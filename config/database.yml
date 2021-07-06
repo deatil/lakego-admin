@@ -1,0 +1,18 @@
+Default: "Mysql"
+Debug: "pro" # dev or pro
+connections: 
+  Mysql:
+    Type: "mysql"
+    Dsn: "" # 填写替换其他配置
+    Host: "127.0.0.1"
+    Port: 3306
+    Username: "root"
+    Password: "123456"
+    Database: "lakego_admin"
+    Charset: "utf8mb4"
+    Prefix: "lakego_lakego_"
+    MaxIdleConns: 10
+    MaxOpenConns: 128
+    ConnMaxLifetime: 60      # 连接不活动时的最大生存时间(秒)
+    #ReConnectInterval: 1    # 保留项,重连数据库间隔秒数
+    #PingFailRetryTimes: 3   # 保留项,最大重连次数

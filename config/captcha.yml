@@ -1,0 +1,10 @@
+# 验证码
+Key: "captcha"
+ExpireTimes: 3600
+Height: 46
+Width: 140
+NoiseCount: 2
+ShowLineOptions: 2
+Length: 4
+Source: "234567890abcdefghjkmnpqrstuvwxyz"
+Fonts: "wqy-microhei.ttc"
