@@ -15,7 +15,7 @@ type Config struct {
  * 连接类型
  */
 func GetDatabaseConfig() interfaces.ConfigInterface {
-	databaseConfig := config.NewConfig("database")
+	databaseConfig := config.New("database")
 	
 	return databaseConfig
 }

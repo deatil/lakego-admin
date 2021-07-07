@@ -35,7 +35,7 @@ func init() {
 }
 
 // 参数设置为可变参数的文件名，这样参数就可以不需要传递，如果传递了多个，我们只取第一个参数作为配置文件名
-func NewConfig(fileName ...string) interfaces.ConfigInterface {
+func New(fileName ...string) interfaces.ConfigInterface {
 	config := viper.New()
 	
 	// 配置文件所在目录

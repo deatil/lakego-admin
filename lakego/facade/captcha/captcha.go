@@ -13,7 +13,7 @@ import (
  * @author deatil
  */
 func New() captcha.Captcha {
-	conf := config.NewConfig("captcha")
+	conf := config.New("captcha")
 	
 	key := conf.GetString("Key")
 	expireTimes := conf.GetInt("ExpireTimes")

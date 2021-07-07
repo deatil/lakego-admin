@@ -12,7 +12,7 @@ import (
  * @author deatil
  */
 func New() cache.Cache {
-	conf := config.NewConfig("cache")
+	conf := config.New("cache")
 	
 	driver := conf.GetString("Driver")
 	prefix := conf.GetString("Prefix")

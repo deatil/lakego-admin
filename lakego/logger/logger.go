@@ -21,7 +21,7 @@ func init() {
     // 设置输出样式，自带的只有两种样式 logrus.JSONFormatter{} 和 logrus.TextFormatter{}
     log.SetFormatter(new(formatter.NormalFormatter))
 	
-	conf := config.NewConfig("logger")
+	conf := config.New("logger")
 	
 	// 日志目录
 	filepath := conf.GetString("Filepath")

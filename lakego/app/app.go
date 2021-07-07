@@ -70,7 +70,7 @@ func (app *App) loadServiceProvider() {
 // 加载 app
 func (app *App) loadApp() {	
 	// 模式
-	mode := config.NewConfig("admin").GetString("Mode")
+	mode := config.New("admin").GetString("Mode")
 	if mode != "dev" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -84,7 +84,7 @@ func (app *App) loadApp() {
 	app.loadServiceProvider()
 
 	// 运行端口
-	httpPort := config.NewConfig("server").GetString("Port")
+	httpPort := config.New("server").GetString("Port")
 	r.Run(httpPort)
 }
 

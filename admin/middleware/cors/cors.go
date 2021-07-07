@@ -10,7 +10,7 @@ import (
 // 允许跨域
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		conf := config.NewConfig("cors")
+		conf := config.New("cors")
 		open := conf.GetBool("OpenAllowOrigin")
 		
 		if (open) {

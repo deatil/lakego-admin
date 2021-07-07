@@ -11,7 +11,7 @@ import (
 
 // 生成后台链接
 func AdminUrl(url string) string {
-	group := config.NewConfig("admin").GetString("Route.Group")
+	group := config.New("admin").GetString("Route.Group")
 	
 	return "/" + group + "/" + url
 }

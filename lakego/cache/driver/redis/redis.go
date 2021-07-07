@@ -192,5 +192,5 @@ func (r *Redis) wrapperKey(key string) string {
 
 // int64 时间格式化为 Duration 格式
 func (r *Redis) IntTimeToDuration(t int64) time.Duration {
-	return time.Duration(t)
+	return time.Second * time.Duration(t)
 }

@@ -4,7 +4,7 @@ import (
 	"time"
 	"strconv"
 	"gorm.io/gorm"
-	
+
 	"lakego-admin/lakego/support/hash"
 	"lakego-admin/lakego/database"
 )
@@ -17,6 +17,7 @@ type Admin struct {
 	Nickname       	string      `gorm:"column:nickname;" json:"nickname" validate:"required"`
 	Email          	string      `gorm:"column:email;size:40;" json:"email"`
 	Avatar   		string      `gorm:"column:avatar;size:32;" json:"avatar"`
+	Introduce   	string      `gorm:"column:introduce;" json:"introduce"`
 	Status     		int         `gorm:"column:status;not null;size:1;" json:"status" validate:"required,max=1,min=-1"`
 	LastLoginTime   int      	`gorm:"column:last_login_time;size:10;" json:"last_login_time"`
 	LastLoginIp     string      `gorm:"column:last_login_ip;size:50;" json:"last_login_ip"`
@@ -24,15 +25,15 @@ type Admin struct {
 	UpdateIp     	string      `gorm:"column:update_ip;size:50;" json:"update_ip"`
 	AddTime     	int      	`gorm:"column:add_time;size:10;" json:"add_time"`
 	AddIp     		string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
-	
-	Attachments []Attachment `gorm:"polymorphic:Owner;polymorphicValue:admin"`
-	AuthGroups []AuthGroup `gorm:"many2many:AuthGroupAccess;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
+
+	Attachments []Attachment `gorm:"column:attachments;polymorphic:Owner;polymorphicValue:admin"`
+	Groups []AuthGroup `gorm:"column:groups;many2many:AuthGroupAccess;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {
 	id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
 	m.ID = id
-	
+
 	return nil
 }
 

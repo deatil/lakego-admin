@@ -32,7 +32,7 @@ func New(context *gin.Context) *Auth {
  * 获取鉴权 token 过期时间
  */
 func (auth *Auth) GetAccessExpiresIn() int {
-	time := config.NewConfig("auth").GetInt("Passport.AccessExpiresIn")
+	time := config.New("auth").GetInt("Passport.AccessExpiresIn")
 	return time
 }
 
@@ -40,7 +40,7 @@ func (auth *Auth) GetAccessExpiresIn() int {
  * 获取刷新 token 过期时间
  */
 func (auth *Auth) GetRefreshExpiresIn() int {
-	time := config.NewConfig("auth").GetInt("Passport.RefreshExpiresIn")
+	time := config.New("auth").GetInt("Passport.RefreshExpiresIn")
 	return time
 }
 
@@ -48,7 +48,7 @@ func (auth *Auth) GetRefreshExpiresIn() int {
  * 生成鉴权 token
  */
 func (auth *Auth) MakeJWT() *jwter.JWT {
-	conf := config.NewConfig("auth")
+	conf := config.New("auth")
 	
 	aud := hash.MD5(helper.GetRequestIp(auth.ctx) + helper.GetHeaderByName(auth.ctx, "HTTP_USER_AGENT"))
 	iss := conf.GetString("Jwt.Iss")
@@ -86,7 +86,7 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
  * 生成鉴权 token
  */
 func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
-	conf := config.NewConfig("auth")
+	conf := config.New("auth")
 
 	jti := conf.GetString("Passport.AccessTokenId")
 	exp := auth.GetAccessExpiresIn()
@@ -116,7 +116,7 @@ func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err e
  * 生成刷新 token
  */
 func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
-	conf := config.NewConfig("auth")
+	conf := config.New("auth")
 
 	jti := conf.GetString("Passport.RefreshTokenId")
 	exp := auth.GetRefreshExpiresIn()
@@ -146,7 +146,7 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
  * 获取鉴权 token
  */
 func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err error) {
-	jti := config.NewConfig("auth").GetString("Passport.AccessTokenId")
+	jti := config.New("auth").GetString("Passport.AccessTokenId")
 	
 	claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
 	
@@ -157,7 +157,7 @@ func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err 
  * 获取刷新 token
  */
 func (auth *Auth) GetRefreshTokenClaims(token string) (claims jwt.MapClaims, err error) {
-	jti := config.NewConfig("auth").GetString("Passport.RefreshTokenId")
+	jti := config.New("auth").GetString("Passport.RefreshTokenId")
 	
 	claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
 	
@@ -206,7 +206,7 @@ func (auth *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface
 func (auth *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
 	data := claims[key].(string)
 	
-	passphrase := config.NewConfig("auth").GetString("Jwt.Passphrase")
+	passphrase := config.New("auth").GetString("Jwt.Passphrase")
 	passphrase = base64.Decode(passphrase)
 	
 	data = cbc.Decode(data, passphrase)

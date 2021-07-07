@@ -12,7 +12,7 @@ import (
  * @author deatil
  */
 func New(name string) interfaces.ConfigInterface {
-	conf := config.NewConfig(name)
+	conf := config.New(name)
 	return conf
 }
 

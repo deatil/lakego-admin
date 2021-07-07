@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version: 5.5.53)
-# Date: 2021-07-02 23:48:52
+# Date: 2021-07-07 22:23:50
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -33,7 +33,7 @@ CREATE TABLE `lakego_lakego_admin` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_admin` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lake','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c',1,1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','82b73cc50afcfdd146cc20d631864390','PaBQfr','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a6',1,1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lake','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c',1,1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','b0ecc530667dd702670f2f258ded3c87','PaBQfr','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a6',1,1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
 /*!40000 ALTER TABLE `lakego_lakego_admin` ENABLE KEYS */;
 
 #
@@ -43,8 +43,8 @@ INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','la
 DROP TABLE IF EXISTS `lakego_lakego_attachment`;
 CREATE TABLE `lakego_lakego_attachment` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '附件关联类型',
-  `type_id` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '关联类型ID',
+  `owner_id` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '关联类型ID',
+  `owner_type` varchar(50) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '附件关联类型',
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件名',
   `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件路径',
   `mime` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件mime类型',
@@ -66,7 +66,7 @@ CREATE TABLE `lakego_lakego_attachment` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_attachment` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_attachment` VALUES ('eb73eb5d52f9c663b5809b6839f2f9a6','admin','e92ba0a3f86f4a5693d8487eb8c632b5','Penguins.jpg','images/20210519\\078d9f012c5a264dd9ee6e959c63e8ef.jpg','image/jpeg','jpg','777835','9d377b10ce778c4938b3c7e2c63a229a','df7be9dc4f467187783aca68c7ce98e4df2172d0','public',1,1621431615,1621431615,1621431615,'127.0.0.1');
+INSERT INTO `lakego_lakego_attachment` VALUES ('eb73eb5d52f9c663b5809b6839f2f9a6','e92ba0a3f86f4a5693d8487eb8c632b5','admin','Penguins.jpg','images/20210519\\078d9f012c5a264dd9ee6e959c63e8ef.jpg','image/jpeg','jpg','777835','9d377b10ce778c4938b3c7e2c63a229a','df7be9dc4f467187783aca68c7ce98e4df2172d0','public',1,1621431615,1621431615,1621431615,'127.0.0.1');
 /*!40000 ALTER TABLE `lakego_lakego_attachment` ENABLE KEYS */;
 
 #

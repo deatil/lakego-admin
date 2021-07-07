@@ -1,4 +1,4 @@
-package auth
+package admin
 
 import (
 	"lakego-admin/lakego/facade/config"
@@ -6,46 +6,46 @@ import (
 
 // 管理员账号结构体
 type Admin struct {
+	Id          string
+	Data        map[string]interface{}
 	AccessToken string
-	Id string
-	Data string
 }
 
-func NewAdmin() Admin {
-	return Admin{}
+func New() *Admin {
+	return &Admin{}
 }
 
-func (admin Admin) WithAccessToken(accessToken string) Admin {
+func (admin *Admin) WithAccessToken(accessToken string) *Admin {
 	admin.AccessToken = accessToken
 	return admin
 }
 
-func (admin Admin) GetAccessToken() string {
+func (admin *Admin) GetAccessToken() string {
 	return admin.AccessToken
 }
 
-func (admin Admin) WithId(id string) Admin {
+func (admin *Admin) WithId(id string) *Admin {
 	admin.Id = id
 	return admin
 }
 
-func (admin Admin) GetId() string {
+func (admin *Admin) GetId() string {
 	return admin.Id
 }
 
-func (admin Admin) WithData(data map[string]interface{}) Admin {
+func (admin *Admin) WithData(data map[string]interface{}) *Admin {
 	admin.Data = data
 	return admin
 }
 
-func (admin Admin) GetData() map[string]interface{} {
+func (admin *Admin) GetData() map[string]interface{} {
 	return admin.Data
 }
 
 // 当前账号信息
-func (admin Admin) GetProfile() map[string]interface{} {
+func (admin *Admin) GetProfile() map[string]interface{} {
 	profile := make(map[string]interface{})
-	
+
 	profile["id"] = admin.Data["id"]
 	profile["name"] = admin.Data["name"]
 	profile["email"] = admin.Data["email"]
@@ -53,45 +53,46 @@ func (admin Admin) GetProfile() map[string]interface{} {
 	profile["avatar"] = admin.Data["avatar"]
 	profile["introduce"] = admin.Data["introduce"]
 	// profile["groups"] = admin.Data["groups"]
-	profile["last_active"] = admin.Data["last_active"]
-	profile["last_ip"] = admin.Data["last_ip"]
-	
+	profile["last_login_time"] = admin.Data["last_login_time"]
+	profile["last_login_ip"] = admin.Data["last_login_ip"]
+
 	return profile
 }
 
 // 是否为超级管理员
-func (admin Admin) IsSuperAdministrator() bool {
+func (admin *Admin) IsSuperAdministrator() bool {
 	if len(admin.Data) == 0 {
 		return false
 	}
-	
-	if isRoot, ok := admin.Data["is_root"]; !ok {
+
+	isRoot, ok := admin.Data["is_root"]
+
+	if !ok {
 		return false
 	}
-	
-	if isRoot != 1 {
+
+	if isRoot.(int) != 1 {
 		return false
 	}
-	
+
 	adminId := config.New("auth").GetString("Auth.AdminId")
 	return admin.Id == adminId
 }
 
 // 是否激活
-func (admin Admin) IsActive() bool {
+func (admin *Admin) IsActive() bool {
 	if admin.IsSuperAdministrator() {
 		return true
 	}
-	
+
 	return admin.Data["status"] == 1
 }
 
 // 所属分组是否激活
-func (admin Admin) IsGroupActive() bool {
+func (admin *Admin) IsGroupActive() bool {
 	if admin.IsSuperAdministrator() {
 		return true
 	}
-	
+
 	return admin.Data["status"] == 1
 }
-

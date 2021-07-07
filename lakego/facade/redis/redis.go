@@ -12,7 +12,7 @@ import (
  * @author deatil
  */
 func New() redis.Redis {
-	conf := config.NewConfig("redis")
+	conf := config.New("redis")
 	
 	db := conf.GetInt("DB")
 	addr := conf.GetString("Host")
@@ -34,7 +34,7 @@ func New() redis.Redis {
  * @author deatil
  */
 func NewWithDB(mainDB int) redis.Redis {
-	conf := config.NewConfig("redis")
+	conf := config.New("redis")
 	
 	addr := conf.GetString("Host")
 	password := conf.GetString("Password")
