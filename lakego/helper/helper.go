@@ -8,9 +8,8 @@ import (
 	"strings"
 	"time"
 	"math/rand"
-	
+
 	"github.com/gin-gonic/gin"
-	"lakego-admin/lakego/support/hash"
 )
 
 func IndexForOne(i int, p, limit int64) int64 {
@@ -42,12 +41,6 @@ func StringToTime(date interface{}) time.Time {
 
 func TimeStampToTime(timeStamp int32) time.Time {
 	return time.Unix(int64(timeStamp), 0)
-}
-
-// 生成密码
-func PasswordMD5(passwd, salt string, salt2 string) string {
-	result := hash.MD5(hash.MD5(passwd+salt) + salt2)
-	return result
 }
 
 // ToString 类型转换，获得string
@@ -110,8 +103,8 @@ func IsNil(i interface{}) bool {
 	v := reflect.ValueOf(i)
 	if v.Kind() != reflect.Ptr {
 		return v.IsNil()
-	}	
-	
+	}
+
 	return false
 }
 
@@ -131,17 +124,17 @@ func MakeRandomString(n int, allowedChars ...[]rune) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 
-	return string(b)	
+	return string(b)
 }
 
 // 请求 IP
 func GetRequestIp(c *gin.Context) string {
 	ip := c.ClientIP()
-	
+
 	if ip == "::1" {
 		ip = "127.0.0.1"
 	}
-	
+
 	return ip
 }
 

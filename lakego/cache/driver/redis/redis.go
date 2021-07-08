@@ -6,9 +6,9 @@ import (
 	"errors"
 	"reflect"
 	"context"
-	
+
 	"github.com/go-redis/redis/v8"
-	
+
 	"lakego-admin/lakego/logger"
 )
 
@@ -52,14 +52,14 @@ func New(config Config) *Redis {
 		client: client,
 	}
 }
-	
+
 // 判断是否存在
 func (r *Redis) Exists(key string) bool {
 	n, err := r.client.Exists(r.ctx, r.wrapperKey(key)).Result()
 	if err != nil {
 		return false
 	}
-	
+
 	if n > 0 {
 		return true
 	} else {
@@ -71,7 +71,7 @@ func (r *Redis) Exists(key string) bool {
 func (r *Redis) Get(key string) (interface{}, error) {
 	var val interface{}
 	var err error
-	
+
 	val, err = r.client.Get(r.ctx, r.wrapperKey(key)).Result()
 	if err == redis.Nil {
 		return val, errors.New("获取存储数据失败")
@@ -85,18 +85,20 @@ func (r *Redis) Get(key string) (interface{}, error) {
 // 设置
 func (r *Redis) Put(key string, value interface{}, expiration interface{}) error {
 	var ttl time.Duration
-	
+
 	if reflect.TypeOf(expiration).String() == "int64" {
 		ttl = r.IntTimeToDuration(expiration.(int64))
+	} else if reflect.TypeOf(expiration).String() == "int" {
+		ttl = r.IntTimeToDuration(int64(expiration.(int)))
 	} else {
 		ttl = expiration.(time.Duration)
 	}
-	
+
 	err := r.client.Set(r.ctx, r.wrapperKey(key), value, ttl).Err()
 	if err != nil {
 		return errors.New("缓存存储失败")
 	}
-	
+
 	return nil
 }
 
@@ -105,42 +107,42 @@ func (r *Redis) Forever(key string, value interface{}) error {
 	err := r.client.Set(r.ctx, r.wrapperKey(key), value, 0).Err()
 	if err != nil {
 		return errors.New("缓存存储失败")
-	}	
-	
+	}
+
 	return nil
 }
 
 // 增加
 func (r *Redis) Increment(key string, value ...int64) error {
 	var err error
-	
+
 	if len(value) > 0 {
 		_, err = r.client.IncrBy(r.ctx, r.wrapperKey(key), value[0]).Result()
 	} else {
 		_, err = r.client.Incr(r.ctx, r.wrapperKey(key)).Result()
 	}
-	
+
 	if err != nil {
 		return errors.New("增加数据量失败")
 	}
-	
+
 	return nil
 }
-	
+
 // 减少
 func (r *Redis) Decrement(key string, value ...int64) error {
 	var err error
-	
+
 	if len(value) > 0 {
 		_, err = r.client.DecrBy(r.ctx, r.wrapperKey(key), value[0]).Result()
 	} else {
 		_, err = r.client.Decr(r.ctx, r.wrapperKey(key)).Result()
 	}
-	
+
 	if err != nil {
 		return errors.New("减少数据量失败")
 	}
-	
+
 	return nil
 }
 
@@ -149,8 +151,8 @@ func (r *Redis) Forget(key string) (bool, error) {
 	_, err := r.client.Del(r.ctx, r.wrapperKey(key)).Result()
 	if err != nil {
 		return false, errors.New("删除数据失败")
-	}	
-	
+	}
+
 	return true, nil
 }
 
@@ -160,7 +162,7 @@ func (r *Redis) Flush() (bool, error) {
 	if err != nil {
 		return false, errors.New("清空数据失败")
 	}
-	
+
 	return true, nil
 }
 
