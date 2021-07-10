@@ -1,8 +1,8 @@
 package config
 
 import (
-	"lakego-admin/lakego/config"
-	"lakego-admin/lakego/config/interfaces"
+    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/config/interfaces"
 )
 
 /**
@@ -12,7 +12,7 @@ import (
  * @author deatil
  */
 func New(name string) interfaces.ConfigInterface {
-	conf := config.New(name)
-	return conf
+    conf := config.New(name)
+    return conf
 }
 

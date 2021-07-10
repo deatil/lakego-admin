@@ -1,7 +1,7 @@
 package casbin
 
 import (
-	"lakego-admin/lakego/casbin"
+    "lakego-admin/lakego/casbin"
 )
 
 /**
@@ -11,6 +11,6 @@ import (
  * @author deatil
  */
 func New() *casbin.Casbin {
-	return casbin.New()
+    return casbin.New()
 }
 

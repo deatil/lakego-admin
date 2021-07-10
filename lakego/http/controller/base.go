@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"lakego-admin/lakego/http/response"
+    "github.com/gin-gonic/gin"
+    "lakego-admin/lakego/http/response"
 )
 
 type BaseController struct {
@@ -20,11 +20,11 @@ func (c *BaseController) SetHeader(context *gin.Context, key string, value strin
  * 返回 json
  */
 func (c *BaseController) ReturnJson(
-	context *gin.Context, 
-	httpCode int, 
-	dataCode int, 
-	msg string, 
-	data interface{},
+    context *gin.Context, 
+    httpCode int, 
+    dataCode int, 
+    msg string, 
+    data interface{},
 ) {
     response.ReturnJson(context, httpCode, dataCode, msg, data)
 }

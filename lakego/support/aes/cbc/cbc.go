@@ -5,7 +5,7 @@ import (
     "crypto/aes"
     "crypto/cipher"
     "encoding/base64"
-	"encoding/hex"
+    "encoding/hex"
 )
 
 func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
@@ -62,8 +62,8 @@ func Encode(str string, key string) string {
     if err != nil {
         return err.Error()
     }
-	
-	return base64.StdEncoding.EncodeToString(enStr)
+    
+    return base64.StdEncoding.EncodeToString(enStr)
 }
 
 // 解密 
@@ -73,14 +73,14 @@ func Decode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
+    
     aeskey := []byte(key)
     deStr, err := AesDecryptCBC(base64Str, aeskey)
     if err != nil {
         return ""
     }
-	
-	return string(deStr)
+    
+    return string(deStr)
 }
 
 // Hex 加密
@@ -92,8 +92,8 @@ func HexEncode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
-	return hex.EncodeToString(enStr)
+    
+    return hex.EncodeToString(enStr)
 }
 
 // Hex 解密
@@ -103,12 +103,12 @@ func HexDecode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
+    
     aeskey := []byte(key)
     deStr, err := AesDecryptCBC(base64Str, aeskey)
     if err != nil {
         return ""
     }
-	
-	return string(deStr)
+    
+    return string(deStr)
 }

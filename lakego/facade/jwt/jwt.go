@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"lakego-admin/lakego/jwt"
+    "lakego-admin/lakego/jwt"
 )
 
 /**
@@ -11,6 +11,6 @@ import (
  * @author deatil
  */
 func New() *jwt.JWT {
-	return jwt.New()
+    return jwt.New()
 }
 

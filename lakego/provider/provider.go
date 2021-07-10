@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 )
 
 /**
@@ -11,12 +11,12 @@ import (
  * @author deatil
  */
 type ServiceProvider interface {
-	// 设置 App
-	WithRoute(*gin.Engine)
-	
-	// 注册
-	Register()  
-	
-	// 引导
-	Boot() 
+    // 设置 App
+    WithRoute(*gin.Engine)
+    
+    // 注册
+    Register()  
+    
+    // 引导
+    Boot() 
 }

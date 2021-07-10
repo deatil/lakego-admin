@@ -1,7 +1,7 @@
 package validate
 
 import (
-	"lakego-admin/lakego/validate"
+    "lakego-admin/lakego/validate"
 )
 
 /**
@@ -11,7 +11,7 @@ import (
  * @author deatil
  */
 func WithValidations(v validate.Validation) {
-	validate.WithValidations(v)
+    validate.WithValidations(v)
 }
 
 /**
@@ -22,7 +22,7 @@ func WithValidations(v validate.Validation) {
  * @author deatil
  */
 func Validate(s interface{}, message map[string]string) (bool, map[string]string) {
-	return validate.CustomValidator.Verify(s, message)
+    return validate.CustomValidator.Verify(s, message)
 }
 
 /**
@@ -32,7 +32,7 @@ func Validate(s interface{}, message map[string]string) (bool, map[string]string
  * @author deatil
  */
 func ValidateMap(data map[string]interface{}, rules map[string]interface{}, message map[string]string) (bool, map[string]string) {
-	return validate.CustomValidator.ValidateMap(data, rules, message)
+    return validate.CustomValidator.ValidateMap(data, rules, message)
 }
 
 /**
@@ -42,5 +42,5 @@ func ValidateMap(data map[string]interface{}, rules map[string]interface{}, mess
  * @author deatil
  */
 func Var(data string, rule string) (bool, error) {
-	return validate.CustomValidator.Var(data, rule)
+    return validate.CustomValidator.Var(data, rule)
 }

@@ -1,26 +1,26 @@
 package lake
 
 import (
-	"strings"
+    "strings"
 )
 
 
 // 分解
 func Explode(needle string, str string) []string {
-	return strings.Split(str, needle)
+    return strings.Split(str, needle)
 }
 
 // 合并
 func Implode(needle string, str []string) string {
-	return strings.Join(str, needle)
+    return strings.Join(str, needle)
 }
 
 // 数组判断
 func InArray(arr []string, str string) bool {
-	for _, v := range arr {
-		if v == str {
-			return true
-		}
-	}
-	return false
+    for _, v := range arr {
+        if v == str {
+            return true
+        }
+    }
+    return false
 }

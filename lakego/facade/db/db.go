@@ -1,8 +1,8 @@
 package db
 
 import (
-	"gorm.io/gorm"
-	"lakego-admin/lakego/database"
+    "gorm.io/gorm"
+    "lakego-admin/lakego/database"
 )
 
 /**
@@ -12,6 +12,6 @@ import (
  * @author deatil
  */
 func New() *gorm.DB {
-	return database.GetDB()
+    return database.GetDB()
 }
 

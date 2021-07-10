@@ -1,7 +1,7 @@
 package event
 
 import (
-	"fmt"
+    "fmt"
 )
  
 // 事件类型基类
@@ -37,13 +37,13 @@ type EventHandler func(event Event)
 type IEventDispatcher interface {
     // 事件监听
     AddEventListener(eventType string, listener *EventListener)
-	
+    
     // 移除事件监听
     RemoveEventListener(eventType string, listener *EventListener) bool
-	
+    
     // 是否包含事件
     HasEventListener(eventType string) bool
-	
+    
     // 事件派发
     DispatchEvent(event Event) bool
 }
@@ -104,7 +104,7 @@ func (this *EventDispatcher) RemoveEventListener(eventType string, listener *Eve
             }
         }
     }
-	
+    
     return false
 }
  
@@ -115,7 +115,7 @@ func (this *EventDispatcher) HasEventListener(eventType string) bool {
             return true
         }
     }
-	
+    
     return false
 }
  
@@ -130,6 +130,6 @@ func (this *EventDispatcher) DispatchEvent(event Event) bool {
             return true
         }
     }
-	
+    
     return false
 }

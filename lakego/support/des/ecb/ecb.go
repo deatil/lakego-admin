@@ -1,12 +1,12 @@
 package ecb
 
 import (
-	"fmt"
-	"errors"
-	"crypto/des"
-	"encoding/hex"
-		
-	"lakego-admin/lakego/support/des/tool"
+    "fmt"
+    "errors"
+    "crypto/des"
+    "encoding/hex"
+        
+    "lakego-admin/lakego/support/des/tool"
 )
 
 func EncryptDES(src string, key string) (string, error) {
@@ -16,15 +16,15 @@ func EncryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-	
+    
     bs := block.BlockSize()
-	
+    
     // 对明文数据进行补码
     data = tool.PKCS5Padding(data, bs)
     if len(data)%bs != 0 {
         return "", errors.New("size error")
     }
-	
+    
     out := make([]byte, len(data))
     dst := out
     for len(data) > 0 {
@@ -34,7 +34,7 @@ func EncryptDES(src string, key string) (string, error) {
         data = data[bs:]
         dst = dst[bs:]
     }
-	
+    
     return fmt.Sprintf("%X", out), nil
 }
  
@@ -49,12 +49,12 @@ func DecryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-	
+    
     bs := block.BlockSize()
     if len(data)%bs != 0 {
         return "", errors.New("size error")
     }
-	
+    
     out := make([]byte, len(data))
     dst := out
     for len(data) > 0 {
@@ -73,8 +73,8 @@ func Encode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
-	return enstr
+    
+    return enstr
 }
 
 // 解密 Decode("950F58725B70C79E", "dfertf12")
@@ -83,7 +83,7 @@ func Decode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
-	return destr
+    
+    return destr
 }
 

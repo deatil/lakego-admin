@@ -1,4 +1,4 @@
-Driver: "redis"
+Driver: "Redis"
 Prefix: "cache"
 Config:
   Redis:

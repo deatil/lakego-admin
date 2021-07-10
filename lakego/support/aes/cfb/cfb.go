@@ -1,46 +1,46 @@
 package cfb
 
 import (
-	"io"
-	"errors"
+    "io"
+    "errors"
     "crypto/aes"
     "crypto/cipher"
-	"crypto/rand"
+    "crypto/rand"
     "encoding/base64"
-	"encoding/hex"
+    "encoding/hex"
 )
 
 func AesEncryptCFB(origData []byte, key []byte) ([]byte, error) {
-	block, err := aes.NewCipher(key)
-	if err != nil {
-		return []byte(""), err
-	}
-	
-	encrypted := make([]byte, aes.BlockSize+len(origData))
-	iv := encrypted[:aes.BlockSize]
-	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return []byte(""), err
-	}
-	
-	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(encrypted[aes.BlockSize:], origData)
-	
-	return encrypted, nil
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        return []byte(""), err
+    }
+    
+    encrypted := make([]byte, aes.BlockSize+len(origData))
+    iv := encrypted[:aes.BlockSize]
+    if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+        return []byte(""), err
+    }
+    
+    stream := cipher.NewCFBEncrypter(block, iv)
+    stream.XORKeyStream(encrypted[aes.BlockSize:], origData)
+    
+    return encrypted, nil
 }
 
 func AesDecryptCFB(encrypted []byte, key []byte) ([]byte, error) {
-	block, _ := aes.NewCipher(key)
-	if len(encrypted) < aes.BlockSize {
-		return []byte(""), errors.New("ciphertext too short")
-	}
-	
-	iv := encrypted[:aes.BlockSize]
-	encrypted = encrypted[aes.BlockSize:]
+    block, _ := aes.NewCipher(key)
+    if len(encrypted) < aes.BlockSize {
+        return []byte(""), errors.New("ciphertext too short")
+    }
+    
+    iv := encrypted[:aes.BlockSize]
+    encrypted = encrypted[aes.BlockSize:]
 
-	stream := cipher.NewCFBDecrypter(block, iv)
-	stream.XORKeyStream(encrypted, encrypted)
-	
-	return encrypted, nil
+    stream := cipher.NewCFBDecrypter(block, iv)
+    stream.XORKeyStream(encrypted, encrypted)
+    
+    return encrypted, nil
 }
 
 // 加密
@@ -52,8 +52,8 @@ func Encode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
-	return base64.StdEncoding.EncodeToString(enStr)
+    
+    return base64.StdEncoding.EncodeToString(enStr)
 }
 
 // 解密
@@ -63,14 +63,14 @@ func Decode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
+    
     aeskey := []byte(key)
     deStr, err := AesDecryptCFB(base64Str, aeskey)
     if err != nil {
         return ""
     }
-	
-	return string(deStr)
+    
+    return string(deStr)
 }
 
 // Hex 加密
@@ -82,8 +82,8 @@ func HexEncode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
-	return hex.EncodeToString(enStr)
+    
+    return hex.EncodeToString(enStr)
 }
 
 // Hex 解密
@@ -93,12 +93,12 @@ func HexDecode(str string, key string) string {
     if err != nil {
         return ""
     }
-	
+    
     aeskey := []byte(key)
     deStr, err := AesDecryptCFB(base64Str, aeskey)
     if err != nil {
         return ""
     }
-	
-	return string(deStr)
+    
+    return string(deStr)
 }

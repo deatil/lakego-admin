@@ -12,24 +12,24 @@ Passport:
 # jwt 相关
 Jwt:
   Iss: "admin-api.yourdomain.com"
-  Aud: "lakego-admin" 
+  Aud: "lakego-admin"
   Sub: "lakego-admin-passport"
   Jti: "lakego-admin-jid"
   Exp: 3600
   Nbf: 0
 
-  # 载荷加密秘钥，为空不加密，base64编码后
-  Passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ=" 
-  # HS256,HS384,HS512; ES256,ES384,ES512; 
+  # HS256,HS384,HS512; ES256,ES384,ES512;
   # RS256,RS384,RS512; PS256,PS384,PS512
   SigningMethod: "HS256"
   # 适用类型 HS
   Secret: "rewrsd35"
   # 公钥和私钥签名适用类型 RS、ES、PS
-  PrivateKey: "" 
+  PrivateKey: ""
   PublicKey: ""
   # 私钥密码，base64编码后，适用类型 RS、ES
-  PrivateKeyPassword: "" 
+  PrivateKeyPassword: ""
+  # 载荷加密秘钥，为空不加密，base64编码后
+  Passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
 
 # 权限
 Auth:

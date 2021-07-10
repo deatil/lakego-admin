@@ -1,18 +1,18 @@
 package errors
 
 import (
-	"github.com/pkg/errors"
+    "github.com/pkg/errors"
 )
 
-// Alias
+// 错误别名
 var (
-	Is           = errors.Is
-	As           = errors.As
-	New          = errors.New
-	Unwrap       = errors.Unwrap
-	Wrap         = errors.Wrap
-	Wrapf        = errors.Wrapf
-	WithStack    = errors.WithStack
-	WithMessage  = errors.WithMessage
-	WithMessagef = errors.WithMessagef
+    Is           = errors.Is
+    As           = errors.As
+    New          = errors.New
+    Unwrap       = errors.Unwrap
+    Wrap         = errors.Wrap
+    Wrapf        = errors.Wrapf
+    WithStack    = errors.WithStack
+    WithMessage  = errors.WithMessage
+    WithMessagef = errors.WithMessagef
 )

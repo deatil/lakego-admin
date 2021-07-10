@@ -1,14 +1,14 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin"
 
-	"lakego-admin/lakego/http/controller"
+    "lakego-admin/lakego/http/controller"
     "lakego-admin/admin/auth/admin"
 )
 
 type ProfileController struct {
-	controller.BaseController
+    controller.BaseController
 }
 
 /**

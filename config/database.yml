@@ -1,9 +1,11 @@
 Default: "Mysql"
-Debug: "pro" # dev or pro
-connections: 
+# dev or pro
+Debug: "pro"
+connections:
   Mysql:
     Type: "mysql"
-    Dsn: "" # 填写替换其他配置
+    # 填写替换其他配置
+    Dsn: ""
     Host: "127.0.0.1"
     Port: 3306
     Username: "root"

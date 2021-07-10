@@ -1,12 +1,12 @@
 package database
 
 import (
-	"database/sql"
-	"database/sql/driver"
-	"encoding/json"
-	"fmt"
-	"strings"
-	"time"
+    "database/sql"
+    "database/sql/driver"
+    "encoding/json"
+    "fmt"
+    "strings"
+    "time"
 )
 
 var timeFormat = "2006-01-02 15:04:05"
@@ -17,48 +17,48 @@ type Datetime sql.NullTime
 
 // Scan implements the Scanner interface.
 func (a *Datetime) Scan(value interface{}) error {
-	return (*sql.NullTime)(a).Scan(value)
+    return (*sql.NullTime)(a).Scan(value)
 }
 
 // Value implements the driver Valuer interface.
 func (a Datetime) Value() (driver.Value, error) {
-	if !a.Valid {
-		return nil, nil
-	}
+    if !a.Valid {
+        return nil, nil
+    }
 
-	return a.Time.Format(timeFormat), nil
+    return a.Time.Format(timeFormat), nil
 }
 
 func (a Datetime) MarshalJSON() ([]byte, error) {
-	if a.Valid {
-		return []byte(fmt.Sprintf("\"%s\"", a.Time.Format(timeFormat))), nil
-	}
+    if a.Valid {
+        return []byte(fmt.Sprintf("\"%s\"", a.Time.Format(timeFormat))), nil
+    }
 
-	return json.Marshal(nil)
+    return json.Marshal(nil)
 }
 
 func (a *Datetime) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), "\"")
+    s := strings.Trim(string(b), "\"")
 
-	if s == "null" || s == "" {
-		a.Valid = false
-		a.Time = time.Time{}
-		return nil
-	}
+    if s == "null" || s == "" {
+        a.Valid = false
+        a.Time = time.Time{}
+        return nil
+    }
 
-	cst, err := time.LoadLocation("Asia/Shanghai")
-	if err != nil {
-		return fmt.Errorf("time.LoadLocation error: %s", err.Error())
-	}
+    cst, err := time.LoadLocation("Asia/Shanghai")
+    if err != nil {
+        return fmt.Errorf("time.LoadLocation error: %s", err.Error())
+    }
 
-	a.Time, err = time.ParseInLocation(timeFormat, s, cst)
-	if err != nil {
-		// When time cannot be resolved using the default format, try RFC3339Nano
-		if a.Time, err = time.ParseInLocation(time.RFC3339Nano, s, cst); err == nil {
-			a.Time = a.Time.In(cst)
-		}
-	}
+    a.Time, err = time.ParseInLocation(timeFormat, s, cst)
+    if err != nil {
+        // When time cannot be resolved using the default format, try RFC3339Nano
+        if a.Time, err = time.ParseInLocation(time.RFC3339Nano, s, cst); err == nil {
+            a.Time = a.Time.In(cst)
+        }
+    }
 
-	a.Valid = true
-	return err
+    a.Valid = true
+    return err
 }
