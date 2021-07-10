@@ -2,7 +2,7 @@ package router
 
 import (
     "github.com/gin-gonic/gin"
-    
+
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/http/route"
 )
@@ -13,10 +13,10 @@ import (
 func Dispatch(engine *gin.Engine) {
     // 中间件
     m := route.GetMiddlewares(config.New("admin").GetString("Route.Middleware"))
-    
-    engine.Use(m...)
+
+    admin := engine.Group(config.New("admin").GetString("Route.Group"))
     {
-        admin := engine.Group(config.New("admin").GetString("Route.Group")) 
+        admin.Use(m...)
         {
             Route(admin)
         }
