@@ -1,4 +1,4 @@
-Default: "Mysql"
+Default: "mysql"
 # dev or pro
 Debug: "pro"
 connections:

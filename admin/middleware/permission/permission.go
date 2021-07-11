@@ -6,9 +6,10 @@ import (
 
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/lake"
-    "lakego-admin/lakego/facade/casbin"
     "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/response"
+    "lakego-admin/lakego/facade/casbin"
+
     "lakego-admin/admin/auth/admin"
 )
 
@@ -26,7 +27,7 @@ func Permission() gin.HandlerFunc {
 
 // 权限检测
 func permissionCheck(ctx *gin.Context) bool {
-    if  checkSuperAdmin(ctx) {
+    if checkSuperAdmin(ctx) {
         return true
     }
 

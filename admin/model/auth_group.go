@@ -4,9 +4,9 @@ import (
     "time"
     "strconv"
     "gorm.io/gorm"
-    
+
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 // 权限分组
@@ -21,17 +21,17 @@ type AuthGroup struct {
     UpdateIp        string      `gorm:"column:update_ip;size:50;" json:"update_ip"`
     AddTime         int         `gorm:"column:add_time;size:10;" json:"add_time"`
     AddIp           string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
-    
+
     Rules []AuthRule `gorm:"column:rules;many2many:AuthRuleAccess;foreignKey:ID;joinForeignKey:GroupId;References:ID;JoinReferences:RuleId"`
 }
 
 func (m *AuthGroup) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
     m.ID = id
-    
+
     return nil
 }
 
 func NewAuthGroup() *gorm.DB {
-    return database.GetDB().Model(&AuthGroup{})
+    return database.New().Model(&AuthGroup{})
 }

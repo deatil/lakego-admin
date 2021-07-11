@@ -4,9 +4,9 @@ import (
     "time"
     "strconv"
     "gorm.io/gorm"
-    
+
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 // 菜单权限
@@ -28,10 +28,10 @@ type AuthRule struct {
 func (m *AuthRule) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
     m.ID = id
-    
+
     return nil
 }
 
 func NewAuthRule() *gorm.DB {
-    return database.GetDB().Model(&AuthRule{})
+    return database.New().Model(&AuthRule{})
 }

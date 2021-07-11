@@ -71,11 +71,12 @@ func (admin *Admin) IsSuperAdministrator() bool {
         return false
     }
 
-    if isRoot.(int) != 1 {
+    if isRoot.(int64) != 1 {
         return false
     }
 
     adminId := config.New("auth").GetString("Auth.AdminId")
+
     return admin.Id == adminId
 }
 

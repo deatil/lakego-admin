@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version: 5.5.53)
-# Date: 2021-07-07 22:23:50
+# Date: 2021-07-11 20:47:15
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -17,6 +17,8 @@ CREATE TABLE `lakego_lakego_admin` (
   `nickname` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '昵称',
   `email` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `avatar` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',
+  `introduce` mediumtext CHARACTER SET utf8mb4 COMMENT '简介',
+  `is_root` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1-超级管理',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `last_login_time` int(10) DEFAULT '0' COMMENT '最后登录时间',
   `last_login_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '最后登录IP',
@@ -33,7 +35,7 @@ CREATE TABLE `lakego_lakego_admin` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_admin` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lake','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c',1,1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','b0ecc530667dd702670f2f258ded3c87','PaBQfr','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a6',1,1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','b0ecc530667dd702670f2f258ded3c87','PaBQfr','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a6','管理员',1,1,1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
 /*!40000 ALTER TABLE `lakego_lakego_admin` ENABLE KEYS */;
 
 #

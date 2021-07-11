@@ -4,9 +4,9 @@ import (
     "time"
     "strconv"
     "gorm.io/gorm"
-    
+
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 // 附件
@@ -32,10 +32,10 @@ type Attachment struct {
 func (m *Attachment) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
     m.ID = id
-    
+
     return nil
 }
 
 func NewAttachment() *gorm.DB {
-    return database.GetDB().Model(&Attachment{})
+    return database.New().Model(&Attachment{})
 }

@@ -5,15 +5,14 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
-    "lakego-admin/lakego/database"
-    "lakego-admin/lakego/provider"
+    providerInterface "lakego-admin/lakego/provider/interfaces"
 )
 
 var serviceProviderLock = new(sync.RWMutex)
 
-var ServiceProvider = []func() provider.ServiceProvider{}
+var serviceProvider = []func() providerInterface.ServiceProvider{}
 
-var UsedServiceProvider []provider.ServiceProvider
+var usedServiceProvider []providerInterface.ServiceProvider
 
 /**
  * App结构体
@@ -30,41 +29,41 @@ func New() *App {
 }
 
 func (app *App) Run() {
-    // 数据库
-    app.loadDatabase()
-
     // 加载 app
     app.loadApp()
 }
 
 // 注册服务提供者
-func (app *App) Register(f func() provider.ServiceProvider) {
+func (app *App) Register(f func() providerInterface.ServiceProvider) {
     serviceProviderLock.Lock()
     defer serviceProviderLock.Unlock()
 
-    ServiceProvider = append(ServiceProvider, f)
+    serviceProvider = append(serviceProvider, f)
 }
 
 // 加载服务提供者
 func (app *App) loadServiceProvider() {
-    if len(ServiceProvider) > 0 {
-        for _, provider := range ServiceProvider {
+    if len(serviceProvider) > 0 {
+        for _, provider := range serviceProvider {
             p := provider()
 
+            // 绑定 app 结构体
+            p.WithApp(app)
+
+            // 路由
             p.WithRoute(app.Engine)
 
             p.Register()
 
-            UsedServiceProvider = append(UsedServiceProvider, p)
+            usedServiceProvider = append(usedServiceProvider, p)
         }
     }
 
-    if len(UsedServiceProvider) > 0 {
-        for _, p2 := range UsedServiceProvider {
+    if len(usedServiceProvider) > 0 {
+        for _, p2 := range usedServiceProvider {
             p2.Boot()
         }
     }
-
 }
 
 // 加载 app
@@ -86,9 +85,4 @@ func (app *App) loadApp() {
     // 运行端口
     httpPort := config.New("server").GetString("Port")
     r.Run(httpPort)
-}
-
-// orm
-func (app *App) loadDatabase() {
-    database.GetPoolInstance().InitPool()
 }

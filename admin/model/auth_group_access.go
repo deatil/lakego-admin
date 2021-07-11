@@ -2,7 +2,7 @@ package model
 
 import (
     "gorm.io/gorm"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 // 管理员管理分组
@@ -12,5 +12,5 @@ type AuthGroupAccess struct {
 }
 
 func NewAuthGroupAccess() *gorm.DB {
-    return database.GetDB().Model(&AuthGroupAccess{})
+    return database.New().Model(&AuthGroupAccess{})
 }

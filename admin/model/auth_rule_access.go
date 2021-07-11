@@ -2,7 +2,7 @@ package model
 
 import (
     "gorm.io/gorm"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 // 分组关联菜单权限
@@ -12,5 +12,5 @@ type AuthRuleAccess struct {
 }
 
 func NewAuthRuleAccess() *gorm.DB {
-    return database.GetDB().Model(&AuthRuleAccess{})
+    return database.New().Model(&AuthRuleAccess{})
 }

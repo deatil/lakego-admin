@@ -6,7 +6,7 @@ import (
     "gorm.io/gorm"
 
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/facade/database"
 )
 
 type Admin struct {
@@ -38,5 +38,5 @@ func (m *Admin) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewAdmin() *gorm.DB {
-    return database.GetDB().Model(&Admin{})
+    return database.New().Model(&Admin{})
 }

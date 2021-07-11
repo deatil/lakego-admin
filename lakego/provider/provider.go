@@ -5,18 +5,11 @@ import (
 )
 
 /**
- * 服务提供者接口
+ * 服务提供者
  *
- * @create 2021-6-19
+ * @create 2021-7-11
  * @author deatil
  */
-type ServiceProvider interface {
-    // 设置 App
-    WithRoute(*gin.Engine)
-    
-    // 注册
-    Register()  
-    
-    // 引导
-    Boot() 
+type ServiceProvider struct {
+
 }
