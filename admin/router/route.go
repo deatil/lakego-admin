@@ -2,7 +2,7 @@ package router
 
 import (
     "github.com/gin-gonic/gin"
-    
+
     "lakego-admin/admin/controller"
 )
 
@@ -16,8 +16,12 @@ func Route(engine *gin.RouterGroup) {
     engine.POST("/passport/login", passportController.Login)
     engine.PUT("/passport/refresh-token", passportController.RefreshToken)
     engine.DELETE("/passport/logout", passportController.Logout)
-    
+
     // 个人信息
     profileController := new(controller.ProfileController)
     engine.GET("/profile", profileController.Index)
+    engine.PUT("/profile/update", profileController.Update)
+    engine.PATCH("/profile/avatar", profileController.UpdateAvatar)
+    engine.PATCH("/profile/password", profileController.UpdatePasssword)
+    engine.GET("/profile/rules", profileController.Rules)
 }

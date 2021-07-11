@@ -18,7 +18,7 @@ func CheckTokenAuth() gin.HandlerFunc {
     return func(context *gin.Context) {
         if !shouldPassThrough(context) {
             // 权限检测
-            JWTCheck(context)
+            jwtCheck(context)
         }
 
         context.Next()
@@ -26,7 +26,7 @@ func CheckTokenAuth() gin.HandlerFunc {
 }
 
 // 路由中间件
-func JWTCheck(ctx *gin.Context) {
+func jwtCheck(ctx *gin.Context) {
     jwtObj := ctx.GetHeader("Authorization")
     if jwtObj == "" {
         response.Error(ctx, code.JwtTokenInvalid, "token不能为空")
