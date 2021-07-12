@@ -5,11 +5,13 @@ import (
     "lakego-admin/lakego/lake"
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/http/code"
+    "lakego-admin/lakego/http/route"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route/middleware"
     appInterface "lakego-admin/lakego/app/interfaces"
 
     // 中间件
+    "lakego-admin/admin/middleware/exception"
     "lakego-admin/admin/middleware/authorization"
     "lakego-admin/admin/middleware/cors"
     "lakego-admin/admin/middleware/event"
@@ -26,12 +28,18 @@ type ServiceProvider struct {
 
 // 路由中间件
 var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
+    // 异常处理
+    "lakego.exception": exception.Handler(),
+
     // 事件
     "lakego.event": event.Event(),
+
     // 跨域处理
     "lakego.cors": cors.Cors(),
+
     // token 验证
     "lakego.auth": authorization.CheckTokenAuth(),
+
     // 权限检测
     "lakego.permission": permission.Permission(),
 }
@@ -39,6 +47,7 @@ var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
 // 中间件分组
 var middlewareGroups map[string]interface{} = map[string]interface{}{
     "lakego-admin": []string{
+        "lakego.exception",
         "lakego.event",
         "lakego.cors",
         "lakego.auth",
@@ -116,7 +125,15 @@ func (s *ServiceProvider) loadRoute() {
         }
     })
 
-    // 路由
-    adminRoute.Dispatch(s.Engine)
+    // 后台路由及设置中间件
+    m := route.GetMiddlewares(config.New("admin").GetString("Route.Middleware"))
+
+    admin := s.Engine.Group(config.New("admin").GetString("Route.Group"))
+    {
+        admin.Use(m...)
+        {
+            adminRoute.Route(admin)
+        }
+    }
 }
 
