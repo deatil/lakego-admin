@@ -3,43 +3,31 @@ package exception
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/lake"
-    "lakego-admin/lakego/config"
     "lakego-admin/lakego/logger"
     "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/response"
 )
 
-type Api struct {
-    Code    int
-    Message string
-}
-
 // 异常处理
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
-        prefix := "/" + config.New("admin").GetString("Route.Group") + "/*"
+        defer func() {
+            if r := recover(); r != nil {
+                switch r.(type) {
+                case string:
+                    logger.Errorf("panic: %v\n", r.(string))
 
-        // 只有 admin 系统路由才拦截
-        if lake.MatchPath(ctx, prefix, "") {
-            defer func() {
-                if r := recover(); r != nil {
-                    switch t := r.(type) {
-                    case *Api:
-                        logger.Errorf("panic: %v\n", t.Message)
+                    // 输出日志
+                    response.Error(ctx, code.StatusException, r.(string))
+                default:
+                    logger.Errorf("panic: internal error")
 
-                        // t.Code
-                        response.Error(ctx, code.StatusException, t.Message)
-                    default:
-                        logger.Errorf("panic: internal error")
-
-                        // "net/http"
-                        // http.StatusInternalServerError
-                        response.Error(ctx, code.StatusException, "服务器内部异常")
-                    }
+                    // "net/http"
+                    // http.StatusInternalServerError
+                    response.Error(ctx, code.StatusException, "服务器内部异常")
                 }
-            }()
-        }
+            }
+        }()
 
         ctx.Next()
     }

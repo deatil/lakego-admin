@@ -17,21 +17,21 @@ type Fields map[string]interface{}
 // import "lakego-admin/lakego/logger"
 func init() {
     log.SetReportCaller(true)
-    
+
     // 设置输出样式，自带的只有两种样式 logrus.JSONFormatter{} 和 logrus.TextFormatter{}
     log.SetFormatter(new(formatter.NormalFormatter))
-    
+
     conf := config.New("logger")
-    
+
     // 日志目录
     filepath := conf.GetString("Filepath")
-    
+
     // 日志文件
     baseLogPath := path.GetBasePath() + filepath
-    
+
     maxAge := conf.GetDuration("MaxAge")
     rotationTime := conf.GetDuration("RotationTime")
-    
+
     writer, err := rotatelogs.New(
         baseLogPath + "/log_%Y%m%d.log",
         // rotatelogs.WithLinkName(baseLogPath), // 生成软链，指向最新日志文件
@@ -41,12 +41,12 @@ func init() {
     if err != nil {
         log.Errorf("config local file system logger error. %v", errors.WithStack(err))
     }
-        
+
     // os.Stdout || os.Stderr
     // 设置output,默认为stderr,可以为任何io.Writer，比如文件*os.File
     // file, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
     log.SetOutput(writer)
-    
+
     // 设置最低loglevel
     log.SetLevel(log.TraceLevel)
 }
@@ -57,7 +57,7 @@ func WithFields(fields Fields) *log.Entry {
     for k, v := range fields {
         data[k] = v
     }
-    
+
     return log.WithFields(data)
 }
 

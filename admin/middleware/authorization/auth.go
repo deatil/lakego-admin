@@ -14,7 +14,7 @@ import (
 )
 
 // 检查token权限
-func CheckTokenAuth() gin.HandlerFunc {
+func Handler() gin.HandlerFunc {
     return func(context *gin.Context) {
         if !shouldPassThrough(context) {
             // 权限检测

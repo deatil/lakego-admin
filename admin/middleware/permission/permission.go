@@ -14,7 +14,7 @@ import (
 )
 
 // 权限检测
-func Permission() gin.HandlerFunc {
+func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         if !shouldPassThrough(ctx) {
             // 权限检测

@@ -3,19 +3,19 @@ package config
 import (
     "log"
     "time"
-    
+
     "github.com/fsnotify/fsnotify"
     "github.com/spf13/viper"
-    
+
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/container"
     "lakego-admin/lakego/config/interfaces"
 )
 
 var lastChangeTime time.Time
-var BasePath string
-var ConfigKeyPrefix string = "Config_"
-var ConfigPath string = "/config"
+var basePath string
+var configKeyPrefix string = "Config_"
+var configPath string = "/config"
 
 /**
  * 配置
@@ -29,25 +29,25 @@ type configMap struct {
 
 func init() {
     lastChangeTime = time.Now()
-    
+
     // 程序根目录
-    BasePath = path.GetBasePath()
+    basePath = path.GetBasePath()
 }
 
 // 参数设置为可变参数的文件名，这样参数就可以不需要传递，如果传递了多个，我们只取第一个参数作为配置文件名
 func New(fileName ...string) interfaces.ConfigInterface {
     config := viper.New()
-    
+
     // 配置文件所在目录
-    config.AddConfigPath(BasePath + ConfigPath)
-    
+    config.AddConfigPath(basePath + configPath)
+
     // 需要读取的文件名,默认为：config
     if len(fileName) == 0 {
         config.SetConfigName("admin")
     } else {
         config.SetConfigName(fileName[0])
     }
-    
+
     // 设置配置文件类型(后缀)为 yml
     if len(fileName) <= 1 {
         config.SetConfigType("yml")
@@ -58,11 +58,14 @@ func New(fileName ...string) interfaces.ConfigInterface {
     if err := config.ReadInConfig(); err != nil {
         log.Fatal(err.Error())
     }
-    
+
     // 设置根目录
     config.AddConfigPath(".")
     config.ReadInConfig()
-    
+
+    // 配置里读取
+    _ = config.ReadInConfig()
+
     // 环境变量
     config.AutomaticEnv()
     config.AllowEmptyEnv(true)
@@ -74,7 +77,7 @@ func New(fileName ...string) interfaces.ConfigInterface {
 
 // 程序根目录
 func (y *configMap) GetBasePath() string {
-    return BasePath
+    return basePath
 }
 
 // 监听文件变化
@@ -92,7 +95,7 @@ func (y *configMap) ConfigFileChangeListen() {
 
 // 判断相关键是否已经缓存
 func (y *configMap) keyIsCache(keyName string) bool {
-    if _, exists := container.New().KeyIsExists(ConfigKeyPrefix + keyName); exists {
+    if _, exists := container.New().KeyIsExists(configKeyPrefix + keyName); exists {
         return true
     } else {
         return false
@@ -101,17 +104,17 @@ func (y *configMap) keyIsCache(keyName string) bool {
 
 // 对键值进行缓存
 func (y *configMap) cache(keyName string, value interface{}) bool {
-    return container.New().Set(ConfigKeyPrefix + keyName, value)
+    return container.New().Set(configKeyPrefix + keyName, value)
 }
 
 // 通过键获取缓存的值
 func (y *configMap) getValueFromCache(keyName string) interface{} {
-    return container.New().Get(ConfigKeyPrefix + keyName)
+    return container.New().Get(configKeyPrefix + keyName)
 }
 
 // 清空已经窜换的配置项信息
 func (y *configMap) clearCache() {
-    container.New().FuzzyDelete(ConfigKeyPrefix)
+    container.New().FuzzyDelete(configKeyPrefix)
 }
 
 // 允许 clone 一个相同功能的结构体
@@ -125,7 +128,7 @@ func (y *configMap) Clone(fileName string) interfaces.ConfigInterface {
     if err := (&config).viper.ReadInConfig(); err != nil {
         log.Fatal("配置初始化失败")
     }
-    
+
     return &config
 }
 

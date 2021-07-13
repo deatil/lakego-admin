@@ -20,14 +20,14 @@ Jwt:
 
   # HS256,HS384,HS512; ES256,ES384,ES512;
   # RS256,RS384,RS512; PS256,PS384,PS512
-  SigningMethod: "HS256"
-  # 适用类型 HS
-  Secret: "rewrsd35"
+  SigningMethod: "RS256"
+  # 密码，base64 编码后，适用类型 HS
+  Secret: "MTIzNDU2"
   # 公钥和私钥签名适用类型 RS、ES、PS
-  PrivateKey: ""
-  PublicKey: ""
-  # 私钥密码，base64编码后，适用类型 RS、ES
-  PrivateKeyPassword: ""
+  PrivateKey: "/config/key/rsa/private_key.pem"
+  PublicKey: "/config/key/rsa/public_key.pem"
+  # 私钥密码，base64 编码后，适用类型 RS
+  PrivateKeyPassword: "MTIzNDU2"
   # 载荷加密秘钥，为空不加密，base64编码后
   Passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
 

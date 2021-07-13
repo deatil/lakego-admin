@@ -3,7 +3,7 @@ package auth
 import (
     "github.com/gin-gonic/gin"
     "github.com/dgrijalva/jwt-go"
-    
+
     jwter "lakego-admin/lakego/jwt"
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/helper"
@@ -49,7 +49,7 @@ func (auth *Auth) GetRefreshExpiresIn() int {
  */
 func (auth *Auth) MakeJWT() *jwter.JWT {
     conf := config.New("auth")
-    
+
     aud := hash.MD5(helper.GetRequestIp(auth.ctx) + helper.GetHeaderByName(auth.ctx, "HTTP_USER_AGENT"))
     iss := conf.GetString("Jwt.Iss")
     sub := conf.GetString("Jwt.Sub")
@@ -62,11 +62,10 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
     privateKey := conf.GetString("Jwt.PrivateKey")
     publicKey := conf.GetString("Jwt.PublicKey")
     privateKeyPassword := conf.GetString("Jwt.PrivateKeyPassword")
-    privateKeyPassword = base64.Decode(privateKeyPassword)
-    
+
     exp2 := int64(exp)
     nbf2 := int64(nbf)
-    
+
     return jwter.New().
         WithAud(aud).
         WithExp(exp2).
@@ -90,25 +89,25 @@ func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err e
 
     jti := conf.GetString("Passport.AccessTokenId")
     exp := auth.GetAccessExpiresIn()
-    
+
     exp2 := int64(exp)
-   
+
     passphrase := conf.GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
-    
+
     jwtHandle := auth.
         MakeJWT().
         WithExp(exp2).
         WithJti(jti)
-        
+
     for k, v := range claims {
         v = cbc.Encode(v, passphrase)
-        
+
         jwtHandle.WithClaim(k, v)
-    }		
-    
+    }
+
     token, err = jwtHandle.MakeToken()
-    
+
     return
 }
 
@@ -120,26 +119,26 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 
     jti := conf.GetString("Passport.RefreshTokenId")
     exp := auth.GetRefreshExpiresIn()
-    
+
     exp2 := int64(exp)
-    
+
     passphrase := conf.GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
-        
+
     jwtHandle := auth.
         MakeJWT().
         WithExp(exp2).
         WithJti(jti)
-        
+
     for k, v := range claims {
         v = cbc.Encode(v, passphrase)
-        
+
         jwtHandle.WithClaim(k, v)
-    }		
-    
+    }
+
     token, err = jwtHandle.MakeToken()
-    
-    return	
+
+    return
 }
 
 /**
@@ -147,9 +146,9 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
  */
 func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err error) {
     jti := config.New("auth").GetString("Passport.AccessTokenId")
-    
+
     claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
-    
+
     return
 }
 
@@ -158,10 +157,10 @@ func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err 
  */
 func (auth *Auth) GetRefreshTokenClaims(token string) (claims jwt.MapClaims, err error) {
     jti := config.New("auth").GetString("Passport.RefreshTokenId")
-    
+
     claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
-    
-    return	
+
+    return
 }
 
 /**
@@ -172,9 +171,9 @@ func (auth *Auth) GetAccessTokenData(token string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     data := auth.GetDataFromTokenClaims(claims, key)
-    
+
     return data
 }
 
@@ -186,31 +185,31 @@ func (auth *Auth) GetRefreshTokenData(token string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     data := auth.GetDataFromTokenClaims(claims, key)
-    
+
     return data
-    
+
 }
 
 /**
  * 从 Claims 获取数据
  */
 func (auth *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface{} {
-    return claims[key]	
+    return claims[key]
 }
 
 /**
- * 从 TokenClaims 获取数据 
+ * 从 TokenClaims 获取数据
  */
 func (auth *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
     data := claims[key].(string)
-    
+
     passphrase := config.New("auth").GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
-    
+
     data = cbc.Decode(data, passphrase)
-    
-    return data	
+
+    return data
 }
 

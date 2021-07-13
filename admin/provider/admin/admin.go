@@ -32,22 +32,22 @@ var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
     "lakego.exception": exception.Handler(),
 
     // 事件
-    "lakego.event": event.Event(),
+    "lakego.event": event.Handler(),
 
     // 跨域处理
-    "lakego.cors": cors.Cors(),
+    "lakego.cors": cors.Handler(),
 
     // token 验证
-    "lakego.auth": authorization.CheckTokenAuth(),
+    "lakego.auth": authorization.Handler(),
 
     // 权限检测
-    "lakego.permission": permission.Permission(),
+    "lakego.permission": permission.Handler(),
 }
 
 // 中间件分组
 var middlewareGroups map[string]interface{} = map[string]interface{}{
     "lakego-admin": []string{
-        "lakego.exception",
+        // "lakego.exception",
         "lakego.event",
         "lakego.cors",
         "lakego.auth",
