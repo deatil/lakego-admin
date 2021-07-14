@@ -47,7 +47,7 @@ var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
 // 中间件分组
 var middlewareGroups map[string]interface{} = map[string]interface{}{
     "lakego-admin": []string{
-        // "lakego.exception",
+        "lakego.exception",
         "lakego.event",
         "lakego.cors",
         "lakego.auth",

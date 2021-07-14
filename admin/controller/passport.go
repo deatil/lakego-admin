@@ -99,14 +99,14 @@ func (control *PassportController) Login(ctx *gin.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        control.Error(ctx, code.LoginError, err.Error())
+        control.Error(ctx, code.LoginError, "授权token生成失败")
         return
     }
 
     // 刷新 token
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
-        control.Error(ctx, code.LoginError, err.Error())
+        control.Error(ctx, code.LoginError, "刷新token生成失败")
         return
     }
 

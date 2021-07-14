@@ -1,6 +1,7 @@
 package exception
 
 import (
+    "runtime/debug"
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/logger"
@@ -20,7 +21,7 @@ func Handler() gin.HandlerFunc {
                     // 输出日志
                     response.Error(ctx, code.StatusException, r.(string))
                 default:
-                    logger.Errorf("panic: internal error")
+                    logger.Errorf("panic: internal error. stack: %v", string(debug.Stack()))
 
                     // "net/http"
                     // http.StatusInternalServerError

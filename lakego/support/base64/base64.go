@@ -1,6 +1,7 @@
 package base64
 
 import (
+    "strings"
     "encoding/base64"
 )
 
@@ -73,6 +74,25 @@ func RawURLDecode(str string) string {
     var err error
 
     newStr, err = base64.RawURLEncoding.DecodeString(str)
+    if err != nil {
+        return ""
+    }
+
+    return string(newStr)
+}
+
+// URL
+func EncodeSegment(seg string) string {
+    return strings.TrimRight(base64.URLEncoding.EncodeToString([]byte(seg)), "=")
+}
+
+// URL
+func DecodeSegment(seg string) string {
+    if l := len(seg) % 4; l > 0 {
+        seg += strings.Repeat("=", 4-l)
+    }
+
+    newStr, err := base64.RawStdEncoding.DecodeString(seg)
     if err != nil {
         return ""
     }
