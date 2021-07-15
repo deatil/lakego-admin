@@ -22,7 +22,7 @@ type AuthGroup struct {
     AddTime         int         `gorm:"column:add_time;size:10;" json:"add_time"`
     AddIp           string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
 
-    Rules []AuthRule `gorm:"column:rules;many2many:AuthRuleAccess;foreignKey:ID;joinForeignKey:GroupId;References:ID;JoinReferences:RuleId"`
+    Rules []AuthRule `gorm:"column:rules;many2many:auth_rule_access;foreignKey:ID;joinForeignKey:GroupId;References:ID;JoinReferences:RuleId"`
 }
 
 func (m *AuthGroup) BeforeCreate(tx *gorm.DB) error {

@@ -16,7 +16,7 @@ func Handler() gin.HandlerFunc {
             if r := recover(); r != nil {
                 switch r.(type) {
                 case string:
-                    logger.Errorf("panic: %v\n", r.(string))
+                    logger.Errorf("panic: %s\n", r.(string))
 
                     // 输出日志
                     response.Error(ctx, code.StatusException, r.(string))

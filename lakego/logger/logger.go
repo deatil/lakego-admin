@@ -4,7 +4,7 @@ import (
     "time"
 
     "github.com/pkg/errors"
-    log "github.com/sirupsen/logrus"
+    "github.com/sirupsen/logrus"
     "github.com/lestrrat/go-file-rotatelogs"
 
     "lakego-admin/lakego/config"
@@ -14,8 +14,11 @@ import (
 
 type Fields map[string]interface{}
 
+var log = logrus.New()
+
 // import "lakego-admin/lakego/logger"
 func init() {
+
     log.SetReportCaller(true)
 
     // 设置输出样式，自带的只有两种样式 logrus.JSONFormatter{} 和 logrus.TextFormatter{}
@@ -48,12 +51,12 @@ func init() {
     log.SetOutput(writer)
 
     // 设置最低loglevel
-    log.SetLevel(log.TraceLevel)
+    log.SetLevel(logrus.TraceLevel)
 }
 
 // 设置自定义变量
-func WithFields(fields Fields) *log.Entry {
-    data := make(log.Fields, len(fields))
+func WithFields(fields Fields) *logrus.Entry {
+    data := make(logrus.Fields, len(fields))
     for k, v := range fields {
         data[k] = v
     }

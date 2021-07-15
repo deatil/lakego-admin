@@ -26,8 +26,8 @@ type Admin struct {
     AddTime         int         `gorm:"column:add_time;size:10;" json:"add_time"`
     AddIp           string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
 
-    Attachments []Attachment `gorm:"column:attachments;polymorphic:Owner;polymorphicValue:admin"`
-    Groups []AuthGroup `gorm:"column:groups;many2many:AuthGroupAccess;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
+    Attachments []Attachment `gorm:"column:attachment;polymorphic:Owner;polymorphicValue:admin"`
+    Groups []AuthGroup `gorm:"column:groups;many2many:auth_group_access;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {
@@ -40,3 +40,4 @@ func (m *Admin) BeforeCreate(tx *gorm.DB) error {
 func NewAdmin() *gorm.DB {
     return database.New().Model(&Admin{})
 }
+
