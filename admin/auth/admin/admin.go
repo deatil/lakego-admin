@@ -1,6 +1,7 @@
 package admin
 
 import (
+    "lakego-admin/lakego/collection"
     "lakego-admin/lakego/facade/config"
 )
 
@@ -42,23 +43,6 @@ func (admin *Admin) GetData() map[string]interface{} {
     return admin.Data
 }
 
-// 当前账号信息
-func (admin *Admin) GetProfile() map[string]interface{} {
-    profile := make(map[string]interface{})
-
-    profile["id"] = admin.Data["id"]
-    profile["name"] = admin.Data["name"]
-    profile["email"] = admin.Data["email"]
-    profile["nickname"] = admin.Data["nickname"]
-    profile["avatar"] = admin.Data["avatar"]
-    profile["introduce"] = admin.Data["introduce"]
-    // profile["groups"] = admin.Data["groups"]
-    profile["last_login_time"] = admin.Data["last_login_time"]
-    profile["last_login_ip"] = admin.Data["last_login_ip"]
-
-    return profile
-}
-
 // 是否为超级管理员
 func (admin *Admin) IsSuperAdministrator() bool {
     if len(admin.Data) == 0 {
@@ -71,7 +55,7 @@ func (admin *Admin) IsSuperAdministrator() bool {
         return false
     }
 
-    if isRoot.(int64) != 1 {
+    if int(isRoot.(float64)) != 1 {
         return false
     }
 
@@ -86,7 +70,8 @@ func (admin *Admin) IsActive() bool {
         return true
     }
 
-    return admin.Data["status"] == 1
+    status := admin.Data["status"]
+    return int(status.(float64)) == 1
 }
 
 // 所属分组是否激活
@@ -95,5 +80,73 @@ func (admin *Admin) IsGroupActive() bool {
         return true
     }
 
-    return admin.Data["status"] == 1
+    // 格式化分组
+    adminGroups := admin.Data["Groups"].([]interface{})
+    status := collection.
+        Collect(adminGroups).
+        Every(func(item, value interface{}) bool {
+            value2 := value.(map[string]interface{})
+
+            status := value2["status"]
+            if int(status.(float64)) == 1 {
+                return false
+            }
+
+            return true
+        })
+
+    return !status
 }
+
+// 当前账号信息
+func (admin *Admin) GetProfile() map[string]interface{} {
+    profile := make(map[string]interface{})
+
+    profile["id"] = admin.Data["id"]
+    profile["name"] = admin.Data["name"]
+    profile["email"] = admin.Data["email"]
+    profile["nickname"] = admin.Data["nickname"]
+    profile["avatar"] = admin.Data["avatar"]
+    profile["introduce"] = admin.Data["introduce"]
+    profile["groups"] = admin.GetGroups()
+    profile["last_login_time"] = admin.Data["last_login_time"]
+    profile["last_login_ip"] = admin.Data["last_login_ip"]
+
+    return profile
+}
+
+// 当前账号所属分组
+func (admin *Admin) GetGroups() []map[string]interface{} {
+    groups := make([]map[string]interface{}, 0)
+
+    // 格式化分组
+    adminGroups := admin.Data["Groups"].([]interface{})
+    groups = collection.
+        Collect(adminGroups).
+        Each(func(item, value interface{}) (interface{}, bool) {
+            value2 := value.(map[string]interface{})
+            group := map[string]interface{}{
+                "id": value2["id"],
+                "title": value2["title"],
+                "description": value2["description"],
+            };
+
+            return group, true
+        }).
+        ToMapArray()
+
+    return groups
+}
+
+// 当前账号所属分组
+func (admin *Admin) GetGroupIds() []string {
+    // 格式化分组
+    adminGroups := admin.Data["Groups"].([]interface{})
+    ids := collection.
+        Collect(adminGroups).
+        Pluck("id").
+        ToStringArray()
+
+    return ids
+}
+

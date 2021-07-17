@@ -2,6 +2,7 @@ package authorization
 
 import (
     "strings"
+    "encoding/json"
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
@@ -49,10 +50,10 @@ func jwtCheck(ctx *gin.Context) {
     userId := jwter.GetDataFromTokenClaims(claims, "id")
 
     // 用户信息
-    adminInfo := map[string]interface{}{}
+    adminInfo := new(model.Admin)
     modelErr := model.NewAdmin().
-        Preload("Groups").
         Where(&model.Admin{ID: userId}).
+        Preload("Groups").
         First(&adminInfo).
         Error
     if modelErr != nil {
@@ -60,10 +61,15 @@ func jwtCheck(ctx *gin.Context) {
         return
     }
 
+    // 结构体转map
+    data, _ := json.Marshal(&adminInfo)
+    adminData := map[string]interface{}{}
+    json.Unmarshal(data, &adminData)
+
     adminer := admin.New()
     adminer.WithAccessToken(accessToken).
         WithId(userId).
-        WithData(adminInfo)
+        WithData(adminData)
 
     ctx.Set("admin_id", userId)
     ctx.Set("access_token", accessToken)

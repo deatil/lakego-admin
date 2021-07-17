@@ -1,4 +1,4 @@
-## lakego-admin 通用后台管理系统
+## lakego-admin 后台管理系统
 
 
 ### 项目介绍

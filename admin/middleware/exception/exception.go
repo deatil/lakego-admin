@@ -21,7 +21,7 @@ func Handler() gin.HandlerFunc {
                     // 输出日志
                     response.Error(ctx, code.StatusException, r.(string))
                 default:
-                    logger.Errorf("panic: internal error. stack: %v", string(debug.Stack()))
+                    logger.Errorf("panic: internal error. message: %s, stack: %v", r, string(debug.Stack()))
 
                     // "net/http"
                     // http.StatusInternalServerError

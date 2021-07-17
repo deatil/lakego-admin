@@ -10,24 +10,25 @@ import (
 )
 
 type Admin struct {
-    ID              string      `gorm:"column:id;size:32;not null;index;" json:"id"`
-    Name            string      `gorm:"column:name;not null;" json:"name" validate:"required"`
-    Password        string      `gorm:"column:password;" json:"password" validate:"required"`
-    PasswordSalt    string      `gorm:"column:password_salt;" json:"password_salt" validate:"required"`
-    Nickname        string      `gorm:"column:nickname;" json:"nickname" validate:"required"`
-    Email           string      `gorm:"column:email;size:40;" json:"email"`
-    Avatar          string      `gorm:"column:avatar;size:32;" json:"avatar"`
-    Introduce       string      `gorm:"column:introduce;" json:"introduce"`
-    Status          int         `gorm:"column:status;not null;size:1;" json:"status" validate:"required,max=1,min=-1"`
-    LastLoginTime   int         `gorm:"column:last_login_time;size:10;" json:"last_login_time"`
-    LastLoginIp     string      `gorm:"column:last_login_ip;size:50;" json:"last_login_ip"`
-    UpdateTime      int         `gorm:"column:update_time;size:10;" json:"update_time"`
-    UpdateIp        string      `gorm:"column:update_ip;size:50;" json:"update_ip"`
-    AddTime         int         `gorm:"column:add_time;size:10;" json:"add_time"`
-    AddIp           string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
+    ID              string      `gorm:"column:id;type:char(32);not null;primaryKey;" json:"id"`
+    Name            string      `gorm:"column:name;not null;type:varchar(30);" json:"name" validate:"required"`
+    Password        string      `gorm:"column:password;type:char(32);" json:"password" validate:"required"`
+    PasswordSalt    string      `gorm:"column:password_salt;type:char(6);" json:"password_salt" validate:"required"`
+    Nickname        string      `gorm:"column:nickname;type:varchar(150);" json:"nickname" validate:"required"`
+    Email           string      `gorm:"column:email;type:varchar(100);" json:"email"`
+    Avatar          string      `gorm:"column:avatar;type:char(32);" json:"avatar"`
+    Introduce       string      `gorm:"column:introduce;type:mediumtext;" json:"introduce"`
+    IsRoot          int         `gorm:"column:is_root;type:tinyint(1);" json:"is_root"`
+    Status          int         `gorm:"column:status;not null;type:tinyint(1);" json:"status" validate:"required,max=1,min=-1"`
+    LastLoginTime   int         `gorm:"column:last_login_time;type:int(10);" json:"last_login_time"`
+    LastLoginIp     string      `gorm:"column:last_login_ip;type:varchar(50);" json:"last_login_ip"`
+    UpdateTime      int         `gorm:"column:update_time;type:int(10);" json:"update_time"`
+    UpdateIp        string      `gorm:"column:update_ip;type:varchar(50);" json:"update_ip"`
+    AddTime         int         `gorm:"column:add_time;type:int(10);" json:"add_time"`
+    AddIp           string      `gorm:"column:add_ip;type:varchar(50);" json:"add_ip"`
 
-    Attachments []Attachment `gorm:"column:attachment;polymorphic:Owner;polymorphicValue:admin"`
-    Groups []AuthGroup `gorm:"column:groups;many2many:auth_group_access;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
+    Groups []AuthGroup `gorm:"many2many:auth_group_access;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
+    Attachments []Attachment `gorm:"polymorphic:Owner;polymorphicValue:admin"`
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {
