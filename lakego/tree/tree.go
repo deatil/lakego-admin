@@ -182,7 +182,7 @@ func (tree *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
     return newData
 }
 
-// 获取当前ID的所有子节点
+// 获取所有父节点ID列表
 func (tree *Tree) GetListParentIds(id interface{}) []interface{} {
     data := tree.GetListParents(id)
     if len(data) <= 0 {
@@ -229,7 +229,7 @@ func (tree *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
     return newData
 }
 
-// 获取当前ID的所有子节点id
+// 获取当前ID的所有子节点id列表
 func (tree *Tree) GetListChildIds(id interface{}) []interface{} {
     data := tree.GetListChildren(id)
     if len(data) <= 0 {
