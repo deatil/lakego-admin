@@ -74,7 +74,6 @@ func jwtCheck(ctx *gin.Context) {
     ctx.Set("admin_id", userId)
     ctx.Set("access_token", accessToken)
     ctx.Set("admin", adminer)
-    ctx.Next()
 }
 
 // 过滤
