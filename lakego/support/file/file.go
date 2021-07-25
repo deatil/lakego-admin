@@ -53,6 +53,16 @@ func EnsureDir(fp string) error {
     return os.MkdirAll(fp, os.ModePerm)
 }
 
+// 是否可读
+func IsReadable(file string) error {
+    _, err := ioutil.ReadFile(file)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
 // ensure the datadir and make sure it's rw-able
 func EnsureDirRW(dataDir string) error {
     err := EnsureDir(dataDir)

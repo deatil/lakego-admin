@@ -45,20 +45,15 @@ func (control *PassportController) Login(ctx *gin.Context) {
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
-    name := post["name"].(string)
-    password := post["password"].(string)
-    captchaCode := post["captcha"].(string)
-
-    validateData := map[string]interface{}{
-        "name": name,
-        "password": password,
-        "captcha": captchaCode,
-    }
-    validateErr := passportValidate.Login(validateData)
+    validateErr := passportValidate.Login(post)
     if validateErr != "" {
         control.Error(ctx, code.LoginError, validateErr)
         return
     }
+
+    name := post["name"].(string)
+    password := post["password"].(string)
+    captchaCode := post["captcha"].(string)
 
     // 验证码检测
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
