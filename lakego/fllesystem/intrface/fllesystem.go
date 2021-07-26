@@ -66,14 +66,4 @@ type Fllesystem interface {
 
     //
     GetMetadata(path string) (interface{}, error)
-
-    //
-    Get(path string) (interface{}, error)
-
-    // 访问链接
-    Url(path string) (string, error)
-
-    // 实际地址
-    Path(path string) (string, error)
-
 }

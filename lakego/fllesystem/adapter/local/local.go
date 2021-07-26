@@ -186,7 +186,7 @@ func (sys *Local) Read(path string) (map[string]interface{}, error) {
         "type": "file",
         "path": path,
         "contents": contents,
-    }
+    }, nil
 }
 
 // 读取
@@ -202,7 +202,7 @@ func (sys *Local) ReadStream(path string) (map[string]interface{}, error) {
         "type": "file",
         "path": path,
         "stream": stream,
-    }
+    }, nil
 }
 
 // 重命名
@@ -311,7 +311,7 @@ func (sys *Local) ListContents(directory string, recursive ...bool) (map[string]
         result = append(result, sys.NormalizeFileInfo(path))
     }
 
-    return result
+    return result, nil
 ｝
 
 func (sys *Local) GetMetadata(path string) (map[string]interface{}, error) {
@@ -355,7 +355,7 @@ func (sys *Local) GetTimestamp(path string) (map[string]interface{}, error) {
 }
 
 // 设置文件的权限
-func (sys *Local) GetVisibility(path string) map[string]string {
+func (sys *Local) GetVisibility(path string) (map[string]string, error) {
     location := sys.ApplyPathPrefix(path)
 
     pathType := "file"
@@ -379,7 +379,7 @@ func (sys *Local) GetVisibility(path string) map[string]string {
         "visibility": permissions,
     }
 
-    return data
+    return data, nil
 }
 
 // 设置文件的权限
@@ -507,7 +507,7 @@ func (sys *Local) MapFileInfo(data map[string]interface{}) (map[string]interface
         normalized["size"] = data["info"].(os.FileInfo).Size()
     }
 
-    return normalized
+    return normalized, nil
 }
 
 func (sys *Local) IsFile(fp string) bool {
