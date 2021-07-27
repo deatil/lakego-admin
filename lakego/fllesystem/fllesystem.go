@@ -8,6 +8,7 @@ import(
     "lakego-admin/lakego/fllesystem/intrface/adapter"
 )
 
+// 文件管理器
 type Fllesystem struct {
     adapter adapter.Adapter
     config *config.Config
@@ -26,14 +27,17 @@ func New(adapters config.Config, conf ...config.Config) *Fllesystem {
     return fs
 }
 
+// 设置配置
 func (fs *Fllesystem) SetConfig(conf config.Config) {
     fs.config = conf
 }
 
+// 获取配置
 func (fs *Fllesystem) GetConfig() config.Config {
     return fs.config
 }
 
+// 提前设置配置
 func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) config.Config {
     conf := config.New(settings)
     conf.SetFallback(fs.GetConfig())
@@ -41,15 +45,18 @@ func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) config.Conf
     return conf
 }
 
+// 设置适配器
 func (fs *Fllesystem) WithAdapter(adapters adapter.Adapter) *Fllesystem {
     fs.adapter = adapters
     return fs
 }
 
+// 获取适配器
 func (fs *Fllesystem) GetAdapter() adapter.Adapter {
     return fs.adapter
 }
 
+// 判断
 func (fs *Fllesystem) Has(path string) bool {
     path = util.NormalizePath(path)
 
@@ -60,6 +67,7 @@ func (fs *Fllesystem) Has(path string) bool {
     return fs.GetAdapter().Has(path)
 }
 
+// 写入文件
 func (fs *Fllesystem) Write(path string, contents string, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -72,6 +80,7 @@ func (fs *Fllesystem) Write(path string, contents string, conf map[string]interf
     return false
 }
 
+// 写入数据流
 func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -84,6 +93,7 @@ func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf map[strin
     return false
 }
 
+// 更新
 func (fs *Fllesystem) Put(path string, contents string, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -104,6 +114,7 @@ func (fs *Fllesystem) Put(path string, contents string, conf map[string]interfac
     return false
 }
 
+// 更新数据流
 func (fs *Fllesystem) PutStream(path string, resource *os.File, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -124,6 +135,7 @@ func (fs *Fllesystem) PutStream(path string, resource *os.File, conf map[string]
     return false
 }
 
+// 读取并删除
 func (fs *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
     path = util.NormalizePath(path)
     contents, err := fs.Read(path)
@@ -137,6 +149,7 @@ func (fs *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
     return contents, nil
 }
 
+// 更新字符
 func (fs *Fllesystem) Update(path string, contents string, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -149,6 +162,7 @@ func (fs *Fllesystem) Update(path string, contents string, conf map[string]inter
     return false
 }
 
+// 更新数据流
 func (fs *Fllesystem) UpdateStream(path string, resource *os.File, conf map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
@@ -161,6 +175,7 @@ func (fs *Fllesystem) UpdateStream(path string, resource *os.File, conf map[stri
     return false
 }
 
+// 文件到字符
 func (fs *Fllesystem) Read(path string) interface{} {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().Read(path)
@@ -172,6 +187,7 @@ func (fs *Fllesystem) Read(path string) interface{} {
     return object["contents"]
 }
 
+// 读取成数据流
 func (fs *Fllesystem) ReadStream(path string) interface{} {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().ReadStream(path)
@@ -183,6 +199,7 @@ func (fs *Fllesystem) ReadStream(path string) interface{} {
     return object["stream"]
 }
 
+// 重命名
 func (fs *Fllesystem) Rename(path string, newpath string) bool {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
@@ -194,6 +211,7 @@ func (fs *Fllesystem) Rename(path string, newpath string) bool {
     return false
 }
 
+// 复制
 func (fs *Fllesystem) Copy(path string, newpath string) bool {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
@@ -205,6 +223,7 @@ func (fs *Fllesystem) Copy(path string, newpath string) bool {
     return false
 }
 
+// 删除
 func (fs *Fllesystem) Delete(path string) bool {
     path = util.NormalizePath(path)
 
@@ -215,6 +234,7 @@ func (fs *Fllesystem) Delete(path string) bool {
     return false
 }
 
+// 删除文件夹
 func (fs *Fllesystem) DeleteDir(dirname string) bool {
     dirname = util.NormalizePath(dirname)
     if dirname == "" {
@@ -228,6 +248,7 @@ func (fs *Fllesystem) DeleteDir(dirname string) bool {
     return false
 }
 
+// 创建文件夹
 func (fs *Fllesystem) CreateDir(dirname string, conf map[string]interface{}) bool {
     dirname = util.NormalizePath(dirname)
 
@@ -240,7 +261,8 @@ func (fs *Fllesystem) CreateDir(dirname string, conf map[string]interface{}) boo
     return false
 }
 
-func (fs *Fllesystem) ListContents(directory string, recursive bool) map[string]interface{} {
+// 列表
+func (fs *Fllesystem) ListContents(directory string, recursive bool) []map[string]interface{} {
     dirname = util.NormalizePath(dirname)
 
     result, _ := fs.GetAdapter().ListContents(dirname, recursive)
@@ -248,6 +270,7 @@ func (fs *Fllesystem) ListContents(directory string, recursive bool) map[string]
     return result
 }
 
+// 类型
 func (fs *Fllesystem) GetMimetype(path string) string {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().GetMimetype(path)
@@ -259,6 +282,7 @@ func (fs *Fllesystem) GetMimetype(path string) string {
     return object["mimetype"]
 }
 
+// 时间戳
 func (fs *Fllesystem) GetTimestamp(path string) int64 {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().GetTimestamp(path)
@@ -270,6 +294,7 @@ func (fs *Fllesystem) GetTimestamp(path string) int64 {
     return object["timestamp"]
 }
 
+// 权限
 func (fs *Fllesystem) GetVisibility(path string) string {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().GetVisibility(path)
@@ -281,6 +306,7 @@ func (fs *Fllesystem) GetVisibility(path string) string {
     return object["visibility"]
 }
 
+// 大小
 func (fs *Fllesystem) GetSize(path string) int64 {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().GetSize(path)
@@ -292,6 +318,7 @@ func (fs *Fllesystem) GetSize(path string) int64 {
     return object["size"]
 }
 
+// 设置权限
 func (fs *Fllesystem) SetVisibility(path string, visibility string) bool {
     path = util.NormalizePath(path)
 
@@ -302,6 +329,7 @@ func (fs *Fllesystem) SetVisibility(path string, visibility string) bool {
     return false
 }
 
+// 信息数据
 func (fs *Fllesystem) GetMetadata(path string) map[string]interface{} {
     path = util.NormalizePath(path)
 
@@ -310,4 +338,23 @@ func (fs *Fllesystem) GetMetadata(path string) map[string]interface{} {
     }
 
     return nil
+}
+
+// 获取
+func (fs *Fllesystem) Get(path string) interface{} {
+    path = util.NormalizePath(path)
+
+    metadata := fs.GetMetadata(path)
+
+    if metadata != nil && metadata["type"] == "file" {
+        return &File{
+            filesystem: fs,
+            path: path,
+        }
+    }
+
+    return &Directory{
+        filesystem: fs,
+        path: path,
+    }
 }

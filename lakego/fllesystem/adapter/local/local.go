@@ -290,7 +290,7 @@ func (sys *Local) CreateDir(dirname string, config config.Config) (map[string]st
 }
 
 // 列出内容
-func (sys *Local) ListContents(directory string, recursive ...bool) (map[string]interface{}, error) {
+func (sys *Local) ListContents(directory string, recursive ...bool) ([]map[string]interface{}, error) {
     location := sys.ApplyPathPrefix(path)
 
     if !sys.IsDir(location) {
