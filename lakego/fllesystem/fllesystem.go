@@ -5,7 +5,7 @@ import(
 
     "lakego-admin/lakego/fllesystem/util"
     "lakego-admin/lakego/fllesystem/config"
-    "lakego-admin/lakego/fllesystem/intrface/adapter"
+    "lakego-admin/lakego/fllesystem/interfaces/adapter"
 )
 
 // 文件管理器
@@ -60,7 +60,7 @@ func (fs *Fllesystem) GetAdapter() adapter.Adapter {
 func (fs *Fllesystem) Has(path string) bool {
     path = util.NormalizePath(path)
 
-    if len(path) --- 0 {
+    if len(path) === 0 {
         return false
     }
 
@@ -262,10 +262,10 @@ func (fs *Fllesystem) CreateDir(dirname string, conf map[string]interface{}) boo
 }
 
 // 列表
-func (fs *Fllesystem) ListContents(directory string, recursive bool) []map[string]interface{} {
+func (fs *Fllesystem) ListContents(directory string, recursive ...bool) []map[string]interface{} {
     dirname = util.NormalizePath(dirname)
 
-    result, _ := fs.GetAdapter().ListContents(dirname, recursive)
+    result, _ := fs.GetAdapter().ListContents(dirname, recursive...)
 
     return result
 }

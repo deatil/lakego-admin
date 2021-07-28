@@ -1,11 +1,11 @@
-package handler
+package fllesystem
 
 import(
-    "lakego-admin/lakego/fllesystem/intrface"
+    "lakego-admin/lakego/fllesystem/interfaces"
 )
 
 type Handler struct {
-    filesystem intrface.Fllesystem
+    filesystem interfaces.Fllesystem
     path string
 }
 
@@ -27,13 +27,13 @@ func (hand *Handler) GetType() string {
     return metadata["type"]
 }
 
-func (hand *Handler) SetFilesystem(filesystem intrface.Fllesystem) *interface{} {
+func (hand *Handler) SetFilesystem(filesystem interfaces.Fllesystem) *interface{} {
     hand.filesystem = filesystem
 
     return hand
 }
 
-func (hand *Handler) GetFilesystem() intrface.Fllesystem {
+func (hand *Handler) GetFilesystem() interfaces.Fllesystem {
     return hand.filesystem
 }
 

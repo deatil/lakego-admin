@@ -1,7 +1,7 @@
-package directory
+package fllesystem
 
 import(
-    "lakego-admin/lakego/fllesystem/intrface"
+    "lakego-admin/lakego/fllesystem/interfaces"
 )
 
 type Directory struct {
@@ -9,7 +9,7 @@ type Directory struct {
 }
 
 // new 文件管理器
-func NewDirectory(filesystem intrface.Fllesystem, path ...string) *Directory {
+func NewDirectory(filesystem interfaces.Fllesystem, path ...string) *Directory {
     fs := &Directory{
         filesystem: filesystem,
     }
@@ -22,7 +22,7 @@ func NewDirectory(filesystem intrface.Fllesystem, path ...string) *Directory {
 }
 
 // 设置管理器
-func (dir *Directory) SetFilesystem(filesystem intrface.Fllesystem) *Directory {
+func (dir *Directory) SetFilesystem(filesystem interfaces.Fllesystem) *Directory {
     dir.filesystem = filesystem
 
     return dir

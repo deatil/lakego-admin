@@ -209,11 +209,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
             return
         }
     } else if jwter.SigningMethod == "HS256" || jwter.SigningMethod == "HS384" || jwter.SigningMethod == "HS512" {
-        if secretData, e := ioutil.ReadFile(jwter.Secret); e == nil {
-            secret = secretData
-        } else {
-            secret = jwter.Secret
-        }
+        secret = jwter.Secret
 
         // 密码
         secret = base64.Decode(secret.(string))
@@ -281,11 +277,7 @@ func (jwter *JWT) ParseToken(strToken string) (jwt.MapClaims, error) {
             return nil, err
         }
     } else if jwter.SigningMethod == "HS256" || jwter.SigningMethod == "HS384" || jwter.SigningMethod == "HS512" {
-        if secretData, e := ioutil.ReadFile(jwter.Secret); e == nil {
-            secret = secretData
-        } else {
-            secret = jwter.Secret
-        }
+        secret = jwter.Secret
 
         // 密码
         secret = base64.Decode(secret.(string))

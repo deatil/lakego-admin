@@ -1,4 +1,4 @@
-package handler
+package fllesystem
 
 import(
     "os"
@@ -11,7 +11,7 @@ type File struct {
 }
 
 // new 文件管理器
-func NewFile(filesystem intrface.Fllesystem, path ...string) *File {
+func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
     fs := &File{
         filesystem: filesystem,
     }
@@ -24,7 +24,7 @@ func NewFile(filesystem intrface.Fllesystem, path ...string) *File {
 }
 
 // 设置管理器
-func (file *File) SetFilesystem(filesystem intrface.Fllesystem) *File {
+func (file *File) SetFilesystem(filesystem interfaces.Fllesystem) *File {
     file.filesystem = filesystem
 
     return hand
