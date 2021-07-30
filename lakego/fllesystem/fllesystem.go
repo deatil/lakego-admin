@@ -5,23 +5,23 @@ import(
 
     "lakego-admin/lakego/fllesystem/util"
     "lakego-admin/lakego/fllesystem/config"
-    "lakego-admin/lakego/fllesystem/interfaces/adapter"
+    "lakego-admin/lakego/fllesystem/interfaces"
 )
 
 // 文件管理器
 type Fllesystem struct {
-    adapter adapter.Adapter
-    config *config.Config
+    adapter interfaces.Adapter
+    config config.Config
 }
 
 // new 文件管理器
-func New(adapters config.Config, conf ...config.Config) *Fllesystem {
+func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesystem {
     fs := &Fllesystem{
         adapter: adapters,
     }
 
     if len(conf) > 0{
-        fs.config = conf[0]
+        fs.config = fs.PrepareConfig(conf[0])
     }
 
     return fs
@@ -46,13 +46,13 @@ func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) config.Conf
 }
 
 // 设置适配器
-func (fs *Fllesystem) WithAdapter(adapters adapter.Adapter) *Fllesystem {
+func (fs *Fllesystem) WithAdapter(adapters interfaces.Adapter) *Fllesystem {
     fs.adapter = adapters
     return fs
 }
 
 // 获取适配器
-func (fs *Fllesystem) GetAdapter() adapter.Adapter {
+func (fs *Fllesystem) GetAdapter() interfaces.Adapter {
     return fs.adapter
 }
 

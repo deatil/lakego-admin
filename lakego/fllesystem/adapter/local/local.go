@@ -32,6 +32,15 @@ var permissionMap map[string]map[string]string = map[string]map[string]string{
     },
 }
 
+func New(root string) *Local {
+    local := &Local{}
+
+    local.EnsureDirectory(root)
+    local.SetPathPrefix(root)
+
+    return local
+}
+
 /**
  * 确认文件夹
  */

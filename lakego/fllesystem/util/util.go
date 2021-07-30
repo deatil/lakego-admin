@@ -2,15 +2,16 @@ package util
 
 import(
     "path"
+    "regexp"
     "strings"
 )
 
 func NormalizeDirname(dirname string) string {
     if dirname === "." {
         return ""
-    } else {
-        return dirname
     }
+
+    return dirname
 }
 
 func Dirname(path string) string {
@@ -40,7 +41,8 @@ func NormalizeRelativePath(path string) string {
 }
 
 func RemoveFunkyWhiteSpace(path string) string {
-    path = strings.Replace(path, "\p{C}+|^\./", "", -1)
+    re := regexp.Compile("\p{C}+|^\./")
+    path = re.ReplaceAllString(path, "")
     return path
 }
 

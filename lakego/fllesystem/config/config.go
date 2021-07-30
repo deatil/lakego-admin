@@ -29,12 +29,12 @@ func (conf *Config) WithSetting(settings map[string]interface{}) *Config {
 /**
  * 获取一个设置
  */
-func (conf *Config) Get(key string, defaults interface{}) interface{} {
+func (conf *Config) Get(key string) interface{} {
     if data, ok := conf.settings[key]; ok {
         return data
     }
 
-    return conf.GetDefault(key, defaults)
+    return nil
 }
 
 /**
@@ -56,12 +56,17 @@ func (conf *Config) Has(key string) bool {
 /**
  * 获取一个值带默认
  */
-func (conf *Config) GetDefault(key string, defaults interface{}) interface{} {
+func (conf *Config) GetDefault(key string, defaults ...interface{}) interface{} {
     if conf.fallback == nil {
         return false
     }
 
-    return conf.fallback.(Config).Get(key, defaults)
+    value := conf.fallback.(Config).Get(key)
+    if value == nil && len(defaults) > 0 {
+        return defaults[0]
+    }
+
+    return value
 }
 
 /**

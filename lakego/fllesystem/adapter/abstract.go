@@ -4,6 +4,7 @@ import(
     "strings"
 )
 
+// 通用基类
 type Abstract struct {
     pathPrefix string
     pathSeparator string
