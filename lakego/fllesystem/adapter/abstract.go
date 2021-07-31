@@ -11,7 +11,7 @@ type Abstract struct {
 }
 
 // 设置前缀
-func (at *Abstract) SetPathPrefix(prefix string) error {
+func (at *Abstract) SetPathPrefix(prefix string) {
     at.pathPrefix = strings.TrimSuffix(prefix, "\\/") + at.pathSeparator
 }
 

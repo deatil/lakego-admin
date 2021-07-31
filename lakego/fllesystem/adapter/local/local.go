@@ -279,7 +279,7 @@ func (sys *Local) DeleteDir(dirname string) error {
 func (sys *Local) CreateDir(dirname string, config config.Config) (map[string]string, error) {
     location := sys.ApplyPathPrefix(dirname)
 
-    visibility := config.Get('visibility', 'public')
+    visibility := config.Get('visibility', 'public').(string)
 
     err := os.MkdirAll(location, permissionMap['dir'][visibility])
     if err != nil {
@@ -321,7 +321,7 @@ func (sys *Local) ListContents(directory string, recursive ...bool) ([]map[strin
     }
 
     return result, nil
-｝
+}
 
 func (sys *Local) GetMetadata(path string) (map[string]interface{}, error) {
     location := sys.ApplyPathPrefix(path)
@@ -432,8 +432,15 @@ func (sys *Local) GuardAgainstUnreadableFileInfo(fp string) error {
 func (sys *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]interface{}, error) {
     var files []map[string]interface{}
     err := fliepath.Walk(location, func(path string, info os.FileInfo, err error) error {
+        var fileType string
+        if info.IsDir() {
+            fileType = "dir"
+        } else {
+            fileType = "file"
+        }
+
         files = append(files, map[string]interface{}{
-            "type": info.IsDir() ? "dir" : "file",
+            "type": fileType,
             "path": path,
             "filename": info.Name(),
             "pathname": path + "/" + info.Name(),
@@ -468,8 +475,15 @@ func (sys *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, e
             info := fs[i]
             name := info.Name()
             if name != "." && name != ".." {
+                var fileType string
+                if info.IsDir() {
+                    fileType = "dir"
+                } else {
+                    fileType = "file"
+                }
+
                 ret = append(ret, map[string]interface{}{
-                    "type": info.IsDir() ? "dir" : "file",
+                    "type": fileType,
                     "path": path,
                     "filename": info.Name(),
                     "pathname": path + "/" + info.Name(),
@@ -489,8 +503,15 @@ func (sys *Local) FileInfo(path string) map[string]interface{} {
         return nil
     }
 
+    var fileType string
+    if info.IsDir() {
+        fileType = "dir"
+    } else {
+        fileType = "file"
+    }
+
     return map[string]interface{}{
-        "type": info.IsDir() ? "dir" : "file",
+        "type": fileType,
         "path": path,
         "filename": info.Name(),
         "pathname": path + "/" + info.Name(),

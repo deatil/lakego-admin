@@ -4,6 +4,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/http/controller"
+    "lakego-admin/lakego/facade/storage"
     "lakego-admin/admin/auth/admin"
 )
 
@@ -54,6 +55,8 @@ func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
  */
 func (control *ProfileController) Rules(ctx *gin.Context) {
     rules := make(map[string]string)
+
+    storage.New()
 
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,

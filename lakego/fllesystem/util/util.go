@@ -7,15 +7,15 @@ import(
 )
 
 func NormalizeDirname(dirname string) string {
-    if dirname === "." {
+    if dirname == "." {
         return ""
     }
 
     return dirname
 }
 
-func Dirname(path string) string {
-    return NormalizeDirname(path.Dir(path))
+func Dirname(name string) string {
+    return NormalizeDirname(path.Dir(name))
 }
 
 func NormalizePath(path string) string {
@@ -28,7 +28,7 @@ func NormalizeRelativePath(path string) string {
 
     var parts []string
 
-    paths = strings.Split(path, "/")
+    paths := strings.Split(path, "/")
     for _, part := range paths {
         if part == ".." && len(parts) > 0 {
             parts = parts[1:]
@@ -41,7 +41,7 @@ func NormalizeRelativePath(path string) string {
 }
 
 func RemoveFunkyWhiteSpace(path string) string {
-    re := regexp.Compile("\p{C}+|^\./")
+    re, _ := regexp.Compile("\p{C}+|^\./")
     path = re.ReplaceAllString(path, "")
     return path
 }

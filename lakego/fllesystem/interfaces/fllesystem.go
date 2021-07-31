@@ -4,7 +4,6 @@ import(
     "os"
 
     "lakego-admin/lakego/fllesystem/config"
-    "lakego-admin/lakego/fllesystem/interfaces/adapter"
 )
 
 type Fllesystem interface {
@@ -18,10 +17,10 @@ type Fllesystem interface {
     PrepareConfig(map[string]interface{}) config.Config
 
     // 设置适配器
-    WithAdapter(adapter.Adapter) Fllesystem
+    WithAdapter(Adapter) Fllesystem
 
     // 获取适配器
-    GetAdapter() adapter.Adapter
+    GetAdapter() Adapter
 
     // 判断
     Has(string) bool
@@ -30,7 +29,7 @@ type Fllesystem interface {
     Write(string, string, map[string]interface{}) bool
 
     // 上传
-    WriteStream(string, *os.File, conf map[string]interface{}) bool
+    WriteStream(string, *os.File, map[string]interface{}) bool
 
     // 上传
     Put(string, string, map[string]interface{}) bool

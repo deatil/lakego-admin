@@ -4,7 +4,6 @@ import(
     "os"
 
     "lakego-admin/lakego/fllesystem/config"
-    "lakego-admin/lakego/fllesystem/interfaces/adapter"
 )
 
 type Adapter interface {
@@ -66,7 +65,7 @@ type Adapter interface {
     SetVisibility(string, string) (map[string]string, error)
 
     // 设置前缀
-    SetPathPrefix(string) error
+    SetPathPrefix(string)
 
     // 获取前缀
     GetPathPrefix() string

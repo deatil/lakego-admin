@@ -3,7 +3,7 @@ package fllesystem
 import(
     "os"
 
-    "lakego-admin/lakego/fllesystem/intrface"
+    "lakego-admin/lakego/fllesystem/interfaces"
 )
 
 type File struct {

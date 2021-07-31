@@ -27,6 +27,15 @@ func (conf *Config) WithSetting(settings map[string]interface{}) *Config {
 }
 
 /**
+ * 设置配置信息
+ */
+func (conf *Config) With(key string, value interface{}) *Config {
+    conf.settings[key] = value
+
+    return conf
+}
+
+/**
  * 获取一个设置
  */
 func (conf *Config) Get(key string) interface{} {
@@ -45,12 +54,7 @@ func (conf *Config) Has(key string) bool {
         return true
     }
 
-    switch conf.fallback.(type) {
-        case Config:
-            return conf.fallback.(Config).Has(key)
-    }
-
-    return false
+    return conf.fallback.Has(key)
 }
 
 /**
@@ -61,7 +65,7 @@ func (conf *Config) GetDefault(key string, defaults ...interface{}) interface{} 
         return false
     }
 
-    value := conf.fallback.(Config).Get(key)
+    value := conf.fallback.Get(key)
     if value == nil && len(defaults) > 0 {
         return defaults[0]
     }
