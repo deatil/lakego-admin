@@ -57,17 +57,17 @@ func Register() {
         })
 
         // 公共磁盘
-        diskRegister.RegisterDisk("public", func() {
+        diskRegister.RegisterDisk("public", func() interfaces.Fllesystem {
             publicConf := disks["public"].(map[string]interface{})
             publicRoot := publicConf["root"].(string)
             publicType := publicConf["type"].(string)
 
             driver := driverRegister.GetDriver(publicType)
             if driver == nil {
-                panic("文件管理器驱动 " + localType + " 没有被注册")
+                panic("文件管理器驱动 " + publicType + " 没有被注册")
             }
 
-            localRoot = basePath + "/" + strings.TrimPrefix(publicRoot, "/")
+            publicRoot = basePath + "/" + strings.TrimPrefix(publicRoot, "/")
 
             driver.EnsureDirectory(publicRoot)
             driver.SetPathPrefix(publicRoot)

@@ -5,6 +5,7 @@ import(
     "strings"
 
     "lakego-admin/lakego/fllesystem"
+    "lakego-admin/lakego/fllesystem/interfaces"
 )
 
 // 文件管理器
@@ -12,13 +13,26 @@ type Fllesystem struct {
     fllesystem.Fllesystem
 }
 
+// new 文件管理器
+func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesystem {
+    fs := &Fllesystem{}
+
+    fs.WithAdapter(adapters)
+
+    if len(conf) > 0{
+        fs.SetConfig(fs.PrepareConfig(conf[0]))
+    }
+
+    return fs
+}
+
 // 获取配置
 func (fs *Fllesystem) Url(url string) string {
     conf := fs.GetConfig()
 
-    url := conf.Get("url").(string)
+    uri := conf.Get("url").(string)
 
-    return url + strings.TrimPrefix(url, "/") + "/" + url
+    return uri + strings.TrimPrefix(url, "/") + "/" + url
 }
 
 // 获取配置
@@ -34,7 +48,7 @@ func (fs *Fllesystem) PutFileAs(path string, resource *os.File, name string, con
     if len(conf) > 0 {
         config = conf[0]
     } else {
-        config - nil
+        config = nil
     }
 
     path = path + "/" + name
@@ -43,5 +57,9 @@ func (fs *Fllesystem) PutFileAs(path string, resource *os.File, name string, con
 
     result := fs.PutStream(path, resource, config)
 
-    return result ? path : ""
+    if result {
+        return path
+    }
+
+    return ""
 }

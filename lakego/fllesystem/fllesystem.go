@@ -12,11 +12,11 @@ import(
 // 文件管理器
 type Fllesystem struct {
     adapter interfaces.Adapter
-    config *config.Config
+    config interfaces.Config
 }
 
 // new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesystem {
+func New(adapters interfaces.Adapter, conf ...map[string]interface{}) interfaces.Fllesystem {
     fs := &Fllesystem{
         adapter: adapters,
     }
@@ -29,17 +29,17 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesyste
 }
 
 // 设置配置
-func (fs *Fllesystem) SetConfig(conf *config.Config) {
+func (fs *Fllesystem) SetConfig(conf interfaces.Config) {
     fs.config = conf
 }
 
 // 获取配置
-func (fs *Fllesystem) GetConfig() *config.Config {
+func (fs *Fllesystem) GetConfig() interfaces.Config {
     return fs.config
 }
 
 // 提前设置配置
-func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) *config.Config {
+func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) interfaces.Config {
     conf := config.New(settings)
     conf.SetFallback(fs.GetConfig())
 
@@ -47,7 +47,7 @@ func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) *config.Con
 }
 
 // 设置适配器
-func (fs *Fllesystem) WithAdapter(adapters interfaces.Adapter) *Fllesystem {
+func (fs *Fllesystem) WithAdapter(adapters interfaces.Adapter) interfaces.Fllesystem {
     fs.adapter = adapters
     return fs
 }
@@ -339,7 +339,7 @@ func (fs *Fllesystem) GetVisibility(path string) string {
         return ""
     }
 
-    return object["visibility"]
+    return object["visibility"].(string)
 }
 
 // 大小

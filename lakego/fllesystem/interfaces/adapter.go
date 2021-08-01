@@ -2,25 +2,26 @@ package interfaces
 
 import(
     "os"
-
-    "lakego-admin/lakego/fllesystem/config"
 )
 
 type Adapter interface {
+    // 确认文件夹
+    EnsureDirectory(string) error
+
     // 判断
     Has(string) bool
 
     // 上传
-    Write(string, string, *config.Config) (map[string]interface{}, error)
+    Write(string, string, Config) (map[string]interface{}, error)
 
     // 上传 Stream 文件类型
-    WriteStream(string, *os.File, *config.Config) (map[string]interface{}, error)
+    WriteStream(string, *os.File, Config) (map[string]interface{}, error)
 
     // 更新
-    Update(string, string, *config.Config) (map[string]interface{}, error)
+    Update(string, string, Config) (map[string]interface{}, error)
 
     // 更新
-    UpdateStream(string, *os.File, *config.Config) (map[string]interface{}, error)
+    UpdateStream(string, *os.File, Config) (map[string]interface{}, error)
 
     //
     Read(string) (map[string]interface{}, error)
@@ -41,7 +42,7 @@ type Adapter interface {
     DeleteDir(string) error
 
     // 创建文件夹
-    CreateDir(string, *config.Config) (map[string]string, error)
+    CreateDir(string, Config) (map[string]string, error)
 
     // 列出内容
     ListContents(string, ...bool) ([]map[string]interface{}, error)
@@ -59,7 +60,7 @@ type Adapter interface {
     GetTimestamp(string) (map[string]interface{}, error)
 
     // 获取文件的权限
-    GetVisibility(string) (map[string]string, error)
+    GetVisibility(string) (map[string]interface{}, error)
 
     // 设置文件的权限
     SetVisibility(string, string) (map[string]string, error)

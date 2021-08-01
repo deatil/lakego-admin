@@ -1,9 +1,13 @@
 package config
 
+import(
+    "lakego-admin/lakego/fllesystem/interfaces"
+)
+
 type Config struct {
     settings map[string]interface{}
 
-    fallback *Config
+    fallback interfaces.Config
 }
 
 /**
@@ -20,7 +24,7 @@ func New(settings map[string]interface{}) *Config {
 /**
  * 设置配置信息
  */
-func (conf *Config) WithSetting(settings map[string]interface{}) *Config {
+func (conf *Config) WithSetting(settings map[string]interface{}) interfaces.Config {
     conf.settings = settings
 
     return conf
@@ -29,7 +33,7 @@ func (conf *Config) WithSetting(settings map[string]interface{}) *Config {
 /**
  * 设置配置信息
  */
-func (conf *Config) With(key string, value interface{}) *Config {
+func (conf *Config) With(key string, value interface{}) interfaces.Config {
     conf.settings[key] = value
 
     return conf
@@ -76,7 +80,7 @@ func (conf *Config) GetDefault(key string, defaults ...interface{}) interface{} 
 /**
  * 设置
  */
-func (conf *Config) Set(key string, value interface{}) *Config {
+func (conf *Config) Set(key string, value interface{}) interfaces.Config {
     conf.settings[key] = value
 
     return conf
@@ -85,7 +89,7 @@ func (conf *Config) Set(key string, value interface{}) *Config {
 /**
  * 设置一个 fallback
  */
-func (conf *Config) SetFallback(fallback *Config) *Config {
+func (conf *Config) SetFallback(fallback interfaces.Config) interfaces.Config {
     conf.fallback = fallback
 
     return conf

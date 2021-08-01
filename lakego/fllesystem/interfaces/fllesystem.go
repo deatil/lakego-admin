@@ -2,19 +2,17 @@ package interfaces
 
 import(
     "os"
-
-    "lakego-admin/lakego/fllesystem/config"
 )
 
 type Fllesystem interface {
     // 设置配置
-    SetConfig(*config.Config)
+    SetConfig(Config)
 
     // 获取配置
-    GetConfig() *config.Config
+    GetConfig() Config
 
     // 提前设置配置
-    PrepareConfig(map[string]interface{}) *config.Config
+    PrepareConfig(map[string]interface{}) Config
 
     // 设置适配器
     WithAdapter(Adapter) Fllesystem
