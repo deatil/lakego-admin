@@ -2,6 +2,7 @@ package fllesystem
 
 import(
     "os"
+    "errors"
 
     "lakego-admin/lakego/fllesystem/util"
     "lakego-admin/lakego/fllesystem/config"
@@ -11,7 +12,7 @@ import(
 // 文件管理器
 type Fllesystem struct {
     adapter interfaces.Adapter
-    config config.Config
+    config *config.Config
 }
 
 // new 文件管理器
@@ -28,17 +29,17 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesyste
 }
 
 // 设置配置
-func (fs *Fllesystem) SetConfig(conf config.Config) {
+func (fs *Fllesystem) SetConfig(conf *config.Config) {
     fs.config = conf
 }
 
 // 获取配置
-func (fs *Fllesystem) GetConfig() config.Config {
+func (fs *Fllesystem) GetConfig() *config.Config {
     return fs.config
 }
 
 // 提前设置配置
-func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) config.Config {
+func (fs *Fllesystem) PrepareConfig(settings map[string]interface{}) *config.Config {
     conf := config.New(settings)
     conf.SetFallback(fs.GetConfig())
 
@@ -60,7 +61,7 @@ func (fs *Fllesystem) GetAdapter() interfaces.Adapter {
 func (fs *Fllesystem) Has(path string) bool {
     path = util.NormalizePath(path)
 
-    if len(path) === 0 {
+    if len(path) == 0 {
         return false
     }
 
@@ -68,12 +69,17 @@ func (fs *Fllesystem) Has(path string) bool {
 }
 
 // 写入文件
-func (fs *Fllesystem) Write(path string, contents string, conf map[string]interface{}) bool {
+func (fs *Fllesystem) Write(path string, contents string, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
 
-    if _. err := fs.GetAdapter().Write(path, contents, configs); err == nil {
+    configs := fs.PrepareConfig(newConf)
+
+    if _, err := fs.GetAdapter().Write(path, contents, configs); err == nil {
         return true
     }
 
@@ -81,12 +87,17 @@ func (fs *Fllesystem) Write(path string, contents string, conf map[string]interf
 }
 
 // 写入数据流
-func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf map[string]interface{}) bool {
+func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
 
-    if _. err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
+    configs := fs.PrepareConfig(newConf)
+
+    if _, err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
         return true
     }
 
@@ -94,20 +105,25 @@ func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf map[strin
 }
 
 // 更新
-func (fs *Fllesystem) Put(path string, contents string, conf map[string]interface{}) bool {
+func (fs *Fllesystem) Put(path string, contents string, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
+
+    configs := fs.PrepareConfig(newConf)
 
     if fs.Has(path) {
-        if _. err := fs.GetAdapter().Update(path, contents, configs); err == nil {
+        if _, err := fs.GetAdapter().Update(path, contents, configs); err == nil {
             return true
         }
 
         return false
     }
 
-    if _. err := fs.GetAdapter().Write(path, contents, configs); err == nil {
+    if _, err := fs.GetAdapter().Write(path, contents, configs); err == nil {
         return true
     }
 
@@ -115,20 +131,25 @@ func (fs *Fllesystem) Put(path string, contents string, conf map[string]interfac
 }
 
 // 更新数据流
-func (fs *Fllesystem) PutStream(path string, resource *os.File, conf map[string]interface{}) bool {
+func (fs *Fllesystem) PutStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
+
+    configs := fs.PrepareConfig(newConf)
 
     if fs.Has(path) {
-        if _. err := fs.GetAdapter().UpdateStream(path, resource, configs); err == nil {
+        if _, err := fs.GetAdapter().UpdateStream(path, resource, configs); err == nil {
             return true
         }
 
         return false
     }
 
-    if _. err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
+    if _, err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
         return true
     }
 
@@ -138,10 +159,10 @@ func (fs *Fllesystem) PutStream(path string, resource *os.File, conf map[string]
 // 读取并删除
 func (fs *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
     path = util.NormalizePath(path)
-    contents, err := fs.Read(path)
+    contents := fs.Read(path)
 
-    if err != nil {
-        return nil, err
+    if contents != nil {
+        return nil, errors.New("读取失败")
     }
 
     fs.Delete(path)
@@ -150,12 +171,17 @@ func (fs *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
 }
 
 // 更新字符
-func (fs *Fllesystem) Update(path string, contents string, conf map[string]interface{}) bool {
+func (fs *Fllesystem) Update(path string, contents string, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
 
-    if _. err := fs.GetAdapter().Update(path, contents, configs); err == nil {
+    configs := fs.PrepareConfig(newConf)
+
+    if _, err := fs.GetAdapter().Update(path, contents, configs); err == nil {
         return true
     }
 
@@ -163,12 +189,17 @@ func (fs *Fllesystem) Update(path string, contents string, conf map[string]inter
 }
 
 // 更新数据流
-func (fs *Fllesystem) UpdateStream(path string, resource *os.File, conf map[string]interface{}) bool {
+func (fs *Fllesystem) UpdateStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
 
-    if _. err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
+    configs := fs.PrepareConfig(newConf)
+
+    if _, err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
         return true
     }
 
@@ -249,10 +280,15 @@ func (fs *Fllesystem) DeleteDir(dirname string) bool {
 }
 
 // 创建文件夹
-func (fs *Fllesystem) CreateDir(dirname string, conf map[string]interface{}) bool {
+func (fs *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}) bool {
     dirname = util.NormalizePath(dirname)
 
-    configs := fs.PrepareConfig(conf)
+    var newConf map[string]interface{}
+    if len(conf) > 0 {
+        newConf = conf[0]
+    }
+
+    configs := fs.PrepareConfig(newConf)
 
     if _, err := fs.GetAdapter().CreateDir(dirname, configs); err == nil {
         return true
@@ -262,7 +298,7 @@ func (fs *Fllesystem) CreateDir(dirname string, conf map[string]interface{}) boo
 }
 
 // 列表
-func (fs *Fllesystem) ListContents(directory string, recursive ...bool) []map[string]interface{} {
+func (fs *Fllesystem) ListContents(dirname string, recursive ...bool) []map[string]interface{} {
     dirname = util.NormalizePath(dirname)
 
     result, _ := fs.GetAdapter().ListContents(dirname, recursive...)
@@ -279,7 +315,7 @@ func (fs *Fllesystem) GetMimetype(path string) string {
         return ""
     }
 
-    return object["mimetype"]
+    return object["mimetype"].(string)
 }
 
 // 时间戳
@@ -291,7 +327,7 @@ func (fs *Fllesystem) GetTimestamp(path string) int64 {
         return 0
     }
 
-    return object["timestamp"]
+    return object["timestamp"].(int64)
 }
 
 // 权限
@@ -312,10 +348,10 @@ func (fs *Fllesystem) GetSize(path string) int64 {
     object, err := fs.GetAdapter().GetSize(path)
 
     if err != nil {
-        return nil
+        return 0
     }
 
-    return object["size"]
+    return object["size"].(int64)
 }
 
 // 设置权限
@@ -347,14 +383,16 @@ func (fs *Fllesystem) Get(path string) interface{} {
     metadata := fs.GetMetadata(path)
 
     if metadata != nil && metadata["type"] == "file" {
-        return &File{
-            filesystem: fs,
-            path: path,
-        }
+        var file File
+        file.filesystem = fs
+        file.path = path
+
+        return file
     }
 
-    return &Directory{
-        filesystem: fs,
-        path: path,
-    }
+    var dir Directory
+    dir.filesystem = fs
+    dir.path = path
+
+    return dir
 }

@@ -41,7 +41,7 @@ func NormalizeRelativePath(path string) string {
 }
 
 func RemoveFunkyWhiteSpace(path string) string {
-    re, _ := regexp.Compile("\p{C}+|^\./")
+    re, _ := regexp.Compile(`\p{C}+|\A\.\/`)
     path = re.ReplaceAllString(path, "")
     return path
 }

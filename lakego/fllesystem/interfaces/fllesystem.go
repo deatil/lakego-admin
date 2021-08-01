@@ -8,13 +8,13 @@ import(
 
 type Fllesystem interface {
     // 设置配置
-    SetConfig(config.Config)
+    SetConfig(*config.Config)
 
     // 获取配置
-    GetConfig() config.Config
+    GetConfig() *config.Config
 
     // 提前设置配置
-    PrepareConfig(map[string]interface{}) config.Config
+    PrepareConfig(map[string]interface{}) *config.Config
 
     // 设置适配器
     WithAdapter(Adapter) Fllesystem
@@ -26,25 +26,25 @@ type Fllesystem interface {
     Has(string) bool
 
     // 上传
-    Write(string, string, map[string]interface{}) bool
+    Write(string, string, ...map[string]interface{}) bool
 
     // 上传
-    WriteStream(string, *os.File, map[string]interface{}) bool
+    WriteStream(string, *os.File, ...map[string]interface{}) bool
 
     // 上传
-    Put(string, string, map[string]interface{}) bool
+    Put(string, string, ...map[string]interface{}) bool
 
     // 上传
-    PutStream(string, *os.File, map[string]interface{}) bool
+    PutStream(string, *os.File, ...map[string]interface{}) bool
 
     // 读取并删除
     ReadAndDelete(string) (interface{}, error)
 
     // 更新
-    Update(string, string, map[string]interface{}) bool
+    Update(string, string, ...map[string]interface{}) bool
 
     // 更新
-    UpdateStream(string, *os.File, map[string]interface{}) bool
+    UpdateStream(string, *os.File, ...map[string]interface{}) bool
 
     // 读取
     Read(string) interface{}
@@ -65,7 +65,7 @@ type Fllesystem interface {
     DeleteDir(string) bool
 
     // 创建文件夹
-    CreateDir(string, map[string]interface{}) bool
+    CreateDir(string, ...map[string]interface{}) bool
 
     // 列出数据
     ListContents(string, ...bool) []map[string]interface{}

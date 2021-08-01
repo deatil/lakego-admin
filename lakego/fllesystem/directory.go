@@ -10,9 +10,8 @@ type Directory struct {
 
 // new 文件管理器
 func NewDirectory(filesystem interfaces.Fllesystem, path ...string) *Directory {
-    fs := &Directory{
-        filesystem: filesystem,
-    }
+    fs := &Directory{}
+    fs.filesystem = filesystem
 
     if len(path) > 0{
         fs.path = path[0]

@@ -12,9 +12,8 @@ type File struct {
 
 // new 文件管理器
 func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
-    fs := &File{
-        filesystem: filesystem,
-    }
+    fs := &File{}
+    fs.filesystem = filesystem
 
     if len(path) > 0{
         fs.path = path[0]
@@ -27,7 +26,7 @@ func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
 func (file *File) SetFilesystem(filesystem interfaces.Fllesystem) *File {
     file.filesystem = filesystem
 
-    return hand
+    return file
 }
 
 // 存在
@@ -52,7 +51,7 @@ func (file *File) Write(content string) bool {
 
 // 写入文件流
 func (file *File) WriteStream(resource *os.File) bool {
-    return file.filesystem.writeStream(file.path, resource)
+    return file.filesystem.WriteStream(file.path, resource)
 }
 
 // 更新字符
@@ -89,10 +88,11 @@ func (file *File) Rename(newpath string) bool {
 // 复制
 func (file *File) Copy(newpath string) (*File, bool) {
     if file.filesystem.Copy(file.path, newpath) {
-        return &File{
-            filesystem: file.filesystem,
-            path: newpath,
-        }, true
+        var file2 = &File{}
+        file2.filesystem = file.filesystem
+        file2.path = newpath
+
+        return file2, true
     }
 
     return nil, false

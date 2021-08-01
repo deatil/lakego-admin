@@ -1,10 +1,10 @@
 package str
 
 import (
-    "encoding/json"
     "strconv"
     "unsafe"
     "strings"
+    "encoding/json"
 )
 
 // S 字符串类型转换
@@ -155,17 +155,17 @@ func (a S) ToJSON(v interface{}) error {
 }
 
 // 截取
-func Substr(s string, pos, length int) string {
-    runes := []rune(s)
+func (a S) Substr(pos, length int) string {
+    runes := []rune(a.String())
     l := pos + length
     if l > len(runes) {
         l = len(runes)
     }
-    
+
     return string(runes[pos:l])
 }
 
 // 获取父级目录
-func GetParentDir(dir string) string {
-    return Substr(dir, 0, strings.LastIndex(dir, "/"))
+func (a S) GetParentDir() string {
+    return a.Substr(0, strings.LastIndex(a.String(), "/"))
 }

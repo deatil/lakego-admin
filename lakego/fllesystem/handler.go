@@ -24,10 +24,10 @@ func (hand *Handler) GetType() string {
         return "dir"
     }
 
-    return metadata["type"]
+    return metadata["type"].(string)
 }
 
-func (hand *Handler) SetFilesystem(filesystem interfaces.Fllesystem) *interface{} {
+func (hand *Handler) SetFilesystem(filesystem interfaces.Fllesystem) interface{} {
     hand.filesystem = filesystem
 
     return hand
@@ -37,7 +37,7 @@ func (hand *Handler) GetFilesystem() interfaces.Fllesystem {
     return hand.filesystem
 }
 
-func (hand *Handler) SetPath(path string) *interface{} {
+func (hand *Handler) SetPath(path string) interface{} {
     hand.path = path
 
     return hand
