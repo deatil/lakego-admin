@@ -4,14 +4,12 @@ import (
     "io"
     "os"
     "fmt"
-    "strconv"
     "strings"
     "errors"
     "net/http"
     "io/ioutil"
     "path/filepath"
 
-    "lakego-admin/lakego/support/str"
     "lakego-admin/lakego/fllesystem/interfaces"
     "lakego-admin/lakego/fllesystem/adapter"
 )
@@ -22,14 +20,14 @@ type Local struct {
     visibility string
 }
 
-var permissionMap map[string]map[string]string = map[string]map[string]string{
+var permissionMap map[string]map[string]uint32 = map[string]map[string]uint32{
     "file": {
-        "public": "0644",
-        "private": "0600",
+        "public": 0644,
+        "private": 0600,
     },
     "dir": {
-        "public": "0755",
-        "private": "0700",
+        "public": 0755,
+        "private": 0700,
     },
 }
 
@@ -46,8 +44,7 @@ func New(root string) *Local {
  * 确认文件夹
  */
 func (sys *Local) EnsureDirectory(root string) error {
-    perm, _ := str.NewWithByte([]byte(permissionMap["dir"]["public"])).Int()
-    err := os.MkdirAll(root, sys.FormatPerm(perm))
+    err := os.MkdirAll(root, sys.FormatPerm(permissionMap["dir"]["public"]))
     if err != nil {
         return errors.New("执行函数 os.MkdirAll() 失败, 错误为:" + err.Error())
     }
@@ -283,8 +280,7 @@ func (sys *Local) CreateDir(dirname string, config interfaces.Config) (map[strin
 
     visibility := config.GetDefault("visibility", "public").(string)
 
-    perm, _ := str.NewWithByte([]byte(permissionMap["dir"][visibility])).Int()
-    err := os.MkdirAll(location, sys.FormatPerm(perm))
+    err := os.MkdirAll(location, sys.FormatPerm(permissionMap["dir"][visibility]))
     if err != nil {
         return nil, errors.New("执行函数 os.MkdirAll() 失败, 错误为:" + err.Error())
     }
@@ -368,7 +364,7 @@ func (sys *Local) GetTimestamp(path string) (map[string]interface{}, error) {
 }
 
 // 设置文件的权限
-func (sys *Local) GetVisibility(path string) (map[string]interface{}, error) {
+func (sys *Local) GetVisibility(path string) (map[string]string, error) {
     location := sys.ApplyPathPrefix(path)
 
     pathType := "file"
@@ -379,18 +375,17 @@ func (sys *Local) GetVisibility(path string) (map[string]interface{}, error) {
     permissions, _ := sys.FileMode(location)
 
     for visibility, visibilityPermissions := range permissionMap[pathType] {
-        visibilityPermissions, _ := str.NewWithByte([]byte(visibilityPermissions)).Int64()
-        if uint32(visibilityPermissions) == permissions {
-            return map[string]interface{}{
+        if visibilityPermissions == permissions {
+            return map[string]string{
                 "path": path,
                 "visibility": visibility,
             }, nil
         }
     }
 
-    data := map[string]interface{}{
+    data := map[string]string{
         "path": path,
-        "visibility": permissions,
+        "visibility": string(permissions),
     }
 
     return data, nil
@@ -405,9 +400,7 @@ func (sys *Local) SetVisibility(path string, visibility string) (map[string]stri
         pathType = "dir"
     }
 
-    perm, _ := str.NewWithByte([]byte(permissionMap[pathType][visibility])).Int()
-
-    e := os.Chmod(location, sys.FormatPerm(perm))
+    e := os.Chmod(location, sys.FormatPerm(permissionMap[pathType][visibility]))
     if e != nil {
         return nil, errors.New("设置文件权限失败")
     }
@@ -538,6 +531,7 @@ func (sys *Local) MapFileInfo(data map[string]interface{}) (map[string]interface
     normalized := map[string]interface{}{
         "type": data["type"],
         "path": sys.GetFilePath(data),
+        "timestamp": data["timestamp"],
     }
 
     if data["type"] == "file" {
@@ -575,18 +569,16 @@ func (sys *Local) FileMode(fp string) (uint32, error) {
         return 0, e
     }
 
-    fileMode := f.Mode()
-
-    perm := fileMode.Perm()
+    perm := f.Mode().Perm()
 
     return uint32(perm), nil
 }
 
-
 /**
- * 权限格式化, 八进制转成十进制
+ * 权限格式化
  */
-func (sys *Local) FormatPerm(i int) os.FileMode {
-    p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
-    return os.FileMode(p)
+func (sys *Local) FormatPerm(i uint32) os.FileMode {
+    // 八进制转成十进制
+    // p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
+    return os.FileMode(i)
 }

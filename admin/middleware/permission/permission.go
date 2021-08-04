@@ -36,8 +36,13 @@ func permissionCheck(ctx *gin.Context) bool {
 
     adminId, _ := ctx.Get("admin_id")
 
+    // 去除自定义分组前缀
+    requestPaths := strings.Split(requestPath, "/")
+    newRequestPaths := requestPaths[2:]
+    newRequestPath := "/" + strings.Join(newRequestPaths, "/")
+
     c := casbin.New()
-    ok, err := c.Enforce(adminId.(string), requestPath, method)
+    ok, err := c.Enforce(adminId.(string), newRequestPath, method)
 
     if err != nil {
         response.Error(ctx, code.AuthError, "你没有访问权限")

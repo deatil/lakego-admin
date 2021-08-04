@@ -30,7 +30,10 @@ func GetDriver(name string) interfaces.Adapter {
  */
 func New() *Driver {
     once.Do(func() {
-        instance = &Driver{}
+        register := make(map[string]func() interfaces.Adapter)
+        instance = &Driver{
+            registers: register,
+        }
     })
 
     return instance

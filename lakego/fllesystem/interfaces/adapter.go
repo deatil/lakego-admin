@@ -60,7 +60,7 @@ type Adapter interface {
     GetTimestamp(string) (map[string]interface{}, error)
 
     // 获取文件的权限
-    GetVisibility(string) (map[string]interface{}, error)
+    GetVisibility(string) (map[string]string, error)
 
     // 设置文件的权限
     SetVisibility(string, string) (map[string]string, error)

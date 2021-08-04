@@ -1,6 +1,7 @@
 package storage
 
 import(
+    "os"
     "sync"
     "strings"
 
@@ -94,4 +95,43 @@ func Disk(name string) interfaces.Fllesystem {
 
 func GetDefaultDisk() string {
     return config.New("filesystem").GetString("Default")
+}
+
+
+// 获取配置
+func Url(fs interfaces.Fllesystem, url string) string {
+    conf := fs.GetConfig()
+
+    uri := conf.Get("url").(string)
+
+    return uri + "/" + strings.TrimPrefix(url, "/")
+}
+
+// 获取配置
+func Path(fs interfaces.Fllesystem, path string) string {
+    adapter := fs.GetAdapter()
+
+    return adapter.ApplyPathPrefix(path)
+}
+
+// 保存数据
+func PutFileAs(fs interfaces.Fllesystem, path string, resource *os.File, name string, conf ...map[string]interface{}) string {
+    var config map[string]interface{}
+    if len(conf) > 0 {
+        config = conf[0]
+    } else {
+        config = nil
+    }
+
+    path = path + "/" + name
+    path = strings.TrimPrefix(path, "/")
+    path = strings.TrimSuffix(path, "/")
+
+    result := fs.PutStream(path, resource, config)
+
+    if result {
+        return path
+    }
+
+    return ""
 }

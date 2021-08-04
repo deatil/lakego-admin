@@ -339,7 +339,7 @@ func (fs *Fllesystem) GetVisibility(path string) string {
         return ""
     }
 
-    return object["visibility"].(string)
+    return object["visibility"]
 }
 
 // 大小

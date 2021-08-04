@@ -30,7 +30,10 @@ func GetDisk(name string) interfaces.Fllesystem {
  */
 func New() *Disk {
     once.Do(func() {
-        instance = &Disk{}
+        register := make(map[string]func() interfaces.Fllesystem)
+        instance = &Disk{
+            registers: register,
+        }
     })
 
     return instance
