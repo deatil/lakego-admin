@@ -1,14 +1,14 @@
 package storage
 
 import(
-    "os"
     "sync"
     "strings"
 
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/storage/fllesystem"
+    "lakego-admin/lakego/fllesystem"
     "lakego-admin/lakego/fllesystem/interfaces"
+    storageFllesystem "lakego-admin/lakego/storage/fllesystem"
     localAdapter "lakego-admin/lakego/fllesystem/adapter/local"
     driverRegister "lakego-admin/lakego/storage/register/driver"
     diskRegister "lakego-admin/lakego/storage/register/disk"
@@ -16,7 +16,7 @@ import(
 
 var once sync.Once
 
-func New() interfaces.Fllesystem {
+func New() *storageFllesystem.Fllesystem {
     disk := GetDefaultDisk()
 
     return Disk(disk)
@@ -80,7 +80,7 @@ func Register() {
     })
 }
 
-func Disk(name string) interfaces.Fllesystem {
+func Disk(name string) *storageFllesystem.Fllesystem {
     // 注册默认磁盘
     Register()
 
@@ -90,48 +90,11 @@ func Disk(name string) interfaces.Fllesystem {
         panic("文件管理器磁盘 " + name + " 没有被注册")
     }
 
-    return disk
+    disk2 := storageFllesystem.NewWithFllesystem(disk.(*fllesystem.Fllesystem))
+
+    return disk2
 }
 
 func GetDefaultDisk() string {
     return config.New("filesystem").GetString("Default")
-}
-
-
-// 获取配置
-func Url(fs interfaces.Fllesystem, url string) string {
-    conf := fs.GetConfig()
-
-    uri := conf.Get("url").(string)
-
-    return uri + "/" + strings.TrimPrefix(url, "/")
-}
-
-// 获取配置
-func Path(fs interfaces.Fllesystem, path string) string {
-    adapter := fs.GetAdapter()
-
-    return adapter.ApplyPathPrefix(path)
-}
-
-// 保存数据
-func PutFileAs(fs interfaces.Fllesystem, path string, resource *os.File, name string, conf ...map[string]interface{}) string {
-    var config map[string]interface{}
-    if len(conf) > 0 {
-        config = conf[0]
-    } else {
-        config = nil
-    }
-
-    path = path + "/" + name
-    path = strings.TrimPrefix(path, "/")
-    path = strings.TrimSuffix(path, "/")
-
-    result := fs.PutStream(path, resource, config)
-
-    if result {
-        return path
-    }
-
-    return ""
 }

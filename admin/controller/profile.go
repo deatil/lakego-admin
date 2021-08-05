@@ -56,7 +56,7 @@ func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
 func (control *ProfileController) Rules(ctx *gin.Context) {
     rules := make(map[string]string)
 
-    mime := storage.New().GetTimestamp("/log/123.log")
+    mime := storage.New().Copy("/log/123.log", "/log/log22/111.log")
 
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,

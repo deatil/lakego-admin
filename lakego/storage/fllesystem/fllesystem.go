@@ -10,18 +10,27 @@ import(
 
 // 文件管理器
 type Fllesystem struct {
-    fllesystem.Fllesystem
+    *fllesystem.Fllesystem
 }
 
 // new 文件管理器
 func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesystem {
-    fs := &Fllesystem{}
+    fs := &fllesystem.Fllesystem{}
 
     fs.WithAdapter(adapters)
 
     if len(conf) > 0{
         fs.SetConfig(fs.PrepareConfig(conf[0]))
     }
+
+    fs2 := &Fllesystem{fs}
+
+    return fs2
+}
+
+// new 文件管理器
+func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Fllesystem {
+    fs := &Fllesystem{ifs}
 
     return fs
 }
@@ -32,7 +41,7 @@ func (fs *Fllesystem) Url(url string) string {
 
     uri := conf.Get("url").(string)
 
-    return uri + strings.TrimPrefix(url, "/") + "/" + url
+    return uri + "/" + strings.TrimPrefix(url, "/")
 }
 
 // 获取配置

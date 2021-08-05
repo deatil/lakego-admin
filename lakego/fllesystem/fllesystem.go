@@ -247,11 +247,11 @@ func (fs *Fllesystem) Copy(path string, newpath string) bool {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
-    if err := fs.GetAdapter().Copy(path, newpath); err == nil {
-        return true
+    if err := fs.GetAdapter().Copy(path, newpath); err != nil {
+        return false
     }
 
-    return false
+    return true
 }
 
 // 删除

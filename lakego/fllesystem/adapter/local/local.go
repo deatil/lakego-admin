@@ -4,6 +4,7 @@ import (
     "io"
     "os"
     "fmt"
+    "strconv"
     "strings"
     "errors"
     "net/http"
@@ -307,17 +308,16 @@ func (sys *Local) ListContents(directory string, recursive ...bool) ([]map[strin
 
     var iterator []map[string]interface{}
     if len(recursive) > 0 && recursive[0] {
-        iterator, _ = sys.GetRecursiveDirectoryIterator(directory)
+        iterator, _ = sys.GetRecursiveDirectoryIterator(location)
     } else {
-        iterator, _ = sys.GetDirectoryIterator(directory)
+        iterator, _ = sys.GetDirectoryIterator(location)
     }
 
     var result []map[string]interface{}
     for _, file := range iterator {
-        path, _ := sys.MapFileInfo(file)
-        newFile , _ := sys.NormalizeFileInfo(path)
+        path, _ := sys.NormalizeFileInfo(file)
 
-        result = append(result, newFile)
+        result = append(result, path)
     }
 
     return result, nil
@@ -383,9 +383,11 @@ func (sys *Local) GetVisibility(path string) (map[string]string, error) {
         }
     }
 
+    permission := strconv.FormatInt(int64(permissions), 10)
+
     data := map[string]string{
         "path": path,
-        "visibility": string(permissions),
+        "visibility": permission,
     }
 
     return data, nil
@@ -471,26 +473,24 @@ func (sys *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, e
 
     ret := make([]map[string]interface{}, 0, sz)
     for i := 0; i < sz; i++ {
-        if fs[i].IsDir() {
-            info := fs[i]
-            name := info.Name()
-            if name != "." && name != ".." {
-                var fileType string
-                if info.IsDir() {
-                    fileType = "dir"
-                } else {
-                    fileType = "file"
-                }
-
-                ret = append(ret, map[string]interface{}{
-                    "type": fileType,
-                    "path": path,
-                    "filename": info.Name(),
-                    "pathname": path + "/" + info.Name(),
-                    "timestamp": info.ModTime().Unix(),
-                    "info": info,
-                })
+        info := fs[i]
+        name := info.Name()
+        if name != "." && name != ".." {
+            var fileType string
+            if info.IsDir() {
+                fileType = "dir"
+            } else {
+                fileType = "file"
             }
+
+            ret = append(ret, map[string]interface{}{
+                "type": fileType,
+                "path": path,
+                "filename": info.Name(),
+                "pathname": path + "/" + info.Name(),
+                "timestamp": info.ModTime().Unix(),
+                "info": info,
+            })
         }
     }
 
