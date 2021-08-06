@@ -161,7 +161,7 @@ func (fs *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
     path = util.NormalizePath(path)
     contents := fs.Read(path)
 
-    if contents != nil {
+    if contents == nil {
         return nil, errors.New("读取失败")
     }
 
@@ -219,7 +219,7 @@ func (fs *Fllesystem) Read(path string) interface{} {
 }
 
 // 读取成数据流
-func (fs *Fllesystem) ReadStream(path string) interface{} {
+func (fs *Fllesystem) ReadStream(path string) *os.File {
     path = util.NormalizePath(path)
     object, err := fs.GetAdapter().ReadStream(path)
 
@@ -227,7 +227,7 @@ func (fs *Fllesystem) ReadStream(path string) interface{} {
         return nil
     }
 
-    return object["stream"]
+    return object["stream"].(*os.File)
 }
 
 // 重命名
@@ -377,22 +377,22 @@ func (fs *Fllesystem) GetMetadata(path string) map[string]interface{} {
 }
 
 // 获取
-func (fs *Fllesystem) Get(path string) interface{} {
+// Get("file.txt", "file").(*fllesystem.File).Read()
+// Get("/file").(*fllesystem.Directory).Read()
+func (fs *Fllesystem) Get(path string, pathType ...string) interface{} {
     path = util.NormalizePath(path)
 
-    metadata := fs.GetMetadata(path)
-
-    if metadata != nil && metadata["type"] == "file" {
-        var file File
+    if len(pathType) > 0 && pathType[0] == "file" {
+        file := &File{}
         file.filesystem = fs
         file.path = path
 
         return file
+    } else {
+        dir := &Directory{}
+        dir.filesystem = fs
+        dir.path = path
+
+        return dir
     }
-
-    var dir Directory
-    dir.filesystem = fs
-    dir.path = path
-
-    return dir
 }

@@ -40,7 +40,7 @@ func (file *File) Read() interface{} {
 }
 
 // 读取成文件流
-func (file *File) ReadStream() interface{} {
+func (file *File) ReadStream() *os.File {
     return file.filesystem.ReadStream(file.path)
 }
 

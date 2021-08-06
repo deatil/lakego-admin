@@ -4,7 +4,6 @@ import (
     "io"
     "os"
     "fmt"
-    "strconv"
     "strings"
     "errors"
     "net/http"
@@ -84,7 +83,7 @@ func (sys *Local) Write(path string, contents string, conf interfaces.Config) (m
         return nil, errors.New("执行函数 os.WriteString() 失败, 错误为:" + writeErr.Error())
     }
 
-    size, sizeErr := sys.FileSize(path)
+    size, sizeErr := sys.FileSize(location)
     if sizeErr != nil {
         return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
     }
@@ -98,7 +97,7 @@ func (sys *Local) Write(path string, contents string, conf interfaces.Config) (m
 
     if visibility := conf.Get("visibility"); visibility != nil {
         result["visibility"] = visibility.(string)
-        sys.SetVisibility(path, visibility.(string))
+        sys.SetVisibility(location, visibility.(string))
     }
 
     return result, nil
@@ -116,7 +115,7 @@ func (sys *Local) WriteStream(path string, stream *os.File, conf interfaces.Conf
 
     defer newFile.Close()
 
-    _, copyErr := io.Copy(stream, newFile)
+    _, copyErr := io.Copy(newFile, stream)
     if copyErr != nil {
         return nil, errors.New("写入文件流失败, 错误为:" + copyErr.Error())
     }
@@ -128,7 +127,7 @@ func (sys *Local) WriteStream(path string, stream *os.File, conf interfaces.Conf
 
     if visibility := conf.Get("visibility"); visibility != nil {
         result["visibility"] = visibility.(string)
-        sys.SetVisibility(path, visibility.(string))
+        sys.SetVisibility(location, visibility.(string))
     }
 
     return result, nil
@@ -150,7 +149,7 @@ func (sys *Local) Update(path string, contents string, conf interfaces.Config) (
         return nil, errors.New("执行函数 os.WriteString() 失败, 错误为:" + writeErr.Error())
     }
 
-    size, sizeErr := sys.FileSize(path)
+    size, sizeErr := sys.FileSize(location)
     if sizeErr != nil {
         return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
     }
@@ -164,7 +163,7 @@ func (sys *Local) Update(path string, contents string, conf interfaces.Config) (
 
     if visibility := conf.Get("visibility"); visibility != nil {
         result["visibility"] = visibility.(string)
-        sys.SetVisibility(path, visibility.(string))
+        sys.SetVisibility(location, visibility.(string))
     }
 
     return result, nil
@@ -183,6 +182,7 @@ func (sys *Local) Read(path string) (map[string]interface{}, error) {
     if openErr != nil {
         return nil, errors.New("执行函数 os.Open() 失败, 错误为:" + openErr.Error())
     }
+    defer file.Close()
 
     data, readAllErr := ioutil.ReadAll(file)
     if readAllErr != nil {
@@ -235,15 +235,30 @@ func (sys *Local) Copy(path string, newpath string) error {
     destination := sys.ApplyPathPrefix(newpath)
     sys.EnsureDirectory(filepath.Dir(destination))
 
-    src, _ := os.OpenFile(location, os.O_RDONLY, 0666)
+    locationStat, e := os.Stat(location)
+    if e != nil {
+        return e
+    }
+
+    if !locationStat.Mode().IsRegular() {
+        return fmt.Errorf("%s 不是一个正常的文件", path)
+    }
+
+    src, openErr := os.Open(location)
+    if openErr != nil {
+        return openErr
+    }
     defer src.Close()
 
-    dsc, _ := os.OpenFile(destination, os.O_RDWR, 0666)
+    dsc, createErr := os.Create(destination)
+    if createErr != nil {
+        return createErr
+    }
     defer dsc.Close()
 
-    _, err := io.Copy(dsc, src)
-    if err != nil {
-        return errors.New("复制失败, 错误为:" + err.Error())
+    _, copyErr := io.Copy(dsc, src)
+    if copyErr != nil {
+        return errors.New("复制失败, 错误为:" + copyErr.Error())
     }
 
     return nil
@@ -383,7 +398,7 @@ func (sys *Local) GetVisibility(path string) (map[string]string, error) {
         }
     }
 
-    permission := strconv.FormatInt(int64(permissions), 10)
+    permission := fmt.Sprintf("%o", permissions)
 
     data := map[string]string{
         "path": path,
@@ -443,9 +458,9 @@ func (sys *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]inter
 
         files = append(files, map[string]interface{}{
             "type": fileType,
-            "path": wpath,
+            "path": path,
             "filename": info.Name(),
-            "pathname": wpath + "/" + info.Name(),
+            "pathname": path + "/" + info.Name(),
             "timestamp": info.ModTime().Unix(),
             "info": info,
         })
@@ -514,7 +529,7 @@ func (sys *Local) FileInfo(path string) map[string]interface{} {
         "type": fileType,
         "path": path,
         "filename": info.Name(),
-        "pathname": path + "/" + info.Name(),
+        "pathname": path,
         "timestamp": info.ModTime().Unix(),
         "info": info,
     }

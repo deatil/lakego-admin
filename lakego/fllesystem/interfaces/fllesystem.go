@@ -35,9 +35,6 @@ type Fllesystem interface {
     // 上传
     PutStream(string, *os.File, ...map[string]interface{}) bool
 
-    // 读取并删除
-    ReadAndDelete(string) (interface{}, error)
-
     // 更新
     Update(string, string, ...map[string]interface{}) bool
 
@@ -48,7 +45,7 @@ type Fllesystem interface {
     Read(string) interface{}
 
     // 读取
-    ReadStream(string) interface{}
+    ReadStream(string) *os.File
 
     // 重命名
     Rename(string, string) bool
@@ -58,6 +55,9 @@ type Fllesystem interface {
 
     // 删除
     Delete(string) bool
+
+    // 读取并删除
+    ReadAndDelete(string) (interface{}, error)
 
     // 删除文件夹
     DeleteDir(string) bool
@@ -87,5 +87,5 @@ type Fllesystem interface {
     GetMetadata(string) map[string]interface{}
 
     // 获取
-    Get(string) interface{}
+    Get(string, ...string) interface{}
 }
