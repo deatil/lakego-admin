@@ -2,6 +2,18 @@ package interfaces
 
 // 缓存接口
 type Cache interface {
+    // 设置驱动
+    WithDriver(Driver)
+
+    // 获取驱动
+    GetDriver() Driver
+
+    // 设置配置
+    WithConfig(map[string]interface{})
+
+    // 获取配置
+    GetConfig(...string) interface{}
+
     // 获取
     Get(string) (interface{}, error)
 

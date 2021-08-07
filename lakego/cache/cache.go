@@ -16,9 +16,9 @@ type Cache struct {
 }
 
 // 创建
-func New(idriver interfaces.Driver, conf ...map[string]interface{}) *Cache {
+func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
     c := &Cache{
-        driver: idriver,
+        driver: driver,
     }
 
     if len(conf) > 0{
@@ -26,6 +26,32 @@ func New(idriver interfaces.Driver, conf ...map[string]interface{}) *Cache {
     }
 
     return c
+}
+
+// 设置驱动
+func (c *Cache) WithDriver(driver interfaces.Driver) {
+    c.driver = driver
+}
+
+// 获取驱动
+func (c *Cache) GetDriver() interfaces.Driver {
+    return c.driver
+}
+
+// 设置配置
+func (c *Cache) WithConfig(config map[string]interface{}) {
+    c.config = config
+}
+
+// 获取配置
+func (c *Cache) GetConfig(conf ...string) interface{} {
+    if len(conf) > 0 {
+        if data, ok := c.config[conf[0]]; ok {
+            return data
+        }
+    }
+
+    return c.config
 }
 
 // 获取
