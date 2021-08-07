@@ -9,7 +9,12 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
-// 文件管理器
+/**
+ * 文件管理器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Fllesystem struct {
     adapter interfaces.Adapter
     config interfaces.Config

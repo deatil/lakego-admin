@@ -1,7 +1,7 @@
 Default: "mysql"
 # dev or pro
 Debug: "pro"
-connections:
+Connections:
   Mysql:
     Type: "mysql"
     # 填写替换其他配置

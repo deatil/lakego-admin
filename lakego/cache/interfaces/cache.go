@@ -1,10 +1,7 @@
 package interfaces
 
-// 驱动接口
-type Driver interface {
-    // 初始化配置
-    Init(map[string]interface{}) Driver
-
+// 缓存接口
+type Cache interface {
     // 获取
     Get(string) (interface{}, error)
 
@@ -13,6 +10,9 @@ type Driver interface {
 
     // 存储一个不过期的数据
     Forever(string, interface{}) error
+
+    // 获取后删除
+    Pull(string) (interface{}, error)
 
     // 自增
     Increment(string, ...int64) error
@@ -25,9 +25,6 @@ type Driver interface {
 
     // 清空所有缓存
     Flush() (bool, error)
-
-    // 设置前缀
-    SetPrefix(string)
 
     // 缓存字段前缀
     GetPrefix() string

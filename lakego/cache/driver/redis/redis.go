@@ -10,28 +10,22 @@ import (
     "github.com/go-redis/redis/v8"
 
     "lakego-admin/lakego/logger"
+    "lakego-admin/lakego/cache/interfaces"
 )
-
-// 配置
-type Config struct {
-    DB int
-    Host string
-    Password string
-}
 
 // redis 缓存
 type Redis struct {
-    config Config
+    config map[string]interface{}
     prefix string
     ctx context.Context
     client *redis.Client
 }
 
 // 实例化
-func New(config Config) *Redis {
-    mainDB := config.DB
-    addr := config.Host
-    password := config.Password
+func (r *Redis) Init(config map[string]interface{}) interfaces.Driver {
+    mainDB := config["db"].(int)
+    addr := config["host"].(string)
+    password := config["password"].(string)
 
     client := redis.NewClient(&redis.Options{
         Addr:     addr,
@@ -167,9 +161,8 @@ func (r *Redis) Flush() (bool, error) {
 }
 
 // 设置前缀
-func (r *Redis) SetPrefix(prefix string) error {
+func (r *Redis) SetPrefix(prefix string) {
     r.prefix = prefix
-    return nil
 }
 
 // 获取前缀
