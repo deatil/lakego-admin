@@ -1,12 +1,12 @@
 package database
 
 import (
+    "fmt"
+    "time"
+    "strings"
+    "encoding/json"
     "database/sql"
     "database/sql/driver"
-    "encoding/json"
-    "fmt"
-    "strings"
-    "time"
 )
 
 var timeFormat = "2006-01-02 15:04:05"

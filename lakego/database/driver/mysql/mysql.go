@@ -10,27 +10,50 @@ import (
     "gorm.io/gorm/schema"
 
     "lakego-admin/lakego/logger"
+    "lakego-admin/lakego/database/interfaces"
 )
 
 type Mysql struct {
     db *gorm.DB
     sqlDB *sql.DB
-    debug string
     config map[string]interface{}
 }
 
-func New(conf map[string]interface{}) *Mysql {
-    return &Mysql{
-        config: conf,
+func New(conf ...map[string]interface{}) *Mysql {
+    m := &Mysql{}
+
+    if len(conf) > 0 {
+        m.config = conf[0]
     }
+
+    return m
 }
 
-/**
- * 设置调试
- */
-func (m *Mysql) WithDebug(debug string) *Mysql {
-    m.debug = debug
+
+// 初始化
+func (m *Mysql) Init(config map[string]interface{}) interfaces.Driver {
+    m.config = config
+
     return m
+}
+
+
+// 设置配置
+func (m *Mysql) WithConfig(config map[string]interface{}) interfaces.Driver {
+    m.config = config
+
+    return m
+}
+
+// 获取配置
+func (m *Mysql) GetConfig(conf ...string) interface{} {
+    if len(conf) > 0 {
+        if data, ok := m.config[conf[0]]; ok {
+            return data
+        }
+    }
+
+    return m.config
 }
 
 /**
@@ -45,7 +68,7 @@ func (m *Mysql) GetConnection() *gorm.DB {
     // dsn 判断
     dsn = conf["dsn"].(string)
     if dsn == "" {
-        dsn = m.GetMysqlDSN()
+        dsn = m.getDSN()
     }
 
     mc := mysql.Config{
@@ -92,8 +115,10 @@ func (m *Mysql) GetConnection() *gorm.DB {
     sqlDB.SetMaxIdleConns(MaxIdleConns)
     sqlDB.SetMaxOpenConns(MaxOpenConns)
 
-    if m.debug == "dev" {
-        db = db.Debug()
+    if debug, ok := conf["debug"]; ok {
+        if debug == "dev" {
+            db = db.Debug()
+        }
     }
 
     m.db = db
@@ -102,7 +127,10 @@ func (m *Mysql) GetConnection() *gorm.DB {
     return db
 }
 
-func (m *Mysql) CloseDb()  {
+/**
+ * 关闭
+ */
+func (m *Mysql) Close()  {
     if m.sqlDB.Ping() != nil {
         return
     }
@@ -113,7 +141,7 @@ func (m *Mysql) CloseDb()  {
 /**
  * 连接 DSN
  */
-func (m *Mysql) GetMysqlDSN() string {
+func (m *Mysql) getDSN() string {
     // 配置
     conf := m.config
 

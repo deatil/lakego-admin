@@ -2,59 +2,74 @@ package database
 
 import (
     "gorm.io/gorm"
-    "lakego-admin/lakego/database/driver/mysql"
+    "lakego-admin/lakego/database/interfaces"
 )
 
-type Config struct {
-    Default string
-    Debug string
-    Connections map[string]interface{}
-}
-
 type Database struct {
-    Config Config
-    DB *gorm.DB
+    config map[string]interface{}
+    driver interfaces.Driver
 }
 
 /**
  * 单例模式
  */
-func New() *Database {
-    return &Database{}
+func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
+    d := &Database{
+        driver: driver,
+    }
+
+    if len(conf) > 0{
+        d.config = conf[0]
+    }
+
+    return d
+}
+
+
+// 设置配置
+func (db *Database) WithConfig(config map[string]interface{}) interfaces.Database {
+    db.config = config
+
+    return db
+}
+
+// 获取配置
+func (db *Database) GetConfig(conf ...string) interface{} {
+    if len(conf) > 0 {
+        if data, ok := db.config[conf[0]]; ok {
+            return data
+        }
+    }
+
+    return db.config
 }
 
 /**
- * 连接
+ * 设置驱动
  */
-func (db *Database) Connection(config Config) {
-    db.Config = config
+func (db *Database) WithDriver(driver interfaces.Driver) interfaces.Database {
+    db.driver = driver
 
-    defaultType := config.Default
-    db.DB = db.ConnectionFromType(defaultType)
+    return db
+}
+
+/**
+ * 获取驱动
+ */
+func (db *Database) GetDriver() interfaces.Driver {
+    return db.driver
 }
 
 /**
  * 获取数据库连接对象db
  */
-func (db *Database) GetDB() *gorm.DB {
-    return db.DB
+func (db *Database) GetConnection() *gorm.DB {
+    return db.driver.GetConnection()
 }
 
 /**
- * 根据 type 创建链接
+ * 关闭连接
  */
-func (db *Database) ConnectionFromType(typeName string) (dbConnection *gorm.DB) {
-    connections := db.Config.Connections
-
-    debug := db.Config.Debug
-    conf := connections[typeName].(map[string]interface{})
-
-    driverType := conf["type"].(string)
-    if driverType == "mysql" {
-        dbConnection = mysql.New(conf).WithDebug(debug).GetConnection()
-    } else {
-        dbConnection = mysql.New(conf).WithDebug(debug).GetConnection()
-    }
-
-    return dbConnection
+func (db *Database) Close() {
+    db.driver.Close()
 }

@@ -12,20 +12,6 @@ var instance *Driver
 var once sync.Once
 
 /**
- * 注册驱动
- */
-func RegisterDriver(name string, f func() interfaces.Driver) {
-    New().With(name, f)
-}
-
-/**
- * 获取已注册驱动
- */
-func GetDriver(name string) interfaces.Driver {
-    return New().Get(name)
-}
-
-/**
  * 单例模式
  */
 func New() *Driver {

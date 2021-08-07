@@ -40,11 +40,11 @@ func (r *Redis) Init(config map[string]interface{}) interfaces.Driver {
         logger.Error(err.Error())
     }
 
-    return &Redis{
-        config: config,
-        ctx: context.Background(),
-        client: client,
-    }
+    r.config = config
+    r.ctx = context.Background()
+    r.client = client
+
+    return r
 }
 
 // 判断是否存在

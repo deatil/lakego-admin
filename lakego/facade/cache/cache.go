@@ -3,12 +3,11 @@ package cache
 import (
     "sync"
 
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/cache"
     "lakego-admin/lakego/cache/interfaces"
+    "lakego-admin/lakego/cache/register"
     redisDriver "lakego-admin/lakego/cache/driver/redis"
-    driverRegister "lakego-admin/lakego/cache/register/driver"
-    cacheRegister "lakego-admin/lakego/cache/register/cache"
 )
 
 /**
@@ -20,17 +19,23 @@ import (
 
 var once sync.Once
 
+// 实例化
 func New() interfaces.Cache {
     cache := GetDefaultCache()
 
     return Cache(cache)
 }
 
-// 注册磁盘
+// 实例化
+func NewWithType(cache string) interfaces.Cache {
+    return Cache(cache)
+}
+
+// 注册
 func Register() {
     once.Do(func() {
         // 注册可用缓存驱动
-        driverRegister.RegisterDriver("redis", func() interfaces.Driver {
+        register.RegisterDriver("redis", func() interfaces.Driver {
             return &redisDriver.Redis{}
         })
 
@@ -38,12 +43,12 @@ func Register() {
         caches := config.New("cache").GetStringMap("Caches")
 
         // redis 缓存
-        cacheRegister.RegisterCache("redis", func() interfaces.Cache {
+        register.RegisterCache("redis", func() interfaces.Cache {
             redisConf := caches["redis"].(map[string]interface{})
             redisType := redisConf["type"].(string)
             redisPrefix := redisConf["prefix"].(string)
 
-            driver := driverRegister.GetDriver(redisType)
+            driver := register.GetDriver(redisType)
             if driver == nil {
                 panic("缓存驱动 " + redisType + " 没有被注册")
             }
@@ -64,7 +69,7 @@ func Cache(name string) interfaces.Cache {
     Register()
 
     // 拿取缓存
-    c := cacheRegister.GetCache(name)
+    c := register.GetCache(name)
     if c == nil {
         panic("缓存类型 " + name + " 没有被注册")
     }

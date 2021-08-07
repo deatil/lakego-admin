@@ -4,28 +4,14 @@ import (
     "sync"
     "gorm.io/gorm"
 
-    "lakego-admin/lakego/database"
     "lakego-admin/lakego/facade/config"
+    "lakego-admin/lakego/database"
+    "lakego-admin/lakego/database/interfaces"
+    "lakego-admin/lakego/database/register"
+    mysqlDriver "lakego-admin/lakego/database/driver/mysql"
 )
 
-var instance *database.Database
 var once sync.Once
-
-func GetInstance() *database.Database {
-    once.Do(func() {
-        instance = database.New()
-
-        conf := config.New("database")
-
-        instance.Connection(database.Config{
-            Default: conf.GetString("Default"),
-            Debug: conf.GetString("Debug"),
-            Connections: conf.GetStringMap("Connections"),
-        })
-    })
-
-    return instance
-}
 
 /**
  * 数据库
@@ -34,29 +20,65 @@ func GetInstance() *database.Database {
  * @author deatil
  */
 func New() *gorm.DB {
-    db := GetInstance()
+    database := GetDefaultDatabase()
 
-    return db.GetDB()
+    return Database(database)
 }
 
+// 实例化
+func NewWithType(database string) *gorm.DB {
+    return Database(database)
+}
 
-/**
- * 数据库，自定义类型
- *
- * @create 2021-7-11
- * @author deatil
- */
-func NewWithType(typeName string) *gorm.DB {
-    db := database.New()
+// 注册
+func Register() {
+    once.Do(func() {
+        // 注册可用驱动
+        register.RegisterDriver("mysql", func() interfaces.Driver {
+            return &mysqlDriver.Mysql{}
+        })
 
-    conf := config.New("database")
+        // 连接列表
+        connections := config.New("database").GetStringMap("Connections")
 
-    db.Connection(database.Config{
-        Default: typeName,
-        Debug: conf.GetString("Debug"),
-        Connections: conf.GetStringMap("Connections"),
+        // mysql
+        register.RegisterDatabase("mysql", func() interfaces.Database {
+            mysqlConf := connections["mysql"].(map[string]interface{})
+            mysqlType := mysqlConf["type"].(string)
+
+            driver := register.GetDriver(mysqlType)
+            if driver == nil {
+                panic("数据库驱动 " + mysqlType + " 没有被注册")
+            }
+
+            driver.WithConfig(mysqlConf)
+
+            d := database.New(driver, mysqlConf)
+
+            return d
+        })
+
     })
-
-    return db.GetDB()
 }
+
+// 选择数据库
+func Database(name string) *gorm.DB {
+    // 注册默认
+    Register()
+
+    // 拿取
+    c := register.GetDatabase(name)
+    if c == nil {
+        panic("数据库类型 " + name + " 没有被注册")
+    }
+
+    return c.GetConnection()
+}
+
+// 默认数据库
+func GetDefaultDatabase() string {
+    return config.New("database").GetString("Default")
+}
+
+
 

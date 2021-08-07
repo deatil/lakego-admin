@@ -1,9 +1,9 @@
 Default: "mysql"
 # dev or pro
-Debug: "pro"
 Connections:
   Mysql:
     Type: "mysql"
+    Debug: "pro"
     # 填写替换其他配置
     Dsn: ""
     Host: "127.0.0.1"

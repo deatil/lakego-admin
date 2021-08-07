@@ -1,23 +1,23 @@
-package disk
+package driver
 
 import(
     "sync"
-    "lakego-admin/lakego/fllesystem/interfaces"
+    "lakego-admin/lakego/database/interfaces"
 )
 
 // 锁
-var diskLock = new(sync.RWMutex)
+var lock = new(sync.RWMutex)
 
-var instance *Disk
-var once sync.Onc
+var instance *Driver
+var once sync.Once
 
 /**
  * 单例模式
  */
-func New() *Disk {
+func New() *Driver {
     once.Do(func() {
-        register := make(map[string]func() interfaces.Fllesystem)
-        instance = &Disk{
+        register := make(map[string]func() interfaces.Driver)
+        instance = &Driver{
             registers: register,
         }
     })
@@ -26,17 +26,17 @@ func New() *Disk {
 }
 
 /**
- * 磁盘
+ * 驱动
  */
-type Disk struct {
+type Driver struct {
     // 已注册数据
-    registers map[string]func() interfaces.Fllesystem
+    registers map[string]func() interfaces.Driver
 }
 
 // 注册
-func (d *Disk) With(name string, f func() interfaces.Fllesystem) {
-    diskLock.Lock()
-    defer diskLock.Unlock()
+func (d *Driver) With(name string, f func() interfaces.Driver) {
+    lock.Lock()
+    defer lock.Unlock()
 
     if exists := d.Exists(name); exists {
         d.Delete(name)
@@ -48,7 +48,7 @@ func (d *Disk) With(name string, f func() interfaces.Fllesystem) {
 /**
  * 获取
  */
-func (d *Disk) Get(name string) interfaces.Fllesystem {
+func (d *Driver) Get(name string) interfaces.Driver {
     if value, exists := d.registers[name]; exists {
         return value()
     }
@@ -59,7 +59,7 @@ func (d *Disk) Get(name string) interfaces.Fllesystem {
 /**
  * 判断
  */
-func (d *Disk) Exists(name string) bool {
+func (d *Driver) Exists(name string) bool {
     if _, exists := d.registers[name]; exists {
         return true
     }
@@ -70,7 +70,7 @@ func (d *Disk) Exists(name string) bool {
 /**
  * 删除
  */
-func (d *Disk) Delete(name string) {
+func (d *Driver) Delete(name string) {
     delete(d.registers, name)
 }
 

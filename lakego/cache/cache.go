@@ -29,8 +29,10 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
 }
 
 // 设置驱动
-func (c *Cache) WithDriver(driver interfaces.Driver) {
+func (c *Cache) WithDriver(driver interfaces.Driver) interfaces.Cache {
     c.driver = driver
+
+    return c
 }
 
 // 获取驱动
@@ -39,8 +41,10 @@ func (c *Cache) GetDriver() interfaces.Driver {
 }
 
 // 设置配置
-func (c *Cache) WithConfig(config map[string]interface{}) {
+func (c *Cache) WithConfig(config map[string]interface{}) interfaces.Cache {
     c.config = config
+
+    return c
 }
 
 // 获取配置

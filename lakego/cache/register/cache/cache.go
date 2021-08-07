@@ -12,20 +12,6 @@ var instance *Cache
 var once sync.Once
 
 /**
- * 注册缓存
- */
-func RegisterCache(name string, f func() interfaces.Cache) {
-    New().With(name, f)
-}
-
-/**
- * 获取已注册缓存
- */
-func GetCache(name string) interfaces.Cache {
-    return New().Get(name)
-}
-
-/**
  * 单例模式
  */
 func New() *Cache {
