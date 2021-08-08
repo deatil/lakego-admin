@@ -9,7 +9,7 @@ import(
 var diskLock = new(sync.RWMutex)
 
 var instance *Disk
-var once sync.Onc
+var once sync.Once
 
 /**
  * 单例模式

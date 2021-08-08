@@ -1,8 +1,11 @@
+# 默认
 Default: "mysql"
-# dev or pro
+
+# 连接列表
 Connections:
   Mysql:
     Type: "mysql"
+    # dev or pro
     Debug: "pro"
     # 填写替换其他配置
     Dsn: ""

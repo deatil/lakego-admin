@@ -47,6 +47,10 @@ func (conf *Config) Get(key string) interface{} {
         return data
     }
 
+    if conf.fallback != nil {
+        return conf.fallback.Get(key)
+    }
+
     return nil
 }
 
@@ -58,23 +62,30 @@ func (conf *Config) Has(key string) bool {
         return true
     }
 
-    return conf.fallback.Has(key)
+    if conf.fallback != nil {
+        return conf.fallback.Has(key)
+    }
+
+    return false
 }
 
 /**
  * 获取一个值带默认
  */
 func (conf *Config) GetDefault(key string, defaults ...interface{}) interface{} {
-    if conf.fallback == nil {
-        return false
+    if data, ok := conf.settings[key]; ok {
+        return data
     }
 
-    value := conf.fallback.Get(key)
-    if value == nil && len(defaults) > 0 {
+    if conf.fallback != nil {
+        return conf.fallback.GetDefault(key, defaults...)
+    }
+
+    if len(defaults) > 0 {
         return defaults[0]
     }
 
-    return value
+    return nil
 }
 
 /**

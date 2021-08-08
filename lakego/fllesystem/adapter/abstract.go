@@ -12,6 +12,13 @@ type Abstract struct {
 
 // 设置前缀
 func (at *Abstract) SetPathPrefix(prefix string) {
+    if prefix == "" {
+        at.pathPrefix = ""
+
+        return
+    }
+
+    at.pathSeparator = "/"
     at.pathPrefix = strings.TrimSuffix(prefix, "\\/") + at.pathSeparator
 }
 

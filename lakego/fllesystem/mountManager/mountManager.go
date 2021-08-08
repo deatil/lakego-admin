@@ -1,4 +1,4 @@
-package fllesystem
+package mountManager
 
 import(
     "os"
@@ -18,8 +18,11 @@ type MountManager struct {
 }
 
 // 实例化
-func New(filesystems ...map[string]interfaces.Fllesystem) *MountManager {
-    mm := &MountManager{}
+func New(filesystems ...map[string]interface{}) *MountManager {
+    ifs := make(map[string]interfaces.Fllesystem)
+    mm := &MountManager{
+        filesystems: ifs,
+    }
 
     if len(filesystems) > 0{
         mm.MountFilesystems(filesystems[0])
@@ -29,9 +32,9 @@ func New(filesystems ...map[string]interfaces.Fllesystem) *MountManager {
 }
 
 // 批量
-func (mm *MountManager) MountFilesystems(filesystems map[string]interfaces.Fllesystem) *MountManager {
+func (mm *MountManager) MountFilesystems(filesystems map[string]interface{}) *MountManager {
     for prefix, filesystem := range filesystems {
-        mm.MountFilesystem(prefix, filesystem)
+        mm.MountFilesystem(prefix, filesystem.(interfaces.Fllesystem))
     }
 
     return mm
@@ -56,16 +59,17 @@ func (mm *MountManager) GetFilesystem(prefix string) interfaces.Fllesystem {
 // 过滤
 // [:prefix, :arguments]
 func (mm *MountManager) FilterPrefix(arguments []string) (string, []string) {
-    if len(arguments) <- 0 {
+    if len(arguments) < 1 {
         panic("arguments 切片不能为空")
     }
 
-    path := arguments[:1]
+    path := arguments[0]
 
     prefix, path := mm.GetPrefixAndPath(path)
 
-    newArguments := make([]string)
-    newArguments = append(newArguments, path, arguments[1:]...)
+    newArguments := make([]string, len(arguments))
+    newArguments = append(newArguments, path)
+    newArguments = append(newArguments, arguments[1:]...)
 
     return prefix, newArguments
 }
@@ -79,20 +83,20 @@ func (mm *MountManager) GetPrefixAndPath(path string) (string, string) {
         panic("在 " + path + " 里前缀 prefix 不存在")
     }
 
-    return paths[:1], strings.Join(paths[1:], "://")
+    return paths[0], strings.Join(paths[1:], "://")
 }
 
 // 列出内容
 func (mm *MountManager) ListContents(directory string, recursive ...bool) []map[string]interface{} {
-    prefix, directory = mm.GetPrefixAndPath(directory)
+    prefix, dir := mm.GetPrefixAndPath(directory)
 
     filesystem := mm.GetFilesystem(prefix)
 
-    result := filesystem.ListContents(directory, recursive...)
+    result := filesystem.ListContents(dir, recursive...)
 
     for key, item := range result {
-        result["filesystem"] = prefix
-        result[key] = result
+        item["filesystem"] = prefix
+        result[key] = item
     }
 
     return result
@@ -106,6 +110,7 @@ func (mm *MountManager) Copy(from string, to string, conf ...map[string]interfac
     if buffer == nil {
         return false
     }
+    defer buffer.Close()
 
     prefixTo, pathTo := mm.GetPrefixAndPath(to)
 
@@ -284,7 +289,7 @@ func (mm *MountManager) ReadAndDelete(path string) (interface{}, error) {
 // 获取
 // Get("file.txt", "file").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (fs *Fllesystem) Get(path string, pathType ...string) interface{} {
+func (mm *MountManager) Get(path string, pathType ...string) interface{} {
     prefix, newPath := mm.GetPrefixAndPath(path)
 
     return mm.GetFilesystem(prefix).Get(newPath, pathType...)

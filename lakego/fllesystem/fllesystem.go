@@ -102,11 +102,11 @@ func (fs *Fllesystem) WriteStream(path string, resource *os.File, conf ...map[st
 
     configs := fs.PrepareConfig(newConf)
 
-    if _, err := fs.GetAdapter().WriteStream(path, resource, configs); err == nil {
-        return true
+    if _, err := fs.GetAdapter().WriteStream(path, resource, configs); err != nil {
+        return false
     }
 
-    return false
+    return true
 }
 
 // 更新

@@ -198,7 +198,7 @@ func (sys *Local) Read(path string) (map[string]interface{}, error) {
     }, nil
 }
 
-// 读取
+// 读取，打开文件需要手动关闭
 func (sys *Local) ReadStream(path string) (map[string]interface{}, error) {
     location := sys.ApplyPathPrefix(path)
 
@@ -206,6 +206,8 @@ func (sys *Local) ReadStream(path string) (map[string]interface{}, error) {
     if err != nil {
         return nil, errors.New("执行函数 os.Open() 失败, 错误为:" + err.Error())
     }
+
+    // defer stream.Close()
 
     return map[string]interface{}{
         "type": "file",
@@ -527,7 +529,7 @@ func (sys *Local) FileInfo(path string) map[string]interface{} {
 
     return map[string]interface{}{
         "type": fileType,
-        "path": path,
+        "path": filepath.Dir(path),
         "filename": info.Name(),
         "pathname": path,
         "timestamp": info.ModTime().Unix(),
@@ -557,16 +559,16 @@ func (sys *Local) MapFileInfo(data map[string]interface{}) (map[string]interface
 }
 
 func (sys *Local) IsFile(fp string) bool {
+    return !sys.IsDir(fp)
+}
+
+func (sys *Local) IsDir(fp string) bool {
     f, e := os.Stat(fp)
     if e != nil {
         return false
     }
 
-    return !f.IsDir()
-}
-
-func (sys *Local) IsDir(fp string) bool {
-    return !sys.IsFile(fp)
+    return f.IsDir()
 }
 
 func (sys *Local) FileSize(fp string) (int64, error) {

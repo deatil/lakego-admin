@@ -7,6 +7,7 @@ import(
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/fllesystem"
+    "lakego-admin/lakego/fllesystem/mountManager"
     "lakego-admin/lakego/fllesystem/interfaces"
     "lakego-admin/lakego/storage/register"
     storageFllesystem "lakego-admin/lakego/storage/fllesystem"
@@ -25,6 +26,11 @@ func New() *storageFllesystem.Fllesystem {
 // 实例化
 func NewWithDisk(disk string) *storageFllesystem.Fllesystem {
     return Disk(disk)
+}
+
+// 批量操作
+func MountManager(filesystems ...map[string]interface{}) *mountManager.MountManager {
+    return mountManager.New(filesystems...)
 }
 
 // 注册磁盘
