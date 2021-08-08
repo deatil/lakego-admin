@@ -14,6 +14,15 @@ func RegisterDriver(name string, f func() interfaces.Driver) {
 }
 
 /**
+ * 批量注册驱动
+ */
+func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
+    for name, f := range drivers {
+        RegisterDriver(name, f)
+    }
+}
+
+/**
  * 获取已注册驱动
  */
 func GetDriver(name string) interfaces.Driver {

@@ -34,8 +34,10 @@ func NewWithType(database string) *gorm.DB {
 func Register() {
     once.Do(func() {
         // 注册可用驱动
-        register.RegisterDriver("mysql", func() interfaces.Driver {
-            return &mysqlDriver.Mysql{}
+        register.RegisterDrivers(map[string]func() interfaces.Driver {
+            "mysql": func() interfaces.Driver {
+                return &mysqlDriver.Mysql{}
+            },
         })
 
         // 连接列表
