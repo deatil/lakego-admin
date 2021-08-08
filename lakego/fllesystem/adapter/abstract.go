@@ -19,7 +19,7 @@ func (at *Abstract) SetPathPrefix(prefix string) {
     }
 
     at.pathSeparator = "/"
-    at.pathPrefix = strings.TrimSuffix(prefix, "\\/") + at.pathSeparator
+    at.pathPrefix = strings.TrimSuffix(prefix, "/") + at.pathSeparator
 }
 
 // 获取前缀
@@ -29,7 +29,7 @@ func (at *Abstract) GetPathPrefix() string {
 
 // 添加前缀
 func (at *Abstract) ApplyPathPrefix(path string) string {
-    return at.GetPathPrefix() + strings.TrimPrefix(path, "\\/")
+    return at.GetPathPrefix() + strings.TrimPrefix(path, "/")
 }
 
 // 移除前缀

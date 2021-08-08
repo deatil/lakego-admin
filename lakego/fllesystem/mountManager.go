@@ -1,4 +1,4 @@
-package mountManager
+package fllesystem
 
 import(
     "os"
@@ -18,7 +18,7 @@ type MountManager struct {
 }
 
 // 实例化
-func New(filesystems ...map[string]interface{}) *MountManager {
+func NewMountManager(filesystems ...map[string]interface{}) *MountManager {
     ifs := make(map[string]interfaces.Fllesystem)
     mm := &MountManager{
         filesystems: ifs,
@@ -287,10 +287,10 @@ func (mm *MountManager) ReadAndDelete(path string) (interface{}, error) {
 }
 
 // 获取
-// Get("file.txt", "file").(*fllesystem.File).Read()
+// Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (mm *MountManager) Get(path string, pathType ...string) interface{} {
+func (mm *MountManager) Get(path string, handler ...interface{}) interface{} {
     prefix, newPath := mm.GetPrefixAndPath(path)
 
-    return mm.GetFilesystem(prefix).Get(newPath, pathType...)
+    return mm.GetFilesystem(prefix).Get(newPath, handler...)
 }

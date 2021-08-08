@@ -129,6 +129,15 @@ func IsFile(fp string) bool {
     return !f.IsDir()
 }
 
+// 判断所给路径是否为文件夹
+func IsDir(fp string) bool {
+    s, err := os.Stat(fp)
+    if err != nil {
+        return false
+    }
+    return s.IsDir()
+}
+
 // IsExist checks whether a file or directory exists.
 // It returns false when the file or directory does not exist.
 func IsExist(fp string) bool {

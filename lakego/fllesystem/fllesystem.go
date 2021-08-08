@@ -382,21 +382,27 @@ func (fs *Fllesystem) GetMetadata(path string) map[string]interface{} {
 }
 
 // 获取
-// Get("file.txt", "file").(*fllesystem.File).Read()
+// Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (fs *Fllesystem) Get(path string, pathType ...string) interface{} {
+func (fs *Fllesystem) Get(path string, handler ...interface{}) interface{} {
     path = util.NormalizePath(path)
 
-    if len(pathType) > 0 && pathType[0] == "file" {
+    if len(handler) > 0 {
+        panic("暂不支持自定义扩展")
+    }
+
+    data := fs.GetMetadata(path)
+
+    if data != nil && data["type"] == "file" {
         file := &File{}
-        file.filesystem = fs
-        file.path = path
+        file.SetFilesystem(fs)
+        file.SetPath(path)
 
         return file
     } else {
         dir := &Directory{}
-        dir.filesystem = fs
-        dir.path = path
+        dir.SetFilesystem(fs)
+        dir.SetPath(path)
 
         return dir
     }
