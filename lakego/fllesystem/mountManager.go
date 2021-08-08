@@ -110,6 +110,8 @@ func (mm *MountManager) Copy(from string, to string, conf ...map[string]interfac
     if buffer == nil {
         return false
     }
+
+    // 手动关闭文件流
     defer buffer.Close()
 
     prefixTo, pathTo := mm.GetPrefixAndPath(to)

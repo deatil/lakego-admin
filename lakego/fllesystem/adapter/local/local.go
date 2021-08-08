@@ -198,7 +198,8 @@ func (sys *Local) Read(path string) (map[string]interface{}, error) {
     }, nil
 }
 
-// 读取，打开文件需要手动关闭
+// 读取成文件流
+// 打开文件需要手动关闭
 func (sys *Local) ReadStream(path string) (map[string]interface{}, error) {
     location := sys.ApplyPathPrefix(path)
 

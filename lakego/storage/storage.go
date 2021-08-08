@@ -1,4 +1,4 @@
-package fllesystem
+package storage
 
 import(
     "os"
@@ -9,12 +9,12 @@ import(
 )
 
 // 文件管理器
-type Fllesystem struct {
+type Storage struct {
     *fllesystem.Fllesystem
 }
 
 // new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesystem {
+func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Storage {
     fs := &fllesystem.Fllesystem{}
 
     fs.WithAdapter(adapters)
@@ -23,21 +23,21 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Fllesyste
         fs.SetConfig(fs.PrepareConfig(conf[0]))
     }
 
-    fs2 := &Fllesystem{fs}
+    fs2 := &Storage{fs}
 
     return fs2
 }
 
 // new 文件管理器
-func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Fllesystem {
-    fs := &Fllesystem{ifs}
+func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Storage {
+    fs := &Storage{ifs}
 
     return fs
 }
 
 // 获取配置
-func (fs *Fllesystem) Url(url string) string {
-    conf := fs.GetConfig()
+func (s *Storage) Url(url string) string {
+    conf := s.GetConfig()
 
     uri := conf.Get("url").(string)
 
@@ -45,14 +45,14 @@ func (fs *Fllesystem) Url(url string) string {
 }
 
 // 获取配置
-func (fs *Fllesystem) Path(path string) string {
-    adapter := fs.GetAdapter()
+func (s *Storage) Path(path string) string {
+    adapter := s.GetAdapter()
 
     return adapter.ApplyPathPrefix(path)
 }
 
 // 保存数据
-func (fs *Fllesystem) PutFileAs(path string, resource *os.File, name string, conf ...map[string]interface{}) string {
+func (s *Storage) PutFileAs(path string, resource *os.File, name string, conf ...map[string]interface{}) string {
     var config map[string]interface{}
     if len(conf) > 0 {
         config = conf[0]
@@ -60,11 +60,11 @@ func (fs *Fllesystem) PutFileAs(path string, resource *os.File, name string, con
         config = nil
     }
 
-    path = path + "/" + name
+    path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := fs.PutStream(path, resource, config)
+    result := s.PutStream(path, resource, config)
 
     if result {
         return path

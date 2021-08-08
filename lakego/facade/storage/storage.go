@@ -8,22 +8,22 @@ import(
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/fllesystem"
     "lakego-admin/lakego/fllesystem/interfaces"
-    "lakego-admin/lakego/storage/register"
-    storageFllesystem "lakego-admin/lakego/storage/fllesystem"
     localAdapter "lakego-admin/lakego/fllesystem/adapter/local"
+    "lakego-admin/lakego/storage"
+    "lakego-admin/lakego/storage/register"
 )
 
 var once sync.Once
 
 // 实例化
-func New() *storageFllesystem.Fllesystem {
+func New() *storage.Storage {
     disk := GetDefaultDisk()
 
     return Disk(disk)
 }
 
 // 实例化
-func NewWithDisk(disk string) *storageFllesystem.Fllesystem {
+func NewWithDisk(disk string) *storage.Storage {
     return Disk(disk)
 }
 
@@ -90,7 +90,7 @@ func Register() {
     })
 }
 
-func Disk(name string) *storageFllesystem.Fllesystem {
+func Disk(name string) *storage.Storage {
     // 注册默认磁盘
     Register()
 
@@ -100,7 +100,7 @@ func Disk(name string) *storageFllesystem.Fllesystem {
         panic("文件管理器磁盘 " + name + " 没有被注册")
     }
 
-    disk2 := storageFllesystem.NewWithFllesystem(disk.(*fllesystem.Fllesystem))
+    disk2 := storage.NewWithFllesystem(disk.(*fllesystem.Fllesystem))
 
     return disk2
 }
