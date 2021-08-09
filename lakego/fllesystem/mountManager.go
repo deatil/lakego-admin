@@ -77,13 +77,13 @@ func (mm *MountManager) FilterPrefix(arguments []string) (string, []string) {
 // 获取前缀和路径
 // [:prefix, :path]
 func (mm *MountManager) GetPrefixAndPath(path string) (string, string) {
-    paths := strings.Split(path, "://")
+    paths := strings.SplitN(path, "://", 2)
 
     if len(paths) < 1 {
         panic("在 " + path + " 里前缀 prefix 不存在")
     }
 
-    return paths[0], strings.Join(paths[1:], "://")
+    return paths[0], paths[1]
 }
 
 // 列出内容

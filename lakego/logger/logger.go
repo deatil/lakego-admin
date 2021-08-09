@@ -18,13 +18,24 @@ var log = logrus.New()
 
 // import "lakego-admin/lakego/logger"
 func init() {
+    // 配置
+    conf := config.New("logger")
 
     log.SetReportCaller(true)
 
-    // 设置输出样式，自带的只有两种样式 logrus.JSONFormatter{} 和 logrus.TextFormatter{}
-    log.SetFormatter(new(formatter.NormalFormatter))
+    formatterType := conf.GetString("Formatter")
 
-    conf := config.New("logger")
+    var useFormatter logrus.Formatter
+    if formatterType == "json" {
+        useFormatter = formatter.JSONFormatter()
+    } else if formatterType == "text" {
+        useFormatter = formatter.TextFormatter()
+    } else {
+        useFormatter = formatter.NormalFormatter()
+    }
+
+    // 设置输出样式
+    log.SetFormatter(useFormatter)
 
     // 日志目录
     filepath := conf.GetString("Filepath")

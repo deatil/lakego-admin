@@ -95,8 +95,8 @@ func shouldPassThrough(context *gin.Context) bool {
     for _, ae := range authenticateExcepts {
         newStr := strings.Split(ae, ":")
         if len(newStr) == 2 {
-            newUtl := newStr[0] + ":" + lake.AdminUrl(newStr[1])
-            if lake.MatchPath(context, newUtl, "") {
+            newUrl := newStr[0] + ":" + lake.AdminUrl(newStr[1])
+            if lake.MatchPath(context, newUrl, "") {
                 return true
             }
         }

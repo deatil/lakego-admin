@@ -1,4 +1,6 @@
+# 格式化类型 normal, json, text
+Formatter: "normal"
 Filepath: "/runtime/log"
 MaxAge: 168
 # 单位：小时
-RotationTime: 24 
+RotationTime: 24

@@ -10,6 +10,7 @@ import (
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/facade/casbin"
 
+    "lakego-admin/admin/model"
     "lakego-admin/admin/auth/admin"
 )
 
@@ -41,7 +42,14 @@ func permissionCheck(ctx *gin.Context) bool {
     newRequestPaths := requestPaths[2:]
     newRequestPath := "/" + strings.Join(newRequestPaths, "/")
 
-    c := casbin.New()
+    // 先匹配分组
+    group := config.New("admin").GetString("Route.Group")
+    if requestPaths[1] != group {
+        response.Error(ctx, code.AuthError, "你没有访问权限")
+        return false
+    }
+
+    c := casbin.New(&model.Rules{})
     ok, err := c.Enforce(adminId.(string), newRequestPath, method)
 
     if err != nil {
@@ -91,8 +99,8 @@ func shouldPassThrough(ctx *gin.Context) bool {
     for _, ae := range authenticateExcepts {
         newStr := strings.Split(ae, ":")
         if len(newStr) == 2 {
-            newUtl := newStr[0] + ":" + lake.AdminUrl(newStr[1])
-            if lake.MatchPath(ctx, newUtl, "") {
+            newUrl := newStr[0] + ":" + lake.AdminUrl(newStr[1])
+            if lake.MatchPath(ctx, newUrl, "") {
                 return true
             }
         }

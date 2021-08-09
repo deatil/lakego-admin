@@ -29,7 +29,7 @@ func (dir *Directory) SetFilesystem(filesystem interfaces.Fllesystem) *Directory
 
 // 删除文件夹
 func (dir *Directory) Delete() bool {
-    return dir.filesystem.Delete(dir.path)
+    return dir.filesystem.DeleteDir(dir.path)
 }
 
 // 列出文件

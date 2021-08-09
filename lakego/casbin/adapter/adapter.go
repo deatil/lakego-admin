@@ -1,33 +1,16 @@
 package adapter
 
 import (
-    "time"
-    "strconv"
-    "context"
     "errors"
-    "runtime"
     "strings"
 
+    "gorm.io/gorm"
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
-    "github.com/jackc/pgconn"
-    "gorm.io/driver/mysql"
-    "gorm.io/driver/postgres"
-    "gorm.io/driver/sqlserver"
-    "gorm.io/gorm"
-    
-    "lakego-admin/lakego/support/hash"
 )
-
-const (
-    defaultDatabaseName = "casbin"
-    defaultTableName    = "rules"
-)
-
-type customTableKey struct{}
 
 type Rules struct {
-    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
+    ID    string `gorm:"primaryKey;autoIncrement:true;size:10"`
     Ptype string `gorm:"size:250;"`
     V0    string `gorm:"size:250;"`
     V1    string `gorm:"size:250;"`
@@ -35,13 +18,6 @@ type Rules struct {
     V3    string `gorm:"size:250;"`
     V4    string `gorm:"size:250;"`
     V5    string `gorm:"size:250;"`
-}
-
-func (rules *Rules) BeforeCreate(tx *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
-    rules.ID = id
-    
-    return nil
 }
 
 type Filter struct {
@@ -54,244 +30,51 @@ type Filter struct {
     V5    []string
 }
 
-// Adapter represents the Gorm adapter for policy storage.
+// gorm 适配器
 type Adapter struct {
-    driverName     string
-    dataSourceName string
-    databaseName   string
-    tablePrefix    string
-    tableName      string
-    dbSpecified    bool
+    model          interface{}
     db             *gorm.DB
     isFiltered     bool
 }
 
-// finalizer is the destructor for Adapter.
-func finalizer(a *Adapter) {
-    sqlDB, err := a.db.DB()
-    if err != nil {
-        panic(err)
-    }
-    err = sqlDB.Close()
-    if err != nil {
-        panic(err)
-    }
-}
-
-func NewAdapter(driverName string, dataSourceName string, params ...interface{}) (*Adapter, error) {
+// 自定义模型
+func NewAdapterByDB(db *gorm.DB, model ...interface{}) (*Adapter, error) {
     a := &Adapter{}
-    a.driverName = driverName
-    a.dataSourceName = dataSourceName
 
-    a.tableName = defaultTableName
-    a.databaseName = defaultDatabaseName
-    a.dbSpecified = false
-
-    if len(params) == 0 {
-
-    } else if len(params) == 1 {
-        switch p1 := params[0].(type) {
-        case bool:
-            a.dbSpecified = p1
-        case string:
-            a.databaseName = p1
-        default:
-            return nil, errors.New("wrong format")
-        }
-    } else if len(params) == 2 {
-        switch p2 := params[1].(type) {
-        case bool:
-            a.dbSpecified = p2
-            p1, ok := params[0].(string)
-            if !ok {
-                return nil, errors.New("wrong format")
-            }
-            a.databaseName = p1
-        case string:
-            p1, ok := params[0].(string)
-            if !ok {
-                return nil, errors.New("wrong format")
-            }
-            a.databaseName = p1
-            a.tableName = p2
-        default:
-            return nil, errors.New("wrong format")
-        }
-    } else if len(params) == 3 {
-        if p3, ok := params[2].(bool); ok {
-            a.dbSpecified = p3
-            a.databaseName = params[0].(string)
-            a.tableName = params[1].(string)
-        } else {
-            return nil, errors.New("wrong format")
-        }
+    var useModel interface{}
+    if len(model) > 0 {
+        useModel = model[0]
     } else {
-        return nil, errors.New("too many parameters")
+        useModel = a.getDefaultModel()
     }
 
-    // Open the DB, create it if not existed.
-    err := a.open()
-    if err != nil {
-        return nil, err
-    }
-
-    // Call the destructor when the object is released.
-    runtime.SetFinalizer(a, finalizer)
+    a.model = useModel
+    a.db = db.Scopes(a.ruleTable(useModel)).Session(&gorm.Session{Context: db.Statement.Context})
 
     return a, nil
 }
 
-// NewAdapterByDBUseTableName creates gorm-adapter by an existing Gorm instance and the specified table prefix and table name
-// Example: gormadapter.NewAdapterByDBUseTableName(&db, "cms", "casbin") Automatically generate table name like this "cms_casbin"
-func NewAdapterByDBUseTableName(db *gorm.DB, prefix string, tableName string) (*Adapter, error) {
-    if len(tableName) == 0 {
-        tableName = defaultTableName
-    }
-
-    a := &Adapter{
-        tablePrefix: prefix,
-        tableName:   tableName,
-    }
-
-    a.db = db.Scopes(a.casbinRuleTable()).Session(&gorm.Session{Context: db.Statement.Context})
-    err := a.createTable()
-    if err != nil {
-        return nil, err
-    }
-
-    return a, nil
-}
-
-// NewFilteredAdapter is the constructor for FilteredAdapter.
-// Casbin will not automatically call LoadPolicy() for a filtered adapter.
-func NewFilteredAdapter(driverName string, dataSourceName string, params ...interface{}) (*Adapter, error) {
-    adapter, err := NewAdapter(driverName, dataSourceName, params...)
-    if err != nil {
-        return nil, err
-    }
-    adapter.isFiltered = true
-    return adapter, err
-}
-
-// NewAdapterByDB creates gorm-adapter by an existing Gorm instance
-func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
-    return NewAdapterByDBUseTableName(db, "", defaultTableName)
-}
-
-func NewAdapterByDBWithCustomTable(db *gorm.DB, t interface{}) (*Adapter, error) {
-    ctx := db.Statement.Context
-    if ctx == nil {
-        ctx = context.Background()
-    }
-
-    ctx = context.WithValue(ctx, customTableKey{}, t)
-
-    return NewAdapterByDBUseTableName(db.WithContext(ctx), "", defaultTableName)
-}
-
-func openDBConnection(driverName, dataSourceName string) (*gorm.DB, error) {
-    var err error
-    var db *gorm.DB
-    if driverName == "postgres" {
-        db, err = gorm.Open(postgres.Open(dataSourceName), &gorm.Config{})
-    } else if driverName == "mysql" {
-        db, err = gorm.Open(mysql.Open(dataSourceName), &gorm.Config{})
-        //} else if driverName == "sqlite3" {
-        //	db, err = gorm.Open(sqlite.Open(dataSourceName), &gorm.Config{})
-    } else if driverName == "sqlserver" {
-        db, err = gorm.Open(sqlserver.Open(dataSourceName), &gorm.Config{})
-    } else {
-        return nil, errors.New("database dialect is not supported")
-    }
-    if err != nil {
-        return nil, err
-    }
-    return db, err
-}
-
-func (a *Adapter) createDatabase() error {
-    var err error
-    db, err := openDBConnection(a.driverName, a.dataSourceName)
-    if err != nil {
-        return err
-    }
-    if a.driverName == "postgres" {
-        if err = db.Exec("CREATE DATABASE " + a.databaseName).Error; err != nil {
-            // 42P04 is	duplicate_database
-            if err.(*pgconn.PgError).Code == "42P04" {
-                return nil
-            }
-        }
-    } else if a.driverName != "sqlite3" {
-        err = db.Exec("CREATE DATABASE IF NOT EXISTS " + a.databaseName).Error
-    }
-    if err != nil {
-        return err
-    }
-    return nil
-}
-
-func (a *Adapter) open() error {
-    var err error
-    var db *gorm.DB
-
-    if a.dbSpecified {
-        db, err = openDBConnection(a.driverName, a.dataSourceName)
-        if err != nil {
-            return err
-        }
-    } else {
-        if err = a.createDatabase(); err != nil {
-            return err
-        }
-        if a.driverName == "postgres" {
-            db, err = openDBConnection(a.driverName, a.dataSourceName+" dbname="+a.databaseName)
-        } else if a.driverName == "sqlite3" {
-            db, err = openDBConnection(a.driverName, a.dataSourceName)
-        } else {
-            db, err = openDBConnection(a.driverName, a.dataSourceName+a.databaseName)
-        }
-        if err != nil {
-            return err
-        }
-    }
-
-    a.db = db.Scopes(a.casbinRuleTable()).Session(&gorm.Session{})
-    return a.createTable()
-}
-
+// 关闭
 func (a *Adapter) close() error {
     a.db = nil
     return nil
 }
 
-// getTableInstance return the dynamic table name
-func (a *Adapter) getTableInstance() *Rules {
+// 默认模型
+func (a *Adapter) getDefaultModel() *Rules {
     return &Rules{}
 }
 
-func (a *Adapter) casbinRuleTable() func(db *gorm.DB) *gorm.DB {
+// 获取设置模型
+func (a *Adapter) getModel() *Rules {
+    return a.model.(*Rules)
+}
+
+// 规则表格
+func (a *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
-        return db.Model(a.getTableInstance())
+        return db.Model(model)
     }
-}
-
-func (a *Adapter) createTable() error {
-    t := a.db.Statement.Context.Value(customTableKey{})
-    if t == nil {
-        return a.db.AutoMigrate(a.getTableInstance())
-    }
-
-    return a.db.AutoMigrate(t)
-}
-
-func (a *Adapter) dropTable() error {
-    t := a.db.Statement.Context.Value(customTableKey{})
-    if t == nil {
-        return a.db.Migrator().DropTable(a.getTableInstance())
-    }
-
-    return a.db.Migrator().DropTable(t)
 }
 
 func loadPolicyLine(line Rules, model model.Model) {
@@ -385,7 +168,7 @@ func (a *Adapter) filterQuery(db *gorm.DB, filter Filter) func(db *gorm.DB) *gor
 }
 
 func (a *Adapter) savePolicyLine(ptype string, rule []string) Rules {
-    line := a.getTableInstance()
+    line := a.getModel()
 
     line.Ptype = ptype
     if len(rule) > 0 {
@@ -412,15 +195,6 @@ func (a *Adapter) savePolicyLine(ptype string, rule []string) Rules {
 
 // SavePolicy saves policy to database.
 func (a *Adapter) SavePolicy(model model.Model) error {
-    err := a.dropTable()
-    if err != nil {
-        return err
-    }
-    err = a.createTable()
-    if err != nil {
-        return err
-    }
-
     for ptype, ast := range model["p"] {
         for _, rule := range ast.Policy {
             line := a.savePolicyLine(ptype, rule)
@@ -486,7 +260,7 @@ func (a *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) err
 
 // RemoveFilteredPolicy removes policy rules that match the filter from the storage.
 func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
-    line := a.getTableInstance()
+    line := a.getModel()
 
     line.Ptype = ptype
     if fieldIndex <= 0 && 0 < fieldIndex+len(fieldValues) {
@@ -540,7 +314,7 @@ func (a *Adapter) rawDelete(db *gorm.DB, line Rules) error {
         queryArgs = append(queryArgs, line.V5)
     }
     args := append([]interface{}{queryStr}, queryArgs...)
-    err := db.Delete(a.getTableInstance(), args...).Error
+    err := db.Delete(a.getModel(), args...).Error
     return err
 }
 

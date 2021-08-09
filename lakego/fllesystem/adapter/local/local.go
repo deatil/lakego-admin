@@ -600,3 +600,18 @@ func (sys *Local) FormatPerm(i uint32) os.FileMode {
     // p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
     return os.FileMode(i)
 }
+
+// 软链接
+func (sys *Local) Symlink(target, link string) error {
+    return os.Symlink(target, link)
+}
+
+// 读取链接
+func (sys *Local) ReadLink(link string) (string, error) {
+    return os.ReadLink(link)
+}
+
+// 是否为软链接
+func (sys *Local) IsSymlink(m os.FileMode) bool {
+    return m&os.ModeSymlink != 0
+}
