@@ -17,14 +17,14 @@ type Casbin struct {
  * @create 2021-6-20
  * @author deatil
  */
-func New(model interface{}) *Casbin {
+func New(model ...interface{}) *Casbin {
     newDb := database.New()
 
     // 配置文件路径
     configPath := path.GetConfigPath()
     modelConf := configPath + "/rbac_model.conf"
 
-    a, _ := casbinAdapter.NewAdapterByDB(newDb, model)
+    a, _ := casbinAdapter.NewAdapterByDB(newDb, model...)
     e, _ := casbin.NewEnforcer(modelConf, a)
 
     // Load the policy from DB.
