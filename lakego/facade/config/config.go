@@ -11,7 +11,7 @@ import (
  * @create 2021-6-20
  * @author deatil
  */
-func New(name string) interfaces.ConfigInterface {
+func New(name string) interfaces.Config {
     conf := config.New(name)
     return conf
 }

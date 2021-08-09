@@ -29,7 +29,7 @@ func init() {
 }
 
 // 参数设置为可变参数的文件名
-func New(fileName ...string) interfaces.ConfigInterface {
+func New(fileName ...string) interfaces.Config {
     config := viper.New()
 
     // 配置文件夹
@@ -86,7 +86,7 @@ func (y *configMap) GetBasePath() string {
 }
 
 // 允许 clone 一个相同功能的结构体
-func (y *configMap) Clone(fileName string) interfaces.ConfigInterface {
+func (y *configMap) Clone(fileName string) interfaces.Config {
     // 这里存在一个深拷贝，需要注意，避免拷贝的结构体操作对原始结构体造成影响
     var config = *y
     var configViper = *(y.viper)

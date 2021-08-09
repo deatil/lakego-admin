@@ -4,9 +4,9 @@ import (
     "time"
 )
 
-type ConfigInterface interface {
+type Config interface {
 
-    Clone(fileName string) ConfigInterface
+    Clone(fileName string) Config
 
     Get(keyName string) interface{}
 
