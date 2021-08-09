@@ -10,7 +10,6 @@ import (
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/facade/casbin"
 
-    "lakego-admin/admin/model"
     "lakego-admin/admin/auth/admin"
 )
 
@@ -49,7 +48,7 @@ func permissionCheck(ctx *gin.Context) bool {
         return false
     }
 
-    c := casbin.New(&model.Rules{})
+    c := casbin.New()
     ok, err := c.Enforce(adminId.(string), newRequestPath, method)
 
     if err != nil {

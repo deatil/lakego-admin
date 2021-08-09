@@ -1,16 +1,20 @@
 package adapter
 
 import (
+    "time"
     "errors"
+    "strconv"
     "strings"
 
     "gorm.io/gorm"
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
+
+    "lakego-admin/lakego/support/hash"
 )
 
 type Rules struct {
-    ID    string `gorm:"primaryKey;autoIncrement:true;size:10"`
+    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
     Ptype string `gorm:"size:250;"`
     V0    string `gorm:"size:250;"`
     V1    string `gorm:"size:250;"`
@@ -18,6 +22,13 @@ type Rules struct {
     V3    string `gorm:"size:250;"`
     V4    string `gorm:"size:250;"`
     V5    string `gorm:"size:250;"`
+}
+
+func (rules *Rules) BeforeCreate(db *gorm.DB) error {
+    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
+    rules.ID = id
+
+    return nil
 }
 
 type Filter struct {
@@ -32,24 +43,17 @@ type Filter struct {
 
 // gorm 适配器
 type Adapter struct {
-    model          interface{}
     db             *gorm.DB
     isFiltered     bool
 }
 
 // 自定义模型
-func NewAdapterByDB(db *gorm.DB, model ...interface{}) (*Adapter, error) {
+func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
     a := &Adapter{}
 
-    var useModel interface{}
-    if len(model) > 0 {
-        useModel = model[0]
-    } else {
-        useModel = a.getDefaultModel()
-    }
-
-    a.model = useModel
-    a.db = db.Scopes(a.ruleTable(useModel)).Session(&gorm.Session{Context: db.Statement.Context})
+    model := a.getDefaultModel()
+    a.db = db.Scopes(a.ruleTable(model)).
+        Session(&gorm.Session{Context: db.Statement.Context})
 
     return a, nil
 }
@@ -65,11 +69,6 @@ func (a *Adapter) getDefaultModel() *Rules {
     return &Rules{}
 }
 
-// 获取设置模型
-func (a *Adapter) getModel() *Rules {
-    return a.model.(*Rules)
-}
-
 // 规则表格
 func (a *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
@@ -78,8 +77,15 @@ func (a *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
 }
 
 func loadPolicyLine(line Rules, model model.Model) {
-    var p = []string{line.Ptype,
-        line.V0, line.V1, line.V2, line.V3, line.V4, line.V5}
+    var p = []string{
+        line.Ptype,
+        line.V0,
+        line.V1,
+        line.V2,
+        line.V3,
+        line.V4,
+        line.V5,
+    }
 
     var lineText string
     if line.V5 != "" {
@@ -168,7 +174,7 @@ func (a *Adapter) filterQuery(db *gorm.DB, filter Filter) func(db *gorm.DB) *gor
 }
 
 func (a *Adapter) savePolicyLine(ptype string, rule []string) Rules {
-    line := a.getModel()
+    line := a.getDefaultModel()
 
     line.Ptype = ptype
     if len(rule) > 0 {
@@ -260,7 +266,7 @@ func (a *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) err
 
 // RemoveFilteredPolicy removes policy rules that match the filter from the storage.
 func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
-    line := a.getModel()
+    line := a.getDefaultModel()
 
     line.Ptype = ptype
     if fieldIndex <= 0 && 0 < fieldIndex+len(fieldValues) {
@@ -314,7 +320,7 @@ func (a *Adapter) rawDelete(db *gorm.DB, line Rules) error {
         queryArgs = append(queryArgs, line.V5)
     }
     args := append([]interface{}{queryStr}, queryArgs...)
-    err := db.Delete(a.getModel(), args...).Error
+    err := db.Delete(a.getDefaultModel(), args...).Error
     return err
 }
 
