@@ -7,12 +7,12 @@ Disks:
         # 磁盘类型
         Type: "local"
         # 磁盘路径
-        Root: "/storage"
+        Root: "{root}/storage"
     Public:
         # 磁盘类型
         Type: "local"
         # 磁盘路径
-        Root: "/storage"
+        Root: "{root}/storage"
         # 磁盘路径对应的外部URL路径
         Url: "/storage"
         # 可见性

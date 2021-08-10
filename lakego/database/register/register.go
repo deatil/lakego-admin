@@ -25,8 +25,8 @@ func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
 /**
  * 获取已注册驱动
  */
-func GetDriver(name string) interfaces.Driver {
-    return driverRegister.New().Get(name)
+func GetDriver(name string, once ...bool) interfaces.Driver {
+    return driverRegister.New().Get(name, once...)
 }
 
 /**
@@ -37,8 +37,17 @@ func RegisterDatabase(name string, f func() interfaces.Database) {
 }
 
 /**
+ * 批量注册驱动
+ */
+func RegisterDatabases(databases map[string]func() interfaces.Database) {
+    for name, f := range databases {
+        RegisterDatabase(name, f)
+    }
+}
+
+/**
  * 获取已注册数据库
  */
-func GetDatabase(name string) interfaces.Database {
-    return databaseRegister.New().Get(name)
+func GetDatabase(name string, once ...bool) interfaces.Database {
+    return databaseRegister.New().Get(name, once...)
 }

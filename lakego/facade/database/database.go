@@ -19,15 +19,15 @@ var once sync.Once
  * @create 2021-7-11
  * @author deatil
  */
-func New() *gorm.DB {
+func New(once ...bool) *gorm.DB {
     database := GetDefaultDatabase()
 
-    return Database(database)
+    return Database(database, once...)
 }
 
 // 实例化
-func NewWithType(database string) *gorm.DB {
-    return Database(database)
+func NewWithType(database string, once ...bool) *gorm.DB {
+    return Database(database, once...)
 }
 
 // 注册
@@ -64,12 +64,19 @@ func Register() {
 }
 
 // 选择数据库
-func Database(name string) *gorm.DB {
+func Database(name string, once ...bool) *gorm.DB {
     // 注册默认
     Register()
 
+    var once2 bool
+    if len(once) > 0 && once[0] {
+        once2 = true
+    } else {
+        once2 = false
+    }
+
     // 拿取
-    c := register.GetDatabase(name)
+    c := register.GetDatabase(name, once2)
     if c == nil {
         panic("数据库类型 " + name + " 没有被注册")
     }

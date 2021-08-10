@@ -271,6 +271,10 @@ func (sys *Local) Copy(path string, newpath string) error {
 func (sys *Local) Delete(path string) error {
     location := sys.ApplyPathPrefix(path)
 
+    if !sys.IsFile(location) {
+        return errors.New("文件删除失败, 当前文件不是文件类型")
+    }
+
     if err := os.Remove(location); err != nil {
         return errors.New("文件删除失败, 错误为:" + err.Error())
     }
@@ -607,8 +611,8 @@ func (sys *Local) Symlink(target, link string) error {
 }
 
 // 读取链接
-func (sys *Local) ReadLink(link string) (string, error) {
-    return os.ReadLink(link)
+func (sys *Local) Readlink(link string) (string, error) {
+    return os.Readlink(link)
 }
 
 // 是否为软链接

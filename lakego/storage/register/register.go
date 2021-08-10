@@ -25,8 +25,8 @@ func RegisterDrivers(drivers map[string]func() interfaces.Adapter) {
 /**
  * 获取已注册适配器
  */
-func GetDriver(name string) interfaces.Adapter {
-    return driverRegister.New().Get(name)
+func GetDriver(name string, once ...bool) interfaces.Adapter {
+    return driverRegister.New().Get(name, once...)
 }
 
 /**
@@ -37,8 +37,17 @@ func RegisterDisk(name string, f func() interfaces.Fllesystem) {
 }
 
 /**
+ * 批量注册磁盘
+ */
+func RegisterDisks(disks map[string]func() interfaces.Fllesystem) {
+    for name, f := range disks {
+        RegisterDisk(name, f)
+    }
+}
+
+/**
  * 获取已注册磁盘
  */
-func GetDisk(name string) interfaces.Fllesystem {
-    return diskRegister.New().Get(name)
+func GetDisk(name string, once ...bool) interfaces.Fllesystem {
+    return diskRegister.New().Get(name, once...)
 }

@@ -25,8 +25,8 @@ func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
 /**
  * 获取已注册驱动
  */
-func GetDriver(name string) interfaces.Driver {
-    return driverRegister.New().Get(name)
+func GetDriver(name string, once ...bool) interfaces.Driver {
+    return driverRegister.New().Get(name, once...)
 }
 
 /**
@@ -37,8 +37,17 @@ func RegisterCache(name string, f func() interfaces.Cache) {
 }
 
 /**
+ * 批量注册缓存
+ */
+func RegisterCaches(caches map[string]func() interfaces.Cache) {
+    for name, f := range caches {
+        RegisterCache(name, f)
+    }
+}
+
+/**
  * 获取已注册缓存
  */
-func GetCache(name string) interfaces.Cache {
-    return cacheRegister.New().Get(name)
+func GetCache(name string, once ...bool) interfaces.Cache {
+    return cacheRegister.New().Get(name, once...)
 }

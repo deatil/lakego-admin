@@ -16,15 +16,15 @@ import(
 var once sync.Once
 
 // 实例化
-func New() *storage.Storage {
+func New(once ...bool) *storage.Storage {
     disk := GetDefaultDisk()
 
-    return Disk(disk)
+    return Disk(disk, once...)
 }
 
 // 实例化
-func NewWithDisk(disk string) *storage.Storage {
-    return Disk(disk)
+func NewWithDisk(disk string, once ...bool) *storage.Storage {
+    return Disk(disk, once...)
 }
 
 // 批量操作
@@ -57,7 +57,10 @@ func Register() {
                 panic("文件管理器驱动 " + localType + " 没有被注册")
             }
 
-            localRoot = basePath + "/" + strings.TrimPrefix(localRoot, "/")
+            if strings.HasPrefix(localRoot, "{root}") {
+                localRoot = strings.TrimPrefix(localRoot, "{root}")
+                localRoot = basePath + "/" + strings.TrimPrefix(localRoot, "/")
+            }
 
             driver.EnsureDirectory(localRoot)
             driver.SetPathPrefix(localRoot)
@@ -78,7 +81,10 @@ func Register() {
                 panic("文件管理器驱动 " + publicType + " 没有被注册")
             }
 
-            publicRoot = basePath + "/" + strings.TrimPrefix(publicRoot, "/")
+            if strings.HasPrefix(publicRoot, "{root}") {
+                publicRoot = strings.TrimPrefix(publicRoot, "{root}")
+                publicRoot = basePath + "/" + strings.TrimPrefix(publicRoot, "/")
+            }
 
             driver.EnsureDirectory(publicRoot)
             driver.SetPathPrefix(publicRoot)
@@ -90,12 +96,19 @@ func Register() {
     })
 }
 
-func Disk(name string) *storage.Storage {
+func Disk(name string, once ...bool) *storage.Storage {
     // 注册默认磁盘
     Register()
 
+    var once2 bool
+    if len(once) > 0 && once[0] {
+        once2 = true
+    } else {
+        once2 = false
+    }
+
     // 拿取磁盘
-    disk := register.GetDisk(name)
+    disk := register.GetDisk(name, once2)
     if disk == nil {
         panic("文件管理器磁盘 " + name + " 没有被注册")
     }

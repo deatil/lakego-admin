@@ -17,8 +17,11 @@ var once sync.Once
 func New() *Disk {
     once.Do(func() {
         register := make(map[string]func() interfaces.Fllesystem)
+        used := make(map[string]interfaces.Fllesystem)
+
         instance = &Disk{
             registers: register,
+            used: used,
         }
     })
 
@@ -31,6 +34,9 @@ func New() *Disk {
 type Disk struct {
     // 已注册数据
     registers map[string]func() interfaces.Fllesystem
+
+    // 已使用
+    used map[string]interfaces.Fllesystem
 }
 
 // 注册
@@ -48,12 +54,27 @@ func (d *Disk) With(name string, f func() interfaces.Fllesystem) {
 /**
  * 获取
  */
-func (d *Disk) Get(name string) interfaces.Fllesystem {
+func (d *Disk) Get(name string, once ...bool) interfaces.Fllesystem {
+    if len(once) > 0 && once[0] {
+        if useDisk, existsDisk := d.used[name]; existsDisk {
+            return useDisk
+        }
+    }
+
     if value, exists := d.registers[name]; exists {
-        return value()
+        d.used[name] = value()
+
+        return d.used[name]
     }
 
     return nil
+}
+
+/**
+ * 获取单列
+ */
+func (d *Disk) GetOnce(name string) interfaces.Fllesystem {
+    return d.Get(name, true)
 }
 
 /**

@@ -17,8 +17,11 @@ var once sync.Once
 func New() *Database {
     once.Do(func() {
         register := make(map[string]func() interfaces.Database)
+        used := make(map[string]interfaces.Database)
+
         instance = &Database{
             registers: register,
+            used: used,
         }
     })
 
@@ -31,6 +34,9 @@ func New() *Database {
 type Database struct {
     // 已注册数据
     registers map[string]func() interfaces.Database
+
+    // 已使用
+    used map[string]interfaces.Database
 }
 
 // 注册
@@ -48,12 +54,27 @@ func (d *Database) With(name string, f func() interfaces.Database) {
 /**
  * 获取
  */
-func (d *Database) Get(name string) interfaces.Database {
+func (d *Database) Get(name string, once ...bool) interfaces.Database {
+    if len(once) > 0 && once[0] {
+        if used, is := d.used[name]; is {
+            return used
+        }
+    }
+
     if value, exists := d.registers[name]; exists {
-        return value()
+        d.used[name] = value()
+
+        return d.used[name]
     }
 
     return nil
+}
+
+/**
+ * 获取单列
+ */
+func (d *Database) GetOnce(name string) interfaces.Database {
+    return d.Get(name, true)
 }
 
 /**
