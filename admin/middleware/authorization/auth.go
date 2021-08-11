@@ -30,7 +30,7 @@ func Handler() gin.HandlerFunc {
 func jwtCheck(ctx *gin.Context) {
     jwtObj := ctx.GetHeader("Authorization")
     if jwtObj == "" {
-        response.Error(ctx, code.JwtTokenInvalid, "token不能为空")
+        response.Error(ctx, "token不能为空", code.JwtTokenInvalid)
         return
     }
 
@@ -42,7 +42,7 @@ func jwtCheck(ctx *gin.Context) {
     // 解析 token
     claims, err := jwter.GetAccessTokenClaims(accessToken)
     if err != nil {
-        response.Error(ctx, code.JwtAccessTokenFail, "token 已过期")
+        response.Error(ctx, "token 已过期", code.JwtAccessTokenFail)
         return
     }
 
@@ -57,7 +57,7 @@ func jwtCheck(ctx *gin.Context) {
         First(&adminInfo).
         Error
     if modelErr != nil {
-        response.Error(ctx, code.JwtTokenInvalid, "账号不存在或者被禁用")
+        response.Error(ctx, "账号不存在或者被禁用", code.JwtTokenInvalid)
         return
     }
 

@@ -20,10 +20,10 @@ func (c *BaseController) SetHeader(context *gin.Context, key string, value strin
  * 返回 json
  */
 func (c *BaseController) ReturnJson(
-    context *gin.Context, 
-    httpCode int, 
-    dataCode int, 
-    msg string, 
+    context *gin.Context,
+    httpCode int,
+    dataCode int,
+    msg string,
     data interface{},
 ) {
     response.ReturnJson(context, httpCode, dataCode, msg, data)
@@ -46,14 +46,14 @@ func (c *BaseController) SuccessWithData(context *gin.Context, msg string, data 
 /**
  * 返回错误 json
  */
-func (c *BaseController) Error(context *gin.Context, dataCode int, msg string) {
-    response.Error(context, dataCode, msg)
+func (c *BaseController) Error(context *gin.Context, msg string, dataCode ...int) {
+    response.Error(context, msg, dataCode...)
 }
 
 /**
  * 返回错误 json，带数据
  */
-func (c *BaseController) ErrorWithData(context *gin.Context, dataCode int, msg string, data interface{}) {
-    response.ErrorWithData(context, dataCode, msg, data)
+func (c *BaseController) ErrorWithData(context *gin.Context, msg string, dataCode int, data interface{}) {
+    response.ErrorWithData(context, msg, dataCode, data)
 }
 

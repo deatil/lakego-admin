@@ -101,10 +101,10 @@ func Disk(name string, once ...bool) *storage.Storage {
     Register()
 
     var once2 bool
-    if len(once) > 0 && once[0] {
-        once2 = true
+    if len(once) > 0 {
+        once2 = once[0]
     } else {
-        once2 = false
+        once2 = true
     }
 
     // 拿取磁盘

@@ -2,9 +2,9 @@ package response
 
 import (
     "net/http"
-    
+
     "github.com/gin-gonic/gin"
-    
+
     "lakego-admin/lakego/http/code"
 )
 
@@ -13,11 +13,12 @@ func SetHeader(context *gin.Context, key string, value string) {
     context.Header(key, value)
 }
 
+// 返回 json
 func ReturnJson(
-    context *gin.Context, 
-    httpCode int, 
-    dataCode int, 
-    msg string, 
+    context *gin.Context,
+    httpCode int,
+    dataCode int,
+    msg string,
     data interface{},
 ) {
     // context.Header("key", "value")
@@ -45,13 +46,26 @@ func SuccessWithData(c *gin.Context, msg string, data interface{}) {
 }
 
 // 失败的业务逻辑
-func Error(c *gin.Context, dataCode int, msg string) {
+func Error(c *gin.Context, msg string, dataCode ...int) {
+    var dataCode2 int
+    if len(dataCode) > 0 {
+        dataCode2 = dataCode[0]
+    } else {
+        dataCode2 = code.StatusError
+    }
+
+    ReturnJson(c, http.StatusOK, dataCode2, msg, gin.H{})
+    c.Abort()
+}
+
+// 失败的业务逻辑，带业务代码
+func ErrorWithCode(c *gin.Context, msg string, dataCode int) {
     ReturnJson(c, http.StatusOK, dataCode, msg, gin.H{})
     c.Abort()
 }
 
 // 失败的业务逻辑，带数据
-func ErrorWithData(c *gin.Context, dataCode int, msg string, data interface{}) {
+func ErrorWithData(c *gin.Context, msg string, dataCode int, data interface{}) {
     ReturnJson(c, http.StatusOK, dataCode, msg, data)
     c.Abort()
 }

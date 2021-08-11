@@ -114,14 +114,14 @@ func (s *ServiceProvider) loadRoute() {
     // 未知路由处理
     s.Engine.NoRoute(func (ctx *gin.Context) {
         if lake.MatchPath(ctx, prefix, "") {
-            response.Error(ctx, code.StatusInvalid, "未知路由")
+            response.Error(ctx, "未知路由", code.StatusInvalid)
         }
     })
 
     // 未知调用方式
     s.Engine.NoMethod(func (ctx *gin.Context) {
         if lake.MatchPath(ctx, prefix, "") {
-            response.Error(ctx, code.StatusInvalid, "访问错误")
+            response.Error(ctx, "访问错误", code.StatusInvalid)
         }
     })
 

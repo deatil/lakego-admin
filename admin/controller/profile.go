@@ -3,8 +3,11 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/controller"
     "lakego-admin/admin/auth/admin"
+    "lakego-admin/admin/model"
+    profileValidate "lakego-admin/admin/validate/profile"
 )
 
 /**
@@ -29,9 +32,36 @@ func (control *ProfileController) Index(ctx *gin.Context) {
 }
 
 /**
- * 修改我的信息
+ * 修改信息
  */
 func (control *ProfileController) Update(ctx *gin.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    // 检测
+    validateErr := profileValidate.Update(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr, code.StatusError)
+        return
+    }
+
+    adminInfo, _ := ctx.Get("admin")
+    adminid := adminInfo.(*admin.Admin).GetId()
+
+    err := model.NewAdmin().
+        Where("id = ?", adminid).
+        Updates(map[string]interface{}{
+            "nickname": post["nickname"].(string),
+            "email": post["email"].(string),
+            "introduce": post["introduce"].(string),
+        }).
+        Error
+    if err != nil {
+        control.Error(ctx, "修改信息失败", code.StatusError)
+        return
+    }
+
     control.Success(ctx, "修改信息成功")
 }
 

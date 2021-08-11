@@ -10,8 +10,8 @@ import (
     "lakego-admin/lakego/support/hash"
     "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/controller"
-    authPassword "lakego-admin/lakego/auth/password"
     "lakego-admin/admin/model"
+    authPassword "lakego-admin/lakego/auth/password"
     passportValidate "lakego-admin/admin/validate/passport"
 )
 
@@ -26,7 +26,7 @@ func (control *PassportController) Captcha(context *gin.Context) {
     c := captcha.New()
     id, b64s, err := c.Generate()
     if err != nil {
-        control.Error(context, code.StatusError, "error")
+        control.Error(context, "error", code.StatusError)
     }
 
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
@@ -47,7 +47,7 @@ func (control *PassportController) Login(ctx *gin.Context) {
 
     validateErr := passportValidate.Login(post)
     if validateErr != "" {
-        control.Error(ctx, code.LoginError, validateErr)
+        control.Error(ctx, validateErr, code.LoginError)
         return
     }
 
@@ -61,7 +61,7 @@ func (control *PassportController) Login(ctx *gin.Context) {
 
     ok := captcha.New().Verify(captchaId, captchaCode, false)
     if !ok {
-        control.Error(ctx, code.LoginError, "验证码错误")
+        control.Error(ctx, "验证码错误", code.LoginError)
         return
     }
 
@@ -72,14 +72,14 @@ func (control *PassportController) Login(ctx *gin.Context) {
         First(&admin).
         Error
     if err != nil {
-        control.Error(ctx, code.LoginError, "账号或者密码错误")
+        control.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
 
     // 验证密码
     checkStatus := authPassword.CheckPassword(admin["password"].(string), password, admin["password_salt"].(string))
     if !checkStatus {
-        control.Error(ctx, code.LoginError, "账号或者密码错误")
+        control.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
 
@@ -94,14 +94,14 @@ func (control *PassportController) Login(ctx *gin.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        control.Error(ctx, code.LoginError, "授权token生成失败")
+        control.Error(ctx, "授权token生成失败", code.LoginError)
         return
     }
 
     // 刷新 token
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
-        control.Error(ctx, code.LoginError, "刷新token生成失败")
+        control.Error(ctx, "刷新token生成失败", code.LoginError)
         return
     }
 
@@ -128,7 +128,7 @@ func (control *PassportController) RefreshToken(ctx *gin.Context) {
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {
-        control.Error(ctx, code.JwtRefreshTokenFail, "refreshToken不能为空")
+        control.Error(ctx, "refreshToken不能为空", code.JwtRefreshTokenFail)
         return
     }
 
@@ -136,7 +136,7 @@ func (control *PassportController) RefreshToken(ctx *gin.Context) {
     refreshTokenPutTime, _ := c.Get(hash.MD5(refreshToken.(string)))
     refreshTokenPutTime = refreshTokenPutTime.(string)
     if refreshTokenPutTime != "" {
-        control.Error(ctx, code.JwtRefreshTokenFail, "refreshToken已失效")
+        control.Error(ctx, "refreshToken已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -146,7 +146,7 @@ func (control *PassportController) RefreshToken(ctx *gin.Context) {
     // 拿取数据
     adminId := jwter.GetRefreshTokenData(refreshToken.(string), "id")
     if adminId == "" {
-        control.Error(ctx, code.JwtRefreshTokenFail, "刷新Token失败")
+        control.Error(ctx, "刷新Token失败", code.JwtRefreshTokenFail)
         return
     }
 
@@ -158,7 +158,7 @@ func (control *PassportController) RefreshToken(ctx *gin.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        control.Error(ctx, code.JwtRefreshTokenFail, "生成 access_token 失败")
+        control.Error(ctx, "生成 access_token 失败", code.JwtRefreshTokenFail)
         return
     }
 
@@ -184,7 +184,7 @@ func (control *PassportController) Logout(ctx *gin.Context) {
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {
-        control.Error(ctx, code.JwtRefreshTokenFail, "refreshToken 不能为空")
+        control.Error(ctx, "refreshToken 不能为空", code.JwtRefreshTokenFail)
         return
     }
 
@@ -192,7 +192,7 @@ func (control *PassportController) Logout(ctx *gin.Context) {
     refreshTokenPutString, _ := c.Get(hash.MD5(refreshToken.(string)))
     refreshTokenPutString = refreshTokenPutString.(string)
     if refreshTokenPutString != "" {
-        control.Error(ctx, code.JwtRefreshTokenFail, "refreshToken 已失效")
+        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -202,7 +202,7 @@ func (control *PassportController) Logout(ctx *gin.Context) {
     // 拿取数据
     claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken.(string))
     if claimsErr != nil {
-        control.Error(ctx, code.JwtRefreshTokenFail, "refreshToken 已失效")
+        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -216,7 +216,7 @@ func (control *PassportController) Logout(ctx *gin.Context) {
 
     nowAdminId, _ := ctx.Get("admin_id")
     if adminId != nowAdminId.(string) {
-        control.Error(ctx, code.JwtRefreshTokenFail, "退出失败")
+        control.Error(ctx, "退出失败", code.JwtRefreshTokenFail)
         return
     }
 

@@ -21,6 +21,7 @@ var usedServiceProvider []providerInterface.ServiceProvider
  * @author deatil
  */
 type App struct {
+    Runned bool
     Engine *gin.Engine
 }
 
@@ -68,19 +69,26 @@ func (app *App) loadServiceProvider() {
 
 // 加载 app
 func (app *App) loadApp() {
+    var r *gin.Engine
+
     // 模式
     mode := config.New("admin").GetString("Mode")
     if mode != "dev" {
         gin.SetMode(gin.ReleaseMode)
-    }
 
-    // 路由
-    r := gin.Default()
+        // 路由
+        r = gin.New()
+    } else {
+        // 路由
+        r = gin.Default()
+    }
 
     app.Engine = r
 
     // 加载服务提供者
     app.loadServiceProvider()
+
+    app.Runned = true
 
     // 运行端口
     httpPort := config.New("server").GetString("Port")

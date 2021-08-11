@@ -44,7 +44,7 @@ func permissionCheck(ctx *gin.Context) bool {
     // 先匹配分组
     group := config.New("admin").GetString("Route.Group")
     if requestPaths[1] != group {
-        response.Error(ctx, code.AuthError, "你没有访问权限")
+        response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
 
@@ -52,10 +52,10 @@ func permissionCheck(ctx *gin.Context) bool {
     ok, err := c.Enforce(adminId.(string), newRequestPath, method)
 
     if err != nil {
-        response.Error(ctx, code.AuthError, "你没有访问权限")
+        response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     } else if !ok {
-        response.Error(ctx, code.AuthError, "你没有访问权限")
+        response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
 
@@ -67,7 +67,7 @@ func checkSuperAdmin(ctx *gin.Context) bool {
     adminInfo, _ := ctx.Get("admin")
 
     if adminInfo == nil {
-        response.Error(ctx, code.AuthError, "你没有访问权限")
+        response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
 
