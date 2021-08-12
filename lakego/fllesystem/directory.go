@@ -27,6 +27,13 @@ func (dir *Directory) SetFilesystem(filesystem interfaces.Fllesystem) *Directory
     return dir
 }
 
+// 设置目录
+func (dir *Directory) SetPath(path string) *Directory {
+    dir.path = path
+
+    return dir
+}
+
 // 删除文件夹
 func (dir *Directory) Delete() bool {
     return dir.filesystem.DeleteDir(dir.path)

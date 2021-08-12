@@ -29,6 +29,13 @@ func (file *File) SetFilesystem(filesystem interfaces.Fllesystem) *File {
     return file
 }
 
+// 设置目录
+func (file *File) SetPath(path string) *File {
+    file.path = path
+
+    return file
+}
+
 // 存在
 func (file *File) Exists() bool {
     return file.filesystem.Has(file.path)

@@ -1,16 +1,23 @@
 package register
 
 import(
+    "lakego-admin/lakego/register"
     "lakego-admin/lakego/fllesystem/interfaces"
-    driverRegister "lakego-admin/lakego/storage/register/driver"
-    diskRegister "lakego-admin/lakego/storage/register/disk"
 )
+
+// 驱动前缀
+var driverPrefix = "storage_driver_"
+
+// 磁盘前缀
+var diskPrefix = "storage_disk_"
 
 /**
  * 注册适配器
  */
 func RegisterDriver(name string, f func() interfaces.Adapter) {
-    driverRegister.New().With(name, f)
+    name = driverPrefix + name
+
+    register.New().With(name, f)
 }
 
 /**
@@ -26,14 +33,25 @@ func RegisterDrivers(drivers map[string]func() interfaces.Adapter) {
  * 获取已注册适配器
  */
 func GetDriver(name string, once ...bool) interfaces.Adapter {
-    return driverRegister.New().Get(name, once...)
+    name = driverPrefix + name
+
+    data := register.New().Get(name, once...)
+    if data != nil {
+        newData := data.(func() interfaces.Adapter)
+
+        return newData()
+    }
+
+    return nil
 }
 
 /**
  * 注册磁盘
  */
 func RegisterDisk(name string, f func() interfaces.Fllesystem) {
-    diskRegister.New().With(name, f)
+    name = diskPrefix + name
+
+    register.New().With(name, f)
 }
 
 /**
@@ -49,5 +67,14 @@ func RegisterDisks(disks map[string]func() interfaces.Fllesystem) {
  * 获取已注册磁盘
  */
 func GetDisk(name string, once ...bool) interfaces.Fllesystem {
-    return diskRegister.New().Get(name, once...)
+    name = diskPrefix + name
+
+    data := register.New().Get(name, once...)
+    if data != nil {
+        newData := data.(func() interfaces.Fllesystem)
+
+        return newData()
+    }
+
+    return nil
 }

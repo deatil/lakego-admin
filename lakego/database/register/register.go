@@ -1,16 +1,23 @@
 package register
 
 import(
+    "lakego-admin/lakego/register"
     "lakego-admin/lakego/database/interfaces"
-    driverRegister "lakego-admin/lakego/database/register/driver"
-    databaseRegister "lakego-admin/lakego/database/register/Database"
 )
+
+// 驱动前缀
+var driverPrefix = "database_driver_"
+
+// 数据库前缀
+var databasePrefix = "database_database_"
 
 /**
  * 注册驱动
  */
 func RegisterDriver(name string, f func() interfaces.Driver) {
-    driverRegister.New().With(name, f)
+    name = driverPrefix + name
+
+    register.New().With(name, f)
 }
 
 /**
@@ -26,14 +33,25 @@ func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
  * 获取已注册驱动
  */
 func GetDriver(name string, once ...bool) interfaces.Driver {
-    return driverRegister.New().Get(name, once...)
+    name = driverPrefix + name
+
+    data := register.New().Get(name, once...)
+    if data != nil {
+        newData := data.(func() interfaces.Driver)
+
+        return newData()
+    }
+
+    return nil
 }
 
 /**
  * 注册数据库
  */
 func RegisterDatabase(name string, f func() interfaces.Database) {
-    databaseRegister.New().With(name, f)
+    name = databasePrefix + name
+
+    register.New().With(name, f)
 }
 
 /**
@@ -49,5 +67,14 @@ func RegisterDatabases(databases map[string]func() interfaces.Database) {
  * 获取已注册数据库
  */
 func GetDatabase(name string, once ...bool) interfaces.Database {
-    return databaseRegister.New().Get(name, once...)
+    name = databasePrefix + name
+
+    data := register.New().Get(name, once...)
+    if data != nil {
+        newData := data.(func() interfaces.Database)
+
+        return newData()
+    }
+
+    return nil
 }
