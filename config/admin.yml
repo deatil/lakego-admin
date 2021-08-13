@@ -4,4 +4,4 @@ Mode: "dev"
 # 路由分组
 Route:
   Group: "admin-api"
-  Middleware: "lakego-admin" 
+  Middleware: "lakego-admin"

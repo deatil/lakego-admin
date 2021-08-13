@@ -17,7 +17,9 @@ var diskPrefix = "storage_disk_"
 func RegisterDriver(name string, f func() interfaces.Adapter) {
     name = driverPrefix + name
 
-    register.New().With(name, f)
+    register.New().With(name, func() interface{} {
+        return f()
+    })
 }
 
 /**
@@ -37,9 +39,7 @@ func GetDriver(name string, once ...bool) interfaces.Adapter {
 
     data := register.New().Get(name, once...)
     if data != nil {
-        newData := data.(func() interfaces.Adapter)
-
-        return newData()
+        return data.(interfaces.Adapter)
     }
 
     return nil
@@ -51,7 +51,9 @@ func GetDriver(name string, once ...bool) interfaces.Adapter {
 func RegisterDisk(name string, f func() interfaces.Fllesystem) {
     name = diskPrefix + name
 
-    register.New().With(name, f)
+    register.New().With(name, func() interface{} {
+        return f()
+    })
 }
 
 /**
@@ -71,9 +73,7 @@ func GetDisk(name string, once ...bool) interfaces.Fllesystem {
 
     data := register.New().Get(name, once...)
     if data != nil {
-        newData := data.(func() interfaces.Fllesystem)
-
-        return newData()
+        return data.(interfaces.Fllesystem)
     }
 
     return nil

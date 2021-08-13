@@ -3,10 +3,10 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/controller"
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/model"
+    authPassword "lakego-admin/lakego/auth/password"
     profileValidate "lakego-admin/admin/validate/profile"
 )
 
@@ -42,10 +42,11 @@ func (control *ProfileController) Update(ctx *gin.Context) {
     // 检测
     validateErr := profileValidate.Update(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr, code.StatusError)
+        control.Error(ctx, validateErr)
         return
     }
 
+    // 当前账号信息
     adminInfo, _ := ctx.Get("admin")
     adminid := adminInfo.(*admin.Admin).GetId()
 
@@ -58,7 +59,7 @@ func (control *ProfileController) Update(ctx *gin.Context) {
         }).
         Error
     if err != nil {
-        control.Error(ctx, "修改信息失败", code.StatusError)
+        control.Error(ctx, "修改信息失败")
         return
     }
 
@@ -69,6 +70,32 @@ func (control *ProfileController) Update(ctx *gin.Context) {
  * 修改头像
  */
 func (control *ProfileController) UpdateAvatar(ctx *gin.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    // 检测
+    validateErr := profileValidate.UpdateAvatar(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    // 当前账号信息
+    adminInfo, _ := ctx.Get("admin")
+    adminid := adminInfo.(*admin.Admin).GetId()
+
+    err := model.NewAdmin().
+        Where("id = ?", adminid).
+        Updates(map[string]interface{}{
+            "avatar": post["avatar"].(string),
+        }).
+        Error
+    if err != nil {
+        control.Error(ctx, "修改头像失败")
+        return
+    }
+
     control.Success(ctx, "修改头像成功")
 }
 
@@ -76,6 +103,53 @@ func (control *ProfileController) UpdateAvatar(ctx *gin.Context) {
  * 修改密码
  */
 func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    // 检测
+    validateErr := profileValidate.UpdatePasssword(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    // 当前账号信息
+    adminInfo, _ := ctx.Get("admin")
+    adminid := adminInfo.(*admin.Admin).GetId()
+    admin := adminInfo.(*admin.Admin).GetData()
+
+    oldpassword := post["oldpassword"].(string)
+    newpassword := post["newpassword"].(string)
+    newpasswordConfirm := post["newpassword_confirm"].(string)
+
+    if newpassword != newpasswordConfirm {
+        control.Error(ctx, "两次密码输入不一致")
+        return
+    }
+
+    // 验证密码
+    checkStatus := authPassword.CheckPassword(admin["password"].(string), oldpassword, admin["password_salt"].(string))
+    if !checkStatus {
+        control.Error(ctx, "用户密码错误")
+        return
+    }
+
+    // 生成密码
+    pass, encrypt := authPassword.MakePassword(newpassword)
+
+    err := model.NewAdmin().
+        Where("id = ?", adminid).
+        Updates(map[string]interface{}{
+            "password": pass,
+            "password_salt": encrypt,
+        }).
+        Error
+    if err != nil {
+        control.Error(ctx, "密码修改失败")
+        return
+    }
+
     control.Success(ctx, "密码修改成功")
 }
 

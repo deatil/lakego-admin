@@ -1,10 +1,20 @@
 # 验证码
 Key: "captcha"
+# 过期时间
 ExpireTimes: 3600
 Height: 46
 Width: 140
 NoiseCount: 2
 ShowLineOptions: 2
+# 长度
 Length: 4
+# 随机数
 Source: "234567890abcdefghjkmnpqrstuvwxyz"
+# 字体
 Fonts: "wqy-microhei.ttc"
+# 颜色
+RGBA:
+    R: 240
+    G: 240
+    B: 246
+    A: 246

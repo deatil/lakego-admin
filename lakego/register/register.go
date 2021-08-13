@@ -15,7 +15,7 @@ var once sync.Once
  */
 func New() *Register {
     once.Do(func() {
-        register := make(map[string]interface{})
+        register := make(map[string]func() interface{})
         used := make(map[string]interface{})
 
         instance = &Register{
@@ -32,14 +32,14 @@ func New() *Register {
  */
 type Register struct {
     // 已注册数据
-    registers map[string]interface{}
+    registers map[string]func() interface{}
 
     // 已使用
     used map[string]interface{}
 }
 
 // 注册
-func (r *Register) With(name string, value interface{}) {
+func (r *Register) With(name string, f func() interface{}) {
     lock.Lock()
     defer lock.Unlock()
 
@@ -47,7 +47,7 @@ func (r *Register) With(name string, value interface{}) {
         r.Delete(name)
     }
 
-    r.registers[name] = value
+    r.registers[name] = f
 }
 
 /**
@@ -55,13 +55,13 @@ func (r *Register) With(name string, value interface{}) {
  */
 func (r *Register) Get(name string, once ...bool) interface{} {
     if len(once) > 0 && once[0] {
-        if useValue, existsValue := r.used[name]; existsValue {
-            return useValue
+        if usedValue, usedExists := r.used[name]; usedExists {
+            return usedValue
         }
     }
 
     if value, exists := r.registers[name]; exists {
-        r.used[name] = value
+        r.used[name] = value()
 
         return r.used[name]
     }

@@ -14,7 +14,7 @@ import (
  */
 func New() captcha.Captcha {
     conf := config.New("captcha")
-    
+
     key := conf.GetString("Key")
     expireTimes := conf.GetInt("ExpireTimes")
     height := conf.GetInt("Height")
@@ -24,7 +24,12 @@ func New() captcha.Captcha {
     length := conf.GetInt("Length")
     source := conf.GetString("Source")
     fonts := conf.GetString("Fonts")
-    
+
+    rgbaR := conf.GetInt("RGBA.R")
+    rgbaG := conf.GetInt("RGBA.G")
+    rgbaB := conf.GetInt("RGBA.B")
+    rgbaA := conf.GetInt("RGBA.A")
+
     return captcha.New(captcha.Config{
         Key: key,
         ExpireTimes: expireTimes,
@@ -35,6 +40,13 @@ func New() captcha.Captcha {
         Length: length,
         Source: source,
         Fonts: fonts,
+
+        RBGA: captcha.RBGA{
+            R: rgbaR,
+            G: rgbaG,
+            B: rgbaB,
+            A: rgbaA,
+        },
     }, redis.New())
 }
 

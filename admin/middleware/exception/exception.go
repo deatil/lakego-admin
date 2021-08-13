@@ -35,11 +35,11 @@ func Handler() gin.HandlerFunc {
                     }
 
                     logStr := fmt.Sprintf(
-                        "[%s][%s]%s:%s %s",
+                        "[%d][%s]%s:%s %d",
                         selecttatusCode,
                         clientIP,
-                        path,
                         method,
+                        path,
                         bodySize,
                     )
 
@@ -61,7 +61,7 @@ func Handler() gin.HandlerFunc {
 
                             // "net/http"
                             // http.StatusInternalServerError
-                            response.ErrorWithData(ctx, r.(string), code.StatusException, responsedata)
+                            response.ErrorWithData(ctx, fmt.Sprintf("%v", r), code.StatusException, responsedata)
                     }
 
                 } else {
@@ -78,11 +78,11 @@ func Handler() gin.HandlerFunc {
                     }
 
                     logStr := fmt.Sprintf(
-                        "[%s][%s]%s:%s",
+                        "[%d][%s]%s:%s",
                         selecttatusCode,
                         clientIP,
-                        path,
                         method,
+                        path,
                     )
 
                     switch r.(type) {
@@ -119,7 +119,7 @@ func formatStackTrace(err interface{}) []string {
             break
         }
 
-        errs = append(errs, fmt.Sprintf("%s:%d (0x%x)\n", file, line, pc))
+        errs = append(errs, fmt.Sprintf("%s:%d (0x%x)", file, line, pc))
     }
 
     return errs

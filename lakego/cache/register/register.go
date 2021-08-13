@@ -17,7 +17,9 @@ var cachePrefix = "cache_cache_"
 func RegisterDriver(name string, f func() interfaces.Driver) {
     name = driverPrefix + name
 
-    register.New().With(name, f)
+    register.New().With(name, func() interface{} {
+        return f()
+    })
 }
 
 /**
@@ -37,9 +39,7 @@ func GetDriver(name string, once ...bool) interfaces.Driver {
 
     data := register.New().Get(name, once...)
     if data != nil {
-        newData := data.(func() interfaces.Driver)
-
-        return newData()
+        return data.(interfaces.Driver)
     }
 
     return nil
@@ -51,7 +51,9 @@ func GetDriver(name string, once ...bool) interfaces.Driver {
 func RegisterCache(name string, f func() interfaces.Cache) {
     name = cachePrefix + name
 
-    register.New().With(name, f)
+    register.New().With(name, func() interface{} {
+        return f()
+    })
 }
 
 /**
@@ -71,9 +73,7 @@ func GetCache(name string, once ...bool) interfaces.Cache {
 
     data := register.New().Get(name, once...)
     if data != nil {
-        newData := data.(func() interfaces.Cache)
-
-        return newData()
+        return data.(interfaces.Cache)
     }
 
     return nil

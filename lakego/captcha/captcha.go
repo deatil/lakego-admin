@@ -5,14 +5,21 @@ import (
     "time"
 
     "github.com/mojocn/base64Captcha"
-    
+
     "lakego-admin/lakego/redis"
 )
+
+type RBGA struct {
+    R int
+    B int
+    G int
+    A int
+}
 
 type Config struct {
     Key string
     ExpireTimes int
-    
+
     Height int
     Width int
     NoiseCount int
@@ -20,6 +27,8 @@ type Config struct {
     Length int
     Source string
     Fonts string
+
+    RBGA RBGA
 }
 
 type Captcha struct {
