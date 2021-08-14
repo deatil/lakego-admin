@@ -14,7 +14,7 @@ Source: "234567890abcdefghjkmnpqrstuvwxyz"
 Fonts: "wqy-microhei.ttc"
 # 颜色
 RGBA:
-    R: 240
-    G: 240
-    B: 246
-    A: 246
+  R: 240
+  G: 240
+  B: 246
+  A: 246

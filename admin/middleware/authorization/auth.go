@@ -28,14 +28,20 @@ func Handler() gin.HandlerFunc {
 
 // 路由中间件
 func jwtCheck(ctx *gin.Context) {
-    jwtObj := ctx.GetHeader("Authorization")
-    if jwtObj == "" {
+    authJwt := ctx.GetHeader("Authorization")
+    if authJwt == "" {
         response.Error(ctx, "token不能为空", code.JwtTokenInvalid)
         return
     }
 
+    prefix := "Bearer "
+    if !strings.HasPrefix(authJwt, prefix) {
+        response.Error(ctx, "token 错误", code.JwtTokenInvalid)
+        return
+    }
+
     // 授权 token
-    accessToken := strings.Split(jwtObj, "Bearer ")[1]
+    accessToken := strings.TrimPrefix(authJwt, prefix)
 
     jwter := auth.New(ctx)
 

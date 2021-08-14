@@ -52,19 +52,12 @@ func (s *Storage) Path(path string) string {
 }
 
 // 保存数据
-func (s *Storage) PutFileAs(path string, resource *os.File, name string, conf ...map[string]interface{}) string {
-    var config map[string]interface{}
-    if len(conf) > 0 {
-        config = conf[0]
-    } else {
-        config = nil
-    }
-
+func (s *Storage) PutFileAs(path string, resource *os.File, name string, config ...map[string]interface{}) string {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := s.PutStream(path, resource, config)
+    result := s.PutStream(path, resource, config...)
 
     if result {
         return path

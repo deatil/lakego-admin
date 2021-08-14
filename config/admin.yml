@@ -5,3 +5,24 @@ Mode: "dev"
 Route:
   Group: "admin-api"
   Middleware: "lakego-admin"
+
+# 文件上传
+Upload:
+  # Disk in `config/filesystem.yml`.
+  Disk: "public"
+  # 目录
+  Directory:
+    Image: "images"
+    Media: "medias"
+    File: "files"
+  #文件类型
+  Filetypes:
+    Image: "gif|png|jpe?g|svg|webp"
+    Html: "htm|html"
+    Office: "docx?|xlsx?|pptx?|pps|potx?"
+    Docs: "docx?|xlsx?|pptx?|pps|potx?|rtf|ods|odt|pages|ai|dxf|ttf|tiff?|wmf|e?ps"
+    Text: "txt|md|csv|nfo|ini|json|php|js|css|ts|sql"
+    Video: "og?|mp4|webm|mp?g|mov|3gp"
+    Audio: "og?|mp3|mp?g|wav"
+    Pdf: "pdf"
+    Flash: "swf"
