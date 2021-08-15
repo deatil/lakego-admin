@@ -80,6 +80,11 @@ func Database(name string, once ...bool) *gorm.DB {
         panic("数据库类型 " + name + " 没有被注册")
     }
 
+    debug := config.New("database").GetBool("Debug")
+    if debug {
+        return c.GetConnectionWithDebug()
+    }
+
     return c.GetConnection()
 }
 

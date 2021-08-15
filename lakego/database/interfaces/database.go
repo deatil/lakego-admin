@@ -21,6 +21,9 @@ type Database interface {
     // 连接
     GetConnection() *gorm.DB
 
+    // 使用 debug 连接
+    GetConnectionWithDebug() *gorm.DB
+
     // 关闭
     Close()
 }

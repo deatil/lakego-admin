@@ -4,7 +4,6 @@ import (
     "fmt"
     "time"
 
-    "database/sql"
     "gorm.io/driver/mysql"
     "gorm.io/gorm"
     "gorm.io/gorm/schema"
@@ -15,7 +14,6 @@ import (
 
 type Mysql struct {
     db *gorm.DB
-    sqlDB *sql.DB
     config map[string]interface{}
 }
 
@@ -101,7 +99,7 @@ func (m *Mysql) GetConnection() *gorm.DB {
         logger.Fatalf("Error to open database[%s] connection: %v", mc.DSN, err)
     }
 
-    // 连接池设置
+    // 连接池设置, *sql.DB (database/sql)
     sqlDB, _ := db.DB()
 
     // 连接不活动时的最大生存时间
@@ -115,14 +113,7 @@ func (m *Mysql) GetConnection() *gorm.DB {
     sqlDB.SetMaxIdleConns(MaxIdleConns)
     sqlDB.SetMaxOpenConns(MaxOpenConns)
 
-    if debug, ok := conf["debug"]; ok {
-        if debug == "dev" {
-            db = db.Debug()
-        }
-    }
-
     m.db = db
-    m.sqlDB = sqlDB
 
     return db
 }
@@ -131,11 +122,13 @@ func (m *Mysql) GetConnection() *gorm.DB {
  * 关闭
  */
 func (m *Mysql) Close()  {
-    if m.sqlDB.Ping() != nil {
+    sqlDB, _ := m.db.DB()
+
+    if sqlDB.Ping() != nil {
         return
     }
 
-    m.sqlDB.Close()
+    sqlDB.Close()
 }
 
 /**

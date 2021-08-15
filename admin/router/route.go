@@ -24,4 +24,8 @@ func Route(engine *gin.RouterGroup) {
     engine.PATCH("/profile/avatar", profileController.UpdateAvatar)
     engine.PATCH("/profile/password", profileController.UpdatePasssword)
     engine.GET("/profile/rules", profileController.Rules)
+
+    // 上传
+    uploadController := new(controller.UploadController)
+    engine.POST("/upload/file", uploadController.File)
 }

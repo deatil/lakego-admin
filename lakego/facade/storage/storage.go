@@ -15,9 +15,6 @@ import(
 
 var once sync.Once
 
-// 对外定义一个type
-type Storage storage.Storage
-
 // 实例化
 func New(once ...bool) *storage.Storage {
     disk := GetDefaultDisk()

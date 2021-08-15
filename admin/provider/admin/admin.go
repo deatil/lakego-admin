@@ -109,7 +109,9 @@ func (s *ServiceProvider) loadGroup() {
  * 导入路由
  */
 func (s *ServiceProvider) loadRoute() {
-    prefix := "/" + config.New("admin").GetString("Route.Group") + "/*"
+    conf := config.New("admin")
+
+    prefix := "/" + conf.GetString("Route.Group") + "/*"
 
     // 未知路由处理
     s.Engine.NoRoute(func (ctx *gin.Context) {
@@ -126,9 +128,10 @@ func (s *ServiceProvider) loadRoute() {
     })
 
     // 后台路由及设置中间件
-    m := route.GetMiddlewares(config.New("admin").GetString("Route.Middleware"))
+    m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
 
-    admin := s.Engine.Group(config.New("admin").GetString("Route.Group"))
+    // 路由
+    admin := s.Engine.Group(conf.GetString("Route.Group"))
     {
         admin.Use(m...)
         {
