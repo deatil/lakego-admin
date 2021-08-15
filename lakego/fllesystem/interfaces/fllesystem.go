@@ -20,6 +20,9 @@ type Fllesystem interface {
     // 获取适配器
     GetAdapter() Adapter
 
+    // 获取
+    GetFllesystem() Fllesystem
+
     // 判断
     Has(string) bool
 

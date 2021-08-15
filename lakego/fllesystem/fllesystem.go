@@ -62,6 +62,11 @@ func (fs *Fllesystem) GetAdapter() interfaces.Adapter {
     return fs.adapter
 }
 
+// 获取文件系统
+func (fs *Fllesystem) GetFllesystem() interfaces.Fllesystem {
+    return fs
+}
+
 // 判断
 func (fs *Fllesystem) Has(path string) bool {
     path = util.NormalizePath(path)

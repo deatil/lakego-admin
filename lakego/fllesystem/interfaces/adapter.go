@@ -5,6 +5,9 @@ import(
 )
 
 type Adapter interface {
+    // 初始化
+    Init(...map[string]interface{})
+
     // 确认文件夹
     EnsureDirectory(string) error
 

@@ -1,13 +1,13 @@
 package controller
 
 import (
-    "os"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/upload"
     "lakego-admin/lakego/facade/config"
+    "lakego-admin/lakego/facade/upload"
     "lakego-admin/lakego/http/controller"
     "lakego-admin/admin/auth/admin"
+    // "lakego-admin/admin/model"
 )
 
 /**
@@ -24,25 +24,43 @@ type UploadController struct {
  * 上传文件
  */
 func (control *UploadController) File(ctx *gin.Context) {
+    // 账号信息
     adminInfo, _ := ctx.Get("admin")
-
     adminId := adminInfo.(*admin.Admin).GetId()
 
-    uploadDisk := config.New("admin").GetString("Upload.Disk")
-    uploadDir := config.New("admin").GetString("Upload.Directory.Image")
+    conf := config.New("admin")
 
-    file, _ := os.Open("./storage/log/22333.mp4")
+    // 上传目录
+    uploadDir := conf.GetString("Upload.Directory.File")
+
+    // 上传文件类型
+    uploadType := ctx.DefaultQuery("type", "file")
+    if uploadType == "image" {
+        uploadDir = conf.GetString("Upload.Directory.Image")
+    } else if uploadType == "media" {
+        uploadDir = conf.GetString("Upload.Directory.Media")
+    }
+
+    file, err := ctx.FormFile(conf.GetString("Upload.Field"))
+    if err != nil {
+        control.Error(ctx, "上传文件失败，原因：" + err.Error())
+        return
+    }
+
     up := upload.New().
-        WithDisk(uploadDisk).
-        WithDir(uploadDir).
-        WithFile(file).
-        UniqueName()
+        WithDir(uploadDir)
 
-    md5 := up.GetFileType()
+    // 上传
+    path := up.SaveUploadedFile(file)
+    if path == "" {
+        control.Error(ctx, "上传文件失败" )
+        return
+    }
 
     data := gin.H{
-        "id": adminId,
-        "md5": md5,
+        "adminId": adminId,
+        "path": path,
+        "path2": file.Filename,
     }
 
     control.SuccessWithData(ctx, "上传文件成功", data)

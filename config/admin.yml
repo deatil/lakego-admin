@@ -10,11 +10,19 @@ Route:
 Upload:
   # Disk in `config/filesystem.yml`.
   Disk: "public"
+
+  # 格式化文件名类型： unique, datetime or sequence, 默认为空使用原始名称
+  Formatname: "unique"
+
+  # 上传文件 key
+  Field: "file"
+
   # 目录
   Directory:
     Image: "images"
     Media: "medias"
     File: "files"
+
   # 文件类型
   Filetypes:
     Image: "(?i)^(gif|png|jpe?g|svg|webp)$"
@@ -22,7 +30,7 @@ Upload:
     Office: "(?i)^(docx?|xlsx?|pptx?|pps|potx?)$"
     Docs: "(?i)^(docx?|xlsx?|pptx?|pps|potx?|rtf|ods|odt|pages|ai|dxf|ttf|tiff?|wmf|e?ps)$"
     Text: "(?i)^(txt|md|csv|nfo|ini|json|php|js|css|ts|sql)$"
-    Video: "(?i)^(og?|mp4|webm|mp?g|mov|3gp)$"
-    Audio: "(?i)^(og?|mp3|mp?g|wav)$"
+    Video: "(?i)^(ogg?|ogg|mp4|webm|mp?g|mov|3gp)$"
+    Audio: "(?i)^(ogg?|ogg|mp3|mp?g|wav)$"
     Pdf: "(?i)^(pdf)$"
     Flash: "(?i)^(swf)$"

@@ -41,6 +41,11 @@ func New(root string) *Local {
 }
 
 /**
+ * 初始化
+ */
+func (sys *Local) Init(config ...map[string]interface{}) {}
+
+/**
  * 确认文件夹
  */
 func (sys *Local) EnsureDirectory(root string) error {

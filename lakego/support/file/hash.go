@@ -18,11 +18,11 @@ func Md5(filename string) (string, error) {
     }
     defer openfile.Close()
 
-    return Md5WithOsOpen(openfile)
+    return Md5WithStream(openfile)
 }
 
 // 文件 Md5
-func Md5WithOsOpen(openfile *os.File) (string, error) {
+func Md5WithStream(openfile *os.File) (string, error) {
     hash := md5.New()
     _, err := io.Copy(hash, openfile)
     if nil != err {
@@ -48,11 +48,11 @@ func Md5ForBig(filename string) (string, error) {
     }
     defer openfile.Close()
 
-    return Md5ForBigWithOsOpen(openfile)
+    return Md5ForBigWithStream(openfile)
 }
 
 // 大文件 Md5
-func Md5ForBigWithOsOpen(openfile *os.File) (string, error) {
+func Md5ForBigWithStream(openfile *os.File) (string, error) {
     const bufferSize = 65536
 
     hash := md5.New()
@@ -80,11 +80,11 @@ func Sha1(filename string) (string, error) {
     }
     defer openfile.Close()
 
-    return Sha1WithOsOpen(openfile)
+    return Sha1WithStream(openfile)
 }
 
 // 文件 Sha1
-func Sha1WithOsOpen(openfile *os.File) (string, error) {
+func Sha1WithStream(openfile *os.File) (string, error) {
     hash := sha1.New()
     _, err := io.Copy(hash, openfile)
     if nil != err {
@@ -110,11 +110,11 @@ func Sha1ForBig(filename string) (string, error) {
     }
     defer openfile.Close()
 
-    return Sha1ForBigWithOsOpen(openfile)
+    return Sha1ForBigWithStream(openfile)
 }
 
 // 大文件 Sha1
-func Sha1ForBigWithOsOpen(openfile *os.File) (string, error) {
+func Sha1ForBigWithStream(openfile *os.File) (string, error) {
     const bufferSize = 65536
 
     hash := sha1.New()
