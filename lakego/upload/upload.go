@@ -6,9 +6,8 @@ import (
     "strings"
     "mime/multipart"
 
-    storager "lakego-admin/lakego/storage"
+    "lakego-admin/lakego/storage"
     "lakego-admin/lakego/validator"
-    "lakego-admin/lakego/facade/storage"
 )
 
 /**
@@ -19,7 +18,7 @@ import (
  */
 type Upload struct {
     // 驱动
-    storage *storager.Storage
+    storage *storage.Storage
 
     // 权限，'private' or 'public'
     storagePermission string
@@ -64,15 +63,15 @@ func (upload *Upload) GetRename() *Rename {
     return upload.rename
 }
 
-// 设置使用磁盘
-func (upload *Upload) WithDisk(disk string) *Upload {
-    upload.storage = storage.NewWithDisk(disk)
+// 设置文件系统
+func (upload *Upload) WithStorage(storager *storage.Storage) *Upload {
+    upload.storage = storager
 
     return upload
 }
 
-// 获取使用的驱动
-func (upload *Upload) GetStorage() *storager.Storage {
+// 获取文件系统
+func (upload *Upload) GetStorage() *storage.Storage {
     return upload.storage
 }
 

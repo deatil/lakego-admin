@@ -21,8 +21,8 @@ func New() *Casbin {
     newDb := database.New()
 
     // 配置文件路径
-    configPath := path.GetConfigPath()
-    modelConf := configPath + "/rbac_model.conf"
+    configPath := path.GetBasePath()
+    modelConf := configPath + "/config/rbac_model.conf"
 
     a, _ := casbinAdapter.NewAdapterByDB(newDb)
     e, _ := casbin.NewEnforcer(modelConf, a)

@@ -30,6 +30,12 @@ func NewFileinfo() *Fileinfo {
     }
 }
 
+// 设置文件
+func (fileinfo *Fileinfo) WithFilename(filename string) *Fileinfo {
+    fileinfo.file, _ = os.Open(filename)
+
+    return fileinfo
+}
 
 // 设置文件流
 func (fileinfo *Fileinfo) WithFile(file *os.File) *Fileinfo {
@@ -50,7 +56,7 @@ func (fileinfo *Fileinfo) WithFiletypes(filetypes map[string]string) *Fileinfo {
     return fileinfo
 }
 
-// 创建文件爱你
+// 创建文件
 func (fileinfo *Fileinfo) EnsureDir(path string) bool {
     err := file.EnsureDir(path)
     if err != nil {

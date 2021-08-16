@@ -22,8 +22,3 @@ func GetBasePath() string {
 
     return basePath
 }
-
-// 配置目录
-func GetConfigPath() string {
-    return GetBasePath() + "/config"
-}

@@ -6,7 +6,6 @@ import (
     "reflect"
     "strconv"
     "strings"
-    "time"
     "math/rand"
 
     "github.com/gin-gonic/gin"
@@ -30,17 +29,6 @@ func IndexDecrOne(i interface{}) int64 {
 
 func StringReplace(str, old, new string) string {
     return strings.Replace(str, old, new, -1)
-}
-
-func StringToTime(date interface{}) time.Time {
-    timeLayout := "2006-01-02 15:04:05"
-    loc, _ := time.LoadLocation("Local")
-    ret, _ := time.ParseInLocation(timeLayout, date.(string), loc)
-    return ret
-}
-
-func TimeStampToTime(timeStamp int32) time.Time {
-    return time.Unix(int64(timeStamp), 0)
 }
 
 // ToString 类型转换，获得string

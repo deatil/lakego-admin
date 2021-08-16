@@ -3,6 +3,7 @@ package upload
 import (
     "lakego-admin/lakego/upload"
     "lakego-admin/lakego/facade/config"
+    "lakego-admin/lakego/facade/storage"
 )
 
 /**
@@ -29,15 +30,18 @@ func New() *upload.Upload {
     filetypes := conf.GetStringMapString("Upload.Filetypes")
     fileinfo := upload.NewFileinfo().WithFiletypes(filetypes)
 
-    // 配置
+    // 文件系统
     uploadDisk := conf.GetString("Upload.Disk")
+    useStorage := storage.NewWithDisk(uploadDisk)
+
+    // 上传文件夹
     uploadDir := conf.GetString("Upload.Directory.Image")
 
     // 上传
     up := upload.New().
-        WithRename(rename).
+        WithStorage(useStorage).
         WithFileinfo(fileinfo).
-        WithDisk(uploadDisk).
+        WithRename(rename).
         WithDir(uploadDir)
 
     return up
