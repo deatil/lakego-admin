@@ -148,6 +148,11 @@ func (fileinfo *Fileinfo) GetSha1() string {
     return str
 }
 
+// 关闭文件流
+func (fileinfo *Fileinfo) Close() {
+    defer fileinfo.file.Close()
+}
+
 // 文件大类
 func (fileinfo *Fileinfo) GetFileType() string {
     filetypes := fileinfo.filetypes

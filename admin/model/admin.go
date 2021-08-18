@@ -28,7 +28,7 @@ type Admin struct {
     AddIp           string      `gorm:"column:add_ip;type:varchar(50);" json:"add_ip"`
 
     Groups []AuthGroup `gorm:"many2many:auth_group_access;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
-    Attachments []Attachment `gorm:"polymorphic:Owner;polymorphicValue:admin"`
+    Attachments []Attachment `gorm:"polymorphic:Owner;polymorphicValue:admin;"`
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {

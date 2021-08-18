@@ -191,8 +191,8 @@ func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
 }
 
 
-// 上传
-func (upload *Upload) Upload(file *os.File) string {
+// 保存打开的文件
+func (upload *Upload) SaveOpenedFile(file *os.File) string {
     s, err := file.Stat()
     if err != nil {
         return ""

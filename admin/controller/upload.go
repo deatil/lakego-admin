@@ -79,6 +79,9 @@ func (control *UploadController) File(ctx *gin.Context) {
     md5 := fileinfo.GetMd5()
     sha1 := fileinfo.GetSha1()
 
+    // 关闭打开的文件
+    fileinfo.Close()
+
     uploadDisk := storage.GetDefaultDisk()
 
     driver := "local"
@@ -96,15 +99,17 @@ func (control *UploadController) File(ctx *gin.Context) {
         First(&attach).
         Error
     if attachErr == nil && len(attach) > 0 {
+        // 移除本次上传
+        up.Destroy(path)
+
         attachUpdateErr := attachmentModel.
             Where("md5 = ?", md5).
             Updates(map[string]interface{}{
                 "update_time": time.NowTime(),
-                "update_ip": helper.GetRequestIp(ctx),
             }).
             Error
-        if attachUpdateErr == nil {
-            control.Error(ctx, "上传文件失败" )
+        if attachUpdateErr != nil {
+            control.Error(ctx, "上传文件失败")
             return
         }
 
@@ -123,7 +128,7 @@ func (control *UploadController) File(ctx *gin.Context) {
     }
 
     // 添加数据
-    attachData := model.Attachment{
+    attachData := &model.Attachment{
         Name: name,
         Path: path,
         Mime: mimeType,
@@ -137,15 +142,19 @@ func (control *UploadController) File(ctx *gin.Context) {
         AddTime: int(time.NowTime()),
         AddIp: helper.GetRequestIp(ctx),
     }
-    adminAppendErr := adminModel.
+    var adminer model.Admin
+    adminFindErr := adminModel.
         Where("id = ?", adminId).
-        Association("Attachments").
-        Append(&attachData).
+        First(&adminer).
         Error
-    if adminAppendErr == nil {
-        control.Error(ctx, "上传文件失败" )
+    if adminFindErr != nil {
+        up.Destroy(path)
+        control.Error(ctx, "上传文件失败")
         return
     }
+    model.NewDB().Model(&adminer).
+        Association("Attachments").
+        Append(attachData)
 
     // 返回数据
     data := gin.H{
