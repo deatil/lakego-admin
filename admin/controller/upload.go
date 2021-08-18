@@ -152,9 +152,15 @@ func (control *UploadController) File(ctx *gin.Context) {
         control.Error(ctx, "上传文件失败")
         return
     }
-    model.NewDB().Model(&adminer).
+    addError := model.NewDB().Model(&adminer).
         Association("Attachments").
         Append(attachData)
+    // 添加数据库失败
+    if addError != nil {
+        up.Destroy(path)
+        control.Error(ctx, "上传文件失败")
+        return
+    }
 
     // 返回数据
     data := gin.H{
