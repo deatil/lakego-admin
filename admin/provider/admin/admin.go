@@ -4,11 +4,11 @@ import (
     "github.com/gin-gonic/gin"
     "lakego-admin/lakego/lake"
     "lakego-admin/lakego/config"
+    "lakego-admin/lakego/provider"
     "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/route"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route/middleware"
-    appInterface "lakego-admin/lakego/app/interfaces"
 
     // 中间件
     "lakego-admin/admin/middleware/exception"
@@ -20,11 +20,6 @@ import (
     // 路由
     adminRoute "lakego-admin/admin/router"
 )
-
-type ServiceProvider struct {
-    App appInterface.App
-    Engine *gin.Engine
-}
 
 // 路由中间件
 var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
@@ -55,14 +50,9 @@ var middlewareGroups map[string]interface{} = map[string]interface{}{
     },
 }
 
-// 注册
-func (s *ServiceProvider) WithApp(app interface{}) {
-    s.App = app.(appInterface.App)
-}
-
-// 注册
-func (s *ServiceProvider) WithRoute(engine *gin.Engine) {
-    s.Engine = engine
+// 服务提供者
+type ServiceProvider struct {
+    provider.ServiceProvider
 }
 
 // 注册
@@ -75,10 +65,6 @@ func (s *ServiceProvider) Register() {
 
     // 路由
     s.loadRoute()
-}
-
-// 引导
-func (s *ServiceProvider) Boot() {
 }
 
 /**
@@ -114,14 +100,14 @@ func (s *ServiceProvider) loadRoute() {
     prefix := "/" + conf.GetString("Route.Group") + "/*"
 
     // 未知路由处理
-    s.Engine.NoRoute(func (ctx *gin.Context) {
+    s.Route.NoRoute(func (ctx *gin.Context) {
         if lake.MatchPath(ctx, prefix, "") {
             response.Error(ctx, "未知路由", code.StatusInvalid)
         }
     })
 
     // 未知调用方式
-    s.Engine.NoMethod(func (ctx *gin.Context) {
+    s.Route.NoMethod(func (ctx *gin.Context) {
         if lake.MatchPath(ctx, prefix, "") {
             response.Error(ctx, "访问错误", code.StatusInvalid)
         }
@@ -131,7 +117,7 @@ func (s *ServiceProvider) loadRoute() {
     m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
 
     // 路由
-    admin := s.Engine.Group(conf.GetString("Route.Group"))
+    admin := s.Route.Group(conf.GetString("Route.Group"))
     {
         admin.Use(m...)
         {

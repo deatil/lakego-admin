@@ -10,7 +10,7 @@ import (
 
 var serviceProviderLock = new(sync.RWMutex)
 
-var serviceProvider = []func() providerInterface.ServiceProvider{}
+var serviceProviders = []func() providerInterface.ServiceProvider{}
 
 var usedServiceProvider []providerInterface.ServiceProvider
 
@@ -26,7 +26,9 @@ type App struct {
 }
 
 func New() *App {
-    return &App{}
+    return &App{
+        Runned: false,
+    }
 }
 
 func (app *App) Run() {
@@ -39,13 +41,30 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
     serviceProviderLock.Lock()
     defer serviceProviderLock.Unlock()
 
-    serviceProvider = append(serviceProvider, f)
+    serviceProviders = append(serviceProviders, f)
+
+    // 启动后注册，直接注册
+    if app.Runned {
+        p := f()
+
+        // 绑定 app 结构体
+        p.WithApp(app)
+
+        // 路由
+        p.WithRoute(app.Engine)
+
+        p.Register()
+
+        p.Boot()
+
+        usedServiceProvider = append(usedServiceProvider, p)
+    }
 }
 
 // 加载服务提供者
 func (app *App) loadServiceProvider() {
-    if len(serviceProvider) > 0 {
-        for _, provider := range serviceProvider {
+    if len(serviceProviders) > 0 {
+        for _, provider := range serviceProviders {
             p := provider()
 
             // 绑定 app 结构体
@@ -78,6 +97,9 @@ func (app *App) loadApp() {
 
         // 路由
         r = gin.New()
+
+        // 使用默认处理机制
+        r.Use(gin.Recovery())
     } else {
         // 路由
         r = gin.Default()

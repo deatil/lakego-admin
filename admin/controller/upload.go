@@ -51,28 +51,17 @@ func (control *UploadController) File(ctx *gin.Context) {
         return
     }
 
-    up := upload.New().
-        WithDir(uploadDir)
-
-    // 文件系统
-    storager := up.GetStorage()
+    // 设置目录
+    up := upload.New().WithDir(uploadDir)
 
     // 文件信息
     fileinfo := up.GetFileinfo()
 
-    // 上传
-    path := up.SaveUploadedFile(file)
-    if path == "" {
-        control.Error(ctx, "上传文件失败" )
-        return
-    }
-
-    filePath := storager.Path(path)
-
-    fileinfo = fileinfo.WithFilename(filePath)
+    // 设置文件流
+    fileinfo = fileinfo.WithFile(file)
 
     // 原始名称
-    name := fileinfo.GetOriginalName()
+    name := fileinfo.GetOriginalFilename()
     mimeType := fileinfo.GetMimeType()
     extension := fileinfo.GetExtension()
     size := fileinfo.GetSize()
@@ -80,7 +69,7 @@ func (control *UploadController) File(ctx *gin.Context) {
     sha1 := fileinfo.GetSha1()
 
     // 关闭打开的文件
-    fileinfo.Close()
+    fileinfo.CloseFile()
 
     uploadDisk := storage.GetDefaultDisk()
 
@@ -88,6 +77,9 @@ func (control *UploadController) File(ctx *gin.Context) {
     if uploadDisk != "" {
         driver = uploadDisk
     }
+
+    // 文件系统
+    storager := up.GetStorage()
 
     // 模型
     adminModel := model.NewAdmin()
@@ -99,9 +91,6 @@ func (control *UploadController) File(ctx *gin.Context) {
         First(&attach).
         Error
     if attachErr == nil && len(attach) > 0 {
-        // 移除本次上传
-        up.Destroy(path)
-
         attachUpdateErr := attachmentModel.
             Where("md5 = ?", md5).
             Updates(map[string]interface{}{
@@ -127,12 +116,30 @@ func (control *UploadController) File(ctx *gin.Context) {
         return
     }
 
+    // 获取当前账号信息
+    var adminer model.Admin
+    adminFindErr := adminModel.
+        Where("id = ?", adminId).
+        First(&adminer).
+        Error
+    if adminFindErr != nil {
+        control.Error(ctx, "上传文件失败")
+        return
+    }
+
+    // 上传
+    path := up.SaveUploadedFile(file)
+    if path == "" {
+        control.Error(ctx, "上传文件失败" )
+        return
+    }
+
     // 添加数据
     attachData := &model.Attachment{
         Name: name,
         Path: path,
         Mime: mimeType,
-        Ext: extension,
+        Extension: extension,
         Size: strconv.FormatInt(size, 10),
         Md5: md5,
         Sha1: sha1,
@@ -142,17 +149,8 @@ func (control *UploadController) File(ctx *gin.Context) {
         AddTime: int(time.NowTime()),
         AddIp: helper.GetRequestIp(ctx),
     }
-    var adminer model.Admin
-    adminFindErr := adminModel.
-        Where("id = ?", adminId).
-        First(&adminer).
-        Error
-    if adminFindErr != nil {
-        up.Destroy(path)
-        control.Error(ctx, "上传文件失败")
-        return
-    }
-    addError := model.NewDB().Model(&adminer).
+    addError := model.NewDB().
+        Model(&adminer).
         Association("Attachments").
         Append(attachData)
     // 添加数据库失败

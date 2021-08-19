@@ -20,17 +20,17 @@ type Upload struct {
     // 驱动
     storage *storage.Storage
 
-    // 权限，'private' or 'public'
-    storagePermission string
-
-    // 文件夹
-    directory string
-
     // 文件信息
     fileinfo *Fileinfo
 
     // 重命名
     rename *Rename
+
+    // 文件夹
+    directory string
+
+    // 权限，'private' or 'public'
+    storagePermission string
 }
 
 func New() *Upload {
@@ -88,7 +88,7 @@ func (upload *Upload) GetDir() interface{} {
 }
 
 // 设置权限
-func (upload *Upload) StoragePermission(permission string) *Upload {
+func (upload *Upload) WithPermission(permission string) *Upload {
     upload.storagePermission = permission
 
     return upload

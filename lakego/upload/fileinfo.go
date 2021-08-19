@@ -1,11 +1,16 @@
 package upload
 
 import (
-    "os"
+    "io"
+    "fmt"
     "path"
+    "bufio"
     "regexp"
     "strings"
     "net/http"
+    "crypto/md5"
+    "crypto/sha1"
+    "mime/multipart"
 
     "lakego-admin/lakego/support/file"
 )
@@ -18,7 +23,10 @@ import (
  */
 type Fileinfo struct {
     // 文件
-    file *os.File
+    fileHeader *multipart.FileHeader
+
+    // 文件流
+    file multipart.File
 
     // 文件类型
     filetypes map[string]string
@@ -30,22 +38,32 @@ func NewFileinfo() *Fileinfo {
     }
 }
 
-// 设置文件
-func (fileinfo *Fileinfo) WithFilename(filename string) *Fileinfo {
-    fileinfo.file, _ = os.Open(filename)
+// 设置文件流
+func (fileinfo *Fileinfo) WithFile(file *multipart.FileHeader) *Fileinfo {
+    fileinfo.fileHeader = file
+
+    openfile, err := file.Open()
+    if err != nil {
+        panic("打开上传文件失败")
+    }
+
+    fileinfo.file = openfile
 
     return fileinfo
 }
 
-// 设置文件流
-func (fileinfo *Fileinfo) WithFile(file *os.File) *Fileinfo {
-    fileinfo.file = file
-
-    return fileinfo
+// 关闭文件流
+func (fileinfo *Fileinfo) CloseFile() {
+    defer fileinfo.file.Close()
 }
 
-// 设置文件流
-func (fileinfo *Fileinfo) GetFile() *os.File {
+// 获取文件
+func (fileinfo *Fileinfo) GetFileHeader() *multipart.FileHeader {
+    return fileinfo.fileHeader
+}
+
+// 获取文件流
+func (fileinfo *Fileinfo) GetFile() multipart.File {
     return fileinfo.file
 }
 
@@ -56,7 +74,12 @@ func (fileinfo *Fileinfo) WithFiletypes(filetypes map[string]string) *Fileinfo {
     return fileinfo
 }
 
-// 创建文件
+// 获取文件类型
+func (fileinfo *Fileinfo) GetFiletypes() map[string]string {
+    return fileinfo.filetypes
+}
+
+// 创建文件夹
 func (fileinfo *Fileinfo) EnsureDir(path string) bool {
     err := file.EnsureDir(path)
     if err != nil {
@@ -64,11 +87,6 @@ func (fileinfo *Fileinfo) EnsureDir(path string) bool {
     }
 
     return true
-}
-
-// 获取文件类型
-func (fileinfo *Fileinfo) GetFiletypes() map[string]string {
-    return fileinfo.filetypes
 }
 
 // mime
@@ -86,71 +104,70 @@ func (fileinfo *Fileinfo) GetMimeType() string {
 
 // 后缀
 func (fileinfo *Fileinfo) GetExtension() string {
-    s, err := fileinfo.file.Stat()
-    if err != nil {
-        return ""
-    }
-
-    name := s.Name()
+    name := fileinfo.fileHeader.Filename
 
     return strings.TrimPrefix(path.Ext(name), ".")
 }
 
 // 大小
 func (fileinfo *Fileinfo) GetSize() int64 {
-    s, err := fileinfo.file.Stat()
-    if err != nil {
-        return 0
-    }
-
-    return s.Size()
+    return fileinfo.fileHeader.Size
 }
 
 // 原始名称
 func (fileinfo *Fileinfo) GetOriginalName() string {
-    s, err := fileinfo.file.Stat()
-    if err != nil {
-        return ""
-    }
-
-    name := s.Name()
+    name := fileinfo.fileHeader.Filename
 
     return strings.TrimSuffix(name, "." + fileinfo.GetExtension())
 }
 
 // 原始文件名
 func (fileinfo *Fileinfo) GetOriginalFilename() string {
-    s, err := fileinfo.file.Stat()
-    if err != nil {
-        return ""
-    }
-
-    return s.Name()
+    return fileinfo.fileHeader.Filename
 }
 
 // MD5 摘要
 func (fileinfo *Fileinfo) GetMd5() string {
-    str, err := file.Md5ForBigWithStream(fileinfo.file)
-    if err != nil {
-        return ""
+    const bufferSize = 65536
+
+    hash := md5.New()
+    for buf, reader := make([]byte, bufferSize), bufio.NewReader(fileinfo.file); ; {
+        n, err := reader.Read(buf)
+        if err != nil {
+            if err == io.EOF {
+                break
+            }
+            return ""
+        }
+
+        hash.Write(buf[:n])
     }
 
-    return str
+    checksum := fmt.Sprintf("%x", hash.Sum(nil))
+
+    return checksum
 }
 
 // sha1 摘要
 func (fileinfo *Fileinfo) GetSha1() string {
-    str, err := file.Sha1ForBigWithStream(fileinfo.file)
-    if err != nil {
-        return ""
+    const bufferSize = 65536
+
+    hash := sha1.New()
+    for buf, reader := make([]byte, bufferSize), bufio.NewReader(fileinfo.file); ; {
+        n, err := reader.Read(buf)
+        if err != nil {
+            if err == io.EOF {
+                break
+            }
+            return ""
+        }
+
+        hash.Write(buf[:n])
     }
 
-    return str
-}
+    checksum := fmt.Sprintf("%x", hash.Sum(nil))
 
-// 关闭文件流
-func (fileinfo *Fileinfo) Close() {
-    defer fileinfo.file.Close()
+    return checksum
 }
 
 // 文件大类

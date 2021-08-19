@@ -11,15 +11,15 @@ import (
 
 type Admin struct {
     ID              string      `gorm:"column:id;type:char(32);not null;primaryKey;" json:"id"`
-    Name            string      `gorm:"column:name;not null;type:varchar(30);" json:"name" validate:"required"`
-    Password        string      `gorm:"column:password;type:char(32);" json:"password" validate:"required"`
-    PasswordSalt    string      `gorm:"column:password_salt;type:char(6);" json:"password_salt" validate:"required"`
-    Nickname        string      `gorm:"column:nickname;type:varchar(150);" json:"nickname" validate:"required"`
+    Name            string      `gorm:"column:name;not null;type:varchar(30);" json:"name"`
+    Password        string      `gorm:"column:password;type:char(32);" json:"password"`
+    PasswordSalt    string      `gorm:"column:password_salt;type:char(6);" json:"password_salt"`
+    Nickname        string      `gorm:"column:nickname;type:varchar(150);" json:"nickname"`
     Email           string      `gorm:"column:email;type:varchar(100);" json:"email"`
     Avatar          string      `gorm:"column:avatar;type:char(32);" json:"avatar"`
     Introduce       string      `gorm:"column:introduce;type:mediumtext;" json:"introduce"`
     IsRoot          int         `gorm:"column:is_root;type:tinyint(1);" json:"is_root"`
-    Status          int         `gorm:"column:status;not null;type:tinyint(1);" json:"status" validate:"required,max=1,min=-1"`
+    Status          int         `gorm:"column:status;not null;type:tinyint(1);" json:"status"`
     LastLoginTime   int         `gorm:"column:last_login_time;type:int(10);" json:"last_login_time"`
     LastLoginIp     string      `gorm:"column:last_login_ip;type:varchar(50);" json:"last_login_ip"`
     UpdateTime      int         `gorm:"column:update_time;type:int(10);" json:"update_time"`
