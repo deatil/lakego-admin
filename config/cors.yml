@@ -1,7 +1,7 @@
 # 跨域响应
 OpenAllowOrigin: true
 AllowOrigin: "*"
-AllowCredentials: "true"
+AllowCredentials: true
 AllowMethods: "GET,POST,PATCH,PUT,DELETE,OPTIONS"
 AllowHeaders: "X-Requested-With,X_Requested_With,Content-Type,Authorization,Lakego-Admin-Captcha-Id"
 exposeHeaders: "Lakego-Admin-Captcha-Id"

@@ -3,6 +3,7 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/event"
     "lakego-admin/lakego/http/controller"
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/model"
@@ -63,6 +64,9 @@ func (control *ProfileController) Update(ctx *gin.Context) {
         return
     }
 
+    // 事件
+    event.ContextDispatch(ctx, "ProfileUpdateAfter", adminid)
+
     control.Success(ctx, "修改信息成功")
 }
 
@@ -95,6 +99,9 @@ func (control *ProfileController) UpdateAvatar(ctx *gin.Context) {
         control.Error(ctx, "修改头像失败")
         return
     }
+
+    // 事件
+    event.ContextDispatch(ctx, "ProfileUpdateAvatarAfter", adminid)
 
     control.Success(ctx, "修改头像成功")
 }
@@ -149,6 +156,9 @@ func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
         control.Error(ctx, "密码修改失败")
         return
     }
+
+    // 事件
+    event.ContextDispatch(ctx, "ProfileUpdatePassswordAfter", adminid)
 
     control.Success(ctx, "密码修改成功")
 }

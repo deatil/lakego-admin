@@ -20,8 +20,8 @@ func Handler() gin.HandlerFunc {
             c.Header("Access-Control-Allow-Methods", conf.GetString("AllowMethods"))
             c.Header("Access-Control-Expose-Headers", conf.GetString("AllowHeaders"))
 
-            allowCredentials := conf.GetString("AllowCredentials")
-            if (allowCredentials == "true") {
+            allowCredentials := conf.GetBool("AllowCredentials")
+            if (allowCredentials) {
                 c.Header("Access-Control-Allow-Credentials", "true")
             }
 
