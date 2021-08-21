@@ -10,14 +10,9 @@ import (
  * @create 2021-8-20
  * @author deatil
  */
-func ContextBind(ctx *gin.Context, name ...string) {
-    eventName := "event"
-    if len(name) > 0 {
-        eventName = name[0]
-    }
-
+func ContextBind(ctx *gin.Context) {
     dispatcher := NewEventDispatcher()
-    ctx.Set(eventName, dispatcher)
+    ctx.Set("event", dispatcher)
 }
 
 // 监听

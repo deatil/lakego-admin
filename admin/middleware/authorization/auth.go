@@ -77,6 +77,18 @@ func jwtCheck(ctx *gin.Context) {
         WithId(userId).
         WithData(adminData)
 
+    // 是否激活
+    if !adminer.IsActive() {
+        response.Error(ctx, "帐号不存在或者已被锁定", code.AuthError)
+        return
+    }
+
+    // 所属分组是否激活
+    if !adminer.IsGroupActive() {
+        response.Error(ctx, "帐号用户组不存在或者已被锁定", code.AuthError)
+        return
+    }
+
     ctx.Set("admin_id", userId)
     ctx.Set("access_token", accessToken)
     ctx.Set("admin", adminer)

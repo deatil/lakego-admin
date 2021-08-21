@@ -17,6 +17,9 @@ type ServiceProvider interface {
     // 设置路由
     WithRoute(*gin.Engine)
 
+    // 获取
+    GetRoute() *gin.Engine
+
     // 注册
     Register()
 

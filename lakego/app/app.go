@@ -5,6 +5,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
+    "lakego-admin/lakego/middleware/event"
     providerInterface "lakego-admin/lakego/provider/interfaces"
 )
 
@@ -56,8 +57,6 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
         p.Register()
 
         p.Boot()
-
-        usedServiceProvider = append(usedServiceProvider, p)
     }
 }
 
@@ -101,10 +100,16 @@ func (app *App) loadApp() {
         // 使用默认处理机制
         r.Use(gin.Recovery())
     } else {
+        gin.SetMode(gin.DebugMode)
+
         // 路由
         r = gin.Default()
     }
 
+    // 事件
+    r.Use(event.Handler())
+
+    // 绑定路由
     app.Engine = r
 
     // 加载服务提供者

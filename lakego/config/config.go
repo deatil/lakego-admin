@@ -33,10 +33,10 @@ func New(fileName ...string) interfaces.Config {
     config := viper.New()
 
     // 配置文件夹
-    configPath := "/config"
+    configPath := basePath + "/config"
 
     // 配置文件所在目录
-    config.AddConfigPath(basePath + configPath)
+    config.AddConfigPath(configPath)
 
     // 需要读取的文件名,默认为：config
     if len(fileName) == 0 {

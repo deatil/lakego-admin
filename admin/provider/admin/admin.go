@@ -14,7 +14,6 @@ import (
     "lakego-admin/admin/middleware/exception"
     "lakego-admin/admin/middleware/authorization"
     "lakego-admin/admin/middleware/cors"
-    "lakego-admin/admin/middleware/event"
     "lakego-admin/admin/middleware/permission"
 
     // 路由
@@ -25,9 +24,6 @@ import (
 var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
     // 异常处理
     "lakego.exception": exception.Handler(),
-
-    // 事件
-    "lakego.event": event.Handler(),
 
     // 跨域处理
     "lakego.cors": cors.Handler(),
@@ -43,7 +39,6 @@ var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
 var middlewareGroups map[string]interface{} = map[string]interface{}{
     "lakego-admin": []string{
         "lakego.exception",
-        "lakego.event",
         "lakego.cors",
         "lakego.auth",
         "lakego.permission",
