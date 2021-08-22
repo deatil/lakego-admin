@@ -2,6 +2,7 @@ package app
 
 import (
     "sync"
+    "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
@@ -22,8 +23,14 @@ var usedServiceProvider []providerInterface.ServiceProvider
  * @author deatil
  */
 type App struct {
+    // 运行状态
     Runned bool
-    Engine *gin.Engine
+
+    // 路由
+    RouteEngine *gin.Engine
+
+    // 根脚本
+    RootCmd *cobra.Command
 }
 
 func New() *App {
@@ -52,7 +59,7 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
         p.WithApp(app)
 
         // 路由
-        p.WithRoute(app.Engine)
+        p.WithRoute(app.RouteEngine)
 
         p.Register()
 
@@ -70,7 +77,7 @@ func (app *App) loadServiceProvider() {
             p.WithApp(app)
 
             // 路由
-            p.WithRoute(app.Engine)
+            p.WithRoute(app.RouteEngine)
 
             p.Register()
 
@@ -83,6 +90,16 @@ func (app *App) loadServiceProvider() {
             p2.Boot()
         }
     }
+}
+
+// 设置根脚本
+func (app *App) WithRootCmd(root *cobra.Command) {
+    app.RootCmd = root
+}
+
+// 获取根脚本
+func (app *App) GetRootCmd() *cobra.Command {
+    return app.RootCmd
 }
 
 // 加载 app
@@ -110,7 +127,7 @@ func (app *App) loadApp() {
     r.Use(event.Handler())
 
     // 绑定路由
-    app.Engine = r
+    app.RouteEngine = r
 
     // 加载服务提供者
     app.loadServiceProvider()

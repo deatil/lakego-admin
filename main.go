@@ -1,9 +1,9 @@
 package main
 
 import (
-	"lakego-admin/bootstrap"
+    "lakego-admin/bootstrap"
 )
 
 func main() {
-	bootstrap.Start()
+    bootstrap.Execute()
 }

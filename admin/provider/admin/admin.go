@@ -18,6 +18,9 @@ import (
 
     // 路由
     adminRoute "lakego-admin/admin/router"
+
+    // 脚本
+    "lakego-admin/admin/cmd"
 )
 
 // 路由中间件
@@ -60,6 +63,16 @@ func (s *ServiceProvider) Register() {
 
     // 路由
     s.loadRoute()
+
+    // 脚本
+    s.loadCmd()
+}
+
+/**
+ * 导入脚本
+ */
+func (s *ServiceProvider) loadCmd() {
+    s.App.GetRootCmd().AddCommand(cmd.InstallCmd)
 }
 
 /**
