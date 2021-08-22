@@ -1,5 +1,9 @@
 package interfaces
 
+import (
+    "time"
+)
+
 // 驱动接口
 type Driver interface {
     // 初始化配置
@@ -9,7 +13,7 @@ type Driver interface {
     Get(string) (interface{}, error)
 
     // 存储
-    Put(string, interface{}, interface{}) error
+    Put(string, interface{}, time.Duration) error
 
     // 存储一个不过期的数据
     Forever(string, interface{}) error

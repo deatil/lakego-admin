@@ -41,12 +41,5 @@ func (dir *Directory) Delete() bool {
 
 // 列出文件
 func (dir *Directory) GetContents(recursive ...bool) []map[string]interface{} {
-    var rec bool
-    if len(recursive) > 0 && recursive[0] {
-        rec = true
-    } else {
-        rec = false
-    }
-
-    return dir.filesystem.ListContents(dir.path, rec)
+    return dir.filesystem.ListContents(dir.path, recursive...)
 }

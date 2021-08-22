@@ -4,7 +4,6 @@ import (
     "fmt"
     "time"
     "errors"
-    "reflect"
     "context"
 
     "github.com/go-redis/redis/v8"
@@ -77,18 +76,8 @@ func (r *Redis) Get(key string) (interface{}, error) {
 }
 
 // 设置
-func (r *Redis) Put(key string, value interface{}, expiration interface{}) error {
-    var ttl time.Duration
-
-    if reflect.TypeOf(expiration).String() == "int64" {
-        ttl = r.IntTimeToDuration(expiration.(int64))
-    } else if reflect.TypeOf(expiration).String() == "int" {
-        ttl = r.IntTimeToDuration(int64(expiration.(int)))
-    } else {
-        ttl = expiration.(time.Duration)
-    }
-
-    err := r.client.Set(r.ctx, r.WrapperKey(key), value, ttl).Err()
+func (r *Redis) Put(key string, value interface{}, expiration time.Duration) error {
+    err := r.client.Set(r.ctx, r.WrapperKey(key), value, expiration).Err()
     if err != nil {
         return errors.New("缓存存储失败")
     }
@@ -176,18 +165,8 @@ func (r *Redis) HashDel(key string) error {
 }
 
 // 过期时间
-func (r *Redis) Expire(key string, expiration interface{}) error {
-    var ttl time.Duration
-
-    if reflect.TypeOf(expiration).String() == "int64" {
-        ttl = r.IntTimeToDuration(expiration.(int64))
-    } else if reflect.TypeOf(expiration).String() == "int" {
-        ttl = r.IntTimeToDuration(int64(expiration.(int)))
-    } else {
-        ttl = expiration.(time.Duration)
-    }
-
-    return r.client.Expire(r.ctx, key, ttl).Err()
+func (r *Redis) Expire(key string, expiration time.Duration) error {
+    return r.client.Expire(r.ctx, key, expiration).Err()
 }
 
 // 设置前缀

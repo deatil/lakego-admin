@@ -5,9 +5,9 @@ import (
 
     "lakego-admin/lakego/event"
     "lakego-admin/lakego/http/controller"
-    "lakego-admin/admin/auth/admin"
-    "lakego-admin/admin/model"
     authPassword "lakego-admin/lakego/auth/password"
+    "lakego-admin/admin/model"
+    "lakego-admin/admin/auth/admin"
     profileValidate "lakego-admin/admin/validate/profile"
 )
 

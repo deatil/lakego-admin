@@ -13,8 +13,10 @@ import (
 type Event struct {
     // 事件触发实例
     Target IEventDispatcher
+
     // 事件类型
     Type   string
+
     // 事件携带数据源
     Object interface{}
 }
@@ -36,21 +38,21 @@ type EventListener struct {
 }
 
 // 监听器函数
-type EventHandler func(event Event)
+type EventHandler func(Event)
 
 // 事件调度接口
 type IEventDispatcher interface {
     // 事件监听
-    AddEventListener(eventType string, listener *EventListener)
+    AddEventListener(string, *EventListener)
 
     // 移除事件监听
-    RemoveEventListener(eventType string, listener *EventListener) bool
+    RemoveEventListener(string, *EventListener) bool
 
     // 是否包含事件
-    HasEventListener(eventType string) bool
+    HasEventListener(string) bool
 
     // 事件派发
-    DispatchEvent(event Event) bool
+    DispatchEvent(Event) bool
 }
 
 // 创建事件派发器
