@@ -39,34 +39,35 @@ func Execute() {
     }
 }
 
-// 运行 api 服务
-func RunServer() {
+// 运行
+func GetRunApp() *app.App {
     newApp := app.New()
-
-    newApp.WithRunningInConsole(false)
 
     // admin 后台路由
     adminServiceProvider := &adminProvider.ServiceProvider{}
     newApp.Register(func() providerInterface.ServiceProvider {
         return adminServiceProvider
     })
+
+    return newApp
+}
+
+// 运行 api 服务
+func RunServer() {
+    newApp := GetRunApp()
+
+    newApp.WithRunningInConsole(false)
 
     newApp.Run()
 }
 
 // 加载脚本
 func RunCmd() {
-    newApp := app.New()
+    newApp := GetRunApp()
 
     newApp.WithRunningInConsole(true)
 
     newApp.WithRootCmd(rootCmd)
-
-    // admin 后台路由
-    adminServiceProvider := &adminProvider.ServiceProvider{}
-    newApp.Register(func() providerInterface.ServiceProvider {
-        return adminServiceProvider
-    })
 
     newApp.LoadServiceProvider()
 }
