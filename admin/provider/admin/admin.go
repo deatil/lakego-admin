@@ -55,17 +55,19 @@ type ServiceProvider struct {
 
 // 注册
 func (s *ServiceProvider) Register() {
-    // 中间件
-    s.loadMiddleware()
+    if s.App.GetRunningInConsole() {
+        // 脚本
+        s.loadCmd()
+    } else {
+        // 中间件
+        s.loadMiddleware()
 
-    // 分组
-    s.loadGroup()
+        // 分组
+        s.loadGroup()
 
-    // 路由
-    s.loadRoute()
-
-    // 脚本
-    s.loadCmd()
+        // 路由
+        s.loadRoute()
+    }
 }
 
 /**

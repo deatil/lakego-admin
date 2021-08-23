@@ -9,8 +9,6 @@ import (
     adminProvider "lakego-admin/admin/provider/admin"
 )
 
-var newApp *app.App
-
 var rootCmd = &cobra.Command{
     Use: "lakego-admin",
     Short: "lakego-admin",
@@ -23,24 +21,53 @@ var rootCmd = &cobra.Command{
         return nil
     },
     Run: func(cmd *cobra.Command, args []string) {
-        // admin 后台路由
-        adminServiceProvider := &adminProvider.ServiceProvider{}
-        newApp.Register(func() providerInterface.ServiceProvider {
-            return adminServiceProvider
-        })
-
-        newApp.Run()
     },
 }
 
-// Execute : apply commands
+// 执行
 func Execute() {
-    newApp = app.New()
+    args := os.Args
+
+    if len(args) > 1 {
+        RunCmd()
+
+        if err := rootCmd.Execute(); err != nil {
+            os.Exit(-1)
+        }
+    } else {
+        RunServer()
+    }
+}
+
+// 运行 api 服务
+func RunServer() {
+    newApp := app.New()
+
+    newApp.WithRunningInConsole(false)
+
+    // admin 后台路由
+    adminServiceProvider := &adminProvider.ServiceProvider{}
+    newApp.Register(func() providerInterface.ServiceProvider {
+        return adminServiceProvider
+    })
+
+    newApp.Run()
+}
+
+// 加载脚本
+func RunCmd() {
+    newApp := app.New()
+
+    newApp.WithRunningInConsole(true)
 
     newApp.WithRootCmd(rootCmd)
 
-    if err := rootCmd.Execute(); err != nil {
-        os.Exit(-1)
-    }
+    // admin 后台路由
+    adminServiceProvider := &adminProvider.ServiceProvider{}
+    newApp.Register(func() providerInterface.ServiceProvider {
+        return adminServiceProvider
+    })
+
+    newApp.LoadServiceProvider()
 }
 

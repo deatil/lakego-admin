@@ -26,6 +26,9 @@ type App struct {
     // 运行状态
     Runned bool
 
+    // 运行在命令行
+    RunningInConsole bool
+
     // 路由
     RouteEngine *gin.Engine
 
@@ -68,7 +71,7 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
 }
 
 // 加载服务提供者
-func (app *App) loadServiceProvider() {
+func (app *App) LoadServiceProvider() {
     if len(serviceProviders) > 0 {
         for _, provider := range serviceProviders {
             p := provider()
@@ -102,6 +105,16 @@ func (app *App) GetRootCmd() *cobra.Command {
     return app.RootCmd
 }
 
+// 设置命令行状态
+func (app *App) WithRunningInConsole(console bool) {
+    app.RunningInConsole = console
+}
+
+// 获取命令行状态
+func (app *App) GetRunningInConsole() bool {
+    return app.RunningInConsole
+}
+
 // 加载 app
 func (app *App) loadApp() {
     var r *gin.Engine
@@ -130,7 +143,7 @@ func (app *App) loadApp() {
     app.RouteEngine = r
 
     // 加载服务提供者
-    app.loadServiceProvider()
+    app.LoadServiceProvider()
 
     app.Runned = true
 

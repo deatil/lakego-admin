@@ -9,6 +9,15 @@ type App interface {
     // 注册服务提供者
     Register(func() providerInterface.ServiceProvider)
 
+    // 脚本
+    WithRootCmd(*cobra.Command)
+
     // 获取脚本
     GetRootCmd() *cobra.Command
+
+    // 命令行状态
+    WithRunningInConsole(bool)
+
+    // 获取命令行状态
+    GetRunningInConsole() bool
 }
