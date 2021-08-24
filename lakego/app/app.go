@@ -70,6 +70,15 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
     }
 }
 
+// 批量导入
+func (app *App) Registers(providers []func() providerInterface.ServiceProvider) {
+    if len(providers) > 0 {
+        for _, provider := range providers {
+            app.Register(provider)
+        }
+    }
+}
+
 // 加载服务提供者
 func (app *App) LoadServiceProvider() {
     if len(serviceProviders) > 0 {

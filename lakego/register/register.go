@@ -28,7 +28,7 @@ func New() *Register {
 }
 
 /**
- * 适配器
+ * 注册器
  */
 type Register struct {
     // 已注册数据

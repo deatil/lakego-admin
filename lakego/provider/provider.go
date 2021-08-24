@@ -1,6 +1,7 @@
 package provider
 
 import (
+    "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
     appInterface "lakego-admin/lakego/app/interfaces"
@@ -38,6 +39,20 @@ func (s *ServiceProvider) WithRoute(route *gin.Engine) {
 // 获取
 func (s *ServiceProvider) GetRoute() *gin.Engine {
     return s.Route
+}
+
+// 添加脚本
+func (s *ServiceProvider) AddCommand(cmd *cobra.Command) {
+    if s.App != nil {
+        s.App.GetRootCmd().AddCommand(cmd)
+    }
+}
+
+// 添加路由
+func (s *ServiceProvider) AddRoute(f func(*gin.Engine)) {
+    if s.Route != nil {
+        f(s.Route)
+    }
 }
 
 // 注册

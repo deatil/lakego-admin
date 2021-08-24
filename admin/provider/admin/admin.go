@@ -55,16 +55,10 @@ type ServiceProvider struct {
 
 // 注册
 func (s *ServiceProvider) Register() {
-    if s.App.GetRunningInConsole() {
-        // 脚本
-        s.loadCmd()
-    } else {
-        // 中间件
-        s.loadMiddleware()
+    // 脚本
+    s.loadCmd()
 
-        // 分组
-        s.loadGroup()
-
+    if !s.App.GetRunningInConsole() {
         // 路由
         s.loadRoute()
     }
@@ -74,7 +68,51 @@ func (s *ServiceProvider) Register() {
  * 导入脚本
  */
 func (s *ServiceProvider) loadCmd() {
-    s.App.GetRootCmd().AddCommand(cmd.InstallCmd)
+    s.AddCommand(cmd.InstallCmd)
+}
+
+/**
+ * 导入路由
+ */
+func (s *ServiceProvider) loadRoute() {
+    s.AddRoute(func(engine *gin.Engine) {
+        // 中间件
+        s.loadMiddleware()
+
+        // 分组
+        s.loadGroup()
+
+        conf := config.New("admin")
+
+        prefix := "/" + conf.GetString("Route.Group") + "/*"
+
+        // 未知路由处理
+        engine.NoRoute(func (ctx *gin.Context) {
+            if lake.MatchPath(ctx, prefix, "") {
+                response.Error(ctx, "未知路由", code.StatusInvalid)
+            }
+        })
+
+        // 未知调用方式
+        engine.NoMethod(func (ctx *gin.Context) {
+            if lake.MatchPath(ctx, prefix, "") {
+                response.Error(ctx, "访问错误", code.StatusInvalid)
+            }
+        })
+
+        // 后台路由及设置中间件
+        m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
+
+        // 路由
+        admin := engine.Group(conf.GetString("Route.Group"))
+        {
+            admin.Use(m...)
+            {
+                adminRoute.Route(admin)
+            }
+        }
+
+    })
 }
 
 /**
@@ -97,41 +135,6 @@ func (s *ServiceProvider) loadGroup() {
     for name, value := range middlewareGroups {
         for _, group := range value.([]string) {
             m.WithGroup(name, group)
-        }
-    }
-}
-
-/**
- * 导入路由
- */
-func (s *ServiceProvider) loadRoute() {
-    conf := config.New("admin")
-
-    prefix := "/" + conf.GetString("Route.Group") + "/*"
-
-    // 未知路由处理
-    s.Route.NoRoute(func (ctx *gin.Context) {
-        if lake.MatchPath(ctx, prefix, "") {
-            response.Error(ctx, "未知路由", code.StatusInvalid)
-        }
-    })
-
-    // 未知调用方式
-    s.Route.NoMethod(func (ctx *gin.Context) {
-        if lake.MatchPath(ctx, prefix, "") {
-            response.Error(ctx, "访问错误", code.StatusInvalid)
-        }
-    })
-
-    // 后台路由及设置中间件
-    m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
-
-    // 路由
-    admin := s.Route.Group(conf.GetString("Route.Group"))
-    {
-        admin.Use(m...)
-        {
-            adminRoute.Route(admin)
         }
     }
 }

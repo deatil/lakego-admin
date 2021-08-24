@@ -5,6 +5,7 @@ import (
     "github.com/spf13/cobra"
 
     "lakego-admin/lakego/app"
+    "lakego-admin/lakego/provider"
     providerInterface "lakego-admin/lakego/provider/interfaces"
     adminProvider "lakego-admin/admin/provider/admin"
 )
@@ -39,15 +40,28 @@ func Execute() {
     }
 }
 
+// 导入服务提供者
+func LoadServiceProvider() {
+    // admin 后台路由
+    adminServiceProvider := &adminProvider.ServiceProvider{}
+    provider.AppendProvider(func() providerInterface.ServiceProvider {
+        return adminServiceProvider
+    })
+}
+
 // 运行
 func GetRunApp() *app.App {
     newApp := app.New()
 
-    // admin 后台路由
-    adminServiceProvider := &adminProvider.ServiceProvider{}
-    newApp.Register(func() providerInterface.ServiceProvider {
-        return adminServiceProvider
-    })
+    // 导入服务提供者
+    LoadServiceProvider()
+
+    // 注册
+    allProviders := provider.GetAllProvider()
+    newApp.Registers(allProviders)
+
+    // 脚本
+    newApp.WithRootCmd(rootCmd)
 
     return newApp
 }
@@ -66,8 +80,6 @@ func RunCmd() {
     newApp := GetRunApp()
 
     newApp.WithRunningInConsole(true)
-
-    newApp.WithRootCmd(rootCmd)
 
     newApp.LoadServiceProvider()
 }

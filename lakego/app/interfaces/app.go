@@ -9,6 +9,9 @@ type App interface {
     // 注册服务提供者
     Register(func() providerInterface.ServiceProvider)
 
+    // 批量注册服务提供者
+    Registers([]func() providerInterface.ServiceProvider)
+
     // 脚本
     WithRootCmd(*cobra.Command)
 
