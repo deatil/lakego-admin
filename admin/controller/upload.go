@@ -128,7 +128,7 @@ func (control *UploadController) File(ctx *gin.Context) {
     }
 
     // 上传
-    path := up.SaveUploadedFile(file)
+    path := up.SaveFile(file)
     if path == "" {
         control.Error(ctx, "上传文件失败" )
         return

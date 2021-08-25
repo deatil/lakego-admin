@@ -6,8 +6,6 @@ import (
 
     "lakego-admin/lakego/app"
     "lakego-admin/lakego/provider"
-    providerInterface "lakego-admin/lakego/provider/interfaces"
-    adminProvider "lakego-admin/admin/provider/admin"
 )
 
 var rootCmd = &cobra.Command{
@@ -40,13 +38,13 @@ func Execute() {
     }
 }
 
-// 导入服务提供者
+// 导入服务提供者，其他app的服务提供者可放这
 func LoadServiceProvider() {
-    // admin 后台路由
-    adminServiceProvider := &adminProvider.ServiceProvider{}
-    provider.AppendProvider(func() providerInterface.ServiceProvider {
-        return adminServiceProvider
-    })
+    if len(providers) > 0 {
+        for _, p := range providers {
+            provider.AppendProvider(p)
+        }
+    }
 }
 
 // 运行

@@ -1,9 +1,10 @@
 package upload
 
 import (
-    "io"
     "os"
+    "io"
     "strings"
+    "io/ioutil"
     "mime/multipart"
 
     "lakego-admin/lakego/storage"
@@ -190,6 +191,56 @@ func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
     return repath
 }
 
+// 保存上传的文件
+func (upload *Upload) SaveFile(file *multipart.FileHeader) string {
+    tmpFile, err := ioutil.TempFile("", "lakego")
+    if err != nil {
+        return ""
+    }
+
+    // 打开上传文件
+    uploadFile, err := file.Open()
+    if err != nil {
+        return ""
+    }
+    defer uploadFile.Close()
+
+    // 复制内容
+    _, err = io.Copy(tmpFile, uploadFile)
+    if err != nil {
+        return ""
+    }
+
+    // 读取上传的临时文件
+    upFile, err := os.Open(tmpFile.Name())
+    if err != nil {
+        return ""
+    }
+
+    defer func() {
+        upFile.Close()
+
+        tmpFile.Close()
+
+        // 删除临时文件
+        os.Remove(tmpFile.Name())
+    }()
+
+    // 保存名称
+    name := file.Filename
+
+    realname := upload.GetRealname(name)
+
+    if upload.storagePermission != "" {
+        return upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname, map[string]interface{}{
+            "visibility": upload.storagePermission,
+        })
+    }
+
+    res := upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname)
+
+    return res
+}
 
 // 保存打开的文件
 func (upload *Upload) SaveOpenedFile(file *os.File) string {
