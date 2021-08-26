@@ -17,14 +17,14 @@ import (
  * @create 2021-7-5
  * @author deatil
  */
-type ProfileController struct {
-    controller.BaseController
+type Profile struct {
+    controller.Base
 }
 
 /**
  * 个人信息
  */
-func (control *ProfileController) Index(ctx *gin.Context) {
+func (control *Profile) Index(ctx *gin.Context) {
     adminInfo, _ := ctx.Get("admin")
 
     adminInfo = adminInfo.(*admin.Admin).GetProfile()
@@ -35,7 +35,7 @@ func (control *ProfileController) Index(ctx *gin.Context) {
 /**
  * 修改信息
  */
-func (control *ProfileController) Update(ctx *gin.Context) {
+func (control *Profile) Update(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -73,7 +73,7 @@ func (control *ProfileController) Update(ctx *gin.Context) {
 /**
  * 修改头像
  */
-func (control *ProfileController) UpdateAvatar(ctx *gin.Context) {
+func (control *Profile) UpdateAvatar(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -109,7 +109,7 @@ func (control *ProfileController) UpdateAvatar(ctx *gin.Context) {
 /**
  * 修改密码
  */
-func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
+func (control *Profile) UpdatePasssword(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -166,7 +166,7 @@ func (control *ProfileController) UpdatePasssword(ctx *gin.Context) {
 /**
  * 权限列表
  */
-func (control *ProfileController) Rules(ctx *gin.Context) {
+func (control *Profile) Rules(ctx *gin.Context) {
     rules := make(map[string]string)
 
     control.SuccessWithData(ctx, "获取成功", gin.H{

@@ -5,12 +5,21 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/http/code"
+    "lakego-admin/admin/support/http/code"
 )
 
 // 设置 header
 func SetHeader(context *gin.Context, key string, value string) {
     context.Header(key, value)
+}
+
+// 批量设置 header
+func SetHeaders(context *gin.Context, headers map[string]string) {
+    if len(headers) > 0 {
+        for k, v := range headers {
+            context.Header(k, v)
+        }
+    }
 }
 
 // 返回 json

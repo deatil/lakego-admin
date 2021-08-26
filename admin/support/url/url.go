@@ -1,4 +1,4 @@
-package lake
+package url
 
 import (
     "strings"
@@ -7,6 +7,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
+    "lakego-admin/lakego/helper"
 )
 
 // 生成后台链接
@@ -33,13 +34,13 @@ func MatchPath(ctx *gin.Context, path string, current string) bool {
         methods = strings.ToUpper(methods)
         methodList := strings.Split(methods, ",")
         if len(methodList) > 0 {
-            if !InArray(methodList, method) {
+            if !helper.InArray(methodList, method) {
                 return false
             }
         }
     }
 
-    if StringContains(path, "*") == -1 {
+    if helper.StringContains(path, "*") == -1 {
         return path == current
     }
 

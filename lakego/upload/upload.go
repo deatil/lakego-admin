@@ -237,9 +237,7 @@ func (upload *Upload) SaveFile(file *multipart.FileHeader) string {
         })
     }
 
-    res := upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname)
-
-    return res
+    return upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname)
 }
 
 // 保存打开的文件

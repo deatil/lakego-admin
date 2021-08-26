@@ -20,14 +20,14 @@ import (
  * @create 2021-8-15
  * @author deatil
  */
-type UploadController struct {
-    controller.BaseController
+type Upload struct {
+    controller.Base
 }
 
 /**
  * 上传文件
  */
-func (control *UploadController) File(ctx *gin.Context) {
+func (control *Upload) File(ctx *gin.Context) {
     // 账号信息
     adminInfo, _ := ctx.Get("admin")
     adminId := adminInfo.(*admin.Admin).GetId()

@@ -2,13 +2,14 @@ package admin
 
 import (
     "github.com/gin-gonic/gin"
-    "lakego-admin/lakego/lake"
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/provider"
-    "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/route"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route/middleware"
+    
+    "lakego-admin/admin/support/url"
+    "lakego-admin/admin/support/http/code"
 
     // 中间件
     "lakego-admin/admin/middleware/exception"
@@ -88,14 +89,14 @@ func (s *ServiceProvider) loadRoute() {
 
         // 未知路由处理
         engine.NoRoute(func (ctx *gin.Context) {
-            if lake.MatchPath(ctx, prefix, "") {
+            if url.MatchPath(ctx, prefix, "") {
                 response.Error(ctx, "未知路由", code.StatusInvalid)
             }
         })
 
         // 未知调用方式
         engine.NoMethod(func (ctx *gin.Context) {
-            if lake.MatchPath(ctx, prefix, "") {
+            if url.MatchPath(ctx, prefix, "") {
                 response.Error(ctx, "访问错误", code.StatusInvalid)
             }
         })

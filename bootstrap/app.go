@@ -38,7 +38,7 @@ func Execute() {
     }
 }
 
-// 导入服务提供者，其他app的服务提供者可放这
+// 导入服务提供者
 func LoadServiceProvider() {
     if len(providers) > 0 {
         for _, p := range providers {

@@ -6,12 +6,13 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
-    "lakego-admin/lakego/lake"
     "lakego-admin/lakego/auth"
-    "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/response"
-    "lakego-admin/admin/model"
+
     "lakego-admin/admin/auth/admin"
+    "lakego-admin/admin/support/url"
+    "lakego-admin/admin/support/http/code"
+    "lakego-admin/admin/model"
 )
 
 // 检查token权限
@@ -95,15 +96,15 @@ func jwtCheck(ctx *gin.Context) {
 }
 
 // 过滤
-func shouldPassThrough(context *gin.Context) bool {
+func shouldPassThrough(ctx *gin.Context) bool {
     // 默认过滤
     excepts := []string{
-        "GET:" + lake.AdminUrl("passport/captcha"),
-        "POST:" + lake.AdminUrl("passport/login"),
-        "PUT:" + lake.AdminUrl("passport/refresh-token"),
+        "GET:" + url.AdminUrl("passport/captcha"),
+        "POST:" + url.AdminUrl("passport/login"),
+        "PUT:" + url.AdminUrl("passport/refresh-token"),
     }
     for _, except := range excepts {
-        if lake.MatchPath(context, except, "") {
+        if url.MatchPath(ctx, except, "") {
             return true
         }
     }
@@ -113,8 +114,8 @@ func shouldPassThrough(context *gin.Context) bool {
     for _, ae := range authenticateExcepts {
         newStr := strings.Split(ae, ":")
         if len(newStr) == 2 {
-            newUrl := newStr[0] + ":" + lake.AdminUrl(newStr[1])
-            if lake.MatchPath(context, newUrl, "") {
+            newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
+            if url.MatchPath(ctx, newUrl, "") {
                 return true
             }
         }

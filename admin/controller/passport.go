@@ -8,21 +8,22 @@ import (
     "lakego-admin/lakego/facade/captcha"
     "lakego-admin/lakego/facade/cache"
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/http/code"
     "lakego-admin/lakego/http/controller"
+
     "lakego-admin/admin/model"
+    "lakego-admin/admin/support/http/code"
     authPassword "lakego-admin/lakego/auth/password"
     passportValidate "lakego-admin/admin/validate/passport"
 )
 
-type PassportController struct {
-    controller.BaseController
+type Passport struct {
+    controller.Base
 }
 
 /**
  * 验证码
  */
-func (control *PassportController) Captcha(context *gin.Context) {
+func (control *Passport) Captcha(context *gin.Context) {
     c := captcha.New()
     id, b64s, err := c.Generate()
     if err != nil {
@@ -40,7 +41,7 @@ func (control *PassportController) Captcha(context *gin.Context) {
 /**
  * 登陆
  */
-func (control *PassportController) Login(ctx *gin.Context) {
+func (control *Passport) Login(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -119,7 +120,7 @@ func (control *PassportController) Login(ctx *gin.Context) {
 /**
  * 刷新 token
  */
-func (control *PassportController) RefreshToken(ctx *gin.Context) {
+func (control *Passport) RefreshToken(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -175,7 +176,7 @@ func (control *PassportController) RefreshToken(ctx *gin.Context) {
 /**
  * 退出
  */
-func (control *PassportController) Logout(ctx *gin.Context) {
+func (control *Passport) Logout(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)

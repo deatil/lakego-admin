@@ -11,14 +11,14 @@ import (
  */
 func Route(engine *gin.RouterGroup) {
     // 登陆
-    passportController := new(controller.PassportController)
+    passportController := new(controller.Passport)
     engine.GET("/passport/captcha", passportController.Captcha)
     engine.POST("/passport/login", passportController.Login)
     engine.PUT("/passport/refresh-token", passportController.RefreshToken)
     engine.DELETE("/passport/logout", passportController.Logout)
 
     // 个人信息
-    profileController := new(controller.ProfileController)
+    profileController := new(controller.Profile)
     engine.GET("/profile", profileController.Index)
     engine.PUT("/profile/update", profileController.Update)
     engine.PATCH("/profile/avatar", profileController.UpdateAvatar)
@@ -26,6 +26,6 @@ func Route(engine *gin.RouterGroup) {
     engine.GET("/profile/rules", profileController.Rules)
 
     // 上传
-    uploadController := new(controller.UploadController)
+    uploadController := new(controller.Upload)
     engine.POST("/upload/file", uploadController.File)
 }
