@@ -14,18 +14,18 @@ var diskPrefix = "storage_disk_"
 /**
  * 注册适配器
  */
-func RegisterDriver(name string, f func() interfaces.Adapter) {
+func RegisterDriver(name string, f func(map[string]interface{}) interfaces.Adapter) {
     name = driverPrefix + name
 
-    register.New().With(name, func() interface{} {
-        return f()
+    register.New().With(name, func(conf map[string]interface{}) interface{} {
+        return f(conf)
     })
 }
 
 /**
  * 批量注册驱动
  */
-func RegisterDrivers(drivers map[string]func() interfaces.Adapter) {
+func RegisterDrivers(drivers map[string]func(map[string]interface{}) interfaces.Adapter) {
     for name, f := range drivers {
         RegisterDriver(name, f)
     }
@@ -34,46 +34,19 @@ func RegisterDrivers(drivers map[string]func() interfaces.Adapter) {
 /**
  * 获取已注册适配器
  */
-func GetDriver(name string, once ...bool) interfaces.Adapter {
+func GetDriver(name string, conf map[string]interface{}, once ...bool) interfaces.Adapter {
     name = driverPrefix + name
 
-    data := register.New().Get(name, once...)
+    var data interface{}
+    reg := register.New()
+    if len(once) > 0 && once[0] {
+        data = reg.GetOnce(name, conf)
+    } else {
+        data = reg.Get(name, conf)
+    }
+
     if data != nil {
         return data.(interfaces.Adapter)
-    }
-
-    return nil
-}
-
-/**
- * 注册磁盘
- */
-func RegisterDisk(name string, f func() interfaces.Fllesystem) {
-    name = diskPrefix + name
-
-    register.New().With(name, func() interface{} {
-        return f()
-    })
-}
-
-/**
- * 批量注册磁盘
- */
-func RegisterDisks(disks map[string]func() interfaces.Fllesystem) {
-    for name, f := range disks {
-        RegisterDisk(name, f)
-    }
-}
-
-/**
- * 获取已注册磁盘
- */
-func GetDisk(name string, once ...bool) interfaces.Fllesystem {
-    name = diskPrefix + name
-
-    data := register.New().Get(name, once...)
-    if data != nil {
-        return data.(interfaces.Fllesystem)
     }
 
     return nil

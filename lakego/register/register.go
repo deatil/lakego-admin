@@ -15,7 +15,7 @@ var once sync.Once
  */
 func New() *Register {
     once.Do(func() {
-        register := make(map[string]func() interface{})
+        register := make(map[string]func(map[string]interface{}) interface{})
         used := make(map[string]interface{})
 
         instance = &Register{
@@ -32,14 +32,14 @@ func New() *Register {
  */
 type Register struct {
     // 已注册数据
-    registers map[string]func() interface{}
+    registers map[string]func(map[string]interface{}) interface{}
 
     // 已使用
     used map[string]interface{}
 }
 
 // 注册
-func (r *Register) With(name string, f func() interface{}) {
+func (r *Register) With(name string, f func(map[string]interface{}) interface{}) {
     lock.Lock()
     defer lock.Unlock()
 
@@ -53,27 +53,25 @@ func (r *Register) With(name string, f func() interface{}) {
 /**
  * 获取
  */
-func (r *Register) Get(name string, once ...bool) interface{} {
-    if len(once) > 0 && once[0] {
-        if usedValue, usedExists := r.used[name]; usedExists {
-            return usedValue
-        }
-    }
-
+func (r *Register) Get(name string, conf map[string]interface{}) interface{} {
     if value, exists := r.registers[name]; exists {
-        r.used[name] = value()
-
-        return r.used[name]
+        return value(conf)
     }
 
     return nil
 }
 
 /**
- * 获取单列
+ * 获取单例
  */
-func (r *Register) GetOnce(name string) interface{} {
-    return r.Get(name, true)
+func (r *Register) GetOnce(name string, conf map[string]interface{}) interface{} {
+    if usedValue, usedExists := r.used[name]; usedExists {
+        return usedValue
+    }
+
+    r.used[name] = r.Get(name, conf)
+
+    return r.used[name]
 }
 
 /**

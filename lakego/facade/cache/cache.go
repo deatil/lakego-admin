@@ -34,33 +34,17 @@ func NewWithType(cache string, once ...bool) interfaces.Cache {
 // 注册
 func Register() {
     once.Do(func() {
-        // 注册可用缓存驱动
-        register.RegisterDriver("redis", func() interfaces.Driver {
-            return &redisDriver.Redis{}
+        // 注册缓存驱动
+        register.RegisterDriver("redis", func(conf map[string]interface{}) interfaces.Driver {
+            prefix := conf["prefix"].(string)
+
+            driver := &redisDriver.Redis{}
+
+            driver.Init(conf)
+            driver.SetPrefix(prefix)
+
+            return driver
         })
-
-        // 缓存列表
-        caches := config.New("cache").GetStringMap("Caches")
-
-        // redis 缓存
-        register.RegisterCache("redis", func() interfaces.Cache {
-            redisConf := caches["redis"].(map[string]interface{})
-            redisType := redisConf["type"].(string)
-            redisPrefix := redisConf["prefix"].(string)
-
-            driver := register.GetDriver(redisType)
-            if driver == nil {
-                panic("缓存驱动 " + redisType + " 没有被注册")
-            }
-
-            driver.Init(redisConf)
-            driver.SetPrefix(redisPrefix)
-
-            c := cache.New(driver, redisConf)
-
-            return c
-        })
-
     })
 }
 
@@ -68,18 +52,25 @@ func Cache(name string, once ...bool) interfaces.Cache {
     // 注册默认缓存
     Register()
 
-    var once2 bool
-    if len(once) > 0 {
-        once2 = once[0]
-    } else {
-        once2 = true
+    // 缓存列表
+    caches := config.New("cache").GetStringMap("Caches")
+
+    // 获取驱动配置
+    driverConfig, ok := caches[name]
+    if !ok {
+        panic("缓存驱动 " + name + " 配置不存在")
     }
 
-    // 拿取缓存
-    c := register.GetCache(name, once2)
-    if c == nil {
-        panic("缓存类型 " + name + " 没有被注册")
+    // 配置
+    driverConf := driverConfig.(map[string]interface{})
+
+    driverType := driverConf["type"].(string)
+    driver := register.GetDriver(driverType, driverConf, once...)
+    if driver == nil {
+        panic("缓存驱动 " + driverType + " 没有被注册")
     }
+
+    c := cache.New(driver, driverConf)
 
     return c
 }

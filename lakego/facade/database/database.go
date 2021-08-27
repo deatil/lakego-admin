@@ -33,31 +33,15 @@ func NewWithType(database string, once ...bool) *gorm.DB {
 // 注册
 func Register() {
     once.Do(func() {
-        // 注册可用驱动
-        register.RegisterDrivers(map[string]func() interfaces.Driver {
-            "mysql": func() interfaces.Driver {
-                return &mysqlDriver.Mysql{}
+        // 注册驱动
+        register.RegisterDrivers(map[string]func(map[string]interface{}) interfaces.Driver {
+            "mysql": func(conf map[string]interface{}) interfaces.Driver {
+                driver := &mysqlDriver.Mysql{}
+
+                driver.WithConfig(conf)
+
+                return driver
             },
-        })
-
-        // 连接列表
-        connections := config.New("database").GetStringMap("Connections")
-
-        // mysql
-        register.RegisterDatabase("mysql", func() interfaces.Database {
-            mysqlConf := connections["mysql"].(map[string]interface{})
-            mysqlType := mysqlConf["type"].(string)
-
-            driver := register.GetDriver(mysqlType)
-            if driver == nil {
-                panic("数据库驱动 " + mysqlType + " 没有被注册")
-            }
-
-            driver.WithConfig(mysqlConf)
-
-            d := database.New(driver, mysqlConf)
-
-            return d
         })
     })
 }
@@ -74,18 +58,32 @@ func Database(name string, once ...bool) *gorm.DB {
         once2 = true
     }
 
-    // 拿取
-    c := register.GetDatabase(name, once2)
-    if c == nil {
-        panic("数据库类型 " + name + " 没有被注册")
+    // 连接列表
+    connections := config.New("database").GetStringMap("Connections")
+
+    // 获取驱动配置
+    driverConfig, ok := connections[name]
+    if !ok {
+        panic("数据库驱动 " + name + " 配置不存在")
     }
+
+    // 配置
+    driverConf := driverConfig.(map[string]interface{})
+
+    driverType := driverConf["type"].(string)
+    driver := register.GetDriver(driverType, driverConf, once2)
+    if driver == nil {
+        panic("数据库驱动 " + driverType + " 没有被注册")
+    }
+
+    d := database.New(driver, driverConf)
 
     debug := config.New("database").GetBool("Debug")
     if debug {
-        return c.GetConnectionWithDebug()
+        return d.GetConnectionWithDebug()
     }
 
-    return c.GetConnection()
+    return d.GetConnection()
 }
 
 // 默认数据库

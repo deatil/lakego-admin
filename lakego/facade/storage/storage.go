@@ -35,63 +35,24 @@ func MountManager(filesystems ...map[string]interface{}) *fllesystem.MountManage
 // 注册磁盘
 func Register() {
     once.Do(func() {
-        // 注册可用驱动
-        register.RegisterDriver("local", func() interfaces.Adapter {
-            return &localAdapter.Local{}
-        })
-
-        // 磁盘列表
-        disks := config.New("filesystem").GetStringMap("Disks")
-
         // 程序根目录
         basePath := path.GetBasePath()
 
-        // 本地磁盘
-        register.RegisterDisk("local", func() interfaces.Fllesystem {
-            localConf := disks["local"].(map[string]interface{})
-            localRoot := localConf["root"].(string)
-            localType := localConf["type"].(string)
+        // 注册可用驱动
+        register.RegisterDriver("local", func(conf map[string]interface{}) interfaces.Adapter {
+            driver := &localAdapter.Local{}
 
-            driver := register.GetDriver(localType)
-            if driver == nil {
-                panic("文件管理器驱动 " + localType + " 没有被注册")
+            root := conf["root"].(string)
+
+            if strings.HasPrefix(root, "{root}") {
+                root = strings.TrimPrefix(root, "{root}")
+                root = basePath + "/" + strings.TrimPrefix(root, "/")
             }
 
-            if strings.HasPrefix(localRoot, "{root}") {
-                localRoot = strings.TrimPrefix(localRoot, "{root}")
-                localRoot = basePath + "/" + strings.TrimPrefix(localRoot, "/")
-            }
+            driver.EnsureDirectory(root)
+            driver.SetPathPrefix(root)
 
-            driver.EnsureDirectory(localRoot)
-            driver.SetPathPrefix(localRoot)
-
-            fs := fllesystem.New(driver, localConf)
-
-            return fs
-        })
-
-        // 公共磁盘
-        register.RegisterDisk("public", func() interfaces.Fllesystem {
-            publicConf := disks["public"].(map[string]interface{})
-            publicRoot := publicConf["root"].(string)
-            publicType := publicConf["type"].(string)
-
-            driver := register.GetDriver(publicType)
-            if driver == nil {
-                panic("文件管理器驱动 " + publicType + " 没有被注册")
-            }
-
-            if strings.HasPrefix(publicRoot, "{root}") {
-                publicRoot = strings.TrimPrefix(publicRoot, "{root}")
-                publicRoot = basePath + "/" + strings.TrimPrefix(publicRoot, "/")
-            }
-
-            driver.EnsureDirectory(publicRoot)
-            driver.SetPathPrefix(publicRoot)
-
-            fs := fllesystem.New(driver, publicConf)
-
-            return fs
+            return driver
         })
     })
 }
@@ -100,19 +61,29 @@ func Disk(name string, once ...bool) *storage.Storage {
     // 注册默认磁盘
     Register()
 
-    var once2 bool
-    if len(once) > 0 {
-        once2 = once[0]
-    } else {
-        once2 = true
+    // 磁盘列表
+    disks := config.New("filesystem").GetStringMap("Disks")
+
+    // 获取驱动配置
+    diskConfig, ok := disks[name]
+    if !ok {
+        panic("文件管理器 " + name + " 配置不存在")
     }
 
-    // 拿取磁盘
-    disk := register.GetDisk(name, once2)
-    if disk == nil {
-        panic("文件管理器磁盘 " + name + " 没有被注册")
+    // 配置
+    diskConf := diskConfig.(map[string]interface{})
+
+    // 获取驱动磁盘
+    diskType := diskConf["type"].(string)
+    driver := register.GetDriver(diskType, diskConf, once...)
+    if driver == nil {
+        panic("文件管理器驱动 " + diskType + " 没有被注册")
     }
 
+    // 磁盘
+    disk := fllesystem.New(driver, diskConf)
+
+    // 使用自定义文件管理器
     disk2 := storage.NewWithFllesystem(disk.(*fllesystem.Fllesystem))
 
     return disk2

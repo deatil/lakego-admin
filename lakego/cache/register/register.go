@@ -8,24 +8,21 @@ import(
 // 驱动前缀
 var driverPrefix = "cache_driver_"
 
-// 缓存前缀
-var cachePrefix = "cache_cache_"
-
 /**
  * 注册驱动
  */
-func RegisterDriver(name string, f func() interfaces.Driver) {
+func RegisterDriver(name string, f func(map[string]interface{}) interfaces.Driver) {
     name = driverPrefix + name
 
-    register.New().With(name, func() interface{} {
-        return f()
+    register.New().With(name, func(conf map[string]interface{}) interface{} {
+        return f(conf)
     })
 }
 
 /**
  * 批量注册驱动
  */
-func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
+func RegisterDrivers(drivers map[string]func(map[string]interface{}) interfaces.Driver) {
     for name, f := range drivers {
         RegisterDriver(name, f)
     }
@@ -34,46 +31,19 @@ func RegisterDrivers(drivers map[string]func() interfaces.Driver) {
 /**
  * 获取已注册驱动
  */
-func GetDriver(name string, once ...bool) interfaces.Driver {
+func GetDriver(name string, conf map[string]interface{}, once ...bool) interfaces.Driver {
     name = driverPrefix + name
 
-    data := register.New().Get(name, once...)
+    var data interface{}
+    reg := register.New()
+    if len(once) > 0 && once[0] {
+        data = reg.GetOnce(name, conf)
+    } else {
+        data = reg.Get(name, conf)
+    }
+
     if data != nil {
         return data.(interfaces.Driver)
-    }
-
-    return nil
-}
-
-/**
- * 注册缓存
- */
-func RegisterCache(name string, f func() interfaces.Cache) {
-    name = cachePrefix + name
-
-    register.New().With(name, func() interface{} {
-        return f()
-    })
-}
-
-/**
- * 批量注册缓存
- */
-func RegisterCaches(caches map[string]func() interfaces.Cache) {
-    for name, f := range caches {
-        RegisterCache(name, f)
-    }
-}
-
-/**
- * 获取已注册缓存
- */
-func GetCache(name string, once ...bool) interfaces.Cache {
-    name = cachePrefix + name
-
-    data := register.New().Get(name, once...)
-    if data != nil {
-        return data.(interfaces.Cache)
     }
 
     return nil
