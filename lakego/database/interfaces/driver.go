@@ -13,7 +13,7 @@ type Driver interface {
     WithConfig(map[string]interface{}) Driver
 
     // 获取配置
-    GetConfig(...string) interface{}
+    GetConfig(string) interface{}
 
     // 连接
     GetConnection() *gorm.DB

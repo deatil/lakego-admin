@@ -34,14 +34,12 @@ func (db *Database) WithConfig(config map[string]interface{}) interfaces.Databas
 }
 
 // 获取配置
-func (db *Database) GetConfig(conf ...string) interface{} {
-    if len(conf) > 0 {
-        if data, ok := db.config[conf[0]]; ok {
-            return data
-        }
+func (db *Database) GetConfig(name string) interface{} {
+    if data, ok := db.config[name]; ok {
+        return data
     }
 
-    return db.config
+    return nil
 }
 
 /**

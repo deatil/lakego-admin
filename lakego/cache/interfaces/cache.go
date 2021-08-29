@@ -12,7 +12,7 @@ type Cache interface {
     WithConfig(map[string]interface{}) Cache
 
     // 获取配置
-    GetConfig(...string) interface{}
+    GetConfig(string) interface{}
 
     // 获取
     Get(string) (interface{}, error)

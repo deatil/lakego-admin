@@ -1,0 +1,37 @@
+# 驱动列表
+Crypts:
+  # Md5
+  Md5:
+    Type: "md5"
+    Key: "dfertf12dfertf12"
+    # 签名方式： 链接 query, 加密函数用 signkey
+    Signtype: "query"
+
+  # Sha1
+  Sha1:
+    Type: "sha1"
+    Key: ""
+    Signtype: "query"
+
+  # hmac 摘要
+  Hmac:
+    Type: "hmac"
+    Key: ""
+    Signtype: "signkey"
+
+  # aes 对称加密
+  Aes:
+    Type: "aes"
+    Key: "dfertf12dfertf12"
+    Iv: "dfertf12dfertf12"
+    Signtype: "signkey"
+
+  # rsa 非对称加密
+  Rsa:
+    Type: "rsa"
+    # 公钥
+    Publickey: ""
+    # 私钥
+    Privatekey: ""
+    Signtype: "signkey"
+

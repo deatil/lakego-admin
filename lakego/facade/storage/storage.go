@@ -4,13 +4,13 @@ import(
     "sync"
     "strings"
 
+    "lakego-admin/lakego/register"
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/fllesystem"
     "lakego-admin/lakego/fllesystem/interfaces"
     localAdapter "lakego-admin/lakego/fllesystem/adapter/local"
     "lakego-admin/lakego/storage"
-    "lakego-admin/lakego/storage/register"
 )
 
 var once sync.Once
@@ -39,7 +39,7 @@ func Register() {
         basePath := path.GetBasePath()
 
         // 注册可用驱动
-        register.RegisterDriver("local", func(conf map[string]interface{}) interfaces.Adapter {
+        register.NewManagerWithPrefix("database_").Register("local", func(conf map[string]interface{}) interface{} {
             driver := &localAdapter.Local{}
 
             root := conf["root"].(string)
@@ -75,13 +75,13 @@ func Disk(name string, once ...bool) *storage.Storage {
 
     // 获取驱动磁盘
     diskType := diskConf["type"].(string)
-    driver := register.GetDriver(diskType, diskConf, once...)
+    driver := register.NewManagerWithPrefix("database_").GetRegister(diskType, diskConf, once...)
     if driver == nil {
         panic("文件管理器驱动 " + diskType + " 没有被注册")
     }
 
     // 磁盘
-    disk := fllesystem.New(driver, diskConf)
+    disk := fllesystem.New(driver.(interfaces.Adapter), diskConf)
 
     // 使用自定义文件管理器
     disk2 := storage.NewWithFllesystem(disk.(*fllesystem.Fllesystem))

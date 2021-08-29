@@ -4,10 +4,10 @@ import (
     "sync"
     "gorm.io/gorm"
 
+    "lakego-admin/lakego/register"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/database"
     "lakego-admin/lakego/database/interfaces"
-    "lakego-admin/lakego/database/register"
     mysqlDriver "lakego-admin/lakego/database/driver/mysql"
 )
 
@@ -34,8 +34,8 @@ func NewWithType(database string, once ...bool) *gorm.DB {
 func Register() {
     once.Do(func() {
         // 注册驱动
-        register.RegisterDrivers(map[string]func(map[string]interface{}) interfaces.Driver {
-            "mysql": func(conf map[string]interface{}) interfaces.Driver {
+        register.NewManagerWithPrefix("database_").RegisterMany(map[string]func(map[string]interface{}) interface{} {
+            "mysql": func(conf map[string]interface{}) interface{} {
                 driver := &mysqlDriver.Mysql{}
 
                 driver.WithConfig(conf)
@@ -71,12 +71,12 @@ func Database(name string, once ...bool) *gorm.DB {
     driverConf := driverConfig.(map[string]interface{})
 
     driverType := driverConf["type"].(string)
-    driver := register.GetDriver(driverType, driverConf, once2)
+    driver := register.NewManagerWithPrefix("database_").GetRegister(driverType, driverConf, once2)
     if driver == nil {
         panic("数据库驱动 " + driverType + " 没有被注册")
     }
 
-    d := database.New(driver, driverConf)
+    d := database.New(driver.(interfaces.Driver), driverConf)
 
     debug := config.New("database").GetBool("Debug")
     if debug {

@@ -14,7 +14,10 @@ import (
  * @author deatil
  */
 type Cache struct {
+    // 配置
     config map[string]interface{}
+
+    // 驱动
     driver interfaces.Driver
 }
 
@@ -51,14 +54,12 @@ func (c *Cache) WithConfig(config map[string]interface{}) interfaces.Cache {
 }
 
 // 获取配置
-func (c *Cache) GetConfig(conf ...string) interface{} {
-    if len(conf) > 0 {
-        if data, ok := c.config[conf[0]]; ok {
-            return data
-        }
+func (c *Cache) GetConfig(name string) interface{} {
+    if data, ok := c.config[name]; ok {
+        return data
     }
 
-    return c.config
+    return nil
 }
 
 // 获取

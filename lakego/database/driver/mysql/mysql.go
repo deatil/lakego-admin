@@ -44,14 +44,12 @@ func (m *Mysql) WithConfig(config map[string]interface{}) interfaces.Driver {
 }
 
 // 获取配置
-func (m *Mysql) GetConfig(conf ...string) interface{} {
-    if len(conf) > 0 {
-        if data, ok := m.config[conf[0]]; ok {
-            return data
-        }
+func (m *Mysql) GetConfig(name string) interface{} {
+    if data, ok := m.config[name]; ok {
+        return data
     }
 
-    return m.config
+    return nil
 }
 
 /**

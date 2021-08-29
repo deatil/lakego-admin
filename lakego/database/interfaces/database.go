@@ -10,7 +10,7 @@ type Database interface {
     WithConfig(map[string]interface{}) Database
 
     // 获取配置
-    GetConfig(...string) interface{}
+    GetConfig(string) interface{}
 
     // 设置驱动
     WithDriver(Driver) Database

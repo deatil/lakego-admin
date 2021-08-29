@@ -3,10 +3,10 @@ package cache
 import (
     "sync"
 
+    "lakego-admin/lakego/register"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/cache"
     "lakego-admin/lakego/cache/interfaces"
-    "lakego-admin/lakego/cache/register"
     redisDriver "lakego-admin/lakego/cache/driver/redis"
 )
 
@@ -35,7 +35,7 @@ func NewWithType(cache string, once ...bool) interfaces.Cache {
 func Register() {
     once.Do(func() {
         // 注册缓存驱动
-        register.RegisterDriver("redis", func(conf map[string]interface{}) interfaces.Driver {
+        register.NewManagerWithPrefix("cache_").Register("redis", func(conf map[string]interface{}) interface{} {
             prefix := conf["prefix"].(string)
 
             driver := &redisDriver.Redis{}
@@ -65,12 +65,12 @@ func Cache(name string, once ...bool) interfaces.Cache {
     driverConf := driverConfig.(map[string]interface{})
 
     driverType := driverConf["type"].(string)
-    driver := register.GetDriver(driverType, driverConf, once...)
+    driver := register.NewManagerWithPrefix("cache_").GetRegister(driverType, driverConf, once...)
     if driver == nil {
         panic("缓存驱动 " + driverType + " 没有被注册")
     }
 
-    c := cache.New(driver, driverConf)
+    c := cache.New(driver.(interfaces.Driver), driverConf)
 
     return c
 }

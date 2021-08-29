@@ -8,6 +8,8 @@ type Config interface {
 
     Clone(fileName string) Config
 
+    OnConfigChange(f func(string)) Config
+
     Get(keyName string) interface{}
 
     GetString(keyName string) string

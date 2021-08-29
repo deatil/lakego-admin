@@ -2,9 +2,6 @@ package casbin
 
 import (
     "github.com/casbin/casbin/v2"
-    casbinAdapter "lakego-admin/lakego/casbin/adapter"
-    "lakego-admin/lakego/facade/database"
-    "lakego-admin/lakego/support/path"
 )
 
 type Casbin struct {
@@ -12,32 +9,19 @@ type Casbin struct {
 }
 
 /**
- * Casbin
- *
- * @create 2021-6-20
- * @author deatil
+ * 设置
  */
-func New() *Casbin {
-    newDb := database.New()
-
-    // 配置文件路径
-    configPath := path.GetBasePath()
-    modelConf := configPath + "/config/rbac_model.conf"
-
-    a, _ := casbinAdapter.NewAdapterByDB(newDb)
-    e, _ := casbin.NewEnforcer(modelConf, a)
-
-    // Load the policy from DB.
-    // e.LoadPolicy()
-
-    // Save the policy back to DB.
-    // e.SavePolicy()
-
-    c := &Casbin{
-        Enforcer: e,
-    }
+func (c *Casbin) WithEnforcer(e *casbin.Enforcer) *Casbin {
+    c.Enforcer = e
 
     return c
+}
+
+/**
+ * 获取
+ */
+func (c *Casbin) GetEnforcer() *casbin.Enforcer {
+    return c.Enforcer
 }
 
 /**
