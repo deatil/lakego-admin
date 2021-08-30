@@ -26,7 +26,7 @@ var once sync.Once
 func Sign(name string) *sign.Sign {
     driver, conf := GetDriver(name)
 
-    s := &sign.Sign{}
+    s := sign.NewSign()
     s.WithConfig(conf)
     s.WithDriver(driver)
 
@@ -43,7 +43,7 @@ func Sign(name string) *sign.Sign {
 func Check(name string) *sign.Check {
     driver, conf := GetDriver(name)
 
-    s := &sign.Check{}
+    s := sign.NewCheck()
     s.WithConfig(conf)
     s.WithDriver(driver)
 

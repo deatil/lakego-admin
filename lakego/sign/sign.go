@@ -9,6 +9,13 @@ import (
     "lakego-admin/lakego/sign/interfaces"
 )
 
+// 实例化
+func NewSign() *Sign {
+    return &Sign{
+        data: make(map[string]string),
+    }
+}
+
 /**
  * 签名
  *
@@ -86,10 +93,6 @@ func (s *Sign) GetDatas() map[string]string {
 
 // 添加签名体字段和值
 func (s *Sign) WithData(key string, value string) *Sign {
-    if s.data == nil {
-        s.data = make(map[string]string)
-    }
-
     s.data[key] = value
 
     return s
@@ -164,13 +167,18 @@ func (s *Sign) GetSignDataString() (string, error) {
 }
 
 // 生成签名
+func (s *Sign) CreateSign(data string) string {
+    return s.driver.Sign(data)
+}
+
+// 生成签名
 func (s *Sign) MakeSign() (string, error) {
     signData, err := s.GetSignDataString()
     if err != nil {
         return "", err
     }
 
-    return s.driver.Sign(signData), nil
+    return s.CreateSign(signData), nil
 }
 
 // 获取生成的所有数据

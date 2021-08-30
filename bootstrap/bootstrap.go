@@ -79,6 +79,6 @@ func RunCmd() {
 
     newApp.WithRunningInConsole(true)
 
-    newApp.LoadServiceProvider()
+    newApp.Console()
 }
 

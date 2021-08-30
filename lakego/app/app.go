@@ -42,9 +42,16 @@ func New() *App {
     }
 }
 
+// 运行
 func (app *App) Run() {
     // 加载 app
     app.loadApp()
+}
+
+// 命令行
+func (app *App) Console() {
+    // 加载服务提供者
+    app.loadServiceProvider()
 }
 
 // 注册服务提供者
@@ -80,7 +87,7 @@ func (app *App) Registers(providers []func() providerInterface.ServiceProvider) 
 }
 
 // 加载服务提供者
-func (app *App) LoadServiceProvider() {
+func (app *App) loadServiceProvider() {
     if len(serviceProviders) > 0 {
         for _, provider := range serviceProviders {
             p := provider()
@@ -152,7 +159,7 @@ func (app *App) loadApp() {
     app.RouteEngine = r
 
     // 加载服务提供者
-    app.LoadServiceProvider()
+    app.loadServiceProvider()
 
     app.Runned = true
 

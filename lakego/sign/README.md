@@ -8,14 +8,14 @@ signData := sign.Sign("md5").
     WithAppID("API123456").
     GetSignMap()
 
-data := sign.Check("md5").
-    WithData(signData).
-    GetDataWithoutSign()
-
 check, _ := sign.Check("md5").
     WithData(signData).
     WithTimeout(1000).
     CheckData()
+
+data := sign.Check("md5").
+    WithDatas(signData).
+    GetDataWithoutSign()
 
 signData2, _ := sign.Sign("md5").
     WithDatas(data).

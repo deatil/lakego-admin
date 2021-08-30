@@ -8,6 +8,13 @@ import (
     "lakego-admin/lakego/sign/interfaces"
 )
 
+// 实例化
+func NewCheck() *Check {
+    return &Check{
+        data: make(map[string]string),
+    }
+}
+
 /**
  * 验证
  *
@@ -56,8 +63,19 @@ func (c *Check) WithDriver(driver interfaces.Driver) *Check {
 }
 
 // 批量设置
-func (c *Check) WithData(data map[string]string) *Check {
-    c.data = data
+func (c *Check) WithData(key string, value string) *Check {
+    c.data[key] = value
+
+    return c
+}
+
+// 批量设置
+func (c *Check) WithDatas(data map[string]string) *Check {
+    if len(data) > 0{
+        for k, v := range data {
+            c.WithData(k, v)
+        }
+    }
 
     return c
 }
