@@ -6,6 +6,7 @@ import (
 
     "lakego-admin/lakego/app"
     "lakego-admin/lakego/provider"
+    _ "lakego-admin/lakego/facade/database"
 )
 
 var rootCmd = &cobra.Command{

@@ -55,7 +55,7 @@ func (m *Mysql) GetConfig(name string) interface{} {
 /**
  * 初始化
  */
-func (m *Mysql) GetConnection() *gorm.DB {
+func (m *Mysql) CreateConnection() {
     var dsn string
 
     // 配置
@@ -112,8 +112,20 @@ func (m *Mysql) GetConnection() *gorm.DB {
     sqlDB.SetMaxOpenConns(MaxOpenConns)
 
     m.db = db
+}
 
-    return db
+/**
+ * 初始化
+ */
+func (m *Mysql) GetConnection() *gorm.DB {
+    return m.db
+}
+
+/**
+ * 获取数据库连接对象db，带debug
+ */
+func (m *Mysql) GetConnectionWithDebug() *gorm.DB {
+    return m.db.Debug()
 }
 
 /**

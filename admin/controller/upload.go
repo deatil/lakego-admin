@@ -9,7 +9,7 @@ import (
     "lakego-admin/lakego/facade/storage"
     "lakego-admin/lakego/support/time"
     "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/http/controller"
+
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/model"
 )
@@ -21,7 +21,7 @@ import (
  * @author deatil
  */
 type Upload struct {
-    controller.Base
+    Base
 }
 
 /**

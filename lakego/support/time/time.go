@@ -12,6 +12,11 @@ func StringToTime(date interface{}) time.Time {
     return ret
 }
 
+// 时间字符转为时间戳
+func StringToTimestamp(date interface{}) int64 {
+    return StringToTime(date).Unix()
+}
+
 // 时间戳转为 time.Time
 func TimeStampToTime(timeStamp int32) time.Time {
     return time.Unix(int64(timeStamp), 0)

@@ -13,6 +13,12 @@ import (
 
 var once sync.Once
 
+// 初始化
+func init() {
+    // 注册默认
+    Register()
+}
+
 /**
  * 数据库
  *
@@ -20,37 +26,6 @@ var once sync.Once
  * @author deatil
  */
 func New(once ...bool) *gorm.DB {
-    database := GetDefaultDatabase()
-
-    return Database(database, once...)
-}
-
-// 实例化
-func NewWithType(database string, once ...bool) *gorm.DB {
-    return Database(database, once...)
-}
-
-// 注册
-func Register() {
-    once.Do(func() {
-        // 注册驱动
-        register.NewManagerWithPrefix("database_").RegisterMany(map[string]func(map[string]interface{}) interface{} {
-            "mysql": func(conf map[string]interface{}) interface{} {
-                driver := &mysqlDriver.Mysql{}
-
-                driver.WithConfig(conf)
-
-                return driver
-            },
-        })
-    })
-}
-
-// 选择数据库
-func Database(name string, once ...bool) *gorm.DB {
-    // 注册默认
-    Register()
-
     var once2 bool
     if len(once) > 0 {
         once2 = once[0]
@@ -58,6 +33,18 @@ func Database(name string, once ...bool) *gorm.DB {
         once2 = true
     }
 
+    database := GetDefaultDatabase()
+
+    return Database(database, once2)
+}
+
+// 实例化
+func NewWithType(database string, once ...bool) *gorm.DB {
+    return Database(database, once...)
+}
+
+// 选择数据库
+func Database(name string, once ...bool) *gorm.DB {
     // 连接列表
     connections := config.New("database").GetStringMap("Connections")
 
@@ -71,7 +58,7 @@ func Database(name string, once ...bool) *gorm.DB {
     driverConf := driverConfig.(map[string]interface{})
 
     driverType := driverConf["type"].(string)
-    driver := register.NewManagerWithPrefix("database_").GetRegister(driverType, driverConf, once2)
+    driver := register.NewManagerWithPrefix("database_").GetRegister(driverType, driverConf, once...)
     if driver == nil {
         panic("数据库驱动 " + driverType + " 没有被注册")
     }
@@ -89,6 +76,23 @@ func Database(name string, once ...bool) *gorm.DB {
 // 默认数据库
 func GetDefaultDatabase() string {
     return config.New("database").GetString("Default")
+}
+
+// 注册
+func Register() {
+    once.Do(func() {
+        // 注册驱动
+        register.NewManagerWithPrefix("database_").RegisterMany(map[string]func(map[string]interface{}) interface{} {
+            "mysql": func(conf map[string]interface{}) interface{} {
+                driver := &mysqlDriver.Mysql{}
+
+                driver.WithConfig(conf)
+                driver.CreateConnection()
+
+                return driver
+            },
+        })
+    })
 }
 
 

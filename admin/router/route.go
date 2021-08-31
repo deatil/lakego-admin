@@ -28,4 +28,14 @@ func Route(engine *gin.RouterGroup) {
     // 上传
     uploadController := new(controller.Upload)
     engine.POST("/upload/file", uploadController.File)
+
+    // 附件
+    attachmentController := new(controller.Attachment)
+    engine.GET("/attachment", attachmentController.Index)
+    engine.GET("/attachment/:id", attachmentController.Detail)
+    engine.PATCH("/attachment/:id/enable", attachmentController.Enable)
+    engine.PATCH("/attachment/:id/disable", attachmentController.Disable)
+    engine.DELETE("/attachment/:id", attachmentController.Delete)
+    engine.GET("/attachment/downcode/:id", attachmentController.DownloadCode)
+    engine.GET("/attachment/download/:code", attachmentController.Download)
 }

@@ -4,8 +4,8 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/event"
-    "lakego-admin/lakego/http/controller"
     authPassword "lakego-admin/lakego/auth/password"
+
     "lakego-admin/admin/model"
     "lakego-admin/admin/auth/admin"
     profileValidate "lakego-admin/admin/validate/profile"
@@ -18,7 +18,7 @@ import (
  * @author deatil
  */
 type Profile struct {
-    controller.Base
+    Base
 }
 
 /**

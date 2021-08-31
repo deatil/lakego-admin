@@ -8,7 +8,6 @@ import (
     "lakego-admin/lakego/facade/captcha"
     "lakego-admin/lakego/facade/cache"
     "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/http/controller"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/support/http/code"
@@ -17,23 +16,23 @@ import (
 )
 
 type Passport struct {
-    controller.Base
+    Base
 }
 
 /**
  * 验证码
  */
-func (control *Passport) Captcha(context *gin.Context) {
+func (control *Passport) Captcha(ctx *gin.Context) {
     c := captcha.New()
     id, b64s, err := c.Generate()
     if err != nil {
-        control.Error(context, "error", code.StatusError)
+        control.Error(ctx, "error", code.StatusError)
     }
 
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
 
-    control.SetHeader(context, key, id)
-    control.SuccessWithData(context, "获取成功", gin.H{
+    control.SetHeader(ctx, key, id)
+    control.SuccessWithData(ctx, "获取成功", gin.H{
         "captcha": b64s,
     })
 }
