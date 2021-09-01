@@ -15,6 +15,12 @@ import(
 
 var once sync.Once
 
+// 初始化
+func init() {
+    // 注册默认磁盘
+    Register()
+}
+
 // 实例化
 func New(once ...bool) *storage.Storage {
     disk := GetDefaultDisk()
@@ -58,9 +64,6 @@ func Register() {
 }
 
 func Disk(name string, once ...bool) *storage.Storage {
-    // 注册默认磁盘
-    Register()
-
     // 磁盘列表
     disks := config.New("filesystem").GetStringMap("Disks")
 

@@ -54,7 +54,7 @@ func (ctl *Base) FormatOrderBy(order string, defaulter ...string) string {
 
     order = strings.ToUpper(order)
 
-    for k, v := range orderList {
+    for _, v := range orderList {
         if order == v {
             return order
         }

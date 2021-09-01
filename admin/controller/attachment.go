@@ -1,9 +1,14 @@
 package controller
 
 import (
+    "strconv"
+    "strings"
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/facade/storage"
+
     "lakego-admin/admin/model"
+    "lakego-admin/admin/support/url"
 )
 
 /**
@@ -20,28 +25,76 @@ type Attachment struct {
  * 列表
  */
 func (control *Attachment) Index(ctx *gin.Context) {
-    start := ctx.Query("start")
-    limit := ctx.Query("limit")
+    // 附件模型
+    attachModel := model.NewAttachment()
 
-    order := ctx.DefaultQuery("order", "ASC")
+    // 排序
+    order := ctx.DefaultQuery("order", "id__DESC")
+    orders := strings.SplitN(order, "__", 2)
+    attachModel = attachModel.Order(orders[0] + " " + orders[1])
 
+    // 搜索条件
     searchword := ctx.DefaultQuery("searchword", "")
+    if searchword != "" {
+        attachModel = attachModel.
+            Or("name = ?", searchword).
+            Or("extension = ?", searchword).
+            Or("driver = ?", searchword)
+    }
 
-    startTime := control.FormatDate(ctx.DefaultQuery("start_time", ""))
-    endTime := control.FormatDate(ctx.DefaultQuery("end_time", ""))
+    // 时间条件
+    startTime := ctx.DefaultQuery("start_time", "")
+    if startTime != "" {
+        attachModel = attachModel.Where("create_time >= ?", control.FormatDate(startTime))
+    }
+
+    endTime := ctx.DefaultQuery("end_time", "")
+    if endTime != "" {
+        attachModel = attachModel.Where("create_time <= ?", control.FormatDate(endTime))
+    }
 
     status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    if status != -1 {
+        attachModel = attachModel.Where("status = ?", status)
+    }
 
-    total := 0
+    // 分页相关
+    start := ctx.DefaultQuery("start", "0")
+    limit := ctx.DefaultQuery("limit", "10")
 
-    list := []string{}
+    newStart, _ := strconv.Atoi(start)
+    newLimit, _ := strconv.Atoi(limit)
+
+    attachModel = attachModel.
+        Offset(newStart).
+        Limit(newLimit)
+
+    list := make([]map[string]interface{}, 0)
+
+    // 列表
+    attachModel = attachModel.Find(&list)
+
+    var total int64
+
+    // 总数
+    err := attachModel.Offset(-1).Limit(-1).Count(&total).Error
+    if err != nil {
+        control.Error(ctx, "获取失败")
+        return
+    }
+
+    newList := make([]map[string]interface{}, 0)
+    for _, v := range list {
+        v["url"] = url.AttachmentUrl(v["path"].(string), v["disk"].(string))
+        newList = append(newList, v)
+    }
 
     // 数据输出
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
-        "list": list,
+        "list": newList,
     })
 }
 
@@ -49,15 +102,70 @@ func (control *Attachment) Index(ctx *gin.Context) {
  * 详情
  */
 func (control *Attachment) Detail(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    newId, _ := strconv.Atoi(id)
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", newId).
+        First(&result).
+        Error
+    if err != nil {
+        control.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    // 格式化链接
+    result["url"] = url.AttachmentUrl(result["path"].(string), result["disk"].(string))
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.SuccessWithData(ctx, "获取成功", result)
 }
 
 /**
  * 启用
  */
 func (control *Attachment) Enable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    if result["status"].(int) == 1 {
+        control.Error(ctx, "文件已启用")
+        return
+    }
+
+    err2 := model.NewAttachment().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 1,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "文件启用失败")
+        return
+    }
 
     // 数据输出
     control.Success(ctx, "文件启用成功")
@@ -67,6 +175,39 @@ func (control *Attachment) Enable(ctx *gin.Context) {
  * 禁用
  */
 func (control *Attachment) Disable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    if result["status"].(int) == 0 {
+        control.Error(ctx, "文件已禁用")
+        return
+    }
+
+    err2 := model.NewAttachment().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 0,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "文件禁用失败")
+        return
+    }
 
     // 数据输出
     control.Success(ctx, "文件禁用成功")
@@ -76,6 +217,38 @@ func (control *Attachment) Disable(ctx *gin.Context) {
  * 删除
  */
 func (control *Attachment) Delete(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    // 附件模型
+    err2 := model.NewAttachment().
+        Delete(&model.Attachment{
+            ID: id,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "文件删除失败")
+        return
+    }
+
+    // 删除具体文件
+    storage.NewWithDisk(result["disk"].(string)).
+        Delete(result["path"].(string))
 
     // 数据输出
     control.Success(ctx, "文件删除成功")

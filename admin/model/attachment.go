@@ -21,7 +21,7 @@ type Attachment struct {
     Size            string      `gorm:"column:size;size:100;" json:"size"`
     Md5             string      `gorm:"column:md5;size:32;" json:"md5"`
     Sha1            string      `gorm:"column:sha1;size:40;" json:"sha1"`
-    Driver          string      `gorm:"column:driver;size:16;" json:"driver"`
+    Disk            string      `gorm:"column:disk;size:16;" json:"disk"`
     Status          int         `gorm:"column:status;not null;size:1;" json:"status"`
     UpdateTime      int         `gorm:"column:update_time;size:10;" json:"update_time"`
     CreateTime      int         `gorm:"column:create_time;size:10;" json:"create_time"`
@@ -39,3 +39,4 @@ func (m *Attachment) BeforeCreate(tx *gorm.DB) error {
 func NewAttachment() *gorm.DB {
     return database.New().Model(&Attachment{})
 }
+

@@ -15,7 +15,7 @@ import (
 )
 
 type Local struct {
-    adapter.Abstract
+    adapter.Adapter
 
     visibility string
 }

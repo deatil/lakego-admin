@@ -143,7 +143,7 @@ func (control *Upload) File(ctx *gin.Context) {
         Size: strconv.FormatInt(size, 10),
         Md5: md5,
         Sha1: sha1,
-        Driver: driver,
+        Disk: driver,
         Status: 1,
         CreateTime: int(time.NowTime()),
         AddTime: int(time.NowTime()),

@@ -8,6 +8,7 @@ import (
 
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/helper"
+    "lakego-admin/lakego/facade/storage"
 )
 
 // 生成后台链接
@@ -54,3 +55,17 @@ func MatchPath(ctx *gin.Context, path string, current string) bool {
 
     return true
 }
+
+// 附件 url
+func AttachmentUrl(path string, disk ...string) string {
+    var url string
+
+    if len(disk) > 0 {
+        url = storage.NewWithDisk(disk[0]).Url(path)
+    } else {
+        url = storage.New().Url(path)
+    }
+
+    return url
+}
+
