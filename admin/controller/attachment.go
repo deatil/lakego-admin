@@ -1,11 +1,15 @@
 package controller
 
 import (
-    "strconv"
     "strings"
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/support/hash"
+    "lakego-admin/lakego/support/time"
+    "lakego-admin/lakego/support/cast"
+    "lakego-admin/lakego/support/random"
     "lakego-admin/lakego/facade/storage"
+    "lakego-admin/lakego/facade/cache"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/support/url"
@@ -62,8 +66,8 @@ func (control *Attachment) Index(ctx *gin.Context) {
     start := ctx.DefaultQuery("start", "0")
     limit := ctx.DefaultQuery("limit", "10")
 
-    newStart, _ := strconv.Atoi(start)
-    newLimit, _ := strconv.Atoi(limit)
+    newStart := cast.ToInt(start)
+    newLimit := cast.ToInt(limit)
 
     attachModel = attachModel.
         Offset(newStart).
@@ -108,7 +112,7 @@ func (control *Attachment) Detail(ctx *gin.Context) {
         return
     }
 
-    newId, _ := strconv.Atoi(id)
+    newId := cast.ToInt(id)
 
     result := map[string]interface{}{}
 
@@ -258,17 +262,66 @@ func (control *Attachment) Delete(ctx *gin.Context) {
  * 下载码
  */
 func (control *Attachment) DownloadCode(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    // 添加到缓存
+    code := hash.MD5(cast.ToString(time.NowTime()) + random.String(10))
+    cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "code": code,
+    })
 }
 
 /**
  * 下载
  */
 func (control *Attachment) Download(ctx *gin.Context) {
+    code := ctx.Param("code")
+    if code == "" {
+        control.ReturnString(ctx, "code值不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    fileId, _ := cache.New().Pull(code)
+    if fileId == "" {
+        control.ReturnString(ctx, "文件信息不存在")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", fileId).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.ReturnString(ctx, "文件信息不存在")
+        return
+    }
+
+    // 文件路径
+    filePath := url.AttachmentPath(result["path"].(string), result["disk"].(string))
+
+    // 下载
+    control.DownloadFile(ctx, filePath, result["name"].(string))
 }
 

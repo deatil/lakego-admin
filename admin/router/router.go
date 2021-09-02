@@ -38,4 +38,19 @@ func Route(engine *gin.RouterGroup) {
     engine.DELETE("/attachment/:id", attachmentController.Delete)
     engine.GET("/attachment/downcode/:id", attachmentController.DownloadCode)
     engine.GET("/attachment/download/:code", attachmentController.Download)
+
+    // 管理员
+    adminController := new(controller.Admin)
+    engine.GET("/admin", adminController.Index)
+    engine.GET("/admin/:id", adminController.Detail)
+    engine.GET("/admin/:id/rules", adminController.Rules)
+    engine.POST("/admin", adminController.Create)
+    engine.PUT("/admin/:id", adminController.Update)
+    engine.DELETE("/admin/:id", adminController.Delete)
+    engine.PATCH("/admin/:id/enable", adminController.Enable)
+    engine.PATCH("/admin/:id/disable", adminController.Disable)
+    engine.PATCH("/admin/:id/avatar", adminController.UpdateAvatar)
+    engine.PATCH("/admin/:id/password", adminController.UpdatePasssword)
+    engine.PATCH("/admin/:id/access", adminController.Access)
+    engine.DELETE("/admin/logout/:refreshToken", adminController.Logout)
 }

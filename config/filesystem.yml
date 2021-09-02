@@ -8,6 +8,7 @@ Disks:
         Type: "local"
         # 磁盘路径
         Root: "{root}/storage"
+
     Public:
         # 磁盘类型
         Type: "local"

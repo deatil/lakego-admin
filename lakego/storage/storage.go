@@ -51,13 +51,28 @@ func (s *Storage) Path(path string) string {
     return adapter.ApplyPathPrefix(path)
 }
 
-// 保存数据
+// 保存数据流
 func (s *Storage) PutFileAs(path string, resource *os.File, name string, config ...map[string]interface{}) string {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
     result := s.PutStream(path, resource, config...)
+
+    if result {
+        return path
+    }
+
+    return ""
+}
+
+// 保存文本数据
+func (s *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) string {
+    path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
+    path = strings.TrimPrefix(path, "/")
+    path = strings.TrimSuffix(path, "/")
+
+    result := s.Put(path, contents, config...)
 
     if result {
         return path

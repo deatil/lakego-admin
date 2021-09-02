@@ -261,6 +261,19 @@ func (upload *Upload) SaveOpenedFile(file *os.File) string {
     return upload.storage.PutFileAs(upload.GetDirectory(), file, realname)
 }
 
+// 保存文本信息
+func (upload *Upload) SaveContents(contents string, name string) string {
+    realname := upload.GetRealname(name)
+
+    if upload.storagePermission != "" {
+        return upload.storage.PutContentsAs(upload.GetDirectory(), contents, realname, map[string]interface{}{
+            "visibility": upload.storagePermission,
+        })
+    }
+
+    return upload.storage.PutContentsAs(upload.GetDirectory(), contents, realname)
+}
+
 // 删除
 func (upload *Upload) Destroy(path string) bool {
     return upload.storage.Delete(path)

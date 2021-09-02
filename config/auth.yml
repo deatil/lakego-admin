@@ -35,8 +35,12 @@ Jwt:
 # 权限
 Auth:
   # 登陆过滤 ["GET:passport/login"]
-  AuthenticateExcepts: []
+  AuthenticateExcepts: [
+    "GET:attachment/download/*"
+  ]
   # 权限过滤 ["GET:passport/login"]
-  PermissionExcepts: []
+  PermissionExcepts: [
+    "GET:attachment/download/*"
+  ]
   # 超级管理员
   AdminId: "e92ba0a3f86f4a5693d8487eb8c632b5"

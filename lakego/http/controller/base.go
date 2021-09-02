@@ -2,58 +2,79 @@ package controller
 
 import (
     "github.com/gin-gonic/gin"
+
+    "lakego-admin/lakego/http/request"
     "lakego-admin/lakego/http/response"
 )
 
-type Base struct {
-
-}
+type Base struct {}
 
 /**
  * 设置 header
  */
-func (c *Base) SetHeader(context *gin.Context, key string, value string) {
-    response.SetHeader(context, key, value)
+func (c *Base) SetHeader(ctx *gin.Context, key string, value string) {
+    response.SetHeader(ctx, key, value)
+}
+
+/**
+ * 返回字符
+ */
+func (c *Base) ReturnString(ctx *gin.Context, msg string) {
+    response.ReturnString(ctx, msg)
 }
 
 /**
  * 返回 json
  */
 func (c *Base) ReturnJson(
-    context *gin.Context,
+    ctx *gin.Context,
     httpCode int,
     dataCode int,
     msg string,
     data interface{},
 ) {
-    response.ReturnJson(context, httpCode, dataCode, msg, data)
+    response.ReturnJson(ctx, httpCode, dataCode, msg, data)
 }
 
 /**
  * 返回成功 json
  */
-func (c *Base) Success(context *gin.Context, msg string) {
-    response.Success(context, msg)
+func (c *Base) Success(ctx *gin.Context, msg string) {
+    response.Success(ctx, msg)
 }
 
 /**
  * 返回成功 json，带数据
  */
-func (c *Base) SuccessWithData(context *gin.Context, msg string, data interface{}) {
-    response.SuccessWithData(context, msg, data)
+func (c *Base) SuccessWithData(ctx *gin.Context, msg string, data interface{}) {
+    response.SuccessWithData(ctx, msg, data)
 }
 
 /**
  * 返回错误 json
  */
-func (c *Base) Error(context *gin.Context, msg string, dataCode ...int) {
-    response.Error(context, msg, dataCode...)
+func (c *Base) Error(ctx *gin.Context, msg string, dataCode ...int) {
+    response.Error(ctx, msg, dataCode...)
 }
 
 /**
  * 返回错误 json，带数据
  */
-func (c *Base) ErrorWithData(context *gin.Context, msg string, dataCode int, data interface{}) {
-    response.ErrorWithData(context, msg, dataCode, data)
+func (c *Base) ErrorWithData(ctx *gin.Context, msg string, dataCode int, data interface{}) {
+    response.ErrorWithData(ctx, msg, dataCode, data)
+}
+
+/**
+ * 请求
+ */
+func (c *Base) Request(ctx *gin.Context) *request.ContextWrapper {
+    return request.Context(ctx)
+}
+
+/**
+ * 返回错误 json
+ */
+func (c *Base) DownloadFile(ctx *gin.Context, filePath string, fileName string) {
+    response.Download(ctx, filePath, fileName)
 }
 

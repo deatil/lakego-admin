@@ -69,3 +69,16 @@ func AttachmentUrl(path string, disk ...string) string {
     return url
 }
 
+// 附件文件地址
+func AttachmentPath(path string, disk ...string) string {
+    var filepath string
+
+    if len(disk) > 0 {
+        filepath = storage.NewWithDisk(disk[0]).Path(path)
+    } else {
+        filepath = storage.New().Path(path)
+    }
+
+    return filepath
+}
+

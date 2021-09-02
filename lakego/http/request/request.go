@@ -2,8 +2,9 @@ package request
 
 import (
     "net/http"
-    "github.com/spf13/cast"
     "github.com/gin-gonic/gin"
+
+    "lakego-admin/lakego/support/cast"
 )
 
 type JSONWriter interface {
