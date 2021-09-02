@@ -11,6 +11,7 @@ import (
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/url"
+    "lakego-admin/admin/support/except"
     "lakego-admin/admin/support/http/code"
     "lakego-admin/admin/model"
 )
@@ -110,8 +111,12 @@ func shouldPassThrough(ctx *gin.Context) bool {
     }
 
     // 自定义权限过滤
-    authenticateExcepts := config.New("auth").GetStringSlice("Auth.AuthenticateExcepts")
-    for _, ae := range authenticateExcepts {
+    configExcepts := config.New("auth").GetStringSlice("Auth.AuthenticateExcepts")
+
+    // 额外定义
+    setExcepts := except.GetPermissionExcepts()
+    configExcepts = append(configExcepts, setExcepts...)
+    for _, ae := range configExcepts {
         newStr := strings.Split(ae, ":")
         if len(newStr) == 2 {
             newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
