@@ -6,6 +6,12 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
+/**
+ * 文件管理扩展
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type File struct {
     Handler
 }

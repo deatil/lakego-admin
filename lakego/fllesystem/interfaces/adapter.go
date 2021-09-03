@@ -4,6 +4,12 @@ import(
     "os"
 )
 
+/**
+ * 适配器接口
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Adapter interface {
     // 初始化
     Init(...map[string]interface{})

@@ -14,6 +14,12 @@ import (
     "lakego-admin/lakego/fllesystem/adapter"
 )
 
+/**
+ * 本地文件适配器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Local struct {
     adapter.Adapter
 

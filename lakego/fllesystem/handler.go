@@ -4,6 +4,12 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
+/**
+ * 扩展基础类
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Handler struct {
     filesystem interfaces.Fllesystem
     path string

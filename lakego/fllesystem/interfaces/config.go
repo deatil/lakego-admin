@@ -1,5 +1,11 @@
 package interfaces
 
+/**
+ * 配置接口
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Config interface {
     // 设置配置信息
     WithSetting(map[string]interface{}) Config

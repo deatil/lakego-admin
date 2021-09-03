@@ -4,7 +4,12 @@ import(
     "strings"
 )
 
-// 通用基类
+/**
+ * 通用基类
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Abstract struct {
     pathPrefix string
     pathSeparator string

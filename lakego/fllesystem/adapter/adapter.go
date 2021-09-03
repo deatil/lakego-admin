@@ -6,6 +6,12 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
+/**
+ * 空适配器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Adapter struct {
     Abstract
 }

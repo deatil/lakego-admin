@@ -6,6 +6,13 @@ import(
     "strings"
 )
 
+/**
+ * 文件管理器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
+
 func NormalizeDirname(dirname string) string {
     if dirname == "." {
         return ""

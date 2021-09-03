@@ -4,6 +4,12 @@ import(
     "os"
 )
 
+/**
+ * 文件管理器接口
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Fllesystem interface {
     // 设置配置
     SetConfig(Config)

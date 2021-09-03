@@ -4,6 +4,12 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
+/**
+ * 配置
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
 type Config struct {
     settings map[string]interface{}
 
