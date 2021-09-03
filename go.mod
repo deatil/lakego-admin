@@ -6,7 +6,6 @@ require (
 	github.com/Bowery/prompt v0.0.0-20190916142128-fa8279994f75 // indirect
 	github.com/casbin/casbin/v2 v2.24.0
 	github.com/casbin/gorm-adapter/v3 v3.2.0 // indirect
-	github.com/chenhg5/collection v0.0.0-20200925143926-f403b87088f9
 	github.com/coreos/bbolt v1.3.2 // indirect
 	github.com/coreos/etcd v3.3.13+incompatible // indirect
 	github.com/coreos/pkg v0.0.0-20180928190104-399ea9e2e55f // indirect
