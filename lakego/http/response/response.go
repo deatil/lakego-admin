@@ -32,6 +32,12 @@ func ReturnString(ctx *gin.Context, contents string, httpCode ...int) {
     ctx.String(code, contents)
 }
 
+// 将json字符窜以标准json格式返回（例如，从redis读取json、格式的字符串，返回给浏览器json格式）
+func ReturnJsonFromString(ctx *gin.Context, httpCode int, jsonStr string) {
+    ctx.Header("Content-Type", "application/json; charset=utf-8")
+    ctx.String(httpCode, jsonStr)
+}
+
 // 返回 json
 func ReturnJson(
     ctx *gin.Context,
@@ -46,12 +52,6 @@ func ReturnJson(
         "message": msg,
         "data":    data,
     })
-}
-
-// 将json字符窜以标准json格式返回（例如，从redis读取json、格式的字符串，返回给浏览器json格式）
-func ReturnJsonFromString(ctx *gin.Context, httpCode int, jsonStr string) {
-    ctx.Header("Content-Type", "application/json; charset=utf-8")
-    ctx.String(httpCode, jsonStr)
 }
 
 // 直接返回成功

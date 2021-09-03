@@ -1,7 +1,7 @@
 package collection
 
 import (
-    "github.com/chenhg5/collection"
+    "lakego-admin/lakego/support/collection"
 )
 
 /**
