@@ -25,4 +25,16 @@ type ServiceProvider interface {
 
     // 引导
     Boot()
+
+    // 设置启动前函数
+    WithBooting(func())
+
+    // 设置启动后函数
+    WithBooted(func())
+
+    // 启动前回调
+    CallBootingCallback()
+
+    // 启动后回调
+    CallBootedCallback()
 }

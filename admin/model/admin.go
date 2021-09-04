@@ -31,6 +31,7 @@ type Admin struct {
 
     Groups []AuthGroup `gorm:"many2many:auth_group_access;foreignKey:ID;joinForeignKey:AdminId;References:ID;JoinReferences:GroupId"`
     Attachments []Attachment `gorm:"polymorphic:Owner;polymorphicValue:admin;"`
+    GroupAccesses []AuthGroupAccess `gorm:"foreignKey:AdminId;references:ID"`
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {

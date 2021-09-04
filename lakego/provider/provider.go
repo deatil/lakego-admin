@@ -19,6 +19,12 @@ type ServiceProvider struct {
 
     // 路由
     Route *gin.Engine
+
+    // 启动前
+    BootingCallback func()
+
+    // 启动后
+    BootedCallback func()
 }
 
 // 设置
@@ -48,6 +54,13 @@ func (s *ServiceProvider) AddCommand(cmd *cobra.Command) {
     }
 }
 
+// 添加脚本
+func (s *ServiceProvider) AddCommands(cmds []*cobra.Command) {
+    for _, cmd := range cmds {
+        s.AddCommand(cmd)
+    }
+}
+
 // 添加路由
 func (s *ServiceProvider) AddRoute(f func(*gin.Engine)) {
     if s.Route != nil {
@@ -55,11 +68,33 @@ func (s *ServiceProvider) AddRoute(f func(*gin.Engine)) {
     }
 }
 
-// 注册
-func (s *ServiceProvider) Register() {
+// 设置启动前函数
+func (s *ServiceProvider) WithBooting(f func()) {
+    s.BootingCallback = f
 }
 
-// 引导
-func (s *ServiceProvider) Boot() {
+// 设置启动后函数
+func (s *ServiceProvider) WithBooted(f func()) {
+    s.BootedCallback = f
 }
+
+// 启动前回调
+func (s *ServiceProvider) CallBootingCallback() {
+    if s.BootingCallback != nil {
+        (s.BootingCallback)()
+    }
+}
+
+// 启动后回调
+func (s *ServiceProvider) CallBootedCallback() {
+    if s.BootedCallback != nil {
+        (s.BootedCallback)()
+    }
+}
+
+// 注册
+func (s *ServiceProvider) Register() {}
+
+// 引导
+func (s *ServiceProvider) Boot() {}
 

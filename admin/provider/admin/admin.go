@@ -2,6 +2,7 @@ package admin
 
 import (
     "github.com/gin-gonic/gin"
+
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/provider"
     "lakego-admin/lakego/http/route"
@@ -18,17 +19,17 @@ import (
     "lakego-admin/admin/middleware/permission"
 
     // 路由
-    adminRoute "lakego-admin/admin/router"
+    adminRoute "lakego-admin/admin/route"
 
     // 脚本
     "lakego-admin/admin/cmd"
 )
 
 // 全局中间件
-var middlewares []gin.HandlerFunc = []gin.HandlerFunc{}
+var middlewares = []gin.HandlerFunc{}
 
 // 路由中间件
-var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
+var routeMiddlewares = map[string]gin.HandlerFunc{
     // 异常处理
     "lakego.exception": exception.Handler(),
 
@@ -43,7 +44,7 @@ var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
 }
 
 // 中间件分组
-var middlewareGroups map[string]interface{} = map[string]interface{}{
+var middlewareGroups = map[string]interface{}{
     "lakego-admin": []string{
         "lakego.exception",
         "lakego.cors",
@@ -60,7 +61,7 @@ type ServiceProvider struct {
 // 注册
 func (s *ServiceProvider) Register() {
     // 脚本
-    s.loadCmd()
+    s.loadCommand()
 
     if !s.App.GetRunningInConsole() {
         // 路由
@@ -71,7 +72,7 @@ func (s *ServiceProvider) Register() {
 /**
  * 导入脚本
  */
-func (s *ServiceProvider) loadCmd() {
+func (s *ServiceProvider) loadCommand() {
     s.AddCommand(cmd.InstallCmd)
 }
 

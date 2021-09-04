@@ -389,11 +389,11 @@ func (fs *Fllesystem) GetMetadata(path string) map[string]interface{} {
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (fs *Fllesystem) Get(path string, handler ...interface{}) interface{} {
+func (fs *Fllesystem) Get(path string, handler ...func(interfaces.Fllesystem, string) interface{}) interface{} {
     path = util.NormalizePath(path)
 
     if len(handler) > 0 {
-        panic("暂不支持自定义扩展")
+        return (handler[0])(fs, path)
     }
 
     data := fs.GetMetadata(path)

@@ -96,5 +96,5 @@ type Fllesystem interface {
     GetMetadata(string) map[string]interface{}
 
     // 获取
-    Get(string, ...interface{}) interface{}
+    Get(string, ...func(Fllesystem, string) interface{}) interface{}
 }

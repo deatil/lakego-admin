@@ -2,8 +2,10 @@ package controller
 
 import (
     "strings"
+    "encoding/json"
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/collection"
     "lakego-admin/lakego/support/cast"
 
     "lakego-admin/admin/model"
@@ -23,13 +25,16 @@ type Admin struct {
  * 列表
  */
 func (control *Admin) Index(ctx *gin.Context) {
-    // 附件模型
+    // 模型
     adminModel := model.NewAdmin()
 
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
     orders := strings.SplitN(order, "__", 2)
-    if orders[0] != "id" || orders[0] != "name" || orders[0] != "last_login_time" || orders[0] != "add_time" {
+    if orders[0] != "id" ||
+        orders[0] != "name" ||
+        orders[0] != "last_active" ||
+        orders[0] != "add_time" {
         orders[0] = "id"
     }
 
@@ -113,9 +118,55 @@ func (control *Admin) Index(ctx *gin.Context) {
  * 详情
  */
 func (control *Admin) Detail(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    newId := cast.ToString(id)
+
+    var info = model.Admin{}
+
+    // 附件模型
+    err := model.NewAdmin().
+        Where("id = ?", newId).
+        Preload("Groups").
+        First(&info).
+        Error
+    if err != nil {
+        control.Error(ctx, "账号不存在")
+        return
+    }
+
+    // 结构体转map
+    data, _ := json.Marshal(&info)
+    adminData := map[string]interface{}{}
+    json.Unmarshal(data, &adminData)
+
+    newInfoGroups:= collection.Collect(adminData["Groups"]).
+        Select("id", "parentid", "title", "description").
+        ToMapArray()
+
+    newInfo := map[string]interface{}{
+        "id": adminData["id"],
+        "name": adminData["name"],
+        "nickname": adminData["nickname"],
+        "email": adminData["email"],
+        "avatar": model.AttachmentUrl(adminData["avatar"].(string)),
+        "is_root": adminData["is_root"],
+        "status": adminData["status"],
+        "last_active": adminData["last_active"],
+        "last_ip": adminData["last_ip"],
+        "update_time": adminData["update_time"],
+        "update_ip": adminData["update_ip"],
+        "add_time": adminData["add_time"],
+        "add_ip": adminData["add_ip"],
+        "groups": newInfoGroups,
+    }
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.SuccessWithData(ctx, "获取成功", newInfo)
 }
 
 /**

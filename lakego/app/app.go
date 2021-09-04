@@ -14,7 +14,7 @@ var serviceProviderLock = new(sync.RWMutex)
 
 var serviceProviders = []func() providerInterface.ServiceProvider{}
 
-var usedServiceProvider []providerInterface.ServiceProvider
+var usedServiceProviders []providerInterface.ServiceProvider
 
 /**
  * App结构体
@@ -34,6 +34,12 @@ type App struct {
 
     // 根脚本
     RootCmd *cobra.Command
+
+    // 启动前
+    BootingCallbacks []func()
+
+    // 启动后
+    BootedCallbacks []func()
 }
 
 func New() *App {
@@ -100,14 +106,54 @@ func (app *App) loadServiceProvider() {
 
             p.Register()
 
-            usedServiceProvider = append(usedServiceProvider, p)
+            usedServiceProviders = append(usedServiceProviders, p)
         }
     }
 
-    if len(usedServiceProvider) > 0 {
-        for _, p2 := range usedServiceProvider {
-            p2.Boot()
+    // 启动前
+    app.CallBootingCallbacks()
+
+    if len(usedServiceProviders) > 0 {
+        for _, sp := range usedServiceProviders {
+            app.BootService(sp)
         }
+    }
+
+    // 启动后
+    app.CallBootedCallbacks()
+}
+
+// 引导服务
+func (app *App) BootService(s providerInterface.ServiceProvider) {
+    s.CallBootingCallback()
+
+    // 启动
+    s.Boot()
+
+    s.CallBootedCallback()
+}
+
+// 设置启动前函数
+func (app *App) WithBooting(f func()) {
+    app.BootingCallbacks = append(app.BootingCallbacks, f)
+}
+
+// 设置启动后函数
+func (app *App) WithBooted(f func()) {
+    app.BootedCallbacks = append(app.BootedCallbacks, f)
+}
+
+// 启动前回调
+func (app *App) CallBootingCallbacks() {
+    for _, callback := range app.BootingCallbacks {
+        callback()
+    }
+}
+
+// 启动后回调
+func (app *App) CallBootedCallbacks() {
+    for _, callback := range app.BootedCallbacks {
+        callback()
     }
 }
 

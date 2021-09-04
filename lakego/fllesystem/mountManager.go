@@ -291,7 +291,7 @@ func (mm *MountManager) ReadAndDelete(path string) (interface{}, error) {
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (mm *MountManager) Get(path string, handler ...interface{}) interface{} {
+func (mm *MountManager) Get(path string, handler ...func(interfaces.Fllesystem, string) interface{}) interface{} {
     prefix, newPath := mm.GetPrefixAndPath(path)
 
     return mm.GetFilesystem(prefix).Get(newPath, handler...)

@@ -7,6 +7,8 @@ import (
 
     "lakego-admin/lakego/support/hash"
     "lakego-admin/lakego/facade/database"
+
+    "lakego-admin/admin/support/url"
 )
 
 // 附件
@@ -38,5 +40,22 @@ func (m *Attachment) BeforeCreate(tx *gorm.DB) error {
 
 func NewAttachment() *gorm.DB {
     return database.New().Model(&Attachment{})
+}
+
+// 附件链接
+func AttachmentUrl(id string) string {
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil {
+        return ""
+    }
+
+    // 格式化链接
+    return url.AttachmentUrl(result["path"].(string), result["disk"].(string))
 }
 

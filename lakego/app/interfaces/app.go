@@ -15,6 +15,12 @@ type App interface {
     // 脚本
     WithRootCmd(*cobra.Command)
 
+    // 设置启动前函数
+    WithBooting(func())
+
+    // 设置启动后函数
+    WithBooted(func())
+
     // 获取脚本
     GetRootCmd() *cobra.Command
 

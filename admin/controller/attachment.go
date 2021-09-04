@@ -114,7 +114,7 @@ func (control *Attachment) Detail(ctx *gin.Context) {
         return
     }
 
-    newId := cast.ToInt(id)
+    newId := cast.ToString(id)
 
     result := map[string]interface{}{}
 
