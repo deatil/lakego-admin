@@ -40,10 +40,12 @@ func (control *Attachment) Index(ctx *gin.Context) {
     // 搜索条件
     searchword := ctx.DefaultQuery("searchword", "")
     if searchword != "" {
+        searchword = "%" + searchword + "%"
+
         attachModel = attachModel.
-            Or("name = ?", searchword).
-            Or("extension = ?", searchword).
-            Or("driver = ?", searchword)
+            Or("name LIKE ?", searchword).
+            Or("extension LIKE ?", searchword).
+            Or("driver LIKE ?", searchword)
     }
 
     // 时间条件

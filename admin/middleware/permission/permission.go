@@ -43,7 +43,7 @@ func permissionCheck(ctx *gin.Context) bool {
     newRequestPath := "/" + strings.Join(newRequestPaths, "/")
 
     // 先匹配分组
-    group := config.New("admin").GetString("Route.Group")
+    group := config.New("admin").GetString("Route.Prefix")
     if requestPaths[1] != group {
         response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
@@ -82,31 +82,31 @@ func checkSuperAdmin(ctx *gin.Context) bool {
 
 // 过滤
 func shouldPassThrough(ctx *gin.Context) bool {
-    // 默认过滤
-    excepts := []string{
-        "GET:" + url.AdminUrl("passport/captcha"),
-        "POST:" + url.AdminUrl("passport/login"),
-        "PUT:" + url.AdminUrl("passport/refresh-token"),
-    }
-    for _, except := range excepts {
-        if url.MatchPath(ctx, except, "") {
-            return true
-        }
+    // 默认
+    defaultExcepts := []string{
+        "GET:passport/captcha",
+        "POST:passport/login",
+        "DELETE:passport/logout",
+        "PUT:passport/refresh-token",
+        "GET:attachment/download/*",
     }
 
-    // 自定义权限过滤
+    // 自定义
     configExcepts := config.New("auth").GetStringSlice("Auth.PermissionExcepts")
 
     // 额外定义
     setExcepts := except.GetPermissionExcepts()
-    configExcepts = append(configExcepts, setExcepts...)
-    for _, ae := range configExcepts {
-        newStr := strings.Split(ae, ":")
-        if len(newStr) == 2 {
-            newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
-            if url.MatchPath(ctx, newUrl, "") {
-                return true
-            }
+
+    // 合并
+    excepts := append(defaultExcepts, configExcepts...)
+    excepts = append(excepts, setExcepts...)
+
+    for _, ae := range excepts {
+        newStr := strings.SplitN(ae, ":", 2)
+
+        newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
+        if url.MatchPath(ctx, newUrl, "") {
+            return true
         }
     }
 

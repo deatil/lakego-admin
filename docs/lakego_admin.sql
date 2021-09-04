@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version: 5.5.53)
-# Date: 2021-07-11 20:47:15
+# Date: 2021-09-04 12:11:40
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -10,32 +10,33 @@
 
 DROP TABLE IF EXISTS `lakego_lakego_admin`;
 CREATE TABLE `lakego_lakego_admin` (
-  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户ID',
-  `name` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '管理账号',
-  `password` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '管理密码',
-  `password_salt` varchar(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '加密因子',
-  `nickname` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '昵称',
-  `email` varchar(40) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `avatar` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',
-  `introduce` mediumtext CHARACTER SET utf8mb4 COMMENT '简介',
-  `is_root` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1-超级管理',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
-  `last_login_time` int(10) DEFAULT '0' COMMENT '最后登录时间',
-  `last_login_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '最后登录IP',
-  `update_time` int(10) DEFAULT '0' COMMENT '更新时间',
-  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '更新IP',
-  `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
-  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加IP',
-  PRIMARY KEY (`id`),
-  KEY `username` (`name`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='管理员表';
+  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password_salt` char(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `nickname` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `avatar` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `introduce` mediumtext COLLATE utf8mb4_unicode_ci,
+  `is_root` tinyint(1) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL,
+  `refresh_time` int(10) NOT NULL DEFAULT '0' COMMENT '刷新时间',
+  `refresh_ip` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '刷新IP',
+  `last_active` int(10) DEFAULT NULL,
+  `last_ip` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `update_time` int(10) DEFAULT NULL,
+  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `add_time` int(10) DEFAULT NULL,
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 #
 # Data for table "lakego_lakego_admin"
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_admin` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','b0ecc530667dd702670f2f258ded3c87','PaBQfr','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a6','管理员',1,1,1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
 /*!40000 ALTER TABLE `lakego_lakego_admin` ENABLE KEYS */;
 
 #
@@ -50,11 +51,11 @@ CREATE TABLE `lakego_lakego_attachment` (
   `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件名',
   `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件路径',
   `mime` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件mime类型',
-  `ext` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件类型',
+  `extension` varchar(10) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '文件类型',
   `size` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '文件大小',
   `md5` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件md5',
   `sha1` char(40) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'sha1 散列值',
-  `driver` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'public' COMMENT '上传驱动',
+  `disk` varchar(16) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'public' COMMENT '上传驱动',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `update_time` int(10) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) NOT NULL DEFAULT '0' COMMENT '上传时间',
@@ -68,7 +69,7 @@ CREATE TABLE `lakego_lakego_attachment` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_attachment` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_attachment` VALUES ('eb73eb5d52f9c663b5809b6839f2f9a6','e92ba0a3f86f4a5693d8487eb8c632b5','admin','Penguins.jpg','images/20210519\\078d9f012c5a264dd9ee6e959c63e8ef.jpg','image/jpeg','jpg','777835','9d377b10ce778c4938b3c7e2c63a229a','df7be9dc4f467187783aca68c7ce98e4df2172d0','public',1,1621431615,1621431615,1621431615,'127.0.0.1');
+INSERT INTO `lakego_lakego_attachment` VALUES ('a816799397e73f9b1978a9738f79a3c6','e92ba0a3f86f4a5693d8487eb8c632b5','admin','2.jpg','images/a816799397e73f9b1978a9738f79a3c6.jpg','image/jpeg','jpg','845941','8cd6239532a506d5b90b4652968b5d8f','da39a3ee5e6b4b0d3255bfef95601890afd80709','public',1,0,1630588690,1630588690,'127.0.0.1');
 /*!40000 ALTER TABLE `lakego_lakego_attachment` ENABLE KEYS */;
 
 #
@@ -77,18 +78,18 @@ INSERT INTO `lakego_lakego_attachment` VALUES ('eb73eb5d52f9c663b5809b6839f2f9a6
 
 DROP TABLE IF EXISTS `lakego_lakego_auth_group`;
 CREATE TABLE `lakego_lakego_auth_group` (
-  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户组id',
-  `parentid` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '父组别',
-  `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '用户组中文名称',
-  `description` varchar(80) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '描述信息',
-  `listorder` int(10) NOT NULL DEFAULT '100' COMMENT '排序ID',
-  `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
-  `update_time` int(10) DEFAULT '0' COMMENT '更新时间',
-  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '更新IP',
-  `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
-  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加IP',
+  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parentid` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(80) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `listorder` int(10) DEFAULT NULL,
+  `status` tinyint(1) NOT NULL,
+  `update_time` int(10) DEFAULT NULL,
+  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `add_time` int(10) DEFAULT NULL,
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='权限组表';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 #
 # Data for table "lakego_lakego_auth_group"
@@ -104,17 +105,17 @@ INSERT INTO `lakego_lakego_auth_group` VALUES ('26d9697f66e341d56af023423d8718b3
 
 DROP TABLE IF EXISTS `lakego_lakego_auth_group_access`;
 CREATE TABLE `lakego_lakego_auth_group_access` (
-  `admin_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `group_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  UNIQUE KEY `admin_id` (`admin_id`,`group_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=FIXED COMMENT='管理员与用户组关联表';
+  `admin_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `group_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
+  PRIMARY KEY (`admin_id`,`group_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 #
 # Data for table "lakego_lakego_auth_group_access"
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_auth_group_access` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_auth_group_access` VALUES ('dbe97f21a69f67fb361b0be64988ee59','26d9697f66e341d56af023423d8718b3');
+INSERT INTO `lakego_lakego_auth_group_access` VALUES ('e92ba0a3f86f4a5693d8487eb8c632b5','538a712299e0ba6011aaf63f2a1317f4');
 /*!40000 ALTER TABLE `lakego_lakego_auth_group_access` ENABLE KEYS */;
 
 #
@@ -193,4 +194,5 @@ CREATE TABLE `lakego_lakego_rules` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_rules` DISABLE KEYS */;
+INSERT INTO `lakego_lakego_rules` VALUES ('6912e5e9f8d33f51603a2ae0265cea48','g','user','editer','','','',''),('cfe1fdeb9a6cb0efbe905449d3448b74','p','editer','user/add','post','','','');
 /*!40000 ALTER TABLE `lakego_lakego_rules` ENABLE KEYS */;

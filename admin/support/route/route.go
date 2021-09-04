@@ -15,7 +15,7 @@ func AddRoute(engine *gin.Engine, f func(rg *gin.RouterGroup)) {
     m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
 
     // 路由
-    admin := engine.Group(conf.GetString("Route.Group"))
+    admin := engine.Group(conf.GetString("Route.Prefix"))
     {
         admin.Use(m...)
         {

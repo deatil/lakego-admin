@@ -9,8 +9,11 @@ var instance *Middleware
 var once sync.Once
 
 type Middleware struct {
-    sMiddleware sync.Map
-    sGroup sync.Map
+    // 中间件
+    middlewares sync.Map
+
+    // 中间件分组
+    groups sync.Map
 }
 
 /**
@@ -35,34 +38,34 @@ func New() *Middleware {
  * 设置中间件
  */
 func (m *Middleware) WithMiddleware(name string, middleware interface{}) bool {
-    if _, exists := m.ExistsMiddleware(name); exists {
+    if _, exists := m.ExistMiddleware(name); exists {
         m.DeleteMiddleware(name)
     }
-    
-    m.sMiddleware.Store(name, middleware)
-    
+
+    m.middlewares.Store(name, middleware)
+
     return true
 }
 
 /**
  * 判断
  */
-func (m *Middleware) ExistsMiddleware(name string) (interface{}, bool) {
-    return m.sMiddleware.Load(name)
+func (m *Middleware) ExistMiddleware(name string) (interface{}, bool) {
+    return m.middlewares.Load(name)
 }
 
 /**
  * 删除
  */
 func (m *Middleware) DeleteMiddleware(name string) {
-    m.sMiddleware.Delete(name)
+    m.middlewares.Delete(name)
 }
 
 /**
  * 获取中间件
  */
 func (m *Middleware) GetMiddleware(name string) interface{} {
-    if value, exists := m.ExistsMiddleware(name); exists {
+    if value, exists := m.ExistMiddleware(name); exists {
         return value
     }
     return nil
@@ -72,13 +75,13 @@ func (m *Middleware) GetMiddleware(name string) interface{} {
  * 获取中间件
  */
 func (m *Middleware) GetHandlerFuncMiddleware(name string) (handlerFunc gin.HandlerFunc) {
-    middleware := m.GetMiddleware(name)	
-    
+    middleware := m.GetMiddleware(name)
+
     if middleware != nil {
         handlerFunc = middleware.(gin.HandlerFunc)
         return
     }
-    
+
     handlerFunc = nil
     return
 }
@@ -89,37 +92,37 @@ func (m *Middleware) GetHandlerFuncMiddleware(name string) (handlerFunc gin.Hand
 func (m *Middleware) WithGroup(name string, group interface{}) bool {
     var newGroups []interface{}
 
-    if newGroup, exists := m.ExistsGroup(name); exists {
+    if newGroup, exists := m.ExistGroup(name); exists {
         // 强制转换为 []interface{} 后增加数据
         newGroups = append(newGroup.([]interface{}), group)
     } else {
         newGroups = append(newGroups, group)
     }
-    
-    m.sGroup.Store(name, newGroups)
-    
+
+    m.groups.Store(name, newGroups)
+
     return true
 }
 
 /**
  * 判断
  */
-func (m *Middleware) ExistsGroup(name string) (interface{}, bool) {
-    return m.sGroup.Load(name)
+func (m *Middleware) ExistGroup(name string) (interface{}, bool) {
+    return m.groups.Load(name)
 }
 
 /**
  * 删除
  */
 func (m *Middleware) DeleteGroup(name string) {
-    m.sGroup.Delete(name)
+    m.groups.Delete(name)
 }
 
 /**
  * 获取分组
  */
 func (m *Middleware) GetGroup(name string) interface{} {
-    if value, exists := m.ExistsGroup(name); exists {
+    if value, exists := m.ExistGroup(name); exists {
         return value
     }
     return nil
@@ -131,14 +134,14 @@ func (m *Middleware) GetGroup(name string) interface{} {
 func (m *Middleware) GetMiddlewares(name string) (middleware []interface{}) {
     var newData []interface{}
 
-    if nameMiddleware, ok := m.ExistsMiddleware(name); ok {
+    if nameMiddleware, ok := m.ExistMiddleware(name); ok {
         newData = append(newData, nameMiddleware)
         return
     }
-    
-    if nameGroups, ok := m.ExistsGroup(name); ok {
+
+    if nameGroups, ok := m.ExistGroup(name); ok {
         nameGroupList := nameGroups.([]interface{})
-         
+
         for _, s := range nameGroupList {
             switch s.(type) {
                 case string:
@@ -153,7 +156,7 @@ func (m *Middleware) GetMiddlewares(name string) (middleware []interface{}) {
         }
 
     }
-    
+
     middleware = newData
     return
 }
@@ -162,16 +165,16 @@ func (m *Middleware) GetMiddlewares(name string) (middleware []interface{}) {
  * 获取中间件列表
  */
 func (m *Middleware) GetHandlerFuncMiddlewares(name string) (handlerFuncs []gin.HandlerFunc) {
-    middlewares := m.GetMiddlewares(name)	
-    
+    middlewares := m.GetMiddlewares(name)
+
     var newMiddlewares []gin.HandlerFunc
-    
+
     if middlewares != nil && len(middlewares) > 0 {
         for _, middleware := range middlewares {
             newMiddlewares = append(newMiddlewares, middleware.(gin.HandlerFunc))
         }
     }
-    
+
     handlerFuncs = newMiddlewares
     return
 }

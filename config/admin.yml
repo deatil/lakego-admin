@@ -3,7 +3,7 @@ Mode: "dev"
 
 # 路由分组
 Route:
-  Group: "admin-api"
+  Prefix: "admin-api"
   Middleware: "lakego-admin"
 
 # 文件上传

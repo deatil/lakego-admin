@@ -7,7 +7,7 @@ import (
     "lakego-admin/lakego/http/route"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route/middleware"
-    
+
     "lakego-admin/admin/support/url"
     "lakego-admin/admin/support/http/code"
 
@@ -23,6 +23,9 @@ import (
     // 脚本
     "lakego-admin/admin/cmd"
 )
+
+// 全局中间件
+var middlewares []gin.HandlerFunc = []gin.HandlerFunc{}
 
 // 路由中间件
 var routeMiddlewares map[string]gin.HandlerFunc = map[string]gin.HandlerFunc{
@@ -85,7 +88,7 @@ func (s *ServiceProvider) loadRoute() {
 
         conf := config.New("admin")
 
-        prefix := "/" + conf.GetString("Route.Group") + "/*"
+        prefix := "/" + conf.GetString("Route.Prefix") + "/*"
 
         // 未知路由处理
         engine.NoRoute(func (ctx *gin.Context) {
@@ -101,11 +104,14 @@ func (s *ServiceProvider) loadRoute() {
             }
         })
 
+        // 全局中间件
+        engine.Use(middlewares...)
+
         // 后台路由及设置中间件
         m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
 
         // 路由
-        admin := engine.Group(conf.GetString("Route.Group"))
+        admin := engine.Group(conf.GetString("Route.Prefix"))
         {
             admin.Use(m...)
             {

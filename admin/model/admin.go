@@ -22,8 +22,8 @@ type Admin struct {
     Status          int         `gorm:"column:status;not null;type:tinyint(1);" json:"status"`
     RefreshTime     int         `gorm:"column:refresh_time;type:int(10);" json:"refresh_time"`
     RefreshIp       string      `gorm:"column:refresh_ip;type:varchar(50);" json:"refresh_ip"`
-    LastLoginTime   int         `gorm:"column:last_login_time;type:int(10);" json:"last_login_time"`
-    LastLoginIp     string      `gorm:"column:last_login_ip;type:varchar(50);" json:"last_login_ip"`
+    LastActive      int         `gorm:"column:last_active;type:int(10);" json:"last_active"`
+    LastIp          string      `gorm:"column:last_ip;type:varchar(50);" json:"last_ip"`
     UpdateTime      int         `gorm:"column:update_time;type:int(10);" json:"update_time"`
     UpdateIp        string      `gorm:"column:update_ip;type:varchar(50);" json:"update_ip"`
     AddTime         int         `gorm:"column:add_time;type:int(10);" json:"add_time"`
