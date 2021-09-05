@@ -1,9 +1,8 @@
 package jwt
 
 import (
-    "errors"
     "time"
-    "strings"
+    "errors"
     "io/ioutil"
     "github.com/dgrijalva/jwt-go"
 
@@ -335,11 +334,7 @@ func (jwter *JWT) Verify(strToken string) error {
 
 // 格式化文件路径
 func (jwter *JWT) FormatPath(file string) string {
-    if !strings.HasPrefix(file, "/") {
-        file = "/" + file
-    }
-
-    filename := path.GetBasePath() + file
+    filename := path.FormatPath(file)
 
     return filename
 }

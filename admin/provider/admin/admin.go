@@ -63,7 +63,7 @@ func (s *ServiceProvider) Register() {
     // 脚本
     s.loadCommand()
 
-    if !s.App.GetRunningInConsole() {
+    if !s.App.RunningInConsole() {
         // 路由
         s.loadRoute()
     }

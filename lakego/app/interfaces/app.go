@@ -28,5 +28,5 @@ type App interface {
     WithRunningInConsole(bool)
 
     // 获取命令行状态
-    GetRunningInConsole() bool
+    RunningInConsole() bool
 }

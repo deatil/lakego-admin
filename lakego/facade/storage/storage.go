@@ -2,7 +2,6 @@ package storage
 
 import(
     "sync"
-    "strings"
 
     "lakego-admin/lakego/register"
     "lakego-admin/lakego/support/path"
@@ -41,19 +40,14 @@ func MountManager(filesystems ...map[string]interface{}) *fllesystem.MountManage
 // 注册磁盘
 func Register() {
     once.Do(func() {
-        // 程序根目录
-        basePath := path.GetBasePath()
-
         // 注册可用驱动
         register.NewManagerWithPrefix("database_").Register("local", func(conf map[string]interface{}) interface{} {
             driver := &localAdapter.Local{}
 
             root := conf["root"].(string)
 
-            if strings.HasPrefix(root, "{root}") {
-                root = strings.TrimPrefix(root, "{root}")
-                root = basePath + "/" + strings.TrimPrefix(root, "/")
-            }
+            // 根目录
+            root = path.FormatPath(root)
 
             driver.EnsureDirectory(root)
             driver.SetPathPrefix(root)

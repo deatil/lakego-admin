@@ -124,13 +124,11 @@ func (control *Admin) Detail(ctx *gin.Context) {
         return
     }
 
-    newId := cast.ToString(id)
-
     var info = model.Admin{}
 
     // 附件模型
     err := model.NewAdmin().
-        Where("id = ?", newId).
+        Where("id = ?", id).
         Preload("Groups").
         First(&info).
         Error
@@ -148,22 +146,21 @@ func (control *Admin) Detail(ctx *gin.Context) {
         Select("id", "parentid", "title", "description").
         ToMapArray()
 
-    newInfo := map[string]interface{}{
-        "id": adminData["id"],
-        "name": adminData["name"],
-        "nickname": adminData["nickname"],
-        "email": adminData["email"],
-        "avatar": model.AttachmentUrl(adminData["avatar"].(string)),
-        "is_root": adminData["is_root"],
-        "status": adminData["status"],
-        "last_active": adminData["last_active"],
-        "last_ip": adminData["last_ip"],
-        "update_time": adminData["update_time"],
-        "update_ip": adminData["update_ip"],
-        "add_time": adminData["add_time"],
-        "add_ip": adminData["add_ip"],
-        "groups": newInfoGroups,
-    }
+    avatar := model.AttachmentUrl(adminData["avatar"].(string))
+
+    newInfo := collection.Collect(adminData).
+        Only([]string{
+            "id", "name", "nickname",
+            "email", "avatar",
+            "is_root", "status",
+            "last_active", "last_ip",
+            "update_time", "update_ip",
+            "add_time", "add_ip",
+        }).
+        ToMap()
+
+    newInfo["groups"] = newInfoGroups
+    newInfo["avatar"] = avatar
 
     // 数据输出
     control.SuccessWithData(ctx, "获取成功", newInfo)

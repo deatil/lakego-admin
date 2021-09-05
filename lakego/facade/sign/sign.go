@@ -53,9 +53,6 @@ func Check(name string) *sign.Check {
 // 注册
 func Register() {
     once.Do(func() {
-        // 程序根目录
-        basePath := path.GetBasePath()
-
         // 注册驱动
         register.NewManagerWithPrefix("sign_").RegisterMany(map[string]func(map[string]interface{}) interface{} {
             "aes": func(conf map[string]interface{}) interface{} {
@@ -95,15 +92,9 @@ func Register() {
 
                 publicKey := conf["publickey"].(string)
                 privateKey := conf["privatekey"].(string)
-
-                if strings.HasPrefix(publicKey, "{root}") {
-                    publicKey = strings.TrimPrefix(publicKey, "{root}")
-                    publicKey = basePath + "/" + strings.TrimPrefix(publicKey, "/")
-                }
-                if strings.HasPrefix(privateKey, "{root}") {
-                    privateKey = strings.TrimPrefix(privateKey, "{root}")
-                    privateKey = basePath + "/" + strings.TrimPrefix(privateKey, "/")
-                }
+                
+                publicKey = path.FormatPath(publicKey)
+                privateKey = path.FormatPath(privateKey)
 
                 driver.Init(map[string]interface{}{
                     "publickey": publicKey,

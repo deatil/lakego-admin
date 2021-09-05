@@ -10,7 +10,7 @@ import (
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/logger"
     "lakego-admin/lakego/http/response"
-    
+
     "lakego-admin/admin/support/http/code"
 )
 
@@ -44,10 +44,13 @@ func Handler() gin.HandlerFunc {
                         bodySize,
                     )
 
+                    trace := formatStackTrace(r)
+
                     // 错误输出详情
                     responsedata := gin.H{
                         "time": time,
-                        "error": formatStackTrace(r),
+                        "file": trace[len(trace) - 3],
+                        "trace": trace,
                     }
 
                     switch r.(type) {

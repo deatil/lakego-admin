@@ -26,7 +26,7 @@ func New(fileName ...string) interfaces.Config {
     conf := viper.New()
 
     // 配置文件夹
-    configPath := path.GetBasePath() + "/config"
+    configPath := path.FormatPath("{root}/config")
 
     // 配置文件所在目录
     conf.AddConfigPath(configPath)

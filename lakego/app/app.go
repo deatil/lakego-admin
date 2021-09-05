@@ -27,7 +27,7 @@ type App struct {
     Runned bool
 
     // 运行在命令行
-    RunningInConsole bool
+    RunInConsole bool
 
     // 路由
     RouteEngine *gin.Engine
@@ -169,12 +169,12 @@ func (app *App) GetRootCmd() *cobra.Command {
 
 // 设置命令行状态
 func (app *App) WithRunningInConsole(console bool) {
-    app.RunningInConsole = console
+    app.RunInConsole = console
 }
 
 // 获取命令行状态
-func (app *App) GetRunningInConsole() bool {
-    return app.RunningInConsole
+func (app *App) RunningInConsole() bool {
+    return app.RunInConsole
 }
 
 // 加载 app

@@ -6,7 +6,7 @@ import (
 )
 
 // 程序根目录
-func GetBasePath() string {
+func BasePath() string {
     var basePath string
 
     if path, err := os.Getwd(); err == nil {
@@ -21,4 +21,17 @@ func GetBasePath() string {
     }
 
     return basePath
+}
+
+// 格式化文件路径
+func FormatPath(path string) string {
+    // 程序根目录
+    basePath := BasePath()
+
+    if strings.HasPrefix(path, "{root}") {
+        path = strings.TrimPrefix(path, "{root}")
+        path = basePath + "/" + strings.TrimPrefix(path, "/")
+    }
+
+    return path
 }

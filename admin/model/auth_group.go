@@ -24,6 +24,9 @@ type AuthGroup struct {
 
     Admins []Admin `gorm:"many2many:auth_group_access;foreignKey:ID;joinForeignKey:GroupId;References:ID;JoinReferences:AdminId"`
     Rules []AuthRule `gorm:"many2many:auth_rule_access;foreignKey:ID;joinForeignKey:GroupId;References:ID;JoinReferences:RuleId"`
+
+    RuleAccesses []AuthRuleAccess `gorm:"foreignKey:GroupId;references:ID"`
+    GroupAccesses []AuthGroupAccess `gorm:"foreignKey:GroupId;references:ID"`
 }
 
 func (m *AuthGroup) BeforeCreate(tx *gorm.DB) error {

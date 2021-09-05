@@ -41,7 +41,7 @@ func init() {
     filepath := conf.GetString("Filepath")
 
     // 日志文件
-    baseLogPath := path.GetBasePath() + filepath
+    baseLogPath := path.FormatPath(filepath)
 
     maxAge := conf.GetDuration("MaxAge")
     rotationTime := conf.GetDuration("RotationTime")
