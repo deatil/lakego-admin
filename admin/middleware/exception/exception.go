@@ -49,7 +49,7 @@ func Handler() gin.HandlerFunc {
                     // 错误输出详情
                     responsedata := gin.H{
                         "time": time,
-                        "file": trace[len(trace) - 3],
+                        "file": trace[3],
                         "trace": trace,
                     }
 

@@ -45,10 +45,3 @@ func NewAdmin() *gorm.DB {
     return database.New().Model(&Admin{})
 }
 
-// 权限检测
-func AdminScopeWithAccess(ids []string) func(*gorm.DB) *gorm.DB {
-    return func(db *gorm.DB) *gorm.DB {
-        return db.Preload("GroupAccesses", "group_id IN (?)", ids)
-    }
-}
-

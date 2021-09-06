@@ -3,6 +3,11 @@ package admin
 import (
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/facade/config"
+    "lakego-admin/lakego/facade/casbin"
+
+    adminRepository "lakego-admin/admin/repository/admin"
+    authruleRepository "lakego-admin/admin/repository/authrule"
+    authgroupRepository "lakego-admin/admin/repository/authgroup"
 )
 
 // 管理员账号结构体
@@ -100,19 +105,31 @@ func (admin *Admin) IsGroupActive() bool {
 
 // 当前账号信息
 func (admin *Admin) GetProfile() map[string]interface{} {
-    profile := make(map[string]interface{})
+    profile := collection.Collect(admin.Data).
+        Only([]string{
+            "id", "name", "nickname", "email",
+            "avatar", "introduce",
+            "last_active", "last_ip",
+        }).
+        ToMap()
 
-    profile["id"] = admin.Data["id"]
-    profile["name"] = admin.Data["name"]
-    profile["email"] = admin.Data["email"]
-    profile["nickname"] = admin.Data["nickname"]
-    profile["avatar"] = admin.Data["avatar"]
-    profile["introduce"] = admin.Data["introduce"]
     profile["groups"] = admin.GetGroups()
-    profile["last_login_time"] = admin.Data["last_login_time"]
-    profile["last_login_ip"] = admin.Data["last_login_ip"]
 
     return profile
+}
+
+// 判断是否有权限
+func (admin *Admin) HasAccess(slug string, method string) bool {
+    if admin.IsSuperAdministrator() {
+        return true
+    }
+
+    can, _ := casbin.New().Enforce(admin.Id, slug, method)
+    if can {
+        return true
+    }
+
+    return false
 }
 
 // 当前账号所属分组
@@ -142,11 +159,81 @@ func (admin *Admin) GetGroups() []map[string]interface{} {
 func (admin *Admin) GetGroupIds() []string {
     // 格式化分组
     adminGroups := admin.Data["Groups"].([]interface{})
+
     ids := collection.
         Collect(adminGroups).
         Pluck("id").
         ToStringArray()
 
     return ids
+}
+
+// 获取 GroupChildren
+func (admin *Admin) GetGroupChildren() []map[string]interface{} {
+    list := make([]map[string]interface{}, 0)
+
+    groupids := admin.GetGroupIds()
+    if len(groupids) < 1 {
+        return list
+    }
+
+    list = authgroupRepository.GetChildrenFromGroupids(groupids)
+
+    list = collection.Collect(list).
+        Select(
+            "id", "name", "nickname", "email",
+            "avatar", "introduce",
+            "last_active", "last_ip",
+        ).
+        ToMapArray()
+
+    return list
+}
+
+// 获取 GroupChildrenIds
+func (admin *Admin) GetGroupChildrenIds() []string {
+    list := admin.GetGroupChildren()
+
+    ids := collection.Collect(list).
+        Pluck("id").
+        ToStringArray()
+
+    return ids
+}
+
+// 获取 rules
+func (admin *Admin) GetRules() []map[string]interface{} {
+    if admin.IsSuperAdministrator() {
+        return authruleRepository.GetAllRule()
+    }
+
+    list := make([]map[string]interface{}, 0)
+
+    groupids := admin.GetGroupIds()
+    if len(groupids) < 1 {
+        return list
+    }
+
+    return adminRepository.GetRules(groupids)
+}
+
+// 获取 ruleids
+func (admin *Admin) GetRuleids() []string {
+    list := admin.GetGroupChildren()
+
+    return collection.Collect(list).
+        SortBy("id").
+        Pluck("id").
+        ToStringArray()
+}
+
+// 获取 slugs
+func (admin *Admin) GetRuleSlugs() []string {
+    list := admin.GetGroupChildren()
+
+    return collection.Collect(list).
+        SortBy("slug").
+        Pluck("slug").
+        ToStringArray()
 }
 

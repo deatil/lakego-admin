@@ -1,6 +1,8 @@
 package admin
 
 import (
+    "encoding/json"
+
     "lakego-admin/lakego/collection"
 
     "lakego-admin/admin/model"
@@ -10,6 +12,8 @@ import (
 func GetGroups(adminid string) []map[string]interface{} {
     var info = model.Admin{}
 
+    groups := make([]map[string]interface{}, 0)
+
     // 附件模型
     err := model.NewAdmin().
         Where("id = ?", adminid).
@@ -17,8 +21,7 @@ func GetGroups(adminid string) []map[string]interface{} {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "账号不存在")
-        return
+        return groups
     }
 
     // 结构体转map
@@ -26,21 +29,10 @@ func GetGroups(adminid string) []map[string]interface{} {
     adminData := map[string]interface{}{}
     json.Unmarshal(data, &adminData)
 
-    groups := make([]map[string]interface{}, 0)
-
     // 格式化分组
     adminGroups := adminData["Groups"].([]map[string]interface{})
-    groups = collection.
-        Collect(adminGroups).
-        Each(func(item, value interface{}) (interface{}, bool) {
-            group := map[string]interface{}{
-                "id": value["id"],
-                "title": value["title"],
-                "description": value["description"],
-            };
-
-            return group, true
-        }).
+    groups = collection.Collect(adminGroups).
+        Select("id", "title", "description").
         ToMapArray()
 
     return groups
@@ -59,8 +51,8 @@ func GetGroupIds(adminid string) []string {
 }
 
 // 权限
-func GetRules(groupids string) []map[string]interface{} {
-    list := male([]map[string]interface{}, 0)
+func GetRules(groupids []string) []map[string]interface{} {
+    list := make([]map[string]interface{}, 0)
 
     // 附件模型
     err := model.NewAuthRule().
@@ -83,7 +75,7 @@ func GetRules(groupids string) []map[string]interface{} {
 }
 
 // 权限ID列表
-func GetRuleids(groupids string) []string {
+func GetRuleids(groupids []string) []string {
     // 格式化分组
     list := GetRules(groupids)
     ids := collection.
@@ -92,29 +84,5 @@ func GetRuleids(groupids string) []string {
         ToStringArray()
 
     return ids
-}
-
-// 全部权限
-func GetAllRule() []map[string]interface{} {
-    list := male([]map[string]interface{}, 0)
-
-    // 附件模型
-    err := model.NewAuthRule().
-        Select([]string{
-            "id", "parentid",
-            "title",
-            "url", "method",
-            "description",
-        }).
-        Where("status = ?", 1).
-        Order("listorder ASC").
-        Order("add_time ASC").
-        Find(&list).
-        Error
-    if err != nil {
-        return nil
-    }
-
-    return list
 }
 

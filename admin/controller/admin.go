@@ -9,6 +9,8 @@ import (
     "lakego-admin/lakego/support/cast"
 
     "lakego-admin/admin/model"
+    "lakego-admin/admin/model/scope"
+    adminRepository "lakego-admin/admin/repository/admin"
 )
 
 /**
@@ -150,8 +152,7 @@ func (control *Admin) Detail(ctx *gin.Context) {
 
     newInfo := collection.Collect(adminData).
         Only([]string{
-            "id", "name", "nickname",
-            "email", "avatar",
+            "id", "name", "nickname", "email",
             "is_root", "status",
             "last_active", "last_ip",
             "update_time", "update_ip",
@@ -170,9 +171,41 @@ func (control *Admin) Detail(ctx *gin.Context) {
  * 管理员权限
  */
 func (control *Admin) Rules(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    var info = model.Admin{}
+
+    // 附件模型
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx, []string{})).
+        Where("id = ?", id).
+        Preload("Groups").
+        First(&info).
+        Error
+    if err != nil {
+        control.Error(ctx, "账号不存在")
+        return
+    }
+
+    // 结构体转map
+    data, _ := json.Marshal(&info)
+    adminData := map[string]interface{}{}
+    json.Unmarshal(data, &adminData)
+
+    groupids := collection.Collect(adminData["Groups"]).
+        Pluck("id").
+        ToStringArray()
+
+    rules := adminRepository.GetRules(groupids)
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "list": rules,
+    })
 }
 
 /**
