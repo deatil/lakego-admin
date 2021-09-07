@@ -115,8 +115,6 @@ func New() (cv *customValidator, err error) {
 
 /**
  * 字段验证
- * 使用验证器验证字段
- * 当有错误时，此只返回单个错误描述
  */
 func (v *customValidator) Verify(
     data interface{},
@@ -171,10 +169,29 @@ func (v *customValidator) Verify(
     return true, result
 }
 
+
 /**
- * map 验证
+ * 字段验证
  * 使用验证器验证字段
  * 当有错误时，此只返回单个错误描述
+ */
+func (v *customValidator) VerifyReturnOneError(
+    data interface{},
+    message map[string]string,
+) (bool, string) {
+    _, errs := v.Verify(data, message)
+
+    if len(errs) > 0 {
+        for _, err := range errs {
+            return false, err
+        }
+    }
+
+    return true, ""
+}
+
+/**
+ * map 验证
  */
 func (v *customValidator) ValidateMap(
     data map[string]interface{},
@@ -224,6 +241,28 @@ func (v *customValidator) ValidateMap(
     }
 
     return true, result
+}
+
+
+/**
+ * map 验证，只返回一个错误值
+ * 使用验证器验证字段
+ * 当有错误时，此只返回单个错误描述
+ */
+func (v *customValidator) ValidateMapReturnOneError(
+    data map[string]interface{},
+    rules map[string]interface{},
+    message map[string]string,
+) (bool, string) {
+    _, errs := v.ValidateMap(data, rules, message)
+
+    if len(errs) > 0 {
+        for _, err := range errs {
+            return false, err
+        }
+    }
+
+    return true, ""
 }
 
 // 单独判断

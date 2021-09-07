@@ -6,6 +6,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/config"
+    "lakego-admin/lakego/route"
     "lakego-admin/lakego/middleware/event"
     providerInterface "lakego-admin/lakego/provider/interfaces"
 )
@@ -207,7 +208,11 @@ func (app *App) loadApp() {
     // 加载服务提供者
     app.loadServiceProvider()
 
+    // 设置已启动
     app.Runned = true
+
+    // 缓存路由信息
+    route.New().With(r)
 
     // 运行端口
     httpPort := config.New("server").GetString("Port")

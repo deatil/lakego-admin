@@ -7,6 +7,7 @@ import (
 
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/support/cast"
+    "lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
@@ -212,9 +213,49 @@ func (control *Admin) Rules(ctx *gin.Context) {
  * 删除
  */
 func (control *Admin) Delete(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能删除自己的账号")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAdmin().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    authAdminId := config.New("auth").GetString("Auth.AdminId")
+    if authAdminId == adminId.(string) {
+        control.Error(ctx, "当前账号不能被删除")
+        return
+    }
+
+    // 删除
+    err2 := model.NewAdmin().
+        Delete(&model.Admin{
+            ID: id,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "账号删除失败")
+        return
+    }
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.Success(ctx, "账号删除成功")
 }
 
 /**
