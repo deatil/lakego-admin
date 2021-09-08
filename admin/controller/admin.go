@@ -11,6 +11,8 @@ import (
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
+    "lakego-admin/admin/auth/admin"
+    adminValidate "lakego-admin/admin/validate/admin"
     adminRepository "lakego-admin/admin/repository/admin"
 )
 
@@ -262,18 +264,141 @@ func (control *Admin) Delete(ctx *gin.Context) {
  * 添加
  */
 func (control *Admin) Create(ctx *gin.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    validateErr := adminValidate.Login(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    status := 0
+    if post["status"].(string) == 1 {
+        status = 1
+    }
+
+    // 附件模型
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Where("name = ?", post["name"].(string)).
+        Or("email = ?", post["email"].(string))
+        First(&result).
+        Error
+    if !(err != nil || len(result) < 1) {
+        control.Error(ctx, "邮箱或者账号已经存在")
+        return
+    }
+
+    insertData := model.Admin{
+        Name: post["name"].(string),
+        Nickname: post["nickname"].(string),
+        Email: post["email"].(string),
+        Introduce: post["introduce"].(string),
+        Status: status,
+    }
+
+    adminInfo := ctx.Get("admin").(*admin.Admin)
+    groupChildrenIds := adminInfo.GetGroupChildrenIds()
+    if len(groupChildrenIds) < 1 {
+        control.Error(ctx, "当前账号不能创建子账号")
+        return
+    }
+
+    err := model.NewDB().
+        Create(&insertData).
+        Error
+    if err != nil {
+        control.Error(ctx, "添加账号失败")
+        return
+    }
+
+    model.NewDB().Create(&model.AuthGroupAccess{
+        AdminId: insertData.ID,
+        GroupId: groupChildrenIds[0],
+    })
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.SuccessWithData(ctx, "添加账号成功", gin.H{
+        "id": insertData.ID,
+    })
 }
 
 /**
  * 更新
  */
 func (control *Admin) Update(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    validateErr := adminValidate.Update(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    status := 0
+    if post["status"].(string) == 1 {
+        status = 1
+    }
+
+    // 链接db
+    db := model.NewDB()
+
+    // 验证
+    result2 := map[string]interface{}{}
+    err2 := model.NewAdmin().
+        Where(db.Where("id = ?", id).Where("name = ?", post["name"].(string))).
+        Or(db.Where("id = ?", id).Where("email = ?", post["email"].(string))).
+        First(&result2).
+        Error
+    if !(err2 != nil || len(result2) < 1) {
+        control.Error(ctx, "管理员账号或者邮箱已经存在")
+        return
+    }
+
+    err3 := model.NewAdmin().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "name": post["name"].(string),
+            "nickname": post["nickname"].(string),
+            "email": post["email"].(string),
+            "introduce": post["introduce"].(string),
+            "status": status,
+        }).
+        Error
+    if err3 != nil {
+        control.Error(ctx, "账号修改失败")
+        return
+    }
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    control.Success(ctx, "账号修改成功")
 }
 
 /**
