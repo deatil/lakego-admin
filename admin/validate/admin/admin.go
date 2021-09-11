@@ -11,7 +11,7 @@ func Create(data map[string]interface{}) string {
         "name": "required,min=2,max=20",
         "nickname": "required,min=2,max=150",
         "email": "required,email,min=5,max=100",
-        "introduce": "required,max=500,
+        "introduce": "required,max=500",
         "status": "required,oneof='0|1'",
     }
 
@@ -49,7 +49,7 @@ func Update(data map[string]interface{}) string {
         "name": "required,min=2,max=20",
         "nickname": "required,min=2,max=150",
         "email": "required,email,min=5,max=100",
-        "introduce": "required,max=500,
+        "introduce": "required,max=500",
         "status": "required,oneof='0|1'",
     }
 

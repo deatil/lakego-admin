@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version: 5.5.53)
-# Date: 2021-09-04 12:11:40
+# Date: 2021-09-11 12:37:41
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -36,7 +36,7 @@ CREATE TABLE `lakego_lakego_admin` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_admin` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','eb73eb5d52f9c663b5809b6839f2f9a8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','78c9246a8c10eb2fe285915df5cc6bd8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
 /*!40000 ALTER TABLE `lakego_lakego_admin` ENABLE KEYS */;
 
 #
@@ -69,7 +69,7 @@ CREATE TABLE `lakego_lakego_attachment` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_attachment` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_attachment` VALUES ('a816799397e73f9b1978a9738f79a3c6','e92ba0a3f86f4a5693d8487eb8c632b5','admin','2.jpg','images/a816799397e73f9b1978a9738f79a3c6.jpg','image/jpeg','jpg','845941','8cd6239532a506d5b90b4652968b5d8f','da39a3ee5e6b4b0d3255bfef95601890afd80709','public',1,0,1630588690,1630588690,'127.0.0.1');
+INSERT INTO `lakego_lakego_attachment` VALUES ('78c9246a8c10eb2fe285915df5cc6bd8','e92ba0a3f86f4a5693d8487eb8c632b5','admin','2.jpg','images/78c9246a8c10eb2fe285915df5cc6bd8.jpg','image/jpeg','jpg','845941','8cd6239532a506d5b90b4652968b5d8f','da39a3ee5e6b4b0d3255bfef95601890afd80709','public',1,0,1630773730,1630773730,'127.0.0.1');
 /*!40000 ALTER TABLE `lakego_lakego_attachment` ENABLE KEYS */;
 
 #
@@ -129,7 +129,9 @@ CREATE TABLE `lakego_lakego_auth_rule` (
   `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则中文描述',
   `url` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '访问地址',
   `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'GET' COMMENT '请求类型',
-  `remark` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '提示',
+  `auth_url` varchar(200) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '权限验证链接',
+  `slug` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '地址鉴权标识',
+  `description` varchar(255) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '描述',
   `listorder` int(10) NOT NULL DEFAULT '100' COMMENT '排序ID',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `update_time` int(10) DEFAULT '0' COMMENT '更新时间',

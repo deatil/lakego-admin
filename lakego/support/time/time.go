@@ -28,8 +28,9 @@ func NowTime() int64 {
 }
 
 // 当前时间，单位：秒
-func NowTimeToInt() int64 {
-    return int(NowTime())
+func NowTimeToInt() int {
+    time := NowTime()
+    return int(time)
 }
 
 // 当前时间，单位：纳秒
@@ -38,6 +39,6 @@ func NowNanoTime() int64 {
 }
 
 // 当前时间，单位：纳秒
-func NowNanoTimeToInt() int64 {
+func NowNanoTimeToInt() int {
     return int(NowNanoTime())
 }

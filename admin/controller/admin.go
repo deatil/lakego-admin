@@ -319,7 +319,7 @@ func (control *Admin) Create(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(string) == 1 {
+    if post["status"].(int) == 1 {
         status = 1
     }
 
@@ -327,7 +327,7 @@ func (control *Admin) Create(ctx *gin.Context) {
     result := map[string]interface{}{}
     err := model.NewAdmin().
         Where("name = ?", post["name"].(string)).
-        Or("email = ?", post["email"].(string))
+        Or("email = ?", post["email"].(string)).
         First(&result).
         Error
     if !(err != nil || len(result) < 1) {
@@ -343,10 +343,10 @@ func (control *Admin) Create(ctx *gin.Context) {
         Status: status,
     }
 
-    err := model.NewDB().
+    err2 := model.NewDB().
         Create(&insertData).
         Error
-    if err != nil {
+    if err2 != nil {
         control.Error(ctx, "添加账号失败")
         return
     }
@@ -400,7 +400,7 @@ func (control *Admin) Update(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(string) == 1 {
+    if post["status"].(int) == 1 {
         status = 1
     }
 
@@ -662,7 +662,9 @@ func (control *Admin) Logout(ctx *gin.Context) {
         return
     }
 
-    if c.Has(hash.MD5(refreshToken.(string))) {
+    c := cache.New()
+
+    if c.Has(hash.MD5(refreshToken)) {
         control.Error(ctx, "refreshToken已失效")
         return
     }
@@ -671,9 +673,9 @@ func (control *Admin) Logout(ctx *gin.Context) {
     jwter := auth.New(ctx)
 
     // 拿取数据
-    claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken.(string))
+    claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken)
     if claimsErr != nil {
-        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
+        control.Error(ctx, "refreshToken 已失效")
         return
     }
 
@@ -733,7 +735,7 @@ func (control *Admin) Access(ctx *gin.Context) {
 
     // 模型
     err2 := model.NewAuthGroupAccess().
-        Delete(&model.Attachment{
+        Delete(&model.AuthGroupAccess{
             AdminId: id,
         }).
         Error
@@ -767,7 +769,7 @@ func (control *Admin) Access(ctx *gin.Context) {
             intersectAccess = newAccessIds
         }
 
-        insertData := make([]model.AuthGroupAccess{}, 0)
+        insertData := make([]model.AuthGroupAccess, 0)
         for _, value := range intersectAccess {
             insertData = append(insertData, model.AuthGroupAccess{
                 AdminId: id,

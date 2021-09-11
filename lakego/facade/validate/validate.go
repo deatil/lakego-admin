@@ -26,6 +26,17 @@ func Validate(s interface{}, message map[string]string) (bool, map[string]string
 }
 
 /**
+ * 验证器
+ * 返回验证器验证结果错误消息 和 bool (是否验证成功)
+ *
+ * @create 2021-9-11
+ * @author deatil
+ */
+func VerifyReturnOneError(s interface{}, message map[string]string) (bool, string) {
+    return validate.CustomValidator.VerifyReturnOneError(s, message)
+}
+
+/**
  * map 验证器
  *
  * @create 2021-6-20
@@ -33,6 +44,16 @@ func Validate(s interface{}, message map[string]string) (bool, map[string]string
  */
 func ValidateMap(data map[string]interface{}, rules map[string]interface{}, message map[string]string) (bool, map[string]string) {
     return validate.CustomValidator.ValidateMap(data, rules, message)
+}
+
+/**
+ * map 验证器
+ *
+ * @create 2021-9-11
+ * @author deatil
+ */
+func ValidateMapReturnOneError(data map[string]interface{}, rules map[string]interface{}, message map[string]string) (bool, string) {
+    return validate.CustomValidator.ValidateMapReturnOneError(data, rules, message)
 }
 
 /**
