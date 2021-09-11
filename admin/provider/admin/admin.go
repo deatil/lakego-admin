@@ -5,9 +5,8 @@ import (
 
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/provider"
-    "lakego-admin/lakego/http/route"
     "lakego-admin/lakego/http/response"
-    "lakego-admin/lakego/http/route/middleware"
+    "lakego-admin/lakego/http/route"
 
     "lakego-admin/admin/support/url"
     "lakego-admin/admin/support/http/code"
@@ -127,7 +126,7 @@ func (s *ServiceProvider) loadRoute() {
  * 导入中间件
  */
 func (s *ServiceProvider) loadMiddleware() {
-    m := middleware.GetInstance()
+    m := route.GetMiddlewareInstance()
 
     for name, value := range routeMiddlewares {
         m.WithMiddleware(name, value)
@@ -138,7 +137,7 @@ func (s *ServiceProvider) loadMiddleware() {
  * 导入中间件分组
  */
 func (s *ServiceProvider) loadGroup() {
-    m := middleware.GetInstance()
+    m := route.GetMiddlewareInstance()
 
     for name, value := range middlewareGroups {
         for _, group := range value.([]string) {

@@ -2,7 +2,6 @@ package middleware
 
 import (
     "sync"
-    "github.com/gin-gonic/gin"
 )
 
 var instance *Middleware
@@ -72,21 +71,6 @@ func (m *Middleware) GetMiddleware(name string) interface{} {
 }
 
 /**
- * 获取中间件
- */
-func (m *Middleware) GetHandlerFuncMiddleware(name string) (handlerFunc gin.HandlerFunc) {
-    middleware := m.GetMiddleware(name)
-
-    if middleware != nil {
-        handlerFunc = middleware.(gin.HandlerFunc)
-        return
-    }
-
-    handlerFunc = nil
-    return
-}
-
-/**
  * 设置分组
  */
 func (m *Middleware) WithGroup(name string, group interface{}) bool {
@@ -132,49 +116,28 @@ func (m *Middleware) GetGroup(name string) interface{} {
  * 获取中间件列表
  */
 func (m *Middleware) GetMiddlewares(name string) (middleware []interface{}) {
-    var newData []interface{}
-
     if nameMiddleware, ok := m.ExistMiddleware(name); ok {
-        newData = append(newData, nameMiddleware)
+        middleware = append(middleware, nameMiddleware)
         return
     }
 
     if nameGroups, ok := m.ExistGroup(name); ok {
         nameGroupList := nameGroups.([]interface{})
 
-        for _, s := range nameGroupList {
-            switch s.(type) {
+        for _, nameGroup := range nameGroupList {
+            switch nameGroup.(type) {
                 case string:
                     // 只判断一层获取字符对应的中间件
-                    data := m.GetMiddleware(s.(string))
+                    data := m.GetMiddleware(nameGroup.(string))
                     if data != nil{
-                        newData = append(newData, data)
+                        middleware = append(middleware, data)
                     }
                 default:
-                    newData = append(newData, s.([]interface{}))
+                    middleware = append(middleware, nameGroup.([]interface{}))
             }
         }
 
     }
 
-    middleware = newData
-    return
-}
-
-/**
- * 获取中间件列表
- */
-func (m *Middleware) GetHandlerFuncMiddlewares(name string) (handlerFuncs []gin.HandlerFunc) {
-    middlewares := m.GetMiddlewares(name)
-
-    var newMiddlewares []gin.HandlerFunc
-
-    if middlewares != nil && len(middlewares) > 0 {
-        for _, middleware := range middlewares {
-            newMiddlewares = append(newMiddlewares, middleware.(gin.HandlerFunc))
-        }
-    }
-
-    handlerFuncs = newMiddlewares
     return
 }
