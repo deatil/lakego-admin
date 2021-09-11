@@ -41,11 +41,11 @@ func Create(data map[string]interface{}) string {
     return err
 }
 
-
 // 编辑验证
 func Update(data map[string]interface{}) string {
     // 规则
     rules := map[string]interface{}{
+        "group_id": "required",
         "name": "required,min=2,max=20",
         "nickname": "required,min=2,max=150",
         "email": "required,email,min=5,max=100",
@@ -55,6 +55,7 @@ func Update(data map[string]interface{}) string {
 
     // 错误提示
     messages := map[string]string{
+        "group_id.required": "账号所属分组不能为空",
         "name.required": "账号不能为空",
         "name.min": "账号最小字符需要2个",
         "name.max": "账号最大字符需要20个",
@@ -69,6 +70,27 @@ func Update(data map[string]interface{}) string {
         "introduce.max": "简介字数最大字符需要500个",
         "status.required": "状态选项不能为空",
         "status.oneof": "状态选项值错误",
+    }
+
+    ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
+    if ok {
+        return ""
+    }
+
+    return err
+}
+
+// 修改头像
+func UpdateAvatar(data map[string]interface{}) string {
+    // 规则
+    rules := map[string]interface{}{
+        "avatar": "required,len=32",
+    }
+
+    // 错误提示
+    messages := map[string]string{
+        "avatar.required": "头像数据不能为空",
+        "avatar.len": "头像数据错误",
     }
 
     ok, err := validate.ValidateMapReturnOneError(data, rules, messages)

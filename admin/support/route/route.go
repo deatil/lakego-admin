@@ -4,10 +4,14 @@ import (
     "github.com/gin-gonic/gin"
     "lakego-admin/lakego/config"
     "lakego-admin/lakego/http/route"
+    router "lakego-admin/lakego/route"
 )
 
 // 路由
-func AddRoute(engine *gin.Engine, f func(rg *gin.RouterGroup)) {
+func AddRoute(f func(rg *gin.RouterGroup)) {
+    // 路由
+    engine := router.New().Get()
+
     // 配置
     conf := config.New("admin")
 

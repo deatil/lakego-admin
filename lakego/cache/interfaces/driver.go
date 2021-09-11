@@ -9,6 +9,9 @@ type Driver interface {
     // 初始化配置
     Init(map[string]interface{}) Driver
 
+    // 判断是否存在
+    Exists(string) bool
+
     // 获取
     Get(string) (interface{}, error)
 

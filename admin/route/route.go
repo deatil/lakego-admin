@@ -42,6 +42,7 @@ func Route(engine *gin.RouterGroup) {
     // 管理员
     adminController := new(controller.Admin)
     engine.GET("/admin", adminController.Index)
+    engine.GET("/admin/groups", adminController.Groups)
     engine.GET("/admin/:id", adminController.Detail)
     engine.GET("/admin/:id/rules", adminController.Rules)
     engine.POST("/admin", adminController.Create)

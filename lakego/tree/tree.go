@@ -2,25 +2,6 @@ package tree
 
 // map 数据格式化为树
 // "lakego-admin/lakego/tree"
-type Tree struct {
-    // 生成树型结构所需要的2维数组
-    data []map[string]interface{}
-
-    // 生成树型结构所需修饰符号
-    icon []string
-    blankspace string
-
-    // 查询
-    idKey string
-    parentidKey string
-    spacerKey string
-    depthKey string
-    haschildKey string
-
-    // 返回子级key
-    buildChildKey string
-}
-
 func New() *Tree {
     return &Tree{
         icon: []string{
@@ -38,6 +19,26 @@ func New() *Tree {
 
         buildChildKey: "children",
     }
+}
+
+// map 数据格式化为树
+type Tree struct {
+    // 生成树型结构所需要的2维数组
+    data []map[string]interface{}
+
+    // 生成树型结构所需修饰符号
+    icon []string
+    blankspace string
+
+    // 查询
+    idKey string
+    parentidKey string
+    spacerKey string
+    depthKey string
+    haschildKey string
+
+    // 返回子级key
+    buildChildKey string
 }
 
 func (tree *Tree) WithIcon(icon []string) *Tree {

@@ -63,6 +63,11 @@ func (c *Cache) GetConfig(name string) interface{} {
 }
 
 // 获取
+func (c *Cache) Has(key string) bool {
+    return c.driver.Exists(key)
+}
+
+// 获取
 func (c *Cache) Get(key string) (interface{}, error) {
     return c.driver.Get(key)
 }

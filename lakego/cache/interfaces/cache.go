@@ -14,6 +14,9 @@ type Cache interface {
     // 获取配置
     GetConfig(string) interface{}
 
+    // 判断
+    Has(string) bool
+
     // 获取
     Get(string) (interface{}, error)
 

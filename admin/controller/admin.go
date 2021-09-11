@@ -5,13 +5,20 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/auth"
+    "lakego-admin/lakego/tree"
+    "lakego-admin/lakego/helper"
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/support/cast"
+    "lakego-admin/lakego/support/hash"
+    "lakego-admin/lakego/support/time"
     "lakego-admin/lakego/facade/config"
+    "lakego-admin/lakego/facade/cache"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
     "lakego-admin/admin/auth/admin"
+    authPassword "lakego-admin/lakego/auth/password"
     adminValidate "lakego-admin/admin/validate/admin"
     adminRepository "lakego-admin/admin/repository/admin"
 )
@@ -31,7 +38,8 @@ type Admin struct {
  */
 func (control *Admin) Index(ctx *gin.Context) {
     // 模型
-    adminModel := model.NewAdmin()
+    adminModel := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx))
 
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
@@ -110,7 +118,6 @@ func (control *Admin) Index(ctx *gin.Context) {
         return
     }
 
-    // 数据输出
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
@@ -131,8 +138,9 @@ func (control *Admin) Detail(ctx *gin.Context) {
 
     var info = model.Admin{}
 
-    // 附件模型
+    // 模型
     err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
         Preload("Groups").
         First(&info).
@@ -166,7 +174,6 @@ func (control *Admin) Detail(ctx *gin.Context) {
     newInfo["groups"] = newInfoGroups
     newInfo["avatar"] = avatar
 
-    // 数据输出
     control.SuccessWithData(ctx, "获取成功", newInfo)
 }
 
@@ -182,9 +189,9 @@ func (control *Admin) Rules(ctx *gin.Context) {
 
     var info = model.Admin{}
 
-    // 附件模型
+    // 模型
     err := model.NewAdmin().
-        Scopes(scope.AdminWithAccess(ctx, []string{})).
+        Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
         Preload("Groups").
         First(&info).
@@ -205,7 +212,6 @@ func (control *Admin) Rules(ctx *gin.Context) {
 
     rules := adminRepository.GetRules(groupids)
 
-    // 数据输出
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,
     })
@@ -229,8 +235,9 @@ func (control *Admin) Delete(ctx *gin.Context) {
 
     result := map[string]interface{}{}
 
-    // 附件模型
+    // 模型
     err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
         First(&result).
         Error
@@ -247,6 +254,7 @@ func (control *Admin) Delete(ctx *gin.Context) {
 
     // 删除
     err2 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
         Delete(&model.Admin{
             ID: id,
         }).
@@ -256,8 +264,44 @@ func (control *Admin) Delete(ctx *gin.Context) {
         return
     }
 
-    // 数据输出
     control.Success(ctx, "账号删除成功")
+}
+
+/**
+ * 添加账号所需分组
+ */
+func (control *Admin) Groups(ctx *gin.Context) {
+    adminInfo, _ := ctx.Get("admin")
+    adminData := adminInfo.(*admin.Admin)
+
+    list := make([]map[string]interface{}, 0)
+    if adminData.IsSuperAdministrator() {
+        err := model.NewAdmin().
+            Order("listorder ASC").
+            Order("create_time ASC").
+            Select([]string{
+                "id",
+                "parentid",
+                "title",
+                "description",
+            }).
+            Find(&list)
+        if err != nil {
+            control.Error(ctx, "获取失败")
+            return
+        }
+
+        newTree := tree.New()
+        list2 := newTree.WithData(list).Build(0, "", 1)
+
+        list = newTree.BuildFormatList(list2, 0)
+    } else {
+        list = adminData.GetGroupChildren()
+    }
+
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "list": list,
+    })
 }
 
 /**
@@ -268,7 +312,7 @@ func (control *Admin) Create(ctx *gin.Context) {
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
-    validateErr := adminValidate.Login(post)
+    validateErr := adminValidate.Create(post)
     if validateErr != "" {
         control.Error(ctx, validateErr)
         return
@@ -279,7 +323,7 @@ func (control *Admin) Create(ctx *gin.Context) {
         status = 1
     }
 
-    // 附件模型
+    // 模型
     result := map[string]interface{}{}
     err := model.NewAdmin().
         Where("name = ?", post["name"].(string)).
@@ -299,13 +343,6 @@ func (control *Admin) Create(ctx *gin.Context) {
         Status: status,
     }
 
-    adminInfo := ctx.Get("admin").(*admin.Admin)
-    groupChildrenIds := adminInfo.GetGroupChildrenIds()
-    if len(groupChildrenIds) < 1 {
-        control.Error(ctx, "当前账号不能创建子账号")
-        return
-    }
-
     err := model.NewDB().
         Create(&insertData).
         Error
@@ -316,10 +353,9 @@ func (control *Admin) Create(ctx *gin.Context) {
 
     model.NewDB().Create(&model.AuthGroupAccess{
         AdminId: insertData.ID,
-        GroupId: groupChildrenIds[0],
+        GroupId: post["group_id"].(string),
     })
 
-    // 数据输出
     control.SuccessWithData(ctx, "添加账号成功", gin.H{
         "id": insertData.ID,
     })
@@ -344,6 +380,7 @@ func (control *Admin) Update(ctx *gin.Context) {
     // 查询
     result := map[string]interface{}{}
     err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
         First(&result).
         Error
@@ -383,6 +420,7 @@ func (control *Admin) Update(ctx *gin.Context) {
     }
 
     err3 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
         Updates(map[string]interface{}{
             "name": post["name"].(string),
@@ -397,7 +435,6 @@ func (control *Admin) Update(ctx *gin.Context) {
         return
     }
 
-    // 数据输出
     control.Success(ctx, "账号修改成功")
 }
 
@@ -405,53 +442,342 @@ func (control *Admin) Update(ctx *gin.Context) {
  * 修改头像
  */
 func (control *Admin) UpdateAvatar(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    validateErr := adminValidate.UpdateAvatar(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    err3 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "avatar": post["avatar"].(string),
+        }).
+        Error
+    if err3 != nil {
+        control.Error(ctx, "修改头像失败")
+        return
+    }
+
+    control.Success(ctx, "修改头像成功")
 }
 
 /**
  * 修改密码
  */
 func (control *Admin) UpdatePasssword(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
-}
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
 
-/**
- * 授权
- */
-func (control *Admin) Access(ctx *gin.Context) {
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    password := post["password"].(string)
+    if len(password) != 32 {
+        control.Error(ctx, "密码格式错误")
+        return
+    }
+
+    // 生成密码
+    pass, encrypt := authPassword.MakePassword(password)
+
+    err3 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "password": pass,
+            "password_salt": encrypt,
+        }).
+        Error
+    if err3 != nil {
+        control.Error(ctx, "修改头像失败")
+        return
+    }
+
+    control.Success(ctx, "密码修改成功")
 }
 
 /**
  * 启用
  */
 func (control *Admin) Enable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if result["status"] == 1 {
+        control.Error(ctx, "账号已启用")
+        return
+    }
+
+    err2 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 1,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "启用账号失败")
+        return
+    }
+
+    control.Success(ctx, "启用账号成功")
 }
 
 /**
  * 禁用
  */
 func (control *Admin) Disable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if result["status"] == 0 {
+        control.Error(ctx, "账号已禁用")
+        return
+    }
+
+    err2 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 0,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "禁用账号失败")
+        return
+    }
+
+    control.Success(ctx, "禁用账号成功")
 }
 
 /**
  * 退出
  */
 func (control *Admin) Logout(ctx *gin.Context) {
+    refreshToken := ctx.Param("refreshToken")
+    if refreshToken == "" {
+        control.Error(ctx, "refreshToken不能为空")
+        return
+    }
 
-    // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    if c.Has(hash.MD5(refreshToken.(string))) {
+        control.Error(ctx, "refreshToken已失效")
+        return
+    }
+
+    // jwt
+    jwter := auth.New(ctx)
+
+    // 拿取数据
+    claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken.(string))
+    if claimsErr != nil {
+        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
+        return
+    }
+
+    // 当前账号ID
+    refreshAdminid := jwter.GetDataFromTokenClaims(claims, "id")
+
+    // 过期时间
+    exp := jwter.GetFromTokenClaims(claims, "exp")
+    iat := jwter.GetFromTokenClaims(claims, "iat")
+    refreshTokenExpiresIn := exp.(float64) - iat.(float64)
+
+    nowAdminId, _ := ctx.Get("admin_id")
+    if refreshAdminid == nowAdminId.(string) {
+        control.Error(ctx, "你不能退出你的账号")
+        return
+    }
+
+    c.Put(hash.MD5(refreshToken), "no", int64(refreshTokenExpiresIn))
+
+    model.NewAdmin().
+        Where("id = ?", refreshAdminid).
+        Updates(map[string]interface{}{
+            "refresh_time": time.NowTimeToInt(),
+            "refresh_ip": helper.GetRequestIp(ctx),
+        })
+
+    control.Success(ctx, "账号退出成功")
+}
+
+/**
+ * 授权
+ */
+func (control *Admin) Access(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能修改自己的账号")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 模型
+    err2 := model.NewAuthGroupAccess().
+        Delete(&model.Attachment{
+            AdminId: id,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "账号授权分组失败")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    access := post["access"].(string)
+    if access != "" {
+        adminInfo, _ := ctx.Get("admin")
+        adminData := adminInfo.(*admin.Admin)
+
+        groupIds := adminData.GetGroupChildrenIds()
+        accessIds := strings.Split(access, ",")
+
+        newAccessIds := collection.Collect(accessIds).
+            Unique().
+            ToStringArray()
+
+        intersectAccess := make([]string, 0)
+        if adminData.IsSuperAdministrator() {
+            intersectAccess = collection.Collect(groupIds).
+                Intersect(accessIds).
+                ToStringArray()
+        } else {
+            intersectAccess = newAccessIds
+        }
+
+        insertData := make([]model.AuthGroupAccess{}, 0)
+        for _, value := range intersectAccess {
+            insertData = append(insertData, model.AuthGroupAccess{
+                AdminId: id,
+                GroupId: value,
+            })
+        }
+
+        model.NewDB().Create(&insertData)
+    }
+
+    control.Success(ctx, "账号授权分组成功")
 }
 

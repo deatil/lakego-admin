@@ -27,7 +27,17 @@ func NowTime() int64 {
     return time.Now().Unix()
 }
 
+// 当前时间，单位：秒
+func NowTimeToInt() int64 {
+    return int(NowTime())
+}
+
 // 当前时间，单位：纳秒
 func NowNanoTime() int64 {
     return time.Now().UnixNano()
+}
+
+// 当前时间，单位：纳秒
+func NowNanoTimeToInt() int64 {
+    return int(NowNanoTime())
 }
