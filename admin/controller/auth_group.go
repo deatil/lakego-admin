@@ -1,13 +1,13 @@
 package controller
 
 import (
-    "encoding/json"
+    "strings"
     "github.com/gin-gonic/gin"
 
     "lakego-admin/lakego/tree"
+    "lakego-admin/lakego/helper"
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/support/cast"
-    "lakego-admin/lakego/support/hash"
     "lakego-admin/lakego/support/time"
 
     "lakego-admin/admin/model"
@@ -30,8 +30,7 @@ type AuthGroup struct {
  */
 func (control *AuthGroup) Index(ctx *gin.Context) {
     // 模型
-    groupModel := model.NewAuthGroup().
-        Scopes(scope.AdminWithAccess(ctx))
+    groupModel := model.NewAuthGroup()
 
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
@@ -109,7 +108,7 @@ func (control *AuthGroup) Index(ctx *gin.Context) {
 /**
  * 树结构
  */
-func (control *AuthGroup) indexTree(ctx *gin.Context) {
+func (control *AuthGroup) IndexTree(ctx *gin.Context) {
     list := make([]map[string]interface{}, 0)
 
     err := model.NewAuthGroup().
@@ -132,7 +131,7 @@ func (control *AuthGroup) indexTree(ctx *gin.Context) {
 /**
  * 子列表
  */
-func (control *AuthGroup) indexChildren(ctx *gin.Context) {
+func (control *AuthGroup) IndexChildren(ctx *gin.Context) {
     id := ctx.Query("id")
     if id == "" {
         control.Error(ctx, "ID错误")
@@ -156,7 +155,7 @@ func (control *AuthGroup) indexChildren(ctx *gin.Context) {
 /**
  * 详情
  */
-func (control *AuthGroup) detail(ctx *gin.Context) {
+func (control *AuthGroup) Detail(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -191,7 +190,7 @@ func (control *AuthGroup) detail(ctx *gin.Context) {
 /**
  * 删除
  */
-func (control *AuthGroup) delete(ctx *gin.Context) {
+func (control *AuthGroup) Delete(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -237,7 +236,7 @@ func (control *AuthGroup) delete(ctx *gin.Context) {
 /**
  * 添加
  */
-func (control *AuthGroup) create(ctx *gin.Context) {
+func (control *AuthGroup) Create(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -264,8 +263,10 @@ func (control *AuthGroup) create(ctx *gin.Context) {
         Parentid: post["parentid"].(string),
         Title: post["title"].(string),
         Description: post["description"].(string),
-        listorder: listorder,
+        Listorder: cast.ToString(listorder),
         Status: status,
+        AddTime: time.NowTimeToInt(),
+        AddIp: helper.GetRequestIp(ctx),
     }
 
     err2 := model.NewDB().
@@ -284,7 +285,7 @@ func (control *AuthGroup) create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (control *AuthGroup) update(ctx *gin.Context) {
+func (control *AuthGroup) Update(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -332,6 +333,8 @@ func (control *AuthGroup) update(ctx *gin.Context) {
             "description": post["description"].(string),
             "listorder": listorder,
             "status": status,
+            "add_time": time.NowTimeToInt(),
+            "add_ip": helper.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {
@@ -345,7 +348,7 @@ func (control *AuthGroup) update(ctx *gin.Context) {
 /**
  * 排序
  */
-func (control *AuthGroup) listorder(ctx *gin.Context) {
+func (control *AuthGroup) Listorder(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -392,7 +395,7 @@ func (control *AuthGroup) listorder(ctx *gin.Context) {
 /**
  * 启用
  */
-func (control *AuthGroup) enable(ctx *gin.Context) {
+func (control *AuthGroup) Enable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -436,7 +439,7 @@ func (control *AuthGroup) enable(ctx *gin.Context) {
 /**
  * 禁用
  */
-func (control *AuthGroup) disable(ctx *gin.Context) {
+func (control *AuthGroup) Disable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")
@@ -480,7 +483,7 @@ func (control *AuthGroup) disable(ctx *gin.Context) {
 /**
  * 授权
  */
-func (control *AuthGroup) access(ctx *gin.Context) {
+func (control *AuthGroup) Access(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
         control.Error(ctx, "ID不能为空")

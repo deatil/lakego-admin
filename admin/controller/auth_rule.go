@@ -1,7 +1,17 @@
 package controller
 
 import (
+    "strings"
     "github.com/gin-gonic/gin"
+
+    "lakego-admin/lakego/tree"
+    "lakego-admin/lakego/helper"
+    "lakego-admin/lakego/support/cast"
+    "lakego-admin/lakego/support/time"
+
+    "lakego-admin/admin/model"
+    authRuleValidate "lakego-admin/admin/validate/authrule"
+    authRuleRepository "lakego-admin/admin/repository/authrule"
 )
 
 /**
@@ -18,6 +28,503 @@ type AuthRule struct {
  * 列表
  */
 func (control *AuthRule) Index(ctx *gin.Context) {
+    // 模型
+    ruleModel := model.NewAuthRule()
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{})
+    // 排序
+    order := ctx.DefaultQuery("order", "id__DESC")
+    orders := strings.SplitN(order, "__", 2)
+    if orders[0] != "id" ||
+        orders[0] != "title" ||
+        orders[0] != "url" ||
+        orders[0] != "method" ||
+        orders[0] != "add_time" {
+        orders[0] = "id"
+    }
+
+    ruleModel = ruleModel.Order(orders[0] + " " + orders[1])
+
+    // 搜索条件
+    searchword := ctx.DefaultQuery("searchword", "")
+    if searchword != "" {
+        searchword = "%" + searchword + "%"
+
+        ruleModel = ruleModel.
+            Or("title LIKE ?", searchword)
+    }
+
+    // 时间条件
+    startTime := ctx.DefaultQuery("start_time", "")
+    if startTime != "" {
+        ruleModel = ruleModel.Where("add_time >= ?", control.FormatDate(startTime))
+    }
+
+    endTime := ctx.DefaultQuery("end_time", "")
+    if endTime != "" {
+        ruleModel = ruleModel.Where("add_time <= ?", control.FormatDate(endTime))
+    }
+
+    status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    if status != -1 {
+        ruleModel = ruleModel.Where("status = ?", status)
+    }
+
+    // 分页相关
+    start := ctx.DefaultQuery("start", "0")
+    limit := ctx.DefaultQuery("limit", "10")
+
+    newStart := cast.ToInt(start)
+    newLimit := cast.ToInt(limit)
+
+    ruleModel = ruleModel.
+        Offset(newStart).
+        Limit(newLimit)
+
+    list := make([]map[string]interface{}, 0)
+
+    // 列表
+    ruleModel = ruleModel.Find(&list)
+
+    var total int64
+
+    // 总数
+    err := ruleModel.
+        Offset(-1).
+        Limit(-1).
+        Count(&total).
+        Error
+    if err != nil {
+        control.Error(ctx, "获取失败")
+        return
+    }
+
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "start": start,
+        "limit": limit,
+        "total": total,
+        "list": list,
+    })
+}
+
+/**
+ * 树结构
+ */
+func (control *AuthRule) IndexTree(ctx *gin.Context) {
+    list := make([]map[string]interface{}, 0)
+
+    err := model.NewAuthRule().
+        Order("listorder ASC").
+        Order("create_time ASC").
+        Find(&list)
+    if err != nil {
+        control.Error(ctx, "获取失败")
+        return
+    }
+
+    newTree := tree.New()
+    list2 := newTree.WithData(list).Build(0, "", 1)
+
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "list": list2,
+    })
+}
+
+/**
+ * 子列表
+ */
+func (control *AuthRule) IndexChildren(ctx *gin.Context) {
+    id := ctx.Query("id")
+    if id == "" {
+        control.Error(ctx, "ID错误")
+        return
+    }
+
+    var data interface{}
+
+    typ := ctx.Query("type")
+    if typ == "list" {
+        data = authRuleRepository.GetChildren(id)
+    } else {
+        data = authRuleRepository.GetChildrenIds(id)
+    }
+
+    control.SuccessWithData(ctx, "获取成功", gin.H{
+        "list": data,
+    })
+}
+
+/**
+ * 详情
+ */
+func (control *AuthRule) Detail(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    var info model.AuthRule
+
+    // 模型
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&info).
+        Error
+    if err != nil {
+        control.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 结构体转map
+    ruleData := model.FormatStructToMap(&info)
+
+    control.SuccessWithData(ctx, "获取成功", ruleData)
+}
+
+/**
+ * 删除
+ */
+func (control *AuthRule) Delete(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 详情
+    var info model.AuthRule
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&info).
+        Error
+    if err != nil {
+        control.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 子级
+    var childInfo model.AuthRule
+    err2 := model.NewAuthRule().
+        Where("parentid = ?", id).
+        First(&childInfo).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "请删除子分组后再操作")
+        return
+    }
+
+    // 删除
+    err3 := model.NewAuthRule().
+        Delete(&model.AuthRule{
+            ID: id,
+        }).
+        Error
+    if err3 != nil {
+        control.Error(ctx, "信息删除失败")
+        return
+    }
+
+    control.Success(ctx, "信息删除成功")
+}
+
+/**
+ * 清空特定ID权限
+ */
+func (control *AuthRule) Clear(ctx *gin.Context) {
+    ids := ctx.Param("ids")
+    if ids == "" {
+        control.Error(ctx, "权限ID列表不能为空")
+        return
+    }
+
+    newIds := strings.Split(ids, ",")
+    for _, id := range newIds {
+        // 详情
+        var info model.AuthRule
+        err := model.NewAuthRule().
+            Where("id = ?", id).
+            First(&info).
+            Error
+        if err != nil {
+            continue
+        }
+
+        // 子级
+        var childInfo model.AuthRule
+        err2 := model.NewAuthRule().
+            Where("parentid = ?", id).
+            First(&childInfo).
+            Error
+        if err2 != nil {
+            continue
+        }
+
+        // 删除
+        err3 := model.NewAuthRule().
+            Delete(&model.AuthRule{
+                ID: id,
+            }).
+            Error
+        if err3 != nil {
+            continue
+        }
+
+    }
+
+    control.Success(ctx, "删除特定权限成功")
+}
+
+/**
+ * 添加
+ */
+func (control *AuthRule) Create(ctx *gin.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    validateErr := authRuleValidate.Create(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    listorder := 0
+    if post["listorder"] != "" {
+        listorder = cast.ToInt(post["listorder"])
+    } else {
+        listorder = 100
+    }
+
+    status := 0
+    if post["status"].(int) == 1 {
+        status = 1
+    }
+
+    insertData := model.AuthRule{
+        Parentid: post["parentid"].(string),
+        Title: post["title"].(string),
+        Url: post["url"].(string),
+        Method: strings.ToUpper(post["method"].(string)),
+        AuthUrl: post["auth_url"].(string),
+        Slug: post["slug"].(string),
+        Description: post["description"].(string),
+        Listorder: cast.ToString(listorder),
+        Status: status,
+        AddTime: time.NowTimeToInt(),
+        AddIp: helper.GetRequestIp(ctx),
+    }
+
+    err2 := model.NewDB().
+        Create(&insertData).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "信息添加失败")
+        return
+    }
+
+    control.SuccessWithData(ctx, "信息添加成功", gin.H{
+        "id": insertData.ID,
+    })
+}
+
+/**
+ * 更新
+ */
+func (control *AuthRule) Update(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    validateErr := authRuleValidate.Update(post)
+    if validateErr != "" {
+        control.Error(ctx, validateErr)
+        return
+    }
+
+    listorder := 0
+    if post["listorder"] != "" {
+        listorder = cast.ToInt(post["listorder"])
+    } else {
+        listorder = 100
+    }
+
+    status := 0
+    if post["status"].(int) == 1 {
+        status = 1
+    }
+
+    err3 := model.NewAuthRule().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "parentid": post["parentid"].(string),
+            "title": post["title"].(string),
+            "url": post["url"].(string),
+            "method": post["method"].(string),
+            "auth_url": post["auth_url"].(string),
+            "slug": post["slug"].(string),
+            "description": post["description"].(string),
+            "listorder": listorder,
+            "status": status,
+            "add_time": time.NowTimeToInt(),
+            "add_ip": helper.GetRequestIp(ctx),
+        }).
+        Error
+    if err3 != nil {
+        control.Error(ctx, "信息修改失败")
+        return
+    }
+
+    control.Success(ctx, "信息修改成功")
+}
+
+/**
+ * 排序
+ */
+func (control *AuthRule) Listorder(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    // 排序
+    listorder := 0
+    if post["listorder"] != "" {
+        listorder = cast.ToInt(post["listorder"])
+    } else {
+        listorder = 100
+    }
+
+    err2 := model.NewAuthRule().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "listorder": listorder,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "更新排序失败")
+        return
+    }
+
+    control.Success(ctx, "更新排序成功")
+}
+
+/**
+ * 启用
+ */
+func (control *AuthRule) Enable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if result["status"] == 1 {
+        control.Error(ctx, "信息已启用")
+        return
+    }
+
+    err2 := model.NewAuthRule().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 1,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "启用失败")
+        return
+    }
+
+    control.Success(ctx, "启用成功")
+}
+
+/**
+ * 禁用
+ */
+func (control *AuthRule) Disable(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 查询
+    result := map[string]interface{}{}
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if result["status"] == 0 {
+        control.Error(ctx, "信息已禁用")
+        return
+    }
+
+    err2 := model.NewAuthRule().
+        Where("id = ?", id).
+        Updates(map[string]interface{}{
+            "status": 1,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "禁用失败")
+        return
+    }
+
+    control.Success(ctx, "禁用成功")
 }
