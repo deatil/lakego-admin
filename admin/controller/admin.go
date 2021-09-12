@@ -276,7 +276,7 @@ func (control *Admin) Groups(ctx *gin.Context) {
 
     list := make([]map[string]interface{}, 0)
     if adminData.IsSuperAdministrator() {
-        err := model.NewAdmin().
+        err := model.NewAuthGroup().
             Order("listorder ASC").
             Order("create_time ASC").
             Select([]string{

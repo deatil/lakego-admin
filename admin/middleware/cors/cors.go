@@ -9,29 +9,29 @@ import (
 
 // 允许跨域
 func Handler() gin.HandlerFunc {
-    return func(c *gin.Context) {
+    return func(ctx *gin.Context) {
         conf := config.New("cors")
         open := conf.GetBool("OpenAllowOrigin")
 
         if (open) {
-            c.Header("Access-Control-Allow-Origin", conf.GetString("AllowOrigin"))
+            ctx.Header("Access-Control-Allow-Origin", conf.GetString("AllowOrigin"))
 
-            c.Header("Access-Control-Allow-Headers", conf.GetString("AllowHeaders"))
-            c.Header("Access-Control-Allow-Methods", conf.GetString("AllowMethods"))
-            c.Header("Access-Control-Expose-Headers", conf.GetString("AllowHeaders"))
+            ctx.Header("Access-Control-Allow-Headers", conf.GetString("AllowHeaders"))
+            ctx.Header("Access-Control-Allow-Methods", conf.GetString("AllowMethods"))
+            ctx.Header("Access-Control-Expose-Headers", conf.GetString("AllowHeaders"))
 
             allowCredentials := conf.GetBool("AllowCredentials")
             if (allowCredentials) {
-                c.Header("Access-Control-Allow-Credentials", "true")
+                ctx.Header("Access-Control-Allow-Credentials", "true")
             }
 
             // 放行所有OPTIONS方法
-            method := c.Request.Method
+            method := ctx.Request.Method
             if method == "OPTIONS" {
-                c.AbortWithStatus(http.StatusAccepted)
+                ctx.AbortWithStatus(http.StatusAccepted)
             }
         }
 
-        c.Next()
+        ctx.Next()
     }
 }

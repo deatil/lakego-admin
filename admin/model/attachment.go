@@ -51,7 +51,7 @@ func AttachmentUrl(id string) string {
         Where("id = ?", id).
         First(&result).
         Error
-    if err != nil {
+    if err != nil || len(result) < 1 {
         return ""
     }
 

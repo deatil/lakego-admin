@@ -19,8 +19,15 @@ func (c *Base) SetHeader(ctx *gin.Context, key string, value string) {
 /**
  * 返回字符
  */
-func (c *Base) ReturnString(ctx *gin.Context, msg string) {
-    response.ReturnString(ctx, msg)
+func (c *Base) ReturnString(ctx *gin.Context, data string, httpCode ...int) {
+    response.ReturnString(ctx, data, httpCode...)
+}
+
+/**
+ * 将json字符窜以标准json格式返回
+ */
+func (c *Base) ReturnJsonFromString(ctx *gin.Context, jsonStr string, httpCode ...int) {
+    response.ReturnJsonFromString(ctx, jsonStr, httpCode...)
 }
 
 /**

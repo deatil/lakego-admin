@@ -18,13 +18,13 @@ import (
 
 // 检查token权限
 func Handler() gin.HandlerFunc {
-    return func(context *gin.Context) {
-        if !shouldPassThrough(context) {
+    return func(ctx *gin.Context) {
+        if !shouldPassThrough(ctx) {
             // 权限检测
-            jwtCheck(context)
+            jwtCheck(ctx)
         }
 
-        context.Next()
+        ctx.Next()
     }
 }
 
