@@ -167,7 +167,8 @@ func (control *Profile) UpdatePasssword(ctx *gin.Context) {
  * 权限列表
  */
 func (control *Profile) Rules(ctx *gin.Context) {
-    rules := make(map[string]string)
+    adminInfo, _ := ctx.Get("admin")
+    rules := adminInfo.(*admin.Admin).GetRules()
 
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,

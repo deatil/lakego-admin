@@ -37,11 +37,7 @@ func GetChildrenFromGroupids(groupids []string) []map[string]interface{} {
         data = append(data, children...)
     }
 
-    list := collection.Collect(data).
-        Collapse().
-        ToMapArray()
-
-    return list
+    return data
 }
 
 // 获取 ChildrenIds
