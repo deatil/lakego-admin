@@ -85,8 +85,11 @@ func (admin *Admin) IsGroupActive() bool {
         return true
     }
 
-    // 格式化分组
     adminGroups := admin.Data["Groups"].([]interface{})
+    if len(adminGroups) == 0 {
+        return false
+    }
+
     status := collection.
         Collect(adminGroups).
         Every(func(item, value interface{}) bool {
@@ -107,8 +110,8 @@ func (admin *Admin) IsGroupActive() bool {
 func (admin *Admin) GetProfile() map[string]interface{} {
     profile := collection.Collect(admin.Data).
         Only([]string{
-            "id", "name", "nickname", "email",
-            "avatar", "introduce",
+            "id", "name", "nickname",
+            "email", "avatar", "introduce",
             "last_active", "last_ip",
         }).
         ToMap()
@@ -138,6 +141,7 @@ func (admin *Admin) GetGroups() []map[string]interface{} {
 
     // 格式化分组
     adminGroups := admin.Data["Groups"].([]interface{})
+
     groups = collection.
         Collect(adminGroups).
         Each(func(item, value interface{}) (interface{}, bool) {
@@ -157,8 +161,11 @@ func (admin *Admin) GetGroups() []map[string]interface{} {
 
 // 当前账号所属分组
 func (admin *Admin) GetGroupIds() []string {
-    // 格式化分组
     adminGroups := admin.Data["Groups"].([]interface{})
+
+    if len(adminGroups) == 0 {
+        return []string{}
+    }
 
     ids := collection.
         Collect(adminGroups).
@@ -173,7 +180,7 @@ func (admin *Admin) GetGroupChildren() []map[string]interface{} {
     list := make([]map[string]interface{}, 0)
 
     groupids := admin.GetGroupIds()
-    if len(groupids) < 1 {
+    if len(groupids) == 0 {
         return list
     }
 
@@ -181,9 +188,10 @@ func (admin *Admin) GetGroupChildren() []map[string]interface{} {
 
     list = collection.Collect(list).
         Select(
-            "id", "name", "nickname", "email",
-            "avatar", "introduce",
-            "last_active", "last_ip",
+            "id",
+            "parentid",
+            "title",
+            "description",
         ).
         ToMapArray()
 
@@ -193,8 +201,12 @@ func (admin *Admin) GetGroupChildren() []map[string]interface{} {
 // 获取 GroupChildrenIds
 func (admin *Admin) GetGroupChildrenIds() []string {
     list := admin.GetGroupChildren()
+    if len(list) == 0 {
+        return []string{}
+    }
 
-    ids := collection.Collect(list).
+    ids := collection.
+        Collect(list).
         Pluck("id").
         ToStringArray()
 
@@ -210,7 +222,7 @@ func (admin *Admin) GetRules() []map[string]interface{} {
     list := make([]map[string]interface{}, 0)
 
     groupids := admin.GetGroupIds()
-    if len(groupids) < 1 {
+    if len(groupids) == 0 {
         return list
     }
 
@@ -219,20 +231,28 @@ func (admin *Admin) GetRules() []map[string]interface{} {
 
 // 获取 ruleids
 func (admin *Admin) GetRuleids() []string {
-    list := admin.GetGroupChildren()
+    list := admin.GetRules()
 
-    return collection.Collect(list).
-        SortBy("id").
+    if len(list) == 0 {
+        return []string{}
+    }
+
+    return collection.
+        Collect(list).
         Pluck("id").
         ToStringArray()
 }
 
 // 获取 slugs
 func (admin *Admin) GetRuleSlugs() []string {
-    list := admin.GetGroupChildren()
+    list := admin.GetRules()
 
-    return collection.Collect(list).
-        SortBy("slug").
+    if len(list) == 0 {
+        return []string{}
+    }
+
+    return collection.
+        Collect(list).
         Pluck("slug").
         ToStringArray()
 }

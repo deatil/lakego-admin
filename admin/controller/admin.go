@@ -218,56 +218,6 @@ func (control *Admin) Rules(ctx *gin.Context) {
 }
 
 /**
- * 删除
- */
-func (control *Admin) Delete(ctx *gin.Context) {
-    id := ctx.Param("id")
-    if id == "" {
-        control.Error(ctx, "账号ID不能为空")
-        return
-    }
-
-    adminId, _ := ctx.Get("admin_id")
-    if id == adminId.(string) {
-        control.Error(ctx, "你不能删除自己的账号")
-        return
-    }
-
-    result := map[string]interface{}{}
-
-    // 模型
-    err := model.NewAdmin().
-        Scopes(scope.AdminWithAccess(ctx)).
-        Where("id = ?", id).
-        First(&result).
-        Error
-    if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
-        return
-    }
-
-    authAdminId := config.New("auth").GetString("Auth.AdminId")
-    if authAdminId == adminId.(string) {
-        control.Error(ctx, "当前账号不能被删除")
-        return
-    }
-
-    // 删除
-    err2 := model.NewAdmin().
-        Scopes(scope.AdminWithAccess(ctx)).
-        Delete(&model.Admin{
-            ID: id,
-        }).
-        Error
-    if err2 != nil {
-        control.Error(ctx, "账号删除失败")
-        return
-    }
-
-    control.Success(ctx, "账号删除成功")
-}
-
-/**
  * 添加账号所需分组
  */
 func (control *Admin) Groups(ctx *gin.Context) {
@@ -278,23 +228,39 @@ func (control *Admin) Groups(ctx *gin.Context) {
     if adminData.IsSuperAdministrator() {
         err := model.NewAuthGroup().
             Order("listorder ASC").
-            Order("create_time ASC").
+            Order("add_time ASC").
             Select([]string{
                 "id",
                 "parentid",
                 "title",
                 "description",
             }).
-            Find(&list)
+            Find(&list).
+            Error
         if err != nil {
             control.Error(ctx, "获取失败")
             return
         }
 
-        newTree := tree.New()
-        list2 := newTree.WithData(list).Build(0, "", 1)
+        list = collection.
+            Collect(list).
+            Each(func(item, value interface{}) (interface{}, bool) {
+                value2 := value.(map[string]interface{})
+                group := map[string]interface{}{
+                    "id": value2["id"],
+                    "parentid": cast.ToString(value2["parentid"]),
+                    "title": value2["title"],
+                    "description": value2["description"],
+                };
 
-        list = newTree.BuildFormatList(list2, 0)
+                return group, true
+            }).
+            ToMapArray()
+
+        newTree := tree.New()
+        list2 := newTree.WithData(list).Build("0", "", 1)
+
+        list = newTree.BuildFormatList(list2, "0")
     } else {
         list = adminData.GetGroupChildren()
     }
@@ -319,7 +285,7 @@ func (control *Admin) Create(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(int) == 1 {
+    if post["status"].(float64) == 1 {
         status = 1
     }
 
@@ -341,6 +307,8 @@ func (control *Admin) Create(ctx *gin.Context) {
         Email: post["email"].(string),
         Introduce: post["introduce"].(string),
         Status: status,
+        AddTime: time.NowTimeToInt(),
+        AddIp: helper.GetRequestIp(ctx),
     }
 
     err2 := model.NewDB().
@@ -400,7 +368,7 @@ func (control *Admin) Update(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(int) == 1 {
+    if post["status"].(float64) == 1 {
         status = 1
     }
 
@@ -410,8 +378,8 @@ func (control *Admin) Update(ctx *gin.Context) {
     // 验证
     result2 := map[string]interface{}{}
     err2 := model.NewAdmin().
-        Where(db.Where("id = ?", id).Where("name = ?", post["name"].(string))).
-        Or(db.Where("id = ?", id).Where("email = ?", post["email"].(string))).
+        Where(db.Where("id != ?", id).Where("name = ?", post["name"].(string))).
+        Or(db.Where("id != ?", id).Where("email = ?", post["email"].(string))).
         First(&result2).
         Error
     if !(err2 != nil || len(result2) < 1) {
@@ -436,6 +404,56 @@ func (control *Admin) Update(ctx *gin.Context) {
     }
 
     control.Success(ctx, "账号修改成功")
+}
+
+/**
+ * 删除
+ */
+func (control *Admin) Delete(ctx *gin.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        control.Error(ctx, "账号ID不能为空")
+        return
+    }
+
+    adminId, _ := ctx.Get("admin_id")
+    if id == adminId.(string) {
+        control.Error(ctx, "你不能删除自己的账号")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 模型
+    err := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        control.Error(ctx, "账号信息不存在")
+        return
+    }
+
+    authAdminId := config.New("auth").GetString("Auth.AdminId")
+    if authAdminId == id {
+        control.Error(ctx, "当前账号不能被删除")
+        return
+    }
+
+    // 删除
+    err2 := model.NewAdmin().
+        Scopes(scope.AdminWithAccess(ctx)).
+        Delete(&model.Admin{
+            ID: id,
+        }).
+        Error
+    if err2 != nil {
+        control.Error(ctx, "账号删除失败")
+        return
+    }
+
+    control.Success(ctx, "账号删除成功")
 }
 
 /**
@@ -735,9 +753,8 @@ func (control *Admin) Access(ctx *gin.Context) {
 
     // 模型
     err2 := model.NewAuthGroupAccess().
-        Delete(&model.AuthGroupAccess{
-            AdminId: id,
-        }).
+        Where("admin_id = ?", id).
+        Delete(&model.AuthGroupAccess{}).
         Error
     if err2 != nil {
         control.Error(ctx, "账号授权分组失败")
@@ -756,13 +773,15 @@ func (control *Admin) Access(ctx *gin.Context) {
         groupIds := adminData.GetGroupChildrenIds()
         accessIds := strings.Split(access, ",")
 
-        newAccessIds := collection.Collect(accessIds).
+        newAccessIds := collection.
+            Collect(accessIds).
             Unique().
             ToStringArray()
 
         intersectAccess := make([]string, 0)
-        if adminData.IsSuperAdministrator() {
-            intersectAccess = collection.Collect(groupIds).
+        if !adminData.IsSuperAdministrator() {
+            intersectAccess = collection.
+                Collect(groupIds).
                 Intersect(accessIds).
                 ToStringArray()
         } else {
