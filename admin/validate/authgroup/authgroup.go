@@ -10,7 +10,7 @@ func Create(data map[string]interface{}) string {
     rules := map[string]interface{}{
         "parentid": "required",
         "title": "required,max=50",
-        "status": "required,oneof='0|1'",
+        "status": "required",
     }
 
     // 错误提示
@@ -19,7 +19,6 @@ func Create(data map[string]interface{}) string {
         "title.required": "名称不能为空",
         "title.max": "名称最大字符需要50个",
         "status.required": "状态选项不能为空",
-        "status.oneof": "状态选项值错误",
     }
 
     ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
@@ -36,7 +35,7 @@ func Update(data map[string]interface{}) string {
     rules := map[string]interface{}{
         "parentid": "required",
         "title": "required,max=50",
-        "status": "required,oneof='0|1'",
+        "status": "required",
     }
 
     // 错误提示
@@ -45,7 +44,6 @@ func Update(data map[string]interface{}) string {
         "title.required": "名称不能为空",
         "title.max": "名称最大字符需要50个",
         "status.required": "状态选项不能为空",
-        "status.oneof": "状态选项值错误",
     }
 
     ok, err := validate.ValidateMapReturnOneError(data, rules, messages)

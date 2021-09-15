@@ -114,7 +114,7 @@ func (control *AuthRule) IndexTree(ctx *gin.Context) {
 
     err := model.NewAuthRule().
         Order("listorder ASC").
-        Order("create_time ASC").
+        Order("add_time ASC").
         Find(&list)
     if err != nil {
         control.Error(ctx, "获取失败")
@@ -296,7 +296,7 @@ func (control *AuthRule) Create(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(int) == 1 {
+    if post["status"].(float64) == 1 {
         status = 1
     }
 
@@ -366,7 +366,7 @@ func (control *AuthRule) Update(ctx *gin.Context) {
     }
 
     status := 0
-    if post["status"].(int) == 1 {
+    if post["status"].(float64) == 1 {
         status = 1
     }
 

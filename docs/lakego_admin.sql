@@ -1,5 +1,5 @@
 ﻿# Host: localhost  (Version: 5.5.53)
-# Date: 2021-09-11 12:37:41
+# Date: 2021-09-15 22:58:17
 # Generator: MySQL-Front 5.3  (Build 4.234)
 
 /*!40101 SET NAMES utf8 */;
@@ -36,7 +36,7 @@ CREATE TABLE `lakego_lakego_admin` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_admin` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_admin` VALUES ('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','78c9246a8c10eb2fe285915df5cc6bd8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `lakego_lakego_admin` VALUES ('a1f47299eb1ef1ae137dad42f3fedc5f','admin223','','','admin22333','larke-admin22@qq.com','','说明11111',0,1,0,'',0,'',0,'',1631632660,'127.0.0.1'),('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','78c9246a8c10eb2fe285915df5cc6bd8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
 /*!40000 ALTER TABLE `lakego_lakego_admin` ENABLE KEYS */;
 
 #
@@ -96,7 +96,7 @@ CREATE TABLE `lakego_lakego_auth_group` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_auth_group` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_auth_group` VALUES ('26d9697f66e341d56af023423d8718b3','538a712299e0ba6011aaf63f2a1317f4','编辑','网站编辑，包括对文章的添加编辑等',105,1,1621431751,'127.0.0.1',0,''),('538a712299e0ba6011aaf63f2a1317f4','0','超级管理员','拥有所有权限',95,1,0,'0',0,'');
+INSERT INTO `lakego_lakego_auth_group` VALUES ('26d9697f66e341d56af023423d8718b3','538a712299e0ba6011aaf63f2a1317f4','编辑','网站编辑，包括对文章的添加编辑等',105,1,1621431751,'127.0.0.1',1621431751,'127.0.0.1'),('538a712299e0ba6011aaf63f2a1317f4','0','超级管理员','拥有所有权限',95,1,1621431751,'127.0.0.1',1621431751,'127.0.0.1');
 /*!40000 ALTER TABLE `lakego_lakego_auth_group` ENABLE KEYS */;
 
 #
@@ -115,7 +115,6 @@ CREATE TABLE `lakego_lakego_auth_group_access` (
 #
 
 /*!40000 ALTER TABLE `lakego_lakego_auth_group_access` DISABLE KEYS */;
-INSERT INTO `lakego_lakego_auth_group_access` VALUES ('e92ba0a3f86f4a5693d8487eb8c632b5','538a712299e0ba6011aaf63f2a1317f4');
 /*!40000 ALTER TABLE `lakego_lakego_auth_group_access` ENABLE KEYS */;
 
 #

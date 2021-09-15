@@ -81,7 +81,7 @@ func Route(engine *gin.RouterGroup) {
     engine.PATCH("/auth/group/:id/sort", authGroupController.Listorder)
     engine.PATCH("/auth/group/:id/enable", authGroupController.Enable)
     engine.PATCH("/auth/group/:id/disable", authGroupController.Disable)
-    engine.PATCH("/auth/group/:id/access", authGroupController.Disable)
+    engine.PATCH("/auth/group/:id/access", authGroupController.Access)
 
     // 系统信息
     systemController := new(controller.System)

@@ -113,15 +113,16 @@ func (control *AuthGroup) IndexTree(ctx *gin.Context) {
 
     err := model.NewAuthGroup().
         Order("listorder ASC").
-        Order("create_time ASC").
-        Find(&list)
+        Order("add_time ASC").
+        Find(&list).
+        Error
     if err != nil {
         control.Error(ctx, "获取失败")
         return
     }
 
     newTree := tree.New()
-    list2 := newTree.WithData(list).Build(0, "", 1)
+    list2 := newTree.WithData(list).Build("0", "", 1)
 
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": list2,
@@ -178,11 +179,34 @@ func (control *AuthGroup) Detail(ctx *gin.Context) {
     // 结构体转map
     groupData := model.FormatStructToMap(&info)
 
-    ruleAccesses:= collection.Collect(groupData["RuleAccesses"]).
-        Pluck("rule_id").
-        ToStringArray()
+    ruleAccesses := make([]string, 0)
+    if len(groupData["RuleAccesses"].([]interface{})) > 0 {
+        ruleAccesses = collection.
+            Collect(groupData["RuleAccesses"]).
+            Pluck("rule_id").
+            ToStringArray()
+    }
+
     delete(groupData, "RuleAccesses")
     groupData["rule_accesses"] = ruleAccesses
+
+    // 格式化
+    groupData = collection.
+        Collect(groupData).
+        Only([]string{
+            "id",
+            "parentid",
+            "title",
+            "description",
+            "listorder",
+            "status",
+            "update_time",
+            "update_ip",
+            "add_time",
+            "add_ip",
+            "rule_accesses",
+        }).
+        ToMap()
 
     control.SuccessWithData(ctx, "获取成功", groupData)
 }
@@ -247,23 +271,20 @@ func (control *AuthGroup) Create(ctx *gin.Context) {
         return
     }
 
-    listorder := 0
-    if post["listorder"] != "" {
-        listorder = cast.ToInt(post["listorder"])
-    } else {
-        listorder = 100
-    }
+    listorder := cast.ToString(post["listorder"])
+    status := cast.ToInt(post["status"])
 
-    status := 0
-    if post["status"].(int) == 1 {
+    if status == 1 {
         status = 1
+    } else {
+        status = 0
     }
 
     insertData := model.AuthGroup{
         Parentid: post["parentid"].(string),
         Title: post["title"].(string),
         Description: post["description"].(string),
-        Listorder: cast.ToString(listorder),
+        Listorder: listorder,
         Status: status,
         AddTime: time.NowTimeToInt(),
         AddIp: helper.GetRequestIp(ctx),
@@ -313,16 +334,13 @@ func (control *AuthGroup) Update(ctx *gin.Context) {
         return
     }
 
-    listorder := 0
-    if post["listorder"] != "" {
-        listorder = cast.ToInt(post["listorder"])
-    } else {
-        listorder = 100
-    }
+    listorder := cast.ToInt(post["listorder"])
+    status := cast.ToInt(post["status"])
 
-    status := 0
-    if post["status"].(int) == 1 {
+    if status == 1 {
         status = 1
+    } else {
+        status = 0
     }
 
     err3 := model.NewAuthGroup().
@@ -469,7 +487,7 @@ func (control *AuthGroup) Disable(ctx *gin.Context) {
     err2 := model.NewAuthGroup().
         Where("id = ?", id).
         Updates(map[string]interface{}{
-            "status": 1,
+            "status": 0,
         }).
         Error
     if err2 != nil {
@@ -503,9 +521,8 @@ func (control *AuthGroup) Access(ctx *gin.Context) {
 
     // 模型
     err2 := model.NewAuthRuleAccess().
-        Delete(&model.AuthRuleAccess{
-            GroupId: id,
-        }).
+        Where("group_id = ?", id).
+        Delete(&model.AuthRuleAccess{}).
         Error
     if err2 != nil {
         control.Error(ctx, "授权失败")
@@ -521,7 +538,8 @@ func (control *AuthGroup) Access(ctx *gin.Context) {
     if access != "" {
         accessIds := strings.Split(access, ",")
 
-        newAccessIds := collection.Collect(accessIds).
+        newAccessIds := collection.
+            Collect(accessIds).
             Unique().
             ToStringArray()
 

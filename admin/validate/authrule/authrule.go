@@ -14,7 +14,7 @@ func Create(data map[string]interface{}) string {
         "method": "required,max=10",
         "auth_url": "required",
         "slug": "required",
-        "status": "required,oneof='0|1'",
+        "status": "required",
     }
 
     // 错误提示
@@ -29,7 +29,6 @@ func Create(data map[string]interface{}) string {
         "auth_url.required": "权限验证链接不能为空",
         "slug.required": "链接标识不能为空",
         "status.required": "状态选项不能为空",
-        "status.oneof": "状态选项值错误",
     }
 
     ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
@@ -50,7 +49,7 @@ func Update(data map[string]interface{}) string {
         "method": "required,max=10",
         "auth_url": "required",
         "slug": "required",
-        "status": "required,oneof='0|1'",
+        "status": "required",
     }
 
     // 错误提示
@@ -65,7 +64,6 @@ func Update(data map[string]interface{}) string {
         "auth_url.required": "权限验证链接不能为空",
         "slug.required": "链接标识不能为空",
         "status.required": "状态选项不能为空",
-        "status.oneof": "状态选项值错误",
     }
 
     ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
