@@ -115,14 +115,15 @@ func (control *AuthRule) IndexTree(ctx *gin.Context) {
     err := model.NewAuthRule().
         Order("listorder ASC").
         Order("add_time ASC").
-        Find(&list)
+        Find(&list).
+        Error
     if err != nil {
         control.Error(ctx, "获取失败")
         return
     }
 
     newTree := tree.New()
-    list2 := newTree.WithData(list).Build(0, "", 1)
+    list2 := newTree.WithData(list).Build("0", "", 1)
 
     control.SuccessWithData(ctx, "获取成功", gin.H{
         "list": list2,
@@ -203,13 +204,13 @@ func (control *AuthRule) Delete(ctx *gin.Context) {
     }
 
     // 子级
-    var childInfo model.AuthRule
+    var total int64
     err2 := model.NewAuthRule().
         Where("parentid = ?", id).
-        First(&childInfo).
+        Count(&total).
         Error
-    if err2 != nil {
-        control.Error(ctx, "请删除子分组后再操作")
+    if err2 != nil || total > 0 {
+        control.Error(ctx, "请删除子权限后再操作")
         return
     }
 
@@ -231,11 +232,15 @@ func (control *AuthRule) Delete(ctx *gin.Context) {
  * 清空特定ID权限
  */
 func (control *AuthRule) Clear(ctx *gin.Context) {
-    ids := ctx.Param("ids")
-    if ids == "" {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if post["ids"] == "" {
         control.Error(ctx, "权限ID列表不能为空")
         return
     }
+    ids := post["ids"].(string)
 
     newIds := strings.Split(ids, ",")
     for _, id := range newIds {
@@ -250,12 +255,12 @@ func (control *AuthRule) Clear(ctx *gin.Context) {
         }
 
         // 子级
-        var childInfo model.AuthRule
+        var total int64
         err2 := model.NewAuthRule().
             Where("parentid = ?", id).
-            First(&childInfo).
+            Count(&total).
             Error
-        if err2 != nil {
+        if err2 != nil || total > 0 {
             continue
         }
 
@@ -518,7 +523,7 @@ func (control *AuthRule) Disable(ctx *gin.Context) {
     err2 := model.NewAuthRule().
         Where("id = ?", id).
         Updates(map[string]interface{}{
-            "status": 1,
+            "status": 0,
         }).
         Error
     if err2 != nil {

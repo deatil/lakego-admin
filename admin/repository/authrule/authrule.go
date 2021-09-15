@@ -71,6 +71,10 @@ func GetChildrenFromRuleids(ruleids []string) []map[string]interface{} {
 func GetChildrenIds(ruleid string) []string {
     list := GetChildren(ruleid)
 
+    if len(list) == 0 {
+        return []string{}
+    }
+
     ids := collection.Collect(list).
         Pluck("id").
         ToStringArray()
@@ -81,6 +85,10 @@ func GetChildrenIds(ruleid string) []string {
 // 获取 ChildrenIds
 func GetChildrenIdsFromRuleids(ruleids []string) []string {
     list := GetChildrenFromRuleids(ruleids)
+
+    if len(list) == 0 {
+        return []string{}
+    }
 
     ids := collection.Collect(list).
         Pluck("id").
@@ -101,6 +109,10 @@ func GetChildrenFromData(data []map[string]interface{}, ruleid string) []map[str
 // 获取 ChildrenIds
 func GetChildrenIdsFromData(data []map[string]interface{}, ruleid string) []string {
     list := GetChildrenFromData(data, ruleid)
+
+    if len(list) == 0 {
+        return []string{}
+    }
 
     ids := collection.Collect(list).
         Pluck("id").

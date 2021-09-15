@@ -233,12 +233,12 @@ func (control *AuthGroup) Delete(ctx *gin.Context) {
     }
 
     // 子级
-    var childInfo model.AuthGroup
+    var total int64
     err2 := model.NewAuthGroup().
         Where("parentid = ?", id).
-        First(&childInfo).
+        Count(&total).
         Error
-    if err2 != nil {
+    if err2 != nil || total > 0 {
         control.Error(ctx, "请删除子分组后再操作")
         return
     }

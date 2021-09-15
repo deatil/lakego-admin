@@ -44,6 +44,11 @@ func GetChildrenFromGroupids(groupids []string) []map[string]interface{} {
 func GetChildrenIds(groupid string) []string {
     // 格式化分组
     list := GetChildren(groupid)
+
+    if len(list) == 0 {
+        return []string{}
+    }
+
     ids := collection.Collect(list).
         Pluck("id").
         ToStringArray()
@@ -55,6 +60,11 @@ func GetChildrenIds(groupid string) []string {
 func GetChildrenIdsFromGroupids(groupids []string) []string {
     // 格式化分组
     list := GetChildrenFromGroupids(groupids)
+
+    if len(list) == 0 {
+        return []string{}
+    }
+
     ids := collection.Collect(list).
         Pluck("id").
         ToStringArray()
@@ -74,6 +84,10 @@ func GetChildrenFromData(data []map[string]interface{}, groupid string) []map[st
 // 获取 ChildrenIds
 func GetChildrenIdsFromData(data []map[string]interface{}, groupid string) []string {
     list := GetChildrenFromData(data, groupid)
+
+    if len(list) == 0 {
+        return []string{}
+    }
 
     ids := collection.Collect(list).
         Pluck("id").
