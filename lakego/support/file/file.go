@@ -1,14 +1,14 @@
 package file
 
 import (
-    "fmt"
-    "io/ioutil"
-    "log"
     "os"
+    "fmt"
+    "log"
+    "time"
     "path"
     "path/filepath"
+    "io/ioutil"
     "strings"
-    "time"
 )
 
 // SelfPath gets compiled executable file absolute path

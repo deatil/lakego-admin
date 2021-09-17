@@ -11,6 +11,11 @@ import (
     "lakego-admin/lakego/support/random"
 )
 
+// 重命名
+func NewRename() *Rename {
+    return &Rename{}
+}
+
 /**
  * 重命名
  *
@@ -32,10 +37,6 @@ type Rename struct {
 
     // 文件存在检测
     checkFileExistsFunc func(string) bool
-}
-
-func NewRename() *Rename {
-    return &Rename{}
 }
 
 // 设置文件名带后缀

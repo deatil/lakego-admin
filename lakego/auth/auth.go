@@ -12,6 +12,13 @@ import (
     "lakego-admin/lakego/support/aes/cbc"
 )
 
+// 授权结构体
+func New(context *gin.Context) *Auth {
+    return &Auth{
+        ctx: context,
+    }
+}
+
 /**
  * 授权结构体
  *
@@ -20,12 +27,6 @@ import (
  */
 type Auth struct {
     ctx *gin.Context
-}
-
-func New(context *gin.Context) *Auth {
-    return &Auth{
-        ctx: context,
-    }
 }
 
 /**

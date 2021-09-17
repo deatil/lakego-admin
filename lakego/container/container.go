@@ -18,8 +18,7 @@ func New() *Container {
  * @create 2021-6-19
  * @author deatil
  */
-type Container struct {
-}
+type Container struct {}
 
 // 键值对的形式将代码注册到容器
 func (c *Container) Set(key string, value interface{}) bool {

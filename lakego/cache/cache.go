@@ -7,6 +7,19 @@ import (
     "lakego-admin/lakego/cache/interfaces"
 )
 
+// 创建
+func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
+    c := &Cache{
+        driver: driver,
+    }
+
+    if len(conf) > 0{
+        c.config = conf[0]
+    }
+
+    return c
+}
+
 /**
  * 缓存
  *
@@ -19,19 +32,6 @@ type Cache struct {
 
     // 驱动
     driver interfaces.Driver
-}
-
-// 创建
-func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
-    c := &Cache{
-        driver: driver,
-    }
-
-    if len(conf) > 0{
-        c.config = conf[0]
-    }
-
-    return c
 }
 
 // 设置驱动

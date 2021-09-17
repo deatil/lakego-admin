@@ -12,13 +12,6 @@ var lock = new(sync.RWMutex)
 var instance *Register
 var once sync.Once
 
-/**
- * 注册器
- */
-type Register struct {
-    providers []func() providerInterface.ServiceProvider
-}
-
 // 添加服务提供者
 func AppendProvider(f func() providerInterface.ServiceProvider) {
     NewRegister().Append(f)
@@ -42,6 +35,13 @@ func NewRegister() *Register {
     })
 
     return instance
+}
+
+/**
+ * 注册器
+ */
+type Register struct {
+    providers []func() providerInterface.ServiceProvider
 }
 
 // 注册

@@ -14,18 +14,17 @@ import (
     "lakego-admin/lakego/fllesystem/adapter"
 )
 
-/**
- * 本地文件适配器
- *
- * @create 2021-8-1
- * @author deatil
- */
-type Local struct {
-    adapter.Adapter
+// 本地文件适配器
+func New(root string) *Local {
+    local := &Local{}
 
-    visibility string
+    local.EnsureDirectory(root)
+    local.SetPathPrefix(root)
+
+    return local
 }
 
+// 权限列表
 var permissionMap map[string]map[string]uint32 = map[string]map[string]uint32{
     "file": {
         "public": 0644,
@@ -37,13 +36,16 @@ var permissionMap map[string]map[string]uint32 = map[string]map[string]uint32{
     },
 }
 
-func New(root string) *Local {
-    local := &Local{}
+/**
+ * 本地文件适配器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
+type Local struct {
+    adapter.Adapter
 
-    local.EnsureDirectory(root)
-    local.SetPathPrefix(root)
-
-    return local
+    visibility string
 }
 
 /**

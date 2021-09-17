@@ -10,6 +10,19 @@ import (
     "lakego-admin/lakego/support/base64"
 )
 
+// JWT
+func New() *JWT {
+    claim := make(map[string]interface{})
+    newClaims := make(map[string]interface{})
+
+    return &JWT{
+        Secret: "123456",
+        SigningMethod: "HS256",
+        Claims: claim,
+        NewClaims: newClaims,
+    }
+}
+
 // 验证方式列表
 var signingMethodList = map[string]interface{} {
     "ES256": jwt.SigningMethodES256,
@@ -38,18 +51,6 @@ type JWT struct {
     PrivateKey string
     PublicKey string
     PrivateKeyPassword string // 私钥密码
-}
-
-func New() *JWT {
-    claim := make(map[string]interface{})
-    newClaims := make(map[string]interface{})
-
-    return &JWT{
-        Secret: "123456",
-        SigningMethod: "HS256",
-        Claims: claim,
-        NewClaims: newClaims,
-    }
 }
 
 func (jwter *JWT) WithAud(aud string) *JWT {

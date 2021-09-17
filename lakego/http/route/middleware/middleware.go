@@ -7,14 +7,6 @@ import (
 var instance *Middleware
 var once sync.Once
 
-type Middleware struct {
-    // 中间件
-    middlewares sync.Map
-
-    // 中间件分组
-    groups sync.Map
-}
-
 /**
  * 单例模式
  */
@@ -31,6 +23,15 @@ func GetInstance() *Middleware {
  */
 func New() *Middleware {
     return &Middleware{}
+}
+
+// 中间件
+type Middleware struct {
+    // 中间件
+    middlewares sync.Map
+
+    // 中间件分组
+    groups sync.Map
 }
 
 /**

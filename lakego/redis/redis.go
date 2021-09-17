@@ -5,28 +5,14 @@ import (
     "fmt"
     "time"
     "errors"
-    
+
     "github.com/go-redis/cache/v8"
     "github.com/go-redis/redis/v8"
-    
+
     "lakego-admin/lakego/logger"
 )
 
-type Config struct {
-    DB int
-    Host string
-    Password string
-    KeyPrefix string
-}
-
-type Redis struct {
-    cache  *cache.Cache
-    client *redis.Client
-    prefix string
-    config Config
-}
-
-// NewRedis creates a new redis client instance
+// redis
 func New(config Config) Redis {
     mainDB := config.DB
     addr := config.Host
@@ -56,6 +42,20 @@ func New(config Config) Redis {
     }
 }
 
+type Config struct {
+    DB int
+    Host string
+    Password string
+    KeyPrefix string
+}
+
+type Redis struct {
+    cache  *cache.Cache
+    client *redis.Client
+    prefix string
+    config Config
+}
+
 func (a Redis) wrapperKey(key string) string {
     return fmt.Sprintf("%s:%s", a.prefix, key)
 }
@@ -68,7 +68,7 @@ func (a Redis) IntTimeToDuration(t int) time.Duration {
 // 设置
 func (a Redis) Set(key string, value interface{}, expiration int) error {
     ttl := a.IntTimeToDuration(expiration)
-    
+
     return a.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
         Key:            a.wrapperKey(key),

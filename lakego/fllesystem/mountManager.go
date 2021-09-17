@@ -7,17 +7,7 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
-/**
- * 文件系统
- *
- * @create 2021-8-7
- * @author deatil
- */
-type MountManager struct {
-    filesystems map[string]interfaces.Fllesystem
-}
-
-// 实例化
+// 文件系统实例化
 func NewMountManager(filesystems ...map[string]interface{}) *MountManager {
     ifs := make(map[string]interfaces.Fllesystem)
     mm := &MountManager{
@@ -29,6 +19,16 @@ func NewMountManager(filesystems ...map[string]interface{}) *MountManager {
     }
 
     return mm
+}
+
+/**
+ * 文件系统
+ *
+ * @create 2021-8-7
+ * @author deatil
+ */
+type MountManager struct {
+    filesystems map[string]interfaces.Fllesystem
 }
 
 // 批量

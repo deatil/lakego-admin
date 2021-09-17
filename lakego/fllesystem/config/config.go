@@ -5,6 +5,17 @@ import(
 )
 
 /**
+ * 初始化
+ */
+func New(settings map[string]interface{}) *Config {
+    conf := &Config{}
+
+    conf.WithSetting(settings)
+
+    return conf
+}
+
+/**
  * 配置
  *
  * @create 2021-8-1
@@ -14,17 +25,6 @@ type Config struct {
     settings map[string]interface{}
 
     fallback interfaces.Config
-}
-
-/**
- * 初始化
- */
-func New(settings map[string]interface{}) *Config {
-    conf := &Config{}
-
-    conf.WithSetting(settings)
-
-    return conf
 }
 
 /**

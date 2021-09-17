@@ -11,6 +11,13 @@ import (
     "lakego-admin/lakego/validator"
 )
 
+// 上传
+func New() *Upload {
+    return &Upload{
+        storagePermission: "",
+    }
+}
+
 /**
  * 上传
  *
@@ -32,12 +39,6 @@ type Upload struct {
 
     // 权限，'private' or 'public'
     storagePermission string
-}
-
-func New() *Upload {
-    return &Upload{
-        storagePermission: "",
-    }
 }
 
 // 设置文件信息

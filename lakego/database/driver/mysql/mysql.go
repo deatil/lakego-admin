@@ -12,11 +12,6 @@ import (
     "lakego-admin/lakego/database/interfaces"
 )
 
-type Mysql struct {
-    db *gorm.DB
-    config map[string]interface{}
-}
-
 func New(conf ...map[string]interface{}) *Mysql {
     m := &Mysql{}
 
@@ -27,6 +22,10 @@ func New(conf ...map[string]interface{}) *Mysql {
     return m
 }
 
+type Mysql struct {
+    db *gorm.DB
+    config map[string]interface{}
+}
 
 // 初始化
 func (m *Mysql) Init(config map[string]interface{}) interfaces.Driver {

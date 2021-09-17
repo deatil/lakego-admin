@@ -20,13 +20,6 @@ type customValidator struct {
 }
 
 /**
- * 添加验证器
- */
-func WithValidations(v Validation) {
-    validations = append(validations, v)
-}
-
-/**
  * 注册自定义验证器
  */
 func init() {
@@ -77,6 +70,13 @@ func init() {
 
     CustomValidator, _ = New()
 
+}
+
+/**
+ * 添加验证器
+ */
+func WithValidations(v Validation) {
+    validations = append(validations, v)
 }
 
 /**

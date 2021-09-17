@@ -7,6 +7,12 @@ import (
     "lakego-admin/lakego/support/cast"
 )
 
+func Context(Ctx *gin.Context) *ContextWrapper {
+    return &ContextWrapper{
+        Ctx: Ctx,
+    }
+}
+
 type JSONWriter interface {
     JSON(code int, data interface{})
 }
@@ -34,12 +40,6 @@ type HandlerFunc func(wrapper *ContextWrapper)
 
 type ContextWrapper struct {
     Ctx *gin.Context
-}
-
-func Context(Ctx *gin.Context) *ContextWrapper {
-    return &ContextWrapper{
-        Ctx: Ctx,
-    }
 }
 
 func (that *ContextWrapper) ResponseJson(json interface{}) {

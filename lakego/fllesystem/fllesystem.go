@@ -9,17 +9,6 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
-/**
- * 文件管理器
- *
- * @create 2021-8-1
- * @author deatil
- */
-type Fllesystem struct {
-    adapter interfaces.Adapter
-    config interfaces.Config
-}
-
 // new 文件管理器
 func New(adapters interfaces.Adapter, conf ...map[string]interface{}) interfaces.Fllesystem {
     fs := &Fllesystem{
@@ -31,6 +20,17 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) interfaces
     }
 
     return fs
+}
+
+/**
+ * 文件管理器
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
+type Fllesystem struct {
+    adapter interfaces.Adapter
+    config interfaces.Config
 }
 
 // 设置配置

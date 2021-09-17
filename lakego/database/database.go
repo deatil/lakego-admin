@@ -5,11 +5,6 @@ import (
     "lakego-admin/lakego/database/interfaces"
 )
 
-type Database struct {
-    config map[string]interface{}
-    driver interfaces.Driver
-}
-
 /**
  * 单例模式
  */
@@ -25,6 +20,10 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
     return d
 }
 
+type Database struct {
+    config map[string]interface{}
+    driver interfaces.Driver
+}
 
 // 设置配置
 func (db *Database) WithConfig(config map[string]interface{}) interfaces.Database {

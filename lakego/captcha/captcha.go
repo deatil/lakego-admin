@@ -9,38 +9,6 @@ import (
     "lakego-admin/lakego/redis"
 )
 
-type RBGA struct {
-    R int
-    B int
-    G int
-    A int
-}
-
-type Config struct {
-    Key string
-    ExpireTimes int
-
-    Height int
-    Width int
-    NoiseCount int
-    ShowLineOptions int
-    Length int
-    Source string
-    Fonts string
-
-    RBGA RBGA
-}
-
-type Captcha struct {
-    *base64Captcha.Captcha
-}
-
-type CaptchaStore struct {
-    key    string
-    redis  *redis.Redis
-    config Config
-}
-
 // id, b64s, err := New.Generate()
 func New(config Config, redis redis.Redis) Captcha {
     ds := base64Captcha.NewDriverString(
@@ -64,6 +32,39 @@ func New(config Config, redis redis.Redis) Captcha {
     return Captcha{
         Captcha: base64Captcha.NewCaptcha(driver, store),
     }
+}
+
+type RBGA struct {
+    R int
+    B int
+    G int
+    A int
+}
+
+type Config struct {
+    Key string
+    ExpireTimes int
+
+    Height int
+    Width int
+    NoiseCount int
+    ShowLineOptions int
+    Length int
+    Source string
+    Fonts string
+
+    RBGA RBGA
+}
+
+// 验证码
+type Captcha struct {
+    *base64Captcha.Captcha
+}
+
+type CaptchaStore struct {
+    key    string
+    redis  *redis.Redis
+    config Config
 }
 
 func (a CaptchaStore) getKey(v string) string {

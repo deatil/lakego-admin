@@ -15,6 +15,13 @@ import (
     "lakego-admin/lakego/support/file"
 )
 
+// 文件信息
+func NewFileinfo() *Fileinfo {
+    return &Fileinfo{
+        filetypes: map[string]string{},
+    }
+}
+
 /**
  * 文件信息
  *
@@ -30,12 +37,6 @@ type Fileinfo struct {
 
     // 文件类型
     filetypes map[string]string
-}
-
-func NewFileinfo() *Fileinfo {
-    return &Fileinfo{
-        filetypes: map[string]string{},
-    }
 }
 
 // 设置文件流

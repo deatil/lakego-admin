@@ -18,6 +18,11 @@ var log = logrus.New()
 
 // import "lakego-admin/lakego/logger"
 func init() {
+    setting()
+}
+
+// 设置
+func setting() {
     // 配置
     conf := config.New("logger")
 

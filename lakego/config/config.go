@@ -11,16 +11,6 @@ import (
     "lakego-admin/lakego/config/interfaces"
 )
 
-/**
- * 配置
- *
- * @create 2021-6-19
- * @author deatil
- */
-type Config struct {
-    adapter *viper.Viper
-}
-
 // 参数设置为可变参数的文件名
 func New(fileName ...string) interfaces.Config {
     conf := viper.New()
@@ -33,7 +23,7 @@ func New(fileName ...string) interfaces.Config {
 
     // 需要读取的文件名,默认为：config
     if len(fileName) == 0 {
-        conf.SetConfigName("admin")
+        conf.SetConfigName("config")
     } else {
         conf.SetConfigName(fileName[0])
     }
@@ -71,6 +61,16 @@ func New(fileName ...string) interfaces.Config {
     return &Config{
         adapter: conf,
     }
+}
+
+/**
+ * 配置
+ *
+ * @create 2021-6-19
+ * @author deatil
+ */
+type Config struct {
+    adapter *viper.Viper
 }
 
 // 事件

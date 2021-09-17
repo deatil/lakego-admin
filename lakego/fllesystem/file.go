@@ -6,16 +6,6 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
-/**
- * 文件管理扩展
- *
- * @create 2021-8-1
- * @author deatil
- */
-type File struct {
-    Handler
-}
-
 // new 文件管理器
 func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
     fs := &File{}
@@ -26,6 +16,16 @@ func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
     }
 
     return fs
+}
+
+/**
+ * 文件管理扩展
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
+type File struct {
+    Handler
 }
 
 // 设置管理器

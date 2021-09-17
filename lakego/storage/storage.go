@@ -8,11 +8,6 @@ import(
     "lakego-admin/lakego/fllesystem/interfaces"
 )
 
-// 文件管理器
-type Storage struct {
-    *fllesystem.Fllesystem
-}
-
 // new 文件管理器
 func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Storage {
     fs := &fllesystem.Fllesystem{}
@@ -33,6 +28,11 @@ func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Storage {
     fs := &Storage{ifs}
 
     return fs
+}
+
+// 文件管理器
+type Storage struct {
+    *fllesystem.Fllesystem
 }
 
 // 获取配置

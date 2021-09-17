@@ -17,6 +17,13 @@ var serviceProviders = []func() providerInterface.ServiceProvider{}
 
 var usedServiceProviders []providerInterface.ServiceProvider
 
+// App结构体
+func New() *App {
+    return &App{
+        Runned: false,
+    }
+}
+
 /**
  * App结构体
  *
@@ -41,12 +48,6 @@ type App struct {
 
     // 启动后
     BootedCallbacks []func()
-}
-
-func New() *App {
-    return &App{
-        Runned: false,
-    }
 }
 
 // 运行
