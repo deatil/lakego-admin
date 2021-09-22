@@ -48,18 +48,24 @@ type App struct {
 
     // 启动后
     BootedCallbacks []func()
+
+    // 初始化后路由
+    Route *gin.Engine
 }
 
 // 运行
 func (app *App) Run() {
+    // 路由
+    app.loadRoute()
+
     // 加载 app
     app.loadApp()
 }
 
 // 命令行
 func (app *App) Console() {
-    // 加载服务提供者
-    app.loadServiceProvider()
+    // 路由
+    app.loadRoute()
 }
 
 // 注册服务提供者
@@ -179,8 +185,8 @@ func (app *App) RunningInConsole() bool {
     return app.RunInConsole
 }
 
-// 加载 app
-func (app *App) loadApp() {
+// 初始化路由
+func (app *App) loadRoute() {
     var r *gin.Engine
 
     // 模式
@@ -215,7 +221,13 @@ func (app *App) loadApp() {
     // 缓存路由信息
     route.New().With(r)
 
+    // 设置路由
+    app.Route = r
+}
+
+// 加载 app
+func (app *App) loadApp() {
     // 运行端口
     httpPort := config.New("server").GetString("Port")
-    r.Run(httpPort)
+    app.Route.Run(httpPort)
 }

@@ -68,7 +68,7 @@ func (db *Database) GetConnection() *gorm.DB {
  * 获取数据库连接对象db，带debug
  */
 func (db *Database) GetConnectionWithDebug() *gorm.DB {
-    return db.GetConnectionWithDebug()
+    return db.driver.GetConnectionWithDebug()
 }
 
 /**

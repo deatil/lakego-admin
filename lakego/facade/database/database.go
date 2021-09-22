@@ -78,6 +78,34 @@ func GetDefaultDatabase() string {
     return config.New("database").GetString("Default")
 }
 
+// 获取配置
+func GetConfig(key string, typ ...string) interface{} {
+    // 连接列表
+    connections := config.New("database").GetStringMap("Connections")
+
+    var name string
+    if len(typ) > 0 {
+        name = typ[0]
+    } else {
+        name = GetDefaultDatabase()
+    }
+
+    // 获取驱动配置
+    driverConfig, ok := connections[name]
+    if !ok {
+        panic("数据库驱动 " + name + " 配置不存在")
+    }
+
+    // 配置
+    driverConf := driverConfig.(map[string]interface{})
+
+    if value, ok := driverConf[key]; ok {
+        return value
+    }
+
+    return nil
+}
+
 // 注册
 func Register() {
     once.Do(func() {

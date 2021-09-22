@@ -59,6 +59,10 @@ func runInsatll() {
             continue
         }
 
+        // 替换前缀
+        prefix := model.GetConfig("prefix")
+        sql = strings.ReplaceAll(sql, "pre__", prefix.(string))
+
         err := model.NewDB().Exec(sql + ";")
         if err == nil {
             fmt.Println(sql, "\t success!")
