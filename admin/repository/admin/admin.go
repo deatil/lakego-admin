@@ -61,6 +61,7 @@ func GetRules(groupids []string) []map[string]interface{} {
             "id", "parentid",
             "title",
             "url", "method",
+            "auth_url", "slug",
             "description",
         }).
         Where("status = ?", 1).
@@ -68,7 +69,7 @@ func GetRules(groupids []string) []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return nil
+        return make([]map[string]interface{}, 0)
     }
 
     return list

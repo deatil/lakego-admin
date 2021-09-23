@@ -55,17 +55,8 @@ type App struct {
 
 // 运行
 func (app *App) Run() {
-    // 路由
-    app.loadRoute()
-
-    // 加载 app
-    app.loadApp()
-}
-
-// 命令行
-func (app *App) Console() {
-    // 路由
-    app.loadRoute()
+    // 运行
+    app.runApp()
 }
 
 // 注册服务提供者
@@ -186,7 +177,7 @@ func (app *App) RunningInConsole() bool {
 }
 
 // 初始化路由
-func (app *App) loadRoute() {
+func (app *App) runApp() {
     var r *gin.Engine
 
     // 模式
@@ -223,11 +214,11 @@ func (app *App) loadRoute() {
 
     // 设置路由
     app.Route = r
-}
 
-// 加载 app
-func (app *App) loadApp() {
-    // 运行端口
-    httpPort := config.New("server").GetString("Port")
-    app.Route.Run(httpPort)
+    // 不是命令行运行
+    if !app.RunInConsole {
+        // 运行端口
+        httpPort := config.New("server").GetString("Port")
+        app.Route.Run(httpPort)
+    }
 }

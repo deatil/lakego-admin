@@ -19,7 +19,7 @@ func GetChildren(groupid string) []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return nil
+        return make([]map[string]interface{}, 0)
     }
 
     childrenList := tree.New().

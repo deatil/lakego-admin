@@ -42,10 +42,10 @@ func New() captcha.Captcha {
         Fonts: fonts,
 
         RBGA: captcha.RBGA{
-            R: rgbaR,
-            G: rgbaG,
-            B: rgbaB,
-            A: rgbaA,
+            R: uint8(rgbaR),
+            G: uint8(rgbaG),
+            B: uint8(rgbaB),
+            A: uint8(rgbaA),
         },
     }, redis.New())
 }

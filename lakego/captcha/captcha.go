@@ -1,8 +1,8 @@
 package captcha
 
 import (
-    "image/color"
     "time"
+    "image/color"
 
     "github.com/mojocn/base64Captcha"
 
@@ -12,14 +12,21 @@ import (
 // id, b64s, err := New.Generate()
 func New(config Config, redis redis.Redis) Captcha {
     ds := base64Captcha.NewDriverString(
-        config.Height, // 46,
-        config.Width, // 140,
-        config.NoiseCount, // 2,
-        config.ShowLineOptions, // 2,
-        config.Length, // 4,
-        config.Source, // "234567890abcdefghjkmnpqrstuvwxyz",
-        &color.RGBA{R: 240, G: 240, B: 246, A: 246},
-        []string{config.Fonts}, // []string{"wqy-microhei.ttc"},
+        config.Height,
+        config.Width,
+        config.NoiseCount,
+        config.ShowLineOptions,
+        config.Length,
+        config.Source,
+        &color.RGBA{
+            R: config.RBGA.R,
+            G: config.RBGA.G,
+            B: config.RBGA.B,
+            A: config.RBGA.A,
+        },
+        []string{
+            config.Fonts,
+        },
     )
 
     driver := ds.ConvertFonts()
@@ -35,10 +42,10 @@ func New(config Config, redis redis.Redis) Captcha {
 }
 
 type RBGA struct {
-    R int
-    B int
-    G int
-    A int
+    R uint8
+    B uint8
+    G uint8
+    A uint8
 }
 
 type Config struct {

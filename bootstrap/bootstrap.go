@@ -49,7 +49,7 @@ func LoadServiceProvider() {
 }
 
 // 运行
-func GetRunApp() *app.App {
+func RunApp(console bool) {
     newApp := app.New()
 
     // 导入服务提供者
@@ -62,24 +62,23 @@ func GetRunApp() *app.App {
     // 脚本
     newApp.WithRootCmd(rootCmd)
 
-    return newApp
+    if console {
+        newApp.WithRunningInConsole(true)
+    } else {
+        newApp.WithRunningInConsole(false)
+    }
+
+    // 运行
+    newApp.Run()
 }
 
 // 运行 api 服务
 func RunServer() {
-    newApp := GetRunApp()
-
-    newApp.WithRunningInConsole(false)
-
-    newApp.Run()
+    RunApp(false)
 }
 
 // 加载脚本
 func RunCmd() {
-    newApp := GetRunApp()
-
-    newApp.WithRunningInConsole(true)
-
-    newApp.Console()
+    RunApp(true)
 }
 

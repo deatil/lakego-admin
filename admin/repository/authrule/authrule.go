@@ -17,6 +17,7 @@ func GetAllRule() []map[string]interface{} {
             "id", "parentid",
             "title",
             "url", "method",
+            "auth_url", "slug",
             "description",
         }).
         Where("status = ?", 1).
@@ -25,7 +26,7 @@ func GetAllRule() []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return nil
+        return make([]map[string]interface{}, 0)
     }
 
     return list
@@ -42,7 +43,7 @@ func GetChildren(ruleid string) []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return nil
+        return make([]map[string]interface{}, 0)
     }
 
     childrenList := tree.New().
