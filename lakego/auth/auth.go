@@ -1,21 +1,20 @@
 package auth
 
 import (
-    "github.com/gin-gonic/gin"
     "github.com/dgrijalva/jwt-go"
 
     jwter "lakego-admin/lakego/jwt"
-    "lakego-admin/lakego/config"
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/support/hash"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/support/base64"
     "lakego-admin/lakego/support/aes/cbc"
 )
 
 // 授权结构体
-func New(context *gin.Context) *Auth {
+func New() *Auth {
+    claim := make(map[string]interface{})
+
     return &Auth{
-        ctx: context,
+        claims: claim,
     }
 }
 
@@ -26,7 +25,8 @@ func New(context *gin.Context) *Auth {
  * @author deatil
  */
 type Auth struct {
-    ctx *gin.Context
+    // 载荷
+    claims map[string]interface{}
 }
 
 /**
@@ -45,13 +45,19 @@ func (auth *Auth) GetRefreshExpiresIn() int {
     return time
 }
 
+// 设置自定义载荷
+func (auth *Auth) WithClaim(key string, value interface{}) *Auth {
+    auth.claims[key] = value
+    return auth
+}
+
 /**
  * 生成鉴权 token
  */
 func (auth *Auth) MakeJWT() *jwter.JWT {
     conf := config.New("auth")
 
-    aud := hash.MD5(helper.GetRequestIp(auth.ctx) + helper.GetHeaderByName(auth.ctx, "HTTP_USER_AGENT"))
+    aud := conf.GetString("Jwt.Aud")
     iss := conf.GetString("Jwt.Iss")
     sub := conf.GetString("Jwt.Sub")
     jti := conf.GetString("Jwt.Jti")
@@ -67,7 +73,7 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
     exp2 := int64(exp)
     nbf2 := int64(nbf)
 
-    return jwter.New().
+    jwtHandler := jwter.New().
         WithAud(aud).
         WithExp(exp2).
         WithJti(jti).
@@ -79,8 +85,32 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
         WithPrivateKey(privateKey).
         WithPublicKey(publicKey).
         WithPrivateKeyPassword(privateKeyPassword)
+
+    if len(auth.claims) > 0 {
+        for k, v := range auth.claims {
+            jwtHandler.WithClaim(k, v)
+        }
+    }
+
+    return jwtHandler
 }
 
+/**
+ * 生成 token
+ */
+func (auth *Auth) MakeToken(claims map[string]string) (token string, err error) {
+    jwtHandle := auth.MakeJWT()
+
+    if len(claims) > 0 {
+        for k, v := range claims {
+            jwtHandle.WithClaim(k, v)
+        }
+    }
+
+    token, err = jwtHandle.MakeToken()
+
+    return
+}
 
 /**
  * 生成鉴权 token
@@ -101,10 +131,12 @@ func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err e
         WithExp(exp2).
         WithJti(jti)
 
-    for k, v := range claims {
-        v = cbc.Encode(v, passphrase)
+    if len(claims) > 0 {
+        for k, v := range claims {
+            v = cbc.Encode(v, passphrase)
 
-        jwtHandle.WithClaim(k, v)
+            jwtHandle.WithClaim(k, v)
+        }
     }
 
     token, err = jwtHandle.MakeToken()
@@ -131,10 +163,12 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
         WithExp(exp2).
         WithJti(jti)
 
-    for k, v := range claims {
-        v = cbc.Encode(v, passphrase)
+    if len(claims) > 0 {
+        for k, v := range claims {
+            v = cbc.Encode(v, passphrase)
 
-        jwtHandle.WithClaim(k, v)
+            jwtHandle.WithClaim(k, v)
+        }
     }
 
     token, err = jwtHandle.MakeToken()

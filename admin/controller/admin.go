@@ -5,19 +5,20 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/auth"
     "lakego-admin/lakego/tree"
     "lakego-admin/lakego/helper"
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/support/cast"
     "lakego-admin/lakego/support/hash"
     "lakego-admin/lakego/support/time"
+    "lakego-admin/lakego/facade/auth"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/cache"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
     "lakego-admin/admin/auth/admin"
+    "lakego-admin/admin/support/jwt"
     authPassword "lakego-admin/lakego/auth/password"
     adminValidate "lakego-admin/admin/validate/admin"
     adminRepository "lakego-admin/admin/repository/admin"
@@ -688,7 +689,8 @@ func (control *Admin) Logout(ctx *gin.Context) {
     }
 
     // jwt
-    jwter := auth.New(ctx)
+    aud := jwt.GetJwtAud(ctx)
+    jwter := auth.NewWithAud(aud)
 
     // 拿取数据
     claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken)

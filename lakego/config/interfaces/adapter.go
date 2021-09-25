@@ -4,11 +4,24 @@ import (
     "time"
 )
 
-type Config interface {
+/**
+ * 适配器接口
+ *
+ * @create 2021-9-25
+ * @author deatil
+ */
+type Adapter interface {
+    // 设置文件夹
+    WithPath(path string)
 
-    Clone(fileName string) Config
+    // 设置读取文件
+    WithFile(fileName ...string)
 
-    OnConfigChange(f func(string)) Config
+    SetDefault(keyName string, value interface{})
+
+    Set(keyName string, value interface{})
+
+    IsSet(keyName string) bool
 
     Get(keyName string) interface{}
 
@@ -24,6 +37,8 @@ type Config interface {
 
     GetFloat64(keyName string) float64
 
+    GetTime(keyName string) time.Time
+
     GetDuration(keyName string) time.Duration
 
     GetStringSlice(keyName string) []string
@@ -31,4 +46,6 @@ type Config interface {
     GetStringMap(keyName string) map[string]interface{}
 
     GetStringMapString(keyName string) map[string]string
+
+    OnConfigChange(f func(string))
 }

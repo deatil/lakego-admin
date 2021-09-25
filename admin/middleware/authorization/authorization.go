@@ -5,12 +5,13 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/config"
-    "lakego-admin/lakego/auth"
     "lakego-admin/lakego/http/response"
+    "lakego-admin/lakego/facade/auth"
+    "lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/url"
+    "lakego-admin/admin/support/jwt"
     "lakego-admin/admin/support/except"
     "lakego-admin/admin/support/http/code"
     "lakego-admin/admin/model"
@@ -45,7 +46,8 @@ func jwtCheck(ctx *gin.Context) {
     // 授权 token
     accessToken := strings.TrimPrefix(authJwt, prefix)
 
-    jwter := auth.New(ctx)
+    aud := jwt.GetJwtAud(ctx)
+    jwter := auth.NewWithAud(aud)
 
     // 解析 token
     claims, err := jwter.GetAccessTokenClaims(accessToken)

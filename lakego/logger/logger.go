@@ -7,7 +7,7 @@ import (
     "github.com/sirupsen/logrus"
     "github.com/lestrrat/go-file-rotatelogs"
 
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/logger/formatter"
 )

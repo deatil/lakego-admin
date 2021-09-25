@@ -5,7 +5,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/route"
     "lakego-admin/lakego/middleware/event"
     providerInterface "lakego-admin/lakego/provider/interfaces"

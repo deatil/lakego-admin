@@ -4,8 +4,8 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/config"
     "lakego-admin/lakego/http/response"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/casbin"
 
     "lakego-admin/admin/auth/admin"

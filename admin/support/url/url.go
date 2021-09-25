@@ -6,8 +6,8 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/config"
     "lakego-admin/lakego/helper"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/storage"
 )
 
@@ -81,4 +81,3 @@ func AttachmentPath(path string, disk ...string) string {
 
     return filepath
 }
-

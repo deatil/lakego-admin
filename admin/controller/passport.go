@@ -3,13 +3,14 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/auth"
+    "lakego-admin/lakego/facade/auth"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/captcha"
     "lakego-admin/lakego/facade/cache"
     "lakego-admin/lakego/support/hash"
 
     "lakego-admin/admin/model"
+    "lakego-admin/admin/support/jwt"
     "lakego-admin/admin/support/http/code"
     authPassword "lakego-admin/lakego/auth/password"
     passportValidate "lakego-admin/admin/validate/passport"
@@ -84,7 +85,8 @@ func (control *Passport) Login(ctx *gin.Context) {
     }
 
     // 生成 token
-    jwter := auth.New(ctx)
+    aud := jwt.GetJwtAud(ctx)
+    jwter := auth.NewWithAud(aud)
 
     // token 数据
     tokenData := map[string]string{
@@ -141,7 +143,8 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     }
 
     // jwt
-    jwter := auth.New(ctx)
+    aud := jwt.GetJwtAud(ctx)
+    jwter := auth.NewWithAud(aud)
 
     // 拿取数据
     adminId := jwter.GetRefreshTokenData(refreshToken.(string), "id")
@@ -197,7 +200,8 @@ func (control *Passport) Logout(ctx *gin.Context) {
     }
 
     // jwt
-    jwter := auth.New(ctx)
+    aud := jwt.GetJwtAud(ctx)
+    jwter := auth.NewWithAud(aud)
 
     // 拿取数据
     claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken.(string))

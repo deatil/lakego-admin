@@ -2,7 +2,7 @@ package route
 
 import (
     "github.com/gin-gonic/gin"
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/http/route"
     router "lakego-admin/lakego/route"
 )

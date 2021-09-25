@@ -3,7 +3,7 @@ package admin
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/provider"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route"

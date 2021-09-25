@@ -1,7 +1,7 @@
 package redis
 
 import (
-    "lakego-admin/lakego/config"
+    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/redis"
 )
 
