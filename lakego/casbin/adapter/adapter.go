@@ -11,6 +11,7 @@ import (
     "github.com/casbin/casbin/v2/persist"
 
     "lakego-admin/lakego/support/hash"
+    "lakego-admin/lakego/support/random"
 )
 
 type Rules struct {
@@ -25,7 +26,7 @@ type Rules struct {
 }
 
 func (rules *Rules) BeforeCreate(db *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
+    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
     rules.ID = id
 
     return nil

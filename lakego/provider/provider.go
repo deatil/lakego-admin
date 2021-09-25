@@ -55,9 +55,9 @@ func (s *ServiceProvider) AddCommand(cmd *cobra.Command) {
 }
 
 // 添加脚本
-func (s *ServiceProvider) AddCommands(cmds []*cobra.Command) {
+func (s *ServiceProvider) AddCommands(cmds []interface{}) {
     for _, cmd := range cmds {
-        s.AddCommand(cmd)
+        s.AddCommand(cmd.(*cobra.Command))
     }
 }
 
@@ -93,8 +93,12 @@ func (s *ServiceProvider) CallBootedCallback() {
 }
 
 // 注册
-func (s *ServiceProvider) Register() {}
+func (s *ServiceProvider) Register() {
+    // 注册
+}
 
 // 引导
-func (s *ServiceProvider) Boot() {}
+func (s *ServiceProvider) Boot() {
+    // 引导
+}
 

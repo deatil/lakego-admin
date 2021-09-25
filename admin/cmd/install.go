@@ -65,9 +65,9 @@ func runInsatll() {
 
         err := model.NewDB().Exec(sql + ";")
         if err == nil {
-            fmt.Println(sql, "\t success!")
+            fmt.Println(sql, "\t 成功!")
         } else {
-            fmt.Println(sql, err, "\t failed!")
+            fmt.Println(sql, err, "\t 失败!")
             os.Exit(1)
         }
     }
@@ -75,5 +75,5 @@ func runInsatll() {
     installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
     installFile.WriteString("")
 
-    fmt.Println("install successfully.")
+    fmt.Println("安装成功.")
 }

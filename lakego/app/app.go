@@ -180,21 +180,29 @@ func (app *App) RunningInConsole() bool {
 func (app *App) runApp() {
     var r *gin.Engine
 
-    // 模式
-    mode := config.New("admin").GetString("Mode")
-    if mode != "dev" {
+    if !app.RunInConsole {
+        // 模式
+        mode := config.New("admin").GetString("Mode")
+        if mode != "dev" {
+            gin.SetMode(gin.ReleaseMode)
+
+            // 路由
+            r = gin.New()
+
+            // 使用默认处理机制
+            r.Use(gin.Recovery())
+        } else {
+            gin.SetMode(gin.DebugMode)
+
+            // 路由
+            r = gin.Default()
+        }
+    } else {
+        // 脚本取消调试模式
         gin.SetMode(gin.ReleaseMode)
 
         // 路由
         r = gin.New()
-
-        // 使用默认处理机制
-        r.Use(gin.Recovery())
-    } else {
-        gin.SetMode(gin.DebugMode)
-
-        // 路由
-        r = gin.Default()
     }
 
     // 事件

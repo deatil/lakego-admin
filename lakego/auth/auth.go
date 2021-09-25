@@ -133,7 +133,9 @@ func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err e
 
     if len(claims) > 0 {
         for k, v := range claims {
-            v = cbc.Encode(v, passphrase)
+            if passphrase != "" {
+                v = cbc.Encode(v, passphrase)
+            }
 
             jwtHandle.WithClaim(k, v)
         }
@@ -165,7 +167,9 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 
     if len(claims) > 0 {
         for k, v := range claims {
-            v = cbc.Encode(v, passphrase)
+            if passphrase != "" {
+                v = cbc.Encode(v, passphrase)
+            }
 
             jwtHandle.WithClaim(k, v)
         }
@@ -243,7 +247,9 @@ func (auth *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
     passphrase := config.New("auth").GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
 
-    data = cbc.Decode(data, passphrase)
+    if passphrase != "" {
+        data = cbc.Decode(data, passphrase)
+    }
 
     return data
 }

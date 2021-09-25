@@ -6,6 +6,7 @@ import (
     "gorm.io/gorm"
 
     "lakego-admin/lakego/support/hash"
+    "lakego-admin/lakego/support/random"
     "lakego-admin/lakego/facade/database"
 )
 
@@ -35,7 +36,7 @@ type Admin struct {
 }
 
 func (m *Admin) BeforeCreate(tx *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
+    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
     m.ID = id
 
     return nil

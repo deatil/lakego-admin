@@ -21,7 +21,18 @@ func GetConfig(key string, typ ...string) interface{} {
 func FormatStructToMap(data interface{}) map[string]interface{} {
     // 结构体转map
     tmp, _ := json.Marshal(&data)
+
     dataMap := make(map[string]interface{})
+    json.Unmarshal(tmp, &dataMap)
+
+    return dataMap
+}
+
+// 格式化获取的数据为 array_map
+func FormatStructToArrayMap(data interface{}) []map[string]interface{} {
+    tmp, _ := json.Marshal(&data)
+
+    dataMap := make([]map[string]interface{}, 0)
     json.Unmarshal(tmp, &dataMap)
 
     return dataMap

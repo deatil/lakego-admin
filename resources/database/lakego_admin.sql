@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `pre__lakego_admin`;
-CREATE TABLE `pre__lakego_admin` (
+DROP TABLE IF EXISTS `pre__admin`;
+CREATE TABLE `pre__admin` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -21,8 +21,8 @@ CREATE TABLE `pre__lakego_admin` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `pre__lakego_attachment`;
-CREATE TABLE `pre__lakego_attachment` (
+DROP TABLE IF EXISTS `pre__attachment`;
+CREATE TABLE `pre__attachment` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `owner_id` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '关联类型ID',
   `owner_type` varchar(50) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '附件关联类型',
@@ -42,8 +42,8 @@ CREATE TABLE `pre__lakego_attachment` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='附件表';
 
-DROP TABLE IF EXISTS `pre__lakego_auth_group`;
-CREATE TABLE `pre__lakego_auth_group` (
+DROP TABLE IF EXISTS `pre__auth_group`;
+CREATE TABLE `pre__auth_group` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `parentid` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `title` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -57,15 +57,15 @@ CREATE TABLE `pre__lakego_auth_group` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `pre__lakego_auth_group_access`;
-CREATE TABLE `pre__lakego_auth_group_access` (
+DROP TABLE IF EXISTS `pre__auth_group_access`;
+CREATE TABLE `pre__auth_group_access` (
   `admin_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `group_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`admin_id`,`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DROP TABLE IF EXISTS `pre__lakego_auth_rule`;
-CREATE TABLE `pre__lakego_auth_rule` (
+DROP TABLE IF EXISTS `pre__auth_rule`;
+CREATE TABLE `pre__auth_rule` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则id',
   `parentid` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '上级ID',
   `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则中文描述',
@@ -84,15 +84,15 @@ CREATE TABLE `pre__lakego_auth_rule` (
   KEY `module` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='规则表';
 
-DROP TABLE IF EXISTS `pre__lakego_auth_rule_access`;
-CREATE TABLE `pre__lakego_auth_rule_access` (
+DROP TABLE IF EXISTS `pre__auth_rule_access`;
+CREATE TABLE `pre__auth_rule_access` (
   `group_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   `rule_id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   UNIQUE KEY `rule_id` (`rule_id`,`group_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='用户组与权限关联表';
 
-DROP TABLE IF EXISTS `pre__lakego_rules`;
-CREATE TABLE `pre__lakego_rules` (
+DROP TABLE IF EXISTS `pre__rules`;
+CREATE TABLE `pre__rules` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `ptype` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `v0` varchar(250) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -111,5 +111,5 @@ CREATE TABLE `pre__lakego_rules` (
   KEY `v5` (`v5`(191))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT;
 
-INSERT INTO `pre__lakego_admin` VALUES ('a1f47299eb1ef1ae137dad42f3fedc5f','admin223','','','admin22333','larke-admin22@qq.com','','说明11111',0,1,0,'',0,'',0,'',1631632660,'127.0.0.1'),('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','78c9246a8c10eb2fe285915df5cc6bd8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
-INSERT INTO `pre__lakego_auth_group` VALUES ('538a712299e0ba6011aaf63f2a1317f4','0','超级管理员','拥有所有权限',95,1,1621431751,'127.0.0.1',1621431751,'127.0.0.1'),('5f3cf499d9d07ece255c2ca8e5a78296','0','编辑33','编辑的描述35',105,0,0,'',1631718553,'127.0.0.1');
+INSERT INTO `pre__admin` VALUES ('a1f47299eb1ef1ae137dad42f3fedc5f','admin223','','','admin22333','larke-admin22@qq.com','','说明11111',0,1,0,'',0,'',0,'',1631632660,'127.0.0.1'),('dbe97f21a69f67fb361b0be64988ee59','lakego','6b4ee75684079f24bb6331d6b4abbb57','bOMvXH','Lake','lake@qq.com','d0633455bf755b408cbc4a6b4fe2400c','lakego-admin',0,1,0,'',1621520922,'127.0.0.1',1621431650,'127.0.0.1',1564415458,'2130706433'),('e92ba0a3f86f4a5693d8487eb8c632b5','admin','db335c563a446ce5bb529a5b6edd0f55','yl2Apw','管理员','lake-admin@qq.com','78c9246a8c10eb2fe285915df5cc6bd8','管理员',1,1,0,'',1621610257,'127.0.0.1',0,'0',1564667925,'2130706433');
+INSERT INTO `pre__auth_group` VALUES ('538a712299e0ba6011aaf63f2a1317f4','0','超级管理员','拥有所有权限',95,1,1621431751,'127.0.0.1',1621431751,'127.0.0.1'),('5f3cf499d9d07ece255c2ca8e5a78296','0','编辑33','编辑的描述35',105,0,0,'',1631718553,'127.0.0.1');

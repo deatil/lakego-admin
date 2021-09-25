@@ -62,17 +62,19 @@ func (s *ServiceProvider) Register() {
     // 脚本
     s.loadCommand()
 
-    if !s.App.RunningInConsole() {
-        // 路由
-        s.loadRoute()
-    }
+    // 路由
+    s.loadRoute()
 }
 
 /**
  * 导入脚本
  */
 func (s *ServiceProvider) loadCommand() {
+    // 安装
     s.AddCommand(cmd.InstallCmd)
+
+    // 重设权限
+    s.AddCommand(cmd.ResetPermissionCmd)
 }
 
 /**
