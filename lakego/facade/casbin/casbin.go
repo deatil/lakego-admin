@@ -1,13 +1,11 @@
 package casbin
 
 import (
-    casbiner "github.com/casbin/casbin/v2"
-
-    casbinAdapter "lakego-admin/lakego/casbin/adapter"
+    "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/facade/database"
     "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/casbin"
+    casbinAdapter "lakego-admin/lakego/casbin/adapter"
 )
 
 /**
@@ -24,17 +22,11 @@ func New() *casbin.Casbin {
     modelConf := path.FormatPath(configfile)
 
     a, _ := casbinAdapter.NewAdapterByDB(newDb)
-    e, _ := casbiner.NewEnforcer(modelConf, a)
 
-    // Load the policy from DB.
-    // e.LoadPolicy()
+    c := &casbin.Casbin{}
 
-    // Save the policy back to DB.
-    // e.SavePolicy()
-
-    c := &casbin.Casbin{
-        Enforcer: e,
-    }
+    c.WithAdapter(a)
+    c.WithModelConf(modelConf)
 
     return c
 }

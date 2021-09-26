@@ -6,7 +6,6 @@ import (
     "github.com/spf13/cobra"
 
     "lakego-admin/lakego/facade/casbin"
-    casbinAdapter "lakego-admin/lakego/casbin/adapter"
 
     "lakego-admin/admin/model"
 )
@@ -37,7 +36,7 @@ var ResetPermissionCmd = &cobra.Command{
 // 重设权限
 func ResetPermission() {
     // 清空原始数据
-    model.NewDB().Where("1 = 1").Delete(&casbinAdapter.Rules{})
+    casbin.New().ClearData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)

@@ -2,10 +2,49 @@ package casbin
 
 import (
     "github.com/casbin/casbin/v2"
+
+    "lakego-admin/lakego/casbin/interfaces"
 )
 
 type Casbin struct {
+    // 适配器
+    Adapter interfaces.Adapter
+
+    // 决策器
     Enforcer *casbin.Enforcer
+}
+
+/**
+ * 设置适配器
+ */
+func (c *Casbin) WithAdapter(a interfaces.Adapter) *Casbin {
+    c.Adapter = a
+
+    return c
+}
+
+/**
+ * 获取适配器
+ */
+func (c *Casbin) GetAdapter() interfaces.Adapter {
+    return c.Adapter
+}
+
+/**
+ * 设置权限文件
+ */
+func (c *Casbin) WithModelConf(modelConf string) *Casbin {
+    e, _ := casbin.NewEnforcer(modelConf, c.Adapter)
+
+    // Load the policy from DB.
+    // e.LoadPolicy()
+
+    // Save the policy back to DB.
+    // e.SavePolicy()
+
+    c.WithEnforcer(e)
+
+    return c
 }
 
 /**
@@ -22,6 +61,15 @@ func (c *Casbin) WithEnforcer(e *casbin.Enforcer) *Casbin {
  */
 func (c *Casbin) GetEnforcer() *casbin.Enforcer {
     return c.Enforcer
+}
+
+/**
+ * 清空数据
+ */
+func (c *Casbin) ClearData() bool {
+    c.Adapter.ClearData()
+
+    return true
 }
 
 /**

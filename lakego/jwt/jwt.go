@@ -243,7 +243,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
 }
 
 // 解析 token
-func (jwter *JWT) ParseToken(strToken string) (jwt.MapClaims, error) {
+func (jwter *JWT) ParseToken(strToken string, valid ...bool) (jwt.MapClaims, error) {
     var claims jwt.MapClaims
     var err error
     var secret interface{}
@@ -309,8 +309,16 @@ func (jwter *JWT) ParseToken(strToken string) (jwt.MapClaims, error) {
         return nil, err
     }
 
-    if err := token.Claims.Valid(); err != nil {
-        return nil, err
+    // 默认需要验证
+    isValid := true
+    if len(valid) > 0 && valid[0] {
+        isValid = valid[0]
+    }
+
+    if isValid {
+        if err := token.Claims.Valid(); err != nil {
+            return nil, err
+        }
     }
 
     var ok bool
@@ -324,7 +332,7 @@ func (jwter *JWT) ParseToken(strToken string) (jwt.MapClaims, error) {
 
 // 验证token是否有效
 func (jwter *JWT) Verify(strToken string) error {
-    _, err := jwter.ParseToken(strToken)
+    _, err := jwter.ParseToken(strToken, true)
 
     if err != nil {
         return err

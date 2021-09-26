@@ -60,8 +60,14 @@ func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
 }
 
 // 关闭
-func (a *Adapter) close() error {
+func (a *Adapter) Close() error {
     a.db = nil
+    return nil
+}
+
+// 清空
+func (a *Adapter) ClearData() error {
+    a.db.Where("1 = 1").Delete(&Rules{})
     return nil
 }
 

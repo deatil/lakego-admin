@@ -15,7 +15,6 @@ import (
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/cache"
     "lakego-admin/lakego/facade/casbin"
-    casbinAdapter "lakego-admin/lakego/casbin/adapter"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
@@ -562,7 +561,7 @@ func (control *Admin) UpdatePasssword(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "修改头像失败")
+        control.Error(ctx, "密码修改失败")
         return
     }
 
@@ -811,7 +810,7 @@ func (control *Admin) Access(ctx *gin.Context) {
  */
 func (control *Admin) ResetPermission(ctx *gin.Context) {
     // 清空原始数据
-    model.NewDB().Where("1 = 1").Delete(&casbinAdapter.Rules{})
+    casbin.New().ClearData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)

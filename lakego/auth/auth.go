@@ -183,10 +183,10 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 /**
  * 获取鉴权 token
  */
-func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err error) {
+func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (claims jwt.MapClaims, err error) {
     jti := config.New("auth").GetString("Passport.AccessTokenId")
 
-    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
+    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token, valid...)
 
     return
 }
@@ -194,10 +194,10 @@ func (auth *Auth) GetAccessTokenClaims(token string) (claims jwt.MapClaims, err 
 /**
  * 获取刷新 token
  */
-func (auth *Auth) GetRefreshTokenClaims(token string) (claims jwt.MapClaims, err error) {
+func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (claims jwt.MapClaims, err error) {
     jti := config.New("auth").GetString("Passport.RefreshTokenId")
 
-    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token)
+    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token, valid...)
 
     return
 }
@@ -205,8 +205,8 @@ func (auth *Auth) GetRefreshTokenClaims(token string) (claims jwt.MapClaims, err
 /**
  * 获取鉴权 token 所在 userid
  */
-func (auth *Auth) GetAccessTokenData(token string, key string) string {
-    claims, err := auth.GetAccessTokenClaims(token)
+func (auth *Auth) GetAccessTokenData(token string, key string, valid ...bool) string {
+    claims, err := auth.GetAccessTokenClaims(token, valid...)
     if err != nil {
         return ""
     }
@@ -219,8 +219,8 @@ func (auth *Auth) GetAccessTokenData(token string, key string) string {
 /**
  * 获取刷新 token 所在 userid
  */
-func (auth *Auth) GetRefreshTokenData(token string, key string) string {
-    claims, err := auth.GetRefreshTokenClaims(token)
+func (auth *Auth) GetRefreshTokenData(token string, key string, valid ...bool) string {
+    claims, err := auth.GetRefreshTokenClaims(token, valid...)
     if err != nil {
         return ""
     }

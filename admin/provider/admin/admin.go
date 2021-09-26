@@ -75,6 +75,15 @@ func (s *ServiceProvider) loadCommand() {
 
     // 重设权限
     s.AddCommand(cmd.ResetPermissionCmd)
+
+    // 导入路由信息
+    s.AddCommand(cmd.ImportRouteCmd)
+
+    // 强制将 jwt 的 refreshToken 放入黑名单
+    s.AddCommand(cmd.PassportLogoutCmd)
+
+    // 重置密码
+    s.AddCommand(cmd.ResetPaswordCmd)
 }
 
 /**
