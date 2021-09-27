@@ -12,9 +12,9 @@ import (
 /**
  * 重置密码
  *
- * > ./main lakego-admin:reset-pasword
- * > main.exe lakego-admin:reset-pasword
- * > go run main.go lakego-admin:reset-pasword
+ * > ./main lakego-admin:reset-pasword --id=[id] --password=[password]
+ * > main.exe lakego-admin:reset-pasword --id=[id] --password=[password]
+ * > go run main.go lakego-admin:reset-pasword --id=[id] --password=[password]
  *
  * @create 2021-9-26
  * @author deatil
@@ -22,7 +22,7 @@ import (
 var ResetPaswordCmd = &cobra.Command{
     Use: "lakego-admin:reset-pasword",
     Short: "lakego-admin reset-pasword.",
-    Example: "{execfile} lakego-admin:reset-pasword",
+    Example: "{execfile} lakego-admin:reset-pasword --id=[id] --password=[password]",
     SilenceUsage: true,
     PreRun: func(cmd *cobra.Command, args []string) {
 

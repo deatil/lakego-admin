@@ -183,23 +183,79 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 /**
  * 获取鉴权 token
  */
-func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (claims jwt.MapClaims, err error) {
+func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.AccessTokenId")
 
-    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token, valid...)
+    jwter := auth.MakeJWT().WithJti(jti)
 
-    return
+    parsedToken, err := jwter.ParseToken(token)
+    if err != nil {
+        return nil, err
+    }
+
+    _, err2 := jwter.Validate(parsedToken)
+    if err2 != nil {
+        return nil, err2
+    }
+
+    // 检测
+    isVerify := true
+    if len(valid) > 0 {
+        isVerify = valid[0]
+    }
+
+    if isVerify {
+        _, err3 := jwter.Verify(parsedToken)
+        if err3 != nil {
+            return nil, err3
+        }
+    }
+
+    claims, claimsErr := jwter.GetClaimsFromToken(parsedToken)
+    if claimsErr != nil {
+        return nil, claimsErr
+    }
+
+    return claims, nil
 }
 
 /**
  * 获取刷新 token
  */
-func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (claims jwt.MapClaims, err error) {
+func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.RefreshTokenId")
 
-    claims, err = auth.MakeJWT().WithJti(jti).ParseToken(token, valid...)
+    jwter := auth.MakeJWT().WithJti(jti)
 
-    return
+    parsedToken, err := jwter.ParseToken(token)
+    if err != nil {
+        return nil, err
+    }
+
+    _, err2 := jwter.Validate(parsedToken)
+    if err2 != nil {
+        return nil, err2
+    }
+
+    // 检测
+    isVerify := true
+    if len(valid) > 0 {
+        isVerify = valid[0]
+    }
+
+    if isVerify {
+        _, err3 := jwter.Verify(parsedToken)
+        if err3 != nil {
+            return nil, err3
+        }
+    }
+
+    claims, claimsErr := jwter.GetClaimsFromToken(parsedToken)
+    if claimsErr != nil {
+        return nil, claimsErr
+    }
+
+    return claims, nil
 }
 
 /**

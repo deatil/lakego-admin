@@ -16,9 +16,9 @@ import (
 /**
  * 强制将 jwt 的 refreshToken 放入黑名单
  *
- * > ./main lakego-admin:passport-logout
- * > main.exe lakego-admin:passport-logout
- * > go run main.go lakego-admin:passport-logout
+ * > ./main lakego-admin:passport-logout --refreshToken=[token]
+ * > main.exe lakego-admin:passport-logout --refreshToken=[token]
+ * > go run main.go lakego-admin:passport-logout --refreshToken=[token]
  *
  * @create 2021-9-26
  * @author deatil
@@ -39,7 +39,7 @@ var PassportLogoutCmd = &cobra.Command{
 var refreshToken string
 
 func init() {
-    pf := ResetPaswordCmd.PersistentFlags()
+    pf := PassportLogoutCmd.PersistentFlags()
     pf.StringVarP(&refreshToken, "refreshToken", "r", "", "刷新token")
 
     cobra.MarkFlagRequired(pf, "refreshToken")
@@ -50,7 +50,7 @@ func PassportLogout() {
     c := cache.New()
 
     if c.Has(hash.MD5(refreshToken)) {
-        fmt.Println("refreshToken已失效")
+        fmt.Println("refreshToken 已失效")
         return
     }
 
@@ -78,7 +78,7 @@ func PassportLogout() {
         Where("id = ?", refreshAdminid).
         Updates(map[string]interface{}{
             "refresh_time": time.NowTimeToInt(),
-            "refresh_ip": "",
+            "refresh_ip": "127.0.0.1",
         })
 
     fmt.Println("账号退出成功")

@@ -12,14 +12,12 @@ import (
 
 // JWT
 func New() *JWT {
-    claim := make(map[string]interface{})
-    newClaims := make(map[string]interface{})
+    claims := make(map[string]interface{})
 
     return &JWT{
         Secret: "123456",
         SigningMethod: "HS256",
-        Claims: claim,
-        NewClaims: newClaims,
+        Claims: claims,
     }
 }
 
@@ -44,7 +42,6 @@ var signingMethodList = map[string]interface{} {
 
 type JWT struct {
     Claims map[string]interface{}
-    NewClaims map[string]interface{}
 
     SigningMethod string
     Secret string
@@ -53,39 +50,45 @@ type JWT struct {
     PrivateKeyPassword string // 私钥密码
 }
 
+// Audience
 func (jwter *JWT) WithAud(aud string) *JWT {
-    jwter.Claims["Audience"] = aud
+    jwter.Claims["aud"] = aud
     return jwter
 }
 
+// ExpiresAt
 func (jwter *JWT) WithExp(exp int64) *JWT {
-    jwter.Claims["ExpiresAt"] = exp
+    jwter.Claims["exp"] = time.Now().Add(time.Second * time.Duration(exp)).Unix()
     return jwter
 }
 
-func (jwter *JWT) WithJti(id string) *JWT {
-    jwter.Claims["Id"] = id
+// Id
+func (jwter *JWT) WithJti(jti string) *JWT {
+    jwter.Claims["jti"] = jti
     return jwter
 }
 
+// Issuer
 func (jwter *JWT) WithIss(iss string) *JWT {
-    jwter.Claims["Issuer"] = iss
+    jwter.Claims["iss"] = iss
     return jwter
 }
 
+// NotBefore
 func (jwter *JWT) WithNbf(nbf int64) *JWT {
-    jwter.Claims["NotBefore"] = nbf
+    jwter.Claims["nbf"] = time.Now().Add(time.Second * time.Duration(nbf)).Unix()
     return jwter
 }
 
+// Subject
 func (jwter *JWT) WithSub(sub string) *JWT {
-    jwter.Claims["Subject"] = sub
+    jwter.Claims["sub"] = sub
     return jwter
 }
 
 // 设置自定义载荷
 func (jwter *JWT) WithClaim(key string, value interface{}) *JWT {
-    jwter.NewClaims[key] = value
+    jwter.Claims[key] = value
     return jwter
 }
 
@@ -121,37 +124,19 @@ func (jwter *JWT) WithPrivateKeyPassword(password string) *JWT {
 
 // 生成token
 func (jwter *JWT) MakeToken() (token string, err error) {
-    claims := make(jwt.MapClaims)
-
-    claims["iat"] = time.Now().Unix()
-    if _, ok := jwter.Claims["Audience"]; ok {
-        claims["aud"] = jwter.Claims["Audience"].(string)
-    }
-    if _, ok := jwter.Claims["ExpiresAt"]; ok {
-        claims["exp"] = time.Now().Add(time.Second * time.Duration(jwter.Claims["ExpiresAt"].(int64))).Unix()
-    }
-    if _, ok := jwter.Claims["Id"]; ok {
-        claims["jti"] = jwter.Claims["Id"].(string)
-    }
-    if _, ok := jwter.Claims["Issuer"]; ok {
-        claims["iss"] = jwter.Claims["Issuer"].(string)
-    }
-    if _, ok := jwter.Claims["NotBefore"]; ok {
-        claims["nbf"] = time.Now().Add(time.Second * time.Duration(jwter.Claims["NotBefore"].(int64))).Unix()
-    }
-    if _, ok := jwter.Claims["Subject"]; ok {
-        claims["sub"] = jwter.Claims["Subject"].(string)
-    }
-
-    for k, v := range jwter.NewClaims {
-        claims[k] = v
-    }
-
     var methodType jwt.SigningMethod
     if method, ok := signingMethodList[jwter.SigningMethod]; ok {
         methodType = method.(jwt.SigningMethod)
     } else {
         methodType = jwt.SigningMethodHS256
+    }
+
+    // 载荷
+    claims := make(jwt.MapClaims)
+    if len(jwter.Claims) > 0 {
+        for k, v := range jwter.Claims {
+            claims[k] = v
+        }
     }
 
     jwtToken := jwt.NewWithClaims(methodType, claims)
@@ -243,8 +228,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
 }
 
 // 解析 token
-func (jwter *JWT) ParseToken(strToken string, valid ...bool) (jwt.MapClaims, error) {
-    var claims jwt.MapClaims
+func (jwter *JWT) ParseToken(strToken string) (*jwt.Token, error) {
     var err error
     var secret interface{}
 
@@ -309,20 +293,13 @@ func (jwter *JWT) ParseToken(strToken string, valid ...bool) (jwt.MapClaims, err
         return nil, err
     }
 
-    // 默认需要验证
-    isValid := true
-    if len(valid) > 0 && valid[0] {
-        isValid = valid[0]
-    }
+    return token, nil
+}
 
-    if isValid {
-        if err := token.Claims.Valid(); err != nil {
-            return nil, err
-        }
-    }
-
+// 从 token 获取解析后的数据
+func (jwter *JWT) GetClaimsFromToken(token *jwt.Token) (jwt.MapClaims, error) {
     var ok bool
-    claims, ok = token.Claims.(jwt.MapClaims)
+    claims, ok := token.Claims.(jwt.MapClaims)
     if !ok {
         return nil, errors.New("Token claims get error")
     }
@@ -330,15 +307,26 @@ func (jwter *JWT) ParseToken(strToken string, valid ...bool) (jwt.MapClaims, err
     return claims, nil
 }
 
-// 验证token是否有效
-func (jwter *JWT) Verify(strToken string) error {
-    _, err := jwter.ParseToken(strToken, true)
-
-    if err != nil {
-        return err
+// token 过期检测
+func (jwter *JWT) Validate(token *jwt.Token) (bool, error) {
+    if err := token.Claims.Valid(); err != nil {
+        return false, err
     }
 
-    return nil
+    return true, nil
+}
+
+// 验证 token 是否有效
+func (jwter *JWT) Verify(token *jwt.Token) (bool, error) {
+    if token.Claims.(jwt.MapClaims).VerifyAudience(jwter.Claims["aud"].(string), false) == false {
+        return false, errors.New("Audience is error")
+    }
+
+    if token.Claims.(jwt.MapClaims).VerifyIssuer(jwter.Claims["iss"].(string), false) == false {
+        return false, errors.New("Issuer is error")
+    }
+
+    return true, nil
 }
 
 // 格式化文件路径
