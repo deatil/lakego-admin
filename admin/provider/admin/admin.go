@@ -16,6 +16,7 @@ import (
     "lakego-admin/admin/middleware/authorization"
     "lakego-admin/admin/middleware/cors"
     "lakego-admin/admin/middleware/permission"
+    "lakego-admin/admin/middleware/actionlog"
 
     // 路由
     adminRoute "lakego-admin/admin/route"
@@ -40,6 +41,9 @@ var routeMiddlewares = map[string]gin.HandlerFunc{
 
     // 权限检测
     "lakego.permission": permission.Handler(),
+
+    // 操作日志
+    "lakego.action-log": actionlog.Handler(),
 }
 
 // 中间件分组
@@ -49,6 +53,7 @@ var middlewareGroups = map[string]interface{}{
         "lakego.cors",
         "lakego.auth",
         "lakego.permission",
+        "lakego.action-log",
     },
 }
 

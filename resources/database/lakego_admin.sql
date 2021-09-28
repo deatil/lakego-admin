@@ -1,3 +1,17 @@
+DROP TABLE IF EXISTS `pre__action_log`;
+CREATE TABLE `pre__action_log` (
+  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '日志ID',
+  `name` varchar(250) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '操作账号信息',
+  `url` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '请求类型',
+  `info` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '内容信息',
+  `useragent` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User-Agent',
+  `ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `add_time` int(10) DEFAULT NULL,
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='操作日志';
+
 DROP TABLE IF EXISTS `pre__admin`;
 CREATE TABLE `pre__admin` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,

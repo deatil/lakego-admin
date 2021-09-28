@@ -42,3 +42,14 @@ func NowNanoTime() int64 {
 func NowNanoTimeToInt() int {
     return int(NowNanoTime())
 }
+
+// 获取几天前时间，单位：秒
+func BeforeTime(day int) int64 {
+    return time.Now().AddDate(0, 0, day).Unix()
+}
+
+// 获取几天前时间，单位：秒
+func BeforeTimeToInt(day int) int {
+    time := BeforeTime(day)
+    return int(time)
+}
