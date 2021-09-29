@@ -23,7 +23,11 @@ func Handler() gin.HandlerFunc {
 // 记录日志
 func recordLog(ctx *gin.Context) {
     adminId, _ := ctx.Get("admin_id")
-    name := "操作账号[" + adminId.(string) + "]"
+
+    name := "操作账号[-]"
+    if adminId != nil {
+        name = "操作账号[" + adminId.(string) + "]"
+    }
 
     url := ctx.Request.URL.String()
     method := strings.ToUpper(ctx.Request.Method)

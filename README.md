@@ -67,6 +67,8 @@ go run main.go lakego-admin:import-route
 
 感谢以下的项目,排名不分先后
 
+ - github.com/gin-gonic/gin
+
  - gorm.io/gorm
 
  - github.com/dgrijalva/jwt-go

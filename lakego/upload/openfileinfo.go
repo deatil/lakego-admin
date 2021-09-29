@@ -2,6 +2,7 @@ package upload
 
 import (
     "io"
+    "os"
     "fmt"
     "path"
     "bufio"
@@ -10,12 +11,11 @@ import (
     "net/http"
     "crypto/md5"
     "crypto/sha1"
-    "mime/multipart"
 )
 
 // 文件信息
-func NewFileinfo() *Fileinfo {
-    return &Fileinfo{
+func NewOpenFileinfo() *OpenFileinfo {
+    return &OpenFileinfo{
         filetypes: map[string]string{},
     }
 }
@@ -23,63 +23,72 @@ func NewFileinfo() *Fileinfo {
 /**
  * 文件信息
  *
- * @create 2021-8-15
+ * @create 2021-9-29
  * @author deatil
  */
-type Fileinfo struct {
+type OpenFileinfo struct {
     // 文件
-    fileHeader *multipart.FileHeader
+    fileName string
 
     // 文件流
-    file multipart.File
+    file *os.File
 
     // 文件类型
     filetypes map[string]string
 }
 
 // 设置文件流
-func (fileinfo *Fileinfo) WithFile(file *multipart.FileHeader) *Fileinfo {
-    fileinfo.fileHeader = file
+func (fileinfo *OpenFileinfo) WithFileName(fileName string) *OpenFileinfo {
+    fileinfo.fileName = fileName
 
-    openfile, err := file.Open()
-    if err != nil {
-        panic("打开上传文件失败")
-    }
-
-    fileinfo.file = openfile
+    // 添加文件流
+    file, _ := os.Open(fileName)
+    fileinfo.file = file
 
     return fileinfo
 }
 
-// 关闭文件流
-func (fileinfo *Fileinfo) CloseFile() {
-    defer fileinfo.file.Close()
+// 获取文件流
+func (fileinfo *OpenFileinfo) GetFileName() string {
+    return fileinfo.fileName
 }
 
-// 获取文件
-func (fileinfo *Fileinfo) GetFileHeader() *multipart.FileHeader {
-    return fileinfo.fileHeader
+// 设置文件流
+func (fileinfo *OpenFileinfo) WithFile(file *os.File) *OpenFileinfo {
+    fileinfo.file = file
+
+    return fileinfo
 }
 
 // 获取文件流
-func (fileinfo *Fileinfo) GetFile() multipart.File {
+func (fileinfo *OpenFileinfo) GetFile() *os.File {
     return fileinfo.file
 }
 
+// 关闭文件流
+func (fileinfo *OpenFileinfo) CloseFile() {
+    defer fileinfo.file.Close()
+}
+
 // 设置文件类型
-func (fileinfo *Fileinfo) WithFiletypes(filetypes map[string]string) *Fileinfo {
+func (fileinfo *OpenFileinfo) WithFiletypes(filetypes map[string]string) *OpenFileinfo {
     fileinfo.filetypes = filetypes
 
     return fileinfo
 }
 
 // 获取文件类型
-func (fileinfo *Fileinfo) GetFiletypes() map[string]string {
+func (fileinfo *OpenFileinfo) GetFiletypes() map[string]string {
     return fileinfo.filetypes
 }
 
+// 字符
+func (fileinfo *OpenFileinfo) String() string {
+    return fileinfo.GetOriginalFilename()
+}
+
 // mime
-func (fileinfo *Fileinfo) GetMimeType() string {
+func (fileinfo *OpenFileinfo) GetMimeType() string {
     // 头部字节
     buffer := make([]byte, 32)
     if _, err := fileinfo.file.Read(buffer); err != nil {
@@ -92,31 +101,37 @@ func (fileinfo *Fileinfo) GetMimeType() string {
 }
 
 // 后缀
-func (fileinfo *Fileinfo) GetExtension() string {
-    name := fileinfo.fileHeader.Filename
+func (fileinfo *OpenFileinfo) GetExtension() string {
+    f, _ := fileinfo.file.Stat()
+    name := f.Name()
 
     return strings.TrimPrefix(path.Ext(name), ".")
 }
 
 // 大小
-func (fileinfo *Fileinfo) GetSize() int64 {
-    return fileinfo.fileHeader.Size
+func (fileinfo *OpenFileinfo) GetSize() int64 {
+    f, _ := fileinfo.file.Stat()
+
+    return f.Size()
 }
 
 // 原始名称
-func (fileinfo *Fileinfo) GetOriginalName() string {
-    name := fileinfo.fileHeader.Filename
+func (fileinfo *OpenFileinfo) GetOriginalName() string {
+    f, _ := fileinfo.file.Stat()
+    name := f.Name()
 
     return strings.TrimSuffix(name, "." + fileinfo.GetExtension())
 }
 
 // 原始文件名
-func (fileinfo *Fileinfo) GetOriginalFilename() string {
-    return fileinfo.fileHeader.Filename
+func (fileinfo *OpenFileinfo) GetOriginalFilename() string {
+    f, _ := fileinfo.file.Stat()
+
+    return f.Name()
 }
 
 // MD5 摘要
-func (fileinfo *Fileinfo) GetMd5() string {
+func (fileinfo *OpenFileinfo) GetMd5() string {
     const bufferSize = 65536
 
     hash := md5.New()
@@ -138,7 +153,7 @@ func (fileinfo *Fileinfo) GetMd5() string {
 }
 
 // sha1 摘要
-func (fileinfo *Fileinfo) GetSha1() string {
+func (fileinfo *OpenFileinfo) GetSha1() string {
     const bufferSize = 65536
 
     hash := sha1.New()
@@ -160,7 +175,7 @@ func (fileinfo *Fileinfo) GetSha1() string {
 }
 
 // 文件大类
-func (fileinfo *Fileinfo) GetFileType() string {
+func (fileinfo *OpenFileinfo) GetFileType() string {
     filetypes := fileinfo.filetypes
 
     extension := fileinfo.GetExtension()

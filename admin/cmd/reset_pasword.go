@@ -5,7 +5,9 @@ import (
 
     "github.com/spf13/cobra"
 
+    "lakego-admin/lakego/support/hash"
     authPassword "lakego-admin/lakego/auth/password"
+
     "lakego-admin/admin/model"
 )
 
@@ -51,6 +53,13 @@ func ResetPasword() {
         return
     }
 
+    if password == "" {
+        fmt.Println("密码不能为空")
+        return
+    }
+
+    password = hash.MD5(password)
+
     // 查询
     result := map[string]interface{}{}
     err := model.NewAdmin().
@@ -59,11 +68,6 @@ func ResetPasword() {
         Error
     if err != nil || len(result) < 1 {
         fmt.Println("账号信息不存在")
-        return
-    }
-
-    if len(password) != 32 {
-        fmt.Println("密码格式错误")
         return
     }
 

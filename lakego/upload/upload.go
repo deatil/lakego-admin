@@ -9,6 +9,7 @@ import (
 
     "lakego-admin/lakego/storage"
     "lakego-admin/lakego/validator"
+    "lakego-admin/lakego/support/file"
 )
 
 // 上传
@@ -31,6 +32,9 @@ type Upload struct {
     // 文件信息
     fileinfo *Fileinfo
 
+    // 文件信息
+    openFileinfo *OpenFileinfo
+
     // 重命名
     rename *Rename
 
@@ -51,6 +55,18 @@ func (upload *Upload) WithFileinfo(fileinfo *Fileinfo) *Upload {
 // 获取文件信息
 func (upload *Upload) GetFileinfo() *Fileinfo {
     return upload.fileinfo
+}
+
+// 设置文件信息2
+func (upload *Upload) WithOpenFileinfo(fileinfo *OpenFileinfo) *Upload {
+    upload.openFileinfo = fileinfo
+
+    return upload
+}
+
+// 获取文件信息2
+func (upload *Upload) GetOpenFileinfo() *OpenFileinfo {
+    return upload.openFileinfo
 }
 
 // 设置重命名
@@ -167,7 +183,7 @@ func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
     dst := upload.storage.Path(path)
 
     // 创建文件夹
-    upload.fileinfo.EnsureDir(dst)
+    upload.EnsureDir(dst)
 
     // 目录
     dst = strings.TrimSuffix(dst, "/") + "/" + realname
@@ -280,5 +296,13 @@ func (upload *Upload) Destroy(path string) bool {
     return upload.storage.Delete(path)
 }
 
+// 创建文件夹
+func (upload *Upload) EnsureDir(path string) bool {
+    err := file.EnsureDir(path)
+    if err != nil {
+        return false
+    }
 
+    return true
+}
 

@@ -26,9 +26,14 @@ func New() *upload.Upload {
         rename.SequenceName()
     }
 
-    // 文件信息
+    // 文件格式
     filetypes := conf.GetStringMapString("Upload.Filetypes")
+
+    // 文件信息
     fileinfo := upload.NewFileinfo().WithFiletypes(filetypes)
+
+    // 文件信息2
+    openFileinfo := upload.NewOpenFileinfo().WithFiletypes(filetypes)
 
     // 文件系统
     uploadDisk := conf.GetString("Upload.Disk")
@@ -41,6 +46,7 @@ func New() *upload.Upload {
     up := upload.New().
         WithStorage(useStorage).
         WithFileinfo(fileinfo).
+        WithOpenFileinfo(openFileinfo).
         WithRename(rename).
         WithDir(uploadDir)
 
