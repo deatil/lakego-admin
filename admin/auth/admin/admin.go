@@ -3,7 +3,7 @@ package admin
 import (
     "lakego-admin/lakego/collection"
     "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/casbin"
+    "lakego-admin/lakego/facade/permission"
 
     adminRepository "lakego-admin/admin/repository/admin"
     authruleRepository "lakego-admin/admin/repository/authrule"
@@ -127,7 +127,7 @@ func (admin *Admin) HasAccess(slug string, method string) bool {
         return true
     }
 
-    can, _ := casbin.New().Enforce(admin.Id, slug, method)
+    can, _ := permission.New().Enforce(admin.Id, slug, method)
     if can {
         return true
     }

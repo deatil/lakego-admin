@@ -17,7 +17,12 @@ import (
     "lakego-admin/admin/model"
 )
 
-// 检查token权限
+/**
+ * 检查 token 权限
+ *
+ * @create 2021-9-5
+ * @author deatil
+ */
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         if !shouldPassThrough(ctx) {

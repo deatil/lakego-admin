@@ -14,7 +14,7 @@ import (
     "lakego-admin/lakego/facade/auth"
     "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/facade/cache"
-    "lakego-admin/lakego/facade/casbin"
+    "lakego-admin/lakego/facade/permission"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/model/scope"
@@ -810,7 +810,7 @@ func (control *Admin) Access(ctx *gin.Context) {
  */
 func (control *Admin) ResetPermission(ctx *gin.Context) {
     // 清空原始数据
-    casbin.New().ClearData()
+    permission.New().ClearData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)
@@ -838,8 +838,8 @@ func (control *Admin) ResetPermission(ctx *gin.Context) {
 
     groupListMap := model.FormatStructToArrayMap(groupList)
 
-    // casbin
-    cas := casbin.New()
+    // permission
+    cas := permission.New()
 
     // 添加权限
     if len(ruleListMap) > 0 {

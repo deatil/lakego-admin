@@ -6,7 +6,7 @@ import (
 
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/casbin"
+    "lakego-admin/lakego/facade/permission"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/url"
@@ -14,7 +14,12 @@ import (
     "lakego-admin/admin/support/http/code"
 )
 
-// 权限检测
+/**
+ * 权限检测
+ *
+ * @create 2021-9-5
+ * @author deatil
+ */
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         if !shouldPassThrough(ctx) {
@@ -49,7 +54,7 @@ func permissionCheck(ctx *gin.Context) bool {
         return false
     }
 
-    c := casbin.New()
+    c := permission.New()
     ok, err := c.Enforce(adminId.(string), newRequestPath, method)
 
     if err != nil {

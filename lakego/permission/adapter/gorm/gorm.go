@@ -1,4 +1,4 @@
-package adapter
+package gorm
 
 import (
     "time"
@@ -57,18 +57,6 @@ func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
         Session(&gorm.Session{Context: db.Statement.Context})
 
     return a, nil
-}
-
-// 关闭
-func (a *Adapter) Close() error {
-    a.db = nil
-    return nil
-}
-
-// 清空
-func (a *Adapter) ClearData() error {
-    a.db.Where("1 = 1").Delete(&Rules{})
-    return nil
 }
 
 // 默认模型
@@ -369,4 +357,17 @@ func (a *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy []st
     newLine := a.savePolicyLine(ptype, newPolicy)
     err := a.db.Where(queryStr, queryArgs...).Updates(newLine).Error
     return err
+}
+
+
+// 关闭
+func (a *Adapter) Close() error {
+    a.db = nil
+    return nil
+}
+
+// 清空
+func (a *Adapter) ClearData() error {
+    a.db.Where("1 = 1").Delete(&Rules{})
+    return nil
 }

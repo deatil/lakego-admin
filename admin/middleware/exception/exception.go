@@ -14,7 +14,12 @@ import (
     "lakego-admin/admin/support/http/code"
 )
 
-// 异常处理
+/**
+ * 异常处理
+ *
+ * @create 2021-9-5
+ * @author deatil
+ */
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         defer func() {

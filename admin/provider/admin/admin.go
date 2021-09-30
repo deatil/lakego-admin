@@ -3,10 +3,10 @@ package admin
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/facade/config"
     "lakego-admin/lakego/provider"
     "lakego-admin/lakego/http/response"
     "lakego-admin/lakego/http/route"
+    "lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/support/url"
     "lakego-admin/admin/support/http/code"
@@ -17,6 +17,7 @@ import (
     "lakego-admin/admin/middleware/cors"
     "lakego-admin/admin/middleware/permission"
     "lakego-admin/admin/middleware/actionlog"
+    "lakego-admin/admin/middleware/admincheck"
 
     // 路由
     adminRoute "lakego-admin/admin/route"
@@ -44,16 +45,24 @@ var routeMiddlewares = map[string]gin.HandlerFunc{
 
     // 操作日志
     "lakego.action-log": actionlog.Handler(),
+
+    // 超级管理员检测
+    "lakego.admin-check": admincheck.Handler(),
 }
 
 // 中间件分组
 var middlewareGroups = map[string]interface{}{
+    // 常规中间件
     "lakego-admin": []string{
         "lakego.exception",
         "lakego.cors",
         "lakego.auth",
         "lakego.permission",
         "lakego.action-log",
+    },
+    // 超级管理员检测
+    "lakego-admin-check": []string{
+        "lakego.admin-check",
     },
 }
 

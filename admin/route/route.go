@@ -3,6 +3,9 @@ package router
 import (
     "github.com/gin-gonic/gin"
 
+    "lakego-admin/lakego/http/route"
+    "lakego-admin/lakego/facade/config"
+
     "lakego-admin/admin/controller"
 )
 
@@ -56,33 +59,39 @@ func Route(engine *gin.RouterGroup) {
     engine.PATCH("/admin/:id/access", adminController.Access)
     engine.DELETE("/admin/logout/:refreshToken", adminController.Logout)
 
-    // 权限菜单
-    authRuleController := new(controller.AuthRule)
-    engine.GET("/auth/rule", authRuleController.Index)
-    engine.GET("/auth/rule/tree", authRuleController.IndexTree)
-    engine.GET("/auth/rule/children", authRuleController.IndexChildren)
-    engine.GET("/auth/rule/:id", authRuleController.Detail)
-    engine.POST("/auth/rule", authRuleController.Create)
-    engine.PUT("/auth/rule/:id", authRuleController.Update)
-    engine.DELETE("/auth/rule/clear", authRuleController.Clear)
-    engine.DELETE("/auth/rule/:id", authRuleController.Delete)
-    engine.PATCH("/auth/rule/:id/sort", authRuleController.Listorder)
-    engine.PATCH("/auth/rule/:id/enable", authRuleController.Enable)
-    engine.PATCH("/auth/rule/:id/disable", authRuleController.Disable)
+    // 中间件
+    m := route.GetMiddlewares(config.New("admin").GetString("Route.AdminMiddleware"))
 
-    // 管理分组
-    authGroupController := new(controller.AuthGroup)
-    engine.GET("/auth/group", authGroupController.Index)
-    engine.GET("/auth/group/tree", authGroupController.IndexTree)
-    engine.GET("/auth/group/children", authGroupController.IndexChildren)
-    engine.GET("/auth/group/:id", authGroupController.Detail)
-    engine.POST("/auth/group", authGroupController.Create)
-    engine.PUT("/auth/group/:id", authGroupController.Update)
-    engine.DELETE("/auth/group/:id", authGroupController.Delete)
-    engine.PATCH("/auth/group/:id/sort", authGroupController.Listorder)
-    engine.PATCH("/auth/group/:id/enable", authGroupController.Enable)
-    engine.PATCH("/auth/group/:id/disable", authGroupController.Disable)
-    engine.PATCH("/auth/group/:id/access", authGroupController.Access)
+    engine.Use(m...)
+    {
+        // 权限菜单
+        authRuleController := new(controller.AuthRule)
+        engine.GET("/auth/rule", authRuleController.Index)
+        engine.GET("/auth/rule/tree", authRuleController.IndexTree)
+        engine.GET("/auth/rule/children", authRuleController.IndexChildren)
+        engine.GET("/auth/rule/:id", authRuleController.Detail)
+        engine.POST("/auth/rule", authRuleController.Create)
+        engine.PUT("/auth/rule/:id", authRuleController.Update)
+        engine.DELETE("/auth/rule/clear", authRuleController.Clear)
+        engine.DELETE("/auth/rule/:id", authRuleController.Delete)
+        engine.PATCH("/auth/rule/:id/sort", authRuleController.Listorder)
+        engine.PATCH("/auth/rule/:id/enable", authRuleController.Enable)
+        engine.PATCH("/auth/rule/:id/disable", authRuleController.Disable)
+
+        // 管理分组
+        authGroupController := new(controller.AuthGroup)
+        engine.GET("/auth/group", authGroupController.Index)
+        engine.GET("/auth/group/tree", authGroupController.IndexTree)
+        engine.GET("/auth/group/children", authGroupController.IndexChildren)
+        engine.GET("/auth/group/:id", authGroupController.Detail)
+        engine.POST("/auth/group", authGroupController.Create)
+        engine.PUT("/auth/group/:id", authGroupController.Update)
+        engine.DELETE("/auth/group/:id", authGroupController.Delete)
+        engine.PATCH("/auth/group/:id/sort", authGroupController.Listorder)
+        engine.PATCH("/auth/group/:id/enable", authGroupController.Enable)
+        engine.PATCH("/auth/group/:id/disable", authGroupController.Disable)
+        engine.PATCH("/auth/group/:id/access", authGroupController.Access)
+    }
 
     // 系统信息
     systemController := new(controller.System)

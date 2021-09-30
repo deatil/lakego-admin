@@ -2,7 +2,6 @@ package controller
 
 import (
     "os"
-    "net"
     "runtime"
 
     "github.com/gin-gonic/gin"
@@ -25,7 +24,7 @@ type System struct {
  */
 func (control *System) Info(ctx *gin.Context) {
     hostname, _ := os.Hostname()
-    netInfo, _ := net.Interfaces()
+    // netInfo, _ := net.Interfaces()
 
     data := gin.H{
         "goos": runtime.GOOS,
@@ -34,7 +33,6 @@ func (control *System) Info(ctx *gin.Context) {
         "version": runtime.Version(),
         "numcpu": runtime.NumCPU(),
         "hostname": hostname,
-        "net": netInfo,
     }
 
     control.SuccessWithData(ctx, "获取成功", data)

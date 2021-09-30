@@ -40,5 +40,3 @@ Auth:
   PermissionExcepts: []
   # 超级管理员
   AdminId: "e92ba0a3f86f4a5693d8487eb8c632b5"
-  # 权限模型
-  RbacModel: "{root}/config/rbac_model.conf"

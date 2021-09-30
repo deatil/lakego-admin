@@ -5,7 +5,7 @@ import (
 
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/facade/casbin"
+    "lakego-admin/lakego/facade/permission"
 
     "lakego-admin/admin/model"
 )
@@ -36,7 +36,7 @@ var ResetPermissionCmd = &cobra.Command{
 // 重设权限
 func ResetPermission() {
     // 清空原始数据
-    casbin.New().ClearData()
+    permission.New().ClearData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)
@@ -64,8 +64,8 @@ func ResetPermission() {
 
     groupListMap := model.FormatStructToArrayMap(groupList)
 
-    // casbin
-    cas := casbin.New()
+    // permission
+    cas := permission.New()
 
     // 添加权限
     if len(ruleListMap) > 0 {

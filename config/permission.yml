@@ -1,0 +1,10 @@
+# 默认
+Default: "gorm"
+
+# 适配器列表
+Adapters:
+  Gorm:
+    Type: "gorm"
+    # 权限模型
+    RbacModel: "{root}/config/rbac_model.conf"
+

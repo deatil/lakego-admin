@@ -7,7 +7,12 @@ import (
     "lakego-admin/lakego/facade/config"
 )
 
-// 允许跨域
+/**
+ * 跨域处理
+ *
+ * @create 2021-9-5
+ * @author deatil
+ */
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         conf := config.New("cors")

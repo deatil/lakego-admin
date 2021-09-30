@@ -5,6 +5,7 @@ Mode: "dev"
 Route:
   Prefix: "admin-api"
   Middleware: "lakego-admin"
+  AdminMiddleware: "lakego-admin-check"
 
 # 文件上传
 Upload:

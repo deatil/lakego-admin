@@ -11,7 +11,12 @@ import (
     "lakego-admin/admin/model"
 )
 
-// 操作日志
+/**
+ * 操作日志
+ *
+ * @create 2021-9-5
+ * @author deatil
+ */
 func Handler() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         ctx.Next()
