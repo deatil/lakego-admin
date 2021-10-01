@@ -6,7 +6,7 @@ import (
 )
 
 /**
- * 单例模式
+ * 使用
  */
 func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
     d := &Database{
@@ -20,8 +20,17 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
     return d
 }
 
+/**
+ * 数据库
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Database struct {
+    // 配置
     config map[string]interface{}
+
+    // 驱动
     driver interfaces.Driver
 }
 

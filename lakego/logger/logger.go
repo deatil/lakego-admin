@@ -12,11 +12,19 @@ import (
     "lakego-admin/lakego/logger/formatter"
 )
 
-type Fields map[string]interface{}
-
+/**
+ * 日志
+ *
+ * import "lakego-admin/lakego/logger"
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 var log = logrus.New()
 
-// import "lakego-admin/lakego/logger"
+type Fields map[string]interface{}
+
+// 默认设置
 func init() {
     setting()
 }

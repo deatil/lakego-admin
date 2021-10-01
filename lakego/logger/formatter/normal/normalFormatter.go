@@ -8,7 +8,12 @@ import (
     "github.com/sirupsen/logrus"
 )
 
-// 正常格式化
+/**
+ * 正常格式化
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 type NormalFormatter struct {}
 
 func (m *NormalFormatter) Format(entry *logrus.Entry) ([]byte, error){

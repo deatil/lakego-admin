@@ -29,6 +29,9 @@ func New() *Register {
 
 /**
  * 注册器
+ *
+ * @create 2021-9-6
+ * @author deatil
  */
 type Register struct {
     // 已注册数据

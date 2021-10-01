@@ -4,7 +4,12 @@ import (
     "time"
 )
 
-// 驱动接口
+/**
+ * 驱动接口
+ *
+ * @create 2021-7-15
+ * @author deatil
+ */
 type Driver interface {
     // 初始化配置
     Init(map[string]interface{}) Driver

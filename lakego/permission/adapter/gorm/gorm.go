@@ -42,7 +42,12 @@ type Filter struct {
     V5    []string
 }
 
-// gorm 适配器
+/**
+ * gorm 适配器
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 type Adapter struct {
     db             *gorm.DB
     isFiltered     bool

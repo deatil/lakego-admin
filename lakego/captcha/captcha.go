@@ -41,6 +41,7 @@ func New(config Config, redis redis.Redis) Captcha {
     }
 }
 
+// 颜色
 type RBGA struct {
     R uint8
     B uint8
@@ -48,6 +49,7 @@ type RBGA struct {
     A uint8
 }
 
+// 配置
 type Config struct {
     Key string
     ExpireTimes int
@@ -63,7 +65,12 @@ type Config struct {
     RBGA RBGA
 }
 
-// 验证码
+/**
+ * 验证码
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Captcha struct {
     *base64Captcha.Captcha
 }

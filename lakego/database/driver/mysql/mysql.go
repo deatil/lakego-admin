@@ -18,6 +18,12 @@ func New(conf ...map[string]interface{}) *Mysql {
     return m
 }
 
+/**
+ * Mysql 驱动
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Mysql struct {
     // 继承默认
     driver.Driver

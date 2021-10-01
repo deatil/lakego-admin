@@ -7,6 +7,12 @@ import (
     "lakego-admin/lakego/http/response"
 )
 
+/**
+ * 控制器基类
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Base struct {}
 
 /**

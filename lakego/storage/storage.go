@@ -30,7 +30,12 @@ func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Storage {
     return fs
 }
 
-// 文件管理器
+/**
+ * 文件管理器
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 type Storage struct {
     *fllesystem.Fllesystem
 }

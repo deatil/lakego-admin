@@ -42,6 +42,7 @@ func New(config Config) Redis {
     }
 }
 
+// 缓存配置
 type Config struct {
     DB int
     Host string
@@ -49,20 +50,17 @@ type Config struct {
     KeyPrefix string
 }
 
+/**
+ * redis 缓存
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 type Redis struct {
     cache  *cache.Cache
     client *redis.Client
     prefix string
     config Config
-}
-
-func (a Redis) wrapperKey(key string) string {
-    return fmt.Sprintf("%s:%s", a.prefix, key)
-}
-
-// int 时间格式化为 Duration 格式
-func (a Redis) IntTimeToDuration(t int) time.Duration {
-    return time.Duration(int64(t))
 }
 
 // 设置
@@ -121,4 +119,14 @@ func (a Redis) Close() error {
 
 func (a Redis) GetClient() *redis.Client {
     return a.client
+}
+
+// 包装 key 值
+func (a Redis) wrapperKey(key string) string {
+    return fmt.Sprintf("%s:%s", a.prefix, key)
+}
+
+// int 时间格式化为 Duration 格式
+func (a Redis) IntTimeToDuration(t int) time.Duration {
+    return time.Duration(int64(t))
 }

@@ -14,11 +14,6 @@ var CustomValidator *customValidator
 // 所有验证器
 var validations []Validation
 
-type customValidator struct {
-    validate *validator.Validate
-    trans    ut.Translator
-}
-
 /**
  * 注册自定义验证器
  */
@@ -38,10 +33,10 @@ func init() {
         validationOfRegexp("strong_password", "^[a-zA-Z][a-zA-Z0-9_]{8,}$", "{0} 必须包含写字母和数字, 且长度为 8-16"),
 
         // 中国邮政编码
-        validationOfRegexp("cn_postal_code", "[0-8][0-7]\\d{4}", "{0} 必须是中国邮政编码"),
+        validationOfRegexp("cn_postal_code", `[0-8][0-7]\d{4}`, "{0} 必须是中国邮政编码"),
 
         // 中国大陆身份证号
-        validationOfRegexp("cn_id_number", "^\\d{15}|\\d{18}$", "{0} 必须是中国身份证号码"),
+        validationOfRegexp("cn_id_number", `^\d{15}|\d{18}$`, "{0} 必须是中国身份证号码"),
 
         // Example
 
@@ -111,6 +106,17 @@ func New() (cv *customValidator, err error) {
     }
 
     return
+}
+
+/**
+ * 自定义验证器
+ *
+ * @create 2021-9-6
+ * @author deatil
+ */
+type customValidator struct {
+    validate *validator.Validate
+    trans    ut.Translator
 }
 
 /**

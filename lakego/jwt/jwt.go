@@ -40,14 +40,30 @@ var signingMethodList = map[string]interface{} {
     "PS512": jwt.SigningMethodPS512,
 }
 
+/**
+ * JWT
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type JWT struct {
+    // 载荷
     Claims map[string]interface{}
 
+    // 签名方法
     SigningMethod string
+
+    // 秘钥
     Secret string
+
+    // 私钥
     PrivateKey string
+
+    // 公钥
     PublicKey string
-    PrivateKeyPassword string // 私钥密码
+
+    // 私钥密码
+    PrivateKeyPassword string
 }
 
 // Audience

@@ -21,7 +21,12 @@ func New() *Tree {
     }
 }
 
-// map 数据格式化为树
+/**
+ * map 数据格式化为树
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
 type Tree struct {
     // 生成树型结构所需要的2维数组
     data []map[string]interface{}

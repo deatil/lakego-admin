@@ -12,11 +12,23 @@ import (
     "lakego-admin/lakego/cache/interfaces"
 )
 
-// redis 缓存
+/**
+ * redis 缓存
+ *
+ * @create 2021-7-15
+ * @author deatil
+ */
 type Redis struct {
+    // 配置
     config map[string]interface{}
+
+    // 前缀
     prefix string
+
+    // 上下文
     ctx context.Context
+
+    // 客户端
     client *redis.Client
 }
 

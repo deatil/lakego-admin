@@ -20,6 +20,12 @@ func New(conf ...map[string]interface{}) *Driver {
     return d
 }
 
+/**
+ * 基础驱动
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Driver struct {
     // gorm
     db *gorm.DB

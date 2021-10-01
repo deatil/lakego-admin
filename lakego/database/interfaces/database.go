@@ -4,7 +4,12 @@ import (
     "gorm.io/gorm"
 )
 
-// 数据库接口
+/**
+ * 数据库接口
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Database interface {
     // 设置配置
     WithConfig(map[string]interface{}) Database

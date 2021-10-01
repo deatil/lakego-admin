@@ -5,6 +5,12 @@ import (
     providerInterface "lakego-admin/lakego/provider/interfaces"
 )
 
+/**
+ * App 接口
+ *
+ * @create 2021-6-19
+ * @author deatil
+ */
 type App interface {
     // 注册服务提供者
     Register(func() providerInterface.ServiceProvider)

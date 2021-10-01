@@ -19,7 +19,7 @@ func New() *Auth {
 }
 
 /**
- * 授权结构体
+ * 授权
  *
  * @create 2021-6-19
  * @author deatil
@@ -183,7 +183,7 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 /**
  * 获取鉴权 token
  */
-func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (jwt.MapClaims, error) {
+func (auth *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.AccessTokenId")
 
     jwter := auth.MakeJWT().WithJti(jti)
@@ -200,8 +200,8 @@ func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (jwt.MapClai
 
     // 检测
     isVerify := true
-    if len(valid) > 0 {
-        isVerify = valid[0]
+    if len(verify) > 0 {
+        isVerify = verify[0]
     }
 
     if isVerify {
@@ -222,7 +222,7 @@ func (auth *Auth) GetAccessTokenClaims(token string, valid ...bool) (jwt.MapClai
 /**
  * 获取刷新 token
  */
-func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (jwt.MapClaims, error) {
+func (auth *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.RefreshTokenId")
 
     jwter := auth.MakeJWT().WithJti(jti)
@@ -239,8 +239,8 @@ func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (jwt.MapCla
 
     // 检测
     isVerify := true
-    if len(valid) > 0 {
-        isVerify = valid[0]
+    if len(verify) > 0 {
+        isVerify = verify[0]
     }
 
     if isVerify {
@@ -261,8 +261,8 @@ func (auth *Auth) GetRefreshTokenClaims(token string, valid ...bool) (jwt.MapCla
 /**
  * 获取鉴权 token 所在 userid
  */
-func (auth *Auth) GetAccessTokenData(token string, key string, valid ...bool) string {
-    claims, err := auth.GetAccessTokenClaims(token, valid...)
+func (auth *Auth) GetAccessTokenData(token string, key string, verify ...bool) string {
+    claims, err := auth.GetAccessTokenClaims(token, verify...)
     if err != nil {
         return ""
     }
@@ -275,8 +275,8 @@ func (auth *Auth) GetAccessTokenData(token string, key string, valid ...bool) st
 /**
  * 获取刷新 token 所在 userid
  */
-func (auth *Auth) GetRefreshTokenData(token string, key string, valid ...bool) string {
-    claims, err := auth.GetRefreshTokenClaims(token, valid...)
+func (auth *Auth) GetRefreshTokenData(token string, key string, verify ...bool) string {
+    claims, err := auth.GetRefreshTokenClaims(token, verify...)
     if err != nil {
         return ""
     }

@@ -39,6 +39,9 @@ func NewRegister() *Register {
 
 /**
  * 注册器
+ *
+ * @create 2021-9-8
+ * @author deatil
  */
 type Register struct {
     providers []func() providerInterface.ServiceProvider

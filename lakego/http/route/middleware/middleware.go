@@ -25,7 +25,12 @@ func New() *Middleware {
     return &Middleware{}
 }
 
-// 中间件
+/**
+ * 中间件
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type Middleware struct {
     // 中间件
     middlewares sync.Map

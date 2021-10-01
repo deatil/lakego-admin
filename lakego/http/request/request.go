@@ -38,6 +38,12 @@ type Reader interface {
 
 type HandlerFunc func(wrapper *ContextWrapper)
 
+/**
+ * 请求
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
 type ContextWrapper struct {
     Ctx *gin.Context
 }

@@ -4,7 +4,9 @@ package register
  * 初始化
  */
 func NewManager() *Manager {
-    return &Manager{}
+    return &Manager{
+        prefix: "",
+    }
 }
 
 /**
@@ -18,6 +20,9 @@ func NewManagerWithPrefix(prefix string) *Manager {
 
 /**
  * 注册管理器
+ *
+ * @create 2021-9-6
+ * @author deatil
  */
 type Manager struct {
     prefix string

@@ -1,6 +1,11 @@
 package interfaces
 
-// 缓存接口
+/**
+ * 缓存接口
+ *
+ * @create 2021-7-15
+ * @author deatil
+ */
 type Cache interface {
     // 设置驱动
     WithDriver(Driver) Cache
