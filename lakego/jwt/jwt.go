@@ -38,6 +38,8 @@ var signingMethodList = map[string]interface{} {
     "PS256": jwt.SigningMethodPS256,
     "PS384": jwt.SigningMethodPS384,
     "PS512": jwt.SigningMethodPS512,
+
+    "EdDSA": jwt.SigningMethodEdDSA,
 }
 
 /**
@@ -157,85 +159,107 @@ func (jwter *JWT) MakeToken() (token string, err error) {
 
     jwtToken := jwt.NewWithClaims(methodType, claims)
 
+    // 密码
     var secret interface{}
 
     if jwter.SigningMethod == "RS256" || jwter.SigningMethod == "RS384" || jwter.SigningMethod == "RS512" {
         // 文件
         keyFile := jwter.FormatPath(jwter.PrivateKey)
 
+        // 获取秘钥数据
+        keyData, e := os.ReadFile(keyFile)
+
+        if e != nil {
+            token = ""
+            err = errors.New("RSA 私钥不存在或者错误")
+            return
+        }
+
         if jwter.PrivateKeyPassword != "" {
-            if keyData, e := os.ReadFile(keyFile); e == nil {
-                // 密码
-                password := base64.Decode(jwter.PrivateKeyPassword)
+            // 密码
+            password := base64.Decode(jwter.PrivateKeyPassword)
 
-                secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, password)
+            secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, password)
 
-                if err != nil {
-                    token = ""
-                    return
-                }
-            } else {
+            if err != nil {
                 token = ""
-                err = errors.New("PrivateKey not exists")
                 return
             }
         } else {
-            if keyData, e := os.ReadFile(keyFile); e == nil {
-                secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
-
-                if err != nil {
-                    token = ""
-                    return
-                }
-            } else {
-                token = ""
-                err = errors.New("PrivateKey not exists")
-                return
-            }
-        }
-    } else if jwter.SigningMethod == "PS256" || jwter.SigningMethod == "PS384" || jwter.SigningMethod == "PS512" {
-        // 文件
-        keyFile := jwter.FormatPath(jwter.PrivateKey)
-
-        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
             if err != nil {
                 token = ""
                 return
             }
-        } else {
+        }
+
+    } else if jwter.SigningMethod == "PS256" || jwter.SigningMethod == "PS384" || jwter.SigningMethod == "PS512" {
+        // 文件
+        keyFile := jwter.FormatPath(jwter.PrivateKey)
+
+        // 秘钥
+        keyData, e := os.ReadFile(keyFile)
+
+        if e != nil {
             token = ""
-            err = errors.New("PrivateKey not exists")
+            err = errors.New("PSS 私钥不存在或者错误")
+            return
+        }
+
+        secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
+
+        if err != nil {
+            token = ""
             return
         }
     } else if jwter.SigningMethod == "HS256" || jwter.SigningMethod == "HS384" || jwter.SigningMethod == "HS512" {
-        secret = jwter.Secret
-
         // 密码
-        secret = base64.Decode(secret.(string))
-        secret = []byte(secret.(string))
+        hmacSecret := base64.Decode(jwter.Secret)
+        secret = []byte(hmacSecret)
     } else if jwter.SigningMethod == "ES256" || jwter.SigningMethod == "ES384" || jwter.SigningMethod == "ES512" {
         // 文件
         keyFile := jwter.FormatPath(jwter.PrivateKey)
 
-        if keyData, e := os.ReadFile(keyFile); e == nil {
-            secret, err = jwt.ParseECPrivateKeyFromPEM(keyData)
+        // 私钥
+        keyData, e := os.ReadFile(keyFile)
 
-            if err != nil {
-                token = ""
-                return
-            }
-        } else {
+        if e != nil {
             token = ""
-            err = errors.New("PrivateKey not exists")
+            err = errors.New("ECDSA 私钥不存在或者错误")
+            return
+        }
+
+        secret, err = jwt.ParseECPrivateKeyFromPEM(keyData)
+
+        if err != nil {
+            token = ""
+            return
+        }
+    } else if jwter.SigningMethod == "EdDSA" {
+        // 文件
+        keyFile := jwter.FormatPath(jwter.PrivateKey)
+
+        // 私钥
+        keyData, e := os.ReadFile(keyFile)
+
+        if e != nil {
+            token = ""
+            err = errors.New("EdDSA 私钥不存在或者错误")
+            return
+        }
+
+        secret, err = jwt.ParseEdPrivateKeyFromPEM(keyData)
+
+        if err != nil {
+            token = ""
             return
         }
     }
 
     if secret == "" {
         token = ""
-        err = errors.New("JWT encode error")
+        err = errors.New("JWT 生成失败")
         return
     }
 
@@ -252,54 +276,78 @@ func (jwter *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := os.ReadFile(keyFile); e == nil {
-            secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
+        // 公钥
+        keyData, e := os.ReadFile(keyFile)
 
-            if err != nil {
-                return nil, err
-            }
-        } else {
-            err = errors.New("PublicKey not exists")
+        if e != nil {
+            err = errors.New("RSA 公钥不存在或者错误")
+            return nil, err
+        }
+
+        secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
+
+        if err != nil {
             return nil, err
         }
     } else if jwter.SigningMethod == "PS256" || jwter.SigningMethod == "PS384" || jwter.SigningMethod == "PS512" {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := os.ReadFile(keyFile); e == nil {
-            secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
+        // 公钥
+        keyData, e := os.ReadFile(keyFile)
 
-            if err != nil {
-                return nil, err
-            }
-        } else {
-            err = errors.New("PublicKey not exists")
+        if e != nil {
+            err = errors.New("PSS 公钥不存在或者错误")
+            return nil, err
+        }
+
+        secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
+
+        if err != nil {
             return nil, err
         }
     } else if jwter.SigningMethod == "HS256" || jwter.SigningMethod == "HS384" || jwter.SigningMethod == "HS512" {
-        secret = jwter.Secret
-
         // 密码
-        secret = base64.Decode(secret.(string))
-        secret = []byte(secret.(string))
+        hmacSecret := base64.Decode(jwter.Secret)
+        secret = []byte(hmacSecret)
     } else if jwter.SigningMethod == "ES256" || jwter.SigningMethod == "ES384" || jwter.SigningMethod == "ES512" {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := os.ReadFile(keyFile); e == nil {
-            secret, err = jwt.ParseECPublicKeyFromPEM(keyData)
+        // 公钥
+        keyData, e := os.ReadFile(keyFile)
 
-            if err != nil {
-                return nil, err
-            }
-        } else {
-            err = errors.New("PublicKey not exists")
+        if e != nil {
+            err = errors.New("ECDSA 公钥不存在或者错误")
+            return nil, err
+        }
+
+        secret, err = jwt.ParseECPublicKeyFromPEM(keyData)
+
+        if err != nil {
+            return nil, err
+        }
+    } else if jwter.SigningMethod == "EdDSA" {
+        // 文件
+        keyFile := jwter.FormatPath(jwter.PublicKey)
+
+        // 公钥
+        keyData, e := os.ReadFile(keyFile)
+
+        if e != nil {
+            err = errors.New("EdDSA 公钥不存在或者错误")
+            return nil, err
+        }
+
+        secret, err = jwt.ParseEdPublicKeyFromPEM(keyData)
+
+        if err != nil {
             return nil, err
         }
     }
 
     if secret == "" {
-        return nil, errors.New("JWT encode error")
+        return nil, errors.New("JWT 解析失败")
     }
 
     token, err := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
@@ -317,7 +365,7 @@ func (jwter *JWT) GetClaimsFromToken(token *jwt.Token) (jwt.MapClaims, error) {
     var ok bool
     claims, ok := token.Claims.(jwt.MapClaims)
     if !ok {
-        return nil, errors.New("Token claims get error")
+        return nil, errors.New("Token 载荷获取失败")
     }
 
     return claims, nil
@@ -334,12 +382,17 @@ func (jwter *JWT) Validate(token *jwt.Token) (bool, error) {
 
 // 验证 token 是否有效
 func (jwter *JWT) Verify(token *jwt.Token) (bool, error) {
-    if token.Claims.(jwt.MapClaims).VerifyAudience(jwter.Claims["aud"].(string), false) == false {
-        return false, errors.New("Audience is error")
+    claims, err := jwter.GetClaimsFromToken(token)
+    if err != nil {
+        return false, err
     }
 
-    if token.Claims.(jwt.MapClaims).VerifyIssuer(jwter.Claims["iss"].(string), false) == false {
-        return false, errors.New("Issuer is error")
+    if claims.VerifyAudience(jwter.Claims["aud"].(string), false) == false {
+        return false, errors.New("Audience 验证失败")
+    }
+
+    if claims.VerifyIssuer(jwter.Claims["iss"].(string), false) == false {
+        return false, errors.New("Issuer 验证失败")
     }
 
     return true, nil
