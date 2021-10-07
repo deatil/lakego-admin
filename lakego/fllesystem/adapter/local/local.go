@@ -7,7 +7,6 @@ import (
     "strings"
     "errors"
     "net/http"
-    "io/ioutil"
     "path/filepath"
 
     "lakego-admin/lakego/fllesystem/interfaces"
@@ -197,9 +196,9 @@ func (sys *Local) Read(path string) (map[string]interface{}, error) {
     }
     defer file.Close()
 
-    data, readAllErr := ioutil.ReadAll(file)
+    data, readAllErr := io.ReadAll(file)
     if readAllErr != nil {
-        return nil, errors.New("执行函数 ioutil.ReadAll() 失败, 错误为:" + readAllErr.Error())
+        return nil, errors.New("执行函数 io.ReadAll() 失败, 错误为:" + readAllErr.Error())
     }
 
     contents := fmt.Sprintf("%s", data)
@@ -457,7 +456,7 @@ func (sys *Local) NormalizeFileInfo(file map[string]interface{}) (map[string]int
 
 // 是否可读
 func (sys *Local) GuardAgainstUnreadableFileInfo(fp string) error {
-    _, err := ioutil.ReadFile(fp)
+    _, err := os.ReadFile(fp)
     if err != nil {
         return err
     }
@@ -494,9 +493,9 @@ func (sys *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]inter
     return files, nil
 }
 
-// 一级目录聂荣
+// 一级目录索引
 func (sys *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, error) {
-    fs, err := ioutil.ReadDir(path)
+    fs, err := os.ReadDir(path)
     if err != nil {
         return []map[string]interface{}{}, err
     }
@@ -510,6 +509,8 @@ func (sys *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, e
     for i := 0; i < sz; i++ {
         info := fs[i]
         name := info.Name()
+        // type := info.Type()
+        stat, _ := info.Info()
         if name != "." && name != ".." {
             var fileType string
             if info.IsDir() {
@@ -521,9 +522,9 @@ func (sys *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, e
             ret = append(ret, map[string]interface{}{
                 "type": fileType,
                 "path": path,
-                "filename": info.Name(),
-                "pathname": path + "/" + info.Name(),
-                "timestamp": info.ModTime().Unix(),
+                "filename": name,
+                "pathname": path + "/" + name,
+                "timestamp": stat.ModTime().Unix(),
                 "info": info,
             })
         }

@@ -1,18 +1,18 @@
 package file
 
 import (
+    "os"
     "bufio"
-    "io/ioutil"
     "strconv"
     "strings"
 )
 
 func ToBytes(filePath string) ([]byte, error) {
-    return ioutil.ReadFile(filePath)
+    return os.ReadFile(filePath)
 }
 
 func ToString(filePath string) (string, error) {
-    b, err := ioutil.ReadFile(filePath)
+    b, err := os.ReadFile(filePath)
     if err != nil {
         return "", err
     }

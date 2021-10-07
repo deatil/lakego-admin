@@ -14,23 +14,23 @@ import (
 /**
  * 重置密码
  *
- * > ./main lakego-admin:reset-pasword --id=[id] --password=[password]
- * > main.exe lakego-admin:reset-pasword --id=[id] --password=[password]
- * > go run main.go lakego-admin:reset-pasword --id=[id] --password=[password]
+ * > ./main lakego-admin:reset-password --id=[id] --password=[password]
+ * > main.exe lakego-admin:reset-password --id=[id] --password=[password]
+ * > go run main.go lakego-admin:reset-password --id=[id] --password=[password]
  *
  * @create 2021-9-26
  * @author deatil
  */
-var ResetPaswordCmd = &cobra.Command{
-    Use: "lakego-admin:reset-pasword",
-    Short: "lakego-admin reset-pasword.",
-    Example: "{execfile} lakego-admin:reset-pasword --id=[id] --password=[password]",
+var ResetPasswordCmd = &cobra.Command{
+    Use: "lakego-admin:reset-password",
+    Short: "lakego-admin reset-password.",
+    Example: "{execfile} lakego-admin:reset-password --id=[id] --password=[password]",
     SilenceUsage: true,
     PreRun: func(cmd *cobra.Command, args []string) {
 
     },
     Run: func(cmd *cobra.Command, args []string) {
-        ResetPasword()
+        ResetPassword()
     },
 }
 
@@ -38,7 +38,7 @@ var id string
 var password string
 
 func init() {
-    pf := ResetPaswordCmd.PersistentFlags()
+    pf := ResetPasswordCmd.PersistentFlags()
     pf.StringVarP(&id, "id", "i", "", "账号ID")
     pf.StringVarP(&password, "password", "p", "", "新建密码")
 
@@ -47,7 +47,7 @@ func init() {
 }
 
 // 重设权限
-func ResetPasword() {
+func ResetPassword() {
     if id == "" {
         fmt.Println("账号ID不能为空")
         return

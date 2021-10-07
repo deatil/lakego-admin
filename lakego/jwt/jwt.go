@@ -1,10 +1,10 @@
 package jwt
 
 import (
+    "os"
     "time"
     "errors"
-    "io/ioutil"
-    "github.com/dgrijalva/jwt-go"
+    "github.com/golang-jwt/jwt/v4"
 
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/support/base64"
@@ -164,7 +164,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
         keyFile := jwter.FormatPath(jwter.PrivateKey)
 
         if jwter.PrivateKeyPassword != "" {
-            if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+            if keyData, e := os.ReadFile(keyFile); e == nil {
                 // 密码
                 password := base64.Decode(jwter.PrivateKeyPassword)
 
@@ -180,7 +180,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
                 return
             }
         } else {
-            if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+            if keyData, e := os.ReadFile(keyFile); e == nil {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
                 if err != nil {
@@ -197,7 +197,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PrivateKey)
 
-        if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
             if err != nil {
@@ -219,7 +219,7 @@ func (jwter *JWT) MakeToken() (token string, err error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PrivateKey)
 
-        if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseECPrivateKeyFromPEM(keyData)
 
             if err != nil {
@@ -252,7 +252,7 @@ func (jwter *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
 
             if err != nil {
@@ -266,7 +266,7 @@ func (jwter *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseRSAPublicKeyFromPEM(keyData)
 
             if err != nil {
@@ -286,7 +286,7 @@ func (jwter *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         // 文件
         keyFile := jwter.FormatPath(jwter.PublicKey)
 
-        if keyData, e := ioutil.ReadFile(keyFile); e == nil {
+        if keyData, e := os.ReadFile(keyFile); e == nil {
             secret, err = jwt.ParseECPublicKeyFromPEM(keyData)
 
             if err != nil {

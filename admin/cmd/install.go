@@ -4,7 +4,6 @@ import (
     "os"
     "fmt"
     "strings"
-    "io/ioutil"
 
     "github.com/spf13/cobra"
 
@@ -55,7 +54,7 @@ func runInsatll() {
         os.Exit(1)
     }
 
-    sqls, _ := ioutil.ReadFile(sqlFile)
+    sqls, _ := os.ReadFile(sqlFile)
     sqlArr := strings.Split(string(sqls), ";")
     for _, sql := range sqlArr {
         sql = strings.Trim(sql, " ")

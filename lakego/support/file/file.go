@@ -7,7 +7,6 @@ import (
     "time"
     "path"
     "path/filepath"
-    "io/ioutil"
     "strings"
 )
 
@@ -55,7 +54,7 @@ func EnsureDir(fp string) error {
 
 // 是否可读
 func IsReadable(file string) error {
-    _, err := ioutil.ReadFile(file)
+    _, err := os.ReadFile(file)
     if err != nil {
         return err
     }
@@ -181,7 +180,7 @@ func DirsUnder(dirPath string) ([]string, error) {
         return []string{}, nil
     }
 
-    fs, err := ioutil.ReadDir(dirPath)
+    fs, err := os.ReadDir(dirPath)
     if err != nil {
         return []string{}, err
     }
@@ -210,7 +209,7 @@ func FilesUnder(dirPath string) ([]string, error) {
         return []string{}, nil
     }
 
-    fs, err := ioutil.ReadDir(dirPath)
+    fs, err := os.ReadDir(dirPath)
     if err != nil {
         return []string{}, err
     }

@@ -4,7 +4,6 @@ import (
     "os"
     "io"
     "strings"
-    "io/ioutil"
     "mime/multipart"
 
     "lakego-admin/lakego/storage"
@@ -210,7 +209,7 @@ func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
 
 // 保存上传的文件
 func (upload *Upload) SaveFile(file *multipart.FileHeader) string {
-    tmpFile, err := ioutil.TempFile("", "lakego")
+    tmpFile, err := os.CreateTemp("", "lakego")
     if err != nil {
         return ""
     }

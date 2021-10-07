@@ -97,7 +97,7 @@ func (s *ServiceProvider) loadCommand() {
     s.AddCommand(cmd.PassportLogoutCmd)
 
     // 重置密码
-    s.AddCommand(cmd.ResetPaswordCmd)
+    s.AddCommand(cmd.ResetPasswordCmd)
 }
 
 /**
@@ -133,14 +133,24 @@ func (s *ServiceProvider) loadRoute() {
         engine.Use(middlewares...)
 
         // 后台路由及设置中间件
-        m := route.GetMiddlewares(conf.GetString("Route.Middleware"))
+        groupMiddlewares := route.GetMiddlewares(conf.GetString("Route.Middleware"))
+
+        // 管理员路由
+        adminGroupMiddlewares := route.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
 
         // 路由
         admin := engine.Group(conf.GetString("Route.Prefix"))
         {
-            admin.Use(m...)
+            admin.Use(groupMiddlewares...)
             {
+                // 常规路由
                 adminRoute.Route(admin)
+
+                // 需要管理员权限
+                admin.Use(adminGroupMiddlewares...)
+                {
+                    adminRoute.AdminRoute(admin)
+                }
             }
         }
 
