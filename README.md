@@ -71,7 +71,7 @@ go run main.go lakego-admin:import-route
 
  - gorm.io/gorm
 
- - github.com/dgrijalva/jwt-go
+ - github.com/golang-jwt/jwt
 
  - github.com/casbin/casbin
 
