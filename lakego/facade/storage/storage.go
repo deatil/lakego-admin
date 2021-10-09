@@ -8,9 +8,9 @@ import(
     "lakego-admin/lakego/support/path"
     "lakego-admin/lakego/facade/config"
 
-    "lakego-admin/lakego/fllesystem"
-    "lakego-admin/lakego/fllesystem/interfaces"
-    localAdapter "lakego-admin/lakego/fllesystem/adapter/local"
+    "github.com/deatil/go-filesystem/filesystem"
+    "github.com/deatil/go-filesystem/filesystem/interfaces"
+    localAdapter "github.com/deatil/go-filesystem/filesystem/adapter/local"
 )
 
 var once sync.Once
@@ -34,8 +34,8 @@ func NewWithDisk(disk string, once ...bool) *storage.Storage {
 }
 
 // 批量操作
-func MountManager(filesystems ...map[string]interface{}) *fllesystem.MountManager {
-    return fllesystem.NewMountManager(filesystems...)
+func MountManager(filesystems ...map[string]interface{}) *filesystem.MountManager {
+    return filesystem.NewMountManager(filesystems...)
 }
 
 // 注册磁盘
@@ -79,10 +79,10 @@ func Disk(name string, once ...bool) *storage.Storage {
     }
 
     // 磁盘
-    disk := fllesystem.New(driver.(interfaces.Adapter), diskConf)
+    disk := filesystem.New(driver.(interfaces.Adapter), diskConf)
 
     // 使用自定义文件管理器
-    disk2 := storage.NewWithFllesystem(disk.(*fllesystem.Fllesystem))
+    disk2 := storage.NewWithFllesystem(disk.(*filesystem.Fllesystem))
 
     return disk2
 }

@@ -4,13 +4,13 @@ import(
     "os"
     "strings"
 
-    "lakego-admin/lakego/fllesystem"
-    "lakego-admin/lakego/fllesystem/interfaces"
+    "github.com/deatil/go-filesystem/filesystem"
+    "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
 
 // new 文件管理器
 func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Storage {
-    fs := &fllesystem.Fllesystem{}
+    fs := &filesystem.Fllesystem{}
 
     fs.WithAdapter(adapters)
 
@@ -24,7 +24,7 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Storage {
 }
 
 // new 文件管理器
-func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Storage {
+func NewWithFllesystem(ifs *filesystem.Fllesystem) *Storage {
     fs := &Storage{ifs}
 
     return fs
@@ -37,7 +37,7 @@ func NewWithFllesystem(ifs *fllesystem.Fllesystem) *Storage {
  * @author deatil
  */
 type Storage struct {
-    *fllesystem.Fllesystem
+    *filesystem.Fllesystem
 }
 
 // 获取配置
