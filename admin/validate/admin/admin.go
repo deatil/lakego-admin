@@ -1,7 +1,7 @@
 package admin
 
 import (
-    "lakego-admin/lakego/facade/validate"
+    "github.com/deatil/lakego-admin/lakego/facade/validate"
 )
 
 // 创建验证

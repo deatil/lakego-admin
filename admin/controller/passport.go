@@ -3,16 +3,16 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/facade/auth"
-    "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/captcha"
-    "lakego-admin/lakego/facade/cache"
-    "lakego-admin/lakego/support/hash"
+    "github.com/deatil/lakego-admin/lakego/facade/auth"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/captcha"
+    "github.com/deatil/lakego-admin/lakego/facade/cache"
+    "github.com/deatil/lakego-admin/lakego/support/hash"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/support/jwt"
     "lakego-admin/admin/support/http/code"
-    authPassword "lakego-admin/lakego/auth/password"
+    authPassword "github.com/deatil/lakego-admin/lakego/auth/password"
     passportValidate "lakego-admin/admin/validate/passport"
 )
 

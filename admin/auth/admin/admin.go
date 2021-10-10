@@ -1,9 +1,9 @@
 package admin
 
 import (
-    "lakego-admin/lakego/collection"
-    "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/permission"
+    "github.com/deatil/lakego-admin/lakego/collection"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/permission"
 
     adminRepository "lakego-admin/admin/repository/admin"
     authruleRepository "lakego-admin/admin/repository/authrule"

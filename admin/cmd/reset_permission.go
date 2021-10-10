@@ -5,7 +5,7 @@ import (
 
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/facade/permission"
+    "github.com/deatil/lakego-admin/lakego/facade/permission"
 
     "lakego-admin/admin/model"
 )

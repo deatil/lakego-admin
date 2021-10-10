@@ -5,8 +5,8 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/support/time"
 
     "lakego-admin/admin/model"
 )

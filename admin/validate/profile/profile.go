@@ -1,7 +1,7 @@
 package passport
 
 import (
-    "lakego-admin/lakego/facade/validate"
+    "github.com/deatil/lakego-admin/lakego/facade/validate"
 )
 
 // 账号信息更新

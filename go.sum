@@ -101,12 +101,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/dchest/safefile v0.0.0-20151022103144-855e8d98f185 h1:3T8ZyTDp5QxTx3NU48JVb2u+75xc040fofcBaN+6jPA=
 github.com/dchest/safefile v0.0.0-20151022103144-855e8d98f185/go.mod h1:cFRxtTwTOJkz2x3rQUNCYKWC93yP1VKjR8NUhqFxZNU=
-github.com/deatil/go-filesystem v0.0.0-20211009154548-cde936a25623 h1:jTW2iif5Nq8rYgSLigOA0i8Tw6gEmiiV9VcWACx4ffc=
-github.com/deatil/go-filesystem v0.0.0-20211009154548-cde936a25623/go.mod h1:WtI8Of7zX1hzDqASyP9x9G6dFDnQ5aua4/z5X6vgqtM=
-github.com/deatil/go-filesystem v0.0.1 h1:LZW02A40jsxSR8YLdxK7ByP+6SlwoyQ/a6nVtDZOEBo=
-github.com/deatil/go-filesystem v0.0.1/go.mod h1:WtI8Of7zX1hzDqASyP9x9G6dFDnQ5aua4/z5X6vgqtM=
-github.com/deatil/go-filesystem v0.0.2 h1:c3bTvEorhZlQHCl8puCFpU5ZfHVr1c9mXLfDf0Dj+80=
-github.com/deatil/go-filesystem v0.0.2/go.mod h1:WtI8Of7zX1hzDqASyP9x9G6dFDnQ5aua4/z5X6vgqtM=
 github.com/deatil/go-filesystem v0.0.3 h1:wez1xNW6rC7xjYrSH0yBCqCRxaxwU+FXrAyPYV/857c=
 github.com/deatil/go-filesystem v0.0.3/go.mod h1:WtI8Of7zX1hzDqASyP9x9G6dFDnQ5aua4/z5X6vgqtM=
 github.com/denisenkom/go-mssqldb v0.0.0-20191124224453-732737034ffd/go.mod h1:xbL0rPBG9cCiLr28tMa8zpbdarY27NDyej4t/EjAShU=

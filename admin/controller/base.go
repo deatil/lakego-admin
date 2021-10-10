@@ -3,8 +3,8 @@ package controller
 import (
     "strings"
 
-    "lakego-admin/lakego/support/time"
-    "lakego-admin/lakego/http/controller"
+    "github.com/deatil/lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/http/controller"
 )
 
 /**

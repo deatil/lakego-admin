@@ -1,8 +1,8 @@
 package authrule
 
 import (
-    "lakego-admin/lakego/tree"
-    "lakego-admin/lakego/collection"
+    "github.com/deatil/lakego-admin/lakego/tree"
+    "github.com/deatil/lakego-admin/lakego/collection"
 
     "lakego-admin/admin/model"
 )

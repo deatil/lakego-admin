@@ -3,7 +3,7 @@ package admin
 import (
     "encoding/json"
 
-    "lakego-admin/lakego/collection"
+    "github.com/deatil/lakego-admin/lakego/collection"
 
     "lakego-admin/admin/model"
 )

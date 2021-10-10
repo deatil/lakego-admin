@@ -6,9 +6,9 @@ import (
 
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/storage"
+    "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/storage"
 )
 
 // 生成后台链接

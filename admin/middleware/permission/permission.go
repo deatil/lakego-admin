@@ -4,9 +4,9 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/http/response"
-    "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/permission"
+    "github.com/deatil/lakego-admin/lakego/http/response"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/permission"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/url"

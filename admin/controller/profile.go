@@ -3,8 +3,8 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/event"
-    authPassword "lakego-admin/lakego/auth/password"
+    "github.com/deatil/lakego-admin/lakego/event"
+    authPassword "github.com/deatil/lakego-admin/lakego/auth/password"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/auth/admin"

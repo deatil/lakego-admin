@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-    providerInterface "lakego-admin/lakego/provider/interfaces"
+    providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
     adminProvider "lakego-admin/admin/provider/admin"
 )
 

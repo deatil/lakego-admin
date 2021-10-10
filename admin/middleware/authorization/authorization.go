@@ -5,9 +5,9 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/http/response"
-    "lakego-admin/lakego/facade/auth"
-    "lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/http/response"
+    "github.com/deatil/lakego-admin/lakego/facade/auth"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/url"

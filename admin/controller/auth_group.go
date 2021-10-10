@@ -4,11 +4,11 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/tree"
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/collection"
-    "lakego-admin/lakego/support/cast"
-    "lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/tree"
+    "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/collection"
+    "github.com/deatil/lakego-admin/lakego/support/cast"
+    "github.com/deatil/lakego-admin/lakego/support/time"
 
     "lakego-admin/admin/model"
     authGroupValidate "lakego-admin/admin/validate/authgroup"

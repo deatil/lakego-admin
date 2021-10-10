@@ -2,7 +2,7 @@ package model
 
 import (
     "gorm.io/gorm"
-    "lakego-admin/lakego/facade/database"
+    "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
 // 分组关联菜单权限

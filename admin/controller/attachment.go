@@ -4,12 +4,12 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/support/time"
-    "lakego-admin/lakego/support/cast"
-    "lakego-admin/lakego/support/random"
-    "lakego-admin/lakego/facade/storage"
-    "lakego-admin/lakego/facade/cache"
+    "github.com/deatil/lakego-admin/lakego/support/hash"
+    "github.com/deatil/lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/support/cast"
+    "github.com/deatil/lakego-admin/lakego/support/random"
+    "github.com/deatil/lakego-admin/lakego/facade/storage"
+    "github.com/deatil/lakego-admin/lakego/facade/cache"
 
     "lakego-admin/admin/model"
     "lakego-admin/admin/support/url"

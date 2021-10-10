@@ -7,9 +7,9 @@ import (
 
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/route"
-    "lakego-admin/lakego/support/time"
-    "lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/route"
+    "github.com/deatil/lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/model"
 )

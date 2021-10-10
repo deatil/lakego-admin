@@ -4,9 +4,9 @@ import (
     "os"
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/app"
-    "lakego-admin/lakego/provider"
-    _ "lakego-admin/lakego/facade/database"
+    "github.com/deatil/lakego-admin/lakego/app"
+    "github.com/deatil/lakego-admin/lakego/provider"
+    _ "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
 var rootCmd = &cobra.Command{

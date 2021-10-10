@@ -5,9 +5,9 @@ import (
     "strconv"
     "gorm.io/gorm"
 
-    "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/support/random"
-    "lakego-admin/lakego/facade/database"
+    "github.com/deatil/lakego-admin/lakego/support/hash"
+    "github.com/deatil/lakego-admin/lakego/support/random"
+    "github.com/deatil/lakego-admin/lakego/facade/database"
 
     "lakego-admin/admin/support/url"
 )

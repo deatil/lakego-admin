@@ -4,8 +4,8 @@ import (
     "strings"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/support/cast"
-    "lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/support/cast"
+    "github.com/deatil/lakego-admin/lakego/support/time"
 
     "lakego-admin/admin/model"
 )

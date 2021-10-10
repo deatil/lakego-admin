@@ -3,8 +3,8 @@ package jwt
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/support/hash"
+    "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/support/hash"
 )
 
 // 获取接收方

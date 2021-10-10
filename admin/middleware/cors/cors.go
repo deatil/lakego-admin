@@ -4,7 +4,7 @@ import (
     "net/http"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
 )
 
 /**

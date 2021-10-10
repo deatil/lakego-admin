@@ -5,10 +5,10 @@ import (
 
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/support/hash"
-    "lakego-admin/lakego/support/time"
-    "lakego-admin/lakego/facade/auth"
-    "lakego-admin/lakego/facade/cache"
+    "github.com/deatil/lakego-admin/lakego/support/hash"
+    "github.com/deatil/lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/facade/auth"
+    "github.com/deatil/lakego-admin/lakego/facade/cache"
 
     "lakego-admin/admin/model"
 )

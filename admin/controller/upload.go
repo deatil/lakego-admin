@@ -4,11 +4,11 @@ import (
     "strconv"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/helper"
-    "lakego-admin/lakego/facade/config"
-    "lakego-admin/lakego/facade/upload"
-    "lakego-admin/lakego/facade/storage"
-    "lakego-admin/lakego/support/time"
+    "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/upload"
+    "github.com/deatil/lakego-admin/lakego/facade/storage"
+    "github.com/deatil/lakego-admin/lakego/support/time"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/model"

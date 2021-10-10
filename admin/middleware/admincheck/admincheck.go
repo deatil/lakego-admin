@@ -3,7 +3,7 @@ package admincheck
 import (
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/http/response"
+    "github.com/deatil/lakego-admin/lakego/http/response"
 
     "lakego-admin/admin/auth/admin"
     "lakego-admin/admin/support/http/code"

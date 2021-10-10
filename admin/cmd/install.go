@@ -7,8 +7,8 @@ import (
 
     "github.com/spf13/cobra"
 
-    "lakego-admin/lakego/support/path"
-    "lakego-admin/lakego/support/file"
+    "github.com/deatil/lakego-admin/lakego/support/path"
+    "github.com/deatil/lakego-admin/lakego/support/file"
 
     "lakego-admin/admin/model"
 )

@@ -7,9 +7,9 @@ import (
     "runtime/debug"
     "github.com/gin-gonic/gin"
 
-    "lakego-admin/lakego/logger"
-    "lakego-admin/lakego/http/response"
-    "lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/logger"
+    "github.com/deatil/lakego-admin/lakego/http/response"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
 
     "lakego-admin/admin/support/http/code"
 )
