@@ -66,7 +66,12 @@ var middlewareGroups = map[string]interface{}{
     },
 }
 
-// 服务提供者
+/**
+ * 服务提供者
+ *
+ * @create 2021-9-11
+ * @author deatil
+ */
 type ServiceProvider struct {
     provider.ServiceProvider
 }

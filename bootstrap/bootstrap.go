@@ -3,8 +3,9 @@ package bootstrap
 import (
     "github.com/deatil/lakego-admin/lakego/app"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
-    
     adminProvider "github.com/deatil/lakego-admin/admin/provider/admin"
+
+    userProvider "app/user/provider/user"
 )
 
 // 服务提供者，设置其他 app 相关服务提供者
@@ -12,6 +13,11 @@ var providers = []func() providerInterface.ServiceProvider{
     // admin 后台
     func() providerInterface.ServiceProvider {
         return &adminProvider.ServiceProvider{}
+    },
+
+    // 用户后台
+    func() providerInterface.ServiceProvider {
+        return &userProvider.ServiceProvider{}
     },
 }
 

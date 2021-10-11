@@ -210,6 +210,9 @@ func (app *App) runApp() {
     // 事件
     r.Use(event.Handler())
 
+    // 缓存路由信息
+    route.New().With(r)
+
     // 绑定路由
     app.RouteEngine = r
 
@@ -218,9 +221,6 @@ func (app *App) runApp() {
 
     // 设置已启动
     app.Runned = true
-
-    // 缓存路由信息
-    route.New().With(r)
 
     // 设置路由
     app.Route = r
