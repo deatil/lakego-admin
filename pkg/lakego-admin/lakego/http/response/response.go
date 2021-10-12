@@ -49,7 +49,6 @@ func ReturnJson(
     msg string,
     data interface{},
 ) {
-    // ctx.Header("key", "value")
     ctx.JSON(httpCode, gin.H{
         "code":    dataCode,
         "message": msg,

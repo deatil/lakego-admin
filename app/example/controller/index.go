@@ -17,8 +17,8 @@ type Index struct {
 }
 
 /**
- * 系统信息
+ * 信息
  */
 func (control *Index) Index(ctx *gin.Context) {
-    control.Success(ctx, "用户信息获取成功")
+    control.Success(ctx, "例子信息获取成功")
 }

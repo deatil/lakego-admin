@@ -1,4 +1,4 @@
-module github.com/deatil/lakego-admin
+module app
 
 go 1.16
 

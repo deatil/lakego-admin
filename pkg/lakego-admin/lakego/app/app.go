@@ -50,9 +50,6 @@ type App struct {
 
     // 启动后
     BootedCallbacks []func()
-
-    // 初始化后路由
-    Route *gin.Engine
 }
 
 // 运行
@@ -216,19 +213,16 @@ func (app *App) runApp() {
     // 绑定路由
     app.RouteEngine = r
 
-    // 加载服务提供者
-    app.loadServiceProvider()
-
     // 设置已启动
     app.Runned = true
 
-    // 设置路由
-    app.Route = r
+    // 加载服务提供者
+    app.loadServiceProvider()
 
     // 不是命令行运行
     if !app.RunInConsole {
         // 运行端口
         httpPort := config.New("server").GetString("Port")
-        app.Route.Run(httpPort)
+        app.RouteEngine.Run(httpPort)
     }
 }

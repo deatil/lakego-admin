@@ -54,7 +54,7 @@ git clone git@github.com:deatil/lakego-admin.git
 go run main.go lakego-admin:install
 ```
 
-4. 权限规则导入，并且你需要自己修改导入的规则层级
+4. 权限规则导入，导入的权限规则需要重新设置层级关系和名称内容
 
 ```go
 go run main.go lakego-admin:import-route
