@@ -75,9 +75,11 @@ func (app *App) Register(f func() providerInterface.ServiceProvider) {
         // 路由
         p.WithRoute(app.RouteEngine)
 
+        // 注册
         p.Register()
 
-        p.Boot()
+        // 引导
+        app.BootService(p)
     }
 }
 
