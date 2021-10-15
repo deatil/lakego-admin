@@ -113,9 +113,6 @@ func (s *ServiceProvider) loadRoute() {
         // 中间件
         s.loadMiddleware()
 
-        // 分组
-        s.loadGroup()
-
         conf := config.New("admin")
 
         prefix := "/" + conf.GetString("Route.Prefix") + "/*"
@@ -168,17 +165,12 @@ func (s *ServiceProvider) loadRoute() {
 func (s *ServiceProvider) loadMiddleware() {
     m := route.GetMiddlewareInstance()
 
+    // 导入中间件
     for name, value := range routeMiddlewares {
         m.WithMiddleware(name, value)
     }
-}
 
-/**
- * 导入中间件分组
- */
-func (s *ServiceProvider) loadGroup() {
-    m := route.GetMiddlewareInstance()
-
+    // 导入中间件分组
     for name, value := range middlewareGroups {
         for _, group := range value.([]string) {
             m.WithGroup(name, group)
