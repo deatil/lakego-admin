@@ -25,10 +25,14 @@ func init() {
  * @create 2021-9-25
  * @author deatil
  */
-func New(name string) *config.Config {
+func New(name ...string) *config.Config {
     adapter := GetDefaultAdapter()
+    
+    if len(name) > 0 {
+        return Config(adapter).WithFile(name[0])
+    }
 
-    return Config(adapter).WithFile(name)
+    return Config(adapter)
 }
 
 // 实例化
