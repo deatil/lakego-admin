@@ -2,12 +2,14 @@ package app
 
 import (
     "sync"
+
     "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/route"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/router"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 )
 
@@ -208,6 +210,12 @@ func (app *App) runApp() {
 
     // 事件
     r.Use(event.Handler())
+
+    // 全局中间件
+    globalMiddlewares := router.GetGlobalMiddlewares()
+
+    // 设置全局中间件
+    r.Use(globalMiddlewares...)
 
     // 缓存路由信息
     route.New().With(r)

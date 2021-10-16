@@ -1,17 +1,18 @@
-package app
+package kernel
 
 import (
     "os"
     "github.com/spf13/cobra"
 
+    "github.com/deatil/lakego-admin/lakego/app"
     "github.com/deatil/lakego-admin/lakego/provider"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
     _ "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
 // 实例化
-func NewBootstrap() *Bootstrap {
-    b := &Bootstrap{}
+func New() *Kernel {
+    b := &Kernel{}
 
     return b
 }
@@ -33,35 +34,35 @@ var rootCmd = &cobra.Command{
 }
 
 /**
- * 系统引导
+ * 核心
  *
  * @create 2021-10-10
  * @author deatil
  */
-type Bootstrap struct {
+type Kernel struct {
     // 注册的服务提供者
     providers []func() providerInterface.ServiceProvider
 }
 
 // 执行
-func (b *Bootstrap) Execute() {
+func (kernel *Kernel) Terminate() {
     args := os.Args
 
     if len(args) > 1 {
-        b.RunCmd()
+        kernel.RunCmd()
     } else {
-        b.RunServer()
+        kernel.RunServer()
     }
 }
 
 // 运行服务
-func (b *Bootstrap) RunServer() {
-    b.RunApp(false)
+func (kernel *Kernel) RunServer() {
+    kernel.RunApp(false)
 }
 
 // 加载脚本
-func (b *Bootstrap) RunCmd() {
-    b.RunApp(true)
+func (kernel *Kernel) RunCmd() {
+    kernel.RunApp(true)
 
     if err := rootCmd.Execute(); err != nil {
         os.Exit(-1)
@@ -69,29 +70,29 @@ func (b *Bootstrap) RunCmd() {
 }
 
 // 添加服务提供者
-func (b *Bootstrap) WithServiceProvider(f func() providerInterface.ServiceProvider) *Bootstrap {
-    b.providers = append(b.providers, f)
+func (kernel *Kernel) WithServiceProvider(f func() providerInterface.ServiceProvider) *Kernel {
+    kernel.providers = append(kernel.providers, f)
 
-    return b
+    return kernel
 }
 
 // 批量添加服务提供者
-func (b *Bootstrap) WithServiceProviders(funcs []func() providerInterface.ServiceProvider) *Bootstrap {
+func (kernel *Kernel) WithServiceProviders(funcs []func() providerInterface.ServiceProvider) *Kernel {
     if len(funcs) > 0 {
         for _, f := range funcs {
-            b.WithServiceProvider(f)
+            kernel.WithServiceProvider(f)
         }
     }
 
-    return b
+    return kernel
 }
 
 // 运行
-func (b *Bootstrap) RunApp(console bool) {
-    newApp := New()
+func (kernel *Kernel) RunApp(console bool) {
+    newApp := app.New()
 
     // 导入服务提供者
-    b.loadServiceProvider()
+    kernel.loadServiceProvider()
 
     // 注册
     allProviders := provider.GetAllProvider()
@@ -111,9 +112,9 @@ func (b *Bootstrap) RunApp(console bool) {
 }
 
 // 导入服务提供者
-func (b *Bootstrap) loadServiceProvider() {
-    if len(b.providers) > 0 {
-        for _, p := range b.providers {
+func (kernel *Kernel) loadServiceProvider() {
+    if len(kernel.providers) > 0 {
+        for _, p := range kernel.providers {
             provider.AppendProvider(p)
         }
     }

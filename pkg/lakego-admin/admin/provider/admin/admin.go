@@ -5,8 +5,8 @@ import (
 
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/http/response"
-    "github.com/deatil/lakego-admin/lakego/http/route"
     "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/facade/router"
 
     "github.com/deatil/lakego-admin/admin/support/url"
     "github.com/deatil/lakego-admin/admin/support/http/code"
@@ -135,10 +135,10 @@ func (s *ServiceProvider) loadRoute() {
         engine.Use(middlewares...)
 
         // 后台路由及设置中间件
-        groupMiddlewares := route.GetMiddlewares(conf.GetString("Route.Middleware"))
+        groupMiddlewares := router.GetMiddlewares(conf.GetString("Route.Middleware"))
 
         // 管理员路由
-        adminGroupMiddlewares := route.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
+        adminGroupMiddlewares := router.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
 
         // 路由
         admin := engine.Group(conf.GetString("Route.Prefix"))
@@ -163,17 +163,17 @@ func (s *ServiceProvider) loadRoute() {
  * 导入中间件
  */
 func (s *ServiceProvider) loadMiddleware() {
-    m := route.GetMiddlewareInstance()
+    m := router.New()
 
     // 导入中间件
     for name, value := range routeMiddlewares {
-        m.WithMiddleware(name, value)
+        m.AliasMiddleware(name, value)
     }
 
     // 导入中间件分组
     for name, value := range middlewareGroups {
         for _, group := range value.([]string) {
-            m.WithGroup(name, group)
+            m.MiddlewareGroup(name, group)
         }
     }
 }

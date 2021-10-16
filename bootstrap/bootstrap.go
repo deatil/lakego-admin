@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-    "github.com/deatil/lakego-admin/lakego/app"
+    "github.com/deatil/lakego-admin/lakego/kernel"
 
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 )
@@ -19,9 +19,9 @@ func AddProvider(f func() interface{}) {
 
 // 执行
 func Execute() {
-    app.NewBootstrap().
+    kernel.New().
         WithServiceProviders(providers).
-        Execute()
+        Terminate()
 }
 
 
