@@ -15,8 +15,8 @@ import (
 // 附件
 type Attachment struct {
     ID              string      `gorm:"column:id;size:32;not null;index;" json:"id"`
-    OwnerType       string      `gorm:"column:owner_type;size:50;not null;" json:"type"`
-    OwnerID         string      `gorm:"column:owner_id;size:32;" json:"type_id"`
+    OwnerType       string      `gorm:"column:owner_type;size:50;not null;" json:"owner_type"`
+    OwnerID         string      `gorm:"column:owner_id;size:32;" json:"owner_id"`
     Name            string      `gorm:"column:name;size:50;" json:"name"`
     Path            string      `gorm:"column:path;size:255;" json:"path"`
     Mime            string      `gorm:"column:mime;size:100;" json:"mime"`

@@ -24,6 +24,7 @@ func New(config Config, redis redis.Redis) Captcha {
             B: config.RBGA.B,
             A: config.RBGA.A,
         },
+        nil,
         []string{
             config.Fonts,
         },
@@ -85,9 +86,11 @@ func (a CaptchaStore) getKey(v string) string {
     return a.key + ":" + v
 }
 
-func (a CaptchaStore) Set(id string, value string) {
+func (a CaptchaStore) Set(id string, value string) error {
     t := time.Second * time.Duration(a.config.ExpireTimes)
     a.redis.Set(a.getKey(id), value, int(t))
+
+    return nil
 }
 
 func (a CaptchaStore) Get(id string, clear bool) string {

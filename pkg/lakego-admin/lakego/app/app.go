@@ -252,7 +252,7 @@ func (app *App) ServerRun() {
     conf := config.New("server")
 
     // 运行方式
-    runType := conf.GetString("RunType")
+    runType := conf.GetString("Default")
     switch runType {
         case "Http":
             // 运行端口
@@ -289,14 +289,18 @@ func (app *App) ServerRun() {
             app.RouteEngine.RunFd(fd)
 
         case "NetListener":
-            // 监听
-            listen := conf.GetBool("Types.NetListener.Listen")
-
-            if listen && app.NetListener != nil {
+            if app.NetListener != nil {
                 app.RouteEngine.RunListener(app.NetListener)
             } else {
-                panic("NetListener 服务启动错误")
+                // 监听
+                typ := conf.GetString("Types.NetListener.Type")
+                port := conf.GetString("Types.NetListener.Port")
+
+                netListener, _ := net.Listen(typ, port)
+
+                app.RouteEngine.RunListener(netListener)
             }
+
         default:
             panic("服务启动错误")
     }

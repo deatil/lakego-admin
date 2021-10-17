@@ -25,12 +25,12 @@ Jwt:
   SigningMethod: "HS256"
   # 密码，base64 编码后，适用类型 HS
   Secret: "MTIzNDU2"
-  # 公钥和私钥签名适用类型 ES, RS, PS, EdDSA
+  # 公钥和私钥，适用类型 ES, RS, PS, EdDSA
   PrivateKey: "{root}/config/key/rsa/private_key.pem"
   PublicKey: "{root}/config/key/rsa/public_key.pem"
   # 私钥密码，base64 编码后，适用类型 RS
   PrivateKeyPassword: "MTIzNDU2"
-  # 载荷加密秘钥，为空或者 base64 后错误不加密，base64编码后
+  # 载荷加密秘钥，为空或者 base64 后解码错误不加密，base64编码后
   Passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
 
 # 权限

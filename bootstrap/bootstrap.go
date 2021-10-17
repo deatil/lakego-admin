@@ -21,7 +21,6 @@ func AddProvider(f func() interface{}) {
 func Execute() {
     kernel.New().
         WithServiceProviders(providers).
-        // WithNetListener(listener net.Listener)
         Terminate()
 }
 
