@@ -10,7 +10,7 @@ var once sync.Once
 /**
  * 单例模式
  */
-func GetInstance() *Middleware {
+func NewWithInstance() *Middleware {
     once.Do(func() {
         instance = New()
     })
@@ -22,7 +22,7 @@ func GetInstance() *Middleware {
  * New
  */
 func New() *Middleware {
-    global := "lakego::group"
+    global := "lakego::router-group"
 
     alias := NewAlias()
     middlewares := NewMiddlewares()
@@ -177,7 +177,7 @@ func (m *Middleware) GetMiddlewareList(name string) (middleware []interface{}) {
                         middleware = append(middleware, data...)
                     }
                 default:
-                    middleware = append(middleware, nameGroup.([]interface{}))
+                    middleware = append(middleware, nameGroup)
             }
         }
     }

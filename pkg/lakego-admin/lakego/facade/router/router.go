@@ -10,7 +10,7 @@ import (
  * 获取中间件单列
  */
 func New() *router.Middleware {
-    return router.GetInstance()
+    return router.NewWithInstance()
 }
 
 /**
@@ -23,7 +23,10 @@ func GetMiddlewares(name string) (handlerFuncs []gin.HandlerFunc) {
 
     if middlewares != nil && len(middlewares) > 0 {
         for _, middlewareItem := range middlewares {
-            handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+            switch middlewareItem.(type) {
+                case gin.HandlerFunc:
+                    handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+            }
         }
     }
 
@@ -40,7 +43,10 @@ func GetGlobalMiddlewares() (handlerFuncs []gin.HandlerFunc) {
 
     if middlewares != nil && len(middlewares) > 0 {
         for _, middlewareItem := range middlewares {
-            handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+            switch middlewareItem.(type) {
+                case gin.HandlerFunc:
+                    handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+            }
         }
     }
 

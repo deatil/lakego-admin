@@ -6,6 +6,7 @@ import (
     "reflect"
     "strconv"
     "strings"
+    "runtime"
     "math/rand"
 
     "github.com/gin-gonic/gin"
@@ -144,3 +145,13 @@ func StructToMap(obj interface{}) map[string]interface{}{
     return data
 }
 
+// 反射获取名称
+func GetNameFromReflect(f interface{}) string {
+    t := reflect.ValueOf(f).Type()
+
+    if t.Kind() == reflect.Func {
+        return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
+    }
+
+    return t.String()
+}

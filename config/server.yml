@@ -1,2 +1,26 @@
-Port: ":8080"   
 Url: "127.0.0.1:8080"
+
+# 运行方式
+RunType: "Http"
+Types:
+  # tcp请求
+  Http:
+    Port: ":8080"
+
+  # https
+  TLS:
+    Port: ":8080"
+    CertFile: ""
+    KeyFile: ""
+
+  # Unix
+  Unix:
+    File: ""
+
+  # Fd
+  Fd:
+    Fd: 1
+
+  # 自定义监听，使用该选项需要自定义配置监听数据
+  NetListener:
+    Listen: true

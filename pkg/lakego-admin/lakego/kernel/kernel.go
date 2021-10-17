@@ -2,6 +2,7 @@ package kernel
 
 import (
     "os"
+    "net"
     "github.com/spf13/cobra"
 
     "github.com/deatil/lakego-admin/lakego/app"
@@ -12,9 +13,9 @@ import (
 
 // 实例化
 func New() *Kernel {
-    b := &Kernel{}
+    kernel := &Kernel{}
 
-    return b
+    return kernel
 }
 
 // 脚本
@@ -42,6 +43,9 @@ var rootCmd = &cobra.Command{
 type Kernel struct {
     // 注册的服务提供者
     providers []func() providerInterface.ServiceProvider
+
+    // 自定义运行监听
+    NetListener net.Listener
 }
 
 // 执行
@@ -87,6 +91,13 @@ func (kernel *Kernel) WithServiceProviders(funcs []func() providerInterface.Serv
     return kernel
 }
 
+// 设置自定义监听
+func (kernel *Kernel) WithNetListener(listener net.Listener) *Kernel {
+    kernel.NetListener = listener
+
+    return kernel
+}
+
 // 运行
 func (kernel *Kernel) RunApp(console bool) {
     newApp := app.New()
@@ -105,6 +116,11 @@ func (kernel *Kernel) RunApp(console bool) {
         newApp.WithRunningInConsole(true)
     } else {
         newApp.WithRunningInConsole(false)
+    }
+
+    // 设置自定义监听
+    if kernel.NetListener != nil {
+        newApp.WithNetListener(kernel.NetListener)
     }
 
     // 运行

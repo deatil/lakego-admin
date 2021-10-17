@@ -11,4 +11,3 @@ func Assert(condition bool, message string) {
         panic("Error#" + message)
     }
 }
-

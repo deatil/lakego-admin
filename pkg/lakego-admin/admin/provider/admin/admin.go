@@ -51,9 +51,9 @@ var routeMiddlewares = map[string]gin.HandlerFunc{
 }
 
 // 中间件分组
-var middlewareGroups = map[string]interface{}{
+var middlewareGroups = map[string][]string{
     // 常规中间件
-    "lakego-admin": []string{
+    "lakego-admin": {
         "lakego.exception",
         "lakego.cors",
         "lakego.auth",
@@ -61,7 +61,7 @@ var middlewareGroups = map[string]interface{}{
         "lakego.action-log",
     },
     // 超级管理员检测
-    "lakego-admin-check": []string{
+    "lakego-admin-check": {
         "lakego.admin-check",
     },
 }
@@ -171,9 +171,9 @@ func (s *ServiceProvider) loadMiddleware() {
     }
 
     // 导入中间件分组
-    for name, value := range middlewareGroups {
-        for _, group := range value.([]string) {
-            m.MiddlewareGroup(name, group)
+    for groupName, middlewares := range middlewareGroups {
+        for _, middleware := range middlewares {
+            m.MiddlewareGroup(groupName, middleware)
         }
     }
 }

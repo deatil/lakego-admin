@@ -1,12 +1,14 @@
 package app
 
 import (
+    "net"
     "sync"
 
     "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/route"
+    "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/router"
@@ -52,6 +54,9 @@ type App struct {
 
     // 启动后
     BootedCallbacks []func()
+
+    // 自定义运行监听
+    NetListener net.Listener
 }
 
 // 运行
@@ -179,6 +184,13 @@ func (app *App) RunningInConsole() bool {
     return app.RunInConsole
 }
 
+// 设置自定义监听
+func (app *App) WithNetListener(listener net.Listener) *App {
+    app.NetListener = listener
+
+    return app
+}
+
 // 初始化路由
 func (app *App) runApp() {
     var r *gin.Engine
@@ -231,8 +243,68 @@ func (app *App) runApp() {
 
     // 不是命令行运行
     if !app.RunInConsole {
-        // 运行端口
-        httpPort := config.New("server").GetString("Port")
-        app.RouteEngine.Run(httpPort)
+        app.ServerRun()
     }
+}
+
+// 服务运行
+func (app *App) ServerRun() {
+    conf := config.New("server")
+
+    // 运行方式
+    runType := conf.GetString("RunType")
+    switch runType {
+        case "Http":
+            // 运行端口
+            httpPort := conf.GetString("Types.Http.Port")
+
+            app.RouteEngine.Run(httpPort)
+
+        case "TLS":
+            // 运行端口
+            httpPort := conf.GetString("Types.TLS.Port")
+
+            certFile := conf.GetString("Types.TLS.CertFile")
+            keyFile := conf.GetString("Types.TLS.KeyFile")
+
+            // 格式化
+            certFile = app.FormatPath(certFile)
+            keyFile = app.FormatPath(keyFile)
+
+            app.RouteEngine.RunTLS(httpPort, certFile, keyFile)
+
+        case "Unix":
+            // 文件
+            file := conf.GetString("Types.Unix.File")
+
+            // 格式化
+            file = app.FormatPath(file)
+
+            app.RouteEngine.RunUnix(file)
+
+        case "Fd":
+            // fd
+            fd := conf.GetInt("Types.Fd.Fd")
+
+            app.RouteEngine.RunFd(fd)
+
+        case "NetListener":
+            // 监听
+            listen := conf.GetBool("Types.NetListener.Listen")
+
+            if listen && app.NetListener != nil {
+                app.RouteEngine.RunListener(app.NetListener)
+            } else {
+                panic("NetListener 服务启动错误")
+            }
+        default:
+            panic("服务启动错误")
+    }
+}
+
+// 格式化文件路径
+func (app *App) FormatPath(file string) string {
+    filename := path.FormatPath(file)
+
+    return filename
 }
