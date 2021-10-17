@@ -1,5 +1,6 @@
 # 验证码
 Key: "captcha"
+
 # 过期时间
 ExpireTimes: 3600
 Height: 46

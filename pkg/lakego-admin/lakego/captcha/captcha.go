@@ -11,6 +11,15 @@ import (
 
 // id, b64s, err := New.Generate()
 func New(config Config, redis redis.Redis) Captcha {
+    /*
+    //go:embed fonts/*.ttf
+    //go:embed fonts/*.ttc
+    var embeddedFontsFS embed.FS
+
+    // 验证码字体驱动,
+    var fontsStorage *base64Captcha.EmbeddedFontsStorage = base64Captcha.NewEmbeddedFontsStorage(embeddedFontsFS)
+    */
+
     ds := base64Captcha.NewDriverString(
         config.Height,
         config.Width,
@@ -24,6 +33,7 @@ func New(config Config, redis redis.Redis) Captcha {
             B: config.RBGA.B,
             A: config.RBGA.A,
         },
+        // 自定义字体目录，参考 fontsStorage 相关注释
         nil,
         []string{
             config.Fonts,
