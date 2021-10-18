@@ -1,16 +1,15 @@
 package captcha
 
 import (
-    "time"
     "image/color"
 
     "github.com/mojocn/base64Captcha"
 
-    "github.com/deatil/lakego-admin/lakego/redis"
+    "github.com/deatil/lakego-admin/lakego/captcha/interfaces"
 )
 
 // id, b64s, err := New.Generate()
-func New(config Config, redis redis.Redis) Captcha {
+func New(config Config, store interfaces.Store) Captcha {
     /*
     //go:embed fonts/*.ttf
     //go:embed fonts/*.ttc
@@ -41,11 +40,6 @@ func New(config Config, redis redis.Redis) Captcha {
     )
 
     driver := ds.ConvertFonts()
-    store := CaptchaStore{
-        redis:  &redis,
-        key:    config.Key,
-        config:	config,
-    }
 
     return Captcha{
         Captcha: base64Captcha.NewCaptcha(driver, store),
@@ -62,9 +56,6 @@ type RBGA struct {
 
 // 配置
 type Config struct {
-    Key string
-    ExpireTimes int
-
     Height int
     Width int
     NoiseCount int
@@ -86,42 +77,8 @@ type Captcha struct {
     *base64Captcha.Captcha
 }
 
-type CaptchaStore struct {
-    key    string
-    redis  *redis.Redis
-    config Config
+// 生成验证码
+func (captcha *Captcha) Make() (string, string, error) {
+    return captcha.Generate()
 }
 
-func (a CaptchaStore) getKey(v string) string {
-    return a.key + ":" + v
-}
-
-func (a CaptchaStore) Set(id string, value string) error {
-    t := time.Second * time.Duration(a.config.ExpireTimes)
-    a.redis.Set(a.getKey(id), value, int(t))
-
-    return nil
-}
-
-func (a CaptchaStore) Get(id string, clear bool) string {
-    var (
-        key = a.getKey(id)
-        val string
-    )
-
-    err := a.redis.Get(key, &val)
-    if err != nil {
-        return ""
-    }
-
-    if !clear {
-        a.redis.Delete(key)
-    }
-
-    return val
-}
-
-func (a CaptchaStore) Verify(id, answer string, clear bool) bool {
-    v := a.Get(id, clear)
-    return v == answer
-}

@@ -25,7 +25,7 @@ type Passport struct {
  */
 func (control *Passport) Captcha(ctx *gin.Context) {
     c := captcha.New()
-    id, b64s, err := c.Generate()
+    id, b64s, err := c.Make()
     if err != nil {
         control.Error(ctx, "error", code.StatusError)
     }
