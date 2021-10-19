@@ -60,7 +60,7 @@ func (control *Passport) Login(ctx *gin.Context) {
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
     captchaId := ctx.GetHeader(key)
 
-    ok := captcha.New().Verify(captchaId, captchaCode, false)
+    ok := captcha.New().Verify(captchaId, captchaCode, true)
     if !ok {
         control.Error(ctx, "验证码错误", code.LoginError)
         return

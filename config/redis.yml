@@ -1,4 +1,4 @@
 Host: "127.0.0.1:6379"
 Password: "admin123"
-DB: 0
+DB: 1
 KeyPrefix: "lakego"

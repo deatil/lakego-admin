@@ -2,6 +2,9 @@ package captcha
 
 import (
     "sync"
+    "image/color"
+
+    "github.com/mojocn/base64Captcha"
 
     "github.com/deatil/lakego-admin/lakego/register"
     "github.com/deatil/lakego-admin/lakego/facade/config"
@@ -25,20 +28,27 @@ func init() {
  * @author deatil
  */
 func New(once ...bool) captcha.Captcha {
+    // 默认驱动
+    driver := GetDefaultDriver()
+
+    // 默认存储
     store := GetDefaultStore()
 
-    return Captcha(store, once...)
+    return Captcha(driver, store, once...)
 }
 
 // 验证码
-func Captcha(name string, once ...bool) captcha.Captcha {
+func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha {
+    // 验证码配置
+    conf := config.New("captcha")
+
     // 存储列表
-    stores := config.New("captcha").GetStringMap("Stores")
+    stores := conf.GetStringMap("Stores")
 
     // 获取配置
-    storeConfig, ok := stores[name]
+    storeConfig, ok := stores[storeName]
     if !ok {
-        panic("验证码存储驱动 " + name + " 配置不存在")
+        panic("验证码存储驱动 " + storeName + " 配置不存在")
     }
 
     // 配置
@@ -52,49 +62,43 @@ func Captcha(name string, once ...bool) captcha.Captcha {
         panic("验证码存储驱动 " + storeType + " 没有被注册")
     }
 
-    // 验证码配置
-    conf := config.New("captcha")
+    // 驱动列表
+    drivers := conf.GetStringMap("Drivers")
 
-    height := conf.GetInt("Captcha.Height")
-    width := conf.GetInt("Captcha.Width")
-    noiseCount := conf.GetInt("Captcha.NoiseCount")
-    showLineOptions := conf.GetInt("Captcha.ShowLineOptions")
-    length := conf.GetInt("Captcha.Length")
-    source := conf.GetString("Captcha.Source")
-    fonts := conf.GetString("Captcha.Fonts")
+    // 获取配置
+    driverConfig, ok := drivers[driverName]
+    if !ok {
+        panic("验证码驱动 " + driverName + " 配置不存在")
+    }
 
-    rgbaR := conf.GetInt("Captcha.RGBA.R")
-    rgbaG := conf.GetInt("Captcha.RGBA.G")
-    rgbaB := conf.GetInt("Captcha.RGBA.B")
-    rgbaA := conf.GetInt("Captcha.RGBA.A")
+    // 驱动配置
+    driverConf := driverConfig.(map[string]interface{})
 
-    return captcha.New(captcha.Config{
-        Height: height,
-        Width: width,
-        NoiseCount: noiseCount,
-        ShowLineOptions: showLineOptions,
-        Length: length,
-        Source: source,
-        Fonts: fonts,
+    driverType := driverConf["type"].(string)
+    driver := register.
+        NewManagerWithPrefix("captcha-driver").
+        GetRegister(driverType, driverConf, once...)
+    if store == nil {
+        panic("验证码驱动 " + driverType + " 没有被注册")
+    }
 
-        RBGA: captcha.RBGA{
-            R: uint8(rgbaR),
-            G: uint8(rgbaG),
-            B: uint8(rgbaB),
-            A: uint8(rgbaA),
-        },
-    }, store.(interfaces.Store))
+    return captcha.New(driver.(interfaces.Driver), store.(interfaces.Store))
 }
 
-// 默认
+// 默认存储
 func GetDefaultStore() string {
     return config.New("captcha").GetString("DefaultStore")
+}
+
+// 默认驱动
+func GetDefaultDriver() string {
+    return config.New("captcha").GetString("DefaultDriver")
 }
 
 // 注册
 func Register() {
     once.Do(func() {
-        // 注册驱动
+        // 注册存储
         register.
             NewManagerWithPrefix("captcha-store").
             RegisterMany(map[string]func(map[string]interface{}) interface{} {
@@ -105,6 +109,136 @@ func Register() {
                     store.Init()
 
                     return store
+                },
+            })
+
+        // 注册驱动
+        register.
+            NewManagerWithPrefix("captcha-driver").
+            RegisterMany(map[string]func(map[string]interface{}) interface{} {
+                // 字符
+                "string": func(conf map[string]interface{}) interface{} {
+                    /*
+                    //go:embed fonts/*.ttf
+                    //go:embed fonts/*.ttc
+                    var embeddedFontsFS embed.FS
+
+                    // 验证码字体驱动,
+                    var fontsStorage *base64Captcha.EmbeddedFontsStorage = base64Captcha.NewEmbeddedFontsStorage(embeddedFontsFS)
+                    */
+
+                    bgColor := conf["bgcolor"].(map[string]interface{})
+
+                    fonts := conf["fonts"].([]interface{})
+                    newFonts := make([]string, 0)
+                    for _, font := range fonts {
+                        newFonts = append(newFonts, font.(string))
+                    }
+
+                    cd := base64Captcha.NewDriverString(
+                        conf["height"].(int),
+                        conf["width"].(int),
+                        conf["noisecount"].(int),
+                        conf["showlineoptions"].(int),
+                        conf["length"].(int),
+                        conf["source"].(string),
+                        &color.RGBA{
+                            R: uint8(bgColor["r"].(int)),
+                            G: uint8(bgColor["g"].(int)),
+                            B: uint8(bgColor["b"].(int)),
+                            A: uint8(bgColor["a"].(int)),
+                        },
+                        // 自定义字体目录，参考 fontsStorage 相关注释
+                        nil,
+                        newFonts,
+                    )
+
+                    driver := cd.ConvertFonts()
+
+                    return driver
+                },
+                // 中文
+                "chinese": func(conf map[string]interface{}) interface{} {
+                    bgColor := conf["bgcolor"].(map[string]interface{})
+
+                    fonts := conf["fonts"].([]interface{})
+                    newFonts := make([]string, 0)
+                    for _, font := range fonts {
+                        newFonts = append(newFonts, font.(string))
+                    }
+
+                    cd := base64Captcha.NewDriverChinese(
+                        conf["height"].(int),
+                        conf["width"].(int),
+                        conf["noisecount"].(int),
+                        conf["showlineoptions"].(int),
+                        conf["length"].(int),
+                        conf["source"].(string),
+                        &color.RGBA{
+                            R: uint8(bgColor["r"].(int)),
+                            G: uint8(bgColor["g"].(int)),
+                            B: uint8(bgColor["b"].(int)),
+                            A: uint8(bgColor["a"].(int)),
+                        },
+                        // 自定义字体目录
+                        nil,
+                        newFonts,
+                    )
+
+                    driver := cd.ConvertFonts()
+
+                    return driver
+                },
+                // 数学公式
+                "math": func(conf map[string]interface{}) interface{} {
+                    bgColor := conf["bgcolor"].(map[string]interface{})
+
+                    fonts := conf["fonts"].([]interface{})
+                    newFonts := make([]string, 0)
+                    for _, font := range fonts {
+                        newFonts = append(newFonts, font.(string))
+                    }
+
+                    cd := base64Captcha.NewDriverMath(
+                        conf["height"].(int),
+                        conf["width"].(int),
+                        conf["noisecount"].(int),
+                        conf["showlineoptions"].(int),
+                        &color.RGBA{
+                            R: uint8(bgColor["r"].(int)),
+                            G: uint8(bgColor["g"].(int)),
+                            B: uint8(bgColor["b"].(int)),
+                            A: uint8(bgColor["a"].(int)),
+                        },
+                        // 自定义字体目录
+                        nil,
+                        newFonts,
+                    )
+
+                    driver := cd.ConvertFonts()
+
+                    return driver
+                },
+                // 音频
+                "audio": func(conf map[string]interface{}) interface{} {
+                    driver := base64Captcha.NewDriverAudio(
+                        conf["length"].(int),
+                        conf["language"].(string),
+                    )
+
+                    return driver
+                },
+                // digit
+                "digit": func(conf map[string]interface{}) interface{} {
+                    driver := base64Captcha.NewDriverDigit(
+                        conf["height"].(int),
+                        conf["width"].(int),
+                        conf["length"].(int),
+                        conf["maxskew"].(float64),
+                        conf["dotcount"].(int),
+                    )
+
+                    return driver
                 },
             })
     })

@@ -1,5 +1,12 @@
-# 验证码配置
-Captcha:
+# 默认驱动
+DefaultDriver: "string"
+
+# 驱动列表
+Drivers:
+  # 字符
+  String:
+    # 类型
+    Type: "string"
     Height: 46
     Width: 140
     NoiseCount: 2
@@ -9,16 +16,67 @@ Captcha:
     # 随机数
     Source: "234567890abcdefghjkmnpqrstuvwxyz"
     # 字体
-    Fonts: "wqy-microhei.ttc"
+    Fonts: ["wqy-microhei.ttc"]
     # 颜色
-    RGBA:
+    BgColor:
       R: 240
       G: 240
       B: 246
       A: 246
 
+  # 中文
+  Chinese:
+    # 类型
+    Type: "chinese"
+    Height: 60
+    Width: 320
+    ShowLineOptions: 0
+    NoiseCount: 0
+    Source: "设想,你在,处理,消费者,的音,频输,出音,频可,能无,论什,么都,没有,任何,输出,或者,它可,能是,单声道,立体声,或是,环绕立,体声的,,不想要,的值"
+    Length: 2
+    Fonts: ["RitaSmith.ttf"]
+    BgColor:
+      R: 125
+      G: 125
+      B: 0
+      A: 118
+
+  # 数学公式
+  Math:
+    # 类型
+    Type: "math"
+    Height: 60
+    Width: 240
+    ShowLineOptions: 0
+    NoiseCount: 0
+    Length: 6
+    Fonts: ["wqy-microhei.ttc"]
+    BgColor:
+      R: 240
+      G: 240
+      B: 246
+      A: 246
+
+  # 音频
+  Audio:
+    # 类型
+    Type: "audio"
+    Length: 6
+    Language: 'zh'
+
+  # Digit 驱动
+  Digit:
+    # 类型
+    Type: "digit"
+    Height: 80
+    Width: 240
+    Length: 4
+    MaxSkew: 0.7
+    DotCount: 80
+
 # 默认存储
 DefaultStore: "redis"
+
 # 存储列表
 Stores:
   # redis 存储配置
