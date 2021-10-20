@@ -6,7 +6,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/captcha/interfaces"
 )
 
-//
+// 验证码
 func New(driver interfaces.Driver, store interfaces.Store) Captcha {
     return Captcha{
         Captcha: base64Captcha.NewCaptcha(driver, store),
@@ -16,7 +16,7 @@ func New(driver interfaces.Driver, store interfaces.Store) Captcha {
 /**
  * 验证码
  *
- * id, b64s, err := New.Make()
+ * id, b64s, err := New().Make()
  *
  * @create 2021-9-15
  * @author deatil

@@ -6,11 +6,15 @@ Default: "Http"
 Types:
   # tcp请求
   Http:
-    Port: ":8080"
+    # 运行地址
+    Addr: ":8080"
+    # 运行方式 gin | grace
+    Servertype: "grace"
 
   # https
   TLS:
-    Port: ":8080"
+    # 运行地址
+    Addr: ":8080"
     CertFile: "{root}/config/server/certFile.pem"
     KeyFile: "{root}/config/server/keyFile.pem"
 

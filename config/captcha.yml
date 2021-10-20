@@ -94,4 +94,20 @@ Stores:
     # 密码
     Password: "admin123"
 
+  # Syncmap 配置
+  Syncmap:
+    # 类型
+    Type: "syncmap"
+    # 存活时间
+    LiveTime: 10
+
+  # Memory 配置
+  Memory:
+    # 类型
+    Type: "memory"
+    # 数量
+    CollectNum: 10240
+    # 过期
+    Expiration: 10
+
 

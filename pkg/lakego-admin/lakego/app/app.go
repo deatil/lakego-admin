@@ -1,8 +1,14 @@
 package app
 
 import (
+    "os"
+    "os/signal"
     "net"
+    "log"
     "sync"
+    "time"
+    "context"
+    "net/http"
 
     "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
@@ -17,18 +23,19 @@ import (
 
 // App结构体
 func New() *App {
+    lock := new(sync.RWMutex)
+
+    serviceProviders := make([]func() providerInterface.ServiceProvider, 0)
+
+    usedServiceProviders := make([]providerInterface.ServiceProvider, 0)
+
     return &App{
+        Lock: lock,
+        ServiceProviders: serviceProviders,
+        UsedServiceProviders: usedServiceProviders,
         Runned: false,
     }
 }
-
-var serviceProviderLock = new(sync.RWMutex)
-
-// 注册的服务提供者
-var serviceProviders = []func() providerInterface.ServiceProvider{}
-
-// 已使用服务提供者
-var usedServiceProviders []providerInterface.ServiceProvider
 
 /**
  * App结构体
@@ -37,6 +44,15 @@ var usedServiceProviders []providerInterface.ServiceProvider
  * @author deatil
  */
 type App struct {
+    // 锁
+    Lock *sync.RWMutex
+
+    // 服务提供者
+    ServiceProviders []func() providerInterface.ServiceProvider
+
+    // 已使用服务提供者
+    UsedServiceProviders []providerInterface.ServiceProvider
+
     // 运行状态
     Runned bool
 
@@ -67,10 +83,10 @@ func (app *App) Run() {
 
 // 注册服务提供者
 func (app *App) Register(f func() providerInterface.ServiceProvider) {
-    serviceProviderLock.Lock()
-    defer serviceProviderLock.Unlock()
+    app.Lock.Lock()
+    defer app.Lock.Unlock()
 
-    serviceProviders = append(serviceProviders, f)
+    app.ServiceProviders = append(app.ServiceProviders, f)
 
     // 启动后注册，直接注册
     if app.Runned {
@@ -101,8 +117,8 @@ func (app *App) Registers(providers []func() providerInterface.ServiceProvider) 
 
 // 加载服务提供者
 func (app *App) loadServiceProvider() {
-    if len(serviceProviders) > 0 {
-        for _, provider := range serviceProviders {
+    if len(app.ServiceProviders) > 0 {
+        for _, provider := range app.ServiceProviders {
             p := provider()
 
             // 绑定 app 结构体
@@ -113,15 +129,15 @@ func (app *App) loadServiceProvider() {
 
             p.Register()
 
-            usedServiceProviders = append(usedServiceProviders, p)
+            app.UsedServiceProviders = append(app.UsedServiceProviders, p)
         }
     }
 
     // 启动前
     app.CallBootingCallbacks()
 
-    if len(usedServiceProviders) > 0 {
-        for _, sp := range usedServiceProviders {
+    if len(app.UsedServiceProviders) > 0 {
+        for _, sp := range app.UsedServiceProviders {
             app.BootService(sp)
         }
     }
@@ -255,14 +271,23 @@ func (app *App) ServerRun() {
     runType := conf.GetString("Default")
     switch runType {
         case "Http":
-            // 运行端口
-            httpPort := conf.GetString("Types.Http.Port")
+            // 运行方式
+            servertype := conf.GetString("Types.Http.Servertype")
 
-            app.RouteEngine.Run(httpPort)
+            // 运行端口
+            addr := conf.GetString("Types.Http.Addr")
+
+            if servertype == "grace" {
+                // 优雅地关机
+                app.GraceRun(addr)
+            } else {
+                // gin 自带运行
+                app.RouteEngine.Run(addr)
+            }
 
         case "TLS":
             // 运行端口
-            httpPort := conf.GetString("Types.TLS.Port")
+            addr := conf.GetString("Types.TLS.Addr")
 
             certFile := conf.GetString("Types.TLS.CertFile")
             keyFile := conf.GetString("Types.TLS.KeyFile")
@@ -271,7 +296,7 @@ func (app *App) ServerRun() {
             certFile = app.FormatPath(certFile)
             keyFile = app.FormatPath(keyFile)
 
-            app.RouteEngine.RunTLS(httpPort, certFile, keyFile)
+            app.RouteEngine.RunTLS(addr, certFile, keyFile)
 
         case "Unix":
             // 文件
@@ -304,6 +329,35 @@ func (app *App) ServerRun() {
         default:
             panic("服务启动错误")
     }
+}
+
+// 优雅地关机
+func (app *App) GraceRun(addr string) {
+    srv := &http.Server{
+        Addr:    addr,
+        Handler: app.RouteEngine,
+    }
+
+    go func() {
+        // 服务连接
+        if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatalf("listen: %s\n", err)
+        }
+    }()
+
+    // 等待中断信号以优雅地关闭服务器（设置 5 秒的超时时间）
+    quit := make(chan os.Signal)
+    signal.Notify(quit, os.Interrupt)
+    <-quit
+    log.Println("Shutdown Server ...")
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    if err := srv.Shutdown(ctx); err != nil {
+        log.Fatal("Server Shutdown:", err)
+    }
+
+    log.Println("Server exiting")
 }
 
 // 格式化文件路径

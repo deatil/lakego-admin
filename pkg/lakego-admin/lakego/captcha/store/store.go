@@ -17,3 +17,8 @@ func (s *Store) Set(id string, value string) error {
 func (s *Store) Get(id string, clear bool) string {
     panic("接口未定义")
 }
+
+// 验证
+func (s *Store) Verify(id string, answer string, clear bool) bool {
+    panic("接口未定义")
+}

@@ -2,6 +2,7 @@ package captcha
 
 import (
     "sync"
+    "time"
     "image/color"
 
     "github.com/mojocn/base64Captcha"
@@ -109,6 +110,22 @@ func Register() {
                     store.Init()
 
                     return store
+                },
+                // 验证码包该驱动有问题
+                "syncmap": func(conf map[string]interface{}) interface{} {
+                    liveTime := time.Minute * time.Duration(int64(conf["livetime"].(int)))
+
+                    syncmap := base64Captcha.NewStoreSyncMap(liveTime)
+
+                    return syncmap
+                },
+                "memory": func(conf map[string]interface{}) interface{} {
+                    collectNum := conf["collectnum"].(int)
+                    expiration := time.Minute * time.Duration(int64(conf["expiration"].(int)))
+
+                    memory := base64Captcha.NewMemoryStore(collectNum, expiration)
+
+                    return memory
                 },
             })
 
