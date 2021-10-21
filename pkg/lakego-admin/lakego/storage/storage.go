@@ -41,8 +41,8 @@ type Storage struct {
 }
 
 // 获取配置
-func (s *Storage) Url(url string) string {
-    conf := s.GetConfig()
+func (this *Storage) Url(url string) string {
+    conf := this.GetConfig()
 
     uri := conf.Get("url").(string)
 
@@ -50,19 +50,19 @@ func (s *Storage) Url(url string) string {
 }
 
 // 获取配置
-func (s *Storage) Path(path string) string {
-    adapter := s.GetAdapter()
+func (this *Storage) Path(path string) string {
+    adapter := this.GetAdapter()
 
     return adapter.ApplyPathPrefix(path)
 }
 
 // 保存数据流
-func (s *Storage) PutFileAs(path string, resource *os.File, name string, config ...map[string]interface{}) string {
+func (this *Storage) PutFileAs(path string, resource *os.File, name string, config ...map[string]interface{}) string {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := s.PutStream(path, resource, config...)
+    result := this.PutStream(path, resource, config...)
 
     if result {
         return path
@@ -72,12 +72,12 @@ func (s *Storage) PutFileAs(path string, resource *os.File, name string, config 
 }
 
 // 保存文本数据
-func (s *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) string {
+func (this *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) string {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := s.Put(path, contents, config...)
+    result := this.Put(path, contents, config...)
 
     if result {
         return path

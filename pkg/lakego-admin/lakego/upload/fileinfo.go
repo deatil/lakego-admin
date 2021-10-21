@@ -38,51 +38,51 @@ type Fileinfo struct {
 }
 
 // 设置文件流
-func (fileinfo *Fileinfo) WithFile(file *multipart.FileHeader) *Fileinfo {
-    fileinfo.fileHeader = file
+func (this *Fileinfo) WithFile(file *multipart.FileHeader) *Fileinfo {
+    this.fileHeader = file
 
     openfile, err := file.Open()
     if err != nil {
         panic("打开上传文件失败")
     }
 
-    fileinfo.file = openfile
+    this.file = openfile
 
-    return fileinfo
+    return this
 }
 
 // 关闭文件流
-func (fileinfo *Fileinfo) CloseFile() {
-    defer fileinfo.file.Close()
+func (this *Fileinfo) CloseFile() {
+    defer this.file.Close()
 }
 
 // 获取文件
-func (fileinfo *Fileinfo) GetFileHeader() *multipart.FileHeader {
-    return fileinfo.fileHeader
+func (this *Fileinfo) GetFileHeader() *multipart.FileHeader {
+    return this.fileHeader
 }
 
 // 获取文件流
-func (fileinfo *Fileinfo) GetFile() multipart.File {
-    return fileinfo.file
+func (this *Fileinfo) GetFile() multipart.File {
+    return this.file
 }
 
 // 设置文件类型
-func (fileinfo *Fileinfo) WithFiletypes(filetypes map[string]string) *Fileinfo {
-    fileinfo.filetypes = filetypes
+func (this *Fileinfo) WithFiletypes(filetypes map[string]string) *Fileinfo {
+    this.filetypes = filetypes
 
-    return fileinfo
+    return this
 }
 
 // 获取文件类型
-func (fileinfo *Fileinfo) GetFiletypes() map[string]string {
-    return fileinfo.filetypes
+func (this *Fileinfo) GetFiletypes() map[string]string {
+    return this.filetypes
 }
 
 // mime
-func (fileinfo *Fileinfo) GetMimeType() string {
+func (this *Fileinfo) GetMimeType() string {
     // 头部字节
     buffer := make([]byte, 32)
-    if _, err := fileinfo.file.Read(buffer); err != nil {
+    if _, err := this.file.Read(buffer); err != nil {
         return ""
     }
 
@@ -92,35 +92,35 @@ func (fileinfo *Fileinfo) GetMimeType() string {
 }
 
 // 后缀
-func (fileinfo *Fileinfo) GetExtension() string {
-    name := fileinfo.fileHeader.Filename
+func (this *Fileinfo) GetExtension() string {
+    name := this.fileHeader.Filename
 
     return strings.TrimPrefix(path.Ext(name), ".")
 }
 
 // 大小
-func (fileinfo *Fileinfo) GetSize() int64 {
-    return fileinfo.fileHeader.Size
+func (this *Fileinfo) GetSize() int64 {
+    return this.fileHeader.Size
 }
 
 // 原始名称
-func (fileinfo *Fileinfo) GetOriginalName() string {
-    name := fileinfo.fileHeader.Filename
+func (this *Fileinfo) GetOriginalName() string {
+    name := this.fileHeader.Filename
 
-    return strings.TrimSuffix(name, "." + fileinfo.GetExtension())
+    return strings.TrimSuffix(name, "." + this.GetExtension())
 }
 
 // 原始文件名
-func (fileinfo *Fileinfo) GetOriginalFilename() string {
-    return fileinfo.fileHeader.Filename
+func (this *Fileinfo) GetOriginalFilename() string {
+    return this.fileHeader.Filename
 }
 
 // MD5 摘要
-func (fileinfo *Fileinfo) GetMd5() string {
+func (this *Fileinfo) GetMd5() string {
     const bufferSize = 65536
 
     hash := md5.New()
-    for buf, reader := make([]byte, bufferSize), bufio.NewReader(fileinfo.file); ; {
+    for buf, reader := make([]byte, bufferSize), bufio.NewReader(this.file); ; {
         n, err := reader.Read(buf)
         if err != nil {
             if err == io.EOF {
@@ -138,11 +138,11 @@ func (fileinfo *Fileinfo) GetMd5() string {
 }
 
 // sha1 摘要
-func (fileinfo *Fileinfo) GetSha1() string {
+func (this *Fileinfo) GetSha1() string {
     const bufferSize = 65536
 
     hash := sha1.New()
-    for buf, reader := make([]byte, bufferSize), bufio.NewReader(fileinfo.file); ; {
+    for buf, reader := make([]byte, bufferSize), bufio.NewReader(this.file); ; {
         n, err := reader.Read(buf)
         if err != nil {
             if err == io.EOF {
@@ -160,10 +160,10 @@ func (fileinfo *Fileinfo) GetSha1() string {
 }
 
 // 文件大类
-func (fileinfo *Fileinfo) GetFileType() string {
-    filetypes := fileinfo.filetypes
+func (this *Fileinfo) GetFileType() string {
+    filetypes := this.filetypes
 
-    extension := fileinfo.GetExtension()
+    extension := this.GetExtension()
 
     filetype := "other"
 

@@ -15,29 +15,29 @@ type Rsa struct {
 }
 
 // 初始化
-func (r *Rsa) Init(conf map[string]interface{}) {
+func (this *Rsa) Init(conf map[string]interface{}) {
     if publicKey, ok := conf["publickey"]; ok {
-        r.publicKey = publicKey.(string)
+        this.publicKey = publicKey.(string)
     }
 
     if privateKey, ok := conf["privatekey"]; ok {
-        r.privateKey = privateKey.(string)
+        this.privateKey = privateKey.(string)
     }
 }
 
 // 签名
-func (r *Rsa) Sign(data string) string {
+func (this *Rsa) Sign(data string) string {
     sha1Data := strings.ToUpper(crypt.SHA1(data))
-    newData, _ := crypt.RsaPublicEncrypt(sha1Data, r.publicKey)
+    newData, _ := crypt.RsaPublicEncrypt(sha1Data, this.publicKey)
 
     return newData
 }
 
 // 验证
-func (r *Rsa) Validate(data string, signData string) bool {
+func (this *Rsa) Validate(data string, signData string) bool {
     newData := strings.ToUpper(crypt.SHA1(data))
 
-    newSignData, _ := crypt.RsaPrivateDecrypt(signData, r.privateKey)
+    newSignData, _ := crypt.RsaPrivateDecrypt(signData, this.privateKey)
 
     return newData == newSignData
 }

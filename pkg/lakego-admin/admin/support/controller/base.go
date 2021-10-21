@@ -20,28 +20,28 @@ type Base struct {}
 /**
  * 设置 header
  */
-func (c *Base) SetHeader(ctx *gin.Context, key string, value string) {
+func (this *Base) SetHeader(ctx *gin.Context, key string, value string) {
     response.SetHeader(ctx, key, value)
 }
 
 /**
  * 返回字符
  */
-func (c *Base) ReturnString(ctx *gin.Context, data string, httpCode ...int) {
+func (this *Base) ReturnString(ctx *gin.Context, data string, httpCode ...int) {
     response.ReturnString(ctx, data, httpCode...)
 }
 
 /**
  * 将json字符窜以标准json格式返回
  */
-func (c *Base) ReturnJsonFromString(ctx *gin.Context, jsonStr string, httpCode ...int) {
+func (this *Base) ReturnJsonFromString(ctx *gin.Context, jsonStr string, httpCode ...int) {
     response.ReturnJsonFromString(ctx, jsonStr, httpCode...)
 }
 
 /**
  * 返回 json
  */
-func (c *Base) ReturnJson(
+func (this *Base) ReturnJson(
     ctx *gin.Context,
     httpCode int,
     dataCode int,
@@ -84,21 +84,21 @@ func (ctl *Base) Error(ctx *gin.Context, msg string, dataCode ...int) {
 /**
  * 返回错误 json，带数据
  */
-func (c *Base) ErrorWithData(ctx *gin.Context, msg string, dataCode int, data interface{}) {
+func (this *Base) ErrorWithData(ctx *gin.Context, msg string, dataCode int, data interface{}) {
     response.ErrorWithData(ctx, msg, dataCode, data)
 }
 
 /**
  * 请求
  */
-func (c *Base) Request(ctx *gin.Context) *request.ContextWrapper {
+func (this *Base) Request(ctx *gin.Context) *request.ContextWrapper {
     return request.Context(ctx)
 }
 
 /**
  * 返回错误 json
  */
-func (c *Base) DownloadFile(ctx *gin.Context, filePath string, fileName string) {
+func (this *Base) DownloadFile(ctx *gin.Context, filePath string, fileName string) {
     response.Download(ctx, filePath, fileName)
 }
 

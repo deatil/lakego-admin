@@ -22,9 +22,9 @@ type ActionLog struct {
     AddIp       string      `gorm:"column:add_ip;type:varchar(50);" json:"add_ip"`
 }
 
-func (m *ActionLog) BeforeCreate(tx *gorm.DB) error {
+func (this *ActionLog) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    m.ID = id
+    this.ID = id
 
     return nil
 }

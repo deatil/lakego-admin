@@ -40,104 +40,104 @@ type Rename struct {
 }
 
 // 设置文件名带后缀
-func (rename *Rename) WithFileName(filename string) *Rename {
-    rename.defaultExtension = strings.TrimPrefix(path.Ext(filename), ".")
-    rename.defaultName = strings.TrimSuffix(filename, "." + rename.defaultExtension)
+func (this *Rename) WithFileName(filename string) *Rename {
+    this.defaultExtension = strings.TrimPrefix(path.Ext(filename), ".")
+    this.defaultName = strings.TrimSuffix(filename, "." + this.defaultExtension)
 
-    return rename
+    return this
 }
 
 // 设置文件存在检测函数
-func (rename *Rename) WithCheckFileExistsFunc(f func(string) bool) *Rename {
-    rename.checkFileExistsFunc = f
+func (this *Rename) WithCheckFileExistsFunc(f func(string) bool) *Rename {
+    this.checkFileExistsFunc = f
 
-    return rename
+    return this
 }
 
 // 设置默认的命名
-func (rename *Rename) WithDefaultName(name string) *Rename {
-    rename.defaultName = name
+func (this *Rename) WithDefaultName(name string) *Rename {
+    this.defaultName = name
 
-    return rename
+    return this
 }
 
 // 获取默认的命名
-func (rename *Rename) GetDefaultName() string {
-    return rename.defaultName
+func (this *Rename) GetDefaultName() string {
+    return this.defaultName
 }
 
 // 设置默认的后缀
-func (rename *Rename) WithdDefaultExtension(ext string) *Rename {
-    rename.defaultExtension = ext
+func (this *Rename) WithdDefaultExtension(ext string) *Rename {
+    this.defaultExtension = ext
 
-    return rename
+    return this
 }
 
 // 获取默认的后缀
-func (rename *Rename) GetDefaultExtension() string {
-    return rename.defaultExtension
+func (this *Rename) GetDefaultExtension() string {
+    return this.defaultExtension
 }
 
 // 设置文件名
-func (rename *Rename) WithName(name string) *Rename {
-    rename.name = name
+func (this *Rename) WithName(name string) *Rename {
+    this.name = name
 
-    return rename
+    return this
 }
 
 // 获取文件名
-func (rename *Rename) GetName() interface{} {
-    return rename.name
+func (this *Rename) GetName() interface{} {
+    return this.name
 }
 
 // UniqueName 命名文件名
-func (rename *Rename) UniqueName() *Rename {
-    rename.generateName = "unique"
+func (this *Rename) UniqueName() *Rename {
+    this.generateName = "unique"
 
-    return rename
+    return this
 }
 
 // datetimeName 命名文件名
-func (rename *Rename) DatetimeName() *Rename {
-    rename.generateName = "datetime"
+func (this *Rename) DatetimeName() *Rename {
+    this.generateName = "datetime"
 
-    return rename
+    return this
 }
 
 // sequenceName 命名文件名
-func (rename *Rename) SequenceName() *Rename {
-    rename.generateName = "sequence"
+func (this *Rename) SequenceName() *Rename {
+    this.generateName = "sequence"
 
-    return rename
+    return this
 }
 
 // 唯一命名
-func (rename *Rename) GenerateUniqueName() string {
+func (this *Rename) GenerateUniqueName() string {
     name := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
 
-    return name + "." + rename.GetDefaultExtension()
+    return name + "." + this.GetDefaultExtension()
 }
 
 // 时间命名
-func (rename *Rename) GenerateDatetimeName() string {
+func (this *Rename) GenerateDatetimeName() string {
     name := fmt.Sprintf("%s", time.Now().Format("20060102150405")) + random.String(6, random.Numeric)
 
-    return name + "." + rename.GetDefaultExtension()
+    return name + "." + this.GetDefaultExtension()
 }
 
 // sequence 命名
-func (rename *Rename) GenerateSequenceName() string {
+func (this *Rename) GenerateSequenceName() string {
     var index int = 1
-    extension := rename.GetDefaultExtension()
-    original := rename.GetDefaultName()
+    extension := this.GetDefaultExtension()
+    original := this.GetDefaultName()
     newFilename := fmt.Sprintf("%s_%d.%s", original, index, extension)
 
     for {
-        if rename.checkFileExistsFunc == nil {
+        if this.checkFileExistsFunc == nil {
             break
         }
 
-        if !rename.checkFileExistsFunc(newFilename) {
+        if !this.checkFileExistsFunc(newFilename) {
             break
         }
 
@@ -149,24 +149,24 @@ func (rename *Rename) GenerateSequenceName() string {
 }
 
 // 原始命名
-func (rename *Rename) GenerateClientName() string {
-    return rename.GetDefaultName() + "." + rename.GetDefaultExtension()
+func (this *Rename) GenerateClientName() string {
+    return this.GetDefaultName() + "." + this.GetDefaultExtension()
 }
 
 // 获取最后存储名称
-func (rename *Rename) GetStoreName() string {
-    if rename.name != "" {
-        return rename.name
+func (this *Rename) GetStoreName() string {
+    if this.name != "" {
+        return this.name
     }
 
-    if rename.generateName == "unique" {
-        return rename.GenerateUniqueName()
-    } else if rename.generateName == "datetime" {
-        return rename.GenerateDatetimeName()
-    } else if rename.generateName == "sequence" {
-        return rename.GenerateSequenceName()
+    if this.generateName == "unique" {
+        return this.GenerateUniqueName()
+    } else if this.generateName == "datetime" {
+        return this.GenerateDatetimeName()
+    } else if this.generateName == "sequence" {
+        return this.GenerateSequenceName()
     }
 
-    return rename.GenerateClientName()
+    return this.GenerateClientName()
 }
 

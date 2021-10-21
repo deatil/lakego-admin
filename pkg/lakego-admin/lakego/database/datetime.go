@@ -16,33 +16,33 @@ var timeFormat = "2006-01-02 15:04:05"
 type Datetime sql.NullTime
 
 // Scan implements the Scanner interface.
-func (a *Datetime) Scan(value interface{}) error {
-    return (*sql.NullTime)(a).Scan(value)
+func (this *Datetime) Scan(value interface{}) error {
+    return (*sql.NullTime)(this).Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (a Datetime) Value() (driver.Value, error) {
-    if !a.Valid {
+func (this Datetime) Value() (driver.Value, error) {
+    if !this.Valid {
         return nil, nil
     }
 
-    return a.Time.Format(timeFormat), nil
+    return this.Time.Format(timeFormat), nil
 }
 
-func (a Datetime) MarshalJSON() ([]byte, error) {
-    if a.Valid {
-        return []byte(fmt.Sprintf("\"%s\"", a.Time.Format(timeFormat))), nil
+func (this Datetime) MarshalJSON() ([]byte, error) {
+    if this.Valid {
+        return []byte(fmt.Sprintf("\"%s\"", this.Time.Format(timeFormat))), nil
     }
 
     return json.Marshal(nil)
 }
 
-func (a *Datetime) UnmarshalJSON(b []byte) error {
+func (this *Datetime) UnmarshalJSON(b []byte) error {
     s := strings.Trim(string(b), "\"")
 
     if s == "null" || s == "" {
-        a.Valid = false
-        a.Time = time.Time{}
+        this.Valid = false
+        this.Time = time.Time{}
         return nil
     }
 
@@ -51,14 +51,14 @@ func (a *Datetime) UnmarshalJSON(b []byte) error {
         return fmt.Errorf("time.LoadLocation error: %s", err.Error())
     }
 
-    a.Time, err = time.ParseInLocation(timeFormat, s, cst)
+    this.Time, err = time.ParseInLocation(timeFormat, s, cst)
     if err != nil {
         // When time cannot be resolved using the default format, try RFC3339Nano
-        if a.Time, err = time.ParseInLocation(time.RFC3339Nano, s, cst); err == nil {
-            a.Time = a.Time.In(cst)
+        if this.Time, err = time.ParseInLocation(time.RFC3339Nano, s, cst); err == nil {
+            this.Time = this.Time.In(cst)
         }
     }
 
-    a.Valid = true
+    this.Valid = true
     return err
 }

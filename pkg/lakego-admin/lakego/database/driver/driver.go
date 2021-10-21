@@ -11,13 +11,13 @@ import (
 )
 
 func New(conf ...map[string]interface{}) *Driver {
-    d := &Driver{}
+    driver := &Driver{}
 
     if len(conf) > 0 {
-        d.Config = conf[0]
+        driver.Config = conf[0]
     }
 
-    return d
+    return driver
 }
 
 /**
@@ -35,23 +35,23 @@ type Driver struct {
 }
 
 // 初始化
-func (d *Driver) Init(config map[string]interface{}) interfaces.Driver {
-    d.Config = config
+func (this *Driver) Init(config map[string]interface{}) interfaces.Driver {
+    this.Config = config
 
-    return d
+    return this
 }
 
 
 // 设置配置
-func (d *Driver) WithConfig(config map[string]interface{}) interfaces.Driver {
-    d.Config = config
+func (this *Driver) WithConfig(config map[string]interface{}) interfaces.Driver {
+    this.Config = config
 
-    return d
+    return this
 }
 
 // 获取配置
-func (d *Driver) GetConfig(name string) interface{} {
-    if data, ok := d.Config[name]; ok {
+func (this *Driver) GetConfig(name string) interface{} {
+    if data, ok := this.Config[name]; ok {
         return data
     }
 
@@ -61,15 +61,15 @@ func (d *Driver) GetConfig(name string) interface{} {
 /**
  * 初始化
  */
-func (d *Driver) CreateConnection() {
+func (this *Driver) CreateConnection() {
 }
 
 /**
  * 初始化
  */
-func (d *Driver) CreateOpenConnection(dia gorm.Dialector) {
+func (this *Driver) CreateOpenConnection(dia gorm.Dialector) {
     // 配置
-    conf := d.Config
+    conf := this.Config
 
     db, err := gorm.Open(dia, &gorm.Config{
         NowFunc: func() time.Time {
@@ -106,28 +106,28 @@ func (d *Driver) CreateOpenConnection(dia gorm.Dialector) {
     sqlDB.SetMaxIdleConns(MaxIdleConns)
     sqlDB.SetMaxOpenConns(MaxOpenConns)
 
-    d.db = db
+    this.db = db
 }
 
 /**
  * 初始化
  */
-func (d *Driver) GetConnection() *gorm.DB {
-    return d.db
+func (this *Driver) GetConnection() *gorm.DB {
+    return this.db
 }
 
 /**
  * 获取数据库连接对象db，带debug
  */
-func (d *Driver) GetConnectionWithDebug() *gorm.DB {
-    return d.db.Debug()
+func (this *Driver) GetConnectionWithDebug() *gorm.DB {
+    return this.db.Debug()
 }
 
 /**
  * 关闭
  */
-func (d *Driver) Close()  {
-    sqlDB, _ := d.db.DB()
+func (this *Driver) Close()  {
+    sqlDB, _ := this.db.DB()
 
     if sqlDB.Ping() != nil {
         return

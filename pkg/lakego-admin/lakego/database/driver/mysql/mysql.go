@@ -32,16 +32,16 @@ type Mysql struct {
 /**
  * 初始化
  */
-func (m *Mysql) CreateConnection() {
+func (this *Mysql) CreateConnection() {
     var dsn string
 
     // 配置
-    conf := m.Config
+    conf := this.Config
 
     // dsn 判断
     dsn = conf["dsn"].(string)
     if dsn == "" {
-        dsn = m.getDSN()
+        dsn = this.getDSN()
     }
 
     mc := mysql.Config{
@@ -56,15 +56,15 @@ func (m *Mysql) CreateConnection() {
     // 创建链接
     dialector := mysql.New(mc)
 
-    m.CreateOpenConnection(dialector)
+    this.CreateOpenConnection(dialector)
 }
 
 /**
  * 连接 DSN
  */
-func (m *Mysql) getDSN() string {
+func (this *Mysql) getDSN() string {
     // 配置
-    conf := m.Config
+    conf := this.Config
 
     Host := conf["host"].(string)
     Port := conf["port"].(int)

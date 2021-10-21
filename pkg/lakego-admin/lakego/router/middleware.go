@@ -59,120 +59,120 @@ type Middleware struct {
 /**
  * 全局名称
  */
-func (m *Middleware) WithGlobal(global string) *Middleware {
-    m.global = global
+func (this *Middleware) WithGlobal(global string) *Middleware {
+    this.global = global
 
-    return m
+    return this
 }
 
 /**
  * 全局名称
  */
-func (m *Middleware) GetGlobal() string {
-    return m.global
+func (this *Middleware) GetGlobal() string {
+    return this.global
 }
 
 /**
  * 别名
  */
-func (m *Middleware) WithAlias(alias *Alias) *Middleware {
-    m.alias = alias
+func (this *Middleware) WithAlias(alias *Alias) *Middleware {
+    this.alias = alias
 
-    return m
+    return this
 }
 
 /**
  * 别名
  */
-func (m *Middleware) GetAlias() *Alias {
-    return m.alias
+func (this *Middleware) GetAlias() *Alias {
+    return this.alias
 }
 
 /**
  * 中间件
  */
-func (m *Middleware) WithMiddlewares(middlewares *Middlewares) *Middleware {
-    m.middlewares = middlewares
+func (this *Middleware) WithMiddlewares(middlewares *Middlewares) *Middleware {
+    this.middlewares = middlewares
 
-    return m
+    return this
 }
 
 /**
  * 中间件
  */
-func (m *Middleware) GetMiddlewares() *Middlewares {
-    return m.middlewares
+func (this *Middleware) GetMiddlewares() *Middlewares {
+    return this.middlewares
 }
 
 /**
  * 中间件分组
  */
-func (m *Middleware) WithGroup(group *Group) *Middleware {
-    m.group = group
+func (this *Middleware) WithGroup(group *Group) *Middleware {
+    this.group = group
 
-    return m
+    return this
 }
 
 /**
  * 中间件分组
  */
-func (m *Middleware) GetGroup() *Group {
-    return m.group
+func (this *Middleware) GetGroup() *Group {
+    return this.group
 }
 
 /**
  * 别名
  */
-func (m *Middleware) AliasMiddleware(name string, middleware interface{}) *Middleware {
-    m.alias.With(name, middleware)
+func (this *Middleware) AliasMiddleware(name string, middleware interface{}) *Middleware {
+    this.alias.With(name, middleware)
 
-    return m
+    return this
 }
 
 /**
  * 中间件分组
  */
-func (m *Middleware) MiddlewareGroup(name string, middleware interface{}) *Middleware {
-    m.group.Push(name, middleware)
+func (this *Middleware) MiddlewareGroup(name string, middleware interface{}) *Middleware {
+    this.group.Push(name, middleware)
 
-    return m
+    return this
 }
 
 /**
  * 全局中间前置
  */
-func (m *Middleware) PrependMiddleware(middleware interface{}) *Middleware {
-    m.group.Prepend(m.global, middleware)
+func (this *Middleware) PrependMiddleware(middleware interface{}) *Middleware {
+    this.group.Prepend(this.global, middleware)
 
-    return m
+    return this
 }
 
 /**
  * 全局中间后置
  */
-func (m *Middleware) PushMiddleware(middleware interface{}) *Middleware {
-    m.group.Push(m.global, middleware)
+func (this *Middleware) PushMiddleware(middleware interface{}) *Middleware {
+    this.group.Push(this.global, middleware)
 
-    return m
+    return this
 }
 
 /**
  * 获取中间件列表
  */
-func (m *Middleware) GetMiddlewareList(name string) (middleware []interface{}) {
-    if nameMiddleware := m.alias.Get(name); nameMiddleware != nil {
+func (this *Middleware) GetMiddlewareList(name string) (middleware []interface{}) {
+    if nameMiddleware := this.alias.Get(name); nameMiddleware != nil {
         middleware = append(middleware, nameMiddleware)
         return
     }
 
-    if ok := m.group.Exists(name); ok {
-        nameGroupList := m.group.Get(name).All()
+    if ok := this.group.Exists(name); ok {
+        nameGroupList := this.group.Get(name).All()
 
         for _, nameGroup := range nameGroupList {
             switch nameGroup.(type) {
                 case string:
                     // 递归查询
-                    data := m.GetMiddlewareList(nameGroup.(string))
+                    data := this.GetMiddlewareList(nameGroup.(string))
                     if data != nil{
                         middleware = append(middleware, data...)
                     }
@@ -188,7 +188,7 @@ func (m *Middleware) GetMiddlewareList(name string) (middleware []interface{}) {
 /**
  * 获取全局中间件列表
  */
-func (m *Middleware) GetGlobalMiddlewareList() (middleware []interface{}) {
-    return m.GetMiddlewareList(m.global)
+func (this *Middleware) GetGlobalMiddlewareList() (middleware []interface{}) {
+    return this.GetMiddlewareList(this.global)
 }
 

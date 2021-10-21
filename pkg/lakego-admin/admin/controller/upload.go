@@ -27,7 +27,7 @@ type Upload struct {
 /**
  * 上传文件
  */
-func (control *Upload) File(ctx *gin.Context) {
+func (this *Upload) File(ctx *gin.Context) {
     // 账号信息
     adminInfo, _ := ctx.Get("admin")
     adminId := adminInfo.(*admin.Admin).GetId()
@@ -47,7 +47,7 @@ func (control *Upload) File(ctx *gin.Context) {
 
     file, err := ctx.FormFile(conf.GetString("Upload.Field"))
     if err != nil {
-        control.Error(ctx, "上传文件失败，原因：" + err.Error())
+        this.Error(ctx, "上传文件失败，原因：" + err.Error())
         return
     }
 
@@ -98,19 +98,19 @@ func (control *Upload) File(ctx *gin.Context) {
             }).
             Error
         if attachUpdateErr != nil {
-            control.Error(ctx, "上传文件失败")
+            this.Error(ctx, "上传文件失败")
             return
         }
 
         if uploadType == "image" || uploadType == "media" {
-            control.SuccessWithData(ctx, "上传文件成功", gin.H{
+            this.SuccessWithData(ctx, "上传文件成功", gin.H{
                 "id": attach["id"],
                 "url": storager.Url(attach["path"].(string)),
             })
             return
         }
 
-        control.SuccessWithData(ctx, "上传文件成功", gin.H{
+        this.SuccessWithData(ctx, "上传文件成功", gin.H{
             "id": attach["id"],
         })
         return
@@ -123,14 +123,14 @@ func (control *Upload) File(ctx *gin.Context) {
         First(&adminer).
         Error
     if adminFindErr != nil {
-        control.Error(ctx, "上传文件失败")
+        this.Error(ctx, "上传文件失败")
         return
     }
 
     // 上传
     path := up.SaveFile(file)
     if path == "" {
-        control.Error(ctx, "上传文件失败" )
+        this.Error(ctx, "上传文件失败" )
         return
     }
 
@@ -156,7 +156,7 @@ func (control *Upload) File(ctx *gin.Context) {
     // 添加数据库失败
     if addError != nil {
         up.Destroy(path)
-        control.Error(ctx, "上传文件失败")
+        this.Error(ctx, "上传文件失败")
         return
     }
 
@@ -174,5 +174,5 @@ func (control *Upload) File(ctx *gin.Context) {
         }
     }
 
-    control.SuccessWithData(ctx, "上传文件成功", data)
+    this.SuccessWithData(ctx, "上传文件成功", data)
 }

@@ -27,7 +27,7 @@ type AuthRule struct {
 /**
  * 列表
  */
-func (control *AuthRule) Index(ctx *gin.Context) {
+func (this *AuthRule) Index(ctx *gin.Context) {
     // 模型
     ruleModel := model.NewAuthRule()
 
@@ -56,15 +56,15 @@ func (control *AuthRule) Index(ctx *gin.Context) {
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        ruleModel = ruleModel.Where("add_time >= ?", control.FormatDate(startTime))
+        ruleModel = ruleModel.Where("add_time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        ruleModel = ruleModel.Where("add_time <= ?", control.FormatDate(endTime))
+        ruleModel = ruleModel.Where("add_time <= ?", this.FormatDate(endTime))
     }
 
-    status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
     if status != -1 {
         ruleModel = ruleModel.Where("status = ?", status)
     }
@@ -94,11 +94,11 @@ func (control *AuthRule) Index(ctx *gin.Context) {
         Count(&total).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -109,7 +109,7 @@ func (control *AuthRule) Index(ctx *gin.Context) {
 /**
  * 树结构
  */
-func (control *AuthRule) IndexTree(ctx *gin.Context) {
+func (this *AuthRule) IndexTree(ctx *gin.Context) {
     list := make([]map[string]interface{}, 0)
 
     err := model.NewAuthRule().
@@ -118,14 +118,14 @@ func (control *AuthRule) IndexTree(ctx *gin.Context) {
         Find(&list).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
     newTree := tree.New()
     list2 := newTree.WithData(list).Build("0", "", 1)
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": list2,
     })
 }
@@ -133,10 +133,10 @@ func (control *AuthRule) IndexTree(ctx *gin.Context) {
 /**
  * 子列表
  */
-func (control *AuthRule) IndexChildren(ctx *gin.Context) {
+func (this *AuthRule) IndexChildren(ctx *gin.Context) {
     id := ctx.Query("id")
     if id == "" {
-        control.Error(ctx, "ID错误")
+        this.Error(ctx, "ID错误")
         return
     }
 
@@ -149,7 +149,7 @@ func (control *AuthRule) IndexChildren(ctx *gin.Context) {
         data = authRuleRepository.GetChildrenIds(id)
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": data,
     })
 }
@@ -157,10 +157,10 @@ func (control *AuthRule) IndexChildren(ctx *gin.Context) {
 /**
  * 详情
  */
-func (control *AuthRule) Detail(ctx *gin.Context) {
+func (this *AuthRule) Detail(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -172,23 +172,23 @@ func (control *AuthRule) Detail(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
     // 结构体转map
     ruleData := model.FormatStructToMap(&info)
 
-    control.SuccessWithData(ctx, "获取成功", ruleData)
+    this.SuccessWithData(ctx, "获取成功", ruleData)
 }
 
 /**
  * 删除
  */
-func (control *AuthRule) Delete(ctx *gin.Context) {
+func (this *AuthRule) Delete(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -199,7 +199,7 @@ func (control *AuthRule) Delete(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -210,7 +210,7 @@ func (control *AuthRule) Delete(ctx *gin.Context) {
         Count(&total).
         Error
     if err2 != nil || total > 0 {
-        control.Error(ctx, "请删除子权限后再操作")
+        this.Error(ctx, "请删除子权限后再操作")
         return
     }
 
@@ -221,23 +221,23 @@ func (control *AuthRule) Delete(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "信息删除失败")
+        this.Error(ctx, "信息删除失败")
         return
     }
 
-    control.Success(ctx, "信息删除成功")
+    this.Success(ctx, "信息删除成功")
 }
 
 /**
  * 清空特定ID权限
  */
-func (control *AuthRule) Clear(ctx *gin.Context) {
+func (this *AuthRule) Clear(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
     if post["ids"] == "" {
-        control.Error(ctx, "权限ID列表不能为空")
+        this.Error(ctx, "权限ID列表不能为空")
         return
     }
     ids := post["ids"].(string)
@@ -276,20 +276,20 @@ func (control *AuthRule) Clear(ctx *gin.Context) {
 
     }
 
-    control.Success(ctx, "删除特定权限成功")
+    this.Success(ctx, "删除特定权限成功")
 }
 
 /**
  * 添加
  */
-func (control *AuthRule) Create(ctx *gin.Context) {
+func (this *AuthRule) Create(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
     validateErr := authRuleValidate.Create(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -323,11 +323,11 @@ func (control *AuthRule) Create(ctx *gin.Context) {
         Create(&insertData).
         Error
     if err2 != nil {
-        control.Error(ctx, "信息添加失败")
+        this.Error(ctx, "信息添加失败")
         return
     }
 
-    control.SuccessWithData(ctx, "信息添加成功", gin.H{
+    this.SuccessWithData(ctx, "信息添加成功", gin.H{
         "id": insertData.ID,
     })
 }
@@ -335,10 +335,10 @@ func (control *AuthRule) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (control *AuthRule) Update(ctx *gin.Context) {
+func (this *AuthRule) Update(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -349,7 +349,7 @@ func (control *AuthRule) Update(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -359,7 +359,7 @@ func (control *AuthRule) Update(ctx *gin.Context) {
 
     validateErr := authRuleValidate.Update(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -392,20 +392,20 @@ func (control *AuthRule) Update(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "信息修改失败")
+        this.Error(ctx, "信息修改失败")
         return
     }
 
-    control.Success(ctx, "信息修改成功")
+    this.Success(ctx, "信息修改成功")
 }
 
 /**
  * 排序
  */
-func (control *AuthRule) Listorder(ctx *gin.Context) {
+func (this *AuthRule) Listorder(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -416,7 +416,7 @@ func (control *AuthRule) Listorder(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -439,20 +439,20 @@ func (control *AuthRule) Listorder(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "更新排序失败")
+        this.Error(ctx, "更新排序失败")
         return
     }
 
-    control.Success(ctx, "更新排序成功")
+    this.Success(ctx, "更新排序成功")
 }
 
 /**
  * 启用
  */
-func (control *AuthRule) Enable(ctx *gin.Context) {
+func (this *AuthRule) Enable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -463,7 +463,7 @@ func (control *AuthRule) Enable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -472,7 +472,7 @@ func (control *AuthRule) Enable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
-        control.Error(ctx, "信息已启用")
+        this.Error(ctx, "信息已启用")
         return
     }
 
@@ -483,20 +483,20 @@ func (control *AuthRule) Enable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "启用失败")
+        this.Error(ctx, "启用失败")
         return
     }
 
-    control.Success(ctx, "启用成功")
+    this.Success(ctx, "启用成功")
 }
 
 /**
  * 禁用
  */
-func (control *AuthRule) Disable(ctx *gin.Context) {
+func (this *AuthRule) Disable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -507,7 +507,7 @@ func (control *AuthRule) Disable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -516,7 +516,7 @@ func (control *AuthRule) Disable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
-        control.Error(ctx, "信息已禁用")
+        this.Error(ctx, "信息已禁用")
         return
     }
 
@@ -527,9 +527,9 @@ func (control *AuthRule) Disable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "禁用失败")
+        this.Error(ctx, "禁用失败")
         return
     }
 
-    control.Success(ctx, "禁用成功")
+    this.Success(ctx, "禁用成功")
 }

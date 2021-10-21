@@ -23,7 +23,7 @@ type ActionLog struct {
 /**
  * 列表
  */
-func (control *ActionLog) Index(ctx *gin.Context) {
+func (this *ActionLog) Index(ctx *gin.Context) {
     // 模型
     logModel := model.NewActionLog()
 
@@ -50,12 +50,12 @@ func (control *ActionLog) Index(ctx *gin.Context) {
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        logModel = logModel.Where("add_time >= ?", control.FormatDate(startTime))
+        logModel = logModel.Where("add_time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        logModel = logModel.Where("add_time <= ?", control.FormatDate(endTime))
+        logModel = logModel.Where("add_time <= ?", this.FormatDate(endTime))
     }
 
     // 请求方式
@@ -89,11 +89,11 @@ func (control *ActionLog) Index(ctx *gin.Context) {
         Count(&total).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -104,16 +104,16 @@ func (control *ActionLog) Index(ctx *gin.Context) {
 /**
  * 清除 30 天前的数据
  */
-func (control *ActionLog) Clear(ctx *gin.Context) {
+func (this *ActionLog) Clear(ctx *gin.Context) {
     // 清除
     err := model.NewActionLog().
         Where("add_time <= ?", time.BeforeTimeToInt(-30)).
         Delete(&model.ActionLog{}).
         Error
     if err != nil {
-        control.Error(ctx, "30天前日志清除失败")
+        this.Error(ctx, "30天前日志清除失败")
         return
     }
 
-    control.Success(ctx, "30天前日志清除成功")
+    this.Success(ctx, "30天前日志清除成功")
 }

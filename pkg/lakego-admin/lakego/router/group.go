@@ -25,11 +25,11 @@ type Group struct {
 /**
  * 后置添加分组
  */
-func (group *Group) Push(name string, middleware interface{}) *Group {
+func (this *Group) Push(name string, middleware interface{}) *Group {
     var newGroup *Middlewares
 
-    if exists := group.Exists(name); exists {
-        newGroup = group.Get(name)
+    if exists := this.Exists(name); exists {
+        newGroup = this.Get(name)
     } else {
         newGroup = NewMiddlewares()
     }
@@ -37,19 +37,19 @@ func (group *Group) Push(name string, middleware interface{}) *Group {
     // 添加数据
     newGroup.Push(middleware)
 
-    group.groups[name] = newGroup
+    this.groups[name] = newGroup
 
-    return group
+    return this
 }
 
 /**
  * 前置添加分组
  */
-func (group *Group) Prepend(name string, middleware interface{}) *Group {
+func (this *Group) Prepend(name string, middleware interface{}) *Group {
     var newGroup *Middlewares
 
-    if exists := group.Exists(name); exists {
-        newGroup = group.Get(name)
+    if exists := this.Exists(name); exists {
+        newGroup = this.Get(name)
     } else {
         newGroup = NewMiddlewares()
     }
@@ -57,16 +57,16 @@ func (group *Group) Prepend(name string, middleware interface{}) *Group {
     // 添加数据
     newGroup.Prepend(middleware)
 
-    group.groups[name] = newGroup
+    this.groups[name] = newGroup
 
-    return group
+    return this
 }
 
 /**
  * 判断
  */
-func (group *Group) Exists(name string) bool {
-    if _, ok := group.groups[name]; ok {
+func (this *Group) Exists(name string) bool {
+    if _, ok := this.groups[name]; ok {
         return true
     }
 
@@ -76,15 +76,15 @@ func (group *Group) Exists(name string) bool {
 /**
  * 删除
  */
-func (group *Group) Delete(name string) {
-    delete(group.groups, name)
+func (this *Group) Delete(name string) {
+    delete(this.groups, name)
 }
 
 /**
  * 获取分组
  */
-func (group *Group) Get(name string) *Middlewares {
-    if data, ok := group.groups[name]; ok {
+func (this *Group) Get(name string) *Middlewares {
+    if data, ok := this.groups[name]; ok {
         return data
     }
 

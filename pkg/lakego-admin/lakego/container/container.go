@@ -21,10 +21,10 @@ func New() *Container {
 type Container struct {}
 
 // 键值对的形式将代码注册到容器
-func (c *Container) Set(key string, value interface{}) bool {
+func (this *Container) Set(key string, value interface{}) bool {
     // 存在则删除旧的
-    if exists := c.Exists(key); exists {
-        c.Delete(key)
+    if exists := this.Exists(key); exists {
+        this.Delete(key)
     }
 
     sMap.Store(key, value)
@@ -35,7 +35,7 @@ func (c *Container) Set(key string, value interface{}) bool {
 /**
  * 单值批量设置
  */
-func (c *Container) SetItems(key string, value interface{}) bool {
+func (this *Container) SetItems(key string, value interface{}) bool {
     var newValues []interface{}
 
     if newValue, exists := sMap.Load(key); exists {
@@ -51,7 +51,7 @@ func (c *Container) SetItems(key string, value interface{}) bool {
 }
 
 // 取值
-func (c *Container) Get(key string) interface{} {
+func (this *Container) Get(key string) interface{} {
     if value, exists := sMap.Load(key); exists {
         return value
     }
@@ -59,7 +59,7 @@ func (c *Container) Get(key string) interface{} {
 }
 
 // 判断是否存在
-func (c *Container) Exists(key string) bool {
+func (this *Container) Exists(key string) bool {
     if _, exists := sMap.Load(key); exists {
         return true
     }
@@ -68,14 +68,14 @@ func (c *Container) Exists(key string) bool {
 }
 
 // 删除
-func (c *Container) Delete(key string) bool {
+func (this *Container) Delete(key string) bool {
     sMap.Delete(key)
 
     return true
 }
 
 // 按照键的前缀删除容器中注册的内容
-func (c *Container) FuzzyDelete(keyPre string) {
+func (this *Container) FuzzyDelete(keyPre string) {
     sMap.Range(func(key, value interface{}) bool {
         if keyname, ok := key.(string); ok {
             if strings.HasPrefix(keyname, keyPre) {

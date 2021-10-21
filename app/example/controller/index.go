@@ -19,6 +19,6 @@ type Index struct {
 /**
  * 信息
  */
-func (control *Index) Index(ctx *gin.Context) {
-    control.Success(ctx, "例子信息获取成功")
+func (this *Index) Index(ctx *gin.Context) {
+    this.Success(ctx, "例子信息获取成功")
 }

@@ -19,7 +19,7 @@ type Base struct {
 }
 
 // 状态通用转换
-func (ctl *Base) SwitchStatus(name string) int {
+func (this *Base) SwitchStatus(name string) int {
     statusList := map[string]int{
         "open": 1,
         "close": 0,
@@ -33,12 +33,12 @@ func (ctl *Base) SwitchStatus(name string) int {
 }
 
 // 时间格式化到时间戳
-func (ctl *Base) FormatDate(date string) int64 {
+func (this *Base) FormatDate(date string) int64 {
     return time.StringToTimestamp(date)
 }
 
 // 状态通用转换
-func (ctl *Base) FormatOrderBy(order string, defaulter ...string) string {
+func (this *Base) FormatOrderBy(order string, defaulter ...string) string {
     newDefault := "ASC"
     if len(defaulter) > 0 {
         newDefault = defaulter[0]

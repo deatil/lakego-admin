@@ -23,24 +23,24 @@ type Permission struct {
 /**
  * 设置适配器
  */
-func (perm *Permission) WithAdapter(a interfaces.Adapter) *Permission {
-    perm.Adapter = a
+func (this *Permission) WithAdapter(a interfaces.Adapter) *Permission {
+    this.Adapter = a
 
-    return perm
+    return this
 }
 
 /**
  * 获取适配器
  */
-func (perm *Permission) GetAdapter() interfaces.Adapter {
-    return perm.Adapter
+func (this *Permission) GetAdapter() interfaces.Adapter {
+    return this.Adapter
 }
 
 /**
  * 设置权限文件
  */
-func (perm *Permission) WithModelConf(modelConf string) *Permission {
-    e, _ := casbin.NewEnforcer(modelConf, perm.Adapter)
+func (this *Permission) WithModelConf(modelConf string) *Permission {
+    e, _ := casbin.NewEnforcer(modelConf, this.Adapter)
 
     // Load the policy from DB.
     // e.LoadPolicy()
@@ -48,32 +48,32 @@ func (perm *Permission) WithModelConf(modelConf string) *Permission {
     // Save the policy back to DB.
     // e.SavePolicy()
 
-    perm.WithEnforcer(e)
+    this.WithEnforcer(e)
 
-    return perm
+    return this
 }
 
 /**
  * 设置
  */
-func (perm *Permission) WithEnforcer(e *casbin.Enforcer) *Permission {
-    perm.Enforcer = e
+func (this *Permission) WithEnforcer(e *casbin.Enforcer) *Permission {
+    this.Enforcer = e
 
-    return perm
+    return this
 }
 
 /**
  * 获取
  */
-func (perm *Permission) GetEnforcer() *casbin.Enforcer {
-    return perm.Enforcer
+func (this *Permission) GetEnforcer() *casbin.Enforcer {
+    return this.Enforcer
 }
 
 /**
  * 清空数据
  */
-func (perm *Permission) ClearData() bool {
-    perm.Adapter.ClearData()
+func (this *Permission) ClearData() bool {
+    this.Adapter.ClearData()
 
     return true
 }
@@ -81,76 +81,76 @@ func (perm *Permission) ClearData() bool {
 /**
  * 添加用户角色
  */
-func (perm *Permission) AddRoleForUser(user string, role string) (bool, error) {
-    return perm.Enforcer.AddRoleForUser(user, role)
+func (this *Permission) AddRoleForUser(user string, role string) (bool, error) {
+    return this.Enforcer.AddRoleForUser(user, role)
 }
 
 /**
  * 用户角色是否拥有某角色
  */
-func (perm *Permission) HasRoleForUser(user string, role string) (bool, error) {
-    return perm.Enforcer.HasRoleForUser(user, role)
+func (this *Permission) HasRoleForUser(user string, role string) (bool, error) {
+    return this.Enforcer.HasRoleForUser(user, role)
 }
 
 /**
  * 删除用户角色
  */
-func (perm *Permission) DeleteRoleForUser(user string, role string) (bool, error) {
-    return perm.Enforcer.DeleteRoleForUser(user, role)
+func (this *Permission) DeleteRoleForUser(user string, role string) (bool, error) {
+    return this.Enforcer.DeleteRoleForUser(user, role)
 }
 
 /**
  * 删除用户所有角色
  */
-func (perm *Permission) DeleteRolesForUser(user string) (bool, error) {
-    return perm.Enforcer.DeleteRolesForUser(user)
+func (this *Permission) DeleteRolesForUser(user string) (bool, error) {
+    return this.Enforcer.DeleteRolesForUser(user)
 }
 
 /**
  * 删除用户信息
  */
-func (perm *Permission) DeleteUser(user string) (bool, error) {
-    return perm.Enforcer.DeleteUser(user)
+func (this *Permission) DeleteUser(user string) (bool, error) {
+    return this.Enforcer.DeleteUser(user)
 }
 
 /**
  * 添加权限
  */
-func (perm *Permission) AddPolicy(user string, ptype string, rule string) (bool, error) {
-    return perm.Enforcer.AddPolicy(user, ptype, rule)
+func (this *Permission) AddPolicy(user string, ptype string, rule string) (bool, error) {
+    return this.Enforcer.AddPolicy(user, ptype, rule)
 }
 
 /**
  * 删除权限
  */
-func (perm *Permission) DeletePolicy(user string, ptype string, rule string) (bool, error) {
-    return perm.Enforcer.DeletePermissionForUser(user, ptype, rule)
+func (this *Permission) DeletePolicy(user string, ptype string, rule string) (bool, error) {
+    return this.Enforcer.DeletePermissionForUser(user, ptype, rule)
 }
 
 /**
  * 删除标识所有权限
  */
-func (perm *Permission) DeletePolicys(user string) (bool, error) {
-    return perm.Enforcer.DeletePermissionForUser(user)
+func (this *Permission) DeletePolicys(user string) (bool, error) {
+    return this.Enforcer.DeletePermissionForUser(user)
 }
 
 /**
  * 判断是否有权限
  */
-func (perm *Permission) HasPermissionForUser(user string, ptype string, rule string) bool {
-    return perm.Enforcer.HasPermissionForUser(user, ptype, rule)
+func (this *Permission) HasPermissionForUser(user string, ptype string, rule string) bool {
+    return this.Enforcer.HasPermissionForUser(user, ptype, rule)
 }
 
 /**
  * 全部权限
  */
-func (perm *Permission) GetPermissionsForUser(user string) [][]string {
-    return perm.Enforcer.GetPermissionsForUser(user)
+func (this *Permission) GetPermissionsForUser(user string) [][]string {
+    return this.Enforcer.GetPermissionsForUser(user)
 }
 
 /**
  * 验证用户权限
  */
-func (perm *Permission) Enforce(user string, ptype string, rule string) (bool, error) {
-    return perm.Enforcer.Enforce(user, ptype, rule)
+func (this *Permission) Enforce(user string, ptype string, rule string) (bool, error) {
+    return this.Enforcer.Enforce(user, ptype, rule)
 }

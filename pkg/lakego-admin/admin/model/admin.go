@@ -35,9 +35,9 @@ type Admin struct {
     GroupAccesses []AuthGroupAccess `gorm:"foreignKey:AdminId;references:ID"`
 }
 
-func (m *Admin) BeforeCreate(tx *gorm.DB) error {
+func (this *Admin) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    m.ID = id
+    this.ID = id
 
     return nil
 }

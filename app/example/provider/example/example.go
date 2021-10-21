@@ -17,8 +17,8 @@ type ServiceProvider struct {
 }
 
 // 注册
-func (s *ServiceProvider) Register() {
-    if !s.GetApp().RunningInConsole() {
+func (this *ServiceProvider) Register() {
+    if !this.GetApp().RunningInConsole() {
         fmt.Println("例子 Register 注册")
     }
 }
@@ -26,8 +26,8 @@ func (s *ServiceProvider) Register() {
 /**
  * 引导
  */
-func (s *ServiceProvider) Boot() {
-    if !s.GetApp().RunningInConsole() {
+func (this *ServiceProvider) Boot() {
+    if !this.GetApp().RunningInConsole() {
         fmt.Println("例子 Boot 引导")
     }
 }

@@ -32,14 +32,14 @@ type Exception struct {
 }
 
 // 运行
-func (e *Exception) Try(f func()) *Exception {
-    e.tryHandler = f
+func (this *Exception) Try(f func()) *Exception {
+    this.tryHandler = f
 
-    return e
+    return this
 }
 
 // 运行
-func (e *Exception) Catch(f func(map[string]interface{})) {
+func (this *Exception) Catch(f func(map[string]interface{})) {
     defer func() {
         if err := recover(); err != nil {
 
@@ -53,7 +53,7 @@ func (e *Exception) Catch(f func(map[string]interface{})) {
                     message = fmt.Sprintf("%s", err)
             }
 
-            trace := e.FormatStackTrace(err)
+            trace := this.FormatStackTrace(err)
 
             f(map[string]interface{}{
                 "file": trace[3],
@@ -63,12 +63,12 @@ func (e *Exception) Catch(f func(map[string]interface{})) {
         }
     }()
 
-    tryHandle := e.tryHandler
+    tryHandle := this.tryHandler
     tryHandle()
 }
 
 // 格式化堆栈信息
-func (e *Exception) FormatStackTrace(err interface{}) []string {
+func (this *Exception) FormatStackTrace(err interface{}) []string {
     errs := make([]string, 0)
 
     for i := 1; ; i++ {

@@ -29,13 +29,13 @@ type Route struct {
 }
 
 // 设置
-func (r *Route) With(engine *gin.Engine) {
-    r.routeEngine = engine
+func (this *Route) With(engine *gin.Engine) {
+    this.routeEngine = engine
 }
 
 // 设置
-func (r *Route) Get() *gin.Engine {
-    return r.routeEngine
+func (this *Route) Get() *gin.Engine {
+    return this.routeEngine
 }
 
 // 路由信息
@@ -48,13 +48,13 @@ type RouteInfo struct {
 }
 RoutesInfo []RouteInfo
 */
-func (r *Route) GetRoutes() gin.RoutesInfo {
-    return r.routeEngine.Routes()
+func (this *Route) GetRoutes() gin.RoutesInfo {
+    return this.routeEngine.Routes()
 }
 
 // 路由信息
-func (r *Route) GetRouteMap() map[string]interface{} {
-    routes := r.GetRoutes()
+func (this *Route) GetRouteMap() map[string]interface{} {
+    routes := this.GetRoutes()
 
     newRoutes := make(map[string]interface{})
     for _, v := range routes {

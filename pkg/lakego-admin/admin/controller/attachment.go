@@ -28,7 +28,7 @@ type Attachment struct {
 /**
  * 列表
  */
-func (control *Attachment) Index(ctx *gin.Context) {
+func (this *Attachment) Index(ctx *gin.Context) {
     // 附件模型
     attachModel := model.NewAttachment()
 
@@ -51,15 +51,15 @@ func (control *Attachment) Index(ctx *gin.Context) {
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        attachModel = attachModel.Where("create_time >= ?", control.FormatDate(startTime))
+        attachModel = attachModel.Where("create_time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        attachModel = attachModel.Where("create_time <= ?", control.FormatDate(endTime))
+        attachModel = attachModel.Where("create_time <= ?", this.FormatDate(endTime))
     }
 
-    status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
     if status != -1 {
         attachModel = attachModel.Where("status = ?", status)
     }
@@ -85,7 +85,7 @@ func (control *Attachment) Index(ctx *gin.Context) {
     // 总数
     err := attachModel.Offset(-1).Limit(-1).Count(&total).Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
@@ -96,7 +96,7 @@ func (control *Attachment) Index(ctx *gin.Context) {
     }
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -107,10 +107,10 @@ func (control *Attachment) Index(ctx *gin.Context) {
 /**
  * 详情
  */
-func (control *Attachment) Detail(ctx *gin.Context) {
+func (this *Attachment) Detail(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "文件ID不能为空")
+        this.Error(ctx, "文件ID不能为空")
         return
     }
 
@@ -124,7 +124,7 @@ func (control *Attachment) Detail(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil {
-        control.Error(ctx, "文件信息不存在")
+        this.Error(ctx, "文件信息不存在")
         return
     }
 
@@ -132,16 +132,16 @@ func (control *Attachment) Detail(ctx *gin.Context) {
     result["url"] = url.AttachmentUrl(result["path"].(string), result["disk"].(string))
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", result)
+    this.SuccessWithData(ctx, "获取成功", result)
 }
 
 /**
  * 启用
  */
-func (control *Attachment) Enable(ctx *gin.Context) {
+func (this *Attachment) Enable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "文件ID不能为空")
+        this.Error(ctx, "文件ID不能为空")
         return
     }
 
@@ -153,12 +153,12 @@ func (control *Attachment) Enable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "文件信息不存在")
+        this.Error(ctx, "文件信息不存在")
         return
     }
 
     if result["status"].(int) == 1 {
-        control.Error(ctx, "文件已启用")
+        this.Error(ctx, "文件已启用")
         return
     }
 
@@ -169,21 +169,21 @@ func (control *Attachment) Enable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "文件启用失败")
+        this.Error(ctx, "文件启用失败")
         return
     }
 
     // 数据输出
-    control.Success(ctx, "文件启用成功")
+    this.Success(ctx, "文件启用成功")
 }
 
 /**
  * 禁用
  */
-func (control *Attachment) Disable(ctx *gin.Context) {
+func (this *Attachment) Disable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "文件ID不能为空")
+        this.Error(ctx, "文件ID不能为空")
         return
     }
 
@@ -195,12 +195,12 @@ func (control *Attachment) Disable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "文件信息不存在")
+        this.Error(ctx, "文件信息不存在")
         return
     }
 
     if result["status"].(int) == 0 {
-        control.Error(ctx, "文件已禁用")
+        this.Error(ctx, "文件已禁用")
         return
     }
 
@@ -211,21 +211,21 @@ func (control *Attachment) Disable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "文件禁用失败")
+        this.Error(ctx, "文件禁用失败")
         return
     }
 
     // 数据输出
-    control.Success(ctx, "文件禁用成功")
+    this.Success(ctx, "文件禁用成功")
 }
 
 /**
  * 删除
  */
-func (control *Attachment) Delete(ctx *gin.Context) {
+func (this *Attachment) Delete(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "文件ID不能为空")
+        this.Error(ctx, "文件ID不能为空")
         return
     }
 
@@ -237,7 +237,7 @@ func (control *Attachment) Delete(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "文件信息不存在")
+        this.Error(ctx, "文件信息不存在")
         return
     }
 
@@ -248,7 +248,7 @@ func (control *Attachment) Delete(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "文件删除失败")
+        this.Error(ctx, "文件删除失败")
         return
     }
 
@@ -257,16 +257,16 @@ func (control *Attachment) Delete(ctx *gin.Context) {
         Delete(result["path"].(string))
 
     // 数据输出
-    control.Success(ctx, "文件删除成功")
+    this.Success(ctx, "文件删除成功")
 }
 
 /**
  * 下载码
  */
-func (control *Attachment) DownloadCode(ctx *gin.Context) {
+func (this *Attachment) DownloadCode(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "文件ID不能为空")
+        this.Error(ctx, "文件ID不能为空")
         return
     }
 
@@ -278,7 +278,7 @@ func (control *Attachment) DownloadCode(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "文件信息不存在")
+        this.Error(ctx, "文件信息不存在")
         return
     }
 
@@ -287,7 +287,7 @@ func (control *Attachment) DownloadCode(ctx *gin.Context) {
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "code": code,
     })
 }
@@ -295,16 +295,16 @@ func (control *Attachment) DownloadCode(ctx *gin.Context) {
 /**
  * 下载
  */
-func (control *Attachment) Download(ctx *gin.Context) {
+func (this *Attachment) Download(ctx *gin.Context) {
     code := ctx.Param("code")
     if code == "" {
-        control.ReturnString(ctx, "code值不能为空")
+        this.ReturnString(ctx, "code值不能为空")
         return
     }
 
     fileId, _ := cache.New().Pull(code)
     if fileId == "" {
-        control.ReturnString(ctx, "文件信息不存在")
+        this.ReturnString(ctx, "文件信息不存在")
         return
     }
 
@@ -316,7 +316,7 @@ func (control *Attachment) Download(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.ReturnString(ctx, "文件信息不存在")
+        this.ReturnString(ctx, "文件信息不存在")
         return
     }
 
@@ -324,6 +324,6 @@ func (control *Attachment) Download(ctx *gin.Context) {
     filePath := url.AttachmentPath(result["path"].(string), result["disk"].(string))
 
     // 下载
-    control.DownloadFile(ctx, filePath, result["name"].(string))
+    this.DownloadFile(ctx, filePath, result["name"].(string))
 }
 

@@ -32,9 +32,9 @@ type Attachment struct {
     AddIp           string      `gorm:"column:add_ip;size:50;" json:"add_ip"`
 }
 
-func (m *Attachment) BeforeCreate(tx *gorm.DB) error {
+func (this *Attachment) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    m.ID = id
+    this.ID = id
 
     return nil
 }

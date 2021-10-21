@@ -48,17 +48,17 @@ type Register struct {
 }
 
 // 注册
-func (r *Register) Append(f func() providerInterface.ServiceProvider) {
+func (this *Register) Append(f func() providerInterface.ServiceProvider) {
     lock.Lock()
     defer lock.Unlock()
 
-    r.providers = append(r.providers, f)
+    this.providers = append(this.providers, f)
 }
 
 /**
  * 获取全部
  */
-func (r *Register) GetAll() []func() providerInterface.ServiceProvider {
-    return r.providers
+func (this *Register) GetAll() []func() providerInterface.ServiceProvider {
+    return this.providers
 }
 

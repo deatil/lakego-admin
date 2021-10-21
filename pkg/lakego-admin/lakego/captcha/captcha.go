@@ -26,7 +26,7 @@ type Captcha struct {
 }
 
 // 生成验证码
-func (captcha *Captcha) Make() (string, string, error) {
-    return captcha.Generate()
+func (this *Captcha) Make() (string, string, error) {
+    return this.Generate()
 }
 

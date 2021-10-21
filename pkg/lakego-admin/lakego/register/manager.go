@@ -31,24 +31,24 @@ type Manager struct {
 /**
  * 设置前缀
  */
-func (m *Manager) WithPrefix(prefix string) *Manager {
-    m.prefix = prefix
+func (this *Manager) WithPrefix(prefix string) *Manager {
+    this.prefix = prefix
 
-    return m
+    return this
 }
 
 /**
  * 获取前缀
  */
-func (m *Manager) GetPrefix(prefix string) string {
-    return m.prefix
+func (this *Manager) GetPrefix(prefix string) string {
+    return this.prefix
 }
 
 /**
  * 注册驱动
  */
-func (m *Manager) Register(name string, f func(map[string]interface{}) interface{}) {
-    name = m.prefix + name
+func (this *Manager) Register(name string, f func(map[string]interface{}) interface{}) {
+    name = this.prefix + name
 
     New().With(name, func(conf map[string]interface{}) interface{} {
         return f(conf)
@@ -58,17 +58,17 @@ func (m *Manager) Register(name string, f func(map[string]interface{}) interface
 /**
  * 批量注册驱动
  */
-func (m *Manager) RegisterMany(drivers map[string]func(map[string]interface{}) interface{}) {
+func (this *Manager) RegisterMany(drivers map[string]func(map[string]interface{}) interface{}) {
     for name, f := range drivers {
-        m.Register(name, f)
+        this.Register(name, f)
     }
 }
 
 /**
  * 获取已注册驱动
  */
-func (m *Manager) GetRegister(name string, conf map[string]interface{}, once ...bool) interface{} {
-    name = m.prefix + name
+func (this *Manager) GetRegister(name string, conf map[string]interface{}, once ...bool) interface{} {
+    name = this.prefix + name
 
     var data interface{}
     reg := New()

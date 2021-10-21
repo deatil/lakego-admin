@@ -36,96 +36,96 @@ type Check struct {
 }
 
 // 返回字符
-func (c *Check) String() string {
+func (this *Check) String() string {
     return "check"
 }
 
 // 设置配置
-func (c *Check) WithConfig(config map[string]interface{}) *Check {
-    c.config = config
+func (this *Check) WithConfig(config map[string]interface{}) *Check {
+    this.config = config
 
-    return c
+    return this
 }
 
 // 获取配置
-func (c *Check) GetConfig(name string) interface{} {
-    if data, ok := c.config[name]; ok {
+func (this *Check) GetConfig(name string) interface{} {
+    if data, ok := this.config[name]; ok {
         return data
     }
 
     return nil
 }
 
-func (c *Check) WithDriver(driver interfaces.Driver) *Check {
-    c.driver = driver
+func (this *Check) WithDriver(driver interfaces.Driver) *Check {
+    this.driver = driver
 
-    return c
+    return this
 }
 
 // 批量设置
-func (c *Check) WithData(key string, value string) *Check {
-    c.data[key] = value
+func (this *Check) WithData(key string, value string) *Check {
+    this.data[key] = value
 
-    return c
+    return this
 }
 
 // 批量设置
-func (c *Check) WithDatas(data map[string]string) *Check {
+func (this *Check) WithDatas(data map[string]string) *Check {
     if len(data) > 0{
         for k, v := range data {
-            c.WithData(k, v)
+            this.WithData(k, v)
         }
     }
 
-    return c
+    return this
 }
 
 // 设置过期时间
-func (c *Check) WithTimeout(timeout int64) *Check {
-    c.timeout = timeout
+func (this *Check) WithTimeout(timeout int64) *Check {
+    this.timeout = timeout
 
-    return c
+    return this
 }
 
 // 返回单个
-func (c *Check) GetData(key string) string {
-    return c.data[key]
+func (this *Check) GetData(key string) string {
+    return this.data[key]
 }
 
 // 返回单个 int64
-func (c *Check) GetDataInt64(key string) int64 {
-    data, _ := util.StringToInt64(c.data[key])
+func (this *Check) GetDataInt64(key string) int64 {
+    data, _ := util.StringToInt64(this.data[key])
 
     return data
 }
 
 // 获取时间戳
-func (c *Check) GetTimestamp() int64 {
-    time := c.GetDataInt64(KeyNameTimeStamp)
+func (this *Check) GetTimestamp() int64 {
+    time := this.GetDataInt64(KeyNameTimeStamp)
 
     return time
 }
 
 // 返回随机字符
-func (c *Check) GetNonceStr() string {
-    return c.GetData(KeyNameNonceStr)
+func (this *Check) GetNonceStr() string {
+    return this.GetData(KeyNameNonceStr)
 }
 
 // 获取 AppId
-func (c *Check) GetAppID() string {
-    return c.GetData(KeyNameAppID)
+func (this *Check) GetAppID() string {
+    return this.GetData(KeyNameAppID)
 }
 
 // 获取签名
-func (c *Check) GetSign() string {
-    return c.GetData(KeyNameSign)
+func (this *Check) GetSign() string {
+    return this.GetData(KeyNameSign)
 }
 
 // 获取不包含 sign 字段的数据
-func (c *Check) GetDataWithoutSign() map[string]string {
+func (this *Check) GetDataWithoutSign() map[string]string {
     data := make(map[string]string)
 
-    for k, val := range c.data {
+    for k, val := range this.data {
         if k != KeyNameSign {
             data[k] = val
         }
@@ -135,9 +135,9 @@ func (c *Check) GetDataWithoutSign() map[string]string {
 }
 
 // 必须包含指定的字段参数
-func (c *Check) MustHasKeys(keys ...string) error {
+func (this *Check) MustHasKeys(keys ...string) error {
     for _, key := range keys {
-        if _, hit := c.data[key]; !hit {
+        if _, hit := this.data[key]; !hit {
             return fmt.Errorf("丢失字段 %s", key)
         }
     }
@@ -146,7 +146,7 @@ func (c *Check) MustHasKeys(keys ...string) error {
 }
 
 // 检测字段
-func (c *Check) CheckKeys() error {
+func (this *Check) CheckKeys() error {
     fields := []string{
         KeyNameTimeStamp,
         KeyNameNonceStr,
@@ -154,15 +154,15 @@ func (c *Check) CheckKeys() error {
         KeyNameSign,
     }
 
-    return c.MustHasKeys(fields...)
+    return this.MustHasKeys(fields...)
 }
 
 // 检查时间戳
-func (c *Check) CheckTimeStamp() error {
-    timestamp := c.GetTimestamp()
+func (this *Check) CheckTimeStamp() error {
+    timestamp := this.GetTimestamp()
     thisTime := time.Unix(timestamp, 0)
 
-    if timestamp > time.Now().Unix() || time.Since(thisTime) > time.Duration(c.timeout) * time.Second {
+    if timestamp > time.Now().Unix() || time.Since(thisTime) > time.Duration(this.timeout) * time.Second {
         return fmt.Errorf("时间已过期 %d", timestamp)
     }
 
@@ -170,15 +170,15 @@ func (c *Check) CheckTimeStamp() error {
 }
 
 // 检测数据
-func (c *Check) CheckData() (bool, error) {
+func (this *Check) CheckData() (bool, error) {
     // 检测字段
-    err := c.CheckKeys()
+    err := this.CheckKeys()
     if err != nil {
         return false, err
     }
 
     // 检测时间戳
-    err2 := c.CheckTimeStamp()
+    err2 := this.CheckTimeStamp()
     if err2 != nil {
         return false, err2
     }
@@ -187,6 +187,6 @@ func (c *Check) CheckData() (bool, error) {
 }
 
 // 检测签名
-func (c *Check) CheckSign(data string, signData string) bool {
-    return c.driver.Validate(data, signData)
+func (this *Check) CheckSign(data string, signData string) bool {
+    return this.driver.Validate(data, signData)
 }

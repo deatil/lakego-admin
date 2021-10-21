@@ -21,40 +21,40 @@ func New() *Admin {
     return &Admin{}
 }
 
-func (admin *Admin) WithAccessToken(accessToken string) *Admin {
-    admin.AccessToken = accessToken
-    return admin
+func (this *Admin) WithAccessToken(accessToken string) *Admin {
+    this.AccessToken = accessToken
+    return this
 }
 
-func (admin *Admin) GetAccessToken() string {
-    return admin.AccessToken
+func (this *Admin) GetAccessToken() string {
+    return this.AccessToken
 }
 
-func (admin *Admin) WithId(id string) *Admin {
-    admin.Id = id
-    return admin
+func (this *Admin) WithId(id string) *Admin {
+    this.Id = id
+    return this
 }
 
-func (admin *Admin) GetId() string {
-    return admin.Id
+func (this *Admin) GetId() string {
+    return this.Id
 }
 
-func (admin *Admin) WithData(data map[string]interface{}) *Admin {
-    admin.Data = data
-    return admin
+func (this *Admin) WithData(data map[string]interface{}) *Admin {
+    this.Data = data
+    return this
 }
 
-func (admin *Admin) GetData() map[string]interface{} {
-    return admin.Data
+func (this *Admin) GetData() map[string]interface{} {
+    return this.Data
 }
 
 // 是否为超级管理员
-func (admin *Admin) IsSuperAdministrator() bool {
-    if len(admin.Data) == 0 {
+func (this *Admin) IsSuperAdministrator() bool {
+    if len(this.Data) == 0 {
         return false
     }
 
-    isRoot, ok := admin.Data["is_root"]
+    isRoot, ok := this.Data["is_root"]
 
     if !ok {
         return false
@@ -66,26 +66,26 @@ func (admin *Admin) IsSuperAdministrator() bool {
 
     adminId := config.New("auth").GetString("Auth.AdminId")
 
-    return admin.Id == adminId
+    return this.Id == adminId
 }
 
 // 是否激活
-func (admin *Admin) IsActive() bool {
-    if admin.IsSuperAdministrator() {
+func (this *Admin) IsActive() bool {
+    if this.IsSuperAdministrator() {
         return true
     }
 
-    status := admin.Data["status"]
+    status := this.Data["status"]
     return int(status.(float64)) == 1
 }
 
 // 所属分组是否激活
-func (admin *Admin) IsGroupActive() bool {
-    if admin.IsSuperAdministrator() {
+func (this *Admin) IsGroupActive() bool {
+    if this.IsSuperAdministrator() {
         return true
     }
 
-    adminGroups := admin.Data["Groups"].([]interface{})
+    adminGroups := this.Data["Groups"].([]interface{})
     if len(adminGroups) == 0 {
         return false
     }
@@ -107,8 +107,8 @@ func (admin *Admin) IsGroupActive() bool {
 }
 
 // 当前账号信息
-func (admin *Admin) GetProfile() map[string]interface{} {
-    profile := collection.Collect(admin.Data).
+func (this *Admin) GetProfile() map[string]interface{} {
+    profile := collection.Collect(this.Data).
         Only([]string{
             "id", "name", "nickname",
             "email", "avatar", "introduce",
@@ -116,18 +116,18 @@ func (admin *Admin) GetProfile() map[string]interface{} {
         }).
         ToMap()
 
-    profile["groups"] = admin.GetGroups()
+    profile["groups"] = this.GetGroups()
 
     return profile
 }
 
 // 判断是否有权限
-func (admin *Admin) HasAccess(slug string, method string) bool {
-    if admin.IsSuperAdministrator() {
+func (this *Admin) HasAccess(slug string, method string) bool {
+    if this.IsSuperAdministrator() {
         return true
     }
 
-    can, _ := permission.New().Enforce(admin.Id, slug, method)
+    can, _ := permission.New().Enforce(this.Id, slug, method)
     if can {
         return true
     }
@@ -136,11 +136,11 @@ func (admin *Admin) HasAccess(slug string, method string) bool {
 }
 
 // 当前账号所属分组
-func (admin *Admin) GetGroups() []map[string]interface{} {
+func (this *Admin) GetGroups() []map[string]interface{} {
     groups := make([]map[string]interface{}, 0)
 
     // 格式化分组
-    adminGroups := admin.Data["Groups"].([]interface{})
+    adminGroups := this.Data["Groups"].([]interface{})
 
     groups = collection.
         Collect(adminGroups).
@@ -160,8 +160,8 @@ func (admin *Admin) GetGroups() []map[string]interface{} {
 }
 
 // 当前账号所属分组
-func (admin *Admin) GetGroupIds() []string {
-    adminGroups := admin.Data["Groups"].([]interface{})
+func (this *Admin) GetGroupIds() []string {
+    adminGroups := this.Data["Groups"].([]interface{})
 
     if len(adminGroups) == 0 {
         return []string{}
@@ -176,10 +176,10 @@ func (admin *Admin) GetGroupIds() []string {
 }
 
 // 获取 GroupChildren
-func (admin *Admin) GetGroupChildren() []map[string]interface{} {
+func (this *Admin) GetGroupChildren() []map[string]interface{} {
     list := make([]map[string]interface{}, 0)
 
-    groupids := admin.GetGroupIds()
+    groupids := this.GetGroupIds()
     if len(groupids) == 0 {
         return list
     }
@@ -199,8 +199,8 @@ func (admin *Admin) GetGroupChildren() []map[string]interface{} {
 }
 
 // 获取 GroupChildrenIds
-func (admin *Admin) GetGroupChildrenIds() []string {
-    list := admin.GetGroupChildren()
+func (this *Admin) GetGroupChildrenIds() []string {
+    list := this.GetGroupChildren()
     if len(list) == 0 {
         return []string{}
     }
@@ -214,14 +214,14 @@ func (admin *Admin) GetGroupChildrenIds() []string {
 }
 
 // 获取 rules
-func (admin *Admin) GetRules() []map[string]interface{} {
-    if admin.IsSuperAdministrator() {
+func (this *Admin) GetRules() []map[string]interface{} {
+    if this.IsSuperAdministrator() {
         return authruleRepository.GetAllRule()
     }
 
     list := make([]map[string]interface{}, 0)
 
-    groupids := admin.GetGroupIds()
+    groupids := this.GetGroupIds()
     if len(groupids) == 0 {
         return list
     }
@@ -230,8 +230,8 @@ func (admin *Admin) GetRules() []map[string]interface{} {
 }
 
 // 获取 ruleids
-func (admin *Admin) GetRuleids() []string {
-    list := admin.GetRules()
+func (this *Admin) GetRuleids() []string {
+    list := this.GetRules()
 
     if len(list) == 0 {
         return []string{}
@@ -244,8 +244,8 @@ func (admin *Admin) GetRuleids() []string {
 }
 
 // 获取 slugs
-func (admin *Admin) GetRuleSlugs() []string {
-    list := admin.GetRules()
+func (this *Admin) GetRuleSlugs() []string {
+    list := this.GetRules()
 
     if len(list) == 0 {
         return []string{}

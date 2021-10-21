@@ -76,78 +76,78 @@ type App struct {
 }
 
 // 运行
-func (app *App) Run() {
+func (this *App) Run() {
     // 运行
-    app.runApp()
+    this.runApp()
 }
 
 // 注册服务提供者
-func (app *App) Register(f func() providerInterface.ServiceProvider) {
-    app.Lock.Lock()
-    defer app.Lock.Unlock()
+func (this *App) Register(f func() providerInterface.ServiceProvider) {
+    this.Lock.Lock()
+    defer this.Lock.Unlock()
 
-    app.ServiceProviders = append(app.ServiceProviders, f)
+    this.ServiceProviders = append(this.ServiceProviders, f)
 
     // 启动后注册，直接注册
-    if app.Runned {
+    if this.Runned {
         p := f()
 
-        // 绑定 app 结构体
-        p.WithApp(app)
+        // 绑定 App 结构体
+        p.WithApp(this)
 
         // 路由
-        p.WithRoute(app.RouteEngine)
+        p.WithRoute(this.RouteEngine)
 
         // 注册
         p.Register()
 
         // 引导
-        app.BootService(p)
+        this.BootService(p)
     }
 }
 
 // 批量导入
-func (app *App) Registers(providers []func() providerInterface.ServiceProvider) {
+func (this *App) Registers(providers []func() providerInterface.ServiceProvider) {
     if len(providers) > 0 {
         for _, provider := range providers {
-            app.Register(provider)
+            this.Register(provider)
         }
     }
 }
 
 // 加载服务提供者
-func (app *App) loadServiceProvider() {
-    if len(app.ServiceProviders) > 0 {
-        for _, provider := range app.ServiceProviders {
+func (this *App) loadServiceProvider() {
+    if len(this.ServiceProviders) > 0 {
+        for _, provider := range this.ServiceProviders {
             p := provider()
 
-            // 绑定 app 结构体
-            p.WithApp(app)
+            // 绑定 App 结构体
+            p.WithApp(this)
 
             // 路由
-            p.WithRoute(app.RouteEngine)
+            p.WithRoute(this.RouteEngine)
 
             p.Register()
 
-            app.UsedServiceProviders = append(app.UsedServiceProviders, p)
+            this.UsedServiceProviders = append(this.UsedServiceProviders, p)
         }
     }
 
     // 启动前
-    app.CallBootingCallbacks()
+    this.CallBootingCallbacks()
 
-    if len(app.UsedServiceProviders) > 0 {
-        for _, sp := range app.UsedServiceProviders {
-            app.BootService(sp)
+    if len(this.UsedServiceProviders) > 0 {
+        for _, sp := range this.UsedServiceProviders {
+            this.BootService(sp)
         }
     }
 
     // 启动后
-    app.CallBootedCallbacks()
+    this.CallBootedCallbacks()
 }
 
 // 引导服务
-func (app *App) BootService(s providerInterface.ServiceProvider) {
+func (this *App) BootService(s providerInterface.ServiceProvider) {
     s.CallBootingCallback()
 
     // 启动
@@ -157,61 +157,61 @@ func (app *App) BootService(s providerInterface.ServiceProvider) {
 }
 
 // 设置启动前函数
-func (app *App) WithBooting(f func()) {
-    app.BootingCallbacks = append(app.BootingCallbacks, f)
+func (this *App) WithBooting(f func()) {
+    this.BootingCallbacks = append(this.BootingCallbacks, f)
 }
 
 // 设置启动后函数
-func (app *App) WithBooted(f func()) {
-    app.BootedCallbacks = append(app.BootedCallbacks, f)
+func (this *App) WithBooted(f func()) {
+    this.BootedCallbacks = append(this.BootedCallbacks, f)
 }
 
 // 启动前回调
-func (app *App) CallBootingCallbacks() {
-    for _, callback := range app.BootingCallbacks {
+func (this *App) CallBootingCallbacks() {
+    for _, callback := range this.BootingCallbacks {
         callback()
     }
 }
 
 // 启动后回调
-func (app *App) CallBootedCallbacks() {
-    for _, callback := range app.BootedCallbacks {
+func (this *App) CallBootedCallbacks() {
+    for _, callback := range this.BootedCallbacks {
         callback()
     }
 }
 
 // 设置根脚本
-func (app *App) WithRootCmd(root *cobra.Command) {
-    app.RootCmd = root
+func (this *App) WithRootCmd(root *cobra.Command) {
+    this.RootCmd = root
 }
 
 // 获取根脚本
-func (app *App) GetRootCmd() *cobra.Command {
-    return app.RootCmd
+func (this *App) GetRootCmd() *cobra.Command {
+    return this.RootCmd
 }
 
 // 设置命令行状态
-func (app *App) WithRunningInConsole(console bool) {
-    app.RunInConsole = console
+func (this *App) WithRunningInConsole(console bool) {
+    this.RunInConsole = console
 }
 
 // 获取命令行状态
-func (app *App) RunningInConsole() bool {
-    return app.RunInConsole
+func (this *App) RunningInConsole() bool {
+    return this.RunInConsole
 }
 
 // 设置自定义监听
-func (app *App) WithNetListener(listener net.Listener) *App {
-    app.NetListener = listener
+func (this *App) WithNetListener(listener net.Listener) *App {
+    this.NetListener = listener
 
-    return app
+    return this
 }
 
 // 初始化路由
-func (app *App) runApp() {
+func (this *App) runApp() {
     var r *gin.Engine
 
-    if !app.RunInConsole {
+    if !this.RunInConsole {
         // 模式
         mode := config.New("admin").GetString("Mode")
         if mode != "dev" {
@@ -249,22 +249,22 @@ func (app *App) runApp() {
     route.New().With(r)
 
     // 绑定路由
-    app.RouteEngine = r
+    this.RouteEngine = r
 
     // 设置已启动
-    app.Runned = true
+    this.Runned = true
 
     // 加载服务提供者
-    app.loadServiceProvider()
+    this.loadServiceProvider()
 
     // 不是命令行运行
-    if !app.RunInConsole {
-        app.ServerRun()
+    if !this.RunInConsole {
+        this.ServerRun()
     }
 }
 
 // 服务运行
-func (app *App) ServerRun() {
+func (this *App) ServerRun() {
     conf := config.New("server")
 
     // 运行方式
@@ -279,10 +279,10 @@ func (app *App) ServerRun() {
 
             if servertype == "grace" {
                 // 优雅地关机
-                app.GraceRun(addr)
+                this.GraceRun(addr)
             } else {
                 // gin 自带运行
-                app.RouteEngine.Run(addr)
+                this.RouteEngine.Run(addr)
             }
 
         case "TLS":
@@ -293,37 +293,37 @@ func (app *App) ServerRun() {
             keyFile := conf.GetString("Types.TLS.KeyFile")
 
             // 格式化
-            certFile = app.FormatPath(certFile)
-            keyFile = app.FormatPath(keyFile)
+            certFile = this.FormatPath(certFile)
+            keyFile = this.FormatPath(keyFile)
 
-            app.RouteEngine.RunTLS(addr, certFile, keyFile)
+            this.RouteEngine.RunTLS(addr, certFile, keyFile)
 
         case "Unix":
             // 文件
             file := conf.GetString("Types.Unix.File")
 
             // 格式化
-            file = app.FormatPath(file)
+            file = this.FormatPath(file)
 
-            app.RouteEngine.RunUnix(file)
+            this.RouteEngine.RunUnix(file)
 
         case "Fd":
             // fd
             fd := conf.GetInt("Types.Fd.Fd")
 
-            app.RouteEngine.RunFd(fd)
+            this.RouteEngine.RunFd(fd)
 
         case "NetListener":
-            if app.NetListener != nil {
-                app.RouteEngine.RunListener(app.NetListener)
+            if this.NetListener != nil {
+                this.RouteEngine.RunListener(this.NetListener)
             } else {
                 // 监听
                 typ := conf.GetString("Types.NetListener.Type")
-                port := conf.GetString("Types.NetListener.Port")
+                addr := conf.GetString("Types.NetListener.Addr")
 
-                netListener, _ := net.Listen(typ, port)
+                netListener, _ := net.Listen(typ, addr)
 
-                app.RouteEngine.RunListener(netListener)
+                this.RouteEngine.RunListener(netListener)
             }
 
         default:
@@ -332,10 +332,10 @@ func (app *App) ServerRun() {
 }
 
 // 优雅地关机
-func (app *App) GraceRun(addr string) {
+func (this *App) GraceRun(addr string) {
     srv := &http.Server{
         Addr:    addr,
-        Handler: app.RouteEngine,
+        Handler: this.RouteEngine,
     }
 
     go func() {
@@ -361,7 +361,7 @@ func (app *App) GraceRun(addr string) {
 }
 
 // 格式化文件路径
-func (app *App) FormatPath(file string) string {
+func (this *App) FormatPath(file string) string {
     filename := path.FormatPath(file)
 
     return filename

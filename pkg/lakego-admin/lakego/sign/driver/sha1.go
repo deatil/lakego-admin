@@ -10,17 +10,17 @@ type SHA1 struct {
 }
 
 // 初始化
-func (s *SHA1) Init(conf map[string]interface{}) {
+func (this *SHA1) Init(conf map[string]interface{}) {
 }
 
 // 签名
-func (s *SHA1) Sign(data string) string {
+func (this *SHA1) Sign(data string) string {
     return strings.ToUpper(crypt.SHA1(data))
 }
 
 // 验证
-func (s *SHA1) Validate(data string, signData string) bool {
-    newData := s.Sign(data)
+func (this *SHA1) Validate(data string, signData string) bool {
+    newData := this.Sign(data)
 
     return newData == signData
 }

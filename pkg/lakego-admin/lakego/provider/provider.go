@@ -28,77 +28,77 @@ type ServiceProvider struct {
 }
 
 // 设置
-func (s *ServiceProvider) WithApp(app interface{}) {
-    s.App = app.(appInterface.App)
+func (this *ServiceProvider) WithApp(app interface{}) {
+    this.App = app.(appInterface.App)
 }
 
 // 获取
-func (s *ServiceProvider) GetApp() appInterface.App {
-    return s.App
+func (this *ServiceProvider) GetApp() appInterface.App {
+    return this.App
 }
 
 // 设置
-func (s *ServiceProvider) WithRoute(route *gin.Engine) {
-    s.Route = route
+func (this *ServiceProvider) WithRoute(route *gin.Engine) {
+    this.Route = route
 }
 
 // 获取
-func (s *ServiceProvider) GetRoute() *gin.Engine {
-    return s.Route
+func (this *ServiceProvider) GetRoute() *gin.Engine {
+    return this.Route
 }
 
 // 添加脚本
-func (s *ServiceProvider) AddCommand(cmd *cobra.Command) {
-    if s.App != nil {
-        s.App.GetRootCmd().AddCommand(cmd)
+func (this *ServiceProvider) AddCommand(cmd *cobra.Command) {
+    if this.App != nil {
+        this.App.GetRootCmd().AddCommand(cmd)
     }
 }
 
 // 添加脚本
-func (s *ServiceProvider) AddCommands(cmds []interface{}) {
+func (this *ServiceProvider) AddCommands(cmds []interface{}) {
     for _, cmd := range cmds {
-        s.AddCommand(cmd.(*cobra.Command))
+        this.AddCommand(cmd.(*cobra.Command))
     }
 }
 
 // 添加路由
-func (s *ServiceProvider) AddRoute(f func(*gin.Engine)) {
-    if s.Route != nil {
-        f(s.Route)
+func (this *ServiceProvider) AddRoute(f func(*gin.Engine)) {
+    if this.Route != nil {
+        f(this.Route)
     }
 }
 
 // 设置启动前函数
-func (s *ServiceProvider) WithBooting(f func()) {
-    s.BootingCallback = f
+func (this *ServiceProvider) WithBooting(f func()) {
+    this.BootingCallback = f
 }
 
 // 设置启动后函数
-func (s *ServiceProvider) WithBooted(f func()) {
-    s.BootedCallback = f
+func (this *ServiceProvider) WithBooted(f func()) {
+    this.BootedCallback = f
 }
 
 // 启动前回调
-func (s *ServiceProvider) CallBootingCallback() {
-    if s.BootingCallback != nil {
-        (s.BootingCallback)()
+func (this *ServiceProvider) CallBootingCallback() {
+    if this.BootingCallback != nil {
+        (this.BootingCallback)()
     }
 }
 
 // 启动后回调
-func (s *ServiceProvider) CallBootedCallback() {
-    if s.BootedCallback != nil {
-        (s.BootedCallback)()
+func (this *ServiceProvider) CallBootedCallback() {
+    if this.BootedCallback != nil {
+        (this.BootedCallback)()
     }
 }
 
 // 注册
-func (s *ServiceProvider) Register() {
+func (this *ServiceProvider) Register() {
     // 注册
 }
 
 // 引导
-func (s *ServiceProvider) Boot() {
+func (this *ServiceProvider) Boot() {
     // 引导
 }
 

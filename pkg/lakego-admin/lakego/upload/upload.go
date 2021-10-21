@@ -45,98 +45,98 @@ type Upload struct {
 }
 
 // 设置文件信息
-func (upload *Upload) WithFileinfo(fileinfo *Fileinfo) *Upload {
-    upload.fileinfo = fileinfo
+func (this *Upload) WithFileinfo(fileinfo *Fileinfo) *Upload {
+    this.fileinfo = fileinfo
 
-    return upload
+    return this
 }
 
 // 获取文件信息
-func (upload *Upload) GetFileinfo() *Fileinfo {
-    return upload.fileinfo
+func (this *Upload) GetFileinfo() *Fileinfo {
+    return this.fileinfo
 }
 
 // 设置文件信息2
-func (upload *Upload) WithOpenFileinfo(fileinfo *OpenFileinfo) *Upload {
-    upload.openFileinfo = fileinfo
+func (this *Upload) WithOpenFileinfo(fileinfo *OpenFileinfo) *Upload {
+    this.openFileinfo = fileinfo
 
-    return upload
+    return this
 }
 
 // 获取文件信息2
-func (upload *Upload) GetOpenFileinfo() *OpenFileinfo {
-    return upload.openFileinfo
+func (this *Upload) GetOpenFileinfo() *OpenFileinfo {
+    return this.openFileinfo
 }
 
 // 设置重命名
-func (upload *Upload) WithRename(rename *Rename) *Upload {
-    upload.rename = rename
+func (this *Upload) WithRename(rename *Rename) *Upload {
+    this.rename = rename
 
-    return upload
+    return this
 }
 
 // 获取重命名
-func (upload *Upload) GetRename() *Rename {
-    return upload.rename
+func (this *Upload) GetRename() *Rename {
+    return this.rename
 }
 
 // 设置文件系统
-func (upload *Upload) WithStorage(storager *storage.Storage) *Upload {
-    upload.storage = storager
+func (this *Upload) WithStorage(storager *storage.Storage) *Upload {
+    this.storage = storager
 
-    return upload
+    return this
 }
 
 // 获取文件系统
-func (upload *Upload) GetStorage() *storage.Storage {
-    return upload.storage
+func (this *Upload) GetStorage() *storage.Storage {
+    return this.storage
 }
 
 // 设置文件夹
-func (upload *Upload) WithDir(directory string) *Upload {
-    upload.directory = directory
+func (this *Upload) WithDir(directory string) *Upload {
+    this.directory = directory
 
-    return upload
+    return this
 }
 
 // 获取文件夹
-func (upload *Upload) GetDir() interface{} {
-    return upload.directory
+func (this *Upload) GetDir() interface{} {
+    return this.directory
 }
 
 // 设置权限
-func (upload *Upload) WithPermission(permission string) *Upload {
-    upload.storagePermission = permission
+func (this *Upload) WithPermission(permission string) *Upload {
+    this.storagePermission = permission
 
-    return upload
+    return this
 }
 
 // 设置的文件夹
-func (upload *Upload) GetDirectory() string {
-    if upload.directory != "" {
-        return upload.directory
+func (this *Upload) GetDirectory() string {
+    if this.directory != "" {
+        return this.directory
     }
 
     return ""
 }
 
 // 对外链接
-func (upload *Upload) GetObjectUrl(path string) string {
+func (this *Upload) GetObjectUrl(path string) string {
     if validator.IsURL(path) {
         return path
     }
 
-    return upload.storage.Url(path)
+    return this.storage.Url(path)
 }
 
 // 如果存在重命名
-func (upload *Upload) IfExists(realname string) bool {
-    dir := upload.GetDirectory()
+func (this *Upload) IfExists(realname string) bool {
+    dir := this.GetDirectory()
     if strings.HasSuffix(dir, "/") {
         dir = strings.TrimSuffix(dir, "/")
     }
 
-    if upload.storage.Has(dir + "/" + realname) {
+    if this.storage.Has(dir + "/" + realname) {
         return true
     }
 
@@ -144,11 +144,11 @@ func (upload *Upload) IfExists(realname string) bool {
 }
 
 // 最后文件名
-func (upload *Upload) GetRealname(name string) string {
-    rename := upload.rename.
+func (this *Upload) GetRealname(name string) string {
+    rename := this.rename.
         WithFileName(name).
         WithCheckFileExistsFunc(func(newFilename string) bool {
-            if upload.storage.Has(newFilename) {
+            if this.storage.Has(newFilename) {
                 return true
             }
 
@@ -158,7 +158,7 @@ func (upload *Upload) GetRealname(name string) string {
     realname := rename.GetStoreName()
 
     // 如果存在
-    if upload.IfExists(realname) {
+    if this.IfExists(realname) {
         realname = rename.GenerateUniqueName()
     }
 
@@ -166,23 +166,23 @@ func (upload *Upload) GetRealname(name string) string {
 }
 
 // 上传文件保存
-func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
+func (this *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
     // 保存名称
     name := file.Filename
 
-    realname := upload.GetRealname(name)
+    realname := this.GetRealname(name)
     realname = strings.TrimPrefix(realname, "/")
     realname = strings.TrimSuffix(realname, "/")
 
     // 保存路径
-    path := upload.GetDirectory()
+    path := this.GetDirectory()
     repath := strings.TrimSuffix(path, "/") + "/" + realname
 
     // 保存路径
-    dst := upload.storage.Path(path)
+    dst := this.storage.Path(path)
 
     // 创建文件夹
-    upload.EnsureDir(dst)
+    this.EnsureDir(dst)
 
     // 目录
     dst = strings.TrimSuffix(dst, "/") + "/" + realname
@@ -208,7 +208,7 @@ func (upload *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
 }
 
 // 保存上传的文件
-func (upload *Upload) SaveFile(file *multipart.FileHeader) string {
+func (this *Upload) SaveFile(file *multipart.FileHeader) string {
     tmpFile, err := os.CreateTemp("", "lakego")
     if err != nil {
         return ""
@@ -245,19 +245,19 @@ func (upload *Upload) SaveFile(file *multipart.FileHeader) string {
     // 保存名称
     name := file.Filename
 
-    realname := upload.GetRealname(name)
+    realname := this.GetRealname(name)
 
-    if upload.storagePermission != "" {
-        return upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname, map[string]interface{}{
-            "visibility": upload.storagePermission,
+    if this.storagePermission != "" {
+        return this.storage.PutFileAs(this.GetDirectory(), upFile, realname, map[string]interface{}{
+            "visibility": this.storagePermission,
         })
     }
 
-    return upload.storage.PutFileAs(upload.GetDirectory(), upFile, realname)
+    return this.storage.PutFileAs(this.GetDirectory(), upFile, realname)
 }
 
 // 保存打开的文件
-func (upload *Upload) SaveOpenedFile(file *os.File) string {
+func (this *Upload) SaveOpenedFile(file *os.File) string {
     s, err := file.Stat()
     if err != nil {
         return ""
@@ -266,37 +266,37 @@ func (upload *Upload) SaveOpenedFile(file *os.File) string {
     // 文件名
     name := s.Name()
 
-    realname := upload.GetRealname(name)
+    realname := this.GetRealname(name)
 
-    if upload.storagePermission != "" {
-        return upload.storage.PutFileAs(upload.GetDirectory(), file, realname, map[string]interface{}{
-            "visibility": upload.storagePermission,
+    if this.storagePermission != "" {
+        return this.storage.PutFileAs(this.GetDirectory(), file, realname, map[string]interface{}{
+            "visibility": this.storagePermission,
         })
     }
 
-    return upload.storage.PutFileAs(upload.GetDirectory(), file, realname)
+    return this.storage.PutFileAs(this.GetDirectory(), file, realname)
 }
 
 // 保存文本信息
-func (upload *Upload) SaveContents(contents string, name string) string {
-    realname := upload.GetRealname(name)
+func (this *Upload) SaveContents(contents string, name string) string {
+    realname := this.GetRealname(name)
 
-    if upload.storagePermission != "" {
-        return upload.storage.PutContentsAs(upload.GetDirectory(), contents, realname, map[string]interface{}{
-            "visibility": upload.storagePermission,
+    if this.storagePermission != "" {
+        return this.storage.PutContentsAs(this.GetDirectory(), contents, realname, map[string]interface{}{
+            "visibility": this.storagePermission,
         })
     }
 
-    return upload.storage.PutContentsAs(upload.GetDirectory(), contents, realname)
+    return this.storage.PutContentsAs(this.GetDirectory(), contents, realname)
 }
 
 // 删除
-func (upload *Upload) Destroy(path string) bool {
-    return upload.storage.Delete(path)
+func (this *Upload) Destroy(path string) bool {
+    return this.storage.Delete(path)
 }
 
 // 创建文件夹
-func (upload *Upload) EnsureDir(path string) bool {
+func (this *Upload) EnsureDir(path string) bool {
     err := file.EnsureDir(path)
     if err != nil {
         return false

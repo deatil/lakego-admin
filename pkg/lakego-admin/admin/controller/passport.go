@@ -23,17 +23,17 @@ type Passport struct {
 /**
  * 验证码
  */
-func (control *Passport) Captcha(ctx *gin.Context) {
+func (this *Passport) Captcha(ctx *gin.Context) {
     c := captcha.New()
     id, b64s, err := c.Make()
     if err != nil {
-        control.Error(ctx, "error", code.StatusError)
+        this.Error(ctx, "error", code.StatusError)
     }
 
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
 
-    control.SetHeader(ctx, key, id)
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SetHeader(ctx, key, id)
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "captcha": b64s,
     })
 }
@@ -41,14 +41,14 @@ func (control *Passport) Captcha(ctx *gin.Context) {
 /**
  * 登陆
  */
-func (control *Passport) Login(ctx *gin.Context) {
+func (this *Passport) Login(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
     validateErr := passportValidate.Login(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr, code.LoginError)
+        this.Error(ctx, validateErr, code.LoginError)
         return
     }
 
@@ -62,7 +62,7 @@ func (control *Passport) Login(ctx *gin.Context) {
 
     ok := captcha.New().Verify(captchaId, captchaCode, true)
     if !ok {
-        control.Error(ctx, "验证码错误", code.LoginError)
+        this.Error(ctx, "验证码错误", code.LoginError)
         return
     }
 
@@ -73,14 +73,14 @@ func (control *Passport) Login(ctx *gin.Context) {
         First(&admin).
         Error
     if err != nil {
-        control.Error(ctx, "账号或者密码错误", code.LoginError)
+        this.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
 
     // 验证密码
     checkStatus := authPassword.CheckPassword(admin["password"].(string), password, admin["password_salt"].(string))
     if !checkStatus {
-        control.Error(ctx, "账号或者密码错误", code.LoginError)
+        this.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
 
@@ -96,14 +96,14 @@ func (control *Passport) Login(ctx *gin.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        control.Error(ctx, "授权token生成失败", code.LoginError)
+        this.Error(ctx, "授权token生成失败", code.LoginError)
         return
     }
 
     // 刷新 token
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
-        control.Error(ctx, "刷新token生成失败", code.LoginError)
+        this.Error(ctx, "刷新token生成失败", code.LoginError)
         return
     }
 
@@ -111,7 +111,7 @@ func (control *Passport) Login(ctx *gin.Context) {
     expiresIn := jwter.GetAccessExpiresIn()
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "access_token": accessToken,
         "expires_in": expiresIn,
         "refresh_token": refreshToken,
@@ -121,7 +121,7 @@ func (control *Passport) Login(ctx *gin.Context) {
 /**
  * 刷新 token
  */
-func (control *Passport) RefreshToken(ctx *gin.Context) {
+func (this *Passport) RefreshToken(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -130,7 +130,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {
-        control.Error(ctx, "refreshToken不能为空", code.JwtRefreshTokenFail)
+        this.Error(ctx, "refreshToken不能为空", code.JwtRefreshTokenFail)
         return
     }
 
@@ -138,7 +138,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     refreshTokenPutTime, _ := c.Get(hash.MD5(refreshToken.(string)))
     refreshTokenPutTime = refreshTokenPutTime.(string)
     if refreshTokenPutTime != "" {
-        control.Error(ctx, "refreshToken已失效", code.JwtRefreshTokenFail)
+        this.Error(ctx, "refreshToken已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -149,7 +149,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     // 拿取数据
     adminId := jwter.GetRefreshTokenData(refreshToken.(string), "id")
     if adminId == "" {
-        control.Error(ctx, "刷新Token失败", code.JwtRefreshTokenFail)
+        this.Error(ctx, "刷新Token失败", code.JwtRefreshTokenFail)
         return
     }
 
@@ -161,7 +161,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        control.Error(ctx, "生成 access_token 失败", code.JwtRefreshTokenFail)
+        this.Error(ctx, "生成 access_token 失败", code.JwtRefreshTokenFail)
         return
     }
 
@@ -169,7 +169,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
     expiresIn := jwter.GetAccessExpiresIn()
 
     // 数据输出
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "access_token": accessToken,
         "expires_in": expiresIn,
     })
@@ -178,7 +178,7 @@ func (control *Passport) RefreshToken(ctx *gin.Context) {
 /**
  * 退出
  */
-func (control *Passport) Logout(ctx *gin.Context) {
+func (this *Passport) Logout(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -187,7 +187,7 @@ func (control *Passport) Logout(ctx *gin.Context) {
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {
-        control.Error(ctx, "refreshToken 不能为空", code.JwtRefreshTokenFail)
+        this.Error(ctx, "refreshToken 不能为空", code.JwtRefreshTokenFail)
         return
     }
 
@@ -195,7 +195,7 @@ func (control *Passport) Logout(ctx *gin.Context) {
     refreshTokenPutString, _ := c.Get(hash.MD5(refreshToken.(string)))
     refreshTokenPutString = refreshTokenPutString.(string)
     if refreshTokenPutString != "" {
-        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
+        this.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -206,7 +206,7 @@ func (control *Passport) Logout(ctx *gin.Context) {
     // 拿取数据
     claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken.(string))
     if claimsErr != nil {
-        control.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
+        this.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
         return
     }
 
@@ -220,7 +220,7 @@ func (control *Passport) Logout(ctx *gin.Context) {
 
     nowAdminId, _ := ctx.Get("admin_id")
     if adminId != nowAdminId.(string) {
-        control.Error(ctx, "退出失败", code.JwtRefreshTokenFail)
+        this.Error(ctx, "退出失败", code.JwtRefreshTokenFail)
         return
     }
 
@@ -232,5 +232,5 @@ func (control *Passport) Logout(ctx *gin.Context) {
     c.Put(hash.MD5(refreshToken.(string)), "no", int64(refreshTokenExpiresIn))
 
     // 数据输出
-    control.Success(ctx, "退出成功")
+    this.Success(ctx, "退出成功")
 }

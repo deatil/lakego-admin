@@ -77,41 +77,41 @@ type ServiceProvider struct {
 }
 
 // 注册
-func (s *ServiceProvider) Register() {
+func (this *ServiceProvider) Register() {
     // 脚本
-    s.loadCommand()
+    this.loadCommand()
 
     // 路由
-    s.loadRoute()
+    this.loadRoute()
 }
 
 /**
  * 导入脚本
  */
-func (s *ServiceProvider) loadCommand() {
+func (this *ServiceProvider) loadCommand() {
     // 安装
-    s.AddCommand(cmd.InstallCmd)
+    this.AddCommand(cmd.InstallCmd)
 
     // 重设权限
-    s.AddCommand(cmd.ResetPermissionCmd)
+    this.AddCommand(cmd.ResetPermissionCmd)
 
     // 导入路由信息
-    s.AddCommand(cmd.ImportRouteCmd)
+    this.AddCommand(cmd.ImportRouteCmd)
 
     // 强制将 jwt 的 refreshToken 放入黑名单
-    s.AddCommand(cmd.PassportLogoutCmd)
+    this.AddCommand(cmd.PassportLogoutCmd)
 
     // 重置密码
-    s.AddCommand(cmd.ResetPasswordCmd)
+    this.AddCommand(cmd.ResetPasswordCmd)
 }
 
 /**
  * 导入路由
  */
-func (s *ServiceProvider) loadRoute() {
-    s.AddRoute(func(engine *gin.Engine) {
+func (this *ServiceProvider) loadRoute() {
+    this.AddRoute(func(engine *gin.Engine) {
         // 中间件
-        s.loadMiddleware()
+        this.loadMiddleware()
 
         conf := config.New("admin")
 
@@ -162,7 +162,7 @@ func (s *ServiceProvider) loadRoute() {
 /**
  * 导入中间件
  */
-func (s *ServiceProvider) loadMiddleware() {
+func (this *ServiceProvider) loadMiddleware() {
     m := router.New()
 
     // 导入中间件

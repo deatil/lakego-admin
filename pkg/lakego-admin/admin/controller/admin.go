@@ -38,7 +38,7 @@ type Admin struct {
 /**
  * 列表
  */
-func (control *Admin) Index(ctx *gin.Context) {
+func (this *Admin) Index(ctx *gin.Context) {
     // 模型
     adminModel := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx))
@@ -69,15 +69,15 @@ func (control *Admin) Index(ctx *gin.Context) {
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        adminModel = adminModel.Where("add_time >= ?", control.FormatDate(startTime))
+        adminModel = adminModel.Where("add_time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        adminModel = adminModel.Where("add_time <= ?", control.FormatDate(endTime))
+        adminModel = adminModel.Where("add_time <= ?", this.FormatDate(endTime))
     }
 
-    status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
     if status != -1 {
         adminModel = adminModel.Where("status = ?", status)
     }
@@ -116,11 +116,11 @@ func (control *Admin) Index(ctx *gin.Context) {
         Count(&total).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -131,10 +131,10 @@ func (control *Admin) Index(ctx *gin.Context) {
 /**
  * 详情
  */
-func (control *Admin) Detail(ctx *gin.Context) {
+func (this *Admin) Detail(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
@@ -148,7 +148,7 @@ func (control *Admin) Detail(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "账号不存在")
+        this.Error(ctx, "账号不存在")
         return
     }
 
@@ -176,16 +176,16 @@ func (control *Admin) Detail(ctx *gin.Context) {
     newInfo["groups"] = newInfoGroups
     newInfo["avatar"] = avatar
 
-    control.SuccessWithData(ctx, "获取成功", newInfo)
+    this.SuccessWithData(ctx, "获取成功", newInfo)
 }
 
 /**
  * 管理员权限
  */
-func (control *Admin) Rules(ctx *gin.Context) {
+func (this *Admin) Rules(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
@@ -199,7 +199,7 @@ func (control *Admin) Rules(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "账号不存在")
+        this.Error(ctx, "账号不存在")
         return
     }
 
@@ -214,7 +214,7 @@ func (control *Admin) Rules(ctx *gin.Context) {
 
     rules := adminRepository.GetRules(groupids)
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,
     })
 }
@@ -222,7 +222,7 @@ func (control *Admin) Rules(ctx *gin.Context) {
 /**
  * 添加账号所需分组
  */
-func (control *Admin) Groups(ctx *gin.Context) {
+func (this *Admin) Groups(ctx *gin.Context) {
     adminInfo, _ := ctx.Get("admin")
     adminData := adminInfo.(*admin.Admin)
 
@@ -240,7 +240,7 @@ func (control *Admin) Groups(ctx *gin.Context) {
             Find(&list).
             Error
         if err != nil {
-            control.Error(ctx, "获取失败")
+            this.Error(ctx, "获取失败")
             return
         }
 
@@ -267,7 +267,7 @@ func (control *Admin) Groups(ctx *gin.Context) {
         list = adminData.GetGroupChildren()
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": list,
     })
 }
@@ -275,14 +275,14 @@ func (control *Admin) Groups(ctx *gin.Context) {
 /**
  * 添加
  */
-func (control *Admin) Create(ctx *gin.Context) {
+func (this *Admin) Create(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
     validateErr := adminValidate.Create(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -299,7 +299,7 @@ func (control *Admin) Create(ctx *gin.Context) {
         First(&result).
         Error
     if !(err != nil || len(result) < 1) {
-        control.Error(ctx, "邮箱或者账号已经存在")
+        this.Error(ctx, "邮箱或者账号已经存在")
         return
     }
 
@@ -317,7 +317,7 @@ func (control *Admin) Create(ctx *gin.Context) {
         Create(&insertData).
         Error
     if err2 != nil {
-        control.Error(ctx, "添加账号失败")
+        this.Error(ctx, "添加账号失败")
         return
     }
 
@@ -326,7 +326,7 @@ func (control *Admin) Create(ctx *gin.Context) {
         GroupId: post["group_id"].(string),
     })
 
-    control.SuccessWithData(ctx, "添加账号成功", gin.H{
+    this.SuccessWithData(ctx, "添加账号成功", gin.H{
         "id": insertData.ID,
     })
 }
@@ -334,16 +334,16 @@ func (control *Admin) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (control *Admin) Update(ctx *gin.Context) {
+func (this *Admin) Update(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -355,7 +355,7 @@ func (control *Admin) Update(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -365,7 +365,7 @@ func (control *Admin) Update(ctx *gin.Context) {
 
     validateErr := adminValidate.Update(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -385,7 +385,7 @@ func (control *Admin) Update(ctx *gin.Context) {
         First(&result2).
         Error
     if !(err2 != nil || len(result2) < 1) {
-        control.Error(ctx, "管理员账号或者邮箱已经存在")
+        this.Error(ctx, "管理员账号或者邮箱已经存在")
         return
     }
 
@@ -401,26 +401,26 @@ func (control *Admin) Update(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "账号修改失败")
+        this.Error(ctx, "账号修改失败")
         return
     }
 
-    control.Success(ctx, "账号修改成功")
+    this.Success(ctx, "账号修改成功")
 }
 
 /**
  * 删除
  */
-func (control *Admin) Delete(ctx *gin.Context) {
+func (this *Admin) Delete(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能删除自己的账号")
+        this.Error(ctx, "你不能删除自己的账号")
         return
     }
 
@@ -433,13 +433,13 @@ func (control *Admin) Delete(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
     authAdminId := config.New("auth").GetString("Auth.AdminId")
     if authAdminId == id {
-        control.Error(ctx, "当前账号不能被删除")
+        this.Error(ctx, "当前账号不能被删除")
         return
     }
 
@@ -451,26 +451,26 @@ func (control *Admin) Delete(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "账号删除失败")
+        this.Error(ctx, "账号删除失败")
         return
     }
 
-    control.Success(ctx, "账号删除成功")
+    this.Success(ctx, "账号删除成功")
 }
 
 /**
  * 修改头像
  */
-func (control *Admin) UpdateAvatar(ctx *gin.Context) {
+func (this *Admin) UpdateAvatar(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -482,7 +482,7 @@ func (control *Admin) UpdateAvatar(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -492,7 +492,7 @@ func (control *Admin) UpdateAvatar(ctx *gin.Context) {
 
     validateErr := adminValidate.UpdateAvatar(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -504,26 +504,26 @@ func (control *Admin) UpdateAvatar(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "修改头像失败")
+        this.Error(ctx, "修改头像失败")
         return
     }
 
-    control.Success(ctx, "修改头像成功")
+    this.Success(ctx, "修改头像成功")
 }
 
 /**
  * 修改密码
  */
-func (control *Admin) UpdatePasssword(ctx *gin.Context) {
+func (this *Admin) UpdatePasssword(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -535,7 +535,7 @@ func (control *Admin) UpdatePasssword(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -545,7 +545,7 @@ func (control *Admin) UpdatePasssword(ctx *gin.Context) {
 
     password := post["password"].(string)
     if len(password) != 32 {
-        control.Error(ctx, "密码格式错误")
+        this.Error(ctx, "密码格式错误")
         return
     }
 
@@ -561,26 +561,26 @@ func (control *Admin) UpdatePasssword(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "密码修改失败")
+        this.Error(ctx, "密码修改失败")
         return
     }
 
-    control.Success(ctx, "密码修改成功")
+    this.Success(ctx, "密码修改成功")
 }
 
 /**
  * 启用
  */
-func (control *Admin) Enable(ctx *gin.Context) {
+func (this *Admin) Enable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -592,7 +592,7 @@ func (control *Admin) Enable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -601,7 +601,7 @@ func (control *Admin) Enable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
-        control.Error(ctx, "账号已启用")
+        this.Error(ctx, "账号已启用")
         return
     }
 
@@ -613,26 +613,26 @@ func (control *Admin) Enable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "启用账号失败")
+        this.Error(ctx, "启用账号失败")
         return
     }
 
-    control.Success(ctx, "启用账号成功")
+    this.Success(ctx, "启用账号成功")
 }
 
 /**
  * 禁用
  */
-func (control *Admin) Disable(ctx *gin.Context) {
+func (this *Admin) Disable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -644,7 +644,7 @@ func (control *Admin) Disable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -653,7 +653,7 @@ func (control *Admin) Disable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
-        control.Error(ctx, "账号已禁用")
+        this.Error(ctx, "账号已禁用")
         return
     }
 
@@ -665,27 +665,27 @@ func (control *Admin) Disable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "禁用账号失败")
+        this.Error(ctx, "禁用账号失败")
         return
     }
 
-    control.Success(ctx, "禁用账号成功")
+    this.Success(ctx, "禁用账号成功")
 }
 
 /**
  * 退出
  */
-func (control *Admin) Logout(ctx *gin.Context) {
+func (this *Admin) Logout(ctx *gin.Context) {
     refreshToken := ctx.Param("refreshToken")
     if refreshToken == "" {
-        control.Error(ctx, "refreshToken不能为空")
+        this.Error(ctx, "refreshToken不能为空")
         return
     }
 
     c := cache.New()
 
     if c.Has(hash.MD5(refreshToken)) {
-        control.Error(ctx, "refreshToken已失效")
+        this.Error(ctx, "refreshToken已失效")
         return
     }
 
@@ -696,7 +696,7 @@ func (control *Admin) Logout(ctx *gin.Context) {
     // 拿取数据
     claims, claimsErr := jwter.GetRefreshTokenClaims(refreshToken)
     if claimsErr != nil {
-        control.Error(ctx, "refreshToken 已失效")
+        this.Error(ctx, "refreshToken 已失效")
         return
     }
 
@@ -710,7 +710,7 @@ func (control *Admin) Logout(ctx *gin.Context) {
 
     nowAdminId, _ := ctx.Get("admin_id")
     if refreshAdminid == nowAdminId.(string) {
-        control.Error(ctx, "你不能退出你的账号")
+        this.Error(ctx, "你不能退出你的账号")
         return
     }
 
@@ -723,22 +723,22 @@ func (control *Admin) Logout(ctx *gin.Context) {
             "refresh_ip": helper.GetRequestIp(ctx),
         })
 
-    control.Success(ctx, "账号退出成功")
+    this.Success(ctx, "账号退出成功")
 }
 
 /**
  * 授权
  */
-func (control *Admin) Access(ctx *gin.Context) {
+func (this *Admin) Access(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "账号ID不能为空")
+        this.Error(ctx, "账号ID不能为空")
         return
     }
 
     adminId, _ := ctx.Get("admin_id")
     if id == adminId.(string) {
-        control.Error(ctx, "你不能修改自己的账号")
+        this.Error(ctx, "你不能修改自己的账号")
         return
     }
 
@@ -750,7 +750,7 @@ func (control *Admin) Access(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -760,7 +760,7 @@ func (control *Admin) Access(ctx *gin.Context) {
         Delete(&model.AuthGroupAccess{}).
         Error
     if err2 != nil {
-        control.Error(ctx, "账号授权分组失败")
+        this.Error(ctx, "账号授权分组失败")
         return
     }
 
@@ -802,13 +802,13 @@ func (control *Admin) Access(ctx *gin.Context) {
         model.NewDB().Create(&insertData)
     }
 
-    control.Success(ctx, "账号授权分组成功")
+    this.Success(ctx, "账号授权分组成功")
 }
 
 /**
  * 权限同步
  */
-func (control *Admin) ResetPermission(ctx *gin.Context) {
+func (this *Admin) ResetPermission(ctx *gin.Context) {
     // 清空原始数据
     permission.New().ClearData()
 
@@ -819,7 +819,7 @@ func (control *Admin) ResetPermission(ctx *gin.Context) {
         Find(&ruleList).
         Error
     if err != nil {
-        control.Error(ctx, "权限同步失败")
+        this.Error(ctx, "权限同步失败")
         return
     }
 
@@ -832,7 +832,7 @@ func (control *Admin) ResetPermission(ctx *gin.Context) {
         Find(&groupList).
         Error
     if err2 != nil {
-        control.Error(ctx, "权限同步失败")
+        this.Error(ctx, "权限同步失败")
         return
     }
 
@@ -857,6 +857,6 @@ func (control *Admin) ResetPermission(ctx *gin.Context) {
         }
     }
 
-    control.Success(ctx, "权限同步成功")
+    this.Success(ctx, "权限同步成功")
 }
 

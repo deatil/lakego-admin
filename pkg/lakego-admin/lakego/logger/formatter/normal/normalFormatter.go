@@ -16,7 +16,7 @@ import (
  */
 type NormalFormatter struct {}
 
-func (m *NormalFormatter) Format(entry *logrus.Entry) ([]byte, error){
+func (this *NormalFormatter) Format(entry *logrus.Entry) ([]byte, error){
     var b *bytes.Buffer
     if entry.Buffer != nil {
         b = entry.Buffer

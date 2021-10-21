@@ -64,12 +64,12 @@ type Redis struct {
 }
 
 // 设置
-func (a Redis) Set(key string, value interface{}, expiration int) error {
-    ttl := a.IntTimeToDuration(expiration)
+func (this Redis) Set(key string, value interface{}, expiration int) error {
+    ttl := this.IntTimeToDuration(expiration)
 
-    return a.cache.Set(&cache.Item{
+    return this.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
-        Key:            a.wrapperKey(key),
+        Key:            this.wrapperKey(key),
         Value:          value,
         TTL:            ttl,
         SkipLocalCache: true,
@@ -77,8 +77,8 @@ func (a Redis) Set(key string, value interface{}, expiration int) error {
 }
 
 // 获取
-func (a Redis) Get(key string, value interface{}) error {
-    err := a.cache.Get(context.TODO(), a.wrapperKey(key), value)
+func (this Redis) Get(key string, value interface{}) error {
+    err := this.cache.Get(context.TODO(), this.wrapperKey(key), value)
     if err == cache.ErrCacheMiss {
         err = errors.New("Redis Key No Exist")
     }
@@ -86,13 +86,13 @@ func (a Redis) Get(key string, value interface{}) error {
     return err
 }
 
-func (a Redis) Delete(keys ...string) (bool, error) {
+func (this Redis) Delete(keys ...string) (bool, error) {
     wrapperKeys := make([]string, len(keys))
     for index, key := range keys {
-        wrapperKeys[index] = a.wrapperKey(key)
+        wrapperKeys[index] = this.wrapperKey(key)
     }
 
-    cmd := a.client.Del(context.TODO(), wrapperKeys...)
+    cmd := this.client.Del(context.TODO(), wrapperKeys...)
     if err := cmd.Err(); err != nil {
         return false, err
     }
@@ -100,33 +100,33 @@ func (a Redis) Delete(keys ...string) (bool, error) {
     return cmd.Val() > 0, nil
 }
 
-func (a Redis) Check(keys ...string) (bool, error) {
+func (this Redis) Check(keys ...string) (bool, error) {
     wrapperKeys := make([]string, len(keys))
     for index, key := range keys {
-        wrapperKeys[index] = a.wrapperKey(key)
+        wrapperKeys[index] = this.wrapperKey(key)
     }
 
-    cmd := a.client.Exists(context.TODO(), wrapperKeys...)
+    cmd := this.client.Exists(context.TODO(), wrapperKeys...)
     if err := cmd.Err(); err != nil {
         return false, err
     }
     return cmd.Val() > 0, nil
 }
 
-func (a Redis) Close() error {
-    return a.client.Close()
+func (this Redis) Close() error {
+    return this.client.Close()
 }
 
-func (a Redis) GetClient() *redis.Client {
-    return a.client
+func (this Redis) GetClient() *redis.Client {
+    return this.client
 }
 
 // 包装 key 值
-func (a Redis) wrapperKey(key string) string {
-    return fmt.Sprintf("%s:%s", a.prefix, key)
+func (this Redis) wrapperKey(key string) string {
+    return fmt.Sprintf("%s:%s", this.prefix, key)
 }
 
 // int 时间格式化为 Duration 格式
-func (a Redis) IntTimeToDuration(t int) time.Duration {
+func (this Redis) IntTimeToDuration(t int) time.Duration {
     return time.Second * time.Duration(int64(t))
 }

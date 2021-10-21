@@ -25,17 +25,17 @@ type Alias struct {
 /**
  * 设置中间件
  */
-func (alias *Alias) With(name string, middleware interface{}) *Alias {
-    alias.item[name] = middleware
+func (this *Alias) With(name string, middleware interface{}) *Alias {
+    this.item[name] = middleware
 
-    return alias
+    return this
 }
 
 /**
  * 获取
  */
-func (alias *Alias) Get(name string) interface{} {
-    if middleware, ok := alias.item[name]; ok {
+func (this *Alias) Get(name string) interface{} {
+    if middleware, ok := this.item[name]; ok {
         return middleware
     }
 
@@ -45,7 +45,7 @@ func (alias *Alias) Get(name string) interface{} {
 /**
  * 获取全部
  */
-func (alias *Alias) GetAll() map[string]interface{} {
-    return alias.item
+func (this *Alias) GetAll() map[string]interface{} {
+    return this.item
 }
 

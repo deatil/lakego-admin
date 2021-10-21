@@ -25,9 +25,9 @@ type Rules struct {
     V5    string `gorm:"size:250;"`
 }
 
-func (rules *Rules) BeforeCreate(db *gorm.DB) error {
+func (this *Rules) BeforeCreate(db *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    rules.ID = id
+    this.ID = id
 
     return nil
 }
@@ -55,22 +55,22 @@ type Adapter struct {
 
 // 自定义模型
 func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
-    a := &Adapter{}
+    adapter := &Adapter{}
 
-    model := a.getDefaultModel()
-    a.db = db.Scopes(a.ruleTable(model)).
+    model := adapter.getDefaultModel()
+    adapter.db = db.Scopes(adapter.ruleTable(model)).
         Session(&gorm.Session{Context: db.Statement.Context})
 
-    return a, nil
+    return adapter, nil
 }
 
 // 默认模型
-func (a *Adapter) getDefaultModel() *Rules {
+func (this *Adapter) getDefaultModel() *Rules {
     return &Rules{}
 }
 
 // 规则表格
-func (a *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
+func (this *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
         return db.Model(model)
     }
@@ -106,9 +106,9 @@ func loadPolicyLine(line Rules, model model.Model) {
 }
 
 // LoadPolicy loads policy from database.
-func (a *Adapter) LoadPolicy(model model.Model) error {
+func (this *Adapter) LoadPolicy(model model.Model) error {
     var lines []Rules
-    if err := a.db.Order("ID").Find(&lines).Error; err != nil {
+    if err := this.db.Order("ID").Find(&lines).Error; err != nil {
         return err
     }
 
@@ -120,7 +120,7 @@ func (a *Adapter) LoadPolicy(model model.Model) error {
 }
 
 // LoadFilteredPolicy loads only policy rules that match the filter.
-func (a *Adapter) LoadFilteredPolicy(model model.Model, filter interface{}) error {
+func (this *Adapter) LoadFilteredPolicy(model model.Model, filter interface{}) error {
     var lines []Rules
 
     filterValue, ok := filter.(Filter)
@@ -128,25 +128,25 @@ func (a *Adapter) LoadFilteredPolicy(model model.Model, filter interface{}) erro
         return errors.New("invalid filter type")
     }
 
-    if err := a.db.Scopes(a.filterQuery(a.db, filterValue)).Order("ID").Find(&lines).Error; err != nil {
+    if err := this.db.Scopes(this.filterQuery(this.db, filterValue)).Order("ID").Find(&lines).Error; err != nil {
         return err
     }
 
     for _, line := range lines {
         loadPolicyLine(line, model)
     }
-    a.isFiltered = true
+    this.isFiltered = true
 
     return nil
 }
 
 // IsFiltered returns true if the loaded policy has been filtered.
-func (a *Adapter) IsFiltered() bool {
-    return a.isFiltered
+func (this *Adapter) IsFiltered() bool {
+    return this.isFiltered
 }
 
 // filterQuery builds the gorm query to match the rule filter to use within a scope.
-func (a *Adapter) filterQuery(db *gorm.DB, filter Filter) func(db *gorm.DB) *gorm.DB {
+func (this *Adapter) filterQuery(db *gorm.DB, filter Filter) func(db *gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
         if len(filter.PType) > 0 {
             db = db.Where("ptype in (?)", filter.PType)
@@ -173,8 +173,8 @@ func (a *Adapter) filterQuery(db *gorm.DB, filter Filter) func(db *gorm.DB) *gor
     }
 }
 
-func (a *Adapter) savePolicyLine(ptype string, rule []string) Rules {
-    line := a.getDefaultModel()
+func (this *Adapter) savePolicyLine(ptype string, rule []string) Rules {
+    line := this.getDefaultModel()
 
     line.Ptype = ptype
     if len(rule) > 0 {
@@ -200,11 +200,11 @@ func (a *Adapter) savePolicyLine(ptype string, rule []string) Rules {
 }
 
 // SavePolicy saves policy to database.
-func (a *Adapter) SavePolicy(model model.Model) error {
+func (this *Adapter) SavePolicy(model model.Model) error {
     for ptype, ast := range model["p"] {
         for _, rule := range ast.Policy {
-            line := a.savePolicyLine(ptype, rule)
-            err := a.db.Create(&line).Error
+            line := this.savePolicyLine(ptype, rule)
+            err := this.db.Create(&line).Error
             if err != nil {
                 return err
             }
@@ -213,8 +213,8 @@ func (a *Adapter) SavePolicy(model model.Model) error {
 
     for ptype, ast := range model["g"] {
         for _, rule := range ast.Policy {
-            line := a.savePolicyLine(ptype, rule)
-            err := a.db.Create(&line).Error
+            line := this.savePolicyLine(ptype, rule)
+            err := this.db.Create(&line).Error
             if err != nil {
                 return err
             }
@@ -225,24 +225,24 @@ func (a *Adapter) SavePolicy(model model.Model) error {
 }
 
 // AddPolicy adds a policy rule to the storage.
-func (a *Adapter) AddPolicy(sec string, ptype string, rule []string) error {
-    line := a.savePolicyLine(ptype, rule)
-    err := a.db.Create(&line).Error
+func (this *Adapter) AddPolicy(sec string, ptype string, rule []string) error {
+    line := this.savePolicyLine(ptype, rule)
+    err := this.db.Create(&line).Error
     return err
 }
 
 // RemovePolicy removes a policy rule from the storage.
-func (a *Adapter) RemovePolicy(sec string, ptype string, rule []string) error {
-    line := a.savePolicyLine(ptype, rule)
-    err := a.rawDelete(a.db, line) //can't use db.Delete as we're not using primary key http://jinzhu.me/gorm/crud.html#delete
+func (this *Adapter) RemovePolicy(sec string, ptype string, rule []string) error {
+    line := this.savePolicyLine(ptype, rule)
+    err := this.rawDelete(this.db, line) //can't use db.Delete as we're not using primary key http://jinzhu.me/gorm/crud.html#delete
     return err
 }
 
 // AddPolicies adds multiple policy rules to the storage.
-func (a *Adapter) AddPolicies(sec string, ptype string, rules [][]string) error {
-    return a.db.Transaction(func(tx *gorm.DB) error {
+func (this *Adapter) AddPolicies(sec string, ptype string, rules [][]string) error {
+    return this.db.Transaction(func(tx *gorm.DB) error {
         for _, rule := range rules {
-            line := a.savePolicyLine(ptype, rule)
+            line := this.savePolicyLine(ptype, rule)
             if err := tx.Create(&line).Error; err != nil {
                 return err
             }
@@ -252,11 +252,11 @@ func (a *Adapter) AddPolicies(sec string, ptype string, rules [][]string) error 
 }
 
 // RemovePolicies removes multiple policy rules from the storage.
-func (a *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) error {
-    return a.db.Transaction(func(tx *gorm.DB) error {
+func (this *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) error {
+    return this.db.Transaction(func(tx *gorm.DB) error {
         for _, rule := range rules {
-            line := a.savePolicyLine(ptype, rule)
-            if err := a.rawDelete(tx, line); err != nil { //can't use db.Delete as we're not using primary key http://jinzhu.me/gorm/crud.html#delete
+            line := this.savePolicyLine(ptype, rule)
+            if err := this.rawDelete(tx, line); err != nil { //can't use db.Delete as we're not using primary key http://jinzhu.me/gorm/crud.html#delete
                 return err
             }
         }
@@ -265,8 +265,8 @@ func (a *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) err
 }
 
 // RemoveFilteredPolicy removes policy rules that match the filter from the storage.
-func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
-    line := a.getDefaultModel()
+func (this *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
+    line := this.getDefaultModel()
 
     line.Ptype = ptype
     if fieldIndex <= 0 && 0 < fieldIndex+len(fieldValues) {
@@ -287,11 +287,11 @@ func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int,
     if fieldIndex <= 5 && 5 < fieldIndex+len(fieldValues) {
         line.V5 = fieldValues[5-fieldIndex]
     }
-    err := a.rawDelete(a.db, *line)
+    err := this.rawDelete(this.db, *line)
     return err
 }
 
-func (a *Adapter) rawDelete(db *gorm.DB, line Rules) error {
+func (this *Adapter) rawDelete(db *gorm.DB, line Rules) error {
     queryArgs := []interface{}{line.Ptype}
 
     queryStr := "ptype = ?"
@@ -320,7 +320,7 @@ func (a *Adapter) rawDelete(db *gorm.DB, line Rules) error {
         queryArgs = append(queryArgs, line.V5)
     }
     args := append([]interface{}{queryStr}, queryArgs...)
-    err := db.Delete(a.getDefaultModel(), args...).Error
+    err := db.Delete(this.getDefaultModel(), args...).Error
     return err
 }
 
@@ -356,23 +356,23 @@ func appendWhere(line Rules) (string, []interface{}) {
 }
 
 // UpdatePolicy updates a new policy rule to DB.
-func (a *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy []string) error {
-    oldLine := a.savePolicyLine(ptype, oldRule)
+func (this *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy []string) error {
+    oldLine := this.savePolicyLine(ptype, oldRule)
     queryStr, queryArgs := appendWhere(oldLine)
-    newLine := a.savePolicyLine(ptype, newPolicy)
-    err := a.db.Where(queryStr, queryArgs...).Updates(newLine).Error
+    newLine := this.savePolicyLine(ptype, newPolicy)
+    err := this.db.Where(queryStr, queryArgs...).Updates(newLine).Error
     return err
 }
 
 
 // 关闭
-func (a *Adapter) Close() error {
-    a.db = nil
+func (this *Adapter) Close() error {
+    this.db = nil
     return nil
 }
 
 // 清空
-func (a *Adapter) ClearData() error {
-    a.db.Where("1 = 1").Delete(&Rules{})
+func (this *Adapter) ClearData() error {
+    this.db.Where("1 = 1").Delete(&Rules{})
     return nil
 }

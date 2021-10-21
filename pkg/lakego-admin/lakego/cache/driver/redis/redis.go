@@ -33,7 +33,7 @@ type Redis struct {
 }
 
 // 实例化
-func (r *Redis) Init(config map[string]interface{}) interfaces.Driver {
+func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
     mainDB := config["db"].(int)
     addr := config["host"].(string)
     password := config["password"].(string)
@@ -51,16 +51,16 @@ func (r *Redis) Init(config map[string]interface{}) interfaces.Driver {
         logger.Error(err.Error())
     }
 
-    r.config = config
-    r.ctx = context.Background()
-    r.client = client
+    this.config = config
+    this.ctx = context.Background()
+    this.client = client
 
-    return r
+    return this
 }
 
 // 判断是否存在
-func (r *Redis) Exists(key string) bool {
-    n, err := r.client.Exists(r.ctx, r.WrapperKey(key)).Result()
+func (this *Redis) Exists(key string) bool {
+    n, err := this.client.Exists(this.ctx, this.WrapperKey(key)).Result()
     if err != nil {
         return false
     }
@@ -73,11 +73,11 @@ func (r *Redis) Exists(key string) bool {
 }
 
 // 获取
-func (r *Redis) Get(key string) (interface{}, error) {
+func (this *Redis) Get(key string) (interface{}, error) {
     var val interface{}
     var err error
 
-    val, err = r.client.Get(r.ctx, r.WrapperKey(key)).Result()
+    val, err = this.client.Get(this.ctx, this.WrapperKey(key)).Result()
     if err == redis.Nil {
         return val, errors.New("获取存储数据失败")
     } else if err != nil {
@@ -88,8 +88,8 @@ func (r *Redis) Get(key string) (interface{}, error) {
 }
 
 // 设置
-func (r *Redis) Put(key string, value interface{}, expiration time.Duration) error {
-    err := r.client.Set(r.ctx, r.WrapperKey(key), value, expiration).Err()
+func (this *Redis) Put(key string, value interface{}, expiration time.Duration) error {
+    err := this.client.Set(this.ctx, this.WrapperKey(key), value, expiration).Err()
     if err != nil {
         return errors.New("缓存存储失败")
     }
@@ -98,8 +98,8 @@ func (r *Redis) Put(key string, value interface{}, expiration time.Duration) err
 }
 
 // 存在永久
-func (r *Redis) Forever(key string, value interface{}) error {
-    err := r.client.Set(r.ctx, r.WrapperKey(key), value, 0).Err()
+func (this *Redis) Forever(key string, value interface{}) error {
+    err := this.client.Set(this.ctx, this.WrapperKey(key), value, 0).Err()
     if err != nil {
         return errors.New("缓存存储失败")
     }
@@ -108,13 +108,13 @@ func (r *Redis) Forever(key string, value interface{}) error {
 }
 
 // 增加
-func (r *Redis) Increment(key string, value ...int64) error {
+func (this *Redis) Increment(key string, value ...int64) error {
     var err error
 
     if len(value) > 0 {
-        _, err = r.client.IncrBy(r.ctx, r.WrapperKey(key), value[0]).Result()
+        _, err = this.client.IncrBy(this.ctx, this.WrapperKey(key), value[0]).Result()
     } else {
-        _, err = r.client.Incr(r.ctx, r.WrapperKey(key)).Result()
+        _, err = this.client.Incr(this.ctx, this.WrapperKey(key)).Result()
     }
 
     if err != nil {
@@ -125,13 +125,13 @@ func (r *Redis) Increment(key string, value ...int64) error {
 }
 
 // 减少
-func (r *Redis) Decrement(key string, value ...int64) error {
+func (this *Redis) Decrement(key string, value ...int64) error {
     var err error
 
     if len(value) > 0 {
-        _, err = r.client.DecrBy(r.ctx, r.WrapperKey(key), value[0]).Result()
+        _, err = this.client.DecrBy(this.ctx, this.WrapperKey(key), value[0]).Result()
     } else {
-        _, err = r.client.Decr(r.ctx, r.WrapperKey(key)).Result()
+        _, err = this.client.Decr(this.ctx, this.WrapperKey(key)).Result()
     }
 
     if err != nil {
@@ -142,8 +142,8 @@ func (r *Redis) Decrement(key string, value ...int64) error {
 }
 
 // 删除
-func (r *Redis) Forget(key string) (bool, error) {
-    _, err := r.client.Del(r.ctx, r.WrapperKey(key)).Result()
+func (this *Redis) Forget(key string) (bool, error) {
+    _, err := this.client.Del(this.ctx, this.WrapperKey(key)).Result()
     if err != nil {
         return false, errors.New("删除数据失败")
     }
@@ -152,8 +152,8 @@ func (r *Redis) Forget(key string) (bool, error) {
 }
 
 // 清空
-func (r *Redis) Flush() (bool, error) {
-    _, err := r.client.FlushDB(r.ctx).Result()
+func (this *Redis) Flush() (bool, error) {
+    _, err := this.client.FlushDB(this.ctx).Result()
     if err != nil {
         return false, errors.New("清空数据失败")
     }
@@ -162,51 +162,51 @@ func (r *Redis) Flush() (bool, error) {
 }
 
 // HashSet
-func (r *Redis) HashSet(key string, field string, value string) error {
-    return r.client.HSet(r.ctx, r.WrapperKey(key), field, value).Err()
+func (this *Redis) HashSet(key string, field string, value string) error {
+    return this.client.HSet(this.ctx, this.WrapperKey(key), field, value).Err()
 }
 
 // HashGet
-func (r *Redis) HashGet(key string, field string) (string, error) {
-    return r.client.HGet(r.ctx, r.WrapperKey(key), field).Result()
+func (this *Redis) HashGet(key string, field string) (string, error) {
+    return this.client.HGet(this.ctx, this.WrapperKey(key), field).Result()
 }
 
 // HashDel
-func (r *Redis) HashDel(key string) error {
-    return r.client.HDel(r.ctx, r.WrapperKey(key)).Err()
+func (this *Redis) HashDel(key string) error {
+    return this.client.HDel(this.ctx, this.WrapperKey(key)).Err()
 }
 
 // 过期时间
-func (r *Redis) Expire(key string, expiration time.Duration) error {
-    return r.client.Expire(r.ctx, key, expiration).Err()
+func (this *Redis) Expire(key string, expiration time.Duration) error {
+    return this.client.Expire(this.ctx, key, expiration).Err()
 }
 
 // 设置前缀
-func (r *Redis) SetPrefix(prefix string) {
-    r.prefix = prefix
+func (this *Redis) SetPrefix(prefix string) {
+    this.prefix = prefix
 }
 
 // 获取前缀
-func (r *Redis) GetPrefix() string {
-    return r.prefix
+func (this *Redis) GetPrefix() string {
+    return this.prefix
 }
 
 // 关闭
-func (r *Redis) Close() error {
-    return r.client.Close()
+func (this *Redis) Close() error {
+    return this.client.Close()
 }
 
 // 获取客户端
-func (r *Redis) GetClient() *redis.Client {
-    return r.client
+func (this *Redis) GetClient() *redis.Client {
+    return this.client
 }
 
 // 包装字段
-func (r *Redis) WrapperKey(key string) string {
-    return fmt.Sprintf("%s:%s", r.prefix, key)
+func (this *Redis) WrapperKey(key string) string {
+    return fmt.Sprintf("%s:%s", this.prefix, key)
 }
 
 // int64 时间格式化为 Duration 格式
-func (r *Redis) IntTimeToDuration(t int64) time.Duration {
+func (this *Redis) IntTimeToDuration(t int64) time.Duration {
     return time.Second * time.Duration(t)
 }

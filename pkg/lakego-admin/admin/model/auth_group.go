@@ -30,9 +30,9 @@ type AuthGroup struct {
     GroupAccesses []AuthGroupAccess `gorm:"foreignKey:GroupId;references:ID"`
 }
 
-func (m *AuthGroup) BeforeCreate(tx *gorm.DB) error {
+func (this *AuthGroup) BeforeCreate(tx *gorm.DB) error {
     id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    m.ID = id
+    this.ID = id
 
     return nil
 }

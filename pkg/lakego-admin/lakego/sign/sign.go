@@ -37,20 +37,20 @@ type Sign struct {
 }
 
 // 返回字符
-func (s *Sign) String() string {
+func (this *Sign) String() string {
     return "sign"
 }
 
 // 设置配置
-func (s *Sign) WithConfig(config map[string]interface{}) *Sign {
-    s.config = config
+func (this *Sign) WithConfig(config map[string]interface{}) *Sign {
+    this.config = config
 
-    return s
+    return this
 }
 
 // 获取配置
-func (s *Sign) GetConfig(name string) interface{} {
-    if data, ok := s.config[name]; ok {
+func (this *Sign) GetConfig(name string) interface{} {
+    if data, ok := this.config[name]; ok {
         return data
     }
 
@@ -58,135 +58,135 @@ func (s *Sign) GetConfig(name string) interface{} {
 }
 
 // 设置驱动
-func (s *Sign) WithDriver(driver interfaces.Driver) *Sign {
-    s.driver = driver
+func (this *Sign) WithDriver(driver interfaces.Driver) *Sign {
+    this.driver = driver
 
-    return s
+    return this
 }
 
 // 获取驱动
-func (s *Sign) GetDriver() interfaces.Driver {
-    return s.driver
+func (this *Sign) GetDriver() interfaces.Driver {
+    return this.driver
 }
 
 // 设置签名key
-func (s *Sign) WithSignKey(signKey string) *Sign {
-    s.signKey = signKey
+func (this *Sign) WithSignKey(signKey string) *Sign {
+    this.signKey = signKey
 
-    return s
+    return this
 }
 
 // 获取签名key
-func (s *Sign) GetSignKey() string {
-    return s.signKey
+func (this *Sign) GetSignKey() string {
+    return this.signKey
 }
 
 // 返回单个
-func (s *Sign) GetData(key string) string {
-    return s.data[key]
+func (this *Sign) GetData(key string) string {
+    return this.data[key]
 }
 
 // 返回全部
-func (s *Sign) GetDatas() map[string]string {
-    return s.data
+func (this *Sign) GetDatas() map[string]string {
+    return this.data
 }
 
 // 添加签名体字段和值
-func (s *Sign) WithData(key string, value string) *Sign {
-    s.data[key] = value
+func (this *Sign) WithData(key string, value string) *Sign {
+    this.data[key] = value
 
-    return s
+    return this
 }
 
 // 批量设置
-func (s *Sign) WithDatas(data map[string]string) *Sign {
+func (this *Sign) WithDatas(data map[string]string) *Sign {
     for k, v := range data {
-        s.WithData(k, v)
+        this.WithData(k, v)
     }
 
-    return s
+    return this
 }
 
 // 设置时间戳
-func (s *Sign) WithTimestamp(ts int64) *Sign {
-    return s.WithData(KeyNameTimeStamp, strconv.FormatInt(ts, 10))
+func (this *Sign) WithTimestamp(ts int64) *Sign {
+    return this.WithData(KeyNameTimeStamp, strconv.FormatInt(ts, 10))
 }
 
 // 获取时间戳
-func (s *Sign) GetTimestamp() string {
-    return s.GetData(KeyNameTimeStamp)
+func (this *Sign) GetTimestamp() string {
+    return this.GetData(KeyNameTimeStamp)
 }
 
 // 设置随机字符
-func (s *Sign) WithNonceStr(nonce string) *Sign {
-    return s.WithData(KeyNameNonceStr, nonce)
+func (this *Sign) WithNonceStr(nonce string) *Sign {
+    return this.WithData(KeyNameNonceStr, nonce)
 }
 
 // 返回随机字符
-func (s *Sign) GetNonceStr() string {
-    return s.GetData(KeyNameNonceStr)
+func (this *Sign) GetNonceStr() string {
+    return this.GetData(KeyNameNonceStr)
 }
 
 // 设置 AppId
-func (s *Sign) WithAppID(appID string) *Sign {
-    return s.WithData(KeyNameAppID, appID)
+func (this *Sign) WithAppID(appID string) *Sign {
+    return this.WithData(KeyNameAppID, appID)
 }
 
 // 获取 AppId
-func (s *Sign) GetAppID() string {
-    return s.GetData(KeyNameAppID)
+func (this *Sign) GetAppID() string {
+    return this.GetData(KeyNameAppID)
 }
 
 // 获取要签名的字符
-func (s *Sign) GetSignDataString() (string, error) {
+func (this *Sign) GetSignDataString() (string, error) {
     // 重设时间
-    timestamp := s.GetTimestamp()
+    timestamp := this.GetTimestamp()
     if timestamp == "" {
-        s.WithTimestamp(time.Now().Unix())
+        this.WithTimestamp(time.Now().Unix())
     }
 
     // 重设随机字符
-    nonceStr := s.GetNonceStr()
+    nonceStr := this.GetNonceStr()
     if nonceStr == "" {
-        s.WithNonceStr(util.RandomStr(10))
+        this.WithNonceStr(util.RandomStr(10))
     }
 
     // 重设 appId
-    appId := s.GetAppID()
+    appId := this.GetAppID()
     if appId == "" {
         return "", errors.New("签名 appId 不能为空")
     }
 
-    signData := util.SortKVPairs(s.data)
+    signData := util.SortKVPairs(this.data)
 
-    if s.signKey != "" {
-        signData = signData + "&" + KeyNameSignKey + "=" + s.signKey
+    if this.signKey != "" {
+        signData = signData + "&" + KeyNameSignKey + "=" + this.signKey
     }
 
     return signData, nil
 }
 
 // 生成签名
-func (s *Sign) CreateSign(data string) string {
-    return s.driver.Sign(data)
+func (this *Sign) CreateSign(data string) string {
+    return this.driver.Sign(data)
 }
 
 // 生成签名
-func (s *Sign) MakeSign() (string, error) {
-    signData, err := s.GetSignDataString()
+func (this *Sign) MakeSign() (string, error) {
+    signData, err := this.GetSignDataString()
     if err != nil {
         return "", err
     }
 
-    return s.CreateSign(signData), nil
+    return this.CreateSign(signData), nil
 }
 
 // 获取生成的所有数据
-func (s *Sign) GetSignMap() map[string]string {
-    sign, _ := s.MakeSign()
-    s.WithData(KeyNameSign, sign)
+func (this *Sign) GetSignMap() map[string]string {
+    sign, _ := this.MakeSign()
+    this.WithData(KeyNameSign, sign)
 
-    data := s.GetDatas()
+    data := this.GetDatas()
 
     return data
 }

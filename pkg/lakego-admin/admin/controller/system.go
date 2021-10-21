@@ -22,7 +22,7 @@ type System struct {
 /**
  * 系统信息
  */
-func (control *System) Info(ctx *gin.Context) {
+func (this *System) Info(ctx *gin.Context) {
     hostname, _ := os.Hostname()
     // netInfo, _ := net.Interfaces()
 
@@ -35,17 +35,17 @@ func (control *System) Info(ctx *gin.Context) {
         "hostname": hostname,
     }
 
-    control.SuccessWithData(ctx, "获取成功", data)
+    this.SuccessWithData(ctx, "获取成功", data)
 }
 
 /**
  * 权限 slug 列表
  */
-func (control *System) Rules(ctx *gin.Context) {
+func (this *System) Rules(ctx *gin.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRuleSlugs()
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,
     })
 }

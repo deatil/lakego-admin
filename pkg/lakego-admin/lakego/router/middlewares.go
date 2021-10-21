@@ -25,37 +25,37 @@ type Middlewares struct {
 /**
  * 前置添加
  */
-func (m *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
-    m.middlewares = append(middlewares, m.middlewares...)
+func (this *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
+    this.middlewares = append(middlewares, this.middlewares...)
 
-    return m
+    return this
 }
 
 /**
  * 后置添加
  */
-func (m *Middlewares) Push(middlewares ...interface{}) *Middlewares {
-    m.middlewares = append(m.middlewares, middlewares...)
+func (this *Middlewares) Push(middlewares ...interface{}) *Middlewares {
+    this.middlewares = append(this.middlewares, middlewares...)
 
-    return m
+    return this
 }
 
 /**
  * 覆写
  */
-func (m *Middlewares) With(middlewares []interface{}) *Middlewares {
-    m.middlewares = middlewares
+func (this *Middlewares) With(middlewares []interface{}) *Middlewares {
+    this.middlewares = middlewares
 
-    return m
+    return this
 }
 
 /**
  * 移除
  */
-func (m *Middlewares) Remove(middleware interface{}) bool {
-    for i, item := range m.middlewares {
+func (this *Middlewares) Remove(middleware interface{}) bool {
+    for i, item := range this.middlewares {
         if middleware == item {
-            m.middlewares = append(m.middlewares[:i], m.middlewares[i + 1:]...)
+            this.middlewares = append(this.middlewares[:i], this.middlewares[i + 1:]...)
 
             return true
         }
@@ -67,6 +67,6 @@ func (m *Middlewares) Remove(middleware interface{}) bool {
 /**
  * 全部
  */
-func (m *Middlewares) All() []interface{} {
-    return m.middlewares
+func (this *Middlewares) All() []interface{} {
+    return this.middlewares
 }

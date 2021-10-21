@@ -4,7 +4,7 @@ import (
     "regexp"
     "github.com/go-playground/validator/v10"
     ut "github.com/go-playground/universal-translator"
-    
+
     "github.com/deatil/lakego-admin/lakego/logger"
 )
 
@@ -28,39 +28,39 @@ type Validation struct {
     translationFn validator.TranslationFunc
 }
 
-func (that Validation) registerCustom(v customValidator) error {
-    return that.register(v.validate, v.trans)
+func (this Validation) registerCustom(v customValidator) error {
+    return this.register(v.validate, v.trans)
 }
 
 // 注册关联验证器
-func (that *Validation) register(v *validator.Validate, t ut.Translator) (err error) {
+func (this *Validation) register(v *validator.Validate, t ut.Translator) (err error) {
 
-    if that.validateFn != nil {
-        err = v.RegisterValidation(that.tag, that.validateFn)
+    if this.validateFn != nil {
+        err = v.RegisterValidation(this.tag, this.validateFn)
     }
     if err == nil {
-        err = that.registerTranslation(v, t)
+        err = this.registerTranslation(v, t)
     }
     return
 }
 
 // 以下方法支持
-func (that *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {
+func (this *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {
 
-    if that.translationFn != nil && that.registerFn != nil {
+    if this.translationFn != nil && this.registerFn != nil {
 
-        err = v.RegisterTranslation(that.tag, t, that.registerFn, that.translationFn)
+        err = v.RegisterTranslation(this.tag, t, this.registerFn, this.translationFn)
 
-    } else if that.translationFn != nil && that.registerFn == nil {
+    } else if this.translationFn != nil && this.registerFn == nil {
 
-        err = v.RegisterTranslation(that.tag, t, registrationFunc(that.tag, that.translation, that.override), that.translationFn)
+        err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), this.translationFn)
 
-    } else if that.translationFn == nil && that.registerFn != nil {
+    } else if this.translationFn == nil && this.registerFn != nil {
 
-        err = v.RegisterTranslation(that.tag, t, that.registerFn, translateFunc)
+        err = v.RegisterTranslation(this.tag, t, this.registerFn, translateFunc)
 
     } else {
-        err = v.RegisterTranslation(that.tag, t, registrationFunc(that.tag, that.translation, that.override), translateFunc)
+        err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), translateFunc)
     }
 
     return
@@ -74,13 +74,13 @@ func validationOfRegexp(tag string, regex string, translation string) Validation
             "namespace": "validation",
         }).Error("创建正则自定义验证器: " + tag + " " + regex + " " + err.Error())
     }
-    
+
     // 闭包持有外部变量整个伴随自己的生命周期
     fn := func(fl validator.FieldLevel) bool {
         field := fl.Field().String()
         return re.MatchString(field)
     }
-    
+
     return Validation {
         tag:         tag,
         translation: translation,

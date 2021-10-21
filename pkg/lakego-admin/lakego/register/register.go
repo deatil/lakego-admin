@@ -42,22 +42,22 @@ type Register struct {
 }
 
 // 注册
-func (r *Register) With(name string, f func(map[string]interface{}) interface{}) {
+func (this *Register) With(name string, f func(map[string]interface{}) interface{}) {
     lock.Lock()
     defer lock.Unlock()
 
-    if exists := r.Exists(name); exists {
-        r.Delete(name)
+    if exists := this.Exists(name); exists {
+        this.Delete(name)
     }
 
-    r.registers[name] = f
+    this.registers[name] = f
 }
 
 /**
  * 获取
  */
-func (r *Register) Get(name string, conf map[string]interface{}) interface{} {
-    if value, exists := r.registers[name]; exists {
+func (this *Register) Get(name string, conf map[string]interface{}) interface{} {
+    if value, exists := this.registers[name]; exists {
         return value(conf)
     }
 
@@ -67,21 +67,21 @@ func (r *Register) Get(name string, conf map[string]interface{}) interface{} {
 /**
  * 获取单例
  */
-func (r *Register) GetOnce(name string, conf map[string]interface{}) interface{} {
-    if usedValue, usedExists := r.used[name]; usedExists {
+func (this *Register) GetOnce(name string, conf map[string]interface{}) interface{} {
+    if usedValue, usedExists := this.used[name]; usedExists {
         return usedValue
     }
 
-    r.used[name] = r.Get(name, conf)
+    this.used[name] = this.Get(name, conf)
 
-    return r.used[name]
+    return this.used[name]
 }
 
 /**
  * 判断
  */
-func (r *Register) Exists(name string) bool {
-    if _, exists := r.registers[name]; exists {
+func (this *Register) Exists(name string) bool {
+    if _, exists := this.registers[name]; exists {
         return true
     }
 
@@ -91,7 +91,7 @@ func (r *Register) Exists(name string) bool {
 /**
  * 删除
  */
-func (r *Register) Delete(name string) {
-    delete(r.registers, name)
+func (this *Register) Delete(name string) {
+    delete(this.registers, name)
 }
 

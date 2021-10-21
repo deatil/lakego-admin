@@ -28,7 +28,7 @@ type AuthGroup struct {
 /**
  * 列表
  */
-func (control *AuthGroup) Index(ctx *gin.Context) {
+func (this *AuthGroup) Index(ctx *gin.Context) {
     // 模型
     groupModel := model.NewAuthGroup()
 
@@ -55,15 +55,15 @@ func (control *AuthGroup) Index(ctx *gin.Context) {
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        groupModel = groupModel.Where("add_time >= ?", control.FormatDate(startTime))
+        groupModel = groupModel.Where("add_time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        groupModel = groupModel.Where("add_time <= ?", control.FormatDate(endTime))
+        groupModel = groupModel.Where("add_time <= ?", this.FormatDate(endTime))
     }
 
-    status := control.SwitchStatus(ctx.DefaultQuery("status", ""))
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
     if status != -1 {
         groupModel = groupModel.Where("status = ?", status)
     }
@@ -93,11 +93,11 @@ func (control *AuthGroup) Index(ctx *gin.Context) {
         Count(&total).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -108,7 +108,7 @@ func (control *AuthGroup) Index(ctx *gin.Context) {
 /**
  * 树结构
  */
-func (control *AuthGroup) IndexTree(ctx *gin.Context) {
+func (this *AuthGroup) IndexTree(ctx *gin.Context) {
     list := make([]map[string]interface{}, 0)
 
     err := model.NewAuthGroup().
@@ -117,14 +117,14 @@ func (control *AuthGroup) IndexTree(ctx *gin.Context) {
         Find(&list).
         Error
     if err != nil {
-        control.Error(ctx, "获取失败")
+        this.Error(ctx, "获取失败")
         return
     }
 
     newTree := tree.New()
     list2 := newTree.WithData(list).Build("0", "", 1)
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": list2,
     })
 }
@@ -132,10 +132,10 @@ func (control *AuthGroup) IndexTree(ctx *gin.Context) {
 /**
  * 子列表
  */
-func (control *AuthGroup) IndexChildren(ctx *gin.Context) {
+func (this *AuthGroup) IndexChildren(ctx *gin.Context) {
     id := ctx.Query("id")
     if id == "" {
-        control.Error(ctx, "ID错误")
+        this.Error(ctx, "ID错误")
         return
     }
 
@@ -148,7 +148,7 @@ func (control *AuthGroup) IndexChildren(ctx *gin.Context) {
         data = authGroupRepository.GetChildrenIds(id)
     }
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": data,
     })
 }
@@ -156,10 +156,10 @@ func (control *AuthGroup) IndexChildren(ctx *gin.Context) {
 /**
  * 详情
  */
-func (control *AuthGroup) Detail(ctx *gin.Context) {
+func (this *AuthGroup) Detail(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -172,7 +172,7 @@ func (control *AuthGroup) Detail(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -208,16 +208,16 @@ func (control *AuthGroup) Detail(ctx *gin.Context) {
         }).
         ToMap()
 
-    control.SuccessWithData(ctx, "获取成功", groupData)
+    this.SuccessWithData(ctx, "获取成功", groupData)
 }
 
 /**
  * 删除
  */
-func (control *AuthGroup) Delete(ctx *gin.Context) {
+func (this *AuthGroup) Delete(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -228,7 +228,7 @@ func (control *AuthGroup) Delete(ctx *gin.Context) {
         First(&info).
         Error
     if err != nil {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -239,7 +239,7 @@ func (control *AuthGroup) Delete(ctx *gin.Context) {
         Count(&total).
         Error
     if err2 != nil || total > 0 {
-        control.Error(ctx, "请删除子分组后再操作")
+        this.Error(ctx, "请删除子分组后再操作")
         return
     }
 
@@ -250,24 +250,24 @@ func (control *AuthGroup) Delete(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "信息删除失败")
+        this.Error(ctx, "信息删除失败")
         return
     }
 
-    control.Success(ctx, "信息删除成功")
+    this.Success(ctx, "信息删除成功")
 }
 
 /**
  * 添加
  */
-func (control *AuthGroup) Create(ctx *gin.Context) {
+func (this *AuthGroup) Create(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
 
     validateErr := authGroupValidate.Create(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -294,11 +294,11 @@ func (control *AuthGroup) Create(ctx *gin.Context) {
         Create(&insertData).
         Error
     if err2 != nil {
-        control.Error(ctx, "信息添加失败")
+        this.Error(ctx, "信息添加失败")
         return
     }
 
-    control.SuccessWithData(ctx, "信息添加成功", gin.H{
+    this.SuccessWithData(ctx, "信息添加成功", gin.H{
         "id": insertData.ID,
     })
 }
@@ -306,10 +306,10 @@ func (control *AuthGroup) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (control *AuthGroup) Update(ctx *gin.Context) {
+func (this *AuthGroup) Update(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -320,7 +320,7 @@ func (control *AuthGroup) Update(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -330,7 +330,7 @@ func (control *AuthGroup) Update(ctx *gin.Context) {
 
     validateErr := authGroupValidate.Update(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -356,20 +356,20 @@ func (control *AuthGroup) Update(ctx *gin.Context) {
         }).
         Error
     if err3 != nil {
-        control.Error(ctx, "信息修改失败")
+        this.Error(ctx, "信息修改失败")
         return
     }
 
-    control.Success(ctx, "信息修改成功")
+    this.Success(ctx, "信息修改成功")
 }
 
 /**
  * 排序
  */
-func (control *AuthGroup) Listorder(ctx *gin.Context) {
+func (this *AuthGroup) Listorder(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -380,7 +380,7 @@ func (control *AuthGroup) Listorder(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "账号信息不存在")
+        this.Error(ctx, "账号信息不存在")
         return
     }
 
@@ -403,20 +403,20 @@ func (control *AuthGroup) Listorder(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "更新排序失败")
+        this.Error(ctx, "更新排序失败")
         return
     }
 
-    control.Success(ctx, "更新排序成功")
+    this.Success(ctx, "更新排序成功")
 }
 
 /**
  * 启用
  */
-func (control *AuthGroup) Enable(ctx *gin.Context) {
+func (this *AuthGroup) Enable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -427,7 +427,7 @@ func (control *AuthGroup) Enable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -436,7 +436,7 @@ func (control *AuthGroup) Enable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
-        control.Error(ctx, "信息已启用")
+        this.Error(ctx, "信息已启用")
         return
     }
 
@@ -447,20 +447,20 @@ func (control *AuthGroup) Enable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "启用失败")
+        this.Error(ctx, "启用失败")
         return
     }
 
-    control.Success(ctx, "启用成功")
+    this.Success(ctx, "启用成功")
 }
 
 /**
  * 禁用
  */
-func (control *AuthGroup) Disable(ctx *gin.Context) {
+func (this *AuthGroup) Disable(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -471,7 +471,7 @@ func (control *AuthGroup) Disable(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -480,7 +480,7 @@ func (control *AuthGroup) Disable(ctx *gin.Context) {
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
-        control.Error(ctx, "信息已禁用")
+        this.Error(ctx, "信息已禁用")
         return
     }
 
@@ -491,20 +491,20 @@ func (control *AuthGroup) Disable(ctx *gin.Context) {
         }).
         Error
     if err2 != nil {
-        control.Error(ctx, "禁用失败")
+        this.Error(ctx, "禁用失败")
         return
     }
 
-    control.Success(ctx, "禁用成功")
+    this.Success(ctx, "禁用成功")
 }
 
 /**
  * 授权
  */
-func (control *AuthGroup) Access(ctx *gin.Context) {
+func (this *AuthGroup) Access(ctx *gin.Context) {
     id := ctx.Param("id")
     if id == "" {
-        control.Error(ctx, "ID不能为空")
+        this.Error(ctx, "ID不能为空")
         return
     }
 
@@ -515,7 +515,7 @@ func (control *AuthGroup) Access(ctx *gin.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        control.Error(ctx, "信息不存在")
+        this.Error(ctx, "信息不存在")
         return
     }
 
@@ -525,7 +525,7 @@ func (control *AuthGroup) Access(ctx *gin.Context) {
         Delete(&model.AuthRuleAccess{}).
         Error
     if err2 != nil {
-        control.Error(ctx, "授权失败")
+        this.Error(ctx, "授权失败")
         return
     }
 
@@ -554,6 +554,6 @@ func (control *AuthGroup) Access(ctx *gin.Context) {
         model.NewDB().Create(&insertData)
     }
 
-    control.Success(ctx, "授权成功")
+    this.Success(ctx, "授权成功")
 }
 

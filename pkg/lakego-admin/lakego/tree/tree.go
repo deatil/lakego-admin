@@ -46,55 +46,55 @@ type Tree struct {
     buildChildKey string
 }
 
-func (tree *Tree) WithIcon(icon []string) *Tree {
-    tree.icon = icon
-    return tree
+func (this *Tree) WithIcon(icon []string) *Tree {
+    this.icon = icon
+    return this
 }
 
-func (tree *Tree) WithBlankspace(blankspace string) *Tree {
-    tree.blankspace = blankspace
-    return tree
+func (this *Tree) WithBlankspace(blankspace string) *Tree {
+    this.blankspace = blankspace
+    return this
 }
 
-func (tree *Tree) WithIdKey(idKey string) *Tree {
-    tree.idKey = idKey
-    return tree
+func (this *Tree) WithIdKey(idKey string) *Tree {
+    this.idKey = idKey
+    return this
 }
 
-func (tree *Tree) WithParentidKey(parentidKey string) *Tree {
-    tree.parentidKey = parentidKey
-    return tree
+func (this *Tree) WithParentidKey(parentidKey string) *Tree {
+    this.parentidKey = parentidKey
+    return this
 }
 
-func (tree *Tree) WithSpacerKey(spacerKey string) *Tree {
-    tree.spacerKey = spacerKey
-    return tree
+func (this *Tree) WithSpacerKey(spacerKey string) *Tree {
+    this.spacerKey = spacerKey
+    return this
 }
 
-func (tree *Tree) WithDepthKey(depthKey string) *Tree {
-    tree.depthKey = depthKey
-    return tree
+func (this *Tree) WithDepthKey(depthKey string) *Tree {
+    this.depthKey = depthKey
+    return this
 }
 
-func (tree *Tree) WithHaschildKey(haschildKey string) *Tree {
-    tree.haschildKey = haschildKey
-    return tree
+func (this *Tree) WithHaschildKey(haschildKey string) *Tree {
+    this.haschildKey = haschildKey
+    return this
 }
 
-func (tree *Tree) WithBuildChildKey(buildChildKey string) *Tree {
-    tree.buildChildKey = buildChildKey
-    return tree
+func (this *Tree) WithBuildChildKey(buildChildKey string) *Tree {
+    this.buildChildKey = buildChildKey
+    return this
 }
 
 // 设置数据
-func (tree *Tree) WithData(data []map[string]interface{}) *Tree {
-    tree.data = data
-    return tree
+func (this *Tree) WithData(data []map[string]interface{}) *Tree {
+    this.data = data
+    return this
 }
 
 // 构建数组
-func (tree *Tree) Build(id interface{}, itemprefix string, depth int) []map[string]interface{} {
-    children := tree.GetListChildren(id)
+func (this *Tree) Build(id interface{}, itemprefix string, depth int) []map[string]interface{} {
+    children := this.GetListChildren(id)
     if len(children) <= 0 {
         return nil
     }
@@ -110,21 +110,21 @@ func (tree *Tree) Build(id interface{}, itemprefix string, depth int) []map[stri
         k := ""
 
         if number == total {
-            if len(tree.icon) >= 3 {
-                j = j + tree.icon[2]
+            if len(this.icon) >= 3 {
+                j = j + this.icon[2]
             }
 
             if itemprefix != "" {
-                k = tree.blankspace
+                k = this.blankspace
             }
         } else {
-            if len(tree.icon) >= 2 {
-                j = j + tree.icon[1]
+            if len(this.icon) >= 2 {
+                j = j + this.icon[1]
             }
 
             if itemprefix != "" {
-                if len(tree.icon) >= 1 {
-                    k = tree.icon[0]
+                if len(this.icon) >= 1 {
+                    k = this.icon[0]
                 }
             }
         }
@@ -134,14 +134,14 @@ func (tree *Tree) Build(id interface{}, itemprefix string, depth int) []map[stri
             spacer = itemprefix + j
         }
 
-        info[tree.spacerKey] = spacer
+        info[this.spacerKey] = spacer
 
         // 深度
-        info[tree.depthKey] = depth
+        info[this.depthKey] = depth
 
-        childList := tree.Build(v[tree.idKey], itemprefix + k + tree.blankspace, depth + 1)
+        childList := this.Build(v[this.idKey], itemprefix + k + this.blankspace, depth + 1)
         if len(childList) > 0{
-            info[tree.buildChildKey] = childList
+            info[this.buildChildKey] = childList
         }
 
         data = append(data, info)
@@ -152,8 +152,8 @@ func (tree *Tree) Build(id interface{}, itemprefix string, depth int) []map[stri
 }
 
 // 所有父节点
-func (tree *Tree) GetListParents(id interface{}, sort ...string) []map[string]interface{} {
-    if len(tree.data) <= 0 {
+func (this *Tree) GetListParents(id interface{}, sort ...string) []map[string]interface{} {
+    if len(this.data) <= 0 {
         return nil
     }
 
@@ -162,19 +162,19 @@ func (tree *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
         order = sort[0]
     }
 
-    self := tree.GetListSelf(id)
+    self := this.GetListSelf(id)
     if self == nil {
         return nil
     }
 
-    parentid := self[tree.parentidKey].(string)
+    parentid := self[this.parentidKey].(string)
     newData := make([]map[string]interface{}, 0)
-    for _, v := range tree.data {
-        dataId := v[tree.idKey].(string)
+    for _, v := range this.data {
+        dataId := v[this.idKey].(string)
         if dataId == parentid {
             newData = append(newData, v)
 
-            parents := tree.GetListParents(v[tree.idKey], sort...)
+            parents := this.GetListParents(v[this.idKey], sort...)
             if len(parents) > 0{
                 if order == "asc" {
                     newData = append(newData, parents...)
@@ -189,23 +189,23 @@ func (tree *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
 }
 
 // 获取所有父节点ID列表
-func (tree *Tree) GetListParentIds(id interface{}) []interface{} {
-    data := tree.GetListParents(id)
+func (this *Tree) GetListParentIds(id interface{}) []interface{} {
+    data := this.GetListParents(id)
     if len(data) <= 0 {
         return nil
     }
 
     ids := make([]interface{}, 0)
     for _, v := range data {
-        ids = append(ids, v[tree.idKey])
+        ids = append(ids, v[this.idKey])
     }
 
     return ids
 }
 
 // 获取当前ID的所有子节点
-func (tree *Tree) GetListChildren(id interface{}, sort ...string) []map[string]interface{} {
-    if len(tree.data) <= 0 {
+func (this *Tree) GetListChildren(id interface{}, sort ...string) []map[string]interface{} {
+    if len(this.data) <= 0 {
         return nil
     }
 
@@ -216,12 +216,12 @@ func (tree *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
 
     id = id.(string)
     newData := make([]map[string]interface{}, 0)
-    for _, v := range tree.data {
-        dataParentId := v[tree.parentidKey].(string)
+    for _, v := range this.data {
+        dataParentId := v[this.parentidKey].(string)
         if dataParentId == id {
             newData = append(newData, v)
 
-            children := tree.GetListChildren(v[tree.idKey], sort...)
+            children := this.GetListChildren(v[this.idKey], sort...)
             if len(children) > 0{
                 if order == "asc" {
                     newData = append(newData, children...)
@@ -236,30 +236,30 @@ func (tree *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
 }
 
 // 获取当前ID的所有子节点id列表
-func (tree *Tree) GetListChildIds(id interface{}) []interface{} {
-    data := tree.GetListChildren(id)
+func (this *Tree) GetListChildIds(id interface{}) []interface{} {
+    data := this.GetListChildren(id)
     if len(data) <= 0 {
         return nil
     }
 
     ids := make([]interface{}, 0)
     for _, v := range data {
-        ids = append(ids, v[tree.idKey])
+        ids = append(ids, v[this.idKey])
     }
 
     return ids
 }
 
 // 得到子级第一级数组
-func (tree *Tree) GetListChild(id interface{}) []map[string]interface{} {
-    if len(tree.data) <= 0 {
+func (this *Tree) GetListChild(id interface{}) []map[string]interface{} {
+    if len(this.data) <= 0 {
         return nil
     }
 
     id = id.(string)
     newData := make([]map[string]interface{}, 0)
-    for _, v := range tree.data {
-        dataParentId := v[tree.parentidKey].(string)
+    for _, v := range this.data {
+        dataParentId := v[this.parentidKey].(string)
         if dataParentId == id {
             newData = append(newData, v)
         }
@@ -269,14 +269,14 @@ func (tree *Tree) GetListChild(id interface{}) []map[string]interface{} {
 }
 
 // 获取ID自己的数据
-func (tree *Tree) GetListSelf(id interface{}) map[string]interface{} {
-    if len(tree.data) <= 0 {
+func (this *Tree) GetListSelf(id interface{}) map[string]interface{} {
+    if len(this.data) <= 0 {
         return nil
     }
 
     id = id.(string)
-    for _, v := range tree.data {
-        dataId := v[tree.idKey].(string)
+    for _, v := range this.data {
+        dataId := v[this.idKey].(string)
         if dataId == id {
             return v
         }
@@ -286,7 +286,7 @@ func (tree *Tree) GetListSelf(id interface{}) map[string]interface{} {
 }
 
 // 将 build 的结果返回为二维数组
-func (tree *Tree) BuildFormatList(data []map[string]interface{}, parentid interface{}) []map[string]interface{} {
+func (this *Tree) BuildFormatList(data []map[string]interface{}, parentid interface{}) []map[string]interface{} {
     if len(data) <= 0 {
         return nil
     }
@@ -294,22 +294,22 @@ func (tree *Tree) BuildFormatList(data []map[string]interface{}, parentid interf
     var list []map[string]interface{} = make([]map[string]interface{}, 0)
     for _, v := range data {
         if len(v) > 0 {
-            if _, ok := v[tree.spacerKey]; !ok {
-                v[tree.spacerKey] = ""
+            if _, ok := v[this.spacerKey]; !ok {
+                v[this.spacerKey] = ""
             }
 
             var ok2 bool
             var child interface{}
-            if child, ok2 = v[tree.buildChildKey]; ok2 {
-                v[tree.haschildKey] = 1
+            if child, ok2 = v[this.buildChildKey]; ok2 {
+                v[this.haschildKey] = 1
             } else {
-                v[tree.haschildKey] = 0
+                v[this.haschildKey] = 0
             }
 
-            delete(v, tree.buildChildKey)
+            delete(v, this.buildChildKey)
 
-            if _, ok3 := v[tree.parentidKey]; !ok3 {
-                v[tree.parentidKey] = parentid
+            if _, ok3 := v[this.parentidKey]; !ok3 {
+                v[this.parentidKey] = parentid
             }
 
             list = append(list, v)
@@ -317,7 +317,7 @@ func (tree *Tree) BuildFormatList(data []map[string]interface{}, parentid interf
             if child != nil {
                 children := child.([]map[string]interface{})
                 if len(children) > 0 {
-                    childData := tree.BuildFormatList(children, v[tree.idKey])
+                    childData := this.BuildFormatList(children, v[this.idKey])
                     list = append(list, childData...)
                 }
             }

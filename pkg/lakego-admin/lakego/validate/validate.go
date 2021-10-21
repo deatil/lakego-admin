@@ -122,13 +122,13 @@ type customValidator struct {
 /**
  * 字段验证
  */
-func (v *customValidator) Verify(
+func (this *customValidator) Verify(
     data interface{},
     message map[string]string,
 ) (bool, map[string]string) {
     result := make(map[string]string)
 
-    err := v.validate.Struct(data)
+    err := this.validate.Struct(data)
     if err != nil {
         for _, e := range err.(validator.ValidationErrors) {
             namespace := e.Namespace()
@@ -149,7 +149,7 @@ func (v *customValidator) Verify(
                 typer = ""
             }
 
-            // err.Translate(v.trans)
+            // err.Translate(this.trans)
             if str, ok := message[field + "." + tag]; ok {
                 str = strings.Replace(str, ":namespace", namespace, -1)
                 str = strings.Replace(str, ":field", field, -1)
@@ -181,11 +181,11 @@ func (v *customValidator) Verify(
  * 使用验证器验证字段
  * 当有错误时，此只返回单个错误描述
  */
-func (v *customValidator) VerifyReturnOneError(
+func (this *customValidator) VerifyReturnOneError(
     data interface{},
     message map[string]string,
 ) (bool, string) {
-    _, errs := v.Verify(data, message)
+    _, errs := this.Verify(data, message)
 
     if len(errs) > 0 {
         for _, err := range errs {
@@ -199,7 +199,7 @@ func (v *customValidator) VerifyReturnOneError(
 /**
  * map 验证
  */
-func (v *customValidator) ValidateMap(
+func (this *customValidator) ValidateMap(
     data map[string]interface{},
     rules map[string]interface{},
     message map[string]string,
@@ -207,7 +207,7 @@ func (v *customValidator) ValidateMap(
     result := make(map[string]string)
 
     // 检测结果
-    errs := v.validate.ValidateMap(data, rules)
+    errs := this.validate.ValidateMap(data, rules)
     if len(errs) > 0 {
         // 字段，错误
         for field, err := range errs {
@@ -255,12 +255,12 @@ func (v *customValidator) ValidateMap(
  * 使用验证器验证字段
  * 当有错误时，此只返回单个错误描述
  */
-func (v *customValidator) ValidateMapReturnOneError(
+func (this *customValidator) ValidateMapReturnOneError(
     data map[string]interface{},
     rules map[string]interface{},
     message map[string]string,
 ) (bool, string) {
-    _, errs := v.ValidateMap(data, rules, message)
+    _, errs := this.ValidateMap(data, rules, message)
 
     if len(errs) > 0 {
         for _, err := range errs {
@@ -272,8 +272,8 @@ func (v *customValidator) ValidateMapReturnOneError(
 }
 
 // 单独判断
-func (v *customValidator) Var(data string, rule string) (bool, error) {
-    err := v.validate.Var(data, rule)
+func (this *customValidator) Var(data string, rule string) (bool, error) {
+    err := this.validate.Var(data, rule)
     if err != nil {
         return false, err
     }

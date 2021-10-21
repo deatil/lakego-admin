@@ -31,17 +31,17 @@ type Redis struct {
 }
 
 // 设置配置
-func (r *Redis) WithConfig(config map[string]interface{}) *Redis {
-    r.config = config
+func (this *Redis) WithConfig(config map[string]interface{}) *Redis {
+    this.config = config
 
-    return r
+    return this
 }
 
 // 初始化
-func (r *Redis) Init() {
-    DB := r.config["db"].(int)
-    addr := r.config["addr"].(string)
-    password := r.config["password"].(string)
+func (this *Redis) Init() {
+    DB := this.config["db"].(int)
+    addr := this.config["addr"].(string)
+    password := this.config["password"].(string)
 
     client := redis.NewClient(&redis.Options{
         Addr:     addr,
@@ -62,19 +62,19 @@ func (r *Redis) Init() {
     })
 
     // 保存缓存句柄
-    r.cache = rcache
+    this.cache = rcache
 
     // 保存客户端
-    r.client = client
+    this.client = client
 }
 
 // 设置
-func (r *Redis) Set(id string, value string) error {
-    ttl := time.Second * time.Duration(r.config["ttl"].(int))
+func (this *Redis) Set(id string, value string) error {
+    ttl := time.Second * time.Duration(this.config["ttl"].(int))
 
-    r.cache.Set(&cache.Item{
+    this.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
-        Key:            r.formatKey(id),
+        Key:            this.formatKey(id),
         Value:          value,
         TTL:            ttl,
         SkipLocalCache: true,
@@ -84,32 +84,32 @@ func (r *Redis) Set(id string, value string) error {
 }
 
 // 获取
-func (r *Redis) Get(id string, clear bool) string {
+func (this *Redis) Get(id string, clear bool) string {
     var (
-        key = r.formatKey(id)
+        key = this.formatKey(id)
         val string
     )
 
-    err := r.cache.Get(context.TODO(), key, &val)
+    err := this.cache.Get(context.TODO(), key, &val)
     if err != nil {
         return ""
     }
 
     if clear {
-        r.client.Del(context.TODO(), key)
+        this.client.Del(context.TODO(), key)
     }
 
     return val
 }
 
 // 验证
-func (r *Redis) Verify(id, answer string, clear bool) bool {
-    v := r.Get(id, clear)
+func (this *Redis) Verify(id, answer string, clear bool) bool {
+    v := this.Get(id, clear)
     return v == answer
 }
 
 // 获取格式化的值
-func (r *Redis) formatKey(v string) string {
-    return r.config["prefix"].(string) + ":" + v
+func (this *Redis) formatKey(v string) string {
+    return this.config["prefix"].(string) + ":" + v
 }
 

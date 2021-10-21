@@ -48,54 +48,54 @@ type ContextWrapper struct {
     Ctx *gin.Context
 }
 
-func (that *ContextWrapper) ResponseJson(json interface{}) {
-    that.Ctx.JSON(http.StatusAccepted, &json)
+func (this *ContextWrapper) ResponseJson(json interface{}) {
+    this.Ctx.JSON(http.StatusAccepted, &json)
 }
 
-func (that *ContextWrapper) ResponseString(str string) {
-    that.Ctx.String(http.StatusAccepted, str)
+func (this *ContextWrapper) ResponseString(str string) {
+    this.Ctx.String(http.StatusAccepted, str)
 }
 
-func (that *ContextWrapper) Unauthorized() {
-    that.Ctx.AbortWithStatus(http.StatusUnauthorized)
+func (this *ContextWrapper) Unauthorized() {
+    this.Ctx.AbortWithStatus(http.StatusUnauthorized)
 }
 
-func (that *ContextWrapper) Forbidden() {
-    that.Ctx.AbortWithStatus(http.StatusForbidden)
+func (this *ContextWrapper) Forbidden() {
+    this.Ctx.AbortWithStatus(http.StatusForbidden)
 }
 
-func (that *ContextWrapper) Query(key string) string {
-    return that.Ctx.Query(key)
+func (this *ContextWrapper) Query(key string) string {
+    return this.Ctx.Query(key)
 }
 
-func (that *ContextWrapper) DefaultQuery(key string, def interface{}) string {
-    return that.Ctx.DefaultQuery(key, cast.ToString(def))
+func (this *ContextWrapper) DefaultQuery(key string, def interface{}) string {
+    return this.Ctx.DefaultQuery(key, cast.ToString(def))
 }
 
-func (that *ContextWrapper) Param(key string) string {
-    return that.Ctx.Param(key)
+func (this *ContextWrapper) Param(key string) string {
+    return this.Ctx.Param(key)
 }
 
-func (that *ContextWrapper) JSON(code int, data interface{}) {
-    that.Ctx.JSON(code, data)
+func (this *ContextWrapper) JSON(code int, data interface{}) {
+    this.Ctx.JSON(code, data)
 }
 
-func (that *ContextWrapper) BindJSON(i interface{}) error {
-    return that.Ctx.BindJSON(i)
+func (this *ContextWrapper) BindJSON(i interface{}) error {
+    return this.Ctx.BindJSON(i)
 }
 
-func (that *ContextWrapper) ShouldBind(i interface{}) error {
-    return that.Ctx.ShouldBind(i)
+func (this *ContextWrapper) ShouldBind(i interface{}) error {
+    return this.Ctx.ShouldBind(i)
 }
 
-func (that *ContextWrapper) ShouldBindQuery(i interface{}) error {
-    return that.Ctx.ShouldBindQuery(i)
+func (this *ContextWrapper) ShouldBindQuery(i interface{}) error {
+    return this.Ctx.ShouldBindQuery(i)
 }
 
-func (that *ContextWrapper) GetQueryArray(key string) ([]string, bool) {
-    return that.Ctx.GetQueryArray(key)
+func (this *ContextWrapper) GetQueryArray(key string) ([]string, bool) {
+    return this.Ctx.GetQueryArray(key)
 }
 
-func (that *ContextWrapper) PostForm(key string) string {
-    return that.Ctx.PostForm(key)
+func (this *ContextWrapper) PostForm(key string) string {
+    return this.Ctx.PostForm(key)
 }

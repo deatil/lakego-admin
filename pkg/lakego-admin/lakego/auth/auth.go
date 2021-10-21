@@ -32,7 +32,7 @@ type Auth struct {
 /**
  * 获取鉴权 token 过期时间
  */
-func (auth *Auth) GetAccessExpiresIn() int {
+func (this *Auth) GetAccessExpiresIn() int {
     time := config.New("auth").GetInt("Passport.AccessExpiresIn")
     return time
 }
@@ -40,21 +40,21 @@ func (auth *Auth) GetAccessExpiresIn() int {
 /**
  * 获取刷新 token 过期时间
  */
-func (auth *Auth) GetRefreshExpiresIn() int {
+func (this *Auth) GetRefreshExpiresIn() int {
     time := config.New("auth").GetInt("Passport.RefreshExpiresIn")
     return time
 }
 
 // 设置自定义载荷
-func (auth *Auth) WithClaim(key string, value interface{}) *Auth {
-    auth.claims[key] = value
-    return auth
+func (this *Auth) WithClaim(key string, value interface{}) *Auth {
+    this.claims[key] = value
+    return this
 }
 
 /**
  * 生成鉴权 token
  */
-func (auth *Auth) MakeJWT() *jwter.JWT {
+func (this *Auth) MakeJWT() *jwter.JWT {
     conf := config.New("auth")
 
     aud := conf.GetString("Jwt.Aud")
@@ -86,8 +86,8 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
         WithPublicKey(publicKey).
         WithPrivateKeyPassword(privateKeyPassword)
 
-    if len(auth.claims) > 0 {
-        for k, v := range auth.claims {
+    if len(this.claims) > 0 {
+        for k, v := range this.claims {
             jwtHandler.WithClaim(k, v)
         }
     }
@@ -98,8 +98,8 @@ func (auth *Auth) MakeJWT() *jwter.JWT {
 /**
  * 生成 token
  */
-func (auth *Auth) MakeToken(claims map[string]string) (token string, err error) {
-    jwtHandle := auth.MakeJWT()
+func (this *Auth) MakeToken(claims map[string]string) (token string, err error) {
+    jwtHandle := this.MakeJWT()
 
     if len(claims) > 0 {
         for k, v := range claims {
@@ -115,18 +115,18 @@ func (auth *Auth) MakeToken(claims map[string]string) (token string, err error) 
 /**
  * 生成鉴权 token
  */
-func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
+func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
     conf := config.New("auth")
 
     jti := conf.GetString("Passport.AccessTokenId")
-    exp := auth.GetAccessExpiresIn()
+    exp := this.GetAccessExpiresIn()
 
     exp2 := int64(exp)
 
     passphrase := conf.GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
 
-    jwtHandle := auth.
+    jwtHandle := this.
         MakeJWT().
         WithExp(exp2).
         WithJti(jti)
@@ -149,18 +149,18 @@ func (auth *Auth) MakeAccessToken(claims map[string]string) (token string, err e
 /**
  * 生成刷新 token
  */
-func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
+func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
     conf := config.New("auth")
 
     jti := conf.GetString("Passport.RefreshTokenId")
-    exp := auth.GetRefreshExpiresIn()
+    exp := this.GetRefreshExpiresIn()
 
     exp2 := int64(exp)
 
     passphrase := conf.GetString("Jwt.Passphrase")
     passphrase = base64.Decode(passphrase)
 
-    jwtHandle := auth.
+    jwtHandle := this.
         MakeJWT().
         WithExp(exp2).
         WithJti(jti)
@@ -183,10 +183,10 @@ func (auth *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 /**
  * 获取鉴权 token
  */
-func (auth *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
+func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.AccessTokenId")
 
-    jwter := auth.MakeJWT().WithJti(jti)
+    jwter := this.MakeJWT().WithJti(jti)
 
     parsedToken, err := jwter.ParseToken(token)
     if err != nil {
@@ -222,10 +222,10 @@ func (auth *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapCla
 /**
  * 获取刷新 token
  */
-func (auth *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
+func (this *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := config.New("auth").GetString("Passport.RefreshTokenId")
 
-    jwter := auth.MakeJWT().WithJti(jti)
+    jwter := this.MakeJWT().WithJti(jti)
 
     parsedToken, err := jwter.ParseToken(token)
     if err != nil {
@@ -261,13 +261,13 @@ func (auth *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapCl
 /**
  * 获取鉴权 token 所在 userid
  */
-func (auth *Auth) GetAccessTokenData(token string, key string, verify ...bool) string {
-    claims, err := auth.GetAccessTokenClaims(token, verify...)
+func (this *Auth) GetAccessTokenData(token string, key string, verify ...bool) string {
+    claims, err := this.GetAccessTokenClaims(token, verify...)
     if err != nil {
         return ""
     }
 
-    data := auth.GetDataFromTokenClaims(claims, key)
+    data := this.GetDataFromTokenClaims(claims, key)
 
     return data
 }
@@ -275,13 +275,13 @@ func (auth *Auth) GetAccessTokenData(token string, key string, verify ...bool) s
 /**
  * 获取刷新 token 所在 userid
  */
-func (auth *Auth) GetRefreshTokenData(token string, key string, verify ...bool) string {
-    claims, err := auth.GetRefreshTokenClaims(token, verify...)
+func (this *Auth) GetRefreshTokenData(token string, key string, verify ...bool) string {
+    claims, err := this.GetRefreshTokenClaims(token, verify...)
     if err != nil {
         return ""
     }
 
-    data := auth.GetDataFromTokenClaims(claims, key)
+    data := this.GetDataFromTokenClaims(claims, key)
 
     return data
 
@@ -290,14 +290,14 @@ func (auth *Auth) GetRefreshTokenData(token string, key string, verify ...bool) 
 /**
  * 从 Claims 获取数据
  */
-func (auth *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface{} {
+func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface{} {
     return claims[key]
 }
 
 /**
  * 从 TokenClaims 获取数据
  */
-func (auth *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
+func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
     data := claims[key].(string)
 
     passphrase := config.New("auth").GetString("Jwt.Passphrase")

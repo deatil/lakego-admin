@@ -20,29 +20,29 @@ type Aes struct {
 }
 
 // 初始化
-func (a *Aes) Init(conf map[string]interface{}) {
+func (this *Aes) Init(conf map[string]interface{}) {
     if key, ok := conf["key"]; ok {
-        a.key = key.(string)
+        this.key = key.(string)
     }
 
     if iv, ok := conf["iv"]; ok {
-        a.iv = iv.(string)
+        this.iv = iv.(string)
     }
 }
 
 // 签名
-func (a *Aes) Sign(data string) string {
+func (this *Aes) Sign(data string) string {
     sha1Data := strings.ToUpper(crypt.SHA1(data))
-    cryptData, _ := crypt.AesEncrypt(sha1Data, []byte(a.key), a.iv)
+    cryptData, _ := crypt.AesEncrypt(sha1Data, []byte(this.key), this.iv)
 
     return cryptData
 }
 
 // 验证
-func (a *Aes) Validate(data string, signData string) bool {
+func (this *Aes) Validate(data string, signData string) bool {
     newData := strings.ToUpper(crypt.SHA1(data))
 
-    newSignData, _ := crypt.AesDecrypt(signData, []byte(a.key), a.iv)
+    newSignData, _ := crypt.AesDecrypt(signData, []byte(this.key), this.iv)
 
     return newData == newSignData
 }

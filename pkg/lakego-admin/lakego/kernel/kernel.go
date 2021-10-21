@@ -49,24 +49,24 @@ type Kernel struct {
 }
 
 // 执行
-func (kernel *Kernel) Terminate() {
+func (this *Kernel) Terminate() {
     args := os.Args
 
     if len(args) > 1 {
-        kernel.RunCmd()
+        this.RunCmd()
     } else {
-        kernel.RunServer()
+        this.RunServer()
     }
 }
 
 // 运行服务
-func (kernel *Kernel) RunServer() {
-    kernel.RunApp(false)
+func (this *Kernel) RunServer() {
+    this.RunApp(false)
 }
 
 // 加载脚本
-func (kernel *Kernel) RunCmd() {
-    kernel.RunApp(true)
+func (this *Kernel) RunCmd() {
+    this.RunApp(true)
 
     if err := rootCmd.Execute(); err != nil {
         os.Exit(-1)
@@ -74,36 +74,36 @@ func (kernel *Kernel) RunCmd() {
 }
 
 // 添加服务提供者
-func (kernel *Kernel) WithServiceProvider(f func() providerInterface.ServiceProvider) *Kernel {
-    kernel.providers = append(kernel.providers, f)
+func (this *Kernel) WithServiceProvider(f func() providerInterface.ServiceProvider) *Kernel {
+    this.providers = append(this.providers, f)
 
-    return kernel
+    return this
 }
 
 // 批量添加服务提供者
-func (kernel *Kernel) WithServiceProviders(funcs []func() providerInterface.ServiceProvider) *Kernel {
+func (this *Kernel) WithServiceProviders(funcs []func() providerInterface.ServiceProvider) *Kernel {
     if len(funcs) > 0 {
         for _, f := range funcs {
-            kernel.WithServiceProvider(f)
+            this.WithServiceProvider(f)
         }
     }
 
-    return kernel
+    return this
 }
 
 // 设置自定义监听
-func (kernel *Kernel) WithNetListener(listener net.Listener) *Kernel {
-    kernel.NetListener = listener
+func (this *Kernel) WithNetListener(listener net.Listener) *Kernel {
+    this.NetListener = listener
 
-    return kernel
+    return this
 }
 
 // 运行
-func (kernel *Kernel) RunApp(console bool) {
+func (this *Kernel) RunApp(console bool) {
     newApp := app.New()
 
     // 导入服务提供者
-    kernel.loadServiceProvider()
+    this.loadServiceProvider()
 
     // 注册
     allProviders := provider.GetAllProvider()
@@ -119,8 +119,8 @@ func (kernel *Kernel) RunApp(console bool) {
     }
 
     // 设置自定义监听
-    if kernel.NetListener != nil {
-        newApp.WithNetListener(kernel.NetListener)
+    if this.NetListener != nil {
+        newApp.WithNetListener(this.NetListener)
     }
 
     // 运行
@@ -128,9 +128,9 @@ func (kernel *Kernel) RunApp(console bool) {
 }
 
 // 导入服务提供者
-func (kernel *Kernel) loadServiceProvider() {
-    if len(kernel.providers) > 0 {
-        for _, p := range kernel.providers {
+func (this *Kernel) loadServiceProvider() {
+    if len(this.providers) > 0 {
+        for _, p := range this.providers {
             provider.AppendProvider(p)
         }
     }

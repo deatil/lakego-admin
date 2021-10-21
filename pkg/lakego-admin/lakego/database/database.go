@@ -35,15 +35,15 @@ type Database struct {
 }
 
 // 设置配置
-func (db *Database) WithConfig(config map[string]interface{}) interfaces.Database {
-    db.config = config
+func (this *Database) WithConfig(config map[string]interface{}) interfaces.Database {
+    this.config = config
 
-    return db
+    return this
 }
 
 // 获取配置
-func (db *Database) GetConfig(name string) interface{} {
-    if data, ok := db.config[name]; ok {
+func (this *Database) GetConfig(name string) interface{} {
+    if data, ok := this.config[name]; ok {
         return data
     }
 
@@ -53,36 +53,36 @@ func (db *Database) GetConfig(name string) interface{} {
 /**
  * 设置驱动
  */
-func (db *Database) WithDriver(driver interfaces.Driver) interfaces.Database {
-    db.driver = driver
+func (this *Database) WithDriver(driver interfaces.Driver) interfaces.Database {
+    this.driver = driver
 
-    return db
+    return this
 }
 
 /**
  * 获取驱动
  */
-func (db *Database) GetDriver() interfaces.Driver {
-    return db.driver
+func (this *Database) GetDriver() interfaces.Driver {
+    return this.driver
 }
 
 /**
  * 获取数据库连接对象db
  */
-func (db *Database) GetConnection() *gorm.DB {
-    return db.driver.GetConnection()
+func (this *Database) GetConnection() *gorm.DB {
+    return this.driver.GetConnection()
 }
 
 /**
  * 获取数据库连接对象db，带debug
  */
-func (db *Database) GetConnectionWithDebug() *gorm.DB {
-    return db.driver.GetConnectionWithDebug()
+func (this *Database) GetConnectionWithDebug() *gorm.DB {
+    return this.driver.GetConnectionWithDebug()
 }
 
 /**
  * 关闭连接
  */
-func (db *Database) Close() {
-    db.driver.Close()
+func (this *Database) Close() {
+    this.driver.Close()
 }

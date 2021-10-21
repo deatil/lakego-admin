@@ -11,20 +11,20 @@ type Hmac struct {
 }
 
 // 初始化
-func (h *Hmac) Init(conf map[string]interface{}) {
+func (this *Hmac) Init(conf map[string]interface{}) {
     if key, ok := conf["key"]; ok {
-        h.key = key.(string)
+        this.key = key.(string)
     }
 }
 
 // 签名
-func (h *Hmac) Sign(data string) string {
-    return strings.ToUpper(crypt.Hmac(h.key, data))
+func (this *Hmac) Sign(data string) string {
+    return strings.ToUpper(crypt.Hmac(this.key, data))
 }
 
 // 验证
-func (h *Hmac) Validate(data string, signData string) bool {
-    newData := h.Sign(data)
+func (this *Hmac) Validate(data string, signData string) bool {
+    newData := this.Sign(data)
 
     return newData == signData
 }

@@ -24,18 +24,18 @@ type Profile struct {
 /**
  * 个人信息
  */
-func (control *Profile) Index(ctx *gin.Context) {
+func (this *Profile) Index(ctx *gin.Context) {
     adminInfo, _ := ctx.Get("admin")
 
     adminInfo = adminInfo.(*admin.Admin).GetProfile()
 
-    control.SuccessWithData(ctx, "获取成功", adminInfo)
+    this.SuccessWithData(ctx, "获取成功", adminInfo)
 }
 
 /**
  * 修改信息
  */
-func (control *Profile) Update(ctx *gin.Context) {
+func (this *Profile) Update(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -43,7 +43,7 @@ func (control *Profile) Update(ctx *gin.Context) {
     // 检测
     validateErr := profileValidate.Update(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -60,20 +60,20 @@ func (control *Profile) Update(ctx *gin.Context) {
         }).
         Error
     if err != nil {
-        control.Error(ctx, "修改信息失败")
+        this.Error(ctx, "修改信息失败")
         return
     }
 
     // 事件
     event.ContextDispatch(ctx, "ProfileUpdateAfter", adminid)
 
-    control.Success(ctx, "修改信息成功")
+    this.Success(ctx, "修改信息成功")
 }
 
 /**
  * 修改头像
  */
-func (control *Profile) UpdateAvatar(ctx *gin.Context) {
+func (this *Profile) UpdateAvatar(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -81,7 +81,7 @@ func (control *Profile) UpdateAvatar(ctx *gin.Context) {
     // 检测
     validateErr := profileValidate.UpdateAvatar(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -96,20 +96,20 @@ func (control *Profile) UpdateAvatar(ctx *gin.Context) {
         }).
         Error
     if err != nil {
-        control.Error(ctx, "修改头像失败")
+        this.Error(ctx, "修改头像失败")
         return
     }
 
     // 事件
     event.ContextDispatch(ctx, "ProfileUpdateAvatarAfter", adminid)
 
-    control.Success(ctx, "修改头像成功")
+    this.Success(ctx, "修改头像成功")
 }
 
 /**
  * 修改密码
  */
-func (control *Profile) UpdatePasssword(ctx *gin.Context) {
+func (this *Profile) UpdatePasssword(ctx *gin.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -117,7 +117,7 @@ func (control *Profile) UpdatePasssword(ctx *gin.Context) {
     // 检测
     validateErr := profileValidate.UpdatePasssword(post)
     if validateErr != "" {
-        control.Error(ctx, validateErr)
+        this.Error(ctx, validateErr)
         return
     }
 
@@ -131,14 +131,14 @@ func (control *Profile) UpdatePasssword(ctx *gin.Context) {
     newpasswordConfirm := post["newpassword_confirm"].(string)
 
     if newpassword != newpasswordConfirm {
-        control.Error(ctx, "两次密码输入不一致")
+        this.Error(ctx, "两次密码输入不一致")
         return
     }
 
     // 验证密码
     checkStatus := authPassword.CheckPassword(admin["password"].(string), oldpassword, admin["password_salt"].(string))
     if !checkStatus {
-        control.Error(ctx, "用户密码错误")
+        this.Error(ctx, "用户密码错误")
         return
     }
 
@@ -153,24 +153,24 @@ func (control *Profile) UpdatePasssword(ctx *gin.Context) {
         }).
         Error
     if err != nil {
-        control.Error(ctx, "密码修改失败")
+        this.Error(ctx, "密码修改失败")
         return
     }
 
     // 事件
     event.ContextDispatch(ctx, "ProfileUpdatePassswordAfter", adminid)
 
-    control.Success(ctx, "密码修改成功")
+    this.Success(ctx, "密码修改成功")
 }
 
 /**
  * 权限列表
  */
-func (control *Profile) Rules(ctx *gin.Context) {
+func (this *Profile) Rules(ctx *gin.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRules()
 
-    control.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", gin.H{
         "list": rules,
     })
 }
