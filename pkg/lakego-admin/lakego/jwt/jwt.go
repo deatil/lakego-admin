@@ -159,20 +159,19 @@ func (this *JWT) MakeToken() (token string, err error) {
 
     jwtToken := jwt.NewWithClaims(methodType, claims)
 
+    // 返回 token
+    token = ""
+
     // 密码
     var secret interface{}
 
     // 判断类型
     switch this.SigningMethod {
         case "RS256", "RS384", "RS512":
-            // 文件
-            keyFile := this.FormatPath(this.PrivateKey)
-
             // 获取秘钥数据
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PrivateKey)
 
             if e != nil {
-                token = ""
                 err = errors.New("RSA 私钥不存在或者错误")
                 return
             }
@@ -184,27 +183,21 @@ func (this *JWT) MakeToken() (token string, err error) {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, password)
 
                 if err != nil {
-                    token = ""
                     return
                 }
             } else {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
                 if err != nil {
-                    token = ""
                     return
                 }
             }
 
         case "PS256", "PS384", "PS512":
-            // 文件
-            keyFile := this.FormatPath(this.PrivateKey)
-
             // 秘钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PrivateKey)
 
             if e != nil {
-                token = ""
                 err = errors.New("PSS 私钥不存在或者错误")
                 return
             }
@@ -212,24 +205,25 @@ func (this *JWT) MakeToken() (token string, err error) {
             secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
 
             if err != nil {
-                token = ""
                 return
             }
 
         case "HS256", "HS384", "HS512":
             // 密码
             hmacSecret := base64.Decode(this.Secret)
+
+            if hmacSecret == "" {
+                err = errors.New("Hmac 密码错误或者为空")
+                return
+            }
+
             secret = []byte(hmacSecret)
 
         case "ES256", "ES384", "ES512":
-            // 文件
-            keyFile := this.FormatPath(this.PrivateKey)
-
             // 私钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PrivateKey)
 
             if e != nil {
-                token = ""
                 err = errors.New("ECDSA 私钥不存在或者错误")
                 return
             }
@@ -237,19 +231,14 @@ func (this *JWT) MakeToken() (token string, err error) {
             secret, err = jwt.ParseECPrivateKeyFromPEM(keyData)
 
             if err != nil {
-                token = ""
                 return
             }
 
         case "EdDSA":
-            // 文件
-            keyFile := this.FormatPath(this.PrivateKey)
-
             // 私钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PrivateKey)
 
             if e != nil {
-                token = ""
                 err = errors.New("EdDSA 私钥不存在或者错误")
                 return
             }
@@ -257,21 +246,13 @@ func (this *JWT) MakeToken() (token string, err error) {
             secret, err = jwt.ParseEdPrivateKeyFromPEM(keyData)
 
             if err != nil {
-                token = ""
                 return
             }
 
         default:
-            token = ""
             err = errors.New("签名类型错误")
             return
 
-    }
-
-    if secret == "" {
-        token = ""
-        err = errors.New("JWT 生成失败")
-        return
     }
 
     token, err = jwtToken.SignedString(secret)
@@ -286,11 +267,8 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
     // 判断类型
     switch this.SigningMethod {
         case "RS256", "RS384", "RS512":
-            // 文件
-            keyFile := this.FormatPath(this.PublicKey)
-
             // 公钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PublicKey)
 
             if e != nil {
                 err = errors.New("RSA 公钥不存在或者错误")
@@ -304,11 +282,8 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
             }
 
         case "PS256", "PS384", "PS512":
-            // 文件
-            keyFile := this.FormatPath(this.PublicKey)
-
             // 公钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PublicKey)
 
             if e != nil {
                 err = errors.New("PSS 公钥不存在或者错误")
@@ -324,14 +299,17 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         case "HS256", "HS384", "HS512":
             // 密码
             hmacSecret := base64.Decode(this.Secret)
+
+            if hmacSecret == "" {
+                err = errors.New("Hmac 密码错误或者为空")
+                return nil, err
+            }
+
             secret = []byte(hmacSecret)
 
         case "ES256", "ES384", "ES512":
-            // 文件
-            keyFile := this.FormatPath(this.PublicKey)
-
             // 公钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PublicKey)
 
             if e != nil {
                 err = errors.New("ECDSA 公钥不存在或者错误")
@@ -345,11 +323,8 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
             }
 
         case "EdDSA":
-            // 文件
-            keyFile := this.FormatPath(this.PublicKey)
-
             // 公钥
-            keyData, e := os.ReadFile(keyFile)
+            keyData, e := this.ReadDataFromFile(this.PublicKey)
 
             if e != nil {
                 err = errors.New("EdDSA 公钥不存在或者错误")
@@ -368,13 +343,10 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
 
     }
 
-    if secret == "" {
-        return nil, errors.New("JWT 解析失败")
-    }
-
     token, err := jwt.Parse(strToken, func(token *jwt.Token) (interface{}, error) {
         return secret, nil
     })
+
     if err != nil {
         return nil, err
     }
@@ -384,7 +356,6 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
 
 // 从 token 获取解析后的数据
 func (this *JWT) GetClaimsFromToken(token *jwt.Token) (jwt.MapClaims, error) {
-    var ok bool
     claims, ok := token.Claims.(jwt.MapClaims)
     if !ok {
         return nil, errors.New("Token 载荷获取失败")
@@ -418,6 +389,25 @@ func (this *JWT) Verify(token *jwt.Token) (bool, error) {
     }
 
     return true, nil
+}
+
+// 从文件读取数据
+func (this *JWT) ReadDataFromFile(file string) ([]byte, error) {
+    // 文件
+    keyFile := this.FormatPath(file)
+
+    if !this.FileExist(keyFile) {
+        return []byte(""), errors.New("秘钥或者私钥文件不存在")
+    }
+
+    // 获取秘钥数据
+    return os.ReadFile(keyFile)
+}
+
+// 文件判断
+func (this *JWT) FileExist(fp string) bool {
+    _, err := os.Stat(fp)
+    return err == nil || os.IsExist(err)
 }
 
 // 格式化文件路径
