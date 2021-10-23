@@ -2,8 +2,24 @@ package di
 
 import (
     "sync"
-    "go.uber.org/fx"
+    "go.uber.org/dig"
 )
+
+var instance *DI
+var once sync.Once
+
+/**
+ * 单例模式
+ */
+func New() *DI {
+    once.Do(func() {
+        instance = &DI{
+            container: dig.New(),
+        }
+    })
+
+    return instance
+}
 
 /**
  * 容器
@@ -12,103 +28,31 @@ import (
  * @author deatil
  */
 type DI struct {
-    // 锁
-    Lock *sync.RWMutex
+    // 容器
+    container *dig.Container
+}
 
-    // 别名
-    Aliases map[string]string
+// 设置容器
+func (this *DI) WithContainer(container *dig.Container) error {
+    this.container = container
 
-    // 别名
-    AbstractAliases map[string][]string
+    return nil
+}
 
-    // 绑定
-    Bindings map[string]func(interface{})
-
-    // 单例绑定
-    Instances map[string]func(interface{})
+// 获取容器
+func (this *DI) GetContainer() *dig.Container {
+    return this.container
 }
 
 // 绑定
-func (this *DI) Bind(abstract string, concrete interface{}) {
-    fx.Provide(concrete)
-
-    this.Bindings[abstract] = func(name interface{}) {
-        fx.Populate(name)
-    }
-
+// dig.Group("ro")
+// dig.LocationForPC("ro")
+// DI.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
+func (this *DI) Provide(constructor interface{}, opts ...dig.ProvideOption) error {
+    return this.Container.Provide(constructor, opts...)
 }
 
-// 单例绑定
-func (this *DI) Singleton(abstract string, concrete interface{}) {
-
+// 使用
+func (this *DI) Invoke(function interface{}, opts ...dig.InvokeOption) error {
+    return this.Container.Invoke(function, opts...)
 }
-
-// make
-func (this *DI) Make(abstract string, parameters map[string]interface{}) {
-
-}
-
-// get
-func (this *DI) Get(id string) {
-
-}
-
-// get
-func (this *DI) Resolve(id string, parameters map[string]interface{}) {
-
-}
-
-// 判断
-func (this *DI) Bound(abstract string) bool {
-    return true
-}
-
-// 别名
-func (this *DI) Alias(abstract string, alias string) {
-    if abstract == alias {
-        panic("不能绑定自己")
-    }
-
-    this.Aliases[abstract] = alias
-
-    this.AbstractAliases[abstract] = append(this.AbstractAliases[abstract], alias)
-}
-
-// 判断
-func (this *DI) Has(abstract string) bool {
-    return this.bound(abstract)
-}
-
-// 判断别名
-func (this *DI) isAlias(abstract string) bool {
-    if _, ok := this.Aliases[abstract]; ok {
-        return true
-    }
-
-    return false
-}
-
-// 判断
-func (this *DI) GetAlias(abstract string) bool {
-    if name, ok := this.Aliases[abstract]; ok {
-        return this.getAlias(name)
-    }
-
-    return abstract
-}
-
-// Bindings
-func (this *DI) GetBindings(abstract string) map[string]func(string, interface{}) {
-    return this.Bindings
-}
-
-// 移除单个
-func (this *DI) forgetInstance(abstract string) {
-    delete(this.Instances, abstract)
-}
-
-// 全部移除
-func (this *DI) forgetInstances(abstract string) {
-    this.Instances = make(map[string]func(string, interface{}))
-}
-
