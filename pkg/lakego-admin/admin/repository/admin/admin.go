@@ -61,8 +61,7 @@ func GetRules(groupids []string) []map[string]interface{} {
             "id", "parentid",
             "title",
             "url", "method",
-            "auth_url", "slug",
-            "description",
+            "slug", "description",
         }).
         Where("status = ?", 1).
         Order("listorder ASC").

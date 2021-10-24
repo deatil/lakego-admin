@@ -12,7 +12,6 @@ func Create(data map[string]interface{}) string {
         "title": "required,max=50",
         "url": "required,max=250",
         "method": "required,max=10",
-        "auth_url": "required",
         "slug": "required",
         "status": "required",
     }
@@ -26,7 +25,6 @@ func Create(data map[string]interface{}) string {
         "url.max": "权限链接最大字符需要250个",
         "method.required": "请求类型不能为空",
         "method.max": "请求类型最大字符需要10个",
-        "auth_url.required": "权限验证链接不能为空",
         "slug.required": "链接标识不能为空",
         "status.required": "状态选项不能为空",
     }
@@ -47,7 +45,6 @@ func Update(data map[string]interface{}) string {
         "title": "required,max=50",
         "url": "required,max=250",
         "method": "required,max=10",
-        "auth_url": "required",
         "slug": "required",
         "status": "required",
     }
@@ -61,7 +58,6 @@ func Update(data map[string]interface{}) string {
         "url.max": "权限链接最大字符需要250个",
         "method.required": "请求类型不能为空",
         "method.max": "请求类型最大字符需要10个",
-        "auth_url.required": "权限验证链接不能为空",
         "slug.required": "链接标识不能为空",
         "status.required": "状态选项不能为空",
     }
