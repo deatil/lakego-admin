@@ -1,6 +1,7 @@
 package di
 
 import (
+	"io"
     "sync"
     "go.uber.org/dig"
 )
@@ -20,6 +21,39 @@ func New() *DI {
 
     return instance
 }
+
+// 选项
+type Option = dig.Option
+
+// 设置选项
+type ProvideOption = dig.ProvideOption
+
+// 使用选项
+type InvokeOption = dig.InvokeOption
+
+// VisualizeOption
+type VisualizeOption = dig.VisualizeOption
+
+// 唯一ID
+type ID = dig.ID
+
+// 结构体的信息
+type ProvideInfo = dig.ProvideInfo
+
+// 输入
+type Input = dig.Input
+
+// 输出
+type Output = dig.Output
+
+// 核心容器
+type Container = dig.Container
+
+// 结构体导入
+type In = dig.In
+
+// 结构体导出
+type Out = dig.Out
 
 /**
  * 容器
@@ -45,14 +79,73 @@ func (this *DI) GetContainer() *dig.Container {
 }
 
 // 绑定
-// dig.Group("ro")
-// dig.LocationForPC("ro")
-// DI.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
+// c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
 func (this *DI) Provide(constructor interface{}, opts ...dig.ProvideOption) error {
-    return this.Container.Provide(constructor, opts...)
+    return this.container.Provide(constructor, opts...)
 }
 
 // 使用
 func (this *DI) Invoke(function interface{}, opts ...dig.InvokeOption) error {
-    return this.Container.Invoke(function, opts...)
+    return this.container.Invoke(function, opts...)
+}
+
+// 命名
+// c.Provide(NewReadOnlyConnection, dig.Name("ro"))
+func Name(name string) dig.ProvideOption {
+    return dig.Name(name)
+}
+
+// 分组
+func Group(group string) dig.ProvideOption {
+    return dig.Group(group)
+}
+
+// 填充信息
+func FillProvideInfo(info *dig.ProvideInfo) dig.ProvideOption {
+    return dig.FillProvideInfo(info)
+}
+
+// c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
+func As(i ...interface{}) dig.ProvideOption {
+    return dig.As(i...)
+}
+
+// dig.LocationForPC("ro")
+func LocationForPC(pc uintptr) dig.ProvideOption {
+    return dig.LocationForPC(pc)
+}
+
+func DeferAcyclicVerification() dig.Option {
+    return dig.DeferAcyclicVerification()
+}
+
+// 创建一个没有设置的容器
+func DryRun(dry bool) dig.Option {
+    return dig.DryRun(dry)
+}
+
+// 是否导入
+func IsIn(o interface{}) bool {
+    return dig.IsIn(o)
+}
+
+// 是否导出
+func IsOut(o interface{}) bool {
+    return dig.IsOut(o)
+}
+
+func VisualizeError(err error) dig.VisualizeOption {
+    return dig.VisualizeError(err)
+}
+
+func RootCause(err error) error {
+    return dig.RootCause(err)
+}
+
+func Visualize(c *dig.Container, w io.Writer, opts ...dig.VisualizeOption) error {
+    return dig.Visualize(c, w, opts...)
+}
+
+func CanVisualizeError(err error) bool {
+    return dig.CanVisualizeError(err)
 }
