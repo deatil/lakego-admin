@@ -1,7 +1,7 @@
 package di
 
 import (
-	"io"
+    "io"
     "sync"
     "go.uber.org/dig"
 )

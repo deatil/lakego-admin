@@ -17,7 +17,6 @@ type AuthRule struct {
     Title       string      `gorm:"column:title;not null;size:50;" json:"title"`
     Url         string      `gorm:"column:url;not null;" json:"url"`
     Method      string      `gorm:"column:method;not null;size:10;" json:"method"`
-    AuthUrl     string      `gorm:"column:auth_url;not null;size:200;" json:"auth_url"`
     Slug        string      `gorm:"column:slug;not null;size:50;" json:"slug"`
     Description string      `gorm:"column:description;" json:"description"`
     Listorder   string      `gorm:"column:listorder;size:10;" json:"listorder"`

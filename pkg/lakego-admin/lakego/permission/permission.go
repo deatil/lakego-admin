@@ -9,6 +9,10 @@ import (
 /**
  * 权限
  *
+ * rbac_model.conf 中 matchers 内置可用函数：
+ * keyMatch [匹配*号], keyMatch2 [匹配 :file]
+ * regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配]
+ *
  * @create 2021-9-30
  * @author deatil
  */

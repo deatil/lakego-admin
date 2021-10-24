@@ -3,6 +3,7 @@ package admin
 import (
     "github.com/gin-gonic/gin"
 
+    "github.com/deatil/lakego-admin/lakego/di"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/http/response"
     "github.com/deatil/lakego-admin/lakego/facade/config"
@@ -83,6 +84,9 @@ func (this *ServiceProvider) Register() {
 
     // 路由
     this.loadRoute()
+
+    // 初始化容器
+    this.initDI()
 }
 
 /**
@@ -176,5 +180,16 @@ func (this *ServiceProvider) loadMiddleware() {
             m.MiddlewareGroup(groupName, middleware)
         }
     }
+}
+
+/**
+ * 初始化容器
+ */
+func (this *ServiceProvider) initDI() {
+    c := di.New()
+
+    c.Provide(func() *config.Conf {
+        return config.New()
+    })
 }
 

@@ -181,16 +181,12 @@ func (this *JWT) MakeToken() (token string, err error) {
                 password := base64.Decode(this.PrivateKeyPassword)
 
                 secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, password)
-
-                if err != nil {
-                    return
-                }
             } else {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
+            }
 
-                if err != nil {
-                    return
-                }
+            if err != nil {
+                return
             }
 
         case "PS256", "PS384", "PS512":

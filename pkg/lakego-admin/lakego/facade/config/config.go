@@ -19,6 +19,9 @@ func init() {
     Register()
 }
 
+// 配置别名
+type Conf = config.Config
+
 /**
  * 配置
  *
@@ -27,7 +30,7 @@ func init() {
  */
 func New(name ...string) *config.Config {
     adapter := GetDefaultAdapter()
-    
+
     if len(name) > 0 {
         return Config(adapter).WithFile(name[0])
     }

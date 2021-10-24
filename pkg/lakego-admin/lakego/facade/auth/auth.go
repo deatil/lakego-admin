@@ -2,6 +2,7 @@ package auth
 
 import (
     "github.com/deatil/lakego-admin/lakego/auth"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
 )
 
 /**
@@ -11,12 +12,23 @@ import (
  * @author deatil
  */
 func New() *auth.Auth {
-    return auth.New()
+    passportConf := config.New("auth").GetStringMap("Passport")
+    jwtConf := config.New("auth").GetStringMap("Jwt")
+
+    return auth.New().
+        WithConfig("passport", passportConf).
+        WithConfig("jwt", jwtConf)
 }
 
 // 默认带接收方
 func NewWithAud(aud string) *auth.Auth {
-    return auth.New().WithClaim("aud", aud)
+    passportConf := config.New("auth").GetStringMap("Passport")
+    jwtConf := config.New("auth").GetStringMap("Jwt")
+
+    return auth.New().
+        WithConfig("passport", passportConf).
+        WithConfig("jwt", jwtConf).
+        WithClaim("aud", aud)
 }
 
 

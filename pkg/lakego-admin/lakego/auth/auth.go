@@ -4,17 +4,15 @@ import (
     "github.com/golang-jwt/jwt/v4"
 
     jwter "github.com/deatil/lakego-admin/lakego/jwt"
-    "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/support/base64"
     "github.com/deatil/lakego-admin/lakego/support/aes/cbc"
 )
 
 // 授权结构体
 func New() *Auth {
-    claim := make(map[string]interface{})
-
     return &Auth{
-        claims: claim,
+        config: make(map[string]interface{}),
+        claims: make(map[string]interface{}),
     }
 }
 
@@ -25,15 +23,95 @@ func New() *Auth {
  * @author deatil
  */
 type Auth struct {
+    // 配置
+    config map[string]interface{}
+
     // 载荷
     claims map[string]interface{}
+}
+
+/**
+ * 设置配置
+ */
+func (this *Auth) WithConfig(key string, value interface{}) *Auth {
+    this.config[key] = value
+
+    return this
+}
+
+/**
+ * 批量设置配置
+ */
+func (this *Auth) WithConfigs(configs map[string]interface{}) *Auth {
+    if len(configs) > 0 {
+        for k, v := range configs {
+            this.WithConfig(k, v)
+        }
+    }
+
+    return this
+}
+
+/**
+ * 获取配置
+ */
+func (this *Auth) GetConfig(key string) interface{} {
+    return this.config[key]
+}
+
+/**
+ * 获取配置
+ */
+func (this *Auth) GetConfigFromMap(key string, key2 string) interface{} {
+    // 配置
+    conf := this.config[key]
+    if conf == "" {
+        return nil
+    }
+
+    // 配置列表
+    confMap := conf.(map[string]interface{})
+
+    // 过期时间
+    conf2 := confMap[key2]
+    if conf2 == "" {
+        return nil
+    }
+
+    return conf2
+}
+
+/**
+ * 获取配置
+ */
+func (this *Auth) GetConfigFromMapStringDefault(key string, key2 string, defaultValue string) string {
+    conf := this.GetConfigFromMap(key, key2)
+    if conf == nil {
+        return defaultValue
+    }
+
+    return conf.(string)
+}
+
+/**
+ * 获取配置
+ */
+func (this *Auth) GetConfigFromMapIntDefault(key string, key2 string, defaultValue int) int {
+    conf := this.GetConfigFromMap(key, key2)
+    if conf == nil {
+        return defaultValue
+    }
+
+    return conf.(int)
 }
 
 /**
  * 获取鉴权 token 过期时间
  */
 func (this *Auth) GetAccessExpiresIn() int {
-    time := config.New("auth").GetInt("Passport.AccessExpiresIn")
+    // 过期时间
+    time := this.GetConfigFromMapIntDefault("passport", "accessexpiresin", 0)
+
     return time
 }
 
@@ -41,7 +119,9 @@ func (this *Auth) GetAccessExpiresIn() int {
  * 获取刷新 token 过期时间
  */
 func (this *Auth) GetRefreshExpiresIn() int {
-    time := config.New("auth").GetInt("Passport.RefreshExpiresIn")
+    // 过期时间
+    time := this.GetConfigFromMapIntDefault("passport", "refreshexpiresin", 0)
+
     return time
 }
 
@@ -55,20 +135,18 @@ func (this *Auth) WithClaim(key string, value interface{}) *Auth {
  * 生成鉴权 token
  */
 func (this *Auth) MakeJWT() *jwter.JWT {
-    conf := config.New("auth")
+    aud := this.GetConfigFromMapStringDefault("jwt", "aud", "")
+    iss := this.GetConfigFromMapStringDefault("jwt", "iss", "")
+    sub := this.GetConfigFromMapStringDefault("jwt", "sub", "")
+    jti := this.GetConfigFromMapStringDefault("jwt", "jti", "")
+    exp := this.GetConfigFromMapIntDefault("jwt", "exp", 0)
+    nbf := this.GetConfigFromMapIntDefault("jwt", "nbf", 0)
 
-    aud := conf.GetString("Jwt.Aud")
-    iss := conf.GetString("Jwt.Iss")
-    sub := conf.GetString("Jwt.Sub")
-    jti := conf.GetString("Jwt.Jti")
-    exp := conf.GetInt("Jwt.Exp")
-    nbf := conf.GetInt("Jwt.Nbf")
-
-    signingMethod := conf.GetString("Jwt.SigningMethod")
-    secret := conf.GetString("Jwt.Secret")
-    privateKey := conf.GetString("Jwt.PrivateKey")
-    publicKey := conf.GetString("Jwt.PublicKey")
-    privateKeyPassword := conf.GetString("Jwt.PrivateKeyPassword")
+    signingMethod := this.GetConfigFromMapStringDefault("jwt", "signingmethod", "")
+    secret := this.GetConfigFromMapStringDefault("jwt", "secret", "")
+    privateKey := this.GetConfigFromMapStringDefault("jwt", "privatekey", "")
+    publicKey := this.GetConfigFromMapStringDefault("jwt", "publickey", "")
+    privateKeyPassword := this.GetConfigFromMapStringDefault("jwt", "privatekeypassword", "")
 
     exp2 := int64(exp)
     nbf2 := int64(nbf)
@@ -116,14 +194,12 @@ func (this *Auth) MakeToken(claims map[string]string) (token string, err error) 
  * 生成鉴权 token
  */
 func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
-    conf := config.New("auth")
-
-    jti := conf.GetString("Passport.AccessTokenId")
+    jti := this.GetConfigFromMapStringDefault("passport", "accesstokenid", "")
     exp := this.GetAccessExpiresIn()
 
     exp2 := int64(exp)
 
-    passphrase := conf.GetString("Jwt.Passphrase")
+    passphrase := this.GetConfigFromMapStringDefault("jwt", "passphrase", "")
     passphrase = base64.Decode(passphrase)
 
     jwtHandle := this.
@@ -150,14 +226,12 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
  * 生成刷新 token
  */
 func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
-    conf := config.New("auth")
-
-    jti := conf.GetString("Passport.RefreshTokenId")
+    jti := this.GetConfigFromMapStringDefault("passport", "refreshtokenid", "")
     exp := this.GetRefreshExpiresIn()
 
     exp2 := int64(exp)
 
-    passphrase := conf.GetString("Jwt.Passphrase")
+    passphrase := this.GetConfigFromMapStringDefault("jwt", "passphrase", "")
     passphrase = base64.Decode(passphrase)
 
     jwtHandle := this.
@@ -184,7 +258,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
  * 获取鉴权 token
  */
 func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
-    jti := config.New("auth").GetString("Passport.AccessTokenId")
+    jti := this.GetConfigFromMapStringDefault("passport", "accesstokenid", "")
 
     jwter := this.MakeJWT().WithJti(jti)
 
@@ -223,7 +297,7 @@ func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapCla
  * 获取刷新 token
  */
 func (this *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
-    jti := config.New("auth").GetString("Passport.RefreshTokenId")
+    jti := this.GetConfigFromMapStringDefault("passport", "refreshtokenid", "")
 
     jwter := this.MakeJWT().WithJti(jti)
 
@@ -300,7 +374,7 @@ func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface
 func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
     data := claims[key].(string)
 
-    passphrase := config.New("auth").GetString("Jwt.Passphrase")
+    passphrase := this.GetConfigFromMapStringDefault("jwt", "passphrase", "")
     passphrase = base64.Decode(passphrase)
 
     if passphrase != "" {

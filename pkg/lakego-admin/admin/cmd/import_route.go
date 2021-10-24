@@ -2,7 +2,6 @@ package cmd
 
 import (
     "fmt"
-    "regexp"
     "strings"
 
     "github.com/spf13/cobra"
@@ -49,15 +48,17 @@ func ImportRoute() {
             continue
         }
 
+        /*
         re, _ := regexp.Compile(`:[0-9a-zA-Z_\-\.\:]+`);
         authUrl := re.ReplaceAllString(v.Path, "*");
         authUrl = strings.TrimPrefix(authUrl, "/" + group)
+        */
 
         v.Path = strings.TrimPrefix(v.Path, "/" + group)
 
         result := map[string]interface{}{}
         err := model.NewAuthRule().
-            Where("auth_url = ?", authUrl).
+            Where("url = ?", v.Path).
             First(&result).
             Error
         if err != nil || len(result) < 1 {
@@ -66,7 +67,6 @@ func ImportRoute() {
                 Title: v.Path,
                 Url: v.Path,
                 Method: strings.ToUpper(v.Method),
-                AuthUrl: authUrl,
                 Slug: v.Path,
                 Description: "",
                 Listorder: "100",
@@ -78,7 +78,7 @@ func ImportRoute() {
             model.NewDB().Create(&insertData)
         } else {
             model.NewAuthRule().
-                Where("auth_url = ?", authUrl).
+                Where("url = ?", v.Path).
                 Updates(map[string]interface{}{
                     "url": v.Path,
                     "method": strings.ToUpper(v.Method),

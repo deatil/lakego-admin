@@ -846,7 +846,7 @@ func (this *Admin) ResetPermission(ctx *gin.Context) {
         for _, rv := range ruleListMap {
             rule := rv["Rule"].(map[string]interface{})
 
-            cas.AddPolicy(rv["group_id"].(string), rule["auth_url"].(string), rule["method"].(string))
+            cas.AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
         }
     }
 

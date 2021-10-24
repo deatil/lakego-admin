@@ -36,6 +36,13 @@ func (this *Config) WithFile(fileName ...string) *Config {
     return this
 }
 
+// 设置读取文件
+func (this *Config) Use(fileName ...string) *Config {
+    this.WithFile(fileName...)
+
+    return this
+}
+
 // 设置默认值
 func (this *Config) SetDefault(keyName string, value interface{}) *Config {
     this.adapter.SetDefault(keyName, value)
