@@ -7,13 +7,13 @@ import (
 )
 
 // 添加
-di.New().Provide(func() *config.Conf {
+di.New().Provide(func() *config.Config {
     return config.New()
 })
 
 // 使用获取
 var data2 string
-di.New().Invoke(func(conf *config.Conf) {
+di.New().Invoke(func(conf *config.Config) {
     data2 = conf.Use("auth").GetString("Passport.PasswordSalt")
 })
 ~~~

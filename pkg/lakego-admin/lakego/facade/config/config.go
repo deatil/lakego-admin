@@ -20,7 +20,7 @@ func init() {
 }
 
 // 配置别名
-type Conf = config.Config
+type Config = config.Config
 
 /**
  * 配置
@@ -32,19 +32,19 @@ func New(name ...string) *config.Config {
     adapter := GetDefaultAdapter()
 
     if len(name) > 0 {
-        return Config(adapter).WithFile(name[0])
+        return NewConfig(adapter).WithFile(name[0])
     }
 
-    return Config(adapter)
+    return NewConfig(adapter)
 }
 
 // 实例化
 func NewWithAdapter(name string, adapter string) *config.Config {
-    return Config(adapter).WithFile(name)
+    return NewConfig(adapter).WithFile(name)
 }
 
 // 配置
-func Config(name string, once ...bool) *config.Config {
+func NewConfig(name string, once ...bool) *config.Config {
     adapter := register.
         NewManagerWithPrefix("config").
         GetRegister(name, nil, once...)

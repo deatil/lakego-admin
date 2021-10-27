@@ -13,6 +13,7 @@ import (
     "github.com/spf13/cobra"
     "github.com/gin-gonic/gin"
 
+    "github.com/deatil/lakego-admin/lakego/di"
     "github.com/deatil/lakego-admin/lakego/route"
     "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
@@ -77,6 +78,9 @@ type App struct {
 
 // 运行
 func (this *App) Run() {
+    // 初始化容器
+    this.initDI()
+
     // 运行
     this.runApp()
 }
@@ -358,6 +362,17 @@ func (this *App) GraceRun(addr string) {
     }
 
     log.Println("Server exiting")
+}
+
+/**
+ * 初始化容器
+ */
+func (this *App) initDI() {
+    d := di.New()
+
+    d.Provide(func() *config.Config {
+        return config.New()
+    })
 }
 
 // 格式化文件路径
