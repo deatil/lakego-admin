@@ -1,16 +1,16 @@
 package request
 
 import (
-    "net/http"
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/support/cast"
 )
 
-func Context(Ctx *gin.Context) *ContextWrapper {
-    return &ContextWrapper{
-        Ctx: Ctx,
-    }
+// 使用
+func New() *Request {
+    request := &Request{}
+
+    return request
 }
 
 type JSONWriter interface {
@@ -36,7 +36,7 @@ type Reader interface {
     PostForm(key string) string
 }
 
-type HandlerFunc func(wrapper *ContextWrapper)
+type HandlerFunc func(request *Request)
 
 /**
  * 请求
@@ -44,58 +44,56 @@ type HandlerFunc func(wrapper *ContextWrapper)
  * @create 2021-9-15
  * @author deatil
  */
-type ContextWrapper struct {
-    Ctx *gin.Context
+type Request struct {
+    // 上下文
+    ctx *gin.Context
 }
 
-func (this *ContextWrapper) ResponseJson(json interface{}) {
-    this.Ctx.JSON(http.StatusAccepted, &json)
+// 设置上下文
+func (this *Request) WithContext(ctx *gin.Context) *Request {
+    this.ctx = ctx
+
+    return this
 }
 
-func (this *ContextWrapper) ResponseString(str string) {
-    this.Ctx.String(http.StatusAccepted, str)
+// 查询数据
+func (this *Request) Query(key string) string {
+    return this.ctx.Query(key)
 }
 
-func (this *ContextWrapper) Unauthorized() {
-    this.Ctx.AbortWithStatus(http.StatusUnauthorized)
+// 带默认
+func (this *Request) DefaultQuery(key string, def interface{}) string {
+    return this.ctx.DefaultQuery(key, cast.ToString(def))
 }
 
-func (this *ContextWrapper) Forbidden() {
-    this.Ctx.AbortWithStatus(http.StatusForbidden)
+// 查询数据
+func (this *Request) Param(key string) string {
+    return this.ctx.Param(key)
 }
 
-func (this *ContextWrapper) Query(key string) string {
-    return this.Ctx.Query(key)
+// json
+func (this *Request) JSON(code int, data interface{}) {
+    this.ctx.JSON(code, data)
 }
 
-func (this *ContextWrapper) DefaultQuery(key string, def interface{}) string {
-    return this.Ctx.DefaultQuery(key, cast.ToString(def))
+// 绑定 json
+func (this *Request) BindJSON(i interface{}) error {
+    return this.ctx.BindJSON(i)
 }
 
-func (this *ContextWrapper) Param(key string) string {
-    return this.Ctx.Param(key)
+func (this *Request) ShouldBind(i interface{}) error {
+    return this.ctx.ShouldBind(i)
 }
 
-func (this *ContextWrapper) JSON(code int, data interface{}) {
-    this.Ctx.JSON(code, data)
+func (this *Request) ShouldBindQuery(i interface{}) error {
+    return this.ctx.ShouldBindQuery(i)
 }
 
-func (this *ContextWrapper) BindJSON(i interface{}) error {
-    return this.Ctx.BindJSON(i)
+func (this *Request) GetQueryArray(key string) ([]string, bool) {
+    return this.ctx.GetQueryArray(key)
 }
 
-func (this *ContextWrapper) ShouldBind(i interface{}) error {
-    return this.Ctx.ShouldBind(i)
-}
-
-func (this *ContextWrapper) ShouldBindQuery(i interface{}) error {
-    return this.Ctx.ShouldBindQuery(i)
-}
-
-func (this *ContextWrapper) GetQueryArray(key string) ([]string, bool) {
-    return this.Ctx.GetQueryArray(key)
-}
-
-func (this *ContextWrapper) PostForm(key string) string {
-    return this.Ctx.PostForm(key)
+// 表单请求
+func (this *Request) PostForm(key string) string {
+    return this.ctx.PostForm(key)
 }

@@ -5,7 +5,6 @@ import (
     "encoding/json"
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/http/response"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
@@ -13,6 +12,7 @@ import (
     "github.com/deatil/lakego-admin/admin/support/url"
     "github.com/deatil/lakego-admin/admin/support/jwt"
     "github.com/deatil/lakego-admin/admin/support/except"
+    "github.com/deatil/lakego-admin/admin/support/response"
     "github.com/deatil/lakego-admin/admin/support/http/code"
     "github.com/deatil/lakego-admin/admin/model"
 )

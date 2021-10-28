@@ -8,9 +8,9 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/logger"
-    "github.com/deatil/lakego-admin/lakego/http/response"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
+    "github.com/deatil/lakego-admin/admin/support/response"
     "github.com/deatil/lakego-admin/admin/support/http/code"
 )
 

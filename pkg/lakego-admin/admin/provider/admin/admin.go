@@ -4,11 +4,11 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/provider"
-    "github.com/deatil/lakego-admin/lakego/http/response"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/router"
 
     "github.com/deatil/lakego-admin/admin/support/url"
+    "github.com/deatil/lakego-admin/admin/support/response"
     "github.com/deatil/lakego-admin/admin/support/http/code"
 
     // 中间件
