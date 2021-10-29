@@ -393,7 +393,7 @@ func (this *JWT) ReadDataFromFile(file string) ([]byte, error) {
     keyFile := this.FormatPath(file)
 
     if !this.FileExist(keyFile) {
-        return []byte(""), errors.New("秘钥或者私钥文件不存在")
+        return nil, errors.New("秘钥或者私钥文件不存在")
     }
 
     // 获取秘钥数据

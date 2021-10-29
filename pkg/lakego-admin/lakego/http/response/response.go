@@ -1,9 +1,11 @@
 package response
 
 import (
+    "io"
     "net/http"
 
     "github.com/gin-gonic/gin"
+    "github.com/gin-gonic/gin/render"
 )
 
 // 使用
@@ -66,6 +68,11 @@ func (this *Response) ReturnString(contents string) {
     this.ctx.String(this.httpCode, contents)
 }
 
+// 返回 json
+func (this *Response) ReturnJson(data gin.H) {
+    this.ctx.JSON(this.httpCode, data)
+}
+
 // 将json字符窜以标准json格式返回
 // 例如，从redis读取json、格式的字符串，返回给浏览器json格式
 func (this *Response) ReturnJsonFromString(jsonStr string) {
@@ -73,34 +80,153 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
     this.ctx.String(this.httpCode, jsonStr)
 }
 
-// 返回 json
-func (this *Response) ReturnJson(data gin.H) {
-    this.ctx.JSON(this.httpCode, data)
-}
-
 // 错误暂停
 func (this *Response) Abort() {
     this.ctx.Abort()
 }
 
-// 响应 json
-func (this *Response) ResponseJson(json interface{}) {
-    this.ctx.JSON(http.StatusAccepted, &json)
+// 输出状态
+func (this *Response) AbortWithStatus(code int) {
+    this.ctx.AbortWithStatus(code)
 }
 
-// 响应字符
-func (this *Response) ResponseString(str string) {
-    this.ctx.String(http.StatusAccepted, str)
+// 输出 json 状态
+func (this *Response) AbortWithStatusJSON(code int, jsonObj interface{}) {
+    this.ctx.AbortWithStatusJSON(code, jsonObj)
+}
+
+// 输出错误状态
+func (this *Response) AbortWithError(code int, err error) *gin.Error {
+    return this.ctx.AbortWithError(code, err)
 }
 
 // 错误
 func (this *Response) Unauthorized() {
-    this.ctx.AbortWithStatus(http.StatusUnauthorized)
+    this.AbortWithStatus(http.StatusUnauthorized)
 }
 
 // 禁止
 func (this *Response) Forbidden() {
-    this.ctx.AbortWithStatus(http.StatusForbidden)
+    this.AbortWithStatus(http.StatusForbidden)
+}
+
+// Status
+func (this *Response) Status(code int) {
+    this.ctx.Status(code)
+}
+
+// SetSameSite
+func (this *Response) SetSameSite(samesite http.SameSite) {
+    this.ctx.SetSameSite(samesite)
+}
+
+// 设置 cookie
+func (this *Response) SetCookie(
+    name string,
+    value string,
+    maxAge int,
+    path string,
+    domain string,
+    secure bool,
+    httpOnly bool,
+) {
+    this.ctx.SetCookie(name, value, maxAge, path, domain, secure, httpOnly)
+}
+
+// Render
+func (this *Response) Render(code int, r render.Render) {
+    this.ctx.Render(code, r)
+}
+
+// HTML
+func (this *Response) HTML(code int, name string, obj interface{}) {
+    this.ctx.HTML(code, name, obj)
+}
+
+// IndentedJSON
+func (this *Response) IndentedJSON(code int, obj interface{}) {
+    this.ctx.IndentedJSON(code, obj)
+}
+
+// SecureJSON
+func (this *Response) SecureJSON(code int, obj interface{}) {
+    this.ctx.SecureJSON(code, obj)
+}
+
+// JSONP
+func (this *Response) JSONP(code int, obj interface{}) {
+    this.ctx.JSONP(code, obj)
+}
+
+// AsciiJSON
+func (this *Response) AsciiJSON(code int, obj interface{}) {
+    this.ctx.AsciiJSON(code, obj)
+}
+
+// PureJSON
+func (this *Response) PureJSON(code int, obj interface{}) {
+    this.ctx.PureJSON(code, obj)
+}
+
+// XML
+func (this *Response) XML(code int, obj interface{}) {
+    this.ctx.XML(code, obj)
+}
+
+// YAML
+func (this *Response) YAML(code int, obj interface{}) {
+    this.ctx.YAML(code, obj)
+}
+
+// ProtoBuf
+func (this *Response) ProtoBuf(code int, obj interface{}) {
+    this.ctx.ProtoBuf(code, obj)
+}
+
+// Redirect
+func (this *Response) Redirect(code int, location string) {
+    this.ctx.Redirect(code, location)
+}
+
+// Data
+func (this *Response) Data(code int, contentType string, data []byte) {
+    this.ctx.Data(code, contentType, data)
+}
+
+// DataFromReader
+func (this *Response) DataFromReader(
+    code int,
+    contentLength int64,
+    contentType string,
+    reader io.Reader,
+    extraHeaders map[string]string,
+) {
+    this.ctx.DataFromReader(code, contentLength, contentType, reader, extraHeaders)
+}
+
+// File
+func (this *Response) File(filepath string) {
+    this.ctx.File(filepath)
+}
+
+// FileFromFS
+func (this *Response) FileFromFS(filepath string, fs http.FileSystem) {
+    this.ctx.FileFromFS(filepath, fs)
+}
+
+// 下载
+func (this *Response) FileAttachment(filepath, filename string) {
+    this.ctx.FileAttachment(filepath, filename)
+}
+
+// SSEvent
+func (this *Response) SSEvent(name string, message interface{}) {
+    this.ctx.SSEvent(name, message)
+}
+
+// SetAccepted
+func (this *Response) SetAccepted(formats ...string) {
+    this.ctx.SetAccepted(formats...)
 }
 
 // 下载
