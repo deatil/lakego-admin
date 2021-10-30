@@ -59,7 +59,7 @@ type Middleware struct {
 /**
  * 全局名称
  */
-func (this *Middleware) WithGlobal(globalName string) *Middleware {
+func (this *Middleware) WithGlobalName(globalName string) *Middleware {
     this.globalName = globalName
 
     return this
