@@ -39,7 +39,7 @@
 1. 首先克隆项目到本地
 
 ```
-git clone git@github.com:deatil/lakego-admin.git
+git clone https://github.com/deatil/lakego-admin.git
 ```
 
 2. 然后配置数据库等相关配置，配置位置
