@@ -240,6 +240,10 @@ func (this *App) runApp() {
         r = gin.New()
     }
 
+    // 设置默认日志记录
+    // file, err := os.Create("./runtime/gin.log")
+    // gin.DefaultWriter = file
+
     // 事件
     r.Use(event.Handler())
 

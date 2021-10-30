@@ -5,8 +5,8 @@ import (
     "errors"
     "crypto/des"
     "encoding/hex"
-        
-    "github.com/deatil/lakego-admin/lakego/support/des/tool"
+
+    "github.com/deatil/lakego-admin/lakego/support/crypto/des/tool"
 )
 
 func EncryptDES(src string, key string) (string, error) {
@@ -16,15 +16,15 @@ func EncryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-    
+
     bs := block.BlockSize()
-    
+
     // 对明文数据进行补码
     data = tool.PKCS5Padding(data, bs)
     if len(data)%bs != 0 {
         return "", errors.New("size error")
     }
-    
+
     out := make([]byte, len(data))
     dst := out
     for len(data) > 0 {
@@ -34,10 +34,10 @@ func EncryptDES(src string, key string) (string, error) {
         data = data[bs:]
         dst = dst[bs:]
     }
-    
+
     return fmt.Sprintf("%X", out), nil
 }
- 
+
 // ECB解密
 func DecryptDES(src string, key string) (string, error) {
     data, err := hex.DecodeString(src)
@@ -49,12 +49,12 @@ func DecryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-    
+
     bs := block.BlockSize()
     if len(data)%bs != 0 {
         return "", errors.New("size error")
     }
-    
+
     out := make([]byte, len(data))
     dst := out
     for len(data) > 0 {
@@ -73,7 +73,7 @@ func Encode(str string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     return enstr
 }
 
@@ -83,7 +83,7 @@ func Decode(str string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     return destr
 }
 

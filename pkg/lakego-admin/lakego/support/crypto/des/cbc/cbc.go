@@ -5,8 +5,8 @@ import (
     "crypto/des"
     "crypto/cipher"
     "encoding/hex"
-    
-    "github.com/deatil/lakego-admin/lakego/support/des/tool"
+
+    "github.com/deatil/lakego-admin/lakego/support/crypto/des/tool"
 )
 
 // CBC 加密
@@ -17,19 +17,19 @@ func EncryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-    
+
     data = tool.PKCS5Padding(data, block.BlockSize())
-    
+
     // 向量
-    iv := []byte("a91ebd0s") 
+    iv := []byte("a91ebd0s")
     mode := cipher.NewCBCEncrypter(block, iv)
-    
+
     out := make([]byte, len(data))
     mode.CryptBlocks(out, data)
-    
+
     return fmt.Sprintf("%X", out), nil
 }
- 
+
 // CBC 解密
 func DecryptDES(src string, key string) (string, error) {
     keyByte := []byte(key)
@@ -37,20 +37,20 @@ func DecryptDES(src string, key string) (string, error) {
     if err != nil {
         return "", err
     }
-    
+
     block, err := des.NewCipher(keyByte)
     if err != nil {
         return "", err
     }
-    
+
     // 向量
     iv := []byte("a91ebd0s")
     mode := cipher.NewCBCDecrypter(block, iv)
     plaintext := make([]byte, len(data))
-    
+
     mode.CryptBlocks(plaintext, data)
     plaintext = tool.PKCS5UnPadding(plaintext)
-    
+
     return string(plaintext), nil
 }
 
@@ -60,7 +60,7 @@ func Encode(str string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     return enstr
 }
 
@@ -70,6 +70,6 @@ func Decode(str string, key string) string {
     if err != nil {
         return ""
     }
-    
+
     return destr
 }

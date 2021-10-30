@@ -11,14 +11,18 @@ import (
     "encoding/pem"
 )
 
-// "github.com/deatil/lakego-admin/lakego/support/rsa"
-type Rsa struct {
-
-}
-
+// "github.com/deatil/lakego-admin/lakego/support/crypto/rsa"
 func New() *Rsa {
     return &Rsa{}
 }
+
+/**
+ * Rsa 加密
+ *
+ * @create 2021-8-28
+ * @author deatil
+ */
+type Rsa struct {}
 
 // RSA公钥私钥产生
 func (*Rsa) MakeRsaKey() ([]byte, []byte, error) {

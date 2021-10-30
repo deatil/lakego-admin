@@ -5,7 +5,7 @@ import (
 
     jwter "github.com/deatil/lakego-admin/lakego/jwt"
     "github.com/deatil/lakego-admin/lakego/support/base64"
-    "github.com/deatil/lakego-admin/lakego/support/aes/cbc"
+    "github.com/deatil/lakego-admin/lakego/support/crypto/aes/cbc"
 )
 
 // 授权结构体

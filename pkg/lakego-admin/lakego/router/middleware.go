@@ -8,6 +8,24 @@ var instance *Middleware
 var once sync.Once
 
 /**
+ * New
+ */
+func New() *Middleware {
+    globalName := "lakego::router-group"
+
+    alias := NewAlias()
+    middlewares := NewMiddlewares()
+    group := NewGroup()
+
+    return &Middleware{
+        globalName: globalName,
+        alias: alias,
+        middlewares: middlewares,
+        group: group,
+    }
+}
+
+/**
  * 单例模式
  */
 func NewWithInstance() *Middleware {
@@ -19,24 +37,6 @@ func NewWithInstance() *Middleware {
 }
 
 /**
- * New
- */
-func New() *Middleware {
-    global := "lakego::router-group"
-
-    alias := NewAlias()
-    middlewares := NewMiddlewares()
-    group := NewGroup()
-
-    return &Middleware{
-        global: global,
-        alias: alias,
-        middlewares: middlewares,
-        group: group,
-    }
-}
-
-/**
  * 中间件
  *
  * @create 2021-9-15
@@ -44,7 +44,7 @@ func New() *Middleware {
  */
 type Middleware struct {
     // 全局名称
-    global string
+    globalName string
 
     // 别名
     alias *Alias
@@ -59,8 +59,8 @@ type Middleware struct {
 /**
  * 全局名称
  */
-func (this *Middleware) WithGlobal(global string) *Middleware {
-    this.global = global
+func (this *Middleware) WithGlobal(globalName string) *Middleware {
+    this.globalName = globalName
 
     return this
 }
@@ -68,8 +68,8 @@ func (this *Middleware) WithGlobal(global string) *Middleware {
 /**
  * 全局名称
  */
-func (this *Middleware) GetGlobal() string {
-    return this.global
+func (this *Middleware) GetGlobalName() string {
+    return this.globalName
 }
 
 /**
@@ -142,7 +142,7 @@ func (this *Middleware) MiddlewareGroup(name string, middleware interface{}) *Mi
  * 全局中间前置
  */
 func (this *Middleware) PrependMiddleware(middleware interface{}) *Middleware {
-    this.group.Prepend(this.global, middleware)
+    this.group.Prepend(this.globalName, middleware)
 
     return this
 }
@@ -151,7 +151,7 @@ func (this *Middleware) PrependMiddleware(middleware interface{}) *Middleware {
  * 全局中间后置
  */
 func (this *Middleware) PushMiddleware(middleware interface{}) *Middleware {
-    this.group.Push(this.global, middleware)
+    this.group.Push(this.globalName, middleware)
 
     return this
 }
@@ -189,6 +189,6 @@ func (this *Middleware) GetMiddlewareList(name string) (middleware []interface{}
  * 获取全局中间件列表
  */
 func (this *Middleware) GetGlobalMiddlewareList() (middleware []interface{}) {
-    return this.GetMiddlewareList(this.global)
+    return this.GetMiddlewareList(this.globalName)
 }
 

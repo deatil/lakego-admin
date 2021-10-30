@@ -15,9 +15,11 @@ func NewUUID() (UUID, error) {
 // MustUUID Create uuid(Throw panic if something goes wrong)
 func MustUUID() UUID {
     v, err := NewUUID()
+
     if err != nil {
         panic(err)
     }
+
     return v
 }
 

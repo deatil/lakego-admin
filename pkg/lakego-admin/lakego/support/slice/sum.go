@@ -18,5 +18,6 @@ func SumFloat64(s []float64) (sum float64) {
     for _, v := range s {
         sum += v
     }
+
     return
 }
