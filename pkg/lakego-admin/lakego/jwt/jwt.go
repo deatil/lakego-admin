@@ -12,17 +12,23 @@ import (
 
 // JWT
 func New() *JWT {
-    claims := make(map[string]interface{})
-
-    return &JWT{
+    jwter := &JWT{
         Secret: "123456",
         SigningMethod: "HS256",
-        Claims: claims,
+        Claims: make(map[string]interface{}),
+        SigningMethodList: make(map[string]jwt.SigningMethod),
+        SigningFunc: make(map[string]func(*JWT) (interface{}, error)),
+        ParseFunc: make(map[string]func(*JWT) (interface{}, error)),
     }
+
+    // 设置签名方式
+    jwter.WithSignMethodMany(signingMethodList)
+
+    return jwter
 }
 
 // 验证方式列表
-var signingMethodList = map[string]interface{} {
+var signingMethodList = map[string]jwt.SigningMethod {
     "ES256": jwt.SigningMethodES256,
     "ES384": jwt.SigningMethodES384,
     "ES512": jwt.SigningMethodES512,
@@ -66,6 +72,15 @@ type JWT struct {
 
     // 私钥密码
     PrivateKeyPassword string
+
+    // 验证方式列表
+    SigningMethodList map[string]jwt.SigningMethod
+
+    // 自定义签名方式
+    SigningFunc map[string]func(*JWT) (interface{}, error)
+
+    // 自定义解析方式
+    ParseFunc map[string]func(*JWT) (interface{}, error)
 }
 
 // Audience
@@ -140,13 +155,111 @@ func (this *JWT) WithPrivateKeyPassword(password string) *JWT {
     return this
 }
 
+// 设置签名方式
+func (this *JWT) WithSignMethod(name string, method jwt.SigningMethod) *JWT {
+    if _, ok := this.SigningMethodList[name]; ok {
+        delete(this.SigningMethodList, name)
+    }
+
+    this.SigningMethodList[name] = method
+
+    return this
+}
+
+// 批量设置签名方式
+func (this *JWT) WithSignMethodMany(methods map[string]jwt.SigningMethod) *JWT {
+    if len(methods) > 0 {
+        for k, v := range methods {
+            this.WithSignMethod(k, v)
+        }
+    }
+
+    return this
+}
+
+// 移除签名方式
+func (this *JWT) WithoutSignMethod(name string) bool {
+    if _, ok := this.SigningMethodList[name]; ok {
+        delete(this.SigningMethodList, name)
+        return true
+    }
+
+    return false
+}
+
+// 设置自定义签名方式
+func (this *JWT) WithSigningFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
+    if _, ok := this.SigningFunc[name]; ok {
+        delete(this.SigningFunc, name)
+    }
+
+    this.SigningFunc[name] = f
+
+    return this
+}
+
+// 批量设置自定义签名方式
+func (this *JWT) WithSigningFuncMany(funcs map[string]func(*JWT) (interface{}, error)) *JWT {
+    if len(funcs) > 0 {
+        for k, v := range funcs {
+            this.WithSigningFunc(k, v)
+        }
+    }
+
+    return this
+}
+
+// 移除自定义签名方式
+func (this *JWT) WithoutSigningFunc(name string) bool {
+    if _, ok := this.SigningFunc[name]; ok {
+        delete(this.SigningFunc, name)
+
+        return true
+    }
+
+    return false
+}
+
+// 设置自定义解析方式
+func (this *JWT) WithParseFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
+    if _, ok := this.ParseFunc[name]; ok {
+        delete(this.ParseFunc, name)
+    }
+
+    this.ParseFunc[name] = f
+
+    return this
+}
+
+// 批量设置自定义解析方式
+func (this *JWT) WithParseFuncMany(funcs map[string]func(*JWT) (interface{}, error)) *JWT {
+    if len(funcs) > 0 {
+        for k, v := range funcs {
+            this.WithParseFunc(k, v)
+        }
+    }
+
+    return this
+}
+
+// 移除自定义解析方式
+func (this *JWT) WithoutParseFunc(name string) bool {
+    if _, ok := this.ParseFunc[name]; ok {
+        delete(this.ParseFunc, name)
+
+        return true
+    }
+
+    return false
+}
+
 // 生成token
 func (this *JWT) MakeToken() (token string, err error) {
-    var methodType jwt.SigningMethod
-    if method, ok := signingMethodList[this.SigningMethod]; ok {
-        methodType = method.(jwt.SigningMethod)
+    var signingMethod jwt.SigningMethod
+    if method, ok := this.SigningMethodList[this.SigningMethod]; ok {
+        signingMethod = method
     } else {
-        methodType = jwt.SigningMethodHS256
+        signingMethod = jwt.SigningMethodHS256
     }
 
     // 载荷
@@ -157,7 +270,7 @@ func (this *JWT) MakeToken() (token string, err error) {
         }
     }
 
-    jwtToken := jwt.NewWithClaims(methodType, claims)
+    jwtToken := jwt.NewWithClaims(signingMethod, claims)
 
     // 返回 token
     token = ""
@@ -246,8 +359,18 @@ func (this *JWT) MakeToken() (token string, err error) {
             }
 
         default:
-            err = errors.New("签名类型错误")
-            return
+            // 自定义签名
+            f, ok := this.SigningFunc[this.SigningMethod]
+            if !ok {
+                err = errors.New("签名类型错误")
+                return
+            }
+
+            secret, err = f(this)
+
+            if err != nil {
+                return
+            }
 
     }
 
@@ -334,8 +457,18 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
             }
 
         default:
-            err = errors.New("签名类型错误")
-            return nil, err
+            // 自定义解析
+            f, ok := this.ParseFunc[this.SigningMethod]
+            if !ok {
+                err = errors.New("签名类型错误")
+                return nil, err
+            }
+
+            secret, err = f(this)
+
+            if err != nil {
+                return nil, err
+            }
 
     }
 

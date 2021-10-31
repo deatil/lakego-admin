@@ -29,6 +29,13 @@ func (this *Config) GetAdapter() interfaces.Adapter {
     return this.adapter
 }
 
+// 设置文件夹
+func (this *Config) WithPath(path string) *Config {
+    this.adapter.WithPath(path)
+
+    return this
+}
+
 // 设置读取文件
 func (this *Config) WithFile(fileName ...string) *Config {
     this.adapter.WithFile(fileName...)

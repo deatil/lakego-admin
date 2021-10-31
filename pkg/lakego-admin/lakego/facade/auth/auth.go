@@ -12,23 +12,19 @@ import (
  * @author deatil
  */
 func New() *auth.Auth {
+    a := auth.New()
+
     passportConf := config.New("auth").GetStringMap("Passport")
     jwtConf := config.New("auth").GetStringMap("Jwt")
 
-    return auth.New().
+    return a.
         WithConfig("passport", passportConf).
         WithConfig("jwt", jwtConf)
 }
 
 // 默认带接收方
 func NewWithAud(aud string) *auth.Auth {
-    passportConf := config.New("auth").GetStringMap("Passport")
-    jwtConf := config.New("auth").GetStringMap("Jwt")
-
-    return auth.New().
-        WithConfig("passport", passportConf).
-        WithConfig("jwt", jwtConf).
-        WithClaim("aud", aud)
+    return New().WithClaim("aud", aud)
 }
 
 

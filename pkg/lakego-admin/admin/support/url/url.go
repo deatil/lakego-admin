@@ -7,6 +7,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/support/file"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/storage"
 )
@@ -77,6 +78,10 @@ func AttachmentPath(path string, disk ...string) string {
         filepath = storage.NewWithDisk(disk[0]).Path(path)
     } else {
         filepath = storage.New().Path(path)
+    }
+
+    if !file.IsExist(filepath) {
+        return ""
     }
 
     return filepath

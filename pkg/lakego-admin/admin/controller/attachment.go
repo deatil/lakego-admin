@@ -323,6 +323,11 @@ func (this *Attachment) Download(ctx *gin.Context) {
     // 文件路径
     filePath := url.AttachmentPath(result["path"].(string), result["disk"].(string))
 
+    if filePath == "" {
+        this.ReturnString(ctx, "文件信息不存在")
+        return
+    }
+
     // 下载
     this.DownloadFile(ctx, filePath, result["name"].(string))
 }
