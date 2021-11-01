@@ -1,9 +1,14 @@
 package auth
 
 import (
+    "sync"
+
     "github.com/deatil/lakego-admin/lakego/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 )
+
+var instance *auth.Auth
+var once sync.Once
 
 /**
  * Auth
@@ -12,12 +17,14 @@ import (
  * @author deatil
  */
 func New() *auth.Auth {
-    a := auth.New()
+    once.Do(func() {
+        instance = auth.New()
+    })
 
     passportConf := config.New("auth").GetStringMap("Passport")
     jwtConf := config.New("auth").GetStringMap("Jwt")
 
-    return a.
+    return instance.
         WithConfig("passport", passportConf).
         WithConfig("jwt", jwtConf)
 }
