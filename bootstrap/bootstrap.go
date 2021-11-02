@@ -11,10 +11,15 @@ var providers []func() providerInterface.ServiceProvider
 
 // 添加服务提供者
 func AddProvider(f func() interface{}) {
-    providers = append(providers, func() providerInterface.ServiceProvider {
-        addFunc := f()
-        return addFunc.(providerInterface.ServiceProvider)
-    })
+    addProvider := f()
+
+    // 判断是否为服务提供者
+    switch addProvider.(type) {
+        case providerInterface.ServiceProvider:
+            providers = append(providers, func() providerInterface.ServiceProvider {
+                return addProvider.(providerInterface.ServiceProvider)
+            })
+    }
 }
 
 // 执行

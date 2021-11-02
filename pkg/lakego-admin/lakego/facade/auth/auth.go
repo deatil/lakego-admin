@@ -3,6 +3,7 @@ package auth
 import (
     "sync"
 
+    "github.com/deatil/lakego-admin/lakego/jwt"
     "github.com/deatil/lakego-admin/lakego/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 )
@@ -18,7 +19,9 @@ var once sync.Once
  */
 func New() *auth.Auth {
     once.Do(func() {
-        instance = auth.New()
+        instance = auth.
+            New().
+            WithJWT(jwt.New())
     })
 
     passportConf := config.New("auth").GetStringMap("Passport")

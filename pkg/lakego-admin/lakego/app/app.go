@@ -14,6 +14,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/di"
+    "github.com/deatil/lakego-admin/lakego/jwt"
     "github.com/deatil/lakego-admin/lakego/route"
     "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
@@ -374,8 +375,14 @@ func (this *App) GraceRun(addr string) {
 func (this *App) initDI() {
     d := di.New()
 
+    // 配置
     d.Provide(func() *config.Config {
         return config.New()
+    })
+
+    // jwt
+    d.Provide(func() *jwt.JWT {
+        return jwt.New()
     })
 }
 

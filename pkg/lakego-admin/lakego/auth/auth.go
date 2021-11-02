@@ -23,11 +23,30 @@ func New() *Auth {
  * @author deatil
  */
 type Auth struct {
+    // jwt
+    JWT *jwter.JWT
+
     // 配置
     config map[string]interface{}
 
     // 载荷
     claims map[string]interface{}
+}
+
+/**
+ * 设置 JWT
+ */
+func (this *Auth) WithJWT(JWT *jwter.JWT) *Auth {
+    this.JWT = JWT
+
+    return this
+}
+
+/**
+ * 获取设置的JWT
+ */
+func (this *Auth) GetJWT() *jwter.JWT {
+    return this.JWT
 }
 
 /**
@@ -151,7 +170,7 @@ func (this *Auth) MakeJWT() *jwter.JWT {
     exp2 := int64(exp)
     nbf2 := int64(nbf)
 
-    jwtHandler := jwter.New().
+    jwtHandler := this.JWT.
         WithAud(aud).
         WithExp(exp2).
         WithJti(jti).
