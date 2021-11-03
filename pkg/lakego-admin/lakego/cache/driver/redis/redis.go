@@ -1,6 +1,7 @@
 package redis
 
 import (
+    "log"
     "fmt"
     "time"
     "errors"
@@ -8,7 +9,6 @@ import (
 
     "github.com/go-redis/redis/v8"
 
-    "github.com/deatil/lakego-admin/lakego/logger"
     "github.com/deatil/lakego-admin/lakego/cache/interfaces"
 )
 
@@ -48,7 +48,7 @@ func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.Error(err.Error())
+        log.Print(err.Error())
     }
 
     this.config = config
@@ -88,7 +88,9 @@ func (this *Redis) Get(key string) (interface{}, error) {
 }
 
 // 设置
-func (this *Redis) Put(key string, value interface{}, expiration time.Duration) error {
+func (this *Redis) Put(key string, value interface{}, ttl int64) error {
+    expiration := this.IntTimeToDuration(ttl)
+
     err := this.client.Set(this.ctx, this.WrapperKey(key), value, expiration).Err()
     if err != nil {
         return errors.New("缓存存储失败")

@@ -31,25 +31,6 @@ func NewWithType(cache string, once ...bool) interfaces.Cache {
     return Cache(cache, once...)
 }
 
-// 注册
-func Register() {
-    once.Do(func() {
-        // 注册缓存驱动
-        register.
-            NewManagerWithPrefix("cache").
-            Register("redis", func(conf map[string]interface{}) interface{} {
-                prefix := conf["prefix"].(string)
-
-                driver := &redisDriver.Redis{}
-
-                driver.Init(conf)
-                driver.SetPrefix(prefix)
-
-                return driver
-            })
-    })
-}
-
 func Cache(name string, once ...bool) interfaces.Cache {
     // 注册默认缓存
     Register()
@@ -82,3 +63,23 @@ func Cache(name string, once ...bool) interfaces.Cache {
 func GetDefaultCache() string {
     return config.New("cache").GetString("Default")
 }
+
+// 注册
+func Register() {
+    once.Do(func() {
+        // 注册缓存驱动
+        register.
+            NewManagerWithPrefix("cache").
+            Register("redis", func(conf map[string]interface{}) interface{} {
+                prefix := conf["prefix"].(string)
+
+                driver := &redisDriver.Redis{}
+
+                driver.Init(conf)
+                driver.SetPrefix(prefix)
+
+                return driver
+            })
+    })
+}
+

@@ -26,7 +26,7 @@ type Cache interface {
     Get(string) (interface{}, error)
 
     // 存储
-    Put(string, interface{}, interface{}) error
+    Put(string, interface{}, int64) error
 
     // 存储一个不过期的数据
     Forever(string, interface{}) error

@@ -4,7 +4,7 @@ import (
     "path"
     "runtime"
     "github.com/sirupsen/logrus"
-    "github.com/deatil/lakego-admin/lakego/logger/formatter/normal"
+    "github.com/deatil/lakego-admin/lakego/logger/driver/logrus/formatter/normal"
 )
 
 // 正常存储格式

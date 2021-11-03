@@ -1,145 +1,96 @@
 package logger
 
 import (
-    "time"
-
-    "github.com/pkg/errors"
-    "github.com/sirupsen/logrus"
-    "github.com/lestrrat/go-file-rotatelogs"
-
-    "github.com/deatil/lakego-admin/lakego/facade/config"
-    "github.com/deatil/lakego-admin/lakego/support/path"
-    "github.com/deatil/lakego-admin/lakego/logger/formatter"
+    "github.com/deatil/lakego-admin/lakego/logger/interfaces"
 )
+
+// 构造方法
+func New(driver interfaces.Driver) *Logger {
+    logger := &Logger{}
+
+    return logger.WithDriver(driver)
+}
+
+// 变量
+type Fields map[string]interface{}
 
 /**
  * 日志
  *
  * import "github.com/deatil/lakego-admin/lakego/logger"
  *
- * @create 2021-9-8
+ * @create 2021-11-3
  * @author deatil
  */
-var log = logrus.New()
-
-type Fields map[string]interface{}
-
-// 默认设置
-func init() {
-    setting()
+type Logger struct {
+    // 日志驱动
+    Driver interfaces.Driver
 }
 
-// 设置
-func setting() {
-    // 配置
-    conf := config.New("logger")
+// 设置驱动
+func (this *Logger) WithDriver(driver interfaces.Driver) *Logger {
+    this.Driver = driver
 
-    log.SetReportCaller(true)
-
-    formatterType := conf.GetString("Formatter")
-
-    var useFormatter logrus.Formatter
-    if formatterType == "json" {
-        useFormatter = formatter.JSONFormatter()
-    } else if formatterType == "text" {
-        useFormatter = formatter.TextFormatter()
-    } else {
-        useFormatter = formatter.NormalFormatter()
-    }
-
-    // 设置输出样式
-    log.SetFormatter(useFormatter)
-
-    // 日志目录
-    filepath := conf.GetString("Filepath")
-
-    // 日志文件
-    baseLogPath := path.FormatPath(filepath)
-
-    maxAge := conf.GetDuration("MaxAge")
-    rotationTime := conf.GetDuration("RotationTime")
-
-    writer, err := rotatelogs.New(
-        baseLogPath + "/log_%Y%m%d.log",
-        // rotatelogs.WithLinkName(baseLogPath), // 生成软链，指向最新日志文件
-        rotatelogs.WithMaxAge(maxAge * time.Hour), // 文件最大保存时间
-        rotatelogs.WithRotationTime(rotationTime * time.Hour), // 日志切割时间间隔
-    )
-    if err != nil {
-        log.Errorf("config local file system logger error. %v", errors.WithStack(err))
-    }
-
-    // os.Stdout || os.Stderr
-    // 设置output,默认为stderr,可以为任何io.Writer，比如文件*os.File
-    // file, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-    log.SetOutput(writer)
-
-    // 设置最低loglevel
-    log.SetLevel(logrus.TraceLevel)
+    return this
 }
 
-// 设置自定义变量
-func WithFields(fields Fields) *logrus.Entry {
-    data := make(logrus.Fields, len(fields))
-    for k, v := range fields {
-        data[k] = v
-    }
-
-    return log.WithFields(data)
+// 获取驱动
+func (this *Logger) GetDriver() interfaces.Driver {
+    return this.Driver
 }
 
-func Trace(args ...interface{}) {
-    log.Trace(args...)
+func (this *Logger) Trace(args ...interface{}) {
+    this.Driver.Trace(args...)
 }
 
-func Tracef(template string, args ...interface{}) {
-    log.Tracef(template, args...)
+func (this *Logger) Tracef(template string, args ...interface{}) {
+    this.Driver.Tracef(template, args...)
 }
 
-func Debug(args ...interface{}) {
-    log.Debug(args...)
+func (this *Logger) Debug(args ...interface{}) {
+    this.Driver.Debug(args...)
 }
 
-func Debugf(template string, args ...interface{}) {
-    log.Debugf(template, args...)
+func (this *Logger) Debugf(template string, args ...interface{}) {
+    this.Driver.Debugf(template, args...)
 }
 
-func Info(args ...interface{}) {
-    log.Info(args...)
+func (this *Logger) Info(args ...interface{}) {
+    this.Driver.Info(args...)
 }
 
-func Infof(template string, args ...interface{}) {
-    log.Infof(template, args...)
+func (this *Logger) Infof(template string, args ...interface{}) {
+    this.Driver.Infof(template, args...)
 }
 
-func Warn(args ...interface{}) {
-    log.Warn(args...)
+func (this *Logger) Warn(args ...interface{}) {
+    this.Driver.Warn(args...)
 }
 
-func Warnf(template string, args ...interface{}) {
-    log.Warnf(template, args...)
+func (this *Logger) Warnf(template string, args ...interface{}) {
+    this.Driver.Warnf(template, args...)
 }
 
-func Error(args ...interface{}) {
-    log.Error(args...)
+func (this *Logger) Error(args ...interface{}) {
+    this.Driver.Error(args...)
 }
 
-func Errorf(template string, args ...interface{}) {
-    log.Errorf(template, args...)
+func (this *Logger) Errorf(template string, args ...interface{}) {
+    this.Driver.Errorf(template, args...)
 }
 
-func Fatal(args ...interface{}) {
-    log.Fatal(args...)
+func (this *Logger) Fatal(args ...interface{}) {
+    this.Driver.Fatal(args...)
 }
 
-func Fatalf(template string, args ...interface{}) {
-    log.Fatalf(template, args...)
+func (this *Logger) Fatalf(template string, args ...interface{}) {
+    this.Driver.Fatalf(template, args...)
 }
 
-func Panic(args ...interface{}) {
-    log.Panic(args...)
+func (this *Logger) Panic(args ...interface{}) {
+    this.Driver.Panic(args...)
 }
 
-func Panicf(template string, args ...interface{}) {
-    log.Panicf(template, args...)
+func (this *Logger) Panicf(template string, args ...interface{}) {
+    this.Driver.Panicf(template, args...)
 }

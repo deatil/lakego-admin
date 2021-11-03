@@ -1,12 +1,12 @@
 package driver
 
 import (
+    "log"
     "time"
 
     "gorm.io/gorm"
     "gorm.io/gorm/schema"
 
-    "github.com/deatil/lakego-admin/lakego/logger"
     "github.com/deatil/lakego-admin/lakego/database/interfaces"
 )
 
@@ -40,7 +40,6 @@ func (this *Driver) Init(config map[string]interface{}) interfaces.Driver {
 
     return this
 }
-
 
 // 设置配置
 func (this *Driver) WithConfig(config map[string]interface{}) interfaces.Driver {
@@ -89,7 +88,7 @@ func (this *Driver) CreateOpenConnection(dia gorm.Dialector) {
     })
 
     if err != nil {
-        logger.Fatalf("Error to open database connection: %v", err)
+        log.Printf("Error to open database connection: %v", err)
     }
 
     // 连接池设置, *sql.DB (database/sql)

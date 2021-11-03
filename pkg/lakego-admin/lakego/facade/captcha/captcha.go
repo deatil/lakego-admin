@@ -79,7 +79,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     driver := register.
         NewManagerWithPrefix("captcha-driver").
         GetRegister(driverType, driverConf, once...)
-    if store == nil {
+    if driver == nil {
         panic("验证码驱动 " + driverType + " 没有被注册")
     }
 

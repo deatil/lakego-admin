@@ -1,9 +1,6 @@
 package cache
 
 import (
-    "time"
-    "reflect"
-
     "github.com/deatil/lakego-admin/lakego/cache/interfaces"
 )
 
@@ -73,9 +70,7 @@ func (this *Cache) Get(key string) (interface{}, error) {
 }
 
 // 设置
-func (this *Cache) Put(key string, value interface{}, seconds interface{}) error {
-    ttl := this.FormatTime(seconds)
-
+func (this *Cache) Put(key string, value interface{}, ttl int64) error {
     return this.driver.Put(key, value, ttl)
 }
 
@@ -122,25 +117,5 @@ func (this *Cache) Flush() (bool, error) {
 // 获取前缀
 func (this *Cache) GetPrefix() string {
     return this.driver.GetPrefix()
-}
-
-// 格式化时间
-func (this *Cache) FormatTime(expiration interface{}) time.Duration {
-    var ttl time.Duration
-
-    if reflect.TypeOf(expiration).String() == "int64" {
-        ttl = this.IntTimeToDuration(expiration.(int64))
-    } else if reflect.TypeOf(expiration).String() == "int" {
-        ttl = this.IntTimeToDuration(int64(expiration.(int)))
-    } else {
-        ttl = expiration.(time.Duration)
-    }
-
-    return ttl
-}
-
-// int64 时间格式化为 Duration 格式
-func (this *Cache) IntTimeToDuration(t int64) time.Duration {
-    return time.Duration(t) * time.Second
 }
 

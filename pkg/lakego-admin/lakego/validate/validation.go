@@ -1,11 +1,10 @@
 package validate
 
 import (
+    "log"
     "regexp"
     "github.com/go-playground/validator/v10"
     ut "github.com/go-playground/universal-translator"
-
-    "github.com/deatil/lakego-admin/lakego/logger"
 )
 
 // 表示 validator.Validate 和 ut.Translator 的组合.
@@ -70,9 +69,7 @@ func (this *Validation) registerTranslation(v *validator.Validate, t ut.Translat
 func validationOfRegexp(tag string, regex string, translation string) Validation {
     re, err := regexp.Compile(regex)
     if err != nil {
-        logger.WithFields(logger.Fields {
-            "namespace": "validation",
-        }).Error("创建正则自定义验证器: " + tag + " " + regex + " " + err.Error())
+        log.Print("创建正则自定义验证器: " + tag + " " + regex + " " + err.Error())
     }
 
     // 闭包持有外部变量整个伴随自己的生命周期

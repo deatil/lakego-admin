@@ -1,6 +1,14 @@
-# 格式化类型 normal, json, text
-Formatter: "normal"
-Filepath: "{root}/runtime/log"
-MaxAge: 168
-# 单位：小时
-RotationTime: 24
+# 默认驱动
+DefaultDriver: "logrus"
+
+# 驱动列表
+Drivers:
+  # logrus 日志驱动
+  Logrus:
+    # 格式化类型 normal, json, text
+    Formatter: "normal"
+    # 日志存储位置
+    Filepath: "{root}/runtime/log"
+    MaxAge: 168
+    # 单位：小时
+    RotationTime: 24

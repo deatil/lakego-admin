@@ -7,7 +7,7 @@ import (
     "runtime/debug"
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/logger"
+    "github.com/deatil/lakego-admin/lakego/facade/logger"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
     "github.com/deatil/lakego-admin/admin/support/response"
@@ -60,13 +60,13 @@ func Handler() gin.HandlerFunc {
 
                     switch r.(type) {
                         case string:
-                            logger.Errorf("%s | panic: %s\n", logStr, r.(string))
+                            logger.New().Errorf("%s | panic: %s\n", logStr, r.(string))
 
                             // 输出日志
                             response.ErrorWithData(ctx, r.(string), code.StatusException, responsedata)
 
                         default:
-                            logger.Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
+                            logger.New().Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
 
                             // "net/http"
                             // http.StatusInternalServerError
@@ -96,13 +96,13 @@ func Handler() gin.HandlerFunc {
 
                     switch r.(type) {
                         case string:
-                            logger.Errorf("%s | panic: %s\n", logStr, r.(string))
+                            logger.New().Errorf("%s | panic: %s\n", logStr, r.(string))
 
                             // 输出日志
                             response.Error(ctx, r.(string), code.StatusException)
 
                         default:
-                            logger.Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
+                            logger.New().Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
 
                             // "net/http"
                             // http.StatusInternalServerError
