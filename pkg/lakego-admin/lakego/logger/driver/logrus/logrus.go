@@ -16,6 +16,9 @@ func New() *Logrus {
     return &Logrus{}
 }
 
+// Entry 别名
+type Entry = logrus.Entry
+
 /**
  * 日志 logrus 驱动
  *
@@ -33,7 +36,7 @@ func (this *Logrus) WithConfig(config map[string]interface{}) {
 }
 
 // 批量设置自定义变量
-func (this *Logrus) WithFields(fields map[string]interface{}) *logrus.Entry {
+func (this *Logrus) WithFields(fields map[string]interface{}) interface{} {
     data := make(logrus.Fields, len(fields))
     for k, v := range fields {
         data[k] = v
@@ -43,7 +46,8 @@ func (this *Logrus) WithFields(fields map[string]interface{}) *logrus.Entry {
 }
 
 // 设置自定义变量
-func (this *Logrus) WithField(key string, value interface{}) *logrus.Entry {
+// *logrus.Entry
+func (this *Logrus) WithField(key string, value interface{}) interface{} {
     return this.getLogger().WithField(key, value)
 }
 

@@ -7,6 +7,12 @@ package interfaces
  * @author deatil
  */
 type Driver interface {
+    // 自定义数据
+    WithField(string, interface{}) interface{}
+
+    // 自定义数据
+    WithFields(map[string]interface{}) interface{}
+
     Trace(...interface{})
 
     Tracef(string, ...interface{})

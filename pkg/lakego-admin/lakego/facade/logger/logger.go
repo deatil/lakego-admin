@@ -1,6 +1,7 @@
 package logger
 
 import (
+    "log"
     "sync"
 
     "github.com/deatil/lakego-admin/lakego/register"
@@ -42,7 +43,7 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
     // 获取配置
     driverConfig, ok := drivers[driverName]
     if !ok {
-        panic("日志驱动 " + driverName + " 配置不存在")
+        log.Print("日志驱动 " + driverName + " 配置不存在")
     }
 
     // 驱动配置
@@ -50,13 +51,25 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
 
     driverType := driverConf["type"].(string)
     driver := register.
-        NewManagerWithPrefix("logger-driver").
+        NewManagerWithPrefix("logger").
         GetRegister(driverType, driverConf, once...)
     if driver == nil {
-        panic("日志驱动 " + driverType + " 没有被注册")
+        log.Print("日志驱动 " + driverType + " 没有被注册")
     }
 
     return logger.New(driver.(interfaces.Driver))
+}
+
+// 批量自定义数据
+// import "github.com/deatil/lakego-admin/lakego/facade/logger"
+// logger.LogrusWithField(logger.New(), "system", "lakego").Info("logger test")
+func LogrusWithFields(log *logger.Logger, fields map[string]interface{}) *logrusDriver.Entry {
+    return log.WithFields(fields).(*logrusDriver.Entry)
+}
+
+// 自定义数据
+func LogrusWithField(log *logger.Logger, key string, value interface{}) *logrusDriver.Entry {
+    return log.WithField(key, value).(*logrusDriver.Entry)
 }
 
 // 默认驱动
@@ -69,7 +82,7 @@ func Register() {
     once.Do(func() {
         // 注册驱动
         register.
-            NewManagerWithPrefix("logger-driver").
+            NewManagerWithPrefix("logger").
             RegisterMany(map[string]func(map[string]interface{}) interface{} {
                 // logrus 日志
                 "logrus": func(conf map[string]interface{}) interface{} {

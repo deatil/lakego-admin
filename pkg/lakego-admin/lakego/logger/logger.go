@@ -39,6 +39,16 @@ func (this *Logger) GetDriver() interfaces.Driver {
     return this.Driver
 }
 
+// 批量设置自定义变量
+func (this *Logger) WithFields(fields map[string]interface{}) interface{} {
+    return this.Driver.WithFields(fields)
+}
+
+// 设置自定义变量
+func (this *Logger) WithField(key string, value interface{}) interface{} {
+    return this.Driver.WithField(key, value)
+}
+
 func (this *Logger) Trace(args ...interface{}) {
     this.Driver.Trace(args...)
 }
