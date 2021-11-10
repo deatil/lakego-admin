@@ -1,7 +1,9 @@
 package logrus
 
 import (
+    "fmt"
     "time"
+    logger "log"
 
     "github.com/pkg/errors"
     "github.com/sirupsen/logrus"
@@ -55,56 +57,153 @@ func (this *Logrus) Trace(args ...interface{}) {
     this.getLogger().Trace(args...)
 }
 
-func (this *Logrus) Tracef(template string, args ...interface{}) {
-    this.getLogger().Tracef(template, args...)
-}
-
 func (this *Logrus) Debug(args ...interface{}) {
     this.getLogger().Debug(args...)
-}
-
-func (this *Logrus) Debugf(template string, args ...interface{}) {
-    this.getLogger().Debugf(template, args...)
 }
 
 func (this *Logrus) Info(args ...interface{}) {
     this.getLogger().Info(args...)
 }
 
-func (this *Logrus) Infof(template string, args ...interface{}) {
-    this.getLogger().Infof(template, args...)
-}
-
 func (this *Logrus) Warn(args ...interface{}) {
     this.getLogger().Warn(args...)
 }
 
-func (this *Logrus) Warnf(template string, args ...interface{}) {
-    this.getLogger().Warnf(template, args...)
+func (this *Logrus) Warning(args ...interface{}) {
+    this.getLogger().Warning(args...)
 }
 
 func (this *Logrus) Error(args ...interface{}) {
     this.getLogger().Error(args...)
 }
 
-func (this *Logrus) Errorf(template string, args ...interface{}) {
-    this.getLogger().Errorf(template, args...)
-}
-
 func (this *Logrus) Fatal(args ...interface{}) {
     this.getLogger().Fatal(args...)
-}
-
-func (this *Logrus) Fatalf(template string, args ...interface{}) {
-    this.getLogger().Fatalf(template, args...)
 }
 
 func (this *Logrus) Panic(args ...interface{}) {
     this.getLogger().Panic(args...)
 }
 
+// ========
+
+func (this *Logrus) Tracef(template string, args ...interface{}) {
+    this.getLogger().Tracef(template, args...)
+}
+
+func (this *Logrus) Debugf(template string, args ...interface{}) {
+    this.getLogger().Debugf(template, args...)
+}
+
+func (this *Logrus) Infof(template string, args ...interface{}) {
+    this.getLogger().Infof(template, args...)
+}
+
+func (this *Logrus) Warnf(template string, args ...interface{}) {
+    this.getLogger().Warnf(template, args...)
+}
+
+func (this *Logrus) Warningf(template string, args ...interface{}) {
+    this.getLogger().Warningf(template, args...)
+}
+
+func (this *Logrus) Errorf(template string, args ...interface{}) {
+    this.getLogger().Errorf(template, args...)
+}
+
+func (this *Logrus) Fatalf(template string, args ...interface{}) {
+    this.getLogger().Fatalf(template, args...)
+}
+
 func (this *Logrus) Panicf(template string, args ...interface{}) {
     this.getLogger().Panicf(template, args...)
+}
+
+// ========
+
+func (this *Logrus) Traceln(args ...interface{}) {
+    this.getLogger().Traceln(args...)
+}
+
+func (this *Logrus) Debugln(args ...interface{}) {
+    this.getLogger().Debugln(args...)
+}
+
+func (this *Logrus) Infoln(args ...interface{}) {
+    this.getLogger().Infoln(args...)
+}
+
+func (this *Logrus) Println(args ...interface{}) {
+    this.getLogger().Println(args...)
+}
+
+func (this *Logrus) Warnln(args ...interface{}) {
+    this.getLogger().Warnln(args...)
+}
+
+func (this *Logrus) Warningln(args ...interface{}) {
+    this.getLogger().Warningln(args...)
+}
+
+func (this *Logrus) Errorln(args ...interface{}) {
+    this.getLogger().Errorln(args...)
+}
+
+func (this *Logrus) Fatalln(args ...interface{}) {
+    this.getLogger().Fatalln(args...)
+}
+
+func (this *Logrus) Panicln(args ...interface{}) {
+    this.getLogger().Panicln(args...)
+}
+
+// ========
+
+func (this *Logrus) TraceFn(fn logrus.LogFunction) {
+    this.getLogger().TraceFn(fn)
+}
+
+func (this *Logrus) DebugFn(fn logrus.LogFunction) {
+    this.getLogger().DebugFn(fn)
+}
+
+func (this *Logrus) InfoFn(fn logrus.LogFunction) {
+    this.getLogger().InfoFn(fn)
+}
+
+func (this *Logrus) PrintFn(fn logrus.LogFunction) {
+    this.getLogger().PrintFn(fn)
+}
+
+func (this *Logrus) WarnFn(fn logrus.LogFunction) {
+    this.getLogger().WarnFn(fn)
+}
+
+func (this *Logrus) WarningFn(fn logrus.LogFunction) {
+    this.getLogger().WarningFn(fn)
+}
+
+func (this *Logrus) ErrorFn(fn logrus.LogFunction) {
+    this.getLogger().ErrorFn(fn)
+}
+
+func (this *Logrus) FatalFn(fn logrus.LogFunction) {
+    this.getLogger().FatalFn(fn)
+}
+
+func (this *Logrus) PanicFn(fn logrus.LogFunction) {
+    this.getLogger().PanicFn(fn)
+}
+
+// ========
+
+func (this *Logrus) Exit(code int) {
+    this.getLogger().Exit(code)
+}
+
+// 获取等级
+func (this *Logrus) GetLevel() logrus.Level {
+    return this.getLogger().GetLevel()
 }
 
 // 设置
@@ -146,7 +245,7 @@ func (this *Logrus) getLogger() *logrus.Logger {
         rotatelogs.WithRotationTime(rotationTime * time.Hour), // 日志切割时间间隔
     )
     if err != nil {
-        log.Errorf("config local file system logger error. %v", errors.WithStack(err))
+        logger.Print(fmt.Sprintf("日志配置错误：%v", errors.WithStack(err)))
     }
 
     // os.Stdout || os.Stderr
@@ -154,8 +253,39 @@ func (this *Logrus) getLogger() *logrus.Logger {
     // file, _ := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
     log.SetOutput(writer)
 
-    // 设置最低loglevel
-    log.SetLevel(logrus.TraceLevel)
+    // 日志等级
+    level := conf["level"].(string)
+
+    // 设置最低 loglevel
+    switch level {
+        case "panic":
+            // panic 等级
+            log.SetLevel(logrus.PanicLevel)
+
+        case "fatal":
+            // fatal 等级
+            log.SetLevel(logrus.FatalLevel)
+
+        case "error":
+            // error 等级
+            log.SetLevel(logrus.ErrorLevel)
+
+        case "warning":
+            // warning 等级
+            log.SetLevel(logrus.WarnLevel)
+
+        case "info":
+            // info 等级
+            log.SetLevel(logrus.InfoLevel)
+
+        case "debug":
+            // debug 等级
+            log.SetLevel(logrus.DebugLevel)
+
+        case "trace":
+            // trace 等级
+            log.SetLevel(logrus.TraceLevel)
+    }
 
     return log
 }

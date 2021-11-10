@@ -22,6 +22,20 @@ import (
 
 var once sync.Once
 
+// 初始化
+func init() {
+    // 注册默认
+    Register()
+}
+
+// 签名
+func NewSign() *sign.Sign {
+    // 默认驱动
+    driver := GetDefaultCrypt()
+
+    return Sign(driver)
+}
+
 // 签名
 func Sign(name string) *sign.Sign {
     driver, conf := GetDriver(name)
@@ -37,6 +51,14 @@ func Sign(name string) *sign.Sign {
     }
 
     return s
+}
+
+// 检测
+func NewCheck() *sign.Check {
+    // 默认驱动
+    driver := GetDefaultCrypt()
+
+    return Check(driver)
 }
 
 // 检测
@@ -110,9 +132,6 @@ func Register() {
 }
 
 func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
-    // 注册默认驱动
-    Register()
-
     // 驱动列表
     crypts := config.New("sign").GetStringMap("crypts")
 
@@ -134,4 +153,9 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
     }
 
     return driver.(interfaces.Driver), driverConf
+}
+
+// 默认签名
+func GetDefaultCrypt() string {
+    return config.New("sign").GetString("Default")
 }

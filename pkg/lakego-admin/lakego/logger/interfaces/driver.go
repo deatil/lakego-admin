@@ -13,31 +13,39 @@ type Driver interface {
     // 自定义数据
     WithFields(map[string]interface{}) interface{}
 
-    Trace(...interface{})
+    // ======
 
-    Tracef(string, ...interface{})
+    Trace(...interface{})
 
     Debug(...interface{})
 
-    Debugf(string, ...interface{})
-
     Info(...interface{})
-
-    Infof(string, ...interface{})
 
     Warn(...interface{})
 
-    Warnf(string, ...interface{})
+    Warning(...interface{})
 
     Error(...interface{})
 
-    Errorf(string, ...interface{})
-
     Fatal(...interface{})
 
-    Fatalf(string, ...interface{})
-
     Panic(...interface{})
+
+    // ======
+
+    Tracef(string, ...interface{})
+
+    Debugf(string, ...interface{})
+
+    Infof(string, ...interface{})
+
+    Warnf(string, ...interface{})
+
+    Warningf(string, ...interface{})
+
+    Errorf(string, ...interface{})
+
+    Fatalf(string, ...interface{})
 
     Panicf(string, ...interface{})
 }

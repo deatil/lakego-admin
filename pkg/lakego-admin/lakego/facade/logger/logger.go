@@ -74,7 +74,7 @@ func LogrusWithField(log *logger.Logger, key string, value interface{}) *logrusD
 
 // 默认驱动
 func GetDefaultDriver() string {
-    return config.New("logger").GetString("DefaultDriver")
+    return config.New("logger").GetString("Default")
 }
 
 // 注册

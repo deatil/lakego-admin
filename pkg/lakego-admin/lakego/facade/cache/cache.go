@@ -19,6 +19,12 @@ import (
 
 var once sync.Once
 
+// 初始化
+func init() {
+    // 注册默认
+    Register()
+}
+
 // 实例化
 func New(once ...bool) interfaces.Cache {
     cache := GetDefaultCache()
@@ -32,9 +38,6 @@ func NewWithType(cache string, once ...bool) interfaces.Cache {
 }
 
 func Cache(name string, once ...bool) interfaces.Cache {
-    // 注册默认缓存
-    Register()
-
     // 缓存列表
     caches := config.New("cache").GetStringMap("Caches")
 
