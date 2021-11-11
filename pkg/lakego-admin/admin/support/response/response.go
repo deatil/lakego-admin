@@ -1,8 +1,7 @@
 package response
 
 import (
-    "github.com/gin-gonic/gin"
-
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/http/request"
     "github.com/deatil/lakego-admin/lakego/http/response"
 

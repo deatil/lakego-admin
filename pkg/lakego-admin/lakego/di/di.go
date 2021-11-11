@@ -22,38 +22,40 @@ func New() *DI {
     return instance
 }
 
-// 选项
-type Option = dig.Option
+type (
+    // 选项
+    Option = dig.Option
 
-// 设置选项
-type ProvideOption = dig.ProvideOption
+    // 设置选项
+    ProvideOption = dig.ProvideOption
 
-// 使用选项
-type InvokeOption = dig.InvokeOption
+    // 使用选项
+    InvokeOption = dig.InvokeOption
 
-// VisualizeOption
-type VisualizeOption = dig.VisualizeOption
+    // VisualizeOption
+    VisualizeOption = dig.VisualizeOption
 
-// 唯一ID
-type ID = dig.ID
+    // 唯一ID
+    ID = dig.ID
 
-// 结构体的信息
-type ProvideInfo = dig.ProvideInfo
+    // 结构体的信息
+    ProvideInfo = dig.ProvideInfo
 
-// 输入
-type Input = dig.Input
+    // 输入
+    Input = dig.Input
 
-// 输出
-type Output = dig.Output
+    // 输出
+    Output = dig.Output
 
-// 核心容器
-type Container = dig.Container
+    // 核心容器
+    Container = dig.Container
 
-// 结构体导入
-type In = dig.In
+    // 结构体导入
+    In = dig.In
 
-// 结构体导出
-type Out = dig.Out
+    // 结构体导出
+    Out = dig.Out
+)
 
 /**
  * 容器

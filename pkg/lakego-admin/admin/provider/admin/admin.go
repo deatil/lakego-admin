@@ -1,8 +1,7 @@
 package admin
 
 import (
-    "github.com/gin-gonic/gin"
-
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/router"
@@ -27,7 +26,7 @@ import (
 )
 
 // 全局中间件
-var middlewares = []gin.HandlerFunc{}
+var globalMiddlewares = []gin.HandlerFunc{}
 
 // 路由中间件
 var routeMiddlewares = map[string]gin.HandlerFunc{
@@ -132,7 +131,7 @@ func (this *ServiceProvider) loadRoute() {
         })
 
         // 全局中间件
-        engine.Use(middlewares...)
+        engine.Use(globalMiddlewares...)
 
         // 后台路由及设置中间件
         groupMiddlewares := router.GetMiddlewares(conf.GetString("Route.Middleware"))
@@ -163,7 +162,7 @@ func (this *ServiceProvider) loadRoute() {
  * 导入中间件
  */
 func (this *ServiceProvider) loadMiddleware() {
-    m := router.New()
+    m := router.NewMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

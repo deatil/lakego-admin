@@ -3,7 +3,7 @@ package route
 import (
     "sync"
 
-    "github.com/gin-gonic/gin"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 )
 
 var instance *Route

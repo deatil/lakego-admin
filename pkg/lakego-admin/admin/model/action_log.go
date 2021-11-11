@@ -17,9 +17,9 @@ type ActionLog struct {
     Method      string      `gorm:"column:method;type:varchar(10);" json:"method"`
     Info        string      `gorm:"column:info;type:text;" json:"info"`
     Useragent   string      `gorm:"column:useragent;type:text;" json:"useragent"`
+    Time        int         `gorm:"column:time;type:int(10);" json:"time"`
     Ip          string      `gorm:"column:ip;type:varchar(50);" json:"ip"`
-    AddTime     int         `gorm:"column:add_time;type:int(10);" json:"add_time"`
-    AddIp       string      `gorm:"column:add_ip;type:varchar(50);" json:"add_ip"`
+    Status      string      `gorm:"column:status;type:char(3);" json:"status"`
 }
 
 func (this *ActionLog) BeforeCreate(tx *gorm.DB) error {

@@ -1,9 +1,8 @@
 package controller
 
 import (
-    "github.com/gin-gonic/gin"
-
     "github.com/deatil/lakego-admin/lakego/event"
+    gin "github.com/deatil/lakego-admin/lakego/router"
     authPassword "github.com/deatil/lakego-admin/lakego/auth/password"
 
     "github.com/deatil/lakego-admin/admin/model"

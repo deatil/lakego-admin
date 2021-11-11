@@ -10,7 +10,7 @@ var once sync.Once
 /**
  * New
  */
-func New() *Middleware {
+func NewMiddleware() *Middleware {
     globalName := "lakego::router-group"
 
     alias := NewAlias()
@@ -28,9 +28,9 @@ func New() *Middleware {
 /**
  * 单例模式
  */
-func NewWithInstance() *Middleware {
+func NewMiddlewareWithInstance() *Middleware {
     once.Do(func() {
-        instance = New()
+        instance = NewMiddleware()
     })
 
     return instance

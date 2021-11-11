@@ -2,8 +2,8 @@ package controller
 
 import (
     "strconv"
-    "github.com/gin-gonic/gin"
-
+    
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/upload"

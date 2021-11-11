@@ -1,7 +1,7 @@
 package route
 
 import (
-    "github.com/gin-gonic/gin"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 
     "github.com/deatil/lakego-admin/admin/controller"
 )

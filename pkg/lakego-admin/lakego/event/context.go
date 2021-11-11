@@ -1,7 +1,7 @@
 package event
 
 import (
-    "github.com/gin-gonic/gin"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 )
 
 /**

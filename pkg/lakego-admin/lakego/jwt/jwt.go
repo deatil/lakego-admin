@@ -15,10 +15,10 @@ func New() *JWT {
     jwter := &JWT{
         Secret: "123456",
         SigningMethod: "HS256",
-        Claims: make(map[string]interface{}),
-        SigningMethodList: make(map[string]jwt.SigningMethod),
-        SigningFunc: make(map[string]func(*JWT) (interface{}, error)),
-        ParseFunc: make(map[string]func(*JWT) (interface{}, error)),
+        Claims: make(Claims),
+        SigningMethodList: make(SigningMethodMap),
+        SigningFunc: make(SigningFunc),
+        ParseFunc: make(ParseFunc),
     }
 
     // 设置签名方式
@@ -28,7 +28,7 @@ func New() *JWT {
 }
 
 // 验证方式列表
-var signingMethodList = map[string]jwt.SigningMethod {
+var signingMethodList = SigningMethodMap {
     "ES256": jwt.SigningMethodES256,
     "ES384": jwt.SigningMethodES384,
     "ES512": jwt.SigningMethodES512,
@@ -48,6 +48,20 @@ var signingMethodList = map[string]jwt.SigningMethod {
     "EdDSA": jwt.SigningMethodEdDSA,
 }
 
+type (
+    // jwt 载荷
+    Claims map[string]interface{}
+
+    // 验证方式列表
+    SigningMethodMap map[string]jwt.SigningMethod
+
+    // 自定义签名方式
+    SigningFunc map[string]func(*JWT) (interface{}, error)
+
+    // 自定义解析方式
+    ParseFunc map[string]func(*JWT) (interface{}, error)
+)
+
 /**
  * JWT
  *
@@ -56,7 +70,7 @@ var signingMethodList = map[string]jwt.SigningMethod {
  */
 type JWT struct {
     // 载荷
-    Claims map[string]interface{}
+    Claims Claims
 
     // 签名方法
     SigningMethod string
@@ -74,13 +88,13 @@ type JWT struct {
     PrivateKeyPassword string
 
     // 验证方式列表
-    SigningMethodList map[string]jwt.SigningMethod
+    SigningMethodList SigningMethodMap
 
     // 自定义签名方式
-    SigningFunc map[string]func(*JWT) (interface{}, error)
+    SigningFunc SigningFunc
 
     // 自定义解析方式
-    ParseFunc map[string]func(*JWT) (interface{}, error)
+    ParseFunc ParseFunc
 }
 
 // Audience
@@ -167,7 +181,7 @@ func (this *JWT) WithSignMethod(name string, method jwt.SigningMethod) *JWT {
 }
 
 // 批量设置签名方式
-func (this *JWT) WithSignMethodMany(methods map[string]jwt.SigningMethod) *JWT {
+func (this *JWT) WithSignMethodMany(methods SigningMethodMap) *JWT {
     if len(methods) > 0 {
         for k, v := range methods {
             this.WithSignMethod(k, v)
@@ -199,7 +213,7 @@ func (this *JWT) WithSigningFunc(name string, f func(*JWT) (interface{}, error))
 }
 
 // 批量设置自定义签名方式
-func (this *JWT) WithSigningFuncMany(funcs map[string]func(*JWT) (interface{}, error)) *JWT {
+func (this *JWT) WithSigningFuncMany(funcs SigningFunc) *JWT {
     if len(funcs) > 0 {
         for k, v := range funcs {
             this.WithSigningFunc(k, v)
@@ -232,7 +246,7 @@ func (this *JWT) WithParseFunc(name string, f func(*JWT) (interface{}, error)) *
 }
 
 // 批量设置自定义解析方式
-func (this *JWT) WithParseFuncMany(funcs map[string]func(*JWT) (interface{}, error)) *JWT {
+func (this *JWT) WithParseFuncMany(funcs ParseFunc) *JWT {
     if len(funcs) > 0 {
         for k, v := range funcs {
             this.WithParseFunc(k, v)

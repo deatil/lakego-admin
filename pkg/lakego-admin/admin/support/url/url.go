@@ -4,9 +4,8 @@ import (
     "strings"
     "regexp"
 
-    "github.com/gin-gonic/gin"
-
     "github.com/deatil/lakego-admin/lakego/helper"
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/file"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/storage"

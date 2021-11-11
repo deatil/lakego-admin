@@ -5,9 +5,7 @@ import (
     "net"
     "mime/multipart"
 
-    "github.com/gin-gonic/gin"
-    "github.com/gin-gonic/gin/binding"
-
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/cast"
 )
 
@@ -157,7 +155,7 @@ func (this *Request) BindUri(obj interface{}) error {
 }
 
 // 绑定 MustBindWith
-func (this *Request) MustBindWith(obj interface{}, b binding.Binding) error {
+func (this *Request) MustBindWith(obj interface{}, b gin.Binding) error {
     return this.ctx.MustBindWith(obj, b)
 }
 
@@ -194,11 +192,11 @@ func (this *Request) ShouldBindUri(obj interface{}) error {
     return this.ctx.ShouldBindUri(obj)
 }
 
-func (this *Request) ShouldBindWith(obj interface{}, b binding.Binding) error {
+func (this *Request) ShouldBindWith(obj interface{}, b gin.Binding) error {
     return this.ctx.ShouldBindWith(obj, b)
 }
 
-func (this *Request) ShouldBindBodyWith(obj interface{}, bb binding.BindingBody) (err error) {
+func (this *Request) ShouldBindBodyWith(obj interface{}, bb gin.BindingBody) (err error) {
     return this.ctx.ShouldBindBodyWith(obj, bb)
 }
 

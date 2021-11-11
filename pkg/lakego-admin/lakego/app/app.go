@@ -11,11 +11,11 @@ import (
     "net/http"
 
     "github.com/spf13/cobra"
-    "github.com/gin-gonic/gin"
-
+    
     "github.com/deatil/lakego-admin/lakego/di"
     "github.com/deatil/lakego-admin/lakego/jwt"
     "github.com/deatil/lakego-admin/lakego/route"
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
     "github.com/deatil/lakego-admin/lakego/facade/config"

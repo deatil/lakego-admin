@@ -1,10 +1,10 @@
 package actionlog
 
 import (
-    "strings"
+    "strconv"
     "encoding/json"
-    "github.com/gin-gonic/gin"
 
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/support/time"
 
@@ -35,7 +35,10 @@ func recordLog(ctx *gin.Context) {
     }
 
     url := ctx.Request.URL.String()
-    method := strings.ToUpper(ctx.Request.Method)
+    method := ctx.Request.Method
+
+    // path := ctx.Request.Path
+    // query := ctx.Request.RawQuery
 
     // 接收数据
     post := make(map[string]interface{})
@@ -45,7 +48,11 @@ func recordLog(ctx *gin.Context) {
     info, _ := json.Marshal(&post)
     useragent := ctx.Request.Header.Get("User-Agent")
 
+    // 请求 IP
     ip := helper.GetRequestIp(ctx)
+
+    // 响应输出状态
+    status := strconv.Itoa(ctx.Writer.Status())
 
     // 记录数据
     model.NewDB().Create(&model.ActionLog{
@@ -54,8 +61,8 @@ func recordLog(ctx *gin.Context) {
         Method: method,
         Info: string(info),
         Useragent: useragent,
+        Time: time.NowTimeToInt(),
         Ip: ip,
-        AddTime: time.NowTimeToInt(),
-        AddIp: ip,
+        Status: status,
     })
 }

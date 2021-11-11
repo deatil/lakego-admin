@@ -2,8 +2,8 @@ package provider
 
 import (
     "github.com/spf13/cobra"
-    "github.com/gin-gonic/gin"
-
+    
+    gin "github.com/deatil/lakego-admin/lakego/router"
     appInterface "github.com/deatil/lakego-admin/lakego/app/interfaces"
 )
 

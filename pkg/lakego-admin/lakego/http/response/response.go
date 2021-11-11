@@ -4,8 +4,7 @@ import (
     "io"
     "net/http"
 
-    "github.com/gin-gonic/gin"
-    "github.com/gin-gonic/gin/render"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 )
 
 // 使用
@@ -134,7 +133,7 @@ func (this *Response) SetCookie(
 }
 
 // Render
-func (this *Response) Render(code int, r render.Render) {
+func (this *Response) Render(code int, r gin.Render) {
     this.ctx.Render(code, r)
 }
 

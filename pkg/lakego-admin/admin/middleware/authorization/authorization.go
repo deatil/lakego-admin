@@ -3,8 +3,8 @@ package authorization
 import (
     "strings"
     "encoding/json"
-    "github.com/gin-gonic/gin"
-
+    
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 

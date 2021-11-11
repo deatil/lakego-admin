@@ -2,10 +2,10 @@ package controller
 
 import (
     "strings"
-    "github.com/gin-gonic/gin"
-
+    
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/cast"
     "github.com/deatil/lakego-admin/lakego/support/time"
 

@@ -2,8 +2,8 @@ package permission
 
 import (
     "strings"
-    "github.com/gin-gonic/gin"
-
+    
+    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/permission"
 

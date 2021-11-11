@@ -1,31 +1,29 @@
 package router
 
 import (
-    "github.com/gin-gonic/gin"
-
     "github.com/deatil/lakego-admin/lakego/router"
 )
 
 /**
  * 获取中间件单列
  */
-func New() *router.Middleware {
-    return router.NewWithInstance()
+func NewMiddleware() *router.Middleware {
+    return router.NewMiddlewareWithInstance()
 }
 
 /**
  * 获取中间件列表
  */
-func GetMiddlewares(name string) (handlerFuncs []gin.HandlerFunc) {
-    m := New()
+func GetMiddlewares(name string) (handlerFuncs []router.HandlerFunc) {
+    m := NewMiddleware()
 
     middlewares := m.GetMiddlewareList(name)
 
     if middlewares != nil && len(middlewares) > 0 {
         for _, middlewareItem := range middlewares {
             switch middlewareItem.(type) {
-                case gin.HandlerFunc:
-                    handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+                case router.HandlerFunc:
+                    handlerFuncs = append(handlerFuncs, middlewareItem.(router.HandlerFunc))
             }
         }
     }
@@ -36,16 +34,16 @@ func GetMiddlewares(name string) (handlerFuncs []gin.HandlerFunc) {
 /**
  * 获取全局中间件列表
  */
-func GetGlobalMiddlewares() (handlerFuncs []gin.HandlerFunc) {
-    m := New()
+func GetGlobalMiddlewares() (handlerFuncs []router.HandlerFunc) {
+    m := NewMiddleware()
 
     middlewares := m.GetGlobalMiddlewareList()
 
     if middlewares != nil && len(middlewares) > 0 {
         for _, middlewareItem := range middlewares {
             switch middlewareItem.(type) {
-                case gin.HandlerFunc:
-                    handlerFuncs = append(handlerFuncs, middlewareItem.(gin.HandlerFunc))
+                case router.HandlerFunc:
+                    handlerFuncs = append(handlerFuncs, middlewareItem.(router.HandlerFunc))
             }
         }
     }

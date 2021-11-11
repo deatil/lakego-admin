@@ -1,7 +1,7 @@
 package admincheck
 
 import (
-    "github.com/gin-gonic/gin"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 
     "github.com/deatil/lakego-admin/admin/auth/admin"
     "github.com/deatil/lakego-admin/admin/support/response"

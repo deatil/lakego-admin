@@ -9,7 +9,7 @@ import (
     "runtime"
     "math/rand"
 
-    "github.com/gin-gonic/gin"
+    gin "github.com/deatil/lakego-admin/lakego/router"
 )
 
 func IndexForOne(i int, p, limit int64) int64 {

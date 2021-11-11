@@ -6,9 +6,9 @@ CREATE TABLE `pre__action_log` (
   `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '请求类型',
   `info` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '内容信息',
   `useragent` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User-Agent',
+  `time` int(10) DEFAULT NULL,
   `ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `add_time` int(10) DEFAULT NULL,
-  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` char(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '输出状态',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='操作日志';
 
@@ -85,7 +85,6 @@ CREATE TABLE `pre__auth_rule` (
   `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则中文描述',
   `url` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '访问地址',
   `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'GET' COMMENT '请求类型',
-  `auth_url` varchar(200) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '权限验证链接',
   `slug` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '地址鉴权标识',
   `description` varchar(255) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '描述',
   `listorder` int(10) NOT NULL DEFAULT '100' COMMENT '排序ID',
