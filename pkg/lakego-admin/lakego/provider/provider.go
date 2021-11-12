@@ -1,9 +1,9 @@
 package provider
 
 import (
-    "github.com/spf13/cobra"
+    "github.com/deatil/lakego-admin/lakego/command"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     appInterface "github.com/deatil/lakego-admin/lakego/app/interfaces"
 )
 
@@ -18,7 +18,7 @@ type ServiceProvider struct {
     App appInterface.App
 
     // 路由
-    Route *gin.Engine
+    Route *router.Engine
 
     // 启动前
     BootingCallback func()
@@ -38,17 +38,17 @@ func (this *ServiceProvider) GetApp() appInterface.App {
 }
 
 // 设置
-func (this *ServiceProvider) WithRoute(route *gin.Engine) {
+func (this *ServiceProvider) WithRoute(route *router.Engine) {
     this.Route = route
 }
 
 // 获取
-func (this *ServiceProvider) GetRoute() *gin.Engine {
+func (this *ServiceProvider) GetRoute() *router.Engine {
     return this.Route
 }
 
 // 添加脚本
-func (this *ServiceProvider) AddCommand(cmd *cobra.Command) {
+func (this *ServiceProvider) AddCommand(cmd *command.Command) {
     if this.App != nil {
         this.App.GetRootCmd().AddCommand(cmd)
     }
@@ -57,12 +57,12 @@ func (this *ServiceProvider) AddCommand(cmd *cobra.Command) {
 // 添加脚本
 func (this *ServiceProvider) AddCommands(cmds []interface{}) {
     for _, cmd := range cmds {
-        this.AddCommand(cmd.(*cobra.Command))
+        this.AddCommand(cmd.(*command.Command))
     }
 }
 
 // 添加路由
-func (this *ServiceProvider) AddRoute(f func(*gin.Engine)) {
+func (this *ServiceProvider) AddRoute(f func(*router.Engine)) {
     if this.Route != nil {
         f(this.Route)
     }

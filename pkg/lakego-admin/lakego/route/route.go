@@ -3,7 +3,7 @@ package route
 import (
     "sync"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 )
 
 var instance *Route
@@ -25,16 +25,16 @@ func New() *Route {
  */
 type Route struct {
     // 路由
-    routeEngine *gin.Engine
+    routeEngine *router.Engine
 }
 
 // 设置
-func (this *Route) With(engine *gin.Engine) {
+func (this *Route) With(engine *router.Engine) {
     this.routeEngine = engine
 }
 
 // 设置
-func (this *Route) Get() *gin.Engine {
+func (this *Route) Get() *router.Engine {
     return this.routeEngine
 }
 
@@ -48,7 +48,7 @@ type RouteInfo struct {
 }
 RoutesInfo []RouteInfo
 */
-func (this *Route) GetRoutes() gin.RoutesInfo {
+func (this *Route) GetRoutes() router.RoutesInfo {
     return this.routeEngine.Routes()
 }
 

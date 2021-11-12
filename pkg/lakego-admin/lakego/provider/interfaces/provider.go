@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 )
 
 /**
@@ -15,10 +15,10 @@ type ServiceProvider interface {
     WithApp(interface{})
 
     // 设置路由
-    WithRoute(*gin.Engine)
+    WithRoute(*router.Engine)
 
     // 获取
-    GetRoute() *gin.Engine
+    GetRoute() *router.Engine
 
     // 注册
     Register()

@@ -10,16 +10,15 @@ import (
     "context"
     "net/http"
 
-    "github.com/spf13/cobra"
-    
     "github.com/deatil/lakego-admin/lakego/di"
     "github.com/deatil/lakego-admin/lakego/jwt"
     "github.com/deatil/lakego-admin/lakego/route"
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
     "github.com/deatil/lakego-admin/lakego/facade/config"
-    "github.com/deatil/lakego-admin/lakego/facade/router"
+    routerFacade "github.com/deatil/lakego-admin/lakego/facade/router"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 )
 
@@ -62,10 +61,10 @@ type App struct {
     RunInConsole bool
 
     // 路由
-    RouteEngine *gin.Engine
+    RouteEngine *router.Engine
 
     // 根脚本
-    RootCmd *cobra.Command
+    RootCmd *command.Command
 
     // 启动前
     BootingCallbacks []func()
@@ -186,12 +185,12 @@ func (this *App) CallBootedCallbacks() {
 }
 
 // 设置根脚本
-func (this *App) WithRootCmd(root *cobra.Command) {
+func (this *App) WithRootCmd(root *command.Command) {
     this.RootCmd = root
 }
 
 // 获取根脚本
-func (this *App) GetRootCmd() *cobra.Command {
+func (this *App) GetRootCmd() *command.Command {
     return this.RootCmd
 }
 
@@ -214,42 +213,42 @@ func (this *App) WithNetListener(listener net.Listener) *App {
 
 // 初始化路由
 func (this *App) runApp() {
-    var r *gin.Engine
+    var r *router.Engine
 
     if !this.RunInConsole {
         // 模式
         mode := config.New("admin").GetString("Mode")
         if mode != "dev" {
-            gin.SetMode(gin.ReleaseMode)
+            router.SetMode(router.ReleaseMode)
 
             // 路由
-            r = gin.New()
+            r = router.New()
 
             // 使用默认处理机制
-            r.Use(gin.Recovery())
+            r.Use(router.Recovery())
         } else {
-            gin.SetMode(gin.DebugMode)
+            router.SetMode(router.DebugMode)
 
             // 路由
-            r = gin.Default()
+            r = router.Default()
         }
     } else {
         // 脚本取消调试模式
-        gin.SetMode(gin.ReleaseMode)
+        router.SetMode(router.ReleaseMode)
 
         // 路由
-        r = gin.New()
+        r = router.New()
     }
 
     // 设置默认日志记录
-    // file, err := os.Create("./runtime/gin.log")
-    // gin.DefaultWriter = file
+    // file, err := os.Create("./runtime/route.log")
+    // router.DefaultWriter = file
 
     // 事件
     r.Use(event.Handler())
 
     // 全局中间件
-    globalMiddlewares := router.GetGlobalMiddlewares()
+    globalMiddlewares := routerFacade.GetGlobalMiddlewares()
 
     // 设置全局中间件
     r.Use(globalMiddlewares...)

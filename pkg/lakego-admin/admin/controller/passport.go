@@ -1,7 +1,7 @@
 package controller
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/captcha"
@@ -22,7 +22,7 @@ type Passport struct {
 /**
  * 验证码
  */
-func (this *Passport) Captcha(ctx *gin.Context) {
+func (this *Passport) Captcha(ctx *router.Context) {
     c := captcha.New()
     id, b64s, err := c.Make()
     if err != nil {
@@ -32,7 +32,7 @@ func (this *Passport) Captcha(ctx *gin.Context) {
     key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
 
     this.SetHeader(ctx, key, id)
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "captcha": b64s,
     })
 }
@@ -40,7 +40,7 @@ func (this *Passport) Captcha(ctx *gin.Context) {
 /**
  * 登陆
  */
-func (this *Passport) Login(ctx *gin.Context) {
+func (this *Passport) Login(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -110,7 +110,7 @@ func (this *Passport) Login(ctx *gin.Context) {
     expiresIn := jwter.GetAccessExpiresIn()
 
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "access_token": accessToken,
         "expires_in": expiresIn,
         "refresh_token": refreshToken,
@@ -120,7 +120,7 @@ func (this *Passport) Login(ctx *gin.Context) {
 /**
  * 刷新 token
  */
-func (this *Passport) RefreshToken(ctx *gin.Context) {
+func (this *Passport) RefreshToken(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -168,7 +168,7 @@ func (this *Passport) RefreshToken(ctx *gin.Context) {
     expiresIn := jwter.GetAccessExpiresIn()
 
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "access_token": accessToken,
         "expires_in": expiresIn,
     })
@@ -177,7 +177,7 @@ func (this *Passport) RefreshToken(ctx *gin.Context) {
 /**
  * 退出
  */
-func (this *Passport) Logout(ctx *gin.Context) {
+func (this *Passport) Logout(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)

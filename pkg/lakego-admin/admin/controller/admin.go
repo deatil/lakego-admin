@@ -4,9 +4,9 @@ import (
     "strings"
     "encoding/json"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/collection"
     "github.com/deatil/lakego-admin/lakego/support/cast"
     "github.com/deatil/lakego-admin/lakego/support/hash"
@@ -38,7 +38,7 @@ type Admin struct {
 /**
  * 列表
  */
-func (this *Admin) Index(ctx *gin.Context) {
+func (this *Admin) Index(ctx *router.Context) {
     // 模型
     adminModel := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx))
@@ -120,7 +120,7 @@ func (this *Admin) Index(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -131,7 +131,7 @@ func (this *Admin) Index(ctx *gin.Context) {
 /**
  * 详情
  */
-func (this *Admin) Detail(ctx *gin.Context) {
+func (this *Admin) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -182,7 +182,7 @@ func (this *Admin) Detail(ctx *gin.Context) {
 /**
  * 管理员权限
  */
-func (this *Admin) Rules(ctx *gin.Context) {
+func (this *Admin) Rules(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -214,7 +214,7 @@ func (this *Admin) Rules(ctx *gin.Context) {
 
     rules := adminRepository.GetRules(groupids)
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": rules,
     })
 }
@@ -222,7 +222,7 @@ func (this *Admin) Rules(ctx *gin.Context) {
 /**
  * 添加账号所需分组
  */
-func (this *Admin) Groups(ctx *gin.Context) {
+func (this *Admin) Groups(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     adminData := adminInfo.(*admin.Admin)
 
@@ -267,7 +267,7 @@ func (this *Admin) Groups(ctx *gin.Context) {
         list = adminData.GetGroupChildren()
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": list,
     })
 }
@@ -275,7 +275,7 @@ func (this *Admin) Groups(ctx *gin.Context) {
 /**
  * 添加
  */
-func (this *Admin) Create(ctx *gin.Context) {
+func (this *Admin) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -326,7 +326,7 @@ func (this *Admin) Create(ctx *gin.Context) {
         GroupId: post["group_id"].(string),
     })
 
-    this.SuccessWithData(ctx, "添加账号成功", gin.H{
+    this.SuccessWithData(ctx, "添加账号成功", router.H{
         "id": insertData.ID,
     })
 }
@@ -334,7 +334,7 @@ func (this *Admin) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (this *Admin) Update(ctx *gin.Context) {
+func (this *Admin) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -411,7 +411,7 @@ func (this *Admin) Update(ctx *gin.Context) {
 /**
  * 删除
  */
-func (this *Admin) Delete(ctx *gin.Context) {
+func (this *Admin) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -461,7 +461,7 @@ func (this *Admin) Delete(ctx *gin.Context) {
 /**
  * 修改头像
  */
-func (this *Admin) UpdateAvatar(ctx *gin.Context) {
+func (this *Admin) UpdateAvatar(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -514,7 +514,7 @@ func (this *Admin) UpdateAvatar(ctx *gin.Context) {
 /**
  * 修改密码
  */
-func (this *Admin) UpdatePasssword(ctx *gin.Context) {
+func (this *Admin) UpdatePasssword(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -571,7 +571,7 @@ func (this *Admin) UpdatePasssword(ctx *gin.Context) {
 /**
  * 启用
  */
-func (this *Admin) Enable(ctx *gin.Context) {
+func (this *Admin) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -623,7 +623,7 @@ func (this *Admin) Enable(ctx *gin.Context) {
 /**
  * 禁用
  */
-func (this *Admin) Disable(ctx *gin.Context) {
+func (this *Admin) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -675,7 +675,7 @@ func (this *Admin) Disable(ctx *gin.Context) {
 /**
  * 退出
  */
-func (this *Admin) Logout(ctx *gin.Context) {
+func (this *Admin) Logout(ctx *router.Context) {
     refreshToken := ctx.Param("refreshToken")
     if refreshToken == "" {
         this.Error(ctx, "refreshToken不能为空")
@@ -729,7 +729,7 @@ func (this *Admin) Logout(ctx *gin.Context) {
 /**
  * 授权
  */
-func (this *Admin) Access(ctx *gin.Context) {
+func (this *Admin) Access(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "账号ID不能为空")
@@ -808,7 +808,7 @@ func (this *Admin) Access(ctx *gin.Context) {
 /**
  * 权限同步
  */
-func (this *Admin) ResetPermission(ctx *gin.Context) {
+func (this *Admin) ResetPermission(ctx *router.Context) {
     // 清空原始数据
     permission.New().ClearData()
 

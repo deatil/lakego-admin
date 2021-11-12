@@ -1,7 +1,7 @@
 package route
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 
     "github.com/deatil/lakego-admin/admin/controller"
 )
@@ -9,7 +9,7 @@ import (
 /**
  * 后台路由
  */
-func Route(engine *gin.RouterGroup) {
+func Route(engine *router.RouterGroup) {
     // 登陆
     passportController := new(controller.Passport)
     engine.GET("/passport/captcha", passportController.Captcha)
@@ -71,7 +71,7 @@ func Route(engine *gin.RouterGroup) {
 /**
  * 后台管理员路由
  */
-func AdminRoute(engine *gin.RouterGroup) {
+func AdminRoute(engine *router.RouterGroup) {
     // 权限菜单
     authRuleController := new(controller.AuthRule)
     engine.GET("/auth/rule", authRuleController.Index)

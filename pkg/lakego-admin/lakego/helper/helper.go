@@ -9,7 +9,7 @@ import (
     "runtime"
     "math/rand"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 )
 
 func IndexForOne(i int, p, limit int64) int64 {
@@ -117,7 +117,7 @@ func MakeRandomString(n int, allowedChars ...[]rune) string {
 }
 
 // 请求 IP
-func GetRequestIp(c *gin.Context) string {
+func GetRequestIp(c *router.Context) string {
     ip := c.ClientIP()
 
     if ip == "::1" {
@@ -128,7 +128,7 @@ func GetRequestIp(c *gin.Context) string {
 }
 
 // 获取 header 中指定 key 的值
-func GetHeaderByName(c *gin.Context, key string) string {
+func GetHeaderByName(c *router.Context, key string) string {
     return c.Request.Header.Get(key)
 }
 

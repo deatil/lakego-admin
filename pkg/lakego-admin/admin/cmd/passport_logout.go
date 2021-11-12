@@ -3,8 +3,7 @@ package cmd
 import (
     "fmt"
 
-    "github.com/spf13/cobra"
-
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     "github.com/deatil/lakego-admin/lakego/support/time"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
@@ -23,15 +22,15 @@ import (
  * @create 2021-9-26
  * @author deatil
  */
-var PassportLogoutCmd = &cobra.Command{
+var PassportLogoutCmd = &command.Command{
     Use: "lakego-admin:passport-logout",
     Short: "lakego-admin passport-logout.",
     Example: "{execfile} lakego-admin:passport-logout",
     SilenceUsage: true,
-    PreRun: func(cmd *cobra.Command, args []string) {
+    PreRun: func(cmd *command.Command, args []string) {
 
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
         PassportLogout()
     },
 }
@@ -42,7 +41,7 @@ func init() {
     pf := PassportLogoutCmd.PersistentFlags()
     pf.StringVarP(&refreshToken, "refreshToken", "r", "", "刷新token")
 
-    cobra.MarkFlagRequired(pf, "refreshToken")
+    command.MarkFlagRequired(pf, "refreshToken")
 }
 
 // 强制将 jwt 的 refreshToken 放入黑名单

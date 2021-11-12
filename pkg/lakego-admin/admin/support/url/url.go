@@ -5,7 +5,7 @@ import (
     "regexp"
 
     "github.com/deatil/lakego-admin/lakego/helper"
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/file"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/storage"
@@ -19,7 +19,7 @@ func AdminUrl(url string) string {
 }
 
 // 匹配链接
-func MatchPath(ctx *gin.Context, path string, current string) bool {
+func MatchPath(ctx *router.Context, path string, current string) bool {
     requestPath := ctx.Request.URL.String()
     method := strings.ToUpper(ctx.Request.Method)
 

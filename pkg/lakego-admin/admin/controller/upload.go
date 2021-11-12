@@ -3,7 +3,7 @@ package controller
 import (
     "strconv"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/upload"
@@ -27,7 +27,7 @@ type Upload struct {
 /**
  * 上传文件
  */
-func (this *Upload) File(ctx *gin.Context) {
+func (this *Upload) File(ctx *router.Context) {
     // 账号信息
     adminInfo, _ := ctx.Get("admin")
     adminId := adminInfo.(*admin.Admin).GetId()
@@ -103,14 +103,14 @@ func (this *Upload) File(ctx *gin.Context) {
         }
 
         if uploadType == "image" || uploadType == "media" {
-            this.SuccessWithData(ctx, "上传文件成功", gin.H{
+            this.SuccessWithData(ctx, "上传文件成功", router.H{
                 "id": attach["id"],
                 "url": storager.Url(attach["path"].(string)),
             })
             return
         }
 
-        this.SuccessWithData(ctx, "上传文件成功", gin.H{
+        this.SuccessWithData(ctx, "上传文件成功", router.H{
             "id": attach["id"],
         })
         return
@@ -161,14 +161,14 @@ func (this *Upload) File(ctx *gin.Context) {
     }
 
     // 返回数据
-    data := gin.H{
+    data := router.H{
         "id": attachData.ID,
     }
 
     if uploadType == "image" || uploadType == "media" {
         url := storager.Url(path)
 
-        data = gin.H{
+        data = router.H{
             "id": attachData.ID,
             "url": url,
         }

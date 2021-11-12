@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     "github.com/deatil/lakego-admin/lakego/support/time"
     "github.com/deatil/lakego-admin/lakego/support/cast"
@@ -28,7 +28,7 @@ type Attachment struct {
 /**
  * 列表
  */
-func (this *Attachment) Index(ctx *gin.Context) {
+func (this *Attachment) Index(ctx *router.Context) {
     // 附件模型
     attachModel := model.NewAttachment()
 
@@ -96,7 +96,7 @@ func (this *Attachment) Index(ctx *gin.Context) {
     }
 
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -107,7 +107,7 @@ func (this *Attachment) Index(ctx *gin.Context) {
 /**
  * 详情
  */
-func (this *Attachment) Detail(ctx *gin.Context) {
+func (this *Attachment) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "文件ID不能为空")
@@ -138,7 +138,7 @@ func (this *Attachment) Detail(ctx *gin.Context) {
 /**
  * 启用
  */
-func (this *Attachment) Enable(ctx *gin.Context) {
+func (this *Attachment) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "文件ID不能为空")
@@ -180,7 +180,7 @@ func (this *Attachment) Enable(ctx *gin.Context) {
 /**
  * 禁用
  */
-func (this *Attachment) Disable(ctx *gin.Context) {
+func (this *Attachment) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "文件ID不能为空")
@@ -222,7 +222,7 @@ func (this *Attachment) Disable(ctx *gin.Context) {
 /**
  * 删除
  */
-func (this *Attachment) Delete(ctx *gin.Context) {
+func (this *Attachment) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "文件ID不能为空")
@@ -263,7 +263,7 @@ func (this *Attachment) Delete(ctx *gin.Context) {
 /**
  * 下载码
  */
-func (this *Attachment) DownloadCode(ctx *gin.Context) {
+func (this *Attachment) DownloadCode(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "文件ID不能为空")
@@ -287,7 +287,7 @@ func (this *Attachment) DownloadCode(ctx *gin.Context) {
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "code": code,
     })
 }
@@ -295,7 +295,7 @@ func (this *Attachment) DownloadCode(ctx *gin.Context) {
 /**
  * 下载
  */
-func (this *Attachment) Download(ctx *gin.Context) {
+func (this *Attachment) Download(ctx *router.Context) {
     code := ctx.Param("code")
     if code == "" {
         this.ReturnString(ctx, "code值不能为空")

@@ -1,10 +1,10 @@
 package admin
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/facade/config"
-    "github.com/deatil/lakego-admin/lakego/facade/router"
+    routerFacade "github.com/deatil/lakego-admin/lakego/facade/router"
 
     "github.com/deatil/lakego-admin/admin/support/url"
     "github.com/deatil/lakego-admin/admin/support/response"
@@ -26,10 +26,10 @@ import (
 )
 
 // 全局中间件
-var globalMiddlewares = []gin.HandlerFunc{}
+var globalMiddlewares = []router.HandlerFunc{}
 
 // 路由中间件
-var routeMiddlewares = map[string]gin.HandlerFunc{
+var routeMiddlewares = map[string]router.HandlerFunc{
     // 异常处理
     "lakego.exception": exception.Handler(),
 
@@ -108,7 +108,7 @@ func (this *ServiceProvider) loadCommand() {
  * 导入路由
  */
 func (this *ServiceProvider) loadRoute() {
-    this.AddRoute(func(engine *gin.Engine) {
+    this.AddRoute(func(engine *router.Engine) {
         // 中间件
         this.loadMiddleware()
 
@@ -117,14 +117,14 @@ func (this *ServiceProvider) loadRoute() {
         prefix := "/" + conf.GetString("Route.Prefix") + "/*"
 
         // 未知路由处理
-        engine.NoRoute(func (ctx *gin.Context) {
+        engine.NoRoute(func (ctx *router.Context) {
             if url.MatchPath(ctx, prefix, "") {
                 response.Error(ctx, "未知路由", code.StatusInvalid)
             }
         })
 
         // 未知调用方式
-        engine.NoMethod(func (ctx *gin.Context) {
+        engine.NoMethod(func (ctx *router.Context) {
             if url.MatchPath(ctx, prefix, "") {
                 response.Error(ctx, "访问错误", code.StatusInvalid)
             }
@@ -134,10 +134,10 @@ func (this *ServiceProvider) loadRoute() {
         engine.Use(globalMiddlewares...)
 
         // 后台路由及设置中间件
-        groupMiddlewares := router.GetMiddlewares(conf.GetString("Route.Middleware"))
+        groupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.Middleware"))
 
         // 管理员路由
-        adminGroupMiddlewares := router.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
+        adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
 
         // 路由
         admin := engine.Group(conf.GetString("Route.Prefix"))
@@ -162,7 +162,7 @@ func (this *ServiceProvider) loadRoute() {
  * 导入中间件
  */
 func (this *ServiceProvider) loadMiddleware() {
-    m := router.NewMiddleware()
+    m := routerFacade.NewMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

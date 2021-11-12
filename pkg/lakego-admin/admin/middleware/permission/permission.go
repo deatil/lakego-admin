@@ -3,7 +3,7 @@ package permission
 import (
     "strings"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/permission"
 
@@ -20,8 +20,8 @@ import (
  * @create 2021-9-5
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         if !shouldPassThrough(ctx) {
             // 权限检测
             permissionCheck(ctx)
@@ -32,7 +32,7 @@ func Handler() gin.HandlerFunc {
 }
 
 // 权限检测
-func permissionCheck(ctx *gin.Context) bool {
+func permissionCheck(ctx *router.Context) bool {
     if checkSuperAdmin(ctx) {
         return true
     }
@@ -69,7 +69,7 @@ func permissionCheck(ctx *gin.Context) bool {
 }
 
 // 超级管理员检测
-func checkSuperAdmin(ctx *gin.Context) bool {
+func checkSuperAdmin(ctx *router.Context) bool {
     adminInfo, _ := ctx.Get("admin")
 
     if adminInfo == nil {
@@ -86,7 +86,7 @@ func checkSuperAdmin(ctx *gin.Context) bool {
 }
 
 // 过滤
-func shouldPassThrough(ctx *gin.Context) bool {
+func shouldPassThrough(ctx *router.Context) bool {
     // 默认
     defaultExcepts := []string{
         "GET:passport/captcha",

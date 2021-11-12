@@ -4,7 +4,7 @@ import (
     "strings"
     "encoding/json"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
@@ -23,8 +23,8 @@ import (
  * @create 2021-9-5
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         if !shouldPassThrough(ctx) {
             // 权限检测
             jwtCheck(ctx)
@@ -35,7 +35,7 @@ func Handler() gin.HandlerFunc {
 }
 
 // 路由中间件
-func jwtCheck(ctx *gin.Context) {
+func jwtCheck(ctx *router.Context) {
     authJwt := ctx.GetHeader("Authorization")
     if authJwt == "" {
         response.Error(ctx, "token不能为空", code.JwtTokenInvalid)
@@ -107,7 +107,7 @@ func jwtCheck(ctx *gin.Context) {
 }
 
 // 过滤
-func shouldPassThrough(ctx *gin.Context) bool {
+func shouldPassThrough(ctx *router.Context) bool {
     // 默认
     defaultExcepts := []string{
         "GET:passport/captcha",

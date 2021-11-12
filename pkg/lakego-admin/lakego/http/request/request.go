@@ -5,7 +5,7 @@ import (
     "net"
     "mime/multipart"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/cast"
 )
 
@@ -24,11 +24,11 @@ func New() *Request {
  */
 type Request struct {
     // 上下文
-    ctx *gin.Context
+    ctx *router.Context
 }
 
 // 设置上下文
-func (this *Request) WithContext(ctx *gin.Context) *Request {
+func (this *Request) WithContext(ctx *router.Context) *Request {
     this.ctx = ctx
 
     return this
@@ -155,7 +155,7 @@ func (this *Request) BindUri(obj interface{}) error {
 }
 
 // 绑定 MustBindWith
-func (this *Request) MustBindWith(obj interface{}, b gin.Binding) error {
+func (this *Request) MustBindWith(obj interface{}, b router.Binding) error {
     return this.ctx.MustBindWith(obj, b)
 }
 
@@ -192,11 +192,11 @@ func (this *Request) ShouldBindUri(obj interface{}) error {
     return this.ctx.ShouldBindUri(obj)
 }
 
-func (this *Request) ShouldBindWith(obj interface{}, b gin.Binding) error {
+func (this *Request) ShouldBindWith(obj interface{}, b router.Binding) error {
     return this.ctx.ShouldBindWith(obj, b)
 }
 
-func (this *Request) ShouldBindBodyWith(obj interface{}, bb gin.BindingBody) (err error) {
+func (this *Request) ShouldBindBodyWith(obj interface{}, bb router.BindingBody) (err error) {
     return this.ctx.ShouldBindBodyWith(obj, bb)
 }
 

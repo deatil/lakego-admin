@@ -2,7 +2,7 @@ package controller
 
 import (
     "github.com/deatil/lakego-admin/lakego/event"
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     authPassword "github.com/deatil/lakego-admin/lakego/auth/password"
 
     "github.com/deatil/lakego-admin/admin/model"
@@ -23,7 +23,7 @@ type Profile struct {
 /**
  * 个人信息
  */
-func (this *Profile) Index(ctx *gin.Context) {
+func (this *Profile) Index(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
 
     adminInfo = adminInfo.(*admin.Admin).GetProfile()
@@ -34,7 +34,7 @@ func (this *Profile) Index(ctx *gin.Context) {
 /**
  * 修改信息
  */
-func (this *Profile) Update(ctx *gin.Context) {
+func (this *Profile) Update(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -72,7 +72,7 @@ func (this *Profile) Update(ctx *gin.Context) {
 /**
  * 修改头像
  */
-func (this *Profile) UpdateAvatar(ctx *gin.Context) {
+func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -108,7 +108,7 @@ func (this *Profile) UpdateAvatar(ctx *gin.Context) {
 /**
  * 修改密码
  */
-func (this *Profile) UpdatePasssword(ctx *gin.Context) {
+func (this *Profile) UpdatePasssword(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -165,11 +165,11 @@ func (this *Profile) UpdatePasssword(ctx *gin.Context) {
 /**
  * 权限列表
  */
-func (this *Profile) Rules(ctx *gin.Context) {
+func (this *Profile) Rules(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRules()
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": rules,
     })
 }

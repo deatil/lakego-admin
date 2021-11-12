@@ -1,7 +1,7 @@
 package event
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 )
 
 /**
@@ -10,13 +10,13 @@ import (
  * @create 2021-8-20
  * @author deatil
  */
-func ContextBind(ctx *gin.Context) {
+func ContextBind(ctx *router.Context) {
     dispatcher := NewEventDispatcher()
     ctx.Set("event", dispatcher)
 }
 
 // 监听
-func ContextEvent(ctx *gin.Context, name string, handler EventHandler) {
+func ContextEvent(ctx *router.Context, name string, handler EventHandler) {
     listener := NewEventListener(handler)
 
     // 当前事件
@@ -25,7 +25,7 @@ func ContextEvent(ctx *gin.Context, name string, handler EventHandler) {
 }
 
 // 移除
-func ContextRemove(ctx *gin.Context, name string, handler EventHandler) bool {
+func ContextRemove(ctx *router.Context, name string, handler EventHandler) bool {
     listener := NewEventListener(handler)
 
     // 当前事件
@@ -34,14 +34,14 @@ func ContextRemove(ctx *gin.Context, name string, handler EventHandler) bool {
 }
 
 // 判断存在
-func ContextHas(ctx *gin.Context, eventType string) bool {
+func ContextHas(ctx *router.Context, eventType string) bool {
     // 当前事件
     cevent, _ := ctx.Get("event")
     return cevent.(*EventDispatcher).HasEventListener(eventType)
 }
 
 // 事件调度
-func ContextDispatch(ctx *gin.Context, name string, object ...interface{}) bool {
+func ContextDispatch(ctx *router.Context, name string, object ...interface{}) bool {
     // 当前事件
     cevent, _ := ctx.Get("event")
 

@@ -3,8 +3,7 @@ package cmd
 import (
     "fmt"
 
-    "github.com/spf13/cobra"
-
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     authPassword "github.com/deatil/lakego-admin/lakego/auth/password"
 
@@ -21,15 +20,15 @@ import (
  * @create 2021-9-26
  * @author deatil
  */
-var ResetPasswordCmd = &cobra.Command{
+var ResetPasswordCmd = &command.Command{
     Use: "lakego-admin:reset-password",
     Short: "lakego-admin reset-password.",
     Example: "{execfile} lakego-admin:reset-password --id=[id] --password=[password]",
     SilenceUsage: true,
-    PreRun: func(cmd *cobra.Command, args []string) {
+    PreRun: func(cmd *command.Command, args []string) {
 
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
         ResetPassword()
     },
 }
@@ -42,8 +41,8 @@ func init() {
     pf.StringVarP(&id, "id", "i", "", "账号ID")
     pf.StringVarP(&password, "password", "p", "", "新建密码")
 
-    cobra.MarkFlagRequired(pf, "id")
-    cobra.MarkFlagRequired(pf, "password")
+    command.MarkFlagRequired(pf, "id")
+    command.MarkFlagRequired(pf, "password")
 }
 
 // 重设权限

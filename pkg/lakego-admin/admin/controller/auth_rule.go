@@ -5,7 +5,7 @@ import (
     
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/cast"
     "github.com/deatil/lakego-admin/lakego/support/time"
 
@@ -27,7 +27,7 @@ type AuthRule struct {
 /**
  * 列表
  */
-func (this *AuthRule) Index(ctx *gin.Context) {
+func (this *AuthRule) Index(ctx *router.Context) {
     // 模型
     ruleModel := model.NewAuthRule()
 
@@ -98,7 +98,7 @@ func (this *AuthRule) Index(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -109,7 +109,7 @@ func (this *AuthRule) Index(ctx *gin.Context) {
 /**
  * 树结构
  */
-func (this *AuthRule) IndexTree(ctx *gin.Context) {
+func (this *AuthRule) IndexTree(ctx *router.Context) {
     list := make([]map[string]interface{}, 0)
 
     err := model.NewAuthRule().
@@ -125,7 +125,7 @@ func (this *AuthRule) IndexTree(ctx *gin.Context) {
     newTree := tree.New()
     list2 := newTree.WithData(list).Build("0", "", 1)
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": list2,
     })
 }
@@ -133,7 +133,7 @@ func (this *AuthRule) IndexTree(ctx *gin.Context) {
 /**
  * 子列表
  */
-func (this *AuthRule) IndexChildren(ctx *gin.Context) {
+func (this *AuthRule) IndexChildren(ctx *router.Context) {
     id := ctx.Query("id")
     if id == "" {
         this.Error(ctx, "ID错误")
@@ -149,7 +149,7 @@ func (this *AuthRule) IndexChildren(ctx *gin.Context) {
         data = authRuleRepository.GetChildrenIds(id)
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": data,
     })
 }
@@ -157,7 +157,7 @@ func (this *AuthRule) IndexChildren(ctx *gin.Context) {
 /**
  * 详情
  */
-func (this *AuthRule) Detail(ctx *gin.Context) {
+func (this *AuthRule) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -185,7 +185,7 @@ func (this *AuthRule) Detail(ctx *gin.Context) {
 /**
  * 删除
  */
-func (this *AuthRule) Delete(ctx *gin.Context) {
+func (this *AuthRule) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -231,7 +231,7 @@ func (this *AuthRule) Delete(ctx *gin.Context) {
 /**
  * 清空特定ID权限
  */
-func (this *AuthRule) Clear(ctx *gin.Context) {
+func (this *AuthRule) Clear(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -282,7 +282,7 @@ func (this *AuthRule) Clear(ctx *gin.Context) {
 /**
  * 添加
  */
-func (this *AuthRule) Create(ctx *gin.Context) {
+func (this *AuthRule) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -326,7 +326,7 @@ func (this *AuthRule) Create(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "信息添加成功", gin.H{
+    this.SuccessWithData(ctx, "信息添加成功", router.H{
         "id": insertData.ID,
     })
 }
@@ -334,7 +334,7 @@ func (this *AuthRule) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (this *AuthRule) Update(ctx *gin.Context) {
+func (this *AuthRule) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -400,7 +400,7 @@ func (this *AuthRule) Update(ctx *gin.Context) {
 /**
  * 排序
  */
-func (this *AuthRule) Listorder(ctx *gin.Context) {
+func (this *AuthRule) Listorder(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -447,7 +447,7 @@ func (this *AuthRule) Listorder(ctx *gin.Context) {
 /**
  * 启用
  */
-func (this *AuthRule) Enable(ctx *gin.Context) {
+func (this *AuthRule) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -491,7 +491,7 @@ func (this *AuthRule) Enable(ctx *gin.Context) {
 /**
  * 禁用
  */
-func (this *AuthRule) Disable(ctx *gin.Context) {
+func (this *AuthRule) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")

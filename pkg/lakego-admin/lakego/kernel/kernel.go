@@ -3,9 +3,9 @@ package kernel
 import (
     "os"
     "net"
-    "github.com/spf13/cobra"
 
     "github.com/deatil/lakego-admin/lakego/app"
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/provider"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
     _ "github.com/deatil/lakego-admin/lakego/facade/database"
@@ -19,18 +19,18 @@ func New() *Kernel {
 }
 
 // 脚本
-var rootCmd = &cobra.Command{
+var rootCmd = &command.Command{
     Use: "lakego-admin",
     Short: "lakego-admin",
     SilenceUsage: true,
     Long: `lakego-admin`,
-    Args: func(cmd *cobra.Command, args []string) error {
+    Args: func(cmd *command.Command, args []string) error {
         return nil
     },
-    PersistentPreRunE: func(*cobra.Command, []string) error {
+    PersistentPreRunE: func(*command.Command, []string) error {
         return nil
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
     },
 }
 

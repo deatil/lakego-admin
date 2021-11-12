@@ -3,12 +3,12 @@ package scope
 import (
     "gorm.io/gorm"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/admin/auth/admin"
 )
 
 // 权限检测
-func AdminWithAccess(ctx *gin.Context, ids ...[]string) func(*gorm.DB) *gorm.DB {
+func AdminWithAccess(ctx *router.Context, ids ...[]string) func(*gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
         adminInfo, _ := ctx.Get("admin")
 

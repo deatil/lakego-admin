@@ -4,9 +4,8 @@ import (
     "fmt"
     "strings"
 
-    "github.com/spf13/cobra"
-
     "github.com/deatil/lakego-admin/lakego/route"
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/time"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
@@ -23,15 +22,15 @@ import (
  * @create 2021-9-26
  * @author deatil
  */
-var ImportRouteCmd = &cobra.Command{
+var ImportRouteCmd = &command.Command{
     Use: "lakego-admin:import-route",
     Short: "lakego-admin import route'info.",
     Example: "{execfile} lakego-admin:import-route",
     SilenceUsage: true,
-    PreRun: func(cmd *cobra.Command, args []string) {
+    PreRun: func(cmd *command.Command, args []string) {
 
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
         ImportRoute()
     },
 }

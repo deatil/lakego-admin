@@ -4,7 +4,7 @@ import (
     "os"
     "runtime"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 
     "github.com/deatil/lakego-admin/admin/auth/admin"
 )
@@ -22,11 +22,11 @@ type System struct {
 /**
  * 系统信息
  */
-func (this *System) Info(ctx *gin.Context) {
+func (this *System) Info(ctx *router.Context) {
     hostname, _ := os.Hostname()
     // netInfo, _ := net.Interfaces()
 
-    data := gin.H{
+    data := router.H{
         "goos": runtime.GOOS,
         "goarch": runtime.GOARCH,
         "goroot": runtime.GOROOT(),
@@ -41,11 +41,11 @@ func (this *System) Info(ctx *gin.Context) {
 /**
  * 权限 slug 列表
  */
-func (this *System) Rules(ctx *gin.Context) {
+func (this *System) Rules(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRuleSlugs()
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": rules,
     })
 }

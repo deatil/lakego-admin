@@ -6,7 +6,7 @@ import (
     "runtime"
     "runtime/debug"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/logger"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 
@@ -20,8 +20,8 @@ import (
  * @create 2021-9-5
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         defer func() {
             if r := recover(); r != nil {
                 mode := config.New("admin").GetString("Mode")
@@ -52,7 +52,7 @@ func Handler() gin.HandlerFunc {
                     trace := formatStackTrace(r)
 
                     // 错误输出详情
-                    responsedata := gin.H{
+                    responsedata := router.H{
                         "time": time,
                         "file": trace[3],
                         "trace": trace,

@@ -3,8 +3,7 @@ package cmd
 import (
     "fmt"
 
-    "github.com/spf13/cobra"
-
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/facade/permission"
 
     "github.com/deatil/lakego-admin/admin/model"
@@ -20,15 +19,15 @@ import (
  * @create 2021-9-25
  * @author deatil
  */
-var ResetPermissionCmd = &cobra.Command{
+var ResetPermissionCmd = &command.Command{
     Use: "lakego-admin:reset-permission",
     Short: "lakego-admin reset enforcer'permission.",
     Example: "{execfile} lakego-admin:reset-permission",
     SilenceUsage: true,
-    PreRun: func(cmd *cobra.Command, args []string) {
+    PreRun: func(cmd *command.Command, args []string) {
 
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
         ResetPermission()
     },
 }

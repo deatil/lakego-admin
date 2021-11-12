@@ -4,7 +4,7 @@ import (
     "strconv"
     "encoding/json"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/support/time"
 
@@ -17,8 +17,8 @@ import (
  * @create 2021-9-5
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         ctx.Next()
 
         go recordLog(ctx)
@@ -26,7 +26,7 @@ func Handler() gin.HandlerFunc {
 }
 
 // 记录日志
-func recordLog(ctx *gin.Context) {
+func recordLog(ctx *router.Context) {
     adminId, _ := ctx.Get("admin_id")
 
     name := "操作账号[-]"

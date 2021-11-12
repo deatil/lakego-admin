@@ -1,7 +1,7 @@
 package admincheck
 
 import (
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 
     "github.com/deatil/lakego-admin/admin/auth/admin"
     "github.com/deatil/lakego-admin/admin/support/response"
@@ -14,8 +14,8 @@ import (
  * @create 2021-9-30
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         isSuperAdministrator := checkSuperAdmin(ctx)
         if !isSuperAdministrator {
             response.Error(ctx, "你没有权限进行该操作", code.AuthError)
@@ -27,7 +27,7 @@ func Handler() gin.HandlerFunc {
 }
 
 // 超级管理员检测
-func checkSuperAdmin(ctx *gin.Context) bool {
+func checkSuperAdmin(ctx *router.Context) bool {
     adminInfo, _ := ctx.Get("admin")
 
     if adminInfo == nil {

@@ -5,8 +5,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/spf13/cobra"
-
+    "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/support/file"
 
@@ -23,15 +22,15 @@ import (
  * @create 2021-8-15
  * @author deatil
  */
-var InstallCmd = &cobra.Command{
+var InstallCmd = &command.Command{
     Use: "lakego-admin:install",
     Short: "Install the lakego-admin.",
     Example: "{execfile} lakego-admin:install",
     SilenceUsage: true,
-    PreRun: func(cmd *cobra.Command, args []string) {
+    PreRun: func(cmd *command.Command, args []string) {
 
     },
-    Run: func(cmd *cobra.Command, args []string) {
+    Run: func(cmd *command.Command, args []string) {
         // 运行安装
         runInsatll()
     },

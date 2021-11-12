@@ -1,7 +1,7 @@
 package interfaces
 
 import (
-    "github.com/spf13/cobra"
+    "github.com/deatil/lakego-admin/lakego/command"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 )
 
@@ -19,7 +19,7 @@ type App interface {
     Registers([]func() providerInterface.ServiceProvider)
 
     // 脚本
-    WithRootCmd(*cobra.Command)
+    WithRootCmd(*command.Command)
 
     // 设置启动前函数
     WithBooting(func())
@@ -28,7 +28,7 @@ type App interface {
     WithBooted(func())
 
     // 获取脚本
-    GetRootCmd() *cobra.Command
+    GetRootCmd() *command.Command
 
     // 命令行状态
     WithRunningInConsole(bool)

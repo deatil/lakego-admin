@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/cast"
     "github.com/deatil/lakego-admin/lakego/support/time"
 
@@ -23,7 +23,7 @@ type ActionLog struct {
 /**
  * 列表
  */
-func (this *ActionLog) Index(ctx *gin.Context) {
+func (this *ActionLog) Index(ctx *router.Context) {
     // 模型
     logModel := model.NewActionLog()
 
@@ -93,7 +93,7 @@ func (this *ActionLog) Index(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -104,7 +104,7 @@ func (this *ActionLog) Index(ctx *gin.Context) {
 /**
  * 清除 30 天前的数据
  */
-func (this *ActionLog) Clear(ctx *gin.Context) {
+func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().
         Where("add_time <= ?", time.BeforeTimeToInt(-30)).

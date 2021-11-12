@@ -1,67 +1,171 @@
 package command
 
 import (
-    "os"
-    "os/exec"
-    "bytes"
-    "path/filepath"
+    "io"
+    "text/template"
+
+    "github.com/spf13/pflag"
+    "github.com/spf13/cobra"
 )
 
-/**
- * 脚本扩展
- *
- * 使用:
- *     import "github.com/deatil/lakego-admin/lakego/command"
- *     str, err := command.Call("lakego-admin:reset-permission")
- *
- * @create 2021-9-25
- * @author deatil
- */
-func Call(name string, params ...string) (string, error) {
-    path := CommandLookPath()
+type (
+    // 脚本
+    Command = cobra.Command
 
-    newParams := []string{
-        name,
-    }
+    // PositionalArgs
+    PositionalArgs = cobra.PositionalArgs
 
-    newParams = append(newParams, params...)
+    // FParseErrWhitelist
+    FParseErrWhitelist = cobra.FParseErrWhitelist
 
-    return Command(path, newParams...)
+    // CompletionOptions
+    CompletionOptions = cobra.CompletionOptions
+
+    // ShellCompDirective is a bit map representing the different behaviors the shell
+    // can be instructed to have once completions have been provided.
+    ShellCompDirective = cobra.ShellCompDirective
+)
+
+// NoArgs returns an error if any args are included.
+func NoArgs(cmd *Command, args []string) error {
+    return cobra.NoArgs(cmd, args)
 }
 
-// 脚本文件
-func Command(commandName string, params ...string) (string, error) {
-    cmd := exec.Command(commandName, params...)
-
-    var out bytes.Buffer
-    cmd.Stdout = &out
-    cmd.Stderr = os.Stderr
-
-    // 重定目录
-    // cmd.Dir = commandDir
-
-    err := cmd.Start()
-    if err != nil {
-        return "", err
-    }
-
-    err = cmd.Wait()
-
-    return out.String(), err
+// OnlyValidArgs returns an error if any args are not in the list of ValidArgs.
+func OnlyValidArgs(cmd *Command, args []string) error {
+    return cobra.OnlyValidArgs(cmd, args)
 }
 
-// 可执行文件的绝对路径
-func CommandLookPath() string {
-    // 可执行文件的绝对路径
-    path, _ := exec.LookPath(os.Args[0])
+// ArbitraryArgs never returns an error.
+func ArbitraryArgs(cmd *Command, args []string) error {
+    return cobra.ArbitraryArgs(cmd, args)
+}
 
-    // 绝对路径
-    absPath, _ := filepath.Abs(path)
+// MinimumNArgs returns an error if there is not at least N args.
+func MinimumNArgs(n int) PositionalArgs {
+    return cobra.MinimumNArgs(n)
+}
 
-    // 索引
-    // index := strings.LastIndex(absPath, string(os.PathSeparator))
-    // path2 := path[:index]
+// MaximumNArgs returns an error if there are more than N args.
+func MaximumNArgs(n int) PositionalArgs {
+    return cobra.MaximumNArgs(n)
+}
 
-    return absPath
+// ExactArgs returns an error if there are not exactly n args.
+func ExactArgs(n int) PositionalArgs {
+    return cobra.ExactArgs(n)
+}
+
+// ExactValidArgs returns an error if
+// there are not exactly N positional args OR
+// there are any positional args that are not in the `ValidArgs` field of `Command`
+func ExactValidArgs(n int) PositionalArgs {
+    return cobra.ExactValidArgs(n)
+}
+
+// RangeArgs returns an error if the number of args is not within the expected range.
+func RangeArgs(min int, max int) PositionalArgs {
+    return cobra.RangeArgs(min, max)
+}
+
+// AddTemplateFunc adds a template function that's available to Usage and Help
+// template generation.
+func AddTemplateFunc(name string, tmplFunc interface{}) {
+    cobra.AddTemplateFunc(name, tmplFunc)
+}
+
+// AddTemplateFuncs adds multiple template functions that are available to Usage and
+// Help template generation.
+func AddTemplateFuncs(tmplFuncs template.FuncMap) {
+    cobra.AddTemplateFuncs(tmplFuncs)
+}
+
+// OnInitialize sets the passed functions to be run when each command's
+// Execute method is called.
+func OnInitialize(y ...func()) {
+    cobra.OnInitialize(y...)
+}
+
+// Gt takes two types and checks whether the first type is greater than the second. In case of types Arrays, Chans,
+// Maps and Slices, Gt will compare their lengths. Ints are compared directly while strings are first parsed as
+// ints and then compared.
+func Gt(a interface{}, b interface{}) bool {
+    return cobra.Gt(a, b)
+}
+
+// Eq takes two types and checks whether they are equal. Supported types are int and string. Unsupported types will panic.
+func Eq(a interface{}, b interface{}) bool {
+    return cobra.Eq(a, b)
+}
+
+// CheckErr prints the msg with the prefix 'Error:' and exits with error code 1. If the msg is nil, it does nothing.
+func CheckErr(msg interface{}) {
+    cobra.CheckErr(msg)
+}
+
+// WriteStringAndCheck writes a string into a buffer, and checks if the error is not nil.
+func WriteStringAndCheck(b io.StringWriter, s string) {
+    cobra.WriteStringAndCheck(b, s)
+}
+
+// NoFileCompletions can be used to disable file completion for commands that should
+// not trigger file completions.
+func NoFileCompletions(cmd *Command, args []string, toComplete string) ([]string, ShellCompDirective) {
+    return cobra.NoFileCompletions(cmd, args, toComplete)
+}
+
+// CompDebug prints the specified string to the same file as where the
+// completion script prints its logs.
+// Note that completion printouts should never be on stdout as they would
+// be wrongly interpreted as actual completion choices by the completion script.
+func CompDebug(msg string, printToStdErr bool) {
+    cobra.CompDebug(msg, printToStdErr)
+}
+
+// CompDebugln prints the specified string with a newline at the end
+// to the same file as where the completion script prints its logs.
+// Such logs are only printed when the user has set the environment
+// variable BASH_COMP_DEBUG_FILE to the path of some file to be used.
+func CompDebugln(msg string, printToStdErr bool) {
+    cobra.CompDebugln(msg, printToStdErr)
+}
+
+// CompError prints the specified completion message to stderr.
+func CompError(msg string) {
+    cobra.CompError(msg)
+}
+
+// CompErrorln prints the specified completion message to stderr with a newline at the end.
+func CompErrorln(msg string) {
+    cobra.CompErrorln(msg)
+}
+
+// MarkFlagRequired instructs the various shell completion implementations to
+// prioritize the named flag when performing completion,
+// and causes your command to report an error if invoked without the flag.
+func MarkFlagRequired(flags *pflag.FlagSet, name string) error {
+    return cobra.MarkFlagRequired(flags, name)
+}
+
+// MarkFlagFilename instructs the various shell completion implementations to
+// limit completions for the named flag to the specified file extensions.
+func MarkFlagFilename(flags *pflag.FlagSet, name string, extensions ...string) error {
+    return cobra.MarkFlagFilename(flags, name, extensions...)
+}
+
+// MarkFlagCustom adds the BashCompCustom annotation to the named flag, if it exists.
+// The bash completion script will call the bash function f for the flag.
+//
+// This will only work for bash completion.
+// It is recommended to instead use c.RegisterFlagCompletionFunc(...) which allows
+// to register a Go function which will work across all shells.
+func MarkFlagCustom(flags *pflag.FlagSet, name string, f string) error {
+    return cobra.MarkFlagCustom(flags, name, f)
+}
+
+// MarkFlagDirname instructs the various shell completion implementations to
+// limit completions for the named flag to directory names.
+func MarkFlagDirname(flags *pflag.FlagSet, name string) error {
+    return cobra.MarkFlagDirname(flags, name)
 }
 

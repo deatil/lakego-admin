@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/collection"
@@ -28,7 +28,7 @@ type AuthGroup struct {
 /**
  * 列表
  */
-func (this *AuthGroup) Index(ctx *gin.Context) {
+func (this *AuthGroup) Index(ctx *router.Context) {
     // 模型
     groupModel := model.NewAuthGroup()
 
@@ -97,7 +97,7 @@ func (this *AuthGroup) Index(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
@@ -108,7 +108,7 @@ func (this *AuthGroup) Index(ctx *gin.Context) {
 /**
  * 树结构
  */
-func (this *AuthGroup) IndexTree(ctx *gin.Context) {
+func (this *AuthGroup) IndexTree(ctx *router.Context) {
     list := make([]map[string]interface{}, 0)
 
     err := model.NewAuthGroup().
@@ -124,7 +124,7 @@ func (this *AuthGroup) IndexTree(ctx *gin.Context) {
     newTree := tree.New()
     list2 := newTree.WithData(list).Build("0", "", 1)
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": list2,
     })
 }
@@ -132,7 +132,7 @@ func (this *AuthGroup) IndexTree(ctx *gin.Context) {
 /**
  * 子列表
  */
-func (this *AuthGroup) IndexChildren(ctx *gin.Context) {
+func (this *AuthGroup) IndexChildren(ctx *router.Context) {
     id := ctx.Query("id")
     if id == "" {
         this.Error(ctx, "ID错误")
@@ -148,7 +148,7 @@ func (this *AuthGroup) IndexChildren(ctx *gin.Context) {
         data = authGroupRepository.GetChildrenIds(id)
     }
 
-    this.SuccessWithData(ctx, "获取成功", gin.H{
+    this.SuccessWithData(ctx, "获取成功", router.H{
         "list": data,
     })
 }
@@ -156,7 +156,7 @@ func (this *AuthGroup) IndexChildren(ctx *gin.Context) {
 /**
  * 详情
  */
-func (this *AuthGroup) Detail(ctx *gin.Context) {
+func (this *AuthGroup) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -214,7 +214,7 @@ func (this *AuthGroup) Detail(ctx *gin.Context) {
 /**
  * 删除
  */
-func (this *AuthGroup) Delete(ctx *gin.Context) {
+func (this *AuthGroup) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -260,7 +260,7 @@ func (this *AuthGroup) Delete(ctx *gin.Context) {
 /**
  * 添加
  */
-func (this *AuthGroup) Create(ctx *gin.Context) {
+func (this *AuthGroup) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
     ctx.BindJSON(&post)
@@ -298,7 +298,7 @@ func (this *AuthGroup) Create(ctx *gin.Context) {
         return
     }
 
-    this.SuccessWithData(ctx, "信息添加成功", gin.H{
+    this.SuccessWithData(ctx, "信息添加成功", router.H{
         "id": insertData.ID,
     })
 }
@@ -306,7 +306,7 @@ func (this *AuthGroup) Create(ctx *gin.Context) {
 /**
  * 更新
  */
-func (this *AuthGroup) Update(ctx *gin.Context) {
+func (this *AuthGroup) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -366,7 +366,7 @@ func (this *AuthGroup) Update(ctx *gin.Context) {
 /**
  * 排序
  */
-func (this *AuthGroup) Listorder(ctx *gin.Context) {
+func (this *AuthGroup) Listorder(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -413,7 +413,7 @@ func (this *AuthGroup) Listorder(ctx *gin.Context) {
 /**
  * 启用
  */
-func (this *AuthGroup) Enable(ctx *gin.Context) {
+func (this *AuthGroup) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -457,7 +457,7 @@ func (this *AuthGroup) Enable(ctx *gin.Context) {
 /**
  * 禁用
  */
-func (this *AuthGroup) Disable(ctx *gin.Context) {
+func (this *AuthGroup) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")
@@ -501,7 +501,7 @@ func (this *AuthGroup) Disable(ctx *gin.Context) {
 /**
  * 授权
  */
-func (this *AuthGroup) Access(ctx *gin.Context) {
+func (this *AuthGroup) Access(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
         this.Error(ctx, "ID不能为空")

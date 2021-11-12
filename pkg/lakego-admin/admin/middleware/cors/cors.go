@@ -3,7 +3,7 @@ package cors
 import (
     "net/http"
     
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/config"
 )
 
@@ -13,8 +13,8 @@ import (
  * @create 2021-9-5
  * @author deatil
  */
-func Handler() gin.HandlerFunc {
-    return func(ctx *gin.Context) {
+func Handler() router.HandlerFunc {
+    return func(ctx *router.Context) {
         conf := config.New("cors")
         open := conf.GetBool("OpenAllowOrigin")
 
