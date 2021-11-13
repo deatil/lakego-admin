@@ -28,7 +28,7 @@ func New() *JWT {
 }
 
 // 验证方式列表
-var signingMethodList = SigningMethodMap {
+var signingMethodList = map[string]jwt.SigningMethod {
     "ES256": jwt.SigningMethodES256,
     "ES384": jwt.SigningMethodES384,
     "ES512": jwt.SigningMethodES512,
@@ -294,6 +294,7 @@ func (this *JWT) MakeToken() (token string, err error) {
 
     // 判断类型
     switch this.SigningMethod {
+        // RSA
         case "RS256", "RS384", "RS512":
             // 获取秘钥数据
             keyData, e := this.ReadDataFromFile(this.PrivateKey)
@@ -316,6 +317,7 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
+        // PSS
         case "PS256", "PS384", "PS512":
             // 秘钥
             keyData, e := this.ReadDataFromFile(this.PrivateKey)
@@ -331,6 +333,7 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
+        // Hmac
         case "HS256", "HS384", "HS512":
             // 密码
             hmacSecret := base64.Decode(this.Secret)
@@ -342,6 +345,7 @@ func (this *JWT) MakeToken() (token string, err error) {
 
             secret = []byte(hmacSecret)
 
+        // ECDSA
         case "ES256", "ES384", "ES512":
             // 私钥
             keyData, e := this.ReadDataFromFile(this.PrivateKey)
@@ -357,6 +361,7 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
+        // EdDSA
         case "EdDSA":
             // 私钥
             keyData, e := this.ReadDataFromFile(this.PrivateKey)
@@ -372,6 +377,7 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
+        // 默认限检查自定义签名方式
         default:
             // 自定义签名
             f, ok := this.SigningFunc[this.SigningMethod]
@@ -399,6 +405,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
 
     // 判断类型
     switch this.SigningMethod {
+        // RSA
         case "RS256", "RS384", "RS512":
             // 公钥
             keyData, e := this.ReadDataFromFile(this.PublicKey)
@@ -414,6 +421,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
                 return nil, err
             }
 
+        // PSS
         case "PS256", "PS384", "PS512":
             // 公钥
             keyData, e := this.ReadDataFromFile(this.PublicKey)
@@ -429,6 +437,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
                 return nil, err
             }
 
+        // Hmac
         case "HS256", "HS384", "HS512":
             // 密码
             hmacSecret := base64.Decode(this.Secret)
@@ -440,6 +449,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
 
             secret = []byte(hmacSecret)
 
+        // ECDSA
         case "ES256", "ES384", "ES512":
             // 公钥
             keyData, e := this.ReadDataFromFile(this.PublicKey)
@@ -455,6 +465,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
                 return nil, err
             }
 
+        // EdDSA
         case "EdDSA":
             // 公钥
             keyData, e := this.ReadDataFromFile(this.PublicKey)
@@ -470,6 +481,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
                 return nil, err
             }
 
+        // 默认先检测自定义解析方式
         default:
             // 自定义解析
             f, ok := this.ParseFunc[this.SigningMethod]

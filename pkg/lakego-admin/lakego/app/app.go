@@ -24,16 +24,10 @@ import (
 
 // App结构体
 func New() *App {
-    lock := new(sync.RWMutex)
-
-    serviceProviders := make([]func() providerInterface.ServiceProvider, 0)
-
-    usedServiceProviders := make([]providerInterface.ServiceProvider, 0)
-
     return &App{
-        Lock: lock,
-        ServiceProviders: serviceProviders,
-        UsedServiceProviders: usedServiceProviders,
+        Lock: new(sync.RWMutex),
+        ServiceProviders: make([]func() providerInterface.ServiceProvider, 0),
+        UsedServiceProviders: make([]providerInterface.ServiceProvider, 0),
         Runned: false,
     }
 }

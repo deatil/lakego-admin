@@ -11,8 +11,8 @@ import (
 // 授权结构体
 func New() *Auth {
     return &Auth{
-        config: make(map[string]interface{}),
-        claims: make(map[string]interface{}),
+        Config: make(map[string]interface{}),
+        Claims: make(map[string]interface{}),
     }
 }
 
@@ -27,10 +27,10 @@ type Auth struct {
     JWT *jwter.JWT
 
     // 配置
-    config map[string]interface{}
+    Config map[string]interface{}
 
     // 载荷
-    claims map[string]interface{}
+    Claims map[string]interface{}
 }
 
 /**
@@ -53,7 +53,7 @@ func (this *Auth) GetJWT() *jwter.JWT {
  * 设置配置
  */
 func (this *Auth) WithConfig(key string, value interface{}) *Auth {
-    this.config[key] = value
+    this.Config[key] = value
 
     return this
 }
@@ -75,7 +75,7 @@ func (this *Auth) WithConfigs(configs map[string]interface{}) *Auth {
  * 获取配置
  */
 func (this *Auth) GetConfig(key string) interface{} {
-    return this.config[key]
+    return this.Config[key]
 }
 
 /**
@@ -83,7 +83,7 @@ func (this *Auth) GetConfig(key string) interface{} {
  */
 func (this *Auth) GetConfigFromMap(key string, key2 string) interface{} {
     // 配置
-    conf := this.config[key]
+    conf := this.Config[key]
     if conf == "" {
         return nil
     }
@@ -146,7 +146,7 @@ func (this *Auth) GetRefreshExpiresIn() int {
 
 // 设置自定义载荷
 func (this *Auth) WithClaim(key string, value interface{}) *Auth {
-    this.claims[key] = value
+    this.Claims[key] = value
     return this
 }
 
@@ -183,8 +183,8 @@ func (this *Auth) MakeJWT() *jwter.JWT {
         WithPublicKey(publicKey).
         WithPrivateKeyPassword(privateKeyPassword)
 
-    if len(this.claims) > 0 {
-        for k, v := range this.claims {
+    if len(this.Claims) > 0 {
+        for k, v := range this.Claims {
             jwtHandler.WithClaim(k, v)
         }
     }

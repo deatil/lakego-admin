@@ -4,7 +4,7 @@ import (
     "io"
     "net/http"
 
-    gin "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/router"
 )
 
 // 使用
@@ -27,11 +27,11 @@ type Response struct {
     httpCode int
 
     // 上下文
-    ctx *gin.Context
+    ctx *router.Context
 }
 
 // 设置上下文
-func (this *Response) WithContext(ctx *gin.Context) *Response {
+func (this *Response) WithContext(ctx *router.Context) *Response {
     this.ctx = ctx
 
     return this
@@ -68,7 +68,7 @@ func (this *Response) ReturnString(contents string) {
 }
 
 // 返回 json
-func (this *Response) ReturnJson(data gin.H) {
+func (this *Response) ReturnJson(data router.H) {
     this.ctx.JSON(this.httpCode, data)
 }
 
@@ -95,7 +95,7 @@ func (this *Response) AbortWithStatusJSON(code int, jsonObj interface{}) {
 }
 
 // 输出错误状态
-func (this *Response) AbortWithError(code int, err error) *gin.Error {
+func (this *Response) AbortWithError(code int, err error) *router.Error {
     return this.ctx.AbortWithError(code, err)
 }
 
@@ -133,7 +133,7 @@ func (this *Response) SetCookie(
 }
 
 // Render
-func (this *Response) Render(code int, r gin.Render) {
+func (this *Response) Render(code int, r router.Render) {
     this.ctx.Render(code, r)
 }
 
