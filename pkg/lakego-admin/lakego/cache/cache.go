@@ -5,7 +5,7 @@ import (
 )
 
 // 创建
-func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
+func New(driver interfaces.Driver, conf ...Config) *Cache {
     cache := &Cache{
         driver: driver,
     }
@@ -17,6 +17,11 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
     return cache
 }
 
+type (
+    // 配置
+    Config = map[string]interface{}
+)
+
 /**
  * 缓存
  *
@@ -25,7 +30,7 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Cache {
  */
 type Cache struct {
     // 配置
-    config map[string]interface{}
+    config Config
 
     // 驱动
     driver interfaces.Driver
@@ -44,7 +49,7 @@ func (this *Cache) GetDriver() interfaces.Driver {
 }
 
 // 设置配置
-func (this *Cache) WithConfig(config map[string]interface{}) interfaces.Cache {
+func (this *Cache) WithConfig(config Config) interfaces.Cache {
     this.config = config
 
     return this

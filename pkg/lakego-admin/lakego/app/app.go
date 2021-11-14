@@ -26,11 +26,25 @@ import (
 func New() *App {
     return &App{
         Lock: new(sync.RWMutex),
-        ServiceProviders: make([]func() providerInterface.ServiceProvider, 0),
-        UsedServiceProviders: make([]providerInterface.ServiceProvider, 0),
+        ServiceProviders: make(ServiceProviders, 0),
+        UsedServiceProviders: make(UsedServiceProviders, 0),
         Runned: false,
     }
 }
+
+type (
+    // 服务提供者
+    ServiceProviders = []func() providerInterface.ServiceProvider
+
+    // 已使用服务提供者
+    UsedServiceProviders = []providerInterface.ServiceProvider
+
+    // 启动前
+    BootingCallbacks = []func()
+
+    // 启动后
+    BootedCallbacks = []func()
+)
 
 /**
  * App结构体
@@ -43,10 +57,10 @@ type App struct {
     Lock *sync.RWMutex
 
     // 服务提供者
-    ServiceProviders []func() providerInterface.ServiceProvider
+    ServiceProviders ServiceProviders
 
     // 已使用服务提供者
-    UsedServiceProviders []providerInterface.ServiceProvider
+    UsedServiceProviders UsedServiceProviders
 
     // 运行状态
     Runned bool
@@ -61,10 +75,10 @@ type App struct {
     RootCmd *command.Command
 
     // 启动前
-    BootingCallbacks []func()
+    BootingCallbacks BootingCallbacks
 
     // 启动后
-    BootedCallbacks []func()
+    BootedCallbacks BootedCallbacks
 
     // 自定义运行监听
     NetListener net.Listener
@@ -105,7 +119,7 @@ func (this *App) Register(f func() providerInterface.ServiceProvider) {
 }
 
 // 批量导入
-func (this *App) Registers(providers []func() providerInterface.ServiceProvider) {
+func (this *App) Registers(providers ServiceProviders) {
     if len(providers) > 0 {
         for _, provider := range providers {
             this.Register(provider)

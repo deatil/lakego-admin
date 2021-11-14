@@ -50,16 +50,16 @@ var signingMethodList = map[string]jwt.SigningMethod {
 
 type (
     // jwt 载荷
-    Claims map[string]interface{}
+    Claims = map[string]interface{}
 
     // 验证方式列表
-    SigningMethodMap map[string]jwt.SigningMethod
+    SigningMethodMap = map[string]jwt.SigningMethod
 
     // 自定义签名方式
-    SigningFunc map[string]func(*JWT) (interface{}, error)
+    SigningFunc = map[string]func(*JWT) (interface{}, error)
 
     // 自定义解析方式
-    ParseFunc map[string]func(*JWT) (interface{}, error)
+    ParseFunc = map[string]func(*JWT) (interface{}, error)
 )
 
 /**

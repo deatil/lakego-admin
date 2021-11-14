@@ -8,8 +8,9 @@ replace (
 )
 
 require (
-	app v0.0.2
-	github.com/deatil/lakego-admin v0.0.2
+	app v0.0.3
+	github.com/deatil/lakego-admin v0.0.3
+	github.com/deatil/go-filesystem v0.0.3
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
