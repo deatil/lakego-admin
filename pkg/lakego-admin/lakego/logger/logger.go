@@ -49,6 +49,8 @@ func (this *Logger) WithField(key string, value interface{}) interface{} {
     return this.Driver.WithField(key, value)
 }
 
+// ========
+
 func (this *Logger) Trace(args ...interface{}) {
     this.Driver.Trace(args...)
 }

@@ -60,16 +60,16 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
     return logger.New(driver.(interfaces.Driver))
 }
 
-// 批量自定义数据
+// 自定义数据
 // import "github.com/deatil/lakego-admin/lakego/facade/logger"
 // logger.LogrusWithField(logger.New(), "system", "lakego").Info("logger test")
-func LogrusWithFields(log *logger.Logger, fields map[string]interface{}) *logrusDriver.Entry {
-    return log.WithFields(fields).(*logrusDriver.Entry)
-}
-
-// 自定义数据
 func LogrusWithField(log *logger.Logger, key string, value interface{}) *logrusDriver.Entry {
     return log.WithField(key, value).(*logrusDriver.Entry)
+}
+
+// 批量自定义数据
+func LogrusWithFields(log *logger.Logger, fields map[string]interface{}) *logrusDriver.Entry {
+    return log.WithFields(fields).(*logrusDriver.Entry)
 }
 
 // 默认驱动

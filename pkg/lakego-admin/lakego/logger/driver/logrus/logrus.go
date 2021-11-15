@@ -18,8 +18,16 @@ func New() *Logrus {
     return &Logrus{}
 }
 
-// Entry 别名
-type Entry = logrus.Entry
+type (
+    // 日志额外数据
+    Fields = logrus.Fields
+
+    // Entry 别名
+    Entry = logrus.Entry
+
+    // 日志方法
+    LogFunction = logrus.LogFunction
+)
 
 /**
  * 日志 logrus 驱动
@@ -39,7 +47,7 @@ func (this *Logrus) WithConfig(config map[string]interface{}) {
 
 // 批量设置自定义变量
 func (this *Logrus) WithFields(fields map[string]interface{}) interface{} {
-    data := make(logrus.Fields, len(fields))
+    data := make(Fields, len(fields))
     for k, v := range fields {
         data[k] = v
     }
@@ -52,6 +60,8 @@ func (this *Logrus) WithFields(fields map[string]interface{}) interface{} {
 func (this *Logrus) WithField(key string, value interface{}) interface{} {
     return this.getLogger().WithField(key, value)
 }
+
+// ========
 
 func (this *Logrus) Trace(args ...interface{}) {
     this.getLogger().Trace(args...)
@@ -159,39 +169,39 @@ func (this *Logrus) Panicln(args ...interface{}) {
 
 // ========
 
-func (this *Logrus) TraceFn(fn logrus.LogFunction) {
+func (this *Logrus) TraceFn(fn LogFunction) {
     this.getLogger().TraceFn(fn)
 }
 
-func (this *Logrus) DebugFn(fn logrus.LogFunction) {
+func (this *Logrus) DebugFn(fn LogFunction) {
     this.getLogger().DebugFn(fn)
 }
 
-func (this *Logrus) InfoFn(fn logrus.LogFunction) {
+func (this *Logrus) InfoFn(fn LogFunction) {
     this.getLogger().InfoFn(fn)
 }
 
-func (this *Logrus) PrintFn(fn logrus.LogFunction) {
+func (this *Logrus) PrintFn(fn LogFunction) {
     this.getLogger().PrintFn(fn)
 }
 
-func (this *Logrus) WarnFn(fn logrus.LogFunction) {
+func (this *Logrus) WarnFn(fn LogFunction) {
     this.getLogger().WarnFn(fn)
 }
 
-func (this *Logrus) WarningFn(fn logrus.LogFunction) {
+func (this *Logrus) WarningFn(fn LogFunction) {
     this.getLogger().WarningFn(fn)
 }
 
-func (this *Logrus) ErrorFn(fn logrus.LogFunction) {
+func (this *Logrus) ErrorFn(fn LogFunction) {
     this.getLogger().ErrorFn(fn)
 }
 
-func (this *Logrus) FatalFn(fn logrus.LogFunction) {
+func (this *Logrus) FatalFn(fn LogFunction) {
     this.getLogger().FatalFn(fn)
 }
 
-func (this *Logrus) PanicFn(fn logrus.LogFunction) {
+func (this *Logrus) PanicFn(fn LogFunction) {
     this.getLogger().PanicFn(fn)
 }
 
@@ -215,15 +225,21 @@ func (this *Logrus) getLogger() *logrus.Logger {
 
     log.SetReportCaller(true)
 
-    formatterType := conf["formatter"].(string)
-
     var useFormatter logrus.Formatter
-    if formatterType == "json" {
-        useFormatter = formatter.JSONFormatter()
-    } else if formatterType == "text" {
-        useFormatter = formatter.TextFormatter()
-    } else {
-        useFormatter = formatter.NormalFormatter()
+
+    formatterType := conf["formatter"].(string)
+    switch formatterType {
+        case "json":
+            // json 格式
+            useFormatter = formatter.JSONFormatter()
+
+        case "text":
+            // 文档格式
+            useFormatter = formatter.TextFormatter()
+
+        default:
+            // 正常格式
+            useFormatter = formatter.NormalFormatter()
     }
 
     // 设置输出样式
