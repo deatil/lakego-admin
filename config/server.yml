@@ -1,3 +1,6 @@
+# 配置模式 dev or release
+Mode: "dev"
+
 # 运行链接
 Url: "127.0.0.1:8080"
 

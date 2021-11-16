@@ -392,6 +392,10 @@ func (this *Auth) GetRefreshTokenData(token string, key string, verify ...bool) 
  * 从 Claims 获取数据
  */
 func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface{} {
+    if _, ok := claims[key]; !ok {
+        return nil
+    }
+
     return claims[key]
 }
 
@@ -399,6 +403,10 @@ func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface
  * 从 TokenClaims 获取数据
  */
 func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
+    if _, ok := claims[key]; !ok {
+        return ""
+    }
+
     data := claims[key].(string)
 
     passphrase := this.GetConfigFromMapStringDefault("jwt", "passphrase", "")

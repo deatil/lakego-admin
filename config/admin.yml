@@ -1,6 +1,3 @@
-# 配置模式 dev or release
-Mode: "dev"
-
 # 路由分组
 Route:
   Prefix: "admin-api"

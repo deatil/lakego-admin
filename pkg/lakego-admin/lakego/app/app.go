@@ -34,16 +34,28 @@ func New() *App {
 
 type (
     // 服务提供者
-    ServiceProviders = []func() providerInterface.ServiceProvider
+    ServiceProvider = func() providerInterface.ServiceProvider
+
+    // 服务提供者列表
+    ServiceProviders = []ServiceProvider
 
     // 已使用服务提供者
-    UsedServiceProviders = []providerInterface.ServiceProvider
+    UsedServiceProvider = providerInterface.ServiceProvider
+
+    // 已使用服务提供者列表
+    UsedServiceProviders = []UsedServiceProvider
 
     // 启动前
-    BootingCallbacks = []func()
+    BootingCallback = func()
+
+    // 启动前列表
+    BootingCallbacks = []BootingCallback
 
     // 启动后
-    BootedCallbacks = []func()
+    BootedCallback = func()
+
+    // 启动后列表
+    BootedCallbacks = []BootedCallback
 )
 
 /**
@@ -94,7 +106,7 @@ func (this *App) Run() {
 }
 
 // 注册服务提供者
-func (this *App) Register(f func() providerInterface.ServiceProvider) {
+func (this *App) Register(f ServiceProvider) {
     this.Lock.Lock()
     defer this.Lock.Unlock()
 
@@ -159,7 +171,7 @@ func (this *App) loadServiceProvider() {
 }
 
 // 引导服务
-func (this *App) BootService(s providerInterface.ServiceProvider) {
+func (this *App) BootService(s UsedServiceProvider) {
     s.CallBootingCallback()
 
     // 启动
@@ -169,12 +181,12 @@ func (this *App) BootService(s providerInterface.ServiceProvider) {
 }
 
 // 设置启动前函数
-func (this *App) WithBooting(f func()) {
+func (this *App) WithBooting(f BootingCallback) {
     this.BootingCallbacks = append(this.BootingCallbacks, f)
 }
 
 // 设置启动后函数
-func (this *App) WithBooted(f func()) {
+func (this *App) WithBooted(f BootedCallback) {
     this.BootedCallbacks = append(this.BootedCallbacks, f)
 }
 
@@ -225,8 +237,13 @@ func (this *App) runApp() {
 
     if !this.RunInConsole {
         // 模式
-        mode := config.New("admin").GetString("Mode")
-        if mode != "dev" {
+        mode := config.New("server").GetString("Mode")
+        if mode == "dev" {
+            router.SetMode(router.DebugMode)
+
+            // 路由
+            r = router.Default()
+        } else {
             router.SetMode(router.ReleaseMode)
 
             // 路由
@@ -234,11 +251,6 @@ func (this *App) runApp() {
 
             // 使用默认处理机制
             r.Use(router.Recovery())
-        } else {
-            router.SetMode(router.DebugMode)
-
-            // 路由
-            r = router.Default()
         }
     } else {
         // 脚本取消调试模式

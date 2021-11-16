@@ -102,6 +102,9 @@ func (this *ServiceProvider) loadCommand() {
 
     // 重置密码
     this.AddCommand(cmd.ResetPasswordCmd)
+
+    // 系统信息
+    this.AddCommand(cmd.VersionCmd)
 }
 
 /**
