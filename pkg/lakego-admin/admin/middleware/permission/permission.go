@@ -2,7 +2,7 @@ package permission
 
 import (
     "strings"
-    
+
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/facade/permission"
@@ -40,7 +40,11 @@ func permissionCheck(ctx *router.Context) bool {
     requestPath := ctx.Request.URL.String()
     method := strings.ToUpper(ctx.Request.Method)
 
-    adminId, _ := ctx.Get("admin_id")
+    adminId, ok := ctx.Get("admin_id")
+    if !ok {
+        response.Error(ctx, "你没有访问权限", code.AuthError)
+        return false
+    }
 
     // 去除自定义分组前缀
     requestPaths := strings.Split(requestPath, "/")
@@ -73,7 +77,6 @@ func checkSuperAdmin(ctx *router.Context) bool {
     adminInfo, _ := ctx.Get("admin")
 
     if adminInfo == nil {
-        response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
 
@@ -106,11 +109,15 @@ func shouldPassThrough(ctx *router.Context) bool {
     excepts := append(defaultExcepts, configExcepts...)
     excepts = append(excepts, setExcepts...)
 
+    // 只检测 url 中的 path 部分
+    urlPath := ctx.Request.URL.String()
+    urlPaths := strings.Split(urlPath, "?")
+
     for _, ae := range excepts {
         newStr := strings.SplitN(ae, ":", 2)
 
         newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
-        if url.MatchPath(ctx, newUrl, "") {
+        if url.MatchPath(ctx, newUrl, urlPaths[0]) {
             return true
         }
     }

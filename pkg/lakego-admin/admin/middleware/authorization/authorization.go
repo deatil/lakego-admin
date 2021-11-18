@@ -3,7 +3,7 @@ package authorization
 import (
     "strings"
     "encoding/json"
-    
+
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/auth"
     "github.com/deatil/lakego-admin/lakego/facade/config"
@@ -126,11 +126,15 @@ func shouldPassThrough(ctx *router.Context) bool {
     excepts := append(defaultExcepts, configExcepts...)
     excepts = append(excepts, setExcepts...)
 
+    // 只检测 url 中的 path 部分
+    urlPath := ctx.Request.URL.String()
+    urlPaths := strings.Split(urlPath, "?")
+
     for _, ae := range excepts {
         newStr := strings.SplitN(ae, ":", 2)
 
         newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
-        if url.MatchPath(ctx, newUrl, "") {
+        if url.MatchPath(ctx, newUrl, urlPaths[0]) {
             return true
         }
     }
