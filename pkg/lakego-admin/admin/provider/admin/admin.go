@@ -26,15 +26,15 @@ import (
 )
 
 // 全局中间件
-var globalMiddlewares = []router.HandlerFunc{}
+var globalMiddlewares = []router.HandlerFunc{
+    // 跨域处理
+    cors.Handler(),
+}
 
 // 路由中间件
 var routeMiddlewares = map[string]router.HandlerFunc{
     // 异常处理
     "lakego.exception": exception.Handler(),
-
-    // 跨域处理
-    "lakego.cors": cors.Handler(),
 
     // token 验证
     "lakego.auth": authorization.Handler(),
@@ -54,7 +54,6 @@ var middlewareGroups = map[string][]string{
     // 常规中间件
     "lakego-admin": {
         "lakego.exception",
-        "lakego.cors",
         "lakego.auth",
         "lakego.permission",
         "lakego.action-log",

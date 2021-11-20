@@ -7,8 +7,8 @@ Drivers:
   String:
     # 类型
     Type: "string"
-    Height: 46
-    Width: 140
+    Height: 50
+    Width: 130
     NoiseCount: 2
     ShowLineOptions: 2
     # 长度
