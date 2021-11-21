@@ -37,6 +37,11 @@ func (this *Response) WithContext(ctx *router.Context) *Response {
     return this
 }
 
+// 获取上下文
+func (this *Response) GetContext() *router.Context {
+    return this.ctx
+}
+
 // 设置状态码
 func (this *Response) WithHttpCode(httpCode int) *Response {
     this.httpCode = httpCode

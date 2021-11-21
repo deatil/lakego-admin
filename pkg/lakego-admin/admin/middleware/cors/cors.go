@@ -1,12 +1,11 @@
 package cors
 
 import (
+    "strings"
     "net/http"
 
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/config"
-
-    "github.com/deatil/lakego-admin/admin/support/url"
 )
 
 /**
@@ -53,10 +52,11 @@ func corsRequest(ctx *router.Context) {
 // 系统请求检测
 func isLakegoAdminRequest(ctx *router.Context) bool {
     // 前缀匹配
-    path := config.New("admin").GetString("Route.Prefix")
-    path = "/" + path
+    path := "/" + config.New("admin").GetString("Route.Prefix")
 
-    if url.MatchPath(ctx, path, "") || url.MatchPath(ctx, path + "/*", "") {
+    url := ctx.Request.URL.String()
+
+    if strings.HasPrefix(url, path) {
         return true
     }
 

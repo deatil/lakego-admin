@@ -34,6 +34,16 @@ func (this *Request) WithContext(ctx *router.Context) *Request {
     return this
 }
 
+// 获取上下文
+func (this *Request) GetContext() *router.Context {
+    return this.ctx
+}
+
+// 完整匹配路径
+func (this *Request) FullPath() string {
+    return this.ctx.FullPath()
+}
+
 // 查询数据
 func (this *Request) Param(key string) string {
     return this.ctx.Param(key)
