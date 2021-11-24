@@ -2,7 +2,6 @@ package response
 
 import (
     "github.com/deatil/lakego-admin/lakego/router"
-    "github.com/deatil/lakego-admin/lakego/http/request"
     "github.com/deatil/lakego-admin/lakego/http/response"
 
     "github.com/deatil/lakego-admin/admin/support/http/code"
@@ -209,20 +208,6 @@ func (this *Response) Error(ctx *router.Context, msg string, dataCode ...int) {
  */
 func (this *Response) ErrorWithData(ctx *router.Context, msg string, dataCode int, data interface{}) {
     this.ReturnJsonWithAbort(ctx, false, dataCode, msg, data)
-}
-
-/**
- * 请求
- */
-func (this *Response) Request(ctx *router.Context) *request.Request {
-    return request.New().WithContext(ctx)
-}
-
-/**
- * 响应
- */
-func (this *Response) response(ctx *router.Context) *response.Response {
-    return response.New().WithContext(ctx)
 }
 
 /**

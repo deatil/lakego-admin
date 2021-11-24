@@ -1,6 +1,10 @@
 package controller
 
 import (
+    "github.com/deatil/lakego-admin/lakego/router"
+    httpRequest "github.com/deatil/lakego-admin/lakego/http/request"
+    httpResponse "github.com/deatil/lakego-admin/lakego/http/response"
+
     "github.com/deatil/lakego-admin/admin/support/response"
 )
 
@@ -12,5 +16,19 @@ import (
  */
 type Base struct {
     response.Response
+}
+
+/**
+ * 请求
+ */
+func (this *Base) Request(ctx *router.Context) *httpRequest.Request {
+    return httpRequest.New().WithContext(ctx)
+}
+
+/**
+ * 响应
+ */
+func (this *Base) response(ctx *router.Context) *httpResponse.Response {
+    return httpResponse.New().WithContext(ctx)
 }
 
