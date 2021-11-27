@@ -15,7 +15,7 @@ Disks:
         # 磁盘路径
         Root: "{root}/storage"
         # 磁盘路径对应的外部URL路径
-        Url: "/storage"
+        Url: "http://lakego-storage.storage1000.com"
         # 可见性
         Visibility: "public"
 

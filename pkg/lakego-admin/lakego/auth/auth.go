@@ -1,6 +1,7 @@
 package auth
 
 import (
+    "time"
     "github.com/golang-jwt/jwt/v4"
 
     jwter "github.com/deatil/lakego-admin/lakego/jwt"
@@ -178,8 +179,11 @@ func (this *Auth) MakeJWT() *jwter.JWT {
     exp2 := int64(exp)
     nbf2 := int64(nbf)
 
+    nowTime := time.Now().Unix()
+
     jwtHandler := this.JWT.
         WithAud(aud).
+        WithIat(nowTime).
         WithExp(exp2).
         WithJti(jti).
         WithIss(iss).

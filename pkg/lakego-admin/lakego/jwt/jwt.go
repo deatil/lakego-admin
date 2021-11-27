@@ -97,79 +97,85 @@ type JWT struct {
     ParseFunc ParseFunc
 }
 
-// Audience
-func (this *JWT) WithAud(aud string) *JWT {
-    this.Claims["aud"] = aud
-    return this
-}
-
-// ExpiresAt
-func (this *JWT) WithExp(exp int64) *JWT {
-    this.Claims["exp"] = time.Now().Add(time.Second * time.Duration(exp)).Unix()
-    return this
-}
-
-// Id
-func (this *JWT) WithJti(jti string) *JWT {
-    this.Claims["jti"] = jti
-    return this
-}
-
-// Issuer
+// (Issuer) 签发者
 func (this *JWT) WithIss(iss string) *JWT {
     this.Claims["iss"] = iss
     return this
 }
 
-// NotBefore
-func (this *JWT) WithNbf(nbf int64) *JWT {
-    this.Claims["nbf"] = time.Now().Add(time.Second * time.Duration(nbf)).Unix()
+// (Issued At) 签发时间，unix时间戳
+func (this *JWT) WithIat(iat int64) *JWT {
+    this.Claims["iat"] = iat
     return this
 }
 
-// Subject
+// (Expiration Time) 过期时间，unix时间戳
+func (this *JWT) WithExp(exp int64) *JWT {
+    this.Claims["exp"] = time.Now().Add(time.Second * time.Duration(exp)).Unix()
+    return this
+}
+
+// (Audience) 接收方
+func (this *JWT) WithAud(aud string) *JWT {
+    this.Claims["aud"] = aud
+    return this
+}
+
+// (Subject) 主题
 func (this *JWT) WithSub(sub string) *JWT {
     this.Claims["sub"] = sub
     return this
 }
 
-// 设置自定义载荷
+// (JWT ID) 唯一ID
+func (this *JWT) WithJti(jti string) *JWT {
+    this.Claims["jti"] = jti
+    return this
+}
+
+// (Not Before) 不要早于这个时间
+func (this *JWT) WithNbf(nbf int64) *JWT {
+    this.Claims["nbf"] = time.Now().Add(time.Second * time.Duration(nbf)).Unix()
+    return this
+}
+
+// 自定义载荷
 func (this *JWT) WithClaim(key string, value interface{}) *JWT {
     this.Claims[key] = value
     return this
 }
 
-// 设置验证方式
+// 验证方式
 func (this *JWT) WithSigningMethod(method string) *JWT {
     this.SigningMethod = method
     return this
 }
 
-// 设置秘钥
+// 密码
 func (this *JWT) WithSecret(secret string) *JWT {
     this.Secret = secret
     return this
 }
 
-// 设置私钥
+// 私钥
 func (this *JWT) WithPrivateKey(privateKey string) *JWT {
     this.PrivateKey = privateKey
     return this
 }
 
-// 设置公钥
+// 公钥
 func (this *JWT) WithPublicKey(publicKey string) *JWT {
     this.PublicKey = publicKey
     return this
 }
 
-// 设置私钥密码
+// 私钥密码
 func (this *JWT) WithPrivateKeyPassword(password string) *JWT {
     this.PrivateKeyPassword = password
     return this
 }
 
-// 设置签名方式
+// 签名方式
 func (this *JWT) WithSignMethod(name string, method jwt.SigningMethod) *JWT {
     if _, ok := this.SigningMethodList[name]; ok {
         delete(this.SigningMethodList, name)
@@ -201,7 +207,7 @@ func (this *JWT) WithoutSignMethod(name string) bool {
     return false
 }
 
-// 设置自定义签名方式
+// 自定义签名方式
 func (this *JWT) WithSigningFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
     if _, ok := this.SigningFunc[name]; ok {
         delete(this.SigningFunc, name)
@@ -234,7 +240,7 @@ func (this *JWT) WithoutSigningFunc(name string) bool {
     return false
 }
 
-// 设置自定义解析方式
+// 自定义解析方式
 func (this *JWT) WithParseFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
     if _, ok := this.ParseFunc[name]; ok {
         delete(this.ParseFunc, name)
@@ -274,6 +280,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         signingMethod = method
     } else {
         signingMethod = jwt.SigningMethodHS256
+    }
+
+    // 签发时间没设置时重新设置
+    if this.Claims["iat"] == "" {
+        this.Claims["iat"] = time.Now().Unix()
     }
 
     // 载荷

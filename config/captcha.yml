@@ -8,7 +8,7 @@ Drivers:
     # 类型
     Type: "string"
     Height: 50
-    Width: 130
+    Width: 150
     NoiseCount: 2
     ShowLineOptions: 2
     # 长度
