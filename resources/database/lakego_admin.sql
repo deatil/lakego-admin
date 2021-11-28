@@ -10,7 +10,7 @@ CREATE TABLE `pre__action_log` (
   `ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   `status` char(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '输出状态',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='操作日志';
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='操作日志';
 
 DROP TABLE IF EXISTS `pre__admin`;
 CREATE TABLE `pre__admin` (

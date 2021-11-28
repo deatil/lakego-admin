@@ -22,6 +22,13 @@ func TimeStampToTime(timeStamp int32) time.Time {
     return time.Unix(int64(timeStamp), 0)
 }
 
+// 时间戳转为时间字符
+func TimeStampToDate(timeStamp int) string {
+    date := time.Unix(int64(timeStamp), 0).Format("2006-01-02 15:04:05")
+
+    return date
+}
+
 // 当前时间，单位：秒
 func NowTime() int64 {
     return time.Now().Unix()

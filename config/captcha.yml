@@ -16,7 +16,10 @@ Drivers:
     # 随机数
     Source: "234567890abcdefghjkmnpqrstuvwxyz"
     # 字体
-    Fonts: ["wqy-microhei.ttc"]
+    # RitaSmith.ttf | wqy-microhei.ttc | Flim-Flam.ttf | DENNEthree-dee.ttf
+    # DeborahFancyDress.ttf | Comismsh.ttf | chromohv.ttf | ApothecaryFont.ttf
+    # actionj.ttf | 3Dumb.ttf
+    Fonts: ["DENNEthree-dee.ttf"]
     # 颜色
     BgColor:
       R: 240
