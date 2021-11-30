@@ -117,6 +117,7 @@ func (this *Admin) GetProfile() map[string]interface{} {
         ToMap()
 
     profile["groups"] = this.GetGroups()
+    profile["is_sa"] = this.IsSuperAdministrator()
 
     return profile
 }
