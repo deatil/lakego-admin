@@ -24,11 +24,15 @@ type Profile struct {
  * 个人信息
  */
 func (this *Profile) Index(ctx *router.Context) {
-    adminInfo, _ := ctx.Get("admin")
+    adminInfo, ok := ctx.Get("admin")
+    if !ok {
+        this.Error(ctx, "获取失败")
+        return
+    }
 
-    adminInfo = adminInfo.(*admin.Admin).GetProfile()
+    adminProfile := adminInfo.(*admin.Admin).GetProfile()
 
-    this.SuccessWithData(ctx, "获取成功", adminInfo)
+    this.SuccessWithData(ctx, "获取成功", adminProfile)
 }
 
 /**
@@ -47,7 +51,12 @@ func (this *Profile) Update(ctx *router.Context) {
     }
 
     // 当前账号信息
-    adminInfo, _ := ctx.Get("admin")
+    adminInfo, ok := ctx.Get("admin")
+    if !ok {
+        this.Error(ctx, "修改信息失败")
+        return
+    }
+
     adminid := adminInfo.(*admin.Admin).GetId()
 
     err := model.NewAdmin().
@@ -85,7 +94,12 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
     }
 
     // 当前账号信息
-    adminInfo, _ := ctx.Get("admin")
+    adminInfo, ok := ctx.Get("admin")
+    if !ok {
+        this.Error(ctx, "密码修改失败")
+        return
+    }
+
     adminid := adminInfo.(*admin.Admin).GetId()
 
     err := model.NewAdmin().
@@ -121,9 +135,17 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     }
 
     // 当前账号信息
-    adminInfo, _ := ctx.Get("admin")
-    adminid := adminInfo.(*admin.Admin).GetId()
-    admin := adminInfo.(*admin.Admin).GetData()
+    adminInfo, ok := ctx.Get("admin")
+    if !ok {
+        this.Error(ctx, "密码修改失败")
+        return
+    }
+
+    // 登陆账号信息
+    adminData := adminInfo.(*admin.Admin)
+
+    adminid := adminData.GetId()
+    admin := adminData.GetData()
 
     oldpassword := post["oldpassword"].(string)
     newpassword := post["newpassword"].(string)
@@ -166,7 +188,12 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
  * 权限列表
  */
 func (this *Profile) Rules(ctx *router.Context) {
-    adminInfo, _ := ctx.Get("admin")
+    adminInfo, ok := ctx.Get("admin")
+    if !ok {
+        this.Error(ctx, "获取失败")
+        return
+    }
+
     rules := adminInfo.(*admin.Admin).GetRules()
 
     this.SuccessWithData(ctx, "获取成功", router.H{
