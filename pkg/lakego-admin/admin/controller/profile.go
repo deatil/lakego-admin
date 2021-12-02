@@ -96,7 +96,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 当前账号信息
     adminInfo, ok := ctx.Get("admin")
     if !ok {
-        this.Error(ctx, "密码修改失败")
+        this.Error(ctx, "修改头像失败")
         return
     }
 

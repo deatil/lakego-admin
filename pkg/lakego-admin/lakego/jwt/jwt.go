@@ -29,22 +29,27 @@ func New() *JWT {
 
 // 验证方式列表
 var signingMethodList = map[string]jwt.SigningMethod {
-    "ES256": jwt.SigningMethodES256,
-    "ES384": jwt.SigningMethodES384,
-    "ES512": jwt.SigningMethodES512,
-
+    // Hmac
     "HS256": jwt.SigningMethodHS256,
     "HS384": jwt.SigningMethodHS384,
     "HS512": jwt.SigningMethodHS512,
 
+    // RSA
     "RS256": jwt.SigningMethodRS256,
     "RS384": jwt.SigningMethodRS384,
     "RS512": jwt.SigningMethodRS512,
 
+    // PSS
     "PS256": jwt.SigningMethodPS256,
     "PS384": jwt.SigningMethodPS384,
     "PS512": jwt.SigningMethodPS512,
 
+    // ECDSA
+    "ES256": jwt.SigningMethodES256,
+    "ES384": jwt.SigningMethodES384,
+    "ES512": jwt.SigningMethodES512,
+
+    // EdDSA
     "EdDSA": jwt.SigningMethodEdDSA,
 }
 
@@ -305,6 +310,18 @@ func (this *JWT) MakeToken() (token string, err error) {
 
     // 判断类型
     switch this.SigningMethod {
+        // Hmac
+        case "HS256", "HS384", "HS512":
+            // 密码
+            hmacSecret := base64.Decode(this.Secret)
+
+            if hmacSecret == "" {
+                err = errors.New("Hmac 密码错误或者为空")
+                return
+            }
+
+            secret = []byte(hmacSecret)
+
         // RSA
         case "RS256", "RS384", "RS512":
             // 获取秘钥数据
@@ -344,18 +361,6 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
-        // Hmac
-        case "HS256", "HS384", "HS512":
-            // 密码
-            hmacSecret := base64.Decode(this.Secret)
-
-            if hmacSecret == "" {
-                err = errors.New("Hmac 密码错误或者为空")
-                return
-            }
-
-            secret = []byte(hmacSecret)
-
         // ECDSA
         case "ES256", "ES384", "ES512":
             // 私钥
@@ -388,9 +393,9 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
-        // 默认限检查自定义签名方式
+        // 默认先检查自定义签名方式
         default:
-            // 自定义签名
+            // 检查自定义签名
             f, ok := this.SigningFunc[this.SigningMethod]
             if !ok {
                 err = errors.New("签名类型错误")
@@ -416,6 +421,18 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
 
     // 判断类型
     switch this.SigningMethod {
+        // Hmac
+        case "HS256", "HS384", "HS512":
+            // 密码
+            hmacSecret := base64.Decode(this.Secret)
+
+            if hmacSecret == "" {
+                err = errors.New("Hmac 密码错误或者为空")
+                return nil, err
+            }
+
+            secret = []byte(hmacSecret)
+
         // RSA
         case "RS256", "RS384", "RS512":
             // 公钥
@@ -447,18 +464,6 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
             if err != nil {
                 return nil, err
             }
-
-        // Hmac
-        case "HS256", "HS384", "HS512":
-            // 密码
-            hmacSecret := base64.Decode(this.Secret)
-
-            if hmacSecret == "" {
-                err = errors.New("Hmac 密码错误或者为空")
-                return nil, err
-            }
-
-            secret = []byte(hmacSecret)
 
         // ECDSA
         case "ES256", "ES384", "ES512":
@@ -492,9 +497,9 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
                 return nil, err
             }
 
-        // 默认先检测自定义解析方式
+        // 默认检查自定义解析方式
         default:
-            // 自定义解析
+            // 检查自定义解析
             f, ok := this.ParseFunc[this.SigningMethod]
             if !ok {
                 err = errors.New("签名类型错误")
@@ -546,11 +551,11 @@ func (this *JWT) Verify(token *jwt.Token) (bool, error) {
         return false, err
     }
 
-    if claims.VerifyAudience(this.Claims["aud"].(string), false) == false {
+    if this.Claims["aud"] == "" || claims.VerifyAudience(this.Claims["aud"].(string), false) == false {
         return false, errors.New("Audience 验证失败")
     }
 
-    if claims.VerifyIssuer(this.Claims["iss"].(string), false) == false {
+    if this.Claims["iss"] == "" || claims.VerifyIssuer(this.Claims["iss"].(string), false) == false {
         return false, errors.New("Issuer 验证失败")
     }
 
