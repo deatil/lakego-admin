@@ -19,10 +19,9 @@ func Handler() router.HandlerFunc {
         isSuperAdministrator := checkSuperAdmin(ctx)
         if !isSuperAdministrator {
             response.Error(ctx, "你没有权限进行该操作", code.AuthError)
-            return
+        } else {
+            ctx.Next()
         }
-
-        ctx.Next()
     }
 }
 

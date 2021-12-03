@@ -25,27 +25,25 @@ import (
  */
 func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
-        if !shouldPassThrough(ctx) {
-            // 权限检测
-            jwtCheck(ctx)
+        // 权限检测
+        if shouldPassThrough(ctx) || jwtCheck(ctx) {
+            ctx.Next()
         }
-
-        ctx.Next()
     }
 }
 
 // 路由中间件
-func jwtCheck(ctx *router.Context) {
+func jwtCheck(ctx *router.Context) bool {
     authJwt := ctx.GetHeader("Authorization")
     if authJwt == "" {
         response.Error(ctx, "token不能为空", code.JwtTokenInvalid)
-        return
+        return false
     }
 
     prefix := "Bearer "
     if !strings.HasPrefix(authJwt, prefix) {
         response.Error(ctx, "token 错误", code.JwtTokenInvalid)
-        return
+        return false
     }
 
     // 授权 token
@@ -58,7 +56,7 @@ func jwtCheck(ctx *router.Context) {
     claims, err := jwter.GetAccessTokenClaims(accessToken)
     if err != nil {
         response.Error(ctx, "token 已过期", code.JwtAccessTokenFail)
-        return
+        return false
     }
 
     // 用户ID
@@ -73,7 +71,7 @@ func jwtCheck(ctx *router.Context) {
         Error
     if modelErr != nil {
         response.Error(ctx, "账号不存在或者被禁用", code.JwtTokenInvalid)
-        return
+        return false
     }
 
     // 结构体转map
@@ -92,18 +90,20 @@ func jwtCheck(ctx *router.Context) {
     // 是否激活
     if !adminer.IsActive() {
         response.Error(ctx, "帐号不存在或者已被锁定", code.AuthError)
-        return
+        return false
     }
 
     // 所属分组是否激活
     if !adminer.IsGroupActive() {
         response.Error(ctx, "帐号用户组不存在或者已被锁定", code.AuthError)
-        return
+        return false
     }
 
     ctx.Set("admin_id", userId)
     ctx.Set("access_token", accessToken)
     ctx.Set("admin", adminer)
+
+    return true
 }
 
 // 过滤

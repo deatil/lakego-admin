@@ -22,12 +22,11 @@ import (
  */
 func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
-        if !shouldPassThrough(ctx) {
-            // 权限检测
-            permissionCheck(ctx)
+        // 权限检测
+        if shouldPassThrough(ctx) || permissionCheck(ctx) {
+            ctx.Next()
         }
 
-        ctx.Next()
     }
 }
 
