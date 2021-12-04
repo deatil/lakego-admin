@@ -6,6 +6,7 @@ import (
 
     "github.com/go-redis/cache/v8"
     "github.com/go-redis/redis/v8"
+    "github.com/go-redis/redis/extra/redisotel/v8"
 
     "github.com/deatil/lakego-admin/lakego/captcha/store"
 )
@@ -39,14 +40,30 @@ func (this *Redis) WithConfig(config map[string]interface{}) *Redis {
 
 // 初始化
 func (this *Redis) Init() {
-    DB := this.config["db"].(int)
+    db := this.config["db"].(int)
     addr := this.config["addr"].(string)
     password := this.config["password"].(string)
 
+    minIdleConn := this.config["minidleconn"].(int)
+    dialTimeout, _ := time.ParseDuration(this.config["dialtimeout"].(string))
+    readTimeout, _ := time.ParseDuration(this.config["readtimeout"].(string))
+    writeTimeout, _ := time.ParseDuration(this.config["writetimeout"].(string))
+    poolSize := this.config["poolsize"].(int)
+    poolTimeout, _ := time.ParseDuration(this.config["pooltimeout"].(string))
+
+    enabletrace := this.config["enabletrace"].(bool)
+
     client := redis.NewClient(&redis.Options{
+        DB:       db,
         Addr:     addr,
-        DB:       DB,
         Password: password,
+
+        MinIdleConns: minIdleConn,
+        DialTimeout:  dialTimeout,
+        ReadTimeout:  readTimeout,
+        WriteTimeout: writeTimeout,
+        PoolSize:     poolSize,
+        PoolTimeout:  poolTimeout,
     })
 
     ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
@@ -54,6 +71,11 @@ func (this *Redis) Init() {
 
     if _, err := client.Ping(ctx).Result(); err != nil {
         panic("验证码 redis 连接失败")
+    }
+
+    // 调试
+    if enabletrace {
+        client.AddHook(redisotel.NewTracingHook())
     }
 
     rcache := cache.New(&cache.Options{

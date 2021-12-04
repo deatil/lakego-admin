@@ -96,6 +96,14 @@ Stores:
     Addr: "127.0.0.1:6379"
     # 密码
     Password: "admin123"
+    # 其他配置
+    MinIdleConn: 200
+    DialTimeout: 60s
+    ReadTimeout: 500ms
+    WriteTimeout: 500ms
+    PoolSize: 100
+    PoolTimeout: 240s
+    Enabletrace: false
 
   # Syncmap 配置
   Syncmap:

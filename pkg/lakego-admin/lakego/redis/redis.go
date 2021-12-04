@@ -8,6 +8,7 @@ import (
 
     "github.com/go-redis/cache/v8"
     "github.com/go-redis/redis/v8"
+    "github.com/go-redis/redis/extra/redisotel/v8"
 
     "github.com/deatil/lakego-admin/lakego/logger"
 )
@@ -15,14 +16,30 @@ import (
 // redis
 func New(config Config) Redis {
     mainDB := config.DB
-    addr := config.Host
+    addr := config.Addr
     password := config.Password
     keyPrefix := config.KeyPrefix
 
+    minIdleConn := config.MinIdleConn
+    dialTimeout := config.DialTimeout
+    readTimeout := config.minIdleConn
+    writeTimeout := config.minIdleConn
+    poolSize := config.minIdleConn
+    poolTimeout := config.minIdleConn
+
+    enabletrace := config.EnableTrace
+
     client := redis.NewClient(&redis.Options{
         Addr:     addr,
-        DB:       mainDB,
         Password: password,
+        DB:       mainDB,
+
+        MinIdleConns: minIdleConn,
+        DialTimeout:  dialTimeout,
+        ReadTimeout:  ReadTimeout,
+        WriteTimeout: WriteTimeout,
+        PoolSize:     PoolSize,
+        PoolTimeout:  PoolTimeout,
     })
 
     ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -30,6 +47,11 @@ func New(config Config) Redis {
 
     if _, err := client.Ping(ctx).Result(); err != nil {
         logger.Error(err.Error())
+    }
+
+    // 调试
+    if enabletrace {
+        client.AddHook(redisotel.NewTracingHook())
     }
 
     return Redis{
@@ -44,10 +66,20 @@ func New(config Config) Redis {
 
 // 缓存配置
 type Config struct {
-    DB int
-    Host string
-    Password string
     KeyPrefix string
+
+    Addr string
+    Password string
+    DB int
+
+    MinIdleConn  int
+    DialTimeout  time.Duration
+    ReadTimeout  time.Duration
+    WriteTimeout time.Duration
+    PoolSize     int
+    PoolTimeout  time.Duration
+
+    EnableTrace  bool
 }
 
 /**

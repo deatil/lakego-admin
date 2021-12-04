@@ -8,6 +8,7 @@ import (
     "context"
 
     "github.com/go-redis/redis/v8"
+    "github.com/go-redis/redis/extra/redisotel/v8"
 
     "github.com/deatil/lakego-admin/lakego/cache/interfaces"
 )
@@ -34,14 +35,30 @@ type Redis struct {
 
 // 实例化
 func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
-    mainDB := config["db"].(int)
-    addr := config["host"].(string)
+    db := config["db"].(int)
+    addr := config["addr"].(string)
     password := config["password"].(string)
 
+    minIdleConn := config["minidleconn"].(int)
+    dialTimeout, _ := time.ParseDuration(config["dialtimeout"].(string))
+    readTimeout, _ := time.ParseDuration(config["readtimeout"].(string))
+    writeTimeout, _ := time.ParseDuration(config["writetimeout"].(string))
+    poolSize := config["poolsize"].(int)
+    poolTimeout, _ := time.ParseDuration(config["pooltimeout"].(string))
+
+    enabletrace := config["enabletrace"].(bool)
+
     client := redis.NewClient(&redis.Options{
-        Addr:     addr,
-        DB:       mainDB,
-        Password: password,
+        DB:           db,
+        Addr:         addr,
+        Password:     password,
+
+        MinIdleConns: minIdleConn,
+        DialTimeout:  dialTimeout,
+        ReadTimeout:  readTimeout,
+        WriteTimeout: writeTimeout,
+        PoolSize:     poolSize,
+        PoolTimeout:  poolTimeout,
     })
 
     ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
@@ -49,6 +66,11 @@ func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
 
     if _, err := client.Ping(ctx).Result(); err != nil {
         log.Print(err.Error())
+    }
+
+    // 调试
+    if enabletrace {
+        client.AddHook(redisotel.NewTracingHook())
     }
 
     this.config = config
