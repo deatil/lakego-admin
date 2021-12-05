@@ -4,41 +4,45 @@ import (
     "fmt"
 )
 
-/**
- * 事件
- *
- * @create 2021-8-20
- * @author deatil
- */
-type Event struct {
-    // 事件触发实例
-    Target IEventDispatcher
-
-    // 事件类型
-    Type   string
-
-    // 事件携带数据源
-    Object interface{}
+// 创建事件派发器
+func NewEventDispatcher() *EventDispatcher {
+    return new(EventDispatcher)
 }
 
-// 事件调度器基类
-type EventDispatcher struct {
-    savers []*EventSaver
+// 创建监听器
+func NewEventListener(h EventHandler) *EventListener {
+    l := new(EventListener)
+    l.Handler = h
+    return l
 }
 
-// 事件调度器中存放的单元
-type EventSaver struct {
-    Type      string
-    Listeners []*EventListener
+// 创建事件
+func NewEvent(eventType string, object interface{}) Event {
+    e := Event{
+        Type: eventType,
+        Object: object,
+    }
+    return e
 }
+
+// =====
+
+// 监听器函数
+type EventHandler func(Event)
 
 // 监听器
 type EventListener struct {
     Handler EventHandler
 }
 
-// 监听器函数
-type EventHandler func(Event)
+// 事件调度器中存放的单元
+type EventSaver struct {
+    // 类型
+    Type      string
+
+    // 监听器
+    Listeners []*EventListener
+}
 
 // 事件调度接口
 type IEventDispatcher interface {
@@ -55,22 +59,23 @@ type IEventDispatcher interface {
     DispatchEvent(Event) bool
 }
 
-// 创建事件派发器
-func NewEventDispatcher() *EventDispatcher {
-    return new(EventDispatcher)
-}
+// =====
 
-// 创建监听器
-func NewEventListener(h EventHandler) *EventListener {
-    l := new(EventListener)
-    l.Handler = h
-    return l
-}
+/**
+ * 事件
+ *
+ * @create 2021-8-20
+ * @author deatil
+ */
+type Event struct {
+    // 事件触发实例
+    Target IEventDispatcher
 
-// 创建事件
-func NewEvent(eventType string, object interface{}) Event {
-    e := Event{Type:eventType, Object:object}
-    return e
+    // 事件类型
+    Type string
+
+    // 事件携带数据源
+    Object interface{}
 }
 
 // 克隆事件
@@ -84,6 +89,13 @@ func (this *Event) Clone() *Event {
 // 返回字符
 func (this *Event) ToString() string {
     return fmt.Sprintf("Event Type %v", this.Type)
+}
+
+// =====
+
+// 事件调度器
+type EventDispatcher struct {
+    savers []*EventSaver
 }
 
 // 事件调度器添加事件
