@@ -2,7 +2,7 @@ package controller
 
 import (
     "strings"
-    
+
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     "github.com/deatil/lakego-admin/lakego/support/time"
@@ -45,7 +45,7 @@ func (this *Attachment) Index(ctx *router.Context) {
         attachModel = attachModel.
             Or("name LIKE ?", searchword).
             Or("extension LIKE ?", searchword).
-            Or("driver LIKE ?", searchword)
+            Or("disk LIKE ?", searchword)
     }
 
     // 时间条件

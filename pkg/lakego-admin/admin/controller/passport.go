@@ -15,6 +15,12 @@ import (
     passportValidate "github.com/deatil/lakego-admin/admin/validate/passport"
 )
 
+/**
+ * 登陆相关
+ *
+ * @create 2021-9-2
+ * @author deatil
+ */
 type Passport struct {
     Base
 }
