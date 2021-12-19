@@ -1,12 +1,14 @@
-package bootstrap
+package provider
 
 import (
+    "github.com/deatil/lakego-admin/lakego/kernel"
+
     adminProvider "github.com/deatil/lakego-admin/admin/provider/admin"
 )
 
 // 后台
 func init() {
-    AddProvider(func() interface{} {
+    kernel.AddProvider(func() interface{} {
         return &adminProvider.ServiceProvider{}
     })
 }

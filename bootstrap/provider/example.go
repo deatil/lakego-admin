@@ -1,12 +1,14 @@
-package bootstrap
+package provider
 
 import (
+    "github.com/deatil/lakego-admin/lakego/kernel"
+
     exampleProvider "app/example/provider/app"
 )
 
 // 例子
 func init() {
-    AddProvider(func() interface{} {
+    kernel.AddProvider(func() interface{} {
         return &exampleProvider.ServiceProvider{}
     })
 }
