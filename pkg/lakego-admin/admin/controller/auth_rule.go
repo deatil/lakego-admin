@@ -2,7 +2,7 @@ package controller
 
 import (
     "strings"
-    
+
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/router"
@@ -34,10 +34,10 @@ func (this *AuthRule) Index(ctx *router.Context) {
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
     orders := strings.SplitN(order, "__", 2)
-    if orders[0] != "id" ||
-        orders[0] != "title" ||
-        orders[0] != "url" ||
-        orders[0] != "method" ||
+    if orders[0] != "id" &&
+        orders[0] != "title" &&
+        orders[0] != "url" &&
+        orders[0] != "method" &&
         orders[0] != "add_time" {
         orders[0] = "id"
     }

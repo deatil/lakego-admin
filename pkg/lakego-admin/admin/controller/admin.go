@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
     "encoding/json"
-    
+
     "github.com/deatil/lakego-admin/lakego/tree"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/router"
@@ -46,9 +46,9 @@ func (this *Admin) Index(ctx *router.Context) {
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
     orders := strings.SplitN(order, "__", 2)
-    if orders[0] != "id" ||
-        orders[0] != "name" ||
-        orders[0] != "last_active" ||
+    if orders[0] != "id" &&
+        orders[0] != "name" &&
+        orders[0] != "last_active" &&
         orders[0] != "add_time" {
         orders[0] = "id"
     }

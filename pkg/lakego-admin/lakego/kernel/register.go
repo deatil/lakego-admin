@@ -3,7 +3,7 @@ package kernel
 import(
     "sync"
 
-    providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
+    "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 )
 
 // 锁
@@ -32,7 +32,7 @@ func AddProvider(f func() interface{}) {
 
 type (
     // 服务提供者
-    Provider = func() providerInterface.ServiceProvider
+    Provider = func() interfaces.ServiceProvider
 )
 
 /**
@@ -55,9 +55,9 @@ func (this *Register) With(f func() interface{}) *Register {
 
     // 判断是否为服务提供者
     switch addProvider.(type) {
-        case providerInterface.ServiceProvider:
-            this.providers = append(this.providers, func() providerInterface.ServiceProvider {
-                return addProvider.(providerInterface.ServiceProvider)
+        case interfaces.ServiceProvider:
+            this.providers = append(this.providers, func() interfaces.ServiceProvider {
+                return addProvider.(interfaces.ServiceProvider)
             })
     }
 
@@ -67,6 +67,6 @@ func (this *Register) With(f func() interface{}) *Register {
 /**
  * 获取全部
  */
-func (this *Register) GetALL() []Provider {
+func (this *Register) GetAll() []Provider {
     return this.providers
 }

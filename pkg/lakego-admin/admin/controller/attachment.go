@@ -35,6 +35,13 @@ func (this *Attachment) Index(ctx *router.Context) {
     // 排序
     order := ctx.DefaultQuery("order", "id__DESC")
     orders := strings.SplitN(order, "__", 2)
+    if orders[0] != "id" &&
+        orders[0] != "name" &&
+        orders[0] != "update_time" &&
+        orders[0] != "add_time" {
+        orders[0] = "id"
+    }
+
     attachModel = attachModel.Order(orders[0] + " " + orders[1])
 
     // 搜索条件

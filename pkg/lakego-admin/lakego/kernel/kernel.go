@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/app"
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/provider"
-    providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
+    "github.com/deatil/lakego-admin/lakego/provider/interfaces"
     _ "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
@@ -42,7 +42,7 @@ var rootCmd = &command.Command{
  */
 type Kernel struct {
     // 注册的服务提供者
-    providers []func() providerInterface.ServiceProvider
+    providers []func() interfaces.ServiceProvider
 
     // 自定义运行监听
     NetListener net.Listener
@@ -74,14 +74,14 @@ func (this *Kernel) RunCmd() {
 }
 
 // 添加服务提供者
-func (this *Kernel) WithServiceProvider(f func() providerInterface.ServiceProvider) *Kernel {
+func (this *Kernel) WithServiceProvider(f func() interfaces.ServiceProvider) *Kernel {
     this.providers = append(this.providers, f)
 
     return this
 }
 
 // 批量添加服务提供者
-func (this *Kernel) WithServiceProviders(funcs []func() providerInterface.ServiceProvider) *Kernel {
+func (this *Kernel) WithServiceProviders(funcs []func() interfaces.ServiceProvider) *Kernel {
     if len(funcs) > 0 {
         for _, f := range funcs {
             this.WithServiceProvider(f)

@@ -1,4 +1,4 @@
-package provider
+package bootstrap
 
 import (
     "github.com/deatil/lakego-admin/lakego/kernel"
