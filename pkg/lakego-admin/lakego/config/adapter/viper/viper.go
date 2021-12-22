@@ -62,6 +62,9 @@ func (this *Viper) WithFile(fileName ...string) {
     this.conf.AutomaticEnv()
     this.conf.AllowEmptyEnv(true)
 
+    // 环境变量前缀
+    this.conf.SetEnvPrefix("APP")
+
     // 事件
     this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
         if changeEvent.Op.String() == "WRITE" {

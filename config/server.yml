@@ -1,4 +1,4 @@
-# 配置模式 dev or release
+# 配置模式 dev | release
 Mode: "dev"
 
 # 运行链接

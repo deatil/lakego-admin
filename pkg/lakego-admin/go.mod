@@ -2,6 +2,10 @@ module github.com/deatil/lakego-admin
 
 go 1.16
 
+replace (
+	github.com/deatil/go-filesystem => ./../go-filesystem
+)
+
 require (
 	github.com/casbin/casbin/v2 v2.37.4
 	github.com/deatil/go-filesystem v0.0.3

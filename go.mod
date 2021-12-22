@@ -4,6 +4,7 @@ go 1.16
 
 replace (
 	app => ./app
+	github.com/deatil/go-filesystem => ./pkg/go-filesystem
 	github.com/deatil/lakego-admin => ./pkg/lakego-admin
 )
 

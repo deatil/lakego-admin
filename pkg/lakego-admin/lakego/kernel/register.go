@@ -27,12 +27,20 @@ func NewRegister() *Register {
 
 // 添加服务提供者
 func AddProvider(f func() interface{}) {
-    NewRegister().With(f)
+    NewRegister().WithProvider(f)
+}
+
+// 获取全部服务提供者
+func GetAllProvider() []Provider {
+    return NewRegister().GetRegisteredProviders()
 }
 
 type (
-    // 服务提供者
-    Provider = func() interfaces.ServiceProvider
+    // 服务提供者接口
+    IServiceProvider = interfaces.ServiceProvider
+
+    // 服务提供者函数
+    Provider = func() IServiceProvider
 )
 
 /**
@@ -47,7 +55,7 @@ type Register struct {
 }
 
 // 注册
-func (this *Register) With(f func() interface{}) *Register {
+func (this *Register) WithProvider(f func() interface{}) *Register {
     lock.Lock()
     defer lock.Unlock()
 
@@ -55,9 +63,9 @@ func (this *Register) With(f func() interface{}) *Register {
 
     // 判断是否为服务提供者
     switch addProvider.(type) {
-        case interfaces.ServiceProvider:
-            this.providers = append(this.providers, func() interfaces.ServiceProvider {
-                return addProvider.(interfaces.ServiceProvider)
+        case IServiceProvider:
+            this.providers = append(this.providers, func() IServiceProvider {
+                return addProvider.(IServiceProvider)
             })
     }
 
@@ -65,8 +73,8 @@ func (this *Register) With(f func() interface{}) *Register {
 }
 
 /**
- * 获取全部
+ * 获取注册的全部服务提供者
  */
-func (this *Register) GetAll() []Provider {
+func (this *Register) GetRegisteredProviders() []Provider {
     return this.providers
 }
