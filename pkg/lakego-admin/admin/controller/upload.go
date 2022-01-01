@@ -135,13 +135,10 @@ func (this *Upload) File(ctx *router.Context) {
     }
 
     // 截取文件名
-    nameLen := conf.GetInt("admin.Upload.NameMaxlen")
+    nameLen := conf.GetInt("Upload.NameMaxlen")
     extensionLen := len(extension) + 1
     attachName := name[:len(name) - extensionLen]
     newName := attachName[:nameLen - extensionLen] + "." + extension
-
-    // 截取后缀
-    extension = extension[:15]
 
     // 添加数据
     attachData := &model.Attachment{
