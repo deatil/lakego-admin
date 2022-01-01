@@ -2,7 +2,7 @@ package controller
 
 import (
     "strconv"
-    
+
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/helper"
     "github.com/deatil/lakego-admin/lakego/facade/config"
@@ -134,9 +134,18 @@ func (this *Upload) File(ctx *router.Context) {
         return
     }
 
+    // 截取文件名
+    nameLen := conf.GetInt("admin.Upload.NameMaxlen")
+    extensionLen := len(extension) + 1
+    attachName := name[:len(name) - extensionLen]
+    newName := attachName[:nameLen - extensionLen] + "." + extension
+
+    // 截取后缀
+    extension = extension[:15]
+
     // 添加数据
     attachData := &model.Attachment{
-        Name: name,
+        Name: newName,
         Path: path,
         Mime: mimeType,
         Extension: extension,
