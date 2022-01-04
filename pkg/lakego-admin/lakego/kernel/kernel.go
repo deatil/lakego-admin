@@ -8,11 +8,18 @@ import (
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/provider/interfaces"
+    lakegoProvider "github.com/deatil/lakego-admin/lakego/providers/lakego"
     _ "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
 // 实例化
 func New() *Kernel {
+    // 导入框架服务提供者
+    AddProvider(func() interface{} {
+        return &lakegoProvider.ServiceProvider{}
+    })
+
+    // 实例化核心
     kernel := &Kernel{}
 
     return kernel

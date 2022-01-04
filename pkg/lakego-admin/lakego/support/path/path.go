@@ -25,10 +25,10 @@ func BasePath() string {
 
 // 格式化文件路径
 func FormatPath(path string) string {
-    // 程序根目录
-    basePath := BasePath()
-
     if strings.HasPrefix(path, "{root}") {
+        // 程序根目录
+        basePath := BasePath()
+
         path = strings.TrimPrefix(path, "{root}")
         path = basePath + "/" + strings.TrimPrefix(path, "/")
     }

@@ -1,11 +1,13 @@
 package file
 
 import (
+    "io"
     "os"
     "fmt"
     "log"
     "time"
     "path"
+    "errors"
     "path/filepath"
     "strings"
 )
@@ -245,3 +247,100 @@ func MustOpenLogFile(fp string) *os.File {
 
     return f
 }
+
+/**
+ * 拷贝文件夹,同时拷贝文件夹中的文件
+ ×
+ * @param srcPath 需要拷贝的文件夹路径
+ * @param destPath 拷贝到的位置
+ */
+func CopyDir(srcPath string, destPath string) error {
+    // 检测目录正确性
+    if srcInfo, err := os.Stat(srcPath); err != nil {
+        return err
+    } else {
+        if !srcInfo.IsDir() {
+            e := errors.New("原始目录不是一个正确的目录！")
+            return e
+        }
+    }
+
+    if destInfo, err := os.Stat(destPath); err != nil {
+        return err
+    } else {
+        if !destInfo.IsDir() {
+            e := errors.New("目标目录不是一个正确的目录！")
+            return e
+        }
+    }
+
+    err := filepath.Walk(srcPath, func(path string, f os.FileInfo, err error) error {
+        if f == nil {
+            return err
+        }
+
+        if !f.IsDir() {
+            path := strings.Replace(path, "\\", "/", -1)
+            destNewPath := strings.Replace(path, srcPath, destPath, -1)
+            CopyFile(path, destNewPath)
+        }
+
+        return nil
+    })
+
+    return err
+}
+
+// 生成目录并拷贝文件
+func CopyFile(src, dest string) (w int64, err error) {
+    srcFile, err := os.Open(src)
+
+    if err != nil {
+        return
+    }
+    defer srcFile.Close()
+
+    // 分割path目录
+    destSplitPathDirs := strings.Split(dest, "/")
+
+    // 检测时候存在目录
+    destSplitPath := ""
+    for index, dir := range destSplitPathDirs {
+        if index < len(destSplitPathDirs) - 1 {
+            destSplitPath = destSplitPath + dir + "/"
+            b, _ := PathExists(destSplitPath)
+            if b == false {
+                // 创建目录
+                err = os.Mkdir(destSplitPath, os.ModePerm)
+                if err != nil {
+                    w = 0
+                    return
+                }
+            }
+        }
+    }
+
+    dstFile, err := os.Create(dest)
+    if err != nil {
+        w = 0
+        return
+    }
+    defer dstFile.Close()
+
+    return io.Copy(dstFile, srcFile)
+}
+
+// 检测文件夹路径时候存在
+func PathExists(path string) (bool, error) {
+    _, err := os.Stat(path)
+    if err == nil {
+        return true, nil
+    }
+
+    if os.IsNotExist(err) {
+        return false, nil
+    }
+
+    return false, err
+}
+
