@@ -6,6 +6,7 @@ import (
     "github.com/spf13/viper"
     "github.com/fsnotify/fsnotify"
 
+    "github.com/deatil/lakego-admin/lakego/support/path"
     "github.com/deatil/lakego-admin/lakego/config/adapter"
 )
 
@@ -48,7 +49,7 @@ func (this *Viper) WithFile(fileName ...string) {
         if len(configFiles) > 0 {
             for _, configFile := range configFiles {
                 // 指定配置文件路径
-                this.conf.SetConfigFile(configFile)
+                this.conf.SetConfigFile(path.FormatPath(configFile))
             }
         }
     } else {
