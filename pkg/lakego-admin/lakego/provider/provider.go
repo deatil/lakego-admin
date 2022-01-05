@@ -1,9 +1,13 @@
 package provider
 
 import (
-    "github.com/deatil/lakego-admin/lakego/command"
-    
+    "github.com/deatil/lakego-admin/lakego/view"
     "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/publish"
+    "github.com/deatil/lakego-admin/lakego/command"
+    "github.com/deatil/lakego-admin/lakego/support/file"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-admin/lakego/config/adapter"
     appInterface "github.com/deatil/lakego-admin/lakego/app/interfaces"
 )
 
@@ -90,6 +94,34 @@ func (this *ServiceProvider) CallBootedCallback() {
     if this.BootedCallback != nil {
         (this.BootedCallback)()
     }
+}
+
+// 配置信息
+func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
+    adapter.NewPathInstance().WithPath(key, path)
+}
+
+// 注册视图
+func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
+    viewFinder := view.NewInstance()
+
+    paths := config.New("view").GetStringSlice("Paths")
+    if len(paths) > 0 {
+        for _, viewPath := range paths {
+            appPath := viewPath + "/pkg/" + namespace
+
+            if exists, _ := file.PathExists(appPath); exists {
+                viewFinder.AddNamespace(namespace, []string{appPath})
+            }
+        }
+    }
+
+    viewFinder.AddNamespace(namespace, []string{path})
+}
+
+// 推送
+func (this *ServiceProvider) Publishes(paths map[string]string, group string) {
+    publish.NewInstance().Publish(this, paths, group)
 }
 
 // 注册

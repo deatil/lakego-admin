@@ -26,7 +26,7 @@ func New() *ViewFinder {
         Paths: make(PathsArray, 0),
         Views: make(ViewsMap),
         Hints: make(HintsMap),
-        Extensions: make(ExtensionsArray),
+        Extensions: make(ExtensionsArray, 0),
     }
 }
 
@@ -88,7 +88,7 @@ func (this *ViewFinder) Find(name string) string {
 
 // 查找命名空间视图
 func (this *ViewFinder) FindNamespacedView(name string) string {
-    data := ParseNamespaceSegments(name)
+    data := this.ParseNamespaceSegments(name)
 
     namespace := data[0]
     view := data[1]
@@ -113,8 +113,8 @@ func (this *ViewFinder) ParseNamespaceSegments(name string) []string {
 
 // 在目录里查找文件
 func (this *ViewFinder) FindInPaths(name string, paths []string) string {
-    if len(this.paths) > 0 {
-        for _, path := range this.paths {
+    if len(paths) > 0 {
+        for _, path := range paths {
             for _, file := range this.GetPossibleViewFiles(name) {
                 viewPath := path + "/" + file
                 if this.FileExist(viewPath) {
@@ -157,7 +157,7 @@ func (this *ViewFinder) PrependLocation(location string) *ViewFinder {
 
 // 重设路径
 func (this *ViewFinder) ResolvePath(path string) string {
-    newPath, err = filepath.Abs(path)
+    newPath, err := filepath.Abs(path)
     if err != nil {
         panic(err)
     }
@@ -176,9 +176,9 @@ func (this *ViewFinder) NormalizeName(name string) string {
     arr := strings.SplitN(name, delimiter, 2)
 
     namespace := arr[0]
-    name := arr[0]
+    name2 := arr[1]
 
-    return namespace + delimiter + strings.ReplaceAll(name, "/", ".")
+    return namespace + delimiter + strings.ReplaceAll(name2, "/", ".")
 }
 
 // 添加命名空间
@@ -214,9 +214,9 @@ func (this *ViewFinder) ReplaceNamespace(namespace string, hints []string) *View
 
 // 添加后缀
 func (this *ViewFinder) AddExtension(extension string) *ViewFinder {
-    for _, ext := range this.Extensions {
+    for extk, ext := range this.Extensions {
         if ext == extension {
-            delete(this.Extensions, name)
+            this.Extensions = append(this.Extensions[:extk], this.Extensions[extk:]...)
         }
     }
 

@@ -42,6 +42,15 @@ func (this *Viper) WithFile(fileName ...string) {
     // 需要读取的文件名,默认为：config
     if len(fileName) > 0 {
         this.conf.SetConfigName(fileName[0])
+
+        // 导入自定义配置
+        configFiles := adapter.NewPathInstance().GetPath(fileName[0])
+        if len(configFiles) > 0 {
+            for _, configFile := range configFiles {
+                // 指定配置文件路径
+                this.conf.SetConfigFile(configFile)
+            }
+        }
     } else {
         this.conf.SetConfigName("config")
     }
