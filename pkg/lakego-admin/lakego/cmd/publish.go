@@ -16,9 +16,9 @@ import (
 /**
  * 推送
  *
- * > ./main lakego:publish
- * > main.exe lakego:publish
- * > go run main.go lakego:publish
+ * > ./main lakego:publish [--force] [--provider=providerName] [--tag=tagname]
+ * > main.exe lakego:publish [--force] [--provider=providerName] [--tag=tagname]
+ * > go run main.go lakego:publish [--force] [--provider=providerName] [--tag=tagname]
  *
  * @create 2022-1-3
  * @author deatil

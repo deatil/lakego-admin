@@ -11,16 +11,16 @@ var instance *ViewFinder
 var once sync.Once
 
 // 单例
-func NewInstance() *ViewFinder {
+func NewViewFinderInstance() *ViewFinder {
     once.Do(func() {
-        instance = New()
+        instance = NewViewFinder()
     })
 
     return instance
 }
 
 // 构造函数
-func New() *ViewFinder {
+func NewViewFinder() *ViewFinder {
     return &ViewFinder{
         HintPathDelimiter: "::",
         Paths: make(PathsArray, 0),

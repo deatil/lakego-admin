@@ -4,6 +4,8 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/provider"
+    "github.com/deatil/lakego-admin/lakego/facade/config"
+    pathTool "github.com/deatil/lakego-admin/lakego/support/path"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 
     "github.com/deatil/lakego-admin/admin/support/route"
@@ -29,6 +31,9 @@ func (this *ServiceProvider) Register() {
     // 脚本
     this.loadCommand()
 
+    // 配置
+    this.loadSetting()
+
     // 路由
     this.loadRoute()
 
@@ -45,6 +50,28 @@ func (this *ServiceProvider) loadCommand() {
 }
 
 /**
+ * 导入配置
+ */
+func (this *ServiceProvider) loadSetting() {
+    // 配置
+    path := "{root}/app/example/config/example.yml"
+
+    // 格式化路径
+    path = pathTool.FormatPath(path)
+
+    // 设置配置
+    this.MergeConfigFrom(path, "example")
+
+    // 推送
+    // go run main.go lakego:publish --tag=example-config
+    toPath := "{root}/config/example.yml"
+    toPath = pathTool.FormatPath(toPath)
+    this.Publishes(map[string]string{
+        path: toPath,
+    }, "example-config")
+}
+
+/**
  * 导入路由
  */
 func (this *ServiceProvider) loadRoute() {
@@ -56,8 +83,12 @@ func (this *ServiceProvider) loadRoute() {
     // 常规 gin 路由，除 gin 自带外没有任何中间件
     this.AddRoute(func(engine *gin.Engine) {
         engine.GET("/example", func(ctx *gin.Context) {
+            // 测试自定义配置数据
+            exampleData := config.New("example").GetString("Default")
+
             ctx.JSON(200, gin.H{
                 "data": "例子显示信息",
+                "exampleData": exampleData,
             })
         })
     })

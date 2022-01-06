@@ -5,6 +5,8 @@ import (
     "net/http"
 
     "github.com/deatil/lakego-admin/lakego/router"
+    "github.com/deatil/lakego-admin/lakego/support/file"
+    viewFetch "github.com/deatil/lakego-admin/lakego/view"
 )
 
 // 使用
@@ -83,6 +85,25 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
     this.ctx.Header("Content-Type", "application/json; charset=utf-8")
     this.ctx.String(this.httpCode, jsonStr)
 }
+
+// 渲染模板
+func (this *Response) Fetch(template string, obj interface{}) {
+    if ok, _ := file.PathExists(template); !ok {
+        template = viewFetch.NewViewFinderInstance().Find(template)
+    }
+
+    this.ctx.HTML(this.httpCode, template, obj)
+}
+
+// 下载
+func (this *Response) Download(filePath string, fileName string) {
+    this.ctx.Header("Content-Type", "application/octet-stream")
+    this.ctx.Header("Content-Disposition", "attachment; filename=" + fileName)
+    this.ctx.Header("Content-Transfer-Encoding", "binary")
+    this.ctx.File(filePath)
+}
+
+/* ===== gin 默认方法 ===== */
 
 // 错误暂停
 func (this *Response) Abort() {
@@ -231,12 +252,4 @@ func (this *Response) SSEvent(name string, message interface{}) {
 // SetAccepted
 func (this *Response) SetAccepted(formats ...string) {
     this.ctx.SetAccepted(formats...)
-}
-
-// 下载
-func (this *Response) Download(filePath string, fileName string) {
-    this.ctx.Header("Content-Type", "application/octet-stream")
-    this.ctx.Header("Content-Disposition", "attachment; filename=" + fileName)
-    this.ctx.Header("Content-Transfer-Encoding", "binary")
-    this.ctx.File(filePath)
 }

@@ -211,6 +211,19 @@ func (this *Response) ErrorWithData(ctx *router.Context, msg string, dataCode in
 }
 
 /**
+ * 渲染模板
+ */
+func (this *Response) Fetch(ctx *router.Context, template string, obj interface{}, httpCode ...int) {
+    resp := response.New().WithContext(ctx)
+
+    if len(httpCode) > 0 {
+        resp.WithHttpCode(httpCode[0])
+    }
+
+    resp.Fetch(template, obj)
+}
+
+/**
  * 下载文件
  */
 func (this *Response) DownloadFile(ctx *router.Context, filePath string, fileName string) {

@@ -1,6 +1,7 @@
 package provider
 
 import (
+    "path/filepath"
     "github.com/deatil/lakego-admin/lakego/view"
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/publish"
@@ -8,6 +9,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/support/file"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     "github.com/deatil/lakego-admin/lakego/config/adapter"
+    pathTool "github.com/deatil/lakego-admin/lakego/support/path"
     appInterface "github.com/deatil/lakego-admin/lakego/app/interfaces"
 )
 
@@ -98,12 +100,18 @@ func (this *ServiceProvider) CallBootedCallback() {
 
 // 配置信息
 func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
-    adapter.NewPathInstance().WithPath(key, path)
+    // 格式化路径
+    path = pathTool.FormatPath(path)
+
+    newPath, err := filepath.Abs(path)
+    if err == nil {
+        adapter.NewPathInstance().WithPath(key, newPath)
+    }
 }
 
 // 注册视图
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
-    viewFinder := view.NewInstance()
+    viewFinder := view.NewViewFinderInstance()
 
     paths := config.New("view").GetStringSlice("Paths")
     if len(paths) > 0 {
@@ -115,6 +123,9 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
             }
         }
     }
+
+    // 格式化路径
+    path = pathTool.FormatPath(path)
 
     viewFinder.AddNamespace(namespace, []string{path})
 }
