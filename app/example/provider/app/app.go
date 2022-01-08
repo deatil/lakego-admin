@@ -54,21 +54,34 @@ func (this *ServiceProvider) loadCommand() {
  */
 func (this *ServiceProvider) loadSetting() {
     // 配置
-    path := "{root}/app/example/config/example.yml"
-
-    // 格式化路径
-    path = pathTool.FormatPath(path)
-
-    // 设置配置
+    path := pathTool.FormatPath("{root}/app/example/config/example.yml")
     this.MergeConfigFrom(path, "example")
 
-    // 推送
-    // go run main.go lakego:publish --tag=example-config
-    toPath := "{root}/config/example.yml"
-    toPath = pathTool.FormatPath(toPath)
-    this.Publishes(map[string]string{
+    // 推送已注册的全部
+    // > go run main.go lakego:publish --all
+
+    // 推送当前服务提供者已注册数据
+    // > go run main.go lakego:publish --provider=app/example/provider/app/ServiceProvider
+
+    // 推送文件
+    // > go run main.go lakego:publish --tag=example-config --force
+    toPath := pathTool.FormatPath("{root}/config/example.yml")
+    this.Publishes(this, map[string]string{
         path: toPath,
     }, "example-config")
+
+    // 推送文件夹
+    // > go run main.go lakego:publish --tag=example-configs --force
+    fromDir := pathTool.FormatPath("{root}/app/example/config/data")
+    toDir := pathTool.FormatPath("{root}/config/data")
+    this.Publishes(this, map[string]string{
+        fromDir: toDir,
+    }, "example-configs")
+
+    // 视图
+    viewPath := "{root}/app/example/resources/view"
+    viewPath = pathTool.FormatPath(viewPath)
+    this.LoadViewsFrom(viewPath, "example")
 }
 
 /**

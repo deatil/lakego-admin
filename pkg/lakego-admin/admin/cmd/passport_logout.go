@@ -38,7 +38,11 @@ var PassportLogoutCmd = &command.Command{
 var refreshToken string
 
 func init() {
-    pf := PassportLogoutCmd.PersistentFlags()
+    // 全局
+    // pf := PassportLogoutCmd.PersistentFlags()
+
+    // 当前命令
+    pf := PassportLogoutCmd.Flags()
     pf.StringVarP(&refreshToken, "refreshToken", "r", "", "刷新token")
 
     command.MarkFlagRequired(pf, "refreshToken")

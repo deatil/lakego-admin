@@ -3,6 +3,7 @@ package path
 import (
     "os"
     "strings"
+    "path/filepath"
 )
 
 // 程序根目录
@@ -31,6 +32,12 @@ func FormatPath(path string) string {
 
         path = strings.TrimPrefix(path, "{root}")
         path = basePath + "/" + strings.TrimPrefix(path, "/")
+
+        // 格式化正常重设
+        newPath, err := filepath.Abs(path)
+        if err == nil {
+            path = newPath
+        }
     }
 
     return path

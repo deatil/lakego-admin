@@ -37,7 +37,7 @@ var id string
 var password string
 
 func init() {
-    pf := ResetPasswordCmd.PersistentFlags()
+    pf := ResetPasswordCmd.Flags()
     pf.StringVarP(&id, "id", "i", "", "账号ID")
     pf.StringVarP(&password, "password", "p", "", "新建密码")
 

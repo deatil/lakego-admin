@@ -4,7 +4,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/provider"
 
     // 脚本
-    "github.com/deatil/lakego-admin/lakego/cmd"
+    "github.com/deatil/lakego-admin/lakego/console"
 )
 
 /**
@@ -28,5 +28,5 @@ func (this *ServiceProvider) Register() {
  */
 func (this *ServiceProvider) loadCommand() {
     // 推送
-    this.AddCommand(cmd.PublishCmd)
+    this.AddCommand(console.PublishCmd)
 }

@@ -7,8 +7,8 @@ import (
     "log"
     "time"
     "path"
-    "errors"
     "path/filepath"
+    "errors"
     "strings"
 )
 
@@ -274,14 +274,19 @@ func CopyDir(srcPath string, destPath string) error {
         }
     }
 
+    // 统一路径
+    srcPath, _ = filepath.Abs(srcPath)
+    destPath, _ = filepath.Abs(destPath)
+
     err := filepath.Walk(srcPath, func(path string, f os.FileInfo, err error) error {
         if f == nil {
             return err
         }
 
         if !f.IsDir() {
-            path := strings.Replace(path, "\\", "/", -1)
+            // 重设为新路径
             destNewPath := strings.Replace(path, srcPath, destPath, -1)
+
             CopyFile(path, destNewPath)
         }
 

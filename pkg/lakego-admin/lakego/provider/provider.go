@@ -131,8 +131,8 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
 }
 
 // 推送
-func (this *ServiceProvider) Publishes(paths map[string]string, group string) {
-    publish.NewInstance().Publish(this, paths, group)
+func (this *ServiceProvider) Publishes(obj interface{}, paths map[string]string, group string) {
+    publish.NewInstance().Publish(obj, paths, group)
 }
 
 // 注册

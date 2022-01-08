@@ -1,4 +1,4 @@
-package cmd
+package console
 
 import (
     "os"
@@ -29,7 +29,6 @@ var PublishCmd = &command.Command{
     Example: "{execfile} lakego:publish",
     SilenceUsage: true,
     PreRun: func(cmd *command.Command, args []string) {
-
     },
     Run: func(cmd *command.Command, args []string) {
         publisher := &Publisher{}
@@ -39,14 +38,16 @@ var PublishCmd = &command.Command{
 
 // 覆盖
 var pForce bool
+var pAll bool
 var pProvider string
 var pTag string
 
 func init() {
-    pf := PublishCmd.PersistentFlags()
-    pf.BoolVarP(&pForce, "force", "f", false, "是否覆盖文件")
-    pf.StringVarP(&pProvider, "provider", "p", "", "根据服务提供者推送")
-    pf.StringVarP(&pTag, "tag", "t", "", "根据标签推送")
+    pf := PublishCmd.Flags()
+    pf.BoolVarP(&pForce, "force", "", false, "是否覆盖文件")
+    pf.BoolVarP(&pAll, "all", "", false, "推送注册的全部数据")
+    pf.StringVarP(&pProvider, "provider", "", "", "根据服务提供者推送")
+    pf.StringVarP(&pTag, "tag", "", "", "根据标签推送")
 }
 
 /**
@@ -59,9 +60,14 @@ type Publisher struct {}
 
 // 运行
 func (this *Publisher) Execute() {
+    if !pAll && pProvider == "" && pTag == "" {
+        fmt.Println("请选择一个推送方式推送")
+        return
+    }
+
     this.PublishTag(pTag)
 
-    fmt.Println("推送完成")
+    fmt.Println("文件推送完成")
 }
 
 // 标签推送
@@ -87,14 +93,14 @@ func (this *Publisher) PathsToPublish(tag string) map[string]string {
 }
 
 // 不确定类型推送
-func (this *Publisher) PublishItem(from string, to string) {
+func (this *Publisher) PublishItem(from string, to string)  {
     if file.IsFile(from) {
         this.PublishFile(from, to)
     } else if file.IsDir(from) {
         this.PublishDirectory(from, to)
+    } else {
+        fmt.Println("不能够定位目录: <" + color.Yellow(from) + ">")
     }
-
-    fmt.Println("不能够定位目录: <" + color.Yellow(from) + ">")
 }
 
 // 推送文件

@@ -77,10 +77,8 @@ func (this *Publish) AddPublishGroup(group string, paths map[string]string) *Pub
         this.PublishGroups[group] = make(map[string]string)
     }
 
-    for _, pv := range paths {
-        for gk := range this.PublishGroups[group] {
-            this.PublishGroups[group][gk] = pv
-        }
+    for pk, pv := range paths {
+        this.PublishGroups[group][pk] = pv
     }
 
     return this
@@ -89,8 +87,7 @@ func (this *Publish) AddPublishGroup(group string, paths map[string]string) *Pub
 // PathsToPublish
 func (this *Publish) PathsToPublish(provider string, group string) map[string]string {
     paths := this.PathsForProviderOrGroup(provider, group)
-
-    if len(paths) > 0 {
+    if paths != nil {
         return paths
     }
 
@@ -107,8 +104,6 @@ func (this *Publish) PathsToPublish(provider string, group string) map[string]st
 
 // PathsForProviderOrGroup
 func (this *Publish) PathsForProviderOrGroup(provider string, group string) map[string]string {
-    dataMap := make(map[string]string)
-
     if provider != "" && group != "" {
         return this.PathsForProviderAndGroup(provider, group)
     } else if group != "" {
@@ -121,7 +116,7 @@ func (this *Publish) PathsForProviderOrGroup(provider string, group string) map[
         }
     }
 
-    return dataMap
+    return nil
 }
 
 // PathsForProviderAndGroup
@@ -170,6 +165,8 @@ func (this *Publish) PublishableGroups() []string {
 
 // 反射获取结构体名称
 func (this *Publish) GetStructName(name interface{}) string {
-    return reflect.TypeOf(name).String()
+    elem := reflect.TypeOf(name).Elem()
+
+    return elem.PkgPath() + "/" + elem.Name()
 }
 
