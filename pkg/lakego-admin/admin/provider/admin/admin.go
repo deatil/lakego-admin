@@ -4,6 +4,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/facade/config"
+    pathTool "github.com/deatil/lakego-admin/lakego/support/path"
     routerFacade "github.com/deatil/lakego-admin/lakego/facade/router"
 
     "github.com/deatil/lakego-admin/admin/support/url"
@@ -81,6 +82,9 @@ func (this *ServiceProvider) Register() {
 
     // 路由
     this.loadRoute()
+
+    // 推送配置
+    this.publishConfig()
 }
 
 /**
@@ -179,3 +183,17 @@ func (this *ServiceProvider) loadMiddleware() {
     }
 }
 
+/**
+ * 推送配置
+ */
+func (this *ServiceProvider) publishConfig() {
+    // 配置
+    path := pathTool.FormatPath("{root}/pkg/lakego-admin/admin/config/admin.yml")
+
+    // 推送文件
+    // > go run main.go lakego:publish --tag=admin-config --force
+    toPath := pathTool.FormatPath("{root}/config/admin-dev.yml")
+    this.Publishes(this, map[string]string{
+        path: toPath,
+    }, "admin-config")
+}
