@@ -104,16 +104,22 @@ func (this *Publish) PathsToPublish(provider string, group string) map[string]st
 
 // PathsForProviderOrGroup
 func (this *Publish) PathsForProviderOrGroup(provider string, group string) map[string]string {
+    dataMap := make(map[string]string)
+
     if provider != "" && group != "" {
         return this.PathsForProviderAndGroup(provider, group)
     } else if group != "" {
         if publishGroupsData, ok := this.PublishGroups[group]; ok {
             return publishGroupsData
         }
+
+        return dataMap
     } else if provider != "" {
         if publishesData, ok := this.Publishes[provider]; ok {
             return publishesData
         }
+
+        return dataMap
     }
 
     return nil

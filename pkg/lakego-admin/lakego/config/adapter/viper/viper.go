@@ -17,9 +17,12 @@ import (
  * @author deatil
  */
 type Viper struct {
-   adapter.Adapter
+    adapter.Adapter
 
-   conf *viper.Viper
+    conf *viper.Viper
+
+    // 路径
+    path string
 }
 
 // 设置读取文件
@@ -27,46 +30,6 @@ func (this *Viper) Init() {
     conf := viper.New()
 
     this.conf = conf
-}
-
-// 设置文件夹
-func (this *Viper) WithPath(path string) {
-    // 配置文件所在目录
-    this.conf.AddConfigPath(path)
-}
-
-// 要读取的文件
-func (this *Viper) WithFile(fileName ...string) {
-    // 设置根目录
-    this.conf.AddConfigPath(".")
-
-    // 需要读取的文件名,默认为：config
-    if len(fileName) > 0 {
-        this.conf.SetConfigName(fileName[0])
-
-        // 导入自定义配置
-        configFiles := adapter.NewPathInstance().GetPath(fileName[0])
-        if len(configFiles) > 0 {
-            for _, configFile := range configFiles {
-                // 指定配置文件路径
-                this.conf.SetConfigFile(path.FormatPath(configFile))
-            }
-        }
-    } else {
-        this.conf.SetConfigName("config")
-    }
-
-    // 设置配置文件类型(后缀)为 yml
-    if len(fileName) > 1 {
-        this.conf.SetConfigType(fileName[1])
-    } else {
-        this.conf.SetConfigType("yml")
-    }
-
-    // 配置里读取
-    if err := this.conf.ReadInConfig(); err != nil {
-        panic("配置初始化失败：" + err.Error())
-    }
 
     // 环境变量
     this.conf.AutomaticEnv()
@@ -74,13 +37,65 @@ func (this *Viper) WithFile(fileName ...string) {
 
     // 环境变量前缀
     this.conf.SetEnvPrefix("APP")
+}
 
-    // 事件
-    this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
-        if changeEvent.Op.String() == "WRITE" {
-            //
+// 设置文件夹
+func (this *Viper) WithPath(path string) {
+    // 配置文件所在目录
+    this.path = path
+}
+
+// 配置路径
+func (this *Viper) WithConfigName(path string, name string, typ string) {
+    // 配置文件所在目录
+    this.conf.AddConfigPath(path)
+
+    this.conf.SetConfigName(name)
+
+    this.conf.SetConfigType(typ)
+
+    // 合并配置
+    this.conf.MergeInConfig()
+}
+
+// 配置文件
+func (this *Viper) WithConfigFile(file string) {
+    // 指定配置文件路径
+    this.conf.SetConfigFile(path.FormatPath(file))
+
+    // 合并配置
+    this.conf.MergeInConfig()
+}
+
+// 要读取的文件
+func (this *Viper) WithFile(fileName ...string) {
+    /*
+    // 配置里读取
+    if err := this.conf.ReadInConfig(); err != nil {
+        panic("配置初始化失败：" + err.Error())
+    }
+    */
+
+    // 设置配置文件类型(后缀)为 yml
+    nameType := ""
+    if len(fileName) > 1 {
+        nameType = fileName[1]
+    } else {
+        nameType = "yml"
+    }
+
+    if len(fileName) > 0 {
+        // 导入自定义配置
+        configFiles := adapter.NewPathInstance().GetPath(fileName[0])
+        if len(configFiles) > 0 {
+            for _, configFile := range configFiles {
+                // 指定配置文件路径
+                this.WithConfigFile(path.FormatPath(configFile))
+            }
         }
-    })
+
+        this.WithConfigName(this.path, fileName[0], nameType)
+    }
 
     this.conf.WatchConfig()
 }
@@ -179,4 +194,12 @@ func (this *Viper) OnConfigChange(f func(string)) {
         opString := changeEvent.Op.String()
         f(opString)
     })
+
+    /*
+    this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
+        if changeEvent.Op.String() == "WRITE" {
+            //
+        }
+    })
+    */
 }

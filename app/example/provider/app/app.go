@@ -98,10 +98,12 @@ func (this *ServiceProvider) loadRoute() {
         engine.GET("/example", func(ctx *gin.Context) {
             // 测试自定义配置数据
             exampleData := config.New("example").GetString("Default")
+            exampleData2 := config.New("example").GetString("Default2")
 
             ctx.JSON(200, gin.H{
                 "data": "例子显示信息",
                 "exampleData": exampleData,
+                "exampleData2": exampleData2,
             })
         })
     })
