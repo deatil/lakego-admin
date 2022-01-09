@@ -2,15 +2,13 @@ package render
 
 import (
     "path"
-    "strings"
+    "path/filepath"
     "net/http"
 
     "github.com/flosch/pongo2/v4"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-gonic/gin/render"
-
-    "github.com/deatil/lakego-admin/lakego/view"
 )
 
 // TemplatePath html files path
@@ -19,8 +17,6 @@ func TemplatePath(tmplDir string) *PongoRender {
         TmplDir: tmplDir,
     }
 }
-
-var HintPathDelimiter string = "::"
 
 // PongoRender struct init
 type PongoRender struct {
@@ -32,11 +28,14 @@ func (p *PongoRender) Instance(name string, data interface{}) render.Render {
     var template *pongo2.Template
     var fileName string
 
-    // 判断
-    if strings.Contains(name, HintPathDelimiter) {
-        fileName = view.NewViewFinderInstance().Find(name)
-    } else {
+    // 判断相对路径
+    if !filepath.IsAbs(name) {
         fileName = path.Join(p.TmplDir, name)
+
+        // 相对路径
+        fileName, _ = filepath.Abs(fileName)
+    } else {
+        fileName = name
     }
 
     if gin.Mode() == gin.DebugMode {
@@ -59,14 +58,26 @@ type PongoHTML struct {
     Data     interface{}
 }
 
-// Render for gin interface  render override
+// 输出
 func (p *PongoHTML) Render(w http.ResponseWriter) error {
     p.WriteContentType(w)
 
+    // 数据兼容处理
     data := pongo2.Context{}
     switch p.Data.(type) {
-        case map[string]string:
-            for k, v := range p.Data.(map[string]string) {
+        // 兼容通用数据
+        case map[string]interface{}:
+            for k, v := range p.Data.(map[string]interface{}) {
+                data[k] = v
+            }
+        // 兼容 gin 数据
+        case gin.H:
+            for k, v := range p.Data.(gin.H) {
+                data[k] = v
+            }
+        // 兼容 pongo2 数据
+        case pongo2.Context:
+            for k, v := range p.Data.(pongo2.Context) {
                 data[k] = v
             }
     }

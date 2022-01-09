@@ -25,6 +25,9 @@ type ServiceProvider struct {
 func (this *ServiceProvider) Register() {
     // 脚本
     this.loadCommand()
+
+    // 模板渲染
+    this.loadHtmlRender()
 }
 
 /**
@@ -38,6 +41,6 @@ func (this *ServiceProvider) loadCommand() {
 /**
  * 导入模板渲染
  */
-func (this *ServiceProvider) loadRender() {
+func (this *ServiceProvider) loadHtmlRender() {
     route.New().Get().HTMLRender = view.New().GetRender()
 }

@@ -38,7 +38,7 @@ func Html(name string, once ...bool) *html.Html {
     // 获取适配器配置
     adapterConfig, ok := adapters[name]
     if !ok {
-        panic("视图适配器 " + name + " 配置不存在")
+        panic("视图适配器[" + name + "]配置不存在")
     }
 
     // 配置
@@ -49,7 +49,7 @@ func Html(name string, once ...bool) *html.Html {
         NewManagerWithPrefix("view").
         GetRegister(adapterType, adapterConf, once...)
     if adapter == nil {
-        panic("视图适配器 " + adapterType + " 没有被注册")
+        panic("视图适配器[" + adapterType + "]没有被注册")
     }
 
     a := html.New(adapter.(interfaces.Adapter))
@@ -59,7 +59,7 @@ func Html(name string, once ...bool) *html.Html {
 
 // 默认适配器
 func GetDefaultAdapter() string {
-    return config.New("database").GetString("Default")
+    return config.New("view").GetString("DefaultAdapter")
 }
 
 // 注册

@@ -38,6 +38,41 @@ func MountManager(filesystems ...map[string]interface{}) *filesystem.MountManage
     return filesystem.NewMountManager(filesystems...)
 }
 
+func Disk(name string, once ...bool) *storage.Storage {
+    // 磁盘列表
+    disks := config.New("filesystem").GetStringMap("Disks")
+
+    // 获取驱动配置
+    diskConfig, ok := disks[name]
+    if !ok {
+        panic("文件管理器[" + name + "]配置不存在")
+    }
+
+    // 配置
+    diskConf := diskConfig.(map[string]interface{})
+
+    // 获取驱动磁盘
+    diskType := diskConf["type"].(string)
+    driver := register.
+        NewManagerWithPrefix("database").
+        GetRegister(diskType, diskConf, once...)
+    if driver == nil {
+        panic("文件管理器驱动[" + diskType + "]没有被注册")
+    }
+
+    // 磁盘
+    disk := filesystem.New(driver.(interfaces.Adapter), diskConf)
+
+    // 使用自定义文件管理器
+    disk2 := storage.NewWithFllesystem(disk.(*filesystem.Fllesystem))
+
+    return disk2
+}
+
+func GetDefaultDisk() string {
+    return config.New("filesystem").GetString("Default")
+}
+
 // 注册磁盘
 func Register() {
     once.Do(func() {
@@ -58,39 +93,4 @@ func Register() {
                 return driver
             })
     })
-}
-
-func Disk(name string, once ...bool) *storage.Storage {
-    // 磁盘列表
-    disks := config.New("filesystem").GetStringMap("Disks")
-
-    // 获取驱动配置
-    diskConfig, ok := disks[name]
-    if !ok {
-        panic("文件管理器 " + name + " 配置不存在")
-    }
-
-    // 配置
-    diskConf := diskConfig.(map[string]interface{})
-
-    // 获取驱动磁盘
-    diskType := diskConf["type"].(string)
-    driver := register.
-        NewManagerWithPrefix("database").
-        GetRegister(diskType, diskConf, once...)
-    if driver == nil {
-        panic("文件管理器驱动 " + diskType + " 没有被注册")
-    }
-
-    // 磁盘
-    disk := filesystem.New(driver.(interfaces.Adapter), diskConf)
-
-    // 使用自定义文件管理器
-    disk2 := storage.NewWithFllesystem(disk.(*filesystem.Fllesystem))
-
-    return disk2
-}
-
-func GetDefaultDisk() string {
-    return config.New("filesystem").GetString("Default")
 }

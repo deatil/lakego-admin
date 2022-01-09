@@ -73,6 +73,11 @@ func ErrorWithData(ctx *router.Context, msg string, dataCode int, data interface
     New().ErrorWithData(ctx, msg, dataCode, data)
 }
 
+// 返回页面
+func Fetch(ctx *router.Context, template string, obj interface{}, httpCode ...int) {
+    New().Fetch(ctx, template, obj, httpCode...)
+}
+
 /**
  * 响应
  *

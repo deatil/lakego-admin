@@ -43,7 +43,7 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
     // 获取配置
     driverConfig, ok := drivers[driverName]
     if !ok {
-        log.Print("日志驱动 " + driverName + " 配置不存在")
+        log.Print("日志驱动[" + driverName + "]配置不存在")
     }
 
     // 驱动配置
@@ -54,7 +54,7 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
         NewManagerWithPrefix("logger").
         GetRegister(driverType, driverConf, once...)
     if driver == nil {
-        log.Print("日志驱动 " + driverType + " 没有被注册")
+        log.Print("日志驱动[" + driverType + "]没有被注册")
     }
 
     return logger.New(driver.(interfaces.Driver))

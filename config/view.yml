@@ -2,11 +2,11 @@
 Paths: ["{root}/resources/view"]
 
 # 默认适配器
-DefaultAdapter: "pong2"
+DefaultAdapter: "pongo2"
 
 # 适配器列表
 Adapters:
-  Pong2:
-    Type: "pong2"
+  Pongo2:
+    Type: "pongo2"
     # 模板根目录
     TmplDir: "{root}/resources/view"

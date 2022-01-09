@@ -4,7 +4,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-admin/lakego/provider"
-    "github.com/deatil/lakego-admin/lakego/facade/config"
+    fileTool "github.com/deatil/lakego-admin/lakego/support/file"
     pathTool "github.com/deatil/lakego-admin/lakego/support/path"
     providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
 
@@ -53,9 +53,14 @@ func (this *ServiceProvider) loadCommand() {
  * 导入配置
  */
 func (this *ServiceProvider) loadSetting() {
-    // 配置
-    path := pathTool.FormatPath("{root}/app/example/config/example.yml")
-    this.MergeConfigFrom(path, "example")
+    // 合并配置
+    toDefaultFile := pathTool.FormatPath("{root}/config/default/example.yml")
+    if fileTool.IsExist(toDefaultFile) {
+        this.MergeConfigFrom(toDefaultFile, "example")
+    }
+
+    configFile := pathTool.FormatPath("{root}/app/example/resources/config/example.yml")
+    toConfigFile := pathTool.FormatPath("{root}/config/example.yml")
 
     // 推送已注册的全部
     // > go run main.go lakego:publish --all
@@ -65,23 +70,23 @@ func (this *ServiceProvider) loadSetting() {
 
     // 推送文件
     // > go run main.go lakego:publish --tag=example-config --force
-    toPath := pathTool.FormatPath("{root}/config/example.yml")
     this.Publishes(this, map[string]string{
-        path: toPath,
+        configFile: toConfigFile,
+        // configFile: toDefaultFile,
     }, "example-config")
 
+    // 视图
+    viewPath := pathTool.FormatPath("{root}/app/example/resources/view")
+    toViewPath := pathTool.FormatPath("{root}/resources/view/example")
+
     // 推送文件夹
-    // > go run main.go lakego:publish --tag=example-configs --force
-    fromDir := pathTool.FormatPath("{root}/app/example/config/data")
-    toDir := pathTool.FormatPath("{root}/config/data")
+    // > go run main.go lakego:publish --tag=example-view --force
     this.Publishes(this, map[string]string{
-        fromDir: toDir,
-    }, "example-configs")
+        viewPath: toViewPath,
+    }, "example-view")
 
     // 视图
-    viewPath := "{root}/app/example/resources/view"
-    viewPath = pathTool.FormatPath(viewPath)
-    this.LoadViewsFrom(viewPath, "example")
+    this.LoadViewsFrom(toViewPath, "example")
 }
 
 /**
@@ -95,17 +100,7 @@ func (this *ServiceProvider) loadRoute() {
 
     // 常规 gin 路由，除 gin 自带外没有任何中间件
     this.AddRoute(func(engine *gin.Engine) {
-        engine.GET("/example", func(ctx *gin.Context) {
-            // 测试自定义配置数据
-            exampleData := config.New("example").GetString("Default")
-            exampleData2 := config.New("example").GetString("Default2")
-
-            ctx.JSON(200, gin.H{
-                "data": "例子显示信息",
-                "exampleData": exampleData,
-                "exampleData2": exampleData2,
-            })
-        })
+        router.GinRoute(engine)
     })
 }
 

@@ -138,7 +138,7 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
     // 获取驱动配置
     driverConfig, ok := crypts[name]
     if !ok {
-        panic("签名驱动 " + name + " 配置不存在")
+        panic("签名驱动[" + name + "]配置不存在")
     }
 
     // 配置
@@ -149,7 +149,7 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
         NewManagerWithPrefix("sign").
         GetRegister(driverType, driverConf)
     if driver == nil {
-        panic("签名驱动 " + driverType + " 没有被注册")
+        panic("签名驱动[" + driverType + "]没有被注册")
     }
 
     return driver.(interfaces.Driver), driverConf

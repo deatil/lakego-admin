@@ -44,7 +44,7 @@ func Cache(name string, once ...bool) interfaces.Cache {
     // 获取驱动配置
     driverConfig, ok := caches[name]
     if !ok {
-        panic("缓存驱动 " + name + " 配置不存在")
+        panic("缓存驱动[" + name + "]配置不存在")
     }
 
     // 配置
@@ -55,7 +55,7 @@ func Cache(name string, once ...bool) interfaces.Cache {
         NewManagerWithPrefix("cache").
         GetRegister(driverType, driverConf, once...)
     if driver == nil {
-        panic("缓存驱动 " + driverType + " 没有被注册")
+        panic("缓存驱动[" + driverType + "]没有被注册")
     }
 
     c := cache.New(driver.(interfaces.Driver), driverConf)

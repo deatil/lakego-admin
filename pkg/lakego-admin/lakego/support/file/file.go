@@ -305,24 +305,14 @@ func CopyFile(src, dest string) (w int64, err error) {
     }
     defer srcFile.Close()
 
-    // 分割path目录
-    destSplitPathDirs := strings.Split(dest, "/")
+    // 文件目录
+    destPath, _ := filepath.Split(dest)
 
-    // 检测时候存在目录
-    destSplitPath := ""
-    for index, dir := range destSplitPathDirs {
-        if index < len(destSplitPathDirs) - 1 {
-            destSplitPath = destSplitPath + dir + "/"
-            b, _ := PathExists(destSplitPath)
-            if b == false {
-                // 创建目录
-                err = os.Mkdir(destSplitPath, os.ModePerm)
-                if err != nil {
-                    w = 0
-                    return
-                }
-            }
-        }
+    // 创建目录
+    err = os.MkdirAll(destPath, os.ModePerm)
+    if err != nil {
+        w = 0
+        return
     }
 
     dstFile, err := os.Create(dest)

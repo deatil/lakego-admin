@@ -49,7 +49,7 @@ func NewConfig(name string, once ...bool) *config.Config {
         NewManagerWithPrefix("config").
         GetRegister(name, nil, once...)
     if adapter == nil {
-        panic("配置驱动 " + name + " 没有被注册")
+        panic("配置驱动[" + name + "]没有被注册")
     }
 
     conf := &config.Config{}

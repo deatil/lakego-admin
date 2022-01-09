@@ -39,22 +39,6 @@ func NewWithDisk(disk string, once ...bool) *permission.Permission {
     return Permission(disk, once...)
 }
 
-// 注册
-func Register() {
-    once.Do(func() {
-        // 注册可用驱动
-        register.
-            NewManagerWithPrefix("permission").
-            Register("gorm", func(conf map[string]interface{}) interface{} {
-                newDb := database.New()
-
-                a, _ := gormAdapter.NewAdapterByDB(newDb)
-
-                return a
-            })
-    })
-}
-
 func Permission(name string, once ...bool) *permission.Permission {
     // 列表
     adapters := config.New("permission").GetStringMap("Adapters")
@@ -62,7 +46,7 @@ func Permission(name string, once ...bool) *permission.Permission {
     // 获取驱动配置
     adapterConfig, ok := adapters[name]
     if !ok {
-        panic("权限适配器[ " + name + " ]配置不存在")
+        panic("权限适配器[" + name + "]配置不存在")
     }
 
     // 配置
@@ -74,7 +58,7 @@ func Permission(name string, once ...bool) *permission.Permission {
         NewManagerWithPrefix("permission").
         GetRegister(permissionType, permissionConfig, once...)
     if adapter == nil {
-        panic("权限适配器驱动[ " + permissionType + " ]没有被注册")
+        panic("权限适配器驱动[" + permissionType + "]没有被注册")
     }
 
     // 配置文件路径
@@ -92,4 +76,20 @@ func Permission(name string, once ...bool) *permission.Permission {
 
 func GetDefaultAdapter() string {
     return config.New("permission").GetString("Default")
+}
+
+// 注册
+func Register() {
+    once.Do(func() {
+        // 注册可用驱动
+        register.
+            NewManagerWithPrefix("permission").
+            Register("gorm", func(conf map[string]interface{}) interface{} {
+                newDb := database.New()
+
+                a, _ := gormAdapter.NewAdapterByDB(newDb)
+
+                return a
+            })
+    })
 }

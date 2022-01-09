@@ -31,7 +31,7 @@ func NewViewFinder() *ViewFinder {
             "htm",
             "php",
             "css",
-            "htmhtml",
+            "html",
         },
     }
 }
@@ -123,6 +123,10 @@ func (this *ViewFinder) FindInPaths(name string, paths []string) string {
         for _, pathV := range paths {
             for _, file := range this.GetPossibleViewFiles(name) {
                 viewPath := path.Join(pathV, file)
+                if !filepath.IsAbs(viewPath) {
+                    viewPath, _ = filepath.Abs(viewPath)
+                }
+
                 if this.FileExist(viewPath) {
                     return viewPath
                 }

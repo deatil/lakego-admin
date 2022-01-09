@@ -51,7 +51,7 @@ func Database(name string, once ...bool) *gorm.DB {
     // 获取驱动配置
     driverConfig, ok := connections[name]
     if !ok {
-        panic("数据库驱动 " + name + " 配置不存在")
+        panic("数据库驱动[" + name + "]配置不存在")
     }
 
     // 配置
@@ -62,7 +62,7 @@ func Database(name string, once ...bool) *gorm.DB {
         NewManagerWithPrefix("database").
         GetRegister(driverType, driverConf, once...)
     if driver == nil {
-        panic("数据库驱动 " + driverType + " 没有被注册")
+        panic("数据库驱动[" + driverType + "]没有被注册")
     }
 
     d := database.New(driver.(interfaces.Driver), driverConf)
@@ -95,7 +95,7 @@ func GetConfig(key string, typ ...string) interface{} {
     // 获取驱动配置
     driverConfig, ok := connections[name]
     if !ok {
-        panic("数据库驱动 " + name + " 配置不存在")
+        panic("数据库驱动[" + name + "]配置不存在")
     }
 
     // 配置

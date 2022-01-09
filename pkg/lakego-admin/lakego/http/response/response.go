@@ -2,10 +2,10 @@ package response
 
 import (
     "io"
+    "strings"
     "net/http"
 
     "github.com/deatil/lakego-admin/lakego/router"
-    "github.com/deatil/lakego-admin/lakego/support/file"
     viewFetch "github.com/deatil/lakego-admin/lakego/view"
 )
 
@@ -88,7 +88,8 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
 
 // 渲染模板
 func (this *Response) Fetch(template string, obj interface{}) {
-    if ok, _ := file.PathExists(template); !ok {
+    hintPathDelimiter := "::"
+    if strings.Contains(template, hintPathDelimiter) {
         template = viewFetch.NewViewFinderInstance().Find(template)
     }
 

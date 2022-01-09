@@ -49,7 +49,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     // 获取配置
     storeConfig, ok := stores[storeName]
     if !ok {
-        panic("验证码存储驱动 " + storeName + " 配置不存在")
+        panic("验证码存储驱动[" + storeName + "]配置不存在")
     }
 
     // 配置
@@ -60,7 +60,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
         NewManagerWithPrefix("captcha-store").
         GetRegister(storeType, storeConf, once...)
     if store == nil {
-        panic("验证码存储驱动 " + storeType + " 没有被注册")
+        panic("验证码存储驱动[" + storeType + "]没有被注册")
     }
 
     // 驱动列表
@@ -69,7 +69,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     // 获取配置
     driverConfig, ok := drivers[driverName]
     if !ok {
-        panic("验证码驱动 " + driverName + " 配置不存在")
+        panic("验证码驱动[" + driverName + "]配置不存在")
     }
 
     // 驱动配置
@@ -80,7 +80,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
         NewManagerWithPrefix("captcha-driver").
         GetRegister(driverType, driverConf, once...)
     if driver == nil {
-        panic("验证码驱动 " + driverType + " 没有被注册")
+        panic("验证码驱动[" + driverType + "]没有被注册")
     }
 
     return captcha.New(driver.(interfaces.Driver), store.(interfaces.Store))
