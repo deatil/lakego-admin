@@ -116,7 +116,7 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
     paths := config.New("view").GetStringSlice("Paths")
     if len(paths) > 0 {
         for _, viewPath := range paths {
-            appPath := viewPath + "/pkg/" + namespace
+            appPath := pathTool.FormatPath(viewPath) + "/pkg/" + namespace
 
             if exists, _ := file.PathExists(appPath); exists {
                 viewFinder.AddNamespace(namespace, []string{appPath})

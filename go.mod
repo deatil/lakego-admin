@@ -13,6 +13,7 @@ require (
 	github.com/deatil/go-filesystem v0.0.3
 	github.com/deatil/lakego-admin v0.0.3
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

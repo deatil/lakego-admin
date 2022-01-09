@@ -4,6 +4,7 @@ import (
     "os"
     "sync"
     "strings"
+    "path"
     "path/filepath"
 )
 
@@ -26,7 +27,12 @@ func NewViewFinder() *ViewFinder {
         Paths: make(PathsArray, 0),
         Views: make(ViewsMap),
         Hints: make(HintsMap),
-        Extensions: make(ExtensionsArray, 0),
+        Extensions: ExtensionsArray{
+            "htm",
+            "php",
+            "css",
+            "htmhtml",
+        },
     }
 }
 
@@ -114,9 +120,9 @@ func (this *ViewFinder) ParseNamespaceSegments(name string) []string {
 // 在目录里查找文件
 func (this *ViewFinder) FindInPaths(name string, paths []string) string {
     if len(paths) > 0 {
-        for _, path := range paths {
+        for _, pathV := range paths {
             for _, file := range this.GetPossibleViewFiles(name) {
-                viewPath := path + "/" + file
+                viewPath := path.Join(pathV, file)
                 if this.FileExist(viewPath) {
                     return viewPath
                 }

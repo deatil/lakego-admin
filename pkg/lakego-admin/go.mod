@@ -2,9 +2,7 @@ module github.com/deatil/lakego-admin
 
 go 1.16
 
-replace (
-	github.com/deatil/go-filesystem => ./../go-filesystem
-)
+replace github.com/deatil/go-filesystem => ./../go-filesystem
 
 require (
 	github.com/casbin/casbin/v2 v2.37.4
@@ -31,6 +29,7 @@ require (
 require (
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
 	github.com/fatih/color v1.13.0 // indirect
+	github.com/flosch/pongo2/v4 v4.0.2 // indirect
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
