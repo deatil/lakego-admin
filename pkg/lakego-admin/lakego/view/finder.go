@@ -142,7 +142,7 @@ func (this *ViewFinder) GetPossibleViewFiles(name string) []string {
     nameArray := make([]string, 0)
     if len(this.Extensions) > 0 {
         for _, ext := range this.Extensions {
-            nameArray = append(nameArray, strings.ReplaceAll(name, "/", ".") + "." + ext)
+            nameArray = append(nameArray, strings.ReplaceAll(name, ".", "/") + "." + ext)
         }
     }
 

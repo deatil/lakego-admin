@@ -24,3 +24,12 @@ func (this *Data) Index(ctx *gin.Context) {
         "msg": "测试数据",
     })
 }
+
+/**
+ * 信息2
+ */
+func (this *Data) Show(ctx *gin.Context) {
+    this.Fetch(ctx, "example::show.index", map[string]interface{}{
+        "msg": "测试数据",
+    })
+}

@@ -36,4 +36,5 @@ func GinRoute(engine *gin.Engine) {
     // 数据
     dataController := new(controller.Data)
     engine.GET("/example/data/index", dataController.Index)
+    engine.GET("/example/data/show", dataController.Show)
 }
