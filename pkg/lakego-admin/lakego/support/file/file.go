@@ -308,11 +308,14 @@ func CopyFile(src, dest string) (w int64, err error) {
     // 文件目录
     destPath, _ := filepath.Split(dest)
 
-    // 创建目录
-    err = os.MkdirAll(destPath, os.ModePerm)
-    if err != nil {
-        w = 0
-        return
+    // 目录不存在时
+    if ok, _ := PathExists(destPath); !ok {
+        // 创建目录
+        err = os.MkdirAll(destPath, os.ModePerm)
+        if err != nil {
+            w = 0
+            return
+        }
     }
 
     dstFile, err := os.Create(dest)
