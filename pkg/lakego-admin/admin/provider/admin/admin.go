@@ -192,7 +192,7 @@ func (this *ServiceProvider) publishConfig() {
 
     // 推送文件
     // > go run main.go lakego:publish --tag=admin-config --force
-    toPath := pathTool.FormatPath("{root}/config/admin-dev.yml")
+    toPath := pathTool.ConfigPath("/admin-dev.yml")
     this.Publishes(this, map[string]string{
         path: toPath,
     }, "admin-config")

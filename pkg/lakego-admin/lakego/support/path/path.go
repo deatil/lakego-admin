@@ -2,6 +2,7 @@ package path
 
 import (
     "os"
+    "reflect"
     "strings"
     "path/filepath"
 )
@@ -33,12 +34,77 @@ func FormatPath(path string) string {
         path = strings.TrimPrefix(path, "{root}")
         path = basePath + "/" + strings.TrimPrefix(path, "/")
 
-        // 格式化正常重设
+        // 格式化为正常
         newPath, err := filepath.Abs(path)
         if err == nil {
             path = newPath
         }
     }
+
+    return path
+}
+
+// 根目录
+func RootPath(path string) string {
+    rootPath := "{root}"
+
+    if path != "" {
+        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    }
+
+    return FormatPath(rootPath)
+}
+
+// app 目录
+func AppPath(path string) string {
+    rootPath := "/app"
+
+    if path != "" {
+        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    }
+
+    return RootPath(rootPath)
+}
+
+// 配置目录
+func ConfigPath(path string) string {
+    rootPath := "/config"
+
+    if path != "" {
+        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    }
+
+    return RootPath(rootPath)
+}
+
+// 运行时目录
+func RuntimePath(path string) string {
+    rootPath := "/runtime"
+
+    if path != "" {
+        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    }
+
+    return RootPath(rootPath)
+}
+
+// 存储目录
+func StoragePath(path string) string {
+    rootPath := "/storage"
+
+    if path != "" {
+        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    }
+
+    return RootPath(rootPath)
+}
+
+// 反射获取结构体路径
+func StructNaPkgPath(name interface{}) string {
+    elem := reflect.TypeOf(name).Elem()
+
+    path := strings.TrimSuffix(elem.PkgPath(), "/")
+    path = strings.TrimSuffix(path, "\\")
 
     return path
 }
