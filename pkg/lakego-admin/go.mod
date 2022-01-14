@@ -28,7 +28,7 @@ require (
 
 require (
 	github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 // indirect
-	github.com/fatih/color v1.9.0
+	github.com/fatih/color v1.13.0
 	github.com/flosch/pongo2/v4 v4.0.2
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
