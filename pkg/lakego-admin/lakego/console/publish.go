@@ -3,6 +3,7 @@ package console
 import (
     "os"
     "fmt"
+    "sort"
     "strings"
     "path/filepath"
 
@@ -31,7 +32,10 @@ var PublishCmd = &command.Command{
     PreRun: func(cmd *command.Command, args []string) {
     },
     Run: func(cmd *command.Command, args []string) {
-        publisher := &Publisher{}
+        publisher := &Publisher{
+            provider: "",
+            tags: make([]string, 0),
+        }
         publisher.Execute()
     },
 }
@@ -56,18 +60,104 @@ func init() {
  * @create 2022-1-3
  * @author deatil
  */
-type Publisher struct {}
+type Publisher struct {
+    // 服务提供者
+    provider string
+
+    // 标签
+    tags []string
+}
 
 // 运行
 func (this *Publisher) Execute() {
-    if !pAll && pProvider == "" && pTag == "" {
-        fmt.Println("请选择一个推送方式推送")
+    this.determineWhatShouldBePublished()
+
+    if pAll || this.provider != "" || this.tags[0] != "" {
+        if len(this.tags) == 0 {
+            this.tags = []string{""}
+        }
+
+        for _, tag := range this.tags {
+            this.PublishTag(tag)
+        }
+    }
+
+    fmt.Println("文件推送完成")
+}
+
+// determineWhatShouldBePublished
+func (this *Publisher) determineWhatShouldBePublished() {
+    if pAll {
         return
     }
 
-    this.PublishTag(pTag)
+    this.provider = pProvider
+    this.tags = []string{pTag}
 
-    fmt.Println("文件推送完成")
+    if pProvider == "" && pTag == "" {
+        this.promptForProviderOrTag()
+    }
+}
+
+// promptForProviderOrTag
+func (this *Publisher) promptForProviderOrTag() {
+    fmt.Println("哪些是你想要推送的 provider 或者 tag 文件？")
+
+    choices := this.publishableChoices()
+    for k, v := range choices {
+        fmt.Println(fmt.Sprintf("[%d]%s", k, v))
+    }
+
+    var choice int
+    fmt.Scanln(&choice)
+
+    if choice == 0 {
+        return
+    }
+
+    if choice > len(choices) - 1 {
+        return
+    }
+
+    this.parseChoice(choices[choice])
+}
+
+// publishableChoices
+func (this *Publisher) publishableChoices() []string {
+    var choices []string
+
+    choices = append(choices, "能够推送的 providers 和 tags 列表")
+
+    providers := publish.NewInstance().PublishableProviders()
+    sort.Strings(providers[:])
+    for _, v := range providers {
+        choices = append(choices, "Provider: " + v)
+    }
+
+    groups := publish.NewInstance().PublishableGroups()
+    sort.Strings(groups[:])
+    for _, v2 := range groups {
+        choices = append(choices, "Tag: " + v2)
+    }
+
+    return choices
+}
+
+// parseChoice
+func (this *Publisher) parseChoice(choice string) {
+    choices := strings.Split(choice, ": ")
+    if len(choices) < 2 {
+        return
+    }
+
+    typ := choices[0]
+    value := choices[1]
+
+    if typ == "Provider" {
+        this.provider = value
+    } else if typ == "Tag" {
+        this.tags = []string{value}
+    }
 }
 
 // 标签推送
@@ -89,7 +179,7 @@ func (this *Publisher) PublishTag(tag string) {
 
 // 目录推送
 func (this *Publisher) PathsToPublish(tag string) map[string]string {
-    return publish.NewInstance().PathsToPublish(pProvider, tag)
+    return publish.NewInstance().PathsToPublish(this.provider, tag)
 }
 
 // 不确定类型推送
@@ -147,6 +237,9 @@ func (this *Publisher) Status(from string, to string, typ string) {
 
     from = strings.TrimPrefix(from, path.BasePath())
     to = strings.TrimPrefix(to, path.BasePath())
+
+    from = strings.Replace(from, "\\", "/", -1)
+    to = strings.Replace(to, "\\", "/", -1)
 
     fmt.Println("Copied " + color.Green(typ) + " [" + color.Yellow(from) + "] To [" + color.Yellow(to) + "]")
 }

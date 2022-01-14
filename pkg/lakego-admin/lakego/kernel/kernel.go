@@ -8,6 +8,8 @@ import (
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/provider"
     "github.com/deatil/lakego-admin/lakego/provider/interfaces"
+    lakegoProvider "github.com/deatil/lakego-admin/lakego/service/lakego"
+
     _ "github.com/deatil/lakego-admin/lakego/facade/database"
 )
 
@@ -15,6 +17,9 @@ import (
 func New() *Kernel {
     // 实例化核心
     kernel := &Kernel{}
+
+    // 导入服务提供者
+    kernel.loadDefaultServiceProvider()
 
     return kernel
 }
@@ -72,6 +77,13 @@ func (this *Kernel) RunCmd() {
     if err := rootCmd.Execute(); err != nil {
         os.Exit(-1)
     }
+}
+
+// 默认服务提供者
+func (this *Kernel) loadDefaultServiceProvider() {
+    this.WithServiceProvider(func() interfaces.ServiceProvider {
+        return &lakegoProvider.ServiceProvider{}
+    })
 }
 
 // 添加服务提供者
