@@ -35,33 +35,33 @@ var globalMiddlewares = []router.HandlerFunc{
 // 路由中间件
 var routeMiddlewares = map[string]router.HandlerFunc{
     // 异常处理
-    "lakego.exception": exception.Handler(),
+    "lakego-admin.exception": exception.Handler(),
 
     // token 验证
-    "lakego.auth": authorization.Handler(),
+    "lakego-admin.auth": authorization.Handler(),
 
     // 权限检测
-    "lakego.permission": permission.Handler(),
+    "lakego-admin.permission": permission.Handler(),
 
     // 操作日志
-    "lakego.action-log": actionlog.Handler(),
+    "lakego-admin.action-log": actionlog.Handler(),
 
     // 超级管理员检测
-    "lakego.admin-check": admincheck.Handler(),
+    "lakego-admin.admin-check": admincheck.Handler(),
 }
 
 // 中间件分组
 var middlewareGroups = map[string][]string{
     // 常规中间件
     "lakego-admin": {
-        "lakego.exception",
-        "lakego.auth",
-        "lakego.permission",
-        "lakego.action-log",
+        "lakego-admin.exception",
+        "lakego-admin.auth",
+        "lakego-admin.permission",
+        "lakego-admin.action-log",
     },
     // 超级管理员检测
     "lakego-admin-check": {
-        "lakego.admin-check",
+        "lakego-admin.admin-check",
     },
 }
 

@@ -2,7 +2,6 @@ package path
 
 import (
     "os"
-    "reflect"
     "strings"
     "path/filepath"
 )
@@ -97,14 +96,4 @@ func StoragePath(path string) string {
     }
 
     return RootPath(rootPath)
-}
-
-// 反射获取结构体路径
-func StructNaPkgPath(name interface{}) string {
-    elem := reflect.TypeOf(name).Elem()
-
-    path := strings.TrimSuffix(elem.PkgPath(), "/")
-    path = strings.TrimSuffix(path, "\\")
-
-    return path
 }
