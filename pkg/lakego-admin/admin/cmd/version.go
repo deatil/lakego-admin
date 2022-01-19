@@ -41,9 +41,21 @@ func ShowVersion() {
     release := conf.GetString("Release")
     version := conf.GetString("Version")
 
-    fmt.Println(color.Green("lakego-admin 系统详情"))
-    fmt.Println("系统名称：", color.Green(name))
-    fmt.Println("系统简称：", color.Green(nameMini))
-    fmt.Println("系统编译序号：", color.Green(release))
-    fmt.Println("系统版本号：", color.Green(version))
+    color.Green("lakego-admin 系统详情")
+    fmt.Println("");
+
+    fmt.Print("系统名称：");
+    color.Green(name);
+    fmt.Println("");
+
+    fmt.Print("系统简称：");
+    color.Green(nameMini);
+    fmt.Println("");
+
+    fmt.Print("系统编译序号：");
+    color.Green(release);
+    fmt.Println("");
+
+    fmt.Print("系统版本号：");
+    color.Green(version);
 }

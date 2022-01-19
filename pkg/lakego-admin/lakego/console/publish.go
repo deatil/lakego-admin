@@ -7,7 +7,6 @@ import (
     "strings"
     "path/filepath"
 
-    "github.com/deatil/lakego-admin/lakego/color"
     "github.com/deatil/lakego-admin/lakego/publish"
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/file"
@@ -189,7 +188,7 @@ func (this *Publisher) PublishItem(from string, to string)  {
     } else if file.IsDir(from) {
         this.PublishDirectory(from, to)
     } else {
-        fmt.Println("不能够定位目录: <" + color.Yellow(from) + ">")
+        fmt.Println("不能够定位目录: <" + from + ">")
     }
 }
 
@@ -241,7 +240,7 @@ func (this *Publisher) Status(from string, to string, typ string) {
     from = strings.Replace(from, "\\", "/", -1)
     to = strings.Replace(to, "\\", "/", -1)
 
-    fmt.Println("Copied " + color.Green(typ) + " [" + color.Yellow(from) + "] To [" + color.Yellow(to) + "]")
+    fmt.Println("Copied " + typ + " [" + from + "] To [" + to + "]")
 }
 
 // 判断

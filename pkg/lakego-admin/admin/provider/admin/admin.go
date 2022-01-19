@@ -59,6 +59,7 @@ var middlewareGroups = map[string][]string{
         "lakego-admin.permission",
         "lakego-admin.action-log",
     },
+
     // 超级管理员检测
     "lakego-admin-check": {
         "lakego-admin.admin-check",
