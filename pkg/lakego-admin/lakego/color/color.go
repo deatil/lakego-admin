@@ -3,7 +3,7 @@ package color
 import (
     "os"
     "fmt"
-	"strings"
+    "strings"
 
     "github.com/fatih/color"
 )
@@ -24,10 +24,10 @@ var (
 )
 
 type (
-    LogFunc = func(string, ...interface{})
+    ColorFunc = func(string, ...interface{})
 )
 
-func NewColorFunc(colorname string) LogFunc {
+func NewColorFunc(colorname string) ColorFunc {
     return func(msg string, v ...interface{}) {
         msg = strings.Replace(msg, "\n", "", -1)
         msg = strings.TrimSpace(msg)
