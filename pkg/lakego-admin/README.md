@@ -16,12 +16,33 @@
  - Redis
 
 
+### 截图预览
+
+<table>
+    <tr>
+        <td width="50%">
+            <center>
+                <img alt="登录" src="https://user-images.githubusercontent.com/24578855/151009218-d544fcb1-973d-42e4-a3b0-1ae72ea6a088.png" />
+            </center>
+        </td>
+        <td width="50%">
+            <center>
+                <img alt="控制台" src="https://user-images.githubusercontent.com/24578855/151009276-f80be447-312e-405d-91b9-b22943787d01.png" />
+            </center>
+        </td>
+    </tr>
+</table>
+
+更多截图 
+[Lakego Admin 后台截图](https://github.com/deatil/lakego-admin/issues/1)
+
+
 ### 安装步骤
 
 1. 首先克隆项目到本地
 
 ```
-git clone git@github.com:deatil/lakego-admin.git
+git clone https://github.com/deatil/lakego-admin.git
 ```
 
 2. 然后配置数据库等相关配置，配置位置
@@ -36,13 +57,19 @@ git clone git@github.com:deatil/lakego-admin.git
 go run main.go lakego-admin:install
 ```
 
-4. 权限规则导入，并且你需要自己修改导入的规则层级
+4. 权限规则导入，导入的权限规则需要重新设置层级关系和名称内容
 
 ```go
 go run main.go lakego-admin:import-route
 ```
 
-5. 后台登录账号及密码：`admin` / `123456`
+5. 运行测试
+
+```go
+go run main.go
+```
+
+6. 后台登录账号及密码：`admin` / `123456`
 
 
 ### 特别鸣谢

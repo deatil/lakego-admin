@@ -22,16 +22,19 @@
     <tr>
         <td width="50%">
             <center>
-                <img alt="login" src="" />
+                <img alt="登录" src="https://user-images.githubusercontent.com/24578855/151009218-d544fcb1-973d-42e4-a3b0-1ae72ea6a088.png" />
             </center>
         </td>
         <td width="50%">
             <center>
-                <img alt="index" src="" />
+                <img alt="控制台" src="https://user-images.githubusercontent.com/24578855/151192881-72510e1d-88db-4db3-b730-a741fd981fd7.png" />
             </center>
         </td>
     </tr>
 </table>
+
+更多截图 
+[Lakego Admin 后台截图](https://github.com/deatil/lakego-admin/issues/1)
 
 
 ### 安装步骤
@@ -60,7 +63,13 @@ go run main.go lakego-admin:install
 go run main.go lakego-admin:import-route
 ```
 
-5. 后台登录账号及密码：`admin` / `123456`
+5. 运行测试
+
+```go
+go run main.go
+```
+
+6. 后台登录账号及密码：`admin` / `123456`
 
 
 ### 特别鸣谢

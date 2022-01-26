@@ -24,13 +24,13 @@ type PongoRender struct {
 }
 
 // Instance init
-func (p *PongoRender) Instance(name string, data interface{}) render.Render {
+func (this *PongoRender) Instance(name string, data interface{}) render.Render {
     var template *pongo2.Template
     var fileName string
 
     // 判断相对路径
     if !filepath.IsAbs(name) {
-        fileName = path.Join(p.TmplDir, name)
+        fileName = path.Join(this.TmplDir, name)
 
         // 相对路径
         fileName, _ = filepath.Abs(fileName)
@@ -59,34 +59,40 @@ type PongoHTML struct {
 }
 
 // 输出
-func (p *PongoHTML) Render(w http.ResponseWriter) error {
-    p.WriteContentType(w)
+func (this *PongoHTML) Render(w http.ResponseWriter) error {
+    this.WriteContentType(w)
 
     // 数据兼容处理
     data := pongo2.Context{}
-    switch p.Data.(type) {
+    switch this.Data.(type) {
         // 兼容通用数据
         case map[string]interface{}:
-            for k, v := range p.Data.(map[string]interface{}) {
+            for k, v := range this.Data.(map[string]interface{}) {
                 data[k] = v
             }
+
         // 兼容 gin 数据
         case gin.H:
-            for k, v := range p.Data.(gin.H) {
+            for k, v := range this.Data.(gin.H) {
                 data[k] = v
             }
+
         // 兼容 pongo2 数据
         case pongo2.Context:
-            for k, v := range p.Data.(pongo2.Context) {
+            for k, v := range this.Data.(pongo2.Context) {
                 data[k] = v
             }
+
+        // 不清楚结构直接赋值为 data
+        default:
+            data["data"] = this.Data
     }
 
-    return p.Template.ExecuteWriter(data, w)
+    return this.Template.ExecuteWriter(data, w)
 }
 
 // WriteContentType  for gin interface  WriteContentType override
-func (p *PongoHTML) WriteContentType(w http.ResponseWriter) {
+func (this *PongoHTML) WriteContentType(w http.ResponseWriter) {
     header := w.Header()
     if val := header["Content-Type"]; len(val) == 0 {
         header["Content-Type"] = []string{"text/html; charset=utf-8"}

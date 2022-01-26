@@ -25,7 +25,7 @@ func BasePath() string {
 }
 
 // 格式化文件路径
-func FormatPath(path string) string {
+func formatPath(path string) string {
     if strings.HasPrefix(path, "{root}") {
         // 程序根目录
         basePath := BasePath()
@@ -43,57 +43,86 @@ func FormatPath(path string) string {
     return path
 }
 
-// 根目录
-func RootPath(path string) string {
-    rootPath := "{root}"
-
+// normalizePath
+func normalizePath(rootPath string, path string) string {
     if path != "" {
-        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+        newPath := rootPath + "/" + strings.TrimSuffix(path, "/")
+
+        return newPath
     }
 
-    return FormatPath(rootPath)
+    return rootPath
+}
+
+// 根目录
+func RootPath(path string) string {
+    newPath := normalizePath("{root}", path)
+
+    return formatPath(newPath)
 }
 
 // app 目录
 func AppPath(path string) string {
-    rootPath := "/app"
+    newPath := normalizePath("/app", path)
 
-    if path != "" {
-        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
-    }
-
-    return RootPath(rootPath)
+    return RootPath(newPath)
 }
 
 // 配置目录
 func ConfigPath(path string) string {
-    rootPath := "/config"
+    newPath := normalizePath("/config", path)
 
-    if path != "" {
-        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
-    }
-
-    return RootPath(rootPath)
+    return RootPath(newPath)
 }
 
 // 运行时目录
 func RuntimePath(path string) string {
-    rootPath := "/runtime"
+    newPath := normalizePath("/runtime", path)
 
-    if path != "" {
-        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
-    }
-
-    return RootPath(rootPath)
+    return RootPath(newPath)
 }
 
 // 存储目录
 func StoragePath(path string) string {
-    rootPath := "/storage"
+    newPath := normalizePath("/storage", path)
 
-    if path != "" {
-        rootPath = rootPath + "/" + strings.TrimSuffix(path, "/")
+    return RootPath(newPath)
+}
+
+// 对外目录
+func PublicPath(path string) string {
+    newPath := normalizePath("/public", path)
+
+    return RootPath(newPath)
+}
+
+// 格式化文件路径
+func FormatPath(path string) string {
+    if strings.HasPrefix(path, "{root}") {
+        path = strings.TrimPrefix(path, "{root}")
+        path = RootPath(path)
+
+    } else if strings.HasPrefix(path, "{app}") {
+        path = strings.TrimPrefix(path, "{app}")
+        path = AppPath(path)
+
+    } else if strings.HasPrefix(path, "{config}") {
+        path = strings.TrimPrefix(path, "{config}")
+        path = ConfigPath(path)
+
+    } else if strings.HasPrefix(path, "{runtime}") {
+        path = strings.TrimPrefix(path, "{runtime}")
+        path = RuntimePath(path)
+
+    } else if strings.HasPrefix(path, "{storage}") {
+        path = strings.TrimPrefix(path, "{storage}")
+        path = StoragePath(path)
+
+    } else if strings.HasPrefix(path, "{public}") {
+        path = strings.TrimPrefix(path, "{public}")
+        path = PublicPath(path)
+
     }
 
-    return RootPath(rootPath)
+    return path
 }

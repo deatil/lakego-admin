@@ -342,3 +342,8 @@ func PathExists(path string) (bool, error) {
     return false, err
 }
 
+// 创建软链接
+func Symlink(target, link string) error {
+    return os.Symlink(target, link)
+}
+
