@@ -10,52 +10,18 @@ import (
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
 
+    "github.com/deatil/lakego-admin/lakego/permission/adapter"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     "github.com/deatil/lakego-admin/lakego/support/random"
 )
 
-type Rules struct {
-    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
-    Ptype string `gorm:"size:250;"`
-    V0    string `gorm:"size:250;"`
-    V1    string `gorm:"size:250;"`
-    V2    string `gorm:"size:250;"`
-    V3    string `gorm:"size:250;"`
-    V4    string `gorm:"size:250;"`
-    V5    string `gorm:"size:250;"`
-}
-
-func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    this.ID = id
-
-    return nil
-}
-
-type Filter struct {
-    PType []string
-    V0    []string
-    V1    []string
-    V2    []string
-    V3    []string
-    V4    []string
-    V5    []string
-}
-
-/**
- * gorm 适配器
- *
- * @create 2021-9-8
- * @author deatil
- */
-type Adapter struct {
-    db             *gorm.DB
-    isFiltered     bool
-}
-
 // 自定义模型
-func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
+func NewAdapterByDB(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
     adapter := &Adapter{}
+
+    if len(rule) > 0 {
+        adapter.WithModel(rule[0])
+    }
 
     model := adapter.getDefaultModel()
     adapter.db = db.Scopes(adapter.ruleTable(model)).
@@ -64,16 +30,35 @@ func NewAdapterByDB(db *gorm.DB) (*Adapter, error) {
     return adapter, nil
 }
 
-// 默认模型
-func (this *Adapter) getDefaultModel() *Rules {
-    return &Rules{}
-}
+func appendWhere(line Rules) (string, []interface{}) {
+    queryArgs := []interface{}{line.Ptype}
 
-// 规则表格
-func (this *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
-    return func(db *gorm.DB) *gorm.DB {
-        return db.Model(model)
+    queryStr := "ptype = ?"
+    if line.V0 != "" {
+        queryStr += " and v0 = ?"
+        queryArgs = append(queryArgs, line.V0)
     }
+    if line.V1 != "" {
+        queryStr += " and v1 = ?"
+        queryArgs = append(queryArgs, line.V1)
+    }
+    if line.V2 != "" {
+        queryStr += " and v2 = ?"
+        queryArgs = append(queryArgs, line.V2)
+    }
+    if line.V3 != "" {
+        queryStr += " and v3 = ?"
+        queryArgs = append(queryArgs, line.V3)
+    }
+    if line.V4 != "" {
+        queryStr += " and v4 = ?"
+        queryArgs = append(queryArgs, line.V4)
+    }
+    if line.V5 != "" {
+        queryStr += " and v5 = ?"
+        queryArgs = append(queryArgs, line.V5)
+    }
+    return queryStr, queryArgs
 }
 
 func loadPolicyLine(line Rules, model model.Model) {
@@ -103,6 +88,80 @@ func loadPolicyLine(line Rules, model model.Model) {
     }
 
     persist.LoadPolicyLine(lineText, model)
+}
+
+// 规则模型
+type Rules struct {
+    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
+    Ptype string `gorm:"size:250;"`
+    V0    string `gorm:"size:250;"`
+    V1    string `gorm:"size:250;"`
+    V2    string `gorm:"size:250;"`
+    V3    string `gorm:"size:250;"`
+    V4    string `gorm:"size:250;"`
+    V5    string `gorm:"size:250;"`
+}
+
+func (this *Rules) BeforeCreate(db *gorm.DB) error {
+    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
+    this.ID = id
+
+    return nil
+}
+
+// 过滤
+type Filter struct {
+    PType []string
+    V0    []string
+    V1    []string
+    V2    []string
+    V3    []string
+    V4    []string
+    V5    []string
+}
+
+/**
+ * gorm 适配器
+ *
+ * rbac_model.conf 中 matchers 内置可用函数：
+ * keyMatch [匹配*号], keyMatch2 [匹配 :file]
+ * regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配]
+ *
+ * @create 2021-9-8
+ * @author deatil
+ */
+type Adapter struct {
+    // 默认适配器
+    adapter.Adapter
+
+    // 模型
+    model          *Rules
+
+    db             *gorm.DB
+    isFiltered     bool
+}
+
+// 默认模型
+func (this *Adapter) WithModel(model *Rules) *Adapter {
+    this.model = model
+
+    return this
+}
+
+// 默认模型
+func (this *Adapter) getDefaultModel() *Rules {
+    if this.model != nil {
+        return this.model
+    }
+
+    return &Rules{}
+}
+
+// 规则表格
+func (this *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
+    return func(db *gorm.DB) *gorm.DB {
+        return db.Model(model)
+    }
 }
 
 // LoadPolicy loads policy from database.
@@ -324,37 +383,6 @@ func (this *Adapter) rawDelete(db *gorm.DB, line Rules) error {
     return err
 }
 
-func appendWhere(line Rules) (string, []interface{}) {
-    queryArgs := []interface{}{line.Ptype}
-
-    queryStr := "ptype = ?"
-    if line.V0 != "" {
-        queryStr += " and v0 = ?"
-        queryArgs = append(queryArgs, line.V0)
-    }
-    if line.V1 != "" {
-        queryStr += " and v1 = ?"
-        queryArgs = append(queryArgs, line.V1)
-    }
-    if line.V2 != "" {
-        queryStr += " and v2 = ?"
-        queryArgs = append(queryArgs, line.V2)
-    }
-    if line.V3 != "" {
-        queryStr += " and v3 = ?"
-        queryArgs = append(queryArgs, line.V3)
-    }
-    if line.V4 != "" {
-        queryStr += " and v4 = ?"
-        queryArgs = append(queryArgs, line.V4)
-    }
-    if line.V5 != "" {
-        queryStr += " and v5 = ?"
-        queryArgs = append(queryArgs, line.V5)
-    }
-    return queryStr, queryArgs
-}
-
 // UpdatePolicy updates a new policy rule to DB.
 func (this *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy []string) error {
     oldLine := this.savePolicyLine(ptype, oldRule)
@@ -364,15 +392,8 @@ func (this *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy [
     return err
 }
 
-
 // 关闭
 func (this *Adapter) Close() error {
     this.db = nil
-    return nil
-}
-
-// 清空
-func (this *Adapter) ClearData() error {
-    this.db.Where("1 = 1").Delete(&Rules{})
     return nil
 }

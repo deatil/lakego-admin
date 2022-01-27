@@ -347,3 +347,12 @@ func Symlink(target, link string) error {
     return os.Symlink(target, link)
 }
 
+// 读取链接
+func Readlink(link string) (string, error) {
+    return os.Readlink(link)
+}
+
+// 是否为软链接
+func IsSymlink(m os.FileMode) bool {
+    return m&os.ModeSymlink != 0
+}

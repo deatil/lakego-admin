@@ -19,3 +19,8 @@ Disks:
         # 可见性
         Visibility: "public"
 
+# 软连接
+# 可执行脚本 "go run main.go lakego:storage-link" 创建
+Links:
+    # to : from
+    - "{public}/storage:{storage}/app/public"

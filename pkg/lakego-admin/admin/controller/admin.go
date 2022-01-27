@@ -815,7 +815,7 @@ func (this *Admin) Access(ctx *router.Context) {
  */
 func (this *Admin) ResetPermission(ctx *router.Context) {
     // 清空原始数据
-    permission.New().ClearData()
+    model.ClearRulesData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)

@@ -1,4 +1,4 @@
-package console
+package publish
 
 import (
     "os"

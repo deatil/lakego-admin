@@ -35,7 +35,7 @@ var ResetPermissionCmd = &command.Command{
 // 重设权限
 func ResetPermission() {
     // 清空原始数据
-    permission.New().ClearData()
+    model.ClearRulesData()
 
     // 权限
     ruleList := make([]model.AuthRuleAccess, 0)

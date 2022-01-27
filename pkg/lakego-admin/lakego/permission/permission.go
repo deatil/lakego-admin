@@ -74,15 +74,6 @@ func (this *Permission) GetEnforcer() *casbin.Enforcer {
 }
 
 /**
- * 清空数据
- */
-func (this *Permission) ClearData() bool {
-    this.Adapter.ClearData()
-
-    return true
-}
-
-/**
  * 添加用户角色
  */
 func (this *Permission) AddRoleForUser(user string, role string) (bool, error) {

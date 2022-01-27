@@ -11,28 +11,24 @@ import (
  * @author deatil
  */
 type Adapter interface {
-    LoadFilteredPolicy(model model.Model, filter interface{}) error
+    LoadPolicy(model.Model) error
+
+    LoadFilteredPolicy(model.Model, interface{}) error
 
     IsFiltered() bool
 
-    SavePolicy(model model.Model) error
+    SavePolicy(model.Model) error
 
-    AddPolicy(sec string, ptype string, rule []string) error
+    AddPolicy(string, string, []string) error
 
-    RemovePolicy(sec string, ptype string, rule []string) error
+    RemovePolicy(string, string, []string) error
 
-    AddPolicies(sec string, ptype string, rules [][]string) error
+    AddPolicies(string, string, [][]string) error
 
-    RemovePolicies(sec string, ptype string, rules [][]string) error
+    RemovePolicies(string, string, [][]string) error
 
-    RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error
+    RemoveFilteredPolicy(string, string, int, ...string) error
 
-    UpdatePolicy(sec string, ptype string, oldRule, newPolicy []string) error
-
-    // 关闭
-    Close() error
-
-    // 清空数据
-    ClearData() error
+    UpdatePolicy(string, string, []string, []string) error
 }
 

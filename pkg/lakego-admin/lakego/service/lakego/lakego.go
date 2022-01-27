@@ -5,7 +5,8 @@ import (
     "github.com/deatil/lakego-admin/lakego/provider"
 
     // 脚本
-    "github.com/deatil/lakego-admin/lakego/console"
+    publishCmd "github.com/deatil/lakego-admin/lakego/console/publish"
+    storageCmd "github.com/deatil/lakego-admin/lakego/console/storage"
 
     // 视图
     "github.com/deatil/lakego-admin/lakego/facade/view"
@@ -35,7 +36,10 @@ func (this *ServiceProvider) Register() {
  */
 func (this *ServiceProvider) loadCommand() {
     // 推送
-    this.AddCommand(console.PublishCmd)
+    this.AddCommand(publishCmd.PublishCmd)
+
+    // 创建软连接
+    this.AddCommand(storageCmd.StorageLinkCmd)
 }
 
 /**

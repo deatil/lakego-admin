@@ -128,7 +128,6 @@ func WhitePrint(msg string, a ...interface{}) {
     color.White(msg, a...)
 }
 
-
 // ======
 
 func BlackString(msg string, a ...interface{}) string {
