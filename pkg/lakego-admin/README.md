@@ -27,7 +27,7 @@
         </td>
         <td width="50%">
             <center>
-                <img alt="控制台" src="https://user-images.githubusercontent.com/24578855/151009276-f80be447-312e-405d-91b9-b22943787d01.png" />
+                <img alt="控制台" src="https://user-images.githubusercontent.com/24578855/151192881-72510e1d-88db-4db3-b730-a741fd981fd7.png" />
             </center>
         </td>
     </tr>
