@@ -1,8 +1,11 @@
-# 配置模式 dev | release
-Mode: "dev"
-
 # 运行链接
 Url: "127.0.0.1:8080"
+
+# 配置模式 lakegodev | dev | release
+Mode: "dev"
+
+# 日志记录方式 file | stdout
+LogType: "stdout"
 
 # 运行方式
 Default: "Http"

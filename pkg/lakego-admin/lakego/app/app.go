@@ -5,6 +5,7 @@ import (
     "os/signal"
     "net"
     "net/http"
+    "fmt"
     "log"
     "sync"
     "time"
@@ -16,6 +17,7 @@ import (
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/path"
+    timeTool "github.com/deatil/lakego-admin/lakego/support/time"
     "github.com/deatil/lakego-admin/lakego/middleware/event"
     "github.com/deatil/lakego-admin/lakego/facade/config"
     routerFacade "github.com/deatil/lakego-admin/lakego/facade/router"
@@ -235,10 +237,37 @@ func (this *App) WithNetListener(listener net.Listener) *App {
 func (this *App) runApp() {
     var r *router.Engine
 
+    // 配置
+    serverConf := config.New("server")
+
     if !this.RunInConsole {
         // 模式
-        mode := config.New("server").GetString("Mode")
-        if mode == "dev" {
+        mode := serverConf.GetString("Mode")
+        if mode == "lakegodev" {
+            router.SetMode(router.DebugMode)
+
+            // 路由
+            r = router.New()
+
+            r.Use(router.LoggerWithFormatter(func(param router.LogFormatterParams) string {
+                // 自定义格式
+                return fmt.Sprintf("[lakego-admin] %s - [%s] \"%s %s %s %d %s [%s] %s\"\n",
+                    param.ClientIP,
+                    param.TimeStamp.Format("2006-01-02 15:04:05"),
+                    // param.TimeStamp.Format(time.RFC1123),
+                    param.Method,
+                    param.Path,
+                    param.Request.Proto,
+                    param.StatusCode,
+                    param.Latency,
+                    param.Request.UserAgent(),
+                    param.ErrorMessage,
+                )
+            }))
+
+            // 使用默认处理机制
+            r.Use(router.Recovery())
+        } else if  mode == "dev" {
             router.SetMode(router.DebugMode)
 
             // 路由
@@ -252,6 +281,7 @@ func (this *App) runApp() {
             // 使用默认处理机制
             r.Use(router.Recovery())
         }
+
     } else {
         // 脚本取消调试模式
         router.SetMode(router.ReleaseMode)
@@ -260,9 +290,18 @@ func (this *App) runApp() {
         r = router.New()
     }
 
-    // 设置默认日志记录
-    // file, err := os.Create("./runtime/route.log")
-    // router.DefaultWriter = file
+    // 日志记录方式
+    logType := serverConf.GetString("LogType")
+    if logType == "file" {
+        logFileName := timeTool.NowFormat("Ymd")
+        logFile := path.RuntimePath(fmt.Sprintf("/log/route_%s.log", logFileName))
+
+        // 设置默认日志记录
+        file, err := os.Create(logFile)
+        if err == nil {
+            router.WithDefaultWriter(file)
+        }
+    }
 
     // 事件
     r.Use(event.Handler())

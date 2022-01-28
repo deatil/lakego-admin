@@ -152,6 +152,16 @@ func Mode() string {
     return gin.Mode()
 }
 
+// WithDefaultWriter
+func WithDefaultWriter(writer io.Writer) {
+    gin.DefaultWriter = writer
+}
+
+// WithDefaultErrorWriter
+func WithDefaultErrorWriter(writer io.Writer) {
+    gin.DefaultErrorWriter = writer
+}
+
 // Bind
 func Bind(val interface{}) HandlerFunc {
     return gin.Bind(val)
