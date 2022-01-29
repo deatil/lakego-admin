@@ -50,11 +50,6 @@ type Local struct {
 }
 
 /**
- * 初始化
- */
-func (this *Local) Init(config ...map[string]interface{}) {}
-
-/**
  * 确认文件夹
  */
 func (this *Local) EnsureDirectory(root string) error {
@@ -118,7 +113,7 @@ func (this *Local) Write(path string, contents string, conf interfaces.Config) (
 }
 
 // 上传 Stream 文件类型
-func (this *Local) WriteStream(path string, stream *os.File, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
     location := this.ApplyPathPrefix(path)
     this.EnsureDirectory(filepath.Dir(location))
 
@@ -184,7 +179,7 @@ func (this *Local) Update(path string, contents string, conf interfaces.Config) 
 }
 
 // 更新
-func (this *Local) UpdateStream(path string, stream *os.File, config interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) UpdateStream(path string, stream io.Reader, config interfaces.Config) (map[string]interface{}, error) {
     return this.WriteStream(path, stream, config)
 }
 

@@ -75,6 +75,13 @@ func ConfigPath(path string) string {
     return RootPath(newPath)
 }
 
+// 资源目录
+func ResourcesPath(path string) string {
+    newPath := normalizePath("/resources", path)
+
+    return RootPath(newPath)
+}
+
 // 运行时目录
 func RuntimePath(path string) string {
     newPath := normalizePath("/runtime", path)
@@ -113,6 +120,10 @@ func FormatPath(path string) string {
     } else if strings.HasPrefix(path, "{runtime}") {
         path = strings.TrimPrefix(path, "{runtime}")
         path = RuntimePath(path)
+
+    } else if strings.HasPrefix(path, "{resources}") {
+        path = strings.TrimPrefix(path, "{resources}")
+        path = ResourcesPath(path)
 
     } else if strings.HasPrefix(path, "{storage}") {
         path = strings.TrimPrefix(path, "{storage}")

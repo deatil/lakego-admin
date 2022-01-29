@@ -9,10 +9,32 @@ import (
 )
 
 var (
-    rawColor = "raw"
+    // NoColor defines if the output is colorized or not.
+    NoColor = color.NoColor
+
+    // Output defines the standard output of the print functions. By default
+    // os.Stdout is used.
+    Output = color.Output
+
+    // Error defines a color supporting writer for os.Stderr.
+    Error = color.Error
+
+    // Base attributes
+    baseMap = map[string]color.Attribute{
+        "reset":         color.Reset,
+        "bold":          color.Bold,
+        "faint":         color.Faint,
+        "italic":        color.Italic,
+        "underline":     color.Underline,
+        "blinkSlow":     color.BlinkSlow,
+        "blinkRapid":    color.BlinkRapid,
+        "reverseVideo":  color.ReverseVideo,
+        "concealed":     color.Concealed,
+        "crossedOut":    color.CrossedOut,
+    }
 
     // 颜色数组
-    colorMap = map[string]color.Attribute{
+    foregroundMap = map[string]color.Attribute{
         "black":   color.FgBlack,
         "red":     color.FgRed,
         "green":   color.FgGreen,
@@ -22,16 +44,54 @@ var (
         "cyan":    color.FgCyan,
         "white":   color.FgWhite,
     }
+
+    // Foreground Hi-Intensity text colors
+    foregroundHiMap = map[string]color.Attribute{
+        "fgHiBlack":   color.FgHiBlack,
+        "fgHiRed":     color.FgHiRed,
+        "fgHiGreen":   color.FgHiGreen,
+        "fgHiYellow":  color.FgHiYellow,
+        "fgHiBlue":    color.FgHiBlue,
+        "fgHiMagenta": color.FgHiMagenta,
+        "fgHiCyan":    color.FgHiCyan,
+        "fgHiWhite":   color.FgHiWhite,
+    }
+
+    // Background text colors
+    backgroundMap = map[string]color.Attribute{
+        "bgBlack":   color.BgBlack,
+        "bgRed":     color.BgRed,
+        "bgGreen":   color.BgGreen,
+        "bgYellow":  color.BgYellow,
+        "bgBlue":    color.BgBlue,
+        "bgMagenta": color.BgMagenta,
+        "bgCyan":    color.BgCyan,
+        "bgWhite":   color.BgWhite,
+    }
+
+    // Background Hi-Intensity text colors
+    backgroundHiMap = map[string]color.Attribute{
+        "bgHiBlack":   color.BgHiBlack,
+        "bgHiRed":     color.BgHiRed,
+        "bgHiGreen":   color.BgHiGreen,
+        "bgHiYellow":  color.BgHiYellow,
+        "bgHiBlue":    color.BgHiBlue,
+        "bgHiMagenta": color.BgHiMagenta,
+        "bgHiCyan":    color.BgHiCyan,
+        "bgHiWhite":   color.BgHiWhite,
+    }
+
+    // 原始颜色
+    rawColor = "raw"
 )
 
 type (
     ColorFunc = func(string, ...interface{})
 )
 
+// 实例化一个方法
 func NewColorFunc(colorname string) ColorFunc {
     return func(msg string, v ...interface{}) {
-        msg = strings.Replace(msg, "\n", "", -1)
-        msg = strings.TrimSpace(msg)
         if len(msg) == 0 {
             return
         }
@@ -39,18 +99,67 @@ func NewColorFunc(colorname string) ColorFunc {
         if colorname == rawColor {
             fmt.Fprintf(os.Stdout, msg, v...)
         } else {
-            color.New(GetColor(colorname)).Fprintf(color.Output, msg, v...)
+            color.New(GetForegroundOption(colorname)).Fprintf(color.Output, msg, v...)
         }
     }
 }
 
-func GetColor(name string) color.Attribute {
-    if v, ok := colorMap[name]; ok {
+// 根据选项显示颜色
+func NewWithOption(value ...color.Attribute) *color.Color {
+    return color.New(value...)
+}
+
+// 清除多余字符
+func FormatTrim(msg string) string {
+    msg = strings.Replace(msg, "\n", "", -1)
+    msg = strings.TrimSpace(msg)
+
+    return msg
+}
+
+// ======
+
+func GetBaseOption(name string) color.Attribute {
+    if v, ok := baseMap[name]; ok {
+        return v
+    }
+
+    return color.Reset
+}
+
+func GetForegroundOption(name string) color.Attribute {
+    if v, ok := foregroundMap[name]; ok {
         return v
     }
 
     return color.FgWhite
 }
+
+func GetForegroundHiOption(name string) color.Attribute {
+    if v, ok := foregroundHiMap[name]; ok {
+        return v
+    }
+
+    return color.FgHiWhite
+}
+
+func GetBackgroundOption(name string) color.Attribute {
+    if v, ok := backgroundMap[name]; ok {
+        return v
+    }
+
+    return color.BgWhite
+}
+
+func GetBackgroundHiOption(name string) color.Attribute {
+    if v, ok := backgroundHiMap[name]; ok {
+        return v
+    }
+
+    return color.BgHiWhite
+}
+
+// ======
 
 func ShowMessage(colorname string, msg string, arg ...interface{}) {
     NewColorFunc(colorname)(msg, arg...)
@@ -96,136 +205,136 @@ func White(msg string, arg ...interface{}) {
 
 // ======
 
-func BlackPrint(msg string, a ...interface{}) {
-    color.Black(msg, a...)
+func BlackPrint(msg string, arg ...interface{}) {
+    color.Black(msg, arg...)
 }
 
-func RedPrint(msg string, a ...interface{}) {
-    color.Red(msg, a...)
+func RedPrint(msg string, arg ...interface{}) {
+    color.Red(msg, arg...)
 }
 
-func GreenPrint(msg string, a ...interface{}) {
-    color.Green(msg, a...)
+func GreenPrint(msg string, arg ...interface{}) {
+    color.Green(msg, arg...)
 }
 
-func YellowPrint(msg string, a ...interface{}) {
-    color.Yellow(msg, a...)
+func YellowPrint(msg string, arg ...interface{}) {
+    color.Yellow(msg, arg...)
 }
 
-func BluePrint(msg string, a ...interface{}) {
-    color.Blue(msg, a...)
+func BluePrint(msg string, arg ...interface{}) {
+    color.Blue(msg, arg...)
 }
 
-func MagentaPrint(msg string, a ...interface{}) {
-    color.Magenta(msg, a...)
+func MagentaPrint(msg string, arg ...interface{}) {
+    color.Magenta(msg, arg...)
 }
 
-func CyanPrint(msg string, a ...interface{}) {
-    color.Cyan(msg, a...)
+func CyanPrint(msg string, arg ...interface{}) {
+    color.Cyan(msg, arg...)
 }
 
-func WhitePrint(msg string, a ...interface{}) {
-    color.White(msg, a...)
-}
-
-// ======
-
-func BlackString(msg string, a ...interface{}) string {
-    return color.BlackString(msg, a...)
-}
-
-func RedString(msg string, a ...interface{}) string {
-    return color.RedString(msg, a...)
-}
-
-func GreenString(msg string, a ...interface{}) string {
-    return color.GreenString(msg, a...)
-}
-
-func YellowString(msg string, a ...interface{}) string {
-    return color.YellowString(msg, a...)
-}
-
-func BlueString(msg string, a ...interface{}) string {
-    return color.BlueString(msg, a...)
-}
-
-func MagentaString(msg string, a ...interface{}) string {
-    return color.MagentaString(msg, a...)
-}
-
-func CyanString(msg string, a ...interface{}) string {
-    return color.CyanString(msg, a...)
-}
-
-func WhiteString(msg string, a ...interface{}) string {
-    return color.WhiteString(msg, a...)
+func WhitePrint(msg string, arg ...interface{}) {
+    color.White(msg, arg...)
 }
 
 // ======
 
-func HiBlack(format string, a ...interface{}) {
-    color.HiBlack(format, a...)
+func BlackString(msg string, arg ...interface{}) string {
+    return color.BlackString(msg, arg...)
 }
 
-func HiRed(format string, a ...interface{}) {
-    color.HiRed(format, a...)
+func RedString(msg string, arg ...interface{}) string {
+    return color.RedString(msg, arg...)
 }
 
-func HiGreen(format string, a ...interface{}) {
-    color.HiGreen(format, a...)
+func GreenString(msg string, arg ...interface{}) string {
+    return color.GreenString(msg, arg...)
 }
 
-func HiYellow(format string, a ...interface{}) {
-    color.HiYellow(format, a...)
+func YellowString(msg string, arg ...interface{}) string {
+    return color.YellowString(msg, arg...)
 }
 
-func HiBlue(format string, a ...interface{}) {
-    color.HiBlue(format, a...)
+func BlueString(msg string, arg ...interface{}) string {
+    return color.BlueString(msg, arg...)
 }
 
-func HiMagenta(format string, a ...interface{}) {
-    color.HiMagenta(format, a...)
+func MagentaString(msg string, arg ...interface{}) string {
+    return color.MagentaString(msg, arg...)
 }
 
-func HiCyan(format string, a ...interface{}) {
-    color.HiCyan(format, a...)
+func CyanString(msg string, arg ...interface{}) string {
+    return color.CyanString(msg, arg...)
 }
 
-func HiWhite(format string, a ...interface{}) {
-    color.HiWhite(format, a...)
+func WhiteString(msg string, arg ...interface{}) string {
+    return color.WhiteString(msg, arg...)
 }
 
 // ======
 
-func HiBlackString(format string, a ...interface{}) string {
-    return color.HiBlackString(format, a...)
+func HiBlack(format string, arg ...interface{}) {
+    color.HiBlack(format, arg...)
 }
 
-func HiRedString(format string, a ...interface{}) string {
-    return color.HiRedString(format, a...)
+func HiRed(format string, arg ...interface{}) {
+    color.HiRed(format, arg...)
 }
 
-func HiGreenString(format string, a ...interface{}) string {
-    return color.HiGreenString(format, a...)
+func HiGreen(format string, arg ...interface{}) {
+    color.HiGreen(format, arg...)
 }
 
-func HiYellowString(format string, a ...interface{}) string {
-    return color.HiYellowString(format, a...)
+func HiYellow(format string, arg ...interface{}) {
+    color.HiYellow(format, arg...)
 }
 
-func HiBlueString(format string, a ...interface{}) string {
-    return color.HiBlueString(format, a...)
+func HiBlue(format string, arg ...interface{}) {
+    color.HiBlue(format, arg...)
 }
 
-func HiMagentaString(format string, a ...interface{}) string {
-    return color.HiMagentaString(format, a...)
+func HiMagenta(format string, arg ...interface{}) {
+    color.HiMagenta(format, arg...)
 }
 
-func HiCyanString(format string, a ...interface{}) string {
-    return color.HiCyanString(format, a...)
+func HiCyan(format string, arg ...interface{}) {
+    color.HiCyan(format, arg...)
 }
 
-func HiWhiteString(format string, a ...interface{}) string {
-    return color.HiWhiteString(format, a...)
+func HiWhite(format string, arg ...interface{}) {
+    color.HiWhite(format, arg...)
+}
+
+// ======
+
+func HiBlackString(format string, arg ...interface{}) string {
+    return color.HiBlackString(format, arg...)
+}
+
+func HiRedString(format string, arg ...interface{}) string {
+    return color.HiRedString(format, arg...)
+}
+
+func HiGreenString(format string, arg ...interface{}) string {
+    return color.HiGreenString(format, arg...)
+}
+
+func HiYellowString(format string, arg ...interface{}) string {
+    return color.HiYellowString(format, arg...)
+}
+
+func HiBlueString(format string, arg ...interface{}) string {
+    return color.HiBlueString(format, arg...)
+}
+
+func HiMagentaString(format string, arg ...interface{}) string {
+    return color.HiMagentaString(format, arg...)
+}
+
+func HiCyanString(format string, arg ...interface{}) string {
+    return color.HiCyanString(format, arg...)
+}
+
+func HiWhiteString(format string, arg ...interface{}) string {
+    return color.HiWhiteString(format, arg...)
 }

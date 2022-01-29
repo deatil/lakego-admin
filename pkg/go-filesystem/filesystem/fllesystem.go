@@ -1,6 +1,7 @@
 package filesystem
 
 import(
+    "io"
     "os"
     "errors"
 
@@ -97,7 +98,7 @@ func (this *Fllesystem) Write(path string, contents string, conf ...map[string]i
 }
 
 // 写入数据流
-func (this *Fllesystem) WriteStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -141,7 +142,7 @@ func (this *Fllesystem) Put(path string, contents string, conf ...map[string]int
 }
 
 // 更新数据流
-func (this *Fllesystem) PutStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -199,7 +200,7 @@ func (this *Fllesystem) Update(path string, contents string, conf ...map[string]
 }
 
 // 更新数据流
-func (this *Fllesystem) UpdateStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}

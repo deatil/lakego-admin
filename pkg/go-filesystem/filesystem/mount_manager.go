@@ -1,6 +1,7 @@
 package filesystem
 
 import(
+    "io"
     "os"
     "strings"
 
@@ -212,7 +213,7 @@ func (this *MountManager) Write(path string, contents string, conf ...map[string
 }
 
 // 写入数据流
-func (this *MountManager) WriteStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *MountManager) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).WriteStream(newPath, resource, conf...)
@@ -226,7 +227,7 @@ func (this *MountManager) Update(path string, contents string, conf ...map[strin
 }
 
 // 更新数据流
-func (this *MountManager) UpdateStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *MountManager) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).UpdateStream(newPath, resource, conf...)
@@ -275,7 +276,7 @@ func (this *MountManager) Put(path string, contents string, conf ...map[string]i
 }
 
 // 更新数据流
-func (this *MountManager) PutStream(path string, resource *os.File, conf ...map[string]interface{}) bool {
+func (this *MountManager) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).PutStream(newPath, resource, conf...)

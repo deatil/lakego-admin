@@ -6,5 +6,5 @@ Adapters:
   Gorm:
     Type: "gorm"
     # 权限模型
-    RbacModel: "{root}/config/rbac_model.conf"
+    RbacModel: "{config}/rbac_model.conf"
 

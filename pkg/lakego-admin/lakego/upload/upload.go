@@ -209,11 +209,6 @@ func (this *Upload) SaveUploadedFile(file *multipart.FileHeader) string {
 
 // 保存上传的文件
 func (this *Upload) SaveFile(file *multipart.FileHeader) string {
-    tmpFile, err := os.CreateTemp("", "lakego")
-    if err != nil {
-        return ""
-    }
-
     // 打开上传文件
     uploadFile, err := file.Open()
     if err != nil {
@@ -221,39 +216,18 @@ func (this *Upload) SaveFile(file *multipart.FileHeader) string {
     }
     defer uploadFile.Close()
 
-    // 复制内容
-    _, err = io.Copy(tmpFile, uploadFile)
-    if err != nil {
-        return ""
-    }
-
-    // 读取上传的临时文件
-    upFile, err := os.Open(tmpFile.Name())
-    if err != nil {
-        return ""
-    }
-
-    defer func() {
-        upFile.Close()
-
-        tmpFile.Close()
-
-        // 删除临时文件
-        os.Remove(tmpFile.Name())
-    }()
-
     // 保存名称
     name := file.Filename
 
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        return this.storage.PutFileAs(this.GetDirectory(), upFile, realname, map[string]interface{}{
+        return this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname, map[string]interface{}{
             "visibility": this.storagePermission,
         })
     }
 
-    return this.storage.PutFileAs(this.GetDirectory(), upFile, realname)
+    return this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname)
 }
 
 // 保存打开的文件

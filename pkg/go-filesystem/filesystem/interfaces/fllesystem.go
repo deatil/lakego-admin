@@ -1,6 +1,7 @@
 package interfaces
 
 import(
+    "io"
     "os"
 )
 
@@ -36,19 +37,19 @@ type Fllesystem interface {
     Write(string, string, ...map[string]interface{}) bool
 
     // 上传
-    WriteStream(string, *os.File, ...map[string]interface{}) bool
+    WriteStream(string, io.Reader, ...map[string]interface{}) bool
 
     // 上传
     Put(string, string, ...map[string]interface{}) bool
 
     // 上传
-    PutStream(string, *os.File, ...map[string]interface{}) bool
+    PutStream(string, io.Reader, ...map[string]interface{}) bool
 
     // 更新
     Update(string, string, ...map[string]interface{}) bool
 
     // 更新
-    UpdateStream(string, *os.File, ...map[string]interface{}) bool
+    UpdateStream(string, io.Reader, ...map[string]interface{}) bool
 
     // 读取
     Read(string) interface{}

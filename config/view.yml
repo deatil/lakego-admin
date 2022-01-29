@@ -1,5 +1,5 @@
 # 视图
-Paths: ["{root}/resources/view"]
+Paths: ["{resources}/view"]
 
 # 默认适配器
 DefaultAdapter: "pongo2"
@@ -9,4 +9,4 @@ Adapters:
   Pongo2:
     Type: "pongo2"
     # 模板根目录
-    TmplDir: "{root}/resources/view"
+    TmplDir: "{resources}/view"

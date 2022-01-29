@@ -69,7 +69,4 @@ __debug_bin
 tmp/
 .tmp/
 
-# 系统相关 #
-./runtime
-./tmp
 

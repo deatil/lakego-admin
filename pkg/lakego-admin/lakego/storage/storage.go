@@ -1,7 +1,7 @@
 package storage
 
 import(
-    "os"
+    "io"
     "strings"
 
     "github.com/deatil/go-filesystem/filesystem"
@@ -40,7 +40,7 @@ type Storage struct {
     *filesystem.Fllesystem
 }
 
-// 获取配置
+// 链接
 func (this *Storage) Url(url string) string {
     conf := this.GetConfig()
 
@@ -49,7 +49,7 @@ func (this *Storage) Url(url string) string {
     return uri + "/" + strings.TrimPrefix(url, "/")
 }
 
-// 获取配置
+// 路径
 func (this *Storage) Path(path string) string {
     adapter := this.GetAdapter()
 
@@ -57,7 +57,7 @@ func (this *Storage) Path(path string) string {
 }
 
 // 保存数据流
-func (this *Storage) PutFileAs(path string, resource *os.File, name string, config ...map[string]interface{}) string {
+func (this *Storage) PutFileAs(path string, resource io.Reader, name string, config ...map[string]interface{}) string {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")

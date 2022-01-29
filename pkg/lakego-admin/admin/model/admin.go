@@ -2,9 +2,9 @@ package model
 
 import (
     "time"
-    "strconv"
     "gorm.io/gorm"
 
+    "github.com/deatil/lakego-admin/lakego/support/cast"
     "github.com/deatil/lakego-admin/lakego/support/hash"
     "github.com/deatil/lakego-admin/lakego/support/random"
     "github.com/deatil/lakego-admin/lakego/facade/database"
@@ -36,8 +36,7 @@ type Admin struct {
 }
 
 func (this *Admin) BeforeCreate(tx *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    this.ID = id
+    this.ID = hash.MD5(cast.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }

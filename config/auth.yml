@@ -26,8 +26,8 @@ Jwt:
   # 密码，base64 编码后，适用类型 HS
   Secret: "MTIzNDU2"
   # 公钥和私钥，适用类型 ES, RS, PS, EdDSA
-  PrivateKey: "{root}/config/key/ed25519-private.pem"
-  PublicKey: "{root}/config/key/ed25519-public.pem"
+  PrivateKey: "{config}/key/ed25519-private.pem"
+  PublicKey: "{config}/key/ed25519-public.pem"
   # 私钥密码，base64 编码后，适用类型 RS
   PrivateKeyPassword: "MTIzNDU2"
   # 载荷加密秘钥，为空或者 base64 后解码错误不加密，base64编码后

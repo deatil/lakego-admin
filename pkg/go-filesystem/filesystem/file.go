@@ -1,6 +1,7 @@
 package filesystem
 
 import(
+    "io"
     "os"
 
     "github.com/deatil/go-filesystem/filesystem/interfaces"
@@ -63,7 +64,7 @@ func (this *File) Write(content string) bool {
 }
 
 // 写入文件流
-func (this *File) WriteStream(resource *os.File) bool {
+func (this *File) WriteStream(resource io.Reader) bool {
     return this.filesystem.WriteStream(this.path, resource)
 }
 
@@ -73,7 +74,7 @@ func (this *File) Update(content string) bool {
 }
 
 // 更新文件流
-func (this *File) UpdateStream(resource *os.File) bool {
+func (this *File) UpdateStream(resource io.Reader) bool {
     return this.filesystem.UpdateStream(this.path, resource)
 }
 

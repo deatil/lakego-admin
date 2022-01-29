@@ -21,12 +21,12 @@ Types:
   TLS:
     # 运行地址
     Addr: ":8080"
-    CertFile: "{root}/config/server/certFile.pem"
-    KeyFile: "{root}/config/server/keyFile.pem"
+    CertFile: "{config}/server/certFile.pem"
+    KeyFile: "{config}/server/keyFile.pem"
 
   # Unix
   Unix:
-    File: "{root}/config/server/unix.pid"
+    File: "{config}/server/unix.pid"
 
   # Fd
   Fd:

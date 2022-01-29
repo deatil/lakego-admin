@@ -80,15 +80,12 @@ func Register() {
         register.
             NewManagerWithPrefix("database").
             Register("local", func(conf map[string]interface{}) interface{} {
-                driver := &localAdapter.Local{}
-
                 root := conf["root"].(string)
 
                 // 根目录
                 root = path.FormatPath(root)
 
-                driver.EnsureDirectory(root)
-                driver.SetPathPrefix(root)
+                driver := localAdapter.New(root)
 
                 return driver
             })
