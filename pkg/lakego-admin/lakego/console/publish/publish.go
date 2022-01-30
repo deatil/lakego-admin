@@ -7,6 +7,7 @@ import (
     "strings"
     "path/filepath"
 
+    "github.com/deatil/lakego-admin/lakego/color"
     "github.com/deatil/lakego-admin/lakego/publish"
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/file"
@@ -81,7 +82,7 @@ func (this *Publisher) Execute() {
         }
     }
 
-    fmt.Println("文件推送完成")
+    color.Greenln("\n文件推送完成")
 }
 
 // determineWhatShouldBePublished
@@ -100,12 +101,14 @@ func (this *Publisher) determineWhatShouldBePublished() {
 
 // promptForProviderOrTag
 func (this *Publisher) promptForProviderOrTag() {
-    fmt.Println("哪些是你想要推送的 provider 或者 tag 文件？")
+    color.Magentaln("哪些是你想要推送的 provider 或者 tag 文件？\n")
 
     choices := this.publishableChoices()
     for k, v := range choices {
-        fmt.Println(fmt.Sprintf("[%d]%s", k, v))
+        color.Yellowln(fmt.Sprintf("[%d]%s", k, v))
     }
+
+    color.Cyan("\n请输入序号：")
 
     var choice int
     fmt.Scanln(&choice)
@@ -172,7 +175,7 @@ func (this *Publisher) PublishTag(tag string) {
     }
 
     if published == false {
-        fmt.Println("不能够定位到推送资源")
+        color.Redln("不能够定位到推送资源")
     }
 }
 
@@ -188,7 +191,7 @@ func (this *Publisher) PublishItem(from string, to string)  {
     } else if file.IsDir(from) {
         this.PublishDirectory(from, to)
     } else {
-        fmt.Println("不能够定位目录: <" + from + ">")
+        color.Redln("不能够定位目录: <" + from + ">")
     }
 }
 
@@ -240,7 +243,7 @@ func (this *Publisher) Status(from string, to string, typ string) {
     from = strings.Replace(from, "\\", "/", -1)
     to = strings.Replace(to, "\\", "/", -1)
 
-    fmt.Println("Copied " + typ + " [" + from + "] To [" + to + "]")
+    color.Magentaln("\n复制 " + typ + " [" + from + "] 到 [" + to + "] 成功。")
 }
 
 // 判断

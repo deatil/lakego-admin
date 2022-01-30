@@ -47,38 +47,38 @@ var (
 
     // Foreground Hi-Intensity text colors
     foregroundHiMap = map[string]color.Attribute{
-        "fgHiBlack":   color.FgHiBlack,
-        "fgHiRed":     color.FgHiRed,
-        "fgHiGreen":   color.FgHiGreen,
-        "fgHiYellow":  color.FgHiYellow,
-        "fgHiBlue":    color.FgHiBlue,
-        "fgHiMagenta": color.FgHiMagenta,
-        "fgHiCyan":    color.FgHiCyan,
-        "fgHiWhite":   color.FgHiWhite,
+        "black":   color.FgHiBlack,
+        "red":     color.FgHiRed,
+        "green":   color.FgHiGreen,
+        "yellow":  color.FgHiYellow,
+        "blue":    color.FgHiBlue,
+        "magenta": color.FgHiMagenta,
+        "cyan":    color.FgHiCyan,
+        "white":   color.FgHiWhite,
     }
 
     // Background text colors
     backgroundMap = map[string]color.Attribute{
-        "bgBlack":   color.BgBlack,
-        "bgRed":     color.BgRed,
-        "bgGreen":   color.BgGreen,
-        "bgYellow":  color.BgYellow,
-        "bgBlue":    color.BgBlue,
-        "bgMagenta": color.BgMagenta,
-        "bgCyan":    color.BgCyan,
-        "bgWhite":   color.BgWhite,
+        "black":   color.BgBlack,
+        "red":     color.BgRed,
+        "green":   color.BgGreen,
+        "yellow":  color.BgYellow,
+        "blue":    color.BgBlue,
+        "magenta": color.BgMagenta,
+        "cyan":    color.BgCyan,
+        "white":   color.BgWhite,
     }
 
     // Background Hi-Intensity text colors
     backgroundHiMap = map[string]color.Attribute{
-        "bgHiBlack":   color.BgHiBlack,
-        "bgHiRed":     color.BgHiRed,
-        "bgHiGreen":   color.BgHiGreen,
-        "bgHiYellow":  color.BgHiYellow,
-        "bgHiBlue":    color.BgHiBlue,
-        "bgHiMagenta": color.BgHiMagenta,
-        "bgHiCyan":    color.BgHiCyan,
-        "bgHiWhite":   color.BgHiWhite,
+        "black":   color.BgHiBlack,
+        "red":     color.BgHiRed,
+        "green":   color.BgHiGreen,
+        "yellow":  color.BgHiYellow,
+        "blue":    color.BgHiBlue,
+        "magenta": color.BgHiMagenta,
+        "cyan":    color.BgHiCyan,
+        "white":   color.BgHiWhite,
     }
 
     // 原始颜色
@@ -119,6 +119,9 @@ func FormatTrim(msg string) string {
 
 // ======
 
+// 可用参数
+// reset | bold | faint | italic | underline
+// blinkSlow | blinkRapid | reverseVideo | concealed | crossedOut
 func GetBaseOption(name string) color.Attribute {
     if v, ok := baseMap[name]; ok {
         return v
@@ -127,6 +130,8 @@ func GetBaseOption(name string) color.Attribute {
     return color.Reset
 }
 
+// 可用颜色
+// black | red | green | yellow | blue | magenta | cyan | white
 func GetForegroundOption(name string) color.Attribute {
     if v, ok := foregroundMap[name]; ok {
         return v
@@ -135,6 +140,8 @@ func GetForegroundOption(name string) color.Attribute {
     return color.FgWhite
 }
 
+// 可用颜色
+// black | red | green | yellow | blue | magenta | cyan | white
 func GetForegroundHiOption(name string) color.Attribute {
     if v, ok := foregroundHiMap[name]; ok {
         return v
@@ -143,6 +150,8 @@ func GetForegroundHiOption(name string) color.Attribute {
     return color.FgHiWhite
 }
 
+// 可用颜色
+// black | red | green | yellow | blue | magenta | cyan | white
 func GetBackgroundOption(name string) color.Attribute {
     if v, ok := backgroundMap[name]; ok {
         return v
@@ -151,6 +160,8 @@ func GetBackgroundOption(name string) color.Attribute {
     return color.BgWhite
 }
 
+// 可用颜色
+// black | red | green | yellow | blue | magenta | cyan | white
 func GetBackgroundHiOption(name string) color.Attribute {
     if v, ok := backgroundHiMap[name]; ok {
         return v
@@ -165,8 +176,17 @@ func ShowMessage(colorname string, msg string, arg ...interface{}) {
     NewColorFunc(colorname)(msg, arg...)
 }
 
+func ShowMessageln(colorname string, msg string, arg ...interface{}) {
+    msg = msg + "\n"
+    NewColorFunc(colorname)(msg, arg...)
+}
+
 func Raw(msg string, arg ...interface{}) {
     ShowMessage("raw", msg, arg...)
+}
+
+func Rawln(msg string, arg ...interface{}) {
+    ShowMessageln("raw", msg, arg...)
 }
 
 // ======
@@ -201,6 +221,41 @@ func Cyan(msg string, arg ...interface{}) {
 
 func White(msg string, arg ...interface{}) {
     ShowMessage("white", msg, arg...)
+}
+
+
+// ======
+
+func Blackln(msg string, arg ...interface{}) {
+    ShowMessageln("black", msg, arg...)
+}
+
+func Redln(msg string, arg ...interface{}) {
+    ShowMessageln("red", msg, arg...)
+}
+
+func Greenln(msg string, arg ...interface{}) {
+    ShowMessageln("green", msg, arg...)
+}
+
+func Yellowln(msg string, arg ...interface{}) {
+    ShowMessageln("yellow", msg, arg...)
+}
+
+func Blueln(msg string, arg ...interface{}) {
+    ShowMessageln("blue", msg, arg...)
+}
+
+func Magentaln(msg string, arg ...interface{}) {
+    ShowMessageln("magenta", msg, arg...)
+}
+
+func Cyanln(msg string, arg ...interface{}) {
+    ShowMessageln("cyan", msg, arg...)
+}
+
+func Whiteln(msg string, arg ...interface{}) {
+    ShowMessageln("white", msg, arg...)
 }
 
 // ======

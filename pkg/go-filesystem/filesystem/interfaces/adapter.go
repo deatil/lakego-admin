@@ -11,7 +11,6 @@ import(
  * @author deatil
  */
 type Adapter interface {
-
     // 设置前缀
     SetPathPrefix(string)
 
@@ -23,8 +22,6 @@ type Adapter interface {
 
     // 移除前缀
     RemovePathPrefix(string) string
-
-    // 以下为需要实现的接口
 
     // 判断
     Has(string) bool

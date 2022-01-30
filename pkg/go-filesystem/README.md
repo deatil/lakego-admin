@@ -6,9 +6,16 @@
 *  go 版本实现的文件管理器
 
 
-### 驱动
+### 适配器
 
 *  `local`: 本地存储
+
+
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-filesystem
+~~~
 
 
 ### 示例
@@ -23,10 +30,10 @@ func init() {
     // 根目录
     root := "/storage"
     adapter := localAdapter.New(root)
-    
+
     // 格式为 map[string]interface{}
     adapterConf := ...
-    
+
     // 磁盘
     fs := filesystem.New(adapter, adapterConf)
 

@@ -1,7 +1,7 @@
 package adapter
 
 import(
-    "os"
+    "io"
 
     "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
@@ -16,16 +16,6 @@ type Adapter struct {
     Abstract
 }
 
-// 初始化
-func (this *Adapter) Init(config ...map[string]interface{}) {
-    // todo
-}
-
-// 确认文件夹
-func (this *Adapter) EnsureDirectory(root string) error {
-    panic("接口没有实现")
-}
-
 // 判断
 func (this *Adapter) Has(string) bool {
     return false
@@ -37,7 +27,7 @@ func (this *Adapter) Write(path string, contents string, conf interfaces.Config)
 }
 
 // 上传 Stream 文件类型
-func (this *Adapter) WriteStream(path string, stream *os.File, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
     panic("接口没有实现")
 }
 
@@ -47,16 +37,16 @@ func (this *Adapter) Update(path string, contents string, conf interfaces.Config
 }
 
 // 更新
-func (this *Adapter) UpdateStream(path string, stream *os.File, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) UpdateStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
     panic("接口没有实现")
 }
 
-//
+// 读取
 func (this *Adapter) Read(path string) (map[string]interface{}, error) {
     panic("接口没有实现")
 }
 
-//
+// 读取数据为数据流
 func (this *Adapter) ReadStream(path string) (map[string]interface{}, error) {
     panic("接口没有实现")
 }

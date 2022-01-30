@@ -189,7 +189,7 @@ func (this *ServiceProvider) loadMiddleware() {
  */
 func (this *ServiceProvider) publishConfig() {
     // 配置
-    path := pathTool.FormatPath("{root}/pkg/lakego-admin/admin/config/admin.yml")
+    path := pathTool.FormatPath("{root}/pkg/lakego-admin/admin/resources/config/admin.yml")
 
     // 推送文件
     // > go run main.go lakego:publish --tag=admin-config --force

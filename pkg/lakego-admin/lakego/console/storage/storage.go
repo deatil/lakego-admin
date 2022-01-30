@@ -4,6 +4,7 @@ import (
     "fmt"
     "strings"
 
+    "github.com/deatil/lakego-admin/lakego/color"
     "github.com/deatil/lakego-admin/lakego/command"
     "github.com/deatil/lakego-admin/lakego/support/file"
     "github.com/deatil/lakego-admin/lakego/support/path"
@@ -22,7 +23,7 @@ import (
  */
 var StorageLinkCmd = &command.Command{
     Use: "lakego:storage-link",
-    Short: "创建公共资源软连接.",
+    Short: "创建资源软连接.",
     Example: "{execfile} lakego:storage-link",
     SilenceUsage: true,
     PreRun: func(cmd *command.Command, args []string) {
@@ -60,5 +61,14 @@ func StorageLink() {
         }
     }
 
-    fmt.Println("软连接创建成功")
+    fmt.Print("\n")
+    color.
+        NewWithOption(
+            color.GetBackgroundHiOption("yellow"),
+            color.GetForegroundOption("magenta"),
+            color.GetBaseOption("bold"),
+            color.GetBaseOption("blinkRapid"),
+        ).
+        Print("软连接创建成功")
+    fmt.Print("\n")
 }
