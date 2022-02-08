@@ -23,3 +23,4 @@ type Index struct {
 func (this *Index) Index(ctx *gin.Context) {
     this.Success(ctx, "例子信息获取成功")
 }
+

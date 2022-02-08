@@ -27,6 +27,15 @@ func (this *Exception) WithData(name string, data interface{}) *Exception {
     return this
 }
 
+// 获取
+func (this *Exception) GetData(name string) interface{} {
+    if data, ok := this.data[name]; ok {
+        return data
+    }
+
+    return nil
+}
+
 // 批量设置
 func (this *Exception) WithDatas(data map[string]interface{}) *Exception {
     if len(data) > 0 {
@@ -38,18 +47,25 @@ func (this *Exception) WithDatas(data map[string]interface{}) *Exception {
     return this
 }
 
-// 获取
-func (this *Exception) GetData(name string) interface{} {
-    if data, ok := this.data[name]; ok {
-        return data
-    }
-
-    return nil
-}
-
 // 获取全部
 func (this *Exception) GetDatas() map[string]interface{} {
     return this.data
+}
+
+// 设置状态码
+func (this *Exception) WithCode(data int) *Exception {
+    return this.WithData("code", data)
+}
+
+// 获取状态码
+func (this *Exception) GetCode() int {
+    data := this.GetData("code")
+
+    if data != nil {
+        return data.(int)
+    }
+
+    return 0
 }
 
 // 设置文件信息
@@ -66,6 +82,22 @@ func (this *Exception) GetFile() string {
     }
 
     return ""
+}
+
+// 设置文件行
+func (this *Exception) WithLine(data int) *Exception {
+    return this.WithData("line", data)
+}
+
+// 获取文件行
+func (this *Exception) GetLine() int {
+    data := this.GetData("line")
+
+    if data != nil {
+        return data.(int)
+    }
+
+    return 0
 }
 
 // 设置错误信息
@@ -85,16 +117,16 @@ func (this *Exception) GetMessage() string {
 }
 
 // 设置堆栈信息
-func (this *Exception) WithTrace(data []string) *Exception {
+func (this *Exception) WithTrace(data []Stack) *Exception {
     return this.WithData("trace", data)
 }
 
 // 获取堆栈信息
-func (this *Exception) GetTrace() []string {
+func (this *Exception) GetTrace() []Stack {
     data := this.GetData("trace")
 
     if data != nil {
-        return data.([]string)
+        return data.([]Stack)
     }
 
     return nil

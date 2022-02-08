@@ -202,7 +202,7 @@ func (this *Publisher) PublishFile(from string, to string) {
 
         file.CopyFile(from, to)
 
-        this.Status(from, to, "File")
+        this.Status(from, to, "文件")
     }
 }
 
@@ -213,7 +213,7 @@ func (this *Publisher) PublishDirectory(from string, to string) {
     // 文件夹复制
     file.CopyDir(from, to)
 
-    this.Status(from, to, "Directory")
+    this.Status(from, to, "文件夹")
 }
 
 // 创建文件夹
@@ -237,13 +237,15 @@ func (this *Publisher) Status(from string, to string, typ string) {
         panic(err2)
     }
 
-    from = strings.TrimPrefix(from, path.BasePath())
-    to = strings.TrimPrefix(to, path.BasePath())
+    basePath := path.BasePath()
 
-    from = strings.Replace(from, "\\", "/", -1)
-    to = strings.Replace(to, "\\", "/", -1)
+    from = strings.TrimPrefix(from, basePath)
+    to = strings.TrimPrefix(to, basePath)
 
-    color.Magentaln("\n复制 " + typ + " [" + from + "] 到 [" + to + "] 成功。")
+    from = strings.TrimPrefix(strings.Replace(from, "\\", "/", -1), "/")
+    to = strings.TrimPrefix(strings.Replace(to, "\\", "/", -1), "/")
+
+    color.Magentaln("\n复制" + typ + " [" + from + "] 到 [" + to + "] 成功。")
 }
 
 // 判断

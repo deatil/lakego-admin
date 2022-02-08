@@ -54,6 +54,9 @@ var signingMethodList = map[string]jwt.SigningMethod {
 }
 
 type (
+    // jwt 头数据
+    Header = map[string]interface{}
+
     // jwt 载荷
     Claims = map[string]interface{}
 
@@ -74,6 +77,9 @@ type (
  * @author deatil
  */
 type JWT struct {
+    // 头数据
+    Header Header
+
     // 载荷
     Claims Claims
 
@@ -147,6 +153,12 @@ func (this *JWT) WithNbf(nbf int64) *JWT {
 // 自定义载荷
 func (this *JWT) WithClaim(key string, value interface{}) *JWT {
     this.Claims[key] = value
+    return this
+}
+
+// 自定义 Header
+func (this *JWT) WithHeader(key string, value interface{}) *JWT {
+    this.Header[key] = value
     return this
 }
 
@@ -302,8 +314,12 @@ func (this *JWT) MakeToken() (token string, err error) {
 
     jwtToken := jwt.NewWithClaims(signingMethod, claims)
 
-    // 返回 token
-    token = ""
+    // 设置自定义 Header
+    if len(this.Header) > 0 {
+        for k2, v2 := range this.Header {
+            jwtToken.Header[k2] = v2
+        }
+    }
 
     // 密码
     var secret interface{}

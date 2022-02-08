@@ -18,9 +18,6 @@ func New() *Kernel {
     // 实例化核心
     kernel := &Kernel{}
 
-    // 导入服务提供者
-    kernel.loadDefaultServiceProvider()
-
     return kernel
 }
 
@@ -54,6 +51,15 @@ type Kernel struct {
     NetListener net.Listener
 }
 
+// 默认服务提供者
+func (this *Kernel) LoadDefaultServiceProvider() *Kernel {
+    this.WithServiceProvider(func() interfaces.ServiceProvider {
+        return &lakegoProvider.ServiceProvider{}
+    })
+
+    return this
+}
+
 // 执行
 func (this *Kernel) Terminate() {
     args := os.Args
@@ -77,13 +83,6 @@ func (this *Kernel) RunCmd() {
     if err := rootCmd.Execute(); err != nil {
         os.Exit(-1)
     }
-}
-
-// 默认服务提供者
-func (this *Kernel) loadDefaultServiceProvider() {
-    this.WithServiceProvider(func() interfaces.ServiceProvider {
-        return &lakegoProvider.ServiceProvider{}
-    })
 }
 
 // 添加服务提供者
@@ -116,7 +115,7 @@ func (this *Kernel) RunApp(console bool) {
     newApp := app.New()
 
     // 导入服务提供者
-    this.loadServiceProvider()
+    this.LoadServiceProvider()
 
     // 注册
     allProviders := provider.GetAllProvider()
@@ -141,7 +140,7 @@ func (this *Kernel) RunApp(console bool) {
 }
 
 // 导入服务提供者
-func (this *Kernel) loadServiceProvider() {
+func (this *Kernel) LoadServiceProvider() {
     if len(this.providers) > 0 {
         for _, p := range this.providers {
             provider.AppendProvider(p)

@@ -16,6 +16,7 @@ func Execute() {
 
     // 运行
     kernel.New().
+        LoadDefaultServiceProvider().
         WithServiceProviders(providers).
         Terminate()
 }

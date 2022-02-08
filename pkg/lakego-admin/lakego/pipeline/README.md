@@ -1,55 +1,21 @@
-package controller
+## 通用管道
+
+
+### 项目介绍
+
+*  go 实现的通用管道
+
+
+### 使用方法
+
+~~~go
+package main
 
 import (
-    "github.com/gin-gonic/gin"
-
     "github.com/deatil/lakego-admin/lakego/pipeline"
-    "github.com/deatil/lakego-admin/lakego/exception"
-    "github.com/deatil/lakego-admin/admin/support/controller"
 )
 
-/**
- * 数据
- *
- * @create 2022-1-9
- * @author deatil
- */
-type Data struct {
-    controller.Base
-}
-
-/**
- * 信息
- */
-func (this *Data) Index(ctx *gin.Context) {
-    this.Fetch(ctx, "example::index", gin.H{
-        "msg": "测试数据",
-    })
-}
-
-/**
- * 信息2
- */
-func (this *Data) Show(ctx *gin.Context) {
-    this.Fetch(ctx, "example::show.index", map[string]interface{}{
-        "msg": "测试数据",
-    })
-}
-
-/**
- * Error 测试
- */
-func (this *Data) Error(ctx *gin.Context) {
-    // 报错测试
-    data := ""
-    exception.
-        Try(func(){
-            panic("exception error")
-        }).
-        Catch(func(e *exception.Exception){
-            data = e.GetMessage()
-        })
-
+func main() {
     // 管道测试
     data2 := pipeline.NewPipeline().
         Send("开始的数据").
@@ -97,12 +63,6 @@ func (this *Data) Error(ctx *gin.Context) {
         return data
     })
     data3 := hub.Pipe("hub 测试", "hub")
-
-    this.SuccessWithData(ctx, "Error 测试", gin.H{
-        "error": data,
-        "data2": data2,
-        "data3": data3,
-    })
 }
 
 /* ======================== */
@@ -121,3 +81,5 @@ func (this PipelineEx) Handle(data interface{}, next pipeline.NextFunc) interfac
 
     return data2
 }
+
+~~~

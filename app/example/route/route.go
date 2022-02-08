@@ -37,4 +37,5 @@ func GinRoute(engine *gin.Engine) {
     dataController := new(controller.Data)
     engine.GET("/example/data/index", dataController.Index)
     engine.GET("/example/data/show", dataController.Show)
+    engine.GET("/example/data/error", dataController.Error)
 }

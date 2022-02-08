@@ -17,6 +17,8 @@ func BasePath() string {
         } else {
             basePath = path
         }
+
+        basePath, _ = filepath.Abs(basePath)
     } else {
         basePath = ""
     }
