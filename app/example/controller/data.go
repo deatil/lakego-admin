@@ -44,9 +44,11 @@ func (this *Data) Error(ctx *gin.Context) {
     data := ""
     exception.
         Try(func(){
-            panic("exception error")
+            panic("exception error test")
+
+            // exception.Throw("exception error test 222")
         }).
-        Catch(func(e *exception.Exception){
+        Catch(func(e exception.Exception){
             data = e.GetMessage()
         })
 

@@ -7,26 +7,12 @@ import (
 
 // 抛出异常
 func Throw(message string, code ...int) {
-    exception := NewException().WithMessage(message)
-    if len(code) > 0 {
-        exception.WithCode(code[0])
-    }
+    e := NewExceptionWithMessage(message, code...)
 
-    panic(exception)
+    panic(e)
 }
 
-/**
-使用：
-import "github.com/deatil/lakego-admin/lakego/exception"
-
-exception.
-    Try(func(){
-        panic("exception error")
-    }).
-    Catch(func(e *exception.Exception){
-        fmt.Println(e.GetMessage())
-    })
-*/
+// 拦截
 func Try(f func()) *Error {
     e := &Error{}
     e.Try(f)
@@ -53,7 +39,7 @@ func (this *Error) Try(f func()) *Error {
 }
 
 // 捕获
-func (this *Error) Catch(f func(*Exception)) {
+func (this *Error) Catch(f func(Exception)) {
     defer func() {
         if err := recover(); err != nil {
 
@@ -63,10 +49,11 @@ func (this *Error) Catch(f func(*Exception)) {
 
             // 判断
             switch err.(type) {
-                case *Exception:
-                    err2 := err.(*Exception)
-                    code = err2.GetCode()
-                    message = err2.GetMessage()
+                case Exception:
+                    e := err.(Exception)
+
+                    code = e.GetCode()
+                    message = e.GetMessage()
 
                 case string:
                     message = err.(string)
@@ -82,12 +69,7 @@ func (this *Error) Catch(f func(*Exception)) {
             nowStack := traces[3]
 
             // 存储错误信息
-            e := NewException().
-                WithCode(code).
-                WithFile(nowStack.GetFile()).
-                WithLine(nowStack.GetLine()).
-                WithMessage(message).
-                WithTrace(traces)
+            e := NewException(code, message, nowStack.GetFile(), nowStack.GetLine(), traces)
 
             // 传递错误信息到函数
             f(e)

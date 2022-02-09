@@ -5,18 +5,18 @@ import (
 )
 
 var instanceHub *Hub
-var once sync.Once
+var onceHub sync.Once
 
 // 构造函数
 func NewHub() *Hub {
     return &Hub{
-        Pipelines: make(PipelinesMap),
+        Pipelines: make(HubPipelinesMap),
     }
 }
 
 // 单例
-func NewHubWithInstance() *Hub {
-    once.Do(func() {
+func InstanceHub() *Hub {
+    onceHub.Do(func() {
         instanceHub = NewHub()
     })
 
@@ -28,7 +28,7 @@ type (
     HubCallbackFunc = func(*Pipeline, interface{}) interface{}
 
     // 数据列表
-    PipelinesMap = map[string]HubCallbackFunc
+    HubPipelinesMap = map[string]HubCallbackFunc
 )
 
 /**
@@ -39,7 +39,7 @@ type (
  */
 type Hub struct {
     // 设置的数据
-    Pipelines PipelinesMap
+    Pipelines HubPipelinesMap
 }
 
 // 默认

@@ -342,6 +342,21 @@ func PathExists(path string) (bool, error) {
     return false, err
 }
 
+// 格式化数据大小
+func FormatBytes(size int64) string {
+    units := []string{" B", " KB", " MB", " GB", " TB", " PB"}
+
+    s := float64(size)
+
+    i := 0
+    for ; s >= 1024 && i < 5; i++ {
+        s /= 1024
+    }
+
+    return fmt.Sprintf("%.2f%s", s, units[i])
+}
+
+
 // 创建软链接
 func Symlink(target, link string) error {
     return os.Symlink(target, link)

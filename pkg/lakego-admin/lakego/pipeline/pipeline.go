@@ -1,6 +1,11 @@
 package pipeline
 
 // 构造函数
+func New() *Pipeline {
+    return NewPipeline()
+}
+
+// 构造函数
 func NewPipeline() *Pipeline {
     return &Pipeline{}
 }
