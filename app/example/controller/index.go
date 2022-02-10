@@ -2,9 +2,9 @@ package controller
 
 import (
     "github.com/gin-gonic/gin"
-    // "github.com/deatil/lakego-admin/lakego/router"
+    // "github.com/deatil/lakego-doak/lakego/router"
 
-    "github.com/deatil/lakego-admin/admin/support/controller"
+    "github.com/deatil/lakego-doak/admin/support/controller"
 )
 
 /**

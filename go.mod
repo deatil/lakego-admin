@@ -1,16 +1,16 @@
-module lakego-admin
+module github.com/deatil/lakego-admin
 
 go 1.16
 
 replace (
 	app => ./app
 	github.com/deatil/go-filesystem => ./pkg/go-filesystem
-	github.com/deatil/lakego-admin => ./pkg/lakego-admin
+	github.com/deatil/lakego-doak => ./pkg/lakego-doak
 )
 
 require (
 	app v0.0.3
-	github.com/deatil/lakego-admin v0.0.3
+	github.com/deatil/lakego-doak v0.0.3
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/ugorji/go v1.2.6 // indirect

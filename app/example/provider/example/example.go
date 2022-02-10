@@ -3,7 +3,7 @@ package example
 import (
     "fmt"
 
-    "github.com/deatil/lakego-admin/lakego/provider"
+    "github.com/deatil/lakego-doak/lakego/provider"
 )
 
 /**

@@ -1,7 +1,7 @@
 package main
 
 import (
-    "lakego-admin/bootstrap"
+    "github.com/deatil/lakego-admin/bootstrap"
 )
 
 func main() {

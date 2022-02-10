@@ -3,12 +3,12 @@ package app
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/provider"
-    fileTool "github.com/deatil/lakego-admin/lakego/support/file"
-    pathTool "github.com/deatil/lakego-admin/lakego/support/path"
-    providerInterface "github.com/deatil/lakego-admin/lakego/provider/interfaces"
+    "github.com/deatil/lakego-doak/lakego/provider"
+    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
+    pathTool "github.com/deatil/lakego-doak/lakego/support/path"
+    providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
-    "github.com/deatil/lakego-admin/admin/support/route"
+    "github.com/deatil/lakego-doak/admin/support/route"
 
     // 路由
     router "app/example/route"

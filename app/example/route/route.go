@@ -3,7 +3,7 @@ package route
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "app/example/controller"
 )

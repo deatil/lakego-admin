@@ -3,9 +3,9 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-admin/lakego/pipeline"
-    "github.com/deatil/lakego-admin/lakego/exception"
-    "github.com/deatil/lakego-admin/admin/support/controller"
+    "github.com/deatil/lakego-doak/lakego/pipeline"
+    "github.com/deatil/lakego-doak/lakego/exception"
+    "github.com/deatil/lakego-doak/admin/support/controller"
 )
 
 /**
@@ -51,8 +51,6 @@ func (this *Data) Error(ctx *gin.Context) {
         Catch(func(e exception.Exception){
             data = e.GetMessage()
         })
-
-    // panic("error.")
 
     // 管道测试
     data2 := pipeline.NewPipeline().

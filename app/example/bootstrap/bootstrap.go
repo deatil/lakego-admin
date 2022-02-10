@@ -1,7 +1,7 @@
 package bootstrap
 
 import (
-    "github.com/deatil/lakego-admin/lakego/kernel"
+    "github.com/deatil/lakego-doak/lakego/kernel"
 
     exampleProvider "app/example/provider/app"
 )
