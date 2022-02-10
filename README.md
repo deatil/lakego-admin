@@ -34,7 +34,7 @@
 </table>
 
 更多截图 
-[Lakego Admin 后台截图](https://github.com/deatil/lakego-doak/issues/1)
+[Lakego Admin 后台截图](https://github.com/deatil/lakego-admin/issues/1)
 
 
 ### 安装步骤
@@ -42,7 +42,7 @@
 1. 首先克隆项目到本地
 
 ```
-git clone https://github.com/deatil/lakego-doak.git
+git clone https://github.com/deatil/lakego-admin.git
 ```
 
 2. 然后配置数据库等相关配置，配置位置
