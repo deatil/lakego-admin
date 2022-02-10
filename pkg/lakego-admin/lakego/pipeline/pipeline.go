@@ -11,6 +11,12 @@ func NewPipeline() *Pipeline {
 }
 
 type (
+    // 管道单个
+    PipeItem = interface{}
+
+    // 管道数组
+    PipeArray = []PipeItem
+
     // Next 函数
     NextFunc = func(interface{}) interface{}
 
@@ -22,6 +28,12 @@ type (
 
     // carry 函数
     CarryFunc = func(interface{}, interface{}) interface{}
+
+    // carry 回调函数
+    CarryCallbackFunc = func(interface{}) interface{}
+
+    // 报错回调函数
+    ExceptionCallbackFunc = func(interface{}, interface{}, interface{})
 )
 
 // 管道接口
@@ -41,7 +53,13 @@ type Pipeline struct {
     Passable interface{}
 
     // 管道
-    Pipes []interface{}
+    Pipes PipeArray
+
+    // Carry 回调函数
+    CarryCallback CarryCallbackFunc
+
+    // Exception 回调函数
+    ExceptionCallback ExceptionCallbackFunc
 }
 
 // 设置数据
@@ -52,14 +70,14 @@ func (this *Pipeline) Send(passable interface{}) *Pipeline {
 }
 
 // 设置管道
-func (this *Pipeline) Through(pipes ...interface{}) *Pipeline {
+func (this *Pipeline) Through(pipes ...PipeItem) *Pipeline {
     this.Pipes = pipes
 
     return this
 }
 
 // 数组
-func (this *Pipeline) ThroughArray(pipes []interface{}) *Pipeline {
+func (this *Pipeline) ThroughArray(pipes PipeArray) *Pipeline {
     this.Pipes = pipes
 
     return this
@@ -109,13 +127,13 @@ func (this *Pipeline) Carry() CarryFunc {
                 // 结构体
                 case PipeInterface:
                     newPipe := pipe.(PipeInterface)
-
                     carry := newPipe.Handle(passable, newStack)
+
                     return this.HandleCarry(carry)
 
                 // 默认报错
                 default:
-                    this.HandleException(passable)
+                    this.HandleException(passable, pipe, newStack)
                     return nil
             }
 
@@ -124,16 +142,43 @@ func (this *Pipeline) Carry() CarryFunc {
 }
 
 // 获取设置的管道
-func (this *Pipeline) GetPipes() []interface{} {
+func (this *Pipeline) GetPipes() PipeArray {
     return this.Pipes
 }
 
 // 返回数据
 func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
+    if this.CarryCallback != nil {
+        callbackFunc := this.CarryCallback
+
+        return callbackFunc(carry)
+    }
+
     return carry
 }
 
 // 报错信息
-func (this *Pipeline) HandleException(passable interface{}) {
-    panic("通用管道设置错误")
+func (this *Pipeline) HandleException(passable interface{}, pipe interface{}, stack interface{}) {
+    if this.ExceptionCallback != nil {
+        callbackFunc := this.ExceptionCallback
+
+        callbackFunc(passable, pipe, stack)
+        return
+    }
+
+    panic("管道队列中有格式设置错误")
+}
+
+// 设置 Carry 回调函数
+func (this *Pipeline) WithCarryCallback(callback CarryCallbackFunc) *Pipeline {
+    this.CarryCallback = callback
+
+    return this
+}
+
+// 设置 Exception 回调函数
+func (this *Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) *Pipeline {
+    this.ExceptionCallback = callback
+
+    return this
 }

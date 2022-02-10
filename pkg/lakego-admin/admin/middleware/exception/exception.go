@@ -1,11 +1,14 @@
 package exception
 
 import (
+    "os"
+    "net"
     "fmt"
     "time"
+    "strings"
     "runtime"
     "runtime/debug"
-    
+
     "github.com/deatil/lakego-admin/lakego/router"
     "github.com/deatil/lakego-admin/lakego/facade/logger"
     "github.com/deatil/lakego-admin/lakego/facade/config"
@@ -24,8 +27,17 @@ func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
         defer func() {
             if r := recover(); r != nil {
-                mode := config.New("admin").GetString("Mode")
-                if mode == "dev" {
+                var brokenPipe bool
+                if ne, ok := r.(*net.OpError); ok {
+                    if se, ok := ne.Err.(*os.SyscallError); ok {
+                        if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
+                            brokenPipe = true
+                        }
+                    }
+                }
+
+                mode := config.New("server").GetString("Mode")
+                if mode == "lakegodev" || mode == "dev" {
 
                     time := time.Now()
                     path := ctx.Request.URL.Path
@@ -49,7 +61,7 @@ func Handler() router.HandlerFunc {
                         bodySize,
                     )
 
-                    trace := formatStackTrace(r)
+                    trace := formatStackTrace()
 
                     // 错误输出详情
                     responsedata := router.H{
@@ -68,8 +80,6 @@ func Handler() router.HandlerFunc {
                         default:
                             logger.New().Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
 
-                            // "net/http"
-                            // http.StatusInternalServerError
                             response.ErrorWithData(ctx, fmt.Sprintf("%v", r), code.StatusException, responsedata)
                     }
 
@@ -104,13 +114,15 @@ func Handler() router.HandlerFunc {
                         default:
                             logger.New().Errorf("%s | panic: internal error. message: %s, stack: %v", logStr, r, string(debug.Stack()))
 
-                            // "net/http"
-                            // http.StatusInternalServerError
                             response.Error(ctx, "服务器内部异常", code.StatusException)
                     }
 
                 }
 
+                if brokenPipe {
+                    ctx.Error(r.(error))
+                    ctx.Abort()
+                }
             }
         }()
 
@@ -119,7 +131,7 @@ func Handler() router.HandlerFunc {
 }
 
 // 格式化堆栈信息
-func formatStackTrace(err interface{}) []string {
+func formatStackTrace() []string {
     errs := make([]string, 0)
 
     for i := 1; ; i++ {

@@ -16,7 +16,7 @@ import (
  */
 func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
-        if isLakegoAdminRequest(ctx) {
+        if isTrueRequest(ctx) {
             conf := config.New("cors")
             open := conf.GetBool("OpenAllowOrigin")
 
@@ -47,7 +47,7 @@ func Handler() router.HandlerFunc {
 }
 
 // 系统请求检测
-func isLakegoAdminRequest(ctx *router.Context) bool {
+func isTrueRequest(ctx *router.Context) bool {
     // 前缀匹配
     path := "/" + config.New("admin").GetString("Route.Prefix")
 

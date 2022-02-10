@@ -52,6 +52,8 @@ func (this *Data) Error(ctx *gin.Context) {
             data = e.GetMessage()
         })
 
+    // panic("error.")
+
     // 管道测试
     data2 := pipeline.NewPipeline().
         Send("开始的数据").

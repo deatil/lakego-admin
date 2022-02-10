@@ -42,7 +42,7 @@ func (this *Storage) Exists(path string) bool {
 }
 
 // 判断
-func (this *Storage) Mssing(path string) bool {
+func (this *Storage) Missing(path string) bool {
     return ! this.Exists(path)
 }
 
