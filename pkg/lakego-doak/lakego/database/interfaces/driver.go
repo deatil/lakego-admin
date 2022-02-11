@@ -11,9 +11,6 @@ import (
  * @author deatil
  */
 type Driver interface {
-    // 初始化配置
-    Init(map[string]interface{}) Driver
-
     // 设置配置
     WithConfig(map[string]interface{}) Driver
 

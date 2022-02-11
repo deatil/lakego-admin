@@ -4,7 +4,7 @@ import (
     "strconv"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/helper"
+    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/upload"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
@@ -147,7 +147,7 @@ func (this *Upload) File(ctx *router.Context) {
         Status: 1,
         CreateTime: int(time.NowTime()),
         AddTime: int(time.NowTime()),
-        AddIp: helper.GetRequestIp(ctx),
+        AddIp: tool.GetRequestIp(ctx),
     }
     addError := model.NewDB().
         Model(&adminer).

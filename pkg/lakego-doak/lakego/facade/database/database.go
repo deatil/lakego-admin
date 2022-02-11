@@ -116,10 +116,7 @@ func Register() {
             NewManagerWithPrefix("database").
             RegisterMany(map[string]func(map[string]interface{}) interface{} {
                 "mysql": func(conf map[string]interface{}) interface{} {
-                    driver := &mysqlDriver.Mysql{}
-
-                    driver.WithConfig(conf)
-                    driver.CreateConnection()
+                    driver := mysqlDriver.New(conf)
 
                     return driver
                 },

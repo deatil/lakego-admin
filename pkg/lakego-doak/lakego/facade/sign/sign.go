@@ -98,15 +98,11 @@ func Register() {
                 "md5": func(conf map[string]interface{}) interface{} {
                     driver := &signDriver.MD5{}
 
-                    driver.Init(conf)
-
                     return driver
                 },
 
                 "sha1": func(conf map[string]interface{}) interface{} {
                     driver := &signDriver.SHA1{}
-
-                    driver.Init(conf)
 
                     return driver
                 },

@@ -4,7 +4,7 @@ import (
     "strings"
     "regexp"
 
-    "github.com/deatil/lakego-doak/lakego/helper"
+    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/support/file"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -35,13 +35,13 @@ func MatchPath(ctx *router.Context, path string, current string) bool {
         methods = strings.ToUpper(methods)
         methodList := strings.Split(methods, ",")
         if len(methodList) > 0 {
-            if !helper.InArray(methodList, method) {
+            if !tool.InArray(methodList, method) {
                 return false
             }
         }
     }
 
-    if helper.StringContains(path, "*") == -1 {
+    if tool.StringContains(path, "*") == -1 {
         return path == current
     }
 

@@ -15,6 +15,8 @@ func New(conf ...map[string]interface{}) *Mysql {
         m.Config = conf[0]
     }
 
+    m.CreateConnection()
+
     return m
 }
 

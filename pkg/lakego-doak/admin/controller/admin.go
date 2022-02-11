@@ -5,7 +5,7 @@ import (
     "encoding/json"
 
     "github.com/deatil/lakego-doak/lakego/tree"
-    "github.com/deatil/lakego-doak/lakego/helper"
+    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/support/cast"
@@ -315,7 +315,7 @@ func (this *Admin) Create(ctx *router.Context) {
         Introduce: post["introduce"].(string),
         Status: status,
         AddTime: time.NowTimeToInt(),
-        AddIp: helper.GetRequestIp(ctx),
+        AddIp: tool.GetRequestIp(ctx),
     }
 
     err2 := model.NewDB().
@@ -725,7 +725,7 @@ func (this *Admin) Logout(ctx *router.Context) {
         Where("id = ?", refreshAdminid).
         Updates(map[string]interface{}{
             "refresh_time": time.NowTimeToInt(),
-            "refresh_ip": helper.GetRequestIp(ctx),
+            "refresh_ip": tool.GetRequestIp(ctx),
         })
 
     this.Success(ctx, "账号退出成功")

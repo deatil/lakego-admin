@@ -34,13 +34,6 @@ type Driver struct {
     Config map[string]interface{}
 }
 
-// 初始化
-func (this *Driver) Init(config map[string]interface{}) interfaces.Driver {
-    this.Config = config
-
-    return this
-}
-
 // 设置配置
 func (this *Driver) WithConfig(config map[string]interface{}) interfaces.Driver {
     this.Config = config

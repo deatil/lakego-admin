@@ -4,7 +4,7 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/tree"
-    "github.com/deatil/lakego-doak/lakego/helper"
+    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/time"
@@ -320,7 +320,7 @@ func (this *AuthRule) Create(ctx *router.Context) {
         Listorder: cast.ToString(listorder),
         Status: status,
         AddTime: time.NowTimeToInt(),
-        AddIp: helper.GetRequestIp(ctx),
+        AddIp: tool.GetRequestIp(ctx),
     }
 
     err2 := model.NewDB().
@@ -391,7 +391,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
             "listorder": listorder,
             "status": status,
             "add_time": time.NowTimeToInt(),
-            "add_ip": helper.GetRequestIp(ctx),
+            "add_ip": tool.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {

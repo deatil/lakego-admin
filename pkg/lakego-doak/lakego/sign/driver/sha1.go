@@ -9,10 +9,6 @@ import (
 type SHA1 struct {
 }
 
-// 初始化
-func (this *SHA1) Init(conf map[string]interface{}) {
-}
-
 // 签名
 func (this *SHA1) Sign(data string) string {
     return strings.ToUpper(crypt.SHA1(data))

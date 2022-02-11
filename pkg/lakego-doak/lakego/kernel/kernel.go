@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/provider/interfaces"
-    lakegoProvider "github.com/deatil/lakego-doak/lakego/service/lakego"
+    lakegoServiceProvider "github.com/deatil/lakego-doak/lakego/serviceprovider/lakego"
 
     _ "github.com/deatil/lakego-doak/lakego/facade/database"
 )
@@ -54,7 +54,7 @@ type Kernel struct {
 // 默认服务提供者
 func (this *Kernel) LoadDefaultServiceProvider() *Kernel {
     this.WithServiceProvider(func() interfaces.ServiceProvider {
-        return &lakegoProvider.ServiceProvider{}
+        return &lakegoServiceProvider.ServiceProvider{}
     })
 
     return this

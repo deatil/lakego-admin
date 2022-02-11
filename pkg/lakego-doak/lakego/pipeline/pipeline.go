@@ -149,9 +149,9 @@ func (this *Pipeline) GetPipes() PipeArray {
 // 返回数据
 func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
     if this.CarryCallback != nil {
-        callbackFunc := this.CarryCallback
+        callback := this.CarryCallback
 
-        return callbackFunc(carry)
+        return callback(carry)
     }
 
     return carry
@@ -160,13 +160,13 @@ func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
 // 报错信息
 func (this *Pipeline) HandleException(passable interface{}, pipe interface{}, stack interface{}) {
     if this.ExceptionCallback != nil {
-        callbackFunc := this.ExceptionCallback
+        callback := this.ExceptionCallback
 
-        callbackFunc(passable, pipe, stack)
+        callback(passable, pipe, stack)
         return
     }
 
-    panic("管道队列中有格式设置错误")
+    panic("管道队列中有格式错误数据")
 }
 
 // 设置 Carry 回调函数

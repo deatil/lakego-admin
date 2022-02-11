@@ -226,6 +226,17 @@ func (this *App) RunningInConsole() bool {
     return this.RunInConsole
 }
 
+// 是否为开发者模式
+func (this *App) IsDev() bool {
+    mode := config.New("server").GetString("Mode")
+
+    if mode == "dev" {
+        return true
+    } else {
+        return false
+    }
+}
+
 // 设置自定义监听
 func (this *App) WithNetListener(listener net.Listener) *App {
     this.NetListener = listener
@@ -340,6 +351,9 @@ func (this *App) runApp() {
 func (this *App) ServerRun() {
     conf := config.New("server")
 
+    // 报错数据
+    var err error
+
     // 运行方式
     runType := conf.GetString("Default")
     switch runType {
@@ -355,7 +369,7 @@ func (this *App) ServerRun() {
                 this.GraceRun(addr)
             } else {
                 // gin 自带运行
-                this.RouteEngine.Run(addr)
+                err = this.RouteEngine.Run(addr)
             }
 
         case "TLS":
@@ -369,7 +383,7 @@ func (this *App) ServerRun() {
             certFile = this.FormatPath(certFile)
             keyFile = this.FormatPath(keyFile)
 
-            this.RouteEngine.RunTLS(addr, certFile, keyFile)
+            err = this.RouteEngine.RunTLS(addr, certFile, keyFile)
 
         case "Unix":
             // 文件
@@ -378,17 +392,17 @@ func (this *App) ServerRun() {
             // 格式化
             file = this.FormatPath(file)
 
-            this.RouteEngine.RunUnix(file)
+            err = this.RouteEngine.RunUnix(file)
 
         case "Fd":
             // fd
             fd := conf.GetInt("Types.Fd.Fd")
 
-            this.RouteEngine.RunFd(fd)
+            err = this.RouteEngine.RunFd(fd)
 
         case "NetListener":
             if this.NetListener != nil {
-                this.RouteEngine.RunListener(this.NetListener)
+                err = this.RouteEngine.RunListener(this.NetListener)
             } else {
                 // 监听
                 typ := conf.GetString("Types.NetListener.Type")
@@ -396,12 +410,17 @@ func (this *App) ServerRun() {
 
                 netListener, _ := net.Listen(typ, addr)
 
-                this.RouteEngine.RunListener(netListener)
+                err = this.RouteEngine.RunListener(netListener)
             }
 
         default:
             panic("服务启动错误")
     }
+
+    if err != nil {
+        log.Fatalf("listen: %s\n", err)
+    }
+
 }
 
 // 优雅地关机

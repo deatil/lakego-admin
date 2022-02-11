@@ -65,13 +65,10 @@ func Permission(name string, once ...bool) *permission.Permission {
     configfile := permissionConfig["rbacmodel"].(string)
     modelConf := path.FormatPath(configfile)
 
-    // permission 使用
-    c := &permission.Permission{}
+    // 添加适配器
+    perm := permission.New(adapter.(interfaces.Adapter), modelConf)
 
-    c.WithAdapter(adapter.(interfaces.Adapter))
-    c.WithModelConf(modelConf)
-
-    return c
+    return perm
 }
 
 func GetDefaultAdapter() string {

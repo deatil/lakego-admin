@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/tree"
-    "github.com/deatil/lakego-doak/lakego/helper"
+    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/time"
@@ -292,7 +292,7 @@ func (this *AuthGroup) Create(ctx *router.Context) {
         Listorder: listorder,
         Status: status,
         AddTime: time.NowTimeToInt(),
-        AddIp: helper.GetRequestIp(ctx),
+        AddIp: tool.GetRequestIp(ctx),
     }
 
     err2 := model.NewDB().
@@ -357,7 +357,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
             "listorder": listorder,
             "status": status,
             "add_time": time.NowTimeToInt(),
-            "add_ip": helper.GetRequestIp(ctx),
+            "add_ip": tool.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {

@@ -9,10 +9,6 @@ import (
 type MD5 struct {
 }
 
-// 初始化
-func (this *MD5) Init(conf map[string]interface{}) {
-}
-
 // 签名
 func (this *MD5) Sign(data string) string {
     return strings.ToUpper(crypt.MD5(data))

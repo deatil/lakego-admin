@@ -7,9 +7,6 @@ package interfaces
  * @author deatil
  */
 type Driver interface {
-    // 初始化配置
-    Init(map[string]interface{}) Driver
-
     // 判断是否存在
     Exists(string) bool
 

@@ -3,6 +3,7 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
+    "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
     "github.com/deatil/lakego-doak/admin/support/controller"
@@ -54,6 +55,9 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // 管道测试
     data2 := pipeline.NewPipeline().
+        WithCarryCallback(func(carry interface{}) interface{} {
+            return carry
+        }).
         Send("开始的数据").
         Through(
             func(data interface{}, next pipeline.NextFunc) interface{} {
@@ -74,7 +78,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
                 return data2
             },
-            &PipelineEx{},
+            PipelineEx{},
         ).
         ThenReturn()
 
@@ -100,10 +104,17 @@ func (this *Data) Error(ctx *gin.Context) {
     })
     data3 := hub.Pipe("hub 测试", "hub")
 
+    // 容器
+    cont := container.Instance()
+    cont.Set("data", "info-2222333")
+    // cont.Delete("data")
+    data5 := cont.Get("data")
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
         "data3": data3,
+        "data5": data5,
     })
 }
 
@@ -115,11 +126,11 @@ type PipelineEx struct {}
 func (this PipelineEx) Handle(data interface{}, next pipeline.NextFunc) interface{} {
     old := data.(string)
 
-    old = old + ", struct 数据1"
+    old = old + ", struct 数据开始"
 
     data2 := next(old)
 
-    data2 = data2.(string) + ", struct 数据2"
+    data2 = data2.(string) + ", struct 数据结束"
 
     return data2
 }

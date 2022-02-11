@@ -35,4 +35,7 @@ type App interface {
 
     // 获取命令行状态
     RunningInConsole() bool
+
+    // 是否为开发者模式
+    IsDev() bool
 }

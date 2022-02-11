@@ -97,7 +97,7 @@ type Redis struct {
 
 // 设置
 func (this Redis) Set(key string, value interface{}, expiration int) error {
-    ttl := this.IntTimeToDuration(expiration)
+    ttl := this.FormatTime(expiration)
 
     return this.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
@@ -159,6 +159,6 @@ func (this Redis) wrapperKey(key string) string {
 }
 
 // int 时间格式化为 Duration 格式
-func (this Redis) IntTimeToDuration(t int) time.Duration {
+func (this Redis) FormatTime(t int) time.Duration {
     return time.Second * time.Duration(int64(t))
 }
