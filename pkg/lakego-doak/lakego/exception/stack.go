@@ -85,7 +85,7 @@ func (this Stack) GetSource() string {
 
     lines = bytes.Split(data, []byte{'\n'})
 
-    info := fmt.Sprintf("%s",this.FormatSource(lines, this.Line))
+    info := fmt.Sprintf("%s", this.FormatSource(lines, this.Line))
 
     return info
 }
