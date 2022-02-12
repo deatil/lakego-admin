@@ -3,7 +3,7 @@ package recovery
 import (
     "bytes"
     "fmt"
-    "io/ioutil"
+    "io"
     "net"
     "net/http/httputil"
     "os"
@@ -144,19 +144,26 @@ func stack(skip int) ([]byte, []string) {
             break
         }
 
-        errs = append(errs, fmt.Sprintf("%s:%d (0x%x)", file, line, pc))
-
         fmt.Fprintf(buf, "%s:%d (0x%x)\n", file, line, pc)
         if file != lastFile {
-            data, err := ioutil.ReadFile(file)
+            openFile, openErr := os.Open(file)
+            if openErr != nil {
+                continue
+            }
+            defer openFile.Close()
+
+            data, err := io.ReadAll(openFile)
             if err != nil {
                 continue
             }
+
             lines = bytes.Split(data, []byte{'\n'})
             lastFile = file
         }
 
         fmt.Fprintf(buf, "\t%s: %s\n", function(pc), source(lines, line))
+
+        errs = append(errs, fmt.Sprintf("%s:%d (0x%x) [%s: %s]", file, line, pc, function(pc), source(lines, line)))
     }
 
     return buf.Bytes(), errs

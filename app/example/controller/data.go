@@ -42,7 +42,7 @@ func (this *Data) Show(ctx *gin.Context) {
  */
 func (this *Data) Error(ctx *gin.Context) {
     // 报错测试
-    data := ""
+    data := []string{}
     exception.
         Try(func(){
             panic("exception error test")
@@ -50,7 +50,12 @@ func (this *Data) Error(ctx *gin.Context) {
             // exception.Throw("exception error test 222")
         }).
         Catch(func(e exception.Exception){
-            data = e.GetMessage()
+            // data = e.GetMessage()
+
+            trace := e.GetTrace()
+            for _, ev := range trace {
+                data = append(data, ev.LongString())
+            }
         })
 
     // 管道测试
