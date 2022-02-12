@@ -6,6 +6,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
+    "github.com/deatil/lakego-doak/lakego/support/cmd"
     "github.com/deatil/lakego-doak/admin/support/controller"
 )
 
@@ -114,6 +115,9 @@ func (this *Data) Error(ctx *gin.Context) {
     cont.Set("data", "info-2222333")
     // cont.Delete("data")
     data5 := cont.Get("data")
+
+    // 脚本相关
+    cmd.New(false, 25)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,

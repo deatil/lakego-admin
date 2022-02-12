@@ -4,9 +4,6 @@ import(
     "sync"
 )
 
-// 锁
-var lock = new(sync.RWMutex)
-
 var instance *Register
 var once sync.Once
 
@@ -27,6 +24,20 @@ func New() *Register {
     return instance
 }
 
+type (
+    // 注册的方法
+    RegisterFunc = func(map[string]interface{}) interface{}
+
+    // 配置 Map
+    ConfigMap = map[string]interface{}
+
+    // 已注册 Map
+    RegistersMap = map[string]RegisterFunc
+
+    // 已使用 Map
+    UsedMap = map[string]interface{}
+)
+
 /**
  * 注册器
  *
@@ -34,17 +45,20 @@ func New() *Register {
  * @author deatil
  */
 type Register struct {
+    // 锁定
+    mu sync.RWMutex
+
     // 已注册数据
-    registers map[string]func(map[string]interface{}) interface{}
+    registers RegistersMap
 
     // 已使用
-    used map[string]interface{}
+    used UsedMap
 }
 
 // 注册
-func (this *Register) With(name string, f func(map[string]interface{}) interface{}) {
-    lock.Lock()
-    defer lock.Unlock()
+func (this *Register) With(name string, f RegisterFunc) {
+    this.mu.Lock()
+    defer this.mu.Unlock()
 
     if exists := this.Exists(name); exists {
         this.Delete(name)
@@ -56,8 +70,15 @@ func (this *Register) With(name string, f func(map[string]interface{}) interface
 /**
  * 获取
  */
-func (this *Register) Get(name string, conf map[string]interface{}) interface{} {
-    if value, exists := this.registers[name]; exists {
+func (this *Register) Get(name string, conf ConfigMap) interface{} {
+    var value RegisterFunc
+    var exists bool
+
+    this.WithRLock(func() {
+        value, exists = this.registers[name]
+    })
+
+    if exists {
         return value(conf)
     }
 
@@ -67,9 +88,16 @@ func (this *Register) Get(name string, conf map[string]interface{}) interface{} 
 /**
  * 获取单例
  */
-func (this *Register) GetOnce(name string, conf map[string]interface{}) interface{} {
-    if usedValue, usedExists := this.used[name]; usedExists {
-        return usedValue
+func (this *Register) GetOnce(name string, conf ConfigMap) interface{} {
+    var value interface{}
+    var exists bool
+
+    this.WithRLock(func() {
+        value, exists = this.used[name]
+    })
+
+    if exists {
+        return value
     }
 
     this.used[name] = this.Get(name, conf)
@@ -81,11 +109,9 @@ func (this *Register) GetOnce(name string, conf map[string]interface{}) interfac
  * 判断
  */
 func (this *Register) Exists(name string) bool {
-    if _, exists := this.registers[name]; exists {
-        return true
-    }
+    _, exists := this.registers[name]
 
-    return false
+    return exists
 }
 
 /**
@@ -93,5 +119,17 @@ func (this *Register) Exists(name string) bool {
  */
 func (this *Register) Delete(name string) {
     delete(this.registers, name)
+}
+
+func (this *Register) WithLock(f func()) {
+    this.mu.Lock()
+    f()
+    this.mu.Unlock()
+}
+
+func (this *Register) WithRLock(f func()) {
+    this.mu.RLock()
+    f()
+    this.mu.RUnlock()
 }
 

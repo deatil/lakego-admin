@@ -4,17 +4,27 @@ import (
     "github.com/google/uuid"
 )
 
-// UUID Define alias
 type UUID = uuid.UUID
 
-// NewUUID Create uuid
-func NewUUID() (UUID, error) {
+// 创建
+func New() (UUID, error) {
     return uuid.NewRandom()
 }
 
-// MustUUID Create uuid(Throw panic if something goes wrong)
+// uuid 字符
+func String() string {
+    v, err := New()
+
+    if err != nil {
+        return ""
+    }
+
+    return v.String()
+}
+
+// 出现错误抛出异常
 func MustUUID() UUID {
-    v, err := NewUUID()
+    v, err := New()
 
     if err != nil {
         panic(err)
@@ -23,7 +33,7 @@ func MustUUID() UUID {
     return v
 }
 
-// MustString Create uuid
+// 创建会抛出异常的 uuid
 func MustString() string {
     return MustUUID().String()
 }
