@@ -2,7 +2,8 @@ package cmd
 
 import (
     "os"
-	"sync"
+    "fmt"
+    "sync"
     "time"
 )
 
@@ -29,6 +30,14 @@ type Cmd struct {
 
     // 延迟时间
     KillDelay time.Duration
+}
+
+func (this *Cmd) GetPid() string {
+    return fmt.Sprintf("%d", os.Getpid())
+}
+
+func (this *Cmd) GetPpid() string {
+    return fmt.Sprintf("%d", os.Getppid())
 }
 
 func (this *Cmd) KillByPid(pid int) error {
