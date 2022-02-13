@@ -87,7 +87,7 @@ func (this *Event) Clone() *Event {
 }
 
 // 返回字符
-func (this *Event) ToString() string {
+func (this *Event) String() string {
     return fmt.Sprintf("Event Type %v", this.Type)
 }
 

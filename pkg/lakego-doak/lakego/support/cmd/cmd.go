@@ -8,10 +8,10 @@ import (
 )
 
 // 构造函数
-func New(sendInterrupt bool, killDelay time.Duration) *Cmd {
+func New() *Cmd {
     return &Cmd{
-        SendInterrupt: sendInterrupt,
-        KillDelay: killDelay,
+        SendInterrupt: false,
+        KillDelay: 15,
     }
 }
 
@@ -32,12 +32,18 @@ type Cmd struct {
     KillDelay time.Duration
 }
 
-func (this *Cmd) GetPid() string {
-    return fmt.Sprintf("%d", os.Getpid())
+// 设置
+func (this *Cmd) WithSendInterrupt(sendInterrupt bool) *Cmd {
+    this.SendInterrupt = sendInterrupt
+
+    return this
 }
 
-func (this *Cmd) GetPpid() string {
-    return fmt.Sprintf("%d", os.Getppid())
+// 设置延迟时间
+func (this *Cmd) WithKillDelay(killDelay time.Duration) *Cmd {
+    this.KillDelay = killDelay
+
+    return this
 }
 
 func (this *Cmd) KillByPid(pid int) error {
@@ -47,6 +53,14 @@ func (this *Cmd) KillByPid(pid int) error {
     }
 
     return proc.Kill()
+}
+
+func (this *Cmd) GetPid() string {
+    return fmt.Sprintf("%d", os.Getpid())
+}
+
+func (this *Cmd) GetPpid() string {
+    return fmt.Sprintf("%d", os.Getppid())
 }
 
 func (this *Cmd) WithLock(f func()) {

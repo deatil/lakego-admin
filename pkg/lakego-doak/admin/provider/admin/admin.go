@@ -1,9 +1,13 @@
 package admin
 
 import (
+    "os"
+    "fmt"
+
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 
@@ -85,6 +89,9 @@ func (this *ServiceProvider) Register() {
 
     // 推送配置
     this.publishConfig()
+
+    // 记录 pid 信息
+    this.putSock()
 }
 
 /**
@@ -196,4 +203,15 @@ func (this *ServiceProvider) publishConfig() {
     this.Publishes(this, map[string]string{
         path: toPath,
     }, "admin-config")
+}
+
+/**
+ * 记录 pid 信息
+ */
+func (this *ServiceProvider) putSock() {
+    file := pathTool.RuntimePath("/pid/lakego.sock")
+
+    contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
+
+    fileTool.WriteFile(file, contents)
 }

@@ -25,7 +25,7 @@ import (
 func Make(workerid int64) (int64, error) {
     snowflake, err := New(workerid)
     if err != nil {
-        return nil, err
+        return 0, err
     }
 
     id := snowflake.Generate()
@@ -48,10 +48,13 @@ func New(workerid int64) (*Snowflake, error) {
 
 const (
     twepoch        = int64(1483228800000)             // 开始时间截 (2017-01-01)
+
     workeridBits   = uint(10)                         // 机器id所占的位数
     sequenceBits   = uint(12)                         // 序列所占的位数
+
     workeridMax    = int64(-1 ^ (-1 << workeridBits)) // 支持的最大机器id数量
-    sequenceMask   = int64(-1 ^ (-1 << sequenceBits)) // 机器ID
+    sequenceMask   = int64(-1 ^ (-1 << sequenceBits)) // 位数
+
     workeridShift  = sequenceBits                     // 机器id左移位数
     timestampShift = sequenceBits + workeridBits      // 时间戳左移位数
 )
@@ -90,7 +93,9 @@ func (this *Snowflake) Generate() int64 {
 
     this.timestamp = now
 
-    r := int64((now-twepoch) << timestampShift | (this.workerid << workeridShift) | (this.sequence))
+    r := int64((now - twepoch) << timestampShift |
+        (this.workerid << workeridShift) |
+        (this.sequence))
 
     this.Unlock()
     return r

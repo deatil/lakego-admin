@@ -12,6 +12,27 @@ import (
     "strings"
 )
 
+// Flags 列表
+const (
+    // 只读模式
+    O_RDONLY int = os.O_RDONLY
+    // 只写模式
+    O_WRONLY int = os.O_WRONLY
+    // 可读可写
+    O_RDWR   int = os.O_RDWR
+    // 追加内容
+    O_APPEND int = os.O_APPEND
+    // 创建文件，如果文件不存在
+    O_CREATE int = os.O_CREATE
+    // 与创建文件一同使用，文件必须存在
+    O_EXCL   int = os.O_EXCL
+    // 打开一个同步的文件流
+    O_SYNC   int = os.O_SYNC
+    // 如果可能，打开时缩短文件
+    O_TRUNC  int = os.O_TRUNC
+)
+
+
 // SelfPath gets compiled executable file absolute path
 func SelfPath() string {
     pt, _ := filepath.Abs(os.Args[0])
@@ -23,7 +44,9 @@ func RealPath(fp string) (string, error) {
     if path.IsAbs(fp) {
         return fp, nil
     }
+
     wd, err := os.Getwd()
+
     return path.Join(wd, fp), err
 }
 
@@ -34,18 +57,19 @@ func SelfDir() string {
 
 // get filepath base name
 func Basename(fp string) string {
-    return path.Base(fp)
+    return filepath.Base(fp)
 }
 
 // get filepath dir name
 func Dir(fp string) string {
-    return path.Dir(fp)
+    return filepath.Dir(fp)
 }
 
 func InsureDir(fp string) error {
     if IsExist(fp) {
         return nil
     }
+
     return os.MkdirAll(fp, os.ModePerm)
 }
 
@@ -154,6 +178,7 @@ func SearchFile(filename string, paths ...string) (fullPath string, err error) {
             return
         }
     }
+
     err = fmt.Errorf("%s not found in paths", fullPath)
     return
 }
@@ -231,8 +256,8 @@ func FilesUnder(dirPath string) ([]string, error) {
     return ret, nil
 }
 
-func MustOpenLogFile(fp string) *os.File {
-    if strings.Contains(fp, "/") {
+func MustOpenFile(fp string) *os.File {
+    if strings.Contains(fp, "/") || strings.Contains(fp, "\\") {
         dir := Dir(fp)
         err := EnsureDir(dir)
         if err != nil {
@@ -342,6 +367,29 @@ func PathExists(path string) (bool, error) {
     return false, err
 }
 
+// 写入文件
+func WriteFile(filename string, contents string, flag ...int) (int, error) {
+    // os.O_CREATE|os.O_RDWR|os.O_APPEND
+    newFlag := os.O_CREATE|os.O_WRONLY
+    if len(flag) > 0 {
+        newFlag = flag[0]
+    }
+
+    data := []byte(contents)
+
+    // 创建文件夹
+    InsureDir(Dir(filename))
+
+    fl, err := os.OpenFile(filename, newFlag, 0666)
+    if err != nil {
+        return 0, err
+    }
+
+    defer fl.Close()
+
+    return fl.Write(data)
+}
+
 // 格式化数据大小
 func FormatBytes(size int64) string {
     units := []string{" B", " KB", " MB", " GB", " TB", " PB"}
@@ -355,7 +403,6 @@ func FormatBytes(size int64) string {
 
     return fmt.Sprintf("%.2f%s", s, units[i])
 }
-
 
 // 创建软链接
 func Symlink(target, link string) error {

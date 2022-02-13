@@ -6,7 +6,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
-    "github.com/deatil/lakego-doak/lakego/support/cmd"
+    "github.com/deatil/lakego-doak/lakego/support/snowflake"
     "github.com/deatil/lakego-doak/admin/support/controller"
 )
 
@@ -116,14 +116,15 @@ func (this *Data) Error(ctx *gin.Context) {
     // cont.Delete("data")
     data5 := cont.Get("data")
 
-    // 脚本相关
-    cmd.New(false, 25)
+    // 雪花算法
+    snowflakeId, _ := snowflake.Make(5)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
         "data3": data3,
         "data5": data5,
+        "snowflakeId": snowflakeId,
     })
 }
 
