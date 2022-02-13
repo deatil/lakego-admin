@@ -17,9 +17,9 @@ import (
 /**
  * 停止 admin 系统服务
  *
- * > ./main lakego-admin:stop
- * > main.exe lakego-admin:stop
- * > go run main.go lakego-admin:stop
+ * > ./main lakego-admin:stop [--pid=12345]
+ * > main.exe lakego-admin:stop [--pid=12345]
+ * > go run main.go lakego-admin:stop [--pid=12345]
  *
  * @create 2022-2-13
  * @author deatil
@@ -28,46 +28,68 @@ var StopCmd = &command.Command{
     Use:   "lakego-admin:stop",
     Short: "停止 admin 系统服务",
     Run: func(cmd *command.Command, args []string) {
-        pidPath := config.New("admin").GetString("PidPath")
+        Stop()
+    },
+}
 
-        location := pathTool.FormatPath(pidPath)
+// 自定义 Pid
+var stopPid string
 
-        file, e := os.Open(location)
-        if e != nil {
-            color.Red(e.Error())
+func init() {
+    pf := StopCmd.Flags()
+    pf.StringVarP(&stopPid, "pid", "p", "", "要停止的pid")
+}
 
-            return
-        }
-        defer file.Close()
+// 停止 admin 系统服务
+func Stop() {
+    pidPath := config.New("admin").GetString("PidPath")
 
-        data, err := io.ReadAll(file)
-        if err != nil {
-            color.Red(err.Error())
+    location := pathTool.FormatPath(pidPath)
 
-            return
-        }
+    file, e := os.Open(location)
+    if e != nil {
+        color.Redln(e.Error())
 
-        contents := fmt.Sprintf("%s", string(data))
+        return
+    }
+    defer file.Close()
 
-        pids := strings.Split(contents, ",")
+    data, err := io.ReadAll(file)
+    if err != nil {
+        color.Redln(err.Error())
 
-        if len(pids) == 0 {
-            color.Red("pid 数据为空")
+        return
+    }
 
-            return
-        }
+    contents := fmt.Sprintf("%s", string(data))
 
-        color.Green("系统服务正在停止...\n")
+    pids := strings.Split(contents, ",")
 
+    if len(pids) == 0 {
+        color.Redln("pid 数据为空")
+
+        return
+    }
+
+    color.Greenln("系统服务正在停止...")
+
+    if stopPid == "" {
         for _, pid := range pids {
             id, err2 := strconv.Atoi(pid)
             if err2 == nil {
                 _, err3 := cmdTool.New().Kill(id)
                 if err3 != nil {
-                    fmt.Println(err3.Error())
+                    color.Redln(err3.Error())
                 }
             }
         }
-
-    },
+    } else {
+        id, err2 := strconv.Atoi(stopPid)
+        if err2 == nil {
+            _, err3 := cmdTool.New().Kill(id)
+            if err3 != nil {
+                color.Redln(err3.Error())
+            }
+        }
+    }
 }
