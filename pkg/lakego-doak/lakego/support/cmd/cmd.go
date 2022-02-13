@@ -11,7 +11,7 @@ import (
 func New() *Cmd {
     return &Cmd{
         SendInterrupt: false,
-        KillDelay: 15,
+        KillDelay: 5,
     }
 }
 

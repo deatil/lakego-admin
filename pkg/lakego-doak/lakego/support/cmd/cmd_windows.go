@@ -9,9 +9,7 @@ import (
     "strings"
 )
 
-func (this *Cmd) Kill(cmd *exec.Cmd) (pid int, err error) {
-    pid = cmd.Process.Pid
-
+func (this *Cmd) Kill(pid int) (int, error) {
     kill := exec.Command("TASKKILL", "/T", "/F", "/PID", strconv.Itoa(pid))
 
     return pid, kill.Run()

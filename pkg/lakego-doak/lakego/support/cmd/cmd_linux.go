@@ -8,9 +8,7 @@ import (
     "time"
 )
 
-func (this *Cmd) Kill(cmd *exec.Cmd) (pid int, err error) {
-    pid = cmd.Process.Pid
-
+func (this *Cmd) Kill(pid int) (pid int, err error) {
     if this.SendInterrupt {
         if err = syscall.Kill(-pid, syscall.SIGINT); err != nil {
             return
@@ -26,11 +24,6 @@ func (this *Cmd) Kill(cmd *exec.Cmd) (pid int, err error) {
 
     if err = syscall.Kill(-pgid, syscall.SIGKILL); err != nil {
         return pgid, err
-    }
-
-    _, err = cmd.Process.Wait()
-    if err != nil {
-        return pid, err
     }
 
     return

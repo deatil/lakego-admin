@@ -4,6 +4,9 @@ Route:
   Middleware: "lakego-admin"
   AdminMiddleware: "lakego-admin-check"
 
+# pid 存放目录
+PidPath: "{runtime}/pid/lakego.sock"
+
 # 文件上传
 Upload:
   # Disk in `config/filesystem.yml`.

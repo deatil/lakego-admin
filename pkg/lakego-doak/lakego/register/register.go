@@ -12,8 +12,8 @@ var once sync.Once
  */
 func New() *Register {
     once.Do(func() {
-        register := make(map[string]func(map[string]interface{}) interface{})
-        used := make(map[string]interface{})
+        register := make(RegistersMap)
+        used := make(UsedMap)
 
         instance = &Register{
             registers: register,

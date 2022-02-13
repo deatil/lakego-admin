@@ -115,6 +115,9 @@ func (this *ServiceProvider) loadCommand() {
 
     // 系统信息
     this.AddCommand(cmd.VersionCmd)
+
+    // 停止 admin 系统服务
+    this.AddCommand(cmd.StopCmd)
 }
 
 /**
@@ -209,7 +212,9 @@ func (this *ServiceProvider) publishConfig() {
  * 记录 pid 信息
  */
 func (this *ServiceProvider) putSock() {
-    file := pathTool.RuntimePath("/pid/lakego.sock")
+    pidPath := config.New("admin").GetString("PidPath")
+
+    file := pathTool.FormatPath(pidPath)
 
     contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
 
