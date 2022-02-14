@@ -8,7 +8,7 @@ import (
 /**
  * 使用
  */
-func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
+func New(driver interfaces.Driver, conf ...ConfigMap) *Database {
     d := &Database{
         driver: driver,
     }
@@ -20,6 +20,11 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
     return d
 }
 
+type (
+    // 配置 map
+    ConfigMap = map[string]interface{}
+)
+
 /**
  * 数据库
  *
@@ -28,14 +33,14 @@ func New(driver interfaces.Driver, conf ...map[string]interface{}) *Database {
  */
 type Database struct {
     // 配置
-    config map[string]interface{}
+    config ConfigMap
 
     // 驱动
     driver interfaces.Driver
 }
 
 // 设置配置
-func (this *Database) WithConfig(config map[string]interface{}) interfaces.Database {
+func (this *Database) WithConfig(config ConfigMap) interfaces.Database {
     this.config = config
 
     return this

@@ -32,14 +32,13 @@ const (
     O_TRUNC  int = os.O_TRUNC
 )
 
-
-// SelfPath gets compiled executable file absolute path
+// 执行文件绝对路径
 func SelfPath() string {
     pt, _ := filepath.Abs(os.Args[0])
     return pt
 }
 
-// get absolute filepath, based on built executable file
+// 绝对路径
 func RealPath(fp string) (string, error) {
     if path.IsAbs(fp) {
         return fp, nil
@@ -50,21 +49,22 @@ func RealPath(fp string) (string, error) {
     return path.Join(wd, fp), err
 }
 
-// SelfDir gets compiled executable file directory
+// 执行文件爱你目录
 func SelfDir() string {
     return filepath.Dir(SelfPath())
 }
 
-// get filepath base name
+// 文件目录名称
 func Basename(fp string) string {
     return filepath.Base(fp)
 }
 
-// get filepath dir name
+// 获取文件夹名称
 func Dir(fp string) string {
     return filepath.Dir(fp)
 }
 
+// 创建文件夹
 func InsureDir(fp string) error {
     if IsExist(fp) {
         return nil
@@ -73,7 +73,7 @@ func InsureDir(fp string) error {
     return os.MkdirAll(fp, os.ModePerm)
 }
 
-// mkdir dir if not exist
+// 创建文件夹
 func EnsureDir(fp string) error {
     return os.MkdirAll(fp, os.ModePerm)
 }
@@ -88,7 +88,7 @@ func IsReadable(file string) error {
     return nil
 }
 
-// ensure the datadir and make sure it's rw-able
+// 创建文件夹并确认能够读写
 func EnsureDirRW(dataDir string) error {
     err := EnsureDir(dataDir)
     if err != nil {
@@ -101,6 +101,7 @@ func EnsureDirRW(dataDir string) error {
         if os.IsPermission(err) {
             return fmt.Errorf("open %s: rw permission denied", dataDir)
         }
+
         return err
     }
 
@@ -115,42 +116,43 @@ func EnsureDirRW(dataDir string) error {
     return nil
 }
 
-// create one file
+// 创建
 func Create(name string) (*os.File, error) {
     return os.Create(name)
 }
 
-// remove one file
+// 删除
 func Remove(name string) error {
     return os.Remove(name)
 }
 
-// close fd
+// 关闭
 func Close(fd *os.File) error {
     return fd.Close()
 }
 
+// 后缀
 func Ext(fp string) string {
     return path.Ext(fp)
 }
 
-// rename file name
+// 重命名文件
 func Rename(src string, target string) error {
     return os.Rename(src, target)
 }
 
-// delete file
+// 删除文件
 func Unlink(fp string) error {
     return os.Remove(fp)
 }
 
-// IsFile checks whether the path is a file,
-// it returns false when it's a directory or does not exist.
+// 是否为文件
 func IsFile(fp string) bool {
     f, e := os.Stat(fp)
     if e != nil {
         return false
     }
+
     return !f.IsDir()
 }
 
@@ -160,18 +162,18 @@ func IsDir(fp string) bool {
     if err != nil {
         return false
     }
+
     return s.IsDir()
 }
 
-// IsExist checks whether a file or directory exists.
-// It returns false when the file or directory does not exist.
+// 文件是否存在
 func IsExist(fp string) bool {
     _, err := os.Stat(fp)
+
     return err == nil || os.IsExist(err)
 }
 
-// Search a file in paths.
-// this is often used in search config file in /etc ~/
+// 在目录里搜索文件
 func SearchFile(filename string, paths ...string) (fullPath string, err error) {
     for _, pt := range paths {
         if fullPath = filepath.Join(pt, filename); IsExist(fullPath) {
@@ -183,25 +185,27 @@ func SearchFile(filename string, paths ...string) (fullPath string, err error) {
     return
 }
 
-// get file modified time
+// 文件最后更新时间
 func FileMTime(fp string) (int64, error) {
     f, e := os.Stat(fp)
     if e != nil {
         return 0, e
     }
+
     return f.ModTime().Unix(), nil
 }
 
-// get file size as how many bytes
+// 文件大小，单位： bytes
 func FileSize(fp string) (int64, error) {
     f, e := os.Stat(fp)
     if e != nil {
         return 0, e
     }
+
     return f.Size(), nil
 }
 
-// list dirs under dirPath
+// 列出文件夹
 func DirsUnder(dirPath string) ([]string, error) {
     if !IsExist(dirPath) {
         return []string{}, nil
@@ -230,7 +234,7 @@ func DirsUnder(dirPath string) ([]string, error) {
     return ret, nil
 }
 
-// list files under dirPath
+// 列出文件
 func FilesUnder(dirPath string) ([]string, error) {
     if !IsExist(dirPath) {
         return []string{}, nil
@@ -256,6 +260,7 @@ func FilesUnder(dirPath string) ([]string, error) {
     return ret, nil
 }
 
+// 打开文件
 func MustOpenFile(fp string) *os.File {
     if strings.Contains(fp, "/") || strings.Contains(fp, "\\") {
         dir := Dir(fp)
@@ -388,6 +393,22 @@ func WriteFile(filename string, contents string, flag ...int) (int, error) {
     defer fl.Close()
 
     return fl.Write(data)
+}
+
+// 读取文件
+func ReadFile(filename string) (string, error) {
+    file, err := os.Open(filename)
+    if err != nil {
+        return "", err
+    }
+    defer file.Close()
+
+    data, err2 := io.ReadAll(file)
+    if err2 != nil {
+        return "", err2
+    }
+
+    return string(data), nil
 }
 
 // 格式化数据大小

@@ -1,9 +1,6 @@
 package cmd
 
 import (
-    "io"
-    "os"
-    "fmt"
     "strconv"
     "strings"
 
@@ -11,6 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     cmdTool "github.com/deatil/lakego-doak/lakego/support/cmd"
+    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
 )
 
@@ -43,28 +41,16 @@ func init() {
 // 停止 admin 系统服务
 func Stop() {
     pidPath := config.New("admin").GetString("PidPath")
-
     location := pathTool.FormatPath(pidPath)
 
-    file, e := os.Open(location)
-    if e != nil {
-        color.Redln(e.Error())
-
-        return
-    }
-    defer file.Close()
-
-    data, err := io.ReadAll(file)
+    contents, err := fileTool.ReadFile(location)
     if err != nil {
         color.Redln(err.Error())
 
         return
     }
 
-    contents := fmt.Sprintf("%s", string(data))
-
     pids := strings.Split(contents, ",")
-
     if len(pids) == 0 {
         color.Redln("pid 数据为空")
 
