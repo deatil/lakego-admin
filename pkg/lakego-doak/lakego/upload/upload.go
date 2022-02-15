@@ -222,12 +222,14 @@ func (this *Upload) SaveFile(file *multipart.FileHeader) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        return this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname, map[string]interface{}{
+        path, _ := this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname, map[string]interface{}{
             "visibility": this.storagePermission,
         })
+        return path
     }
 
-    return this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname)
+    path, _ := this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname)
+    return path
 }
 
 // 保存打开的文件
@@ -243,12 +245,14 @@ func (this *Upload) SaveOpenedFile(file *os.File) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        return this.storage.PutFileAs(this.GetDirectory(), file, realname, map[string]interface{}{
+        path, _ := this.storage.PutFileAs(this.GetDirectory(), file, realname, map[string]interface{}{
             "visibility": this.storagePermission,
         })
+        return path
     }
 
-    return this.storage.PutFileAs(this.GetDirectory(), file, realname)
+    path, _ := this.storage.PutFileAs(this.GetDirectory(), file, realname)
+    return path
 }
 
 // 保存文本信息
@@ -256,17 +260,24 @@ func (this *Upload) SaveContents(contents string, name string) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        return this.storage.PutContentsAs(this.GetDirectory(), contents, realname, map[string]interface{}{
+        path, _ := this.storage.PutContentsAs(this.GetDirectory(), contents, realname, map[string]interface{}{
             "visibility": this.storagePermission,
         })
+        return path
     }
 
-    return this.storage.PutContentsAs(this.GetDirectory(), contents, realname)
+    path, _ :=  this.storage.PutContentsAs(this.GetDirectory(), contents, realname)
+    return path
 }
 
 // 删除
 func (this *Upload) Destroy(path string) bool {
-    return this.storage.Delete(path)
+    _, err := this.storage.Delete(path)
+    if err != nil {
+        return false
+    }
+
+    return true
 }
 
 // 创建文件夹
@@ -278,4 +289,3 @@ func (this *Upload) EnsureDir(path string) bool {
 
     return true
 }
-

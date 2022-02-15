@@ -3,7 +3,6 @@ package gorm
 import (
     "time"
     "errors"
-    "strconv"
     "strings"
 
     "gorm.io/gorm"
@@ -11,8 +10,10 @@ import (
     "github.com/casbin/casbin/v2/persist"
 
     "github.com/deatil/lakego-doak/lakego/permission/adapter"
+    "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/hash"
     "github.com/deatil/lakego-doak/lakego/support/random"
+    "github.com/deatil/lakego-doak/lakego/support/snowflake"
 )
 
 // 自定义模型
@@ -103,8 +104,8 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    id := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10) + random.String(10))
-    this.ID = id
+    snowflakeId, _ := snowflake.Make(5)
+    this.ID = hash.MD5(cast.ToString(snowflakeId) + cast.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }

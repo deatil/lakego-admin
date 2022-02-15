@@ -27,8 +27,7 @@ func (this *Handler) IsFile() bool {
 
 // 类型
 func (this *Handler) GetType() string {
-    metadata := this.filesystem.GetMetadata(this.path)
-
+    metadata, _ := this.filesystem.GetMetadata(this.path)
     if metadata == nil {
         return "dir"
     }

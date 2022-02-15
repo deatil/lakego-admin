@@ -34,67 +34,67 @@ type Fllesystem interface {
     Has(string) bool
 
     // 上传
-    Write(string, string, ...map[string]interface{}) bool
+    Write(string, string, ...map[string]interface{}) (bool, error)
 
     // 上传
-    WriteStream(string, io.Reader, ...map[string]interface{}) bool
+    WriteStream(string, io.Reader, ...map[string]interface{}) (bool, error)
 
     // 上传
-    Put(string, string, ...map[string]interface{}) bool
+    Put(string, string, ...map[string]interface{}) (bool, error)
 
     // 上传
-    PutStream(string, io.Reader, ...map[string]interface{}) bool
+    PutStream(string, io.Reader, ...map[string]interface{}) (bool, error)
 
     // 更新
-    Update(string, string, ...map[string]interface{}) bool
+    Update(string, string, ...map[string]interface{}) (bool, error)
 
     // 更新
-    UpdateStream(string, io.Reader, ...map[string]interface{}) bool
+    UpdateStream(string, io.Reader, ...map[string]interface{}) (bool, error)
 
     // 读取
-    Read(string) interface{}
+    Read(string) (string, error)
 
     // 读取
-    ReadStream(string) *os.File
+    ReadStream(string) (*os.File, error)
 
     // 重命名
-    Rename(string, string) bool
+    Rename(string, string) (bool, error)
 
     // 复制
-    Copy(string, string) bool
+    Copy(string, string) (bool, error)
 
     // 删除
-    Delete(string) bool
+    Delete(string) (bool, error)
 
     // 读取并删除
     ReadAndDelete(string) (interface{}, error)
 
     // 删除文件夹
-    DeleteDir(string) bool
+    DeleteDir(string) (bool, error)
 
     // 创建文件夹
-    CreateDir(string, ...map[string]interface{}) bool
+    CreateDir(string, ...map[string]interface{}) (bool, error)
 
     // 列出数据
-    ListContents(string, ...bool) []map[string]interface{}
+    ListContents(string, ...bool) ([]map[string]interface{}, error)
 
     // 文件 mime-type
-    GetMimetype(string) string
+    GetMimetype(string) (string, error)
 
     // 文件时间
-    GetTimestamp(string) int64
+    GetTimestamp(string) (int64, error)
 
     // 权限
-    GetVisibility(string) string
+    GetVisibility(string) (string, error)
 
     // 大小
-    GetSize(string) int64
+    GetSize(string) (int64, error)
 
     // 设置权限
-    SetVisibility(string, string) bool
+    SetVisibility(string, string) (bool, error)
 
     // 信息数据
-    GetMetadata(string) map[string]interface{}
+    GetMetadata(string) (map[string]interface{}, error)
 
     // 获取
     Get(string, ...func(Fllesystem, string) interface{}) interface{}

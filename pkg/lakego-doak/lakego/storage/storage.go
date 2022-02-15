@@ -54,55 +54,64 @@ func (this *Storage) Path(path string) string {
 }
 
 // 保存数据流
-func (this *Storage) PutFileAs(path string, resource io.Reader, name string, config ...map[string]interface{}) string {
+func (this *Storage) PutFileAs(path string, resource io.Reader, name string, config ...map[string]interface{}) (string, error) {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := this.PutStream(path, resource, config...)
-
+    result, err := this.PutStream(path, resource, config...)
     if result {
-        return path
+        return path, nil
     }
 
-    return ""
+    return "", err
 }
 
 // 保存文本数据
-func (this *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) string {
+func (this *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) (string, error) {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result := this.Put(path, contents, config...)
+    result, err := this.Put(path, contents, config...)
 
     if result {
-        return path
+        return path, nil
     }
 
-    return ""
+    return "", err
 }
 
 // 头部添加
-func (this *Storage) Prepend(path string, data string, separator string) bool {
+func (this *Storage) Prepend(path string, data string, separator string) (bool, error) {
     if this.Exists(path) {
-        return this.Put(path, data + separator + this.Read(path).(string))
+        readData, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        return this.Put(path, data + separator + readData)
     }
 
     return this.Put(path, data)
 }
 
 // 尾部添加
-func (this *Storage) Append(path string, data string, separator string) bool {
+func (this *Storage) Append(path string, data string, separator string) (bool, error) {
     if this.Exists(path) {
-        return this.Put(path, this.Read(path).(string) + separator + data)
+        readData, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        return this.Put(path, readData + separator + data)
     }
 
     return this.Put(path, data)
 }
 
 // 时间戳
-func (this *Storage) LastModified(path string) int64 {
+func (this *Storage) LastModified(path string) (int64, error) {
     return this.GetTimestamp(path)
 }
 

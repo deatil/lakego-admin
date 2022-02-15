@@ -18,6 +18,14 @@ func NewManagerWithPrefix(prefix string) *Manager {
     }
 }
 
+type (
+    // 配置 Map
+    ManagerConfigMap = map[string]interface{}
+
+    // 注册的方法
+    ManagerRegisterFunc = func(ManagerConfigMap) interface{}
+)
+
 /**
  * 注册管理器
  *
@@ -47,10 +55,10 @@ func (this *Manager) GetPrefix(prefix string) string {
 /**
  * 注册驱动
  */
-func (this *Manager) Register(name string, f func(map[string]interface{}) interface{}) {
+func (this *Manager) Register(name string, f ManagerRegisterFunc) {
     name = this.prefix + name
 
-    New().With(name, func(conf map[string]interface{}) interface{} {
+    New().With(name, func(conf ManagerConfigMap) interface{} {
         return f(conf)
     })
 }
@@ -58,7 +66,7 @@ func (this *Manager) Register(name string, f func(map[string]interface{}) interf
 /**
  * 批量注册驱动
  */
-func (this *Manager) RegisterMany(drivers map[string]func(map[string]interface{}) interface{}) {
+func (this *Manager) RegisterMany(drivers map[string]ManagerRegisterFunc) {
     for name, f := range drivers {
         this.Register(name, f)
     }
@@ -67,7 +75,7 @@ func (this *Manager) RegisterMany(drivers map[string]func(map[string]interface{}
 /**
  * 获取已注册驱动
  */
-func (this *Manager) GetRegister(name string, conf map[string]interface{}, once ...bool) interface{} {
+func (this *Manager) GetRegister(name string, conf ManagerConfigMap, once ...bool) interface{} {
     name = this.prefix + name
 
     var data interface{}

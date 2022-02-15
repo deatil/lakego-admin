@@ -12,8 +12,10 @@ type (
 func ArrayReduce(array []ArrayItem, callback CallableFunc, initial interface{}) ArrayItem {
     data := initial
 
-    for _, item := range array {
-        data = callback(data, item)
+    if len(array) > 0 {
+        for _, item := range array {
+            data = callback(data, item)
+        }
     }
 
     return data

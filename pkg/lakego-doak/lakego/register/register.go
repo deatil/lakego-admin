@@ -12,12 +12,9 @@ var once sync.Once
  */
 func New() *Register {
     once.Do(func() {
-        register := make(RegistersMap)
-        used := make(UsedMap)
-
         instance = &Register{
-            registers: register,
-            used: used,
+            registers: make(RegistersMap),
+            used: make(UsedMap),
         }
     })
 
@@ -25,11 +22,11 @@ func New() *Register {
 }
 
 type (
-    // 注册的方法
-    RegisterFunc = func(map[string]interface{}) interface{}
-
     // 配置 Map
     ConfigMap = map[string]interface{}
+
+    // 注册的方法
+    RegisterFunc = func(ConfigMap) interface{}
 
     // 已注册 Map
     RegistersMap = map[string]RegisterFunc
@@ -60,8 +57,8 @@ func (this *Register) With(name string, f RegisterFunc) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
-    if exists := this.Exists(name); exists {
-        this.Delete(name)
+    if _, exists := this.registers[name]; exists {
+        delete(this.registers, name)
     }
 
     this.registers[name] = f
@@ -71,13 +68,10 @@ func (this *Register) With(name string, f RegisterFunc) {
  * 获取
  */
 func (this *Register) Get(name string, conf ConfigMap) interface{} {
-    var value RegisterFunc
-    var exists bool
+    this.mu.RLock()
+    defer this.mu.RUnlock()
 
-    this.WithRLock(func() {
-        value, exists = this.registers[name]
-    })
-
+    value, exists := this.registers[name]
     if exists {
         return value(conf)
     }
@@ -89,27 +83,35 @@ func (this *Register) Get(name string, conf ConfigMap) interface{} {
  * 获取单例
  */
 func (this *Register) GetOnce(name string, conf ConfigMap) interface{} {
-    var value interface{}
-    var exists bool
+    this.mu.RLock()
+    defer this.mu.RUnlock()
 
-    this.WithRLock(func() {
-        value, exists = this.used[name]
-    })
-
+    // 存在
+    value, exists := this.used[name]
     if exists {
         return value
     }
 
-    this.used[name] = this.Get(name, conf)
+    // 不存在
+    value2, exists2 := this.registers[name]
+    if exists2 {
+        this.used[name] = value2(conf)
 
-    return this.used[name]
+        return this.used[name]
+    }
+
+    return nil
 }
 
 /**
  * 判断
  */
 func (this *Register) Exists(name string) bool {
-    _, exists := this.registers[name]
+    var exists bool
+
+    this.WithRLock(func() {
+        _, exists = this.registers[name]
+    })
 
     return exists
 }
@@ -118,15 +120,19 @@ func (this *Register) Exists(name string) bool {
  * 删除
  */
 func (this *Register) Delete(name string) {
-    delete(this.registers, name)
+    this.WithRLock(func() {
+        delete(this.registers, name)
+    })
 }
 
+// 左
 func (this *Register) WithLock(f func()) {
     this.mu.Lock()
     f()
     this.mu.Unlock()
 }
 
+// 右
 func (this *Register) WithRLock(f func()) {
     this.mu.RLock()
     f()

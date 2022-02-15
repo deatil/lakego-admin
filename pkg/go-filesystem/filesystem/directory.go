@@ -41,11 +41,11 @@ func (this *Directory) SetPath(path string) *Directory {
 }
 
 // 删除文件夹
-func (this *Directory) Delete() bool {
+func (this *Directory) Delete() (bool, error) {
     return this.filesystem.DeleteDir(this.path)
 }
 
 // 列出文件
-func (this *Directory) GetContents(recursive ...bool) []map[string]interface{} {
+func (this *Directory) GetContents(recursive ...bool) ([]map[string]interface{}, error) {
     return this.filesystem.ListContents(this.path, recursive...)
 }

@@ -30,7 +30,10 @@ func New(adapters interfaces.Adapter, conf ...map[string]interface{}) interfaces
  * @author deatil
  */
 type Fllesystem struct {
+    // 适配器
     adapter interfaces.Adapter
+
+    // 配置
     config interfaces.Config
 }
 
@@ -80,7 +83,7 @@ func (this *Fllesystem) Has(path string) bool {
 }
 
 // 写入文件
-func (this *Fllesystem) Write(path string, contents string, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) Write(path string, contents string, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -90,15 +93,15 @@ func (this *Fllesystem) Write(path string, contents string, conf ...map[string]i
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().Write(path, contents, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().Write(path, contents, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 写入数据流
-func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -109,14 +112,14 @@ func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map
     configs := this.PrepareConfig(newConf)
 
     if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
-        return false
+        return false, err
     }
 
-    return true
+    return true, nil
 }
 
 // 更新
-func (this *Fllesystem) Put(path string, contents string, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) Put(path string, contents string, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -127,22 +130,22 @@ func (this *Fllesystem) Put(path string, contents string, conf ...map[string]int
     configs := this.PrepareConfig(newConf)
 
     if this.Has(path) {
-        if _, err := this.GetAdapter().Update(path, contents, configs); err == nil {
-            return true
+        if _, err := this.GetAdapter().Update(path, contents, configs); err != nil {
+            return false, err
         }
 
-        return false
+        return true, nil
     }
 
-    if _, err := this.GetAdapter().Write(path, contents, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().Write(path, contents, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 更新数据流
-func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -153,27 +156,27 @@ func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[s
     configs := this.PrepareConfig(newConf)
 
     if this.Has(path) {
-        if _, err := this.GetAdapter().UpdateStream(path, resource, configs); err == nil {
-            return true
+        if _, err := this.GetAdapter().UpdateStream(path, resource, configs); err != nil {
+            return false, err
         }
 
-        return false
+        return true, nil
     }
 
-    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 读取并删除
 func (this *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
     path = util.NormalizePath(path)
-    contents := this.Read(path)
 
-    if contents == nil {
-        return nil, errors.New("读取失败")
+    contents, err := this.Read(path)
+    if err != nil {
+        return nil, err
     }
 
     this.Delete(path)
@@ -182,7 +185,7 @@ func (this *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
 }
 
 // 更新字符
-func (this *Fllesystem) Update(path string, contents string, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) Update(path string, contents string, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -192,15 +195,15 @@ func (this *Fllesystem) Update(path string, contents string, conf ...map[string]
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().Update(path, contents, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().Update(path, contents, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 更新数据流
-func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]interface{}
@@ -210,88 +213,88 @@ func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...ma
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 文件到字符
-func (this *Fllesystem) Read(path string) interface{} {
+func (this *Fllesystem) Read(path string) (string, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().Read(path)
 
     if err != nil {
-        return nil
+        return "", err
     }
 
-    return object["contents"]
+    return object["contents"].(string), nil
 }
 
 // 读取成数据流
-func (this *Fllesystem) ReadStream(path string) *os.File {
+func (this *Fllesystem) ReadStream(path string) (*os.File, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().ReadStream(path)
 
     if err != nil {
-        return nil
+        return nil, err
     }
 
-    return object["stream"].(*os.File)
+    return object["stream"].(*os.File), nil
 }
 
 // 重命名
-func (this *Fllesystem) Rename(path string, newpath string) bool {
+func (this *Fllesystem) Rename(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
-    if err := this.GetAdapter().Rename(path, newpath); err == nil {
-        return true
+    if err := this.GetAdapter().Rename(path, newpath); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 复制
-func (this *Fllesystem) Copy(path string, newpath string) bool {
+func (this *Fllesystem) Copy(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
     if err := this.GetAdapter().Copy(path, newpath); err != nil {
-        return false
+        return false, err
     }
 
-    return true
+    return true, nil
 }
 
 // 删除
-func (this *Fllesystem) Delete(path string) bool {
+func (this *Fllesystem) Delete(path string) (bool, error) {
     path = util.NormalizePath(path)
 
-    if err := this.GetAdapter().Delete(path); err == nil {
-        return true
+    if err := this.GetAdapter().Delete(path); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 删除文件夹
-func (this *Fllesystem) DeleteDir(dirname string) bool {
+func (this *Fllesystem) DeleteDir(dirname string) (bool, error) {
     dirname = util.NormalizePath(dirname)
     if dirname == "" {
-        return false
+        return false, errors.New("文件夹路径错误")
     }
 
-    if err := this.GetAdapter().DeleteDir(dirname); err == nil {
-        return true
+    if err := this.GetAdapter().DeleteDir(dirname); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 创建文件夹
-func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}) bool {
+func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}) (bool, error) {
     dirname = util.NormalizePath(dirname)
 
     var newConf map[string]interface{}
@@ -301,90 +304,93 @@ func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().CreateDir(dirname, configs); err == nil {
-        return true
+    if _, err := this.GetAdapter().CreateDir(dirname, configs); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 列表
-func (this *Fllesystem) ListContents(dirname string, recursive ...bool) []map[string]interface{} {
+func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[string]interface{}, error) {
     dirname = util.NormalizePath(dirname)
 
-    result, _ := this.GetAdapter().ListContents(dirname, recursive...)
+    result, err := this.GetAdapter().ListContents(dirname, recursive...)
+    if err != nil {
+        return nil, err
+    }
 
-    return result
+    return result, nil
 }
 
 // 类型
-func (this *Fllesystem) GetMimetype(path string) string {
+func (this *Fllesystem) GetMimetype(path string) (string, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().GetMimetype(path)
 
     if err != nil {
-        return ""
+        return "", err
     }
 
-    return object["mimetype"].(string)
+    return object["mimetype"].(string), nil
 }
 
 // 时间戳
-func (this *Fllesystem) GetTimestamp(path string) int64 {
+func (this *Fllesystem) GetTimestamp(path string) (int64, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().GetTimestamp(path)
 
     if err != nil {
-        return 0
+        return 0, err
     }
 
-    return object["timestamp"].(int64)
+    return object["timestamp"].(int64), nil
 }
 
 // 权限
-func (this *Fllesystem) GetVisibility(path string) string {
+func (this *Fllesystem) GetVisibility(path string) (string, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().GetVisibility(path)
 
     if err != nil {
-        return ""
+        return "", err
     }
 
-    return object["visibility"]
+    return object["visibility"], nil
 }
 
 // 大小
-func (this *Fllesystem) GetSize(path string) int64 {
+func (this *Fllesystem) GetSize(path string) (int64, error) {
     path = util.NormalizePath(path)
     object, err := this.GetAdapter().GetSize(path)
 
     if err != nil {
-        return 0
+        return 0, err
     }
 
-    return object["size"].(int64)
+    return object["size"].(int64), nil
 }
 
 // 设置权限
-func (this *Fllesystem) SetVisibility(path string, visibility string) bool {
+func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, error) {
     path = util.NormalizePath(path)
 
-    if _, err := this.GetAdapter().SetVisibility(path, visibility); err == nil {
-        return true
+    if _, err := this.GetAdapter().SetVisibility(path, visibility); err != nil {
+        return false, err
     }
 
-    return false
+    return true, nil
 }
 
 // 信息数据
-func (this *Fllesystem) GetMetadata(path string) map[string]interface{} {
+func (this *Fllesystem) GetMetadata(path string) (map[string]interface{}, error) {
     path = util.NormalizePath(path)
 
-    if info, err := this.GetAdapter().GetMetadata(path); err == nil {
-        return info
+    if info, err := this.GetAdapter().GetMetadata(path); err != nil {
+        return nil, err
+    } else {
+        return info, nil
     }
-
-    return nil
 }
 
 // 获取
@@ -397,7 +403,7 @@ func (this *Fllesystem) Get(path string, handler ...func(interfaces.Fllesystem, 
         return handler[0](this, path)
     }
 
-    data := this.GetMetadata(path)
+    data, _ := this.GetMetadata(path)
 
     if data != nil && data["type"] == "file" {
         file := &File{}
