@@ -49,7 +49,7 @@ func (this *File) Exists() bool {
 }
 
 // 读取
-func (this *File) Read() (interface{}, error) {
+func (this *File) Read() (string, error) {
     return this.filesystem.Read(this.path)
 }
 

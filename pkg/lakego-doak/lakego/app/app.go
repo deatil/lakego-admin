@@ -27,6 +27,7 @@ import (
 // App结构体
 func New() *App {
     return &App{
+        Config: config.New("server"),
         Lock: new(sync.RWMutex),
         ServiceProviders: make(ServiceProviders, 0),
         UsedServiceProviders: make(UsedServiceProviders, 0),
@@ -67,6 +68,9 @@ type (
  * @author deatil
  */
 type App struct {
+    // 配置
+    Config *config.Config
+
     // 锁
     Lock *sync.RWMutex
 
@@ -96,6 +100,13 @@ type App struct {
 
     // 自定义运行监听
     NetListener net.Listener
+}
+
+// 设置配置
+func (this *App) WithConfig(conf *config.Config) *App {
+    this.Config = conf
+
+    return this
 }
 
 // 运行
@@ -228,7 +239,7 @@ func (this *App) RunningInConsole() bool {
 
 // 是否为开发者模式
 func (this *App) IsDev() bool {
-    mode := config.New("server").GetString("Mode")
+    mode := this.Config.GetString("Mode")
 
     if mode == "dev" {
         return true
@@ -249,7 +260,7 @@ func (this *App) runApp() {
     var r *router.Engine
 
     // 配置
-    serverConf := config.New("server")
+    serverConf := this.Config
 
     if !this.RunInConsole {
         mode := serverConf.GetString("Mode")
@@ -349,7 +360,7 @@ func (this *App) runApp() {
 
 // 服务运行
 func (this *App) ServerRun() {
-    conf := config.New("server")
+    conf := this.Config
 
     // 报错数据
     var err error

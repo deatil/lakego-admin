@@ -32,6 +32,16 @@ const (
     O_TRUNC  int = os.O_TRUNC
 )
 
+// 将 path 中的 ‘/’ 转换为系统相关的路径分隔符
+func FromSlash(s string) string {
+    return filepath.FromSlash(s)
+}
+
+// 将 path 中平台相关的路径分隔符转换为 ‘/’
+func ToSlash(s string) string {
+    return filepath.ToSlash(s)
+}
+
 // 执行文件绝对路径
 func SelfPath() string {
     pt, _ := filepath.Abs(os.Args[0])
@@ -46,7 +56,7 @@ func RealPath(fp string) (string, error) {
 
     wd, err := os.Getwd()
 
-    return path.Join(wd, fp), err
+    return filepath.Join(wd, fp), err
 }
 
 // 执行文件爱你目录
@@ -133,7 +143,7 @@ func Close(fd *os.File) error {
 
 // 后缀
 func Ext(fp string) string {
-    return path.Ext(fp)
+    return filepath.Ext(fp)
 }
 
 // 重命名文件

@@ -7,13 +7,18 @@ import(
 /**
  * 初始化
  */
-func New(settings map[string]interface{}) *Config {
+func New(settings SettingsMap) *Config {
     conf := &Config{}
 
     conf.WithSetting(settings)
 
     return conf
 }
+
+type (
+    // 配置 map
+    SettingsMap = map[string]interface{}
+)
 
 /**
  * 配置
@@ -23,7 +28,7 @@ func New(settings map[string]interface{}) *Config {
  */
 type Config struct {
     // 设置
-    settings map[string]interface{}
+    settings SettingsMap
 
     // 配置
     fallback interfaces.Config
@@ -32,7 +37,7 @@ type Config struct {
 /**
  * 设置配置信息
  */
-func (this *Config) WithSetting(settings map[string]interface{}) interfaces.Config {
+func (this *Config) WithSetting(settings SettingsMap) interfaces.Config {
     this.settings = settings
 
     return this

@@ -166,7 +166,7 @@ func (this *MountManager) Has(path string) bool {
 }
 
 // 文件到字符
-func (this *MountManager) Read(path string) (interface{}, error) {
+func (this *MountManager) Read(path string) (string, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Read(newPath)
