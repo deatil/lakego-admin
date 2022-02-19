@@ -151,6 +151,24 @@ func (this *Viper) GetInt64(keyName string) int64 {
     return value
 }
 
+// GetUint
+func (this *Viper) GetUint(keyName string) uint {
+    value := this.conf.GetUint(keyName)
+    return value
+}
+
+// GetUint32
+func (this *Viper) GetUint32(keyName string) uint32 {
+    value := this.conf.GetUint32(keyName)
+    return value
+}
+
+// GetUint64
+func (this *Viper) GetUint64(keyName string) uint64 {
+    value := this.conf.GetUint64(keyName)
+    return value
+}
+
 // float64
 func (this *Viper) GetFloat64(keyName string) float64 {
     value := this.conf.GetFloat64(keyName)
@@ -169,6 +187,12 @@ func (this *Viper) GetDuration(keyName string) time.Duration {
     return value
 }
 
+// GetIntSlice
+func (this *Viper) GetIntSlice(keyName string) []int {
+    value := this.conf.GetIntSlice(keyName)
+    return value
+}
+
 // GetStringSlice
 func (this *Viper) GetStringSlice(keyName string) []string {
     value := this.conf.GetStringSlice(keyName)
@@ -184,6 +208,18 @@ func (this *Viper) GetStringMap(keyName string) map[string]interface{} {
 // GetStringMapString
 func (this *Viper) GetStringMapString(keyName string) map[string]string {
     value := this.conf.GetStringMapString(keyName)
+    return value
+}
+
+// GetStringMapStringSlice
+func (this *Viper) GetStringMapStringSlice(keyName string) map[string][]string {
+    value := this.conf.GetStringMapStringSlice(keyName)
+    return value
+}
+
+// GetSizeInBytes
+func (this *Viper) GetSizeInBytes(keyName string) uint {
+    value := this.conf.GetSizeInBytes(keyName)
     return value
 }
 

@@ -71,86 +71,92 @@ func (this *Config) IsSet(keyName string) bool {
 
 // Get 一个原始值
 func (this *Config) Get(keyName string) interface{} {
-    value := this.adapter.Get(keyName)
-
-    return value
+    return this.adapter.Get(keyName)
 }
 
 // GetString
 func (this *Config) GetString(keyName string) string {
-    value := this.adapter.GetString(keyName)
-
-    return value
+    return this.adapter.GetString(keyName)
 }
 
 // GetBool
 func (this *Config) GetBool(keyName string) bool {
-    value := this.adapter.GetBool(keyName)
-
-    return value
+    return this.adapter.GetBool(keyName)
 }
 
 // GetInt
 func (this *Config) GetInt(keyName string) int {
-    value := this.adapter.GetInt(keyName)
-
-    return value
+    return this.adapter.GetInt(keyName)
 }
 
 // GetInt32
 func (this *Config) GetInt32(keyName string) int32 {
-    value := this.adapter.GetInt32(keyName)
-
-    return value
+    return this.adapter.GetInt32(keyName)
 }
 
 // GetInt64
 func (this *Config) GetInt64(keyName string) int64 {
-    value := this.adapter.GetInt64(keyName)
+    return this.adapter.GetInt64(keyName)
+}
 
-    return value
+// GetUint
+func (this *Config) GetUint(keyName string) uint {
+    return this.adapter.GetUint(keyName)
+}
+
+// GetUint32
+func (this *Config) GetUint32(keyName string) uint32 {
+    return this.adapter.GetUint32(keyName)
+}
+
+// GetUint64
+func (this *Config) GetUint64(keyName string) uint64 {
+    return this.adapter.GetUint64(keyName)
 }
 
 // float64
 func (this *Config) GetFloat64(keyName string) float64 {
-    value := this.adapter.GetFloat64(keyName)
-
-    return value
+    return this.adapter.GetFloat64(keyName)
 }
 
 // GetTime
 func (this *Config) GetTime(keyName string) time.Time {
-    value := this.adapter.GetTime(keyName)
-
-    return value
+    return this.adapter.GetTime(keyName)
 }
 
 // GetDuration
 func (this *Config) GetDuration(keyName string) time.Duration {
-    value := this.adapter.GetDuration(keyName)
+    return this.adapter.GetDuration(keyName)
+}
 
-    return value
+// GetIntSlice
+func (this *Config) GetIntSlice(keyName string) []int {
+    return this.adapter.GetIntSlice(keyName)
 }
 
 // GetStringSlice
 func (this *Config) GetStringSlice(keyName string) []string {
-    value := this.adapter.GetStringSlice(keyName)
-
-    return value
+    return this.adapter.GetStringSlice(keyName)
 }
 
 // GetStringMap
 func (this *Config) GetStringMap(keyName string) map[string]interface{} {
-    value := this.adapter.GetStringMap(keyName)
-
-    return value
+    return this.adapter.GetStringMap(keyName)
 }
 
 // GetStringMapString
 func (this *Config) GetStringMapString(keyName string) map[string]string {
-    value := this.adapter.GetStringMapString(keyName)
+    return this.adapter.GetStringMapString(keyName)
+}
 
-    return value
+// GetStringMapStringSlice
+func (this *Config) GetStringMapStringSlice(keyName string) map[string][]string {
+    return this.adapter.GetStringMapStringSlice(keyName)
+}
+
+// GetSizeInBytes
+func (this *Config) GetSizeInBytes(keyName string) uint {
+    return this.adapter.GetSizeInBytes(keyName)
 }
 
 // 事件

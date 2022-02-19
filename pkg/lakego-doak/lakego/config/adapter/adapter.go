@@ -67,6 +67,21 @@ func (this *Adapter) GetInt64(keyName string) int64 {
     panic("方法没有实现")
 }
 
+// GetUint
+func (this *Adapter) GetUint(keyName string) uint {
+    panic("方法没有实现")
+}
+
+// GetUint32
+func (this *Adapter) GetUint32(keyName string) uint32 {
+    panic("方法没有实现")
+}
+
+// GetUint64
+func (this *Adapter) GetUint64(keyName string) uint64 {
+    panic("方法没有实现")
+}
+
 // float64
 func (this *Adapter) GetFloat64(keyName string) float64 {
     panic("方法没有实现")
@@ -82,6 +97,11 @@ func (this *Adapter) GetDuration(keyName string) time.Duration {
     panic("方法没有实现")
 }
 
+// GetIntSlice
+func (this *Adapter) GetIntSlice(keyName string) []int {
+    panic("方法没有实现")
+}
+
 // GetStringSlice
 func (this *Adapter) GetStringSlice(keyName string) []string {
     panic("方法没有实现")
@@ -94,6 +114,16 @@ func (this *Adapter) GetStringMap(keyName string) map[string]interface{} {
 
 // GetStringMapString
 func (this *Adapter) GetStringMapString(keyName string) map[string]string {
+    panic("方法没有实现")
+}
+
+// GetStringMapStringSlice
+func (this *Adapter) GetStringMapStringSlice(keyName string) map[string][]string {
+    panic("方法没有实现")
+}
+
+// GetSizeInBytes
+func (this *Adapter) GetSizeInBytes(keyName string) uint {
     panic("方法没有实现")
 }
 
