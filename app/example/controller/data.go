@@ -85,6 +85,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
                 return data2
             },
+            func(data interface{}, next pipeline.NextFunc) {
+            },
             PipelineEx{},
         ).
         ThenReturn()

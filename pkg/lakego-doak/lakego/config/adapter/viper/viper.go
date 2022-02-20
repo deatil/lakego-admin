@@ -100,6 +100,11 @@ func (this *Viper) WithFile(fileName ...string) {
     this.conf.WatchConfig()
 }
 
+// 获取
+func (this *Viper) GetViper() *viper.Viper {
+    return this.conf
+}
+
 // 设置默认值
 func (this *Viper) SetDefault(keyName string, value interface{}) {
     this.conf.SetDefault(keyName, value)

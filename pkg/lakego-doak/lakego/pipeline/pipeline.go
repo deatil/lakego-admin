@@ -33,7 +33,7 @@ type (
     CarryCallbackFunc = func(interface{}) interface{}
 
     // 报错回调函数
-    ExceptionCallbackFunc = func(interface{}, interface{}, interface{})
+    ExceptionCallbackFunc = func(interface{}, interface{}, interface{}) interface{}
 )
 
 // 管道接口
@@ -133,8 +133,7 @@ func (this *Pipeline) Carry() CarryFunc {
 
                 // 默认报错
                 default:
-                    this.HandleException(passable, pipe, newStack)
-                    return nil
+                    return this.HandleException(passable, pipe, newStack)
             }
 
         }
@@ -158,15 +157,14 @@ func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
 }
 
 // 报错信息
-func (this *Pipeline) HandleException(passable interface{}, pipe interface{}, stack interface{}) {
+func (this *Pipeline) HandleException(passable interface{}, pipe interface{}, stack NextFunc) interface{} {
     if this.ExceptionCallback != nil {
         callback := this.ExceptionCallback
 
-        callback(passable, pipe, stack)
-        return
+        return callback(passable, pipe, stack)
     }
 
-    panic("管道队列中有格式错误数据")
+    return stack(passable)
 }
 
 // 设置 Carry 回调函数
