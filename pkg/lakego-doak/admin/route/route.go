@@ -60,12 +60,6 @@ func Route(engine *router.RouterGroup) {
     systemController := new(controller.System)
     engine.GET("/system/info", systemController.Info)
     engine.GET("/system/rules", systemController.Rules)
-
-    // 操作日志
-    actionLogController := new(controller.ActionLog)
-    engine.GET("/action-log", actionLogController.Index)
-    engine.DELETE("/action-log/clear", actionLogController.Clear)
-
 }
 
 /**

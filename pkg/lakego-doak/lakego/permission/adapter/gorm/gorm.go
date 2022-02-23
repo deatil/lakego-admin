@@ -13,11 +13,10 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/hash"
     "github.com/deatil/lakego-doak/lakego/support/random"
-    "github.com/deatil/lakego-doak/lakego/support/snowflake"
 )
 
 // 自定义模型
-func NewAdapterByDB(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
+func New(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
     adapter := &Adapter{}
 
     if len(rule) > 0 {
@@ -29,66 +28,6 @@ func NewAdapterByDB(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
         Session(&gorm.Session{Context: db.Statement.Context})
 
     return adapter, nil
-}
-
-func appendWhere(line Rules) (string, []interface{}) {
-    queryArgs := []interface{}{line.Ptype}
-
-    queryStr := "ptype = ?"
-    if line.V0 != "" {
-        queryStr += " and v0 = ?"
-        queryArgs = append(queryArgs, line.V0)
-    }
-    if line.V1 != "" {
-        queryStr += " and v1 = ?"
-        queryArgs = append(queryArgs, line.V1)
-    }
-    if line.V2 != "" {
-        queryStr += " and v2 = ?"
-        queryArgs = append(queryArgs, line.V2)
-    }
-    if line.V3 != "" {
-        queryStr += " and v3 = ?"
-        queryArgs = append(queryArgs, line.V3)
-    }
-    if line.V4 != "" {
-        queryStr += " and v4 = ?"
-        queryArgs = append(queryArgs, line.V4)
-    }
-    if line.V5 != "" {
-        queryStr += " and v5 = ?"
-        queryArgs = append(queryArgs, line.V5)
-    }
-    return queryStr, queryArgs
-}
-
-func loadPolicyLine(line Rules, model model.Model) {
-    var p = []string{
-        line.Ptype,
-        line.V0,
-        line.V1,
-        line.V2,
-        line.V3,
-        line.V4,
-        line.V5,
-    }
-
-    var lineText string
-    if line.V5 != "" {
-        lineText = strings.Join(p, ", ")
-    } else if line.V4 != "" {
-        lineText = strings.Join(p[:6], ", ")
-    } else if line.V3 != "" {
-        lineText = strings.Join(p[:5], ", ")
-    } else if line.V2 != "" {
-        lineText = strings.Join(p[:4], ", ")
-    } else if line.V1 != "" {
-        lineText = strings.Join(p[:3], ", ")
-    } else if line.V0 != "" {
-        lineText = strings.Join(p[:2], ", ")
-    }
-
-    persist.LoadPolicyLine(lineText, model)
 }
 
 // 规则模型
@@ -104,8 +43,7 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    snowflakeId, _ := snowflake.Make(5)
-    this.ID = hash.MD5(cast.ToString(snowflakeId) + cast.ToString(time.Nanosecond) + random.String(15))
+    this.ID = hash.MD5(cast.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }
@@ -125,8 +63,8 @@ type Filter struct {
  * gorm 适配器
  *
  * rbac_model.conf 中 matchers 内置可用函数：
- * keyMatch [匹配*号], keyMatch2 [匹配 :file]
- * regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配]
+ *  keyMatch [匹配*号], keyMatch2 [匹配 :file]
+ *  regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配]
  *
  * @create 2021-9-8
  * @author deatil
@@ -397,4 +335,64 @@ func (this *Adapter) UpdatePolicy(sec string, ptype string, oldRule, newPolicy [
 func (this *Adapter) Close() error {
     this.db = nil
     return nil
+}
+
+func appendWhere(line Rules) (string, []interface{}) {
+    queryArgs := []interface{}{line.Ptype}
+
+    queryStr := "ptype = ?"
+    if line.V0 != "" {
+        queryStr += " and v0 = ?"
+        queryArgs = append(queryArgs, line.V0)
+    }
+    if line.V1 != "" {
+        queryStr += " and v1 = ?"
+        queryArgs = append(queryArgs, line.V1)
+    }
+    if line.V2 != "" {
+        queryStr += " and v2 = ?"
+        queryArgs = append(queryArgs, line.V2)
+    }
+    if line.V3 != "" {
+        queryStr += " and v3 = ?"
+        queryArgs = append(queryArgs, line.V3)
+    }
+    if line.V4 != "" {
+        queryStr += " and v4 = ?"
+        queryArgs = append(queryArgs, line.V4)
+    }
+    if line.V5 != "" {
+        queryStr += " and v5 = ?"
+        queryArgs = append(queryArgs, line.V5)
+    }
+    return queryStr, queryArgs
+}
+
+func loadPolicyLine(line Rules, model model.Model) {
+    var p = []string{
+        line.Ptype,
+        line.V0,
+        line.V1,
+        line.V2,
+        line.V3,
+        line.V4,
+        line.V5,
+    }
+
+    var lineText string
+    if line.V5 != "" {
+        lineText = strings.Join(p, ", ")
+    } else if line.V4 != "" {
+        lineText = strings.Join(p[:6], ", ")
+    } else if line.V3 != "" {
+        lineText = strings.Join(p[:5], ", ")
+    } else if line.V2 != "" {
+        lineText = strings.Join(p[:4], ", ")
+    } else if line.V1 != "" {
+        lineText = strings.Join(p[:3], ", ")
+    } else if line.V0 != "" {
+        lineText = strings.Join(p[:2], ", ")
+    }
+
+    persist.LoadPolicyLine(lineText, model)
 }

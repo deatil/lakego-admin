@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/support/time"
 
-    "github.com/deatil/lakego-doak/admin/model"
+    "github.com/deatil/lakego-doak/action-log/model"
 )
 
 /**

@@ -26,8 +26,8 @@ type ServiceProvider struct {
     provider.ServiceProvider
 }
 
-// 注册
-func (this *ServiceProvider) Register() {
+// 引导
+func (this *ServiceProvider) Boot() {
     // 脚本
     this.loadCommand()
 

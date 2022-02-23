@@ -12,6 +12,20 @@ func NewMiddleware() *router.Middleware {
 }
 
 /**
+ * 中间件别名
+ */
+func AliasMiddleware(name string, middleware interface{}) {
+    NewMiddleware().AliasMiddleware(name, middleware)
+}
+
+/**
+ * 中间件分组
+ */
+func MiddlewareGroup(name string, middlewares []interface{}) {
+    NewMiddleware().MiddlewareGroup(name, middlewares)
+}
+
+/**
  * 获取中间件列表
  */
 func GetMiddlewares(name string) (handlerFuncs []router.HandlerFunc) {

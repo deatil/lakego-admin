@@ -7,7 +7,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/hash"
     "github.com/deatil/lakego-doak/lakego/support/random"
-    "github.com/deatil/lakego-doak/lakego/support/snowflake"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
@@ -31,8 +30,7 @@ type AuthRule struct {
 }
 
 func (this *AuthRule) BeforeCreate(tx *gorm.DB) error {
-    snowflakeId, _ := snowflake.Make(5)
-    this.ID = hash.MD5(cast.ToString(snowflakeId) + cast.ToString(time.Nanosecond) + random.String(15))
+    this.ID = hash.MD5(cast.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }

@@ -20,7 +20,6 @@ import (
     "github.com/deatil/lakego-doak/admin/middleware/authorization"
     "github.com/deatil/lakego-doak/admin/middleware/cors"
     "github.com/deatil/lakego-doak/admin/middleware/permission"
-    "github.com/deatil/lakego-doak/admin/middleware/actionlog"
     "github.com/deatil/lakego-doak/admin/middleware/admincheck"
 
     // 路由
@@ -47,9 +46,6 @@ var routeMiddlewares = map[string]router.HandlerFunc{
     // 权限检测
     "lakego-admin.permission": permission.Handler(),
 
-    // 操作日志
-    "lakego-admin.action-log": actionlog.Handler(),
-
     // 超级管理员检测
     "lakego-admin.admin-check": admincheck.Handler(),
 }
@@ -60,7 +56,6 @@ var middlewareGroups = map[string][]string{
     "lakego-admin": {
         "lakego-admin.auth",
         "lakego-admin.permission",
-        "lakego-admin.action-log",
     },
 
     // 超级管理员检测
@@ -79,8 +74,8 @@ type ServiceProvider struct {
     provider.ServiceProvider
 }
 
-// 注册
-func (this *ServiceProvider) Register() {
+// 引导
+func (this *ServiceProvider) Boot() {
     // 脚本
     this.loadCommand()
 
@@ -188,7 +183,7 @@ func (this *ServiceProvider) loadMiddleware() {
     // 导入中间件分组
     for groupName, middlewares := range middlewareGroups {
         for _, middleware := range middlewares {
-            m.MiddlewareGroup(groupName, middleware)
+            m.PushMiddlewareToGroup(groupName, middleware)
         }
     }
 }

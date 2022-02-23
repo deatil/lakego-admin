@@ -7,7 +7,9 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/time"
 
-    "github.com/deatil/lakego-doak/admin/model"
+    adminController "github.com/deatil/lakego-doak/admin/controller"
+
+    "github.com/deatil/lakego-doak/action-log/model"
 )
 
 /**
@@ -17,7 +19,7 @@ import (
  * @author deatil
  */
 type ActionLog struct {
-    Base
+    adminController.Base
 }
 
 /**

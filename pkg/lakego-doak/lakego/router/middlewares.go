@@ -23,6 +23,15 @@ type Middlewares struct {
 }
 
 /**
+ * 覆写
+ */
+func (this *Middlewares) With(middlewares []interface{}) *Middlewares {
+    this.middlewares = middlewares
+
+    return this
+}
+
+/**
  * 前置添加
  */
 func (this *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
@@ -36,15 +45,6 @@ func (this *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
  */
 func (this *Middlewares) Push(middlewares ...interface{}) *Middlewares {
     this.middlewares = append(this.middlewares, middlewares...)
-
-    return this
-}
-
-/**
- * 覆写
- */
-func (this *Middlewares) With(middlewares []interface{}) *Middlewares {
-    this.middlewares = middlewares
 
     return this
 }

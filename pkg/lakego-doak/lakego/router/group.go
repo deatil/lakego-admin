@@ -23,19 +23,18 @@ type Group struct {
 }
 
 /**
- * 后置添加分组
+ * 添加分组 - 覆盖
  */
-func (this *Group) Push(name string, middleware interface{}) *Group {
-    var newGroup *Middlewares
-
-    if exists := this.Exists(name); exists {
-        newGroup = this.Get(name)
-    } else {
-        newGroup = NewMiddlewares()
-    }
+func (this *Group) With(name string, middlewares []interface{}) *Group {
+    newGroup := NewMiddlewares()
 
     // 添加数据
-    newGroup.Push(middleware)
+    newGroup.With(middlewares)
+
+    // 删除已存在
+    if exists := this.Exists(name); exists {
+        this.Remove(name)
+    }
 
     this.groups[name] = newGroup
 
@@ -43,7 +42,7 @@ func (this *Group) Push(name string, middleware interface{}) *Group {
 }
 
 /**
- * 前置添加分组
+ * 添加分组 - 前置
  */
 func (this *Group) Prepend(name string, middleware interface{}) *Group {
     var newGroup *Middlewares
@@ -56,6 +55,26 @@ func (this *Group) Prepend(name string, middleware interface{}) *Group {
 
     // 添加数据
     newGroup.Prepend(middleware)
+
+    this.groups[name] = newGroup
+
+    return this
+}
+
+/**
+ * 添加分组 - 后置
+ */
+func (this *Group) Push(name string, middleware interface{}) *Group {
+    var newGroup *Middlewares
+
+    if exists := this.Exists(name); exists {
+        newGroup = this.Get(name)
+    } else {
+        newGroup = NewMiddlewares()
+    }
+
+    // 添加数据
+    newGroup.Push(middleware)
 
     this.groups[name] = newGroup
 
@@ -76,7 +95,7 @@ func (this *Group) Exists(name string) bool {
 /**
  * 删除
  */
-func (this *Group) Delete(name string) {
+func (this *Group) Remove(name string) {
     delete(this.groups, name)
 }
 

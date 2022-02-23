@@ -84,7 +84,7 @@ func Register() {
             Register("gorm", func(conf map[string]interface{}) interface{} {
                 newDb := database.New()
 
-                a, _ := gormAdapter.NewAdapterByDB(newDb)
+                a, _ := gormAdapter.New(newDb)
 
                 return a
             })

@@ -132,7 +132,25 @@ func (this *Middleware) AliasMiddleware(name string, middleware interface{}) *Mi
 /**
  * 中间件分组
  */
-func (this *Middleware) MiddlewareGroup(name string, middleware interface{}) *Middleware {
+func (this *Middleware) MiddlewareGroup(name string, middlewares []interface{}) *Middleware {
+    this.group.With(name, middlewares)
+
+    return this
+}
+
+/**
+ * 中间件分组 - 前置
+ */
+func (this *Middleware) PrependMiddlewareToGroup(name string, middleware interface{}) *Middleware {
+    this.group.Prepend(name, middleware)
+
+    return this
+}
+
+/**
+ * 中间件分组 - 后置
+ */
+func (this *Middleware) PushMiddlewareToGroup(name string, middleware interface{}) *Middleware {
     this.group.Push(name, middleware)
 
     return this
