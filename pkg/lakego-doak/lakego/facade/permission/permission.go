@@ -2,6 +2,7 @@ package permission
 
 import (
     "sync"
+    "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/support/path"
@@ -42,6 +43,9 @@ func NewWithDisk(disk string, once ...bool) *permission.Permission {
 func Permission(name string, once ...bool) *permission.Permission {
     // 列表
     adapters := config.New("permission").GetStringMap("Adapters")
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取驱动配置
     adapterConfig, ok := adapters[name]

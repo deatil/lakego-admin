@@ -1,5 +1,5 @@
 # 默认磁盘
-Default: "public"
+Default: "Public"
 
 # 磁盘列表
 Disks:

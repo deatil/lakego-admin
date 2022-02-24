@@ -3,6 +3,7 @@ package logger
 import (
     "log"
     "sync"
+    "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -39,6 +40,9 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
 
     // 驱动列表
     drivers := conf.GetStringMap("Drivers")
+
+    // 转为小写
+    driverName = strings.ToLower(driverName)
 
     // 获取配置
     driverConfig, ok := drivers[driverName]

@@ -8,7 +8,7 @@ import (
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
-    "github.com/deatil/lakego-doak/admin/support/route"
+    "github.com/deatil/lakego-doak-admin/admin/support/route"
 
     // 路由
     router "app/example/route"

@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/exception"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
 
-    "github.com/deatil/lakego-doak/admin/support/controller"
+    "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
 
 /**

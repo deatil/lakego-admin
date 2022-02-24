@@ -3,6 +3,7 @@ package captcha
 import (
     "sync"
     "time"
+    "strings"
     "image/color"
 
     "github.com/mojocn/base64Captcha"
@@ -46,6 +47,9 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     // 存储列表
     stores := conf.GetStringMap("Stores")
 
+    // 转为小写
+    storeName = strings.ToLower(storeName)
+
     // 获取配置
     storeConfig, ok := stores[storeName]
     if !ok {
@@ -65,6 +69,9 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
 
     // 驱动列表
     drivers := conf.GetStringMap("Drivers")
+
+    // 转为小写
+    driverName = strings.ToLower(driverName)
 
     // 获取配置
     driverConfig, ok := drivers[driverName]

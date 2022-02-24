@@ -1,5 +1,5 @@
 # 默认
-Default: "gorm"
+Default: "Gorm"
 
 # 适配器列表
 Adapters:

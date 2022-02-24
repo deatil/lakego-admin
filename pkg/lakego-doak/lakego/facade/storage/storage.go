@@ -2,6 +2,7 @@ package storage
 
 import(
     "sync"
+    "strings"
 
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/register"
@@ -41,6 +42,9 @@ func MountManager(filesystems ...map[string]interface{}) *filesystem.MountManage
 func Disk(name string, once ...bool) *storage.Storage {
     // 磁盘列表
     disks := config.New("filesystem").GetStringMap("Disks")
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取驱动配置
     diskConfig, ok := disks[name]

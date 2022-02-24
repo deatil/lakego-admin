@@ -1,5 +1,5 @@
 # 默认驱动
-DefaultDriver: "string"
+DefaultDriver: "String"
 
 # 驱动列表
 Drivers:

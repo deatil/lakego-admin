@@ -1,5 +1,5 @@
 # 默认
-Default: "mysql"
+Default: "Mysql"
 
 # true or false
 Debug: false

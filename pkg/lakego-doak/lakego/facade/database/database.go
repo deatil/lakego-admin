@@ -2,6 +2,7 @@ package database
 
 import (
     "sync"
+    "strings"
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/register"
@@ -47,6 +48,9 @@ func NewWithType(database string, once ...bool) *gorm.DB {
 func Database(name string, once ...bool) *gorm.DB {
     // 连接列表
     connections := config.New("database").GetStringMap("Connections")
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取驱动配置
     driverConfig, ok := connections[name]

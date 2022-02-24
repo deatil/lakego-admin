@@ -2,6 +2,7 @@ package view
 
 import (
     "sync"
+    "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -34,6 +35,9 @@ func New(once ...bool) *html.Html {
 func Html(name string, once ...bool) *html.Html {
     // 连接列表
     adapters := config.New("view").GetStringMap("Adapters")
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取适配器配置
     adapterConfig, ok := adapters[name]

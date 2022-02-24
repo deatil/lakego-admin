@@ -2,6 +2,7 @@ package cache
 
 import (
     "sync"
+    "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -27,19 +28,22 @@ func init() {
 
 // 实例化
 func New(once ...bool) interfaces.Cache {
-    cache := GetDefaultCache()
+    name := GetDefaultCache()
 
-    return Cache(cache, once...)
+    return Cache(name, once...)
 }
 
 // 实例化
-func NewWithType(cache string, once ...bool) interfaces.Cache {
-    return Cache(cache, once...)
+func NewWithType(name string, once ...bool) interfaces.Cache {
+    return Cache(name, once...)
 }
 
 func Cache(name string, once ...bool) interfaces.Cache {
     // 缓存列表
     caches := config.New("cache").GetStringMap("Caches")
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取驱动配置
     driverConfig, ok := caches[name]

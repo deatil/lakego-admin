@@ -131,6 +131,9 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
     // 驱动列表
     crypts := config.New("sign").GetStringMap("crypts")
 
+    // 转为小写
+    name = strings.ToLower(name)
+
     // 获取驱动配置
     driverConfig, ok := crypts[name]
     if !ok {

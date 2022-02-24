@@ -1,5 +1,5 @@
 # 默认驱动
-Default: "logrus"
+Default: "Logrus"
 
 # 驱动列表
 Drivers:

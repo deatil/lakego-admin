@@ -1,5 +1,5 @@
 # 默认缓存
-Default: "redis"
+Default: "Redis"
 
 # 缓存列表
 Caches:

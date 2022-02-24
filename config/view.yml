@@ -1,8 +1,9 @@
 # 视图
-Paths: ["{resources}/view"]
+Paths:
+  - "{resources}/view"
 
 # 默认适配器
-DefaultAdapter: "pongo2"
+DefaultAdapter: "Pongo2"
 
 # 适配器列表
 Adapters:
