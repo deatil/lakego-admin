@@ -43,6 +43,13 @@ func (this *Alias) Get(name string) interface{} {
 }
 
 /**
+ * 移除
+ */
+func (this *Alias) Remove(name string) {
+    delete(this.item, name)
+}
+
+/**
  * 获取全部
  */
 func (this *Alias) GetAll() map[string]interface{} {
