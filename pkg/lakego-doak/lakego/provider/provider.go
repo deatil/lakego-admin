@@ -11,6 +11,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
     appInterface "github.com/deatil/lakego-doak/lakego/app/interfaces"
+    routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 )
 
 /**
@@ -72,6 +73,36 @@ func (this *ServiceProvider) AddRoute(f func(*router.Engine)) {
     if this.Route != nil {
         f(this.Route)
     }
+}
+
+// 添加路由分组
+func (this *ServiceProvider) AddGroup(conf map[string]string, f func(*router.RouterGroup)) {
+    // 分组前缀
+    prefix, ok := conf["prefix"]
+    if !ok {
+        return
+    }
+
+    // 中间件
+    middleware, ok2 := conf["middleware"]
+    if !ok2 {
+        return
+    }
+
+    // 中间件
+    groupMiddlewares := routerFacade.GetMiddlewares(middleware)
+
+    // 使用中间件
+    this.AddRoute(func(engine *router.Engine) {
+        // 路由
+        group := engine.Group(prefix)
+        {
+            group.Use(groupMiddlewares...)
+            {
+                f(group)
+            }
+        }
+    })
 }
 
 // 设置启动前函数

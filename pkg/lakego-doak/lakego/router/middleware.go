@@ -28,7 +28,7 @@ func NewMiddleware() *Middleware {
 /**
  * 单例模式
  */
-func NewMiddlewareWithInstance() *Middleware {
+func InstanceMiddleware() *Middleware {
     once.Do(func() {
         instance = NewMiddleware()
     })

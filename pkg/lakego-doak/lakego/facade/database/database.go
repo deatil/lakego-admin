@@ -46,27 +46,17 @@ func NewWithType(database string, once ...bool) *gorm.DB {
 
 // 选择数据库
 func Database(name string, once ...bool) *gorm.DB {
-    // 连接列表
-    connections := config.New("database").GetStringMap("Connections")
+    // 使用驱动类型
+    driverType, driverConf := GetConfig("type", name)
 
-    // 转为小写
-    name = strings.ToLower(name)
+    newDriverType := driverType.(string)
 
-    // 获取驱动配置
-    driverConfig, ok := connections[name]
-    if !ok {
-        panic("数据库驱动[" + name + "]配置不存在")
-    }
-
-    // 配置
-    driverConf := driverConfig.(map[string]interface{})
-
-    driverType := driverConf["type"].(string)
+    // 驱动
     driver := register.
         NewManagerWithPrefix("database").
-        GetRegister(driverType, driverConf, once...)
+        GetRegister(newDriverType, driverConf, once...)
     if driver == nil {
-        panic("数据库驱动[" + driverType + "]没有被注册")
+        panic("数据库驱动[" + newDriverType + "]没有被注册")
     }
 
     d := database.New(driver.(interfaces.Driver), driverConf)
@@ -85,7 +75,7 @@ func GetDefaultDatabase() string {
 }
 
 // 获取配置
-func GetConfig(key string, typ ...string) interface{} {
+func GetConfig(key string, typ ...string) (interface{}, map[string]interface{}) {
     // 连接列表
     connections := config.New("database").GetStringMap("Connections")
 
@@ -95,6 +85,9 @@ func GetConfig(key string, typ ...string) interface{} {
     } else {
         name = GetDefaultDatabase()
     }
+
+    // 转为小写
+    name = strings.ToLower(name)
 
     // 获取驱动配置
     driverConfig, ok := connections[name]
@@ -106,10 +99,10 @@ func GetConfig(key string, typ ...string) interface{} {
     driverConf := driverConfig.(map[string]interface{})
 
     if value, ok := driverConf[key]; ok {
-        return value
+        return value, driverConf
     }
 
-    return nil
+    return nil, driverConf
 }
 
 // 注册

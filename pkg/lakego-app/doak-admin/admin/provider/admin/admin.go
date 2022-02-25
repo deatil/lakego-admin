@@ -147,9 +147,6 @@ func (this *ServiceProvider) loadRoute() {
         // 中间件
         groupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.Middleware"))
 
-        // 管理员中间件
-        adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
-
         // 路由
         admin := engine.Group(conf.GetString("Route.Prefix"))
         {
@@ -157,6 +154,9 @@ func (this *ServiceProvider) loadRoute() {
             {
                 // 常规路由
                 adminRoute.Route(admin)
+
+                // 管理员中间件
+                adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
 
                 // 需要管理员权限
                 admin.Use(adminGroupMiddlewares...)

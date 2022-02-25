@@ -14,7 +14,9 @@ func NewDB() *gorm.DB {
 
 // 获取配置
 func GetConfig(key string, typ ...string) interface{} {
-    return database.GetConfig(key, typ...)
+    conf, _ := database.GetConfig(key, typ...)
+
+    return conf
 }
 
 // 格式化获取的数据为 map

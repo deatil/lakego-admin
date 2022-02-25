@@ -8,7 +8,7 @@ import (
  * 获取中间件单列
  */
 func NewMiddleware() *router.Middleware {
-    return router.NewMiddlewareWithInstance()
+    return router.InstanceMiddleware()
 }
 
 /**
