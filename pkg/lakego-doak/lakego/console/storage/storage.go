@@ -64,10 +64,10 @@ func StorageLink() {
     fmt.Print("\n")
     color.
         NewWithOption(
-            color.GetBackgroundHiOption("yellow"),
-            color.GetForegroundOption("magenta"),
-            color.GetBaseOption("bold"),
-            color.GetBaseOption("blinkRapid"),
+            color.BackgroundHiOption("yellow"),
+            color.ForegroundOption("magenta"),
+            color.BaseOption("bold"),
+            color.BaseOption("blinkRapid"),
         ).
         Print("软连接创建成功")
     fmt.Print("\n")

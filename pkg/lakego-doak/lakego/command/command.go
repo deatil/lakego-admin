@@ -2,6 +2,8 @@ package command
 
 import (
     "io"
+    "bytes"
+    "context"
     "text/template"
 
     "github.com/spf13/pflag"
@@ -167,5 +169,46 @@ func MarkFlagCustom(flags *pflag.FlagSet, name string, f string) error {
 // limit completions for the named flag to directory names.
 func MarkFlagDirname(flags *pflag.FlagSet, name string) error {
     return cobra.MarkFlagDirname(flags, name)
+}
+
+// 执行脚本
+func ExecuteCommand(root *cobra.Command, args ...string) (output string, err error) {
+    _, output, err = ExecuteCommandC(root, args...)
+    return output, err
+}
+
+// ctx := context.TODO()
+func ExecuteCommandWithContext(ctx context.Context, root *cobra.Command, args ...string) (output string, err error) {
+    buf := new(bytes.Buffer)
+    root.SetOut(buf)
+    root.SetErr(buf)
+    root.SetArgs(args)
+
+    err = root.ExecuteContext(ctx)
+
+    return buf.String(), err
+}
+
+func ExecuteCommandC(root *cobra.Command, args ...string) (c *cobra.Command, output string, err error) {
+    buf := new(bytes.Buffer)
+    root.SetOut(buf)
+    root.SetErr(buf)
+    root.SetArgs(args)
+
+    c, err = root.ExecuteC()
+
+    return c, buf.String(), err
+}
+
+// ctx := context.TODO()
+func ExecuteCommandWithContextC(ctx context.Context, root *cobra.Command, args ...string) (c *cobra.Command, output string, err error) {
+    buf := new(bytes.Buffer)
+    root.SetOut(buf)
+    root.SetErr(buf)
+    root.SetArgs(args)
+
+    c, err = root.ExecuteContextC(ctx)
+
+    return c, buf.String(), err
 }
 

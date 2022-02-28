@@ -9,10 +9,16 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/crypto/des/tool"
 )
 
+var (
+    // 默认向量
+    defaultIv = "a91ebd0s"
+)
+
 // CBC 加密
-func EncryptDES(src string, key string) (string, error) {
+func EncryptDES(src string, key string, ivStr string) (string, error) {
     data := []byte(src)
     keyByte := []byte(key)
+
     block, err := des.NewCipher(keyByte)
     if err != nil {
         return "", err
@@ -21,7 +27,7 @@ func EncryptDES(src string, key string) (string, error) {
     data = tool.PKCS5Padding(data, block.BlockSize())
 
     // 向量
-    iv := []byte("a91ebd0s")
+    iv := []byte(ivStr)
     mode := cipher.NewCBCEncrypter(block, iv)
 
     out := make([]byte, len(data))
@@ -31,8 +37,9 @@ func EncryptDES(src string, key string) (string, error) {
 }
 
 // CBC 解密
-func DecryptDES(src string, key string) (string, error) {
+func DecryptDES(src string, key string, ivStr string) (string, error) {
     keyByte := []byte(key)
+
     data, err := hex.DecodeString(src)
     if err != nil {
         return "", err
@@ -44,7 +51,7 @@ func DecryptDES(src string, key string) (string, error) {
     }
 
     // 向量
-    iv := []byte("a91ebd0s")
+    iv := []byte(ivStr)
     mode := cipher.NewCBCDecrypter(block, iv)
     plaintext := make([]byte, len(data))
 
@@ -55,8 +62,13 @@ func DecryptDES(src string, key string) (string, error) {
 }
 
 // 加密 Encode("12fgt", "dfertf12")
-func Encode(str string, key string) string {
-    enstr, err := EncryptDES(str, key)
+func Encode(str string, key string, iv ...string) string {
+    ivStr := defaultIv
+    if len(iv) > 0 {
+        ivStr = iv[0]
+    }
+
+    enstr, err := EncryptDES(str, key, ivStr)
     if err != nil {
         return ""
     }
@@ -65,7 +77,12 @@ func Encode(str string, key string) string {
 }
 
 // 解密 Decode("AF381D34F51CD48E", "dfertf12")
-func Decode(str string, key string) string {
+func Decode(str string, key string, iv ...string) string {
+    ivStr := defaultIv
+    if len(iv) > 0 {
+        ivStr = iv[0]
+    }
+
     destr, err := DecryptDES(str, key)
     if err != nil {
         return ""

@@ -19,7 +19,7 @@ var (
     // Error defines a color supporting writer for os.Stderr.
     Error = color.Error
 
-    // Base attributes
+    // 基础设置
     baseMap = map[string]color.Attribute{
         "reset":         color.Reset,
         "bold":          color.Bold,
@@ -33,7 +33,7 @@ var (
         "crossedOut":    color.CrossedOut,
     }
 
-    // 颜色数组
+    // 前景色
     foregroundMap = map[string]color.Attribute{
         "black":   color.FgBlack,
         "red":     color.FgRed,
@@ -45,7 +45,7 @@ var (
         "white":   color.FgWhite,
     }
 
-    // Foreground Hi-Intensity text colors
+    // 前景高亮色
     foregroundHiMap = map[string]color.Attribute{
         "black":   color.FgHiBlack,
         "red":     color.FgHiRed,
@@ -57,7 +57,7 @@ var (
         "white":   color.FgHiWhite,
     }
 
-    // Background text colors
+    // 背景色
     backgroundMap = map[string]color.Attribute{
         "black":   color.BgBlack,
         "red":     color.BgRed,
@@ -69,7 +69,7 @@ var (
         "white":   color.BgWhite,
     }
 
-    // Background Hi-Intensity text colors
+    // 背景高亮色
     backgroundHiMap = map[string]color.Attribute{
         "black":   color.BgHiBlack,
         "red":     color.BgHiRed,
@@ -89,6 +89,16 @@ type (
     ColorFunc = func(string, ...interface{})
 )
 
+// 根据选项显示颜色
+func New(value ...color.Attribute) *color.Color {
+    return NewWithOption(value...)
+}
+
+// 根据选项显示颜色
+func NewWithOption(value ...color.Attribute) *color.Color {
+    return color.New(value...)
+}
+
 // 实例化一个方法
 func NewColorFunc(colorname string) ColorFunc {
     return func(msg string, v ...interface{}) {
@@ -99,14 +109,10 @@ func NewColorFunc(colorname string) ColorFunc {
         if colorname == rawColor {
             fmt.Fprintf(os.Stdout, msg, v...)
         } else {
-            color.New(GetForegroundOption(colorname)).Fprintf(color.Output, msg, v...)
+            NewWithOption(ForegroundOption(colorname)).
+                Fprintf(color.Output, msg, v...)
         }
     }
-}
-
-// 根据选项显示颜色
-func NewWithOption(value ...color.Attribute) *color.Color {
-    return color.New(value...)
 }
 
 // 清除多余字符
@@ -119,10 +125,10 @@ func FormatTrim(msg string) string {
 
 // ======
 
-// 可用参数
+// 基础设置，可用参数
 // reset | bold | faint | italic | underline
 // blinkSlow | blinkRapid | reverseVideo | concealed | crossedOut
-func GetBaseOption(name string) color.Attribute {
+func BaseOption(name string) color.Attribute {
     if v, ok := baseMap[name]; ok {
         return v
     }
@@ -130,9 +136,9 @@ func GetBaseOption(name string) color.Attribute {
     return color.Reset
 }
 
-// 可用颜色
+// 前景色，可用颜色
 // black | red | green | yellow | blue | magenta | cyan | white
-func GetForegroundOption(name string) color.Attribute {
+func ForegroundOption(name string) color.Attribute {
     if v, ok := foregroundMap[name]; ok {
         return v
     }
@@ -140,9 +146,9 @@ func GetForegroundOption(name string) color.Attribute {
     return color.FgWhite
 }
 
-// 可用颜色
+// 前景高亮色，可用颜色
 // black | red | green | yellow | blue | magenta | cyan | white
-func GetForegroundHiOption(name string) color.Attribute {
+func ForegroundHiOption(name string) color.Attribute {
     if v, ok := foregroundHiMap[name]; ok {
         return v
     }
@@ -150,9 +156,9 @@ func GetForegroundHiOption(name string) color.Attribute {
     return color.FgHiWhite
 }
 
-// 可用颜色
+// 背景色，可用颜色
 // black | red | green | yellow | blue | magenta | cyan | white
-func GetBackgroundOption(name string) color.Attribute {
+func BackgroundOption(name string) color.Attribute {
     if v, ok := backgroundMap[name]; ok {
         return v
     }
@@ -160,9 +166,9 @@ func GetBackgroundOption(name string) color.Attribute {
     return color.BgWhite
 }
 
-// 可用颜色
+// 背景高亮色，可用颜色
 // black | red | green | yellow | blue | magenta | cyan | white
-func GetBackgroundHiOption(name string) color.Attribute {
+func BackgroundHiOption(name string) color.Attribute {
     if v, ok := backgroundHiMap[name]; ok {
         return v
     }
@@ -178,7 +184,7 @@ func ShowMessage(colorname string, msg string, arg ...interface{}) {
 
 func ShowMessageln(colorname string, msg string, arg ...interface{}) {
     msg = msg + "\n"
-    NewColorFunc(colorname)(msg, arg...)
+    ShowMessage(colorname, msg, arg...)
 }
 
 func Raw(msg string, arg ...interface{}) {

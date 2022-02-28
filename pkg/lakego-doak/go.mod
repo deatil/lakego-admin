@@ -31,6 +31,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/flosch/pongo2/v4 v4.0.2
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4
+	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20171201141054-1d33003b3869 // indirect
 	github.com/lestrrat/go-envload v0.0.0-20180220120943-6ed08b54a570 // indirect
 	github.com/lestrrat/go-strftime v0.0.0-20180220042222-ba3bf9c1d042 // indirect

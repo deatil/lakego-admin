@@ -6,6 +6,8 @@ import (
     "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
+    _ "github.com/deatil/lakego-doak/lakego/str"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
@@ -121,6 +123,9 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // 雪花算法
     snowflakeId, _ := snowflake.Make(5)
+
+    // 文件管理
+    filesystem.New()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
