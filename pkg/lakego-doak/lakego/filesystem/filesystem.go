@@ -40,8 +40,8 @@ func (this *Filesystem) Missing(path string) bool {
 }
 
 // 获取数据
-func (this *Filesystem) Get(path string, lock bool) (string, error) {
-    if lock {
+func (this *Filesystem) Get(path string, lock ...bool) (string, error) {
+    if len(lock) > 0 && lock[0] {
         file, err := os.Open(path)
         if err != nil {
             return "", err
@@ -109,7 +109,7 @@ func (this *Filesystem) Hash(path string) (string, error) {
 }
 
 // 添加数据
-func (this *Filesystem) Put(path string, contents string, lock bool) error {
+func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
     out, createErr := os.Create(path)
     if createErr != nil {
         return errors.New("执行函数 os.Create() 失败, 错误为:" + createErr.Error())
@@ -133,12 +133,33 @@ func (this *Filesystem) Replace(path string, contents string) error {
     }
 
     if _, err := f.Write([]byte(contents)); err != nil {
+        f.Close()
+        return err
+    }
+    f.Close()
+
+    srcFile, err := os.Open(f.Name())
+    if err != nil {
         return err
     }
 
-    defer f.Close()
+    desFile, err := os.Create(path)
+    if err != nil {
+        return err
+    }
 
-    return os.Rename(f.Name(), path)
+    _, err2 := io.Copy(desFile, srcFile)
+    if err2 != nil {
+        return err2
+    }
+
+    defer func() {
+        srcFile.Close()
+        desFile.Close()
+        os.Remove(f.Name())
+    }()
+
+    return nil
 }
 
 // 替换
@@ -181,6 +202,17 @@ func (this *Filesystem) Chmod(path string, mode uint32) error {
     return nil
 }
 
+// 创建文件
+func (this *Filesystem) Touch(filename string) error {
+    fd, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0666)
+    if err != nil {
+        return err
+    }
+
+    fd.Close()
+    return nil
+}
+
 // 获取权限
 func (this *Filesystem) Perm(path string) (uint32, error) {
     f, err := os.Stat(path)
@@ -191,6 +223,18 @@ func (this *Filesystem) Perm(path string) (uint32, error) {
     perm := f.Mode().Perm()
 
     return uint32(perm), nil
+}
+
+// 获取权限 - 字符
+func (this *Filesystem) PermString(path string) (string, error) {
+    f, err := os.Stat(path)
+    if err != nil {
+        return "", err
+    }
+
+    perm := f.Mode().Perm()
+
+    return perm.String(), nil
 }
 
 // 删除
@@ -206,10 +250,10 @@ func (this *Filesystem) Move(path string, target string) error {
 // 文件复制
 func (this *Filesystem) Copy(path string, target string) error {
     srcFile, err := os.Open(path)
-
     if err != nil {
         return err
     }
+
     defer srcFile.Close()
 
     // 文件目录
@@ -243,9 +287,54 @@ func (this *Filesystem) Link(target string, link string) error {
     return os.Symlink(target, link)
 }
 
-// 相对链接
-func (this *Filesystem) RelativeLink(basepath string, targpath string) error {
-    return nil
+// 读取软链接于原始路径的相对地址
+func (this *Filesystem) Readlink(path string) (string, error) {
+    return os.Readlink(path)
+}
+
+// 读取软链接的原始地址
+func (this *Filesystem) EvalSymlinks(path string) (string, error) {
+    return filepath.EvalSymlinks(path)
+}
+
+// 返回路径是否是一个绝对路径
+func (this *Filesystem) IsAbs(path string) bool {
+    return filepath.IsAbs(path)
+}
+
+// 返回 path 代表的绝对路径
+func (this *Filesystem) Abs(path string) (string, error) {
+    return filepath.Abs(path)
+}
+
+// 返回一个相对路径
+func (this *Filesystem) Rel(basepath, targpath string) (string, error) {
+    return filepath.Rel(basepath, targpath)
+}
+
+// 绝对路径
+func (this *Filesystem) Realpath(path string) (string, error) {
+    return filepath.Abs(path)
+}
+
+// 规整化路径
+func (this *Filesystem) Clean(path string) string {
+    return filepath.Clean(path)
+}
+
+// 函数根据最后一个路径分隔符将路径 path 分隔为目录和文件名两部分（dir 和 file）
+func (this *Filesystem) Split(path string) (string, string) {
+    return filepath.Split(path)
+}
+
+// 分割 PATH 或 GOPATH 之类的环境变量
+func (this *Filesystem) SplitList(path string) []string {
+    return filepath.SplitList(path)
+}
+
+// 函数可以将任意数量的路径元素放入一个单一路径里，会根据需要添加路径分隔符
+func (this *Filesystem) Join(elem ...string) string {
+    return filepath.Join(elem...)
 }
 
 // 文件名称
@@ -353,6 +442,17 @@ func (this *Filesystem) LastModified(path string) int64 {
     return f.ModTime().Unix()
 }
 
+// 是否是文件
+func (this *Filesystem) IsFile(path string) bool {
+    fd, err := os.Stat(path)
+    if err != nil && os.IsNotExist(err) {
+        return false
+    }
+
+    fm := fd.Mode()
+    return !fm.IsDir()
+}
+
 // 是否为文件夹
 func (this *Filesystem) IsDirectory(path string) bool {
     fd, err := os.Stat(path)
@@ -386,14 +486,9 @@ func (this *Filesystem) IsWritable(path string) bool {
     return len(strings.Split(perm.String(), "w")) == 4
 }
 
-// 是否是文件
-func (this *Filesystem) IsFile(path string) bool {
-    _, err := os.Stat(path)
-    if err != nil && os.IsNotExist(err) {
-        return false
-    }
-
-    return true
+// 文件路径匹配
+func (this *Filesystem) Match(pattern, name string) (bool, error) {
+    return filepath.Match(pattern, name)
 }
 
 // 查询
@@ -483,9 +578,14 @@ func (this *Filesystem) Directories(directory string) ([]string, error) {
 func (this *Filesystem) EnsureDirectoryExists(
     directory string,
     mode uint32,
-    recursive bool,
+    recursive ...bool,
 ) error {
-    err := this.MakeDirectory(directory, mode, recursive)
+    newRecursive := true
+    if len(recursive) > 0 {
+        newRecursive = recursive[0]
+    }
+
+    err := this.MakeDirectory(directory, mode, newRecursive)
     if err != nil {
         return err
     }
@@ -513,8 +613,12 @@ func (this *Filesystem) EnsureDirectoryExists(
 }
 
 // 创建文件夹
-func (this *Filesystem) MakeDirectory(directory string, mode uint32, recursive bool) error {
-    if recursive {
+func (this *Filesystem) MakeDirectory(
+    directory string,
+    mode uint32,
+    recursive ...bool,
+) error {
+    if len(recursive) > 0 && recursive[0] {
         return os.MkdirAll(directory, os.FileMode(mode))
     } else {
         return os.Mkdir(directory, os.FileMode(mode))
@@ -525,9 +629,9 @@ func (this *Filesystem) MakeDirectory(directory string, mode uint32, recursive b
 func (this *Filesystem) MoveDirectory(
     from string,
     to string,
-    overwrite bool,
+    overwrite ...bool,
 ) error {
-    if overwrite && this.IsDirectory(to) {
+    if len(overwrite) > 0 && overwrite[0] && this.IsDirectory(to) {
         err := this.DeleteDirectory(to, false)
         if err != nil {
             return errors.New("覆盖旧文件操作失败")
@@ -541,7 +645,7 @@ func (this *Filesystem) MoveDirectory(
 func (this *Filesystem) CopyDirectory(directory string, destination string) error {
     // 检测目录正确性
     if srcInfo, err := os.Stat(directory); err != nil {
-        return err
+        return errors.New("原始目录不是一个正确的目录！原因为：" + err.Error())
     } else {
         if !srcInfo.IsDir() {
             e := errors.New("原始目录不是一个正确的目录！")
@@ -549,8 +653,17 @@ func (this *Filesystem) CopyDirectory(directory string, destination string) erro
         }
     }
 
+    // 目录不存在时
+    if !this.Exists(destination) {
+        // 创建目录
+        err := os.MkdirAll(destination, os.ModePerm)
+        if err != nil {
+            return errors.New("创建目录失败！原因为：" + err.Error())
+        }
+    }
+
     if destInfo, err := os.Stat(destination); err != nil {
-        return err
+        return errors.New("目标目录不是一个正确的目录！原因为：" + err.Error())
     } else {
         if !destInfo.IsDir() {
             e := errors.New("目标目录不是一个正确的目录！")
@@ -581,7 +694,7 @@ func (this *Filesystem) CopyDirectory(directory string, destination string) erro
 }
 
 // 删除文件夹
-func (this *Filesystem) DeleteDirectory(directory string, preserve bool) error {
+func (this *Filesystem) DeleteDirectory(directory string, preserve ...bool) error {
     if !this.IsDirectory(directory) {
         return errors.New("文件夹删除失败, 当前文件不是文件夹类型")
     }
@@ -590,7 +703,11 @@ func (this *Filesystem) DeleteDirectory(directory string, preserve bool) error {
         return errors.New("文件夹删除失败, 错误为:" + err.Error())
     }
 
-    if !preserve {
+    if len(preserve) == 0 {
+        preserve = []bool{false}
+    }
+
+    if !preserve[0] {
         this.Delete(directory)
     }
 
@@ -603,7 +720,7 @@ func (this *Filesystem) DeleteDirectories(directory string) bool {
 
     if len(allDirectories) > 0 {
         for _, directoryName := range allDirectories {
-            this.DeleteDirectory(directoryName, false)
+            this.DeleteDirectory(filepath.Join(directory, directoryName), false)
         }
 
         return true

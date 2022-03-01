@@ -4,14 +4,12 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
-
-    "github.com/deatil/lakego-doak/lakego/route"
 )
 
 // 路由
 func AddRoute(f func(rg *router.RouterGroup)) {
     // 路由
-    engine := route.New().Get()
+    engine := router.NewRoute().Get()
 
     // 配置
     conf := config.New("admin")

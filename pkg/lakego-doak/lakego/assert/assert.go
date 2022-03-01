@@ -11,3 +11,10 @@ func Assert(condition bool, message string) {
         panic("Error#" + message)
     }
 }
+
+// 断言加默认返回
+func AssertDefault(condition bool, def interface{}) interface{} {
+    if !condition {
+        return def
+    }
+}

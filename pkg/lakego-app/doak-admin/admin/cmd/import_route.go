@@ -4,7 +4,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/deatil/lakego-doak/lakego/route"
+    "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/support/time"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -37,7 +37,7 @@ var ImportRouteCmd = &command.Command{
 
 // 导入路由信息
 func ImportRoute() {
-    routes := route.New().GetRoutes()
+    routes := router.NewRoute().GetRoutes()
 
     // 路由前缀
     group := config.New("admin").GetString("Route.Prefix")

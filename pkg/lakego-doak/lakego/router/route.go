@@ -1,20 +1,18 @@
-package route
+package router
 
 import (
     "sync"
-
-    "github.com/deatil/lakego-doak/lakego/router"
 )
 
-var instance *Route
-var once sync.Once
+var instanceRoute *Route
+var onceRoute sync.Once
 
-func New() *Route {
-    once.Do(func() {
-        instance = &Route{}
+func NewRoute() *Route {
+    onceRoute.Do(func() {
+        instanceRoute = &Route{}
     })
 
-    return instance
+    return instanceRoute
 }
 
 /**
@@ -25,16 +23,16 @@ func New() *Route {
  */
 type Route struct {
     // 路由
-    routeEngine *router.Engine
+    routeEngine *Engine
 }
 
 // 设置
-func (this *Route) With(engine *router.Engine) {
+func (this *Route) With(engine *Engine) {
     this.routeEngine = engine
 }
 
 // 设置
-func (this *Route) Get() *router.Engine {
+func (this *Route) Get() *Engine {
     return this.routeEngine
 }
 
@@ -48,7 +46,7 @@ type RouteInfo struct {
 }
 RoutesInfo []RouteInfo
 */
-func (this *Route) GetRoutes() router.RoutesInfo {
+func (this *Route) GetRoutes() RoutesInfo {
     return this.routeEngine.Routes()
 }
 

@@ -1,7 +1,7 @@
 package lakego
 
 import (
-    "github.com/deatil/lakego-doak/lakego/route"
+    "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
 
     // 脚本
@@ -46,5 +46,5 @@ func (this *ServiceProvider) loadCommand() {
  * 导入模板渲染
  */
 func (this *ServiceProvider) loadHtmlRender() {
-    route.New().Get().HTMLRender = view.New().GetRender()
+    router.NewRoute().Get().HTMLRender = view.New().GetRender()
 }

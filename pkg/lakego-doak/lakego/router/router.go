@@ -262,4 +262,3 @@ func BasicAuthForRealm(accounts Accounts, realm string) HandlerFunc {
 func BasicAuth(accounts Accounts) HandlerFunc {
     return gin.BasicAuth(accounts)
 }
-

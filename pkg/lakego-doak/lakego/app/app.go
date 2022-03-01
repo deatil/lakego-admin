@@ -13,7 +13,6 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/di"
     "github.com/deatil/lakego-doak/lakego/jwt"
-    "github.com/deatil/lakego-doak/lakego/route"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/support/path"
@@ -341,7 +340,7 @@ func (this *App) runApp() {
     r.Use(globalMiddlewares...)
 
     // 缓存路由信息
-    route.New().With(r)
+    router.NewRoute().With(r)
 
     // 绑定路由
     this.RouteEngine = r

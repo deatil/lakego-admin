@@ -5,7 +5,6 @@ import (
     "encoding/json"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/support/time"
 
     "github.com/deatil/lakego-doak-action-log/action-log/model"
@@ -45,7 +44,7 @@ func recordLog(ctx *router.Context) {
     useragent := ctx.Request.Header.Get("User-Agent")
 
     // 请求 IP
-    ip := tool.GetRequestIp(ctx)
+    ip := router.GetRequestIp(ctx)
 
     // 响应输出状态
     status := strconv.Itoa(ctx.Writer.Status())

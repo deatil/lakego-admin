@@ -1,7 +1,6 @@
 package url
 
 import (
-    "github.com/deatil/lakego-doak/lakego/tool"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
@@ -9,7 +8,7 @@ import (
 
 // 匹配链接
 func MatchPath(ctx *router.Context, path string, current string) bool {
-    return tool.MatchPath(ctx, path, current)
+    return router.MatchPath(ctx, path, current)
 }
 
 // 生成后台链接

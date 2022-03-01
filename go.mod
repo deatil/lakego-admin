@@ -15,6 +15,7 @@ require (
 	github.com/deatil/lakego-doak v0.0.3
 	github.com/deatil/lakego-doak-action-log v0.0.3
 	github.com/deatil/lakego-doak-admin v0.0.3
+	github.com/iancoleman/strcase v0.2.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/ugorji/go v1.2.6 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect

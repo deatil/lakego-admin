@@ -93,6 +93,7 @@ func FormatTime(timeUnix time.Time, format string) string {
         "Y": fmt.Sprintf("%d", timeUnix.Year()),
         "m": fmt.Sprintf("%d", timeUnix.Month()),
         "d": fmt.Sprintf("%d", timeUnix.Day()),
+
         "H": fmt.Sprintf("%d", timeUnix.Hour()),
         "i": fmt.Sprintf("%d", timeUnix.Minute()),
         "s": fmt.Sprintf("%d", timeUnix.Second()),
@@ -110,6 +111,11 @@ func TimeFormat(timeStamp int, format string) string {
     now := TimeStampToTime(timeStamp)
 
     return FormatTime(now, format)
+}
+
+// 时间
+func Date(format string, timestamp int) string {
+    return TimeFormat(timestamp, format)
 }
 
 // 当前时间

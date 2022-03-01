@@ -6,8 +6,8 @@ import (
     "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
-    _ "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/filesystem"
+    "github.com/deatil/lakego-doak/lakego/support/str"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
@@ -125,7 +125,15 @@ func (this *Data) Error(ctx *gin.Context) {
     snowflakeId, _ := snowflake.Make(5)
 
     // 文件管理
-    filesystem.New()
+    fs := filesystem.New()
+    img := "./runtime/test/13/123"
+    // img2 := "./runtime/test/13123"
+    // txt := "./runtime/test/1/data.txt"
+    fsInfo := fs.Clean(img)
+
+    // 字符处理
+    strData := "asdfd"
+    newStrData := str.PadBoth(strData, 10, "123")
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
@@ -133,6 +141,11 @@ func (this *Data) Error(ctx *gin.Context) {
         "data3": data3,
         "data5": data5,
         "snowflakeId": snowflakeId,
+
+        "img": img,
+        "fsInfo": fsInfo,
+
+        "str": newStrData,
     })
 }
 
