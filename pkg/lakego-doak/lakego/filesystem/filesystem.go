@@ -15,9 +15,56 @@ import (
     "github.com/h2non/filetype"
 )
 
+// 构造函数
 func New() *Filesystem {
     return &Filesystem{}
 }
+
+type FileInfo = os.FileInfo
+
+type FileMode = os.FileMode
+
+const (
+    ModeDir        = os.ModeDir        // d: is a directory
+    ModeAppend     = os.ModeAppend     // a: append-only
+    ModeExclusive  = os.ModeExclusive  // l: exclusive use
+    ModeTemporary  = os.ModeTemporary  // T: temporary file; Plan 9 only
+    ModeSymlink    = os.ModeSymlink    // L: symbolic link
+    ModeDevice     = os.ModeDevice     // D: device file
+    ModeNamedPipe  = os.ModeNamedPipe  // p: named pipe (FIFO)
+    ModeSocket     = os.ModeSocket     // S: Unix domain socket
+    ModeSetuid     = os.ModeSetuid     // u: setuid
+    ModeSetgid     = os.ModeSetgid     // g: setgid
+    ModeCharDevice = os.ModeCharDevice // c: Unix character device, when ModeDevice is set
+    ModeSticky     = os.ModeSticky     // t: sticky
+    ModeIrregular  = os.ModeIrregular  // ?: non-regular file; nothing else is known about this file
+
+    // Mask for the type bits. For regular files, none will be set.
+    ModeType = os.ModeType
+
+    // Unix permission bits, 0o777
+    ModePerm = os.ModePerm
+)
+
+// Flags 列表
+const (
+    // 只读模式
+    O_RDONLY int = os.O_RDONLY
+    // 只写模式
+    O_WRONLY int = os.O_WRONLY
+    // 可读可写
+    O_RDWR   int = os.O_RDWR
+    // 追加内容
+    O_APPEND int = os.O_APPEND
+    // 创建文件，如果文件不存在
+    O_CREATE int = os.O_CREATE
+    // 与创建文件一同使用，文件必须存在
+    O_EXCL   int = os.O_EXCL
+    // 打开一个同步的文件流
+    O_SYNC   int = os.O_SYNC
+    // 如果可能，打开时缩短文件
+    O_TRUNC  int = os.O_TRUNC
+)
 
 /**
  * 本地文件管理器
@@ -26,6 +73,16 @@ func New() *Filesystem {
  * @author deatil
  */
 type Filesystem struct{}
+
+// 创建
+func (this *Filesystem) Create(name string) (*os.File, error) {
+    return os.Create(name)
+}
+
+// 关闭
+func (this *Filesystem) Close(fd *os.File) error {
+    return fd.Close()
+}
 
 // 判断
 func (this *Filesystem) Exists(path string) bool {
@@ -73,6 +130,34 @@ func (this *Filesystem) SharedGet(path string) (string, error) {
     }
 
     return string(data), nil
+}
+
+// 行读取
+func (this *Filesystem) Lines(path string) ([]string, error) {
+    openFile, err := os.Open(path)
+    if err != nil {
+        return []string{}, err
+    }
+
+    defer openFile.Close()
+
+    reader := bufio.NewReader(openFile)
+
+    data := make([]string, 0)
+    for {
+        line, err := reader.ReadString('\n')
+        data = append(data, line)
+
+        if err != nil {
+            if err == io.EOF {
+                break
+            }
+
+            return data, err
+        }
+    }
+
+    return data, err
 }
 
 // md5 值
@@ -242,7 +327,7 @@ func (this *Filesystem) Delete(path string) error {
     return os.Remove(path)
 }
 
-// get
+// 移动
 func (this *Filesystem) Move(path string, target string) error {
     return os.Rename(path, target)
 }
@@ -297,6 +382,11 @@ func (this *Filesystem) EvalSymlinks(path string) (string, error) {
     return filepath.EvalSymlinks(path)
 }
 
+// 是否为软链接
+func (this *Filesystem) IsSymlink(m os.FileMode) bool {
+    return m&os.ModeSymlink != 0
+}
+
 // 返回路径是否是一个绝对路径
 func (this *Filesystem) IsAbs(path string) bool {
     return filepath.IsAbs(path)
@@ -332,6 +422,16 @@ func (this *Filesystem) SplitList(path string) []string {
     return filepath.SplitList(path)
 }
 
+// 将 path 中的 ‘/’ 转换为系统相关的路径分隔符
+func (this *Filesystem) FromSlash(s string) string {
+    return filepath.FromSlash(s)
+}
+
+// 将 path 中平台相关的路径分隔符转换为 ‘/’
+func (this *Filesystem) ToSlash(s string) string {
+    return filepath.ToSlash(s)
+}
+
 // 函数可以将任意数量的路径元素放入一个单一路径里，会根据需要添加路径分隔符
 func (this *Filesystem) Join(elem ...string) string {
     return filepath.Join(elem...)
@@ -356,12 +456,12 @@ func (this *Filesystem) Dirname(path string) string {
     return filepath.Dir(path)
 }
 
-// get
+// 后缀
 func (this *Filesystem) Extension(path string) string {
     return filepath.Ext(path)[1:]
 }
 
-// get
+// 后缀
 func (this *Filesystem) GuessExtension(path string) string {
     file, err := os.Open(path)
     if err != nil {
@@ -382,7 +482,7 @@ func (this *Filesystem) GuessExtension(path string) string {
     return kind.Extension
 }
 
-// get
+// 类型，大类
 func (this *Filesystem) Type(path string) string {
     file, err := os.Open(path)
     if err != nil {
@@ -474,16 +574,14 @@ func (this *Filesystem) IsReadable(path string) bool {
     return true
 }
 
-// get
+// 是否可写
 func (this *Filesystem) IsWritable(path string) bool {
-    f, e := os.Stat(path)
-    if e != nil {
+    perm, err := this.PermString(path)
+    if err != nil {
         return false
     }
 
-    perm := f.Mode().Perm()
-
-    return len(strings.Split(perm.String(), "w")) == 4
+    return len(strings.Split(perm, "w")) == 4
 }
 
 // 文件路径匹配
@@ -703,11 +801,12 @@ func (this *Filesystem) DeleteDirectory(directory string, preserve ...bool) erro
         return errors.New("文件夹删除失败, 错误为:" + err.Error())
     }
 
-    if len(preserve) == 0 {
-        preserve = []bool{false}
+    newPreserve := false
+    if len(preserve) > 0 {
+        newPreserve = preserve[0]
     }
 
-    if !preserve[0] {
+    if !newPreserve {
         this.Delete(directory)
     }
 

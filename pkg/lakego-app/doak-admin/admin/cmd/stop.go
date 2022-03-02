@@ -7,8 +7,8 @@ import (
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     cmdTool "github.com/deatil/lakego-doak/lakego/support/cmd"
-    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
 )
 
@@ -43,7 +43,7 @@ func Stop() {
     pidPath := config.New("admin").GetString("PidPath")
     location := pathTool.FormatPath(pidPath)
 
-    contents, err := fileTool.ReadFile(location)
+    contents, err := filesystem.New().Get(location)
     if err != nil {
         color.Redln(err.Error())
 

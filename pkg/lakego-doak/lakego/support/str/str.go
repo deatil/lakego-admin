@@ -19,7 +19,12 @@ import (
 )
 
 // 判断位置
-func Strpos(haystack string, needle string, offset int) int {
+func Strpos(haystack string, needle string, start ...int) int {
+    offset := 0
+    if len(start) > 0 {
+        offset = start[0]
+    }
+
     length := len(haystack)
     if length == 0 || offset > length || -offset > length {
         return -1
@@ -38,7 +43,12 @@ func Strpos(haystack string, needle string, offset int) int {
 }
 
 // 判断位置
-func Stripos(haystack string, needle string, offset int) int {
+func Stripos(haystack string, needle string, start ...int) int {
+    offset := 0
+    if len(start) > 0 {
+        offset = start[0]
+    }
+
     length := len(haystack)
     if length == 0 || offset > length || -offset > length {
         return -1
@@ -58,7 +68,12 @@ func Stripos(haystack string, needle string, offset int) int {
 }
 
 // Strrpos
-func Strrpos(haystack string, needle string, offset int) int {
+func Strrpos(haystack string, needle string, start ...int) int {
+    offset := 0
+    if len(start) > 0 {
+        offset = start[0]
+    }
+
     pos, length := 0, len(haystack)
     if length == 0 || offset > length || -offset > length {
         return -1
@@ -79,7 +94,12 @@ func Strrpos(haystack string, needle string, offset int) int {
 }
 
 // Strripos
-func Strripos(haystack string, needle string, offset int) int {
+func Strripos(haystack string, needle string, start ...int) int {
+    offset := 0
+    if len(start) > 0 {
+        offset = start[0]
+    }
+
     pos, length := 0, len(haystack)
     if length == 0 || offset > length || -offset > length {
         return -1
@@ -124,25 +144,53 @@ func Ucwords(str string) string {
     return strings.Title(str)
 }
 
-// Substr
-func Substr(str string, start uint, length int) string {
-    if start < 0 || length < -1 {
-        return str
-    }
-
-    switch {
-        case length == -1:
+// 返回字符串的子串
+func Substr(str string, start int, length ...int) string {
+    if len(length) == 0 {
+        if start >= 0 {
             return str[start:]
-        case length == 0:
+        }
+
+        return str[len(str)+start:]
+    }
+
+    newLength := length[0]
+
+    // length 为 0 时
+    if newLength == 0 {
+        return ""
+    }
+
+    // length 大于 0 时
+    if newLength > 0 {
+        if start >= 0 {
+            end := start + newLength
+            if end > len(str) {
+                end = len(str)
+            }
+
+            return str[start:end]
+        }
+
+        return str[len(str)+start:len(str)+start+newLength]
+    }
+
+    // length 小于 0 时
+    if start >= 0 {
+        end := len(str) + newLength
+        if end <= 0 || start >= end {
             return ""
+        }
+
+        return str[start:end]
     }
 
-    end := int(start) + length
-    if end > len(str) {
-        end = len(str)
+    newStr := str[len(str)+start:]
+    if len(newStr) + newLength <= 0 {
+        return ""
     }
 
-    return str[start:end]
+    return newStr[:len(newStr)+newLength]
 }
 
 // Strrev

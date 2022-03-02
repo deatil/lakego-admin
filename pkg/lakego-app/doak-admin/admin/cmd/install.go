@@ -6,8 +6,8 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/command"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/path"
-    "github.com/deatil/lakego-doak/lakego/support/file"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
@@ -41,13 +41,15 @@ func runInsatll() {
     fmt.Println("开始安装并导入数据...")
     fmt.Println("")
 
-    if ok := file.IsExist("./install.lock"); ok {
+    fs := filesystem.New()
+
+    if ok := fs.Exists("./install.lock"); ok {
         fmt.Println("请先删除文件 [./install.lock] ！")
         os.Exit(1)
     }
 
     sqlFile := path.FormatPath("{root}/resources/database/lakego_admin.sql")
-    dataExit := file.IsExist(sqlFile)
+    dataExit := fs.Exists(sqlFile)
     if !dataExit {
         fmt.Println("数据库文件 [lakego_admin.sql] 不存在！")
         os.Exit(1)

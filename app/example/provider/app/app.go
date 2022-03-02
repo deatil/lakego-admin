@@ -4,7 +4,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-doak/lakego/provider"
-    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
@@ -55,7 +55,7 @@ func (this *ServiceProvider) loadCommand() {
 func (this *ServiceProvider) loadSetting() {
     // 合并配置
     toDefaultFile := pathTool.FormatPath("{root}/config/default/example.yml")
-    if fileTool.IsExist(toDefaultFile) {
+    if filesystem.New().Exists(toDefaultFile) {
         this.MergeConfigFrom(toDefaultFile, "example")
     }
 

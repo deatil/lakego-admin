@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/file"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 )
@@ -52,11 +52,13 @@ func StorageLink() {
                 from := path.FormatPath(array[1])
                 to := path.FormatPath(array[0])
 
+                fs := filesystem.New()
+
                 if pForce {
-                    file.Unlink(to)
+                    fs.Delete(to)
                 }
 
-                file.Symlink(from, to)
+                fs.Link(from, to)
             }
         }
     }

@@ -14,7 +14,7 @@ import (
 //	bmp	=> image/bmp
 //  xlsx、docx 、zip	=> application/zip
 //  tar.gz => application/x-gzip
-//  txt、json、log等文本文件 => text/plain; charset=utf-8 
+//  txt、json、log等文本文件 => text/plain; charset=utf-8
 
 // 通过文件名获取文件mime信息
 func GetFilesMimeByFileName(filepath string) string {
@@ -35,7 +35,6 @@ func GetFilesMimeByFileName(filepath string) string {
 
 // 通过文件指针获取文件mime信息
 func GetFilesMimeByFp(fp multipart.File) string {
-
     buffer := make([]byte, 32)
     if _, err := fp.Read(buffer); err != nil {
         return ""

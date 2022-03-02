@@ -8,7 +8,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/validator"
-    "github.com/deatil/lakego-doak/lakego/support/file"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
 )
 
 // 上传
@@ -282,7 +282,7 @@ func (this *Upload) Destroy(path string) bool {
 
 // 创建文件夹
 func (this *Upload) EnsureDir(path string) bool {
-    err := file.EnsureDir(path)
+    err := filesystem.New().MakeDirectory(path, 0666)
     if err != nil {
         return false
     }

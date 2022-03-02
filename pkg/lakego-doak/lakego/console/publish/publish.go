@@ -10,7 +10,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/file"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/path"
 )
 
@@ -186,9 +186,10 @@ func (this *Publisher) PathsToPublish(tag string) map[string]string {
 
 // 不确定类型推送
 func (this *Publisher) PublishItem(from string, to string)  {
-    if file.IsFile(from) {
+    fs := filesystem.New()
+    if fs.IsFile(from) {
         this.PublishFile(from, to)
-    } else if file.IsDir(from) {
+    } else if fs.IsDirectory(from) {
         this.PublishDirectory(from, to)
     } else {
         color.Redln("不能够定位目录: <" + from + ">")
@@ -200,7 +201,7 @@ func (this *Publisher) PublishFile(from string, to string) {
     if !this.IsExist(to) || pForce {
         this.CreateParentDirectory(filepath.Dir(to))
 
-        file.CopyFile(from, to)
+        filesystem.New().Copy(from, to)
 
         this.Status(from, to, "文件")
     }
@@ -211,7 +212,7 @@ func (this *Publisher) PublishDirectory(from string, to string) {
     this.CreateParentDirectory(to)
 
     // 文件夹复制
-    file.CopyDir(from, to)
+    filesystem.New().CopyDirectory(from, to)
 
     this.Status(from, to, "文件夹")
 }

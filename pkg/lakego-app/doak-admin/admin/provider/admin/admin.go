@@ -6,8 +6,8 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    fileTool "github.com/deatil/lakego-doak/lakego/support/file"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 
@@ -213,5 +213,5 @@ func (this *ServiceProvider) putSock() {
 
     contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
 
-    fileTool.WriteFile(file, contents)
+    filesystem.New().Put(file, contents)
 }

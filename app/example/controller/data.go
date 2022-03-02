@@ -3,7 +3,6 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/pipeline"
     "github.com/deatil/lakego-doak/lakego/exception"
     "github.com/deatil/lakego-doak/lakego/filesystem"
@@ -115,31 +114,24 @@ func (this *Data) Error(ctx *gin.Context) {
     })
     data3 := hub.Pipe("hub 测试", "hub")
 
-    // 容器
-    cont := container.Instance()
-    cont.Set("data", "info-2222333")
-    // cont.Delete("data")
-    data5 := cont.Get("data")
-
     // 雪花算法
     snowflakeId, _ := snowflake.Make(5)
 
     // 文件管理
     fs := filesystem.New()
-    img := "./runtime/test/13/123"
+    img := "./runtime/test/13123/123321.txt"
     // img2 := "./runtime/test/13123"
     // txt := "./runtime/test/1/data.txt"
-    fsInfo := fs.Clean(img)
+    fsInfo := fs.IsWritable(img)
 
     // 字符处理
-    strData := "asdfd"
-    newStrData := str.PadBoth(strData, 10, "123")
+    strData := "t_ydfd_ydf"
+    newStrData := str.LowerCamel(strData)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
         "data3": data3,
-        "data5": data5,
         "snowflakeId": snowflakeId,
 
         "img": img,

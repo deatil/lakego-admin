@@ -6,7 +6,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/file"
+    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/support/path"
@@ -149,7 +149,7 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
         for _, viewPath := range paths {
             appPath := pathTool.FormatPath(viewPath) + "/pkg/" + namespace
 
-            if exists, _ := file.PathExists(appPath); exists {
+            if filesystem.New().Exists(appPath) {
                 viewFinder.AddNamespace(namespace, []string{appPath})
             }
         }
