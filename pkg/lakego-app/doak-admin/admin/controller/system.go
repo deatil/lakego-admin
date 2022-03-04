@@ -21,9 +21,15 @@ type System struct {
     Base
 }
 
-/**
- * 系统信息
- */
+// 系统信息
+// @Summary 系统信息
+// @Description 系统信息
+// @Tags 系统
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /system/info [get]
+// @Security Bearer
 func (this *System) Info(ctx *router.Context) {
     hostname, _ := os.Hostname()
     // netInfo, _ := net.Interfaces()
@@ -62,9 +68,15 @@ func (this *System) Info(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", data)
 }
 
-/**
- * 权限 slug 列表
- */
+// 权限 slug 列表
+// @Summary 权限 slug 列表
+// @Description 权限 slug 列表
+// @Tags 系统
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /system/rules [get]
+// @Security Bearer
 func (this *System) Rules(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRuleSlugs()

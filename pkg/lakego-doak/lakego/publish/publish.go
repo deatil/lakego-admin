@@ -9,7 +9,7 @@ var instance *Publish
 var once sync.Once
 
 // 单例
-func NewInstance() *Publish {
+func Instance() *Publish {
     once.Do(func() {
         instance = New()
     })
@@ -173,6 +173,6 @@ func (this *Publish) PublishableGroups() []string {
 func (this *Publish) GetStructName(name interface{}) string {
     elem := reflect.TypeOf(name).Elem()
 
-    return elem.PkgPath() + "/" + elem.Name()
+    return elem.PkgPath() + "." + elem.Name()
 }
 

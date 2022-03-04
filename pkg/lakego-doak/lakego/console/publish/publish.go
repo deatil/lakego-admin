@@ -130,13 +130,13 @@ func (this *Publisher) publishableChoices() []string {
 
     choices = append(choices, "能够推送的 providers 和 tags 列表")
 
-    providers := publish.NewInstance().PublishableProviders()
+    providers := publish.Instance().PublishableProviders()
     sort.Strings(providers[:])
     for _, v := range providers {
         choices = append(choices, "Provider: " + v)
     }
 
-    groups := publish.NewInstance().PublishableGroups()
+    groups := publish.Instance().PublishableGroups()
     sort.Strings(groups[:])
     for _, v2 := range groups {
         choices = append(choices, "Tag: " + v2)
@@ -181,7 +181,7 @@ func (this *Publisher) PublishTag(tag string) {
 
 // 目录推送
 func (this *Publisher) PathsToPublish(tag string) map[string]string {
-    return publish.NewInstance().PathsToPublish(this.provider, tag)
+    return publish.Instance().PathsToPublish(this.provider, tag)
 }
 
 // 不确定类型推送
@@ -192,6 +192,8 @@ func (this *Publisher) PublishItem(from string, to string)  {
     } else if fs.IsDirectory(from) {
         this.PublishDirectory(from, to)
     } else {
+        from, _ = this.RemovePathPrefix(from)
+
         color.Redln("不能够定位目录: <" + from + ">")
     }
 }
@@ -228,23 +230,8 @@ func (this *Publisher) CreateParentDirectory(directory string) error {
 
 // Status
 func (this *Publisher) Status(from string, to string, typ string) {
-    from, err := filepath.Abs(from)
-    if err != nil {
-        panic(err)
-    }
-
-    to, err2 := filepath.Abs(to)
-    if err2 != nil {
-        panic(err2)
-    }
-
-    basePath := path.BasePath()
-
-    from = strings.TrimPrefix(from, basePath)
-    to = strings.TrimPrefix(to, basePath)
-
-    from = strings.TrimPrefix(strings.Replace(from, "\\", "/", -1), "/")
-    to = strings.TrimPrefix(strings.Replace(to, "\\", "/", -1), "/")
+    from, _ = this.RemovePathPrefix(from)
+    to, _ = this.RemovePathPrefix(to)
 
     color.Magentaln("\n复制" + typ + " [" + from + "] 到 [" + to + "] 成功。")
 }
@@ -253,4 +240,19 @@ func (this *Publisher) Status(from string, to string, typ string) {
 func (this *Publisher) IsExist(fp string) bool {
     _, err := os.Stat(fp)
     return err == nil || os.IsExist(err)
+}
+
+// 移除路径前缀
+func (this *Publisher) RemovePathPrefix(pathName string) (string, error) {
+    newPath, err := filepath.Abs(pathName)
+    if err != nil {
+        return pathName, err
+    }
+
+    basePath := path.BasePath()
+
+    newPath = strings.TrimPrefix(newPath, basePath)
+    newPath = strings.TrimPrefix(strings.Replace(newPath, "\\", "/", -1), "/")
+
+    return newPath, nil
 }

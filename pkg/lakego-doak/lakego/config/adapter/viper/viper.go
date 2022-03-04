@@ -2,6 +2,7 @@ package viper
 
 import (
     "time"
+    "strings"
 
     "github.com/spf13/viper"
     "github.com/fsnotify/fsnotify"
@@ -25,18 +26,21 @@ type Viper struct {
     path string
 }
 
-// 设置读取文件
+// 初始化
 func (this *Viper) Init() {
-    conf := viper.New()
+    this.conf = viper.New()
+}
 
-    this.conf = conf
+// 环境变量前缀
+func (this *Viper) SetEnvPrefix(prefix string) {
+    this.conf.SetEnvPrefix(prefix)
+    this.conf.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+}
 
-    // 环境变量
+// 环境变量
+func (this *Viper) AutomaticEnv() {
     this.conf.AutomaticEnv()
     this.conf.AllowEmptyEnv(true)
-
-    // 环境变量前缀
-    this.conf.SetEnvPrefix("APP")
 }
 
 // 设置文件夹
@@ -86,7 +90,7 @@ func (this *Viper) WithFile(fileName ...string) {
 
     if len(fileName) > 0 {
         // 导入自定义配置
-        configFiles := adapter.NewPathInstance().GetPath(fileName[0])
+        configFiles := adapter.InstancePath().GetPath(fileName[0])
         if len(configFiles) > 0 {
             for _, configFile := range configFiles {
                 // 指定配置文件路径

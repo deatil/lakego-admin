@@ -13,6 +13,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/di"
     "github.com/deatil/lakego-doak/lakego/jwt"
+    "github.com/deatil/lakego-doak/lakego/env"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/support/path"
@@ -110,6 +111,9 @@ func (this *App) WithConfig(conf *config.Config) *App {
 
 // 运行
 func (this *App) Run() {
+    // 导入环境变量
+    this.LoadEnv()
+
     // 初始化容器
     this.initDI()
 
@@ -477,6 +481,29 @@ func (this *App) initDI() {
     d.Provide(func() *jwt.JWT {
         return jwt.New()
     })
+}
+
+// 导入 env 环境变量
+func (this *App) LoadEnv() {
+    // 开发方式 env 环境文件
+    envType := ".env.production"
+
+    mode := this.Config.GetString("Mode")
+    if mode == "dev" {
+        envType = ".env.development"
+    }
+
+    // 开发环境变量
+    err := env.Load(envType)
+    if err != nil {
+        log.Println("环境变量导入失败，原因为：" + err.Error())
+    }
+
+    // 默认环境变量
+    err = env.Load()
+    if err != nil {
+        log.Println("环境变量导入失败，原因为：" + err.Error())
+    }
 }
 
 // 格式化文件路径

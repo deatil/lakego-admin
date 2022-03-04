@@ -16,7 +16,10 @@ import (
  */
 func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
-        if isTrueRequest(ctx) {
+        // 域名
+        origin := ctx.GetHeader("Origin")
+
+        if len(origin) > 0 && isTrueRequest(ctx) {
             conf := config.New("cors")
             open := conf.GetBool("OpenAllowOrigin")
 

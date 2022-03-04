@@ -75,6 +75,8 @@ func Register() {
                 configPath := path.FormatPath("{root}/config")
 
                 adapter.Init()
+                // adapter.SetEnvPrefix("LAKEGO")
+                adapter.AutomaticEnv()
                 adapter.WithPath(configPath)
 
                 return adapter

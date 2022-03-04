@@ -2,7 +2,6 @@ package router
 
 import (
     "io"
-    "net/http"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-gonic/gin/render"
@@ -24,10 +23,10 @@ const (
 )
 
 // 默认写入
-var DefaultWriter = gin.DefaultWriter
+var DefaultWriter = &gin.DefaultWriter
 
 // 默认错误写入
-var DefaultErrorWriter = gin.DefaultErrorWriter
+var DefaultErrorWriter = &gin.DefaultErrorWriter
 
 type (
     // 中间件
@@ -115,150 +114,106 @@ type (
 
 var Validator = binding.Validator
 
+// ===== gin 默认方法 =====
+
 // 使用 gin
-func New() *Engine {
-    return gin.New()
-}
+// gin.New() *Engine
+var New = gin.New
 
 // 默认 gin
-func Default() *Engine {
-    return gin.Default()
-}
+// gin.Default() *Engine
+var Default = gin.Default
 
 // 设置模式
-func SetMode(value string) {
-    gin.SetMode(value)
-}
+// gin.SetMode(value string)
+var SetMode = gin.SetMode
 
 // DisableBindValidation closes the default validator.
-func DisableBindValidation() {
-    gin.DisableBindValidation()
-}
+// gin.DisableBindValidation()
+var DisableBindValidation = gin.DisableBindValidation
 
-// EnableJsonDecoderUseNumber sets true for binding.EnableDecoderUseNumber to
-// call the UseNumber method on the JSON Decoder instance.
-func EnableJsonDecoderUseNumber() {
-    gin.EnableJsonDecoderUseNumber()
-}
+// gin.EnableJsonDecoderUseNumber()
+var EnableJsonDecoderUseNumber = gin.EnableJsonDecoderUseNumber
 
-// EnableJsonDecoderDisallowUnknownFields sets true for binding.EnableDecoderDisallowUnknownFields to
-// call the DisallowUnknownFields method on the JSON Decoder instance.
-func EnableJsonDecoderDisallowUnknownFields() {
-    gin.EnableJsonDecoderDisallowUnknownFields()
-}
+// gin.EnableJsonDecoderDisallowUnknownFields()
+var EnableJsonDecoderDisallowUnknownFields = gin.EnableJsonDecoderDisallowUnknownFields
 
 // Mode returns currently gin mode.
-func Mode() string {
-    return gin.Mode()
-}
+// gin.Mode() string
+var Mode = gin.Mode
 
-// WithDefaultWriter
+// gin.Bind(val interface{}) HandlerFunc
+var Bind = gin.Bind
+
+// gin.WrapF(f http.HandlerFunc) HandlerFunc
+var WrapF = gin.WrapF
+
+// gin.WrapH(h http.Handler) HandlerFunc
+var WrapH = gin.WrapH
+
+// 文件夹
+// gin.Dir(root string, listDirectory bool) http.FileSystem
+var Dir = gin.Dir
+
+// 是否为调试
+// gin.IsDebugging() bool
+var IsDebugging = gin.IsDebugging
+
+// gin 默认回收中间件
+// gin.Recovery() HandlerFunc
+var Recovery = gin.Recovery
+
+// gin.CustomRecovery(handle RecoveryFunc) HandlerFunc
+var CustomRecovery = gin.CustomRecovery
+
+// gin.RecoveryWithWriter(out io.Writer, recovery ...RecoveryFunc) HandlerFunc
+var RecoveryWithWriter = gin.RecoveryWithWriter
+
+// gin.CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc
+var CustomRecoveryWithWriter = gin.CustomRecoveryWithWriter
+
+// gin 默认日志中间件
+// gin.Logger() HandlerFunc
+var Logger = gin.Logger
+
+// DisableConsoleColor disables color output in the console.
+// gin.DisableConsoleColor()
+var DisableConsoleColor = gin.DisableConsoleColor
+
+// gin.ForceConsoleColor()
+var ForceConsoleColor = gin.ForceConsoleColor
+
+// ErrorLogger returns a handlerfunc for any error type.
+// gin.ErrorLogger() HandlerFunc
+var ErrorLogger = gin.ErrorLogger
+
+// gin.ErrorLoggerT(typ ErrorType) HandlerFunc
+var ErrorLoggerT = gin.ErrorLoggerT
+
+// gin.LoggerWithFormatter(f LogFormatter) HandlerFunc
+var LoggerWithFormatter = gin.LoggerWithFormatter
+
+// gin.LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc
+var LoggerWithWriter = gin.LoggerWithWriter
+
+// gin.LoggerWithConfig(conf LoggerConfig) HandlerFunc
+var LoggerWithConfig = gin.LoggerWithConfig
+
+// gin.BasicAuthForRealm(accounts Accounts, realm string) HandlerFunc
+var BasicAuthForRealm = gin.BasicAuthForRealm
+
+// gin.BasicAuth(accounts Accounts) HandlerFunc
+var BasicAuth = gin.BasicAuth
+
+// binding.Default(method, contentType string) Binding
+var BindingDefault = binding.Default
+
+// 设置默认写入
 func WithDefaultWriter(writer io.Writer) {
     gin.DefaultWriter = writer
 }
 
-// WithDefaultErrorWriter
+// 设置默认错误写入
 func WithDefaultErrorWriter(writer io.Writer) {
     gin.DefaultErrorWriter = writer
-}
-
-// Bind
-func Bind(val interface{}) HandlerFunc {
-    return gin.Bind(val)
-}
-
-// WrapF
-func WrapF(f http.HandlerFunc) HandlerFunc {
-    return gin.WrapF(f)
-}
-
-// WrapF
-func WrapH(h http.Handler) HandlerFunc {
-    return gin.WrapH(h)
-}
-
-// 文件夹
-func Dir(root string, listDirectory bool) http.FileSystem {
-    return gin.Dir(root, listDirectory)
-}
-
-// 是否为调试
-func IsDebugging() bool {
-    return gin.IsDebugging()
-}
-
-// BindingDefault
-func BindingDefault(method, contentType string) Binding {
-    return binding.Default(method, contentType)
-}
-
-// gin 默认回收中间件
-func Recovery() HandlerFunc {
-    return gin.Recovery()
-}
-
-// CustomRecovery returns a middleware that recovers from any panics and calls the provided handle func to handle it.
-func CustomRecovery(handle RecoveryFunc) HandlerFunc {
-    return gin.CustomRecovery(handle)
-}
-
-// RecoveryWithWriter returns a middleware for a given writer that recovers from any panics and writes a 500 if there was one.
-func RecoveryWithWriter(out io.Writer, recovery ...RecoveryFunc) HandlerFunc {
-    return gin.RecoveryWithWriter(out, recovery...)
-}
-
-// CustomRecoveryWithWriter returns a middleware for a given writer that recovers from any panics and calls the provided handle func to handle it.
-func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) HandlerFunc {
-    return gin.CustomRecoveryWithWriter(out, handle)
-}
-
-// gin 默认日志中间件
-func Logger() HandlerFunc {
-    return gin.Logger()
-}
-
-// DisableConsoleColor disables color output in the console.
-func DisableConsoleColor() {
-    gin.DisableConsoleColor()
-}
-
-// ForceConsoleColor force color output in the console.
-func ForceConsoleColor() {
-    gin.ForceConsoleColor()
-}
-
-// ErrorLogger returns a handlerfunc for any error type.
-func ErrorLogger() HandlerFunc {
-    return gin.ErrorLogger()
-}
-
-// ErrorLoggerT returns a handlerfunc for a given error type.
-func ErrorLoggerT(typ ErrorType) HandlerFunc {
-    return gin.ErrorLoggerT(typ)
-}
-
-// LoggerWithFormatter instance a Logger middleware with the specified log format function.
-func LoggerWithFormatter(f LogFormatter) HandlerFunc {
-    return gin.LoggerWithFormatter(f)
-}
-
-// LoggerWithWriter instance a Logger middleware with the specified writer buffer.
-// Example: os.Stdout, a file opened in write mode, a socket...
-func LoggerWithWriter(out io.Writer, notlogged ...string) HandlerFunc {
-    return gin.LoggerWithWriter(out, notlogged...)
-}
-
-// LoggerWithConfig instance a Logger middleware with config.
-func LoggerWithConfig(conf LoggerConfig) HandlerFunc {
-    return gin.LoggerWithConfig(conf)
-}
-
-// BasicAuthForRealm
-func BasicAuthForRealm(accounts Accounts, realm string) HandlerFunc {
-    return gin.BasicAuthForRealm(accounts, realm)
-}
-
-// BasicAuth
-func BasicAuth(accounts Accounts) HandlerFunc {
-    return gin.BasicAuth(accounts)
 }

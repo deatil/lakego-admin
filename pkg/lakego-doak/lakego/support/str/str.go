@@ -18,6 +18,53 @@ import (
     "github.com/iancoleman/strcase"
 )
 
+// Snake 转为 snake_case
+func Snake(str string) string {
+    return strcase.ToSnake(str)
+}
+
+// SnakeWithIgnore
+func SnakeWithIgnore(s string, ignore string) string {
+    return strcase.ToSnakeWithIgnore(s, ignore)
+}
+
+// 转为 SCREAMING_SNAKE_CASE
+func ScreamingSnake(s string) string {
+    return strcase.ToScreamingSnake(s)
+}
+
+// 转为 kebab-case
+func Kebab(s string) string {
+    return strcase.ToKebab(s)
+}
+
+// 转为 SCREAMING-KEBAB-CASE
+func ScreamingKebab(s string) string {
+    return strcase.ToScreamingKebab(s)
+}
+
+// 转为 delimited.snake.case
+func Delimited(s string, delimiter uint8) string {
+    return strcase.ToDelimited(s, delimiter)
+}
+
+// ScreamingDelimited
+func ScreamingDelimited(s string, delimiter uint8, ignore string, screaming bool) string {
+    return strcase.ToScreamingDelimited(s, delimiter, ignore, screaming)
+}
+
+// Camel 转为 CamelCase
+func Camel(str string) string {
+    return strcase.ToCamel(str)
+}
+
+// LowerCamel 转为 lowerCamelCase
+func LowerCamel(str string) string {
+    return strcase.ToLowerCamel(str)
+}
+
+// ==============================
+
 // 判断位置
 func Strpos(haystack string, needle string, start ...int) int {
     offset := 0
@@ -542,79 +589,6 @@ func Bin2hex(str string) (string, error) {
     return strconv.FormatInt(i, 16), nil
 }
 
-// Snake 转为 snake_case
-func Snake(str string) string {
-    return strcase.ToSnake(str)
-}
-
-// Camel 转为 CamelCase
-func Camel(str string) string {
-    return strcase.ToCamel(str)
-}
-
-// LowerCamel 转为 lowerCamelCase
-func LowerCamel(str string) string {
-    return strcase.ToLowerCamel(str)
-}
-
-// 填充字符串的两侧
-func PadBoth(value string, length int, pad string) string {
-    if length < 0 {
-        length = 0
-    }
-
-    needLen := length - len(value)
-    if needLen < 0 {
-        return value
-    }
-
-    leftLen := needLen / 2
-
-    leftData := PadLeft(value, leftLen + len(value), pad)
-
-    newData := PadRight(leftData, length, pad)
-
-    return newData
-}
-
-// 填充字符串的左侧
-func PadLeft(value string, length int, pad string) string {
-    if length < 0 {
-        length = 0
-    }
-
-    needLen := length - len(value)
-    if needLen < 0 {
-        return value
-    }
-
-    newValue := strings.Repeat(pad, needLen)
-
-    // 左侧取生成后的右侧字符
-    value = newValue[len(newValue) - needLen:] + value
-
-    return value
-}
-
-// 填充字符串的右侧
-func PadRight(value string, length int, pad string) string {
-    if length < 0 {
-        length = 0
-    }
-
-    needLen := length - len(value)
-    if needLen < 0 {
-        return value
-    }
-
-    newValue := strings.Repeat(pad, needLen)
-
-    value = value + newValue[:needLen]
-
-    return value
-
-}
-
 // 生成随机数
 func Random(n int, allowedChars ...[]rune) string {
     var defaultLetters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
@@ -633,6 +607,8 @@ func Random(n int, allowedChars ...[]rune) string {
 
     return string(b)
 }
+
+// ==============================
 
 // 重复
 func Repeat(str string, times int) string {
@@ -862,4 +838,64 @@ func CompareVersion(src, toCompare string) bool {
 
     return false
 }
+
+// ==============================
+
+// 填充字符串的两侧
+func PadBoth(value string, length int, pad string) string {
+    if length < 0 {
+        length = 0
+    }
+
+    needLen := length - len(value)
+    if needLen < 0 {
+        return value
+    }
+
+    leftLen := needLen / 2
+
+    leftData := PadLeft(value, leftLen + len(value), pad)
+
+    newData := PadRight(leftData, length, pad)
+
+    return newData
+}
+
+// 填充字符串的左侧
+func PadLeft(value string, length int, pad string) string {
+    if length < 0 {
+        length = 0
+    }
+
+    needLen := length - len(value)
+    if needLen < 0 {
+        return value
+    }
+
+    newValue := strings.Repeat(pad, needLen)
+
+    // 左侧取生成后的右侧字符
+    value = newValue[len(newValue) - needLen:] + value
+
+    return value
+}
+
+// 填充字符串的右侧
+func PadRight(value string, length int, pad string) string {
+    if length < 0 {
+        length = 0
+    }
+
+    needLen := length - len(value)
+    if needLen < 0 {
+        return value
+    }
+
+    newValue := strings.Repeat(pad, needLen)
+
+    value = value + newValue[:needLen]
+
+    return value
+}
+
 

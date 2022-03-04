@@ -34,9 +34,22 @@ type Admin struct {
     Base
 }
 
-/**
- * 列表
- */
+// 管理员列表
+// @Summary 管理员列表
+// @Description 管理员列表
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param order query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time query string false "结束时间"
+// @Param status query string false "状态"
+// @Param start query string false "开始数据量"
+// @Param limit query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin [get]
+// @Security Bearer
 func (this *Admin) Index(ctx *router.Context) {
     // 模型
     adminModel := model.NewAdmin().
@@ -132,9 +145,16 @@ func (this *Admin) Index(ctx *router.Context) {
     })
 }
 
-/**
- * 详情
- */
+// 管理员详情
+// @Summary 管理员详情
+// @Description 管理员详情
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin/{id} [get]
+// @Security Bearer
 func (this *Admin) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -183,9 +203,16 @@ func (this *Admin) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", newInfo)
 }
 
-/**
- * 管理员权限
- */
+// 管理员权限
+// @Summary 管理员权限
+// @Description 管理员权限
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin/{id}/rules [get]
+// @Security Bearer
 func (this *Admin) Rules(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -223,9 +250,15 @@ func (this *Admin) Rules(ctx *router.Context) {
     })
 }
 
-/**
- * 添加账号所需分组
- */
+// 添加账号所需分组
+// @Summary 添加账号所需分组
+// @Description 添加账号所需分组
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin/groups [get]
+// @Security Bearer
 func (this *Admin) Groups(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     adminData := adminInfo.(*admin.Admin)
@@ -276,9 +309,20 @@ func (this *Admin) Groups(ctx *router.Context) {
     })
 }
 
-/**
- * 添加
- */
+// 管理员添加
+// @Summary 管理员添加
+// @Description 管理员添加
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param name formData string true "名称"
+// @Param email formData string true "邮箱"
+// @Param nickname formData string true "昵称"
+// @Param introduce formData string true "描述"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin [post]
+// @Security Bearer
 func (this *Admin) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -335,9 +379,21 @@ func (this *Admin) Create(ctx *router.Context) {
     })
 }
 
-/**
- * 更新
- */
+// 管理员更新
+// @Summary 管理员更新
+// @Description 管理员更新信息
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Param name formData string true "名称"
+// @Param email formData string true "邮箱"
+// @Param nickname formData string true "昵称"
+// @Param introduce formData string true "描述"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin/{id} [put]
+// @Security Bearer
 func (this *Admin) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -412,9 +468,16 @@ func (this *Admin) Update(ctx *router.Context) {
     this.Success(ctx, "账号修改成功")
 }
 
-/**
- * 删除
- */
+// 管理员删除
+// @Summary 管理员删除
+// @Description 管理员账号删除
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /admin/{id} [delete]
+// @Security Bearer
 func (this *Admin) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -462,9 +525,17 @@ func (this *Admin) Delete(ctx *router.Context) {
     this.Success(ctx, "账号删除成功")
 }
 
-/**
- * 修改头像
- */
+// 修改头像
+// @Summary 修改头像
+// @Description 修改管理员账号头像
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Param avatar formData string true "头像数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/{id}/avatar [patch]
+// @Security Bearer
 func (this *Admin) UpdateAvatar(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -515,9 +586,17 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
     this.Success(ctx, "修改头像成功")
 }
 
-/**
- * 修改密码
- */
+// 修改密码
+// @Summary 修改密码
+// @Description 修改管理员账号密码
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Param password formData string true "新密码"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/{id}/password [patch]
+// @Security Bearer
 func (this *Admin) UpdatePasssword(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -572,9 +651,16 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
     this.Success(ctx, "密码修改成功")
 }
 
-/**
- * 启用
- */
+// 启用
+// @Summary 启用
+// @Description 管理员账号启用
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/{id}/enable [patch]
+// @Security Bearer
 func (this *Admin) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -624,9 +710,16 @@ func (this *Admin) Enable(ctx *router.Context) {
     this.Success(ctx, "启用账号成功")
 }
 
-/**
- * 禁用
- */
+// 禁用
+// @Summary 禁用
+// @Description 管理员账号禁用
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "管理员ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/{id}/disable [patch]
+// @Security Bearer
 func (this *Admin) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -676,9 +769,16 @@ func (this *Admin) Disable(ctx *router.Context) {
     this.Success(ctx, "禁用账号成功")
 }
 
-/**
- * 退出
- */
+// 账号退出
+// @Summary 账号退出
+// @Description 管理员账号退出
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param refreshToken path string true "刷新 token"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/logout/{refreshToken} [delete]
+// @Security Bearer
 func (this *Admin) Logout(ctx *router.Context) {
     refreshToken := ctx.Param("refreshToken")
     if refreshToken == "" {
@@ -730,9 +830,16 @@ func (this *Admin) Logout(ctx *router.Context) {
     this.Success(ctx, "账号退出成功")
 }
 
-/**
- * 授权
- */
+// 账号授权
+// @Summary 账号授权
+// @Description 管理员账号授权
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "刷新 token"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/{id}/access [patch]
+// @Security Bearer
 func (this *Admin) Access(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -809,9 +916,15 @@ func (this *Admin) Access(ctx *router.Context) {
     this.Success(ctx, "账号授权分组成功")
 }
 
-/**
- * 权限同步
- */
+// 账号权限同步
+// @Summary 账号权限同步
+// @Description 管理员账号权限同步
+// @Tags 管理员
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /admin/reset-permission [put]
+// @Security Bearer
 func (this *Admin) ResetPermission(ctx *router.Context) {
     // 清空原始数据
     model.ClearRulesData()

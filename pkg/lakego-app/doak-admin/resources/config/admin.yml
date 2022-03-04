@@ -4,6 +4,9 @@ Route:
   Middleware: "lakego-admin"
   AdminMiddleware: "lakego-admin-check"
 
+# pid 存放目录
+PidPath: "{runtime}/pid/lakego.sock"
+
 # 文件上传
 Upload:
   # Disk in `config/filesystem.yml`.
@@ -32,7 +35,3 @@ Upload:
     Audio: "(?i)^(og?|ogg|mp3|mp?g|wav)$"
     Pdf: "(?i)^(pdf)$"
     Flash: "(?i)^(swf)$"
-
-  # 上传文件名最长字符
-  NameMaxlen: 150
-

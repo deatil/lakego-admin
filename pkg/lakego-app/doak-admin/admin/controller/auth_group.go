@@ -24,9 +24,22 @@ type AuthGroup struct {
     Base
 }
 
-/**
- * 列表
- */
+// 权限分组列表
+// @Summary 权限分组列表
+// @Description 权限分组列表
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param order query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time query string false "结束时间"
+// @Param status query string false "状态"
+// @Param start query string false "开始数据量"
+// @Param limit query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/group [get]
+// @Security Bearer
 func (this *AuthGroup) Index(ctx *router.Context) {
     // 模型
     groupModel := model.NewAuthGroup()
@@ -109,9 +122,15 @@ func (this *AuthGroup) Index(ctx *router.Context) {
     })
 }
 
-/**
- * 树结构
- */
+// 权限分组树结构
+// @Summary 权限分组树结构
+// @Description 权限分组树结构
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/group/tree [get]
+// @Security Bearer
 func (this *AuthGroup) IndexTree(ctx *router.Context) {
     list := make([]map[string]interface{}, 0)
 
@@ -133,9 +152,17 @@ func (this *AuthGroup) IndexTree(ctx *router.Context) {
     })
 }
 
-/**
- * 子列表
- */
+// 权限分组子列表
+// @Summary 权限分组子列表
+// @Description 权限分组子列表
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id query string true "权限分组ID"
+// @Param type query string false "数据类型，可选值：list | ids"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/group/children [get]
+// @Security Bearer
 func (this *AuthGroup) IndexChildren(ctx *router.Context) {
     id := ctx.Query("id")
     if id == "" {
@@ -157,9 +184,16 @@ func (this *AuthGroup) IndexChildren(ctx *router.Context) {
     })
 }
 
-/**
- * 详情
- */
+// 权限分组详情
+// @Summary 权限分组详情
+// @Description 权限分组详情
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/group/{id} [get]
+// @Security Bearer
 func (this *AuthGroup) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -215,9 +249,16 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", groupData)
 }
 
-/**
- * 删除
- */
+// 权限分组删除
+// @Summary 权限分组删除
+// @Description 权限分组删除
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
+// @Router /auth/group/{id} [delete]
+// @Security Bearer
 func (this *AuthGroup) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -261,9 +302,20 @@ func (this *AuthGroup) Delete(ctx *router.Context) {
     this.Success(ctx, "信息删除成功")
 }
 
-/**
- * 添加
- */
+// 权限分组添加
+// @Summary 权限分组添加
+// @Description 权限分组添加
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param parentid formData string true "父级ID"
+// @Param title formData string true "名称"
+// @Param description formData string true "描述"
+// @Param listorder formData string true "排序"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息添加成功", "data": ""}"
+// @Router /auth/group [post]
+// @Security Bearer
 func (this *AuthGroup) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -307,9 +359,21 @@ func (this *AuthGroup) Create(ctx *router.Context) {
     })
 }
 
-/**
- * 更新
- */
+// 权限分组更新
+// @Summary 权限分组更新
+// @Description 权限分组更新
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Param parentid formData string true "父级ID"
+// @Param title formData string true "名称"
+// @Param description formData string true "描述"
+// @Param listorder formData string true "排序"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息修改成功", "data": ""}"
+// @Router /auth/group/{id} [put]
+// @Security Bearer
 func (this *AuthGroup) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -367,9 +431,17 @@ func (this *AuthGroup) Update(ctx *router.Context) {
     this.Success(ctx, "信息修改成功")
 }
 
-/**
- * 排序
- */
+// 权限分组排序
+// @Summary 权限分组排序
+// @Description 权限分组排序
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Param listorder formData string true "排序值"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "更新排序成功", "data": ""}"
+// @Router /auth/group/{id}/sort [patch]
+// @Security Bearer
 func (this *AuthGroup) Listorder(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -414,9 +486,16 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
     this.Success(ctx, "更新排序成功")
 }
 
-/**
- * 启用
- */
+// 权限分组启用
+// @Summary 权限分组启用
+// @Description 权限分组启用
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "启用成功", "data": ""}"
+// @Router /auth/group/{id}/enable [patch]
+// @Security Bearer
 func (this *AuthGroup) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -458,9 +537,16 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
     this.Success(ctx, "启用成功")
 }
 
-/**
- * 禁用
- */
+// 权限分组禁用
+// @Summary 权限分组禁用
+// @Description 权限分组禁用
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "禁用成功", "data": ""}"
+// @Router /auth/group/{id}/disable [patch]
+// @Security Bearer
 func (this *AuthGroup) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -502,9 +588,16 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
     this.Success(ctx, "禁用成功")
 }
 
-/**
- * 授权
- */
+// 权限分组授权
+// @Summary 权限分组授权
+// @Description 权限分组授权
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "授权成功", "data": ""}"
+// @Router /auth/group/{id}/access [patch]
+// @Security Bearer
 func (this *AuthGroup) Access(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {

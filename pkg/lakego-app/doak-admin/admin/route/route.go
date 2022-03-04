@@ -20,7 +20,7 @@ func Route(engine *router.RouterGroup) {
     // 个人信息
     profileController := new(controller.Profile)
     engine.GET("/profile", profileController.Index)
-    engine.PUT("/profile/update", profileController.Update)
+    engine.PUT("/profile", profileController.Update)
     engine.PATCH("/profile/avatar", profileController.UpdateAvatar)
     engine.PATCH("/profile/password", profileController.UpdatePasssword)
     engine.GET("/profile/rules", profileController.Rules)
@@ -80,7 +80,7 @@ func AdminRoute(engine *router.RouterGroup) {
     engine.PATCH("/auth/rule/:id/enable", authRuleController.Enable)
     engine.PATCH("/auth/rule/:id/disable", authRuleController.Disable)
 
-    // 管理分组
+    // 权限分组
     authGroupController := new(controller.AuthGroup)
     engine.GET("/auth/group", authGroupController.Index)
     engine.GET("/auth/group/tree", authGroupController.IndexTree)

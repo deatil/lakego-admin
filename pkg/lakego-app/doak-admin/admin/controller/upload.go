@@ -23,9 +23,17 @@ type Upload struct {
     Base
 }
 
-/**
- * 上传文件
- */
+// 上传文件
+// @Summary 上传文件
+// @Description 上传文件
+// @Tags 上传
+// @Accept application/json
+// @Produce application/json
+// @Param type query string false "文件类型，可选数据：image | media | file。默认：file"
+// @Param file formData string true "文件数据"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
+// @Router /upload/file [post]
+// @Security Bearer
 func (this *Upload) File(ctx *router.Context) {
     // 账号信息
     adminInfo, _ := ctx.Get("admin")

@@ -20,9 +20,15 @@ type Profile struct {
     Base
 }
 
-/**
- * 个人信息
- */
+// 个人信息
+// @Summary 个人信息详情
+// @Description 个人信息详情
+// @Tags 个人信息
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /profile [get]
+// @Security Bearer
 func (this *Profile) Index(ctx *router.Context) {
     adminInfo, ok := ctx.Get("admin")
     if !ok {
@@ -35,9 +41,18 @@ func (this *Profile) Index(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", adminProfile)
 }
 
-/**
- * 修改信息
- */
+// 修改信息
+// @Summary 修改个人信息详情
+// @Description 修改个人信息详情
+// @Tags 个人信息
+// @Accept application/json
+// @Produce application/json
+// @Param nickname formData string true "昵称"
+// @Param email formData string true "邮箱"
+// @Param introduce formData string true "简介"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "修改信息成功", "data": ""}"
+// @Router /profile [put]
+// @Security Bearer
 func (this *Profile) Update(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -78,9 +93,16 @@ func (this *Profile) Update(ctx *router.Context) {
     this.Success(ctx, "修改信息成功")
 }
 
-/**
- * 修改头像
- */
+// 修改头像
+// @Summary 修改个人头像
+// @Description 修改个人头像
+// @Tags 个人信息
+// @Accept application/json
+// @Produce application/json
+// @Param avatar formData string true "头像数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "修改头像成功", "data": ""}"
+// @Router /profile/avatar [patch]
+// @Security Bearer
 func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -119,9 +141,18 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
     this.Success(ctx, "修改头像成功")
 }
 
-/**
- * 修改密码
- */
+// 修改密码
+// @Summary 修改密码
+// @Description 修改密码
+// @Tags 个人信息
+// @Accept application/json
+// @Produce application/json
+// @Param oldpassword formData string true "旧密码"
+// @Param newpassword formData string true "新密码"
+// @Param newpassword_confirm formData string true "确认新密码"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
+// @Router /profile/password [patch]
+// @Security Bearer
 func (this *Profile) UpdatePasssword(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -184,9 +215,15 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     this.Success(ctx, "密码修改成功")
 }
 
-/**
- * 权限列表
- */
+// 权限列表
+// @Summary 权限列表
+// @Description 权限列表
+// @Tags 个人信息
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /profile/rules [get]
+// @Security Bearer
 func (this *Profile) Rules(ctx *router.Context) {
     adminInfo, ok := ctx.Get("admin")
     if !ok {

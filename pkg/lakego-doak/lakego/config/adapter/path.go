@@ -8,7 +8,7 @@ var instance *Path
 var once sync.Once
 
 // 单例
-func NewPathInstance() *Path {
+func InstancePath() *Path {
     once.Do(func() {
         instance = &Path{
             Pathes: make(PathesMap),

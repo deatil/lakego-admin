@@ -10,6 +10,7 @@ import (
     logRouter "github.com/deatil/lakego-doak-action-log/action-log/route"
     logMiddleware "github.com/deatil/lakego-doak-action-log/action-log/middleware/actionlog"
 )
+
 // 路由中间件
 var routeMiddlewares = map[string]router.HandlerFunc{
     // 操作日志

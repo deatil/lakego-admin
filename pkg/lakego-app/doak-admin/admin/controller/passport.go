@@ -25,9 +25,15 @@ type Passport struct {
     Base
 }
 
-/**
- * 验证码
- */
+// 验证码
+// @Summary 登陆验证码
+// @Description 登陆验证码
+// @Tags 登陆相关
+// @Accept application/json
+// @Produce application/json
+// @Header 200 {string} string "Lakego-Admin-Captcha-Id"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /passport/captcha [get]
 func (this *Passport) Captcha(ctx *router.Context) {
     c := captcha.New()
     id, b64s, err := c.Make()
@@ -43,9 +49,18 @@ func (this *Passport) Captcha(ctx *router.Context) {
     })
 }
 
-/**
- * 登陆
- */
+// 账号登陆
+// @Summary 账号登陆
+// @Description 账号登陆
+// @Tags 登陆相关
+// @Accept application/json
+// @Produce application/json
+// @Param Lakego-Admin-Captcha-Id header string true "验证码字段"
+// @Param name formData string true "账号"
+// @Param password formData string true "密码"
+// @Param captcha formData string true "验证码"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "登录成功", "data": ""}"
+// @Router /passport/login [post]
 func (this *Passport) Login(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -116,16 +131,22 @@ func (this *Passport) Login(ctx *router.Context) {
     expiresIn := jwter.GetAccessExpiresIn()
 
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", router.H{
+    this.SuccessWithData(ctx, "登录成功", router.H{
         "access_token": accessToken,
         "expires_in": expiresIn,
         "refresh_token": refreshToken,
     })
 }
 
-/**
- * 刷新 token
- */
+// 刷新 token
+// @Summary 刷新 token
+// @Description 刷新 token
+// @Tags 登陆相关
+// @Accept application/json
+// @Produce application/json
+// @Param refresh_token formData string true "刷新 Token"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /passport/refresh-token [post]
 func (this *Passport) RefreshToken(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -180,9 +201,17 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     })
 }
 
-/**
- * 退出
- */
+// 账号退出
+// @Summary 当前账号退出
+// @Description 当前账号退出
+// @Tags 登陆相关
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param refresh_token formData string true "刷新 Token"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /passport/logout [delete]
+// @Security Bearer
 func (this *Passport) Logout(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})

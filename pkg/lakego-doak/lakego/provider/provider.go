@@ -136,13 +136,13 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 
     newPath, err := filepath.Abs(path)
     if err == nil {
-        adapter.NewPathInstance().WithPath(key, newPath)
+        adapter.InstancePath().WithPath(key, newPath)
     }
 }
 
 // 注册视图
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
-    viewFinder := view.NewViewFinderInstance()
+    viewFinder := view.InstanceViewFinder()
 
     paths := config.New("view").GetStringSlice("Paths")
     if len(paths) > 0 {
@@ -163,7 +163,7 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
 
 // 推送
 func (this *ServiceProvider) Publishes(obj interface{}, paths map[string]string, group string) {
-    publish.NewInstance().Publish(obj, paths, group)
+    publish.Instance().Publish(obj, paths, group)
 }
 
 // 注册

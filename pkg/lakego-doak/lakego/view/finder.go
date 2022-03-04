@@ -12,7 +12,7 @@ var instance *ViewFinder
 var once sync.Once
 
 // 单例
-func NewViewFinderInstance() *ViewFinder {
+func InstanceViewFinder() *ViewFinder {
     once.Do(func() {
         instance = NewViewFinder()
     })

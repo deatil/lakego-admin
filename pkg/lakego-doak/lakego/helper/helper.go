@@ -241,22 +241,6 @@ func Long2ip(properAddress uint32) string {
     return ip.String()
 }
 
-// 获取环境变量
-func Getenv(varname string) string {
-    return os.Getenv(varname)
-}
-
-// 设置环境变量
-func Putenv(setting string) error {
-    s := strings.Split(setting, "=")
-
-    if len(s) != 2 {
-        return errors.New("setting: invalid")
-    }
-
-    return os.Setenv(s[0], s[1])
-}
-
 func MemoryUsage() uint64 {
     stat := new(runtime.MemStats)
     runtime.ReadMemStats(stat)

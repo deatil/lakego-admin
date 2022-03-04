@@ -22,9 +22,22 @@ type ActionLog struct {
     adminController.Base
 }
 
-/**
- * 列表
- */
+// 操作日志列表
+// @Summary 操作日志列表
+// @Description 操作日志列表
+// @Tags 操作日志
+// @Accept application/json
+// @Produce application/json
+// @Param order query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time query string false "结束时间"
+// @Param status query string false "状态"
+// @Param start query string false "开始数据量"
+// @Param limit query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /action-log [get]
+// @Security Bearer
 func (this *ActionLog) Index(ctx *router.Context) {
     // 模型
     logModel := model.NewActionLog()
@@ -108,9 +121,15 @@ func (this *ActionLog) Index(ctx *router.Context) {
     })
 }
 
-/**
- * 清除 30 天前的数据
- */
+// 清除 30 天前的数据
+// @Summary 清除 30 天前的日志数据
+// @Description 清除 30 天前的日志数据
+// @Tags 操作日志
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "30天前日志清除成功", "data": ""}"
+// @Router /action-log/clear [delete]
+// @Security Bearer
 func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().

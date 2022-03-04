@@ -7,7 +7,7 @@ import (
     "encoding/json"
 )
 
-func NewWithByte(b []byte) S {
+func NewS(b []byte) S {
     return *(*S)(unsafe.Pointer(&b))
 }
 

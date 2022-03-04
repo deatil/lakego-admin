@@ -193,7 +193,7 @@ func (this *ServiceProvider) loadMiddleware() {
  */
 func (this *ServiceProvider) publishConfig() {
     // 配置
-    path := pathTool.FormatPath("{root}/pkg/lakego-doak/admin/resources/config/admin.yml")
+    path := pathTool.FormatPath("{root}/pkg/lakego-app/doak-admin/resources/config/admin.yml")
 
     // 推送文件
     // > go run main.go lakego:publish --tag=admin-config --force

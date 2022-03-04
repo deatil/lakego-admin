@@ -90,7 +90,7 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
 func (this *Response) Fetch(template string, obj interface{}) {
     hintPathDelimiter := "::"
     if strings.Contains(template, hintPathDelimiter) {
-        template = viewFetch.NewViewFinderInstance().Find(template)
+        template = viewFetch.InstanceViewFinder().Find(template)
     }
 
     this.ctx.HTML(this.httpCode, template, obj)

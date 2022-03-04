@@ -25,9 +25,22 @@ type Attachment struct {
     Base
 }
 
-/**
- * 列表
- */
+// 附件列表
+// @Summary 附件列表
+// @Description 附件列表
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param order query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time query string false "结束时间"
+// @Param status query string false "状态"
+// @Param start query string false "开始数据量"
+// @Param limit query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /attachment [get]
+// @Security Bearer
 func (this *Attachment) Index(ctx *router.Context) {
     // 附件模型
     attachModel := model.NewAttachment()
@@ -116,9 +129,16 @@ func (this *Attachment) Index(ctx *router.Context) {
     })
 }
 
-/**
- * 详情
- */
+// 附件详情
+// @Summary 附件详情
+// @Description 附件详情
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /attachment/{id} [get]
+// @Security Bearer
 func (this *Attachment) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -147,9 +167,16 @@ func (this *Attachment) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", result)
 }
 
-/**
- * 启用
- */
+// 附件启用
+// @Summary 附件启用
+// @Description 附件启用
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /attachment/{id}/enable [patch]
+// @Security Bearer
 func (this *Attachment) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -189,9 +216,16 @@ func (this *Attachment) Enable(ctx *router.Context) {
     this.Success(ctx, "文件启用成功")
 }
 
-/**
- * 禁用
- */
+// 附件禁用
+// @Summary 附件禁用
+// @Description 附件禁用
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /attachment/{id}/disable [patch]
+// @Security Bearer
 func (this *Attachment) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -231,9 +265,16 @@ func (this *Attachment) Disable(ctx *router.Context) {
     this.Success(ctx, "文件禁用成功")
 }
 
-/**
- * 删除
- */
+// 附件删除
+// @Summary 附件删除
+// @Description 附件删除
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /attachment/{id} [delete]
+// @Security Bearer
 func (this *Attachment) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -272,9 +313,16 @@ func (this *Attachment) Delete(ctx *router.Context) {
     this.Success(ctx, "文件删除成功")
 }
 
-/**
- * 下载码
- */
+// 附件下载码
+// @Summary 附件下载码
+// @Description 附件下载码
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /attachment/downcode/{id} [get]
+// @Security Bearer
 func (this *Attachment) DownloadCode(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -304,9 +352,16 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
     })
 }
 
-/**
- * 下载
- */
+// 附件下载
+// @Summary 附件下载
+// @Description 附件下载
+// @Tags 附件
+// @Accept application/json
+// @Produce application/force-download
+// @Param code path string true "附件下载码"
+// @Success 200 {string} string ""
+// @Router /attachment/download/{code} [get]
+// @Security Bearer
 func (this *Attachment) Download(ctx *router.Context) {
     code := ctx.Param("code")
     if code == "" {

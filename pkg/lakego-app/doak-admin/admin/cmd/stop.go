@@ -40,26 +40,26 @@ func init() {
 
 // 停止 admin 系统服务
 func Stop() {
-    pidPath := config.New("admin").GetString("PidPath")
-    location := pathTool.FormatPath(pidPath)
-
-    contents, err := filesystem.New().Get(location)
-    if err != nil {
-        color.Redln(err.Error())
-
-        return
-    }
-
-    pids := strings.Split(contents, ",")
-    if len(pids) == 0 {
-        color.Redln("pid 数据为空")
-
-        return
-    }
-
     color.Greenln("系统服务正在停止...")
 
     if stopPid == "" {
+        pidPath := config.New("admin").GetString("PidPath")
+        location := pathTool.FormatPath(pidPath)
+
+        contents, err := filesystem.New().Get(location)
+        if err != nil {
+            color.Redln(err.Error())
+
+            return
+        }
+
+        pids := strings.Split(contents, ",")
+        if len(pids) == 0 {
+            color.Redln("pid 数据为空")
+
+            return
+        }
+
         for _, pid := range pids {
             id, err2 := strconv.Atoi(pid)
             if err2 == nil {

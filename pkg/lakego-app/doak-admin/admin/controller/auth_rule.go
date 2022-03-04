@@ -14,7 +14,7 @@ import (
 )
 
 /**
- * 菜单权限
+ * 权限菜单
  *
  * @create 2021-9-12
  * @author deatil
@@ -23,9 +23,22 @@ type AuthRule struct {
     Base
 }
 
-/**
- * 列表
- */
+// 权限菜单列表
+// @Summary 权限菜单列表
+// @Description 权限菜单列表
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param order query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time query string false "结束时间"
+// @Param status query string false "状态"
+// @Param start query string false "开始数据量"
+// @Param limit query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/rule [get]
+// @Security Bearer
 func (this *AuthRule) Index(ctx *router.Context) {
     // 模型
     ruleModel := model.NewAuthRule()
@@ -110,9 +123,15 @@ func (this *AuthRule) Index(ctx *router.Context) {
     })
 }
 
-/**
- * 树结构
- */
+// 权限菜单树结构
+// @Summary 权限菜单树结构
+// @Description 权限菜单树结构
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/rule/tree [get]
+// @Security Bearer
 func (this *AuthRule) IndexTree(ctx *router.Context) {
     list := make([]map[string]interface{}, 0)
 
@@ -134,9 +153,17 @@ func (this *AuthRule) IndexTree(ctx *router.Context) {
     })
 }
 
-/**
- * 子列表
- */
+// 权限菜单子列表
+// @Summary 权限菜单子列表
+// @Description 权限菜单子列表
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id query string true "权限菜单ID"
+// @Param type query string false "数据类型，可选值：list | ids"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/rule/children [get]
+// @Security Bearer
 func (this *AuthRule) IndexChildren(ctx *router.Context) {
     id := ctx.Query("id")
     if id == "" {
@@ -158,9 +185,16 @@ func (this *AuthRule) IndexChildren(ctx *router.Context) {
     })
 }
 
-/**
- * 详情
- */
+// 权限菜单详情
+// @Summary 权限菜单详情
+// @Description 权限菜单详情
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Router /auth/rule/{id} [get]
+// @Security Bearer
 func (this *AuthRule) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -186,9 +220,16 @@ func (this *AuthRule) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", ruleData)
 }
 
-/**
- * 删除
- */
+// 权限菜单删除
+// @Summary 权限菜单删除
+// @Description 权限菜单删除
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
+// @Router /auth/rule/{id} [delete]
+// @Security Bearer
 func (this *AuthRule) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -232,9 +273,16 @@ func (this *AuthRule) Delete(ctx *router.Context) {
     this.Success(ctx, "信息删除成功")
 }
 
-/**
- * 清空特定ID权限
- */
+// 清空特定ID权限
+// @Summary 清空特定ID权限
+// @Description 清空特定ID权限
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param ids formData string true "权限ID列表"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "删除特定权限成功", "data": ""}"
+// @Router /auth/rule/clear [delete]
+// @Security Bearer
 func (this *AuthRule) Clear(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -283,9 +331,23 @@ func (this *AuthRule) Clear(ctx *router.Context) {
     this.Success(ctx, "删除特定权限成功")
 }
 
-/**
- * 添加
- */
+// 权限菜单添加
+// @Summary 权限菜单添加
+// @Description 权限菜单添加
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param parentid formData string true "父级ID"
+// @Param title formData string true "名称"
+// @Param url formData string true "URL链接"
+// @Param method formData string true "请求方式"
+// @Param slug formData string true "别名 Slug"
+// @Param description formData string true "描述"
+// @Param listorder formData string true "排序"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息添加成功", "data": ""}"
+// @Router /auth/rule [post]
+// @Security Bearer
 func (this *AuthRule) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]interface{})
@@ -335,9 +397,24 @@ func (this *AuthRule) Create(ctx *router.Context) {
     })
 }
 
-/**
- * 更新
- */
+// 权限菜单更新
+// @Summary 权限菜单更新
+// @Description 权限菜单更新
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Param parentid formData string true "父级ID"
+// @Param title formData string true "名称"
+// @Param url formData string true "URL链接"
+// @Param method formData string true "请求方式"
+// @Param slug formData string true "别名 Slug"
+// @Param description formData string true "描述"
+// @Param listorder formData string true "排序"
+// @Param status formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息修改成功", "data": ""}"
+// @Router /auth/rule/{id} [put]
+// @Security Bearer
 func (this *AuthRule) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -401,9 +478,17 @@ func (this *AuthRule) Update(ctx *router.Context) {
     this.Success(ctx, "信息修改成功")
 }
 
-/**
- * 排序
- */
+// 权限菜单排序
+// @Summary 权限菜单排序
+// @Description 权限菜单排序
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Param listorder formData string true "排序值"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "更新排序成功", "data": ""}"
+// @Router /auth/rule/{id}/sort [patch]
+// @Security Bearer
 func (this *AuthRule) Listorder(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -448,9 +533,16 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
     this.Success(ctx, "更新排序成功")
 }
 
-/**
- * 启用
- */
+// 权限菜单启用
+// @Summary 权限菜单启用
+// @Description 权限菜单启用
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "启用成功", "data": ""}"
+// @Router /auth/rule/{id}/enable [patch]
+// @Security Bearer
 func (this *AuthRule) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -492,9 +584,16 @@ func (this *AuthRule) Enable(ctx *router.Context) {
     this.Success(ctx, "启用成功")
 }
 
-/**
- * 禁用
- */
+// 权限菜单禁用
+// @Summary 权限菜单禁用
+// @Description 权限菜单禁用
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "禁用成功", "data": ""}"
+// @Router /auth/rule/{id}/disable [patch]
+// @Security Bearer
 func (this *AuthRule) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
