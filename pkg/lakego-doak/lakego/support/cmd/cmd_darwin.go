@@ -18,10 +18,10 @@ import (
     }
  *
  */
-func (this *Cmd) Kill(pid int) (pid int, err error) {
+func (this *Cmd) Kill(pid int) (int, error) {
     if this.SendInterrupt {
         if err = syscall.Kill(pid, syscall.SIGINT); err != nil {
-            return
+            return 0, err
         }
 
         time.Sleep(this.KillDelay * time.Millisecond)

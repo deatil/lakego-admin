@@ -2117,6 +2117,12 @@ const docTemplate = `{
                         "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
+                        },
+                        "headers": {
+                            "string": {
+                                "type": "string",
+                                "description": "Lakego-Admin-Captcha-Id"
+                            }
                         }
                     }
                 }
@@ -2554,7 +2560,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0.10",
+	Version:          "1.0.12",
 	Host:             "127.0.0.1:8080",
 	BasePath:         "/admin-api",
 	Schemes:          []string{},

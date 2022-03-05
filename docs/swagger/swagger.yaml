@@ -11,7 +11,7 @@ info:
     url: https://github.com/deatil/lakego-admin/blob/main/README.md
   termsOfService: https://github.com/deatil
   title: lakego-admin API文档
-  version: 1.0.10
+  version: 1.0.12
 paths:
   /action-log:
     get:
@@ -1354,6 +1354,10 @@ paths:
       responses:
         "200":
           description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          headers:
+            string:
+              description: Lakego-Admin-Captcha-Id
+              type: string
           schema:
             type: string
       summary: 登陆验证码

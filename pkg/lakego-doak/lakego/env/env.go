@@ -43,6 +43,46 @@ var Marshal = godotenv.Marshal
 
 var ToEnvString = godotenv.Marshal
 
+// ==========
+
+// 获取环境变量
+func Get(key string) string {
+    return os.Getenv(key)
+}
+
+// 设置
+func Set(key string, value string) error {
+    return os.Setenv(key, value)
+}
+
+// 获取环境变量
+func Lookup(key string) (string, bool) {
+    return os.LookupEnv(key)
+}
+
+// 获取所有环境变量
+// 每行结果：key=value
+func Environ() []string {
+    return os.Environ()
+}
+
+// 替换字符中的 ${var} or $var 为环境变量
+func Expand(s string) string {
+    return os.ExpandEnv(s)
+}
+
+// 删除指定的环境变量
+func Unset(key string) error {
+    return os.Unsetenv(key)
+}
+
+// 清除所有环境变量
+func Clear() {
+    os.Clearenv()
+}
+
+// ==========
+
 // 根据文件解析 env 数据
 func ParseFile(path string) (map[string]string, error) {
     file, err := os.OpenFile(path, os.O_RDONLY, 0666)
@@ -75,31 +115,8 @@ func ParseFileToString(path string) (string, error) {
     return contents, nil
 }
 
-// ==========
-
-// 替换字符中的 ${var} or $var 为环境变量
-func ExpandEnv(s string) string {
-    return os.ExpandEnv(s)
-}
-
-// 获取环境变量
-func Get(key string) string {
-    return os.Getenv(key)
-}
-
-// 获取环境变量
-func Lookup(key string) (string, bool) {
-    return os.LookupEnv(key)
-}
-
-// 获取所有环境变量
-// 每行结果：key=value
-func Environ() []string {
-    return os.Environ()
-}
-
 // 设置环境变量
-func Set(setting string) error {
+func SetString(setting string) error {
     s := strings.Split(setting, "=")
 
     if len(s) != 2 {
@@ -116,22 +133,8 @@ func SetArray(settings []string) error {
     }
 
     for _, setting := range settings {
-        s := strings.Split(setting, "=")
-
-        if len(s) == 2 {
-            os.Setenv(s[0], s[1])
-        }
+        SetString(setting)
     }
 
     return nil
-}
-
-// 删除指定的环境变量
-func Unset(key string) error {
-    return os.Unsetenv(key)
-}
-
-// 清除所有环境变量
-func Clear() {
-    os.Clearenv()
 }

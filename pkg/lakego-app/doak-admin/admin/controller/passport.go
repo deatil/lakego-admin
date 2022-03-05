@@ -31,8 +31,8 @@ type Passport struct {
 // @Tags 登陆相关
 // @Accept application/json
 // @Produce application/json
-// @Header 200 {string} string "Lakego-Admin-Captcha-Id"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Header 200 {string} string "Lakego-Admin-Captcha-Id"
 // @Router /passport/captcha [get]
 func (this *Passport) Captcha(ctx *router.Context) {
     c := captcha.New()

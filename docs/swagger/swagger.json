@@ -13,7 +13,7 @@
             "name": "Apache2",
             "url": "https://github.com/deatil/lakego-admin/blob/main/README.md"
         },
-        "version": "1.0.10"
+        "version": "1.0.12"
     },
     "host": "127.0.0.1:8080",
     "basePath": "/admin-api",
@@ -2110,6 +2110,12 @@
                         "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
+                        },
+                        "headers": {
+                            "string": {
+                                "type": "string",
+                                "description": "Lakego-Admin-Captcha-Id"
+                            }
                         }
                     }
                 }
