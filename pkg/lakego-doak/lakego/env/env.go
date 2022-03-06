@@ -28,7 +28,7 @@ var Parse = godotenv.Parse
 // Unmarshal(str string) (envMap map[string]string, err error)
 var Unmarshal = godotenv.Unmarshal
 
-var ToMap = godotenv.Unmarshal
+var FormatToMap = godotenv.Unmarshal
 
 // Exec(filenames []string, cmd string, cmdArgs []string) error
 var Exec = godotenv.Exec
@@ -41,7 +41,7 @@ var Write = godotenv.Write
 // Marshal(envMap map[string]string) (string, error)
 var Marshal = godotenv.Marshal
 
-var ToEnvString = godotenv.Marshal
+var FormatToEnvString = godotenv.Marshal
 
 // ==========
 
@@ -115,6 +115,47 @@ func ParseFileToString(path string) (string, error) {
     return contents, nil
 }
 
+// 判断
+func Contains(key string) bool {
+    _, ok := os.LookupEnv(key)
+    return ok
+}
+
+// 移除
+func Remove(key ...string) error {
+    for _, v := range key {
+        if err := os.Unsetenv(v); err != nil {
+            return err
+        }
+    }
+
+    return nil
+}
+
+// 返回 env 的 map 数据
+func Map() map[string]string {
+    m := make(map[string]string)
+    i := 0
+
+    for _, s := range os.Environ() {
+        i = strings.IndexByte(s, '=')
+        m[s[0:i]] = s[i+1:]
+    }
+
+    return m
+}
+
+// 设置 map
+func SetMap(m map[string]string) error {
+    for k, v := range m {
+        if err := Set(k, v); err != nil {
+            return err
+        }
+    }
+
+    return nil
+}
+
 // 设置环境变量
 func SetString(setting string) error {
     s := strings.Split(setting, "=")
@@ -138,3 +179,17 @@ func SetArray(settings []string) error {
 
     return nil
 }
+
+// 格式化为数组
+func FormatToArray(data map[string]string) []string {
+    array := make([]string, len(data))
+
+    index := 0
+    for k, v := range data {
+        array[index] = k + "=" + v
+        index++
+    }
+
+    return array
+}
+

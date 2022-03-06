@@ -7,6 +7,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/exception"
     "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/str"
+    "github.com/deatil/lakego-doak/lakego/support/time"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
@@ -128,6 +129,9 @@ func (this *Data) Error(ctx *gin.Context) {
     strData := "t_ydfd_ydf"
     newStrData := str.LowerCamel(strData)
 
+    // 时间
+    date := time.NowDatetimeStr()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
@@ -138,6 +142,8 @@ func (this *Data) Error(ctx *gin.Context) {
         "fsInfo": fsInfo,
 
         "str": newStrData,
+
+        "date": date,
     })
 }
 

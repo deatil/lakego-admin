@@ -107,15 +107,15 @@ func FormatTime(timeUnix time.Time, format string) string {
 }
 
 // 时间戳格式化
-func TimeFormat(timeStamp int, format string) string {
+func FormatTimeStamp(timeStamp int, format string) string {
     now := TimeStampToTime(timeStamp)
 
     return FormatTime(now, format)
 }
 
 // 时间
-func Date(format string, timestamp int) string {
-    return TimeFormat(timestamp, format)
+func FormatDate(timestamp int, format string) string {
+    return FormatTimeStamp(timestamp, format)
 }
 
 // 当前时间

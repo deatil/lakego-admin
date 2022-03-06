@@ -16,14 +16,14 @@ func New() *Cmd {
 }
 
 /**
- * Cmd
+ * Cmd 脚本
  *
  * @create 2022-2-12
  * @author deatil
  */
 type Cmd struct {
     // 锁定
-    mu sync.RWMutex
+    RWMutex sync.RWMutex
 
     // 输出
     SendInterrupt bool
@@ -63,8 +63,11 @@ func (this *Cmd) GetPpid() string {
     return fmt.Sprintf("%d", os.Getppid())
 }
 
+// 锁定使用
 func (this *Cmd) WithLock(f func()) {
-    this.mu.Lock()
+    this.RWMutex.Lock()
+
     f()
-    this.mu.Unlock()
+
+    this.RWMutex.Unlock()
 }
