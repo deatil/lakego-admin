@@ -6,7 +6,7 @@
 *  `lakego-admin` 是基于 `gin` 的后台开发框架，完全api接口化，适用于前后端分离的项目
 *  基于 `JWT` 的用户登录态管理
 *  权限判断基于 `go-casbin` 的 `RBAC` 授权
-*  使用 `Swagger` 作为 API 文档管理工具
+*  使用 `Swagger` 作为 API 文档管理
 *  本项目为 `后台api服务`
 
 

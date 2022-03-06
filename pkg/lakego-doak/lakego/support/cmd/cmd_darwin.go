@@ -19,6 +19,8 @@ import (
  *
  */
 func (this *Cmd) Kill(pid int) (int, error) {
+    var err error
+
     if this.SendInterrupt {
         if err = syscall.Kill(pid, syscall.SIGINT); err != nil {
             return 0, err

@@ -9,6 +9,8 @@ import (
 )
 
 func (this *Cmd) Kill(pid int) (int, error) {
+    var err error
+
     if this.SendInterrupt {
         if err = syscall.Kill(-pid, syscall.SIGINT); err != nil {
             return 0, err
@@ -17,7 +19,7 @@ func (this *Cmd) Kill(pid int) (int, error) {
         time.Sleep(this.KillDelay * time.Millisecond)
     }
 
-    pgid, err := syscall.Getpgid(cmd.Process.Pid)
+    pgid, err := syscall.Getpgid(pid)
     if err != nil {
         return pgid, err
     }
