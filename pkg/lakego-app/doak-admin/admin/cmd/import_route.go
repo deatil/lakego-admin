@@ -70,7 +70,7 @@ func ImportRoute() {
                 Description: "",
                 Listorder: "100",
                 Status: 1,
-                AddTime: time.NowTimeToInt(),
+                AddTime: int(time.NowTime()),
                 AddIp: "127.0.0.1",
             }
 

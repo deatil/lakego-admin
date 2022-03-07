@@ -4,6 +4,8 @@ import (
     "regexp"
     "strings"
     "net/url"
+
+    "github.com/deatil/lakego-doak/lakego/support/array"
 )
 
 func FormatURL(u string) string {
@@ -53,12 +55,12 @@ func MatchPath(ctx *Context, path string, current string) bool {
 
         methods = strings.ToUpper(methods)
         methodList := strings.Split(methods, ",")
-        if len(methodList) > 0 {
-            for _, methodName:= range methodList {
-                if methodName == method {
-                    return false
-                }
-            }
+        if len(methodList) == 0 {
+            return false
+        }
+
+        if !array.InArray(method, methodList) {
+            return false
         }
     }
 

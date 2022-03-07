@@ -34,19 +34,19 @@ func PackageName(v interface{}) string {
 }
 
 // 复制 map
-func CopyMap(m map[string]string) map[string]string {
+func CopyMap(m map[string]string) (map[string]string, error) {
     var buf bytes.Buffer
     enc := gob.NewEncoder(&buf)
     dec := gob.NewDecoder(&buf)
     err := enc.Encode(m)
     if err != nil {
-        panic(err)
+        return map[string]string{}, err
     }
 
     var cm map[string]string
     err = dec.Decode(&cm)
     if err != nil {
-        panic(err)
+        return map[string]string{}, err
     }
 
     return cm

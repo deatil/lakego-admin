@@ -133,7 +133,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().
-        Where("add_time <= ?", time.BeforeTimeToInt(-30)).
+        Where("add_time <= ?", int(time.BeforeTime(-30))).
         Delete(&model.ActionLog{}).
         Error
     if err != nil {

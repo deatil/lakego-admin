@@ -324,7 +324,7 @@ func (this *App) runApp() {
     // 日志记录方式
     logType := serverConf.GetString("LogType")
     if logType == "file" {
-        logFileName := timeTool.NowFormat("Ymd")
+        logFileName := timeTool.Now().Format("Ymd")
         logFile := path.RuntimePath(fmt.Sprintf("/log/route_%s.log", logFileName))
 
         // 设置默认日志记录
@@ -485,22 +485,8 @@ func (this *App) initDI() {
 
 // 导入 env 环境变量
 func (this *App) LoadEnv() {
-    // 开发方式 env 环境文件
-    envType := ".env.production"
-
-    mode := this.Config.GetString("Mode")
-    if mode == "dev" {
-        envType = ".env.development"
-    }
-
-    // 开发环境变量
-    err := env.Load(envType)
-    if err != nil {
-        log.Println("环境变量导入失败，原因为：" + err.Error())
-    }
-
-    // 默认环境变量
-    err = env.Load()
+    // 环境变量
+    err := env.Load()
     if err != nil {
         log.Println("环境变量导入失败，原因为：" + err.Error())
     }

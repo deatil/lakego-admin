@@ -1,8 +1,8 @@
 package di
 
 import (
-    "io"
     "sync"
+
     "go.uber.org/dig"
 )
 
@@ -57,6 +57,53 @@ type (
     Out = dig.Out
 )
 
+// 命名
+// c.Provide(NewReadOnlyConnection, dig.Name("ro"))
+// dig.Name(name string) dig.ProvideOption
+var Name = dig.Name
+
+// 分组
+// dig.Group(group string) dig.ProvideOption
+var Group = dig.Group
+
+// 填充信息
+// dig.FillProvideInfo(info *dig.ProvideInfo) dig.ProvideOption
+var FillProvideInfo = dig.FillProvideInfo
+
+// c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
+// dig.As(i ...interface{}) dig.ProvideOption
+var As = dig.As
+
+// dig.LocationForPC(pc uintptr) dig.ProvideOption
+var LocationForPC = dig.LocationForPC
+
+// dig.DeferAcyclicVerification() dig.Option
+var DeferAcyclicVerification = dig.DeferAcyclicVerification
+
+// 创建一个没有设置的容器
+// dig.DryRun(dry bool) dig.Option
+var DryRun = dig.DryRun
+
+// 是否导入
+// dig.IsIn(o interface{}) bool
+var IsIn = dig.IsIn
+
+// 是否导出
+// dig.IsOut(o interface{}) bool
+var IsOut = dig.IsOut
+
+// dig.VisualizeError(err error) dig.VisualizeOption
+var VisualizeError = dig.VisualizeError
+
+// dig.RootCause(err error) error
+var RootCause = dig.RootCause
+
+// dig.Visualize(c *dig.Container, w io.Writer, opts ...dig.VisualizeOption) error
+var Visualize = dig.Visualize
+
+// dig.CanVisualizeError(err error) bool
+var CanVisualizeError = dig.CanVisualizeError
+
 /**
  * 容器
  *
@@ -89,65 +136,4 @@ func (this *DI) Provide(constructor interface{}, opts ...dig.ProvideOption) erro
 // 使用
 func (this *DI) Invoke(function interface{}, opts ...dig.InvokeOption) error {
     return this.container.Invoke(function, opts...)
-}
-
-// 命名
-// c.Provide(NewReadOnlyConnection, dig.Name("ro"))
-func Name(name string) dig.ProvideOption {
-    return dig.Name(name)
-}
-
-// 分组
-func Group(group string) dig.ProvideOption {
-    return dig.Group(group)
-}
-
-// 填充信息
-func FillProvideInfo(info *dig.ProvideInfo) dig.ProvideOption {
-    return dig.FillProvideInfo(info)
-}
-
-// c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
-func As(i ...interface{}) dig.ProvideOption {
-    return dig.As(i...)
-}
-
-// dig.LocationForPC("ro")
-func LocationForPC(pc uintptr) dig.ProvideOption {
-    return dig.LocationForPC(pc)
-}
-
-func DeferAcyclicVerification() dig.Option {
-    return dig.DeferAcyclicVerification()
-}
-
-// 创建一个没有设置的容器
-func DryRun(dry bool) dig.Option {
-    return dig.DryRun(dry)
-}
-
-// 是否导入
-func IsIn(o interface{}) bool {
-    return dig.IsIn(o)
-}
-
-// 是否导出
-func IsOut(o interface{}) bool {
-    return dig.IsOut(o)
-}
-
-func VisualizeError(err error) dig.VisualizeOption {
-    return dig.VisualizeError(err)
-}
-
-func RootCause(err error) error {
-    return dig.RootCause(err)
-}
-
-func Visualize(c *dig.Container, w io.Writer, opts ...dig.VisualizeOption) error {
-    return dig.Visualize(c, w, opts...)
-}
-
-func CanVisualizeError(err error) bool {
-    return dig.CanVisualizeError(err)
 }

@@ -44,7 +44,7 @@ func (this *System) Info(ctx *router.Context) {
     version := conf.GetString("Version")
 
     // 服务器时间
-    nowDatetime := time.TimeStampToDate(time.NowTimeToInt())
+    nowDatetime := time.TimeStampToDate(time.NowTime())
 
     data := router.H{
         "goos": runtime.GOOS,

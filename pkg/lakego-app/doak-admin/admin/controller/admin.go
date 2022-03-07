@@ -357,7 +357,7 @@ func (this *Admin) Create(ctx *router.Context) {
         Email: post["email"].(string),
         Introduce: post["introduce"].(string),
         Status: status,
-        AddTime: time.NowTimeToInt(),
+        AddTime: int(time.NowTime()),
         AddIp: router.GetRequestIp(ctx),
     }
 
@@ -823,7 +823,7 @@ func (this *Admin) Logout(ctx *router.Context) {
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
         Updates(map[string]interface{}{
-            "refresh_time": time.NowTimeToInt(),
+            "refresh_time": int(time.NowTime()),
             "refresh_ip": router.GetRequestIp(ctx),
         })
 

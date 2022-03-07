@@ -1,127 +1,246 @@
 package time
 
 import (
-    "fmt"
     "time"
-    "strings"
 )
 
-var (
-    // 纳秒
-    Nanosecond = time.Nanosecond
-
-    // 微妙
-    Microsecond = time.Microsecond
-
-    // 毫秒
-    Millisecond = time.Millisecond
-
-    // 秒
-    Second = time.Second
-
-    // 分钟
-    Minute = time.Minute
-)
-
-// 时间字符转为时间
-func StringToTime(date interface{}) time.Time {
-    timeLayout := "2006-01-02 15:04:05"
-    loc, _ := time.LoadLocation("Local")
-    ret, _ := time.ParseInLocation(timeLayout, date.(string), loc)
-    return ret
-}
-
-// 时间字符转为时间戳
-func StringToTimestamp(date interface{}) int64 {
-    return StringToTime(date).Unix()
-}
-
-// 时间戳转为 time.Time
-func TimeStampToTime(timeStamp int) time.Time {
-    return time.Unix(int64(timeStamp), 0)
-}
-
-// 时间转换为时间戳
-func TimeToStamp(strTime string) int64 {
-    t, _ := time.Parse("2006-01-02 15:04:05", strTime)
-
-    return t.Unix()
-}
-
-// 时间戳转为时间字符
-func TimeStampToDate(timeStamp int) string {
-    date := time.Unix(int64(timeStamp), 0).Format("2006-01-02 15:04:05")
-
-    return date
-}
-
-// 当前时间，单位：秒
-func NowTime() int64 {
-    return time.Now().Unix()
-}
-
-// 当前时间，单位：秒
-func NowTimeToInt() int {
-    time := NowTime()
-    return int(time)
-}
-
-// 当前时间，单位：纳秒
-func NowNanoTime() int64 {
-    return time.Now().UnixNano()
-}
-
-// 当前时间，单位：纳秒
-func NowNanoTimeToInt() int {
-    return int(NowNanoTime())
-}
-
-// 获取几天前时间，单位：秒
-func BeforeTime(day int) int64 {
-    return time.Now().AddDate(0, 0, day).Unix()
-}
-
-// 获取几天前时间，单位：秒
-func BeforeTimeToInt(day int) int {
-    time := BeforeTime(day)
-    return int(time)
-}
-
-// 时间格式化
-func FormatTime(timeUnix time.Time, format string) string {
-    formatMap := map[string]string{
-        "Y": fmt.Sprintf("%d", timeUnix.Year()),
-        "m": fmt.Sprintf("%d", timeUnix.Month()),
-        "d": fmt.Sprintf("%d", timeUnix.Day()),
-
-        "H": fmt.Sprintf("%d", timeUnix.Hour()),
-        "i": fmt.Sprintf("%d", timeUnix.Minute()),
-        "s": fmt.Sprintf("%d", timeUnix.Second()),
+// 获取本月的总天数
+func (this Datebin) DaysInMonth() int {
+    if this.IsInvalid() {
+        return 0
     }
 
-    for k, v := range formatMap {
-        format = strings.Replace(format, k, v, -1)
+    return this.MonthEnd().time.In(this.loc).Day()
+}
+
+// 获取本年的第几月
+func (this Datebin) MonthInYear() int {
+    if this.IsInvalid() {
+        return 0
     }
 
-    return format
+    return int(this.time.In(this.loc).Month())
 }
 
-// 时间戳格式化
-func FormatTimeStamp(timeStamp int, format string) string {
-    now := TimeStampToTime(timeStamp)
+// 获取本年的第几天
+func (this Datebin) DayInYear() int {
+    if this.IsInvalid() {
+        return 0
+    }
 
-    return FormatTime(now, format)
+    return this.time.In(this.loc).YearDay()
 }
 
-// 时间
-func FormatDate(timestamp int, format string) string {
-    return FormatTimeStamp(timestamp, format)
+// 获取本月的第几天
+func (this Datebin) DayInMonth() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Day()
 }
 
-// 当前时间
-func NowFormat(format string) string {
-    now := time.Now()
+// 获取本周的第几天
+func (this Datebin) DayInWeek() int {
+    if this.IsInvalid() {
+        return 0
+    }
 
-    return FormatTime(now, format)
+    day := int(this.time.In(this.loc).Weekday())
+    if day == 0 {
+        return DaysPerWeek
+    }
+
+    return day
 }
 
+// 获取本年的第几周
+func (this Datebin) WeekInYear() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    _, week := this.time.In(this.loc).ISOWeek()
+    return week
+}
+
+// 获取当前年
+func (this Datebin) Year() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Year()
+}
+
+// 获取当前季度
+func (this Datebin) Quarter() (quarter int) {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    switch {
+        case this.Month() >= 10:
+            quarter = 4
+        case this.Month() >= 7:
+            quarter = 3
+        case this.Month() >= 4:
+            quarter = 2
+        case this.Month() >= 1:
+            quarter = 1
+    }
+
+    return
+}
+
+// 获取当前月
+func (this Datebin) Month() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.MonthInYear()
+}
+
+// 获取当前日
+func (this Datebin) Day() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.DayInMonth()
+}
+
+// 获取当前小时
+func (this Datebin) Hour() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Hour()
+}
+
+// 获取当前分钟数
+func (this Datebin) Minute() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Minute()
+}
+
+// 获取当前秒数
+func (this Datebin) Second() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Second()
+}
+
+// 获取当前毫秒数，3位数字
+func (this Datebin) Millisecond() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Nanosecond() / 1e6
+}
+
+// 获取当前微秒数，6位数字
+func (this Datebin) Microsecond() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Nanosecond() / 1e3
+}
+
+// 获取当前纳秒数，9位数字
+func (this Datebin) Nanosecond() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Nanosecond()
+}
+
+// 输出秒级时间戳
+func (this Datebin) Timestamp() int64 {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).Unix()
+}
+
+// 获取毫秒级时间戳
+func (this Datebin) TimestampWithMillisecond() int64 {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    // return this.time.In(this.loc).UnixNano() / 1e6
+    return this.time.In(this.loc).UnixNano() / int64(time.Millisecond)
+}
+
+// 获取微秒级时间戳
+func (this Datebin) TimestampWithMicrosecond() int64 {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).UnixNano() / int64(time.Microsecond)
+}
+
+// 获取纳秒级时间戳
+func (this Datebin) TimestampWithNanosecond() int64 {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.time.In(this.loc).UnixNano()
+}
+
+// 明天
+func (this Datebin) Tomorrow(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    if this.IsZero() {
+        this.time = time.Now().In(this.loc).AddDate(0, 0, 1)
+    } else {
+        this.time = this.time.In(this.loc).AddDate(0, 0, 1)
+    }
+
+    return this
+}
+
+// 昨天
+func (this Datebin) Yesterday(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    if this.IsZero() {
+        this.time = time.Now().In(this.loc).AddDate(0, 0, -1)
+    } else {
+        this.time = this.time.In(this.loc).AddDate(0, 0, -1)
+    }
+
+    return this
+}
+
+// 星期几数字
+func (this Datebin) Weekday() int {
+    return int(this.time.In(this.loc).Weekday())
+}
