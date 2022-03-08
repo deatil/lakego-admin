@@ -4,31 +4,64 @@ import (
     "time"
 )
 
-// 时间字符转为时间
-func StringToTime(date string, formatStr ...string) time.Time {
-    return TimeString(date, formatStr...).GetTime()
+// 当前
+func Now(timezone ...string) Datebin {
+    return NewDatebin().Now(timezone...)
 }
 
-// 时间字符转为时间戳
-func StringToTimestamp(date string, formatStr ...string) int64 {
-    return TimeString(date, formatStr...).Timestamp()
+// 今天
+func Today(timezone ...string) Datebin {
+    return NewDatebin().Today(timezone...)
 }
 
-// 时间戳转为 time.Time
-func TimeStampToTime(timeStamp int64) time.Time {
-    return Unix(timeStamp, 0).GetTime()
+// 明天
+func Tomorrow(timezone ...string) Datebin {
+    return NewDatebin().Tomorrow(timezone...)
 }
 
-// 时间转换为时间戳
-func TimeToStamp(strTime string) int64 {
-    return TimeString(strTime).Timestamp()
+// 昨天
+func Yesterday(timezone ...string) Datebin {
+    return NewDatebin().Yesterday(timezone...)
 }
 
-// 时间戳转为时间字符
-func TimeStampToDate(timeStamp int64) string {
-    date := Unix(timeStamp, 0).DatetimeString()
+// 时间
+func Time(t time.Time) Datebin {
+    return NewDatebin().WithTime(t)
+}
 
-    return date
+// 时间戳
+func Unix(sec int64, nsec int64) Datebin {
+    return Time(time.Unix(sec, nsec))
+}
+
+// 日期
+func Date(year int, month int, day int) Datebin {
+    monthData, ok := Months[month]
+    if !ok {
+        monthData = Months[1]
+    }
+
+    return Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
+}
+
+// 日期时间
+func Datetime(year int, month int, day int, hour int, min int, sec int) Datebin {
+    monthData, ok := Months[month]
+    if !ok {
+        monthData = Months[1]
+    }
+
+    return Time(time.Date(year, monthData, day, hour, min, sec, 0, time.UTC))
+}
+
+// 时间字符
+func Parse(date string, format ...string) Datebin {
+    return NewDatebin().Parse(date, format...)
+}
+
+// 时间字符
+func TimeString(date string, format ...string) Datebin {
+    return Parse(date, format...)
 }
 
 // 当前时间，单位：秒
@@ -41,23 +74,48 @@ func NowNanoTime() int64 {
     return Now().TimestampWithNanosecond()
 }
 
-// 获取几天前时间，单位：秒
-func BeforeTime(day int) int64 {
-    return Now().Offset("day", day).Timestamp()
-}
-
 // 当前日期时间字符
 func NowDatetimeString(timezone ...string) string {
-    return Now(timezone...).DatetimeString()
+    return Now(timezone...).ToDatetimeString()
 }
 
 // 当前日期
 func NowDateString(timezone ...string) string {
-    return Now(timezone...).DateString()
+    return Now(timezone...).ToDateString()
 }
 
 // 当前时间字符
 func NowTimeString(timezone ...string) string {
-    return Now(timezone...).TimeString()
+    return Now(timezone...).ToTimeString()
+}
+
+// 时间字符转为时间
+func StringToTime(date string, format ...string) time.Time {
+    return TimeString(date, format...).GetTime()
+}
+
+// 时间字符转为时间戳
+func StringToTimestamp(date string, format ...string) int64 {
+    return TimeString(date, format...).Timestamp()
+}
+
+// 时间戳转为 time.Time
+func TimestampToTime(timestamp int64) time.Time {
+    return Unix(timestamp, 0).GetTime()
+}
+
+// 时间转换为时间戳
+func TimeToTimestamp(t time.Time) int64 {
+    return Time(t).Timestamp()
+}
+
+// 时间戳转为时间字符
+func TimestampToDatetimeString(timestamp int64) string {
+    return Unix(timestamp, 0).ToDatetimeString()
+}
+
+// 获取几天前时间，单位：天
+func BeforeDayTime(day uint) int64 {
+    return Now().SubDays(day).Timestamp()
 }
 

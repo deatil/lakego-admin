@@ -68,6 +68,17 @@ var (
         "c": "2006-01-02T15:04:05Z07:00",
         "r": "Mon, 02 Jan 2006 15:04:05 -0700",
     }
+
+    // 周列表
+    Weeks = []string{
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    }
 )
 
 /**
@@ -120,7 +131,7 @@ func (this Datebin) GetLocationString() string {
 func (this Datebin) WithTimezone(timezone string) Datebin {
     location, err := this.GetLocationByTimezone(timezone)
     if err == nil {
-        this.WithLocation(location)
+        this.loc = location
     }
 
     return this
@@ -128,11 +139,13 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
 
 // 重新设置时区
 func (this Datebin) ReplaceTimezone(timezone string) Datebin {
-    // 重设
-    this = this.WithTimezone(timezone)
+    location, err := this.GetLocationByTimezone(timezone)
+    if err == nil {
+        this.loc = location
+    }
 
     // 设置时区
-    this.time = this.time.In(this.loc)
+    this.time = this.time.In(location)
 
     return this
 }
@@ -157,11 +170,6 @@ func (this Datebin) GetLocationByTimezone(timezone string) (*time.Location, erro
 // 通过持续时长解析
 func (this Datebin) ParseDuration(duration string) (time.Duration, error) {
     return time.ParseDuration(duration)
-}
-
-// 获取绝对值
-func (this Datebin) GetAbsValue(value int64) int64 {
-    return (value ^ value>>31) - value>>31
 }
 
 // 获取错误
@@ -190,13 +198,39 @@ func (this Datebin) UTC() Datebin {
     return this
 }
 
+// 时间字符
+func (this Datebin) Parse(date string, format ...string) Datebin {
+    var layout = ""
+
+    if len(format) > 0 {
+        layout = format[0]
+    } else if len(format) == 0 && len(date) == 19 {
+        layout = "Y-m-d H:i:s"
+    } else if len(format) == 0 && len(date) == 10 {
+        layout = "Y-m-d"
+    } else {
+        layout = "Y-m-d"
+    }
+
+    layout = this.FormatLayout(layout)
+    time, err := time.Parse(layout, date)
+
+    if err != nil {
+        return this
+    }
+
+    this.time = time
+
+    return this
+}
+
 // 格式化
-func (this Datebin) Format(str string) string {
-    return this.time.In(this.loc).Format(this.FormatStr(str))
+func (this Datebin) Format(layout string) string {
+    return this.time.In(this.loc).Format(this.FormatLayout(layout))
 }
 
 // 格式化字符为 go 对应时间字符
-func (this Datebin) FormatStr(str string) string {
+func (this Datebin) FormatLayout(str string) string {
     var buffer bytes.Buffer
 
     for i := 0; i < len(str); i++ {
@@ -218,63 +252,9 @@ func (this Datebin) FormatStr(str string) string {
     return buffer.String()
 }
 
-// =====
-
 // 构造函数
 func NewDatebin() Datebin {
     return Datebin{
         loc: time.Local,
     }
-}
-
-// 当前
-func Now(timezone ...string) Datebin {
-    return NewDatebin().Now(timezone...)
-}
-
-// 时间
-func Time(t time.Time) Datebin {
-    return NewDatebin().WithTime(t)
-}
-
-// 时间戳
-func Unix(sec int64, nsec int64) Datebin {
-    return Time(time.Unix(sec, nsec))
-}
-
-// 日期
-func Date(year int, month int, day int) Datebin {
-    return Time(time.Date(year, Months[month], day, 0, 0, 0, 0, time.UTC))
-}
-
-// 日期时间
-func Datetime(year int, month int, day int, hour int, min int, sec int) Datebin {
-    return Time(time.Date(year, Months[month], day, hour, min, sec, 0, time.UTC))
-}
-
-// 时间字符
-func TimeString(str string, formatStr ...string) Datebin {
-    var format = ""
-
-    if len(formatStr) > 0 {
-        format = formatStr[0]
-    } else if len(formatStr) == 0 && len(str) == 19 {
-        format = "Y-m-d H:i:s"
-    } else if len(formatStr) == 0 && len(str) == 10 {
-        format = "Y-m-d"
-    } else {
-        format = "Y-m-d"
-    }
-
-    date := NewDatebin()
-
-    format = date.FormatStr(format)
-    time, err := time.Parse(format, str)
-    if err != nil {
-        return date
-    }
-
-    date.time = time
-
-    return date
 }

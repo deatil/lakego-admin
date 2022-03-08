@@ -8,6 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/driver"
 )
 
+// 构造函数
 func New(conf ...map[string]interface{}) *Mysql {
     m := &Mysql{}
 
@@ -85,4 +86,3 @@ func (this *Mysql) getDSN() string {
         Charset,
     )
 }
-

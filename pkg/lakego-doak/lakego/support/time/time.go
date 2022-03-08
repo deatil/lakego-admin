@@ -64,6 +64,24 @@ func (this Datebin) WeekInYear() int {
     return week
 }
 
+// 获取当前世纪
+func (this Datebin) Century() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.Year() / YearsPerCentury + 1
+}
+
+// 获取当前年代
+func (this Datebin) Decade() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
+    return this.Year() % YearsPerCentury / YearsPerDecade * YearsPerDecade
+}
+
 // 获取当前年
 func (this Datebin) Year() int {
     if this.IsInvalid() {
@@ -100,6 +118,11 @@ func (this Datebin) Month() int {
     }
 
     return this.MonthInYear()
+}
+
+// 星期几数字
+func (this Datebin) Weekday() int {
+    return int(this.time.In(this.loc).Weekday())
 }
 
 // 获取当前日
@@ -202,6 +225,28 @@ func (this Datebin) TimestampWithNanosecond() int64 {
     return this.time.In(this.loc).UnixNano()
 }
 
+// 今天
+func (this Datebin) Today(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    var datetime Datebin
+    if this.IsZero() {
+        datetime = this.Now()
+    } else {
+        datetime = this
+    }
+
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
+
+    return this
+}
+
 // 明天
 func (this Datebin) Tomorrow(timezone ...string) Datebin {
     if len(timezone) > 0 {
@@ -212,11 +257,14 @@ func (this Datebin) Tomorrow(timezone ...string) Datebin {
         return this
     }
 
+    var datetime Datebin
     if this.IsZero() {
-        this.time = time.Now().In(this.loc).AddDate(0, 0, 1)
+        datetime = this.Now().AddDay()
     } else {
-        this.time = this.time.In(this.loc).AddDate(0, 0, 1)
+        datetime = this.AddDay()
     }
+
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
 
     return this
 }
@@ -231,16 +279,14 @@ func (this Datebin) Yesterday(timezone ...string) Datebin {
         return this
     }
 
+    var datetime Datebin
     if this.IsZero() {
-        this.time = time.Now().In(this.loc).AddDate(0, 0, -1)
+        datetime = this.Now().SubDay()
     } else {
-        this.time = this.time.In(this.loc).AddDate(0, 0, -1)
+        datetime = this.SubDay()
     }
 
-    return this
-}
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
 
-// 星期几数字
-func (this Datebin) Weekday() int {
-    return int(this.time.In(this.loc).Weekday())
+    return this
 }

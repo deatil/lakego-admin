@@ -18,6 +18,16 @@ func (this Datebin) IsInvalid() bool {
     return false
 }
 
+// 是否是 Utc 时区
+func (this Datebin) IsUtc() bool {
+    return this.GetTimezone() == LocationUTC
+}
+
+// 是否是本地时区
+func (this Datebin) IsLocal() bool {
+    return this.GetTimezone() == this.Now().GetTimezone()
+}
+
 // 是否是当前时间
 func (this Datebin) IsNow() bool {
     if this.IsInvalid() {
@@ -264,7 +274,7 @@ func (this Datebin) IsYesterday() bool {
         return false
     }
 
-    return this.DateString() == this.Now().Offset("day", -1).DateString()
+    return this.ToDateString() == this.Now().Offset("day", -1).ToDateString()
 }
 
 // 是否是今天
@@ -273,7 +283,7 @@ func (this Datebin) IsToday() bool {
         return false
     }
 
-    return this.DateString() == this.Now().DateString()
+    return this.ToDateString() == this.Now().ToDateString()
 }
 
 // 是否是明天
@@ -282,5 +292,102 @@ func (this Datebin) IsTomorrow() bool {
         return false
     }
 
-    return this.DateString() == this.Now().Offset("day", +1).DateString()
+    return this.ToDateString() == this.Now().Offset("day", +1).ToDateString()
+}
+
+// 通过格式比对是否相等
+func (this Datebin) IsSameAs(format string, date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    return this.Format(format) == date.Format(format)
+}
+
+// 通过格式比对是否相等
+func (this Datebin) IsSameUnit(unit string, date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    units := map[string]string{
+        // @call isSameUnit
+        "year": "Y",
+        // @call isSameUnit
+        "week": "o-W",
+        // @call isSameUnit
+        "day": "Y-m-d",
+        // @call isSameUnit
+        "hour": "Y-m-d H",
+        // @call isSameUnit
+        "minute": "Y-m-d H:i",
+        // @call isSameUnit
+        "second": "Y-m-d H:i:s",
+        // @call isSameUnit
+        "micro": "Y-m-d H:i:s.u",
+        // @call isSameUnit
+        "microsecond": "Y-m-d H:i:s.u",
+    }
+
+    _, ok := units[unit]
+    if !ok {
+        return false
+    }
+
+    return this.IsSameAs(units[unit], date)
+}
+
+// 是否是同一年的同一个月
+func (this Datebin) IsSameYearMonth(date Datebin) bool {
+    return this.IsSameAs("Y-m", date)
+}
+
+// 是否是同一个月
+func (this Datebin) IsSameMonth(date Datebin) bool {
+    return this.IsSameAs("m", date)
+}
+
+// 是否是一个生日
+func (this Datebin) IsBirthday(date Datebin) bool {
+    return this.IsSameAs("md", date)
+}
+
+// 是否是当前月最后一天
+func (this Datebin) IsLastOfMonth() bool {
+    return this.DayInMonth() == this.DaysInMonth()
+}
+
+// 是否当天开始
+func (this Datebin) IsStartOfDay() bool {
+    return this.Format("H:i:s") == "00:00:00"
+}
+
+// 是否当天开始
+func (this Datebin) IsStartOfDayWithMicrosecond() bool {
+    return this.Format("H:i:s.u") == "00:00:00.000000"
+}
+
+// 是否当天结束
+func (this Datebin) IsEndOfDay() bool {
+    return this.Format("H:i:s") == "23:59:59"
+}
+
+// 是否当天结束
+func (this Datebin) IsEndOfDayWithMicrosecond() bool {
+    return this.Format("H:i:s.u") == "23:59:59.999999"
+}
+
+// 是否是半夜
+func (this Datebin) IsMidnight() bool {
+    return this.IsStartOfDay()
+}
+
+// 是否是中午
+func (this Datebin) IsMidday(midDay ...string) bool {
+    midDayAt := "12"
+    if len(midDay) > 0 {
+        midDayAt = midDay[0]
+    }
+
+    return this.Format("H:i:s.u") == midDayAt + ":00:00"
 }

@@ -130,9 +130,8 @@ func (this *Data) Error(ctx *gin.Context) {
     newStrData := str.LowerCamel(strData)
 
     // 时间
-    date := time.Now()
-    date2 := date.IsPast()
-    dateStr := time.Date(2022, 3, 6).AddDay(5).DatetimeString()
+    date := time.Yesterday().ToDatetimeString()
+    dateStr := time.Parse("2012-03-15 12:03:17").ToDatetimeString()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
@@ -146,7 +145,7 @@ func (this *Data) Error(ctx *gin.Context) {
         "str": newStrData,
 
         "date": dateStr,
-        "date2": date2,
+        "date2": date,
     })
 }
 

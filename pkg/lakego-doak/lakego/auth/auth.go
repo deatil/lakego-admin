@@ -422,4 +422,3 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
 
     return data
 }
-
