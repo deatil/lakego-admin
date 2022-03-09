@@ -14,7 +14,7 @@ func (this Datebin) DaysInMonth() int {
 }
 
 // 获取本年的第几月
-func (this Datebin) MonthInYear() int {
+func (this Datebin) MonthOfYear() int {
     if this.IsInvalid() {
         return 0
     }
@@ -23,7 +23,7 @@ func (this Datebin) MonthInYear() int {
 }
 
 // 获取本年的第几天
-func (this Datebin) DayInYear() int {
+func (this Datebin) DayOfYear() int {
     if this.IsInvalid() {
         return 0
     }
@@ -32,7 +32,7 @@ func (this Datebin) DayInYear() int {
 }
 
 // 获取本月的第几天
-func (this Datebin) DayInMonth() int {
+func (this Datebin) DayOfMonth() int {
     if this.IsInvalid() {
         return 0
     }
@@ -41,7 +41,7 @@ func (this Datebin) DayInMonth() int {
 }
 
 // 获取本周的第几天
-func (this Datebin) DayInWeek() int {
+func (this Datebin) DayOfWeek() int {
     if this.IsInvalid() {
         return 0
     }
@@ -55,7 +55,7 @@ func (this Datebin) DayInWeek() int {
 }
 
 // 获取本年的第几周
-func (this Datebin) WeekInYear() int {
+func (this Datebin) WeekOfYear() int {
     if this.IsInvalid() {
         return 0
     }
@@ -117,7 +117,7 @@ func (this Datebin) Month() int {
         return 0
     }
 
-    return this.MonthInYear()
+    return this.MonthOfYear()
 }
 
 // 星期几数字
@@ -131,7 +131,7 @@ func (this Datebin) Day() int {
         return 0
     }
 
-    return this.DayInMonth()
+    return this.DayOfMonth()
 }
 
 // 获取当前小时

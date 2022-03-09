@@ -65,13 +65,13 @@ func TimeString(date string, format ...string) Datebin {
 }
 
 // 当前时间，单位：秒
-func NowTime() int64 {
-    return Now().Timestamp()
+func NowTime(timezone ...string) int64 {
+    return Now(timezone...).Timestamp()
 }
 
 // 当前时间，单位：纳秒。转换为 int: int(time)
-func NowNanoTime() int64 {
-    return Now().TimestampWithNanosecond()
+func NowNanoTime(timezone ...string) int64 {
+    return Now(timezone...).TimestampWithNanosecond()
 }
 
 // 当前日期时间字符

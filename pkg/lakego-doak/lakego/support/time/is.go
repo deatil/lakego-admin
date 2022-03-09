@@ -79,6 +79,58 @@ func (this Datebin) IsLongYear() bool {
     return w == weeksPerLongYear
 }
 
+// 是否是春季
+func (this Datebin) IsSpring() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    if this.Month() == 3 || this.Month() == 4 || this.Month() == 5 {
+        return true
+    }
+
+    return false
+}
+
+// 是否是夏季
+func (this Datebin) IsSummer() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    if this.Month() == 6 || this.Month() == 7 || this.Month() == 8 {
+        return true
+    }
+
+    return false
+}
+
+// 是否是秋季
+func (this Datebin) IsAutumn() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    if this.Month() == 9 || this.Month() == 10 || this.Month() == 11 {
+        return true
+    }
+
+    return false
+}
+
+// 是否是冬季
+func (this Datebin) IsWinter() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    if this.Month() == 12 || this.Month() == 1 || this.Month() == 2 {
+        return true
+    }
+
+    return false
+}
+
 // 是否是一月
 func (this Datebin) IsJanuary() bool {
     if this.IsInvalid() {
@@ -354,7 +406,7 @@ func (this Datebin) IsBirthday(date Datebin) bool {
 
 // 是否是当前月最后一天
 func (this Datebin) IsLastOfMonth() bool {
-    return this.DayInMonth() == this.DaysInMonth()
+    return this.DayOfMonth() == this.DaysInMonth()
 }
 
 // 是否当天开始

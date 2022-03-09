@@ -41,6 +41,17 @@ func ShowVersion() {
     release := conf.GetString("Release")
     version := conf.GetString("Version")
 
+    logo := `
+.__          __
+|  | _____  |  | __ ____   ____   ____
+|  | \__  \ |  |/ // __ \ / ___\ /  _ \
+|  |__/ __ \|    <\  ___// /_/  >  <_> )
+|____(____  /__|_ \\___  >___  / \____/
+          \/     \/    \/_____/
+    `
+
+    color.Whiteln(logo);
+
     color.Magenta("\n===========================\n")
 
     color.Yellow("\nlakego-admin 系统详情\n\n")
