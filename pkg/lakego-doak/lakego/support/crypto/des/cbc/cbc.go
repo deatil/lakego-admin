@@ -61,7 +61,8 @@ func DecryptDES(src string, key string, ivStr string) (string, error) {
     return string(plaintext), nil
 }
 
-// 加密 Encode("12fgt", "dfertf12")
+// 加密
+// Encode("12fgt", "dfertf12")
 func Encode(str string, key string, iv ...string) string {
     ivStr := defaultIv
     if len(iv) > 0 {
@@ -76,14 +77,15 @@ func Encode(str string, key string, iv ...string) string {
     return enstr
 }
 
-// 解密 Decode("AF381D34F51CD48E", "dfertf12")
+// 解密
+// Decode("AF381D34F51CD48E", "dfertf12")
 func Decode(str string, key string, iv ...string) string {
     ivStr := defaultIv
     if len(iv) > 0 {
         ivStr = iv[0]
     }
 
-    destr, err := DecryptDES(str, key)
+    destr, err := DecryptDES(str, key, ivStr)
     if err != nil {
         return ""
     }

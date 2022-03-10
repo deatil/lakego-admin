@@ -9,6 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/str"
     "github.com/deatil/lakego-doak/lakego/support/time"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
+    "github.com/deatil/lakego-doak/lakego/support/crypto/des/ecb"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -135,6 +136,9 @@ func (this *Data) Error(ctx *gin.Context) {
         Diff(time.Parse("2022-05-15 12:05:18")).
         Months()
 
+    // 加密测试
+    cypt := ecb.Decode("839089A6B911CE9E", "dfertf12")
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
@@ -148,6 +152,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "date": date,
         "date2": date2,
+
+        "cypt": cypt,
     })
 }
 

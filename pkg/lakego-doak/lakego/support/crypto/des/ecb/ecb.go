@@ -68,7 +68,8 @@ func DecryptDES(src string, key string) (string, error) {
 }
 
 
-// 加密 Encode("asert", "dfertf12")
+// 加密
+// Encode("asert", "dfertf12")
 func Encode(str string, key string) string {
     enstr, err := EncryptDES(str, key)
     if err != nil {
@@ -78,7 +79,8 @@ func Encode(str string, key string) string {
     return enstr
 }
 
-// 解密 Decode("950F58725B70C79E", "dfertf12")
+// 解密
+// Decode("950F58725B70C79E", "dfertf12")
 func Decode(str string, key string) string {
     destr, err := DecryptDES(str, key)
     if err != nil {

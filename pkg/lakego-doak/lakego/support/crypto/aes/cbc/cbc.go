@@ -8,11 +8,6 @@ import (
     "encoding/hex"
 )
 
-var (
-    // 默认向量
-    defaultIv = "a91ebd0s"
-)
-
 func PKCS5Padding(ciphertext []byte, blockSize int) []byte {
     padding := blockSize - len(ciphertext)%blockSize
     padtext := bytes.Repeat([]byte{byte(padding)}, padding)
@@ -25,63 +20,43 @@ func PKCS5UnPadding(origData []byte) []byte {
     return origData[:(length - unpadding)]
 }
 
-func AesEncryptCBC(src string, key string, ivStr string) ([]byte, error) {
-    data := []byte(src)
-    keyByte := []byte(key)
-
-    block, err := aes.NewCipher(keyByte)
+func AesEncryptCBC(origData, key []byte) ([]byte, error) {
+    block, err := aes.NewCipher(key)
     if err != nil {
         return nil, err
     }
 
-    // 向量
-    iv := []byte(ivStr)
-
-    blockMode := cipher.NewCBCEncrypter(block, iv)
-
-    data = PKCS5Padding(data, block.BlockSize())
-    crypted := make([]byte, len(data))
-    blockMode.CryptBlocks(crypted, data)
-
+    blockSize := block.BlockSize()
+    origData = PKCS5Padding(origData, blockSize)
+    blockMode := cipher.NewCBCEncrypter(block, key[:blockSize])
+    crypted := make([]byte, len(origData))
+    blockMode.CryptBlocks(crypted, origData)
     return crypted, nil
 }
 
-func AesDecryptCBC(src string, key string, ivStr string) ([]byte, error) {
-    data := []byte(src)
-    keyByte := []byte(key)
-
-    block, err := aes.NewCipher(keyByte)
+func AesDecryptCBC(crypted, key []byte) ([]byte, error) {
+    block, err := aes.NewCipher(key)
     if err != nil {
         return nil, err
     }
 
-    // 向量
-    iv := []byte(ivStr)
-
-    blockMode := cipher.NewCBCDecrypter(block, iv)
-
-    origData := make([]byte, len(data))
-    blockMode.CryptBlocks(origData, data)
-
+    blockSize := block.BlockSize()
+    blockMode := cipher.NewCBCDecrypter(block, key[:blockSize])
+    origData := make([]byte, len(crypted))
+    blockMode.CryptBlocks(origData, crypted)
     origData = PKCS5UnPadding(origData)
-
     return origData, nil
 }
 
 // 加密
 // Encode("fgtre", "dfertf12dfertf12")
-/*
-16 字节 - AES-128
-24 字节 - AES-192
-32 字节 - AES-256
-*/
-func Encode(str string, key string, iv ...string) string {
-    ivStr := defaultIv
-    if len(iv) > 0 {
-        ivStr = iv[0]
-    }
-
-    enStr, err := AesEncryptCBC(str, key, ivStr)
+// 16 字节 - AES-128
+// 24 字节 - AES-192
+// 32 字节 - AES-256
+func Encode(str string, key string) string {
+    aeskey := []byte(key)
+    newStr := []byte(str)
+    enStr, err := AesEncryptCBC(newStr, aeskey)
     if err != nil {
         return err.Error()
     }
@@ -91,18 +66,14 @@ func Encode(str string, key string, iv ...string) string {
 
 // 解密
 // Decode("UGFrxUqdF4drEh3Wsf7bng==", "dfertf12dfertf12")
-func Decode(str string, key string, iv ...string) string {
-    ivStr := defaultIv
-    if len(iv) > 0 {
-        ivStr = iv[0]
-    }
-
+func Decode(str string, key string) string {
     base64Str, err := base64.StdEncoding.DecodeString(str)
     if err != nil {
         return ""
     }
 
-    deStr, err := AesDecryptCBC(string(base64Str), key, ivStr)
+    aeskey := []byte(key)
+    deStr, err := AesDecryptCBC(base64Str, aeskey)
     if err != nil {
         return ""
     }
@@ -112,13 +83,10 @@ func Decode(str string, key string, iv ...string) string {
 
 // Hex 加密
 // HexEncode("fgtre", "dfertf12dfertf12")
-func HexEncode(str string, key string, iv ...string) string {
-    ivStr := defaultIv
-    if len(iv) > 0 {
-        ivStr = iv[0]
-    }
-
-    enStr, err := AesEncryptCBC(str, key, ivStr)
+func HexEncode(str string, key string) string {
+    aeskey := []byte(key)
+    newStr := []byte(str)
+    enStr, err := AesEncryptCBC(newStr, aeskey)
     if err != nil {
         return ""
     }
@@ -128,18 +96,14 @@ func HexEncode(str string, key string, iv ...string) string {
 
 // Hex 解密
 // HexDecode("50616bc54a9d17876b121dd6b1fedb9e", "dfertf12dfertf12")
-func HexDecode(str string, key string, iv ...string) string {
-    ivStr := defaultIv
-    if len(iv) > 0 {
-        ivStr = iv[0]
-    }
-
+func HexDecode(str string, key string) string {
     base64Str, err := hex.DecodeString(str)
     if err != nil {
         return ""
     }
 
-    deStr, err := AesDecryptCBC(string(base64Str), key, ivStr)
+    aeskey := []byte(key)
+    deStr, err := AesDecryptCBC(base64Str, aeskey)
     if err != nil {
         return ""
     }

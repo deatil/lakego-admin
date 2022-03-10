@@ -11,7 +11,7 @@ import (
     "encoding/pem"
 )
 
-// "github.com/deatil/lakego-doak/lakego/support/crypto/rsa"
+// 构造函数
 func New() *Rsa {
     return &Rsa{}
 }
