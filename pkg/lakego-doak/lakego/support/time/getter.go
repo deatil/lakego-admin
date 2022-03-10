@@ -225,6 +225,20 @@ func (this Datebin) TimestampWithNanosecond() int64 {
     return this.time.In(this.loc).UnixNano()
 }
 
+// 当前
+func (this Datebin) Now(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    this.time = time.Now().In(this.loc)
+    return this
+}
+
 // 今天
 func (this Datebin) Today(timezone ...string) Datebin {
     if len(timezone) > 0 {

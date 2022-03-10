@@ -34,24 +34,41 @@ func Unix(sec int64, nsec int64) Datebin {
     return Time(time.Unix(sec, nsec))
 }
 
+// 时间戳
+func Timestamp(timestamp int64) Datebin {
+    return Unix(timestamp, 0)
+}
+
 // 日期
-func Date(year int, month int, day int) Datebin {
+func Date(year int, month int, day int, timezone ...string) Datebin {
     monthData, ok := Months[month]
     if !ok {
         monthData = Months[1]
     }
 
-    return Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
+    date := Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
+
+    if len(timezone) > 0 {
+        date = date.ReplaceTimezone(timezone[0])
+    }
+
+    return date
 }
 
 // 日期时间
-func Datetime(year int, month int, day int, hour int, min int, sec int) Datebin {
+func Datetime(year int, month int, day int, hour int, min int, sec int, timezone ...string) Datebin {
     monthData, ok := Months[month]
     if !ok {
         monthData = Months[1]
     }
 
-    return Time(time.Date(year, monthData, day, hour, min, sec, 0, time.UTC))
+    date := Time(time.Date(year, monthData, day, hour, min, sec, 0, time.UTC))
+
+    if len(timezone) > 0 {
+        date = date.ReplaceTimezone(timezone[0])
+    }
+
+    return date
 }
 
 // 时间字符
@@ -67,11 +84,6 @@ func TimeString(date string, format ...string) Datebin {
 // 当前时间，单位：秒
 func NowTime(timezone ...string) int64 {
     return Now(timezone...).Timestamp()
-}
-
-// 当前时间，单位：纳秒。转换为 int: int(time)
-func NowNanoTime(timezone ...string) int64 {
-    return Now(timezone...).TimestampWithNanosecond()
 }
 
 // 当前日期时间字符
@@ -101,21 +113,11 @@ func StringToTimestamp(date string, format ...string) int64 {
 
 // 时间戳转为 time.Time
 func TimestampToTime(timestamp int64) time.Time {
-    return Unix(timestamp, 0).GetTime()
+    return Timestamp(timestamp).GetTime()
 }
 
 // 时间转换为时间戳
 func TimeToTimestamp(t time.Time) int64 {
     return Time(t).Timestamp()
-}
-
-// 时间戳转为时间字符
-func TimestampToDatetimeString(timestamp int64) string {
-    return Unix(timestamp, 0).ToDatetimeString()
-}
-
-// 获取几天前时间，单位：天
-func BeforeDayTime(day uint) int64 {
-    return Now().SubDays(day).Timestamp()
 }
 
