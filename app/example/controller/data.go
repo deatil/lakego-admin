@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/exception"
     "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/support/str"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
     "github.com/deatil/lakego-doak/lakego/support/crypto/des/ecb"
 
@@ -131,10 +131,9 @@ func (this *Data) Error(ctx *gin.Context) {
     newStrData := str.LowerCamel(strData)
 
     // 时间
-    date := time.Parse("2032-03-15 12:03:17").ToDatetimeString()
-    date2 := time.Parse("2022-03-15 12:05:17").
-        Diff(time.Parse("2022-05-15 12:05:18")).
-        Months()
+    date := datebin.Now().ToWeekdayString()
+    date2 := datebin.Parse("2032-03-15 12:06:17").
+        Age()
 
     // 加密测试
     cypt := ecb.Decode("839089A6B911CE9E", "dfertf12")

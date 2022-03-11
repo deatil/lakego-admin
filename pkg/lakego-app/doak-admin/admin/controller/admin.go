@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
@@ -357,7 +357,7 @@ func (this *Admin) Create(ctx *router.Context) {
         Email: post["email"].(string),
         Introduce: post["introduce"].(string),
         Status: status,
-        AddTime: int(time.NowTime()),
+        AddTime: int(datebin.NowTime()),
         AddIp: router.GetRequestIp(ctx),
     }
 
@@ -823,7 +823,7 @@ func (this *Admin) Logout(ctx *router.Context) {
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
         Updates(map[string]interface{}{
-            "refresh_time": int(time.NowTime()),
+            "refresh_time": int(datebin.NowTime()),
             "refresh_ip": router.GetRequestIp(ctx),
         })
 

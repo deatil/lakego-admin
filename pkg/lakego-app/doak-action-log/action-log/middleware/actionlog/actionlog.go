@@ -5,7 +5,7 @@ import (
     "encoding/json"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-action-log/action-log/model"
 )
@@ -63,7 +63,7 @@ func recordLog(ctx *router.Context) {
         Method: method,
         Info: string(info),
         Useragent: useragent,
-        Time: int(time.NowTime()),
+        Time: int(datebin.NowTime()),
         Ip: ip,
         Status: status,
     })

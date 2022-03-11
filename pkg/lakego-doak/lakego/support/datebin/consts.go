@@ -1,4 +1,4 @@
-package time
+package datebin
 
 import (
     "time"
@@ -120,7 +120,7 @@ const (
     TimeFormat          = "15:04:05"
     HourMinuteFormat    = "15:04"
     HourFormat          = "15"
-    ShortDateTimeFormat = "20060102150405"
+    ShortDatetimeFormat = "20060102150405"
     ShortDateFormat     = "20060102"
     ShortTimeFormat     = "150405"
 )

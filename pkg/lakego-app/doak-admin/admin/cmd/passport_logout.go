@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
 
@@ -80,7 +80,7 @@ func PassportLogout() {
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
         Updates(map[string]interface{}{
-            "refresh_time": int(time.NowTime()),
+            "refresh_time": int(datebin.NowTime()),
             "refresh_ip": "127.0.0.1",
         })
 

@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
 
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -34,7 +34,7 @@ func (this *Base) SwitchStatus(name string) int {
 
 // 时间格式化到时间戳
 func (this *Base) FormatDate(date string) int64 {
-    return time.StringToTimestamp(date)
+    return datebin.StringToTimestamp(date)
 }
 
 // 状态通用转换

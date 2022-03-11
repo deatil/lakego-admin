@@ -17,7 +17,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/support/path"
-    timeTool "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/middleware/event"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
@@ -324,7 +324,7 @@ func (this *App) runApp() {
     // 日志记录方式
     logType := serverConf.GetString("LogType")
     if logType == "file" {
-        logFileName := timeTool.Now().Format("Ymd")
+        logFileName := datebin.Now().Format("Ymd")
         logFile := path.RuntimePath(fmt.Sprintf("/log/route_%s.log", logFileName))
 
         // 设置默认日志记录

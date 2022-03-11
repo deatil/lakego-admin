@@ -1,8 +1,13 @@
-package time
+package datebin
 
 import (
     "time"
 )
+
+// 年龄，可为负数
+func (this Datebin) Age() int {
+    return int(this.Diff(this.Now()).Years())
+}
 
 // 获取本月的总天数
 func (this Datebin) DaysInMonth() int {
@@ -188,8 +193,13 @@ func (this Datebin) Nanosecond() int {
     return this.time.In(this.loc).Nanosecond()
 }
 
-// 输出秒级时间戳
+// 秒级时间戳
 func (this Datebin) Timestamp() int64 {
+    return this.TimestampWithSecond()
+}
+
+// 秒级时间戳
+func (this Datebin) TimestampWithSecond() int64 {
     if this.IsInvalid() {
         return 0
     }
@@ -223,6 +233,11 @@ func (this Datebin) TimestampWithNanosecond() int64 {
     }
 
     return this.time.In(this.loc).UnixNano()
+}
+
+// 获取纳秒级时间戳
+func (this Datebin) UnixNano() int64 {
+    return this.TimestampWithNanosecond()
 }
 
 // 当前
@@ -303,4 +318,71 @@ func (this Datebin) Yesterday(timezone ...string) Datebin {
     this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
 
     return this
+}
+
+// 最小值
+func (this Datebin) Min(d Datebin) Datebin {
+    if this.Lt(d) {
+        return this
+    }
+
+    return d
+}
+
+// 最小值
+func (this Datebin) Minimum(d Datebin) Datebin {
+    return this.Min(d)
+}
+
+// 最大值
+func (this Datebin) Max(d Datebin) Datebin {
+    if this.Gt(d) {
+        return this
+    }
+
+    return d
+}
+
+// 最大值
+func (this Datebin) Maximum(d Datebin) Datebin {
+    return this.Max(d)
+}
+
+// 平均值
+func (this Datebin) Avg(d Datebin) Datebin {
+    diffSeconds := this.Diff(d).Seconds()
+
+    if diffSeconds == 0 {
+        return this
+    }
+
+    average := int(diffSeconds / 2)
+    if average > 0 {
+        return this.AddSeconds(uint(average))
+    } else {
+        return this.SubSeconds(uint(-average))
+    }
+}
+
+// 最大值
+func (this Datebin) Average(d Datebin) Datebin {
+    return this.Avg(d)
+}
+
+// 取 a 和 b 中与当前时间最近的一个
+func (this Datebin) Closest(a Datebin, b Datebin) Datebin {
+    if this.Diff(a).SecondsAbs() < this.Diff(b).SecondsAbs() {
+        return a
+    }
+
+    return b
+}
+
+// 取 a 和 b 中与当前时间最远的一个
+func (this Datebin) Farthest(a Datebin, b Datebin) Datebin {
+    if this.Diff(a).SecondsAbs() > this.Diff(b).SecondsAbs() {
+        return a
+    }
+
+    return b
 }

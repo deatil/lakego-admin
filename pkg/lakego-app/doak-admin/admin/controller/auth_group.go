@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     authGroupValidate "github.com/deatil/lakego-doak-admin/admin/validate/authgroup"
@@ -342,7 +342,7 @@ func (this *AuthGroup) Create(ctx *router.Context) {
         Description: post["description"].(string),
         Listorder: listorder,
         Status: status,
-        AddTime: int(time.NowTime()),
+        AddTime: int(datebin.NowTime()),
         AddIp: router.GetRequestIp(ctx),
     }
 
@@ -419,7 +419,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
             "description": post["description"].(string),
             "listorder": listorder,
             "status": status,
-            "add_time": int(time.NowTime()),
+            "add_time": int(datebin.NowTime()),
             "add_ip": router.GetRequestIp(ctx),
         }).
         Error

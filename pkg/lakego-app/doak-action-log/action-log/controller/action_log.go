@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     adminController "github.com/deatil/lakego-doak-admin/admin/controller"
 
@@ -133,7 +133,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().
-        Where("add_time <= ?", int(time.Now().SubDays(30).Timestamp())).
+        Where("add_time <= ?", int(datebin.Now().SubDays(30).Timestamp())).
         Delete(&model.ActionLog{}).
         Error
     if err != nil {

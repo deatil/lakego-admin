@@ -1,4 +1,4 @@
-package time
+package datebin
 
 // 大于
 func (this Datebin) Gt(d Datebin) bool {

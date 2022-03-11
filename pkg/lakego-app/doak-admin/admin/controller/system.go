@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
 )
@@ -44,7 +44,7 @@ func (this *System) Info(ctx *router.Context) {
     version := conf.GetString("Version")
 
     // 服务器时间
-    nowDatetime := time.NowDatetimeString()
+    nowDatetime := datebin.NowDatetimeString()
 
     data := router.H{
         "goos": runtime.GOOS,

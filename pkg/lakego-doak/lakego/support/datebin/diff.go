@@ -1,4 +1,4 @@
-package time
+package datebin
 
 // 相差时间判断
 func (this Datebin) Diff(date Datebin) Difftime {

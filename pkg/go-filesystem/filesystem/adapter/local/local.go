@@ -310,7 +310,7 @@ func (this *Local) DeleteDir(dirname string) error {
 func (this *Local) CreateDir(dirname string, config interfaces.Config) (map[string]string, error) {
     location := this.ApplyPathPrefix(dirname)
 
-    visibility := config.GetDefault("visibility", "public").(string)
+    visibility := config.Get("visibility", "public").(string)
 
     err := os.MkdirAll(location, this.FormatPerm(permissionMap["dir"][visibility]))
     if err != nil {

@@ -1,9 +1,17 @@
-package time
+package datebin
 
 import (
     "strconv"
     "strings"
 )
+
+// 构造函数
+func NewDifftime(start Datebin, end Datebin) Difftime {
+    return Difftime{
+        Start: start,
+        End: end,
+    }
+}
 
 /**
  * 时间判断
@@ -152,15 +160,7 @@ func (this Difftime) Format(str string) string {
     return str
 }
 
-// 绝对值格式化
+// 取绝对值
 func (this Difftime) AbsFormat(value int64) int64 {
-    return (value ^ value>>31) - value>>31
-}
-
-// 构造函数
-func NewDifftime(start Datebin, end Datebin) Difftime {
-    return Difftime{
-        Start: start,
-        End: end,
-    }
+    return this.Start.AbsFormat(value)
 }

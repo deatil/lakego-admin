@@ -1,4 +1,4 @@
-package time
+package datebin
 
 import (
     "time"
@@ -13,20 +13,6 @@ func NewDatebin() Datebin {
         loc: time.Local,
     }
 }
-
-// go 默认时间
-var (
-    // 纳秒
-    Nanosecond = time.Nanosecond
-    // 微妙
-    Microsecond = time.Microsecond
-    // 毫秒
-    Millisecond = time.Millisecond
-    // 秒
-    Second = time.Second
-    // 分钟
-    Minute = time.Minute
-)
 
 var (
     // 月份
@@ -46,7 +32,7 @@ var (
     }
 
     // 格式字符
-    FormatStrs = map[string]string{
+    Formats = map[string]string{
         "D": "Mon",
         "d": "02",
         "N": "Monday",
@@ -115,7 +101,6 @@ type Datebin struct {
 // 设置时间
 func (this Datebin) WithTime(time time.Time) Datebin {
     this.time = time
-
     return this
 }
 
@@ -127,7 +112,6 @@ func (this Datebin) GetTime() time.Time {
 // 设置时间
 func (this Datebin) WithWeekStartAt(weekday time.Weekday) Datebin {
     this.weekStartAt = weekday
-
     return this
 }
 
@@ -139,7 +123,6 @@ func (this Datebin) GetWeekStartAt() time.Weekday {
 // 设置时区
 func (this Datebin) WithLocation(loc *time.Location) Datebin {
     this.loc = loc
-
     return this
 }
 
@@ -165,15 +148,12 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
 
 // 重新设置时区
 func (this Datebin) ReplaceTimezone(timezone string) Datebin {
-    location, err := this.GetLocationByTimezone(timezone)
-    if err == nil {
-        this.loc = location
-    }
+    date := this.WithTimezone(timezone)
 
     // 设置时区
-    this.time = this.time.In(location)
+    date.time = date.time.In(date.loc)
 
-    return this
+    return date
 }
 
 // 获取时区
@@ -210,13 +190,6 @@ func (this Datebin) Time() Datebin {
     return this
 }
 
-// UTC
-func (this Datebin) UTC() Datebin {
-    this.time = this.time.UTC()
-
-    return this
-}
-
 // 时间字符
 func (this Datebin) Parse(date string, format ...string) Datebin {
     var layout = ""
@@ -231,7 +204,7 @@ func (this Datebin) Parse(date string, format ...string) Datebin {
         layout = "Y-m-d"
     }
 
-    layout = this.FormatLayout(layout)
+    layout = this.LayoutFormat(layout)
     time, err := time.Parse(layout, date)
 
     if err != nil {
@@ -243,17 +216,22 @@ func (this Datebin) Parse(date string, format ...string) Datebin {
     return this
 }
 
+// 原始格式
+func (this Datebin) Layout(layout string) string {
+    return this.time.In(this.loc).Format(layout)
+}
+
 // 格式化
 func (this Datebin) Format(layout string) string {
-    return this.time.In(this.loc).Format(this.FormatLayout(layout))
+    return this.Layout(this.LayoutFormat(layout))
 }
 
 // 格式化字符为 go 对应时间字符
-func (this Datebin) FormatLayout(str string) string {
+func (this Datebin) LayoutFormat(str string) string {
     var buffer bytes.Buffer
 
     for i := 0; i < len(str); i++ {
-        val, ok := FormatStrs[str[i:i+1]]
+        val, ok := Formats[str[i:i+1]]
         if ok {
             buffer.WriteString(val)
         } else {
@@ -311,7 +289,11 @@ func (this Datebin) FormatLayout(str string) string {
     return buffer.String()
 }
 
-// 原始格式
-func (this Datebin) Layout(layout string) string {
-    return this.time.Format(layout)
+// 取绝对值
+func (this Datebin) AbsFormat(value int64) int64 {
+    if value < 0 {
+        return -value
+    }
+
+    return value
 }

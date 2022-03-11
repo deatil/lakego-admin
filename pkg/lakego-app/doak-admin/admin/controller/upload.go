@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/upload"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -101,7 +101,7 @@ func (this *Upload) File(ctx *router.Context) {
         attachUpdateErr := attachmentModel.
             Where("md5 = ?", md5).
             Updates(map[string]interface{}{
-                "update_time": time.NowTime(),
+                "update_time": datebin.NowTime(),
             }).
             Error
         if attachUpdateErr != nil {
@@ -152,8 +152,8 @@ func (this *Upload) File(ctx *router.Context) {
         Sha1: sha1,
         Disk: driver,
         Status: 1,
-        CreateTime: int(time.NowTime()),
-        AddTime: int(time.NowTime()),
+        CreateTime: int(datebin.NowTime()),
+        AddTime: int(datebin.NowTime()),
         AddIp: router.GetRequestIp(ctx),
     }
     addError := model.NewDB().

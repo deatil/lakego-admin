@@ -50,7 +50,6 @@ func (this *Fllesystem) GetConfig() interfaces.Config {
 // 提前设置配置
 func (this *Fllesystem) PrepareConfig(settings map[string]interface{}) interfaces.Config {
     conf := config.New(settings)
-    conf.SetFallback(this.GetConfig())
 
     return conf
 }

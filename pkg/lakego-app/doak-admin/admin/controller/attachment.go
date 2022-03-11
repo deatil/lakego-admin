@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/support/cast"
     "github.com/deatil/lakego-doak/lakego/support/random"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
@@ -343,7 +343,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
     }
 
     // 添加到缓存
-    code := hash.MD5(cast.ToString(time.NowTime()) + random.String(10))
+    code := hash.MD5(cast.ToString(datebin.NowTime()) + random.String(10))
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出

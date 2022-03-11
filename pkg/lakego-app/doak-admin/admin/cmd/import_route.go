@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/time"
+    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -70,7 +70,7 @@ func ImportRoute() {
                 Description: "",
                 Listorder: "100",
                 Status: 1,
-                AddTime: int(time.NowTime()),
+                AddTime: int(datebin.NowTime()),
                 AddIp: "127.0.0.1",
             }
 
