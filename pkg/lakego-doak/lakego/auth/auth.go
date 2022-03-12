@@ -12,17 +12,17 @@ import (
 // 授权结构体
 func New() *Auth {
     return &Auth{
-        Config: make(Config),
-        Claims: make(Claims),
+        Config: make(ConfigMap),
+        Claims: make(ClaimMap),
     }
 }
 
 type (
     // 配置
-    Config = map[string]interface{}
+    ConfigMap = map[string]interface{}
 
     // 载荷
-    Claims = map[string]interface{}
+    ClaimMap = map[string]interface{}
 )
 
 /**
@@ -36,10 +36,10 @@ type Auth struct {
     JWT *jwt.JWT
 
     // 配置
-    Config Config
+    Config ConfigMap
 
     // 载荷
-    Claims Claims
+    Claims ClaimMap
 }
 
 /**
@@ -70,7 +70,7 @@ func (this *Auth) WithConfig(key string, value interface{}) *Auth {
 /**
  * 批量设置配置
  */
-func (this *Auth) WithConfigs(configs Config) *Auth {
+func (this *Auth) WithConfigs(configs ConfigMap) *Auth {
     if len(configs) > 0 {
         for k, v := range configs {
             this.WithConfig(k, v)
@@ -98,7 +98,7 @@ func (this *Auth) GetConfigFromMap(key string, key2 string) interface{} {
     }
 
     // 配置列表
-    confMap := conf.(Config)
+    confMap := conf.(ConfigMap)
 
     // 过期时间
     conf2 := confMap[key2]
