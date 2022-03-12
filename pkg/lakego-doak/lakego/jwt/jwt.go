@@ -4,10 +4,8 @@ import (
     "os"
     "time"
     "errors"
-    "github.com/golang-jwt/jwt/v4"
 
-    "github.com/deatil/lakego-doak/lakego/path"
-    "github.com/deatil/lakego-doak/lakego/support/base64"
+    "github.com/golang-jwt/jwt/v4"
 )
 
 // JWT
@@ -27,6 +25,50 @@ func New() *JWT {
 
     return jwter
 }
+
+// jwt 默认
+type (
+    // 载荷
+    Claims = jwt.Claims
+
+    // 已注册载荷
+    RegisteredClaims = jwt.RegisteredClaims
+
+    // StandardClaims
+    StandardClaims = jwt.StandardClaims
+
+    // 载荷 map
+    MapClaims = jwt.MapClaims
+
+    // Token
+    Token = jwt.Token
+
+    // Keyfunc
+    Keyfunc = jwt.Keyfunc
+
+    // ClaimStrings
+    ClaimStrings = jwt.ClaimStrings
+
+    // NumericDate
+    NumericDate = jwt.NumericDate
+
+    // 签名方法
+    SigningMethod = jwt.SigningMethod
+
+    // 解析
+    Parser = jwt.Parser
+)
+
+// TimeFunc = time.Now
+var TimeFunc = jwt.TimeFunc
+
+// 注册签名方法
+// RegisterSigningMethod(alg string, f func() SigningMethod)
+var RegisterSigningMethod = jwt.RegisterSigningMethod
+
+// 获取注册的方法
+// GetSigningMethod(alg string) (method SigningMethod)
+var GetSigningMethod = jwt.GetSigningMethod
 
 // 验证方式列表
 var signingMethodList = map[string]jwt.SigningMethod {
@@ -333,7 +375,7 @@ func (this *JWT) MakeToken() (token string, err error) {
         // Hmac
         case "HS256", "HS384", "HS512":
             // 密码
-            hmacSecret := base64.Decode(this.Secret)
+            hmacSecret := this.Secret
 
             if hmacSecret == "" {
                 err = errors.New("Hmac 密码错误或者为空")
@@ -353,10 +395,7 @@ func (this *JWT) MakeToken() (token string, err error) {
             }
 
             if this.PrivateKeyPassword != "" {
-                // 密码
-                password := base64.Decode(this.PrivateKeyPassword)
-
-                secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, password)
+                secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyData, this.PrivateKeyPassword)
             } else {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyData)
             }
@@ -444,7 +483,7 @@ func (this *JWT) ParseToken(strToken string) (*jwt.Token, error) {
         // Hmac
         case "HS256", "HS384", "HS512":
             // 密码
-            hmacSecret := base64.Decode(this.Secret)
+            hmacSecret := this.Secret
 
             if hmacSecret == "" {
                 err = errors.New("Hmac 密码错误或者为空")
@@ -594,26 +633,16 @@ func (this *JWT) Verify(token *jwt.Token) (bool, error) {
 
 // 从文件读取数据
 func (this *JWT) ReadDataFromFile(file string) ([]byte, error) {
-    // 文件
-    keyFile := this.FormatPath(file)
-
-    if !this.FileExist(keyFile) {
+    if !this.FileExist(file) {
         return nil, errors.New("秘钥或者私钥文件不存在")
     }
 
     // 获取秘钥数据
-    return os.ReadFile(keyFile)
+    return os.ReadFile(file)
 }
 
 // 文件判断
 func (this *JWT) FileExist(fp string) bool {
     _, err := os.Stat(fp)
     return err == nil || os.IsExist(err)
-}
-
-// 格式化文件路径
-func (this *JWT) FormatPath(file string) string {
-    filename := path.FormatPath(file)
-
-    return filename
 }
