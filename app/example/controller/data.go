@@ -131,9 +131,12 @@ func (this *Data) Error(ctx *gin.Context) {
     newStrData := str.LowerCamel(strData)
 
     // 时间
-    date := datebin.Now().ToWeekdayString()
+    date := datebin.
+        Now().
+        DayEnd().
+        ToDatetimeString()
     date2 := datebin.Parse("2032-03-15 12:06:17").
-        Age()
+        ToDatetimeString()
 
     // 加密测试
     cypt := ecb.Decode("839089A6B911CE9E", "dfertf12")

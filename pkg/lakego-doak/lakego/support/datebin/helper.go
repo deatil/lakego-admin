@@ -39,22 +39,6 @@ func Timestamp(timestamp int64) Datebin {
     return Unix(timestamp, 0)
 }
 
-// 日期
-func Date(year int, month int, day int, timezone ...string) Datebin {
-    monthData, ok := Months[month]
-    if !ok {
-        monthData = Months[1]
-    }
-
-    date := Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
-
-    if len(timezone) > 0 {
-        date = date.ReplaceTimezone(timezone[0])
-    }
-
-    return date
-}
-
 // 日期时间
 func Datetime(year int, month int, day int, hour int, min int, sec int, timezone ...string) Datebin {
     monthData, ok := Months[month]
@@ -63,6 +47,22 @@ func Datetime(year int, month int, day int, hour int, min int, sec int, timezone
     }
 
     date := Time(time.Date(year, monthData, day, hour, min, sec, 0, time.UTC))
+
+    if len(timezone) > 0 {
+        date = date.ReplaceTimezone(timezone[0])
+    }
+
+    return date
+}
+
+// 日期
+func Date(year int, month int, day int, timezone ...string) Datebin {
+    monthData, ok := Months[month]
+    if !ok {
+        monthData = Months[1]
+    }
+
+    date := Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
 
     if len(timezone) > 0 {
         date = date.ReplaceTimezone(timezone[0])

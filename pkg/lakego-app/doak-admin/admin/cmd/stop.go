@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/filesystem"
     cmdTool "github.com/deatil/lakego-doak/lakego/support/cmd"
-    pathTool "github.com/deatil/lakego-doak/lakego/support/path"
+    pathTool "github.com/deatil/lakego-doak/lakego/path"
 )
 
 /**

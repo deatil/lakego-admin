@@ -6,7 +6,7 @@ import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
 
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/support/base64"
 )
 

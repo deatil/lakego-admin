@@ -16,7 +16,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/env"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/middleware/event"
     "github.com/deatil/lakego-doak/lakego/facade/config"

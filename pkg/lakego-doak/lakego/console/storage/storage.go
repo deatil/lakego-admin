@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/filesystem"
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 )
 

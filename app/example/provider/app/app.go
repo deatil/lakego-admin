@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/filesystem"
-    pathTool "github.com/deatil/lakego-doak/lakego/support/path"
+    pathTool "github.com/deatil/lakego-doak/lakego/path"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     "github.com/deatil/lakego-doak-admin/admin/support/route"

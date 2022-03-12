@@ -7,7 +7,7 @@ import (
     "github.com/spf13/viper"
     "github.com/fsnotify/fsnotify"
 
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
 )
 

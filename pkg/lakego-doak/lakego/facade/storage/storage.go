@@ -6,7 +6,7 @@ import(
 
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/register"
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/go-filesystem/filesystem"

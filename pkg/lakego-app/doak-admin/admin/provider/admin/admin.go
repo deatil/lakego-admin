@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    pathTool "github.com/deatil/lakego-doak/lakego/support/path"
+    pathTool "github.com/deatil/lakego-doak/lakego/path"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"

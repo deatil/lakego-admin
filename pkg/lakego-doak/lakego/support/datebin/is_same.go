@@ -79,8 +79,3 @@ func (this Datebin) IsSameMonthDay(date Datebin) bool {
 func (this Datebin) IsSameYearMonthDay(date Datebin) bool {
     return this.IsSameYear(date) && this.IsSameMonth(date) && this.IsSameDay(date)
 }
-
-// 是否是一个生日
-func (this Datebin) IsBirthday(date Datebin) bool {
-    return this.IsSameAs("md", date)
-}

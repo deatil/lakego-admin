@@ -9,7 +9,7 @@ import (
 // 构造函数
 func NewDatebin() Datebin {
     return Datebin{
-        weekStartAt: time.Sunday,
+        weekStartAt: time.Monday,
         loc: time.Local,
     }
 }

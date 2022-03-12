@@ -9,7 +9,7 @@ import (
     "github.com/sirupsen/logrus"
     "github.com/lestrrat/go-file-rotatelogs"
 
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/logger/driver/logrus/formatter"
 )
 

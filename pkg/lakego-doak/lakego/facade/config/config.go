@@ -4,7 +4,7 @@ import (
     "sync"
 
     "github.com/deatil/lakego-doak/lakego/register"
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
 
     "github.com/deatil/lakego-doak/lakego/config"
     "github.com/deatil/lakego-doak/lakego/config/interfaces"

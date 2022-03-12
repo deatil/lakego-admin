@@ -5,7 +5,7 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
-    "github.com/deatil/lakego-doak/lakego/support/path"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/sign"
     "github.com/deatil/lakego-doak/lakego/sign/interfaces"
