@@ -1,7 +1,7 @@
 package datebin
 
 import (
-    "time"
+    "strconv"
 )
 
 // 获取当前世纪
@@ -101,25 +101,7 @@ func (this Datebin) Second() int {
     return this.time.In(this.loc).Second()
 }
 
-// 获取当前毫秒数，3位数字
-func (this Datebin) Millisecond() int {
-    if this.IsInvalid() {
-        return 0
-    }
-
-    return this.time.In(this.loc).Nanosecond() / 1e6
-}
-
-// 获取当前微秒数，6位数字
-func (this Datebin) Microsecond() int {
-    if this.IsInvalid() {
-        return 0
-    }
-
-    return this.time.In(this.loc).Nanosecond() / 1e3
-}
-
-// 获取当前纳秒数，9位数字
+// 获取当前纳秒数，范围[0, 999999999]
 func (this Datebin) Nanosecond() int {
     if this.IsInvalid() {
         return 0
@@ -128,12 +110,12 @@ func (this Datebin) Nanosecond() int {
     return this.time.In(this.loc).Nanosecond()
 }
 
-// 秒级时间戳
+// 秒级时间戳，10位
 func (this Datebin) Timestamp() int64 {
     return this.TimestampWithSecond()
 }
 
-// 秒级时间戳
+// 秒级时间戳，10位
 func (this Datebin) TimestampWithSecond() int64 {
     if this.IsInvalid() {
         return 0
@@ -142,26 +124,33 @@ func (this Datebin) TimestampWithSecond() int64 {
     return this.time.In(this.loc).Unix()
 }
 
-// 获取毫秒级时间戳
+// 毫秒级时间戳，13位
 func (this Datebin) TimestampWithMillisecond() int64 {
     if this.IsInvalid() {
         return 0
     }
 
-    // return this.time.In(this.loc).UnixNano() / 1e6
-    return this.time.In(this.loc).UnixNano() / int64(time.Millisecond)
+    second := strconv.FormatInt(this.TimestampWithNanosecond(), 10)
+
+    data, _ := strconv.ParseInt(second[:13], 10, 64)
+
+    return data
 }
 
-// 获取微秒级时间戳
+// 微秒级时间戳，16位
 func (this Datebin) TimestampWithMicrosecond() int64 {
     if this.IsInvalid() {
         return 0
     }
 
-    return this.time.In(this.loc).UnixNano() / int64(time.Microsecond)
+    second := strconv.FormatInt(this.TimestampWithNanosecond(), 10)
+
+    data, _ := strconv.ParseInt(second[:16], 10, 64)
+
+    return data
 }
 
-// 获取纳秒级时间戳
+// 纳秒级时间戳，19位
 func (this Datebin) TimestampWithNanosecond() int64 {
     if this.IsInvalid() {
         return 0
@@ -170,7 +159,47 @@ func (this Datebin) TimestampWithNanosecond() int64 {
     return this.time.In(this.loc).UnixNano()
 }
 
-// 获取纳秒级时间戳
-func (this Datebin) UnixNano() int64 {
-    return this.TimestampWithNanosecond()
+// 获取当前毫秒数，3位数字
+func (this Datebin) MillisecondWithFixed() int {
+    if this.IsInvalid() {
+        data, _ := strconv.Atoi("000")
+        return data
+    }
+
+    second := strconv.FormatInt(this.TimestampWithNanosecond(), 10)
+
+    // 截取 UnixNano 后9位
+    data, _ := strconv.Atoi(second[10:13])
+
+    return data
+}
+
+// 获取当前微秒数，6位数字
+func (this Datebin) MicrosecondWithFixed() int {
+    if this.IsInvalid() {
+        data, _ := strconv.Atoi("000000")
+        return data
+    }
+
+    second := strconv.FormatInt(this.TimestampWithNanosecond(), 10)
+
+    // 截取 UnixNano 后9位
+    data, _ := strconv.Atoi(second[10:16])
+
+    return data
+}
+
+// 获取当前纳秒数，9位数字
+func (this Datebin) NanosecondWithFixed() int {
+    if this.IsInvalid() {
+        data, _ := strconv.Atoi("000000000")
+        return data
+    }
+
+    unixNano := strconv.FormatInt(this.TimestampWithNanosecond(), 10)
+
+    // 截取 UnixNano 后9位
+    data, _ := strconv.Atoi(unixNano[10:])
+
+    return data
 }

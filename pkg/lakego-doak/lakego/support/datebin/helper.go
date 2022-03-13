@@ -46,7 +46,7 @@ func Datetime(year int, month int, day int, hour int, min int, sec int, timezone
         monthData = Months[1]
     }
 
-    date := Time(time.Date(year, monthData, day, hour, min, sec, 0, time.UTC))
+    date := Time(time.Date(year, monthData, day, hour, min, sec, 0, time.Local))
 
     if len(timezone) > 0 {
         date = date.ReplaceTimezone(timezone[0])
@@ -62,7 +62,7 @@ func Date(year int, month int, day int, timezone ...string) Datebin {
         monthData = Months[1]
     }
 
-    date := Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.UTC))
+    date := Time(time.Date(year, monthData, day, 0, 0, 0, 0, time.Local))
 
     if len(timezone) > 0 {
         date = date.ReplaceTimezone(timezone[0])

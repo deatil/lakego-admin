@@ -2,8 +2,6 @@ package datebin
 
 import (
     "time"
-    "bytes"
-    "strconv"
 )
 
 // 构造函数
@@ -38,7 +36,7 @@ var (
         "N": "Monday",
         "j": "2",
         "l": "Monday",
-        // "z": "__2",
+        "z": "__2",
 
         "F": "January",
         "m": "01",
@@ -51,12 +49,12 @@ var (
         "a": "pm",
         "A": "PM",
         "g": "3",
-        // "G": "=G=15",
+        "G": "=G=15",
         "h": "03",
         "H": "15",
         "i": "04",
         "s": "05",
-        // "u": ".000000",
+        "u": "000000",
 
         "O": "-0700",
         "P": "-07:00",
@@ -188,105 +186,6 @@ func (this Datebin) Time() Datebin {
     this.time = this.time.In(this.loc)
 
     return this
-}
-
-// 时间字符
-func (this Datebin) Parse(date string, format ...string) Datebin {
-    var layout = ""
-
-    if len(format) > 0 {
-        layout = format[0]
-    } else if len(format) == 0 && len(date) == 19 {
-        layout = "Y-m-d H:i:s"
-    } else if len(format) == 0 && len(date) == 10 {
-        layout = "Y-m-d"
-    } else {
-        layout = "Y-m-d"
-    }
-
-    layout = this.LayoutFormat(layout)
-    time, err := time.Parse(layout, date)
-
-    if err != nil {
-        return this
-    }
-
-    this.time = time
-
-    return this
-}
-
-// 原始格式
-func (this Datebin) Layout(layout string) string {
-    return this.time.In(this.loc).Format(layout)
-}
-
-// 格式化
-func (this Datebin) Format(layout string) string {
-    return this.Layout(this.LayoutFormat(layout))
-}
-
-// 格式化字符为 go 对应时间字符
-func (this Datebin) LayoutFormat(str string) string {
-    var buffer bytes.Buffer
-
-    for i := 0; i < len(str); i++ {
-        val, ok := Formats[str[i:i+1]]
-        if ok {
-            buffer.WriteString(val)
-        } else {
-            switch str[i] {
-                case '\\':
-                    buffer.WriteByte(str[i+1])
-                    i++
-                    continue
-                case 'W': // ISO-8601 格式数字表示的年份中的第几周，取值范围 1-52
-                    buffer.WriteString(strconv.Itoa(this.WeekOfYear()))
-                case 'N': // ISO-8601 格式数字表示的星期中的第几天，取值范围 1-7
-                    buffer.WriteString(strconv.Itoa(this.DayOfWeek()))
-                case 'S': // 月份中第几天的英文缩写后缀，如st, nd, rd, th
-                    suffix := "th"
-                    switch this.Day() {
-                        case 1, 21, 31:
-                            suffix = "st"
-                        case 2, 22:
-                            suffix = "nd"
-                        case 3, 23:
-                            suffix = "rd"
-                    }
-
-                    buffer.WriteString(suffix)
-                case 'G': // 数字表示的小时，24 小时格式，没有前导零
-                    buffer.WriteString(strconv.Itoa(this.Hour()))
-                case 'U': // 秒级时间戳
-                    buffer.WriteString(strconv.FormatInt(this.Timestamp(), 10))
-                case 'u': // 数字表示的毫秒
-                    buffer.WriteString(strconv.Itoa(this.Millisecond()))
-                case 'w': // 数字表示的星期中的第几天
-                    buffer.WriteString(strconv.Itoa(this.DayOfWeek() - 1))
-                case 't': // 指定的月份有几天
-                    buffer.WriteString(strconv.Itoa(this.DaysInMonth()))
-                case 'z': // 年份中的第几天
-                    buffer.WriteString(strconv.Itoa(this.DayOfYear() - 1))
-                case 'e': // 当前位置
-                    buffer.WriteString(this.GetLocationString())
-                case 'Q': // 当前季度
-                    buffer.WriteString(strconv.Itoa(this.Quarter()))
-                case 'C': // 当前百年数
-                    buffer.WriteString(strconv.Itoa(this.Century()))
-                case 'L': // 是否为闰年
-                    if this.IsLeapYear() {
-                        buffer.WriteString("LeapYear")
-                    } else {
-                        buffer.WriteString("NoLeapYear")
-                    }
-                default:
-                    buffer.WriteByte(str[i])
-            }
-        }
-    }
-
-    return buffer.String()
 }
 
 // 取绝对值
