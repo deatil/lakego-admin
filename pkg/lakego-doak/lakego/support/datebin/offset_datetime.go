@@ -2,16 +2,12 @@ package datebin
 
 // 前 n 百年
 func (this Datebin) SubCenturies(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("century", offset)
+    return this.Offset("century", int(-data))
 }
 
 // 前 n 百年
 func (this Datebin) SubCenturiesNoOverflow(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.OffsetYearsNoOverflow(offset * YearsPerCentury)
+    return this.OffsetYearsNoOverflow(int(-data) * YearsPerCentury)
 }
 
 // 前一百年
@@ -46,16 +42,12 @@ func (this Datebin) AddCenturyNoOverflow() Datebin {
 
 // 前 n 十年
 func (this Datebin) SubDecades(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("decade", offset)
+    return this.Offset("decade", int(-data))
 }
 
 // 前 n 十年
 func (this Datebin) SubDecadesNoOverflow(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.OffsetYearsNoOverflow(offset * YearsPerDecade)
+    return this.OffsetYearsNoOverflow(int(-data) * YearsPerDecade)
 }
 
 // 前十年
@@ -90,16 +82,12 @@ func (this Datebin) AddDecadeNoOverflow() Datebin {
 
 // 前 n 年
 func (this Datebin) SubYears(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("year", offset)
+    return this.Offset("year", int(-data))
 }
 
 // 前 n 年
 func (this Datebin) SubYearsNoOverflow(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.OffsetYearsNoOverflow(offset)
+    return this.OffsetYearsNoOverflow(int(-data))
 }
 
 // 前一年
@@ -134,16 +122,12 @@ func (this Datebin) AddYearNoOverflow() Datebin {
 
 // 前 n 季度
 func (this Datebin) SubQuarters(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("quarter", offset)
+    return this.Offset("quarter", int(-data))
 }
 
 // 前 n 季度
 func (this Datebin) SubQuartersNoOverflow(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.OffsetMonthsNoOverflow(offset * MonthsPerQuarter)
+    return this.OffsetMonthsNoOverflow(int(-data) * MonthsPerQuarter)
 }
 
 // 前一季度
@@ -178,16 +162,12 @@ func (this Datebin) AddQuarterNoOverflow() Datebin {
 
 // 前 n 月
 func (this Datebin) SubMonths(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("month", offset)
+    return this.Offset("month", int(-data))
 }
 
 // 前 n 月
 func (this Datebin) SubMonthsNoOverflow(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.OffsetMonthsNoOverflow(offset)
+    return this.OffsetMonthsNoOverflow(int(-data))
 }
 
 // 前一月
@@ -222,9 +202,7 @@ func (this Datebin) AddMonthNoOverflow() Datebin {
 
 // 前 n 周
 func (this Datebin) SubWeekdays(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("weekday", offset)
+    return this.Offset("weekday", int(-data))
 }
 
 // 前一周
@@ -244,9 +222,7 @@ func (this Datebin) AddWeekday() Datebin {
 
 // 前 n 天
 func (this Datebin) SubDays(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("day", offset)
+    return this.Offset("day", int(-data))
 }
 
 // 前一天
@@ -266,9 +242,7 @@ func (this Datebin) AddDay() Datebin {
 
 // 前 n 小时
 func (this Datebin) SubHours(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("hour", offset)
+    return this.Offset("hour", int(-data))
 }
 
 // 前一小时
@@ -288,9 +262,7 @@ func (this Datebin) AddHour() Datebin {
 
 // 前 n 分钟
 func (this Datebin) SubMinutes(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("minute", offset)
+    return this.Offset("minute", int(-data))
 }
 
 // 前一分钟
@@ -310,9 +282,7 @@ func (this Datebin) AddMinute() Datebin {
 
 // 前 n 秒
 func (this Datebin) SubSeconds(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("second", offset)
+    return this.Offset("second", int(-data))
 }
 
 // 前一秒
@@ -332,9 +302,7 @@ func (this Datebin) AddSecond() Datebin {
 
 // 前 n 毫秒
 func (this Datebin) SubMilliseconds(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("millisecond", offset)
+    return this.Offset("millisecond", int(-data))
 }
 
 // 前一毫秒
@@ -354,9 +322,7 @@ func (this Datebin) AddMillisecond() Datebin {
 
 // 前 n 微妙
 func (this Datebin) SubMicroseconds(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("microsecond", offset)
+    return this.Offset("microsecond", int(-data))
 }
 
 // 前一微妙
@@ -376,9 +342,7 @@ func (this Datebin) AddMicrosecond() Datebin {
 
 // 前 n 纳秒
 func (this Datebin) SubNanoseconds(data uint) Datebin {
-    offset := 0 - int(data)
-
-    return this.Offset("nanosecond", offset)
+    return this.Offset("nanosecond", int(-data))
 }
 
 // 前一纳秒

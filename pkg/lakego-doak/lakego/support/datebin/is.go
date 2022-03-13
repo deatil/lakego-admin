@@ -133,7 +133,6 @@ func (this Datebin) IsLatelyMonth() bool {
     now := this.Now()
 
     monthDifference := now.Month() - this.Month()
-
     if this.AbsFormat(int64(monthDifference)) != 1 {
         return false
     }
@@ -182,10 +181,10 @@ func (this Datebin) IsMidday(midDay ...string) bool {
         midDayAt = midDay[0]
     }
 
-    return this.Format("H:i:s.u") == midDayAt + ":00:00"
+    return this.Format("H:i:s") == midDayAt + ":00:00"
 }
 
-// 是否是一个生日
+// 是否是一个生日日期
 func (this Datebin) IsBirthday(date Datebin) bool {
-    return this.IsSameAs("md", date)
+    return this.Format("md") == date.Format("md")
 }

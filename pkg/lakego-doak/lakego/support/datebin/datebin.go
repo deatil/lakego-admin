@@ -2,6 +2,7 @@ package datebin
 
 import (
     "time"
+    "bytes"
 )
 
 // 构造函数
@@ -29,8 +30,8 @@ var (
         12: time.December,
     }
 
-    // 格式字符
-    Formats = map[string]string{
+    // 解析的格式字符
+    PaseFormats = map[string]string{
         "D": "Mon",
         "d": "02",
         "N": "Monday",
@@ -55,6 +56,37 @@ var (
         "i": "04",
         "s": "05",
         "u": "000000",
+
+        "O": "-0700",
+        "P": "-07:00",
+        "T": "MST",
+
+        "c": "2006-01-02T15:04:05Z07:00",
+        "r": "Mon, 02 Jan 2006 15:04:05 -0700",
+    }
+
+    // 输出的格式字符
+    ToFormats = map[string]string{
+        "D": "Mon",
+        "d": "02",
+        "j": "2",
+        "l": "Monday",
+
+        "F": "January",
+        "m": "01",
+        "M": "Jan",
+        "n": "1",
+
+        "Y": "2006",
+        "y": "06",
+
+        "a": "pm",
+        "A": "PM",
+        "g": "3",
+        "h": "03",
+        "H": "15",
+        "i": "04",
+        "s": "05",
 
         "O": "-0700",
         "P": "-07:00",
@@ -186,6 +218,56 @@ func (this Datebin) Time() Datebin {
     this.time = this.time.In(this.loc)
 
     return this
+}
+
+// 时间字符
+func (this Datebin) Parse(date string, format ...string) Datebin {
+    var layout = ""
+
+    if len(format) > 0 {
+        layout = format[0]
+    } else if len(format) == 0 && len(date) == 19 {
+        layout = "Y-m-d H:i:s"
+    } else if len(format) == 0 && len(date) == 10 {
+        layout = "Y-m-d"
+    } else {
+        layout = "Y-m-d"
+    }
+
+    // 格式化
+    layout = this.FormatParseLayout(layout)
+    time, err := time.Parse(layout, date)
+
+    if err != nil {
+        return this
+    }
+
+    this.time = time
+
+    return this
+}
+
+// 格式化解析 layout
+func (this Datebin) FormatParseLayout(str string) string {
+    var buffer bytes.Buffer
+
+    for i := 0; i < len(str); i++ {
+        val, ok := PaseFormats[str[i:i+1]]
+        if ok {
+            buffer.WriteString(val)
+        } else {
+            switch str[i] {
+                case '\\':
+                    buffer.WriteByte(str[i+1])
+                    i++
+                    continue
+                default:
+                    buffer.WriteByte(str[i])
+            }
+        }
+    }
+
+    return buffer.String()
 }
 
 // 取绝对值

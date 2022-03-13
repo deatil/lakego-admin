@@ -1,7 +1,9 @@
 package auth
 
 import (
+    "os"
     "time"
+    "errors"
 
     "github.com/deatil/lakego-doak/lakego/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
@@ -176,15 +178,16 @@ func (this *Auth) MakeJWT() *jwt.JWT {
     publicKey := this.GetStringConfig("jwt", "publickey", "")
     privateKeyPassword := this.GetStringConfig("jwt", "privatekeypassword", "")
 
-    exp2 := int64(exp)
-    nbf2 := int64(nbf)
-
     // 解析 base64
     secret = base64.Decode(secret)
 
     // 格式化公钥和私钥
     privateKey = this.FormatPath(privateKey)
     publicKey = this.FormatPath(publicKey)
+
+    // 读取文件
+    privateKeyData, _ := this.ReadDataFromFile(privateKey)
+    publicKeyData, _ := this.ReadDataFromFile(publicKey)
 
     // 私钥密码
     privateKeyPassword = base64.Decode(privateKeyPassword)
@@ -194,15 +197,15 @@ func (this *Auth) MakeJWT() *jwt.JWT {
     jwtHandler := this.JWT.
         WithAud(aud).
         WithIat(nowTime).
-        WithExp(exp2).
+        WithExp(int64(exp)).
         WithJti(jti).
         WithIss(iss).
-        WithNbf(nbf2).
+        WithNbf(int64(nbf)).
         WithSub(sub).
         WithSigningMethod(signingMethod).
         WithSecret(secret).
-        WithPrivateKey(privateKey).
-        WithPublicKey(publicKey).
+        WithPrivateKey(string(privateKeyData)).
+        WithPublicKey(string(publicKeyData)).
         WithPrivateKeyPassword(privateKeyPassword)
 
     if len(this.Claims) > 0 {
@@ -238,14 +241,12 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
     jti := this.GetStringConfig("passport", "accesstokenid", "")
     exp := this.GetAccessExpiresIn()
 
-    exp2 := int64(exp)
-
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
     passphrase = base64.Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
-        WithExp(exp2).
+        WithExp(int64(exp)).
         WithJti(jti)
 
     if len(claims) > 0 {
@@ -270,14 +271,12 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
     jti := this.GetStringConfig("passport", "refreshtokenid", "")
     exp := this.GetRefreshExpiresIn()
 
-    exp2 := int64(exp)
-
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
     passphrase = base64.Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
-        WithExp(exp2).
+        WithExp(int64(exp)).
         WithJti(jti)
 
     if len(claims) > 0 {
@@ -431,6 +430,22 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
     }
 
     return data
+}
+
+// 从文件读取数据
+func (this *Auth) ReadDataFromFile(file string) ([]byte, error) {
+    if !this.FileExist(file) {
+        return []byte(""), errors.New("秘钥或者私钥文件不存在")
+    }
+
+    // 获取秘钥数据
+    return os.ReadFile(file)
+}
+
+// 文件判断
+func (this *Auth) FileExist(fp string) bool {
+    _, err := os.Stat(fp)
+    return err == nil || os.IsExist(err)
 }
 
 // 格式化文件路径

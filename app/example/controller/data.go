@@ -133,8 +133,9 @@ func (this *Data) Error(ctx *gin.Context) {
     // 时间
     date := datebin.
         Now().
-        ToLayoutString("U")
-    date2 := datebin.Parse("2032-03-15 12:06:17").
+        ToDatetimeString()
+    date2 := datebin.
+        Parse("2032-03-15 12:06:17").
         ToDatetimeString()
 
     // 加密测试
