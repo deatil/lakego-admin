@@ -31,4 +31,3 @@ func (this *Base) Request(ctx *router.Context) *httpRequest.Request {
 func (this *Base) response(ctx *router.Context) *httpResponse.Response {
     return httpResponse.New().WithContext(ctx)
 }
-

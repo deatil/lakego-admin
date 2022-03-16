@@ -207,22 +207,22 @@ func IsHash(str, algorithm string) bool {
     algo := strings.ToLower(algorithm)
 
     switch algo {
-    case "crc32", "crc32b":
-        length = "8"
-    case "md5", "md4", "ripemd128", "tiger128":
-        length = "32"
-    case "sha1", "ripemd160", "tiger160":
-        length = "40"
-    case "tiger192":
-        length = "48"
-    case "sha256":
-        length = "64"
-    case "sha384":
-        length = "96"
-    case "sha512":
-        length = "128"
-    default:
-        return false
+        case "crc32", "crc32b":
+            length = "8"
+        case "md5", "md4", "ripemd128", "tiger128":
+            length = "32"
+        case "sha1", "ripemd160", "tiger160":
+            length = "40"
+        case "tiger192":
+            length = "48"
+        case "sha256":
+            length = "64"
+        case "sha384":
+            length = "96"
+        case "sha512":
+            length = "128"
+        default:
+            return false
     }
 
     return regexp.MustCompile("^[a-f0-9]{" + length + "}$").MatchString(str)

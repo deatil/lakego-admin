@@ -106,7 +106,7 @@ func (this Datebin) Millisecond() int {
         return 0
     }
 
-    return this.time.In(this.loc).Nanosecond() / 1e6
+    return this.time.In(this.loc).Nanosecond() / int(Millisecond)
 }
 
 // 获取当前微秒数，范围[0, 999999]
@@ -115,7 +115,7 @@ func (this Datebin) Microsecond() int {
         return 0
     }
 
-    return this.time.In(this.loc).Nanosecond() / 1e3
+    return this.time.In(this.loc).Nanosecond() / int(Microsecond)
 }
 
 // 获取当前纳秒数，范围[0, 999999999]
@@ -147,7 +147,7 @@ func (this Datebin) TimestampWithMillisecond() int64 {
         return 0
     }
 
-    return this.time.In(this.loc).UnixNano() / int64(1e6)
+    return this.time.In(this.loc).UnixNano() / int64(Millisecond)
 }
 
 // 微秒级时间戳，16位
@@ -156,7 +156,7 @@ func (this Datebin) TimestampWithMicrosecond() int64 {
         return 0
     }
 
-    return this.time.In(this.loc).UnixNano() / int64(1e3)
+    return this.time.In(this.loc).UnixNano() / int64(Microsecond)
 }
 
 // 纳秒级时间戳，19位
@@ -167,4 +167,3 @@ func (this Datebin) TimestampWithNanosecond() int64 {
 
     return this.time.In(this.loc).UnixNano()
 }
-

@@ -20,7 +20,7 @@ func (this Datebin) IsInvalid() bool {
 
 // 是否是 Utc 时区
 func (this Datebin) IsUtc() bool {
-    return this.GetTimezone() == LocationUTC
+    return this.GetTimezone() == LocUTC
 }
 
 // 是否是本地时区
@@ -156,7 +156,8 @@ func (this Datebin) IsStartOfDay() bool {
 
 // 是否当天开始
 func (this Datebin) IsStartOfDayWithMicrosecond() bool {
-    return this.Format("H:i:s.u") == "00:00:00.000000"
+    return this.Format("H:i:s") == "00:00:00" &&
+        this.Microsecond() == 0
 }
 
 // 是否当天结束
@@ -166,7 +167,8 @@ func (this Datebin) IsEndOfDay() bool {
 
 // 是否当天结束
 func (this Datebin) IsEndOfDayWithMicrosecond() bool {
-    return this.Format("H:i:s.u") == "23:59:59.999999"
+    return this.Format("H:i:s") == "23:59:59" &&
+        this.Microsecond() == 999999
 }
 
 // 是否是半夜

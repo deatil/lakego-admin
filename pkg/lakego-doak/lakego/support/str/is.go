@@ -5,7 +5,6 @@ import (
     "strconv"
     "reflect"
     "strings"
-    "encoding/json"
 )
 
 // 判断是否为空
@@ -33,12 +32,6 @@ func Empty(val interface{}) bool {
     }
 
     return reflect.DeepEqual(val, reflect.Zero(v.Type()).Interface())
-}
-
-// 是否为 json
-func IsJSON(str string) bool {
-    var js json.RawMessage
-    return json.Unmarshal([]byte(str), &js) == nil
 }
 
 // 判断是否为 nil

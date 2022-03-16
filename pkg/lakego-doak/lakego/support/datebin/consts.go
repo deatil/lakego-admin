@@ -4,52 +4,81 @@ import (
     "time"
 )
 
+// 默认常量
+const (
+    // 纳秒 [Nanosecond time.Duration = 1]
+    Nanosecond = time.Nanosecond
+    // 微妙 [Microsecond = Nanosecond * 1000]
+    Microsecond = time.Microsecond
+    // 毫秒 [Millisecond = Microsecond * 1000]
+    Millisecond = time.Millisecond
+    // 秒 [Second = Millisecond * 1000]
+    Second = time.Second
+    // 分钟 [Minute = Second * 60]
+    Minute = time.Minute
+    // 小时 [Hour = Minute * 60]
+    Hour = time.Hour
+    // 天 [Day = Hour * 24]
+    Day = time.Hour * 24
+)
+
 // 时区常量
 const (
-    LocationLocal = "Local"
-    LocationCET   = "CET"
-    LocationEET   = "EET"
-    LocationEST   = "EST"
-    LocationGMT   = "GMT"
-    LocationUTC   = "UTC"
-    LocationUCT   = "UCT"
-    LocationMST   = "MST"
+    LocLocal = "Local"
+    LocCET   = "CET"
+    LocEET   = "EET"
+    LocEST   = "EST"
+    LocGMT   = "GMT"
+    LocUTC   = "UTC"
+    LocUCT   = "UCT"
+    LocMST   = "MST"
 
-    LocationCuba      = "Cuba"      // 古巴
-    LocationEgypt     = "Egypt"     // 埃及
-    LocationEire      = "Eire"      // 爱尔兰
-    LocationGreenwich = "Greenwich" // 格林尼治
-    LocationIceland   = "Iceland"   // 冰岛
-    LocationIran      = "Iran"      // 伊朗
-    LocationIsrael    = "Israel"    // 以色列
-    LocationJamaica   = "Jamaica"   // 牙买加
-    LocationJapan     = "Japan"     // 日本
-    LocationLibya     = "Libya"     // 利比亚
-    LocationPoland    = "Poland"    // 波兰
-    LocationPortugal  = "Portugal"  // 葡萄牙
-    LocationPRC       = "PRC"       // 中国
-    LocationSingapore = "Singapore" // 新加坡
-    LocationTurkey    = "Turkey"    // 土耳其
+    LocCuba      = "Cuba"      // 古巴
+    LocEgypt     = "Egypt"     // 埃及
+    LocEire      = "Eire"      // 爱尔兰
+    LocGreenwich = "Greenwich" // 格林尼治
+    LocIceland   = "Iceland"   // 冰岛
+    LocIran      = "Iran"      // 伊朗
+    LocIsrael    = "Israel"    // 以色列
+    LocJamaica   = "Jamaica"   // 牙买加
+    LocJapan     = "Japan"     // 日本
+    LocLibya     = "Libya"     // 利比亚
+    LocPoland    = "Poland"    // 波兰
+    LocPortugal  = "Portugal"  // 葡萄牙
+    LocPRC       = "PRC"       // 中国
+    LocSingapore = "Singapore" // 新加坡
+    LocTurkey    = "Turkey"    // 土耳其
 
-    LocationShanghai   = "Asia/Shanghai"       // 上海
-    LocationChongqing  = "Asia/Chongqing"      // 重庆
-    LocationHarbin     = "Asia/Harbin"         // 哈尔滨
-    LocationHongKong   = "Asia/Hong_Kong"      // 香港
-    LocationMacao      = "Asia/Macao"          // 澳门
-    LocationTaipei     = "Asia/Taipei"         // 台北
-    LocationTokyo      = "Asia/Tokyo"          // 东京
-    LocationSaigon     = "Asia/Saigon"         // 西贡
-    LocationSeoul      = "Asia/Seoul"          // 首尔
-    LocationBangkok    = "Asia/Bangkok"        // 曼谷
-    LocationDubai      = "Asia/Dubai"          // 迪拜
-    LocationNewYork    = "America/New_York"    // 纽约
-    LocationLosAngeles = "America/Los_Angeles" // 洛杉矶
-    LocationChicago    = "America/Chicago"     // 芝加哥
-    LocationMoscow     = "Europe/Moscow"       // 莫斯科
-    LocationLondon     = "Europe/London"       // 伦敦
-    LocationBerlin     = "Europe/Berlin"       // 柏林
-    LocationParis      = "Europe/Paris"        // 巴黎
-    LocationRome       = "Europe/Rome"         // 罗马
+    LocShanghai   = "Asia/Shanghai"       // 上海
+    LocChongqing  = "Asia/Chongqing"      // 重庆
+    LocHarbin     = "Asia/Harbin"         // 哈尔滨
+    LocHongKong   = "Asia/Hong_Kong"      // 香港
+    LocMacao      = "Asia/Macao"          // 澳门
+    LocTaipei     = "Asia/Taipei"         // 台北
+    LocTokyo      = "Asia/Tokyo"          // 东京
+    LocSaigon     = "Asia/Saigon"         // 西贡
+    LocSeoul      = "Asia/Seoul"          // 首尔
+    LocBangkok    = "Asia/Bangkok"        // 曼谷
+    LocDubai      = "Asia/Dubai"          // 迪拜
+    LocNewYork    = "America/New_York"    // 纽约
+    LocLosAngeles = "America/Los_Angeles" // 洛杉矶
+    LocChicago    = "America/Chicago"     // 芝加哥
+    LocMoscow     = "Europe/Moscow"       // 莫斯科
+    LocLondon     = "Europe/London"       // 伦敦
+    LocBerlin     = "Europe/Berlin"       // 柏林
+    LocParis      = "Europe/Paris"        // 巴黎
+    LocRome       = "Europe/Rome"         // 罗马
+)
+
+// 周常量
+const (
+    WeekMonday    = "Monday"
+    WeekTuesday   = "Tuesday"
+    WeekWednesday = "Wednesday"
+    WeekThursday  = "Thursday"
+    WeekFriday    = "Friday"
+    WeekSaturday  = "Saturday"
+    WeekSunday    = "Sunday"
 )
 
 // 月份常量

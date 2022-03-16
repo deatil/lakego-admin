@@ -79,6 +79,19 @@ func Fetch(ctx *router.Context, template string, obj interface{}, httpCode ...in
 }
 
 /**
+ * JSON 响应
+ *
+ * @create 2021-10-28
+ * @author deatil
+ */
+type JSONResult struct {
+    Success bool         `json:"success"`
+    Code    int          `json:"code"`
+    Message string       `json:"message"`
+    Data    interface{}  `json:"data"`
+}
+
+/**
  * 响应
  *
  * @create 2021-10-28

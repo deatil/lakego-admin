@@ -2,10 +2,11 @@ package publish
 
 import (
     "os"
-    "fmt"
     "sort"
     "strings"
     "path/filepath"
+
+    "github.com/AlecAivazis/survey/v2"
 
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/publish"
@@ -99,32 +100,28 @@ func (this *Publisher) determineWhatShouldBePublished() {
     }
 }
 
-// promptForProviderOrTag
+// 选择器
+// 输入接收：fmt.Scanln(&choice)
 func (this *Publisher) promptForProviderOrTag() {
-    color.Magentaln("哪些是你想要推送的 provider 或者 tag 文件？\n")
-
     choices := this.publishableChoices()
-    for k, v := range choices {
-        color.Yellowln(fmt.Sprintf("[%d]%s", k, v))
+
+    // 选择器
+    choice := ""
+    prompt := &survey.Select{
+        Message: "哪些是你想要推送的 provider 或者 tag 文件？",
+        Options: choices,
+        Default: choices[0],
+        Help: "上下移动选择你需要的选项",
     }
-
-    color.Cyan("\n请输入序号：")
-
-    var choice int
-    fmt.Scanln(&choice)
-
-    if choice == 0 {
+    err := survey.AskOne(prompt, &choice)
+    if err != nil {
         return
     }
 
-    if choice > len(choices) - 1 {
-        return
-    }
-
-    this.parseChoice(choices[choice])
+    this.parseChoice(choice)
 }
 
-// publishableChoices
+// 可选择列表
 func (this *Publisher) publishableChoices() []string {
     var choices []string
 

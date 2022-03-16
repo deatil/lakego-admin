@@ -155,3 +155,20 @@ func (this Datebin) Farthest(a Datebin, b Datebin) Datebin {
 func (this Datebin) Age() int {
     return int(this.Diff(this.Now()).Years())
 }
+
+// 用于查找将规定的持续时间‘d’舍入为‘m’持续时间的最接近倍数的结果
+func (this Datebin) Round(d time.Duration) Datebin {
+    this.time = this.time.Round(d)
+    return this
+}
+
+// 用于查找将规定的持续时间‘d’朝零舍入到‘m’持续时间的倍数的结果
+func (this Datebin) Truncate(d time.Duration) Datebin {
+    this.time = this.time.Truncate(d)
+    return this
+}
+
+// 返回时分秒数据
+func (this Datebin) Clock() (hour, min, sec int) {
+    return this.time.Clock()
+}

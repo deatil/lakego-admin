@@ -56,7 +56,7 @@ func (this *Manager) GetPrefix(prefix string) string {
  * 注册驱动
  */
 func (this *Manager) Register(name string, f ManagerRegisterFunc) {
-    name = this.prefix + name
+    name = this.FormatName(name)
 
     New().With(name, func(conf ManagerConfigMap) interface{} {
         return f(conf)
@@ -76,7 +76,7 @@ func (this *Manager) RegisterMany(drivers map[string]ManagerRegisterFunc) {
  * 获取已注册驱动
  */
 func (this *Manager) GetRegister(name string, conf ManagerConfigMap, once ...bool) interface{} {
-    name = this.prefix + name
+    name = this.FormatName(name)
 
     var data interface{}
     reg := New()
@@ -91,4 +91,13 @@ func (this *Manager) GetRegister(name string, conf ManagerConfigMap, once ...boo
     }
 
     return nil
+}
+
+/**
+ * 格式化名称
+ */
+func (this *Manager) FormatName(name string) string {
+    name = this.prefix + "::" + name
+
+    return name
 }
