@@ -63,6 +63,7 @@ out/
 *.sublime*
 __debug_bin
 .project
+.github
 
 # 临时文件 #
 ######################

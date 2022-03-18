@@ -1,7 +1,6 @@
 package tree
 
-// map 数据格式化为树
-// "github.com/deatil/lakego-doak/lakego/tree"
+// 构造函数
 func New() *Tree {
     return &Tree{
         icon: []string{

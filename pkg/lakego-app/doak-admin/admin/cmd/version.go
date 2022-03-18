@@ -2,6 +2,7 @@ package cmd
 
 import (
     "fmt"
+    "runtime"
 
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
@@ -67,6 +68,9 @@ func ShowVersion() {
 
     color.Cyan("版本序号：");
     fmt.Println(version);
+
+    color.Cyan("Golang版本：");
+    fmt.Println(runtime.Version());
 
     color.Magenta("\n===========================\n")
 }
