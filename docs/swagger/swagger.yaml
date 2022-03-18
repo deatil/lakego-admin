@@ -11,7 +11,7 @@ info:
     url: https://github.com/deatil/lakego-admin/blob/main/README.md
   termsOfService: https://github.com/deatil
   title: lakego-admin API文档
-  version: 1.0.12
+  version: 1.0.1
 paths:
   /action-log:
     get:
