@@ -1,0 +1,11 @@
+go 1.18
+
+use (
+	./
+	./app
+	./pkg/go-filesystem
+	./pkg/lakego-doak
+	./pkg/lakego-app/doak-action-log
+	./pkg/lakego-app/doak-admin
+	./pkg/lakego-app/doak-swagger
+)

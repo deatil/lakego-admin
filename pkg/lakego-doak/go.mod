@@ -1,8 +1,6 @@
 module github.com/deatil/lakego-doak
 
-go 1.16
-
-replace github.com/deatil/go-filesystem => ./../go-filesystem
+go 1.18
 
 require (
 	github.com/casbin/casbin/v2 v2.37.4
