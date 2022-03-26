@@ -13,10 +13,7 @@ func Encode(str string) string {
 
 // 解密
 func Decode(str string) string {
-    var newStr []byte
-    var err error
-
-    newStr, err = base64.StdEncoding.DecodeString(str)
+    newStr, err := base64.StdEncoding.DecodeString(str)
     if err != nil {
         return ""
     }
@@ -32,10 +29,7 @@ func URLEncode(str string) string {
 
 // URL 解密
 func URLDecode(str string) string {
-    var newStr []byte
-    var err error
-
-    newStr, err = base64.URLEncoding.DecodeString(str)
+    newStr, err := base64.URLEncoding.DecodeString(str)
     if err != nil {
         return ""
     }
@@ -51,10 +45,7 @@ func RawEncode(str string) string {
 
 // Raw 解密，无填充编码
 func RawDecode(str string) string {
-    var newStr []byte
-    var err error
-
-    newStr, err = base64.RawStdEncoding.DecodeString(str)
+    newStr, err := base64.RawStdEncoding.DecodeString(str)
     if err != nil {
         return ""
     }
@@ -70,10 +61,7 @@ func RawURLEncode(str string) string {
 
 // RawURL 解密，无填充编码
 func RawURLDecode(str string) string {
-    var newStr []byte
-    var err error
-
-    newStr, err = base64.RawURLEncoding.DecodeString(str)
+    newStr, err := base64.RawURLEncoding.DecodeString(str)
     if err != nil {
         return ""
     }

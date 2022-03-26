@@ -1,43 +1,43 @@
 package cryptobin
 
 // 设置数据
-func (this Crypto) WithData(data []byte) Crypto {
-    this.Data = data
+func (this Cryptobin) WithData(data []byte) Cryptobin {
+    this.data = data
 
     return this
 }
 
 // 设置密钥
-func (this Crypto) WithKey(data []byte) Crypto {
-    this.Key = data
+func (this Cryptobin) WithKey(data []byte) Cryptobin {
+    this.key = data
 
     return this
 }
 
 // 设置向量
-func (this Crypto) WithIv(data []byte) Crypto {
-    this.Iv = data
+func (this Cryptobin) WithIv(data []byte) Cryptobin {
+    this.iv = data
 
     return this
 }
 
 // 加密类型
-func (this Crypto) WithType(data string) Crypto {
-    this.Type = data
+func (this Cryptobin) WithType(data string) Cryptobin {
+    this.multiple = data
 
     return this
 }
 
 // 加密方式
-func (this Crypto) WithMode(data string) Crypto {
-    this.Mode = data
+func (this Cryptobin) WithMode(data string) Cryptobin {
+    this.mode = data
 
     return this
 }
 
 // 补码算法
-func (this Crypto) WithPadding(data string) Crypto {
-    this.Padding = data
+func (this Cryptobin) WithPadding(data string) Cryptobin {
+    this.padding = data
 
     return this
 }

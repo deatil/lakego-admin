@@ -1,41 +1,41 @@
 package cryptobin
 
 // 数据
-func (this Crypto) GetData() []byte {
-    return this.Data
+func (this Cryptobin) GetData() []byte {
+    return this.data
 }
 
 // 密码
-func (this Crypto) GetKey() []byte {
-    return this.Key
+func (this Cryptobin) GetKey() []byte {
+    return this.key
 }
 
 // 向量
-func (this Crypto) GetIv() []byte {
-    return this.Iv
+func (this Cryptobin) GetIv() []byte {
+    return this.iv
 }
 
 // 加密类型
-func (this Crypto) GetType() string {
-    return this.Type
+func (this Cryptobin) GetType() string {
+    return this.multiple
 }
 
 // 加密方式
-func (this Crypto) GetMode() string {
-    return this.Mode
+func (this Cryptobin) GetMode() string {
+    return this.mode
 }
 
 // 补码算法
-func (this Crypto) GetPadding() string {
-    return this.Padding
+func (this Cryptobin) GetPadding() string {
+    return this.padding
 }
 
 // 解析后的数据
-func (this Crypto) GetParsedData() []byte {
-    return this.ParsedData
+func (this Cryptobin) GetParsedData() []byte {
+    return this.parsedData
 }
 
 // 错误信息
-func (this Crypto) GetError() error {
+func (this Cryptobin) GetError() error {
     return this.Error
 }

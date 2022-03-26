@@ -5,6 +5,7 @@
 
 *  对称加密（Aes/Des/TriDes）解密
 *  非对称（RSA）加密解密
+*  默认 `Aes`, `ECB`, `PKCS7Padding`
 
 
 ### 使用方法
@@ -18,9 +19,9 @@ import (
 )
 
 func main() {
-	// 加密
+    // 加密
     cypt := cryptobin.
-		FromString("useData").
+        FromString("useData").
         SetKey("dfertf12dfertf12").
         Aes().
         ECB().
@@ -28,7 +29,7 @@ func main() {
         Encrypt().
         ToBase64String()
     cyptde := cryptobin.
-		FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
+        FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
         SetKey("dfertf12dfertf12").
         Aes().
         ECB().

@@ -9,14 +9,15 @@ import (
 )
 
 // 加密
-func (this Crypto) Encrypt() Crypto {
+func (this Cryptobin) Encrypt() Cryptobin {
     var block cipher.Block
     var err error
 
     // 密钥
-    key := this.Key
+    key := this.key
 
-    switch this.Type {
+    // 加密类型
+    switch this.multiple {
         case "Aes":
             // NewCipher creates and returns a new cipher.Block.
             // The key argument should be the AES key,
@@ -38,18 +39,19 @@ func (this Crypto) Encrypt() Crypto {
     bs := block.BlockSize()
 
     // 加密数据
-    plainText := this.Data
+    plainText := this.data
 
+    // 补码方式
     var plainPadding []byte
-        switch this.Padding {
-            case "Zero":
-                plainPadding = this.ZerosPadding(plainText, bs)
-            case "Pkcs5":
-                plainPadding = this.Pkcs5Padding(plainText)
-            case "Pkcs7":
-                plainPadding = this.Pkcs7Padding(plainText, bs)
-            default:
-                plainPadding = plainText
+    switch this.padding {
+        case "Zero":
+            plainPadding = this.ZerosPadding(plainText, bs)
+        case "Pkcs5":
+            plainPadding = this.Pkcs5Padding(plainText)
+        case "Pkcs7":
+            plainPadding = this.Pkcs7Padding(plainText, bs)
+        default:
+            plainPadding = plainText
     }
 
     if len(plainPadding)%bs != 0 {
@@ -59,10 +61,11 @@ func (this Crypto) Encrypt() Crypto {
     }
 
     // 向量
-    iv := this.Iv
+    iv := this.iv
 
+    // 模式
     cryptText := make([]byte, len(plainPadding))
-    switch this.Mode {
+    switch this.mode {
         case "ECB":
             dst := cryptText
             for len(plainPadding) > 0 {
@@ -80,20 +83,21 @@ func (this Crypto) Encrypt() Crypto {
             cipher.NewCTR(block, iv).XORKeyStream(cryptText, plainPadding)
     }
 
-    this.ParsedData = cryptText
+    this.parsedData = cryptText
 
     return this
 }
 
 // 解密
-func (this Crypto) Decrypt() Crypto {
+func (this Cryptobin) Decrypt() Cryptobin {
     var block cipher.Block
     var err error
 
     // 密钥
-    key := this.Key
+    key := this.key
 
-    switch this.Type {
+    // 加密类型
+    switch this.multiple {
         case "Aes":
             block, err = aes.NewCipher(key)
         case "Des":
@@ -108,7 +112,7 @@ func (this Crypto) Decrypt() Crypto {
     }
 
     // 解密数据
-    cipherText := this.Data
+    cipherText := this.data
 
     bs := block.BlockSize()
     if len(cipherText)%bs != 0 {
@@ -117,11 +121,12 @@ func (this Crypto) Decrypt() Crypto {
     }
 
     // 向量
-    iv := this.Iv
+    iv := this.iv
 
     dst := make([]byte, len(cipherText))
 
-    switch this.Mode {
+    // 加密模式
+    switch this.mode {
         case "ECB":
             dstTmp := dst
             for len(cipherText) > 0 {
@@ -139,7 +144,8 @@ func (this Crypto) Decrypt() Crypto {
             cipher.NewCTR(block, iv).XORKeyStream(dst, cipherText)
     }
 
-    switch this.Padding {
+    // 补码模式
+    switch this.padding {
         case "Zero":
             dst = this.ZerosUnPadding(dst)
         case "Pkcs5":
@@ -148,21 +154,21 @@ func (this Crypto) Decrypt() Crypto {
             dst = this.Pkcs7UnPadding(dst)
     }
 
-    this.ParsedData = dst
+    this.parsedData = dst
 
     return this
 }
 
 // 加密 RSA
-func (this Crypto) EnRsa() Crypto {
-    this.ParsedData, this.Error = NewRsa().Encrypt(this.Data, this.Key)
+func (this Cryptobin) EnRsa() Cryptobin {
+    this.parsedData, this.Error = NewRsa().Encrypt(this.data, this.key)
 
     return this
 }
 
 // 解密 RSA
-func (this Crypto) DeRsa(password ...string) Crypto {
-    this.ParsedData, this.Error = NewRsa().Decrypt(this.Data, this.Key, password...)
+func (this Cryptobin) DeRsa(password ...string) Cryptobin {
+    this.parsedData, this.Error = NewRsa().Decrypt(this.data, this.key, password...)
 
     return this
 }

@@ -9,9 +9,9 @@ import (
 )
 
 // 加密
-func (this Crypto) AesCFBEncrypt() Crypto {
-    origData := this.Data
-    key := this.Key
+func (this Cryptobin) AesCFBEncrypt() Cryptobin {
+    origData := this.data
+    key := this.key
 
     block, err := aes.NewCipher(key)
     if err != nil {
@@ -30,15 +30,15 @@ func (this Crypto) AesCFBEncrypt() Crypto {
     stream := cipher.NewCFBEncrypter(block, iv)
     stream.XORKeyStream(encrypted[aes.BlockSize:], origData)
 
-    this.ParsedData = encrypted
+    this.parsedData = encrypted
 
     return this
 }
 
 // 解密
-func (this Crypto) AesCFBDecrypt() Crypto {
-    encrypted := this.Data
-    key := this.Key
+func (this Cryptobin) AesCFBDecrypt() Cryptobin {
+    encrypted := this.data
+    key := this.key
 
     block, _ := aes.NewCipher(key)
     if len(encrypted) < aes.BlockSize {
@@ -52,14 +52,14 @@ func (this Crypto) AesCFBDecrypt() Crypto {
     stream := cipher.NewCFBDecrypter(block, iv)
     stream.XORKeyStream(encrypted, encrypted)
 
-    this.ParsedData = encrypted
+    this.parsedData = encrypted
 
     return this
 }
 
-func (this Crypto) AesECBEncrypt() Crypto {
-    origData := this.Data
-    key := this.Key
+func (this Cryptobin) AesECBEncrypt() Cryptobin {
+    origData := this.data
+    key := this.key
 
     cipher, _ := aes.NewCipher(this.AesECBGenerateKey(key))
     length := (len(origData) + aes.BlockSize) / aes.BlockSize
@@ -77,14 +77,14 @@ func (this Crypto) AesECBEncrypt() Crypto {
         cipher.Encrypt(encrypted[bs:be], plain[bs:be])
     }
 
-    this.ParsedData = encrypted
+    this.parsedData = encrypted
 
     return this
 }
 
-func (this Crypto) AesECBDecrypt() Crypto {
-    encrypted := this.Data
-    key := this.Key
+func (this Cryptobin) AesECBDecrypt() Cryptobin {
+    encrypted := this.data
+    key := this.key
 
     cipher, _ := aes.NewCipher(this.AesECBGenerateKey(key))
     decrypted := make([]byte, len(encrypted))
@@ -98,12 +98,12 @@ func (this Crypto) AesECBDecrypt() Crypto {
         trim = len(decrypted) - int(decrypted[len(decrypted)-1])
     }
 
-    this.ParsedData = decrypted[:trim]
+    this.parsedData = decrypted[:trim]
 
     return this
 }
 
-func (this Crypto) AesECBGenerateKey(key []byte) (genKey []byte) {
+func (this Cryptobin) AesECBGenerateKey(key []byte) (genKey []byte) {
     genKey = make([]byte, 16)
     copy(genKey, key)
     for i := 16; i < len(key); {

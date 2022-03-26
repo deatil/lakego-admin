@@ -1,8 +1,12 @@
 package cryptobin
 
 // 构造函数
-func New() Crypto {
-    return Crypto{}
+func New() Cryptobin {
+    return Cryptobin{
+        multiple: "Aes",
+        mode: "ECB",
+        padding: "Pkcs7",
+    }
 }
 
 /**
@@ -11,27 +15,27 @@ func New() Crypto {
  * @create 2022-3-19
  * @author deatil
  */
-type Crypto struct {
+type Cryptobin struct {
     // 数据
-    Data []byte
+    data []byte
 
     // 密钥
-    Key []byte
+    key []byte
 
     // 向量
-    Iv []byte
+    iv []byte
 
     // 加密类型
-    Type string
+    multiple string
 
     // 加密方式
-    Mode string
+    mode string
 
     // 填充模式
-    Padding string
+    padding string
 
     // 解析后的数据
-    ParsedData []byte
+    parsedData []byte
 
     // 错误
     Error error

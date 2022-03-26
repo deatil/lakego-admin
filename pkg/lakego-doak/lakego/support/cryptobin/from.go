@@ -1,29 +1,29 @@
 package cryptobin
 
 // 字节
-func (this Crypto) FromByte(data []byte) Crypto {
-    this.Data = data
+func (this Cryptobin) FromByte(data []byte) Cryptobin {
+    this.data = data
 
     return this
 }
 
 // 字符
-func (this Crypto) FromString(data string) Crypto {
-    this.Data = []byte(data)
+func (this Cryptobin) FromString(data string) Cryptobin {
+    this.data = []byte(data)
 
     return this
 }
 
 // Base64
-func (this Crypto) FromBase64(data string) Crypto {
-    this.Data, this.Error = this.Base64Decode(data)
+func (this Cryptobin) FromBase64String(data string) Cryptobin {
+    this.data, this.Error = this.Base64Decode(data)
 
     return this
 }
 
 // Hex
-func (this Crypto) FromHex(data string) Crypto {
-    this.Data, this.Error = this.HexDecode(data)
+func (this Cryptobin) FromHexString(data string) Cryptobin {
+    this.data, this.Error = this.HexDecode(data)
 
     return this
 }

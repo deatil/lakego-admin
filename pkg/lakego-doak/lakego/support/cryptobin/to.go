@@ -1,26 +1,26 @@
 package cryptobin
 
 // 输出原始字符
-func (this Crypto) String() string {
-    return string(this.Data)
+func (this Cryptobin) String() string {
+    return string(this.data)
 }
 
 // 输出字节
-func (this Crypto) ToByte() []byte {
-    return this.ParsedData
+func (this Cryptobin) ToByte() []byte {
+    return this.parsedData
 }
 
 // 输出字符
-func (this Crypto) ToString() string {
-    return string(this.ParsedData)
+func (this Cryptobin) ToString() string {
+    return string(this.parsedData)
 }
 
 // 输出Base64
-func (this Crypto) ToBase64String() string {
-    return this.Base64Encode(this.ParsedData)
+func (this Cryptobin) ToBase64String() string {
+    return this.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
-func (this Crypto) ToHexString() string {
-    return this.HexEncode(this.ParsedData)
+func (this Cryptobin) ToHexString() string {
+    return this.HexEncode(this.parsedData)
 }
