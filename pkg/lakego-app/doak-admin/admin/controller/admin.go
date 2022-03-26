@@ -56,14 +56,14 @@ func (this *Admin) Index(ctx *router.Context) {
         Scopes(scope.AdminWithAccess(ctx))
 
     // 排序
-    order := ctx.DefaultQuery("order", "id__DESC")
+    order := ctx.DefaultQuery("order", "add_time__DESC")
     orders := strings.SplitN(order, "__", 2)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "name" &&
         orders[0] != "last_active" &&
         orders[0] != "add_time") {
-        orders[0] = "id"
+        orders[0] = "add_time"
     }
 
     if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
@@ -77,10 +77,12 @@ func (this *Admin) Index(ctx *router.Context) {
     if searchword != "" {
         searchword = "%" + searchword + "%"
 
-        adminModel = adminModel.
-            Or("name LIKE ?", searchword).
-            Or("nickname LIKE ?", searchword).
-            Or("email LIKE ?", searchword)
+        adminModel = adminModel.Where(
+            model.NewDB().
+                Where("name LIKE ?", searchword).
+                Or("nickname LIKE ?", searchword).
+                Or("email LIKE ?", searchword),
+        )
     }
 
     // 时间条件

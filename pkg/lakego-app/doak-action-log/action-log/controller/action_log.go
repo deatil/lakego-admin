@@ -28,10 +28,11 @@ type ActionLog struct {
 // @Tags 操作日志
 // @Accept application/json
 // @Produce application/json
-// @Param order query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
+// @Param order query string false "排序，示例：id__DESC"
 // @Param start_time query string false "开始时间"
 // @Param end_time query string false "结束时间"
+// @Param method query string false "请求方法"
 // @Param status query string false "状态"
 // @Param start query string false "开始数据量"
 // @Param limit query string false "每页数量"
@@ -43,12 +44,12 @@ func (this *ActionLog) Index(ctx *router.Context) {
     logModel := model.NewActionLog()
 
     // 排序
-    order := ctx.DefaultQuery("order", "id__DESC")
+    order := ctx.DefaultQuery("order", "time__DESC")
     orders := strings.SplitN(order, "__", 2)
     if orders[0] == "" ||
         (orders[0] != "id" &&
-        orders[0] != "add_time") {
-        orders[0] = "id"
+        orders[0] != "time") {
+        orders[0] = "time"
     }
 
     if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
@@ -62,26 +63,33 @@ func (this *ActionLog) Index(ctx *router.Context) {
     if searchword != "" {
         searchword = "%" + searchword + "%"
 
-        logModel = logModel.
-            Or("name LIKE ?", searchword).
-            Or("url LIKE ?", searchword)
+        logModel = logModel.Where(
+            model.NewDB().
+                Where("name LIKE ?", searchword).
+                Or("url LIKE ?", searchword),
+        )
     }
 
     // 时间条件
     startTime := ctx.DefaultQuery("start_time", "")
     if startTime != "" {
-        logModel = logModel.Where("add_time >= ?", this.FormatDate(startTime))
+        logModel = logModel.Where("time >= ?", this.FormatDate(startTime))
     }
 
     endTime := ctx.DefaultQuery("end_time", "")
     if endTime != "" {
-        logModel = logModel.Where("add_time <= ?", this.FormatDate(endTime))
+        logModel = logModel.Where("time <= ?", this.FormatDate(endTime))
     }
 
     // 请求方式
     method := ctx.DefaultQuery("method", "")
     if method != "" {
         logModel = logModel.Where("method = ?", method)
+    }
+
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
+    if status != -1 {
+        logModel = logModel.Where("status = ?", status)
     }
 
     // 分页相关
@@ -133,7 +141,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().
-        Where("add_time <= ?", int(datebin.Now().SubDays(30).Timestamp())).
+        Where("time <= ?", int(datebin.Now().SubDays(30).Timestamp())).
         Delete(&model.ActionLog{}).
         Error
     if err != nil {

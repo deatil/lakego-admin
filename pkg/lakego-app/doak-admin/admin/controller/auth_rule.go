@@ -44,7 +44,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
     ruleModel := model.NewAuthRule()
 
     // 排序
-    order := ctx.DefaultQuery("order", "id__DESC")
+    order := ctx.DefaultQuery("order", "add_time__DESC")
     orders := strings.SplitN(order, "__", 2)
     if orders[0] == "" ||
         (orders[0] != "id" &&
@@ -52,7 +52,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
         orders[0] != "url" &&
         orders[0] != "method" &&
         orders[0] != "add_time") {
-        orders[0] = "id"
+        orders[0] = "add_time"
     }
 
     if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
@@ -67,7 +67,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
         searchword = "%" + searchword + "%"
 
         ruleModel = ruleModel.
-            Or("title LIKE ?", searchword)
+            Where("title LIKE ?", searchword)
     }
 
     // 时间条件

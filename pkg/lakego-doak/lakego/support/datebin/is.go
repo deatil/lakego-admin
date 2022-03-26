@@ -185,8 +185,3 @@ func (this Datebin) IsMidday(midDay ...string) bool {
 
     return this.Format("H:i:s") == midDayAt + ":00:00"
 }
-
-// 是否是一个生日日期
-func (this Datebin) IsBirthday(date Datebin) bool {
-    return this.Format("md") == date.Format("md")
-}

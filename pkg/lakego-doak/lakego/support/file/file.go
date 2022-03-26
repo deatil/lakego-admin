@@ -104,3 +104,10 @@ func FormatBytes(size int64) string {
     return fmt.Sprintf("%.2f%s", s, units[i])
 }
 
+// 格式化路径
+func FormatPath(p string) string {
+    p = strings.Replace(p, "\\", "/", -1)
+    p = filepath.Clean(p)
+    p = strings.TrimSuffix(p, "/")
+    return p
+}

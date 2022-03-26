@@ -20,8 +20,10 @@ func New() *Filesystem {
     return &Filesystem{}
 }
 
+// 文件信息
 type FileInfo = os.FileInfo
 
+// 文件权限
 type FileMode = os.FileMode
 
 const (

@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/support/base64"
-    "github.com/deatil/lakego-doak/lakego/support/crypto/aes/cbc"
+    "github.com/deatil/lakego-doak/lakego/support/cryptobin"
 )
 
 // 授权结构体
@@ -18,6 +18,9 @@ func New() *Auth {
         Claims: make(ClaimMap),
     }
 }
+
+// 加密向量
+var cryptoIv = "hyju5yu7f0.gtr3e"
 
 type (
     // 配置
@@ -252,7 +255,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
     if len(claims) > 0 {
         for k, v := range claims {
             if passphrase != "" {
-                v = cbc.Encode(v, passphrase)
+                v = this.Encode(v, passphrase)
             }
 
             jwtHandle.WithClaim(k, v)
@@ -282,7 +285,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
     if len(claims) > 0 {
         for k, v := range claims {
             if passphrase != "" {
-                v = cbc.Encode(v, passphrase)
+                v = this.Encode(v, passphrase)
             }
 
             jwtHandle.WithClaim(k, v)
@@ -426,8 +429,38 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
     passphrase = base64.Decode(passphrase)
 
     if passphrase != "" {
-        data = cbc.Decode(data, passphrase)
+        data = this.Decode(data, passphrase)
     }
+
+    return data
+}
+
+// 加密
+func (this *Auth) Encode(data string, passphrase string) string {
+    data = cryptobin.
+        FromString(data).
+        SetIv(cryptoIv).
+        SetKey(passphrase).
+        Aes().
+        CBC().
+        PKCS7Padding().
+        Encrypt().
+        ToBase64String()
+
+    return data
+}
+
+// 解密
+func (this *Auth) Decode(data string, passphrase string) string {
+    data = cryptobin.
+        FromBase64String(data).
+        SetIv(cryptoIv).
+        SetKey(passphrase).
+        Aes().
+        CBC().
+        PKCS7Padding().
+        Decrypt().
+        ToString()
 
     return data
 }

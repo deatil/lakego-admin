@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/support/str"
     "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/support/snowflake"
-    "github.com/deatil/lakego-doak/lakego/support/crypto/des/ecb"
+    "github.com/deatil/lakego-doak/lakego/support/cryptobin"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -139,7 +139,24 @@ func (this *Data) Error(ctx *gin.Context) {
         ToDatetimeString()
 
     // 加密测试
-    cypt := ecb.Decode("839089A6B911CE9E", "dfertf12")
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetIv("ftr4tyew").
+        SetKey("dfertf12dfertf12dfertf12").
+        TriDes().
+        ECB().
+        PKCS7Padding().
+        Encrypt().
+        ToHexString()
+    cyptde := cryptobin.
+        FromHexString("6ef89f062bc9d46109d0dfd4899af2fc").
+        SetIv("ftr4tyew").
+        SetKey("dfertf12dfertf12dfertf12").
+        TriDes().
+        ECB().
+        PKCS7Padding().
+        Decrypt().
+        ToString()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
@@ -156,6 +173,7 @@ func (this *Data) Error(ctx *gin.Context) {
         "date2": date2,
 
         "cypt": cypt,
+        "cyptde": cyptde,
     })
 }
 

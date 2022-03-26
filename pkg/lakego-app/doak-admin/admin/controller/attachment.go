@@ -46,14 +46,14 @@ func (this *Attachment) Index(ctx *router.Context) {
     attachModel := model.NewAttachment()
 
     // 排序
-    order := ctx.DefaultQuery("order", "id__DESC")
+    order := ctx.DefaultQuery("order", "add_time__DESC")
     orders := strings.SplitN(order, "__", 2)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "name" &&
         orders[0] != "update_time" &&
         orders[0] != "add_time") {
-        orders[0] = "id"
+        orders[0] = "add_time"
     }
 
     if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
@@ -67,10 +67,12 @@ func (this *Attachment) Index(ctx *router.Context) {
     if searchword != "" {
         searchword = "%" + searchword + "%"
 
-        attachModel = attachModel.
-            Or("name LIKE ?", searchword).
-            Or("extension LIKE ?", searchword).
-            Or("disk LIKE ?", searchword)
+        attachModel = attachModel.Where(
+            model.NewDB().
+                Where("name LIKE ?", searchword).
+                Or("extension LIKE ?", searchword).
+                Or("disk LIKE ?", searchword),
+        )
     }
 
     // 时间条件
@@ -365,13 +367,13 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
 func (this *Attachment) Download(ctx *router.Context) {
     code := ctx.Param("code")
     if code == "" {
-        this.ReturnString(ctx, "code值不能为空")
+        this.ReturnString(ctx, "下载ID不能为空")
         return
     }
 
     fileId, _ := cache.New().Pull(code)
     if fileId == "" {
-        this.ReturnString(ctx, "文件信息不存在")
+        this.ReturnString(ctx, "文件不存在")
         return
     }
 
@@ -383,7 +385,7 @@ func (this *Attachment) Download(ctx *router.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        this.ReturnString(ctx, "文件信息不存在")
+        this.ReturnString(ctx, "文件不存在")
         return
     }
 
@@ -391,7 +393,7 @@ func (this *Attachment) Download(ctx *router.Context) {
     filePath := url.AttachmentPath(result["path"].(string), result["disk"].(string))
 
     if filePath == "" {
-        this.ReturnString(ctx, "文件信息不存在")
+        this.ReturnString(ctx, "文件不存在")
         return
     }
 
