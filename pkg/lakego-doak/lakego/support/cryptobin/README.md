@@ -3,8 +3,8 @@
 
 ### 项目介绍
 
-*  对称加密（Aes/Des/TriDes）解密
-*  非对称（RSA）加密解密
+*  对称加密解密（Aes/Des/TriDes）
+*  非对称加密解密（RSA）
 *  默认 `Aes`, `ECB`, `PKCS7Padding`
 
 
