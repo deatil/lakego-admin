@@ -25,7 +25,7 @@ func main() {
         SetKey("dfertf12dfertf12").
         Aes().
         ECB().
-        Pkcs7().
+        PKCS7Padding().
         Encrypt().
         ToBase64String()
     cyptde := cryptobin.
@@ -33,7 +33,7 @@ func main() {
         SetKey("dfertf12dfertf12").
         Aes().
         ECB().
-        Pkcs7().
+        PKCS7Padding().
         Decrypt().
         ToString()
 
