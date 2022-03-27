@@ -7,7 +7,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
-    "github.com/deatil/lakego-doak/lakego/support/base64"
+    "github.com/deatil/lakego-doak/lakego/support/encoding"
     "github.com/deatil/lakego-doak/lakego/support/cryptobin"
 )
 
@@ -182,7 +182,7 @@ func (this *Auth) MakeJWT() *jwt.JWT {
     privateKeyPassword := this.GetStringConfig("jwt", "privatekeypassword", "")
 
     // 解析 base64
-    secret = base64.Decode(secret)
+    secret = encoding.Base64Decode(secret)
 
     // 格式化公钥和私钥
     privateKey = this.FormatPath(privateKey)
@@ -193,7 +193,7 @@ func (this *Auth) MakeJWT() *jwt.JWT {
     publicKeyData, _ := this.ReadDataFromFile(publicKey)
 
     // 私钥密码
-    privateKeyPassword = base64.Decode(privateKeyPassword)
+    privateKeyPassword = encoding.Base64Decode(privateKeyPassword)
 
     nowTime := time.Now().Unix()
 
@@ -245,7 +245,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
     exp := this.GetAccessExpiresIn()
 
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
-    passphrase = base64.Decode(passphrase)
+    passphrase = encoding.Base64Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
@@ -275,7 +275,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
     exp := this.GetRefreshExpiresIn()
 
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
-    passphrase = base64.Decode(passphrase)
+    passphrase = encoding.Base64Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
@@ -426,7 +426,7 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
     data := claims[key].(string)
 
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
-    passphrase = base64.Decode(passphrase)
+    passphrase = encoding.Base64Decode(passphrase)
 
     if passphrase != "" {
         data = this.Decode(data, passphrase)

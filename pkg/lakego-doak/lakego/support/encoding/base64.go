@@ -1,4 +1,4 @@
-package base64
+package encoding
 
 import (
     "strings"
@@ -6,13 +6,13 @@ import (
 )
 
 // 加密
-func Encode(str string) string {
+func Base64Encode(str string) string {
     newStr := base64.StdEncoding.EncodeToString([]byte(str))
     return newStr
 }
 
 // 解密
-func Decode(str string) string {
+func Base64Decode(str string) string {
     newStr, err := base64.StdEncoding.DecodeString(str)
     if err != nil {
         return ""
@@ -22,13 +22,13 @@ func Decode(str string) string {
 }
 
 // URL 加密
-func URLEncode(str string) string {
+func Base64URLEncode(str string) string {
     newStr := base64.URLEncoding.EncodeToString([]byte(str))
     return newStr
 }
 
 // URL 解密
-func URLDecode(str string) string {
+func Base64URLDecode(str string) string {
     newStr, err := base64.URLEncoding.DecodeString(str)
     if err != nil {
         return ""
@@ -38,13 +38,13 @@ func URLDecode(str string) string {
 }
 
 // Raw 加密，无填充编码
-func RawEncode(str string) string {
+func Base64RawEncode(str string) string {
     newStr := base64.RawStdEncoding.EncodeToString([]byte(str))
     return newStr
 }
 
 // Raw 解密，无填充编码
-func RawDecode(str string) string {
+func Base64RawDecode(str string) string {
     newStr, err := base64.RawStdEncoding.DecodeString(str)
     if err != nil {
         return ""
@@ -54,13 +54,13 @@ func RawDecode(str string) string {
 }
 
 // RawURL 加密，无填充编码
-func RawURLEncode(str string) string {
+func Base64RawURLEncode(str string) string {
     newStr := base64.RawURLEncoding.EncodeToString([]byte(str))
     return newStr
 }
 
 // RawURL 解密，无填充编码
-func RawURLDecode(str string) string {
+func Base64RawURLDecode(str string) string {
     newStr, err := base64.RawURLEncoding.DecodeString(str)
     if err != nil {
         return ""
@@ -70,12 +70,12 @@ func RawURLDecode(str string) string {
 }
 
 // URL
-func EncodeSegment(seg string) string {
+func Base64EncodeSegment(seg string) string {
     return strings.TrimRight(base64.URLEncoding.EncodeToString([]byte(seg)), "=")
 }
 
 // URL
-func DecodeSegment(seg string) string {
+func Base64DecodeSegment(seg string) string {
     if l := len(seg) % 4; l > 0 {
         seg += strings.Repeat("=", 4-l)
     }

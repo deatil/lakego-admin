@@ -77,13 +77,54 @@ func (this *Rsa) MakePrvKey(bits int) ([]byte, error) {
 
 // 公钥
 func (this *Rsa) MakePubKeyFromPrvKey(prvKey []byte) ([]byte, error) {
-    block, _ := pem.Decode(prvKey)
-    privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+    privateKey, err := ParseRSAPrivateKeyFromPEM(prvKey)
     if err != nil {
         return nil, err
     }
 
     publicKey := privateKey.PublicKey
+
+    X509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
+    if err != nil {
+        return nil, err
+    }
+
+    publicBlock := pem.Block{
+        Type: "RSA Public Key",
+        Bytes: X509PublicKey,
+    }
+
+    rs := pem.EncodeToMemory(&publicBlock)
+    return rs, nil
+}
+
+// 带密码私钥
+func (this *Rsa) MakePassPrvKey(bits int, password string) ([]byte, error) {
+    privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+    if err != nil {
+        return nil, err
+    }
+
+    x509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
+
+    privateBlock, err := x509.EncryptPEMBlock(rand.Reader, "RSA Private Key", x509PrivateKey, []byte(password), x509.PEMCipherAES256)
+    if err != nil {
+        return nil, err
+    }
+
+    rs := pem.EncodeToMemory(privateBlock)
+    return rs, nil
+}
+
+// 公钥
+func (this *Rsa) MakePubKeyFromPassPrvKey(prvKey []byte, password string) ([]byte, error) {
+    privateKey, err := ParseRSAPrivateKeyFromPEMWithPassword(prvKey, password)
+    if err != nil {
+        return nil, err
+    }
+
+    publicKey := privateKey.PublicKey
+
     X509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
     if err != nil {
         return nil, err

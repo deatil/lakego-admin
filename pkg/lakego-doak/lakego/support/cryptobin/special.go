@@ -40,7 +40,12 @@ func (this Cryptobin) AesCFBDecrypt() Cryptobin {
     encrypted := this.data
     key := this.key
 
-    block, _ := aes.NewCipher(key)
+    block, err := aes.NewCipher(key)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
     if len(encrypted) < aes.BlockSize {
         this.Error = errors.New("ciphertext too short")
         return this
@@ -61,7 +66,12 @@ func (this Cryptobin) AesECBEncrypt() Cryptobin {
     origData := this.data
     key := this.key
 
-    cipher, _ := aes.NewCipher(this.AesECBGenerateKey(key))
+    cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
     length := (len(origData) + aes.BlockSize) / aes.BlockSize
     plain := make([]byte, length*aes.BlockSize)
     copy(plain, origData)
@@ -86,7 +96,12 @@ func (this Cryptobin) AesECBDecrypt() Cryptobin {
     encrypted := this.data
     key := this.key
 
-    cipher, _ := aes.NewCipher(this.AesECBGenerateKey(key))
+    cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
     decrypted := make([]byte, len(encrypted))
 
     for bs, be := 0, cipher.BlockSize(); bs < len(encrypted); bs, be = bs+cipher.BlockSize(), be+cipher.BlockSize() {

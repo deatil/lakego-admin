@@ -152,7 +152,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ToString()
 
     // 签名
-    hashData := hash.SHA3384("测试")
+    hashData := hash.CRC16("123")
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
