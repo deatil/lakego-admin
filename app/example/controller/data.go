@@ -152,6 +152,11 @@ func (this *Data) Error(ctx *gin.Context) {
         ToString()
 
     // 签名
+    rsa := cryptobin.NewRsa()
+    rsaPriKey, _ := rsa.MakePassPKCS8PrvKey(2048, "123", "AES256")
+    rsaPubKey, _ := rsa.MakePubKeyFromPassPrvKey(rsaPriKey, "123")
+
+    // 签名
     hashData := hash.CRC16("123")
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
@@ -170,6 +175,9 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "cypt": cypt,
         "cyptde": cyptde,
+
+        "rsaPriKey": string(rsaPriKey),
+        "rsaPubKey": string(rsaPubKey),
 
         "hashData": hashData,
     })
