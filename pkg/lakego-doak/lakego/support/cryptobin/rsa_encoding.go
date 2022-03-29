@@ -15,8 +15,6 @@ var (
     ErrDataBroken      = errors.New("data broken, first byte is not zero")
     ErrKeyPairDismatch = errors.New("data is not encrypted by the private key")
     ErrDecryption      = errors.New("decryption error")
-    ErrPublicKey       = errors.New("get public key error")
-    ErrPrivateKey      = errors.New("get private key error")
 )
 
 // 公钥加密或解密byte

@@ -40,7 +40,7 @@ var MbTable = []uint16{
 }
 
 // CRC16/modbus
-func CRC16(s string) string {
+func CRC16Modbus(s string) string {
     data := []byte(s)
 
     var crc16 uint16

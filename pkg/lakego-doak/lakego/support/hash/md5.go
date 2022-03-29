@@ -12,7 +12,7 @@ func MD5(s string) string {
 }
 
 // MD5 16位哈希值
-func MD516(s string) string {
+func MD5_16(s string) string {
     data := MD5(s)
     return data[8:24]
 }

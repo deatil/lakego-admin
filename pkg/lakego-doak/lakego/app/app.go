@@ -18,8 +18,9 @@ import (
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/support/datebin"
-    "github.com/deatil/lakego-doak/lakego/middleware/event"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/middleware/event"
+    "github.com/deatil/lakego-doak/lakego/middleware/recovery"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
@@ -334,14 +335,9 @@ func (this *App) runApp() {
         }
     }
 
-    // 事件
-    r.Use(event.Handler())
-
     // 全局中间件
-    globalMiddlewares := routerFacade.GetGlobalMiddlewares()
-
-    // 设置全局中间件
-    r.Use(globalMiddlewares...)
+    r.Use(event.Handler())
+    r.Use(recovery.Handler())
 
     // 缓存路由信息
     router.NewRoute().With(r)
@@ -354,6 +350,12 @@ func (this *App) runApp() {
 
     // 加载服务提供者
     this.loadServiceProvider()
+
+    // 全局中间件
+    globalMiddlewares := routerFacade.GetGlobalMiddlewares()
+
+    // 设置全局中间件
+    r.Use(globalMiddlewares...)
 
     // 不是命令行运行
     if !this.RunInConsole {

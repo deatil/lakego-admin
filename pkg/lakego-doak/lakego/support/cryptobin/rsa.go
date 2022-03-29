@@ -19,7 +19,7 @@ type Rsa struct {
 }
 
 // 设置 hash 类型
-func (this Rsa) WithKey(data string) Rsa {
+func (this *Rsa) WithHash(data string) *Rsa {
     this.hash = data
 
     return this

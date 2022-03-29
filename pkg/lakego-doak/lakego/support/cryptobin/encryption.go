@@ -159,16 +159,30 @@ func (this Cryptobin) Decrypt() Cryptobin {
     return this
 }
 
-// 加密 RSA
-func (this Cryptobin) EnRsa() Cryptobin {
+// RSA 加密
+func (this Cryptobin) RsaEncrypt() Cryptobin {
     this.parsedData, this.Error = NewRsa().Encrypt(this.data, this.key)
 
     return this
 }
 
-// 解密 RSA
-func (this Cryptobin) DeRsa(password ...string) Cryptobin {
+// RSA 解密
+func (this Cryptobin) RsaDecrypt(password ...string) Cryptobin {
     this.parsedData, this.Error = NewRsa().Decrypt(this.data, this.key, password...)
+
+    return this
+}
+
+// RSA 私钥加密
+func (this Cryptobin) RsaPrikeyEncrypt(password ...string) Cryptobin {
+    this.parsedData, this.Error = NewRsa().PriKeyEncrypt(this.data, this.key, password...)
+
+    return this
+}
+
+// RSA 公钥解密
+func (this Cryptobin) RsaPubkeyDecrypt() Cryptobin {
+    this.parsedData, this.Error = NewRsa().PubKeyDecrypt(this.data, this.key)
 
     return this
 }

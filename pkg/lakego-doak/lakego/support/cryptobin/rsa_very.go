@@ -64,9 +64,9 @@ func (this *Rsa) Sign(data []byte, keyBytes []byte, password ...string) ([]byte,
     var err error
 
     if len(password) > 0 {
-        priv, err = ParseRSAPrivateKeyFromPEMWithPassword(keyBytes, password[0])
+        priv, err = this.ParseRSAPrivateKeyFromPEMWithPassword(keyBytes, password[0])
     } else {
-        priv, err = ParseRSAPrivateKeyFromPEM(keyBytes)
+        priv, err = this.ParseRSAPrivateKeyFromPEM(keyBytes)
     }
 
     signature, err := rsa.SignPKCS1v15(rand.Reader, priv, hash, hashed)
@@ -79,7 +79,7 @@ func (this *Rsa) Sign(data []byte, keyBytes []byte, password ...string) ([]byte,
 
 // 公钥验证
 func (this *Rsa) Very(data, signData, keyBytes []byte) (bool, error) {
-    pubKey, err := ParseRSAPublicKeyFromPEM(keyBytes)
+    pubKey, err := this.ParseRSAPublicKeyFromPEM(keyBytes)
     if err != nil {
         return false, err
     }

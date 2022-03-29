@@ -5,7 +5,6 @@ import (
     "crypto/sha256"
     "crypto/sha512"
     "encoding/hex"
-    "golang.org/x/crypto/sha3"
 )
 
 // SHA1 哈希值
@@ -38,28 +37,14 @@ func SHA512(s string) string {
     return hex.EncodeToString(sum[:])
 }
 
-// ==========
-
-// SHA3224 哈希值
-func SHA3224(s string) string {
-    sum := sha3.Sum224([]byte(s))
+// SHA512_224 哈希值
+func SHA512_224(s string) string {
+    sum := sha512.Sum512_224([]byte(s))
     return hex.EncodeToString(sum[:])
 }
 
-// SHA3256 哈希值
-func SHA3256(s string) string {
-    sum := sha3.Sum256([]byte(s))
-    return hex.EncodeToString(sum[:])
-}
-
-// SHA3384 哈希值
-func SHA3384(s string) string {
-    sum := sha3.Sum384([]byte(s))
-    return hex.EncodeToString(sum[:])
-}
-
-// SHA3512 哈希值
-func SHA3512(s string) string {
-    sum := sha3.Sum512([]byte(s))
+// SHA512_256 哈希值
+func SHA512_256(s string) string {
+    sum := sha512.Sum512_256([]byte(s))
     return hex.EncodeToString(sum[:])
 }

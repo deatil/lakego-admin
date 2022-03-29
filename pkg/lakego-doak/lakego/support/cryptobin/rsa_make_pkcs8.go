@@ -7,18 +7,21 @@ import (
     "encoding/pem"
 )
 
-// 私钥
+// 生成 PKCS8 私钥
 // bits = 512 | 1024 | 2048 | 4096
-func (this *Rsa) MakePrvKey(bits int) ([]byte, error) {
-    privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+func (this *Rsa) MakePKCS8PrivateKey(bits int) ([]byte, error) {
+    private, err := rsa.GenerateKey(rand.Reader, bits)
     if err != nil {
         return nil, err
     }
 
-    X509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
+    X509PrivateKey, err := x509.MarshalPKCS8PrivateKey(private)
+    if err != nil {
+        return nil, err
+    }
 
     privateBlock := pem.Block{
-        Type: "RSA PRIVATE KEY",
+        Type: "PRIVATE KEY",
         Bytes: X509PrivateKey,
     }
 
@@ -27,30 +30,12 @@ func (this *Rsa) MakePrvKey(bits int) ([]byte, error) {
 }
 
 // 公钥
-func (this *Rsa) MakePubKeyFromPrvKey(prvKey []byte) ([]byte, error) {
-    privateKey, err := this.ParseRSAPrivateKeyFromPEM(prvKey)
-    if err != nil {
-        return nil, err
-    }
-
-    publicKey := privateKey.PublicKey
-
-    X509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
-    if err != nil {
-        return nil, err
-    }
-
-    publicBlock := pem.Block{
-        Type: "PUBLIC KEY",
-        Bytes: X509PublicKey,
-    }
-
-    rs := pem.EncodeToMemory(&publicBlock)
-    return rs, nil
+func (this *Rsa) MakePKCS8PubKeyFromPKCS8PrvKey(prvKey []byte) ([]byte, error) {
+    return this.MakePubKeyFromPrvKey(prvKey)
 }
 
 // 带密码私钥
-func (this *Rsa) MakePassPrvKey(bits int, password string, PEMCipher ...string) ([]byte, error) {
+func (this *Rsa) MakePassPKCS8PrvKey(bits int, password string, PEMCipher ...string) ([]byte, error) {
     privateKey, err := rsa.GenerateKey(rand.Reader, bits)
     if err != nil {
         return nil, err
@@ -72,26 +57,30 @@ func (this *Rsa) MakePassPrvKey(bits int, password string, PEMCipher ...string) 
         }
     }
 
-    x509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
+    x509Encoded, err := x509.MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        return nil, err
+    }
 
-    privateBlock, err := x509.EncryptPEMBlock(
+    block, err := EncryptPKCS8PrivateKey(
         rand.Reader,
-        "RSA PRIVATE KEY",
-        x509PrivateKey,
+        "ENCRYPTED PRIVATE KEY",
+        x509Encoded,
         []byte(password),
         usePEMCipher,
+        "SHA256",
     )
     if err != nil {
         return nil, err
     }
 
-    rs := pem.EncodeToMemory(privateBlock)
+    rs := pem.EncodeToMemory(block)
     return rs, nil
 }
 
 // 公钥
-func (this *Rsa) MakePubKeyFromPassPrvKey(prvKey []byte, password string) ([]byte, error) {
-    privateKey, err := this.ParseRSAPrivateKeyFromPEMWithPassword(prvKey, password)
+func (this *Rsa) MakePKCS8PubKeyFromPassPKCS8PrvKey(prvKey []byte, password string) ([]byte, error) {
+    privateKey, err := this.ParseRSAPKCS8PrivateKeyFromPEMWithPassword(prvKey, password)
     if err != nil {
         return nil, err
     }

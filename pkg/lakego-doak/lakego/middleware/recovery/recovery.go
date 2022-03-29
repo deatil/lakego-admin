@@ -1,22 +1,20 @@
 package recovery
 
 import (
-    "bytes"
     "fmt"
     "io"
-    "net"
-    "net/http/httputil"
     "os"
+    "net"
+    "net/http"
+    "net/http/httputil"
+    "time"
+    "bytes"
     "runtime"
     "strings"
-    "time"
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/logger"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-
-    "github.com/deatil/lakego-doak-admin/admin/support/response"
-    "github.com/deatil/lakego-doak-admin/admin/support/http/code"
 )
 
 var (
@@ -29,7 +27,7 @@ var (
 /**
  * 全局异常处理
  *
- * @create 2022-2-10
+ * @create 2022-3-27
  * @author deatil
  */
 func Handler() router.HandlerFunc {
@@ -58,7 +56,7 @@ func Handler() router.HandlerFunc {
 
                 mode := config.New("server").GetString("Mode")
 
-                msg := ""
+                var msg string
 
                 // 提示
                 switch err.(type) {
@@ -74,17 +72,17 @@ func Handler() router.HandlerFunc {
 
                 headersToStr := strings.Join(headers, "\r\n")
                 if brokenPipe {
-                    logData = fmt.Sprintf("[lakego-admin] %s\n%s", err, headersToStr)
+                    logData = fmt.Sprintf("[lakego] %s\n%s", err, headersToStr)
                 } else if mode == "dev" {
                     logData = fmt.Sprintf(
-                        "[lakego-admin] panic recovered: %s\n%s\n%s",
+                        "[lakego] panic recovered: %s\n%s\n%s",
                         err,
                         headersToStr,
                         stack,
                     )
                 } else {
                     logData = fmt.Sprintf(
-                        "[lakego-admin] panic recovered: %s\n%s",
+                        "[lakego] panic recovered: %s\n%s",
                         err,
                         stack,
                     )
@@ -117,18 +115,7 @@ func Handler() router.HandlerFunc {
 }
 
 func responseData(ctx *router.Context, msg string, data router.H) {
-    // 前缀匹配
-    path := "/" + config.New("admin").GetString("Route.Prefix")
-
-    url := ctx.Request.URL.String()
-
-    // 当前只返回 admin 系统错误
-    if strings.HasPrefix(url, path) {
-        response.ErrorWithData(ctx, msg, code.StatusException, data)
-    } else {
-        // 其他默认返回字符
-        response.ReturnString(ctx, msg)
-    }
+    ctx.String(http.StatusOK, msg)
 }
 
 func stack(skip int) ([]byte, []string) {
