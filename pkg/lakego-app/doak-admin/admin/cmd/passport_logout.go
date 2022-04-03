@@ -3,9 +3,9 @@ package cmd
 import (
     "fmt"
 
+    "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
 

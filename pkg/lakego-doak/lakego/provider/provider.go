@@ -2,11 +2,11 @@ package provider
 
 import (
     "path/filepath"
+    "github.com/deatil/lake-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/view"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/path"

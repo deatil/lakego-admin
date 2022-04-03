@@ -1,8 +1,8 @@
 package jwt
 
 import (
+    "github.com/deatil/go-hash/hash"
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
 )
 
 // 获取接收方

@@ -3,9 +3,10 @@ package controller
 import (
     "strings"
 
+    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-datebin/datebin"
+    
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     adminController "github.com/deatil/lakego-doak-admin/admin/controller"
 

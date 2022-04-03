@@ -3,11 +3,12 @@ package controller
 import (
     "strings"
 
+    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-datebin/datebin"
+    
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
-    "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/random"
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
 

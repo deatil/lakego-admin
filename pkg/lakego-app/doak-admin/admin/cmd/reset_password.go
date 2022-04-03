@@ -3,8 +3,8 @@ package cmd
 import (
     "fmt"
 
+    "github.com/deatil/go-hash/hash"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
     authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
 
     "github.com/deatil/lakego-doak-admin/admin/model"

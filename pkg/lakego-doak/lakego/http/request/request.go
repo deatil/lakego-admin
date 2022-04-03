@@ -4,9 +4,10 @@ import (
     "io"
     "net"
     "mime/multipart"
+    
+    cast "github.com/deatil/go-goch/goch"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/cast"
 )
 
 // 使用

@@ -4,9 +4,9 @@ import (
     "os"
     "fmt"
 
+    "github.com/deatil/lake-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
-    "github.com/deatil/lakego-doak/lakego/filesystem"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
     routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"

@@ -4,9 +4,10 @@ import (
     "time"
     "gorm.io/gorm"
 
-    "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/random"
+    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-hash/hash"
+
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 

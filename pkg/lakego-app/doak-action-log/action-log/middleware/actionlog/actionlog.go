@@ -4,8 +4,8 @@ import (
     "strconv"
     "encoding/json"
 
+    "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-action-log/action-log/model"
 )

@@ -34,7 +34,6 @@ func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
         defer func() {
             if err := recover(); err != nil {
-
                 var brokenPipe bool
                 if ne, ok := err.(*net.OpError); ok {
                     if se, ok := ne.Err.(*os.SyscallError); ok {

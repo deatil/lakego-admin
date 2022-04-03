@@ -19,20 +19,6 @@ import (
     "encoding/binary"
 )
 
-// 包名称
-func PackageName(v interface{}) string {
-    if v == nil {
-        return ""
-    }
-
-    val := reflect.ValueOf(v)
-    if val.Kind() == reflect.Ptr {
-        return val.Elem().Type().PkgPath()
-    }
-
-    return val.Type().PkgPath()
-}
-
 // 复制 map
 func CopyMap(m map[string]string) (map[string]string, error) {
     var buf bytes.Buffer
@@ -63,17 +49,6 @@ func StructToMap(obj interface{}) map[string]interface{} {
     }
 
     return data
-}
-
-// 反射获取名称
-func GetNameFromReflect(f interface{}) string {
-    t := reflect.ValueOf(f).Type()
-
-    if t.Kind() == reflect.Func {
-        return runtime.FuncForPC(reflect.ValueOf(f).Pointer()).Name()
-    }
-
-    return t.String()
 }
 
 func LogN(n, b float64) float64 {

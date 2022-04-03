@@ -5,10 +5,10 @@ import (
     "time"
     "errors"
 
+    "github.com/deatil/go-encoding/encoding"
+    "github.com/deatil/go-cryptobin/cryptobin"
     "github.com/deatil/lakego-doak/lakego/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
-    "github.com/deatil/lakego-doak/lakego/support/encoding"
-    "github.com/deatil/lakego-doak/lakego/support/cryptobin"
 )
 
 // 授权结构体

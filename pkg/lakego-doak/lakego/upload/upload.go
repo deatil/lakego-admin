@@ -5,10 +5,10 @@ import (
     "io"
     "strings"
     "mime/multipart"
-
+    
+    "github.com/deatil/lake-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/validator"
-    "github.com/deatil/lakego-doak/lakego/filesystem"
 )
 
 // 上传

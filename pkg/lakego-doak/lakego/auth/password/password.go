@@ -1,8 +1,9 @@
 package password
 
 import (
-    "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/random"
+    "github.com/deatil/go-hash/hash"
+    
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 )
 

@@ -3,7 +3,16 @@ go 1.18
 use (
 	./
 	./app
-	./pkg/go-filesystem
+	./pkg/lakego-pkg/go-hash
+	./pkg/lakego-pkg/go-goch
+	./pkg/lakego-pkg/go-pipeline
+	./pkg/lakego-pkg/go-exception
+	./pkg/lakego-pkg/go-collection
+	./pkg/lakego-pkg/go-cryptobin
+	./pkg/lakego-pkg/go-datebin
+	./pkg/lakego-pkg/go-encoding
+	./pkg/lakego-pkg/go-filesystem
+	./pkg/lakego-pkg/lake-filesystem
 	./pkg/lakego-doak
 	./pkg/lakego-app/doak-action-log
 	./pkg/lakego-app/doak-admin

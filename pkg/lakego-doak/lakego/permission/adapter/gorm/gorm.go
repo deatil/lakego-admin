@@ -8,11 +8,12 @@ import (
     "gorm.io/gorm"
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
+    
+    "github.com/deatil/go-hash/hash"
+    cast "github.com/deatil/go-goch/goch"
 
     "github.com/deatil/lakego-doak/lakego/permission/adapter"
-    "github.com/deatil/lakego-doak/lakego/support/cast"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
-    "github.com/deatil/lakego-doak/lakego/support/random"
+    "github.com/deatil/lakego-doak/lakego/random"
 )
 
 // 自定义模型

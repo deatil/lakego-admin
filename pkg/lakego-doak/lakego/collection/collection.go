@@ -1,7 +1,7 @@
 package collection
 
 import (
-    "github.com/deatil/lakego-doak/lakego/support/collection"
+    "github.com/deatil/go-collection/collection"
 )
 
 /**

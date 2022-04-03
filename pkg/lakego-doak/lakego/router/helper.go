@@ -5,7 +5,7 @@ import (
     "strings"
     "net/url"
 
-    "github.com/deatil/lakego-doak/lakego/support/array"
+    "github.com/deatil/lakego-doak/lakego/array"
 )
 
 func FormatURL(u string) string {

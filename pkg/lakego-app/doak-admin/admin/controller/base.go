@@ -3,7 +3,7 @@ package controller
 import (
     "strings"
 
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
+    "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )

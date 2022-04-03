@@ -122,11 +122,10 @@ func responseData(ctx *router.Context, msg string, data router.H) {
 
     url := ctx.Request.URL.String()
 
-    // 当前只返回 admin 系统错误
+    // 返回错误
     if strings.HasPrefix(url, path) {
         response.ErrorWithData(ctx, msg, code.StatusException, data)
     } else {
-        // 其他默认返回字符
         response.ReturnString(ctx, msg)
     }
 }

@@ -4,6 +4,9 @@ go 1.18
 
 require (
 	github.com/casbin/casbin/v2 v2.37.4
+	github.com/deatil/go-goch v0.0.3
+	github.com/deatil/go-hash v0.0.3
+	github.com/deatil/go-cryptobin v0.0.3
 	github.com/deatil/go-filesystem v0.0.3
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.4
@@ -42,6 +45,8 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/tebeka/strftime v0.1.5 // indirect
 	go.uber.org/dig v1.13.0
+	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
+	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/sys v0.0.0-20220315194320-039c03cc5b86 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
 	golang.org/x/text v0.3.7 // indirect

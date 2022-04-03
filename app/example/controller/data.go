@@ -3,14 +3,15 @@ package controller
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-doak/lakego/pipeline"
-    "github.com/deatil/lakego-doak/lakego/exception"
-    "github.com/deatil/lakego-doak/lakego/filesystem"
-    "github.com/deatil/lakego-doak/lakego/support/str"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
-    "github.com/deatil/lakego-doak/lakego/support/snowflake"
-    "github.com/deatil/lakego-doak/lakego/support/cryptobin"
-    "github.com/deatil/lakego-doak/lakego/support/hash"
+    "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-datebin/datebin"
+    "github.com/deatil/go-pipeline/pipeline"
+    "github.com/deatil/go-exception/exception"
+    "github.com/deatil/go-cryptobin/cryptobin"
+    "github.com/deatil/lake-filesystem/filesystem"
+
+    "github.com/deatil/lakego-doak/lakego/str"
+    "github.com/deatil/lakego-doak/lakego/snowflake"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -151,13 +152,19 @@ func (this *Data) Error(ctx *gin.Context) {
         Decrypt().
         ToString()
 
-    // 签名
+    // 生成证书
     rsa := cryptobin.NewRsa()
-    rsaPriKey, _ := rsa.MakePassPKCS8PrvKey(1024, "123", "DES")
-    rsaPubKey, _ := rsa.MakePKCS8PubKeyFromPassPKCS8PrvKey(rsaPriKey, "123")
+    rsaPriKey := rsa.
+        GenerateKey(2048).
+        CreatePKCS8WithPassword("123", "AES256CBC", "SHA256").
+        ToKeyString()
+    rsaPubKey := rsa.
+        FromPKCS8WithPassword([]byte(rsaPriKey), "123").
+        CreatePublicKey().
+        ToKeyString()
 
     // 签名
-    hashData := hash.MD5SHA1("123")
+    hashData := hash.FromString("123").MD5_16().ToString()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
@@ -176,8 +183,8 @@ func (this *Data) Error(ctx *gin.Context) {
         "cypt": cypt,
         "cyptde": cyptde,
 
-        "rsaPriKey": string(rsaPriKey),
-        "rsaPubKey": string(rsaPubKey),
+        "rsaPriKey": rsaPriKey,
+        "rsaPubKey": rsaPubKey,
 
         "hashData": hashData,
     })

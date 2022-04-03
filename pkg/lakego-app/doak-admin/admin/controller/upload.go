@@ -3,11 +3,11 @@ package controller
 import (
     "strconv"
 
+    "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/upload"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/model"

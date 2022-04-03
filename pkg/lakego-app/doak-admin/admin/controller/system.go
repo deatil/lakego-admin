@@ -4,9 +4,9 @@ import (
     "os"
     "runtime"
 
+    "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/support/datebin"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
 )
