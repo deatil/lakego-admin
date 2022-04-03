@@ -2,7 +2,7 @@ package provider
 
 import (
     "path/filepath"
-    "github.com/deatil/lake-filesystem/filesystem"
+    "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/view"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"

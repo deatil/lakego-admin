@@ -13,7 +13,7 @@ package main
 
 import (
     "fmt"
-    "github.com/deatil/lake-filesystem/filesystem"
+    "github.com/deatil/lakego-filesystem/filesystem"
 )
 
 func main() {

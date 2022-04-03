@@ -13,8 +13,8 @@ replace (
 	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
 	github.com/deatil/go-filesystem => ./pkg/lakego-pkg/go-filesystem
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
-	github.com/deatil/lake-filesystem => ./pkg/lakego-pkg/lake-filesystem
-	github.com/deatil/lakego-doak => ./pkg/lakego-doak
+	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
@@ -46,7 +46,7 @@ require (
 	github.com/deatil/go-goch v0.0.3 // indirect
 	github.com/deatil/go-hash v0.0.3 // indirect
 	github.com/deatil/go-pipeline v0.0.0-00010101000000-000000000000 // indirect
-	github.com/deatil/lake-filesystem v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect

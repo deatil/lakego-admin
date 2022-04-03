@@ -8,7 +8,7 @@ import (
     "github.com/deatil/go-pipeline/pipeline"
     "github.com/deatil/go-exception/exception"
     "github.com/deatil/go-cryptobin/cryptobin"
-    "github.com/deatil/lake-filesystem/filesystem"
+    "github.com/deatil/lakego-filesystem/filesystem"
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/snowflake"

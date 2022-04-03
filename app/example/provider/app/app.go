@@ -3,7 +3,7 @@ package app
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lake-filesystem/filesystem"
+    "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/provider"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"

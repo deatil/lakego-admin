@@ -1,4 +1,4 @@
-module github.com/deatil/lake-filesystem
+module github.com/deatil/lakego-filesystem
 
 go 1.16
 

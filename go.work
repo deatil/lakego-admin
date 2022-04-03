@@ -12,8 +12,8 @@ use (
 	./pkg/lakego-pkg/go-datebin
 	./pkg/lakego-pkg/go-encoding
 	./pkg/lakego-pkg/go-filesystem
-	./pkg/lakego-pkg/lake-filesystem
-	./pkg/lakego-doak
+	./pkg/lakego-pkg/lakego-filesystem
+	./pkg/lakego-pkg/lakego-doak
 	./pkg/lakego-app/doak-action-log
 	./pkg/lakego-app/doak-admin
 	./pkg/lakego-app/doak-swagger

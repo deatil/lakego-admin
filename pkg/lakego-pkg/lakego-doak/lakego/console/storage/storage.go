@@ -4,7 +4,7 @@ import (
     "fmt"
     "strings"
 
-    "github.com/deatil/lake-filesystem/filesystem"
+    "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/path"
