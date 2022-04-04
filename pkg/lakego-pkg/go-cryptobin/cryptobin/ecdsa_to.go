@@ -34,7 +34,7 @@ func (this Ecdsa) ToHexString() string {
 
 // ==========
 
-// 验证情况
+// 验证结果
 func (this Ecdsa) ToVeryed() bool {
     return this.veryed
 }

@@ -2,9 +2,9 @@ package cryptobin
 
 import (
     "crypto"
-    "crypto/md5"
-    "crypto/rand"
     "crypto/rsa"
+    "crypto/rand"
+    "crypto/md5"
     "crypto/sha1"
     "crypto/sha256"
     "crypto/sha512"
@@ -12,8 +12,8 @@ import (
 
 // 私钥签名
 func (this Rsa) Sign() Rsa {
-    hash := this.GetCryptoHash(this.signHash)
-    hashed := this.GetCryptoHashInfo(this.signHash, this.data)
+    hash := this.HashType(this.signHash)
+    hashed := this.DataHash(this.signHash, this.data)
 
     this.paredData, this.Error = rsa.SignPKCS1v15(rand.Reader, this.privateKey, hash, hashed)
 
@@ -23,8 +23,8 @@ func (this Rsa) Sign() Rsa {
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) Very(data []byte) Rsa {
-    hash := this.GetCryptoHash(this.signHash)
-    hashed := this.GetCryptoHashInfo(this.signHash, data)
+    hash := this.HashType(this.signHash)
+    hashed := this.DataHash(this.signHash, data)
 
     err := rsa.VerifyPKCS1v15(this.publicKey, hash, hashed, this.data)
     if err != nil {
@@ -40,7 +40,7 @@ func (this Rsa) Very(data []byte) Rsa {
 }
 
 // 签名
-func (this Rsa) GetCryptoHash(signHash string) crypto.Hash {
+func (this Rsa) HashType(signHash string) crypto.Hash {
     hashs := map[string]crypto.Hash{
         "MD5": crypto.MD5,
         "SHA1": crypto.SHA1,
@@ -59,7 +59,7 @@ func (this Rsa) GetCryptoHash(signHash string) crypto.Hash {
 }
 
 // 签名后数据
-func (this Rsa) GetCryptoHashInfo(signHash string, data []byte) []byte {
+func (this Rsa) DataHash(signHash string, data []byte) []byte {
     switch signHash {
         case "MD5":
             sum := md5.Sum(data)
@@ -81,5 +81,5 @@ func (this Rsa) GetCryptoHashInfo(signHash string, data []byte) []byte {
             return sum[:]
     }
 
-    return nil
+    return data
 }

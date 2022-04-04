@@ -37,30 +37,27 @@ func (this *Base) FormatDate(date string) int64 {
     return datebin.StringToTimestamp(date)
 }
 
-// 状态通用转换
-func (this *Base) FormatOrderBy(order string, defaulter ...string) string {
-    newDefault := "ASC"
-    if len(defaulter) > 0 {
-        newDefault = defaulter[0]
+// 格式化排序
+func (this *Base) FormatOrderBy(order string, def ...string) []string {
+    newDefault := "add_time__DESC"
+    if len(def) > 0 {
+        newDefault = def[0]
     }
 
     if order == "" {
-        return newDefault
+        order = newDefault
     }
 
-    orderList := []string{
-        "ASC",
-        "DESC",
+    orders := strings.SplitN(order, "__", 2)
+    if len(orders) != 2 {
+        orders = []string{"add_time", "DESC"}
     }
 
-    order = strings.ToUpper(order)
-
-    for _, v := range orderList {
-        if order == v {
-            return order
-        }
+    orders[1] = strings.ToUpper(orders[1])
+    if orders[1] != "ASC" && orders[1] != "DESC" {
+        orders[1] = "DESC"
     }
 
-    return newDefault
+    return orders
 }
 

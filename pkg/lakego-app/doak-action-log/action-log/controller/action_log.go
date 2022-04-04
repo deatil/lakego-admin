@@ -1,11 +1,9 @@
 package controller
 
 import (
-    "strings"
-
-    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-datebin/datebin"
-    
+
     "github.com/deatil/lakego-doak/lakego/router"
 
     adminController "github.com/deatil/lakego-doak-admin/admin/controller"
@@ -46,15 +44,11 @@ func (this *ActionLog) Index(ctx *router.Context) {
 
     // 排序
     order := ctx.DefaultQuery("order", "time__DESC")
-    orders := strings.SplitN(order, "__", 2)
+    orders := this.FormatOrderBy(order)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "time") {
         orders[0] = "time"
-    }
-
-    if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
-        orders[1] = "DESC"
     }
 
     logModel = logModel.Order(orders[0] + " " + orders[1])
@@ -97,8 +91,8 @@ func (this *ActionLog) Index(ctx *router.Context) {
     start := ctx.DefaultQuery("start", "0")
     limit := ctx.DefaultQuery("limit", "10")
 
-    newStart := cast.ToInt(start)
-    newLimit := cast.ToInt(limit)
+    newStart := goch.ToInt(start)
+    newLimit := goch.ToInt(limit)
 
     logModel = logModel.
         Offset(newStart).

@@ -12,7 +12,7 @@ import (
 )
 
 // 私钥签名
-func (this Ecdsa) Sign() Ecdsa {
+func (this Ecdsa) Sign(separator ...string) Ecdsa {
     hashed := this.DataHash(this.signHash, this.data)
 
     r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashed)
@@ -33,7 +33,12 @@ func (this Ecdsa) Sign() Ecdsa {
         return this
     }
 
-    signStr := string(rt) + "+" + string(st)
+    sep := "+"
+    if len(separator) > 0 {
+        sep = separator[0]
+    }
+
+    signStr := string(rt) + sep + string(st)
 
     this.paredData = []byte(signStr)
 
@@ -41,10 +46,15 @@ func (this Ecdsa) Sign() Ecdsa {
 }
 
 // 公钥验证
-func (this Ecdsa) Very(data []byte) Ecdsa {
+func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
     hashed := this.DataHash(this.signHash, data)
 
-    split := strings.Split(string(this.data), "+")
+    sep := "+"
+    if len(separator) > 0 {
+        sep = separator[0]
+    }
+
+    split := strings.Split(string(this.data), sep)
     rStr := split[0]
     sStr := split[1]
     rr := new(big.Int)
@@ -90,5 +100,5 @@ func (this Ecdsa) DataHash(signHash string, data []byte) []byte {
             return sum[:]
     }
 
-    return nil
+    return data
 }

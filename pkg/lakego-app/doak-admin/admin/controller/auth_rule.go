@@ -3,9 +3,9 @@ package controller
 import (
     "strings"
 
-    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-datebin/datebin"
-    
+
     "github.com/deatil/lakego-doak/lakego/tree"
     "github.com/deatil/lakego-doak/lakego/router"
 
@@ -46,7 +46,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
 
     // 排序
     order := ctx.DefaultQuery("order", "add_time__DESC")
-    orders := strings.SplitN(order, "__", 2)
+    orders := this.FormatOrderBy(order)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "title" &&
@@ -54,10 +54,6 @@ func (this *AuthRule) Index(ctx *router.Context) {
         orders[0] != "method" &&
         orders[0] != "add_time") {
         orders[0] = "add_time"
-    }
-
-    if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
-        orders[1] = "DESC"
     }
 
     ruleModel = ruleModel.Order(orders[0] + " " + orders[1])
@@ -91,8 +87,8 @@ func (this *AuthRule) Index(ctx *router.Context) {
     start := ctx.DefaultQuery("start", "0")
     limit := ctx.DefaultQuery("limit", "10")
 
-    newStart := cast.ToInt(start)
-    newLimit := cast.ToInt(limit)
+    newStart := goch.ToInt(start)
+    newLimit := goch.ToInt(limit)
 
     ruleModel = ruleModel.
         Offset(newStart).
@@ -362,7 +358,7 @@ func (this *AuthRule) Create(ctx *router.Context) {
 
     listorder := 0
     if post["listorder"] != "" {
-        listorder = cast.ToInt(post["listorder"])
+        listorder = goch.ToInt(post["listorder"])
     } else {
         listorder = 100
     }
@@ -379,7 +375,7 @@ func (this *AuthRule) Create(ctx *router.Context) {
         Method: strings.ToUpper(post["method"].(string)),
         Slug: post["slug"].(string),
         Description: post["description"].(string),
-        Listorder: cast.ToString(listorder),
+        Listorder: goch.ToString(listorder),
         Status: status,
         AddTime: int(datebin.NowTime()),
         AddIp: router.GetRequestIp(ctx),
@@ -446,7 +442,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
 
     listorder := 0
     if post["listorder"] != "" {
-        listorder = cast.ToInt(post["listorder"])
+        listorder = goch.ToInt(post["listorder"])
     } else {
         listorder = 100
     }
@@ -515,7 +511,7 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
     // 排序
     listorder := 0
     if post["listorder"] != "" {
-        listorder = cast.ToInt(post["listorder"])
+        listorder = goch.ToInt(post["listorder"])
     } else {
         listorder = 100
     }

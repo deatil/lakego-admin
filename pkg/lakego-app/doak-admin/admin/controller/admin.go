@@ -4,10 +4,10 @@ import (
     "strings"
     "encoding/json"
 
-    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
-    
+
     "github.com/deatil/lakego-doak/lakego/tree"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
@@ -58,17 +58,13 @@ func (this *Admin) Index(ctx *router.Context) {
 
     // 排序
     order := ctx.DefaultQuery("order", "add_time__DESC")
-    orders := strings.SplitN(order, "__", 2)
+    orders := this.FormatOrderBy(order)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "name" &&
         orders[0] != "last_active" &&
         orders[0] != "add_time") {
         orders[0] = "add_time"
-    }
-
-    if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
-        orders[1] = "DESC"
     }
 
     adminModel = adminModel.Order(orders[0] + " " + orders[1])
@@ -106,8 +102,8 @@ func (this *Admin) Index(ctx *router.Context) {
     start := ctx.DefaultQuery("start", "0")
     limit := ctx.DefaultQuery("limit", "10")
 
-    newStart := cast.ToInt(start)
-    newLimit := cast.ToInt(limit)
+    newStart := goch.ToInt(start)
+    newLimit := goch.ToInt(limit)
 
     adminModel = adminModel.
         Offset(newStart).
@@ -290,7 +286,7 @@ func (this *Admin) Groups(ctx *router.Context) {
                 value2 := value.(map[string]interface{})
                 group := map[string]interface{}{
                     "id": value2["id"],
-                    "parentid": cast.ToString(value2["parentid"]),
+                    "parentid": goch.ToString(value2["parentid"]),
                     "title": value2["title"],
                     "description": value2["description"],
                 };

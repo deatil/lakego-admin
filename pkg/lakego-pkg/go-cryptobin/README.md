@@ -159,6 +159,23 @@ func main() {
         Very([]byte("测试")).
         ToVeryed()
 
+    // PSS 验证
+    pri, _ := fs.Get("./runtime/key/sample_key")
+    pub, _ := fs.Get("./runtime/key/sample_key.pub")
+    rsa := cryptobin.NewRsa()
+    rsaPriKey := rsa.
+        FromPrivateKey([]byte(pri)).
+        FromString("测试").
+        WithSignHash("SHA256").
+        PSSSign().
+        ToBase64String()
+    rsaPubKey := rsa.
+        FromBase64String(rsaPriKey).
+        FromPublicKey([]byte(pub)).
+        WithSignHash("SHA256").
+        PSSVery([]byte("测试")).
+        ToVeryed()
+
 }
 
 ~~~

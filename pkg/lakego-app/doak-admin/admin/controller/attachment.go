@@ -1,12 +1,10 @@
 package controller
 
 import (
-    "strings"
-
-    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
-    
+
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
@@ -48,17 +46,13 @@ func (this *Attachment) Index(ctx *router.Context) {
 
     // 排序
     order := ctx.DefaultQuery("order", "add_time__DESC")
-    orders := strings.SplitN(order, "__", 2)
+    orders := this.FormatOrderBy(order)
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "name" &&
         orders[0] != "update_time" &&
         orders[0] != "add_time") {
         orders[0] = "add_time"
-    }
-
-    if orders[1] == "" || (orders[1] != "DESC" && orders[1] != "ASC") {
-        orders[1] = "DESC"
     }
 
     attachModel = attachModel.Order(orders[0] + " " + orders[1])
@@ -96,8 +90,8 @@ func (this *Attachment) Index(ctx *router.Context) {
     start := ctx.DefaultQuery("start", "0")
     limit := ctx.DefaultQuery("limit", "10")
 
-    newStart := cast.ToInt(start)
-    newLimit := cast.ToInt(limit)
+    newStart := goch.ToInt(start)
+    newLimit := goch.ToInt(limit)
 
     attachModel = attachModel.
         Offset(newStart).
@@ -149,7 +143,7 @@ func (this *Attachment) Detail(ctx *router.Context) {
         return
     }
 
-    newId := cast.ToString(id)
+    newId := goch.ToString(id)
 
     result := map[string]interface{}{}
 
@@ -346,7 +340,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
     }
 
     // 添加到缓存
-    code := hash.MD5(cast.ToString(datebin.NowTime()) + random.String(10))
+    code := hash.MD5(goch.ToString(datebin.NowTime()) + random.String(10))
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出
