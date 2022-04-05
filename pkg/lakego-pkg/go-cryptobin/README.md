@@ -209,6 +209,22 @@ func main() {
         Very([]byte("测试")).
         ToVeryed()
 
+    // =====
+
+    // Chacha20poly1305 加密测试
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        Chacha20poly1305([]byte("werfrewerfre"), []byte("ftyhg5")).
+        Encrypt().
+        ToBase64String()
+    cyptde := cryptobin.
+        FromBase64String("c2c0u6OYvU0EmsFapoCfiLky+OakQW9x/A==").
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        Chacha20poly1305([]byte("werfrewerfre"), []byte("ftyhg5")).
+        Decrypt().
+        ToString()
+
 }
 
 ~~~

@@ -21,6 +21,60 @@ func (this Cryptobin) TriDes() Cryptobin {
     return this
 }
 
+// Twofish
+func (this Cryptobin) Twofish() Cryptobin {
+    this.multiple = "Twofish"
+
+    return this
+}
+
+// Blowfish
+func (this Cryptobin) Blowfish(salt ...[]byte) Cryptobin {
+    this.multiple = "Blowfish"
+
+    if len(salt) > 0 {
+        this.config["salt"] = salt[0]
+    }
+
+    return this
+}
+
+// Tea
+func (this Cryptobin) Tea(rounds ...int) Cryptobin {
+    this.multiple = "Tea"
+
+    if len(rounds) > 0 {
+        this.config["rounds"] = rounds[0]
+    }
+
+    return this
+}
+
+// Xtea
+func (this Cryptobin) Xtea() Cryptobin {
+    this.multiple = "Xtea"
+
+    return this
+}
+
+// Cast5
+func (this Cryptobin) Cast5() Cryptobin {
+    this.multiple = "Cast5"
+
+    return this
+}
+
+// Chacha20poly1305
+// nonce is 12 bytes
+func (this Cryptobin) Chacha20poly1305(nonce []byte, additional []byte) Cryptobin {
+    this.multiple = "Chacha20poly1305"
+
+    this.config["nonce"] = nonce
+    this.config["additional"] = additional
+
+    return this
+}
+
 // ==========
 
 // ECB
@@ -64,24 +118,6 @@ func (this Cryptobin) GCM(nonce []byte, additional []byte) Cryptobin {
 
     this.config["nonce"] = nonce
     this.config["additional"] = additional
-
-    return this
-}
-
-// Blowfish
-func (this Cryptobin) Blowfish(salt []byte) Cryptobin {
-    this.mode = "Blowfish"
-
-    this.config["salt"] = salt
-
-    return this
-}
-
-// Tea
-func (this Cryptobin) Tea(rounds int) Cryptobin {
-    this.mode = "Tea"
-
-    this.config["rounds"] = rounds
 
     return this
 }
