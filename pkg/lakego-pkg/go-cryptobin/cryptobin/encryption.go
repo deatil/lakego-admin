@@ -6,6 +6,9 @@ import (
     "crypto/aes"
     "crypto/des"
     "crypto/cipher"
+
+    "golang.org/x/crypto/tea"
+    "golang.org/x/crypto/blowfish"
 )
 
 // Cipher
@@ -25,6 +28,18 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             block, err = des.NewCipher(key)
         case "TriDes":
             block, err = des.NewTripleDESCipher(key)
+        case "Blowfish":
+            if salt, ok := this.config["salt"]; ok {
+                block, err = blowfish.NewSaltedCipher(key, salt.([]byte))
+            } else {
+                block, err = blowfish.NewCipher(key)
+            }
+        case "Tea":
+            if rounds, ok := this.config["rounds"]; ok {
+                block, err = tea.NewCipherWithRounds(key, rounds.(int))
+            } else {
+                block, err = tea.NewCipher(key)
+            }
     }
 
     if err != nil {
@@ -124,7 +139,7 @@ func (this Cryptobin) Encrypt() Cryptobin {
 
             additional, _ := this.config["additional"]
 
-            cryptText = gcm.Seal(nil, nonce, plainPadding, additional)
+            cryptText = gcm.Seal(nil, nonce.([]byte), plainPadding, additional.([]byte))
     }
 
     this.parsedData = cryptText
@@ -189,7 +204,7 @@ func (this Cryptobin) Decrypt() Cryptobin {
 
             additional, _ := this.config["additional"]
 
-            dst, err = gcm.Open(nil, nonce, cipherText, additional)
+            dst, err = gcm.Open(nil, nonce.([]byte), cipherText, additional.([]byte))
             if err != nil {
                 this.Error = err
                 return this

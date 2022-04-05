@@ -159,6 +159,8 @@ func main() {
         Very([]byte("测试")).
         ToVeryed()
 
+    // =====
+
     // PSS 验证
     pri, _ := fs.Get("./runtime/key/sample_key")
     pub, _ := fs.Get("./runtime/key/sample_key.pub")
@@ -174,6 +176,37 @@ func main() {
         FromPublicKey([]byte(pub)).
         WithSignHash("SHA256").
         PSSVery([]byte("测试")).
+        ToVeryed()
+
+    // =====
+
+    // 生成 eddsa 证书
+    eddsa := cryptobin.NewEdDSA().GenerateKey()
+    eddsaPriKey := eddsa.
+        CreatePrivateKey().
+        ToKeyString()
+    eddsaPubKey := eddsa.
+        CreatePublicKey().
+        ToKeyString()
+
+    fs.Put("./runtime/key/eddsa_key", eddsaPriKey)
+    fs.Put("./runtime/key/eddsa_key.pub", eddsaPubKey)
+
+    // =====
+
+    // eddsa 验证
+    pri, _ := fs.Get("./runtime/key/eddsa_key")
+    pub, _ := fs.Get("./runtime/key/eddsa_key.pub")
+    rsa := cryptobin.NewEdDSA()
+    rsaPriKey := rsa.
+        FromPrivateKey([]byte(pri)).
+        FromString("测试").
+        Sign().
+        ToBase64String()
+    rsaPubKey := rsa.
+        FromBase64String(rsaPriKey).
+        FromPublicKey([]byte(pub)).
+        Very([]byte("测试")).
         ToVeryed()
 
 }

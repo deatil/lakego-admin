@@ -6,7 +6,7 @@ func New() Cryptobin {
         multiple: "Aes",
         mode: "ECB",
         padding: "Pkcs7",
-        config: make(map[string][]byte),
+        config: make(map[string]interface{}),
     }
 }
 
@@ -39,7 +39,7 @@ type Cryptobin struct {
     parsedData []byte
 
     // 额外配置
-    config map[string][]byte
+    config map[string]interface{}
 
     // 错误
     Error error

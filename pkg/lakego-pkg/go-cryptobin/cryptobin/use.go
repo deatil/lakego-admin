@@ -68,6 +68,24 @@ func (this Cryptobin) GCM(nonce []byte, additional []byte) Cryptobin {
     return this
 }
 
+// Blowfish
+func (this Cryptobin) Blowfish(salt []byte) Cryptobin {
+    this.mode = "Blowfish"
+
+    this.config["salt"] = salt
+
+    return this
+}
+
+// Tea
+func (this Cryptobin) Tea(rounds int) Cryptobin {
+    this.mode = "Tea"
+
+    this.config["rounds"] = rounds
+
+    return this
+}
+
 // ==========
 
 // Zero 补码

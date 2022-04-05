@@ -1,34 +1,28 @@
 package cryptobin
 
 import (
-    "crypto/ecdsa"
-    "crypto/elliptic"
+    "crypto/ed25519"
 )
 
 // 构造函数
-func NewEcdsa() Ecdsa {
-    return Ecdsa{
-        curve: elliptic.P256(),
-        signHash: "SHA512",
+func NewEdDSA() EdDSA {
+    return EdDSA{
         veryed: false,
     }
 }
 
 /**
- * Ecdsa
+ * EdDSA
  *
  * @create 2022-4-3
  * @author deatil
  */
-type Ecdsa struct {
+type EdDSA struct {
     // 私钥
-    privateKey *ecdsa.PrivateKey
+    privateKey ed25519.PrivateKey
 
     // 公钥
-    publicKey *ecdsa.PublicKey
-
-    // 生成类型
-    curve elliptic.Curve
+    publicKey ed25519.PublicKey
 
     // [私钥/公钥]数据
     keyData []byte
@@ -38,9 +32,6 @@ type Ecdsa struct {
 
     // 解析后的数据
     paredData []byte
-
-    // 签名验证类型
-    signHash string
 
     // 验证后情况
     veryed bool

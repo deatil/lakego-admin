@@ -43,14 +43,14 @@ func (this Cryptobin) WithPadding(data string) Cryptobin {
 }
 
 // 配置
-func (this Cryptobin) WithConfig(config map[string][]byte) Cryptobin {
+func (this Cryptobin) WithConfig(config map[string]interface{}) Cryptobin {
     this.config = config
 
     return this
 }
 
 // 设置配置
-func (this Cryptobin) SetConfig(key string, value []byte) Cryptobin {
+func (this Cryptobin) SetConfig(key string, value interface{}) Cryptobin {
     this.config[key] = value
 
     return this

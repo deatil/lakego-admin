@@ -36,7 +36,7 @@ func (this Cryptobin) GetParsedData() []byte {
 }
 
 // 获取配置
-func (this Cryptobin) GetConfig(key string) []byte {
+func (this Cryptobin) GetConfig(key string) interface{} {
     if data, ok := this.config[key]; ok {
         return data
     }
@@ -45,7 +45,7 @@ func (this Cryptobin) GetConfig(key string) []byte {
 }
 
 // 获取全部配置
-func (this Cryptobin) GetConfigs() map[string][]byte {
+func (this Cryptobin) GetConfigs() map[string]interface{} {
     return this.config
 }
 
