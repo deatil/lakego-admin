@@ -7,7 +7,7 @@ import (
 
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-cryptobin/cryptobin"
-    "github.com/deatil/lakego-doak/lakego/jwt"
+    "github.com/deatil/lakego-jwt/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
 )
 

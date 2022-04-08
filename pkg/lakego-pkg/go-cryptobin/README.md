@@ -16,7 +16,7 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin"
+    "github.com/deatil/go-cryptobin/cryptobin"
 )
 
 func main() {
@@ -224,6 +224,46 @@ func main() {
         Chacha20poly1305([]byte("werfrewerfre"), []byte("ftyhg5")).
         Decrypt().
         ToString()
+
+    // =====
+
+    // RC4 加密测试
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12dfertf12dfertf12").
+        RC4().
+        Encrypt().
+        ToHexString()
+    cyptde := cryptobin.
+        FromHexString("4308d5f24be9195317").
+        SetKey("dfertf12dfertf12dfertf12").
+        RC4().
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // Chacha20 加密测试
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12dfertf12dfertf12ghy6yhtg").
+        Chacha20([]byte("fgr5tfgr5rtr")).
+        Encrypt().
+        ToHexString()
+    cyptde := cryptobin.
+        FromHexString("a87757b7196994e818").
+        SetKey("dfertf12dfertf12dfertf12ghy6yhtg").
+        Chacha20([]byte("fgr5tfgr5rtr")).
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // Asn1 编码
+    var p string
+    encodeStr := encoding.ForAsn1("test-data").ToBase64String()
+    encoding.FromBase64String("Ewl0ZXN0LWRhdGE=").Asn1To(&p)
+    encodeStr2 := p
 
 }
 

@@ -4,13 +4,13 @@ import (
     "sync"
     "strings"
 
+    "github.com/deatil/go-sign/sign"
+    "github.com/deatil/go-sign/sign/interfaces"
+    signDriver "github.com/deatil/go-sign/sign/driver"
+
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/sign"
-    "github.com/deatil/lakego-doak/lakego/sign/interfaces"
-
-    signDriver "github.com/deatil/lakego-doak/lakego/sign/driver"
 )
 
 /**

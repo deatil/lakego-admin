@@ -5,6 +5,7 @@ go 1.18
 replace (
 	app => ./app
 	github.com/deatil/go-goch => ./pkg/lakego-pkg/go-goch
+	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/go-hash => ./pkg/lakego-pkg/go-hash
 	github.com/deatil/go-datebin => ./pkg/lakego-pkg/go-datebin
 	github.com/deatil/go-encoding => ./pkg/lakego-pkg/go-encoding
@@ -13,6 +14,7 @@ replace (
 	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
 	github.com/deatil/go-filesystem => ./pkg/lakego-pkg/go-filesystem
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
+	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log

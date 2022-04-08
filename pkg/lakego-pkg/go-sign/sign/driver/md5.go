@@ -3,7 +3,7 @@ package driver
 import (
     "strings"
 
-    "github.com/deatil/lakego-doak/lakego/sign/crypt"
+    "github.com/deatil/go-sign/sign/crypt"
 )
 
 type MD5 struct {

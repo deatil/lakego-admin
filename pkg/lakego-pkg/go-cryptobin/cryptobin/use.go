@@ -64,6 +64,19 @@ func (this Cryptobin) Cast5() Cryptobin {
     return this
 }
 
+// Chacha20
+func (this Cryptobin) Chacha20(nonce []byte, counter ...uint32) Cryptobin {
+    this.multiple = "Chacha20"
+
+    this.config["nonce"] = nonce
+
+    if len(counter) > 0 {
+        this.config["counter"] = counter[0]
+    }
+
+    return this
+}
+
 // Chacha20poly1305
 // nonce is 12 bytes
 func (this Cryptobin) Chacha20poly1305(nonce []byte, additional []byte) Cryptobin {
@@ -71,6 +84,13 @@ func (this Cryptobin) Chacha20poly1305(nonce []byte, additional []byte) Cryptobi
 
     this.config["nonce"] = nonce
     this.config["additional"] = additional
+
+    return this
+}
+
+// RC4
+func (this Cryptobin) RC4() Cryptobin {
+    this.multiple = "RC4"
 
     return this
 }

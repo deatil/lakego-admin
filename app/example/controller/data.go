@@ -5,6 +5,7 @@ import (
 
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
+    "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-pipeline/pipeline"
     "github.com/deatil/go-exception/exception"
     "github.com/deatil/go-cryptobin/cryptobin"
@@ -12,6 +13,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/snowflake"
+    "github.com/deatil/lakego-doak/lakego/facade/sign"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -166,6 +168,16 @@ func (this *Data) Error(ctx *gin.Context) {
     // 签名
     hashData := hash.FromString("123").MD5_16().ToString()
 
+    // 编码
+    encodeStr := encoding.FromString("test-data").ToBase85String()
+    encodeStr2 := encoding.FromBase85String("FCfN8/S&:3@/p9-").ToString()
+
+    // 签名
+    signData := sign.Sign("md5").
+        WithData("test", "测试测试").
+        WithAppID("API123456").
+        GetSignMap()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
@@ -187,6 +199,11 @@ func (this *Data) Error(ctx *gin.Context) {
         "rsaPubKey": rsaPubKey,
 
         "hashData": hashData,
+
+        "encodeStr": encodeStr,
+        "encodeStr2": encodeStr2,
+
+        "signData": signData,
     })
 }
 

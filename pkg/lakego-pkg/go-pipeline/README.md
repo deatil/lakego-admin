@@ -12,7 +12,7 @@
 package main
 
 import (
-    "github.com/deatil/lakego-doak/lakego/pipeline"
+    "github.com/deatil/go-pipeline/pipeline"
 )
 
 func main() {

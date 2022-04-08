@@ -12,8 +12,8 @@ import (
     "context"
 
     "github.com/deatil/go-datebin/datebin"
+    "github.com/deatil/lakego-jwt/jwt"
     "github.com/deatil/lakego-doak/lakego/di"
-    "github.com/deatil/lakego-doak/lakego/jwt"
     "github.com/deatil/lakego-doak/lakego/env"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"

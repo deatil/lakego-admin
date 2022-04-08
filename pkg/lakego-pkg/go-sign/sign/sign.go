@@ -5,8 +5,8 @@ import (
     "errors"
     "strconv"
 
-    "github.com/deatil/lakego-doak/lakego/sign/util"
-    "github.com/deatil/lakego-doak/lakego/sign/interfaces"
+    "github.com/deatil/go-sign/sign/util"
+    "github.com/deatil/go-sign/sign/interfaces"
 )
 
 // 实例化

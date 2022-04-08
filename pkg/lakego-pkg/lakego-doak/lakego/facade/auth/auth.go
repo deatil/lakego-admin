@@ -3,7 +3,7 @@ package auth
 import (
     "sync"
 
-    "github.com/deatil/lakego-doak/lakego/jwt"
+    "github.com/deatil/lakego-jwt/jwt"
     "github.com/deatil/lakego-doak/lakego/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 )

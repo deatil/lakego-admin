@@ -14,7 +14,7 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-datebin"
+    "github.com/deatil/go-datebin/datebin"
 )
 
 func main() {

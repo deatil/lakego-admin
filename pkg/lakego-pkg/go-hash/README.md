@@ -13,7 +13,7 @@ package main
 
 import (
     "fmt"
-    "github.com/deatil/go-hash"
+    "github.com/deatil/go-hash/hash"
 )
 
 func main() {

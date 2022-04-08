@@ -1,7 +1,7 @@
 package jwt
 
 import (
-    "github.com/deatil/lakego-doak/lakego/jwt"
+    "github.com/deatil/lakego-jwt/jwt"
 )
 
 /**
