@@ -170,5 +170,9 @@ func (this Datebin) Truncate(d time.Duration) Datebin {
 
 // 返回时分秒数据
 func (this Datebin) Clock() (hour, min, sec int) {
+    if this.IsInvalid() {
+        return 0, 0, 0
+    }
+
     return this.time.Clock()
 }

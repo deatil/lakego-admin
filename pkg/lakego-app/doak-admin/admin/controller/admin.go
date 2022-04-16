@@ -57,7 +57,7 @@ func (this *Admin) Index(ctx *router.Context) {
         Scopes(scope.AdminWithAccess(ctx))
 
     // 排序
-    order := ctx.DefaultQuery("order", "add_time__DESC")
+    order := ctx.DefaultQuery("order", "add_time__ASC")
     orders := this.FormatOrderBy(order)
     if orders[0] == "" ||
         (orders[0] != "id" &&
@@ -136,11 +136,17 @@ func (this *Admin) Index(ctx *router.Context) {
         return
     }
 
+    newlist := make([]map[string]interface{}, 0)
+    for _, item := range list {
+        item["avatar_url"] = model.AttachmentUrl(item["avatar"].(string))
+        newlist = append(newlist, item)
+    }
+
     this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
-        "list": list,
+        "list": newlist,
     })
 }
 
@@ -180,16 +186,19 @@ func (this *Admin) Detail(ctx *router.Context) {
     adminData := map[string]interface{}{}
     json.Unmarshal(data, &adminData)
 
-    newInfoGroups:= collection.Collect(adminData["Groups"]).
-        Select("id", "parentid", "title", "description").
-        ToMapArray()
+    newInfoGroups := make([]map[string]interface{}, 0)
+    if len(adminData["Groups"].([]interface{})) > 0 {
+        newInfoGroups = collection.Collect(adminData["Groups"].([]interface{})).
+            Select("id", "parentid", "title", "description").
+            ToMapArray()
+    }
 
     avatar := model.AttachmentUrl(adminData["avatar"].(string))
 
     newInfo := collection.Collect(adminData).
         Only([]string{
             "id", "name", "nickname", "email",
-            "is_root", "status",
+            "introduce", "is_root", "status",
             "last_active", "last_ip",
             "update_time", "update_ip",
             "add_time", "add_ip",
@@ -836,6 +845,7 @@ func (this *Admin) Logout(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "刷新 token"
+// @Param access formData string true "权限列表，半角逗号分隔"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
 // @Router /admin/{id}/access [patch]
 // @Security Bearer

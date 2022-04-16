@@ -8,8 +8,8 @@ import (
     "golang.org/x/crypto/chacha20poly1305"
 )
 
-// 不通用的加密
-func (this Cryptobin) AEADEncrypt() Cryptobin {
+// 加密
+func (this Cryptobin) GuessEncrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
         case "Chacha20":
@@ -78,8 +78,8 @@ func (this Cryptobin) AEADEncrypt() Cryptobin {
     }
 }
 
-// 不通用的解密
-func (this Cryptobin) AEADDecrypt() Cryptobin {
+// 解密
+func (this Cryptobin) GuessDecrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
         case "Chacha20":

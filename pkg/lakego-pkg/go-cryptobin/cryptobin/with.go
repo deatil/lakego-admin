@@ -49,9 +49,16 @@ func (this Cryptobin) WithConfig(config map[string]interface{}) Cryptobin {
     return this
 }
 
-// 设置配置
-func (this Cryptobin) SetConfig(key string, value interface{}) Cryptobin {
+// 设置一个配置
+func (this Cryptobin) WithOneConfig(key string, value interface{}) Cryptobin {
     this.config[key] = value
+
+    return this
+}
+
+// 设置错误
+func (this Cryptobin) WithError(err error) Cryptobin {
+    this.Error = err
 
     return this
 }

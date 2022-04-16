@@ -48,13 +48,13 @@ func Route(engine *router.RouterGroup) {
     engine.POST("/admin", adminController.Create)
     engine.PUT("/admin/:id", adminController.Update)
     engine.DELETE("/admin/:id", adminController.Delete)
-    engine.PUT("/admin/reset-permission", adminController.ResetPermission)
     engine.PATCH("/admin/:id/enable", adminController.Enable)
     engine.PATCH("/admin/:id/disable", adminController.Disable)
     engine.PATCH("/admin/:id/avatar", adminController.UpdateAvatar)
     engine.PATCH("/admin/:id/password", adminController.UpdatePasssword)
     engine.PATCH("/admin/:id/access", adminController.Access)
     engine.DELETE("/admin/logout/:refreshToken", adminController.Logout)
+    engine.PUT("/admin/reset-permission", adminController.ResetPermission)
 
     // 系统信息
     systemController := new(controller.System)

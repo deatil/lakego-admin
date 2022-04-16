@@ -26,6 +26,14 @@ func main() {
     base64Data := encoding.Base64Encode("useData").
     fmt.Println("Base64 编码后结果：", base64Data)
 
+    // =====
+
+    // Asn1 编码
+    var p string
+    encodeStr := encoding.ForAsn1("test-data").ToBase64String()
+    encoding.FromBase64String("Ewl0ZXN0LWRhdGE=").Asn1To(&p)
+    encodeStr2 := p
+
     // XML 编码
     p := Per{
         Name: "kkk",

@@ -8,7 +8,6 @@ import (
     "strings"
     "strconv"
     "math/rand"
-    "hash/crc32"
     "unicode"
     "unicode/utf8"
     "encoding/json"
@@ -544,17 +543,13 @@ func HTMLEntityDecode(str string) string {
     return html.UnescapeString(str)
 }
 
-// Crc32
-func Crc32(str string) uint32 {
-    return crc32.ChecksumIEEE([]byte(str))
-}
-
 // Bindec
 func Bindec(str string) (string, error) {
     i, err := strconv.ParseInt(str, 2, 0)
     if err != nil {
         return "", err
     }
+
     return strconv.FormatInt(i, 10), nil
 }
 

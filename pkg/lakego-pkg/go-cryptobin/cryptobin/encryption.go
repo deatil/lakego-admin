@@ -7,7 +7,7 @@ func (this Cryptobin) Encrypt() Cryptobin {
         case "Chacha20",
             "Chacha20poly1305",
             "RC4":
-            return this.AEADEncrypt()
+            return this.GuessEncrypt()
         // 默认通用
         default:
             return this.CipherEncrypt()
@@ -21,7 +21,7 @@ func (this Cryptobin) Decrypt() Cryptobin {
         case "Chacha20",
             "Chacha20poly1305",
             "RC4":
-            return this.AEADDecrypt()
+            return this.GuessDecrypt()
         // 默认通用
         default:
             return this.CipherDecrypt()

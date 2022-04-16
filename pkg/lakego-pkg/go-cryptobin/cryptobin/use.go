@@ -191,7 +191,7 @@ func (this Cryptobin) SetKey(data string) Cryptobin {
 // ==========
 
 // 不做处理
-func (this Cryptobin) NoParsed() Cryptobin {
+func (this Cryptobin) NoParse() Cryptobin {
     this.parsedData = this.data
 
     return this

@@ -14,9 +14,6 @@ type (
     // 管道单个
     PipeItem = interface{}
 
-    // 管道数组
-    PipeArray = []PipeItem
-
     // Next 函数
     NextFunc = func(interface{}) interface{}
 
@@ -53,7 +50,7 @@ type Pipeline struct {
     Passable interface{}
 
     // 管道
-    Pipes PipeArray
+    Pipes []PipeItem
 
     // Carry 回调函数
     CarryCallback CarryCallbackFunc
@@ -77,7 +74,7 @@ func (this *Pipeline) Through(pipes ...PipeItem) *Pipeline {
 }
 
 // 数组
-func (this *Pipeline) ThroughArray(pipes PipeArray) *Pipeline {
+func (this *Pipeline) ThroughArray(pipes []PipeItem) *Pipeline {
     this.Pipes = pipes
 
     return this
@@ -141,7 +138,7 @@ func (this *Pipeline) Carry() CarryFunc {
 }
 
 // 获取设置的管道
-func (this *Pipeline) GetPipes() PipeArray {
+func (this *Pipeline) GetPipes() []PipeItem {
     return this.Pipes
 }
 

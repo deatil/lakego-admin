@@ -592,6 +592,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
+// @Param access formData string true "权限列表，半角逗号分隔"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "授权成功", "data": ""}"
 // @Router /auth/group/{id}/access [patch]
 // @Security Bearer

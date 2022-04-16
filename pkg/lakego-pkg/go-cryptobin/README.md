@@ -257,14 +257,6 @@ func main() {
         Decrypt().
         ToString()
 
-    // =====
-
-    // Asn1 编码
-    var p string
-    encodeStr := encoding.ForAsn1("test-data").ToBase64String()
-    encoding.FromBase64String("Ewl0ZXN0LWRhdGE=").Asn1To(&p)
-    encodeStr2 := p
-
 }
 
 ~~~

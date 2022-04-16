@@ -2,6 +2,8 @@ package controller
 
 import (
     "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-datebin/datebin"
+
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -108,9 +110,12 @@ func (this *Passport) Login(ctx *router.Context) {
     aud := jwt.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
+    // 账号ID
+    adminid := admin["id"].(string)
+
     // token 数据
     tokenData := map[string]string{
-        "id": admin["id"].(string),
+        "id": adminid,
     }
 
     // 授权 token
@@ -129,6 +134,14 @@ func (this *Passport) Login(ctx *router.Context) {
 
     // 授权 token 过期时间
     expiresIn := jwter.GetAccessExpiresIn()
+
+    // 更新登录时间
+    model.NewAdmin().
+        Where("id = ?", adminid).
+        Updates(map[string]interface{}{
+            "last_active": int(datebin.NowTime()),
+            "last_ip": router.GetRequestIp(ctx),
+        })
 
     // 数据输出
     this.SuccessWithData(ctx, "登录成功", router.H{

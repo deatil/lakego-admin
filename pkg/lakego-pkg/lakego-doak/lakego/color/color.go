@@ -19,7 +19,7 @@ var (
     // Error defines a color supporting writer for os.Stderr.
     Error = color.Error
 
-    // 基础设置
+    // 基础样式
     baseMap = map[string]color.Attribute{
         "reset":         color.Reset,
         "bold":          color.Bold,
