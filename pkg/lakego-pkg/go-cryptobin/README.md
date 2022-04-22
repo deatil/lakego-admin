@@ -8,7 +8,14 @@
 *  默认 `Aes`, `ECB`, `PKCS7Padding`
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-cryptobin
+~~~
+
+
+### 使用
 
 ~~~go
 package main
@@ -47,7 +54,6 @@ func main() {
     // Des 加密测试
     cypt := cryptobin.
         FromString("test-pass").
-        SetIv("ftr4tywe").
         SetKey("dfertf12").
         Des().
         ECB().
@@ -56,7 +62,6 @@ func main() {
         ToBase64String()
     cyptde := cryptobin.
         FromBase64String("bvifBivJ1GEJ0N/UiZry/A==").
-        SetIv("ftr4tywe").
         SetKey("dfertf12").
         Des().
         ECB().
@@ -254,6 +259,46 @@ func main() {
         FromHexString("a87757b7196994e818").
         SetKey("dfertf12dfertf12dfertf12ghy6yhtg").
         Chacha20([]byte("fgr5tfgr5rtr")).
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // SM4 加密测试
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey("1234567890abcdef").
+        SM4().
+        ECB().
+        PKCS7Padding().
+        Encrypt().
+        ToHexString()
+    cyptde := cryptobin.
+        FromHexString("5d91a272c4ede4bf4cf19c963daec309").
+        SetKey("1234567890abcdef").
+        SM4().
+        ECB().
+        PKCS7Padding().
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // Padding 加密测试
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12").
+        Des().
+        ECB().
+        TBCPadding().
+        Encrypt().
+        ToBase64String()
+    cyptde := cryptobin.
+        FromBase64String("bvifBivJ1GEXAEgBAo9OoA==").
+        SetKey("dfertf12").
+        Des().
+        ECB().
+        TBCPadding().
         Decrypt().
         ToString()
 

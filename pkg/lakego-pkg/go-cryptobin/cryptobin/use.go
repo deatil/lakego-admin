@@ -64,6 +64,13 @@ func (this Cryptobin) Cast5() Cryptobin {
     return this
 }
 
+// SM4
+func (this Cryptobin) SM4() Cryptobin {
+    this.multiple = "SM4"
+
+    return this
+}
+
 // Chacha20
 func (this Cryptobin) Chacha20(nonce []byte, counter ...uint32) Cryptobin {
     this.multiple = "Chacha20"
@@ -144,6 +151,13 @@ func (this Cryptobin) GCM(nonce []byte, additional []byte) Cryptobin {
 
 // ==========
 
+// 不补码
+func (this Cryptobin) NoPadding() Cryptobin {
+    this.padding = ""
+
+    return this
+}
+
 // Zero 补码
 func (this Cryptobin) ZeroPadding() Cryptobin {
     this.padding = "Zero"
@@ -153,21 +167,53 @@ func (this Cryptobin) ZeroPadding() Cryptobin {
 
 // PKCS5 补码
 func (this Cryptobin) PKCS5Padding() Cryptobin {
-    this.padding = "Pkcs5"
+    this.padding = "PKCS5"
 
     return this
 }
 
 // PKCS7 补码
 func (this Cryptobin) PKCS7Padding() Cryptobin {
-    this.padding = "Pkcs7"
+    this.padding = "PKCS7"
 
     return this
 }
 
-// 不补码
-func (this Cryptobin) NoPadding() Cryptobin {
-    this.padding = ""
+// X923 补码
+func (this Cryptobin) X923Padding() Cryptobin {
+    this.padding = "X923"
+
+    return this
+}
+
+// ISO10126 补码
+func (this Cryptobin) ISO10126Padding() Cryptobin {
+    this.padding = "ISO10126"
+
+    return this
+}
+
+// ISO7816_4 补码
+func (this Cryptobin) ISO7816_4Padding() Cryptobin {
+    this.padding = "ISO7816_4"
+
+    return this
+}
+
+// TBC 补码
+func (this Cryptobin) TBCPadding() Cryptobin {
+    this.padding = "TBC"
+
+    return this
+}
+
+// PKCS1 补码
+func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
+    this.padding = "PKCS1"
+
+    if len(bt) > 0 {
+        this.config["pkcs1_padding_bt"] = bt[0]
+    }
 
     return this
 }

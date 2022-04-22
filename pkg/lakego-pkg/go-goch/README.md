@@ -6,7 +6,14 @@
 *  常用的数据转换合集
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-goch
+~~~
+
+
+### 使用
 
 ~~~go
 package main

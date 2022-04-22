@@ -1,4 +1,4 @@
-package example
+package provider
 
 import (
     "fmt"
@@ -12,12 +12,12 @@ import (
  * @create 2021-10-12
  * @author deatil
  */
-type ServiceProvider struct {
+type OtherServiceProvider struct {
     provider.ServiceProvider
 }
 
 // 注册
-func (this *ServiceProvider) Register() {
+func (this *OtherServiceProvider) Register() {
     if !this.GetApp().RunningInConsole() {
         fmt.Println("例子 Register 注册")
     }
@@ -26,7 +26,7 @@ func (this *ServiceProvider) Register() {
 /**
  * 引导
  */
-func (this *ServiceProvider) Boot() {
+func (this *OtherServiceProvider) Boot() {
     if !this.GetApp().RunningInConsole() {
         fmt.Println("例子 Boot 引导")
     }

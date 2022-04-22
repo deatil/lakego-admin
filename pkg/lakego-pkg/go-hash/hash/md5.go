@@ -6,8 +6,8 @@ import (
 )
 
 // MD5 哈希值
-func MD5(s string) string {
-    sum := md5.Sum([]byte(s))
+func MD5(data string) string {
+    sum := md5.Sum([]byte(data))
     return hex.EncodeToString(sum[:])
 }
 
@@ -17,9 +17,9 @@ func (this Hash) MD5() Hash {
 }
 
 // MD5 16位哈希值
-func MD5_16(s string) string {
-    data := MD5(s)
-    return data[8:24]
+func MD5_16(data string) string {
+    hashData := MD5(data)
+    return hashData[8:24]
 }
 
 // MD5 16位哈希值

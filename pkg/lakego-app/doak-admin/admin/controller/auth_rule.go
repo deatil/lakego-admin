@@ -32,6 +32,7 @@ type AuthRule struct {
 // @Produce application/json
 // @Param order query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
+// @Param method query string false "请求方式"
 // @Param start_time query string false "开始时间"
 // @Param end_time query string false "结束时间"
 // @Param status query string false "状态"
@@ -65,6 +66,11 @@ func (this *AuthRule) Index(ctx *router.Context) {
 
         ruleModel = ruleModel.
             Where("title LIKE ?", searchword)
+    }
+
+    method := ctx.DefaultQuery("method", "")
+    if method != "" {
+        ruleModel = ruleModel.Where("method = ?", method)
     }
 
     // 时间条件

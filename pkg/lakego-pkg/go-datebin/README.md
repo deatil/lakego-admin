@@ -6,7 +6,14 @@
 *  时间各种简单的使用
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-datebin
+~~~
+
+
+### 使用
 
 ~~~go
 package main

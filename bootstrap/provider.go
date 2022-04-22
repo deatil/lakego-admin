@@ -11,6 +11,9 @@ import (
     _ "github.com/deatil/lakego-admin/docs/swagger"
     _ "github.com/deatil/lakego-doak-swagger/swagger/bootstrap"
 
+    // 静态文件代理模块
+    _ "github.com/deatil/lakego-doak-statics/statics/bootstrap"
+
     // 例子，不用时可以注释该引入
     _ "app/example/bootstrap"
 )

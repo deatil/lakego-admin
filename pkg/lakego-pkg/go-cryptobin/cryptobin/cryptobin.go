@@ -5,7 +5,7 @@ func New() Cryptobin {
     return Cryptobin{
         multiple: "Aes",
         mode: "ECB",
-        padding: "Pkcs7",
+        padding: "PKCS7",
         config: make(map[string]interface{}),
     }
 }

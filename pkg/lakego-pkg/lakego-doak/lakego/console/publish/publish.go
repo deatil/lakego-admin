@@ -48,11 +48,18 @@ var pProvider string
 var pTag string
 
 func init() {
+    // PersistentFlags() 表示该类参数可以被用于当前命令及其子命令。
+    // Flags() 表示该类参数只能用于当前命令。
+    // cobra默认只解析当前命令的local flags，
+    // 通过开启Command.TraverseChildren参数，可以解析每个命令的local flags。
     pf := PublishCmd.Flags()
-    pf.BoolVarP(&pForce, "force", "", false, "是否覆盖文件")
-    pf.BoolVarP(&pAll, "all", "", false, "推送注册的全部数据")
-    pf.StringVarP(&pProvider, "provider", "", "", "根据服务提供者推送")
-    pf.StringVarP(&pTag, "tag", "", "", "根据标签推送")
+    pf.BoolVarP(&pForce, "force", "f", false, "是否覆盖文件")
+    pf.BoolVarP(&pAll, "all", "a", false, "推送注册的全部数据")
+    pf.StringVarP(&pProvider, "provider", "p", "", "根据服务提供者推送")
+    pf.StringVarP(&pTag, "tag", "t", "", "根据标签推送")
+
+    // 必填
+    // command.MarkFlagRequired(pf, "all")
 }
 
 /**

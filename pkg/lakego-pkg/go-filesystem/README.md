@@ -11,7 +11,7 @@
 *  `local`: 本地存储
 
 
-### 安装
+### 下载安装
 
 ~~~go
 go get -u github.com/deatil/go-filesystem

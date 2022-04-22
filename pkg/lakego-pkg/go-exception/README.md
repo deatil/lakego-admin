@@ -1,7 +1,14 @@
 ## 异常处理
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-exception
+~~~
+
+
+### 使用
 
 ~~~go
 package main

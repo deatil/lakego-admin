@@ -1,6 +1,7 @@
-package logger
+package math
 
 import (
+    "time"
     "math"
     "math/rand"
     "strconv"
@@ -20,7 +21,7 @@ func Rand(min, max int) int {
 
     // 重设最大值
     if int31 := 1<<31 - 1; max > int31 {
-        max = strconv.Itoa(int31)
+        max = int31
     }
 
     if min == max {
@@ -89,36 +90,13 @@ func Min(nums ...float64) float64 {
     return min
 }
 
-// Decbin
-func Decbin(number int64) string {
-    return strconv.FormatInt(number, 2)
+// IsNan
+func IsNan(val float64) bool {
+    return math.IsNaN(val)
 }
 
-// Dechex
-func Dechex(number int64) string {
-    return strconv.FormatInt(number, 16)
-}
-
-// Hexdec
-func Hexdec(str string) int64 {
-    data, _ := strconv.ParseInt(str, 16, 0)
-
-    return data
-}
-
-// Decoct
-func Decoct(number int64) string {
-    return strconv.FormatInt(number, 8)
-}
-
-// Octdec
-func Octdec(str string) int64 {
-    data, _ := strconv.ParseInt(str, 8, 0)
-
-    return data
-}
-
-// BaseConvert
+// 各种进制互转
+// BaseConvert("12312", 8, 16)
 func BaseConvert(number string, frombase, tobase int) string {
     i, err := strconv.ParseInt(number, frombase, 0)
     if err != nil {
@@ -128,7 +106,38 @@ func BaseConvert(number string, frombase, tobase int) string {
     return strconv.FormatInt(i, tobase)
 }
 
-// IsNan
-func IsNan(val float64) bool {
-    return math.IsNaN(val)
+// 十进制转二进制
+func Decbin(number int64) string {
+    return strconv.FormatInt(number, 2)
+}
+
+// 二进制转十进制
+func Bindec(str string) int64 {
+    data, _ := strconv.ParseInt(str, 2, 0)
+
+    return data
+}
+
+// 十进制转八进制
+func Decoct(number int64) string {
+    return strconv.FormatInt(number, 8)
+}
+
+// 八进制转十进制
+func Octdec(str string) int64 {
+    data, _ := strconv.ParseInt(str, 8, 0)
+
+    return data
+}
+
+// 十进制转十六进制
+func Dechex(number int64) string {
+    return strconv.FormatInt(number, 16)
+}
+
+// 十六进制转十进制
+func Hexdec(str string) int64 {
+    data, _ := strconv.ParseInt(str, 16, 0)
+
+    return data
 }

@@ -3,6 +3,7 @@ package encoding
 import (
     "bytes"
     "strings"
+    "strconv"
     "encoding/csv"
     "encoding/gob"
     "encoding/xml"
@@ -63,6 +64,46 @@ func (this Encoding) ToHexString() string {
 // 输出 BytesBuffer
 func (this Encoding) ToBytesBuffer() *bytes.Buffer {
     return bytes.NewBuffer(this.data)
+}
+
+// 输出进制编码
+func (this Encoding) ToConvert(base int) string {
+    number, err := strconv.ParseInt(string(this.data), 10, 0)
+    if err != nil {
+        return ""
+    }
+
+    return strconv.FormatInt(number, base)
+}
+
+// 输出 二进制
+func (this Encoding) ToConvertBin() string {
+    return this.ToConvert(2)
+}
+
+// 输出 八进制
+func (this Encoding) ToConvertOct() string {
+    return this.ToConvert(8)
+}
+
+// 输出 十进制
+func (this Encoding) ToConvertDec() int64 {
+    number, err := strconv.ParseInt(string(this.data), 10, 0)
+    if err != nil {
+        return 0
+    }
+
+    return number
+}
+
+// 输出 十进制
+func (this Encoding) ToConvertDecString() string {
+    return this.ToConvert(10)
+}
+
+// 输出 十六进制
+func (this Encoding) ToConvertHex() string {
+    return this.ToConvert(16)
 }
 
 // Gob 编码输出

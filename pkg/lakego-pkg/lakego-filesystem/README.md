@@ -6,7 +6,14 @@
 *  本地文件管理
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/lakego-filesystem
+~~~
+
+
+### 使用
 
 ~~~go
 package main
@@ -19,12 +26,13 @@ import (
 func main() {
     fs := filesystem.New()
 
-    img := "./runtime/test/13123/123321.txt"
-    // img2 := "./runtime/test/13123"
-    // txt := "./runtime/test/1/data.txt"
-    fsInfo := fs.IsWritable(img)
+    file := "./runtime/test/13123/123321.txt"
+    fileInfo, err := fs.Get(file)
+    if err != nil {
+        fmt.Println("打开文件错误，原因为：", err.Error())
+    }
 
-    fmt.Println("结果：", fsInfo)
+    fmt.Println("结果：", fileInfo)
 }
 
 ~~~

@@ -12,6 +12,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
 
     "github.com/deatil/lakego-doak/lakego/str"
+    "github.com/deatil/lakego-doak/lakego/math"
     "github.com/deatil/lakego-doak/lakego/snowflake"
     "github.com/deatil/lakego-doak/lakego/facade/sign"
 
@@ -142,15 +143,21 @@ func (this *Data) Error(ctx *gin.Context) {
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()
 
-    // 加密测试
+    // SM4 加密测试
     cypt := cryptobin.
         FromString("test-pass").
-        SetKey("dfertf12dfertf12dfertf12").
+        SetKey("dfertf12").
+        Des().
+        ECB().
+        TBCPadding().
         Encrypt().
-        ToHexString()
+        ToBase64String()
     cyptde := cryptobin.
-        FromHexString("deec911b634a2435bb7bf8a6fb1f9eae").
-        SetKey("dfertf12dfertf12dfertf12").
+        FromBase64String("bvifBivJ1GEXAEgBAo9OoA==").
+        SetKey("dfertf12").
+        Des().
+        ECB().
+        TBCPadding().
         Decrypt().
         ToString()
 
@@ -166,17 +173,22 @@ func (this *Data) Error(ctx *gin.Context) {
         ToKeyString()
 
     // 签名
-    hashData := hash.FromString("123").MD5_16().ToString()
+    hashData := hash.FromString("123").MD5().ToString()
 
     // 编码
-    encodeStr := encoding.FromString("test-data").ToBase85String()
-    encodeStr2 := encoding.FromBase85String("FCfN8/S&:3@/p9-").ToString()
+    encodeStr := encoding.FromString("test-data").ToBase64String()
+    encodeStr2 := encoding.FromBase64String("dGVzdC1kYXRh").ToString()
+    encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
 
     // 签名
     signData := sign.Sign("md5").
         WithData("test", "测试测试").
         WithAppID("API123456").
         GetSignMap()
+
+    // 数字相关
+    mathData := math.Decbin(123)
+    mathData2 := math.Bindec("1111011")
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
@@ -202,8 +214,12 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "encodeStr": encodeStr,
         "encodeStr2": encodeStr2,
+        "encodeStr3": encodeStr3,
 
         "signData": signData,
+
+        "mathData": mathData,
+        "mathData2": mathData2,
     })
 }
 

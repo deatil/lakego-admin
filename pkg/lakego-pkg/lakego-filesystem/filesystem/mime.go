@@ -1,7 +1,7 @@
 package filesystem
 
 // 后缀对应的格式
-var MimeTypeMap = map[string]string{
+var MimeTypes = map[string]string{
     "323":                    "text/h323",
     "3g2":                    "video/3gpp2",
     "3gp":                    "video/3gpp",
@@ -616,7 +616,7 @@ var MimeTypeMap = map[string]string{
 
 // 获取后缀对应的格式
 func GetMimeType(extension string) string {
-    if mimeType, ok := MimeTypeMap[extension]; ok {
+    if mimeType, ok := MimeTypes[extension]; ok {
         return mimeType
     } else {
         return "Unknown"

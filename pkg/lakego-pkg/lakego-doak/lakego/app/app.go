@@ -9,6 +9,7 @@ import (
     "log"
     "sync"
     "time"
+    "errors"
     "context"
 
     "github.com/deatil/go-datebin/datebin"
@@ -430,13 +431,12 @@ func (this *App) ServerRun() {
             }
 
         default:
-            panic("服务启动错误")
+            err = errors.New("服务启动错误")
     }
 
     if err != nil {
-        log.Fatalf("listen: %s\n", err)
+        log.Fatalf("server err: %s\n", err)
     }
-
 }
 
 // 优雅地关机

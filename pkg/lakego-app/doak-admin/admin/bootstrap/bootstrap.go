@@ -3,12 +3,12 @@ package bootstrap
 import (
     "github.com/deatil/lakego-doak/lakego/kernel"
 
-    adminProvider "github.com/deatil/lakego-doak-admin/admin/provider/admin"
+    "github.com/deatil/lakego-doak-admin/admin/provider"
 )
 
-// 后台
+// 添加服务提供者
 func init() {
     kernel.AddProvider(func() interface{} {
-        return &adminProvider.ServiceProvider{}
+        return &provider.AdminServiceProvider{}
     })
 }

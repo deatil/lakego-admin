@@ -42,6 +42,10 @@ func ShowVersion() {
     release := conf.GetString("Release")
     version := conf.GetString("Version")
 
+    goVersion := runtime.Version()
+
+    color.Magenta("\n===========================\n")
+
     logo := `
 .__          __
 |  | _____  |  | __ ____   ____   ____
@@ -52,8 +56,6 @@ func ShowVersion() {
     `
 
     color.Whiteln(logo);
-
-    color.Magenta("\n===========================\n")
 
     color.Yellow("\nlakego-admin 系统详情\n\n")
 
@@ -69,8 +71,8 @@ func ShowVersion() {
     color.Cyan("版本序号：");
     fmt.Println(version);
 
-    color.Cyan("Golang版本：");
-    fmt.Println(runtime.Version());
+    color.Cyan("Go  版本：");
+    fmt.Println(goVersion);
 
     color.Magenta("\n===========================\n")
 }

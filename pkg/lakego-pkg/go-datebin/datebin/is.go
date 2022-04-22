@@ -119,7 +119,7 @@ func (this Datebin) IsCurrentMonth() bool {
 // 时间是否是当前最近的一周
 func (this Datebin) IsLatelyWeek() bool {
     secondsPerWeek := float64(SecondsPerWeek)
-    difference := this.Now().Time().GetTime().Sub(this.Time().GetTime())
+    difference := this.Now().UseLocTime().GetTime().Sub(this.UseLocTime().GetTime())
 
     if difference.Seconds() > 0 && difference.Seconds() < secondsPerWeek {
         return true

@@ -6,7 +6,14 @@
 *  JWT 生成和验证
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/lakego-jwt
+~~~
+
+
+### 使用
 
 ~~~go
 package main
@@ -32,6 +39,8 @@ func main() {
         WithPrivateKeyPassword(privateKeyPassword).
         WithClaim(k, v).
         MakeToken()
+
+	fmt.Println("生成的 Token 为：", token)
 }
 
 ~~~

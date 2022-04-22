@@ -46,14 +46,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "排序，示例：id__DESC",
-                        "name": "order",
+                        "description": "搜索关键字",
+                        "name": "searchword",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "搜索关键字",
-                        "name": "searchword",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
                         "in": "query"
                     },
                     {
@@ -66,6 +66,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "结束时间",
                         "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方法",
+                        "name": "method",
                         "in": "query"
                     },
                     {
@@ -519,6 +525,13 @@ const docTemplate = `{
                         "description": "刷新 token",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "权限列表，半角逗号分隔",
+                        "name": "access",
+                        "in": "formData",
                         "required": true
                     }
                 ],
@@ -1395,6 +1408,13 @@ const docTemplate = `{
                         "description": "权限分组ID",
                         "name": "id",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "权限列表，半角逗号分隔",
+                        "name": "access",
+                        "in": "formData",
                         "required": true
                     }
                 ],

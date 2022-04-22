@@ -19,13 +19,13 @@ paths:
       - application/json
       description: 操作日志列表
       parameters:
-      - description: 排序，示例：id__DESC
-        in: query
-        name: order
-        type: string
       - description: 搜索关键字
         in: query
         name: searchword
+        type: string
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
         type: string
       - description: 开始时间
         in: query
@@ -34,6 +34,10 @@ paths:
       - description: 结束时间
         in: query
         name: end_time
+        type: string
+      - description: 请求方法
+        in: query
+        name: method
         type: string
       - description: 状态
         in: query
@@ -266,6 +270,11 @@ paths:
       - description: 刷新 token
         in: path
         name: id
+        required: true
+        type: string
+      - description: 权限列表，半角逗号分隔
+        in: formData
+        name: access
         required: true
         type: string
       produces:
@@ -837,6 +846,11 @@ paths:
       - description: 权限分组ID
         in: path
         name: id
+        required: true
+        type: string
+      - description: 权限列表，半角逗号分隔
+        in: formData
+        name: access
         required: true
         type: string
       produces:

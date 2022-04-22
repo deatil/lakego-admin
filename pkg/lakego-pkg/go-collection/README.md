@@ -4,10 +4,16 @@
 ### 项目介绍
 
 *  常用的集合处理
-*  原始代码来源于网络
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-collection
+~~~
+
+
+### 使用
 
 ~~~go
 package main

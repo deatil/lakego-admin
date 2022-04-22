@@ -1,4 +1,4 @@
-package lakego
+package serviceprovider
 
 import (
     "github.com/deatil/lakego-doak/lakego/router"
@@ -12,18 +12,23 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/view"
 )
 
+// 构造函数
+func NewLakego() *Lakego {
+    return &Lakego{}
+}
+
 /**
  * 服务提供者
  *
  * @create 2022-1-4
  * @author deatil
  */
-type ServiceProvider struct {
+type Lakego struct {
     provider.ServiceProvider
 }
 
 // 注册
-func (this *ServiceProvider) Register() {
+func (this *Lakego) Register() {
     // 脚本
     this.loadCommand()
 
@@ -34,7 +39,7 @@ func (this *ServiceProvider) Register() {
 /**
  * 导入脚本
  */
-func (this *ServiceProvider) loadCommand() {
+func (this *Lakego) loadCommand() {
     // 推送
     this.AddCommand(publishCmd.PublishCmd)
 
@@ -45,6 +50,6 @@ func (this *ServiceProvider) loadCommand() {
 /**
  * 导入模板渲染
  */
-func (this *ServiceProvider) loadHtmlRender() {
+func (this *Lakego) loadHtmlRender() {
     router.NewRoute().Get().HTMLRender = view.New().GetRender()
 }

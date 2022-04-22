@@ -3,26 +3,46 @@ package datebin
 import (
     "time"
     "bytes"
+    "strconv"
+    "strings"
 )
 
 // 解析时间字符
-func (this Datebin) Parse(date string, format ...string) Datebin {
-    var layout = ""
+func (this Datebin) Parse(date string) Datebin {
+    // 解析需要的格式
+    var layout = DatetimeFormat
 
-    if len(format) > 0 {
-        layout = format[0]
-    } else if len(format) == 0 && len(date) == 19 {
-        layout = "Y-m-d H:i:s"
-    } else if len(format) == 0 && len(date) == 10 {
-        layout = "Y-m-d"
+    if _, err := strconv.ParseInt(date, 10, 64); err == nil {
+        switch {
+            case len(date) == 8:
+                layout = ShortDateFormat
+            case len(date) == 14:
+                layout = ShortDatetimeFormat
+        }
     } else {
-        layout = "Y-m-d H:i:s"
+        switch {
+            case len(date) == 10 && strings.Count(date, "-") == 2:
+                layout = DateFormat
+            case len(date) == 19 && strings.Count(date, "-") == 2 && strings.Count(date, ":") == 2:
+                layout = DatetimeFormat
+            case len(date) == 18 && strings.Index(date, ".") == 14:
+                layout = ShortDatetimeMilliFormat
+            case len(date) == 21 && strings.Index(date, ".") == 14:
+                layout = ShortDatetimeMicroFormat
+            case len(date) == 24 && strings.Index(date, ".") == 14:
+                layout = ShortDatetimeNanoFormat
+            case len(date) == 25 && strings.Index(date, "T") == 10:
+                layout = RFC3339Format
+            case len(date) == 29 && strings.Index(date, "T") == 10 && strings.Index(date, ".") == 19:
+                layout = RFC3339MilliFormat
+            case len(date) == 32 && strings.Index(date, "T") == 10 && strings.Index(date, ".") == 19:
+                layout = RFC3339MicroFormat
+            case len(date) == 35 && strings.Index(date, "T") == 10 && strings.Index(date, ".") == 19:
+                layout = RFC3339NanoFormat
+        }
     }
 
-    // 格式化
-    layout = this.FormatParseLayout(layout)
     time, err := time.Parse(layout, date)
-
     if err != nil {
         return this
     }
@@ -30,6 +50,31 @@ func (this Datebin) Parse(date string, format ...string) Datebin {
     this.time = time
 
     return this
+}
+
+// 用布局字符解析时间字符
+func (this Datebin) ParseWithLayout(date string, layout string, timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    time, err := time.ParseInLocation(layout, date, this.loc)
+    if err != nil {
+        return this
+    }
+
+    this.time = time
+
+    return this
+}
+
+// 用格式化字符解析时间字符
+func (this Datebin) ParseWithFormat(date string, format string, timezone ...string) Datebin {
+    return this.ParseWithLayout(date, this.FormatParseLayout(format), timezone...)
 }
 
 // 格式化解析 layout

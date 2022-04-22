@@ -126,7 +126,7 @@ func (this Datebin) ToWeekdayString(timezone ...string) string {
 
     weekday := this.Weekday()
 
-    return Weeks[weekday]
+    return Weekdays[weekday]
 }
 
 // 原始格式
@@ -310,7 +310,7 @@ func (this Datebin) ToAtomString(timezone ...string) string {
 }
 
 // 输出 W3C 格式字符串
-func (this Datebin) ToW3cString(timezone ...string) string {
+func (this Datebin) ToW3CString(timezone ...string) string {
     return this.ToRFC3339String(timezone...)
 }
 

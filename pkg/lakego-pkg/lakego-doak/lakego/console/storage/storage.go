@@ -38,7 +38,7 @@ var pForce bool
 
 func init() {
     pf := StorageLinkCmd.Flags()
-    pf.BoolVarP(&pForce, "force", "", false, "是否覆盖文件")
+    pf.BoolVarP(&pForce, "force", "f", false, "是否覆盖文件")
 }
 
 // 创建公共资源软连接

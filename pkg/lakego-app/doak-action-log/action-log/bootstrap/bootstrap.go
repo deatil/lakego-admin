@@ -3,12 +3,12 @@ package bootstrap
 import (
     "github.com/deatil/lakego-doak/lakego/kernel"
 
-    serviceProvider "github.com/deatil/lakego-doak-action-log/action-log/provider/app"
+    "github.com/deatil/lakego-doak-action-log/action-log/provider"
 )
 
-// 例子
+// 添加服务提供者
 func init() {
     kernel.AddProvider(func() interface{} {
-        return &serviceProvider.ServiceProvider{}
+        return &provider.ActionLogServiceProvider{}
     })
 }

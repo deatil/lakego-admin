@@ -61,6 +61,10 @@ func (this Datebin) Month() int {
 
 // 星期几数字
 func (this Datebin) Weekday() int {
+    if this.IsInvalid() {
+        return 0
+    }
+
     return int(this.time.In(this.loc).Weekday())
 }
 

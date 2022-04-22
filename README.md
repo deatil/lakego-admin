@@ -58,13 +58,19 @@ git clone https://github.com/deatil/lakego-admin.git
 go run main.go lakego-admin:install
 ```
 
-4. 权限规则导入，导入的权限规则需要重新设置层级关系和名称内容
+4. 运行下面的命令创建附件软链接
+
+```go
+go run main.go lakego:storage-link
+```
+
+5. 权限规则导入。导入的权限规则需要重新设置层级关系和名称内容
 
 ```go
 go run main.go lakego-admin:import-route
 ```
 
-5. 运行测试
+6. 运行测试
 
 ```go
 go run main.go

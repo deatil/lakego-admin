@@ -4,22 +4,23 @@ go 1.18
 
 replace (
 	app => ./app
-	github.com/deatil/go-goch => ./pkg/lakego-pkg/go-goch
-	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
-	github.com/deatil/go-hash => ./pkg/lakego-pkg/go-hash
+	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
+	github.com/deatil/go-cryptobin => ./pkg/lakego-pkg/go-cryptobin
 	github.com/deatil/go-datebin => ./pkg/lakego-pkg/go-datebin
 	github.com/deatil/go-encoding => ./pkg/lakego-pkg/go-encoding
-	github.com/deatil/go-cryptobin => ./pkg/lakego-pkg/go-cryptobin
 	github.com/deatil/go-exception => ./pkg/lakego-pkg/go-exception
-	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
 	github.com/deatil/go-filesystem => ./pkg/lakego-pkg/go-filesystem
+	github.com/deatil/go-goch => ./pkg/lakego-pkg/go-goch
+	github.com/deatil/go-hash => ./pkg/lakego-pkg/go-hash
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
-	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
-	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
+	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
+	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 )
 
 require (
@@ -27,6 +28,7 @@ require (
 	github.com/deatil/lakego-doak v0.0.3
 	github.com/deatil/lakego-doak-action-log v0.0.3
 	github.com/deatil/lakego-doak-admin v0.0.3
+	github.com/deatil/lakego-doak-statics v0.0.0-00010101000000-000000000000
 	github.com/deatil/lakego-doak-swagger v0.0.3
 	github.com/swaggo/swag v1.8.0
 )
@@ -48,7 +50,9 @@ require (
 	github.com/deatil/go-goch v0.0.3 // indirect
 	github.com/deatil/go-hash v0.0.3 // indirect
 	github.com/deatil/go-pipeline v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/go-sign v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/lakego-jwt v0.0.3 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/flosch/pongo2/v4 v4.0.2 // indirect
@@ -67,7 +71,7 @@ require (
 	github.com/go-redis/redis/extra/redisotel/v8 v8.11.4 // indirect
 	github.com/go-redis/redis/v8 v8.11.4 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/golang-jwt/jwt/v4 v4.1.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect

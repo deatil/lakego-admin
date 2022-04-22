@@ -2,17 +2,16 @@ package hash
 
 import (
     "io"
-    "fmt"
     "hash"
+    "encoding/hex"
 )
 
 // md2 签名
-func MD2(str string) string {
-    c := NewMD2()
-    io.WriteString(c, str)
-    has := c.Sum(nil)
-    md5str := fmt.Sprintf("%x", has)
-    return md5str
+func MD2(data string) string {
+    m := NewMD2()
+    io.WriteString(m, data)
+
+    return hex.EncodeToString(m.Sum(nil))
 }
 
 // md2 签名

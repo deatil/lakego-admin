@@ -1,11 +1,11 @@
-package app
+package provider
 
 import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-filesystem/filesystem"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
-    pathTool "github.com/deatil/lakego-doak/lakego/path"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     "github.com/deatil/lakego-doak-admin/admin/support/route"
@@ -13,7 +13,6 @@ import (
     // 路由
     router "app/example/route"
     command "app/example/cmd"
-    exampleProvider "app/example/provider/example"
 )
 
 /**
@@ -22,12 +21,12 @@ import (
  * @create 2021-10-11
  * @author deatil
  */
-type ServiceProvider struct {
+type ExampleServiceProvider struct {
     provider.ServiceProvider
 }
 
 // 引导
-func (this *ServiceProvider) Boot() {
+func (this *ExampleServiceProvider) Boot() {
     // 脚本
     this.loadCommand()
 
@@ -44,7 +43,7 @@ func (this *ServiceProvider) Boot() {
 /**
  * 导入脚本
  */
-func (this *ServiceProvider) loadCommand() {
+func (this *ExampleServiceProvider) loadCommand() {
     // 用户信息
     this.AddCommand(command.ExampleCmd)
 }
@@ -52,15 +51,15 @@ func (this *ServiceProvider) loadCommand() {
 /**
  * 导入配置
  */
-func (this *ServiceProvider) loadSetting() {
+func (this *ExampleServiceProvider) loadSetting() {
     // 合并配置
-    toDefaultFile := pathTool.FormatPath("{root}/config/default/example.yml")
+    toDefaultFile := path.FormatPath("{root}/config/default/example.yml")
     if filesystem.New().Exists(toDefaultFile) {
         this.MergeConfigFrom(toDefaultFile, "example")
     }
 
-    configFile := pathTool.FormatPath("{root}/app/example/resources/config/example.yml")
-    toConfigFile := pathTool.FormatPath("{root}/config/example.yml")
+    configFile := path.FormatPath("{root}/app/example/resources/config/example.yml")
+    toConfigFile := path.FormatPath("{root}/config/example.yml")
 
     // 推送已注册的全部
     // > go run main.go lakego:publish --all
@@ -76,8 +75,8 @@ func (this *ServiceProvider) loadSetting() {
     }, "example-config")
 
     // 视图
-    viewPath := pathTool.FormatPath("{root}/app/example/resources/view")
-    toViewPath := pathTool.FormatPath("{root}/resources/view/example")
+    viewPath := path.FormatPath("{root}/app/example/resources/view")
+    toViewPath := path.FormatPath("{root}/resources/view/example")
 
     // 推送文件夹
     // > go run main.go lakego:publish --tag=example-view --force
@@ -92,7 +91,7 @@ func (this *ServiceProvider) loadSetting() {
 /**
  * 导入路由
  */
-func (this *ServiceProvider) loadRoute() {
+func (this *ExampleServiceProvider) loadRoute() {
     // 后台路由，包括后台使用的所有中间件
     route.AddRoute(func(engine *gin.RouterGroup) {
         router.Route(engine)
@@ -107,10 +106,10 @@ func (this *ServiceProvider) loadRoute() {
 /**
  * 注册额外服务提供者
  */
-func (this *ServiceProvider) registerProviders() {
+func (this *ExampleServiceProvider) registerProviders() {
     // 注册
     this.GetApp().Register(func() providerInterface.ServiceProvider {
-        return &exampleProvider.ServiceProvider{}
+        return &OtherServiceProvider{}
     })
 }
 

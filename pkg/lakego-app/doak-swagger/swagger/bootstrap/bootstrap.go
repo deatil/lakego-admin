@@ -3,12 +3,12 @@ package bootstrap
 import (
     "github.com/deatil/lakego-doak/lakego/kernel"
 
-    serviceProvider "github.com/deatil/lakego-doak-swagger/swagger/provider/swagger"
+    "github.com/deatil/lakego-doak-swagger/swagger/provider"
 )
 
-// 后台系统API接口文档模块
+// 添加服务提供者
 func init() {
     kernel.AddProvider(func() interface{} {
-        return &serviceProvider.ServiceProvider{}
+        return &provider.SwaggerServiceProvider{}
     })
 }

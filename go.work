@@ -16,7 +16,8 @@ use (
 	./pkg/lakego-pkg/lakego-jwt
 	./pkg/lakego-pkg/lakego-filesystem
 	./pkg/lakego-pkg/lakego-doak
-	./pkg/lakego-app/doak-action-log
 	./pkg/lakego-app/doak-admin
+	./pkg/lakego-app/doak-action-log
 	./pkg/lakego-app/doak-swagger
+	./pkg/lakego-app/doak-statics
 )

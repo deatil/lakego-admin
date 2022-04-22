@@ -6,7 +6,14 @@
 *  通用签名
 
 
-### 使用方法
+### 下载安装
+
+~~~go
+go get -u github.com/deatil/go-sign
+~~~
+
+
+### 使用
 
 ~~~go
 import "github.com/deatil/go-sign/sign"

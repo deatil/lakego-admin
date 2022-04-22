@@ -2,6 +2,8 @@ package encoding
 
 import (
     "bytes"
+    "errors"
+    "strconv"
     "encoding/csv"
     "encoding/gob"
     "encoding/xml"
@@ -81,6 +83,74 @@ func (this Encoding) FromBytesBuffer(data *bytes.Buffer) Encoding {
     this.data = data.Bytes()
 
     return this
+}
+
+// 给定类型数据格式化为string类型数据
+// bitSize 限制长度
+// ParseBool()、ParseFloat()、ParseInt()、ParseUint()。
+// FormatBool()、FormatInt()、FormatUint()、FormatFloat()、
+func (this Encoding) FromConvert(input interface{}, base int, bitSize ...int) Encoding {
+    newBitSize := 0
+    if len(bitSize) > 0 {
+        newBitSize = bitSize[0]
+    }
+
+    var number int64
+    var err error
+
+    switch input.(type) {
+        case int:
+            number = int64(input.(int))
+        case int8:
+            number = int64(input.(int8))
+        case int16:
+            number = int64(input.(int16))
+        case int32:
+            number = int64(input.(int32))
+        case int64:
+            number = input.(int64)
+        case string:
+            number, err = strconv.ParseInt(input.(string), base, newBitSize)
+            if err != nil {
+                this.Error = err
+                return this
+            }
+        default:
+            this.Error = errors.New("数据输入格式错误")
+            return this
+    }
+
+    // 转为10进制字符
+    data := strconv.FormatInt(number, 10)
+
+    this.data = []byte(data)
+
+    return this
+}
+
+// 二进制
+func (this Encoding) FromConvertBin(data string) Encoding {
+    return this.FromConvert(data, 2)
+}
+
+// 八进制
+func (this Encoding) FromConvertOct(data string) Encoding {
+    return this.FromConvert(data, 8)
+}
+
+// 十进制
+func (this Encoding) FromConvertDec(data int64) Encoding {
+    return this.FromConvert(data, 10)
+}
+
+// 十进制字符
+func (this Encoding) FromConvertDecString(data string) Encoding {
+    return this.FromConvert(data, 10)
+}
+
+// 十六进制
+func (this Encoding) FromConvertHex(data string) Encoding {
+    return this.FromConvert(data, 16)
 }
 
 // Gob

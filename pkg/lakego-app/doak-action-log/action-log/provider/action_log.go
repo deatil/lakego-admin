@@ -1,4 +1,4 @@
-package app
+package provider
 
 import (
     "github.com/deatil/lakego-doak/lakego/router"
@@ -31,18 +31,18 @@ var middlewareGroups = map[string][]string{
  * @create 2021-10-11
  * @author deatil
  */
-type ServiceProvider struct {
+type ActionLogServiceProvider struct {
     provider.ServiceProvider
 }
 
 // 注册
-func (this *ServiceProvider) Register() {
+func (this *ActionLogServiceProvider) Register() {
     // 中间件
     this.loadMiddleware()
 }
 
 // 引导
-func (this *ServiceProvider) Boot() {
+func (this *ActionLogServiceProvider) Boot() {
     // 路由
     this.loadRoute()
 }
@@ -50,7 +50,7 @@ func (this *ServiceProvider) Boot() {
 /**
  * 导入中间件
  */
-func (this *ServiceProvider) loadMiddleware() {
+func (this *ActionLogServiceProvider) loadMiddleware() {
     m := routerFacade.NewMiddleware()
 
     // 导入中间件
@@ -69,7 +69,7 @@ func (this *ServiceProvider) loadMiddleware() {
 /**
  * 导入路由
  */
-func (this *ServiceProvider) loadRoute() {
+func (this *ActionLogServiceProvider) loadRoute() {
     // 后台路由
     route.AddRoute(func(engine *router.RouterGroup) {
         logRouter.Route(engine)

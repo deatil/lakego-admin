@@ -1,5 +1,9 @@
 package encoding
 
+import (
+    "bytes"
+)
+
 // 字节
 func FromBytes(data []byte) Encoding {
     return New().FromBytes(data)
@@ -33,6 +37,41 @@ func FromBase85String(data string) Encoding {
 // Hex
 func FromHexString(data string) Encoding {
     return New().FromHexString(data)
+}
+
+// Hex
+func FromBytesBuffer(data *bytes.Buffer) Encoding {
+    return New().FromBytesBuffer(data)
+}
+
+// Hex
+func FromConvert(data interface{}, base int, bitSize ...int) Encoding {
+    return New().FromConvert(data, base, bitSize...)
+}
+
+// 二进制
+func FromConvertBin(data string) Encoding {
+    return New().FromConvertBin(data)
+}
+
+// 八进制
+func FromConvertOct(data string) Encoding {
+    return New().FromConvertOct(data)
+}
+
+// 十进制
+func FromConvertDec(data int64) Encoding {
+    return New().FromConvertDec(data)
+}
+
+// 十进制字符
+func FromConvertDecString(data string) Encoding {
+    return New().FromConvertDecString(data)
+}
+
+// 十六进制
+func FromConvertHex(data string) Encoding {
+    return New().FromConvertHex(data)
 }
 
 // Gob
