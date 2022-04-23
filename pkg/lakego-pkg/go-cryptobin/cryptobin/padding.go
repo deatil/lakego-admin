@@ -65,10 +65,12 @@ func (this Padding) ZeroUnPadding(src []byte) []byte {
 func (this Padding) X923Padding(text []byte, blockSize int) []byte {
     paddingSize := blockSize - len(text)%blockSize
 
-    paddingText := bytes.Repeat([]byte{byte(0)}, paddingSize-1)
-    text = append(text, paddingText...)
+    if paddingSize > 0 {
+        paddingText := bytes.Repeat([]byte{byte(0)}, paddingSize - 1)
+        text = append(text, paddingText...)
 
-    text = append(text, byte(paddingSize))
+        text = append(text, byte(paddingSize))
+    }
 
     return text
 }
@@ -91,11 +93,13 @@ func (this Padding) X923UnPadding(src []byte) []byte {
 func (this Padding) ISO10126Padding(text []byte, blockSize int) []byte {
     paddingSize := blockSize - len(text)%blockSize
 
-    for i := 1; i < paddingSize; i++ {
-        text = append(text, this.RandomBytes(1)...)
-    }
+    if paddingSize > 0 {
+        for i := 0; i < paddingSize - 1; i++ {
+            text = append(text, this.RandomBytes(1)...)
+        }
 
-    text = append(text, byte(paddingSize))
+        text = append(text, byte(paddingSize))
+    }
 
     return text
 }
@@ -118,10 +122,12 @@ func (this Padding) ISO10126UnPadding(src []byte) []byte {
 func (this Padding) ISO7816_4Padding(text []byte, blockSize int) []byte {
     paddingSize := blockSize - len(text)%blockSize
 
-    text = append(text, 0x80)
+    if paddingSize > 0 {
+        text = append(text, 0x80)
 
-    paddingText := bytes.Repeat([]byte{0x00}, paddingSize-1)
-    text = append(text, paddingText...)
+        paddingText := bytes.Repeat([]byte{0x00}, paddingSize - 1)
+        text = append(text, paddingText...)
+    }
 
     return text
 }
@@ -201,22 +207,23 @@ func (this Padding) TBCUnPadding(src []byte) []byte {
 func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
     n := len(text)
 
-    text = append(text, 0x00)
-    text = append(text, 0x02)
+    paddingSize := blockSize - 3 - n
 
-    paddingLength := blockSize - 3 - n
+    if paddingSize < 1 {
+        return text
+    }
 
     switch {
         case bt == "00":
-            for i := 1; i <= paddingLength; i++ {
+            for i := 1; i <= paddingSize; i++ {
                 text = append(text, 0x00)
             }
         case bt == "01":
-            for i := 1; i <= paddingLength; i++ {
+            for i := 1; i <= paddingSize; i++ {
                 text = append(text, 0xFF)
             }
         case bt == "02":
-            for i := 1; i <= paddingLength; i++ {
+            for i := 1; i <= paddingSize; i++ {
                 text = append(text, this.RandomBytes(1)...)
             }
     }

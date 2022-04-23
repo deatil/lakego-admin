@@ -6,16 +6,23 @@ import (
     "github.com/tjfoc/gmsm/sm2"
 )
 
-// Pkcs8
-func (this SM2) FromSM2PrivateKey(key []byte) SM2 {
-    this.privateKey, this.Error = this.ParseSM2PrivateKeyFromPEM(key)
+// 私钥
+func (this SM2) FromPrivateKey(key []byte) SM2 {
+    this.privateKey, this.Error = this.ParsePrivateKeyFromPEM(key)
 
     return this
 }
 
-// Pkcs8WithPassword
-func (this SM2) FromSM2PrivateKeyWithPassword(key []byte, password string) SM2 {
-    this.privateKey, this.Error = this.ParseSM2PrivateKeyFromPEMWithPassword(key, []byte(password))
+// 私钥带密码
+func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
+    this.privateKey, this.Error = this.ParsePrivateKeyFromPEMWithPassword(key, []byte(password))
+
+    return this
+}
+
+// 公钥
+func (this SM2) FromPublicKey(key []byte) SM2 {
+    this.publicKey, this.Error = this.ParsePublicKeyFromPEM(key)
 
     return this
 }

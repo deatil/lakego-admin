@@ -1,18 +1,23 @@
 package cryptobin
 
+// 私钥
+func SM2FromPrivateKey(key []byte) SM2 {
+    return NewSM2().FromPrivateKey(key)
+}
+
+// 私钥带密码
+func SM2FromPrivateKeyWithPassword(key []byte, password string) SM2 {
+    return NewSM2().FromPrivateKeyWithPassword(key, password)
+}
+
+// 公钥
+func SM2FromPublicKey(key []byte) SM2 {
+    return NewSM2().FromPublicKey(key)
+}
+
 // 生成密钥
 func SM2GenerateKey() SM2 {
     return NewSM2().GenerateKey()
-}
-
-// Pkcs8
-func SM2FromSM2PrivateKey(key []byte) SM2 {
-    return NewSM2().FromSM2PrivateKey(key)
-}
-
-// Pkcs8WithPassword
-func SM2FromSM2PrivateKeyWithPassword(key []byte, password string) SM2 {
-    return NewSM2().FromSM2PrivateKeyWithPassword(key, password)
 }
 
 // ==========

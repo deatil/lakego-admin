@@ -7,7 +7,7 @@ import (
 // 构造函数
 func NewSM2() SM2 {
     return SM2{
-        veryed:   false,
+        veryed: false,
     }
 }
 
