@@ -9,6 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/captcha"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/support/jwt"
@@ -121,6 +122,8 @@ func (this *Passport) Login(ctx *router.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
+        logger.New().Error("[login]" + err.Error())
+
         this.Error(ctx, "授权token生成失败", code.LoginError)
         return
     }
@@ -128,6 +131,8 @@ func (this *Passport) Login(ctx *router.Context) {
     // 刷新 token
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
+        logger.New().Error("[login]" + err.Error())
+
         this.Error(ctx, "刷新token生成失败", code.LoginError)
         return
     }
@@ -200,6 +205,8 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
+        logger.New().Error("[login]" + err.Error())
+
         this.Error(ctx, "生成 access_token 失败", code.JwtRefreshTokenFail)
         return
     }

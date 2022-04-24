@@ -13,7 +13,7 @@ Disks:
         # 磁盘类型
         Type: "local"
         # 磁盘路径
-        Root: "{public}/storage"
+        Root: "{storage}/app/public"
         # 磁盘路径对应的外部URL路径
         Url: "http://127.0.0.1:8080/storage"
         # 可见性

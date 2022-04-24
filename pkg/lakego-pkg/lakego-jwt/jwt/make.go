@@ -127,6 +127,28 @@ func (this *JWT) MakeToken() (token string, err error) {
                 return
             }
 
+        // 国密 SM2
+        case "GmSM2":
+            // 私钥
+            keyData := this.PrivateKey
+            if keyData == "" {
+                err = errors.New("GmSM2 私钥内容不能为空")
+                return
+            }
+
+            // 转换为字节
+            keyByte := []byte(keyData)
+
+            if this.PrivateKeyPassword != "" {
+                secret, err = ParseSM2PrivateKeyFromPEMWithPassword(keyByte, this.PrivateKeyPassword)
+            } else {
+                secret, err = ParseSM2PrivateKeyFromPEM(keyByte)
+            }
+
+            if err != nil {
+                return
+            }
+
         // 默认先检查自定义签名方式
         default:
             // 检查自定义签名

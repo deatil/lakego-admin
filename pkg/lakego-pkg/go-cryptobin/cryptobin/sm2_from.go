@@ -15,7 +15,7 @@ func (this SM2) FromPrivateKey(key []byte) SM2 {
 
 // 私钥带密码
 func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
-    this.privateKey, this.Error = this.ParsePrivateKeyFromPEMWithPassword(key, []byte(password))
+    this.privateKey, this.Error = this.ParsePrivateKeyFromPEMWithPassword(key, password)
 
     return this
 }

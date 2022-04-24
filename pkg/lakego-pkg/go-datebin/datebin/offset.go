@@ -117,6 +117,7 @@ func (this Datebin) AddDuration(duration string) Datebin {
     td, err := this.ParseDuration(duration)
     this.time = this.time.In(this.loc).Add(td)
     this.Error = err
+
     return this
 }
 

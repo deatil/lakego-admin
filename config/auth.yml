@@ -21,7 +21,7 @@ Jwt:
   # 使用签名方式
   # HS256,HS384,HS512; ES256,ES384,ES512;
   # RS256,RS384,RS512; PS256,PS384,PS512;
-  # EdDSA;
+  # EdDSA;GmSM2(国密)
   SigningMethod: "HS512"
   # 密码，base64 编码后，适用类型 HS
   Secret: "MTIzNDU2"

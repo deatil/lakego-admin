@@ -4,6 +4,86 @@ import (
     "time"
 )
 
+// 当前
+func (this Datebin) Now(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    this.time = time.Now().In(this.loc)
+    return this
+}
+
+// 今天
+func (this Datebin) Today(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    var datetime Datebin
+    if this.IsZero() {
+        datetime = this.Now()
+    } else {
+        datetime = this
+    }
+
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
+
+    return this
+}
+
+// 明天
+func (this Datebin) Tomorrow(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    var datetime Datebin
+    if this.IsZero() {
+        datetime = this.Now().AddDay()
+    } else {
+        datetime = this.AddDay()
+    }
+
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
+
+    return this
+}
+
+// 昨天
+func (this Datebin) Yesterday(timezone ...string) Datebin {
+    if len(timezone) > 0 {
+        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
+    }
+
+    if this.Error != nil {
+        return this
+    }
+
+    var datetime Datebin
+    if this.IsZero() {
+        datetime = this.Now().SubDay()
+    } else {
+        datetime = this.SubDay()
+    }
+
+    this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
+
+    return this
+}
+
 // 最小值
 func (this Datebin) Min(d Datebin) Datebin {
     if this.Lt(d) {

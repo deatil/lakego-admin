@@ -28,4 +28,7 @@ var signingMethodList = map[string]jwt.SigningMethod {
 
     // EdDSA
     "EdDSA": jwt.SigningMethodEdDSA,
+
+    // 国密 SM2
+    "GmSM2": SigningMethodGmSM2,
 }

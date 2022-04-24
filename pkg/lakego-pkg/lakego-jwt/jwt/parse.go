@@ -92,6 +92,23 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
                 return nil, err
             }
 
+        // 国密 SM2
+        case "GmSM2":
+            // 公钥
+            keyData := this.PublicKey
+            if keyData == "" {
+                err = errors.New("GmSM2 公钥内容不能为空")
+                return nil, err
+            }
+
+            // 转换为字节
+            keyByte := []byte(keyData)
+
+            secret, err = ParseSM2PublicKeyFromPEM(keyByte)
+            if err != nil {
+                return nil, err
+            }
+
         // 默认检查自定义解析方式
         default:
             // 检查自定义解析

@@ -11,8 +11,8 @@ func (this SM2) ParsePrivateKeyFromPEM(key []byte) (*sm2.PrivateKey, error) {
 }
 
 // 解析 SM2 PKCS8 私钥带密码
-func (this SM2) ParsePrivateKeyFromPEMWithPassword(key []byte, pwd []byte) (*sm2.PrivateKey, error) {
-    return x509.ReadPrivateKeyFromPem(key, pwd)
+func (this SM2) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (*sm2.PrivateKey, error) {
+    return x509.ReadPrivateKeyFromPem(key, []byte(password))
 }
 
 // 解析 SM2 PKCS8 公钥

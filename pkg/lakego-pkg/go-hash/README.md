@@ -4,6 +4,7 @@
 ### 项目介绍
 
 *  常用的摘要 hash 算法
+*  算法包括: MD2, MD4, MD5, MD5SHA1, Ripemd160, SHA1, SHA256, SM3(国密)
 
 
 ### 下载安装
