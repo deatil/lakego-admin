@@ -207,8 +207,8 @@ func (this *Auth) MakeJWT() *jwt.JWT {
         WithSub(sub).
         WithSigningMethod(signingMethod).
         WithSecret(secret).
-        WithPrivateKey(string(privateKeyData)).
-        WithPublicKey(string(publicKeyData)).
+        WithPrivateKey(privateKeyData).
+        WithPublicKey(publicKeyData).
         WithPrivateKeyPassword(privateKeyPassword)
 
     if len(this.Claims) > 0 {

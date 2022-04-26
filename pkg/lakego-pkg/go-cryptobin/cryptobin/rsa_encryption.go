@@ -14,6 +14,8 @@ func (this Rsa) Decrypt() Rsa {
     return this
 }
 
+// ====================
+
 // 私钥加密
 func (this Rsa) PriKeyEncrypt() Rsa {
     this.paredData, this.Error = priKeyByte(this.privateKey, this.data, true)

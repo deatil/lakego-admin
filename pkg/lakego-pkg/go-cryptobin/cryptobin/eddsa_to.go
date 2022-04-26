@@ -24,12 +24,12 @@ func (this EdDSA) ToString() string {
 
 // 输出Base64
 func (this EdDSA) ToBase64String() string {
-    return this.Base64Encode(this.paredData)
+    return NewEncoding().Base64Encode(this.paredData)
 }
 
 // 输出Hex
 func (this EdDSA) ToHexString() string {
-    return this.HexEncode(this.paredData)
+    return NewEncoding().HexEncode(this.paredData)
 }
 
 // ==========

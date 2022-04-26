@@ -49,25 +49,36 @@ const (
     LocSingapore = "Singapore" // 新加坡
     LocTurkey    = "Turkey"    // 土耳其
 
+    LocMajuro     = "Pacific/Majuro"      // 马朱罗
+    LocMidway     = "Pacific/Midway"      // 中途岛
+    LocHonolulu   = "Pacific/Honolulu"    // 檀香山
     LocShanghai   = "Asia/Shanghai"       // 上海
     LocChongqing  = "Asia/Chongqing"      // 重庆
     LocHarbin     = "Asia/Harbin"         // 哈尔滨
     LocHongKong   = "Asia/Hong_Kong"      // 香港
     LocMacao      = "Asia/Macao"          // 澳门
     LocTaipei     = "Asia/Taipei"         // 台北
-    LocTokyo      = "Asia/Tokyo"          // 东京
+    LocTokyo      = "Asia/Tokyo"          // 日本-东京
     LocSaigon     = "Asia/Saigon"         // 西贡
     LocSeoul      = "Asia/Seoul"          // 首尔
-    LocBangkok    = "Asia/Bangkok"        // 曼谷
+    LocBangkok    = "Asia/Bangkok"        // 泰国-曼谷
+    LocHoChiMinh  = "Asia/Ho_Chi_Minh"    // 越南
+    LocPyongyang  = "Asia/Pyongyang"      // 韩国
     LocDubai      = "Asia/Dubai"          // 迪拜
     LocNewYork    = "America/New_York"    // 纽约
     LocLosAngeles = "America/Los_Angeles" // 洛杉矶
     LocChicago    = "America/Chicago"     // 芝加哥
+    LocSantiago   = "America/Santiago"    // 圣地亚哥
+    LocSaoPaulo   = "America/Sao_Paulo"   // 圣保罗
     LocMoscow     = "Europe/Moscow"       // 莫斯科
-    LocLondon     = "Europe/London"       // 伦敦
+    LocLondon     = "Europe/London"       // 欧洲-伦敦
     LocBerlin     = "Europe/Berlin"       // 柏林
     LocParis      = "Europe/Paris"        // 巴黎
     LocRome       = "Europe/Rome"         // 罗马
+    LocAthens     = "Europe/Athens"       // 东欧标准时间 (雅典)
+    LocHelsinki   = "Europe/Helsinki"     // 东欧标准时间 (赫尔辛基)
+    LocMinsk      = "Europe/Minsk"        // 明斯克
+    LocAmsterdam  = "Europe/Amsterdam"    // 中欧标准时间 (阿姆斯特丹)
 )
 
 // 周常量

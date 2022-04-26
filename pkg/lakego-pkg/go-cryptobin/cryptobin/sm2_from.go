@@ -52,7 +52,7 @@ func (this SM2) FromString(data string) SM2 {
 
 // Base64
 func (this SM2) FromBase64String(data string) SM2 {
-    newData, err := this.Base64Decode(data)
+    newData, err := NewEncoding().Base64Decode(data)
 
     this.data = newData
     this.Error = err
@@ -62,7 +62,7 @@ func (this SM2) FromBase64String(data string) SM2 {
 
 // Hex
 func (this SM2) FromHexString(data string) SM2 {
-    newData, err := this.HexDecode(data)
+    newData, err := NewEncoding().HexDecode(data)
 
     this.data = newData
     this.Error = err

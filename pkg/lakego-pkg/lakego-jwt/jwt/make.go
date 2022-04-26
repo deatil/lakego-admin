@@ -57,14 +57,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         // RSA
         case "RS256", "RS384", "RS512":
             // 获取秘钥数据
-            keyData := this.PrivateKey
-            if keyData == "" {
+            keyByte := this.PrivateKey
+            if len(keyByte) == 0 {
                 err = errors.New("RSA 私钥内容不能为空")
                 return
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             if this.PrivateKeyPassword != "" {
                 secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyByte, this.PrivateKeyPassword)
@@ -79,14 +76,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         // PSS
         case "PS256", "PS384", "PS512":
             // 秘钥
-            keyData := this.PrivateKey
-            if keyData == "" {
+            keyByte := this.PrivateKey
+            if len(keyByte) == 0 {
                 err = errors.New("PSS 私钥内容不能为空")
                 return
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyByte)
             if err != nil {
@@ -96,14 +90,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         // ECDSA
         case "ES256", "ES384", "ES512":
             // 私钥
-            keyData := this.PrivateKey
-            if keyData == "" {
+            keyByte := this.PrivateKey
+            if len(keyByte) == 0 {
                 err = errors.New("ECDSA 私钥内容不能为空")
                 return
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseECPrivateKeyFromPEM(keyByte)
             if err != nil {
@@ -113,14 +104,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         // EdDSA
         case "EdDSA":
             // 私钥
-            keyData := this.PrivateKey
-            if keyData == "" {
+            keyByte := this.PrivateKey
+            if len(keyByte) == 0 {
                 err = errors.New("EdDSA 私钥内容不能为空")
                 return
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseEdPrivateKeyFromPEM(keyByte)
             if err != nil {
@@ -130,14 +118,11 @@ func (this *JWT) MakeToken() (token string, err error) {
         // 国密 SM2
         case "GmSM2":
             // 私钥
-            keyData := this.PrivateKey
-            if keyData == "" {
+            keyByte := this.PrivateKey
+            if len(keyByte) == 0 {
                 err = errors.New("GmSM2 私钥内容不能为空")
                 return
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             if this.PrivateKeyPassword != "" {
                 secret, err = ParseSM2PrivateKeyFromPEMWithPassword(keyByte, this.PrivateKeyPassword)

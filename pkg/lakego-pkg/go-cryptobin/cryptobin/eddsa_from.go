@@ -56,7 +56,7 @@ func (this EdDSA) FromString(data string) EdDSA {
 
 // Base64
 func (this EdDSA) FromBase64String(data string) EdDSA {
-    newData, err := this.Base64Decode(data)
+    newData, err := NewEncoding().Base64Decode(data)
 
     this.data = newData
     this.Error = err
@@ -66,7 +66,7 @@ func (this EdDSA) FromBase64String(data string) EdDSA {
 
 // Hex
 func (this EdDSA) FromHexString(data string) EdDSA {
-    newData, err := this.HexDecode(data)
+    newData, err := NewEncoding().HexDecode(data)
 
     this.data = newData
     this.Error = err

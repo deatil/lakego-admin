@@ -8,9 +8,9 @@ import (
 // 构造函数
 func NewEcdsa() Ecdsa {
     return Ecdsa{
-        curve: elliptic.P256(),
+        curve:    elliptic.P256(),
         signHash: "SHA512",
-        veryed: false,
+        veryed:   false,
     }
 }
 

@@ -17,10 +17,10 @@ func (this Cryptobin) ToString() string {
 
 // 输出Base64
 func (this Cryptobin) ToBase64String() string {
-    return this.Base64Encode(this.parsedData)
+    return NewEncoding().Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this Cryptobin) ToHexString() string {
-    return this.HexEncode(this.parsedData)
+    return NewEncoding().HexEncode(this.parsedData)
 }

@@ -93,6 +93,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
                 return data2
             },
+            // 不符时跳过
             func(data interface{}, next pipeline.NextFunc) {
             },
             PipelineEx{},
@@ -127,8 +128,6 @@ func (this *Data) Error(ctx *gin.Context) {
     // 文件管理
     fs := filesystem.New()
     img := "./runtime/test/13123/123321.txt"
-    // img2 := "./runtime/test/13123"
-    // txt := "./runtime/test/1/data.txt"
     fsInfo := fs.IsWritable(img)
 
     // 字符处理
@@ -149,7 +148,7 @@ func (this *Data) Error(ctx *gin.Context) {
         SetKey("dfertf12").
         Des().
         ECB().
-        TBCPadding().
+        ISO10126Padding().
         Encrypt().
         ToBase64String()
     cyptde := cryptobin.
@@ -157,7 +156,7 @@ func (this *Data) Error(ctx *gin.Context) {
         SetKey("dfertf12").
         Des().
         ECB().
-        TBCPadding().
+        ISO10126Padding().
         Decrypt().
         ToString()
 

@@ -89,7 +89,7 @@ func (this Rsa) FromString(data string) Rsa {
 
 // Base64
 func (this Rsa) FromBase64String(data string) Rsa {
-    newData, err := this.Base64Decode(data)
+    newData, err := NewEncoding().Base64Decode(data)
 
     this.data = newData
     this.Error = err
@@ -99,7 +99,7 @@ func (this Rsa) FromBase64String(data string) Rsa {
 
 // Hex
 func (this Rsa) FromHexString(data string) Rsa {
-    newData, err := this.HexDecode(data)
+    newData, err := NewEncoding().HexDecode(data)
 
     this.data = newData
     this.Error = err

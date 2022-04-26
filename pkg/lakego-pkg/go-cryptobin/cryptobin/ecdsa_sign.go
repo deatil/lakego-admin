@@ -13,9 +13,9 @@ import (
 
 // 私钥签名
 func (this Ecdsa) Sign(separator ...string) Ecdsa {
-    hashed := this.DataHash(this.signHash, this.data)
+    hashData := this.DataHash(this.signHash, this.data)
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashed)
+    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
         this.Error = err
         return this
@@ -47,7 +47,7 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 
 // 公钥验证
 func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
-    hashed := this.DataHash(this.signHash, data)
+    hashData := this.DataHash(this.signHash, data)
 
     sep := "+"
     if len(separator) > 0 {
@@ -72,7 +72,7 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
         return this
     }
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashed, rr, ss)
+    this.veryed = ecdsa.Verify(this.publicKey, hashData, rr, ss)
 
     return this
 }

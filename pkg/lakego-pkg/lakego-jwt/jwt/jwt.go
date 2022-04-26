@@ -58,10 +58,10 @@ type JWT struct {
     Secret string
 
     // 私钥
-    PrivateKey string
+    PrivateKey []byte
 
     // 公钥
-    PublicKey string
+    PublicKey []byte
 
     // 私钥密码
     PrivateKeyPassword string

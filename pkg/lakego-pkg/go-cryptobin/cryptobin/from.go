@@ -16,14 +16,14 @@ func (this Cryptobin) FromString(data string) Cryptobin {
 
 // Base64
 func (this Cryptobin) FromBase64String(data string) Cryptobin {
-    this.data, this.Error = this.Base64Decode(data)
+    this.data, this.Error = NewEncoding().Base64Decode(data)
 
     return this
 }
 
 // Hex
 func (this Cryptobin) FromHexString(data string) Cryptobin {
-    this.data, this.Error = this.HexDecode(data)
+    this.data, this.Error = NewEncoding().HexDecode(data)
 
     return this
 }

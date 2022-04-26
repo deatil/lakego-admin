@@ -4,9 +4,9 @@ package cryptobin
 func New() Cryptobin {
     return Cryptobin{
         multiple: "Aes",
-        mode: "ECB",
-        padding: "PKCS7",
-        config: make(map[string]interface{}),
+        mode:     "ECB",
+        padding:  "PKCS7",
+        config:   make(map[string]interface{}),
     }
 }
 

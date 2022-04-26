@@ -71,13 +71,13 @@ func (this *JWT) WithSecret(secret string) *JWT {
 }
 
 // 私钥
-func (this *JWT) WithPrivateKey(privateKey string) *JWT {
+func (this *JWT) WithPrivateKey(privateKey []byte) *JWT {
     this.PrivateKey = privateKey
     return this
 }
 
 // 公钥
-func (this *JWT) WithPublicKey(publicKey string) *JWT {
+func (this *JWT) WithPublicKey(publicKey []byte) *JWT {
     this.PublicKey = publicKey
     return this
 }

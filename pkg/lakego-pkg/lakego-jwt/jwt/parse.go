@@ -27,14 +27,11 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
         // RSA
         case "RS256", "RS384", "RS512":
             // 公钥
-            keyData := this.PublicKey
-            if keyData == "" {
+            keyByte := this.PublicKey
+            if len(keyByte) == 0 {
                 err = errors.New("RSA 公钥内容不能为空")
                 return nil, err
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseRSAPublicKeyFromPEM(keyByte)
             if err != nil {
@@ -44,14 +41,11 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
         // PSS
         case "PS256", "PS384", "PS512":
             // 公钥
-            keyData := this.PublicKey
-            if keyData == "" {
+            keyByte := this.PublicKey
+            if len(keyByte) == 0 {
                 err = errors.New("PSS 公钥内容不能为空")
                 return nil, err
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseRSAPublicKeyFromPEM(keyByte)
             if err != nil {
@@ -61,14 +55,11 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
         // ECDSA
         case "ES256", "ES384", "ES512":
             // 公钥
-            keyData := this.PublicKey
-            if keyData == "" {
+            keyByte := this.PublicKey
+            if len(keyByte) == 0 {
                 err = errors.New("ECDSA 公钥内容不能为空")
                 return nil, err
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseECPublicKeyFromPEM(keyByte)
             if err != nil {
@@ -78,14 +69,11 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
         // EdDSA
         case "EdDSA":
             // 公钥
-            keyData := this.PublicKey
-            if keyData == "" {
+            keyByte := this.PublicKey
+            if len(keyByte) == 0 {
                 err = errors.New("EdDSA 公钥内容不能为空")
                 return nil, err
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = jwt.ParseEdPublicKeyFromPEM(keyByte)
             if err != nil {
@@ -95,14 +83,11 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
         // 国密 SM2
         case "GmSM2":
             // 公钥
-            keyData := this.PublicKey
-            if keyData == "" {
+            keyByte := this.PublicKey
+            if len(keyByte) == 0 {
                 err = errors.New("GmSM2 公钥内容不能为空")
                 return nil, err
             }
-
-            // 转换为字节
-            keyByte := []byte(keyData)
 
             secret, err = ParseSM2PublicKeyFromPEM(keyByte)
             if err != nil {

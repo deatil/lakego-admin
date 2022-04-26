@@ -24,12 +24,12 @@ func (this SM2) ToString() string {
 
 // 输出Base64
 func (this SM2) ToBase64String() string {
-    return this.Base64Encode(this.paredData)
+    return NewEncoding().Base64Encode(this.paredData)
 }
 
 // 输出Hex
 func (this SM2) ToHexString() string {
-    return this.HexEncode(this.paredData)
+    return NewEncoding().HexEncode(this.paredData)
 }
 
 // ==========

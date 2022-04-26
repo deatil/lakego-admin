@@ -24,12 +24,12 @@ func (this Rsa) ToString() string {
 
 // 输出Base64
 func (this Rsa) ToBase64String() string {
-    return this.Base64Encode(this.paredData)
+    return NewEncoding().Base64Encode(this.paredData)
 }
 
 // 输出Hex
 func (this Rsa) ToHexString() string {
-    return this.HexEncode(this.paredData)
+    return NewEncoding().HexEncode(this.paredData)
 }
 
 // ==========

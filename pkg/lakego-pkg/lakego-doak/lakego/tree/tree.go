@@ -93,7 +93,7 @@ func (this *Tree) WithData(data []map[string]interface{}) *Tree {
 
 // 构建数组
 func (this *Tree) Build(id interface{}, itemprefix string, depth int) []map[string]interface{} {
-    children := this.GetListChildren(id)
+    children := this.GetListChild(id)
     if len(children) <= 0 {
         return nil
     }
@@ -169,18 +169,29 @@ func (this *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
     parentid := self[this.parentidKey].(string)
     newData := make([]map[string]interface{}, 0)
     for _, v := range this.data {
-        dataId := v[this.idKey].(string)
-        if dataId == parentid {
-            newData = append(newData, v)
+        // 不存在跳过
+        if _, ok := v[this.idKey]; !ok {
+            continue
+        }
 
-            parents := this.GetListParents(v[this.idKey], sort...)
-            if len(parents) > 0{
-                if order == "asc" {
-                    newData = append(newData, parents...)
-                } else {
-                    newData = append(parents, newData...)
+        switch v[this.idKey].(type) {
+            case string:
+                dataId := v[this.idKey].(string)
+
+                if dataId == parentid {
+                    newData = append(newData, v)
+
+                    parents := this.GetListParents(v[this.idKey], sort...)
+                    if len(parents) > 0{
+                        if order == "asc" {
+                            newData = append(newData, parents...)
+                        } else {
+                            newData = append(parents, newData...)
+                        }
+                    }
                 }
-            }
+            default:
+                continue
         }
     }
 
@@ -196,6 +207,11 @@ func (this *Tree) GetListParentIds(id interface{}) []interface{} {
 
     ids := make([]interface{}, 0)
     for _, v := range data {
+        // 不存在跳过
+        if _, ok := v[this.idKey]; !ok {
+            continue
+        }
+
         ids = append(ids, v[this.idKey])
     }
 
@@ -216,19 +232,30 @@ func (this *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
     id = id.(string)
     newData := make([]map[string]interface{}, 0)
     for _, v := range this.data {
-        dataParentId := v[this.parentidKey].(string)
-        if dataParentId == id {
-            newData = append(newData, v)
-
-            children := this.GetListChildren(v[this.idKey], sort...)
-            if len(children) > 0{
-                if order == "asc" {
-                    newData = append(newData, children...)
-                } else {
-                    newData = append(children, newData...)
-                }
-            }
+        // 不存在跳过
+        if _, ok := v[this.parentidKey]; !ok {
+            continue
         }
+
+        switch v[this.parentidKey].(type) {
+            case string:
+                dataParentId := v[this.parentidKey].(string)
+                if dataParentId == id {
+                    newData = append(newData, v)
+
+                    children := this.GetListChildren(v[this.idKey], sort...)
+                    if len(children) > 0{
+                        if order == "asc" {
+                            newData = append(newData, children...)
+                        } else {
+                            newData = append(children, newData...)
+                        }
+                    }
+                }
+            default:
+                continue
+        }
+
     }
 
     return newData
@@ -243,6 +270,11 @@ func (this *Tree) GetListChildIds(id interface{}) []interface{} {
 
     ids := make([]interface{}, 0)
     for _, v := range data {
+        // 不存在跳过
+        if _, ok := v[this.idKey]; !ok {
+            continue
+        }
+
         ids = append(ids, v[this.idKey])
     }
 
@@ -258,6 +290,11 @@ func (this *Tree) GetListChild(id interface{}) []map[string]interface{} {
     id = id.(string)
     newData := make([]map[string]interface{}, 0)
     for _, v := range this.data {
+        // 不存在跳过
+        if _, ok := v[this.parentidKey]; !ok {
+            continue
+        }
+
         dataParentId := v[this.parentidKey].(string)
         if dataParentId == id {
             newData = append(newData, v)
@@ -275,6 +312,11 @@ func (this *Tree) GetListSelf(id interface{}) map[string]interface{} {
 
     id = id.(string)
     for _, v := range this.data {
+        // 不存在跳过
+        if _, ok := v[this.idKey]; !ok {
+            continue
+        }
+
         dataId := v[this.idKey].(string)
         if dataId == id {
             return v
@@ -290,7 +332,7 @@ func (this *Tree) BuildFormatList(data []map[string]interface{}, parentid interf
         return nil
     }
 
-    var list []map[string]interface{} = make([]map[string]interface{}, 0)
+    var list = make([]map[string]interface{}, 0)
     for _, v := range data {
         if len(v) > 0 {
             if _, ok := v[this.spacerKey]; !ok {
