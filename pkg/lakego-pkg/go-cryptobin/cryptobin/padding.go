@@ -22,7 +22,7 @@ type Padding struct {}
 // 填充至符合块大小的整数倍，填充值为填充数量数
 func (this Padding) PKCS7Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -62,7 +62,7 @@ func (this Padding) PKCS5UnPadding(src []byte) []byte {
 // 数据长度不对齐时使用0填充，否则不填充
 func (this Padding) ZeroPadding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -88,7 +88,7 @@ func (this Padding) ZeroUnPadding(src []byte) []byte {
 // 填充至符合块大小的整数倍，填充值最后一个字节为填充的数量数，其他字节填0
 func (this Padding) X923Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -124,7 +124,7 @@ func (this Padding) X923UnPadding(src []byte) []byte {
 // 填充至符合块大小的整数倍，填充值最后一个字节为填充的数量数，其他字节填充随机字节。
 func (this Padding) ISO10126Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -161,7 +161,7 @@ func (this Padding) ISO10126UnPadding(src []byte) []byte {
 // 填充至符合块大小的整数倍，填充值第一个字节为0x80，其他字节填0x00。
 func (this Padding) ISO7816_4Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -200,7 +200,7 @@ func (this Padding) ISO7816_4UnPadding(src []byte) []byte {
 // 填充至符合块大小的整数倍，原文最后一位为1时填充0x00，最后一位为0时填充0xFF。
 func (this Padding) TBCPadding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 
@@ -265,7 +265,7 @@ func (this Padding) TBCUnPadding(src []byte) []byte {
 // BT = 02时，随机填充，但不能为00。
 func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
     n := len(text)
-    if n == 0 || blockSize < 0 {
+    if n == 0 || blockSize < 1 {
         return text
     }
 

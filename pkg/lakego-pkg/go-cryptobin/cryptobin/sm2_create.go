@@ -3,6 +3,7 @@ package cryptobin
 import (
     "errors"
 
+    "github.com/tjfoc/gmsm/sm2"
     "github.com/tjfoc/gmsm/x509"
 )
 
@@ -22,15 +23,21 @@ func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
 
 // 国密 公钥
 func (this SM2) CreatePublicKey() SM2 {
-    if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+    var publicKey *sm2.PublicKey
 
-        return this
+    if this.publicKey == nil {
+        if this.privateKey == nil {
+            this.Error = errors.New("privateKey error.")
+
+            return this
+        }
+
+        publicKey = &this.privateKey.PublicKey
+    } else {
+        publicKey = this.publicKey
     }
 
-    publicKey := this.privateKey.PublicKey
-
-    this.keyData, this.Error = x509.WritePublicKeyToPem(&publicKey)
+    this.keyData, this.Error = x509.WritePublicKeyToPem(publicKey)
 
     return this
 }

@@ -29,11 +29,11 @@ func (this Cryptobin) Twofish() Cryptobin {
 }
 
 // Blowfish
-func (this Cryptobin) Blowfish(salt ...[]byte) Cryptobin {
+func (this Cryptobin) Blowfish(salt ...string) Cryptobin {
     this.multiple = "Blowfish"
 
     if len(salt) > 0 {
-        this.config["salt"] = salt[0]
+        this.config["salt"] = []byte(salt[0])
     }
 
     return this
@@ -72,10 +72,10 @@ func (this Cryptobin) SM4() Cryptobin {
 }
 
 // Chacha20
-func (this Cryptobin) Chacha20(nonce []byte, counter ...uint32) Cryptobin {
+func (this Cryptobin) Chacha20(nonce string, counter ...uint32) Cryptobin {
     this.multiple = "Chacha20"
 
-    this.config["nonce"] = nonce
+    this.config["nonce"] = []byte(nonce)
 
     if len(counter) > 0 {
         this.config["counter"] = counter[0]
@@ -86,11 +86,11 @@ func (this Cryptobin) Chacha20(nonce []byte, counter ...uint32) Cryptobin {
 
 // Chacha20poly1305
 // nonce is 12 bytes
-func (this Cryptobin) Chacha20poly1305(nonce []byte, additional []byte) Cryptobin {
+func (this Cryptobin) Chacha20poly1305(nonce string, additional string) Cryptobin {
     this.multiple = "Chacha20poly1305"
 
-    this.config["nonce"] = nonce
-    this.config["additional"] = additional
+    this.config["nonce"] = []byte(nonce)
+    this.config["additional"] = []byte(additional)
 
     return this
 }
@@ -140,11 +140,11 @@ func (this Cryptobin) CTR() Cryptobin {
 }
 
 // GCM
-func (this Cryptobin) GCM(nonce []byte, additional []byte) Cryptobin {
+func (this Cryptobin) GCM(nonce string, additional string) Cryptobin {
     this.mode = "GCM"
 
-    this.config["nonce"] = nonce
-    this.config["additional"] = additional
+    this.config["nonce"] = []byte(nonce)
+    this.config["additional"] = []byte(additional)
 
     return this
 }

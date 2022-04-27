@@ -1,8 +1,10 @@
 package cryptobin
 
 import (
-    "crypto/ecdsa"
+    "strings"
+    "math/big"
     "crypto/rand"
+    "crypto/ecdsa"
 )
 
 // 私钥
@@ -22,6 +24,90 @@ func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
 // 生成密钥
 func (this Ecdsa) GenerateKey() Ecdsa {
     this.privateKey, this.Error = ecdsa.GenerateKey(this.curve, rand.Reader)
+
+    return this
+}
+
+// ==========
+
+// 公钥字符 (hexStringX + hexStringY)
+func (this Ecdsa) FromPublicKeyString(keyString string) Ecdsa {
+    publicKeyStr := strings.TrimLeft(strings.TrimPrefix(keyString, "04"), "0")
+
+    x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
+    y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
+
+    this.publicKey = &ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 私钥字符，必须先添加公钥 (hexStringD)
+func (this Ecdsa) FromPrivateKeyString(keyString string) Ecdsa {
+    privateKeyStr := strings.TrimLeft(keyString, "0")
+    d, _ := new(big.Int).SetString(privateKeyStr[:], 16)
+
+    this.privateKey = &ecdsa.PrivateKey{
+        PublicKey: *this.publicKey,
+        D:         d,
+    }
+
+    return this
+}
+
+// ==========
+
+// 公钥字符对
+func (this Ecdsa) FromPublicKeyXYBytes(XBytes, YBytes []byte) Ecdsa {
+    x := new(big.Int).SetBytes(XBytes)
+    y := new(big.Int).SetBytes(YBytes)
+
+    this.publicKey = &ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 私钥字符，必须先添加公钥
+func (this Ecdsa) FromPrivateKeyXYDBytes(XBytes, YBytes, DBytes []byte) Ecdsa {
+    x := new(big.Int).SetBytes(XBytes)
+    y := new(big.Int).SetBytes(YBytes)
+    d := new(big.Int).SetBytes(DBytes)
+
+    publicKey := ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    this.privateKey = &ecdsa.PrivateKey{
+        PublicKey: publicKey,
+        D:         d,
+    }
+
+    return this
+}
+
+// ==========
+
+// 明文私钥生成私钥结构体
+func (this Ecdsa) FromPrivateKeyBytes(priByte []byte) Ecdsa {
+    c := this.curve
+    k := new(big.Int).SetBytes(priByte)
+
+    priv := new(ecdsa.PrivateKey)
+    priv.PublicKey.Curve = c
+    priv.D = k
+    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+
+    this.privateKey = priv
 
     return this
 }

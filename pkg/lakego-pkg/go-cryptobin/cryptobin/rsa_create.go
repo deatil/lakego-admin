@@ -2,6 +2,7 @@ package cryptobin
 
 import (
     "errors"
+    "crypto/rsa"
     "crypto/rand"
     "crypto/x509"
     "encoding/pem"
@@ -129,15 +130,21 @@ func (this Rsa) CreatePKCS8WithPassword(password string, opts ...string) Rsa {
 
 // 公钥
 func (this Rsa) CreatePublicKey() Rsa {
-    if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+    var publicKey *rsa.PublicKey
 
-        return this
+    if this.publicKey == nil {
+        if this.privateKey == nil {
+            this.Error = errors.New("privateKey error.")
+
+            return this
+        }
+
+        publicKey = &this.privateKey.PublicKey
+    } else {
+        publicKey = this.publicKey
     }
 
-    publicKey := this.privateKey.PublicKey
-
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
+    x509PublicKey, err := x509.MarshalPKIXPublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this

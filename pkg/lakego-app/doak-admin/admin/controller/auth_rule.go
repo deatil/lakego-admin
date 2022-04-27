@@ -374,13 +374,18 @@ func (this *AuthRule) Create(ctx *router.Context) {
         status = 1
     }
 
+    description := ""
+    if _, ok := post["description"]; ok {
+        description = post["description"].(string)
+    }
+
     insertData := model.AuthRule{
         Parentid: post["parentid"].(string),
         Title: post["title"].(string),
         Url: post["url"].(string),
         Method: strings.ToUpper(post["method"].(string)),
         Slug: post["slug"].(string),
-        Description: post["description"].(string),
+        Description: description,
         Listorder: goch.ToString(listorder),
         Status: status,
         AddTime: int(datebin.NowTime()),

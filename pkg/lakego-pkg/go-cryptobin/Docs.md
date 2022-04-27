@@ -209,13 +209,13 @@ func main() {
     cypt := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12dfertf12").
-        Chacha20poly1305([]byte("werfrewerfre"), []byte("ftyhg5")).
+        Chacha20poly1305("werfrewerfre", "ftyhg5").
         Encrypt().
         ToBase64String()
     cyptde := cryptobin.
         FromBase64String("c2c0u6OYvU0EmsFapoCfiLky+OakQW9x/A==").
         SetKey("dfertf12dfertf12dfertf12dfertf12").
-        Chacha20poly1305([]byte("werfrewerfre"), []byte("ftyhg5")).
+        Chacha20poly1305("werfrewerfre", "ftyhg5").
         Decrypt().
         ToString()
 
@@ -241,13 +241,13 @@ func main() {
     cypt := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12ghy6yhtg").
-        Chacha20([]byte("fgr5tfgr5rtr")).
+        Chacha20("fgr5tfgr5rtr").
         Encrypt().
         ToHexString()
     cyptde := cryptobin.
         FromHexString("a87757b7196994e818").
         SetKey("dfertf12dfertf12dfertf12ghy6yhtg").
-        Chacha20([]byte("fgr5tfgr5rtr")).
+        Chacha20("fgr5tfgr5rtr").
         Decrypt().
         ToString()
 
@@ -394,6 +394,47 @@ func main() {
         SetKey(dekey).
         SM2Decrypt("123").
         ToString()
+
+    // =====
+
+    // SM2 生成 byte
+    sm2 := cryptobin.NewSM2()
+
+    dekey2, _ := fs.Get("./runtime/key/sm2_key")
+    sm2PrivateKeyX := sm2.
+        FromPrivateKey([]byte(dekey2)).
+        GetPrivateKeyX().
+        Bytes()
+    sm2PrivateKeyY := sm2.
+        FromPrivateKey([]byte(dekey2)).
+        GetPrivateKeyY().
+        Bytes()
+    sm2PrivateKeyD := sm2.
+        FromPrivateKey([]byte(dekey2)).
+        GetPrivateKeyD().
+        Bytes()
+
+    x := encoding.FromBytes(sm2a).ToHexString()
+    y := encoding.FromBytes(sm2b).ToHexString()
+    d := encoding.FromBytes(sm2c).ToHexString()
+
+    // =====
+
+    // SM2 加密2
+    sm2PublicKeyX  := "a4b75c4c8c44d11687bdd93c0883e630c895234beb685910efbe27009ad911fa"
+    sm2PublicKeyY  := "d521f5e8249de7a405f254a9888cbb8e651fd60c50bd22bd182a4bc7d1261c94"
+    sm2PrivateKeyD := "0f495b5445eb59ddecf0626f5ca0041c550584f0189e89d95f8d4c52499ff838"
+
+    sm2 := cryptobin.NewSM2()
+    sm2PriKey := sm2.
+        FromPublicKeyString(sm2PublicKeyX + sm2PublicKeyY).
+        CreatePublicKey().
+        ToKeyString()
+    sm2PubKey := sm2.
+        FromPublicKeyString(sm2PublicKeyX + sm2PublicKeyY).
+        FromPrivateKeyString(sm2PrivateKeyD).
+        CreatePrivateKey().
+        ToKeyString()
 
 }
 

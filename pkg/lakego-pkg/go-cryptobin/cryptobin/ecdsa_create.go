@@ -27,22 +27,28 @@ func (this Ecdsa) CreatePrivateKey() Ecdsa {
 
 // 公钥
 func (this Ecdsa) CreatePublicKey() Ecdsa {
-    if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+    var publicKey *ecdsa.PublicKey
 
-        return this
+    if this.publicKey == nil {
+        if this.privateKey == nil {
+            this.Error = errors.New("privateKey error.")
+
+            return this
+        }
+
+        x := this.privateKey.X
+        y := this.privateKey.Y
+
+        publicKey = &ecdsa.PublicKey{
+            Curve: this.curve,
+            X: x,
+            Y: y,
+        }
+    } else {
+        publicKey = this.publicKey
     }
 
-    x := this.privateKey.X
-    y := this.privateKey.Y
-
-    publicKey := ecdsa.PublicKey{
-        Curve: this.curve,
-        X: x,
-        Y: y,
-    }
-
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(&publicKey)
+    x509PublicKey, err := x509.MarshalPKIXPublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this

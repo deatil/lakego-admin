@@ -30,6 +30,7 @@ func GetAllRule() []map[string]interface{} {
 
     return list
 }
+
 // 获取 Children
 func GetChildren(ruleid string) []map[string]interface{} {
     list := make([]map[string]interface{}, 0)
@@ -45,9 +46,12 @@ func GetChildren(ruleid string) []map[string]interface{} {
         return make([]map[string]interface{}, 0)
     }
 
-    childrenList := tree.New().
+    res := tree.New().
         WithData(list).
-        GetListChildren(ruleid, "asc")
+        Build(ruleid, "", 0)
+
+    childrenList := tree.New().
+        BuildFormatList(res, ruleid)
 
     return childrenList
 }

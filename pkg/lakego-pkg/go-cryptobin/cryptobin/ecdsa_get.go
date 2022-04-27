@@ -1,7 +1,9 @@
 package cryptobin
 
 import (
+    "math/big"
     "crypto/ecdsa"
+    "crypto/elliptic"
 )
 
 // 获取 PrivateKey
@@ -9,9 +11,49 @@ func (this Ecdsa) GetPrivateKey() *ecdsa.PrivateKey {
     return this.privateKey
 }
 
+// 获取 PrivateKeyCurve
+func (this Ecdsa) GetPrivateKeyCurve() elliptic.Curve {
+    return this.privateKey.Curve
+}
+
+// 获取 PrivateKeyX
+// privateKeyXHex := NewEncoding().HexEncode(GetPrivateKeyX().Bytes())
+func (this Ecdsa) GetPrivateKeyX() *big.Int {
+    return this.privateKey.X
+}
+
+// 获取 PrivateKeyY
+// privateKeyYHex := NewEncoding().HexEncode(GetPrivateKeyY().Bytes())
+func (this Ecdsa) GetPrivateKeyY() *big.Int {
+    return this.privateKey.Y
+}
+
+// 获取 PrivateKeyD
+// privateKeyDHex := NewEncoding().HexEncode(GetPrivateKeyD().Bytes())
+func (this Ecdsa) GetPrivateKeyD() *big.Int {
+    return this.privateKey.D
+}
+
 // 获取 PublicKey
 func (this Ecdsa) GetPublicKey() *ecdsa.PublicKey {
     return this.publicKey
+}
+
+// 获取 PublicKeyCurve
+func (this Ecdsa) GetPublicKeyCurve() elliptic.Curve {
+    return this.publicKey.Curve
+}
+
+// 获取 PublicKeyX
+// publicKeyXHex := NewEncoding().HexEncode(GetPublicKeyX().Bytes())
+func (this Ecdsa) GetPublicKeyX() *big.Int {
+    return this.publicKey.X
+}
+
+// 获取 PublicKeyY
+// publicKeyYHex := NewEncoding().HexEncode(GetPublicKeyY().Bytes())
+func (this Ecdsa) GetPublicKeyY() *big.Int {
+    return this.publicKey.Y
 }
 
 // 获取 keyData
