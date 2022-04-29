@@ -99,7 +99,7 @@ func shouldPassThrough(ctx *router.Context) bool {
     }
 
     // 自定义
-    configExcepts := config.New("auth").GetStringSlice("Auth.PermissionExcepts")
+    configExcepts := config.New("auth").GetStringSlice("auth.permission-excepts")
 
     // 额外定义
     setExcepts := except.GetPermissionExcepts()

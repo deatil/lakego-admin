@@ -27,3 +27,15 @@ func (this Cryptobin) Decrypt() Cryptobin {
             return this.CipherDecrypt()
     }
 }
+
+// ====================
+
+// 方法加密
+func (this Cryptobin) FuncEncrypt(f func(Cryptobin) Cryptobin) Cryptobin {
+    return f(this)
+}
+
+// 方法解密
+func (this Cryptobin) FuncDecrypt(f func(Cryptobin) Cryptobin) Cryptobin {
+    return f(this)
+}

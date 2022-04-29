@@ -61,7 +61,7 @@ func Database(name string, once ...bool) *gorm.DB {
 
     d := database.New(driver.(interfaces.Driver), driverConf)
 
-    debug := config.New("database").GetBool("Debug")
+    debug := config.New("database").GetBool("debug")
     if debug {
         return d.GetConnectionWithDebug()
     }
@@ -71,13 +71,13 @@ func Database(name string, once ...bool) *gorm.DB {
 
 // 默认数据库
 func GetDefaultDatabase() string {
-    return config.New("database").GetString("Default")
+    return config.New("database").GetString("default")
 }
 
 // 获取配置
 func GetConfig(key string, typ ...string) (interface{}, map[string]interface{}) {
     // 连接列表
-    connections := config.New("database").GetStringMap("Connections")
+    connections := config.New("database").GetStringMap("connections")
 
     var name string
     if len(typ) > 0 {

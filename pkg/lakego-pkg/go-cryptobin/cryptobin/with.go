@@ -8,36 +8,36 @@ func (this Cryptobin) WithData(data []byte) Cryptobin {
 }
 
 // 设置密钥
-func (this Cryptobin) WithKey(data []byte) Cryptobin {
-    this.key = data
+func (this Cryptobin) WithKey(key []byte) Cryptobin {
+    this.key = key
 
     return this
 }
 
 // 设置向量
-func (this Cryptobin) WithIv(data []byte) Cryptobin {
-    this.iv = data
+func (this Cryptobin) WithIv(iv []byte) Cryptobin {
+    this.iv = iv
 
     return this
 }
 
 // 加密类型
-func (this Cryptobin) WithType(data string) Cryptobin {
-    this.multiple = data
+func (this Cryptobin) WithMultiple(multiple string) Cryptobin {
+    this.multiple = multiple
 
     return this
 }
 
 // 加密方式
-func (this Cryptobin) WithMode(data string) Cryptobin {
-    this.mode = data
+func (this Cryptobin) WithMode(mode string) Cryptobin {
+    this.mode = mode
 
     return this
 }
 
 // 补码算法
-func (this Cryptobin) WithPadding(data string) Cryptobin {
-    this.padding = data
+func (this Cryptobin) WithPadding(padding string) Cryptobin {
+    this.padding = padding
 
     return this
 }

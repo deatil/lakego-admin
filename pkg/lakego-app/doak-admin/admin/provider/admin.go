@@ -102,6 +102,9 @@ func (this *AdminServiceProvider) loadCommand() {
     // 导入路由信息
     this.AddCommand(cmd.ImportRouteCmd)
 
+    // 导入 api 路由信息
+    this.AddCommand(cmd.ImportApiRouteCmd)
+
     // 强制将 jwt 的 refreshToken 放入黑名单
     this.AddCommand(cmd.PassportLogoutCmd)
 
@@ -156,7 +159,7 @@ func (this *AdminServiceProvider) loadRoute() {
                 adminRoute.Route(admin)
 
                 // 管理员中间件
-                adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.AdminMiddleware"))
+                adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("route.admin-middleware"))
 
                 // 需要管理员权限
                 admin.Use(adminGroupMiddlewares...)
@@ -207,7 +210,7 @@ func (this *AdminServiceProvider) publishConfig() {
  * 记录 pid 信息
  */
 func (this *AdminServiceProvider) putSock() {
-    pidPath := config.New("admin").GetString("PidPath")
+    pidPath := config.New("admin").GetString("pid-path")
 
     file := pathTool.FormatPath(pidPath)
 

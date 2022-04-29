@@ -143,7 +143,7 @@ func (this *Auth) GetIntConfig(key string, key2 string, defaultValue int) int {
  */
 func (this *Auth) GetAccessExpiresIn() int {
     // 过期时间
-    time := this.GetIntConfig("passport", "accessexpiresin", 0)
+    time := this.GetIntConfig("passport", "access-expires-in", 0)
 
     return time
 }
@@ -153,7 +153,7 @@ func (this *Auth) GetAccessExpiresIn() int {
  */
 func (this *Auth) GetRefreshExpiresIn() int {
     // 过期时间
-    time := this.GetIntConfig("passport", "refreshexpiresin", 0)
+    time := this.GetIntConfig("passport", "refresh-expires-in", 0)
 
     return time
 }
@@ -175,11 +175,11 @@ func (this *Auth) MakeJWT() *jwt.JWT {
     exp := this.GetIntConfig("jwt", "exp", 0)
     nbf := this.GetIntConfig("jwt", "nbf", 0)
 
-    signingMethod := this.GetStringConfig("jwt", "signingmethod", "")
+    signingMethod := this.GetStringConfig("jwt", "signing-method", "")
     secret := this.GetStringConfig("jwt", "secret", "")
-    privateKey := this.GetStringConfig("jwt", "privatekey", "")
-    publicKey := this.GetStringConfig("jwt", "publickey", "")
-    privateKeyPassword := this.GetStringConfig("jwt", "privatekeypassword", "")
+    privateKey := this.GetStringConfig("jwt", "private-key", "")
+    publicKey := this.GetStringConfig("jwt", "public-key", "")
+    privateKeyPassword := this.GetStringConfig("jwt", "private-key-password", "")
 
     // 解析 base64
     secret = encoding.Base64Decode(secret)
@@ -241,7 +241,7 @@ func (this *Auth) MakeToken(claims map[string]string) (token string, err error) 
  * 生成鉴权 token
  */
 func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
-    jti := this.GetStringConfig("passport", "accesstokenid", "")
+    jti := this.GetStringConfig("passport", "access-token-id", "")
     exp := this.GetAccessExpiresIn()
 
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
@@ -271,7 +271,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
  * 生成刷新 token
  */
 func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
-    jti := this.GetStringConfig("passport", "refreshtokenid", "")
+    jti := this.GetStringConfig("passport", "refresh-token-id", "")
     exp := this.GetRefreshExpiresIn()
 
     passphrase := this.GetStringConfig("jwt", "passphrase", "")
@@ -301,7 +301,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
  * 获取鉴权 token
  */
 func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
-    jti := this.GetStringConfig("passport", "accesstokenid", "")
+    jti := this.GetStringConfig("passport", "access-token-id", "")
 
     jwter := this.MakeJWT().WithJti(jti)
 
@@ -340,7 +340,7 @@ func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapCla
  * 获取刷新 token
  */
 func (this *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
-    jti := this.GetStringConfig("passport", "refreshtokenid", "")
+    jti := this.GetStringConfig("passport", "refresh-token-id", "")
 
     jwter := this.MakeJWT().WithJti(jti)
 

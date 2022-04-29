@@ -6,8 +6,7 @@ import (
     "github.com/deatil/go-sign/sign/crypt"
 )
 
-type SHA1 struct {
-}
+type SHA1 struct {}
 
 // 签名
 func (this *SHA1) Sign(data string) string {

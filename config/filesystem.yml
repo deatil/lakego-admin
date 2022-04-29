@@ -1,26 +1,26 @@
 # 默认磁盘
-Default: "Public"
+default: "public"
 
 # 磁盘列表
-Disks:
-    Local:
+disks:
+    local:
         # 磁盘类型
-        Type: "local"
+        type: "local"
         # 磁盘路径
-        Root: "{storage}/app/attach"
+        root: "{storage}/app/attach"
 
-    Public:
+    public:
         # 磁盘类型
-        Type: "local"
+        type: "local"
         # 磁盘路径
-        Root: "{storage}/app/public"
-        # 磁盘路径对应的外部URL路径
-        Url: "http://127.0.0.1:8080/storage"
+        root: "{storage}/app/public"
+        # 磁盘路径对应的外部url路径
+        url: "http://127.0.0.1:8080/storage"
         # 可见性
-        Visibility: "public"
+        visibility: "public"
 
 # 软连接
 # 可执行脚本 "go run main.go lakego:storage-link" 创建
-Links:
+links:
     # to : from
     - "{public}/storage:{storage}/app/public"

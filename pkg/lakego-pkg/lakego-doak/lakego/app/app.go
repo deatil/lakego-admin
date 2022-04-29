@@ -244,7 +244,7 @@ func (this *App) RunningInConsole() bool {
 
 // 是否为开发者模式
 func (this *App) IsDev() bool {
-    mode := this.Config.GetString("Mode")
+    mode := this.Config.GetString("mode")
 
     if mode == "dev" {
         return true
@@ -268,12 +268,12 @@ func (this *App) runApp() {
     serverConf := this.Config
 
     if !this.RunInConsole {
-        mode := serverConf.GetString("Mode")
+        mode := serverConf.GetString("mode")
 
         // 模式
         if mode == "dev" {
             // 日志显示方式
-            logShowType := serverConf.GetString("LogShowType")
+            logShowType := serverConf.GetString("log-show-type")
 
             if logShowType == "lakego" {
                 router.SetMode(router.DebugMode)
@@ -324,7 +324,7 @@ func (this *App) runApp() {
     }
 
     // 日志记录方式
-    logType := serverConf.GetString("LogType")
+    logType := serverConf.GetString("log-type")
     if logType == "file" {
         logFileName := datebin.Now().Format("Ymd")
         logFile := path.RuntimePath(fmt.Sprintf("/log/route_%s.log", logFileName))
@@ -372,14 +372,14 @@ func (this *App) ServerRun() {
     var err error
 
     // 运行方式
-    runType := conf.GetString("Default")
+    runType := conf.GetString("default")
     switch runType {
-        case "Http":
+        case "http":
             // 运行方式
-            servertype := conf.GetString("Types.Http.Servertype")
+            servertype := conf.GetString("types.http.server-type")
 
             // 运行端口
-            addr := conf.GetString("Types.Http.Addr")
+            addr := conf.GetString("types.http.addr")
 
             if servertype == "grace" {
                 // 优雅地关机
@@ -389,12 +389,12 @@ func (this *App) ServerRun() {
                 err = this.RouteEngine.Run(addr)
             }
 
-        case "TLS":
+        case "tls":
             // 运行端口
-            addr := conf.GetString("Types.TLS.Addr")
+            addr := conf.GetString("types.tls.addr")
 
-            certFile := conf.GetString("Types.TLS.CertFile")
-            keyFile := conf.GetString("Types.TLS.KeyFile")
+            certFile := conf.GetString("types.tls.cert-file")
+            keyFile := conf.GetString("types.tls.key-file")
 
             // 格式化
             certFile = this.FormatPath(certFile)
@@ -402,28 +402,28 @@ func (this *App) ServerRun() {
 
             err = this.RouteEngine.RunTLS(addr, certFile, keyFile)
 
-        case "Unix":
+        case "unix":
             // 文件
-            file := conf.GetString("Types.Unix.File")
+            file := conf.GetString("types.unix.file")
 
             // 格式化
             file = this.FormatPath(file)
 
             err = this.RouteEngine.RunUnix(file)
 
-        case "Fd":
+        case "fd":
             // fd
-            fd := conf.GetInt("Types.Fd.Fd")
+            fd := conf.GetInt("types.fd.fd")
 
             err = this.RouteEngine.RunFd(fd)
 
-        case "NetListener":
+        case "net-listener":
             if this.NetListener != nil {
                 err = this.RouteEngine.RunListener(this.NetListener)
             } else {
                 // 监听
-                typ := conf.GetString("Types.NetListener.Type")
-                addr := conf.GetString("Types.NetListener.Addr")
+                typ := conf.GetString("types.net-listener.type")
+                addr := conf.GetString("types.net-listener.addr")
 
                 netListener, _ := net.Listen(typ, addr)
 

@@ -42,7 +42,7 @@ func NewWithDisk(disk string, once ...bool) *permission.Permission {
 
 func Permission(name string, once ...bool) *permission.Permission {
     // 列表
-    adapters := config.New("permission").GetStringMap("Adapters")
+    adapters := config.New("permission").GetStringMap("adapters")
 
     // 转为小写
     name = strings.ToLower(name)
@@ -66,7 +66,7 @@ func Permission(name string, once ...bool) *permission.Permission {
     }
 
     // 配置文件路径
-    configfile := permissionConfig["rbacmodel"].(string)
+    configfile := permissionConfig["rbac-model"].(string)
     modelConf := path.FormatPath(configfile)
 
     // 添加适配器
@@ -76,7 +76,7 @@ func Permission(name string, once ...bool) *permission.Permission {
 }
 
 func GetDefaultAdapter() string {
-    return config.New("permission").GetString("Default")
+    return config.New("permission").GetString("default")
 }
 
 // 注册

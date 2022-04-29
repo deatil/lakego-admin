@@ -164,6 +164,54 @@ func (this *Attachment) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", result)
 }
 
+// 附件删除
+// @Summary 附件删除
+// @Description 附件删除
+// @Tags 附件
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "附件ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Router /attachment/{id} [delete]
+// @Security Bearer
+func (this *Attachment) Delete(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "文件ID不能为空")
+        return
+    }
+
+    result := map[string]interface{}{}
+
+    // 附件模型
+    err := model.NewAttachment().
+        Where("id = ?", id).
+        First(&result).
+        Error
+    if err != nil || len(result) < 1 {
+        this.Error(ctx, "文件信息不存在")
+        return
+    }
+
+    // 附件模型
+    err2 := model.NewAttachment().
+        Delete(&model.Attachment{
+            ID: id,
+        }).
+        Error
+    if err2 != nil {
+        this.Error(ctx, "文件删除失败")
+        return
+    }
+
+    // 删除具体文件
+    storage.NewWithDisk(result["disk"].(string)).
+        Delete(result["path"].(string))
+
+    // 数据输出
+    this.Success(ctx, "文件删除成功")
+}
+
 // 附件启用
 // @Summary 附件启用
 // @Description 附件启用
@@ -260,54 +308,6 @@ func (this *Attachment) Disable(ctx *router.Context) {
 
     // 数据输出
     this.Success(ctx, "文件禁用成功")
-}
-
-// 附件删除
-// @Summary 附件删除
-// @Description 附件删除
-// @Tags 附件
-// @Accept application/json
-// @Produce application/json
-// @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
-// @Router /attachment/{id} [delete]
-// @Security Bearer
-func (this *Attachment) Delete(ctx *router.Context) {
-    id := ctx.Param("id")
-    if id == "" {
-        this.Error(ctx, "文件ID不能为空")
-        return
-    }
-
-    result := map[string]interface{}{}
-
-    // 附件模型
-    err := model.NewAttachment().
-        Where("id = ?", id).
-        First(&result).
-        Error
-    if err != nil || len(result) < 1 {
-        this.Error(ctx, "文件信息不存在")
-        return
-    }
-
-    // 附件模型
-    err2 := model.NewAttachment().
-        Delete(&model.Attachment{
-            ID: id,
-        }).
-        Error
-    if err2 != nil {
-        this.Error(ctx, "文件删除失败")
-        return
-    }
-
-    // 删除具体文件
-    storage.NewWithDisk(result["disk"].(string)).
-        Delete(result["path"].(string))
-
-    // 数据输出
-    this.Success(ctx, "文件删除成功")
 }
 
 // 附件下载码

@@ -251,8 +251,8 @@ func (this *Logrus) getLogger() *logrus.Logger {
     // 日志文件
     baseLogPath := path.FormatPath(filepath)
 
-    maxAge := time.Duration(int64(conf["maxage"].(int)))
-    rotationTime := time.Duration(int64(conf["rotationtime"].(int)))
+    maxAge := time.Duration(int64(conf["max-age"].(int)))
+    rotationTime := time.Duration(int64(conf["rotation-time"].(int)))
 
     writer, err := rotatelogs.New(
         baseLogPath + "/log_%Y%m%d.log",

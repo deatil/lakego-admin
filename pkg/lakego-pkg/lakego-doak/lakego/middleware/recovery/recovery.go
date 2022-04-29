@@ -53,7 +53,7 @@ func Handler() router.HandlerFunc {
                     }
                 }
 
-                mode := config.New("server").GetString("Mode")
+                mode := config.New("server").GetString("mode")
 
                 var msg string
 

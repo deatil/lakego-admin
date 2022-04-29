@@ -21,20 +21,17 @@ func (this Ecdsa) WithPublicKey(data *ecdsa.PublicKey) Ecdsa {
 
 // 设置 data
 // 可选 [P521 | P384 | P256 | P224]
-func (this Ecdsa) WithCurve(hash string) Ecdsa {
-    var curve elliptic.Curve
-
-    if hash == "P521" {
-        curve = elliptic.P521()
-    } else if hash == "P384" {
-        curve = elliptic.P384()
-    } else if hash == "P256" {
-        curve = elliptic.P256()
-    } else if hash == "P224" {
-        curve = elliptic.P224()
+func (this Ecdsa) WithCurve(curve string) Ecdsa {
+    switch {
+        case curve == "P521":
+            this.curve = elliptic.P521()
+        case curve == "P384":
+            this.curve = elliptic.P384()
+        case curve == "P256":
+            this.curve = elliptic.P256()
+        case curve == "P224":
+            this.curve = elliptic.P224()
     }
-
-    this.curve = curve
 
     return this
 }
@@ -54,8 +51,8 @@ func (this Ecdsa) WithParedData(data []byte) Ecdsa {
 }
 
 // 设置 hash 类型
-func (this Ecdsa) WithSignHash(data string) Ecdsa {
-    this.signHash = data
+func (this Ecdsa) WithSignHash(hash string) Ecdsa {
+    this.signHash = hash
 
     return this
 }

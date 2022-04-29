@@ -1,41 +1,38 @@
-# 运行链接
-Url: "127.0.0.1:8080"
-
 # 配置模式 dev | release
-Mode: "dev"
+mode: "dev"
 
 # 日志记录方式 file | stdout
-LogType: "stdout"
+log-type: "stdout"
 
 # 日志显示方式 lakego | gin
-LogShowType: "gin"
+log-show-type: "gin"
 
 # 运行方式
-Default: "Http"
-Types:
+default: "http"
+types:
   # tcp请求
-  Http:
+  http:
     # 运行地址
-    Addr: ":8080"
+    addr: ":8080"
     # 运行方式 gin | grace
-    Servertype: "grace"
+    server-type: "grace"
 
   # https
-  TLS:
+  tls:
     # 运行地址
-    Addr: ":8080"
-    CertFile: "{config}/server/certFile.pem"
-    KeyFile: "{config}/server/keyFile.pem"
+    addr: ":8080"
+    cert-file: "{config}/server/certFile.pem"
+    key-file: "{config}/server/keyFile.pem"
 
-  # Unix
-  Unix:
-    File: "{config}/server/unix.pid"
+  # unix
+  unix:
+    file: "{config}/server/unix.pid"
 
-  # Fd
-  Fd:
-    Fd: 1
+  # fd
+  fd:
+    fd: 1
 
   # 自定义监听
-  NetListener:
-    Type: "tcp"
-    Addr: ":8080"
+  net-listener:
+    type: "tcp"
+    addr: ":8080"

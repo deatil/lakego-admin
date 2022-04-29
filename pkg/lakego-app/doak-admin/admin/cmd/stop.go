@@ -43,7 +43,7 @@ func Stop() {
     color.Greenln("系统服务正在停止...")
 
     if stopPid == "" {
-        pidPath := config.New("admin").GetString("PidPath")
+        pidPath := config.New("admin").GetString("pid-path")
         location := pathTool.FormatPath(pidPath)
 
         contents, err := filesystem.New().Get(location)

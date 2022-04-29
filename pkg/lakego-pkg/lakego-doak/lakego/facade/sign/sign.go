@@ -123,6 +123,12 @@ func Register() {
 
                     return driver
                 },
+
+                "bcrypt": func(conf map[string]interface{}) interface{} {
+                    driver := &signDriver.Bcrypt{}
+
+                    return driver
+                },
             })
     })
 }
@@ -156,5 +162,5 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
 
 // 默认签名
 func GetDefaultCrypt() string {
-    return config.New("sign").GetString("Default")
+    return config.New("sign").GetString("default")
 }

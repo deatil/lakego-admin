@@ -89,10 +89,10 @@ func (this *Driver) CreateOpenConnection(dia gorm.Dialector) {
 
     // 连接不活动时的最大生存时间
     sqlDB.SetConnMaxIdleTime(time.Second * 30)
-    sqlDB.SetConnMaxLifetime(time.Duration(conf["connmaxlifetime"].(int)) * time.Second)
+    sqlDB.SetConnMaxLifetime(time.Duration(conf["conn-max-lifetime"].(int)) * time.Second)
 
-    MaxIdleConns := conf["maxidleconns"].(int)
-    MaxOpenConns := conf["maxopenconns"].(int)
+    MaxIdleConns := conf["max-idle-conns"].(int)
+    MaxOpenConns := conf["max-open-conns"].(int)
 
     // 连接超时相关
     sqlDB.SetMaxIdleConns(MaxIdleConns)

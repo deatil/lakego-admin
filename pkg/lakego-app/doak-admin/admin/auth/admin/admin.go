@@ -64,7 +64,7 @@ func (this *Admin) IsSuperAdministrator() bool {
         return false
     }
 
-    adminId := config.New("auth").GetString("Auth.AdminId")
+    adminId := config.New("auth").GetString("auth.admin-id")
 
     return this.Id == adminId
 }
@@ -142,6 +142,9 @@ func (this *Admin) GetGroups() []map[string]interface{} {
 
     // 格式化分组
     adminGroups := this.Data["Groups"].([]interface{})
+    if len(adminGroups) == 0 {
+        return groups
+    }
 
     groups = collection.
         Collect(adminGroups).

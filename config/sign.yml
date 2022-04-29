@@ -1,40 +1,46 @@
 # 默认签名
-Default: "Md5"
+default: "md5"
 
 # 驱动列表
-Crypts:
-  # Md5
-  Md5:
-    Type: "md5"
-    Key: "dfertf12dfertf12"
+crypts:
+  # md5
+  md5:
+    type: "md5"
+    key: "dfertf12dfertf12"
     # 签名方式： 链接 query, 加密函数用 signkey
-    Signtype: "query"
+    signtype: "query"
 
-  # Sha1
-  Sha1:
-    Type: "sha1"
-    Key: ""
-    Signtype: "query"
+  # sha1
+  sha1:
+    type: "sha1"
+    key: ""
+    signtype: "query"
 
   # hmac 摘要
-  Hmac:
-    Type: "hmac"
-    Key: ""
-    Signtype: "signkey"
+  hmac:
+    type: "hmac"
+    key: ""
+    signtype: "signkey"
 
   # aes 对称加密
-  Aes:
-    Type: "aes"
-    Key: "dfertf12dfertf12"
-    Iv: "dfertf12dfertf12"
-    Signtype: "signkey"
+  aes:
+    type: "aes"
+    key: "dfertf12dfertf12"
+    iv: "dfertf12dfertf12"
+    signtype: "signkey"
 
   # rsa 非对称加密
-  Rsa:
-    Type: "rsa"
+  rsa:
+    type: "rsa"
     # 公钥
-    Publickey: ""
+    publickey: ""
     # 私钥
-    Privatekey: ""
-    Signtype: "signkey"
+    privatekey: ""
+    signtype: "signkey"
+
+  # bcrypt 摘要
+  bcrypt:
+    type: "bcrypt"
+    key: ""
+    signtype: "query"
 

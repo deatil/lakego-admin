@@ -36,11 +36,11 @@ var VersionCmd = &command.Command{
 func ShowVersion() {
     conf := config.New("version")
 
-    name := conf.GetString("Name")
-    nameMini := conf.GetString("NameMini")
+    name := conf.GetString("name")
+    nameMini := conf.GetString("name-mini")
     // logo := conf.GetString("Logo")
-    release := conf.GetString("Release")
-    version := conf.GetString("Version")
+    release := conf.GetString("release")
+    version := conf.GetString("version")
 
     goVersion := runtime.Version()
 

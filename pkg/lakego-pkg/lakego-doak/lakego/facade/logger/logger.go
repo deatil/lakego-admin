@@ -39,7 +39,7 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
     conf := config.New("logger")
 
     // 驱动列表
-    drivers := conf.GetStringMap("Drivers")
+    drivers := conf.GetStringMap("drivers")
 
     // 转为小写
     driverName = strings.ToLower(driverName)
@@ -78,7 +78,7 @@ func LogrusWithFields(log *logger.Logger, fields map[string]interface{}) *logrus
 
 // 默认驱动
 func GetDefaultDriver() string {
-    return config.New("logger").GetString("Default")
+    return config.New("logger").GetString("default")
 }
 
 // 注册

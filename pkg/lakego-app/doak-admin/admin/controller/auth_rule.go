@@ -223,117 +223,6 @@ func (this *AuthRule) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", ruleData)
 }
 
-// 权限菜单删除
-// @Summary 权限菜单删除
-// @Description 权限菜单删除
-// @Tags 权限菜单
-// @Accept application/json
-// @Produce application/json
-// @Param id path string true "权限菜单ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
-// @Router /auth/rule/{id} [delete]
-// @Security Bearer
-func (this *AuthRule) Delete(ctx *router.Context) {
-    id := ctx.Param("id")
-    if id == "" {
-        this.Error(ctx, "ID不能为空")
-        return
-    }
-
-    // 详情
-    var info model.AuthRule
-    err := model.NewAuthRule().
-        Where("id = ?", id).
-        First(&info).
-        Error
-    if err != nil {
-        this.Error(ctx, "信息不存在")
-        return
-    }
-
-    // 子级
-    var total int64
-    err2 := model.NewAuthRule().
-        Where("parentid = ?", id).
-        Count(&total).
-        Error
-    if err2 != nil || total > 0 {
-        this.Error(ctx, "请删除子权限后再操作")
-        return
-    }
-
-    // 删除
-    err3 := model.NewAuthRule().
-        Delete(&model.AuthRule{
-            ID: id,
-        }).
-        Error
-    if err3 != nil {
-        this.Error(ctx, "信息删除失败")
-        return
-    }
-
-    this.Success(ctx, "信息删除成功")
-}
-
-// 清空特定ID权限
-// @Summary 清空特定ID权限
-// @Description 清空特定ID权限
-// @Tags 权限菜单
-// @Accept application/json
-// @Produce application/json
-// @Param ids formData string true "权限ID列表"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "删除特定权限成功", "data": ""}"
-// @Router /auth/rule/clear [delete]
-// @Security Bearer
-func (this *AuthRule) Clear(ctx *router.Context) {
-    // 接收数据
-    post := make(map[string]interface{})
-    ctx.BindJSON(&post)
-
-    if post["ids"] == "" {
-        this.Error(ctx, "权限ID列表不能为空")
-        return
-    }
-    ids := post["ids"].(string)
-
-    newIds := strings.Split(ids, ",")
-    for _, id := range newIds {
-        // 详情
-        var info model.AuthRule
-        err := model.NewAuthRule().
-            Where("id = ?", id).
-            First(&info).
-            Error
-        if err != nil {
-            continue
-        }
-
-        // 子级
-        var total int64
-        err2 := model.NewAuthRule().
-            Where("parentid = ?", id).
-            Count(&total).
-            Error
-        if err2 != nil || total > 0 {
-            continue
-        }
-
-        // 删除
-        err3 := model.NewAuthRule().
-            Delete(&model.AuthRule{
-                ID: id,
-            }).
-            Error
-        if err3 != nil {
-            continue
-        }
-
-    }
-
-    this.Success(ctx, "删除特定权限成功")
-}
-
 // 权限菜单添加
 // @Summary 权限菜单添加
 // @Description 权限菜单添加
@@ -484,6 +373,59 @@ func (this *AuthRule) Update(ctx *router.Context) {
     }
 
     this.Success(ctx, "信息修改成功")
+}
+
+// 权限菜单删除
+// @Summary 权限菜单删除
+// @Description 权限菜单删除
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限菜单ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
+// @Router /auth/rule/{id} [delete]
+// @Security Bearer
+func (this *AuthRule) Delete(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 详情
+    var info model.AuthRule
+    err := model.NewAuthRule().
+        Where("id = ?", id).
+        First(&info).
+        Error
+    if err != nil {
+        this.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 子级
+    var total int64
+    err2 := model.NewAuthRule().
+        Where("parentid = ?", id).
+        Count(&total).
+        Error
+    if err2 != nil || total > 0 {
+        this.Error(ctx, "请删除子权限后再操作")
+        return
+    }
+
+    // 删除
+    err3 := model.NewAuthRule().
+        Delete(&model.AuthRule{
+            ID: id,
+        }).
+        Error
+    if err3 != nil {
+        this.Error(ctx, "信息删除失败")
+        return
+    }
+
+    this.Success(ctx, "信息删除成功")
 }
 
 // 权限菜单排序
@@ -641,4 +583,62 @@ func (this *AuthRule) Disable(ctx *router.Context) {
     }
 
     this.Success(ctx, "禁用成功")
+}
+
+// 清空特定ID权限
+// @Summary 清空特定ID权限
+// @Description 清空特定ID权限
+// @Tags 权限菜单
+// @Accept application/json
+// @Produce application/json
+// @Param ids formData string true "权限ID列表"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "删除特定权限成功", "data": ""}"
+// @Router /auth/rule/clear [delete]
+// @Security Bearer
+func (this *AuthRule) Clear(ctx *router.Context) {
+    // 接收数据
+    post := make(map[string]interface{})
+    ctx.BindJSON(&post)
+
+    if post["ids"] == "" {
+        this.Error(ctx, "权限ID列表不能为空")
+        return
+    }
+    ids := post["ids"].(string)
+
+    newIds := strings.Split(ids, ",")
+    for _, id := range newIds {
+        // 详情
+        var info model.AuthRule
+        err := model.NewAuthRule().
+            Where("id = ?", id).
+            First(&info).
+            Error
+        if err != nil {
+            continue
+        }
+
+        // 子级
+        var total int64
+        err2 := model.NewAuthRule().
+            Where("parentid = ?", id).
+            Count(&total).
+            Error
+        if err2 != nil || total > 0 {
+            continue
+        }
+
+        // 删除
+        err3 := model.NewAuthRule().
+            Delete(&model.AuthRule{
+                ID: id,
+            }).
+            Error
+        if err3 != nil {
+            continue
+        }
+
+    }
+
+    this.Success(ctx, "删除特定权限成功")
 }

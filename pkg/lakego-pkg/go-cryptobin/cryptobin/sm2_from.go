@@ -86,19 +86,11 @@ func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
 }
 
 // 私钥字符，必须先添加公钥
-func (this SM2) FromPrivateKeyXYDBytes(XBytes, YBytes, DBytes []byte) SM2 {
-    x := new(big.Int).SetBytes(XBytes)
-    y := new(big.Int).SetBytes(YBytes)
+func (this SM2) FromPrivateKeyDBytes(DBytes []byte) SM2 {
     d := new(big.Int).SetBytes(DBytes)
 
-    publicKey := sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
-        X:     x,
-        Y:     y,
-    }
-
     this.privateKey = &sm2.PrivateKey{
-        PublicKey: publicKey,
+        PublicKey: *this.publicKey,
         D:         d,
     }
 

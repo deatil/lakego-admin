@@ -1,19 +1,19 @@
 # 默认缓存
-Default: "Redis"
+default: "redis"
 
 # 缓存列表
-Caches:
-  Redis:
-    Type: "redis"
-    Prefix: "cache"
-    DB: 1
-    Addr: "127.0.0.1:6379"
-    Password: "admin123"
-    MinIdleConn: 200
-    DialTimeout: 60s
-    ReadTimeout: 500ms
-    WriteTimeout: 500ms
-    PoolSize: 100
-    PoolTimeout: 240s
-    Enabletrace: false
+caches:
+  redis:
+    type: "redis"
+    prefix: "cache"
+    db: 1
+    addr: "127.0.0.1:6379"
+    password: "admin123"
+    minidle-conn: 200
+    dial-timeout: 60s
+    read-timeout: 500ms
+    write-timeout: 500ms
+    pool-size: 100
+    pool-timeout: 240s
+    enabletrace: false
 

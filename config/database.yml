@@ -1,24 +1,24 @@
 # 默认
-Default: "Mysql"
+default: "mysql"
 
 # true or false
-Debug: false
+debug: false
 
 # 连接列表
-Connections:
-  Mysql:
-    Type: "mysql"
+connections:
+  mysql:
+    type: "mysql"
     # 填写替换其他配置
-    Dsn: ""
-    Host: "127.0.0.1"
-    Port: 3306
-    Username: "root"
-    Password: "123456"
-    Database: "lakego_admin"
-    Charset: "utf8mb4"
-    Prefix: "lakego_lakego_"
-    MaxIdleConns: 10
-    MaxOpenConns: 128
-    ConnMaxLifetime: 60      # 连接不活动时的最大生存时间(秒)
-    #ReConnectInterval: 1    # 保留项,重连数据库间隔秒数
-    #PingFailRetryTimes: 3   # 保留项,最大重连次数
+    dsn: ""
+    host: "127.0.0.1"
+    port: 3306
+    username: "root"
+    password: "123456"
+    database: "lakego_admin"
+    charset: "utf8mb4"
+    prefix: "lakego_lakego_"
+    max-idle-conns: 10
+    max-open-conns: 128
+    conn-max-lifetime: 60      # 连接不活动时的最大生存时间(秒)
+    #reconnectinterval: 1    # 保留项,重连数据库间隔秒数
+    #pingfailretrytimes: 3   # 保留项,最大重连次数

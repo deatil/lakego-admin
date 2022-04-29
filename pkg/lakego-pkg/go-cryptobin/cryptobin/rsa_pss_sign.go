@@ -8,8 +8,10 @@ import (
 // 私钥签名
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
 func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
-    hash := this.HashType(this.signHash)
-    hashed := this.DataHash(this.signHash, this.data)
+    newHash := NewHash()
+
+    hash := newHash.GetCryptoHash(this.signHash)
+    hashed := newHash.DataCryptoHash(this.signHash, this.data)
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthEqualsHash,
@@ -27,8 +29,10 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
-    hash := this.HashType(this.signHash)
-    hashed := this.DataHash(this.signHash, data)
+    newHash := NewHash()
+
+    hash := newHash.GetCryptoHash(this.signHash)
+    hashed := newHash.DataCryptoHash(this.signHash, data)
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthAuto,

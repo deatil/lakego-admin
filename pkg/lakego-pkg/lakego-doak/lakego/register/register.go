@@ -14,7 +14,7 @@ func New() *Register {
     once.Do(func() {
         instance = &Register{
             registers: make(RegistersMap),
-            used: make(UsedMap),
+            used:      make(UsedMap),
         }
     })
 

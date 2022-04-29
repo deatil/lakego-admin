@@ -144,7 +144,7 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
     viewFinder := view.InstanceViewFinder()
 
-    paths := config.New("view").GetStringSlice("Paths")
+    paths := config.New("view").GetStringSlice("paths")
     if len(paths) > 0 {
         for _, viewPath := range paths {
             appPath := pathTool.FormatPath(viewPath) + "/pkg/" + namespace

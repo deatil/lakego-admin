@@ -41,7 +41,7 @@ func MountManager(filesystems ...map[string]interface{}) *filesystem.MountManage
 
 func Disk(name string, once ...bool) *storage.Storage {
     // 磁盘列表
-    disks := config.New("filesystem").GetStringMap("Disks")
+    disks := config.New("filesystem").GetStringMap("disks")
 
     // 转为小写
     name = strings.ToLower(name)
@@ -74,7 +74,7 @@ func Disk(name string, once ...bool) *storage.Storage {
 }
 
 func GetDefaultDisk() string {
-    return config.New("filesystem").GetString("Default")
+    return config.New("filesystem").GetString("default")
 }
 
 // 注册磁盘

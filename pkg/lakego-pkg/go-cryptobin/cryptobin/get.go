@@ -16,7 +16,7 @@ func (this Cryptobin) GetIv() []byte {
 }
 
 // 加密类型
-func (this Cryptobin) GetType() string {
+func (this Cryptobin) GetMultiple() string {
     return this.multiple
 }
 

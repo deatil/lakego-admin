@@ -34,7 +34,7 @@ func New(once ...bool) *html.Html {
 // 模板渲染
 func Html(name string, once ...bool) *html.Html {
     // 连接列表
-    adapters := config.New("view").GetStringMap("Adapters")
+    adapters := config.New("view").GetStringMap("adapters")
 
     // 转为小写
     name = strings.ToLower(name)
@@ -63,7 +63,7 @@ func Html(name string, once ...bool) *html.Html {
 
 // 默认适配器
 func GetDefaultAdapter() string {
-    return config.New("view").GetString("DefaultAdapter")
+    return config.New("view").GetString("default-adapter")
 }
 
 // 注册
@@ -74,7 +74,7 @@ func Register() {
             NewManagerWithPrefix("view").
             RegisterMany(map[string]func(map[string]interface{}) interface{} {
                 "pongo2": func(conf map[string]interface{}) interface{} {
-                    path := conf["tmpldir"].(string)
+                    path := conf["tmpl-dir"].(string)
                     adapter := pongo2Adapter.New(path)
 
                     return adapter

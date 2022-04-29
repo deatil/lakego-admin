@@ -1,13 +1,13 @@
 # 视图
-Paths:
+paths:
   - "{resources}/view"
 
 # 默认适配器
-DefaultAdapter: "Pongo2"
+default-adapter: "Pongo2"
 
 # 适配器列表
-Adapters:
-  Pongo2:
-    Type: "pongo2"
+adapters:
+  pongo2:
+    type: "pongo2"
     # 模板根目录
-    TmplDir: "{resources}/view"
+    tmpl-dir: "{resources}/view"

@@ -44,7 +44,7 @@ func (this *Passport) Captcha(ctx *router.Context) {
         this.Error(ctx, "error", code.StatusError)
     }
 
-    key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
+    key := config.New("auth").GetString("passport.header-captcha-key")
 
     this.SetHeader(ctx, key, id)
     this.SuccessWithData(ctx, "获取成功", router.H{
@@ -80,7 +80,7 @@ func (this *Passport) Login(ctx *router.Context) {
     captchaCode := post["captcha"].(string)
 
     // 验证码检测
-    key := config.New("auth").GetString("Passport.HeaderCaptchaKey")
+    key := config.New("auth").GetString("passport.header-captcha-key")
     captchaId := ctx.GetHeader(key)
 
     ok := captcha.New().Verify(captchaId, captchaCode, true)

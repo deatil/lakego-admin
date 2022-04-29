@@ -246,59 +246,6 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", groupData)
 }
 
-// 权限分组删除
-// @Summary 权限分组删除
-// @Description 权限分组删除
-// @Tags 权限分组
-// @Accept application/json
-// @Produce application/json
-// @Param id path string true "权限分组ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
-// @Router /auth/group/{id} [delete]
-// @Security Bearer
-func (this *AuthGroup) Delete(ctx *router.Context) {
-    id := ctx.Param("id")
-    if id == "" {
-        this.Error(ctx, "ID不能为空")
-        return
-    }
-
-    // 详情
-    var info model.AuthGroup
-    err := model.NewAuthGroup().
-        Where("id = ?", id).
-        First(&info).
-        Error
-    if err != nil {
-        this.Error(ctx, "信息不存在")
-        return
-    }
-
-    // 子级
-    var total int64
-    err2 := model.NewAuthGroup().
-        Where("parentid = ?", id).
-        Count(&total).
-        Error
-    if err2 != nil || total > 0 {
-        this.Error(ctx, "请删除子分组后再操作")
-        return
-    }
-
-    // 删除
-    err3 := model.NewAuthGroup().
-        Delete(&model.AuthGroup{
-            ID: id,
-        }).
-        Error
-    if err3 != nil {
-        this.Error(ctx, "信息删除失败")
-        return
-    }
-
-    this.Success(ctx, "信息删除成功")
-}
-
 // 权限分组添加
 // @Summary 权限分组添加
 // @Description 权限分组添加
@@ -426,6 +373,59 @@ func (this *AuthGroup) Update(ctx *router.Context) {
     }
 
     this.Success(ctx, "信息修改成功")
+}
+
+// 权限分组删除
+// @Summary 权限分组删除
+// @Description 权限分组删除
+// @Tags 权限分组
+// @Accept application/json
+// @Produce application/json
+// @Param id path string true "权限分组ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
+// @Router /auth/group/{id} [delete]
+// @Security Bearer
+func (this *AuthGroup) Delete(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 详情
+    var info model.AuthGroup
+    err := model.NewAuthGroup().
+        Where("id = ?", id).
+        First(&info).
+        Error
+    if err != nil {
+        this.Error(ctx, "信息不存在")
+        return
+    }
+
+    // 子级
+    var total int64
+    err2 := model.NewAuthGroup().
+        Where("parentid = ?", id).
+        Count(&total).
+        Error
+    if err2 != nil || total > 0 {
+        this.Error(ctx, "请删除子分组后再操作")
+        return
+    }
+
+    // 删除
+    err3 := model.NewAuthGroup().
+        Delete(&model.AuthGroup{
+            ID: id,
+        }).
+        Error
+    if err3 != nil {
+        this.Error(ctx, "信息删除失败")
+        return
+    }
+
+    this.Success(ctx, "信息删除成功")
 }
 
 // 权限分组排序

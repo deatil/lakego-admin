@@ -1,43 +1,43 @@
 # 登陆
-Passport:
+passport:
   # 密码全局盐
-  PasswordSalt: "e6c2ea864004a461e744b28a394df50c"
+  password-salt: "e6c2ea864004a461e744b28a394df50c"
   # 验证码字段
-  HeaderCaptchaKey: "Lakego-Admin-Captcha-Id"
-  AccessTokenId: "lakego-passport-access-token"
-  AccessExpiresIn: 86400
-  RefreshTokenId: "lakego-passport-refresh-token"
-  RefreshExpiresIn: 604800
+  header-captcha-key: "Lakego-Admin-Captcha-Id"
+  access-token-id: "lakego-passport-access-token"
+  access-expires-in: 86400
+  refresh-token-id: "lakego-passport-refresh-token"
+  refresh-expires-in: 604800
 
 # jwt 相关
-Jwt:
-  Iss: "admin-api.yourdomain.com"
-  Aud: "lakego-admin"
-  Sub: "lakego-admin-passport"
-  Jti: "lakego-admin-jid"
-  Exp: 3600
-  Nbf: 0
+jwt:
+  iss: "admin-api.yourdomain.com"
+  aud: "lakego-admin"
+  sub: "lakego-admin-passport"
+  jti: "lakego-admin-jid"
+  exp: 3600
+  nbf: 0
 
   # 使用签名方式
   # HS256,HS384,HS512; ES256,ES384,ES512;
   # RS256,RS384,RS512; PS256,PS384,PS512;
   # EdDSA;GmSM2(国密)
-  SigningMethod: "HS512"
+  signing-method: "HS512"
   # 密码，base64 编码后，适用类型 HS
-  Secret: "MTIzNDU2"
+  secret: "MTIzNDU2"
   # 公钥和私钥，适用类型 ES, RS, PS, EdDSA
-  PrivateKey: "{config}/key/ed25519-private.pem"
-  PublicKey: "{config}/key/ed25519-public.pem"
+  private-key: "{config}/key/ed25519-private.pem"
+  public-key: "{config}/key/ed25519-public.pem"
   # 私钥密码，base64 编码后，适用类型 RS
-  PrivateKeyPassword: "MTIzNDU2"
+  private-key-password: "MTIzNDU2"
   # 载荷加密秘钥，为空或者 base64 后解码错误不加密，base64编码后
-  Passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
+  passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
 
 # 权限
-Auth:
+auth:
   # 登陆过滤 ["GET:passport/login"]
-  AuthenticateExcepts: []
+  authenticate-excepts: []
   # 权限过滤 ["GET:passport/login"]
-  PermissionExcepts: []
+  permission-excepts: []
   # 超级管理员
-  AdminId: "e92ba0a3f86f4a5693d8487eb8c632b5"
+  admin-id: "e92ba0a3f86f4a5693d8487eb8c632b5"

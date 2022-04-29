@@ -414,9 +414,9 @@ func main() {
         GetPrivateKeyD().
         Bytes()
 
-    x := encoding.FromBytes(sm2a).ToHexString()
-    y := encoding.FromBytes(sm2b).ToHexString()
-    d := encoding.FromBytes(sm2c).ToHexString()
+    x := cryptobin.NewEncoding().HexEncode(sm2a)
+    y := cryptobin.NewEncoding().HexEncode(sm2b)
+    d := cryptobin.NewEncoding().HexEncode(sm2c)
 
     // =====
 
@@ -435,6 +435,22 @@ func main() {
         FromPrivateKeyString(sm2PrivateKeyD).
         CreatePrivateKey().
         ToKeyString()
+
+    // =====
+
+    // RsaOAEPEncrypt 加密测试
+    enkey, _ := fs.Get("./runtime/key/sample_key.pub")
+    cypt := cryptobin.
+        FromString("test-pass").
+        SetKey(enkey).
+        RsaOAEPEncrypt("SHA1").
+        ToBase64String()
+    dekey, _ := fs.Get("./runtime/key/sample_key")
+    cyptde := cryptobin.
+        FromBase64String("W7k/gm81yoc2tAlV1vDM0HxMPRktqQ0OFScvhYgO8boc+jj/OY3CwFcNko98XQnKeNTzqctDtQb6QlRdBtCf76DMjhH/4un7FxuXnYF/D+GGbqV5M0P/Sfqr4zqt7jPXiUqV3LUmASoWc8TnA70XY/ZWZ35ZwEBMYfJcmxdJpT8XfW0i0HSZpFNg/bZ55o/fy7+8bVcXPiVdTtvncLIUxxZsWZbLG4K4ufZ476efi8N36CPOOvUHigiVTTHWznk4U/Bd1RlBgxCOQNbhQUco3LcBzSxiKyQLqC+jQ7GMzw1EBWB3p9RHez5xVPX51GyOJJHmFLeLNuIOEtGWPB7yZQ==").
+        SetKey(dekey).
+        RsaOAEPDecrypt("SHA1").
+        ToString()
 
 }
 

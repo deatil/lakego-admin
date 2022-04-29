@@ -21,18 +21,23 @@ func Handler() router.HandlerFunc {
 
         if len(origin) > 0 && isTrueRequest(ctx) {
             conf := config.New("cors")
-            open := conf.GetBool("OpenAllowOrigin")
+            open := conf.GetBool("open-allow-origin")
 
             if (open) {
-                ctx.Header("Access-Control-Allow-Origin", conf.GetString("AllowOrigin"))
+                ctx.Header("Access-Control-Allow-Origin", conf.GetString("allow-origin"))
 
-                ctx.Header("Access-Control-Allow-Headers", conf.GetString("AllowHeaders"))
-                ctx.Header("Access-Control-Allow-Methods", conf.GetString("AllowMethods"))
-                ctx.Header("Access-Control-Expose-Headers", conf.GetString("AllowHeaders"))
+                ctx.Header("Access-Control-Allow-Headers", conf.GetString("allow-headers"))
+                ctx.Header("Access-Control-Allow-Methods", conf.GetString("allow-methods"))
+                ctx.Header("Access-Control-Expose-Headers", conf.GetString("expose-headers"))
 
-                allowCredentials := conf.GetBool("AllowCredentials")
+                allowCredentials := conf.GetBool("allow-credentials")
                 if (allowCredentials) {
                     ctx.Header("Access-Control-Allow-Credentials", "true")
+                }
+
+                maxAge := conf.GetString("max-age")
+                if maxAge != "" {
+                    ctx.Header("Access-Control-Max-Age", maxAge)
                 }
 
                 // 放行所有OPTIONS方法

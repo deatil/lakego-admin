@@ -2,7 +2,7 @@ package password
 
 import (
     "github.com/deatil/go-hash/hash"
-    
+
     "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 )
@@ -22,7 +22,7 @@ func CheckPassword(password string, needPassword string, needSalt string) bool {
 func EncryptPassword(password string) (pass string, encrypt string) {
     encrypt = random.String(6)
     pass = hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt());
-    return	
+    return
 }
 
 /**
@@ -34,11 +34,11 @@ func EncryptPassword(password string) (pass string, encrypt string) {
  */
 func EncryptPasswordWithEncrypt(password string, encrypt string) string {
     newPassword := hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt());
-    return newPassword	
+    return newPassword
 }
 
 // 密码通用盐
 func GetPasswordSalt() string {
-    salt := config.New("auth").GetString("Passport.PasswordSalt")
+    salt := config.New("auth").GetString("passport.password-salt")
     return salt
 }

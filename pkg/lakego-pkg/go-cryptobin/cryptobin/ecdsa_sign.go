@@ -3,11 +3,7 @@ package cryptobin
 import (
     "strings"
     "math/big"
-    "crypto/md5"
     "crypto/rand"
-    "crypto/sha1"
-    "crypto/sha256"
-    "crypto/sha512"
     "crypto/ecdsa"
 )
 
@@ -79,26 +75,5 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
 
 // 签名后数据
 func (this Ecdsa) DataHash(signHash string, data []byte) []byte {
-    switch signHash {
-        case "MD5":
-            sum := md5.Sum(data)
-            return sum[:]
-        case "SHA1":
-            sum := sha1.Sum(data)
-            return sum[:]
-        case "SHA224":
-            sum := sha256.Sum224(data)
-            return sum[:]
-        case "SHA256":
-            sum := sha256.Sum256(data)
-            return sum[:]
-        case "SHA384":
-            sum := sha512.Sum384(data)
-            return sum[:]
-        case "SHA512":
-            sum := sha512.Sum512(data)
-            return sum[:]
-    }
-
-    return data
+    return NewHash().DataHash(signHash, data)
 }

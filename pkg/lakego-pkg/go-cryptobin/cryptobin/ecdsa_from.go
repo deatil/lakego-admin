@@ -76,19 +76,11 @@ func (this Ecdsa) FromPublicKeyXYBytes(XBytes, YBytes []byte) Ecdsa {
 }
 
 // 私钥字符，必须先添加公钥
-func (this Ecdsa) FromPrivateKeyXYDBytes(XBytes, YBytes, DBytes []byte) Ecdsa {
-    x := new(big.Int).SetBytes(XBytes)
-    y := new(big.Int).SetBytes(YBytes)
+func (this Ecdsa) FromPrivateKeyDBytes(DBytes []byte) Ecdsa {
     d := new(big.Int).SetBytes(DBytes)
 
-    publicKey := ecdsa.PublicKey{
-        Curve: this.curve,
-        X:     x,
-        Y:     y,
-    }
-
     this.privateKey = &ecdsa.PrivateKey{
-        PublicKey: publicKey,
+        PublicKey: *this.publicKey,
         D:         d,
     }
 

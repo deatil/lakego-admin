@@ -6,8 +6,7 @@ import (
     "github.com/deatil/go-sign/sign/crypt"
 )
 
-type MD5 struct {
-}
+type MD5 struct {}
 
 // 签名
 func (this *MD5) Sign(data string) string {

@@ -67,3 +67,9 @@ func (this *Route) GetRouteMap() map[string]interface{} {
     return newRoutes
 }
 
+// 最后一个
+func (this *Route) GetLastRoute() RouteInfo {
+    routes := this.routeEngine.Routes()
+
+    return routes[len(routes) - 1]
+}

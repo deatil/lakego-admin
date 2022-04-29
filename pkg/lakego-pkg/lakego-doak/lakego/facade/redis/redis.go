@@ -14,18 +14,18 @@ import (
 func New() redis.Redis {
     conf := config.New("redis")
 
-    keyPrefix := conf.GetString("KeyPrefix")
+    keyPrefix := conf.GetString("key-prefix")
 
-    addr := conf.GetString("Addr")
-    password := conf.GetString("Password")
-    db := conf.GetInt("DB")
+    addr := conf.GetString("addr")
+    password := conf.GetString("password")
+    db := conf.GetInt("db")
 
-    minIdleConn := config["minidleconn"].(int)
-    dialTimeout, _ := time.ParseDuration(config["dialtimeout"].(string))
-    readTimeout, _ := time.ParseDuration(config["readtimeout"].(string))
-    writeTimeout, _ := time.ParseDuration(config["writetimeout"].(string))
-    poolSize := config["poolsize"].(int)
-    poolTimeout, _ := time.ParseDuration(config["pooltimeout"].(string))
+    minIdleConn := config["minidle-conn"].(int)
+    dialTimeout, _ := time.ParseDuration(config["dial-timeout"].(string))
+    readTimeout, _ := time.ParseDuration(config["read-timeout"].(string))
+    writeTimeout, _ := time.ParseDuration(config["write-timeout"].(string))
+    poolSize := config["pool-size"].(int)
+    poolTimeout, _ := time.ParseDuration(config["pool-timeout"].(string))
 
     enabletrace := config["enabletrace"].(bool)
 

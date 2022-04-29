@@ -39,12 +39,12 @@ func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
     addr := config["addr"].(string)
     password := config["password"].(string)
 
-    minIdleConn := config["minidleconn"].(int)
-    dialTimeout, _ := time.ParseDuration(config["dialtimeout"].(string))
-    readTimeout, _ := time.ParseDuration(config["readtimeout"].(string))
-    writeTimeout, _ := time.ParseDuration(config["writetimeout"].(string))
-    poolSize := config["poolsize"].(int)
-    poolTimeout, _ := time.ParseDuration(config["pooltimeout"].(string))
+    minIdleConn := config["minidle-conn"].(int)
+    dialTimeout, _ := time.ParseDuration(config["dial-timeout"].(string))
+    readTimeout, _ := time.ParseDuration(config["read-timeout"].(string))
+    writeTimeout, _ := time.ParseDuration(config["write-timeout"].(string))
+    poolSize := config["pool-size"].(int)
+    poolTimeout, _ := time.ParseDuration(config["pool-timeout"].(string))
 
     enabletrace := config["enabletrace"].(bool)
 

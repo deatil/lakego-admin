@@ -1,6 +1,6 @@
 # 系统信息
-Name: "LakegoAdmin"
-NameMini: "Lakego"
-Logo: "<b>Lakego</b> admin"
-Release: "20220312"
-Version: "1.0.16"
+name: "LakegoAdmin"
+name-mini: "Lakego"
+logo: "<b>Lakego</b> admin"
+release: "20220312"
+version: "1.0.16"

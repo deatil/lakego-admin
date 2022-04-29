@@ -43,7 +43,7 @@ func init() {
 
 // 创建公共资源软连接
 func StorageLink() {
-    links := config.New("filesystem").GetStringSlice("Links")
+    links := config.New("filesystem").GetStringSlice("links")
 
     if len(links) > 0 {
         for _, link := range links {

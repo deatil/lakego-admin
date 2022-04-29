@@ -512,7 +512,7 @@ func (this *Admin) Delete(ctx *router.Context) {
         return
     }
 
-    authAdminId := config.New("auth").GetString("Auth.AdminId")
+    authAdminId := config.New("auth").GetString("auth.admin-id")
     if authAdminId == id {
         this.Error(ctx, "当前账号不能被删除")
         return
