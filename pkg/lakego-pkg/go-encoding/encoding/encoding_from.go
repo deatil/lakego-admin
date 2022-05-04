@@ -3,6 +3,7 @@ package encoding
 import (
     "bytes"
     "errors"
+    "strings"
     "strconv"
     "encoding/csv"
     "encoding/gob"
@@ -49,6 +50,38 @@ func (this Encoding) FromBase58String(data string) Encoding {
 // Base64
 func (this Encoding) FromBase64String(data string) Encoding {
     this.data, this.Error = base64.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base64URL
+func (this Encoding) FromBase64URLString(data string) Encoding {
+    this.data, this.Error = base64.URLEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base64Raw
+func (this Encoding) FromBase64RawString(data string) Encoding {
+    this.data, this.Error = base64.RawStdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base64RawURL
+func (this Encoding) FromBase64RawURLString(data string) Encoding {
+    this.data, this.Error = base64.RawURLEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base64Segment
+func (this Encoding) FromBase64SegmentString(data string) Encoding {
+    if l := len(data) % 4; l > 0 {
+        data += strings.Repeat("=", 4-l)
+    }
+
+    this.data, this.Error = base64.RawStdEncoding.DecodeString(data)
 
     return this
 }

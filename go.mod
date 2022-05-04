@@ -14,13 +14,15 @@ replace (
 	github.com/deatil/go-hash => ./pkg/lakego-pkg/go-hash
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
+	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
+	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
+	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
-	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
-	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 )
 
 require (
@@ -49,6 +51,8 @@ require (
 	github.com/deatil/go-filesystem v0.0.3 // indirect
 	github.com/deatil/go-goch v0.0.3 // indirect
 	github.com/deatil/go-hash v0.0.3 // indirect
+	github.com/deatil/go-cmd v0.0.3 // indirect
+	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/go-pipeline v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-sign v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect

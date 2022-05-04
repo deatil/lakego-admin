@@ -13,6 +13,8 @@ use (
 	./pkg/lakego-pkg/go-datebin
 	./pkg/lakego-pkg/go-encoding
 	./pkg/lakego-pkg/go-filesystem
+	./pkg/lakego-pkg/go-cmd
+	./pkg/lakego-pkg/go-validator
 	./pkg/lakego-pkg/lakego-jwt
 	./pkg/lakego-pkg/lakego-filesystem
 	./pkg/lakego-pkg/lakego-doak

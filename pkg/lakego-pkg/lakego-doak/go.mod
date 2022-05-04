@@ -8,6 +8,8 @@ require (
 	github.com/deatil/go-hash v0.0.3
 	github.com/deatil/go-cryptobin v0.0.3
 	github.com/deatil/go-filesystem v0.0.3
+	github.com/deatil/go-cmd v0.0.3 // indirect
+	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/lakego-jwt v0.0.3
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.4

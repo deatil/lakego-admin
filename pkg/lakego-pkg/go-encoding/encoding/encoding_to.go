@@ -31,22 +31,42 @@ func (this Encoding) ToString() string {
     return string(this.data)
 }
 
-// 输出Base64
+// 输出 Base32
 func (this Encoding) ToBase32String() string {
     return base32.StdEncoding.EncodeToString(this.data)
 }
 
-// 输出Base64
+// 输出 Base58
 func (this Encoding) ToBase58String() string {
     return Base58Encode(string(this.data))
 }
 
-// 输出Base64
+// 输出 Base64
 func (this Encoding) ToBase64String() string {
     return base64.StdEncoding.EncodeToString(this.data)
 }
 
-// 输出Base85
+// 输出 Base64URL
+func (this Encoding) ToBase64URLString() string {
+    return base64.URLEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base64Raw
+func (this Encoding) ToBase64RawString() string {
+    return base64.RawStdEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base64RawURL
+func (this Encoding) ToBase64RawURLString() string {
+    return base64.RawURLEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base64Segment
+func (this Encoding) ToBase64SegmentString() string {
+    return strings.TrimRight(base64.URLEncoding.EncodeToString(this.data), "=")
+}
+
+// 输出 Base85
 func (this Encoding) ToBase85String() string {
     text := this.data
 
@@ -56,7 +76,7 @@ func (this Encoding) ToBase85String() string {
     return string(dest)
 }
 
-// 输出Hex
+// 输出 Hex
 func (this Encoding) ToHexString() string {
     return hex.EncodeToString(this.data)
 }

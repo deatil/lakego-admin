@@ -4,11 +4,12 @@ import (
     "strconv"
     "strings"
 
+    cmdTool "github.com/deatil/go-cmd/cmd"
     "github.com/deatil/lakego-filesystem/filesystem"
+
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    cmdTool "github.com/deatil/lakego-doak/lakego/cmd"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
 )
 

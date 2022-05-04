@@ -6,9 +6,10 @@ import (
     "strings"
     "mime/multipart"
     
+    "github.com/deatil/go-validator/validator"
     "github.com/deatil/lakego-filesystem/filesystem"
+    
     "github.com/deatil/lakego-doak/lakego/storage"
-    "github.com/deatil/lakego-doak/lakego/validator"
 )
 
 // 上传
