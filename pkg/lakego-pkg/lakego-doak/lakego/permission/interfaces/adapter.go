@@ -13,7 +13,7 @@ import (
 type Adapter interface {
     LoadPolicy(model.Model) error
 
-    LoadFilteredPolicy(model.Model, interface{}) error
+    LoadFilteredPolicy(model.Model, any) error
 
     IsFiltered() bool
 

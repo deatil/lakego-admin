@@ -22,32 +22,32 @@ func (this *Adapter) Has(string) bool {
 }
 
 // 上传
-func (this *Adapter) Write(path string, contents string, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) Write(path string, contents string, conf interfaces.Config) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 // 上传 Stream 文件类型
-func (this *Adapter) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 // 更新
-func (this *Adapter) Update(path string, contents string, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) Update(path string, contents string, conf interfaces.Config) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 // 更新
-func (this *Adapter) UpdateStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Adapter) UpdateStream(path string, stream io.Reader, conf interfaces.Config) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 // 读取
-func (this *Adapter) Read(path string) (map[string]interface{}, error) {
+func (this *Adapter) Read(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 // 读取数据为数据流
-func (this *Adapter) ReadStream(path string) (map[string]interface{}, error) {
+func (this *Adapter) ReadStream(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 
@@ -77,27 +77,27 @@ func (this *Adapter) CreateDir(dirname string, conf interfaces.Config) (map[stri
 }
 
 // 列出内容
-func (this *Adapter) ListContents(directory string, recursive ...bool) ([]map[string]interface{}, error) {
+func (this *Adapter) ListContents(directory string, recursive ...bool) ([]map[string]any, error) {
     panic("接口没有实现")
 }
 
 //
-func (this *Adapter) GetMetadata(path string) (map[string]interface{}, error) {
+func (this *Adapter) GetMetadata(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 //
-func (this *Adapter) GetSize(path string) (map[string]interface{}, error) {
+func (this *Adapter) GetSize(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 //
-func (this *Adapter) GetMimetype(path string) (map[string]interface{}, error) {
+func (this *Adapter) GetMimetype(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 
 //
-func (this *Adapter) GetTimestamp(path string) (map[string]interface{}, error) {
+func (this *Adapter) GetTimestamp(path string) (map[string]any, error) {
     panic("接口没有实现")
 }
 

@@ -183,7 +183,7 @@ func (this S) DefaultFloat32(defaultVal float32) float32 {
 }
 
 // 转换为JSON
-func (this S) ToJSON(v interface{}) error {
+func (this S) ToJSON(v any) error {
     return json.Unmarshal(this.Bytes(), v)
 }
 

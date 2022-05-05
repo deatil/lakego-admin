@@ -38,7 +38,7 @@ func (this *SigningMethodSM2) Alg() string {
 }
 
 // 公钥验证
-func (this *SigningMethodSM2) Verify(signingString, signature string, key interface{}) error {
+func (this *SigningMethodSM2) Verify(signingString, signature string, key any) error {
     var err error
     var sm2Key *sm2.PublicKey
     var ok bool
@@ -61,7 +61,7 @@ func (this *SigningMethodSM2) Verify(signingString, signature string, key interf
 }
 
 // 私钥签名
-func (this *SigningMethodSM2) Sign(signingString string, key interface{}) (string, error) {
+func (this *SigningMethodSM2) Sign(signingString string, key any) (string, error) {
     var sm2Key *sm2.PrivateKey
     var ok bool
 

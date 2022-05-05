@@ -75,7 +75,7 @@ func GetDefaultDatabase() string {
 }
 
 // 获取配置
-func GetConfig(key string, typ ...string) (interface{}, map[string]interface{}) {
+func GetConfig(key string, typ ...string) (any, map[string]any) {
     // 连接列表
     connections := config.New("database").GetStringMap("connections")
 
@@ -96,7 +96,7 @@ func GetConfig(key string, typ ...string) (interface{}, map[string]interface{}) 
     }
 
     // 配置
-    driverConf := driverConfig.(map[string]interface{})
+    driverConf := driverConfig.(map[string]any)
 
     if value, ok := driverConf[key]; ok {
         return value, driverConf
@@ -111,8 +111,8 @@ func Register() {
         // 注册驱动
         register.
             NewManagerWithPrefix("database").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
-                "mysql": func(conf map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
+                "mysql": func(conf map[string]any) any {
                     driver := mysqlDriver.New(conf)
 
                     return driver

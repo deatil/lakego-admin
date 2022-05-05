@@ -101,7 +101,7 @@ func (this *Upload) WithDir(directory string) *Upload {
 }
 
 // 获取文件夹
-func (this *Upload) GetDir() interface{} {
+func (this *Upload) GetDir() any {
     return this.directory
 }
 
@@ -223,7 +223,7 @@ func (this *Upload) SaveFile(file *multipart.FileHeader) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        path, _ := this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname, map[string]interface{}{
+        path, _ := this.storage.PutFileAs(this.GetDirectory(), uploadFile, realname, map[string]any{
             "visibility": this.storagePermission,
         })
         return path
@@ -246,7 +246,7 @@ func (this *Upload) SaveOpenedFile(file *os.File) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        path, _ := this.storage.PutFileAs(this.GetDirectory(), file, realname, map[string]interface{}{
+        path, _ := this.storage.PutFileAs(this.GetDirectory(), file, realname, map[string]any{
             "visibility": this.storagePermission,
         })
         return path
@@ -261,7 +261,7 @@ func (this *Upload) SaveContents(contents string, name string) string {
     realname := this.GetRealname(name)
 
     if this.storagePermission != "" {
-        path, _ := this.storage.PutContentsAs(this.GetDirectory(), contents, realname, map[string]interface{}{
+        path, _ := this.storage.PutContentsAs(this.GetDirectory(), contents, realname, map[string]any{
             "visibility": this.storagePermission,
         })
         return path

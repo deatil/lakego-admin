@@ -53,7 +53,7 @@ var Group = dig.Group
 var FillProvideInfo = dig.FillProvideInfo
 
 // c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
-// dig.As(i ...interface{}) dig.ProvideOption
+// dig.As(i ...any) dig.ProvideOption
 var As = dig.As
 
 // dig.LocationForPC(pc uintptr) dig.ProvideOption
@@ -67,11 +67,11 @@ var DeferAcyclicVerification = dig.DeferAcyclicVerification
 var DryRun = dig.DryRun
 
 // 是否导入
-// dig.IsIn(o interface{}) bool
+// dig.IsIn(o any) bool
 var IsIn = dig.IsIn
 
 // 是否导出
-// dig.IsOut(o interface{}) bool
+// dig.IsOut(o any) bool
 var IsOut = dig.IsOut
 
 // dig.VisualizeError(err error) dig.VisualizeOption

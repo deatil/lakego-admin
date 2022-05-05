@@ -15,6 +15,7 @@ replace (
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
+	github.com/deatil/go-tree => ./pkg/lakego-pkg/go-tree
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
 	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt

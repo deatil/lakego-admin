@@ -47,11 +47,11 @@ func (this *DI) GetContainer() *dig.Container {
 
 // 绑定
 // c.Provide(newFile, dig.As(new(io.Reader)), dig.Name("temp"))
-func (this *DI) Provide(constructor interface{}, opts ...dig.ProvideOption) error {
+func (this *DI) Provide(constructor any, opts ...dig.ProvideOption) error {
     return this.container.Provide(constructor, opts...)
 }
 
 // 使用
-func (this *DI) Invoke(function interface{}, opts ...dig.InvokeOption) error {
+func (this *DI) Invoke(function any, opts ...dig.InvokeOption) error {
     return this.container.Invoke(function, opts...)
 }

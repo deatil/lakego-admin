@@ -2,8 +2,8 @@ package http
 
 // 读接口
 type Reader interface {
-    BindJSON(i interface{}) error
-    ShouldBind(i interface{}) error
+    BindJSON(i any) error
+    ShouldBind(i any) error
     PostForm(key string) string
 }
 
@@ -22,7 +22,7 @@ type PathParamReader interface {
 
 // json 输出
 type JSONWriter interface {
-    JSON(code int, data interface{})
+    JSON(code int, data any)
 }
 
 // 写接口

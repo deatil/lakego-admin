@@ -18,7 +18,7 @@ func (this *Adapter) LoadPolicy(model model.Model) error {
     panic("接口没有被实现")
 }
 
-func (this *Adapter) LoadFilteredPolicy(model model.Model, filter interface{}) error {
+func (this *Adapter) LoadFilteredPolicy(model model.Model, filter any) error {
     panic("接口没有被实现")
 }
 

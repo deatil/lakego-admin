@@ -128,7 +128,7 @@ func (this *File) GetVisibility() (string, error) {
 }
 
 // 数据
-func (this *File) GetMetadata() (map[string]interface{}, error) {
+func (this *File) GetMetadata() (map[string]any, error) {
     return this.filesystem.GetMetadata(this.path)
 }
 

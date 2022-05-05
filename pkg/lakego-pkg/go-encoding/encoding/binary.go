@@ -6,7 +6,7 @@ import (
 )
 
 // Binary 编码
-func BinaryEncode(src interface{}) (string, error) {
+func BinaryEncode(src any) (string, error) {
     buf := bytes.NewBuffer(nil)
 
     err := binary.Write(buf, binary.LittleEndian, src)
@@ -18,7 +18,7 @@ func BinaryEncode(src interface{}) (string, error) {
 }
 
 // Binary 解码
-func BinaryDecode(src string, dst interface{}) error {
+func BinaryDecode(src string, dst any) error {
     buf := bytes.NewBuffer([]byte(src))
 
     return binary.Read(buf, binary.LittleEndian, dst)

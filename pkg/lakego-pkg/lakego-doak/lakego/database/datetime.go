@@ -16,7 +16,7 @@ var timeFormat = "2006-01-02 15:04:05"
 type Datetime sql.NullTime
 
 // Scan implements the Scanner interface.
-func (this *Datetime) Scan(value interface{}) error {
+func (this *Datetime) Scan(value any) error {
     return (*sql.NullTime)(this).Scan(value)
 }
 

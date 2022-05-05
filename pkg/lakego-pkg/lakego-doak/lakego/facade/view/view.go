@@ -46,7 +46,7 @@ func Html(name string, once ...bool) *html.Html {
     }
 
     // 配置
-    adapterConf := adapterConfig.(map[string]interface{})
+    adapterConf := adapterConfig.(map[string]any)
 
     adapterType := adapterConf["type"].(string)
     adapter := register.
@@ -72,8 +72,8 @@ func Register() {
         // 注册驱动
         register.
             NewManagerWithPrefix("view").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
-                "pongo2": func(conf map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
+                "pongo2": func(conf map[string]any) any {
                     path := conf["tmpl-dir"].(string)
                     adapter := pongo2Adapter.New(path)
 

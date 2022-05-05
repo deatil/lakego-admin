@@ -22,7 +22,7 @@ func New(driver interfaces.Driver, conf ...ConfigMap) *Database {
 
 type (
     // 配置 map
-    ConfigMap = map[string]interface{}
+    ConfigMap = map[string]any
 )
 
 /**
@@ -47,7 +47,7 @@ func (this *Database) WithConfig(config ConfigMap) interfaces.Database {
 }
 
 // 获取配置
-func (this *Database) GetConfig(name string) interface{} {
+func (this *Database) GetConfig(name string) any {
     if data, ok := this.config[name]; ok {
         return data
     }

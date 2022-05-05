@@ -1,15 +1,5 @@
 package cryptobin
 
-// 构造函数
-func New() Cryptobin {
-    return Cryptobin{
-        multiple: "Aes",
-        mode:     "ECB",
-        padding:  "PKCS7",
-        config:   make(map[string]interface{}),
-    }
-}
-
 /**
  * 对称加密
  *
@@ -39,7 +29,7 @@ type Cryptobin struct {
     parsedData []byte
 
     // 额外配置
-    config map[string]interface{}
+    config map[string]any
 
     // 错误
     Error error

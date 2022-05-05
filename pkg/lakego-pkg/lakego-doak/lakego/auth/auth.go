@@ -24,10 +24,10 @@ var cryptoIv = "hyju5yu7f0.gtr3e"
 
 type (
     // 配置
-    ConfigMap = map[string]interface{}
+    ConfigMap = map[string]any
 
     // 载荷
-    ClaimMap = map[string]interface{}
+    ClaimMap = map[string]any
 )
 
 /**
@@ -66,7 +66,7 @@ func (this *Auth) GetJWT() *jwt.JWT {
 /**
  * 设置配置
  */
-func (this *Auth) WithConfig(key string, value interface{}) *Auth {
+func (this *Auth) WithConfig(key string, value any) *Auth {
     this.Config[key] = value
 
     return this
@@ -88,14 +88,14 @@ func (this *Auth) WithConfigs(configs ConfigMap) *Auth {
 /**
  * 获取配置
  */
-func (this *Auth) GetConfig(key string) interface{} {
+func (this *Auth) GetConfig(key string) any {
     return this.Config[key]
 }
 
 /**
  * 获取配置
  */
-func (this *Auth) GetConfigFromMap(key string, key2 string) interface{} {
+func (this *Auth) GetConfigFromMap(key string, key2 string) any {
     // 配置
     conf := this.Config[key]
     if conf == "" {
@@ -159,7 +159,7 @@ func (this *Auth) GetRefreshExpiresIn() int {
 }
 
 // 设置自定义载荷
-func (this *Auth) WithClaim(key string, value interface{}) *Auth {
+func (this *Auth) WithClaim(key string, value any) *Auth {
     this.Claims[key] = value
     return this
 }
@@ -407,7 +407,7 @@ func (this *Auth) GetRefreshTokenData(token string, key string, verify ...bool) 
 /**
  * 从 Claims 获取数据
  */
-func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) interface{} {
+func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) any {
     if _, ok := claims[key]; !ok {
         return nil
     }

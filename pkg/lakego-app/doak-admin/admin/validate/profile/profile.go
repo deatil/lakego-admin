@@ -5,9 +5,9 @@ import (
 )
 
 // 账号信息更新
-func Update(data map[string]interface{}) string {
+func Update(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "nickname": "required,max=150",
         "email": "required,email,max=100",
         "introduce": "required,max=500",
@@ -36,9 +36,9 @@ func Update(data map[string]interface{}) string {
 }
 
 // 更新头像
-func UpdateAvatar(data map[string]interface{}) string {
+func UpdateAvatar(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "avatar": "required,len=32",
     }
 
@@ -60,9 +60,9 @@ func UpdateAvatar(data map[string]interface{}) string {
 }
 
 // 修改密码
-func UpdatePasssword(data map[string]interface{}) string {
+func UpdatePasssword(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "oldpassword": "required,len=32",
         "newpassword": "required,len=32",
         "newpassword_confirm": "required,len=32",

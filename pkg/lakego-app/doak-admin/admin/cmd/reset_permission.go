@@ -69,7 +69,7 @@ func ResetPermission() {
     // 添加权限
     if len(ruleListMap) > 0 {
         for _, rv := range ruleListMap {
-            rule := rv["Rule"].(map[string]interface{})
+            rule := rv["Rule"].(map[string]any)
 
             cas.AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
         }

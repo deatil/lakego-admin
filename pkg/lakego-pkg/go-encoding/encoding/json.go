@@ -8,31 +8,31 @@ import (
 )
 
 // Json 编码
-func JsonEncode(src interface{}) string {
+func JsonEncode(src any) string {
     data, _ := json.Marshal(src)
 
     return string(data)
 }
 
 // Json 解码
-func JsonDecode(data string, dst interface{}) error {
+func JsonDecode(data string, dst any) error {
     return json.Unmarshal([]byte(data), dst)
 }
 
 // =======================
 
 // Json 编码
-func Marshal(v interface{}) ([]byte, error) {
+func Marshal(v any) ([]byte, error) {
     return jsoniter.Marshal(v)
 }
 
 // Json 编码
-func MarshalIndent(v interface{}, prefix, indent string) ([]byte, error) {
+func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
     return jsoniter.MarshalIndent(v, prefix, indent)
 }
 
 // Json 解码
-func Unmarshal(data []byte, v interface{}) error {
+func Unmarshal(data []byte, v any) error {
     return jsoniter.Unmarshal(data, v)
 }
 

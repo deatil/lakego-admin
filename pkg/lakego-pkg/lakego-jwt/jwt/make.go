@@ -39,7 +39,7 @@ func (this *JWT) MakeToken() (token string, err error) {
     }
 
     // 密码
-    var secret interface{}
+    var secret any
 
     // 判断类型
     switch this.SigningMethod {

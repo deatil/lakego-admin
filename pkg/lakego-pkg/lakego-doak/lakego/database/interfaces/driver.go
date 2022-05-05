@@ -12,10 +12,10 @@ import (
  */
 type Driver interface {
     // 设置配置
-    WithConfig(map[string]interface{}) Driver
+    WithConfig(map[string]any) Driver
 
     // 获取配置
-    GetConfig(string) interface{}
+    GetConfig(string) any
 
     // 连接
     GetConnection() *gorm.DB

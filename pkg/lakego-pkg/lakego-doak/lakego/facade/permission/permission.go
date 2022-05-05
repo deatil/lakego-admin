@@ -54,7 +54,7 @@ func Permission(name string, once ...bool) *permission.Permission {
     }
 
     // 配置
-    permissionConfig := adapterConfig.(map[string]interface{})
+    permissionConfig := adapterConfig.(map[string]any)
 
     // 获取驱动
     permissionType := permissionConfig["type"].(string)
@@ -85,7 +85,7 @@ func Register() {
         // 注册可用驱动
         register.
             NewManagerWithPrefix("permission").
-            Register("gorm", func(conf map[string]interface{}) interface{} {
+            Register("gorm", func(conf map[string]any) any {
                 newDb := database.New()
 
                 a, _ := gormAdapter.New(newDb)

@@ -1,7 +1,7 @@
 package jwt
 
 // 自定义签名方式
-func (this *JWT) WithSigningFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
+func (this *JWT) WithSigningFunc(name string, f func(*JWT) (any, error)) *JWT {
     if _, ok := this.SigningFuncs[name]; ok {
         delete(this.SigningFuncs, name)
     }

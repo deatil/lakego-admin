@@ -76,7 +76,7 @@ func (this *Local) Has(path string) bool {
 }
 
 // 上传
-func (this *Local) Write(path string, contents string, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) Write(path string, contents string, conf interfaces.Config) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
     this.EnsureDirectory(filepath.Dir(location))
 
@@ -97,7 +97,7 @@ func (this *Local) Write(path string, contents string, conf interfaces.Config) (
         return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
     }
 
-    result := map[string]interface{}{
+    result := map[string]any{
         "type": "file",
         "size": size,
         "path": path,
@@ -113,7 +113,7 @@ func (this *Local) Write(path string, contents string, conf interfaces.Config) (
 }
 
 // 上传 Stream 文件类型
-func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Config) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
     this.EnsureDirectory(filepath.Dir(location))
 
@@ -129,7 +129,7 @@ func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Co
         return nil, errors.New("写入文件流失败, 错误为:" + copyErr.Error())
     }
 
-    result := map[string]interface{}{
+    result := map[string]any{
         "type": "file",
         "path": path,
     }
@@ -143,7 +143,7 @@ func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Co
 }
 
 // 更新
-func (this *Local) Update(path string, contents string, conf interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) Update(path string, contents string, conf interfaces.Config) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     out, createErr := os.Create(location)
@@ -163,7 +163,7 @@ func (this *Local) Update(path string, contents string, conf interfaces.Config) 
         return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
     }
 
-    result := map[string]interface{}{
+    result := map[string]any{
         "type": "file",
         "size": size,
         "path": path,
@@ -179,12 +179,12 @@ func (this *Local) Update(path string, contents string, conf interfaces.Config) 
 }
 
 // 更新
-func (this *Local) UpdateStream(path string, stream io.Reader, config interfaces.Config) (map[string]interface{}, error) {
+func (this *Local) UpdateStream(path string, stream io.Reader, config interfaces.Config) (map[string]any, error) {
     return this.WriteStream(path, stream, config)
 }
 
 // 读取
-func (this *Local) Read(path string) (map[string]interface{}, error) {
+func (this *Local) Read(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     file, openErr := os.Open(location)
@@ -200,7 +200,7 @@ func (this *Local) Read(path string) (map[string]interface{}, error) {
 
     contents := fmt.Sprintf("%s", data)
 
-    return map[string]interface{}{
+    return map[string]any{
         "type": "file",
         "path": path,
         "contents": contents,
@@ -209,7 +209,7 @@ func (this *Local) Read(path string) (map[string]interface{}, error) {
 
 // 读取成文件流
 // 打开文件需要手动关闭
-func (this *Local) ReadStream(path string) (map[string]interface{}, error) {
+func (this *Local) ReadStream(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     stream, err := os.Open(location)
@@ -219,7 +219,7 @@ func (this *Local) ReadStream(path string) (map[string]interface{}, error) {
 
     // defer stream.Close()
 
-    return map[string]interface{}{
+    return map[string]any{
         "type": "file",
         "path": path,
         "stream": stream,
@@ -330,21 +330,21 @@ func (this *Local) CreateDir(dirname string, config interfaces.Config) (map[stri
 }
 
 // 列出内容
-func (this *Local) ListContents(directory string, recursive ...bool) ([]map[string]interface{}, error) {
+func (this *Local) ListContents(directory string, recursive ...bool) ([]map[string]any, error) {
     location := this.ApplyPathPrefix(directory)
 
     if !this.IsDir(location) {
-        return []map[string]interface{}{}, nil
+        return []map[string]any{}, nil
     }
 
-    var iterator []map[string]interface{}
+    var iterator []map[string]any
     if len(recursive) > 0 && recursive[0] {
         iterator, _ = this.GetRecursiveDirectoryIterator(location)
     } else {
         iterator, _ = this.GetDirectoryIterator(location)
     }
 
-    var result []map[string]interface{}
+    var result []map[string]any
     for _, file := range iterator {
         path, _ := this.NormalizeFileInfo(file)
 
@@ -354,7 +354,7 @@ func (this *Local) ListContents(directory string, recursive ...bool) ([]map[stri
     return result, nil
 }
 
-func (this *Local) GetMetadata(path string) (map[string]interface{}, error) {
+func (this *Local) GetMetadata(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     info := this.FileInfo(location)
@@ -362,11 +362,11 @@ func (this *Local) GetMetadata(path string) (map[string]interface{}, error) {
     return this.NormalizeFileInfo(info)
 }
 
-func (this *Local) GetSize(path string) (map[string]interface{}, error) {
+func (this *Local) GetSize(path string) (map[string]any, error) {
     return this.GetMetadata(path)
 }
 
-func (this *Local) GetMimetype(path string) (map[string]interface{}, error) {
+func (this *Local) GetMimetype(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     f, err := os.Open(location)
@@ -383,14 +383,14 @@ func (this *Local) GetMimetype(path string) (map[string]interface{}, error) {
 
     mimetype := http.DetectContentType(buffer)
 
-    return map[string]interface{}{
+    return map[string]any{
         "path": path,
         "type": "file",
         "mimetype": mimetype,
     }, nil
 }
 
-func (this *Local) GetTimestamp(path string) (map[string]interface{}, error) {
+func (this *Local) GetTimestamp(path string) (map[string]any, error) {
     return this.GetMetadata(path)
 }
 
@@ -451,7 +451,7 @@ func (this *Local) SetVisibility(path string, visibility string) (map[string]str
 }
 
 // NormalizeFileInfo
-func (this *Local) NormalizeFileInfo(file map[string]interface{}) (map[string]interface{}, error) {
+func (this *Local) NormalizeFileInfo(file map[string]any) (map[string]any, error) {
     return this.MapFileInfo(file)
 }
 
@@ -466,8 +466,8 @@ func (this *Local) GuardAgainstUnreadableFileInfo(fp string) error {
 }
 
 // 获取全部文件
-func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]interface{}, error) {
-    var files []map[string]interface{}
+func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]any, error) {
+    var files []map[string]any
     err := filepath.Walk(path, func(wpath string, info os.FileInfo, err error) error {
         var fileType string
         if info.IsDir() {
@@ -476,7 +476,7 @@ func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]inte
             fileType = "file"
         }
 
-        files = append(files, map[string]interface{}{
+        files = append(files, map[string]any{
             "type": fileType,
             "path": path,
             "filename": info.Name(),
@@ -495,18 +495,18 @@ func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]inte
 }
 
 // 一级目录索引
-func (this *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, error) {
+func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
     fs, err := os.ReadDir(path)
     if err != nil {
-        return []map[string]interface{}{}, err
+        return []map[string]any{}, err
     }
 
     sz := len(fs)
     if sz == 0 {
-        return []map[string]interface{}{}, nil
+        return []map[string]any{}, nil
     }
 
-    ret := make([]map[string]interface{}, 0, sz)
+    ret := make([]map[string]any, 0, sz)
     for i := 0; i < sz; i++ {
         info := fs[i]
         name := info.Name()
@@ -520,7 +520,7 @@ func (this *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, 
                 fileType = "file"
             }
 
-            ret = append(ret, map[string]interface{}{
+            ret = append(ret, map[string]any{
                 "type": fileType,
                 "path": path,
                 "filename": name,
@@ -534,7 +534,7 @@ func (this *Local) GetDirectoryIterator(path string) ([]map[string]interface{}, 
     return ret, nil
 }
 
-func (this *Local) FileInfo(path string) map[string]interface{} {
+func (this *Local) FileInfo(path string) map[string]any {
     info, e := os.Stat(path)
     if e != nil {
         return nil
@@ -547,7 +547,7 @@ func (this *Local) FileInfo(path string) map[string]interface{} {
         fileType = "file"
     }
 
-    return map[string]interface{}{
+    return map[string]any{
         "type": fileType,
         "path": filepath.Dir(path),
         "filename": info.Name(),
@@ -557,15 +557,15 @@ func (this *Local) FileInfo(path string) map[string]interface{} {
     }
 }
 
-func (this *Local) GetFilePath(file map[string]interface{}) string {
+func (this *Local) GetFilePath(file map[string]any) string {
     location := file["pathname"].(string)
     path := this.RemovePathPrefix(location)
     return strings.Trim(strings.Replace(path, "\\", "/", -1), "/")
 }
 
 // 获取全部文件
-func (this *Local) MapFileInfo(data map[string]interface{}) (map[string]interface{}, error) {
-    normalized := map[string]interface{}{
+func (this *Local) MapFileInfo(data map[string]any) (map[string]any, error) {
+    normalized := map[string]any{
         "type": data["type"],
         "path": this.GetFilePath(data),
         "timestamp": data["timestamp"],

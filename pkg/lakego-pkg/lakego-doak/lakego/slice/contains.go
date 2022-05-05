@@ -1,6 +1,6 @@
 package slice
 
-func Contains(items []interface{}, item interface{}) bool {
+func Contains(items []any, item any) bool {
     for _, v := range items {
         if v == item {
             return true

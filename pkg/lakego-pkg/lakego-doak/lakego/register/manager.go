@@ -20,10 +20,10 @@ func NewManagerWithPrefix(prefix string) *Manager {
 
 type (
     // 配置 Map
-    ManagerConfigMap = map[string]interface{}
+    ManagerConfigMap = map[string]any
 
     // 注册的方法
-    ManagerRegisterFunc = func(ManagerConfigMap) interface{}
+    ManagerRegisterFunc = func(ManagerConfigMap) any
 )
 
 /**
@@ -58,7 +58,7 @@ func (this *Manager) GetPrefix(prefix string) string {
 func (this *Manager) Register(name string, f ManagerRegisterFunc) {
     name = this.FormatName(name)
 
-    New().With(name, func(conf ManagerConfigMap) interface{} {
+    New().With(name, func(conf ManagerConfigMap) any {
         return f(conf)
     })
 }
@@ -75,10 +75,10 @@ func (this *Manager) RegisterMany(drivers map[string]ManagerRegisterFunc) {
 /**
  * 获取已注册驱动
  */
-func (this *Manager) GetRegister(name string, conf ManagerConfigMap, once ...bool) interface{} {
+func (this *Manager) GetRegister(name string, conf ManagerConfigMap, once ...bool) any {
     name = this.FormatName(name)
 
-    var data interface{}
+    var data any
     reg := New()
     if len(once) > 0 && once[0] {
         data = reg.GetOnce(name, conf)

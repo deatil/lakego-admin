@@ -17,13 +17,13 @@ type Adapter interface {
     // 设置读取文件
     WithFile(fileName ...string)
 
-    SetDefault(keyName string, value interface{})
+    SetDefault(keyName string, value any)
 
-    Set(keyName string, value interface{})
+    Set(keyName string, value any)
 
     IsSet(keyName string) bool
 
-    Get(keyName string) interface{}
+    Get(keyName string) any
 
     GetString(keyName string) string
 
@@ -51,7 +51,7 @@ type Adapter interface {
 
     GetStringSlice(keyName string) []string
 
-    GetStringMap(keyName string) map[string]interface{}
+    GetStringMap(keyName string) map[string]any
 
     GetStringMapString(keyName string) map[string]string
 

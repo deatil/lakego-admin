@@ -27,22 +27,22 @@ type Adapter interface {
     Has(string) bool
 
     // 上传
-    Write(string, string, Config) (map[string]interface{}, error)
+    Write(string, string, Config) (map[string]any, error)
 
     // 上传 Stream 文件类型
-    WriteStream(string, io.Reader, Config) (map[string]interface{}, error)
+    WriteStream(string, io.Reader, Config) (map[string]any, error)
 
     // 更新
-    Update(string, string, Config) (map[string]interface{}, error)
+    Update(string, string, Config) (map[string]any, error)
 
     // 更新
-    UpdateStream(string, io.Reader, Config) (map[string]interface{}, error)
+    UpdateStream(string, io.Reader, Config) (map[string]any, error)
 
     // 读取
-    Read(string) (map[string]interface{}, error)
+    Read(string) (map[string]any, error)
 
     // 读取文件为数据流
-    ReadStream(string) (map[string]interface{}, error)
+    ReadStream(string) (map[string]any, error)
 
     // 重命名
     Rename(string, string) error
@@ -60,19 +60,19 @@ type Adapter interface {
     CreateDir(string, Config) (map[string]string, error)
 
     // 列出内容
-    ListContents(string, ...bool) ([]map[string]interface{}, error)
+    ListContents(string, ...bool) ([]map[string]any, error)
 
     // 文件信息
-    GetMetadata(string) (map[string]interface{}, error)
+    GetMetadata(string) (map[string]any, error)
 
     // 文件大小
-    GetSize(string) (map[string]interface{}, error)
+    GetSize(string) (map[string]any, error)
 
     // 类型
-    GetMimetype(string) (map[string]interface{}, error)
+    GetMimetype(string) (map[string]any, error)
 
     // 获取时间戳
-    GetTimestamp(string) (map[string]interface{}, error)
+    GetTimestamp(string) (map[string]any, error)
 
     // 获取文件的权限
     GetVisibility(string) (map[string]string, error)

@@ -1,10 +1,5 @@
 package encoding
 
-// 构造函数
-func New() Encoding {
-    return Encoding{}
-}
-
 /**
  * 编码
  *

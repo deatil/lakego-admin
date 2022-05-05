@@ -72,7 +72,7 @@ func RangeArgs(min int, max int) PositionalArgs {
 
 // AddTemplateFunc adds a template function that's available to Usage and Help
 // template generation.
-func AddTemplateFunc(name string, tmplFunc interface{}) {
+func AddTemplateFunc(name string, tmplFunc any) {
     cobra.AddTemplateFunc(name, tmplFunc)
 }
 
@@ -91,17 +91,17 @@ func OnInitialize(y ...func()) {
 // Gt takes two types and checks whether the first type is greater than the second. In case of types Arrays, Chans,
 // Maps and Slices, Gt will compare their lengths. Ints are compared directly while strings are first parsed as
 // ints and then compared.
-func Gt(a interface{}, b interface{}) bool {
+func Gt(a any, b any) bool {
     return cobra.Gt(a, b)
 }
 
 // Eq takes two types and checks whether they are equal. Supported types are int and string. Unsupported types will panic.
-func Eq(a interface{}, b interface{}) bool {
+func Eq(a any, b any) bool {
     return cobra.Eq(a, b)
 }
 
 // CheckErr prints the msg with the prefix 'Error:' and exits with error code 1. If the msg is nil, it does nothing.
-func CheckErr(msg interface{}) {
+func CheckErr(msg any) {
     cobra.CheckErr(msg)
 }
 

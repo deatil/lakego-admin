@@ -76,7 +76,7 @@ func jwtCheck(ctx *router.Context) bool {
 
     // 结构体转map
     data, _ := json.Marshal(&adminInfo)
-    adminData := map[string]interface{}{}
+    adminData := map[string]any{}
     json.Unmarshal(data, &adminData)
 
     // 头像

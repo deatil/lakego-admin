@@ -36,7 +36,7 @@ func (this *Handler) GetType() string {
 }
 
 // 设置文件系统
-func (this *Handler) SetFilesystem(filesystem interfaces.Fllesystem) interface{} {
+func (this *Handler) SetFilesystem(filesystem interfaces.Fllesystem) any {
     this.filesystem = filesystem
 
     return this
@@ -48,7 +48,7 @@ func (this *Handler) GetFilesystem() interfaces.Fllesystem {
 }
 
 // 设置目录
-func (this *Handler) SetPath(path string) interface{} {
+func (this *Handler) SetPath(path string) any {
     this.path = path
 
     return this

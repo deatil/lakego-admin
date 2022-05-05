@@ -15,7 +15,7 @@ type Rsa struct {
 }
 
 // 初始化
-func (this *Rsa) Init(conf map[string]interface{}) {
+func (this *Rsa) Init(conf map[string]any) {
     if publicKey, ok := conf["publickey"]; ok {
         this.publicKey = publicKey.(string)
     }

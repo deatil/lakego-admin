@@ -15,7 +15,7 @@ func New(data DataMap) Config {
 
 type (
     // 配置 map
-    DataMap = map[string]interface{}
+    DataMap = map[string]any
 )
 
 /**
@@ -41,7 +41,7 @@ func (this Config) Set(data DataMap) interfaces.Config {
 /**
  * 设置单个新数据
  */
-func (this Config) With(key string, value interface{}) interfaces.Config {
+func (this Config) With(key string, value any) interfaces.Config {
     this.Data[key] = value
 
     return this
@@ -61,7 +61,7 @@ func (this Config) Has(key string) bool {
 /**
  * 获取一个带默认的值
  */
-func (this Config) Get(key string, defaults ...interface{}) interface{} {
+func (this Config) Get(key string, defaults ...any) any {
     if data, ok := this.Data[key]; ok {
         return data
     }

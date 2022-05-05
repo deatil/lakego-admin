@@ -35,7 +35,7 @@ func ReturnJson(
     success bool,
     dataCode int,
     msg string,
-    data interface{},
+    data any,
     httpCode ...int,
 ) {
     New().ReturnJson(ctx, success, dataCode, msg, data, httpCode...)
@@ -47,7 +47,7 @@ func ReturnJsonWithAbort(
     success bool,
     dataCode int,
     msg string,
-    data interface{},
+    data any,
     httpCode ...int,
 ) {
     New().ReturnJsonWithAbort(ctx, success, dataCode, msg, data, httpCode...)
@@ -59,7 +59,7 @@ func Success(ctx *router.Context, msg string) {
 }
 
 // 返回成功 json，带数据
-func SuccessWithData(ctx *router.Context, msg string, data interface{}) {
+func SuccessWithData(ctx *router.Context, msg string, data any) {
     New().SuccessWithData(ctx, msg, data)
 }
 
@@ -69,12 +69,12 @@ func Error(ctx *router.Context, msg string, dataCode ...int) {
 }
 
 // 返回错误 json，带数据
-func ErrorWithData(ctx *router.Context, msg string, dataCode int, data interface{}) {
+func ErrorWithData(ctx *router.Context, msg string, dataCode int, data any) {
     New().ErrorWithData(ctx, msg, dataCode, data)
 }
 
 // 返回页面
-func Fetch(ctx *router.Context, template string, obj interface{}, httpCode ...int) {
+func Fetch(ctx *router.Context, template string, obj any, httpCode ...int) {
     New().Fetch(ctx, template, obj, httpCode...)
 }
 
@@ -88,7 +88,7 @@ type JSONResult struct {
     Success bool         `json:"success"`
     Code    int          `json:"code"`
     Message string       `json:"message"`
-    Data    interface{}  `json:"data"`
+    Data    any  `json:"data"`
 }
 
 /**
@@ -140,7 +140,7 @@ func (this *Response) ReturnJson(
     success bool,
     dataCode int,
     msg string,
-    data interface{},
+    data any,
     httpCode ...int,
 ) {
     resp := response.New().WithContext(ctx)
@@ -165,7 +165,7 @@ func (this *Response) ReturnJsonWithAbort(
     success bool,
     dataCode int,
     msg string,
-    data interface{},
+    data any,
     httpCode ...int,
 ) {
     resp := response.New().WithContext(ctx)
@@ -203,7 +203,7 @@ func (this *Response) Success(ctx *router.Context, msg string) {
 /**
  * 返回成功 json，带数据
  */
-func (this *Response) SuccessWithData(ctx *router.Context, msg string, data interface{}) {
+func (this *Response) SuccessWithData(ctx *router.Context, msg string, data any) {
     dataCode := code.StatusSuccess
 
     this.ReturnJson(ctx, true, dataCode, msg, data)
@@ -224,14 +224,14 @@ func (this *Response) Error(ctx *router.Context, msg string, dataCode ...int) {
 /**
  * 返回错误 json，带数据
  */
-func (this *Response) ErrorWithData(ctx *router.Context, msg string, dataCode int, data interface{}) {
+func (this *Response) ErrorWithData(ctx *router.Context, msg string, dataCode int, data any) {
     this.ReturnJsonWithAbort(ctx, false, dataCode, msg, data)
 }
 
 /**
  * 渲染模板
  */
-func (this *Response) Fetch(ctx *router.Context, template string, obj interface{}, httpCode ...int) {
+func (this *Response) Fetch(ctx *router.Context, template string, obj any, httpCode ...int) {
     resp := response.New().WithContext(ctx)
 
     if len(httpCode) > 0 {

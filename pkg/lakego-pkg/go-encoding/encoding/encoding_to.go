@@ -127,7 +127,7 @@ func (this Encoding) ToConvertHex() string {
 }
 
 // Gob 编码输出
-func (this Encoding) GobTo(dst interface{}) error {
+func (this Encoding) GobTo(dst any) error {
     buf := bytes.NewBuffer(this.data)
     dec := gob.NewDecoder(buf)
 
@@ -135,7 +135,7 @@ func (this Encoding) GobTo(dst interface{}) error {
 }
 
 // Xml 编码输出
-func (this Encoding) XMLTo(dst interface{}) error {
+func (this Encoding) XMLTo(dst any) error {
     buf := bytes.NewBuffer(this.data)
     dec := xml.NewDecoder(buf)
 
@@ -143,12 +143,12 @@ func (this Encoding) XMLTo(dst interface{}) error {
 }
 
 // JSON 编码输出
-func (this Encoding) JSONTo(dst interface{}) error {
+func (this Encoding) JSONTo(dst any) error {
     return json.Unmarshal(this.data, dst)
 }
 
 // Binary 编码输出
-func (this Encoding) BinaryTo(dst interface{}) error {
+func (this Encoding) BinaryTo(dst any) error {
     buf := bytes.NewBuffer(this.data)
 
     return binary.Read(buf, binary.LittleEndian, dst)
@@ -173,7 +173,7 @@ func (this Encoding) CsvTo(opts ...rune) ([][]string, error) {
 }
 
 // Asn1 编码输出
-func (this Encoding) Asn1To(val interface{}, params ...string) ([]byte, error) {
+func (this Encoding) Asn1To(val any, params ...string) ([]byte, error) {
     if len(params) > 0 {
         return asn1.UnmarshalWithParams(this.data, val, params[0])
     } else {

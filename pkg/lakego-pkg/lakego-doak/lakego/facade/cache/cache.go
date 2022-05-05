@@ -52,7 +52,7 @@ func Cache(name string, once ...bool) interfaces.Cache {
     }
 
     // 配置
-    driverConf := driverConfig.(map[string]interface{})
+    driverConf := driverConfig.(map[string]any)
 
     driverType := driverConf["type"].(string)
     driver := register.
@@ -77,7 +77,7 @@ func Register() {
         // 注册缓存驱动
         register.
             NewManagerWithPrefix("cache").
-            Register("redis", func(conf map[string]interface{}) interface{} {
+            Register("redis", func(conf map[string]any) any {
                 prefix := conf["prefix"].(string)
 
                 driver := &redisDriver.Redis{}

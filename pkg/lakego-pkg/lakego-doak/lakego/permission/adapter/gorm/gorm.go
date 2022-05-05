@@ -98,7 +98,7 @@ func (this *Adapter) getDefaultModel() *Rules {
 }
 
 // 规则表格
-func (this *Adapter) ruleTable(model interface{}) func(db *gorm.DB) *gorm.DB {
+func (this *Adapter) ruleTable(model any) func(db *gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
         return db.Model(model)
     }
@@ -119,7 +119,7 @@ func (this *Adapter) LoadPolicy(model model.Model) error {
 }
 
 // LoadFilteredPolicy loads only policy rules that match the filter.
-func (this *Adapter) LoadFilteredPolicy(model model.Model, filter interface{}) error {
+func (this *Adapter) LoadFilteredPolicy(model model.Model, filter any) error {
     var lines []Rules
 
     filterValue, ok := filter.(Filter)
@@ -291,7 +291,7 @@ func (this *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex i
 }
 
 func (this *Adapter) rawDelete(db *gorm.DB, line Rules) error {
-    queryArgs := []interface{}{line.Ptype}
+    queryArgs := []any{line.Ptype}
 
     queryStr := "ptype = ?"
     if line.V0 != "" {
@@ -318,7 +318,7 @@ func (this *Adapter) rawDelete(db *gorm.DB, line Rules) error {
         queryStr += " and v5 = ?"
         queryArgs = append(queryArgs, line.V5)
     }
-    args := append([]interface{}{queryStr}, queryArgs...)
+    args := append([]any{queryStr}, queryArgs...)
     err := db.Delete(this.getDefaultModel(), args...).Error
     return err
 }
@@ -338,8 +338,8 @@ func (this *Adapter) Close() error {
     return nil
 }
 
-func appendWhere(line Rules) (string, []interface{}) {
-    queryArgs := []interface{}{line.Ptype}
+func appendWhere(line Rules) (string, []any) {
+    queryArgs := []any{line.Ptype}
 
     queryStr := "ptype = ?"
     if line.V0 != "" {

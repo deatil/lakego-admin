@@ -4,7 +4,7 @@ package router
  * New
  */
 func NewMiddlewares() *Middlewares {
-    middlewares:= make([]interface{}, 0)
+    middlewares:= make([]any, 0)
 
     return &Middlewares{
         middlewares: middlewares,
@@ -19,13 +19,13 @@ func NewMiddlewares() *Middlewares {
  */
 type Middlewares struct {
     // 中间件
-    middlewares []interface{}
+    middlewares []any
 }
 
 /**
  * 覆写
  */
-func (this *Middlewares) With(middlewares []interface{}) *Middlewares {
+func (this *Middlewares) With(middlewares []any) *Middlewares {
     this.middlewares = middlewares
 
     return this
@@ -34,7 +34,7 @@ func (this *Middlewares) With(middlewares []interface{}) *Middlewares {
 /**
  * 前置添加
  */
-func (this *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
+func (this *Middlewares) Prepend(middlewares ...any) *Middlewares {
     this.middlewares = append(middlewares, this.middlewares...)
 
     return this
@@ -43,7 +43,7 @@ func (this *Middlewares) Prepend(middlewares ...interface{}) *Middlewares {
 /**
  * 后置添加
  */
-func (this *Middlewares) Push(middlewares ...interface{}) *Middlewares {
+func (this *Middlewares) Push(middlewares ...any) *Middlewares {
     this.middlewares = append(this.middlewares, middlewares...)
 
     return this
@@ -52,7 +52,7 @@ func (this *Middlewares) Push(middlewares ...interface{}) *Middlewares {
 /**
  * 移除
  */
-func (this *Middlewares) Remove(middleware interface{}) bool {
+func (this *Middlewares) Remove(middleware any) bool {
     for i, item := range this.middlewares {
         if middleware == item {
             this.middlewares = append(this.middlewares[:i], this.middlewares[i + 1:]...)
@@ -67,6 +67,6 @@ func (this *Middlewares) Remove(middleware interface{}) bool {
 /**
  * 全部
  */
-func (this *Middlewares) All() []interface{} {
+func (this *Middlewares) All() []any {
     return this.middlewares
 }

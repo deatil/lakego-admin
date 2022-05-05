@@ -1,15 +1,15 @@
 package authgroup
 
 import (
-    "github.com/deatil/lakego-doak/lakego/tree"
+    "github.com/deatil/go-tree/tree"
     "github.com/deatil/lakego-doak/lakego/collection"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
 
 // 获取 Children
-func GetChildren(groupid string) []map[string]interface{} {
-    list := make([]map[string]interface{}, 0)
+func GetChildren(groupid string) []map[string]any {
+    list := make([]map[string]any, 0)
 
     // 附件模型
     err := model.NewAuthGroup().
@@ -19,7 +19,7 @@ func GetChildren(groupid string) []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return make([]map[string]interface{}, 0)
+        return make([]map[string]any, 0)
     }
 
     res := tree.New().
@@ -33,8 +33,8 @@ func GetChildren(groupid string) []map[string]interface{} {
 }
 
 // 获取 Children
-func GetChildrenFromGroupids(groupids []string) []map[string]interface{} {
-    data := make([]map[string]interface{}, 0)
+func GetChildrenFromGroupids(groupids []string) []map[string]any {
+    data := make([]map[string]any, 0)
     for _, id := range groupids {
         children := GetChildren(id)
         data = append(data, children...)
@@ -76,7 +76,7 @@ func GetChildrenIdsFromGroupids(groupids []string) []string {
 }
 
 // 获取 Children
-func GetChildrenFromData(data []map[string]interface{}, groupid string) []map[string]interface{} {
+func GetChildrenFromData(data []map[string]any, groupid string) []map[string]any {
     childrenList := tree.New().
         WithData(data).
         GetListChildren(groupid, "asc")
@@ -85,7 +85,7 @@ func GetChildrenFromData(data []map[string]interface{}, groupid string) []map[st
 }
 
 // 获取 ChildrenIds
-func GetChildrenIdsFromData(data []map[string]interface{}, groupid string) []string {
+func GetChildrenIdsFromData(data []map[string]any, groupid string) []string {
     list := GetChildrenFromData(data, groupid)
 
     if len(list) == 0 {

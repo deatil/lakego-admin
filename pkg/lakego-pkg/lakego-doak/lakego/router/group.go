@@ -25,7 +25,7 @@ type Group struct {
 /**
  * 添加分组 - 覆盖
  */
-func (this *Group) With(name string, middlewares []interface{}) *Group {
+func (this *Group) With(name string, middlewares []any) *Group {
     newGroup := NewMiddlewares()
 
     // 添加数据
@@ -44,7 +44,7 @@ func (this *Group) With(name string, middlewares []interface{}) *Group {
 /**
  * 添加分组 - 前置
  */
-func (this *Group) Prepend(name string, middleware interface{}) *Group {
+func (this *Group) Prepend(name string, middleware any) *Group {
     var newGroup *Middlewares
 
     if exists := this.Exists(name); exists {
@@ -64,7 +64,7 @@ func (this *Group) Prepend(name string, middleware interface{}) *Group {
 /**
  * 添加分组 - 后置
  */
-func (this *Group) Push(name string, middleware interface{}) *Group {
+func (this *Group) Push(name string, middleware any) *Group {
     var newGroup *Middlewares
 
     if exists := this.Exists(name); exists {

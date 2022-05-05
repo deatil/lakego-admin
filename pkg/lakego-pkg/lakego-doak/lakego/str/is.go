@@ -8,7 +8,7 @@ import (
 )
 
 // 判断是否为空
-func Empty(val interface{}) bool {
+func Empty(val any) bool {
     if val == nil {
         return true
     }
@@ -35,7 +35,7 @@ func Empty(val interface{}) bool {
 }
 
 // 判断是否为 nil
-func IsNil(i interface{}) bool {
+func IsNil(i any) bool {
     v := reflect.ValueOf(i)
     if v.Kind() != reflect.Ptr {
         return v.IsNil()
@@ -45,7 +45,7 @@ func IsNil(i interface{}) bool {
 }
 
 // 是否为数字
-func IsNumeric(val interface{}) bool {
+func IsNumeric(val any) bool {
     switch val.(type) {
         case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
             return true

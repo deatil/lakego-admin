@@ -24,7 +24,7 @@ type PongoRender struct {
 }
 
 // Instance init
-func (this *PongoRender) Instance(name string, data interface{}) render.Render {
+func (this *PongoRender) Instance(name string, data any) render.Render {
     var template *pongo2.Template
     var fileName string
 
@@ -55,7 +55,7 @@ func (this *PongoRender) Instance(name string, data interface{}) render.Render {
 type PongoHTML struct {
     Template *pongo2.Template
     Name     string
-    Data     interface{}
+    Data     any
 }
 
 // 输出
@@ -66,8 +66,8 @@ func (this *PongoHTML) Render(w http.ResponseWriter) error {
     data := pongo2.Context{}
     switch this.Data.(type) {
         // 兼容通用数据
-        case map[string]interface{}:
-            for k, v := range this.Data.(map[string]interface{}) {
+        case map[string]any:
+            for k, v := range this.Data.(map[string]any) {
                 data[k] = v
             }
 

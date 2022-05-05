@@ -12,10 +12,10 @@ import (
  */
 type Database interface {
     // 设置配置
-    WithConfig(map[string]interface{}) Database
+    WithConfig(map[string]any) Database
 
     // 获取配置
-    GetConfig(string) interface{}
+    GetConfig(string) any
 
     // 设置驱动
     WithDriver(Driver) Database

@@ -45,7 +45,7 @@ func NewAttachment() *gorm.DB {
 
 // 附件链接
 func AttachmentUrl(id string) string {
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := NewAttachment().

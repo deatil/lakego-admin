@@ -23,12 +23,12 @@ func (this *Adapter) WithFile(fileName ...string) {
 }
 
 // 设置默认值
-func (this *Adapter) SetDefault(keyName string, value interface{}) {
+func (this *Adapter) SetDefault(keyName string, value any) {
     panic("方法没有实现")
 }
 
 // 设置
-func (this *Adapter) Set(keyName string, value interface{}) {
+func (this *Adapter) Set(keyName string, value any) {
     panic("方法没有实现")
 }
 
@@ -38,7 +38,7 @@ func (this *Adapter) IsSet(keyName string) bool {
 }
 
 // Get 一个原始值
-func (this *Adapter) Get(keyName string) interface{} {
+func (this *Adapter) Get(keyName string) any {
     panic("方法没有实现")
 }
 
@@ -108,7 +108,7 @@ func (this *Adapter) GetStringSlice(keyName string) []string {
 }
 
 // GetStringMap
-func (this *Adapter) GetStringMap(keyName string) map[string]interface{} {
+func (this *Adapter) GetStringMap(keyName string) map[string]any {
     panic("方法没有实现")
 }
 

@@ -12,7 +12,7 @@ import (
  */
 type ServiceProvider interface {
     // 设置 App
-    WithApp(interface{})
+    WithApp(any)
 
     // 设置路由
     WithRoute(*router.Engine)

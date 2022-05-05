@@ -5,14 +5,6 @@ import (
     "crypto/x509"
 )
 
-// 构造函数
-func NewRsa() Rsa {
-    return Rsa{
-        veryed:   false,
-        signHash: "SHA512",
-    }
-}
-
 // pem 加密方式
 var PEMCiphers = map[string]x509.PEMCipher{
     "DESCBC":     x509.PEMCipherDES,

@@ -36,12 +36,12 @@ func (this Cryptobin) GetParsedData() []byte {
 }
 
 // 获取全部配置
-func (this Cryptobin) GetConfig() map[string]interface{} {
+func (this Cryptobin) GetConfig() map[string]any {
     return this.config
 }
 
 // 获取一个配置
-func (this Cryptobin) GetOneConfig(key string) interface{} {
+func (this Cryptobin) GetOneConfig(key string) any {
     if data, ok := this.config[key]; ok {
         return data
     }

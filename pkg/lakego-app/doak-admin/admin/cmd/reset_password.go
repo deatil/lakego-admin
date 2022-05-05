@@ -60,7 +60,7 @@ func ResetPassword() {
     password = hash.MD5(password)
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Where("id = ?", id).
         First(&result).
@@ -75,7 +75,7 @@ func ResetPassword() {
 
     err3 := model.NewAdmin().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "password": pass,
             "password_salt": encrypt,
         }).

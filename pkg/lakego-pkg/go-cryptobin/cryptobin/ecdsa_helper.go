@@ -1,5 +1,20 @@
 package cryptobin
 
+import (
+    "crypto/elliptic"
+)
+
+// 构造函数
+func NewEcdsa() Ecdsa {
+    return Ecdsa{
+        curve:    elliptic.P256(),
+        signHash: "SHA512",
+        veryed:   false,
+    }
+}
+
+// ==========
+
 // 私钥
 func EcdsaFromPrivateKey(key []byte) Ecdsa {
     return NewEcdsa().FromPrivateKey(key)

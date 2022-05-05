@@ -1,5 +1,14 @@
 package cryptobin
 
+// 构造函数
+func NewSM2() SM2 {
+    return SM2{
+        veryed: false,
+    }
+}
+
+// ==========
+
 // 私钥
 func SM2FromPrivateKey(key []byte) SM2 {
     return NewSM2().FromPrivateKey(key)

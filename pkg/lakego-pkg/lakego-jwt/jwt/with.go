@@ -47,13 +47,13 @@ func (this *JWT) WithNbf(nbf int64) *JWT {
 }
 
 // 自定义载荷
-func (this *JWT) WithClaim(key string, value interface{}) *JWT {
+func (this *JWT) WithClaim(key string, value any) *JWT {
     this.Claims[key] = value
     return this
 }
 
 // 自定义 Header
-func (this *JWT) WithHeader(key string, value interface{}) *JWT {
+func (this *JWT) WithHeader(key string, value any) *JWT {
     this.Headers[key] = value
     return this
 }

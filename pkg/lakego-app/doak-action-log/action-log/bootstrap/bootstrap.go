@@ -8,7 +8,7 @@ import (
 
 // 添加服务提供者
 func init() {
-    kernel.AddProvider(func() interface{} {
+    kernel.AddProvider(func() any {
         return &provider.ActionLogServiceProvider{}
     })
 }

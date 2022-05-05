@@ -7,7 +7,7 @@ import (
 )
 
 // 实现 sql.Scanner 接口，Scan 将 value 填充进结构体
-func (this *Datebin) Scan(value interface{}) error {
+func (this *Datebin) Scan(value any) error {
     data, ok := value.(time.Time)
     if ok {
         *this = Datebin{time: data, loc: time.Local}

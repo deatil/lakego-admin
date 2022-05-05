@@ -7,11 +7,11 @@ import (
 )
 
 type BaseCollection struct {
-    value  interface{}
+    value  any
     length int
 }
 
-func (c BaseCollection) Value() interface{} {
+func (c BaseCollection) Value() any {
     return c.value
 }
 
@@ -27,12 +27,12 @@ func (c BaseCollection) Select(keys ...string) Collection {
 
 // ToStruct turn the collection to the specified struct using mapstructure.
 // https://github.com/mitchellh/mapstructure
-func (c BaseCollection) ToStruct(dist interface{}) {
+func (c BaseCollection) ToStruct(dist any) {
     panic("not implement")
 }
 
 // All returns the underlying array represented by the collection.
-func (c BaseCollection) All() []interface{} {
+func (c BaseCollection) All() []any {
     panic("not implement")
 }
 
@@ -62,7 +62,7 @@ func (c BaseCollection) Join(delimiter string) string {
 }
 
 // Combine combines the values of the collection, as keys, with the values of another array or collection.
-func (c BaseCollection) Combine(value []interface{}) Collection {
+func (c BaseCollection) Combine(value []any) Collection {
     panic("not implement")
 }
 
@@ -82,7 +82,7 @@ func (c BaseCollection) ToInt64Array() []int64 {
 }
 
 // Mode returns the mode value of a given key.
-func (c BaseCollection) Mode(key ...string) []interface{} {
+func (c BaseCollection) Mode(key ...string) []any {
     panic("not implement")
 }
 
@@ -92,17 +92,17 @@ func (c BaseCollection) Only(keys []string) Collection {
 }
 
 // Prepend adds an item to the beginning of the collection.
-func (c BaseCollection) Prepend(values ...interface{}) Collection {
+func (c BaseCollection) Prepend(values ...any) Collection {
     panic("not implement")
 }
 
 // Pull removes and returns an item from the collection by its key.
-func (c BaseCollection) Pull(key interface{}) Collection {
+func (c BaseCollection) Pull(key any) Collection {
     panic("not implement")
 }
 
 // Put sets the given key and value in the collection:.
-func (c BaseCollection) Put(key string, value interface{}) Collection {
+func (c BaseCollection) Put(key string, value any) Collection {
     panic("not implement")
 }
 
@@ -127,22 +127,22 @@ func (c BaseCollection) Collapse() Collection {
 }
 
 // Concat appends the given array or collection values onto the end of the collection.
-func (c BaseCollection) Concat(value interface{}) Collection {
+func (c BaseCollection) Concat(value any) Collection {
     panic("not implement")
 }
 
 // Contains determines whether the collection contains a given item.
-func (c BaseCollection) Contains(value ...interface{}) bool {
+func (c BaseCollection) Contains(value ...any) bool {
     panic("not implement")
 }
 
 // CountBy counts the occurrences of values in the collection. By default, the method counts the occurrences of every element.
-func (c BaseCollection) CountBy(callback ...interface{}) map[interface{}]int {
+func (c BaseCollection) CountBy(callback ...any) map[any]int {
     panic("not implement")
 }
 
 // CrossJoin cross joins the collection's values among the given arrays or collections, returning a Cartesian product with all possible permutations.
-func (c BaseCollection) CrossJoin(array ...[]interface{}) MultiDimensionalArrayCollection {
+func (c BaseCollection) CrossJoin(array ...[]any) MultiDimensionalArrayCollection {
     panic("not implement")
 }
 
@@ -153,19 +153,19 @@ func (c BaseCollection) Dd() {
 
 // Diff compares the collection against another collection or a plain PHP array based on its values.
 // This method will return the values in the original collection that are not present in the given collection.
-func (c BaseCollection) Diff(interface{}) Collection {
+func (c BaseCollection) Diff(any) Collection {
     panic("not implement")
 }
 
 // DiffAssoc compares the collection against another collection or a plain PHP  array based on its keys and values.
 // This method will return the key / value pairs in the original collection that are not present in the given collection.
-func (c BaseCollection) DiffAssoc(map[string]interface{}) Collection {
+func (c BaseCollection) DiffAssoc(map[string]any) Collection {
     panic("not implement")
 }
 
 // DiffKeys compares the collection against another collection or a plain PHP array based on its keys.
 // This method will return the key / value pairs in the original collection that are not present in the given collection.
-func (c BaseCollection) DiffKeys(map[string]interface{}) Collection {
+func (c BaseCollection) DiffKeys(map[string]any) Collection {
     panic("not implement")
 }
 
@@ -175,7 +175,7 @@ func (c BaseCollection) Dump() {
 }
 
 // Each iterates over the items in the collection and passes each item to a callback.
-func (c BaseCollection) Each(func(item, value interface{}) (interface{}, bool)) Collection {
+func (c BaseCollection) Each(func(item, value any) (any, bool)) Collection {
     panic("not implement")
 }
 
@@ -195,17 +195,17 @@ func (c BaseCollection) Filter(CB) Collection {
 }
 
 // First returns the first element in the collection that passes a given truth test.
-func (c BaseCollection) First(...CB) interface{} {
+func (c BaseCollection) First(...CB) any {
     panic("not implement")
 }
 
 // FirstWhere returns the first element in the collection with the given key / value pair.
-func (c BaseCollection) FirstWhere(key string, values ...interface{}) map[string]interface{} {
+func (c BaseCollection) FirstWhere(key string, values ...any) map[string]any {
     panic("not implement")
 }
 
 // FlatMap iterates through the collection and passes each value to the given callback.
-func (c BaseCollection) FlatMap(func(value interface{}) interface{}) Collection {
+func (c BaseCollection) FlatMap(func(value any) any) Collection {
     panic("not implement")
 }
 
@@ -225,7 +225,7 @@ func (c BaseCollection) ForPage(int, int) Collection {
 }
 
 // Get returns the item at a given key. If the key does not exist, null is returned.
-func (c BaseCollection) Get(string, ...interface{}) interface{} {
+func (c BaseCollection) Get(string, ...any) any {
     panic("not implement")
 }
 
@@ -250,7 +250,7 @@ func (c BaseCollection) Intersect([]string) Collection {
 }
 
 // IntersectByKeys removes any keys from the original collection that are not present in the given array or collection.
-func (c BaseCollection) IntersectByKeys(map[string]interface{}) Collection {
+func (c BaseCollection) IntersectByKeys(map[string]any) Collection {
     panic("not implement")
 }
 
@@ -266,7 +266,7 @@ func (c BaseCollection) IsNotEmpty() bool {
 
 // KeyBy keys the collection by the given key. If multiple items have the same key, only the last one will
 // appear in the new collection.
-func (c BaseCollection) KeyBy(interface{}) Collection {
+func (c BaseCollection) KeyBy(any) Collection {
     panic("not implement")
 }
 
@@ -276,7 +276,7 @@ func (c BaseCollection) Keys() Collection {
 }
 
 // Last returns the last element in the collection that passes a given truth test.
-func (c BaseCollection) Last(...CB) interface{} {
+func (c BaseCollection) Last(...CB) any {
     panic("not implement")
 }
 
@@ -298,7 +298,7 @@ func (c BaseCollection) Median(key ...string) decimal.Decimal {
 // Merge merges the given array or collection with the original collection. If a string key in the given items
 // matches a string key in the original collection, the given items's value will overwrite the value in the
 // original collection.
-func (c BaseCollection) Merge(interface{}) Collection {
+func (c BaseCollection) Merge(any) Collection {
     panic("not implement")
 }
 
@@ -307,7 +307,7 @@ func (c BaseCollection) Nth(...int) Collection {
 }
 
 // Pad will fill the array with the given value until the array reaches the specified size.
-func (c BaseCollection) Pad(int, interface{}) Collection {
+func (c BaseCollection) Pad(int, any) Collection {
     panic("not implement")
 }
 
@@ -317,12 +317,12 @@ func (c BaseCollection) Partition(PartCB) (Collection, Collection) {
 }
 
 // Pop removes and returns the last item from the collection.
-func (c BaseCollection) Pop() interface{} {
+func (c BaseCollection) Pop() any {
     panic("not implement")
 }
 
 // Push appends an item to the end of the collection.
-func (c BaseCollection) Push(interface{}) Collection {
+func (c BaseCollection) Push(any) Collection {
     panic("not implement")
 }
 
@@ -332,7 +332,7 @@ func (c BaseCollection) Random(...int) Collection {
 }
 
 // Reduce reduces the collection to a single value, passing the result of each iteration into the subsequent iteration.
-func (c BaseCollection) Reduce(ReduceCB) interface{} {
+func (c BaseCollection) Reduce(ReduceCB) any {
     panic("not implement")
 }
 
@@ -348,7 +348,7 @@ func (c BaseCollection) Reverse() Collection {
 
 // Search searches the collection for the given value and returns its key if found. If the item is not found,
 // -1 is returned.
-func (c BaseCollection) Search(interface{}) int {
+func (c BaseCollection) Search(any) int {
     panic("not implement")
 }
 
@@ -393,12 +393,12 @@ func (c BaseCollection) Unique() Collection {
 }
 
 // WhereIn filters the collection by a given key / value contained within the given array.
-func (c BaseCollection) WhereIn(string, []interface{}) Collection {
+func (c BaseCollection) WhereIn(string, []any) Collection {
     panic("not implement")
 }
 
 // WhereNotIn filters the collection by a given key / value not contained within the given array.
-func (c BaseCollection) WhereNotIn(string, []interface{}) Collection {
+func (c BaseCollection) WhereNotIn(string, []any) Collection {
     panic("not implement")
 }
 
@@ -417,7 +417,7 @@ func (c BaseCollection) ToNumberArray() []decimal.Decimal {
 }
 
 // ToStringArray converts the collection into a plain golang slice which contains string.
-func (c BaseCollection) ToMultiDimensionalArray() [][]interface{} {
+func (c BaseCollection) ToMultiDimensionalArray() [][]any {
     panic("not implement")
 }
 
@@ -427,17 +427,17 @@ func (c BaseCollection) ToStringArray() []string {
 }
 
 // ToMap converts the collection into a plain golang map.
-func (c BaseCollection) ToMap() map[string]interface{} {
+func (c BaseCollection) ToMap() map[string]any {
     panic("not implement")
 }
 
 // ToMapArray converts the collection into a plain golang slice which contains map.
-func (c BaseCollection) ToMapArray() []map[string]interface{} {
+func (c BaseCollection) ToMapArray() []map[string]any {
     panic("not implement")
 }
 
 // Where filters the collection by a given key / value pair.
-func (c BaseCollection) Where(key string, values ...interface{}) Collection {
+func (c BaseCollection) Where(key string, values ...any) Collection {
     panic("not implement")
 }
 

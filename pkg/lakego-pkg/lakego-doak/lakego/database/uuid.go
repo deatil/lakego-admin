@@ -37,7 +37,7 @@ func (this BinaryUUID) GormDataType() string {
 }
 
 // scan value into BinaryUUID
-func (this *BinaryUUID) Scan(value interface{}) error {
+func (this *BinaryUUID) Scan(value any) error {
     bytes, ok := value.([]byte)
     if !ok {
         return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))

@@ -12,7 +12,7 @@ import (
 )
 
 type MapArrayCollection struct {
-    value []map[string]interface{}
+    value []map[string]any
     BaseCollection
 }
 
@@ -34,7 +34,7 @@ func (c MapArrayCollection) Length() int {
 
 // ToStruct turn the collection to the specified struct using mapstructure.
 // https://github.com/mitchellh/mapstructure
-func (c MapArrayCollection) ToStruct(dist interface{}) {
+func (c MapArrayCollection) ToStruct(dist any) {
     if err := mapstructure.Decode(c.value, dist); err != nil {
         panic(err)
     }
@@ -42,7 +42,7 @@ func (c MapArrayCollection) ToStruct(dist interface{}) {
 
 // Select select the keys of collection and delete others.
 func (c MapArrayCollection) Select(keys ...string) Collection {
-    var n = make([]map[string]interface{}, len(c.value))
+    var n = make([]map[string]any, len(c.value))
     copy(n, c.value)
 
     for _, value := range n {
@@ -132,7 +132,7 @@ func (c MapArrayCollection) Max(key ...string) decimal.Decimal {
 
 // Pluck retrieves all of the values for a given key.
 func (c MapArrayCollection) Pluck(key string) Collection {
-    var s = make([]interface{}, 0)
+    var s = make([]any, 0)
     for i := 0; i < len(c.value); i++ {
         s = append(s, c.value[i][key])
     }
@@ -140,16 +140,16 @@ func (c MapArrayCollection) Pluck(key string) Collection {
 }
 
 // Each iterates over the items in the collection and passes each item to a callback.
-func (c MapArrayCollection) Each(cb func(item, value interface{}) (interface{}, bool)) Collection {
-    var d = make([]map[string]interface{}, 0)
+func (c MapArrayCollection) Each(cb func(item, value any) (any, bool)) Collection {
+    var d = make([]map[string]any, 0)
     var (
-        newValue interface{}
+        newValue any
         stop     = false
     )
     for key, value := range c.value {
         if !stop {
             newValue, stop = cb(key, value)
-            d = append(d, newValue.(map[string]interface{}))
+            d = append(d, newValue.(map[string]any))
         } else {
             d = append(d, value)
         }
@@ -160,14 +160,14 @@ func (c MapArrayCollection) Each(cb func(item, value interface{}) (interface{}, 
 }
 
 // Prepend adds an item to the beginning of the collection.
-func (c MapArrayCollection) Prepend(values ...interface{}) Collection {
+func (c MapArrayCollection) Prepend(values ...any) Collection {
 
     var d MapArrayCollection
 
-    var n = make([]map[string]interface{}, len(c.value))
+    var n = make([]map[string]any, len(c.value))
     copy(n, c.value)
 
-    d.value = append([]map[string]interface{}{values[0].(map[string]interface{})}, n...)
+    d.value = append([]map[string]any{values[0].(map[string]any)}, n...)
     d.length = len(d.value)
 
     return d
@@ -177,9 +177,9 @@ func (c MapArrayCollection) Prepend(values ...interface{}) Collection {
 func (c MapArrayCollection) Only(keys []string) Collection {
     var d MapArrayCollection
 
-    var ma = make([]map[string]interface{}, 0)
+    var ma = make([]map[string]any, 0)
     for _, k := range keys {
-        m := make(map[string]interface{}, 0)
+        m := make(map[string]any, 0)
         for _, v := range c.value {
             m[k] = v[k]
         }
@@ -195,13 +195,13 @@ func (c MapArrayCollection) Only(keys []string) Collection {
 func (c MapArrayCollection) Splice(index ...int) Collection {
 
     if len(index) == 1 {
-        var n = make([]map[string]interface{}, len(c.value))
+        var n = make([]map[string]any, len(c.value))
         copy(n, c.value)
         n = n[index[0]:]
 
         return MapArrayCollection{n, BaseCollection{length: len(n)}}
     } else if len(index) > 1 {
-        var n = make([]map[string]interface{}, len(c.value))
+        var n = make([]map[string]any, len(c.value))
         copy(n, c.value)
         n = n[index[0] : index[0]+index[1]]
 
@@ -230,8 +230,8 @@ func (c MapArrayCollection) Take(num int) Collection {
 }
 
 // All returns the underlying array represented by the collection.
-func (c MapArrayCollection) All() []interface{} {
-    s := make([]interface{}, len(c.value))
+func (c MapArrayCollection) All() []any {
+    s := make([]any, len(c.value))
     for i := 0; i < len(c.value); i++ {
         s[i] = c.value[i]
     }
@@ -240,8 +240,8 @@ func (c MapArrayCollection) All() []interface{} {
 }
 
 // Mode returns the mode value of a given key.
-func (c MapArrayCollection) Mode(key ...string) []interface{} {
-    valueCount := make(map[interface{}]int)
+func (c MapArrayCollection) Mode(key ...string) []any {
+    valueCount := make(map[any]int)
     for i := 0; i < c.length; i++ {
         if v, ok := c.value[i][key[0]]; ok {
             valueCount[v]++
@@ -249,7 +249,7 @@ func (c MapArrayCollection) Mode(key ...string) []interface{} {
     }
 
     maxCount := 0
-    maxValue := make([]interface{}, len(valueCount))
+    maxValue := make([]any, len(valueCount))
     for v, c := range valueCount {
         switch {
         case c < maxCount:
@@ -257,7 +257,7 @@ func (c MapArrayCollection) Mode(key ...string) []interface{} {
         case c == maxCount:
             maxValue = append(maxValue, v)
         case c > maxCount:
-            maxValue = append([]interface{}{}, v)
+            maxValue = append([]any{}, v)
             maxCount = c
         }
     }
@@ -265,7 +265,7 @@ func (c MapArrayCollection) Mode(key ...string) []interface{} {
 }
 
 // ToMapArray converts the collection into a plain golang slice which contains map.
-func (c MapArrayCollection) ToMapArray() []map[string]interface{} {
+func (c MapArrayCollection) ToMapArray() []map[string]any {
     return c.value
 }
 
@@ -273,7 +273,7 @@ func (c MapArrayCollection) ToMapArray() []map[string]interface{} {
 func (c MapArrayCollection) Chunk(num int) MultiDimensionalArrayCollection {
     var d MultiDimensionalArrayCollection
     d.length = c.length/num + 1
-    d.value = make([][]interface{}, d.length)
+    d.value = make([][]any, d.length)
 
     count := 0
     for i := 1; i <= c.length; i++ {
@@ -297,15 +297,15 @@ func (c MapArrayCollection) Chunk(num int) MultiDimensionalArrayCollection {
 }
 
 // Concat appends the given array or collection values onto the end of the collection.
-func (c MapArrayCollection) Concat(value interface{}) Collection {
+func (c MapArrayCollection) Concat(value any) Collection {
     return MapArrayCollection{
-        value:          append(c.value, value.([]map[string]interface{})...),
-        BaseCollection: BaseCollection{length: c.length + len(value.([]map[string]interface{}))},
+        value:          append(c.value, value.([]map[string]any)...),
+        BaseCollection: BaseCollection{length: c.length + len(value.([]map[string]any))},
     }
 }
 
 // CrossJoin cross joins the collection's values among the given arrays or collections, returning a Cartesian product with all possible permutations.
-func (c MapArrayCollection) CrossJoin(array ...[]interface{}) MultiDimensionalArrayCollection {
+func (c MapArrayCollection) CrossJoin(array ...[]any) MultiDimensionalArrayCollection {
     var d MultiDimensionalArrayCollection
 
     // A two-dimensional-slice's initial
@@ -313,9 +313,9 @@ func (c MapArrayCollection) CrossJoin(array ...[]interface{}) MultiDimensionalAr
     for _, s := range array {
         length *= len(s)
     }
-    value := make([][]interface{}, length)
+    value := make([][]any, length)
     for i := range value {
-        value[i] = make([]interface{}, len(array)+1)
+        value[i] = make([]any, len(array)+1)
     }
 
     offset := length / c.length
@@ -332,7 +332,7 @@ func (c MapArrayCollection) CrossJoin(array ...[]interface{}) MultiDimensionalAr
 // vl: length of value
 // ai: index of array
 // si: index of value's sub-array
-func assignmentToValue(value, array [][]interface{}, vl, si, ai, preOffset int) {
+func assignmentToValue(value, array [][]any, vl, si, ai, preOffset int) {
     offset := preOffset / len(array[ai])
     times := 0
 
@@ -370,7 +370,7 @@ func (c MapArrayCollection) Every(cb CB) bool {
 
 // Filter filters the collection using the given callback, keeping only those items that pass a given truth test.
 func (c MapArrayCollection) Filter(cb CB) Collection {
-    var d = make([]map[string]interface{}, 0)
+    var d = make([]map[string]any, 0)
     copy(d, c.value)
     for key, value := range c.value {
         if !cb(key, value) {
@@ -383,7 +383,7 @@ func (c MapArrayCollection) Filter(cb CB) Collection {
 }
 
 // First returns the first element in the collection that passes a given truth test.
-func (c MapArrayCollection) First(cbs ...CB) interface{} {
+func (c MapArrayCollection) First(cbs ...CB) any {
     if len(cbs) > 0 {
         for key, value := range c.value {
             if cbs[0](key, value) {
@@ -401,7 +401,7 @@ func (c MapArrayCollection) First(cbs ...CB) interface{} {
 }
 
 // FirstWhere returns the first element in the collection with the given key / value pair.
-func (c MapArrayCollection) FirstWhere(key string, values ...interface{}) map[string]interface{} {
+func (c MapArrayCollection) FirstWhere(key string, values ...any) map[string]any {
     if len(values) < 1 {
         for _, value := range c.value {
             if isTrue(value[key]) {
@@ -448,22 +448,22 @@ func (c MapArrayCollection) FirstWhere(key string, values ...interface{}) map[st
             }
         }
     }
-    return map[string]interface{}{}
+    return map[string]any{}
 }
 
 // GroupBy groups the collection's items by a given key.
 func (c MapArrayCollection) GroupBy(k string) Collection {
-    var d = make(map[string]interface{}, 0)
+    var d = make(map[string]any, 0)
     for _, value := range c.value {
         for kk, vv := range value {
             if kk == k {
                 vvKey := fmt.Sprintf("%v", vv)
                 if _, ok := d[vvKey]; ok {
-                    am := d[vvKey].([]map[string]interface{})
+                    am := d[vvKey].([]map[string]any)
                     am = append(am, value)
                     d[vvKey] = am
                 } else {
-                    d[vvKey] = []map[string]interface{}{value}
+                    d[vvKey] = []map[string]any{value}
                 }
             }
         }
@@ -498,13 +498,13 @@ func (c MapArrayCollection) IsNotEmpty() bool {
 
 // KeyBy keys the collection by the given key. If multiple items have the same key, only the last one will
 // appear in the new collection.
-func (c MapArrayCollection) KeyBy(v interface{}) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapArrayCollection) KeyBy(v any) Collection {
+    var d = make(map[string]any, 0)
     if k, ok := v.(string); ok {
         for _, value := range c.value {
             for kk, vv := range value {
                 if kk == k {
-                    d[fmt.Sprintf("%v", vv)] = []map[string]interface{}{value}
+                    d[fmt.Sprintf("%v", vv)] = []map[string]any{value}
                 }
             }
         }
@@ -513,7 +513,7 @@ func (c MapArrayCollection) KeyBy(v interface{}) Collection {
         for _, value := range c.value {
             for kk, vv := range value {
                 if kk == k {
-                    d[fmt.Sprintf("%v", vb(vv))] = []map[string]interface{}{value}
+                    d[fmt.Sprintf("%v", vb(vv))] = []map[string]any{value}
                 }
             }
         }
@@ -524,9 +524,9 @@ func (c MapArrayCollection) KeyBy(v interface{}) Collection {
 }
 
 // Last returns the last element in the collection that passes a given truth test.
-func (c MapArrayCollection) Last(cbs ...CB) interface{} {
+func (c MapArrayCollection) Last(cbs ...CB) any {
     if len(cbs) > 0 {
-        var last interface{}
+        var last any
         for key, value := range c.value {
             if cbs[0](key, value) {
                 last = value
@@ -544,15 +544,15 @@ func (c MapArrayCollection) Last(cbs ...CB) interface{} {
 
 // MapToGroups groups the collection's items by the given callback.
 func (c MapArrayCollection) MapToGroups(cb MapCB) Collection {
-    var d = make(map[string]interface{}, 0)
+    var d = make(map[string]any, 0)
     for _, value := range c.value {
         nk, nv := cb(value)
         if _, ok := d[nk]; ok {
-            am := d[nk].([]interface{})
+            am := d[nk].([]any)
             am = append(am, nv)
             d[nk] = am
         } else {
-            d[nk] = []interface{}{nv}
+            d[nk] = []any{nv}
         }
     }
     return MapCollection{
@@ -562,7 +562,7 @@ func (c MapArrayCollection) MapToGroups(cb MapCB) Collection {
 
 // MapWithKeys iterates through the collection and passes each value to the given callback.
 func (c MapArrayCollection) MapWithKeys(cb MapCB) Collection {
-    var d = make(map[string]interface{}, 0)
+    var d = make(map[string]any, 0)
     for _, value := range c.value {
         nk, nv := cb(value)
         d[nk] = nv
@@ -574,8 +574,8 @@ func (c MapArrayCollection) MapWithKeys(cb MapCB) Collection {
 
 // Partition separate elements that pass a given truth test from those that do not.
 func (c MapArrayCollection) Partition(cb PartCB) (Collection, Collection) {
-    var d1 = make([]map[string]interface{}, 0)
-    var d2 = make([]map[string]interface{}, 0)
+    var d1 = make([]map[string]any, 0)
+    var d2 = make([]map[string]any, 0)
 
     for i := 0; i < len(c.value); i++ {
         if cb(i) {
@@ -593,20 +593,20 @@ func (c MapArrayCollection) Partition(cb PartCB) (Collection, Collection) {
 }
 
 // Pop removes and returns the last item from the collection.
-func (c MapArrayCollection) Pop() interface{} {
+func (c MapArrayCollection) Pop() any {
     last := c.value[len(c.value)-1]
     c.value = c.value[:len(c.value)-1]
     return last
 }
 
 // Push appends an item to the end of the collection.
-func (c MapArrayCollection) Push(v interface{}) Collection {
-    var d = make([]map[string]interface{}, len(c.value)+1)
+func (c MapArrayCollection) Push(v any) Collection {
+    var d = make([]map[string]any, len(c.value)+1)
     for i := 0; i < len(d); i++ {
         if i < len(c.value) {
             d[i] = c.value[i]
         } else {
-            d[i] = v.(map[string]interface{})
+            d[i] = v.(map[string]any)
         }
     }
 
@@ -625,7 +625,7 @@ func (c MapArrayCollection) Random(num ...int) Collection {
         if num[0] > len(c.value) {
             panic("wrong num")
         }
-        var d = make([]map[string]interface{}, len(c.value))
+        var d = make([]map[string]any, len(c.value))
         copy(d, c.value)
         for i := 0; i < len(c.value)-num[0]; i++ {
             index := rand.Intn(len(d))
@@ -638,8 +638,8 @@ func (c MapArrayCollection) Random(num ...int) Collection {
 }
 
 // Reduce reduces the collection to a single value, passing the result of each iteration into the subsequent iteration.
-func (c MapArrayCollection) Reduce(cb ReduceCB) interface{} {
-    var res interface{}
+func (c MapArrayCollection) Reduce(cb ReduceCB) any {
+    var res any
 
     for i := 0; i < len(c.value); i++ {
         res = cb(res, c.value[i])
@@ -650,7 +650,7 @@ func (c MapArrayCollection) Reduce(cb ReduceCB) interface{} {
 
 // Reject filters the collection using the given callback.
 func (c MapArrayCollection) Reject(cb CB) Collection {
-    var d = make([]map[string]interface{}, 0)
+    var d = make([]map[string]any, 0)
     for key, value := range c.value {
         if !cb(key, value) {
             d = append(d, value)
@@ -663,7 +663,7 @@ func (c MapArrayCollection) Reject(cb CB) Collection {
 
 // Reverse reverses the order of the collection's items, preserving the original keys.
 func (c MapArrayCollection) Reverse() Collection {
-    var d = make([]map[string]interface{}, len(c.value))
+    var d = make([]map[string]any, len(c.value))
     j := 0
     for i := len(c.value) - 1; i > -1; i-- {
         d[j] = c.value[i]
@@ -676,7 +676,7 @@ func (c MapArrayCollection) Reverse() Collection {
 
 // Search searches the collection for the given value and returns its key if found. If the item is not found,
 // -1 is returned.
-func (c MapArrayCollection) Search(v interface{}) int {
+func (c MapArrayCollection) Search(v any) int {
     cb := v.(CB)
     for i := 0; i < len(c.value); i++ {
         if cb(i, c.value[i]) {
@@ -688,7 +688,7 @@ func (c MapArrayCollection) Search(v interface{}) int {
 
 // Shift removes and returns the first item from the collection.
 func (c MapArrayCollection) Shift() Collection {
-    var d = make([]map[string]interface{}, len(c.value))
+    var d = make([]map[string]any, len(c.value))
     copy(d, c.value)
     d = d[1:]
     return MapArrayCollection{
@@ -698,7 +698,7 @@ func (c MapArrayCollection) Shift() Collection {
 
 // Shuffle randomly shuffles the items in the collection.
 func (c MapArrayCollection) Shuffle() Collection {
-    var d = make([]map[string]interface{}, len(c.value))
+    var d = make([]map[string]any, len(c.value))
     copy(d, c.value)
     rand.Seed(time.Now().UnixNano())
     rand.Shuffle(len(c.value), func(i, j int) { d[i], d[j] = d[j], d[i] })
@@ -709,7 +709,7 @@ func (c MapArrayCollection) Shuffle() Collection {
 
 // Slice returns a slice of the collection starting at the given index.
 func (c MapArrayCollection) Slice(keys ...int) Collection {
-    var d = make([]map[string]interface{}, len(c.value))
+    var d = make([]map[string]any, len(c.value))
     copy(d, c.value)
     if len(keys) == 1 {
         return MapArrayCollection{
@@ -724,16 +724,16 @@ func (c MapArrayCollection) Slice(keys ...int) Collection {
 
 // Split breaks a collection into the given number of groups.
 func (c MapArrayCollection) Split(num int) Collection {
-    var d = make([][]interface{}, int(math.Ceil(float64(len(c.value))/float64(num))))
+    var d = make([][]any, int(math.Ceil(float64(len(c.value))/float64(num))))
 
     j := -1
     for i := 0; i < len(c.value); i++ {
         if i%num == 0 {
             j++
             if i+num <= len(c.value) {
-                d[j] = make([]interface{}, num)
+                d[j] = make([]any, num)
             } else {
-                d[j] = make([]interface{}, len(c.value)-i)
+                d[j] = make([]any, len(c.value)-i)
             }
             d[j][i%num] = c.value[i]
         } else {
@@ -747,8 +747,8 @@ func (c MapArrayCollection) Split(num int) Collection {
 }
 
 // WhereIn filters the collection by a given key / value contained within the given array.
-func (c MapArrayCollection) WhereIn(key string, in []interface{}) Collection {
-    var d = make([]map[string]interface{}, 0)
+func (c MapArrayCollection) WhereIn(key string, in []any) Collection {
+    var d = make([]map[string]any, 0)
     for i := 0; i < len(c.value); i++ {
         for j := 0; j < len(in); j++ {
             if c.value[i][key] == in[j] {
@@ -763,8 +763,8 @@ func (c MapArrayCollection) WhereIn(key string, in []interface{}) Collection {
 }
 
 // WhereNotIn filters the collection by a given key / value not contained within the given array.
-func (c MapArrayCollection) WhereNotIn(key string, in []interface{}) Collection {
-    var d = make([]map[string]interface{}, 0)
+func (c MapArrayCollection) WhereNotIn(key string, in []any) Collection {
+    var d = make([]map[string]any, 0)
     for i := 0; i < len(c.value); i++ {
         isIn := false
         for j := 0; j < len(in); j++ {
@@ -783,8 +783,8 @@ func (c MapArrayCollection) WhereNotIn(key string, in []interface{}) Collection 
 }
 
 // Where filters the collection by a given key / value pair.
-func (c MapArrayCollection) Where(key string, values ...interface{}) Collection {
-    var d = make([]map[string]interface{}, 0)
+func (c MapArrayCollection) Where(key string, values ...any) Collection {
+    var d = make([]map[string]any, 0)
     if len(values) < 1 {
         for _, value := range c.value {
             if isTrue(value[key]) {

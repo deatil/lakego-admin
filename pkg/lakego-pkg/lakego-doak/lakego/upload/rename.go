@@ -86,7 +86,7 @@ func (this *Rename) WithName(name string) *Rename {
 }
 
 // 获取文件名
-func (this *Rename) GetName() interface{} {
+func (this *Rename) GetName() any {
     return this.name
 }
 

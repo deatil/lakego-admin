@@ -46,6 +46,6 @@ func (this *Directory) Delete() (bool, error) {
 }
 
 // 列出文件
-func (this *Directory) GetContents(recursive ...bool) ([]map[string]interface{}, error) {
+func (this *Directory) GetContents(recursive ...bool) ([]map[string]any, error) {
     return this.filesystem.ListContents(this.path, recursive...)
 }

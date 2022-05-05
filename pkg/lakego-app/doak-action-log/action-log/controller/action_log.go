@@ -98,7 +98,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
         Offset(newStart).
         Limit(newLimit)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     // 列表
     logModel = logModel.Find(&list)

@@ -390,14 +390,14 @@ func EncryptPKCS8PrivateKey(
     data []byte,
     password []byte,
     alg x509.PEMCipher,
-    opts ...interface{},
+    opts ...any,
 ) (*pem.Block, error) {
     ciph := cipherByKey(alg)
     if ciph == nil {
         return nil, errors.New(fmt.Sprintf("failed to encrypt PEM: unknown algorithm %v", alg))
     }
 
-    var opt interface{}
+    var opt any
     if len(opts) > 0 {
         opt = opts[0]
     } else {

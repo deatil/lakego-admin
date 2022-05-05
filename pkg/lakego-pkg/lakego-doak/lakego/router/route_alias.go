@@ -142,7 +142,7 @@ var EnableJsonDecoderDisallowUnknownFields = gin.EnableJsonDecoderDisallowUnknow
 // gin.Mode() string
 var Mode = gin.Mode
 
-// gin.Bind(val interface{}) HandlerFunc
+// gin.Bind(val any) HandlerFunc
 var Bind = gin.Bind
 
 // gin.WrapF(f http.HandlerFunc) HandlerFunc

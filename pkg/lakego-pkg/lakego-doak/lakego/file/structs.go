@@ -5,7 +5,7 @@ import (
 )
 
 // 结构体路径
-func PackageName(v interface{}) string {
+func PackageName(v any) string {
     if v == nil {
         return ""
     }
@@ -19,7 +19,7 @@ func PackageName(v interface{}) string {
 }
 
 // 获取结构体名称
-func StructName(name interface{}) string {
+func StructName(name any) string {
     t := reflect.ValueOf(f).Type()
 
     if t.Kind() == reflect.Func {
@@ -30,7 +30,7 @@ func StructName(name interface{}) string {
 }
 
 // 获取结构体真实名称
-func StructRealName(name interface{}) string {
+func StructRealName(name any) string {
     elem := reflect.TypeOf(name).Elem()
 
     return elem.PkgPath() + "." + elem.Name()

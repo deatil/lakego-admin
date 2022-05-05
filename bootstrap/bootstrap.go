@@ -5,7 +5,7 @@ import (
 )
 
 // 添加服务提供者
-func AddProvider(f func() interface{}) {
+func AddProvider(f func() any) {
     kernel.AddProvider(f)
 }
 

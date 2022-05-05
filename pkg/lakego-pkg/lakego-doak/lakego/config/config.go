@@ -51,14 +51,14 @@ func (this *Config) Use(fileName ...string) *Config {
 }
 
 // 设置默认值
-func (this *Config) SetDefault(keyName string, value interface{}) *Config {
+func (this *Config) SetDefault(keyName string, value any) *Config {
     this.adapter.SetDefault(keyName, value)
 
     return this
 }
 
 // 设置
-func (this *Config) Set(keyName string, value interface{}) *Config {
+func (this *Config) Set(keyName string, value any) *Config {
     this.adapter.Set(keyName, value)
 
     return this
@@ -70,7 +70,7 @@ func (this *Config) IsSet(keyName string) bool {
 }
 
 // Get 一个原始值
-func (this *Config) Get(keyName string) interface{} {
+func (this *Config) Get(keyName string) any {
     return this.adapter.Get(keyName)
 }
 
@@ -140,7 +140,7 @@ func (this *Config) GetStringSlice(keyName string) []string {
 }
 
 // GetStringMap
-func (this *Config) GetStringMap(keyName string) map[string]interface{} {
+func (this *Config) GetStringMap(keyName string) map[string]any {
     return this.adapter.GetStringMap(keyName)
 }
 

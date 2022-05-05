@@ -23,16 +23,16 @@ func New() *Register {
 
 type (
     // 配置 Map
-    ConfigMap = map[string]interface{}
+    ConfigMap = map[string]any
 
     // 注册的方法
-    RegisterFunc = func(ConfigMap) interface{}
+    RegisterFunc = func(ConfigMap) any
 
     // 已注册 Map
     RegistersMap = map[string]RegisterFunc
 
     // 已使用 Map
-    UsedMap = map[string]interface{}
+    UsedMap = map[string]any
 )
 
 /**
@@ -67,7 +67,7 @@ func (this *Register) With(name string, f RegisterFunc) {
 /**
  * 获取
  */
-func (this *Register) Get(name string, conf ConfigMap) interface{} {
+func (this *Register) Get(name string, conf ConfigMap) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
 
@@ -82,7 +82,7 @@ func (this *Register) Get(name string, conf ConfigMap) interface{} {
 /**
  * 获取单例
  */
-func (this *Register) GetOnce(name string, conf ConfigMap) interface{} {
+func (this *Register) GetOnce(name string, conf ConfigMap) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
 

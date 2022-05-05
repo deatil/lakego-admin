@@ -13,28 +13,28 @@ func NewDB() *gorm.DB {
 }
 
 // 获取配置
-func GetConfig(key string, typ ...string) interface{} {
+func GetConfig(key string, typ ...string) any {
     conf, _ := database.GetConfig(key, typ...)
 
     return conf
 }
 
 // 格式化获取的数据为 map
-func FormatStructToMap(data interface{}) map[string]interface{} {
+func FormatStructToMap(data any) map[string]any {
     // 结构体转map
     tmp, _ := json.Marshal(&data)
 
-    dataMap := make(map[string]interface{})
+    dataMap := make(map[string]any)
     json.Unmarshal(tmp, &dataMap)
 
     return dataMap
 }
 
 // 格式化获取的数据为 array_map
-func FormatStructToArrayMap(data interface{}) []map[string]interface{} {
+func FormatStructToArrayMap(data any) []map[string]any {
     tmp, _ := json.Marshal(&data)
 
-    dataMap := make([]map[string]interface{}, 0)
+    dataMap := make([]map[string]any, 0)
     json.Unmarshal(tmp, &dataMap)
 
     return dataMap

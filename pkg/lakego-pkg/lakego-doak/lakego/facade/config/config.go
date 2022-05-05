@@ -68,7 +68,7 @@ func Register() {
         // 注册可用驱动
         register.
             NewManagerWithPrefix("config").
-            Register("viper", func(conf map[string]interface{}) interface{} {
+            Register("viper", func(conf map[string]any) any {
                 adapter := &viperAdapter.Viper{}
 
                 // 配置文件夹

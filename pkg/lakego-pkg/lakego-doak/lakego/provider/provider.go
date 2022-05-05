@@ -35,7 +35,7 @@ type ServiceProvider struct {
 }
 
 // 设置
-func (this *ServiceProvider) WithApp(app interface{}) {
+func (this *ServiceProvider) WithApp(app any) {
     this.App = app.(appInterface.App)
 }
 
@@ -62,7 +62,7 @@ func (this *ServiceProvider) AddCommand(cmd *command.Command) {
 }
 
 // 添加脚本
-func (this *ServiceProvider) AddCommands(cmds []interface{}) {
+func (this *ServiceProvider) AddCommands(cmds []any) {
     for _, cmd := range cmds {
         this.AddCommand(cmd.(*command.Command))
     }
@@ -162,7 +162,7 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
 }
 
 // 推送
-func (this *ServiceProvider) Publishes(obj interface{}, paths map[string]string, group string) {
+func (this *ServiceProvider) Publishes(obj any, paths map[string]string, group string) {
     publish.Instance().Publish(obj, paths, group)
 }
 

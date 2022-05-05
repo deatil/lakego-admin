@@ -1,7 +1,7 @@
 package jwt
 
 // 自定义解析方式
-func (this *JWT) WithParseFunc(name string, f func(*JWT) (interface{}, error)) *JWT {
+func (this *JWT) WithParseFunc(name string, f func(*JWT) (any, error)) *JWT {
     if _, ok := this.ParseFuncs[name]; ok {
         delete(this.ParseFuncs, name)
     }

@@ -110,12 +110,12 @@ func (this *Viper) GetViper() *viper.Viper {
 }
 
 // 设置默认值
-func (this *Viper) SetDefault(keyName string, value interface{}) {
+func (this *Viper) SetDefault(keyName string, value any) {
     this.conf.SetDefault(keyName, value)
 }
 
 // 设置
-func (this *Viper) Set(keyName string, value interface{}) {
+func (this *Viper) Set(keyName string, value any) {
     this.conf.Set(keyName, value)
 }
 
@@ -125,7 +125,7 @@ func (this *Viper) IsSet(keyName string) bool {
 }
 
 // Get 一个原始值
-func (this *Viper) Get(keyName string) interface{} {
+func (this *Viper) Get(keyName string) any {
     value := this.conf.Get(keyName)
     return value
 }
@@ -209,7 +209,7 @@ func (this *Viper) GetStringSlice(keyName string) []string {
 }
 
 // GetStringMap
-func (this *Viper) GetStringMap(keyName string) map[string]interface{} {
+func (this *Viper) GetStringMap(keyName string) map[string]any {
     value := this.conf.GetStringMap(keyName)
     return value
 }

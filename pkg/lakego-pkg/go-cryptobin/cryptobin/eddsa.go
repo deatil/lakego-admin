@@ -4,13 +4,6 @@ import (
     "crypto/ed25519"
 )
 
-// 构造函数
-func NewEdDSA() EdDSA {
-    return EdDSA{
-        veryed: false,
-    }
-}
-
 /**
  * EdDSA
  *

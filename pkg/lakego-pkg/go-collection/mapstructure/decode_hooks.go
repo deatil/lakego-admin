@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-// typedDecodeHook takes a raw DecodeHookFunc (an interface{}) and turns
+// typedDecodeHook takes a raw DecodeHookFunc (an any) and turns
 // it into the proper DecodeHookFunc type, such as DecodeHookFuncType.
 func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 	// Create variables here so we can reference them with the reflect pkg
@@ -21,7 +21,7 @@ func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 
 	// Fill in the variables into this interface and the rest is done
 	// automatically using the reflect package.
-	potential := []interface{}{f1, f2, f3}
+	potential := []any{f1, f2, f3}
 
 	v := reflect.ValueOf(h)
 	vt := v.Type()
@@ -40,7 +40,7 @@ func typedDecodeHook(h DecodeHookFunc) DecodeHookFunc {
 // that took reflect.Kind instead of reflect.Type.
 func DecodeHookExec(
 	raw DecodeHookFunc,
-	from reflect.Value, to reflect.Value) (interface{}, error) {
+	from reflect.Value, to reflect.Value) (any, error) {
 
 	switch f := typedDecodeHook(raw).(type) {
 	case DecodeHookFuncType:
@@ -60,9 +60,9 @@ func DecodeHookExec(
 // The composed funcs are called in order, with the result of the
 // previous transformation.
 func ComposeDecodeHookFunc(fs ...DecodeHookFunc) DecodeHookFunc {
-	return func(f reflect.Value, t reflect.Value) (interface{}, error) {
+	return func(f reflect.Value, t reflect.Value) (any, error) {
 		var err error
-		var data interface{}
+		var data any
 		newFrom := f
 		for _, f1 := range fs {
 			data, err = DecodeHookExec(f1, newFrom, t)
@@ -82,7 +82,7 @@ func StringToSliceHookFunc(sep string) DecodeHookFunc {
 	return func(
 		f reflect.Kind,
 		t reflect.Kind,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f != reflect.String || t != reflect.Slice {
 			return data, nil
 		}
@@ -102,7 +102,7 @@ func StringToTimeDurationHookFunc() DecodeHookFunc {
 	return func(
 		f reflect.Type,
 		t reflect.Type,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}
@@ -121,7 +121,7 @@ func StringToIPHookFunc() DecodeHookFunc {
 	return func(
 		f reflect.Type,
 		t reflect.Type,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}
@@ -145,7 +145,7 @@ func StringToIPNetHookFunc() DecodeHookFunc {
 	return func(
 		f reflect.Type,
 		t reflect.Type,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}
@@ -165,7 +165,7 @@ func StringToTimeHookFunc(layout string) DecodeHookFunc {
 	return func(
 		f reflect.Type,
 		t reflect.Type,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}
@@ -186,7 +186,7 @@ func StringToTimeHookFunc(layout string) DecodeHookFunc {
 func WeaklyTypedHook(
 	f reflect.Kind,
 	t reflect.Kind,
-	data interface{}) (interface{}, error) {
+	data any) (any, error) {
 	dataVal := reflect.ValueOf(data)
 	switch t {
 	case reflect.String:
@@ -215,17 +215,17 @@ func WeaklyTypedHook(
 }
 
 func RecursiveStructToMapHookFunc() DecodeHookFunc {
-	return func(f reflect.Value, t reflect.Value) (interface{}, error) {
+	return func(f reflect.Value, t reflect.Value) (any, error) {
 		if f.Kind() != reflect.Struct {
 			return f.Interface(), nil
 		}
 
-		var i interface{} = struct{}{}
+		var i any = struct{}{}
 		if t.Type() != reflect.TypeOf(&i).Elem() {
 			return f.Interface(), nil
 		}
 
-		m := make(map[string]interface{})
+		m := make(map[string]any)
 		t.Set(reflect.ValueOf(m))
 
 		return f.Interface(), nil
@@ -239,7 +239,7 @@ func TextUnmarshallerHookFunc() DecodeHookFuncType {
 	return func(
 		f reflect.Type,
 		t reflect.Type,
-		data interface{}) (interface{}, error) {
+		data any) (any, error) {
 		if f.Kind() != reflect.String {
 			return data, nil
 		}

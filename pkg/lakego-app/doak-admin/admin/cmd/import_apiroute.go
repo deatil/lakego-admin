@@ -48,7 +48,7 @@ func ImportApiRoute() {
         return
     }
 
-    var routes map[string]interface{}
+    var routes map[string]any
 
     // 转换为 map
     err = encoding.Unmarshal([]byte(swaggerInfo), &routes)
@@ -62,17 +62,17 @@ func ImportApiRoute() {
         return
     }
 
-    paths := routes["paths"].(map[string]interface{})
+    paths := routes["paths"].(map[string]any)
 
     for k, v := range paths {
-        result := map[string]interface{}{}
+        result := map[string]any{}
 
-        paths2 := v.(map[string]interface{})
+        paths2 := v.(map[string]any)
         for kk, vv := range paths2 {
             url := k
             method := strings.ToUpper(kk)
 
-            data := vv.(map[string]interface{})
+            data := vv.(map[string]any)
             title := data["summary"].(string)
 
             err := model.NewAuthRule().
@@ -99,7 +99,7 @@ func ImportApiRoute() {
                 model.NewAuthRule().
                     Where("url = ?", url).
                     Where("method = ?", method).
-                    Updates(map[string]interface{}{
+                    Updates(map[string]any{
                         "url": url,
                         "method": method,
                     })

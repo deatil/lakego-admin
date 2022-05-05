@@ -26,7 +26,7 @@ func NewRegister() *Register {
 }
 
 // 添加服务提供者
-func AddProvider(f func() interface{}) {
+func AddProvider(f func() any) {
     NewRegister().WithProvider(f)
 }
 
@@ -55,7 +55,7 @@ type Register struct {
 }
 
 // 注册
-func (this *Register) WithProvider(f func() interface{}) *Register {
+func (this *Register) WithProvider(f func() any) *Register {
     lock.Lock()
     defer lock.Unlock()
 

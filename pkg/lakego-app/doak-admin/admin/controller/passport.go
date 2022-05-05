@@ -66,7 +66,7 @@ func (this *Passport) Captcha(ctx *router.Context) {
 // @Router /passport/login [post]
 func (this *Passport) Login(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := passportValidate.Login(post)
@@ -90,7 +90,7 @@ func (this *Passport) Login(ctx *router.Context) {
     }
 
     // 用户信息
-    admin := map[string]interface{}{}
+    admin := map[string]any{}
     err := model.NewAdmin().
         Where(&model.Admin{Name: name}).
         First(&admin).
@@ -143,7 +143,7 @@ func (this *Passport) Login(ctx *router.Context) {
     // 更新登录时间
     model.NewAdmin().
         Where("id = ?", adminid).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "last_active": int(datebin.NowTime()),
             "last_ip": router.GetRequestIp(ctx),
         })
@@ -167,10 +167,10 @@ func (this *Passport) Login(ctx *router.Context) {
 // @Router /passport/refresh-token [post]
 func (this *Passport) RefreshToken(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
-    var refreshToken interface{}
+    var refreshToken any
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {
@@ -234,10 +234,10 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
 // @Security Bearer
 func (this *Passport) Logout(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
-    var refreshToken interface{}
+    var refreshToken any
     var ok bool
 
     if refreshToken, ok = post["refresh_token"]; !ok {

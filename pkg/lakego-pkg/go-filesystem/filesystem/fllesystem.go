@@ -11,7 +11,7 @@ import(
 )
 
 // new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]interface{}) interfaces.Fllesystem {
+func New(adapters interfaces.Adapter, conf ...map[string]any) interfaces.Fllesystem {
     fs := &Fllesystem{
         adapter: adapters,
     }
@@ -48,7 +48,7 @@ func (this *Fllesystem) GetConfig() interfaces.Config {
 }
 
 // 提前设置配置
-func (this *Fllesystem) PrepareConfig(settings map[string]interface{}) interfaces.Config {
+func (this *Fllesystem) PrepareConfig(settings map[string]any) interfaces.Config {
     conf := config.New(settings)
 
     return conf
@@ -82,10 +82,10 @@ func (this *Fllesystem) Has(path string) bool {
 }
 
 // 写入文件
-func (this *Fllesystem) Write(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) Write(path string, contents string, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -100,10 +100,10 @@ func (this *Fllesystem) Write(path string, contents string, conf ...map[string]i
 }
 
 // 写入数据流
-func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -118,10 +118,10 @@ func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map
 }
 
 // 更新
-func (this *Fllesystem) Put(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) Put(path string, contents string, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -144,10 +144,10 @@ func (this *Fllesystem) Put(path string, contents string, conf ...map[string]int
 }
 
 // 更新数据流
-func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -170,7 +170,7 @@ func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[s
 }
 
 // 读取并删除
-func (this *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
+func (this *Fllesystem) ReadAndDelete(path string) (any, error) {
     path = util.NormalizePath(path)
 
     contents, err := this.Read(path)
@@ -184,10 +184,10 @@ func (this *Fllesystem) ReadAndDelete(path string) (interface{}, error) {
 }
 
 // 更新字符
-func (this *Fllesystem) Update(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) Update(path string, contents string, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -202,10 +202,10 @@ func (this *Fllesystem) Update(path string, contents string, conf ...map[string]
 }
 
 // 更新数据流
-func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -293,10 +293,10 @@ func (this *Fllesystem) DeleteDir(dirname string) (bool, error) {
 }
 
 // 创建文件夹
-func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}) (bool, error) {
+func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]any) (bool, error) {
     dirname = util.NormalizePath(dirname)
 
-    var newConf map[string]interface{}
+    var newConf map[string]any
     if len(conf) > 0 {
         newConf = conf[0]
     }
@@ -311,7 +311,7 @@ func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]interface{}
 }
 
 // 列表
-func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[string]interface{}, error) {
+func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[string]any, error) {
     dirname = util.NormalizePath(dirname)
 
     result, err := this.GetAdapter().ListContents(dirname, recursive...)
@@ -382,7 +382,7 @@ func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, err
 }
 
 // 信息数据
-func (this *Fllesystem) GetMetadata(path string) (map[string]interface{}, error) {
+func (this *Fllesystem) GetMetadata(path string) (map[string]any, error) {
     path = util.NormalizePath(path)
 
     if info, err := this.GetAdapter().GetMetadata(path); err != nil {
@@ -395,7 +395,7 @@ func (this *Fllesystem) GetMetadata(path string) (map[string]interface{}, error)
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (this *Fllesystem) Get(path string, handler ...func(interfaces.Fllesystem, string) interface{}) interface{} {
+func (this *Fllesystem) Get(path string, handler ...func(interfaces.Fllesystem, string) any) any {
     path = util.NormalizePath(path)
 
     if len(handler) > 0 {

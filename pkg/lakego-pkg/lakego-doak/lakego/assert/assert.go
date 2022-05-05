@@ -13,7 +13,7 @@ func Assert(condition bool, message string) {
 }
 
 // 断言加默认返回
-func AssertDefault(condition bool, def interface{}) interface{} {
+func AssertDefault(condition bool, def any) any {
     if !condition {
         return def
     }

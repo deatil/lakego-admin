@@ -78,8 +78,8 @@ func Register() {
         // 注册驱动
         register.
             NewManagerWithPrefix("sign").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
-                "aes": func(conf map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
+                "aes": func(conf map[string]any) any {
                     driver := &signDriver.Aes{}
 
                     driver.Init(conf)
@@ -87,7 +87,7 @@ func Register() {
                     return driver
                 },
 
-                "hmac": func(conf map[string]interface{}) interface{} {
+                "hmac": func(conf map[string]any) any {
                     driver := &signDriver.Hmac{}
 
                     driver.Init(conf)
@@ -95,19 +95,19 @@ func Register() {
                     return driver
                 },
 
-                "md5": func(conf map[string]interface{}) interface{} {
+                "md5": func(conf map[string]any) any {
                     driver := &signDriver.MD5{}
 
                     return driver
                 },
 
-                "sha1": func(conf map[string]interface{}) interface{} {
+                "sha1": func(conf map[string]any) any {
                     driver := &signDriver.SHA1{}
 
                     return driver
                 },
 
-                "rsa": func(conf map[string]interface{}) interface{} {
+                "rsa": func(conf map[string]any) any {
                     driver := &signDriver.Rsa{}
 
                     publicKey := conf["publickey"].(string)
@@ -116,7 +116,7 @@ func Register() {
                     publicKey = path.FormatPath(publicKey)
                     privateKey = path.FormatPath(privateKey)
 
-                    driver.Init(map[string]interface{}{
+                    driver.Init(map[string]any{
                         "publickey": publicKey,
                         "privatekey": privateKey,
                     })
@@ -124,7 +124,7 @@ func Register() {
                     return driver
                 },
 
-                "bcrypt": func(conf map[string]interface{}) interface{} {
+                "bcrypt": func(conf map[string]any) any {
                     driver := &signDriver.Bcrypt{}
 
                     return driver
@@ -133,7 +133,7 @@ func Register() {
     })
 }
 
-func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
+func GetDriver(name string) (interfaces.Driver, map[string]any) {
     // 驱动列表
     crypts := config.New("sign").GetStringMap("crypts")
 
@@ -147,7 +147,7 @@ func GetDriver(name string) (interfaces.Driver, map[string]interface{}) {
     }
 
     // 配置
-    driverConf := driverConfig.(map[string]interface{})
+    driverConf := driverConfig.(map[string]any)
 
     driverType := driverConf["type"].(string)
     driver := register.

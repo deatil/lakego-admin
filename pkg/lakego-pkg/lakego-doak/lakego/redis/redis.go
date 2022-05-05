@@ -96,7 +96,7 @@ type Redis struct {
 }
 
 // 设置
-func (this Redis) Set(key string, value interface{}, expiration int) error {
+func (this Redis) Set(key string, value any, expiration int) error {
     ttl := this.FormatTime(expiration)
 
     return this.cache.Set(&cache.Item{
@@ -109,7 +109,7 @@ func (this Redis) Set(key string, value interface{}, expiration int) error {
 }
 
 // 获取
-func (this Redis) Get(key string, value interface{}) error {
+func (this Redis) Get(key string, value any) error {
     err := this.cache.Get(context.TODO(), this.wrapperKey(key), value)
     if err == cache.ErrCacheMiss {
         err = errors.New("Redis Key No Exist")

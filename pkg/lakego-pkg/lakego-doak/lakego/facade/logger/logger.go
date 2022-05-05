@@ -51,7 +51,7 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
     }
 
     // 驱动配置
-    driverConf := driverConfig.(map[string]interface{})
+    driverConf := driverConfig.(map[string]any)
 
     driverType := driverConf["type"].(string)
     driver := register.
@@ -67,12 +67,12 @@ func NewLogger(driverName string, once ...bool) *logger.Logger {
 // 自定义数据
 // import "github.com/deatil/lakego-doak/lakego/facade/logger"
 // logger.LogrusWithField(logger.New(), "system", "lakego").Info("logger test")
-func LogrusWithField(log *logger.Logger, key string, value interface{}) *logrusDriver.Entry {
+func LogrusWithField(log *logger.Logger, key string, value any) *logrusDriver.Entry {
     return log.WithField(key, value).(*logrusDriver.Entry)
 }
 
 // 批量自定义数据
-func LogrusWithFields(log *logger.Logger, fields map[string]interface{}) *logrusDriver.Entry {
+func LogrusWithFields(log *logger.Logger, fields map[string]any) *logrusDriver.Entry {
     return log.WithFields(fields).(*logrusDriver.Entry)
 }
 
@@ -87,9 +87,9 @@ func Register() {
         // 注册驱动
         register.
             NewManagerWithPrefix("logger").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
                 // logrus 日志
-                "logrus": func(conf map[string]interface{}) interface{} {
+                "logrus": func(conf map[string]any) any {
                     driver := logrusDriver.New()
 
                     driver.WithConfig(conf)

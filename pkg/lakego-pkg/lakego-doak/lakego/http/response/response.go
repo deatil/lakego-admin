@@ -87,7 +87,7 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
 }
 
 // 渲染模板
-func (this *Response) Fetch(template string, obj interface{}) {
+func (this *Response) Fetch(template string, obj any) {
     hintPathDelimiter := "::"
     if strings.Contains(template, hintPathDelimiter) {
         template = viewFetch.InstanceViewFinder().Find(template)
@@ -117,7 +117,7 @@ func (this *Response) AbortWithStatus(code int) {
 }
 
 // 输出 json 状态
-func (this *Response) AbortWithStatusJSON(code int, jsonObj interface{}) {
+func (this *Response) AbortWithStatusJSON(code int, jsonObj any) {
     this.ctx.AbortWithStatusJSON(code, jsonObj)
 }
 
@@ -165,47 +165,47 @@ func (this *Response) Render(code int, r router.Render) {
 }
 
 // HTML
-func (this *Response) HTML(code int, name string, obj interface{}) {
+func (this *Response) HTML(code int, name string, obj any) {
     this.ctx.HTML(code, name, obj)
 }
 
 // IndentedJSON
-func (this *Response) IndentedJSON(code int, obj interface{}) {
+func (this *Response) IndentedJSON(code int, obj any) {
     this.ctx.IndentedJSON(code, obj)
 }
 
 // SecureJSON
-func (this *Response) SecureJSON(code int, obj interface{}) {
+func (this *Response) SecureJSON(code int, obj any) {
     this.ctx.SecureJSON(code, obj)
 }
 
 // JSONP
-func (this *Response) JSONP(code int, obj interface{}) {
+func (this *Response) JSONP(code int, obj any) {
     this.ctx.JSONP(code, obj)
 }
 
 // AsciiJSON
-func (this *Response) AsciiJSON(code int, obj interface{}) {
+func (this *Response) AsciiJSON(code int, obj any) {
     this.ctx.AsciiJSON(code, obj)
 }
 
 // PureJSON
-func (this *Response) PureJSON(code int, obj interface{}) {
+func (this *Response) PureJSON(code int, obj any) {
     this.ctx.PureJSON(code, obj)
 }
 
 // XML
-func (this *Response) XML(code int, obj interface{}) {
+func (this *Response) XML(code int, obj any) {
     this.ctx.XML(code, obj)
 }
 
 // YAML
-func (this *Response) YAML(code int, obj interface{}) {
+func (this *Response) YAML(code int, obj any) {
     this.ctx.YAML(code, obj)
 }
 
 // ProtoBuf
-func (this *Response) ProtoBuf(code int, obj interface{}) {
+func (this *Response) ProtoBuf(code int, obj any) {
     this.ctx.ProtoBuf(code, obj)
 }
 
@@ -246,7 +246,7 @@ func (this *Response) FileAttachment(filepath, filename string) {
 }
 
 // SSEvent
-func (this *Response) SSEvent(name string, message interface{}) {
+func (this *Response) SSEvent(name string, message any) {
     this.ctx.SSEvent(name, message)
 }
 

@@ -9,7 +9,7 @@ import(
 )
 
 // new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]interface{}) *Storage {
+func New(adapters interfaces.Adapter, conf ...map[string]any) *Storage {
     fs := &filesystem.Fllesystem{}
 
     fs.WithAdapter(adapters)
@@ -54,7 +54,7 @@ func (this *Storage) Path(path string) string {
 }
 
 // 保存数据流
-func (this *Storage) PutFileAs(path string, resource io.Reader, name string, config ...map[string]interface{}) (string, error) {
+func (this *Storage) PutFileAs(path string, resource io.Reader, name string, config ...map[string]any) (string, error) {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
@@ -68,7 +68,7 @@ func (this *Storage) PutFileAs(path string, resource io.Reader, name string, con
 }
 
 // 保存文本数据
-func (this *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]interface{}) (string, error) {
+func (this *Storage) PutContentsAs(path string, contents string, name string, config ...map[string]any) (string, error) {
     path = strings.TrimSuffix(path, "/") + "/" + strings.TrimPrefix(name, "/")
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")

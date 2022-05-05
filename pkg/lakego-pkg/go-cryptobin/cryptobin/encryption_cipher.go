@@ -69,9 +69,13 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
                 return this
             }
 
+            var additionalBytes []byte
             additional, _ := this.config["additional"]
+            if additional != nil {
+                additionalBytes = additional.([]byte)
+            }
 
-            cryptText = gcm.Seal(nil, nonce.([]byte), plainPadding, additional.([]byte))
+            cryptText = gcm.Seal(nil, nonce.([]byte), plainPadding, additionalBytes)
         default:
             this.Error = fmt.Errorf("Mode [%s] is error.", this.mode)
             return this
@@ -137,9 +141,13 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
                 return this
             }
 
+            var additionalBytes []byte
             additional, _ := this.config["additional"]
+            if additional != nil {
+                additionalBytes = additional.([]byte)
+            }
 
-            dst, err = gcm.Open(nil, nonce.([]byte), cipherText, additional.([]byte))
+            dst, err = gcm.Open(nil, nonce.([]byte), cipherText, additionalBytes)
             if err != nil {
                 this.Error = err
                 return this

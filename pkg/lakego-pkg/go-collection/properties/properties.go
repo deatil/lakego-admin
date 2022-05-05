@@ -29,7 +29,7 @@ type ErrorHandlerFunc func(error)
 var ErrorHandler ErrorHandlerFunc = LogFatalHandler
 
 // LogHandlerFunc defines the function prototype for logging errors.
-type LogHandlerFunc func(fmt string, args ...interface{})
+type LogHandlerFunc func(fmt string, args ...any)
 
 // LogPrintf defines a log handler which uses log.Printf.
 var LogPrintf LogHandlerFunc = log.Printf
@@ -561,7 +561,7 @@ func (p *Properties) Set(key, value string) (prev string, ok bool, err error) {
 
 // SetValue sets property key to the default string value
 // as defined by fmt.Sprintf("%v").
-func (p *Properties) SetValue(key string, value interface{}) error {
+func (p *Properties) SetValue(key string, value any) error {
 	_, _, err := p.Set(key, fmt.Sprintf("%v", value))
 	return err
 }

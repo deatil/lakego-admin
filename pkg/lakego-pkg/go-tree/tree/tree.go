@@ -28,7 +28,7 @@ func New() *Tree {
  */
 type Tree struct {
     // 生成树型结构所需要的2维数组
-    data []map[string]interface{}
+    data []map[string]any
 
     // 生成树型结构所需修饰符号
     icon []string
@@ -86,19 +86,19 @@ func (this *Tree) WithBuildChildKey(buildChildKey string) *Tree {
 }
 
 // 设置数据
-func (this *Tree) WithData(data []map[string]interface{}) *Tree {
+func (this *Tree) WithData(data []map[string]any) *Tree {
     this.data = data
     return this
 }
 
 // 构建数组
-func (this *Tree) Build(id interface{}, itemprefix string, depth int) []map[string]interface{} {
+func (this *Tree) Build(id any, itemprefix string, depth int) []map[string]any {
     children := this.GetListChild(id)
     if len(children) <= 0 {
         return nil
     }
 
-    data := make([]map[string]interface{}, 0)
+    data := make([]map[string]any, 0)
     var number int = 1
 
     total := len(children)
@@ -151,7 +151,7 @@ func (this *Tree) Build(id interface{}, itemprefix string, depth int) []map[stri
 }
 
 // 所有父节点
-func (this *Tree) GetListParents(id interface{}, sort ...string) []map[string]interface{} {
+func (this *Tree) GetListParents(id any, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -167,7 +167,7 @@ func (this *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
     }
 
     parentid := self[this.parentidKey].(string)
-    newData := make([]map[string]interface{}, 0)
+    newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
@@ -199,13 +199,13 @@ func (this *Tree) GetListParents(id interface{}, sort ...string) []map[string]in
 }
 
 // 获取所有父节点ID列表
-func (this *Tree) GetListParentIds(id interface{}) []interface{} {
+func (this *Tree) GetListParentIds(id any) []any {
     data := this.GetListParents(id)
     if len(data) <= 0 {
         return nil
     }
 
-    ids := make([]interface{}, 0)
+    ids := make([]any, 0)
     for _, v := range data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
@@ -219,7 +219,7 @@ func (this *Tree) GetListParentIds(id interface{}) []interface{} {
 }
 
 // 获取当前ID的所有子节点
-func (this *Tree) GetListChildren(id interface{}, sort ...string) []map[string]interface{} {
+func (this *Tree) GetListChildren(id any, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -230,7 +230,7 @@ func (this *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
     }
 
     id = id.(string)
-    newData := make([]map[string]interface{}, 0)
+    newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
         if _, ok := v[this.parentidKey]; !ok {
@@ -262,13 +262,13 @@ func (this *Tree) GetListChildren(id interface{}, sort ...string) []map[string]i
 }
 
 // 获取当前ID的所有子节点id列表
-func (this *Tree) GetListChildIds(id interface{}) []interface{} {
+func (this *Tree) GetListChildIds(id any) []any {
     data := this.GetListChildren(id)
     if len(data) <= 0 {
         return nil
     }
 
-    ids := make([]interface{}, 0)
+    ids := make([]any, 0)
     for _, v := range data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
@@ -282,13 +282,13 @@ func (this *Tree) GetListChildIds(id interface{}) []interface{} {
 }
 
 // 得到子级第一级数组
-func (this *Tree) GetListChild(id interface{}) []map[string]interface{} {
+func (this *Tree) GetListChild(id any) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
 
     id = id.(string)
-    newData := make([]map[string]interface{}, 0)
+    newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
         if _, ok := v[this.parentidKey]; !ok {
@@ -305,7 +305,7 @@ func (this *Tree) GetListChild(id interface{}) []map[string]interface{} {
 }
 
 // 获取ID自己的数据
-func (this *Tree) GetListSelf(id interface{}) map[string]interface{} {
+func (this *Tree) GetListSelf(id any) map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -327,12 +327,12 @@ func (this *Tree) GetListSelf(id interface{}) map[string]interface{} {
 }
 
 // 将 build 的结果返回为二维数组
-func (this *Tree) BuildFormatList(data []map[string]interface{}, parentid interface{}) []map[string]interface{} {
+func (this *Tree) BuildFormatList(data []map[string]any, parentid any) []map[string]any {
     if len(data) <= 0 {
         return nil
     }
 
-    var list = make([]map[string]interface{}, 0)
+    var list = make([]map[string]any, 0)
     for _, v := range data {
         if len(v) > 0 {
             if _, ok := v[this.spacerKey]; !ok {
@@ -340,7 +340,7 @@ func (this *Tree) BuildFormatList(data []map[string]interface{}, parentid interf
             }
 
             var ok2 bool
-            var child interface{}
+            var child any
             if child, ok2 = v[this.buildChildKey]; ok2 {
                 v[this.haschildKey] = 1
             } else {
@@ -356,7 +356,7 @@ func (this *Tree) BuildFormatList(data []map[string]interface{}, parentid interf
             list = append(list, v)
 
             if child != nil {
-                children := child.([]map[string]interface{})
+                children := child.([]map[string]any)
                 if len(children) > 0 {
                     childData := this.BuildFormatList(children, v[this.idKey])
                     list = append(list, childData...)

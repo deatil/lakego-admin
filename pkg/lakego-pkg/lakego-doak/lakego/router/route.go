@@ -51,10 +51,10 @@ func (this *Route) GetRoutes() RoutesInfo {
 }
 
 // 路由信息
-func (this *Route) GetRouteMap() map[string]interface{} {
+func (this *Route) GetRouteMap() map[string]any {
     routes := this.GetRoutes()
 
-    newRoutes := make(map[string]interface{})
+    newRoutes := make(map[string]any)
     for _, v := range routes {
         if newRoute, ok := newRoutes[v.Method]; ok {
             newRoute = append(newRoute.([]string), v.Path)

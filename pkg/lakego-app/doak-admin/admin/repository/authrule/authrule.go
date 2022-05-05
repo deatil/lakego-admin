@@ -1,15 +1,15 @@
 package authrule
 
 import (
-    "github.com/deatil/lakego-doak/lakego/tree"
+    "github.com/deatil/go-tree/tree"
     "github.com/deatil/lakego-doak/lakego/collection"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
 
 // 全部权限
-func GetAllRule() []map[string]interface{} {
-    list := make([]map[string]interface{}, 0)
+func GetAllRule() []map[string]any {
+    list := make([]map[string]any, 0)
 
     // 附件模型
     err := model.NewAuthRule().
@@ -25,15 +25,15 @@ func GetAllRule() []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return make([]map[string]interface{}, 0)
+        return make([]map[string]any, 0)
     }
 
     return list
 }
 
 // 获取 Children
-func GetChildren(ruleid string) []map[string]interface{} {
-    list := make([]map[string]interface{}, 0)
+func GetChildren(ruleid string) []map[string]any {
+    list := make([]map[string]any, 0)
 
     // 附件模型
     err := model.NewAuthRule().
@@ -43,7 +43,7 @@ func GetChildren(ruleid string) []map[string]interface{} {
         Find(&list).
         Error
     if err != nil {
-        return make([]map[string]interface{}, 0)
+        return make([]map[string]any, 0)
     }
 
     res := tree.New().
@@ -57,8 +57,8 @@ func GetChildren(ruleid string) []map[string]interface{} {
 }
 
 // 获取 Children
-func GetChildrenFromRuleids(ruleids []string) []map[string]interface{} {
-    data := make([]map[string]interface{}, 0)
+func GetChildrenFromRuleids(ruleids []string) []map[string]any {
+    data := make([]map[string]any, 0)
     for _, id := range ruleids {
         children := GetChildren(id)
         data = append(data, children...)
@@ -102,7 +102,7 @@ func GetChildrenIdsFromRuleids(ruleids []string) []string {
 }
 
 // 获取 Children
-func GetChildrenFromData(data []map[string]interface{}, ruleid string) []map[string]interface{} {
+func GetChildrenFromData(data []map[string]any, ruleid string) []map[string]any {
     childrenList := tree.New().
         WithData(data).
         GetListChildren(ruleid, "asc")
@@ -111,7 +111,7 @@ func GetChildrenFromData(data []map[string]interface{}, ruleid string) []map[str
 }
 
 // 获取 ChildrenIds
-func GetChildrenIdsFromData(data []map[string]interface{}, ruleid string) []string {
+func GetChildrenIdsFromData(data []map[string]any, ruleid string) []string {
     list := GetChildrenFromData(data, ruleid)
 
     if len(list) == 0 {

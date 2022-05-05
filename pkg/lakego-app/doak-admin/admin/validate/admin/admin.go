@@ -5,9 +5,9 @@ import (
 )
 
 // 创建验证
-func Create(data map[string]interface{}) string {
+func Create(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "group_id": "required,len=32",
         "name": "required,min=2,max=20",
         "nickname": "required,min=2,max=150",
@@ -44,9 +44,9 @@ func Create(data map[string]interface{}) string {
 }
 
 // 编辑验证
-func Update(data map[string]interface{}) string {
+func Update(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "name": "required,min=2,max=20",
         "nickname": "required,min=2,max=150",
         "email": "required,email,min=5,max=100",
@@ -80,9 +80,9 @@ func Update(data map[string]interface{}) string {
 }
 
 // 修改头像
-func UpdateAvatar(data map[string]interface{}) string {
+func UpdateAvatar(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "avatar": "required,len=32",
     }
 

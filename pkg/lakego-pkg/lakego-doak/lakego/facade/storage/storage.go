@@ -35,7 +35,7 @@ func NewWithDisk(disk string, once ...bool) *storage.Storage {
 }
 
 // 批量操作
-func MountManager(filesystems ...map[string]interface{}) *filesystem.MountManager {
+func MountManager(filesystems ...map[string]any) *filesystem.MountManager {
     return filesystem.NewMountManager(filesystems...)
 }
 
@@ -53,7 +53,7 @@ func Disk(name string, once ...bool) *storage.Storage {
     }
 
     // 配置
-    diskConf := diskConfig.(map[string]interface{})
+    diskConf := diskConfig.(map[string]any)
 
     // 获取驱动磁盘
     diskType := diskConf["type"].(string)
@@ -83,7 +83,7 @@ func Register() {
         // 注册可用驱动
         register.
             NewManagerWithPrefix("database").
-            Register("local", func(conf map[string]interface{}) interface{} {
+            Register("local", func(conf map[string]any) any {
                 root := conf["root"].(string)
 
                 // 根目录

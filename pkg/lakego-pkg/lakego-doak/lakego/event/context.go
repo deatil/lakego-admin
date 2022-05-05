@@ -41,11 +41,11 @@ func ContextHas(ctx *router.Context, eventType string) bool {
 }
 
 // 事件调度
-func ContextDispatch(ctx *router.Context, name string, object ...interface{}) bool {
+func ContextDispatch(ctx *router.Context, name string, object ...any) bool {
     // 当前事件
     cevent, _ := ctx.Get("event")
 
-    var eventObject interface{}
+    var eventObject any
     if len(object) > 0 {
         eventObject = object[0]
     }

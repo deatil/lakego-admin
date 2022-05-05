@@ -1,5 +1,15 @@
 package cryptobin
 
+// 构造函数
+func NewRsa() Rsa {
+    return Rsa{
+        veryed:   false,
+        signHash: "SHA512",
+    }
+}
+
+// ==========
+
 // 私钥
 func RsaFromPrivateKey(key []byte) Rsa {
     return NewRsa().FromPrivateKey(key)

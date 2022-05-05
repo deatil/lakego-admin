@@ -5,6 +5,14 @@ import (
 )
 
 // 构造函数
+func New() Datebin {
+    return Datebin{
+        weekStartAt: time.Monday,
+        loc: time.Local,
+    }
+}
+
+// 构造函数
 func NewDatebin() Datebin {
     return New()
 }

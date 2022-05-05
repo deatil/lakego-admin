@@ -12,31 +12,31 @@ func NewPipeline() *Pipeline {
 
 type (
     // 管道单个
-    PipeItem = interface{}
+    PipeItem = any
 
     // Next 函数
-    NextFunc = func(interface{}) interface{}
+    NextFunc = func(any) any
 
     // 目标函数
-    DestinationFunc = func(interface{}) interface{}
+    DestinationFunc = func(any) any
 
     // 迭代的值函数
-    PipeFunc = func(interface{}, NextFunc) interface{}
+    PipeFunc = func(any, NextFunc) any
 
     // carry 函数
-    CarryFunc = func(interface{}, interface{}) interface{}
+    CarryFunc = func(any, any) any
 
     // carry 回调函数
-    CarryCallbackFunc = func(interface{}) interface{}
+    CarryCallbackFunc = func(any) any
 
     // 报错回调函数
-    ExceptionCallbackFunc = func(interface{}, interface{}, interface{}) interface{}
+    ExceptionCallbackFunc = func(any, any, any) any
 )
 
 // 管道接口
 type PipeInterface interface {
     // 方法
-    Handle(interface{}, NextFunc) interface{}
+    Handle(any, NextFunc) any
 }
 
 /**
@@ -47,7 +47,7 @@ type PipeInterface interface {
  */
 type Pipeline struct {
     // 数据
-    Passable interface{}
+    Passable any
 
     // 管道
     Pipes []PipeItem
@@ -60,7 +60,7 @@ type Pipeline struct {
 }
 
 // 设置数据
-func (this *Pipeline) Send(passable interface{}) *Pipeline {
+func (this *Pipeline) Send(passable any) *Pipeline {
     this.Passable = passable
 
     return this
@@ -81,7 +81,7 @@ func (this *Pipeline) ThroughArray(pipes []PipeItem) *Pipeline {
 }
 
 // 返回
-func (this *Pipeline) Then(destination DestinationFunc) interface{} {
+func (this *Pipeline) Then(destination DestinationFunc) any {
     pipeline := ArrayReduce(
         ArrayReverse(this.Pipes),
         this.Carry(),
@@ -94,25 +94,25 @@ func (this *Pipeline) Then(destination DestinationFunc) interface{} {
 }
 
 // 返回数据
-func (this *Pipeline) ThenReturn() interface{} {
-    return this.Then(func(passable interface{}) interface{} {
+func (this *Pipeline) ThenReturn() any {
+    return this.Then(func(passable any) any {
         return passable
     })
 }
 
 // 包装
 func (this *Pipeline) PrepareDestination(destination DestinationFunc) NextFunc {
-    return func(passable interface{}) interface{} {
+    return func(passable any) any {
         return destination(passable)
     }
 }
 
 // 格式化数据
 func (this *Pipeline) Carry() CarryFunc {
-    return func(stack interface{}, pipe interface{}) interface{} {
+    return func(stack any, pipe any) any {
         newStack := stack.(NextFunc)
 
-        return func(passable interface{}) interface{} {
+        return func(passable any) any {
 
             // 判断类型
             switch pipe.(type) {
@@ -143,7 +143,7 @@ func (this *Pipeline) GetPipes() []PipeItem {
 }
 
 // 返回数据
-func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
+func (this *Pipeline) HandleCarry(carry any) any {
     if this.CarryCallback != nil {
         callback := this.CarryCallback
 
@@ -154,7 +154,7 @@ func (this *Pipeline) HandleCarry(carry interface{}) interface{} {
 }
 
 // 报错信息
-func (this *Pipeline) HandleException(passable interface{}, pipe interface{}, stack NextFunc) interface{} {
+func (this *Pipeline) HandleException(passable any, pipe any, stack NextFunc) any {
     if this.ExceptionCallback != nil {
         callback := this.ExceptionCallback
 

@@ -1,5 +1,15 @@
 package cryptobin
 
+// 构造函数
+func New() Cryptobin {
+    return Cryptobin{
+        multiple: "Aes",
+        mode:     "ECB",
+        padding:  "PKCS7",
+        config:   make(map[string]any),
+    }
+}
+
 // 字节
 func FromBytes(data []byte) Cryptobin {
     return New().FromBytes(data)

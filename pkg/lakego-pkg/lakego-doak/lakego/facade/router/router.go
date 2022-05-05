@@ -14,14 +14,14 @@ func NewMiddleware() *router.Middleware {
 /**
  * 中间件别名
  */
-func AliasMiddleware(name string, middleware interface{}) {
+func AliasMiddleware(name string, middleware any) {
     NewMiddleware().AliasMiddleware(name, middleware)
 }
 
 /**
  * 中间件分组
  */
-func MiddlewareGroup(name string, middlewares []interface{}) {
+func MiddlewareGroup(name string, middlewares []any) {
     NewMiddleware().MiddlewareGroup(name, middlewares)
 }
 

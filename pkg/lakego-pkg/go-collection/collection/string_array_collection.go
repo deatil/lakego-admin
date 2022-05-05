@@ -31,9 +31,9 @@ func (c StringArrayCollection) Length() int {
 }
 
 // Combine combines the values of the collection, as keys, with the values of another array or collection.
-func (c StringArrayCollection) Combine(value []interface{}) Collection {
+func (c StringArrayCollection) Combine(value []any) Collection {
     var (
-        m      = make(map[string]interface{}, 0)
+        m      = make(map[string]any, 0)
         length = c.length
         d      MapCollection
     )
@@ -53,7 +53,7 @@ func (c StringArrayCollection) Combine(value []interface{}) Collection {
 }
 
 // Prepend adds an item to the beginning of the collection.
-func (c StringArrayCollection) Prepend(values ...interface{}) Collection {
+func (c StringArrayCollection) Prepend(values ...any) Collection {
 
     var d StringArrayCollection
 
@@ -105,8 +105,8 @@ func (c StringArrayCollection) Take(num int) Collection {
 }
 
 // All returns the underlying array represented by the collection.
-func (c StringArrayCollection) All() []interface{} {
-    s := make([]interface{}, len(c.value))
+func (c StringArrayCollection) All() []any {
+    s := make([]any, len(c.value))
     for i := 0; i < len(c.value); i++ {
         s[i] = c.value[i]
     }
@@ -115,10 +115,10 @@ func (c StringArrayCollection) All() []interface{} {
 }
 
 // Mode returns the mode value of a given key.
-func (c StringArrayCollection) Mode(key ...string) []interface{} {
+func (c StringArrayCollection) Mode(key ...string) []any {
     valueCount := c.CountBy()
     maxCount := 0
-    maxValue := make([]interface{}, len(valueCount))
+    maxValue := make([]any, len(valueCount))
     for v, c := range valueCount {
         switch {
         case c < maxCount:
@@ -126,7 +126,7 @@ func (c StringArrayCollection) Mode(key ...string) []interface{} {
         case c == maxCount:
             maxValue = append(maxValue, v)
         case c > maxCount:
-            maxValue = append([]interface{}{}, v)
+            maxValue = append([]any{}, v)
             maxCount = c
         }
     }
@@ -142,7 +142,7 @@ func (c StringArrayCollection) ToStringArray() []string {
 func (c StringArrayCollection) Chunk(num int) MultiDimensionalArrayCollection {
     var d MultiDimensionalArrayCollection
     d.length = c.length/num + 1
-    d.value = make([][]interface{}, d.length)
+    d.value = make([][]any, d.length)
 
     count := 0
     for i := 1; i <= c.length; i++ {
@@ -166,7 +166,7 @@ func (c StringArrayCollection) Chunk(num int) MultiDimensionalArrayCollection {
 }
 
 // Concat appends the given array or collection values onto the end of the collection.
-func (c StringArrayCollection) Concat(value interface{}) Collection {
+func (c StringArrayCollection) Concat(value any) Collection {
     var d = make([]string, len(c.value))
     copy(d, c.value)
     return StringArrayCollection{
@@ -176,7 +176,7 @@ func (c StringArrayCollection) Concat(value interface{}) Collection {
 }
 
 // Contains determines whether the collection contains a given item.
-func (c StringArrayCollection) Contains(value ...interface{}) bool {
+func (c StringArrayCollection) Contains(value ...any) bool {
     if callback, ok := value[0].(CB); ok {
         for k, v := range c.value {
             if callback(k, v) {
@@ -195,8 +195,8 @@ func (c StringArrayCollection) Contains(value ...interface{}) bool {
 }
 
 // CountBy counts the occurrences of values in the collection. By default, the method counts the occurrences of every element.
-func (c StringArrayCollection) CountBy(callback ...interface{}) map[interface{}]int {
-    valueCount := make(map[interface{}]int)
+func (c StringArrayCollection) CountBy(callback ...any) map[any]int {
+    valueCount := make(map[any]int)
 
     if len(callback) > 0 {
         if cb, ok := callback[0].(FilterFun); ok {
@@ -214,16 +214,16 @@ func (c StringArrayCollection) CountBy(callback ...interface{}) map[interface{}]
 }
 
 // CrossJoin cross joins the collection's values among the given arrays or collections, returning a Cartesian product with all possible permutations.
-func (c StringArrayCollection) CrossJoin(array ...[]interface{}) MultiDimensionalArrayCollection {
+func (c StringArrayCollection) CrossJoin(array ...[]any) MultiDimensionalArrayCollection {
     var d MultiDimensionalArrayCollection
 
     length := len(c.value)
     for _, s := range array {
         length *= len(s)
     }
-    value := make([][]interface{}, length)
+    value := make([][]any, length)
     for i := range value {
-        value[i] = make([]interface{}, len(array)+1)
+        value[i] = make([]any, len(array)+1)
     }
 
     offset := length / c.length
@@ -249,7 +249,7 @@ func (c StringArrayCollection) Dump() {
 
 // Diff compares the collection against another collection or a plain PHP array based on its values.
 // This method will return the values in the original collection that are not present in the given collection.
-func (c StringArrayCollection) Diff(m interface{}) Collection {
+func (c StringArrayCollection) Diff(m any) Collection {
     ms := m.([]string)
     var d = make([]string, 0)
     for _, value := range c.value {
@@ -270,10 +270,10 @@ func (c StringArrayCollection) Diff(m interface{}) Collection {
 }
 
 // Each iterates over the items in the collection and passes each item to a callback.
-func (c StringArrayCollection) Each(cb func(item, value interface{}) (interface{}, bool)) Collection {
+func (c StringArrayCollection) Each(cb func(item, value any) (any, bool)) Collection {
     var d = make([]string, 0)
     var (
-        newValue interface{}
+        newValue any
         stop     = false
     )
     for key, value := range c.value {
@@ -313,7 +313,7 @@ func (c StringArrayCollection) Filter(cb CB) Collection {
 }
 
 // First returns the first element in the collection that passes a given truth test.
-func (c StringArrayCollection) First(cbs ...CB) interface{} {
+func (c StringArrayCollection) First(cbs ...CB) any {
     if len(cbs) > 0 {
         for key, value := range c.value {
             if cbs[0](key, value) {
@@ -377,9 +377,9 @@ func (c StringArrayCollection) IsNotEmpty() bool {
 }
 
 // Last returns the last element in the collection that passes a given truth test.
-func (c StringArrayCollection) Last(cbs ...CB) interface{} {
+func (c StringArrayCollection) Last(cbs ...CB) any {
     if len(cbs) > 0 {
-        var last interface{}
+        var last any
         for key, value := range c.value {
             if cbs[0](key, value) {
                 last = value
@@ -398,7 +398,7 @@ func (c StringArrayCollection) Last(cbs ...CB) interface{} {
 // Merge merges the given array or collection with the original collection. If a string key in the given items
 // matches a string key in the original collection, the given items's value will overwrite the value in the
 // original collection.
-func (c StringArrayCollection) Merge(i interface{}) Collection {
+func (c StringArrayCollection) Merge(i any) Collection {
     m := i.([]string)
     var d = make([]string, len(c.value))
     copy(d, c.value)
@@ -422,7 +422,7 @@ func (c StringArrayCollection) Merge(i interface{}) Collection {
 }
 
 // Pad will fill the array with the given value until the array reaches the specified size.
-func (c StringArrayCollection) Pad(num int, value interface{}) Collection {
+func (c StringArrayCollection) Pad(num int, value any) Collection {
     if len(c.value) > num {
         d := make([]string, len(c.value))
         copy(d, c.value)
@@ -478,14 +478,14 @@ func (c StringArrayCollection) Partition(cb PartCB) (Collection, Collection) {
 }
 
 // Pop removes and returns the last item from the collection.
-func (c StringArrayCollection) Pop() interface{} {
+func (c StringArrayCollection) Pop() any {
     last := c.value[len(c.value)-1]
     c.value = c.value[:len(c.value)-1]
     return last
 }
 
 // Push appends an item to the end of the collection.
-func (c StringArrayCollection) Push(v interface{}) Collection {
+func (c StringArrayCollection) Push(v any) Collection {
     var d = make([]string, len(c.value)+1)
     for i := 0; i < len(d); i++ {
         if i < len(c.value) {
@@ -523,8 +523,8 @@ func (c StringArrayCollection) Random(num ...int) Collection {
 }
 
 // Reduce reduces the collection to a single value, passing the result of each iteration into the subsequent iteration.
-func (c StringArrayCollection) Reduce(cb ReduceCB) interface{} {
-    var res interface{}
+func (c StringArrayCollection) Reduce(cb ReduceCB) any {
+    var res any
 
     for i := 0; i < len(c.value); i++ {
         res = cb(res, c.value[i])
@@ -561,7 +561,7 @@ func (c StringArrayCollection) Reverse() Collection {
 
 // Search searches the collection for the given value and returns its key if found. If the item is not found,
 // -1 is returned.
-func (c StringArrayCollection) Search(v interface{}) int {
+func (c StringArrayCollection) Search(v any) int {
     if s, ok := v.(string); ok {
         for i := 0; i < len(c.value); i++ {
             if s == c.value[i] {
@@ -616,16 +616,16 @@ func (c StringArrayCollection) Slice(keys ...int) Collection {
 
 // Split breaks a collection into the given number of groups.
 func (c StringArrayCollection) Split(num int) Collection {
-    var d = make([][]interface{}, int(math.Ceil(float64(len(c.value))/float64(num))))
+    var d = make([][]any, int(math.Ceil(float64(len(c.value))/float64(num))))
 
     j := -1
     for i := 0; i < len(c.value); i++ {
         if i%num == 0 {
             j++
             if i+num <= len(c.value) {
-                d[j] = make([]interface{}, num)
+                d[j] = make([]any, num)
             } else {
-                d[j] = make([]interface{}, len(c.value)-i)
+                d[j] = make([]any, len(c.value)-i)
             }
             d[j][i%num] = c.value[i]
         } else {

@@ -9,7 +9,7 @@ import (
 
 // 私钥签名
 func (this EdDSA) Sign() EdDSA {
-    var key interface{}
+    var key any
     key = this.privateKey
 
     var ed25519Key crypto.Signer
@@ -38,7 +38,7 @@ func (this EdDSA) Sign() EdDSA {
 
 // 公钥验证
 func (this EdDSA) Very(data []byte) EdDSA {
-    var key interface{}
+    var key any
     key = this.publicKey
 
     var ed25519Key ed25519.PublicKey

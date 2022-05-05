@@ -9,7 +9,7 @@ import (
 // 解析 token
 func (this *JWT) ParseToken(strToken string) (*Token, error) {
     var err error
-    var secret interface{}
+    var secret any
 
     // 判断类型
     switch this.SigningMethod {
@@ -111,7 +111,7 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
 
     }
 
-    token, err := jwt.Parse(strToken, func(token *Token) (interface{}, error) {
+    token, err := jwt.Parse(strToken, func(token *Token) (any, error) {
         return secret, nil
     })
 

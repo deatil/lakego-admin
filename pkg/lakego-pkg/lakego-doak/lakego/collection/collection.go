@@ -11,25 +11,25 @@ import (
  * @author deatil
  */
 // Collect transforms src into Collection. The src could be json string, []string,
-// []map[string]interface{}, map[string]interface{}, []int, []int16, []int32, []int64,
-// []float32, []float64, []interface{}.
-func Collect(src interface{}) collection.Collection {
+// []map[string]any, map[string]any, []int, []int16, []int32, []int64,
+// []float32, []float64, []any.
+func Collect(src any) collection.Collection {
     return collection.Collect(src)
 }
 
 /*
 type Collection interface {
-    Value() interface{}
+    Value() any
 
     // All returns the underlying array represented by the collection.
-    All() []interface{}
+    All() []any
 
     // Length return the length of the collection.
     Length() int
 
     // ToStruct turn the collection to the specified struct using mapstructure.
     // https://github.com/mitchellh/mapstructure
-    ToStruct(dist interface{})
+    ToStruct(dist any)
 
     // Select select the keys of collection and delete others.
     Select(keys ...string) Collection
@@ -50,7 +50,7 @@ type Collection interface {
     Join(delimiter string) string
 
     // Combine combines the values of the collection, as keys, with the values of another array or collection.
-    Combine(value []interface{}) Collection
+    Combine(value []any) Collection
 
     // Count returns the total number of items in the collection.
     Count() int
@@ -59,19 +59,19 @@ type Collection interface {
     Pluck(key string) Collection
 
     // Mode returns the mode value of a given key.
-    Mode(key ...string) []interface{}
+    Mode(key ...string) []any
 
     // Only returns the items in the collection with the specified keys.
     Only(keys []string) Collection
 
     // Prepend adds an item to the beginning of the collection.
-    Prepend(values ...interface{}) Collection
+    Prepend(values ...any) Collection
 
     // Pull removes and returns an item from the collection by its key.
-    Pull(key interface{}) Collection
+    Pull(key any) Collection
 
     // Put sets the given key and value in the collection:.
-    Put(key string, value interface{}) Collection
+    Put(key string, value any) Collection
 
     // SortBy sorts the collection by the given key.
     SortBy(key string) Collection
@@ -86,37 +86,37 @@ type Collection interface {
     Collapse() Collection
 
     // Concat appends the given array or collection values onto the end of the collection.
-    Concat(value interface{}) Collection
+    Concat(value any) Collection
 
     // Contains determines whether the collection contains a given item.
-    Contains(value ...interface{}) bool
+    Contains(value ...any) bool
 
     // CountBy counts the occurrences of values in the collection. By default, the method counts the occurrences of every element.
-    CountBy(callback ...interface{}) map[interface{}]int
+    CountBy(callback ...any) map[any]int
 
     // CrossJoin cross joins the collection's values among the given arrays or collections, returning a Cartesian product with all possible permutations.
-    CrossJoin(array ...[]interface{}) MultiDimensionalArrayCollection
+    CrossJoin(array ...[]any) MultiDimensionalArrayCollection
 
     // Dd dumps the collection's items and ends execution of the script.
     Dd()
 
     // Diff compares the collection against another collection or a plain PHP array based on its values.
     // This method will return the values in the original collection that are not present in the given collection.
-    Diff(interface{}) Collection
+    Diff(any) Collection
 
     // DiffAssoc compares the collection against another collection or a plain PHP  array based on its keys and values.
     // This method will return the key / value pairs in the original collection that are not present in the given collection.
-    DiffAssoc(map[string]interface{}) Collection
+    DiffAssoc(map[string]any) Collection
 
     // DiffKeys compares the collection against another collection or a plain PHP array based on its keys.
     // This method will return the key / value pairs in the original collection that are not present in the given collection.
-    DiffKeys(map[string]interface{}) Collection
+    DiffKeys(map[string]any) Collection
 
     // Dump dumps the collection's items.
     Dump()
 
     // Each iterates over the items in the collection and passes each item to a callback.
-    Each(func(item, value interface{}) (interface{}, bool)) Collection
+    Each(func(item, value any) (any, bool)) Collection
 
     // Every may be used to verify that all elements of a collection pass a given truth test.
     Every(CB) bool
@@ -128,13 +128,13 @@ type Collection interface {
     Filter(CB) Collection
 
     // First returns the first element in the collection that passes a given truth test.
-    First(...CB) interface{}
+    First(...CB) any
 
     // FirstWhere returns the first element in the collection with the given key / value pair.
-    FirstWhere(key string, values ...interface{}) map[string]interface{}
+    FirstWhere(key string, values ...any) map[string]any
 
     // FlatMap iterates through the collection and passes each value to the given callback.
-    FlatMap(func(value interface{}) interface{}) Collection
+    FlatMap(func(value any) any) Collection
 
     // Flip swaps the collection's keys with their corresponding values.
     Flip() Collection
@@ -146,7 +146,7 @@ type Collection interface {
     ForPage(int, int) Collection
 
     // Get returns the item at a given key. If the key does not exist, null is returned.
-    Get(string, ...interface{}) interface{}
+    Get(string, ...any) any
 
     // GroupBy groups the collection's items by a given key.
     GroupBy(string) Collection
@@ -161,7 +161,7 @@ type Collection interface {
     Intersect([]string) Collection
 
     // IntersectByKeys removes any keys from the original collection that are not present in the given array or collection.
-    IntersectByKeys(map[string]interface{}) Collection
+    IntersectByKeys(map[string]any) Collection
 
     // IsEmpty returns true if the collection is empty; otherwise, false is returned.
     IsEmpty() bool
@@ -171,13 +171,13 @@ type Collection interface {
 
     // KeyBy keys the collection by the given key. If multiple items have the same key, only the last one will
     // appear in the new collection.
-    KeyBy(interface{}) Collection
+    KeyBy(any) Collection
 
     // Keys returns all of the collection's keys.
     Keys() Collection
 
     // Last returns the last element in the collection that passes a given truth test.
-    Last(...CB) interface{}
+    Last(...CB) any
 
     // MapToGroups groups the collection's items by the given callback.
     MapToGroups(MapCB) Collection
@@ -191,25 +191,25 @@ type Collection interface {
     // Merge merges the given array or collection with the original collection. If a string key in the given items
     // matches a string key in the original collection, the given items's value will overwrite the value in the
     // original collection.
-    Merge(interface{}) Collection
+    Merge(any) Collection
 
     // Pad will fill the array with the given value until the array reaches the specified size.
-    Pad(int, interface{}) Collection
+    Pad(int, any) Collection
 
     // Partition separate elements that pass a given truth test from those that do not.
     Partition(PartCB) (Collection, Collection)
 
     // Pop removes and returns the last item from the collection.
-    Pop() interface{}
+    Pop() any
 
     // Push appends an item to the end of the collection.
-    Push(interface{}) Collection
+    Push(any) Collection
 
     // Random returns a random item from the collection.
     Random(...int) Collection
 
     // Reduce reduces the collection to a single value, passing the result of each iteration into the subsequent iteration.
-    Reduce(ReduceCB) interface{}
+    Reduce(ReduceCB) any
 
     // Reject filters the collection using the given callback.
     Reject(CB) Collection
@@ -219,7 +219,7 @@ type Collection interface {
 
     // Search searches the collection for the given value and returns its key if found. If the item is not found,
     // -1 is returned.
-    Search(interface{}) int
+    Search(any) int
 
     // Shift removes and returns the first item from the collection.
     Shift() Collection
@@ -246,10 +246,10 @@ type Collection interface {
     Unique() Collection
 
     // WhereIn filters the collection by a given key / value contained within the given array.
-    WhereIn(string, []interface{}) Collection
+    WhereIn(string, []any) Collection
 
     // WhereNotIn filters the collection by a given key / value not contained within the given array.
-    WhereNotIn(string, []interface{}) Collection
+    WhereNotIn(string, []any) Collection
 
     // ToJson converts the collection into a json string.
     ToJson() string
@@ -267,15 +267,15 @@ type Collection interface {
     ToStringArray() []string
 
     // ToMultiDimensionalArray converts the collection into a multi dimensional array.
-    ToMultiDimensionalArray() [][]interface{}
+    ToMultiDimensionalArray() [][]any
 
     // ToMap converts the collection into a plain golang map.
-    ToMap() map[string]interface{}
+    ToMap() map[string]any
 
     // ToMapArray converts the collection into a plain golang slice which contains map.
-    ToMapArray() []map[string]interface{}
+    ToMapArray() []map[string]any
 
     // Where filters the collection by a given key / value pair.
-    Where(key string, values ...interface{}) Collection
+    Where(key string, values ...any) Collection
 }
 */

@@ -20,7 +20,7 @@ type Aes struct {
 }
 
 // 初始化
-func (this *Aes) Init(conf map[string]interface{}) {
+func (this *Aes) Init(conf map[string]any) {
     if key, ok := conf["key"]; ok {
         this.key = key.(string)
     }

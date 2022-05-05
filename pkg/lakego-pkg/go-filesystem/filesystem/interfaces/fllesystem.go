@@ -19,7 +19,7 @@ type Fllesystem interface {
     GetConfig() Config
 
     // 提前设置配置
-    PrepareConfig(map[string]interface{}) Config
+    PrepareConfig(map[string]any) Config
 
     // 设置适配器
     WithAdapter(Adapter) Fllesystem
@@ -34,22 +34,22 @@ type Fllesystem interface {
     Has(string) bool
 
     // 上传
-    Write(string, string, ...map[string]interface{}) (bool, error)
+    Write(string, string, ...map[string]any) (bool, error)
 
     // 上传
-    WriteStream(string, io.Reader, ...map[string]interface{}) (bool, error)
+    WriteStream(string, io.Reader, ...map[string]any) (bool, error)
 
     // 上传
-    Put(string, string, ...map[string]interface{}) (bool, error)
+    Put(string, string, ...map[string]any) (bool, error)
 
     // 上传
-    PutStream(string, io.Reader, ...map[string]interface{}) (bool, error)
+    PutStream(string, io.Reader, ...map[string]any) (bool, error)
 
     // 更新
-    Update(string, string, ...map[string]interface{}) (bool, error)
+    Update(string, string, ...map[string]any) (bool, error)
 
     // 更新
-    UpdateStream(string, io.Reader, ...map[string]interface{}) (bool, error)
+    UpdateStream(string, io.Reader, ...map[string]any) (bool, error)
 
     // 读取
     Read(string) (string, error)
@@ -67,16 +67,16 @@ type Fllesystem interface {
     Delete(string) (bool, error)
 
     // 读取并删除
-    ReadAndDelete(string) (interface{}, error)
+    ReadAndDelete(string) (any, error)
 
     // 删除文件夹
     DeleteDir(string) (bool, error)
 
     // 创建文件夹
-    CreateDir(string, ...map[string]interface{}) (bool, error)
+    CreateDir(string, ...map[string]any) (bool, error)
 
     // 列出数据
-    ListContents(string, ...bool) ([]map[string]interface{}, error)
+    ListContents(string, ...bool) ([]map[string]any, error)
 
     // 文件 mime-type
     GetMimetype(string) (string, error)
@@ -94,8 +94,8 @@ type Fllesystem interface {
     SetVisibility(string, string) (bool, error)
 
     // 信息数据
-    GetMetadata(string) (map[string]interface{}, error)
+    GetMetadata(string) (map[string]any, error)
 
     // 获取
-    Get(string, ...func(Fllesystem, string) interface{}) interface{}
+    Get(string, ...func(Fllesystem, string) any) any
 }

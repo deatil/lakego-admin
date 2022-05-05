@@ -21,7 +21,7 @@ import (
  */
 type Redis struct {
     // 配置
-    config map[string]interface{}
+    config map[string]any
 
     // 前缀
     prefix string
@@ -34,7 +34,7 @@ type Redis struct {
 }
 
 // 实例化
-func (this *Redis) Init(config map[string]interface{}) interfaces.Driver {
+func (this *Redis) Init(config map[string]any) interfaces.Driver {
     db := config["db"].(int)
     addr := config["addr"].(string)
     password := config["password"].(string)
@@ -95,8 +95,8 @@ func (this *Redis) Exists(key string) bool {
 }
 
 // 获取
-func (this *Redis) Get(key string) (interface{}, error) {
-    var val interface{}
+func (this *Redis) Get(key string) (any, error) {
+    var val any
     var err error
 
     val, err = this.client.Get(this.ctx, this.WrapperKey(key)).Result()
@@ -110,7 +110,7 @@ func (this *Redis) Get(key string) (interface{}, error) {
 }
 
 // 设置
-func (this *Redis) Put(key string, value interface{}, ttl int64) error {
+func (this *Redis) Put(key string, value any, ttl int64) error {
     expiration := this.IntTimeToDuration(ttl)
 
     err := this.client.Set(this.ctx, this.WrapperKey(key), value, expiration).Err()
@@ -122,7 +122,7 @@ func (this *Redis) Put(key string, value interface{}, ttl int64) error {
 }
 
 // 存在永久
-func (this *Redis) Forever(key string, value interface{}) error {
+func (this *Redis) Forever(key string, value any) error {
     err := this.client.Set(this.ctx, this.WrapperKey(key), value, 0).Err()
     if err != nil {
         return errors.New("缓存存储失败")

@@ -21,7 +21,7 @@ func WithValidations(v validate.Validation) {
  * @create 2021-6-20
  * @author deatil
  */
-func Validate(s interface{}, message map[string]string) (bool, map[string]string) {
+func Validate(s any, message map[string]string) (bool, map[string]string) {
     return validate.CustomValidator.Verify(s, message)
 }
 
@@ -32,7 +32,7 @@ func Validate(s interface{}, message map[string]string) (bool, map[string]string
  * @create 2021-9-11
  * @author deatil
  */
-func VerifyReturnOneError(s interface{}, message map[string]string) (bool, string) {
+func VerifyReturnOneError(s any, message map[string]string) (bool, string) {
     return validate.CustomValidator.VerifyReturnOneError(s, message)
 }
 
@@ -42,7 +42,7 @@ func VerifyReturnOneError(s interface{}, message map[string]string) (bool, strin
  * @create 2021-6-20
  * @author deatil
  */
-func ValidateMap(data map[string]interface{}, rules map[string]interface{}, message map[string]string) (bool, map[string]string) {
+func ValidateMap(data map[string]any, rules map[string]any, message map[string]string) (bool, map[string]string) {
     return validate.CustomValidator.ValidateMap(data, rules, message)
 }
 
@@ -52,7 +52,7 @@ func ValidateMap(data map[string]interface{}, rules map[string]interface{}, mess
  * @create 2021-9-11
  * @author deatil
  */
-func ValidateMapReturnOneError(data map[string]interface{}, rules map[string]interface{}, message map[string]string) (bool, string) {
+func ValidateMapReturnOneError(data map[string]any, rules map[string]any, message map[string]string) (bool, string) {
     return validate.CustomValidator.ValidateMapReturnOneError(data, rules, message)
 }
 

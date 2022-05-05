@@ -8,44 +8,44 @@ package interfaces
  */
 type Driver interface {
     // 自定义数据
-    WithField(string, interface{}) interface{}
+    WithField(string, any) any
 
     // 自定义数据
-    WithFields(map[string]interface{}) interface{}
+    WithFields(map[string]any) any
 
     // ======
 
-    Trace(...interface{})
+    Trace(...any)
 
-    Debug(...interface{})
+    Debug(...any)
 
-    Info(...interface{})
+    Info(...any)
 
-    Warn(...interface{})
+    Warn(...any)
 
-    Warning(...interface{})
+    Warning(...any)
 
-    Error(...interface{})
+    Error(...any)
 
-    Fatal(...interface{})
+    Fatal(...any)
 
-    Panic(...interface{})
+    Panic(...any)
 
     // ======
 
-    Tracef(string, ...interface{})
+    Tracef(string, ...any)
 
-    Debugf(string, ...interface{})
+    Debugf(string, ...any)
 
-    Infof(string, ...interface{})
+    Infof(string, ...any)
 
-    Warnf(string, ...interface{})
+    Warnf(string, ...any)
 
-    Warningf(string, ...interface{})
+    Warningf(string, ...any)
 
-    Errorf(string, ...interface{})
+    Errorf(string, ...any)
 
-    Fatalf(string, ...interface{})
+    Fatalf(string, ...any)
 
-    Panicf(string, ...interface{})
+    Panicf(string, ...any)
 }

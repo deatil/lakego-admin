@@ -288,7 +288,7 @@ func Strstr(haystack string, needle string) string {
 }
 
 // Strtr("baab", "ab", "01") will return "1001", a => 0; b => 1.
-func Strtr(haystack string, params ...interface{}) string {
+func Strtr(haystack string, params ...any) string {
     ac := len(params)
     if ac == 1 {
         pairs := params[0].(map[string]string)
@@ -370,7 +370,7 @@ func StrShuffle(str string) string {
 }
 
 // 非数值或字符类型的变量将会被转换成JSON格式字符串
-func Strval(value interface{}) string {
+func Strval(value any) string {
     // interface 转 string
     var key string
     if value == nil {
@@ -481,12 +481,12 @@ func Nl2br(str string, isXhtml bool) string {
 }
 
 // JSONDecode
-func JSONDecode(data string, val interface{}) error {
+func JSONDecode(data string, val any) error {
     return json.Unmarshal([]byte(data), val)
 }
 
 // 转换为 json 字符
-func JSONEncode(val interface{}) string {
+func JSONEncode(val any) string {
     if val == nil {
         return ""
     }

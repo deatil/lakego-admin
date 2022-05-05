@@ -4,9 +4,9 @@ import (
     "strings"
 
     "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-tree/tree"
     "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/tree"
+    
     "github.com/deatil/lakego-doak/lakego/router"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -100,7 +100,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
         Offset(newStart).
         Limit(newLimit)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     // 列表
     ruleModel = ruleModel.Find(&list)
@@ -136,7 +136,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
 // @Router /auth/rule/tree [get]
 // @Security Bearer
 func (this *AuthRule) IndexTree(ctx *router.Context) {
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     err := model.NewAuthRule().
         Order("listorder ASC").
@@ -174,7 +174,7 @@ func (this *AuthRule) IndexChildren(ctx *router.Context) {
         return
     }
 
-    var data interface{}
+    var data any
 
     typ := ctx.Query("type")
     if typ == "list" {
@@ -242,7 +242,7 @@ func (this *AuthRule) Detail(ctx *router.Context) {
 // @Security Bearer
 func (this *AuthRule) Create(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := authRuleValidate.Create(post)
@@ -320,7 +320,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthRule().
         Where("id = ?", id).
         First(&result).
@@ -331,7 +331,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := authRuleValidate.Update(post)
@@ -354,7 +354,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
 
     err3 := model.NewAuthRule().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "parentid": post["parentid"].(string),
             "title": post["title"].(string),
             "url": post["url"].(string),
@@ -447,7 +447,7 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthRule().
         Where("id = ?", id).
         First(&result).
@@ -458,7 +458,7 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 排序
@@ -471,7 +471,7 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
 
     err2 := model.NewAuthRule().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "listorder": listorder,
         }).
         Error
@@ -501,7 +501,7 @@ func (this *AuthRule) Enable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthRule().
         Where("id = ?", id).
         First(&result).
@@ -512,7 +512,7 @@ func (this *AuthRule) Enable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
@@ -522,7 +522,7 @@ func (this *AuthRule) Enable(ctx *router.Context) {
 
     err2 := model.NewAuthRule().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 1,
         }).
         Error
@@ -552,7 +552,7 @@ func (this *AuthRule) Disable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthRule().
         Where("id = ?", id).
         First(&result).
@@ -563,7 +563,7 @@ func (this *AuthRule) Disable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
@@ -573,7 +573,7 @@ func (this *AuthRule) Disable(ctx *router.Context) {
 
     err2 := model.NewAuthRule().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 0,
         }).
         Error
@@ -597,7 +597,7 @@ func (this *AuthRule) Disable(ctx *router.Context) {
 // @Security Bearer
 func (this *AuthRule) Clear(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if post["ids"] == "" {

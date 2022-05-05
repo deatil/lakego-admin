@@ -122,20 +122,14 @@ func (this Ecdsa) FromString(data string) Ecdsa {
 
 // Base64
 func (this Ecdsa) FromBase64String(data string) Ecdsa {
-    newData, err := NewEncoding().Base64Decode(data)
-
-    this.data = newData
-    this.Error = err
+    this.data, this.Error = NewEncoding().Base64Decode(data)
 
     return this
 }
 
 // Hex
 func (this Ecdsa) FromHexString(data string) Ecdsa {
-    newData, err := NewEncoding().HexDecode(data)
-
-    this.data = newData
-    this.Error = err
+    this.data, this.Error = NewEncoding().HexDecode(data)
 
     return this
 }

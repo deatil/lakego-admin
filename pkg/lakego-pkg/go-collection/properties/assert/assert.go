@@ -15,14 +15,14 @@ const skip = 2
 
 // Equal asserts that got and want are equal as defined by
 // reflect.DeepEqual. The test fails with msg if they are not equal.
-func Equal(t *testing.T, got, want interface{}, msg ...string) {
+func Equal(t *testing.T, got, want any, msg ...string) {
 	if x := equal(2, got, want, msg...); x != "" {
 		fmt.Println(x)
 		t.Fail()
 	}
 }
 
-func equal(skip int, got, want interface{}, msg ...string) string {
+func equal(skip int, got, want any, msg ...string) string {
 	if !reflect.DeepEqual(got, want) {
 		return fail(skip, "got %v want %v %s", got, want, strings.Join(msg, " "))
 	}
@@ -79,7 +79,7 @@ func matches(skip int, value, expr string) string {
 	return ""
 }
 
-func fail(skip int, format string, args ...interface{}) string {
+func fail(skip int, format string, args ...any) string {
 	_, file, line, _ := runtime.Caller(skip)
 	return fmt.Sprintf("\t%s:%d: %s\n", filepath.Base(file), line, fmt.Sprintf(format, args...))
 }

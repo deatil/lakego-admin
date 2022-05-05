@@ -12,6 +12,6 @@ import (
  */
 type Render interface {
     // Instance init
-    Instance(name string, data interface{}) render.Render
+    Instance(name string, data any) render.Render
 }
 

@@ -5,16 +5,16 @@ import (
 )
 
 /*
-user := map[string]interface{}{
+user := map[string]any{
     "name": "Arshiya Kiani", 
     "password": "6b4ee75684079f24bb6331d6b4abbb57",
     "captcha": "wert",
 }
 Login(user)
 */
-func Login(data map[string]interface{}) string {
+func Login(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "name": "required", 
         "password": "required,len=32",
         "captcha": "required,len=4",

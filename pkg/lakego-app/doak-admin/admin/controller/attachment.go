@@ -97,7 +97,7 @@ func (this *Attachment) Index(ctx *router.Context) {
         Offset(newStart).
         Limit(newLimit)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     // 列表
     attachModel = attachModel.Find(&list)
@@ -111,7 +111,7 @@ func (this *Attachment) Index(ctx *router.Context) {
         return
     }
 
-    newList := make([]map[string]interface{}, 0)
+    newList := make([]map[string]any, 0)
     for _, v := range list {
         v["url"] = url.AttachmentUrl(v["path"].(string), v["disk"].(string))
         newList = append(newList, v)
@@ -145,7 +145,7 @@ func (this *Attachment) Detail(ctx *router.Context) {
 
     newId := goch.ToString(id)
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().
@@ -181,7 +181,7 @@ func (this *Attachment) Delete(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().
@@ -229,7 +229,7 @@ func (this *Attachment) Enable(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().
@@ -248,7 +248,7 @@ func (this *Attachment) Enable(ctx *router.Context) {
 
     err2 := model.NewAttachment().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 1,
         }).
         Error
@@ -278,7 +278,7 @@ func (this *Attachment) Disable(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().
@@ -297,7 +297,7 @@ func (this *Attachment) Disable(ctx *router.Context) {
 
     err2 := model.NewAttachment().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 0,
         }).
         Error
@@ -327,7 +327,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().
@@ -372,7 +372,7 @@ func (this *Attachment) Download(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 附件模型
     err := model.NewAttachment().

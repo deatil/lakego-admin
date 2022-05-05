@@ -23,7 +23,7 @@ func NewCheck() *Check {
  */
 type Check struct {
     // 配置
-    config map[string]interface{}
+    config map[string]any
 
     // 驱动
     driver interfaces.Driver
@@ -41,14 +41,14 @@ func (this *Check) String() string {
 }
 
 // 设置配置
-func (this *Check) WithConfig(config map[string]interface{}) *Check {
+func (this *Check) WithConfig(config map[string]any) *Check {
     this.config = config
 
     return this
 }
 
 // 获取配置
-func (this *Check) GetConfig(name string) interface{} {
+func (this *Check) GetConfig(name string) any {
     if data, ok := this.config[name]; ok {
         return data
     }

@@ -22,7 +22,7 @@ type Redis struct {
     store.Store
 
     // 配置
-    config map[string]interface{}
+    config map[string]any
 
     // 缓存
     cache *cache.Cache
@@ -32,7 +32,7 @@ type Redis struct {
 }
 
 // 设置配置
-func (this *Redis) WithConfig(config map[string]interface{}) *Redis {
+func (this *Redis) WithConfig(config map[string]any) *Redis {
     this.config = config
 
     return this

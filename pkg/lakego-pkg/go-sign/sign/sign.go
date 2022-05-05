@@ -24,7 +24,7 @@ func NewSign() *Sign {
  */
 type Sign struct {
     // 配置
-    config map[string]interface{}
+    config map[string]any
 
     // 驱动
     driver interfaces.Driver
@@ -42,14 +42,14 @@ func (this *Sign) String() string {
 }
 
 // 设置配置
-func (this *Sign) WithConfig(config map[string]interface{}) *Sign {
+func (this *Sign) WithConfig(config map[string]any) *Sign {
     this.config = config
 
     return this
 }
 
 // 获取配置
-func (this *Sign) GetConfig(name string) interface{} {
+func (this *Sign) GetConfig(name string) any {
     if data, ok := this.config[name]; ok {
         return data
     }

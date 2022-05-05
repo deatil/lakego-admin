@@ -87,7 +87,7 @@ import (
 //     // Field is decoded recursively with "myName." as key prefix
 //     // and the next dotted element of the key as map key.
 //     Field map[string]string `properties:"myName"`
-func (p *Properties) Decode(x interface{}) error {
+func (p *Properties) Decode(x any) error {
 	t, v := reflect.TypeOf(x), reflect.ValueOf(x)
 	if t.Kind() != reflect.Ptr || v.Elem().Type().Kind() != reflect.Struct {
 		return fmt.Errorf("not a pointer to struct: %s", t)
@@ -114,7 +114,7 @@ func dec(p *Properties, key string, def *string, opts map[string]string, v refle
 
 	// conv converts a string to a value of the given type.
 	conv := func(s string, t reflect.Type) (val reflect.Value, err error) {
-		var v interface{}
+		var v any
 
 		switch {
 		case isDuration(t):

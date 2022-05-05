@@ -1,5 +1,14 @@
 package cryptobin
 
+// 构造函数
+func NewEdDSA() EdDSA {
+    return EdDSA{
+        veryed: false,
+    }
+}
+
+// ==========
+
 // 私钥
 func EdDSAFromPrivateKey(key []byte) EdDSA {
     return NewEdDSA().FromPrivateKey(key)

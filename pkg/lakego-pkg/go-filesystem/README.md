@@ -56,13 +56,13 @@ fs.Put(path, contents string) bool
 fs.PutStream(path string, resource io.Reader) bool
 
 // 读取后删除
-fs.ReadAndDelete(path string) (interface{}, error)
+fs.ReadAndDelete(path string) (any, error)
 
 // 更新
 fs.Update(path, contents string) bool
 
 // 读取
-fs.Read(path string) interface{}
+fs.Read(path string) any
 
 // 重命名
 fs.Rename(path, newpath string) bool

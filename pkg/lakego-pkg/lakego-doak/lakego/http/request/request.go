@@ -56,7 +56,7 @@ func (this *Request) Query(key string) string {
 }
 
 // 带默认
-func (this *Request) DefaultQuery(key string, def interface{}) string {
+func (this *Request) DefaultQuery(key string, def any) string {
     return this.ctx.DefaultQuery(key, cast.ToString(def))
 }
 
@@ -131,83 +131,83 @@ func (this *Request) MultipartForm() (*multipart.Form, error) {
 }
 
 // 绑定
-func (this *Request) Bind(obj interface{}) error {
+func (this *Request) Bind(obj any) error {
     return this.ctx.Bind(obj)
 }
 
 // 绑定 json
-func (this *Request) BindJSON(i interface{}) error {
+func (this *Request) BindJSON(i any) error {
     return this.ctx.BindJSON(i)
 }
 
 // 绑定 xml
-func (this *Request) BindXML(obj interface{}) error {
+func (this *Request) BindXML(obj any) error {
     return this.ctx.BindXML(obj)
 }
 
 // 绑定 query
-func (this *Request) BindQuery(obj interface{}) error {
+func (this *Request) BindQuery(obj any) error {
     return this.ctx.BindQuery(obj)
 }
 
 // 绑定 BindYAML
-func (this *Request) BindYAML(obj interface{}) error {
+func (this *Request) BindYAML(obj any) error {
     return this.ctx.BindYAML(obj)
 }
 
 // 绑定 BindHeader
-func (this *Request) BindHeader(obj interface{}) error {
+func (this *Request) BindHeader(obj any) error {
     return this.ctx.BindHeader(obj)
 }
 
 // 绑定 BindUri
-func (this *Request) BindUri(obj interface{}) error {
+func (this *Request) BindUri(obj any) error {
     return this.ctx.BindUri(obj)
 }
 
 // 绑定 MustBindWith
-func (this *Request) MustBindWith(obj interface{}, b router.Binding) error {
+func (this *Request) MustBindWith(obj any, b router.Binding) error {
     return this.ctx.MustBindWith(obj, b)
 }
 
 // json
-func (this *Request) JSON(code int, data interface{}) {
+func (this *Request) JSON(code int, data any) {
     this.ctx.JSON(code, data)
 }
 
-func (this *Request) ShouldBind(obj interface{}) error {
+func (this *Request) ShouldBind(obj any) error {
     return this.ctx.ShouldBind(obj)
 }
 
-func (this *Request) ShouldBindJSON(obj interface{}) error {
+func (this *Request) ShouldBindJSON(obj any) error {
     return this.ctx.ShouldBindJSON(obj)
 }
 
-func (this *Request) ShouldBindXML(obj interface{}) error {
+func (this *Request) ShouldBindXML(obj any) error {
     return this.ctx.ShouldBindXML(obj)
 }
 
-func (this *Request) ShouldBindQuery(obj interface{}) error {
+func (this *Request) ShouldBindQuery(obj any) error {
     return this.ctx.ShouldBindQuery(obj)
 }
 
-func (this *Request) ShouldBindYAML(obj interface{}) error {
+func (this *Request) ShouldBindYAML(obj any) error {
     return this.ctx.ShouldBindYAML(obj)
 }
 
-func (this *Request) ShouldBindHeader(obj interface{}) error {
+func (this *Request) ShouldBindHeader(obj any) error {
     return this.ctx.ShouldBindHeader(obj)
 }
 
-func (this *Request) ShouldBindUri(obj interface{}) error {
+func (this *Request) ShouldBindUri(obj any) error {
     return this.ctx.ShouldBindUri(obj)
 }
 
-func (this *Request) ShouldBindWith(obj interface{}, b router.Binding) error {
+func (this *Request) ShouldBindWith(obj any, b router.Binding) error {
     return this.ctx.ShouldBindWith(obj, b)
 }
 
-func (this *Request) ShouldBindBodyWith(obj interface{}, bb router.BindingBody) (err error) {
+func (this *Request) ShouldBindBodyWith(obj any, bb router.BindingBody) (err error) {
     return this.ctx.ShouldBindBodyWith(obj, bb)
 }
 
@@ -252,7 +252,7 @@ func (this *Request) Stream(step func(w io.Writer) bool) bool {
 }
 
 // Value
-func (this *Request) Value(key interface{}) interface{} {
+func (this *Request) Value(key any) any {
     return this.ctx.Value(key)
 }
 

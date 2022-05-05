@@ -123,7 +123,7 @@ type customValidator struct {
  * 字段验证
  */
 func (this *customValidator) Verify(
-    data interface{},
+    data any,
     message map[string]string,
 ) (bool, map[string]string) {
     result := make(map[string]string)
@@ -182,7 +182,7 @@ func (this *customValidator) Verify(
  * 当有错误时，此只返回单个错误描述
  */
 func (this *customValidator) VerifyReturnOneError(
-    data interface{},
+    data any,
     message map[string]string,
 ) (bool, string) {
     _, errs := this.Verify(data, message)
@@ -200,8 +200,8 @@ func (this *customValidator) VerifyReturnOneError(
  * map 验证
  */
 func (this *customValidator) ValidateMap(
-    data map[string]interface{},
-    rules map[string]interface{},
+    data map[string]any,
+    rules map[string]any,
     message map[string]string,
 ) (bool, map[string]string) {
     result := make(map[string]string)
@@ -256,8 +256,8 @@ func (this *customValidator) ValidateMap(
  * 当有错误时，此只返回单个错误描述
  */
 func (this *customValidator) ValidateMapReturnOneError(
-    data map[string]interface{},
-    rules map[string]interface{},
+    data map[string]any,
+    rules map[string]any,
     message map[string]string,
 ) (bool, string) {
     _, errs := this.ValidateMap(data, rules, message)

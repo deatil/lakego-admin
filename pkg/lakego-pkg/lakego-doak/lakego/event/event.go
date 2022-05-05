@@ -17,7 +17,7 @@ func NewEventListener(h EventHandler) *EventListener {
 }
 
 // 创建事件
-func NewEvent(eventType string, object interface{}) Event {
+func NewEvent(eventType string, object any) Event {
     e := Event{
         Type: eventType,
         Object: object,
@@ -75,7 +75,7 @@ type Event struct {
     Type string
 
     // 事件携带数据源
-    Object interface{}
+    Object any
 }
 
 // 克隆事件

@@ -37,16 +37,16 @@ type (
  */
 type Logrus struct {
     // 配置
-    Config map[string]interface{}
+    Config map[string]any
 }
 
 // 设置配置
-func (this *Logrus) WithConfig(config map[string]interface{}) {
+func (this *Logrus) WithConfig(config map[string]any) {
     this.Config = config
 }
 
 // 批量设置自定义变量
-func (this *Logrus) WithFields(fields map[string]interface{}) interface{} {
+func (this *Logrus) WithFields(fields map[string]any) any {
     data := make(Fields, len(fields))
     for k, v := range fields {
         data[k] = v
@@ -57,113 +57,113 @@ func (this *Logrus) WithFields(fields map[string]interface{}) interface{} {
 
 // 设置自定义变量
 // *logrus.Entry
-func (this *Logrus) WithField(key string, value interface{}) interface{} {
+func (this *Logrus) WithField(key string, value any) any {
     return this.getLogger().WithField(key, value)
 }
 
 // ========
 
-func (this *Logrus) Trace(args ...interface{}) {
+func (this *Logrus) Trace(args ...any) {
     this.getLogger().Trace(args...)
 }
 
-func (this *Logrus) Debug(args ...interface{}) {
+func (this *Logrus) Debug(args ...any) {
     this.getLogger().Debug(args...)
 }
 
-func (this *Logrus) Info(args ...interface{}) {
+func (this *Logrus) Info(args ...any) {
     this.getLogger().Info(args...)
 }
 
-func (this *Logrus) Warn(args ...interface{}) {
+func (this *Logrus) Warn(args ...any) {
     this.getLogger().Warn(args...)
 }
 
-func (this *Logrus) Warning(args ...interface{}) {
+func (this *Logrus) Warning(args ...any) {
     this.getLogger().Warning(args...)
 }
 
-func (this *Logrus) Error(args ...interface{}) {
+func (this *Logrus) Error(args ...any) {
     this.getLogger().Error(args...)
 }
 
-func (this *Logrus) Fatal(args ...interface{}) {
+func (this *Logrus) Fatal(args ...any) {
     this.getLogger().Fatal(args...)
 }
 
-func (this *Logrus) Panic(args ...interface{}) {
+func (this *Logrus) Panic(args ...any) {
     this.getLogger().Panic(args...)
 }
 
 // ========
 
-func (this *Logrus) Tracef(template string, args ...interface{}) {
+func (this *Logrus) Tracef(template string, args ...any) {
     this.getLogger().Tracef(template, args...)
 }
 
-func (this *Logrus) Debugf(template string, args ...interface{}) {
+func (this *Logrus) Debugf(template string, args ...any) {
     this.getLogger().Debugf(template, args...)
 }
 
-func (this *Logrus) Infof(template string, args ...interface{}) {
+func (this *Logrus) Infof(template string, args ...any) {
     this.getLogger().Infof(template, args...)
 }
 
-func (this *Logrus) Warnf(template string, args ...interface{}) {
+func (this *Logrus) Warnf(template string, args ...any) {
     this.getLogger().Warnf(template, args...)
 }
 
-func (this *Logrus) Warningf(template string, args ...interface{}) {
+func (this *Logrus) Warningf(template string, args ...any) {
     this.getLogger().Warningf(template, args...)
 }
 
-func (this *Logrus) Errorf(template string, args ...interface{}) {
+func (this *Logrus) Errorf(template string, args ...any) {
     this.getLogger().Errorf(template, args...)
 }
 
-func (this *Logrus) Fatalf(template string, args ...interface{}) {
+func (this *Logrus) Fatalf(template string, args ...any) {
     this.getLogger().Fatalf(template, args...)
 }
 
-func (this *Logrus) Panicf(template string, args ...interface{}) {
+func (this *Logrus) Panicf(template string, args ...any) {
     this.getLogger().Panicf(template, args...)
 }
 
 // ========
 
-func (this *Logrus) Traceln(args ...interface{}) {
+func (this *Logrus) Traceln(args ...any) {
     this.getLogger().Traceln(args...)
 }
 
-func (this *Logrus) Debugln(args ...interface{}) {
+func (this *Logrus) Debugln(args ...any) {
     this.getLogger().Debugln(args...)
 }
 
-func (this *Logrus) Infoln(args ...interface{}) {
+func (this *Logrus) Infoln(args ...any) {
     this.getLogger().Infoln(args...)
 }
 
-func (this *Logrus) Println(args ...interface{}) {
+func (this *Logrus) Println(args ...any) {
     this.getLogger().Println(args...)
 }
 
-func (this *Logrus) Warnln(args ...interface{}) {
+func (this *Logrus) Warnln(args ...any) {
     this.getLogger().Warnln(args...)
 }
 
-func (this *Logrus) Warningln(args ...interface{}) {
+func (this *Logrus) Warningln(args ...any) {
     this.getLogger().Warningln(args...)
 }
 
-func (this *Logrus) Errorln(args ...interface{}) {
+func (this *Logrus) Errorln(args ...any) {
     this.getLogger().Errorln(args...)
 }
 
-func (this *Logrus) Fatalln(args ...interface{}) {
+func (this *Logrus) Fatalln(args ...any) {
     this.getLogger().Fatalln(args...)
 }
 
-func (this *Logrus) Panicln(args ...interface{}) {
+func (this *Logrus) Panicln(args ...any) {
     this.getLogger().Panicln(args...)
 }
 

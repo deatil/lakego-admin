@@ -4,7 +4,7 @@ package router
  * New
  */
 func NewAlias() *Alias {
-    item := make(map[string]interface{})
+    item := make(map[string]any)
 
     return &Alias{
         item: item,
@@ -19,13 +19,13 @@ func NewAlias() *Alias {
  */
 type Alias struct {
     // 中间件
-    item map[string]interface{}
+    item map[string]any
 }
 
 /**
  * 设置中间件
  */
-func (this *Alias) With(name string, middleware interface{}) *Alias {
+func (this *Alias) With(name string, middleware any) *Alias {
     this.item[name] = middleware
 
     return this
@@ -34,7 +34,7 @@ func (this *Alias) With(name string, middleware interface{}) *Alias {
 /**
  * 获取
  */
-func (this *Alias) Get(name string) interface{} {
+func (this *Alias) Get(name string) any {
     if middleware, ok := this.item[name]; ok {
         return middleware
     }
@@ -52,7 +52,7 @@ func (this *Alias) Remove(name string) {
 /**
  * 获取全部
  */
-func (this *Alias) GetAll() map[string]interface{} {
+func (this *Alias) GetAll() map[string]any {
     return this.item
 }
 

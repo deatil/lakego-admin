@@ -103,7 +103,7 @@ func (this Rsa) FromYoumarkPKCS8WithPassword(key []byte, password string) Rsa {
         return this
     }
 
-    var parsedKey interface{}
+    var parsedKey any
     if parsedKey, _, err = youmarkPkcs8.ParsePrivateKey(block.Bytes, []byte(password)); err != nil {
         this.Error = err
 

@@ -55,7 +55,7 @@ func (this *Profile) Index(ctx *router.Context) {
 // @Security Bearer
 func (this *Profile) Update(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 检测
@@ -76,7 +76,7 @@ func (this *Profile) Update(ctx *router.Context) {
 
     err := model.NewAdmin().
         Where("id = ?", adminid).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "nickname": post["nickname"].(string),
             "email": post["email"].(string),
             "introduce": post["introduce"].(string),
@@ -105,7 +105,7 @@ func (this *Profile) Update(ctx *router.Context) {
 // @Security Bearer
 func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 检测
@@ -126,7 +126,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 
     err := model.NewAdmin().
         Where("id = ?", adminid).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "avatar": post["avatar"].(string),
         }).
         Error
@@ -155,7 +155,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 // @Security Bearer
 func (this *Profile) UpdatePasssword(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 检测
@@ -199,7 +199,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
 
     err := model.NewAdmin().
         Where("id = ?", adminid).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "password": pass,
             "password_salt": encrypt,
         }).

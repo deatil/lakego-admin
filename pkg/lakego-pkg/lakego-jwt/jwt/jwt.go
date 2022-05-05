@@ -20,22 +20,22 @@ func New() *JWT {
 
 type (
     // jwt 头数据
-    HeaderMap = map[string]interface{}
+    HeaderMap = map[string]any
 
     // jwt 载荷
-    ClaimMap = map[string]interface{}
+    ClaimMap = map[string]any
 
     // 验证方式列表
     SigningMethodMap = map[string]SigningMethod
 
     // 自定义签名方式
-    SigningFuncMap = map[string]func(*JWT) (interface{}, error)
+    SigningFuncMap = map[string]func(*JWT) (any, error)
 
     // 自定义解析方式
-    ParseFuncMap = map[string]func(*JWT) (interface{}, error)
+    ParseFuncMap = map[string]func(*JWT) (any, error)
 
     // jwt 解析后的头数据 map
-    ParsedHeaderMap = map[string]interface{}
+    ParsedHeaderMap = map[string]any
 )
 
 /**

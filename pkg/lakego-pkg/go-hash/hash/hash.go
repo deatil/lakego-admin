@@ -1,10 +1,5 @@
 package hash
 
-// 构造函数
-func NewHash() Hash {
-    return Hash{}
-}
-
 /**
  * hash
  *

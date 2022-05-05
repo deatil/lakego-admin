@@ -8,14 +8,14 @@ package interfaces
  */
 type Config interface {
     // 覆盖旧数据
-    Set(map[string]interface{}) Config
+    Set(map[string]any) Config
 
     // 设置单个新数据
-    With(string, interface{}) Config
+    With(string, any) Config
 
     // 是否存在
     Has(string) bool
 
     // 获取一个带默认的值
-    Get(string, ...interface{}) interface{}
+    Get(string, ...any) any
 }

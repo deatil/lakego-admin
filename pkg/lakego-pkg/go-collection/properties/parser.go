@@ -50,7 +50,7 @@ done:
 	return properties, nil
 }
 
-func (p *parser) errorf(format string, args ...interface{}) {
+func (p *parser) errorf(format string, args ...any) {
 	format = fmt.Sprintf("properties: Line %d: %s", p.lex.lineNumber(), format)
 	panic(fmt.Errorf(format, args...))
 }

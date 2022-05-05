@@ -9,7 +9,7 @@ import (
 )
 
 // 构造函数
-func New(conf ...map[string]interface{}) *Mysql {
+func New(conf ...map[string]any) *Mysql {
     m := &Mysql{}
 
     if len(conf) > 0 {

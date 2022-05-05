@@ -14,25 +14,25 @@ type Cache interface {
     GetDriver() Driver
 
     // 设置配置
-    WithConfig(map[string]interface{}) Cache
+    WithConfig(map[string]any) Cache
 
     // 获取配置
-    GetConfig(string) interface{}
+    GetConfig(string) any
 
     // 判断
     Has(string) bool
 
     // 获取
-    Get(string) (interface{}, error)
+    Get(string) (any, error)
 
     // 存储
-    Put(string, interface{}, int64) error
+    Put(string, any, int64) error
 
     // 存储一个不过期的数据
-    Forever(string, interface{}) error
+    Forever(string, any) error
 
     // 获取后删除
-    Pull(string) (interface{}, error)
+    Pull(string) (any, error)
 
     // 自增
     Increment(string, ...int64) error

@@ -86,7 +86,7 @@ var (
 )
 
 type (
-    ColorFunc = func(string, ...interface{})
+    ColorFunc = func(string, ...any)
 )
 
 // 根据选项显示颜色
@@ -101,7 +101,7 @@ func NewWithOption(value ...color.Attribute) *color.Color {
 
 // 实例化一个方法
 func NewColorFunc(colorname string) ColorFunc {
-    return func(msg string, v ...interface{}) {
+    return func(msg string, v ...any) {
         if len(msg) == 0 {
             return
         }
@@ -178,224 +178,224 @@ func BackgroundHiOption(name string) color.Attribute {
 
 // ======
 
-func ShowMessage(colorname string, msg string, arg ...interface{}) {
+func ShowMessage(colorname string, msg string, arg ...any) {
     NewColorFunc(colorname)(msg, arg...)
 }
 
-func ShowMessageln(colorname string, msg string, arg ...interface{}) {
+func ShowMessageln(colorname string, msg string, arg ...any) {
     msg = msg + "\n"
     ShowMessage(colorname, msg, arg...)
 }
 
-func Raw(msg string, arg ...interface{}) {
+func Raw(msg string, arg ...any) {
     ShowMessage("raw", msg, arg...)
 }
 
-func Rawln(msg string, arg ...interface{}) {
+func Rawln(msg string, arg ...any) {
     ShowMessageln("raw", msg, arg...)
 }
 
 // ======
 
-func Black(msg string, arg ...interface{}) {
+func Black(msg string, arg ...any) {
     ShowMessage("black", msg, arg...)
 }
 
-func Red(msg string, arg ...interface{}) {
+func Red(msg string, arg ...any) {
     ShowMessage("red", msg, arg...)
 }
 
-func Green(msg string, arg ...interface{}) {
+func Green(msg string, arg ...any) {
     ShowMessage("green", msg, arg...)
 }
 
-func Yellow(msg string, arg ...interface{}) {
+func Yellow(msg string, arg ...any) {
     ShowMessage("yellow", msg, arg...)
 }
 
-func Blue(msg string, arg ...interface{}) {
+func Blue(msg string, arg ...any) {
     ShowMessage("blue", msg, arg...)
 }
 
-func Magenta(msg string, arg ...interface{}) {
+func Magenta(msg string, arg ...any) {
     ShowMessage("magenta", msg, arg...)
 }
 
-func Cyan(msg string, arg ...interface{}) {
+func Cyan(msg string, arg ...any) {
     ShowMessage("cyan", msg, arg...)
 }
 
-func White(msg string, arg ...interface{}) {
+func White(msg string, arg ...any) {
     ShowMessage("white", msg, arg...)
 }
 
 
 // ======
 
-func Blackln(msg string, arg ...interface{}) {
+func Blackln(msg string, arg ...any) {
     ShowMessageln("black", msg, arg...)
 }
 
-func Redln(msg string, arg ...interface{}) {
+func Redln(msg string, arg ...any) {
     ShowMessageln("red", msg, arg...)
 }
 
-func Greenln(msg string, arg ...interface{}) {
+func Greenln(msg string, arg ...any) {
     ShowMessageln("green", msg, arg...)
 }
 
-func Yellowln(msg string, arg ...interface{}) {
+func Yellowln(msg string, arg ...any) {
     ShowMessageln("yellow", msg, arg...)
 }
 
-func Blueln(msg string, arg ...interface{}) {
+func Blueln(msg string, arg ...any) {
     ShowMessageln("blue", msg, arg...)
 }
 
-func Magentaln(msg string, arg ...interface{}) {
+func Magentaln(msg string, arg ...any) {
     ShowMessageln("magenta", msg, arg...)
 }
 
-func Cyanln(msg string, arg ...interface{}) {
+func Cyanln(msg string, arg ...any) {
     ShowMessageln("cyan", msg, arg...)
 }
 
-func Whiteln(msg string, arg ...interface{}) {
+func Whiteln(msg string, arg ...any) {
     ShowMessageln("white", msg, arg...)
 }
 
 // ======
 
-func BlackPrint(msg string, arg ...interface{}) {
+func BlackPrint(msg string, arg ...any) {
     color.Black(msg, arg...)
 }
 
-func RedPrint(msg string, arg ...interface{}) {
+func RedPrint(msg string, arg ...any) {
     color.Red(msg, arg...)
 }
 
-func GreenPrint(msg string, arg ...interface{}) {
+func GreenPrint(msg string, arg ...any) {
     color.Green(msg, arg...)
 }
 
-func YellowPrint(msg string, arg ...interface{}) {
+func YellowPrint(msg string, arg ...any) {
     color.Yellow(msg, arg...)
 }
 
-func BluePrint(msg string, arg ...interface{}) {
+func BluePrint(msg string, arg ...any) {
     color.Blue(msg, arg...)
 }
 
-func MagentaPrint(msg string, arg ...interface{}) {
+func MagentaPrint(msg string, arg ...any) {
     color.Magenta(msg, arg...)
 }
 
-func CyanPrint(msg string, arg ...interface{}) {
+func CyanPrint(msg string, arg ...any) {
     color.Cyan(msg, arg...)
 }
 
-func WhitePrint(msg string, arg ...interface{}) {
+func WhitePrint(msg string, arg ...any) {
     color.White(msg, arg...)
 }
 
 // ======
 
-func BlackString(msg string, arg ...interface{}) string {
+func BlackString(msg string, arg ...any) string {
     return color.BlackString(msg, arg...)
 }
 
-func RedString(msg string, arg ...interface{}) string {
+func RedString(msg string, arg ...any) string {
     return color.RedString(msg, arg...)
 }
 
-func GreenString(msg string, arg ...interface{}) string {
+func GreenString(msg string, arg ...any) string {
     return color.GreenString(msg, arg...)
 }
 
-func YellowString(msg string, arg ...interface{}) string {
+func YellowString(msg string, arg ...any) string {
     return color.YellowString(msg, arg...)
 }
 
-func BlueString(msg string, arg ...interface{}) string {
+func BlueString(msg string, arg ...any) string {
     return color.BlueString(msg, arg...)
 }
 
-func MagentaString(msg string, arg ...interface{}) string {
+func MagentaString(msg string, arg ...any) string {
     return color.MagentaString(msg, arg...)
 }
 
-func CyanString(msg string, arg ...interface{}) string {
+func CyanString(msg string, arg ...any) string {
     return color.CyanString(msg, arg...)
 }
 
-func WhiteString(msg string, arg ...interface{}) string {
+func WhiteString(msg string, arg ...any) string {
     return color.WhiteString(msg, arg...)
 }
 
 // ======
 
-func HiBlack(format string, arg ...interface{}) {
+func HiBlack(format string, arg ...any) {
     color.HiBlack(format, arg...)
 }
 
-func HiRed(format string, arg ...interface{}) {
+func HiRed(format string, arg ...any) {
     color.HiRed(format, arg...)
 }
 
-func HiGreen(format string, arg ...interface{}) {
+func HiGreen(format string, arg ...any) {
     color.HiGreen(format, arg...)
 }
 
-func HiYellow(format string, arg ...interface{}) {
+func HiYellow(format string, arg ...any) {
     color.HiYellow(format, arg...)
 }
 
-func HiBlue(format string, arg ...interface{}) {
+func HiBlue(format string, arg ...any) {
     color.HiBlue(format, arg...)
 }
 
-func HiMagenta(format string, arg ...interface{}) {
+func HiMagenta(format string, arg ...any) {
     color.HiMagenta(format, arg...)
 }
 
-func HiCyan(format string, arg ...interface{}) {
+func HiCyan(format string, arg ...any) {
     color.HiCyan(format, arg...)
 }
 
-func HiWhite(format string, arg ...interface{}) {
+func HiWhite(format string, arg ...any) {
     color.HiWhite(format, arg...)
 }
 
 // ======
 
-func HiBlackString(format string, arg ...interface{}) string {
+func HiBlackString(format string, arg ...any) string {
     return color.HiBlackString(format, arg...)
 }
 
-func HiRedString(format string, arg ...interface{}) string {
+func HiRedString(format string, arg ...any) string {
     return color.HiRedString(format, arg...)
 }
 
-func HiGreenString(format string, arg ...interface{}) string {
+func HiGreenString(format string, arg ...any) string {
     return color.HiGreenString(format, arg...)
 }
 
-func HiYellowString(format string, arg ...interface{}) string {
+func HiYellowString(format string, arg ...any) string {
     return color.HiYellowString(format, arg...)
 }
 
-func HiBlueString(format string, arg ...interface{}) string {
+func HiBlueString(format string, arg ...any) string {
     return color.HiBlueString(format, arg...)
 }
 
-func HiMagentaString(format string, arg ...interface{}) string {
+func HiMagentaString(format string, arg ...any) string {
     return color.HiMagentaString(format, arg...)
 }
 
-func HiCyanString(format string, arg ...interface{}) string {
+func HiCyanString(format string, arg ...any) string {
     return color.HiCyanString(format, arg...)
 }
 
-func HiWhiteString(format string, arg ...interface{}) string {
+func HiWhiteString(format string, arg ...any) string {
     return color.HiWhiteString(format, arg...)
 }

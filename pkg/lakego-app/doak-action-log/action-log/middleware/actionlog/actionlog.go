@@ -32,7 +32,7 @@ func recordLog(ctx *router.Context) {
     method := ctx.Request.Method
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.ShouldBind(&post)
 
     if raw != "" {

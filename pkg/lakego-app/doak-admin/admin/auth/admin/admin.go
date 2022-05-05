@@ -13,7 +13,7 @@ import (
 // 管理员账号结构体
 type Admin struct {
     Id          string
-    Data        map[string]interface{}
+    Data        map[string]any
     AccessToken string
 }
 
@@ -39,12 +39,12 @@ func (this *Admin) GetId() string {
     return this.Id
 }
 
-func (this *Admin) WithData(data map[string]interface{}) *Admin {
+func (this *Admin) WithData(data map[string]any) *Admin {
     this.Data = data
     return this
 }
 
-func (this *Admin) GetData() map[string]interface{} {
+func (this *Admin) GetData() map[string]any {
     return this.Data
 }
 
@@ -85,15 +85,15 @@ func (this *Admin) IsGroupActive() bool {
         return true
     }
 
-    adminGroups := this.Data["Groups"].([]interface{})
+    adminGroups := this.Data["Groups"].([]any)
     if len(adminGroups) == 0 {
         return false
     }
 
     status := collection.
         Collect(adminGroups).
-        Every(func(item, value interface{}) bool {
-            value2 := value.(map[string]interface{})
+        Every(func(item, value any) bool {
+            value2 := value.(map[string]any)
 
             status := value2["status"]
             if int(status.(float64)) == 1 {
@@ -107,7 +107,7 @@ func (this *Admin) IsGroupActive() bool {
 }
 
 // 当前账号信息
-func (this *Admin) GetProfile() map[string]interface{} {
+func (this *Admin) GetProfile() map[string]any {
     profile := collection.Collect(this.Data).
         Only([]string{
             "id", "name", "nickname",
@@ -137,20 +137,20 @@ func (this *Admin) HasAccess(slug string, method string) bool {
 }
 
 // 当前账号所属分组
-func (this *Admin) GetGroups() []map[string]interface{} {
-    groups := make([]map[string]interface{}, 0)
+func (this *Admin) GetGroups() []map[string]any {
+    groups := make([]map[string]any, 0)
 
     // 格式化分组
-    adminGroups := this.Data["Groups"].([]interface{})
+    adminGroups := this.Data["Groups"].([]any)
     if len(adminGroups) == 0 {
         return groups
     }
 
     groups = collection.
         Collect(adminGroups).
-        Each(func(item, value interface{}) (interface{}, bool) {
-            value2 := value.(map[string]interface{})
-            group := map[string]interface{}{
+        Each(func(item, value any) (any, bool) {
+            value2 := value.(map[string]any)
+            group := map[string]any{
                 "id": value2["id"],
                 "title": value2["title"],
                 "description": value2["description"],
@@ -165,7 +165,7 @@ func (this *Admin) GetGroups() []map[string]interface{} {
 
 // 当前账号所属分组
 func (this *Admin) GetGroupIds() []string {
-    adminGroups := this.Data["Groups"].([]interface{})
+    adminGroups := this.Data["Groups"].([]any)
 
     if len(adminGroups) == 0 {
         return []string{}
@@ -180,8 +180,8 @@ func (this *Admin) GetGroupIds() []string {
 }
 
 // 获取 GroupChildren
-func (this *Admin) GetGroupChildren() []map[string]interface{} {
-    list := make([]map[string]interface{}, 0)
+func (this *Admin) GetGroupChildren() []map[string]any {
+    list := make([]map[string]any, 0)
 
     groupids := this.GetGroupIds()
     if len(groupids) == 0 {
@@ -218,12 +218,12 @@ func (this *Admin) GetGroupChildrenIds() []string {
 }
 
 // 获取 rules
-func (this *Admin) GetRules() []map[string]interface{} {
+func (this *Admin) GetRules() []map[string]any {
     if this.IsSuperAdministrator() {
         return authruleRepository.GetAllRule()
     }
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     groupids := this.GetGroupIds()
     if len(groupids) == 0 {

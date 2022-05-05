@@ -4,14 +4,6 @@ import (
     "time"
 )
 
-// 构造函数
-func New() Datebin {
-    return Datebin{
-        weekStartAt: time.Monday,
-        loc: time.Local,
-    }
-}
-
 var (
     // 解析的格式字符
     PaseFormats = map[string]string{

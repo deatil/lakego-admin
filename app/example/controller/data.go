@@ -42,7 +42,7 @@ func (this *Data) Index(ctx *gin.Context) {
  * 信息2
  */
 func (this *Data) Show(ctx *gin.Context) {
-    this.Fetch(ctx, "example::show.index", map[string]interface{}{
+    this.Fetch(ctx, "example::show.index", map[string]any{
         "msg": "测试数据",
     })
 }
@@ -70,12 +70,12 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // 管道测试
     data2 := pipeline.NewPipeline().
-        WithCarryCallback(func(carry interface{}) interface{} {
+        WithCarryCallback(func(carry any) any {
             return carry
         }).
         Send("开始的数据").
         Through(
-            func(data interface{}, next pipeline.NextFunc) interface{} {
+            func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第1次数据1"
 
@@ -84,7 +84,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
                 return data2
             },
-            func(data interface{}, next pipeline.NextFunc) interface{} {
+            func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第2次数据1"
 
@@ -94,7 +94,7 @@ func (this *Data) Error(ctx *gin.Context) {
                 return data2
             },
             // 不符时跳过
-            func(data interface{}, next pipeline.NextFunc) {
+            func(data any, next pipeline.NextFunc) {
             },
             PipelineEx{},
         ).
@@ -102,11 +102,11 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // hub 测试
     hub := pipeline.NewHub()
-    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object interface{}) interface{} {
+    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object any) any {
         data := pipe.
             Send(object).
             Through(
-                func(data interface{}, next pipeline.NextFunc) interface{} {
+                func(data any, next pipeline.NextFunc) any {
                     old := data.(string)
                     old = old + ", 第1次数据1"
 
@@ -227,7 +227,7 @@ func (this *Data) Error(ctx *gin.Context) {
 // 管道测试
 type PipelineEx struct {}
 
-func (this PipelineEx) Handle(data interface{}, next pipeline.NextFunc) interface{} {
+func (this PipelineEx) Handle(data any, next pipeline.NextFunc) any {
     old := data.(string)
 
     old = old + ", struct 数据开始"

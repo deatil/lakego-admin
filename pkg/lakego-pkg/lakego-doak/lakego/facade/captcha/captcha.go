@@ -57,7 +57,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     }
 
     // 配置
-    storeConf := storeConfig.(map[string]interface{})
+    storeConf := storeConfig.(map[string]any)
 
     storeType := storeConf["type"].(string)
     store := register.
@@ -80,7 +80,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     }
 
     // 驱动配置
-    driverConf := driverConfig.(map[string]interface{})
+    driverConf := driverConfig.(map[string]any)
 
     driverType := driverConf["type"].(string)
     driver := register.
@@ -109,8 +109,8 @@ func Register() {
         // 注册存储
         register.
             NewManagerWithPrefix("captcha-store").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
-                "redis": func(conf map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
+                "redis": func(conf map[string]any) any {
                     store := &redisStore.Redis{}
 
                     store.WithConfig(conf)
@@ -119,14 +119,14 @@ func Register() {
                     return store
                 },
                 // 验证码包该驱动有问题
-                "syncmap": func(conf map[string]interface{}) interface{} {
+                "syncmap": func(conf map[string]any) any {
                     liveTime := time.Minute * time.Duration(int64(conf["livetime"].(int)))
 
                     syncmap := base64Captcha.NewStoreSyncMap(liveTime)
 
                     return syncmap
                 },
-                "memory": func(conf map[string]interface{}) interface{} {
+                "memory": func(conf map[string]any) any {
                     collectNum := conf["collectnum"].(int)
                     expiration := time.Minute * time.Duration(int64(conf["expiration"].(int)))
 
@@ -139,9 +139,9 @@ func Register() {
         // 注册驱动
         register.
             NewManagerWithPrefix("captcha-driver").
-            RegisterMany(map[string]func(map[string]interface{}) interface{} {
+            RegisterMany(map[string]func(map[string]any) any {
                 // 字符
-                "string": func(conf map[string]interface{}) interface{} {
+                "string": func(conf map[string]any) any {
                     /*
                     //go:embed fonts/*.ttf
                     //go:embed fonts/*.ttc
@@ -151,9 +151,9 @@ func Register() {
                     var fontsStorage *base64Captcha.EmbeddedFontsStorage = base64Captcha.NewEmbeddedFontsStorage(embeddedFontsFS)
                     */
 
-                    bgColor := conf["bgcolor"].(map[string]interface{})
+                    bgColor := conf["bgcolor"].(map[string]any)
 
-                    fonts := conf["fonts"].([]interface{})
+                    fonts := conf["fonts"].([]any)
                     newFonts := make([]string, 0)
                     for _, font := range fonts {
                         newFonts = append(newFonts, font.(string))
@@ -182,10 +182,10 @@ func Register() {
                     return driver
                 },
                 // 中文
-                "chinese": func(conf map[string]interface{}) interface{} {
-                    bgColor := conf["bgcolor"].(map[string]interface{})
+                "chinese": func(conf map[string]any) any {
+                    bgColor := conf["bgcolor"].(map[string]any)
 
-                    fonts := conf["fonts"].([]interface{})
+                    fonts := conf["fonts"].([]any)
                     newFonts := make([]string, 0)
                     for _, font := range fonts {
                         newFonts = append(newFonts, font.(string))
@@ -214,10 +214,10 @@ func Register() {
                     return driver
                 },
                 // 数学公式
-                "math": func(conf map[string]interface{}) interface{} {
-                    bgColor := conf["bgcolor"].(map[string]interface{})
+                "math": func(conf map[string]any) any {
+                    bgColor := conf["bgcolor"].(map[string]any)
 
-                    fonts := conf["fonts"].([]interface{})
+                    fonts := conf["fonts"].([]any)
                     newFonts := make([]string, 0)
                     for _, font := range fonts {
                         newFonts = append(newFonts, font.(string))
@@ -244,7 +244,7 @@ func Register() {
                     return driver
                 },
                 // 音频
-                "audio": func(conf map[string]interface{}) interface{} {
+                "audio": func(conf map[string]any) any {
                     driver := base64Captcha.NewDriverAudio(
                         conf["length"].(int),
                         conf["language"].(string),
@@ -253,7 +253,7 @@ func Register() {
                     return driver
                 },
                 // digit
-                "digit": func(conf map[string]interface{}) interface{} {
+                "digit": func(conf map[string]any) any {
                     driver := base64Captcha.NewDriverDigit(
                         conf["height"].(int),
                         conf["width"].(int),

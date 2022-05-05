@@ -8,7 +8,7 @@ import (
 )
 
 type MapCollection struct {
-    value map[string]interface{}
+    value map[string]any
     BaseCollection
 }
 
@@ -16,7 +16,7 @@ type MapCollection struct {
 func (c MapCollection) Only(keys []string) Collection {
     var (
         d MapCollection
-        m = make(map[string]interface{}, 0)
+        m = make(map[string]any, 0)
     )
 
     for _, k := range keys {
@@ -30,7 +30,7 @@ func (c MapCollection) Only(keys []string) Collection {
 
 // ToStruct turn the collection to the specified struct using mapstructure.
 // https://github.com/mitchellh/mapstructure
-func (c MapCollection) ToStruct(dist interface{}) {
+func (c MapCollection) ToStruct(dist any) {
     if err := mapstructure.Decode(c.value, dist); err != nil {
         panic(err)
     }
@@ -59,7 +59,7 @@ func (c MapCollection) Select(keys ...string) Collection {
 }
 
 // Prepend adds an item to the beginning of the collection.
-func (c MapCollection) Prepend(values ...interface{}) Collection {
+func (c MapCollection) Prepend(values ...any) Collection {
 
     var m = copyMap(c.value)
     m[values[0].(string)] = values[1]
@@ -68,12 +68,12 @@ func (c MapCollection) Prepend(values ...interface{}) Collection {
 }
 
 // ToMap converts the collection into a plain golang map.
-func (c MapCollection) ToMap() map[string]interface{} {
+func (c MapCollection) ToMap() map[string]any {
     return c.value
 }
 
 // Contains determines whether the collection contains a given item.
-func (c MapCollection) Contains(value ...interface{}) bool {
+func (c MapCollection) Contains(value ...any) bool {
     if callback, ok := value[0].(CB); ok {
         for k, v := range c.value {
             if callback(k, v) {
@@ -103,8 +103,8 @@ func (c MapCollection) Dump() {
 
 // DiffAssoc compares the collection against another collection or a plain PHP  array based on its keys and values.
 // This method will return the key / value pairs in the original collection that are not present in the given collection.
-func (c MapCollection) DiffAssoc(m map[string]interface{}) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapCollection) DiffAssoc(m map[string]any) Collection {
+    var d = make(map[string]any, 0)
     for key, value := range m {
         if v, ok := c.value[key]; ok {
             if v != value {
@@ -119,8 +119,8 @@ func (c MapCollection) DiffAssoc(m map[string]interface{}) Collection {
 
 // DiffKeys compares the collection against another collection or a plain PHP array based on its keys.
 // This method will return the key / value pairs in the original collection that are not present in the given collection.
-func (c MapCollection) DiffKeys(m map[string]interface{}) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapCollection) DiffKeys(m map[string]any) Collection {
+    var d = make(map[string]any, 0)
     for key, value := range c.value {
         if _, ok := m[key]; !ok {
             d[key] = value
@@ -132,10 +132,10 @@ func (c MapCollection) DiffKeys(m map[string]interface{}) Collection {
 }
 
 // Each iterates over the items in the collection and passes each item to a callback.
-func (c MapCollection) Each(cb func(item, value interface{}) (interface{}, bool)) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapCollection) Each(cb func(item, value any) (any, bool)) Collection {
+    var d = make(map[string]any, 0)
     var (
-        newValue interface{}
+        newValue any
         stop     = false
     )
     for key, value := range c.value {
@@ -174,8 +174,8 @@ func (c MapCollection) Except(keys []string) Collection {
 }
 
 // FlatMap iterates through the collection and passes each value to the given callback.
-func (c MapCollection) FlatMap(cb func(value interface{}) interface{}) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapCollection) FlatMap(cb func(value any) any) Collection {
+    var d = make(map[string]any, 0)
     for key, value := range c.value {
         d[key] = cb(value)
     }
@@ -186,7 +186,7 @@ func (c MapCollection) FlatMap(cb func(value interface{}) interface{}) Collectio
 
 // Flip swaps the collection's keys with their corresponding values.
 func (c MapCollection) Flip() Collection {
-    var d = make(map[string]interface{}, 0)
+    var d = make(map[string]any, 0)
     for key, value := range c.value {
         d[fmt.Sprintf("%v", value)] = key
     }
@@ -211,7 +211,7 @@ func (c MapCollection) Forget(k string) Collection {
 }
 
 // Get returns the item at a given key. If the key does not exist, null is returned.
-func (c MapCollection) Get(k string, v ...interface{}) interface{} {
+func (c MapCollection) Get(k string, v ...any) any {
     if len(v) > 0 {
         if value, ok := c.value[k]; ok {
             return value
@@ -241,8 +241,8 @@ func (c MapCollection) Has(keys ...string) bool {
 }
 
 // IntersectByKeys removes any keys from the original collection that are not present in the given array or collection.
-func (c MapCollection) IntersectByKeys(m map[string]interface{}) Collection {
-    var d = make(map[string]interface{}, 0)
+func (c MapCollection) IntersectByKeys(m map[string]any) Collection {
+    var d = make(map[string]any, 0)
     for key, value := range c.value {
         for kk := range m {
             if kk == key {
@@ -279,8 +279,8 @@ func (c MapCollection) Keys() Collection {
 // Merge merges the given array or collection with the original collection. If a string key in the given items
 // matches a string key in the original collection, the given items's value will overwrite the value in the
 // original collection.
-func (c MapCollection) Merge(i interface{}) Collection {
-    m := i.(map[string]interface{})
+func (c MapCollection) Merge(i any) Collection {
+    m := i.(map[string]any)
     var d = copyMap(c.value)
 
     for key, value := range m {

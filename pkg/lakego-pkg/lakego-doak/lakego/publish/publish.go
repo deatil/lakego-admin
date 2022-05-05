@@ -48,7 +48,7 @@ type Publish struct {
 }
 
 // 添加推送
-func (this *Publish) Publish(class interface{}, paths map[string]string, group string) *Publish {
+func (this *Publish) Publish(class any, paths map[string]string, group string) *Publish {
     className := this.GetStructName(class)
 
     this.EnsurePublishArrayInitialized(className)
@@ -170,7 +170,7 @@ func (this *Publish) PublishableGroups() []string {
 }
 
 // 反射获取结构体名称
-func (this *Publish) GetStructName(name interface{}) string {
+func (this *Publish) GetStructName(name any) string {
     elem := reflect.TypeOf(name).Elem()
 
     return elem.PkgPath() + "." + elem.Name()

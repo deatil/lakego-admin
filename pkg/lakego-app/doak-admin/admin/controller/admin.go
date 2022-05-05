@@ -6,9 +6,9 @@ import (
 
     "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-tree/tree"
     "github.com/deatil/go-datebin/datebin"
 
-    "github.com/deatil/lakego-doak/lakego/tree"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
@@ -109,7 +109,7 @@ func (this *Admin) Index(ctx *router.Context) {
         Offset(newStart).
         Limit(newLimit)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     // 列表
     adminModel = adminModel.
@@ -136,7 +136,7 @@ func (this *Admin) Index(ctx *router.Context) {
         return
     }
 
-    newlist := make([]map[string]interface{}, 0)
+    newlist := make([]map[string]any, 0)
     for _, item := range list {
         item["avatar_url"] = model.AttachmentUrl(item["avatar"].(string))
         newlist = append(newlist, item)
@@ -183,12 +183,12 @@ func (this *Admin) Detail(ctx *router.Context) {
 
     // 结构体转map
     data, _ := json.Marshal(&info)
-    adminData := map[string]interface{}{}
+    adminData := map[string]any{}
     json.Unmarshal(data, &adminData)
 
-    newInfoGroups := make([]map[string]interface{}, 0)
-    if len(adminData["Groups"].([]interface{})) > 0 {
-        newInfoGroups = collection.Collect(adminData["Groups"].([]interface{})).
+    newInfoGroups := make([]map[string]any, 0)
+    if len(adminData["Groups"].([]any)) > 0 {
+        newInfoGroups = collection.Collect(adminData["Groups"].([]any)).
             Select("id", "parentid", "title", "description").
             ToMapArray()
     }
@@ -244,7 +244,7 @@ func (this *Admin) Rules(ctx *router.Context) {
 
     // 结构体转map
     data, _ := json.Marshal(&info)
-    adminData := map[string]interface{}{}
+    adminData := map[string]any{}
     json.Unmarshal(data, &adminData)
 
     groupids := collection.Collect(adminData["Groups"]).
@@ -271,7 +271,7 @@ func (this *Admin) Groups(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     adminData := adminInfo.(*admin.Admin)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
     if adminData.IsSuperAdministrator() {
         err := model.NewAuthGroup().
             Order("listorder ASC").
@@ -291,9 +291,9 @@ func (this *Admin) Groups(ctx *router.Context) {
 
         list = collection.
             Collect(list).
-            Each(func(item, value interface{}) (interface{}, bool) {
-                value2 := value.(map[string]interface{})
-                group := map[string]interface{}{
+            Each(func(item, value any) (any, bool) {
+                value2 := value.(map[string]any)
+                group := map[string]any{
                     "id": value2["id"],
                     "parentid": goch.ToString(value2["parentid"]),
                     "title": value2["title"],
@@ -333,7 +333,7 @@ func (this *Admin) Groups(ctx *router.Context) {
 // @Security Bearer
 func (this *Admin) Create(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := adminValidate.Create(post)
@@ -348,7 +348,7 @@ func (this *Admin) Create(ctx *router.Context) {
     }
 
     // 模型
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Where("name = ?", post["name"].(string)).
         Or("email = ?", post["email"].(string)).
@@ -416,7 +416,7 @@ func (this *Admin) Update(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -428,7 +428,7 @@ func (this *Admin) Update(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := adminValidate.Update(post)
@@ -446,7 +446,7 @@ func (this *Admin) Update(ctx *router.Context) {
     db := model.NewDB()
 
     // 验证
-    result2 := map[string]interface{}{}
+    result2 := map[string]any{}
     err2 := model.NewAdmin().
         Where(db.Where("id != ?", id).Where("name = ?", post["name"].(string))).
         Or(db.Where("id != ?", id).Where("email = ?", post["email"].(string))).
@@ -460,7 +460,7 @@ func (this *Admin) Update(ctx *router.Context) {
     err3 := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "name": post["name"].(string),
             "nickname": post["nickname"].(string),
             "email": post["email"].(string),
@@ -499,7 +499,7 @@ func (this *Admin) Delete(ctx *router.Context) {
         return
     }
 
-    result := map[string]interface{}{}
+    result := map[string]any{}
 
     // 模型
     err := model.NewAdmin().
@@ -558,7 +558,7 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -570,7 +570,7 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := adminValidate.UpdateAvatar(post)
@@ -582,7 +582,7 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
     err3 := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "avatar": post["avatar"].(string),
         }).
         Error
@@ -619,7 +619,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -631,7 +631,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     password := post["password"].(string)
@@ -646,7 +646,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
     err3 := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "password": pass,
             "password_salt": encrypt,
         }).
@@ -683,7 +683,7 @@ func (this *Admin) Enable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -695,7 +695,7 @@ func (this *Admin) Enable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
@@ -706,7 +706,7 @@ func (this *Admin) Enable(ctx *router.Context) {
     err2 := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 1,
         }).
         Error
@@ -742,7 +742,7 @@ func (this *Admin) Disable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -754,7 +754,7 @@ func (this *Admin) Disable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
@@ -765,7 +765,7 @@ func (this *Admin) Disable(ctx *router.Context) {
     err2 := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 0,
         }).
         Error
@@ -830,7 +830,7 @@ func (this *Admin) Logout(ctx *router.Context) {
 
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "refresh_time": int(datebin.NowTime()),
             "refresh_ip": router.GetRequestIp(ctx),
         })
@@ -863,7 +863,7 @@ func (this *Admin) Access(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAdmin().
         Scopes(scope.AdminWithAccess(ctx)).
         Where("id = ?", id).
@@ -885,7 +885,7 @@ func (this *Admin) Access(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     access := post["access"].(string)
@@ -970,7 +970,7 @@ func (this *Admin) ResetPermission(ctx *router.Context) {
     // 添加权限
     if len(ruleListMap) > 0 {
         for _, rv := range ruleListMap {
-            rule := rv["Rule"].(map[string]interface{})
+            rule := rv["Rule"].(map[string]any)
 
             cas.AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
         }

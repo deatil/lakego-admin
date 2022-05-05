@@ -10,7 +10,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/interfaces"
 )
 
-func New(conf ...map[string]interface{}) *Driver {
+func New(conf ...map[string]any) *Driver {
     driver := &Driver{}
 
     if len(conf) > 0 {
@@ -31,18 +31,18 @@ type Driver struct {
     db *gorm.DB
 
     // 配置
-    Config map[string]interface{}
+    Config map[string]any
 }
 
 // 设置配置
-func (this *Driver) WithConfig(config map[string]interface{}) interfaces.Driver {
+func (this *Driver) WithConfig(config map[string]any) interfaces.Driver {
     this.Config = config
 
     return this
 }
 
 // 获取配置
-func (this *Driver) GetConfig(name string) interface{} {
+func (this *Driver) GetConfig(name string) any {
     if data, ok := this.Config[name]; ok {
         return data
     }

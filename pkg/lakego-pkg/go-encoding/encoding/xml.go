@@ -6,7 +6,7 @@ import (
 )
 
 // xml 编码
-func XmlEncode(src interface{}) (string, error) {
+func XmlEncode(src any) (string, error) {
     buf := bytes.NewBuffer(nil)
 
     enc := xml.NewEncoder(buf)
@@ -19,7 +19,7 @@ func XmlEncode(src interface{}) (string, error) {
 }
 
 // xml 解码
-func XmlDecode(src string, dst interface{}) error {
+func XmlDecode(src string, dst any) error {
     buf := bytes.NewBuffer([]byte(src))
     dec := xml.NewDecoder(buf)
     return dec.Decode(dst)

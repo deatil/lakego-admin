@@ -5,9 +5,9 @@ import (
 )
 
 // 创建验证
-func Create(data map[string]interface{}) string {
+func Create(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "parentid": "required",
         "title": "required,max=50",
         "status": "required",
@@ -30,9 +30,9 @@ func Create(data map[string]interface{}) string {
 }
 
 // 编辑验证
-func Update(data map[string]interface{}) string {
+func Update(data map[string]any) string {
     // 规则
-    rules := map[string]interface{}{
+    rules := map[string]any{
         "parentid": "required",
         "title": "required,max=50",
         "status": "required",

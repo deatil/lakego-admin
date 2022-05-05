@@ -9,7 +9,7 @@ import(
 )
 
 // 文件系统实例化
-func NewMountManager(filesystems ...map[string]interface{}) *MountManager {
+func NewMountManager(filesystems ...map[string]any) *MountManager {
     ifs := make(map[string]interfaces.Fllesystem)
     mm := &MountManager{
         filesystems: ifs,
@@ -33,7 +33,7 @@ type MountManager struct {
 }
 
 // 批量
-func (this *MountManager) MountFilesystems(filesystems map[string]interface{}) *MountManager {
+func (this *MountManager) MountFilesystems(filesystems map[string]any) *MountManager {
     for prefix, filesystem := range filesystems {
         this.MountFilesystem(prefix, filesystem.(interfaces.Fllesystem))
     }
@@ -88,7 +88,7 @@ func (this *MountManager) GetPrefixAndPath(path string) (string, string) {
 }
 
 // 列出内容
-func (this *MountManager) ListContents(directory string, recursive ...bool) ([]map[string]interface{}, error) {
+func (this *MountManager) ListContents(directory string, recursive ...bool) ([]map[string]any, error) {
     prefix, dir := this.GetPrefixAndPath(directory)
 
     filesystem := this.GetFilesystem(prefix)
@@ -107,7 +107,7 @@ func (this *MountManager) ListContents(directory string, recursive ...bool) ([]m
 }
 
 // 复制
-func (this *MountManager) Copy(from string, to string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) Copy(from string, to string, conf ...map[string]any) (bool, error) {
     prefixFrom, pathFrom := this.GetPrefixAndPath(from)
 
     buffer, err := this.GetFilesystem(prefixFrom).ReadStream(pathFrom)
@@ -129,7 +129,7 @@ func (this *MountManager) Copy(from string, to string, conf ...map[string]interf
 }
 
 // 移动
-func (this *MountManager) Move(from string, to string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) Move(from string, to string, conf ...map[string]any) (bool, error) {
     prefixFrom, pathFrom := this.GetPrefixAndPath(from)
     prefixTo, pathTo := this.GetPrefixAndPath(to)
 
@@ -180,7 +180,7 @@ func (this *MountManager) ReadStream(path string) (*os.File, error) {
 }
 
 // 信息数据
-func (this *MountManager) GetMetadata(path string) (map[string]interface{}, error) {
+func (this *MountManager) GetMetadata(path string) (map[string]any, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).GetMetadata(newPath)
@@ -215,28 +215,28 @@ func (this *MountManager) GetVisibility(path string) (string, error) {
 }
 
 // 写入文件
-func (this *MountManager) Write(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) Write(path string, contents string, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Write(newPath, contents, conf...)
 }
 
 // 写入数据流
-func (this *MountManager) WriteStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) WriteStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).WriteStream(newPath, resource, conf...)
 }
 
 // 更新字符
-func (this *MountManager) Update(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) Update(path string, contents string, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Update(newPath, contents, conf...)
 }
 
 // 更新数据流
-func (this *MountManager) UpdateStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) UpdateStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).UpdateStream(newPath, resource, conf...)
@@ -264,7 +264,7 @@ func (this *MountManager) DeleteDir(dirname string) (bool, error) {
 }
 
 // 创建文件夹
-func (this *MountManager) CreateDir(dirname string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) CreateDir(dirname string, conf ...map[string]any) (bool, error) {
     prefix, newDirname := this.GetPrefixAndPath(dirname)
 
     return this.GetFilesystem(prefix).CreateDir(newDirname, conf...)
@@ -278,21 +278,21 @@ func (this *MountManager) SetVisibility(path string, visibility string) (bool, e
 }
 
 // 更新
-func (this *MountManager) Put(path string, contents string, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) Put(path string, contents string, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Put(newPath, contents, conf...)
 }
 
 // 更新数据流
-func (this *MountManager) PutStream(path string, resource io.Reader, conf ...map[string]interface{}) (bool, error) {
+func (this *MountManager) PutStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).PutStream(newPath, resource, conf...)
 }
 
 // 读取并删除
-func (this *MountManager) ReadAndDelete(path string) (interface{}, error) {
+func (this *MountManager) ReadAndDelete(path string) (any, error) {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).ReadAndDelete(newPath)
@@ -301,7 +301,7 @@ func (this *MountManager) ReadAndDelete(path string) (interface{}, error) {
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (this *MountManager) Get(path string, handler ...func(interfaces.Fllesystem, string) interface{}) interface{} {
+func (this *MountManager) Get(path string, handler ...func(interfaces.Fllesystem, string) any) any {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Get(newPath, handler...)

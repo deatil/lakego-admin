@@ -27,7 +27,7 @@ func main() {
     data2 := pipeline.NewPipeline().
         Send("开始的数据").
         Through(
-            func(data interface{}, next pipeline.NextFunc) interface{} {
+            func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第1次数据1"
 
@@ -36,7 +36,7 @@ func main() {
 
                 return data2
             },
-            func(data interface{}, next pipeline.NextFunc) interface{} {
+            func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第2次数据1"
 
@@ -51,11 +51,11 @@ func main() {
 
     // hub 测试
     hub := pipeline.NewHub()
-    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object interface{}) interface{} {
+    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object any) any {
         data := pipe.
             Send(object).
             Through(
-                func(data interface{}, next pipeline.NextFunc) interface{} {
+                func(data any, next pipeline.NextFunc) any {
                     old := data.(string)
                     old = old + ", 第1次数据1"
 
@@ -77,7 +77,7 @@ func main() {
 // 管道测试
 type PipelineEx struct {}
 
-func (this PipelineEx) Handle(data interface{}, next pipeline.NextFunc) interface{} {
+func (this PipelineEx) Handle(data any, next pipeline.NextFunc) any {
     old := data.(string)
 
     old = old + ", struct 数据1"

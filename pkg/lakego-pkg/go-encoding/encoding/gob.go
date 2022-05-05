@@ -6,7 +6,7 @@ import (
 )
 
 // Gob 编码
-func GobEncode(src interface{}) (string, error) {
+func GobEncode(src any) (string, error) {
     buf := bytes.NewBuffer(nil)
 
     enc := gob.NewEncoder(buf)
@@ -19,7 +19,7 @@ func GobEncode(src interface{}) (string, error) {
 }
 
 // Gob 解码
-func GobDecode(src string, dst interface{}) error {
+func GobDecode(src string, dst any) error {
     buf := bytes.NewBuffer([]byte(src))
     dec := gob.NewDecoder(buf)
     return dec.Decode(dst)

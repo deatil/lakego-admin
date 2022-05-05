@@ -4,9 +4,9 @@ import (
     "strings"
 
     "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-tree/tree"
     "github.com/deatil/go-datebin/datebin"
 
-    "github.com/deatil/lakego-doak/lakego/tree"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
 
@@ -93,7 +93,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
         Offset(newStart).
         Limit(newLimit)
 
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     // 列表
     groupModel = groupModel.Find(&list)
@@ -129,7 +129,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
 // @Router /auth/group/tree [get]
 // @Security Bearer
 func (this *AuthGroup) IndexTree(ctx *router.Context) {
-    list := make([]map[string]interface{}, 0)
+    list := make([]map[string]any, 0)
 
     err := model.NewAuthGroup().
         Order("listorder ASC").
@@ -167,7 +167,7 @@ func (this *AuthGroup) IndexChildren(ctx *router.Context) {
         return
     }
 
-    var data interface{}
+    var data any
 
     typ := ctx.Query("type")
     if typ == "list" {
@@ -215,7 +215,7 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
     groupData := model.FormatStructToMap(&info)
 
     ruleAccesses := make([]string, 0)
-    if len(groupData["RuleAccesses"].([]interface{})) > 0 {
+    if len(groupData["RuleAccesses"].([]any)) > 0 {
         ruleAccesses = collection.
             Collect(groupData["RuleAccesses"]).
             Pluck("rule_id").
@@ -262,7 +262,7 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
 // @Security Bearer
 func (this *AuthGroup) Create(ctx *router.Context) {
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := authGroupValidate.Create(post)
@@ -326,7 +326,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthGroup().
         Where("id = ?", id).
         First(&result).
@@ -337,7 +337,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     validateErr := authGroupValidate.Update(post)
@@ -357,7 +357,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
 
     err3 := model.NewAuthGroup().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "parentid": post["parentid"].(string),
             "title": post["title"].(string),
             "description": post["description"].(string),
@@ -447,7 +447,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthGroup().
         Where("id = ?", id).
         First(&result).
@@ -458,7 +458,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 排序
@@ -471,7 +471,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
 
     err2 := model.NewAuthGroup().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "listorder": listorder,
         }).
         Error
@@ -501,7 +501,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthGroup().
         Where("id = ?", id).
         First(&result).
@@ -512,7 +512,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 1 {
@@ -522,7 +522,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
 
     err2 := model.NewAuthGroup().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 1,
         }).
         Error
@@ -552,7 +552,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthGroup().
         Where("id = ?", id).
         First(&result).
@@ -563,7 +563,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     if result["status"] == 0 {
@@ -573,7 +573,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
 
     err2 := model.NewAuthGroup().
         Where("id = ?", id).
-        Updates(map[string]interface{}{
+        Updates(map[string]any{
             "status": 0,
         }).
         Error
@@ -604,7 +604,7 @@ func (this *AuthGroup) Access(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]interface{}{}
+    result := map[string]any{}
     err := model.NewAuthGroup().
         Where("id = ?", id).
         First(&result).
@@ -625,7 +625,7 @@ func (this *AuthGroup) Access(ctx *router.Context) {
     }
 
     // 接收数据
-    post := make(map[string]interface{})
+    post := make(map[string]any)
     ctx.BindJSON(&post)
 
     // 添加权限

@@ -19,7 +19,7 @@ func New(driver interfaces.Driver, conf ...Config) *Cache {
 
 type (
     // 配置
-    Config = map[string]interface{}
+    Config = map[string]any
 )
 
 /**
@@ -56,7 +56,7 @@ func (this *Cache) WithConfig(config Config) interfaces.Cache {
 }
 
 // 获取配置
-func (this *Cache) GetConfig(name string) interface{} {
+func (this *Cache) GetConfig(name string) any {
     if data, ok := this.config[name]; ok {
         return data
     }
@@ -70,23 +70,23 @@ func (this *Cache) Has(key string) bool {
 }
 
 // 获取
-func (this *Cache) Get(key string) (interface{}, error) {
+func (this *Cache) Get(key string) (any, error) {
     return this.driver.Get(key)
 }
 
 // 设置
-func (this *Cache) Put(key string, value interface{}, ttl int64) error {
+func (this *Cache) Put(key string, value any, ttl int64) error {
     return this.driver.Put(key, value, ttl)
 }
 
 // 永久设置
-func (this *Cache) Forever(key string, value interface{}) error {
+func (this *Cache) Forever(key string, value any) error {
     return this.driver.Forever(key, value)
 }
 
 // 获取后删除
-func (this *Cache) Pull(key string) (interface{}, error) {
-    var val interface{}
+func (this *Cache) Pull(key string) (any, error) {
+    var val any
     var err error
 
     val, err = this.driver.Get(key)

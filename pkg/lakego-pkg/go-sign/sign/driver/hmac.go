@@ -11,7 +11,7 @@ type Hmac struct {
 }
 
 // 初始化
-func (this *Hmac) Init(conf map[string]interface{}) {
+func (this *Hmac) Init(conf map[string]any) {
     if key, ok := conf["key"]; ok {
         this.key = key.(string)
     }

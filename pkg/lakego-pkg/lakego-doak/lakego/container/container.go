@@ -34,7 +34,7 @@ type Container struct {
 }
 
 // 键值对的形式将代码注册到容器
-func (this *Container) Set(key string, value interface{}) bool {
+func (this *Container) Set(key string, value any) bool {
     // 存在则删除旧的
     if exists := this.Exists(key); exists {
         this.Delete(key)
@@ -48,12 +48,12 @@ func (this *Container) Set(key string, value interface{}) bool {
 /**
  * 单值批量设置
  */
-func (this *Container) SetItems(key string, value interface{}) bool {
-    var newValues []interface{}
+func (this *Container) SetItems(key string, value any) bool {
+    var newValues []any
 
     if newValue, exists := this.SyncMap.Load(key); exists {
-        // 强制转换为 []interface{} 后增加数据
-        newValues = append(newValue.([]interface{}), value)
+        // 强制转换为 []any 后增加数据
+        newValues = append(newValue.([]any), value)
     } else {
         newValues = append(newValues, value)
     }
@@ -64,7 +64,7 @@ func (this *Container) SetItems(key string, value interface{}) bool {
 }
 
 // 取值
-func (this *Container) Get(key string) interface{} {
+func (this *Container) Get(key string) any {
     if value, exists := this.SyncMap.Load(key); exists {
         return value
     }
@@ -90,7 +90,7 @@ func (this *Container) Delete(key string) bool {
 
 // 按照键的前缀删除容器中注册的内容
 func (this *Container) FuzzyDelete(keyPre string) {
-    this.SyncMap.Range(func(key, value interface{}) bool {
+    this.SyncMap.Range(func(key, value any) bool {
         if keyname, ok := key.(string); ok {
             if strings.HasPrefix(keyname, keyPre) {
                 this.SyncMap.Delete(keyname)

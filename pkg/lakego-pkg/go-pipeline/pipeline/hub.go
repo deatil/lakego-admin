@@ -25,7 +25,7 @@ func InstanceHub() *Hub {
 
 type (
     // 回调函数
-    HubCallbackFunc = func(*Pipeline, interface{}) interface{}
+    HubCallbackFunc = func(*Pipeline, any) any
 
     // 数据列表
     HubPipelinesMap = map[string]HubCallbackFunc
@@ -55,7 +55,7 @@ func (this *Hub) Pipeline(name string, callback HubCallbackFunc) *Hub {
 }
 
 // 执行
-func (this *Hub) Pipe(object interface{}, pipeline ...string) interface{} {
+func (this *Hub) Pipe(object any, pipeline ...string) any {
     name := "default"
 
     if len(pipeline) > 0 {

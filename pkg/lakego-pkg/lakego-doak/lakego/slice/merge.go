@@ -1,7 +1,7 @@
 package slice
 
 // SliceMerge merges interface slices to one slice.
-func Merge(slice1, slice2 []interface{}) (c []interface{}) {
+func Merge(slice1, slice2 []any) (c []any) {
     c = append(slice1, slice2...)
     return
 }

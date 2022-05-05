@@ -4,6 +4,13 @@ import (
     "bytes"
 )
 
+// 构造函数
+func New() Encoding {
+    return Encoding{}
+}
+
+// ==========
+
 // 字节
 func FromBytes(data []byte) Encoding {
     return New().FromBytes(data)
@@ -45,7 +52,7 @@ func FromBytesBuffer(data *bytes.Buffer) Encoding {
 }
 
 // Hex
-func FromConvert(data interface{}, base int, bitSize ...int) Encoding {
+func FromConvert(data any, base int, bitSize ...int) Encoding {
     return New().FromConvert(data, base, bitSize...)
 }
 
@@ -75,22 +82,22 @@ func FromConvertHex(data string) Encoding {
 }
 
 // Gob
-func ForGob(data interface{}) Encoding {
+func ForGob(data any) Encoding {
     return New().ForGob(data)
 }
 
 // Xml
-func ForXML(data interface{}) Encoding {
+func ForXML(data any) Encoding {
     return New().ForXML(data)
 }
 
 // JSON
-func ForJSON(data interface{}) Encoding {
+func ForJSON(data any) Encoding {
     return New().ForJSON(data)
 }
 
 // Binary
-func ForBinary(data interface{}) Encoding {
+func ForBinary(data any) Encoding {
     return New().ForBinary(data)
 }
 
@@ -100,6 +107,6 @@ func ForCsv(data [][]string) Encoding {
 }
 
 // Asn1
-func ForAsn1(data interface{}, params ...string) Encoding {
+func ForAsn1(data any, params ...string) Encoding {
     return New().ForAsn1(data, params...)
 }
