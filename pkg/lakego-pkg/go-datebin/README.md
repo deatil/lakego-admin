@@ -32,9 +32,13 @@ func main() {
     date2 := datebin.
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()
+    date3 := datebin.
+        FromDatetime(2032, 3, 15, 12, 56, 5).
+        ToDatetimeString()
 
     fmt.Println("当前的时间：", date)
     fmt.Println("解析的时间：", date2)
+    fmt.Println("设置的时间：", date3)
 }
 
 ~~~

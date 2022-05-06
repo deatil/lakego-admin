@@ -13,6 +13,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/snowflake"
     "github.com/deatil/lakego-doak/lakego/facade/sign"
 
@@ -137,6 +138,7 @@ func (this *Data) Error(ctx *gin.Context) {
     // 时间
     date := datebin.
         Now().
+        AddDay().
         ToDatetimeString()
     date2 := datebin.
         Parse("2032-03-15 12:06:17").
@@ -189,6 +191,26 @@ func (this *Data) Error(ctx *gin.Context) {
     mathData := math.Decbin(123)
     mathData2 := math.Bindec("1111011")
 
+    // 数组
+    arrData := map[string]any{
+        "a": 123,
+        "b": map[string]any{
+            "c": "ccc",
+            "d": map[string]any{
+                "e": "eee",
+                "f": map[string]any{
+                    "g": "ggg",
+                },
+            },
+            "dd": []any{
+                "ccccc",
+                "ddddd",
+                "fffff",
+            },
+        },
+    }
+    arr := array.ArrGet(arrData, "b.d.e")
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "error": data,
         "data2": data2,
@@ -219,6 +241,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "mathData": mathData,
         "mathData2": mathData2,
+
+        "arr": arr,
     })
 }
 

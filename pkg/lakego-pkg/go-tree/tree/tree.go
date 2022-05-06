@@ -92,7 +92,7 @@ func (this *Tree) WithData(data []map[string]any) *Tree {
 }
 
 // 构建数组
-func (this *Tree) Build(id any, itemprefix string, depth int) []map[string]any {
+func (this *Tree) Build(id string, itemprefix string, depth int) []map[string]any {
     children := this.GetListChild(id)
     if len(children) <= 0 {
         return nil
@@ -138,7 +138,7 @@ func (this *Tree) Build(id any, itemprefix string, depth int) []map[string]any {
         // 深度
         info[this.depthKey] = depth
 
-        childList := this.Build(v[this.idKey], itemprefix + k + this.blankspace, depth + 1)
+        childList := this.Build(v[this.idKey].(string), itemprefix + k + this.blankspace, depth + 1)
         if len(childList) > 0{
             info[this.buildChildKey] = childList
         }
@@ -151,7 +151,7 @@ func (this *Tree) Build(id any, itemprefix string, depth int) []map[string]any {
 }
 
 // 所有父节点
-func (this *Tree) GetListParents(id any, sort ...string) []map[string]any {
+func (this *Tree) GetListParents(id string, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -181,7 +181,7 @@ func (this *Tree) GetListParents(id any, sort ...string) []map[string]any {
                 if dataId == parentid {
                     newData = append(newData, v)
 
-                    parents := this.GetListParents(v[this.idKey], sort...)
+                    parents := this.GetListParents(v[this.idKey].(string), sort...)
                     if len(parents) > 0{
                         if order == "asc" {
                             newData = append(newData, parents...)
@@ -199,7 +199,7 @@ func (this *Tree) GetListParents(id any, sort ...string) []map[string]any {
 }
 
 // 获取所有父节点ID列表
-func (this *Tree) GetListParentIds(id any) []any {
+func (this *Tree) GetListParentIds(id string) []any {
     data := this.GetListParents(id)
     if len(data) <= 0 {
         return nil
@@ -219,7 +219,7 @@ func (this *Tree) GetListParentIds(id any) []any {
 }
 
 // 获取当前ID的所有子节点
-func (this *Tree) GetListChildren(id any, sort ...string) []map[string]any {
+func (this *Tree) GetListChildren(id string, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -229,7 +229,6 @@ func (this *Tree) GetListChildren(id any, sort ...string) []map[string]any {
         order = sort[0]
     }
 
-    id = id.(string)
     newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
@@ -243,7 +242,7 @@ func (this *Tree) GetListChildren(id any, sort ...string) []map[string]any {
                 if dataParentId == id {
                     newData = append(newData, v)
 
-                    children := this.GetListChildren(v[this.idKey], sort...)
+                    children := this.GetListChildren(v[this.idKey].(string), sort...)
                     if len(children) > 0{
                         if order == "asc" {
                             newData = append(newData, children...)
@@ -262,7 +261,7 @@ func (this *Tree) GetListChildren(id any, sort ...string) []map[string]any {
 }
 
 // 获取当前ID的所有子节点id列表
-func (this *Tree) GetListChildIds(id any) []any {
+func (this *Tree) GetListChildIds(id string) []any {
     data := this.GetListChildren(id)
     if len(data) <= 0 {
         return nil
@@ -282,12 +281,11 @@ func (this *Tree) GetListChildIds(id any) []any {
 }
 
 // 得到子级第一级数组
-func (this *Tree) GetListChild(id any) []map[string]any {
+func (this *Tree) GetListChild(id string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
 
-    id = id.(string)
     newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
@@ -305,12 +303,11 @@ func (this *Tree) GetListChild(id any) []map[string]any {
 }
 
 // 获取ID自己的数据
-func (this *Tree) GetListSelf(id any) map[string]any {
+func (this *Tree) GetListSelf(id string) map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
 
-    id = id.(string)
     for _, v := range this.data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
@@ -327,7 +324,7 @@ func (this *Tree) GetListSelf(id any) map[string]any {
 }
 
 // 将 build 的结果返回为二维数组
-func (this *Tree) BuildFormatList(data []map[string]any, parentid any) []map[string]any {
+func (this *Tree) BuildFormatList(data []map[string]any, parentid string) []map[string]any {
     if len(data) <= 0 {
         return nil
     }
@@ -358,7 +355,7 @@ func (this *Tree) BuildFormatList(data []map[string]any, parentid any) []map[str
             if child != nil {
                 children := child.([]map[string]any)
                 if len(children) > 0 {
-                    childData := this.BuildFormatList(children, v[this.idKey])
+                    childData := this.BuildFormatList(children, v[this.idKey].(string))
                     list = append(list, childData...)
                 }
             }

@@ -37,6 +37,8 @@ func Yesterday(timezone ...string) Datebin {
     return New().Yesterday(timezone...)
 }
 
+// ====================
+
 // 时间
 func UseTime(t time.Time, timezone ...string) Datebin {
     date := New().WithTime(t)
@@ -49,17 +51,17 @@ func UseTime(t time.Time, timezone ...string) Datebin {
 }
 
 // 时间戳
-func Unix(second int64, nsec int64, timezone ...string) Datebin {
+func UseUnix(second int64, nsec int64, timezone ...string) Datebin {
     return UseTime(time.Unix(second, nsec), timezone...)
 }
 
 // 时间戳
-func Timestamp(timestamp int64, timezone ...string) Datebin {
-    return Unix(timestamp, 0, timezone...)
+func FromTimestamp(timestamp int64, timezone ...string) Datebin {
+    return UseUnix(timestamp, 0, timezone...)
 }
 
 // 日期时间带纳秒
-func DatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond int, timezone ...string) Datebin {
+func FromDatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond int, timezone ...string) Datebin {
     monthData, ok := Months[month]
     if !ok {
         monthData = Months[1]
@@ -69,46 +71,33 @@ func DatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond i
 }
 
 // 日期时间带微秒
-func DatetimeWithMicrosecond(year, month, day, hour, minute, second, microsecond int, timezone ...string) Datebin {
-    return DatetimeWithNanosecond(year, month, day, hour, minute, second, microsecond * 1e3, timezone...)
+func FromDatetimeWithMicrosecond(year, month, day, hour, minute, second, microsecond int, timezone ...string) Datebin {
+    return FromDatetimeWithNanosecond(year, month, day, hour, minute, second, microsecond * 1e3, timezone...)
 }
 
 // 日期时间带毫秒
-func DatetimeWithMillisecond(year, month, day, hour, minute, second, millisecond int, timezone ...string) Datebin {
-    return DatetimeWithNanosecond(year, month, day, hour, minute, second, millisecond * 1e6, timezone...)
+func FromDatetimeWithMillisecond(year, month, day, hour, minute, second, millisecond int, timezone ...string) Datebin {
+    return FromDatetimeWithNanosecond(year, month, day, hour, minute, second, millisecond * 1e6, timezone...)
 }
 
 // 日期时间
-func Datetime(year, month, day, hour, minute, second int, timezone ...string) Datebin {
-    monthData, ok := Months[month]
-    if !ok {
-        monthData = Months[1]
-    }
-
-    return UseTime(time.Date(year, monthData, day, hour, minute, second, 0, time.Local), timezone...)
+func FromDatetime(year, month, day, hour, minute, second int, timezone ...string) Datebin {
+    return FromDatetimeWithNanosecond(year, month, day, hour, minute, second, 0, timezone...)
 }
 
 // 日期
-func Date(year, month, day int, timezone ...string) Datebin {
-    monthData, ok := Months[month]
-    if !ok {
-        monthData = Months[1]
-    }
-
-    return UseTime(time.Date(year, monthData, day, 0, 0, 0, 0, time.Local), timezone...)
+func FromDate(year, month, day int, timezone ...string) Datebin {
+    return FromDatetimeWithNanosecond(year, month, day, 0, 0, 0, 0, timezone...)
 }
 
 // 时间
-func Time(hour, minute, second int, timezone ...string) Datebin {
+func FromTime(hour, minute, second int, timezone ...string) Datebin {
     year, month, day := Now(timezone...).Date()
 
-    monthData, ok := Months[month]
-    if !ok {
-        monthData = Months[1]
-    }
-
-    return UseTime(time.Date(year, monthData, day, hour, minute, second, 0, time.Local), timezone...)
+    return FromDatetimeWithNanosecond(year, month, day, hour, minute, second, 0, timezone...)
 }
+
+// ====================
 
 // 解析时间字符
 func Parse(date string) Datebin {
@@ -126,7 +115,7 @@ func ParseWithFormat(date string, format string, timezone ...string) Datebin {
 }
 
 // 时间字符
-func DatetimeString(date string, format ...string) Datebin {
+func ParseDatetimeString(date string, format ...string) Datebin {
     if len(format) > 1 && format[1] == "u" {
         return ParseWithFormat(date, format[0])
     }
@@ -137,6 +126,8 @@ func DatetimeString(date string, format ...string) Datebin {
 
     return Parse(date)
 }
+
+// ====================
 
 // 当前时间，单位：秒
 func NowTime(timezone ...string) int64 {
@@ -158,9 +149,11 @@ func NowTimeString(timezone ...string) string {
     return Now(timezone...).ToTimeString()
 }
 
+// ====================
+
 // 时间戳转为 time.Time
 func TimestampToTime(timestamp int64, timezone ...string) time.Time {
-    return Timestamp(timestamp, timezone...).GetTime()
+    return FromTimestamp(timestamp, timezone...).GetTime()
 }
 
 // 时间转换为时间戳
@@ -170,11 +163,11 @@ func TimeToTimestamp(t time.Time, timezone ...string) int64 {
 
 // 时间字符转为时间
 func StringToTime(date string, format ...string) time.Time {
-    return DatetimeString(date, format...).GetTime()
+    return ParseDatetimeString(date, format...).GetTime()
 }
 
 // 时间字符转为时间戳
 func StringToTimestamp(date string, format ...string) int64 {
-    return DatetimeString(date, format...).Timestamp()
+    return ParseDatetimeString(date, format...).Timestamp()
 }
 
