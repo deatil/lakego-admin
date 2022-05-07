@@ -24,12 +24,12 @@ func New() *auth.Auth {
             WithJWT(jwt.New())
     })
 
-    passportConf := config.New("auth").GetStringMap("Passport")
-    jwtConf := config.New("auth").GetStringMap("Jwt")
+    jwtConf := config.New("auth").GetStringMap("jwt")
+    passportConf := config.New("auth").GetStringMap("passport")
 
     return instance.
-        WithConfig("passport", passportConf).
-        WithConfig("jwt", jwtConf)
+        WithOneConfig("passport", passportConf).
+        WithOneConfig("jwt", jwtConf)
 }
 
 // 默认带接收方

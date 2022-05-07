@@ -187,7 +187,7 @@ func (this *Data) Error(ctx *gin.Context) {
         WithAppID("API123456").
         GetSignMap()
 
-    // 数字相关
+    // 数组相关
     mathData := math.Decbin(123)
     mathData2 := math.Bindec("1111011")
 
@@ -206,6 +206,11 @@ func (this *Data) Error(ctx *gin.Context) {
                 "ccccc",
                 "ddddd",
                 "fffff",
+            },
+            "ff": map[any]any{
+                111: "fccccc",
+                222: "fddddd",
+                333: "dfffff",
             },
         },
     }

@@ -52,6 +52,7 @@ func (this Arr) Get(source map[string]any, key string) any {
     if val != nil {
         return val
     }
+
     if nested && this.isPathShadowedInDeepMap(path, source) != "" {
         return nil
     }
@@ -61,14 +62,11 @@ func (this Arr) Get(source map[string]any, key string) any {
     if val != nil {
         return val
     }
-    if nested && this.isPathShadowedInDeepMap(path, source) != "" {
-        return nil
-    }
 
     return nil
 }
 
-// 搜索
+// 数组
 func (this Arr) searchMap(source map[string]any, path []string) any {
     if len(path) == 0 {
         return source
@@ -119,7 +117,7 @@ func (this Arr) searchIndexableWithPathPrefixes(source any, path []string) any {
     return nil
 }
 
-// 数组
+// 切片
 func (this Arr) searchSliceWithPathPrefixes(
     sourceSlice []any,
     prefixKey string,
@@ -176,8 +174,8 @@ func (this Arr) searchMapWithPathPrefixes(
 }
 
 // 是否合适
-func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]interface{}) string {
-    var parentVal interface{}
+func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]any) string {
+    var parentVal any
 
     for i := 1; i < len(path); i++ {
         parentVal = this.searchMap(m, path[0:i])
@@ -186,9 +184,9 @@ func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]interface{})
         }
 
         switch parentVal.(type) {
-            case map[interface{}]interface{}:
+            case map[any]any:
                 continue
-            case map[string]interface{}:
+            case map[string]any:
                 continue
             default:
                 return strings.Join(path[0:i], this.keyDelim)
