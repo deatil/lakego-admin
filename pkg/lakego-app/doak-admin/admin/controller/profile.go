@@ -215,9 +215,9 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     this.Success(ctx, "密码修改成功")
 }
 
-// 权限列表
-// @Summary 权限列表
-// @Description 权限列表
+// 个人权限列表
+// @Summary 个人权限列表
+// @Description 个人权限列表
 // @Tags 个人信息
 // @Accept application/json
 // @Produce application/json

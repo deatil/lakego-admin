@@ -5,10 +5,25 @@ import (
     "encoding/json"
 
     "github.com/deatil/go-datebin/datebin"
+    "github.com/deatil/lakego-doak/lakego/gmq"
     "github.com/deatil/lakego-doak/lakego/router"
 
     "github.com/deatil/lakego-doak-action-log/action-log/model"
 )
+
+var MQ *gmq.GMQ
+
+func init() {
+    MQ = gmq.NewGMQ()
+
+    // 订短信主题
+    MQ.Subscribe("action-log", func(value interface{}) {
+        f := value.(func())
+        f()
+    })
+
+    go MQ.Run()
+}
 
 /**
  * 操作日志
@@ -20,7 +35,9 @@ func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
         ctx.Next()
 
-        recordLog(ctx)
+        MQ.Publish("action-log", func() {
+            recordLog(ctx)
+        })
     }
 }
 

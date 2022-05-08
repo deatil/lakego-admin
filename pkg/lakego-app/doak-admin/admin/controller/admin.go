@@ -35,9 +35,9 @@ type Admin struct {
     Base
 }
 
-// 管理员列表
-// @Summary 管理员列表
-// @Description 管理员列表
+// 账号列表
+// @Summary 账号列表
+// @Description 管理员账号列表
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
@@ -150,9 +150,9 @@ func (this *Admin) Index(ctx *router.Context) {
     })
 }
 
-// 管理员详情
-// @Summary 管理员详情
-// @Description 管理员详情
+// 账号详情
+// @Summary 账号详情
+// @Description 管理员账号详情
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
@@ -211,9 +211,9 @@ func (this *Admin) Detail(ctx *router.Context) {
     this.SuccessWithData(ctx, "获取成功", newInfo)
 }
 
-// 管理员权限
-// @Summary 管理员权限
-// @Description 管理员权限
+// 账号权限
+// @Summary 账号权限
+// @Description 账号权限
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
@@ -317,9 +317,9 @@ func (this *Admin) Groups(ctx *router.Context) {
     })
 }
 
-// 管理员添加
-// @Summary 管理员添加
-// @Description 管理员添加
+// 添加账号
+// @Summary 添加账号
+// @Description 添加账号
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
@@ -387,8 +387,8 @@ func (this *Admin) Create(ctx *router.Context) {
     })
 }
 
-// 管理员更新
-// @Summary 管理员更新
+// 更新账号
+// @Summary 更新账号
 // @Description 管理员更新信息
 // @Tags 管理员
 // @Accept application/json
@@ -476,8 +476,8 @@ func (this *Admin) Update(ctx *router.Context) {
     this.Success(ctx, "账号修改成功")
 }
 
-// 管理员删除
-// @Summary 管理员删除
+// 删除账号
+// @Summary 删除账号
 // @Description 管理员账号删除
 // @Tags 管理员
 // @Accept application/json
@@ -533,8 +533,8 @@ func (this *Admin) Delete(ctx *router.Context) {
     this.Success(ctx, "账号删除成功")
 }
 
-// 修改头像
-// @Summary 修改头像
+// 修改账号头像
+// @Summary 修改账号头像
 // @Description 修改管理员账号头像
 // @Tags 管理员
 // @Accept application/json
@@ -594,8 +594,8 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
     this.Success(ctx, "修改头像成功")
 }
 
-// 修改密码
-// @Summary 修改密码
+// 修改账号密码
+// @Summary 修改账号密码
 // @Description 修改管理员账号密码
 // @Tags 管理员
 // @Accept application/json
@@ -659,8 +659,8 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
     this.Success(ctx, "密码修改成功")
 }
 
-// 启用
-// @Summary 启用
+// 账号启用
+// @Summary 账号启用
 // @Description 管理员账号启用
 // @Tags 管理员
 // @Accept application/json
@@ -718,8 +718,8 @@ func (this *Admin) Enable(ctx *router.Context) {
     this.Success(ctx, "启用账号成功")
 }
 
-// 禁用
-// @Summary 禁用
+// 账号禁用
+// @Summary 账号禁用
 // @Description 管理员账号禁用
 // @Tags 管理员
 // @Accept application/json
