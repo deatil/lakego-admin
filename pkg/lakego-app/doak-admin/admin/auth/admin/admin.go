@@ -258,6 +258,17 @@ func (this *Admin) GetRuleSlugs() []string {
     return collection.
         Collect(list).
         Pluck("slug").
+        Filter(func(item, value any) bool {
+            switch value.(type) {
+                case string:
+                    val := value.(string)
+                    if val != "" {
+                        return true
+                    }
+            }
+
+            return false
+        }).
         ToStringArray()
 }
 

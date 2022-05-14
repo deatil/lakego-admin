@@ -368,7 +368,7 @@ func (this *Attachment) Download(ctx *router.Context) {
 
     fileId, _ := cache.New().Pull(code)
     if fileId == "" {
-        this.ReturnString(ctx, "文件不存在")
+        this.ReturnString(ctx, "文件ID错误")
         return
     }
 
@@ -380,7 +380,7 @@ func (this *Attachment) Download(ctx *router.Context) {
         First(&result).
         Error
     if err != nil || len(result) < 1 {
-        this.ReturnString(ctx, "文件不存在")
+        this.ReturnString(ctx, "文件数据不存在")
         return
     }
 
