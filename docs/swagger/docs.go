@@ -18,7 +18,7 @@ const docTemplate = `{
         },
         "license": {
             "name": "Apache2",
-            "url": "https://github.com/deatil/lakego-admin/blob/main/README.md"
+            "url": "https://github.com/deatil/lakego-admin/blob/main/LICENSE"
         },
         "version": "{{.Version}}"
     },
@@ -138,7 +138,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "管理员列表",
+                "description": "管理员账号列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -148,7 +148,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员列表",
+                "summary": "账号列表",
                 "parameters": [
                     {
                         "type": "string",
@@ -208,7 +208,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "管理员添加",
+                "description": "添加账号",
                 "consumes": [
                     "application/json"
                 ],
@@ -218,7 +218,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员添加",
+                "summary": "添加账号",
                 "parameters": [
                     {
                         "type": "string",
@@ -366,7 +366,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "管理员详情",
+                "description": "管理员账号详情",
                 "consumes": [
                     "application/json"
                 ],
@@ -376,7 +376,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员详情",
+                "summary": "账号详情",
                 "parameters": [
                     {
                         "type": "string",
@@ -411,7 +411,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员更新",
+                "summary": "更新账号",
                 "parameters": [
                     {
                         "type": "string",
@@ -481,7 +481,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员删除",
+                "summary": "删除账号",
                 "parameters": [
                     {
                         "type": "string",
@@ -562,7 +562,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "修改头像",
+                "summary": "修改账号头像",
                 "parameters": [
                     {
                         "type": "string",
@@ -606,7 +606,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "禁用",
+                "summary": "账号禁用",
                 "parameters": [
                     {
                         "type": "string",
@@ -643,7 +643,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "启用",
+                "summary": "账号启用",
                 "parameters": [
                     {
                         "type": "string",
@@ -680,7 +680,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "修改密码",
+                "summary": "修改账号密码",
                 "parameters": [
                     {
                         "type": "string",
@@ -714,7 +714,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "管理员权限",
+                "description": "账号权限",
                 "consumes": [
                     "application/json"
                 ],
@@ -724,7 +724,7 @@ const docTemplate = `{
                 "tags": [
                     "管理员"
                 ],
-                "summary": "管理员权限",
+                "summary": "账号权限",
                 "parameters": [
                     {
                         "type": "string",
@@ -1575,6 +1575,12 @@ const docTemplate = `{
                         "type": "string",
                         "description": "搜索关键字",
                         "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方式",
+                        "name": "method",
                         "in": "query"
                     },
                     {
@@ -2448,7 +2454,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "权限列表",
+                "description": "个人权限列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -2458,7 +2464,7 @@ const docTemplate = `{
                 "tags": [
                     "个人信息"
                 ],
-                "summary": "权限列表",
+                "summary": "个人权限列表",
                 "responses": {
                     "200": {
                         "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
@@ -2580,7 +2586,7 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0.1",
+	Version:          "1.0.2",
 	Host:             "127.0.0.1:8080",
 	BasePath:         "/admin-api",
 	Schemes:          []string{},

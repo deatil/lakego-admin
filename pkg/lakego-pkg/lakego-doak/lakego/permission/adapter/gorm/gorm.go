@@ -8,12 +8,12 @@ import (
     "gorm.io/gorm"
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
-    
-    "github.com/deatil/go-hash/hash"
-    cast "github.com/deatil/go-goch/goch"
 
-    "github.com/deatil/lakego-doak/lakego/permission/adapter"
+    "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-goch/goch"
+
     "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/permission/adapter"
 )
 
 // 自定义模型
@@ -44,7 +44,7 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    this.ID = hash.MD5(cast.ToString(time.Nanosecond) + random.String(15))
+    this.ID = hash.MD5(goch.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }

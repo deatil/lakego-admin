@@ -466,6 +466,8 @@ func (this *Admin) Update(ctx *router.Context) {
             "email": post["email"].(string),
             "introduce": post["introduce"].(string),
             "status": status,
+            "update_time": int(datebin.NowTime()),
+            "update_ip": router.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {
@@ -913,6 +915,10 @@ func (this *Admin) Access(ctx *router.Context) {
 
         insertData := make([]model.AuthGroupAccess, 0)
         for _, value := range intersectAccess {
+            if value == "" {
+                continue
+            }
+
             insertData = append(insertData, model.AuthGroupAccess{
                 AdminId: id,
                 GroupId: value,

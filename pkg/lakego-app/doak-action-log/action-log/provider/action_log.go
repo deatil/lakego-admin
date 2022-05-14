@@ -31,18 +31,18 @@ var middlewareGroups = map[string][]string{
  * @create 2021-10-11
  * @author deatil
  */
-type ActionLogServiceProvider struct {
+type ActionLog struct {
     provider.ServiceProvider
 }
 
 // 注册
-func (this *ActionLogServiceProvider) Register() {
+func (this *ActionLog) Register() {
     // 中间件
     this.loadMiddleware()
 }
 
 // 引导
-func (this *ActionLogServiceProvider) Boot() {
+func (this *ActionLog) Boot() {
     // 路由
     this.loadRoute()
 }
@@ -50,7 +50,7 @@ func (this *ActionLogServiceProvider) Boot() {
 /**
  * 导入中间件
  */
-func (this *ActionLogServiceProvider) loadMiddleware() {
+func (this *ActionLog) loadMiddleware() {
     m := routerFacade.NewMiddleware()
 
     // 导入中间件
@@ -69,7 +69,7 @@ func (this *ActionLogServiceProvider) loadMiddleware() {
 /**
  * 导入路由
  */
-func (this *ActionLogServiceProvider) loadRoute() {
+func (this *ActionLog) loadRoute() {
     // 后台路由
     route.AddRoute(func(engine *router.RouterGroup) {
         logRouter.Route(engine)

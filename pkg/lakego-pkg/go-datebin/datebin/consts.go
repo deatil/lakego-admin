@@ -149,6 +149,10 @@ const (
     RFC2822Format            = time.RFC1123Z
     KitchenFormat            = time.Kitchen
     RFC3339Format            = time.RFC3339
+    StampFormat              = time.Stamp
+    StampMilliFormat         = time.StampMilli
+    StampMicroFormat         = time.StampMicro
+    StampNanoFormat          = time.StampNano
     RFC3339MilliFormat       = "2006-01-02T15:04:05.999Z07:00"
     RFC3339MicroFormat       = "2006-01-02T15:04:05.999999Z07:00"
     RFC3339NanoFormat        = "2006-01-02T15:04:05.999999999Z07:00"

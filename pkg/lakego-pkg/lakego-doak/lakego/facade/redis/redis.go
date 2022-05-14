@@ -1,42 +1,65 @@
 package redis
 
 import (
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/go-goch/goch"
+
     "github.com/deatil/lakego-doak/lakego/redis"
+    "github.com/deatil/lakego-doak/lakego/array"
+    "github.com/deatil/lakego-doak/lakego/facade/config"
 )
 
 /**
- * redis
+ * 构造函数
+ *
+ * redis.New().Set("go-redis", "go-redis-data", 60000)
  *
  * @create 2021-6-20
  * @author deatil
  */
-func New() redis.Redis {
+func New(defVal ...string) redis.Redis {
     conf := config.New("redis")
 
-    keyPrefix := conf.GetString("key-prefix")
+    // 默认
+    defaultConnect := conf.GetString("default")
+    if len(defVal) > 0 {
+        defaultConnect = defVal[0]
+    }
 
-    addr := conf.GetString("addr")
-    password := conf.GetString("password")
-    db := conf.GetInt("db")
+    // 连接列表
+    connects := conf.GetStringMap("connects")
 
-    minIdleConn := config["minidle-conn"].(int)
-    dialTimeout, _ := time.ParseDuration(config["dial-timeout"].(string))
-    readTimeout, _ := time.ParseDuration(config["read-timeout"].(string))
-    writeTimeout, _ := time.ParseDuration(config["write-timeout"].(string))
-    poolSize := config["pool-size"].(int)
-    poolTimeout, _ := time.ParseDuration(config["pool-timeout"].(string))
+    // 连接使用的配置
+    connectConfs, ok := connects[defaultConnect]
+    if !ok {
+        panic("redis连接配置 [" + defaultConnect + "] 不存在")
+    }
 
-    enabletrace := config["enabletrace"].(bool)
+    // 格式化转换
+    connectConf := goch.ToStringMap(connectConfs)
+
+    addr := goch.ToString(array.ArrGet(connectConf, "addr"))
+    password := goch.ToString(array.ArrGet(connectConf, "password"))
+
+    db := goch.ToInt(array.ArrGet(connectConf, "db"))
+
+    minIdleConn := goch.ToInt(array.ArrGet(connectConf, "minidle-conn"))
+    dialTimeout := goch.ToDuration(array.ArrGet(connectConf, "dial-timeout"))
+    readTimeout := goch.ToDuration(array.ArrGet(connectConf, "read-timeout"))
+    writeTimeout := goch.ToDuration(array.ArrGet(connectConf, "write-timeout"))
+
+    poolSize := goch.ToInt(array.ArrGet(connectConf, "pool-size"))
+    poolTimeout := goch.ToDuration(array.ArrGet(connectConf, "pool-timeout"))
+
+    enabletrace := goch.ToBool(array.ArrGet(connectConf, "enabletrace"))
+
+    keyPrefix := goch.ToString(array.ArrGet(connectConf, "key-prefix"))
 
     return redis.New(redis.Config{
-        KeyPrefix: keyPrefix,
-
-        DB: db,
-        Addr: addr,
+        DB:       db,
+        Addr:     addr,
         Password: password,
 
-        MinIdleConns: minIdleConn,
+        MinIdleConn:  minIdleConn,
         DialTimeout:  dialTimeout,
         ReadTimeout:  readTimeout,
         WriteTimeout: writeTimeout,
@@ -44,27 +67,12 @@ func New() redis.Redis {
         PoolTimeout:  poolTimeout,
 
         EnableTrace:  enabletrace,
+
+        KeyPrefix:    keyPrefix,
     })
 }
 
-/**
- * redis，带 DB 选择
- *
- * @create 2021-6-20
- * @author deatil
- */
-func NewWithDB(mainDB int) redis.Redis {
-    conf := config.New("redis")
-
-    addr := conf.GetString("Host")
-    password := conf.GetString("Password")
-    keyPrefix := conf.GetString("KeyPrefix")
-
-    return redis.New(redis.Config{
-        DB: mainDB,
-        Host: addr,
-        Password: password,
-        KeyPrefix: keyPrefix,
-    })
+// 连接
+func Connect(name string) redis.Redis {
+    return New(name)
 }
-

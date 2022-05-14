@@ -505,7 +505,7 @@ type Account struct {
 type JSONResult struct {
     Code    int          `json:"code" `
     Message string       `json:"message"`
-    Data    interface{}  `json:"data"`
+    Data    any  `json:"data"`
 }
 
 type Order struct { //in `proto` package

@@ -14,12 +14,12 @@ import (
  * @create 2022-2-21
  * @author deatil
  */
-type SwaggerServiceProvider struct {
+type Swagger struct {
     provider.ServiceProvider
 }
 
 // 引导
-func (this *SwaggerServiceProvider) Boot() {
+func (this *Swagger) Boot() {
     // 路由
     this.loadRoute()
 }
@@ -27,7 +27,7 @@ func (this *SwaggerServiceProvider) Boot() {
 /**
  * 导入路由
  */
-func (this *SwaggerServiceProvider) loadRoute() {
+func (this *Swagger) loadRoute() {
     // 常规 gin 路由
     this.AddRoute(func(engine *router.Engine) {
         engine.GET("/swagger/*any", ginSwagger.DisablingWrapHandler(swaggerFiles.Handler, "LAKEGO_ADMIN_SWAGGER_CLOSE"))

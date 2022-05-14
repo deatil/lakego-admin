@@ -8,10 +8,10 @@ info:
   description: lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
   license:
     name: Apache2
-    url: https://github.com/deatil/lakego-admin/blob/main/README.md
+    url: https://github.com/deatil/lakego-admin/blob/main/LICENSE
   termsOfService: https://github.com/deatil
   title: lakego-admin API文档
-  version: 1.0.1
+  version: 1.0.2
 paths:
   /action-log:
     get:
@@ -85,7 +85,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 管理员列表
+      description: 管理员账号列表
       parameters:
       - description: 排序，示例：id__DESC
         in: query
@@ -124,13 +124,13 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员列表
+      summary: 账号列表
       tags:
       - 管理员
     post:
       consumes:
       - application/json
-      description: 管理员添加
+      description: 添加账号
       parameters:
       - description: 名称
         in: formData
@@ -166,7 +166,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员添加
+      summary: 添加账号
       tags:
       - 管理员
   /admin/{id}:
@@ -189,13 +189,13 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员删除
+      summary: 删除账号
       tags:
       - 管理员
     get:
       consumes:
       - application/json
-      description: 管理员详情
+      description: 管理员账号详情
       parameters:
       - description: 管理员ID
         in: path
@@ -211,7 +211,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员详情
+      summary: 账号详情
       tags:
       - 管理员
     put:
@@ -258,7 +258,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员更新
+      summary: 更新账号
       tags:
       - 管理员
   /admin/{id}/access:
@@ -314,7 +314,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 修改头像
+      summary: 修改账号头像
       tags:
       - 管理员
   /admin/{id}/disable:
@@ -337,7 +337,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 禁用
+      summary: 账号禁用
       tags:
       - 管理员
   /admin/{id}/enable:
@@ -360,7 +360,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 启用
+      summary: 账号启用
       tags:
       - 管理员
   /admin/{id}/password:
@@ -388,14 +388,14 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 修改密码
+      summary: 修改账号密码
       tags:
       - 管理员
   /admin/{id}/rules:
     get:
       consumes:
       - application/json
-      description: 管理员权限
+      description: 账号权限
       parameters:
       - description: 管理员ID
         in: path
@@ -411,7 +411,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 管理员权限
+      summary: 账号权限
       tags:
       - 管理员
   /admin/groups:
@@ -998,6 +998,10 @@ paths:
         in: query
         name: searchword
         type: string
+      - description: 请求方式
+        in: query
+        name: method
+        type: string
       - description: 开始时间
         in: query
         name: start_time
@@ -1573,7 +1577,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 权限列表
+      description: 个人权限列表
       produces:
       - application/json
       responses:
@@ -1583,7 +1587,7 @@ paths:
             type: string
       security:
       - Bearer: []
-      summary: 权限列表
+      summary: 个人权限列表
       tags:
       - 个人信息
   /system/info:

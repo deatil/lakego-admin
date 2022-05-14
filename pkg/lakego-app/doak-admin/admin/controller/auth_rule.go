@@ -6,7 +6,7 @@ import (
     "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-tree/tree"
     "github.com/deatil/go-datebin/datebin"
-    
+
     "github.com/deatil/lakego-doak/lakego/router"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -53,6 +53,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
         orders[0] != "title" &&
         orders[0] != "url" &&
         orders[0] != "method" &&
+        orders[0] != "listorder" &&
         orders[0] != "add_time") {
         orders[0] = "add_time"
     }
@@ -363,8 +364,8 @@ func (this *AuthRule) Update(ctx *router.Context) {
             "description": post["description"].(string),
             "listorder": listorder,
             "status": status,
-            "add_time": int(datebin.NowTime()),
-            "add_ip": router.GetRequestIp(ctx),
+            "update_time": int(datebin.NowTime()),
+            "update_ip": router.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {

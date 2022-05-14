@@ -4,7 +4,7 @@ import (
     "time"
     "gorm.io/gorm"
 
-    cast "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-hash/hash"
     
     "github.com/deatil/lakego-doak/lakego/random"
@@ -32,7 +32,7 @@ type AuthGroup struct {
 }
 
 func (this *AuthGroup) BeforeCreate(tx *gorm.DB) error {
-    this.ID = hash.MD5(cast.ToString(time.Nanosecond) + random.String(15))
+    this.ID = hash.MD5(goch.ToString(time.Nanosecond) + random.String(15))
 
     return nil
 }

@@ -16,7 +16,7 @@ var MQ *gmq.GMQ
 func init() {
     MQ = gmq.NewGMQ()
 
-    // 订短信主题
+    // 执行记录
     MQ.Subscribe("action-log", func(value interface{}) {
         f := value.(func())
         f()

@@ -51,6 +51,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
     if orders[0] == "" ||
         (orders[0] != "id" &&
         orders[0] != "title" &&
+        orders[0] != "listorder" &&
         orders[0] != "add_time") {
         orders[0] = "add_time"
     }
@@ -363,8 +364,8 @@ func (this *AuthGroup) Update(ctx *router.Context) {
             "description": post["description"].(string),
             "listorder": listorder,
             "status": status,
-            "add_time": int(datebin.NowTime()),
-            "add_ip": router.GetRequestIp(ctx),
+            "update_time": int(datebin.NowTime()),
+            "update_ip": router.GetRequestIp(ctx),
         }).
         Error
     if err3 != nil {
@@ -640,6 +641,10 @@ func (this *AuthGroup) Access(ctx *router.Context) {
 
         insertData := make([]model.AuthRuleAccess, 0)
         for _, value := range newAccessIds {
+            if value == "" {
+                continue
+            }
+
             insertData = append(insertData, model.AuthRuleAccess{
                 GroupId: id,
                 RuleId: value,

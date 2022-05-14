@@ -1,7 +1,6 @@
 package serviceprovider
 
 import (
-    "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
 
     // 脚本
@@ -27,8 +26,8 @@ type Lakego struct {
     provider.ServiceProvider
 }
 
-// 注册
-func (this *Lakego) Register() {
+// 引导
+func (this *Lakego) Boot() {
     // 脚本
     this.loadCommand()
 
@@ -51,5 +50,5 @@ func (this *Lakego) loadCommand() {
  * 导入模板渲染
  */
 func (this *Lakego) loadHtmlRender() {
-    router.NewRoute().Get().HTMLRender = view.New().GetRender()
+    this.GetRoute().HTMLRender = view.New().GetRender()
 }

@@ -9,6 +9,6 @@ import (
 // 添加服务提供者
 func init() {
     kernel.AddProvider(func() any {
-        return &provider.SwaggerServiceProvider{}
+        return &provider.Swagger{}
     })
 }

@@ -11,12 +11,12 @@ import (
  * @create 2022-4-17
  * @author deatil
  */
-type StaticsServiceProvider struct {
+type Statics struct {
     provider.ServiceProvider
 }
 
 // 引导
-func (this *StaticsServiceProvider) Boot() {
+func (this *Statics) Boot() {
     // 路由
     this.loadRoute()
 }
@@ -24,7 +24,7 @@ func (this *StaticsServiceProvider) Boot() {
 /**
  * 导入路由
  */
-func (this *StaticsServiceProvider) loadRoute() {
+func (this *Statics) loadRoute() {
     // 静态文件代理路由
     this.AddRoute(func(engine *router.Engine) {
         engine.Static("/storage", "./public/storage")
