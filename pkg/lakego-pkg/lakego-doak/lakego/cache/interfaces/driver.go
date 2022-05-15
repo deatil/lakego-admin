@@ -1,5 +1,9 @@
 package interfaces
 
+import (
+    "time"
+)
+
 /**
  * 驱动接口
  *
@@ -14,7 +18,7 @@ type Driver interface {
     Get(string) (any, error)
 
     // 存储
-    Put(string, any, int64) error
+    Put(string, any, time.Duration) error
 
     // 存储一个不过期的数据
     Forever(string, any) error
@@ -30,11 +34,5 @@ type Driver interface {
 
     // 清空所有缓存
     Flush() (bool, error)
-
-    // 设置前缀
-    SetPrefix(string)
-
-    // 缓存字段前缀
-    GetPrefix() string
 }
 

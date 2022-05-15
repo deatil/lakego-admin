@@ -26,6 +26,11 @@ func ArrGetWithGoch(source map[string]any, key string, defVal ...any) goch.Goch 
     return goch.New(data)
 }
 
+type (
+    // Goch 别名
+    Goch = goch.Goch
+)
+
 /**
  * 数组
  *

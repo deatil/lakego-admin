@@ -15,8 +15,9 @@ import (
 /**
  * 缓存
  *
- * cache.New().Get("larke-cache", "larke-cache-data", 122222)
- * cacheData, err := cache.New().Get("larke-cache")
+ * cache.New().Put("lakego-cache", "lakego-cache-data", 122222)
+ * cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
+ * cacheData, err := cache.New().Get("lakego-cache")
  *
  * @create 2021-7-3
  * @author deatil
@@ -31,20 +32,22 @@ func init() {
 }
 
 // 实例化
-func New(once ...bool) interfaces.Cache {
+func New(once ...bool) *cache.Cache {
     name := GetDefaultCache()
 
     return Cache(name, once...)
 }
 
 // 实例化
-func NewWithType(name string, once ...bool) interfaces.Cache {
+func NewWithType(name string, once ...bool) *cache.Cache {
     return Cache(name, once...)
 }
 
-func Cache(name string, once ...bool) interfaces.Cache {
+func Cache(name string, once ...bool) *cache.Cache {
+    conf := config.New("cache")
+
     // 缓存列表
-    caches := config.New("cache").GetStringMap("Caches")
+    caches := conf.GetStringMap("caches")
 
     // 转为小写
     name = strings.ToLower(name)
@@ -68,11 +71,15 @@ func Cache(name string, once ...bool) interfaces.Cache {
 
     c := cache.New(driver.(interfaces.Driver), driverConf)
 
+    // 前缀
+    keyPrefix := conf.GetString("key-prefix")
+    c.WithPrefix(keyPrefix)
+
     return c
 }
 
 func GetDefaultCache() string {
-    return config.New("cache").GetString("Default")
+    return config.New("cache").GetString("default")
 }
 
 // 注册
@@ -96,8 +103,6 @@ func Register() {
 
                 enabletrace := array.ArrGetWithGoch(conf, "enabletrace").ToBool()
 
-                keyPrefix   := array.ArrGetWithGoch(conf, "key-prefix").ToString()
-
                 driver := redisDriver.New(redisDriver.Config{
                     DB:       db,
                     Addr:     addr,
@@ -111,8 +116,6 @@ func Register() {
                     PoolTimeout:  poolTimeout,
 
                     EnableTrace:  enabletrace,
-
-                    KeyPrefix:    keyPrefix,
                 })
 
                 return driver

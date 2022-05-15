@@ -87,7 +87,7 @@ stores:
     # 类型
     type: "redis"
     # 前缀
-    prefix: "captcha"
+    key-prefix: "lakego-captcha"
     # redis 使用数据库
     db: 1
     # 地址

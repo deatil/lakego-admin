@@ -80,7 +80,7 @@ func ImportRoute() {
                 Where("url = ?", v.Path).
                 Where("method = ?", strings.ToUpper(v.Method)).
                 Updates(map[string]any{
-                    "title": title,
+                    "title": v.Path,
                 })
         }
 

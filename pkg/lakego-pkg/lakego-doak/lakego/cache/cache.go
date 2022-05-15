@@ -1,6 +1,12 @@
 package cache
 
 import (
+    "fmt"
+    "time"
+
+    "github.com/deatil/go-goch/goch"
+
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/cache/interfaces"
 )
 
@@ -32,12 +38,15 @@ type Cache struct {
     // 配置
     config Config
 
+    // 前缀
+    prefix string
+
     // 驱动
     driver interfaces.Driver
 }
 
 // 设置驱动
-func (this *Cache) WithDriver(driver interfaces.Driver) interfaces.Cache {
+func (this *Cache) WithDriver(driver interfaces.Driver) *Cache {
     this.driver = driver
 
     return this
@@ -49,38 +58,56 @@ func (this *Cache) GetDriver() interfaces.Driver {
 }
 
 // 设置配置
-func (this *Cache) WithConfig(config Config) interfaces.Cache {
+func (this *Cache) WithConfig(config Config) *Cache {
     this.config = config
 
     return this
 }
 
 // 获取配置
-func (this *Cache) GetConfig(name string) any {
-    if data, ok := this.config[name]; ok {
-        return data
-    }
+func (this *Cache) GetConfig(name string) goch.Goch {
+    return array.ArrGetWithGoch(this.config, name)
+}
 
-    return nil
+// 设置前缀
+func (this *Cache) WithPrefix(prefix string) *Cache {
+    this.prefix = prefix
+
+    return this
+}
+
+// 获取前缀
+func (this *Cache) GetPrefix() string {
+    return this.prefix
 }
 
 // 获取
 func (this *Cache) Has(key string) bool {
+    key = this.wrapperKey(key)
+
     return this.driver.Exists(key)
 }
 
 // 获取
 func (this *Cache) Get(key string) (any, error) {
+    key = this.wrapperKey(key)
+
     return this.driver.Get(key)
 }
 
 // 设置
-func (this *Cache) Put(key string, value any, ttl int64) error {
-    return this.driver.Put(key, value, ttl)
+func (this *Cache) Put(key string, value any, ttl any) error {
+    key = this.wrapperKey(key)
+
+    expiration := this.formatTime(ttl)
+
+    return this.driver.Put(key, value, expiration)
 }
 
 // 永久设置
 func (this *Cache) Forever(key string, value any) error {
+    key = this.wrapperKey(key)
+
     return this.driver.Forever(key, value)
 }
 
@@ -88,6 +115,8 @@ func (this *Cache) Forever(key string, value any) error {
 func (this *Cache) Pull(key string) (any, error) {
     var val any
     var err error
+
+    key = this.wrapperKey(key)
 
     val, err = this.driver.Get(key)
     if err != nil {
@@ -101,16 +130,22 @@ func (this *Cache) Pull(key string) (any, error) {
 
 // 增加一
 func (this *Cache) Increment(key string, value ...int64) error {
+    key = this.wrapperKey(key)
+
     return this.driver.Increment(key, value...)
 }
 
 // 减去一
 func (this *Cache) Decrement(key string, value ...int64) error {
+    key = this.wrapperKey(key)
+
     return this.driver.Decrement(key, value...)
 }
 
 // 删除
 func (this *Cache) Forget(key string) (bool, error) {
+    key = this.wrapperKey(key)
+
     return this.driver.Forget(key)
 }
 
@@ -119,8 +154,16 @@ func (this *Cache) Flush() (bool, error) {
     return this.driver.Flush()
 }
 
-// 获取前缀
-func (this *Cache) GetPrefix() string {
-    return this.driver.GetPrefix()
+// 包装字段
+func (this *Cache) wrapperKey(key string) string {
+    if this.prefix == "" {
+        return key
+    }
+
+    return fmt.Sprintf("%s:%s", this.prefix, key)
 }
 
+// 时间格式化
+func (this *Cache) formatTime(t any) time.Duration {
+    return time.Second * goch.ToDuration(t)
+}

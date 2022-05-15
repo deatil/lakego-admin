@@ -10,6 +10,7 @@ import (
     "github.com/go-redis/redis/v8"
     "github.com/go-redis/redis/extra/redisotel/v8"
 
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
@@ -100,8 +101,8 @@ type Redis struct {
 }
 
 // 设置
-func (this Redis) Set(key string, value any, expiration int) error {
-    ttl := this.FormatTime(expiration)
+func (this Redis) Set(key string, value any, expiration any) error {
+    ttl := this.formatTime(expiration)
 
     return this.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
@@ -159,10 +160,14 @@ func (this Redis) GetClient() *redis.Client {
 
 // 包装 key 值
 func (this Redis) wrapperKey(key string) string {
+    if this.prefix == "" {
+        return key
+    }
+
     return fmt.Sprintf("%s:%s", this.prefix, key)
 }
 
-// int 时间格式化为 Duration 格式
-func (this Redis) FormatTime(t int) time.Duration {
-    return time.Second * time.Duration(int64(t))
+// 时间格式化
+func (this Redis) formatTime(t any) time.Duration {
+    return time.Second * goch.ToDuration(t)
 }

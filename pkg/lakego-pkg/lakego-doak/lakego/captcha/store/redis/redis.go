@@ -150,6 +150,10 @@ func (this *Redis) Verify(id, answer string, clear bool) bool {
 
 // 获取格式化的值
 func (this *Redis) formatKey(v string) string {
+    if this.prefix == "" {
+        return v
+    }
+
     return this.prefix + ":" + v
 }
 

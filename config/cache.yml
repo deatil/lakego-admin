@@ -1,11 +1,13 @@
 # 默认缓存
 default: "redis"
 
+# 前缀
+key-prefix: "lakego-cache"
+
 # 缓存列表
 caches:
   redis:
     type: "redis"
-    key-prefix: "cache"
     addr: "127.0.0.1:6379"
     password: "admin123"
     db: 1

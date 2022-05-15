@@ -15,4 +15,4 @@ connects:
     pool-size: 100
     pool-timeout: 240s
     enabletrace: false
-    key-prefix: "lakego"
+    key-prefix: "lakego-redis"

@@ -16,6 +16,8 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/snowflake"
     "github.com/deatil/lakego-doak/lakego/facade/sign"
+    // "github.com/deatil/lakego-doak/lakego/facade/cache"
+    // "github.com/deatil/lakego-doak/lakego/facade/redis"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -216,7 +218,19 @@ func (this *Data) Error(ctx *gin.Context) {
     }
     arr := array.ArrGet(arrData, "b.d.e")
 
+    // 缓存
+    // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
+    // cacheData, _ := cache.New().Get("lakego-cache-forever")
+
+    // redis
+    // redis.New().Set("go-redis", "go-redis-data", 60000)
+    // var redisData string
+    // redis.New().Get("go-redis", &redisData)
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        // "cacheData": cacheData,
+        // "redisData": redisData,
+
         "error": data,
         "data2": data2,
         "data3": data3,

@@ -7,7 +7,7 @@
 *  基于 `JWT` 的用户登录态管理
 *  权限判断基于 `go-casbin` 的 `RBAC` 授权
 *  使用 `Swagger` 作为 API 文档管理
-*  本项目为 `后台api服务`
+*  本项目为 `后台api服务`，`后台前端页面` 可查看 [Lakego Admin Frontend](https://github.com/deatil/lakego-admin-frontend) 项目
 
 
 ### 环境要求
@@ -31,19 +31,20 @@
                 <img alt="控制台" src="https://user-images.githubusercontent.com/24578855/151192881-72510e1d-88db-4db3-b730-a741fd981fd7.png" />
             </center>
         </td>
+    </tr>
+    <tr>
         <td width="50%">
             <center>
                 <img alt="操作日志" src="https://user-images.githubusercontent.com/24578855/168456599-8401a6ef-9b8a-4fd8-bb30-3978bf4b0ec7.png" />
             </center>
         </td>
-    </tr>
-    
-    <tr>
         <td width="50%">
             <center>
                 <img alt="管理员" src="https://user-images.githubusercontent.com/24578855/168456604-c4dddd71-4b70-496b-ba2e-752e69932571.png" />
             </center>
         </td>
+    </tr>
+    <tr>
         <td width="50%">
             <center>
                 <img alt="用户组" src="https://user-images.githubusercontent.com/24578855/168456611-1f7fcdb6-e2af-4f8f-8572-227cd4096b61.png" />
@@ -87,7 +88,7 @@ go run main.go lakego-admin:install
 go run main.go lakego:storage-link
 ```
 
-5. 权限规则导入。导入的权限规则需要重新设置层级关系和名称内容
+5. 如需导入新的权限规则则需要重新设置导入规则的相关内容
 
 ```go
 go run main.go lakego-admin:import-route
