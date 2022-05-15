@@ -15,8 +15,15 @@ func NewArr() Arr {
 }
 
 // 获取
-func ArrGet(source map[string]any, key string) any {
-    return NewArr().Get(source, key)
+func ArrGet(source map[string]any, key string, defVal ...any) any {
+    return NewArr().Get(source, key, defVal...)
+}
+
+// 获取
+func ArrGetWithGoch(source map[string]any, key string, defVal ...any) goch.Goch {
+    data := NewArr().Get(source, key, defVal...)
+
+    return goch.New(data)
 }
 
 /**
@@ -38,7 +45,21 @@ func (this Arr) WithKeyDelim(data string) Arr {
 }
 
 // 获取
-func (this Arr) Get(source map[string]any, key string) any {
+func (this Arr) Get(source map[string]any, key string, defVal ...any) any {
+    data := this.Find(source, key)
+    if data != nil {
+        return data
+    }
+
+    if len(defVal) > 0 {
+        return defVal[0]
+    }
+
+    return nil
+}
+
+// 查找
+func (this Arr) Find(source map[string]any, key string) any {
     lowerKey := strings.ToLower(key)
 
     var (

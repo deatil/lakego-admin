@@ -78,9 +78,9 @@ func ImportRoute() {
         } else {
             model.NewAuthRule().
                 Where("url = ?", v.Path).
+                Where("method = ?", strings.ToUpper(v.Method)).
                 Updates(map[string]any{
-                    "url": v.Path,
-                    "method": strings.ToUpper(v.Method),
+                    "title": title,
                 })
         }
 

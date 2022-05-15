@@ -1,7 +1,6 @@
 package redis
 
 import (
-    "log"
     "fmt"
     "time"
     "errors"
@@ -10,48 +9,29 @@ import (
     "github.com/go-redis/redis/v8"
     "github.com/go-redis/redis/extra/redisotel/v8"
 
-    "github.com/deatil/lakego-doak/lakego/cache/interfaces"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
-/**
- * redis 缓存
- *
- * @create 2021-7-15
- * @author deatil
- */
-type Redis struct {
-    // 配置
-    config map[string]any
+// 构造函数
+func New(config Config) *Redis {
+    db        := config.DB
+    addr      := config.Addr
+    password  := config.Password
+    keyPrefix := config.KeyPrefix
 
-    // 前缀
-    prefix string
+    minIdleConn  := config.MinIdleConn
+    dialTimeout  := config.DialTimeout
+    readTimeout  := config.ReadTimeout
+    writeTimeout := config.WriteTimeout
+    poolSize     := config.PoolSize
+    poolTimeout  := config.PoolTimeout
 
-    // 上下文
-    ctx context.Context
-
-    // 客户端
-    client *redis.Client
-}
-
-// 实例化
-func (this *Redis) Init(config map[string]any) interfaces.Driver {
-    db := config["db"].(int)
-    addr := config["addr"].(string)
-    password := config["password"].(string)
-
-    minIdleConn := config["minidle-conn"].(int)
-    dialTimeout, _ := time.ParseDuration(config["dial-timeout"].(string))
-    readTimeout, _ := time.ParseDuration(config["read-timeout"].(string))
-    writeTimeout, _ := time.ParseDuration(config["write-timeout"].(string))
-    poolSize := config["pool-size"].(int)
-    poolTimeout, _ := time.ParseDuration(config["pool-timeout"].(string))
-
-    enabletrace := config["enabletrace"].(bool)
+    enabletrace  := config.EnableTrace
 
     client := redis.NewClient(&redis.Options{
-        DB:           db,
-        Addr:         addr,
-        Password:     password,
+        Addr:     addr,
+        Password: password,
+        DB:       db,
 
         MinIdleConns: minIdleConn,
         DialTimeout:  dialTimeout,
@@ -65,7 +45,7 @@ func (this *Redis) Init(config map[string]any) interfaces.Driver {
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        log.Print(err.Error())
+        logger.New().Error(err.Error())
     }
 
     // 调试
@@ -73,11 +53,46 @@ func (this *Redis) Init(config map[string]any) interfaces.Driver {
         client.AddHook(redisotel.NewTracingHook())
     }
 
-    this.config = config
-    this.ctx = context.Background()
-    this.client = client
+    return &Redis{
+        prefix: keyPrefix,
+        ctx:    context.Background(),
+        client: client,
+    }
+}
 
-    return this
+// 缓存配置
+type Config struct {
+    Addr     string
+    Password string
+    DB       int
+
+    MinIdleConn  int
+    DialTimeout  time.Duration
+    ReadTimeout  time.Duration
+    WriteTimeout time.Duration
+    PoolSize     int
+    PoolTimeout  time.Duration
+
+    EnableTrace  bool
+
+    KeyPrefix    string
+}
+
+/**
+ * redis 缓存
+ *
+ * @create 2021-7-15
+ * @author deatil
+ */
+type Redis struct {
+    // 前缀
+    prefix string
+
+    // 上下文
+    ctx context.Context
+
+    // 客户端
+    client *redis.Client
 }
 
 // 判断是否存在

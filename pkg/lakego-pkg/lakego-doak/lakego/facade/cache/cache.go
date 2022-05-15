@@ -4,6 +4,7 @@ import (
     "sync"
     "strings"
 
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/cache"
@@ -13,6 +14,9 @@ import (
 
 /**
  * 缓存
+ *
+ * cache.New().Get("larke-cache", "larke-cache-data", 122222)
+ * cacheData, err := cache.New().Get("larke-cache")
  *
  * @create 2021-7-3
  * @author deatil
@@ -78,12 +82,38 @@ func Register() {
         register.
             NewManagerWithPrefix("cache").
             Register("redis", func(conf map[string]any) any {
-                prefix := conf["prefix"].(string)
+                addr     := array.ArrGetWithGoch(conf, "addr").ToString()
+                password := array.ArrGetWithGoch(conf, "password").ToString()
+                db       := array.ArrGetWithGoch(conf, "db").ToInt()
 
-                driver := &redisDriver.Redis{}
+                minIdleConn  := array.ArrGetWithGoch(conf, "minidle-conn").ToInt()
+                dialTimeout  := array.ArrGetWithGoch(conf, "dial-timeout").ToDuration()
+                readTimeout  := array.ArrGetWithGoch(conf, "read-timeout").ToDuration()
+                writeTimeout := array.ArrGetWithGoch(conf, "write-timeout").ToDuration()
 
-                driver.Init(conf)
-                driver.SetPrefix(prefix)
+                poolSize    := array.ArrGetWithGoch(conf, "pool-size").ToInt()
+                poolTimeout := array.ArrGetWithGoch(conf, "pool-timeout").ToDuration()
+
+                enabletrace := array.ArrGetWithGoch(conf, "enabletrace").ToBool()
+
+                keyPrefix   := array.ArrGetWithGoch(conf, "key-prefix").ToString()
+
+                driver := redisDriver.New(redisDriver.Config{
+                    DB:       db,
+                    Addr:     addr,
+                    Password: password,
+
+                    MinIdleConn:  minIdleConn,
+                    DialTimeout:  dialTimeout,
+                    ReadTimeout:  readTimeout,
+                    WriteTimeout: writeTimeout,
+                    PoolSize:     poolSize,
+                    PoolTimeout:  poolTimeout,
+
+                    EnableTrace:  enabletrace,
+
+                    KeyPrefix:    keyPrefix,
+                })
 
                 return driver
             })

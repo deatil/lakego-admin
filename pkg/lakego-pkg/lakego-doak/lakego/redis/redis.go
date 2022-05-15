@@ -13,7 +13,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
-// redis
+// 构造函数
 func New(config Config) Redis {
     db := config.DB
     addr := config.Addr
@@ -55,8 +55,8 @@ func New(config Config) Redis {
     }
 
     return Redis{
-        client: client,
         prefix: keyPrefix,
+        client: client,
         cache: cache.New(&cache.Options{
             Redis:      client,
             LocalCache: cache.NewTinyLFU(1000, time.Minute),
@@ -89,10 +89,14 @@ type Config struct {
  * @author deatil
  */
 type Redis struct {
-    cache  *cache.Cache
-    client *redis.Client
+    // 前缀
     prefix string
-    config Config
+
+    // 缓存
+    cache  *cache.Cache
+
+    // 客户端
+    client *redis.Client
 }
 
 // 设置

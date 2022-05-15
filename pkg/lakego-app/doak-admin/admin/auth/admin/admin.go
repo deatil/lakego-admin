@@ -262,7 +262,7 @@ func (this *Admin) GetRuleSlugs() []string {
             switch value.(type) {
                 case string:
                     val := value.(string)
-                    if val != "" {
+                    if val != "" && val != "#" {
                         return true
                     }
             }

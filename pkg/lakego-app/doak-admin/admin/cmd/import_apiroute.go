@@ -100,8 +100,7 @@ func ImportApiRoute() {
                     Where("url = ?", url).
                     Where("method = ?", method).
                     Updates(map[string]any{
-                        "url": url,
-                        "method": method,
+                        "title": title,
                     })
             }
 

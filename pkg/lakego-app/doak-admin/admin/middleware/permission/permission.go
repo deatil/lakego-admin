@@ -51,7 +51,7 @@ func permissionCheck(ctx *router.Context) bool {
     newRequestPath := "/" + strings.Join(newRequestPaths, "/")
 
     // 先匹配分组
-    group := config.New("admin").GetString("Route.Prefix")
+    group := config.New("admin").GetString("route.prefix")
     if requestPaths[1] != group {
         response.Error(ctx, "你没有访问权限", code.AuthError)
         return false

@@ -8,6 +8,7 @@ import (
 
     "github.com/mojocn/base64Captcha"
 
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/captcha"
@@ -111,10 +112,41 @@ func Register() {
             NewManagerWithPrefix("captcha-store").
             RegisterMany(map[string]func(map[string]any) any {
                 "redis": func(conf map[string]any) any {
-                    store := &redisStore.Redis{}
+                    addr := array.ArrGetWithGoch(conf, "addr").ToString()
+                    password := array.ArrGetWithGoch(conf, "password").ToString()
 
-                    store.WithConfig(conf)
-                    store.Init()
+                    db := array.ArrGetWithGoch(conf, "db").ToInt()
+
+                    minIdleConn := array.ArrGetWithGoch(conf, "minidle-conn").ToInt()
+                    dialTimeout := array.ArrGetWithGoch(conf, "dial-timeout").ToDuration()
+                    readTimeout := array.ArrGetWithGoch(conf, "read-timeout").ToDuration()
+                    writeTimeout := array.ArrGetWithGoch(conf, "write-timeout").ToDuration()
+
+                    poolSize := array.ArrGetWithGoch(conf, "pool-size").ToInt()
+                    poolTimeout := array.ArrGetWithGoch(conf, "pool-timeout").ToDuration()
+
+                    enabletrace := array.ArrGetWithGoch(conf, "enabletrace").ToBool()
+
+                    keyPrefix := array.ArrGetWithGoch(conf, "key-prefix").ToString()
+                    ttl       := array.ArrGetWithGoch(conf, "ttl").ToInt()
+
+                    store := redisStore.New(redisStore.Config{
+                        DB:       db,
+                        Addr:     addr,
+                        Password: password,
+
+                        MinIdleConn:  minIdleConn,
+                        DialTimeout:  dialTimeout,
+                        ReadTimeout:  readTimeout,
+                        WriteTimeout: writeTimeout,
+                        PoolSize:     poolSize,
+                        PoolTimeout:  poolTimeout,
+
+                        EnableTrace:  enabletrace,
+
+                        KeyPrefix:    keyPrefix,
+                        TTL:          ttl,
+                    })
 
                     return store
                 },
@@ -127,7 +159,7 @@ func Register() {
                     return syncmap
                 },
                 "memory": func(conf map[string]any) any {
-                    collectNum := conf["collectnum"].(int)
+                    collectNum := conf["collect-num"].(int)
                     expiration := time.Minute * time.Duration(int64(conf["expiration"].(int)))
 
                     memory := base64Captcha.NewMemoryStore(collectNum, expiration)
@@ -162,8 +194,8 @@ func Register() {
                     cd := base64Captcha.NewDriverString(
                         conf["height"].(int),
                         conf["width"].(int),
-                        conf["noisecount"].(int),
-                        conf["showlineoptions"].(int),
+                        conf["noise-count"].(int),
+                        conf["showline-options"].(int),
                         conf["length"].(int),
                         conf["source"].(string),
                         &color.RGBA{
@@ -194,8 +226,8 @@ func Register() {
                     cd := base64Captcha.NewDriverChinese(
                         conf["height"].(int),
                         conf["width"].(int),
-                        conf["noisecount"].(int),
-                        conf["showlineoptions"].(int),
+                        conf["noise-count"].(int),
+                        conf["showline-options"].(int),
                         conf["length"].(int),
                         conf["source"].(string),
                         &color.RGBA{
@@ -226,8 +258,8 @@ func Register() {
                     cd := base64Captcha.NewDriverMath(
                         conf["height"].(int),
                         conf["width"].(int),
-                        conf["noisecount"].(int),
-                        conf["showlineoptions"].(int),
+                        conf["noise-count"].(int),
+                        conf["showline-options"].(int),
                         &color.RGBA{
                             R: uint8(bgColor["r"].(int)),
                             G: uint8(bgColor["g"].(int)),
@@ -258,8 +290,8 @@ func Register() {
                         conf["height"].(int),
                         conf["width"].(int),
                         conf["length"].(int),
-                        conf["maxskew"].(float64),
-                        conf["dotcount"].(int),
+                        conf["max-skew"].(float64),
+                        conf["dot-count"].(int),
                     )
 
                     return driver

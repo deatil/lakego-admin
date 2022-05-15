@@ -8,8 +8,82 @@ import (
     "github.com/go-redis/redis/v8"
     "github.com/go-redis/redis/extra/redisotel/v8"
 
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
     "github.com/deatil/lakego-doak/lakego/captcha/store"
+    "github.com/deatil/lakego-doak/lakego/captcha/interfaces"
 )
+
+// 构造函数
+func New(config Config) interfaces.Store {
+    db        := config.DB
+    addr      := config.Addr
+    password  := config.Password
+    keyPrefix := config.KeyPrefix
+    ttl       := config.TTL
+
+    minIdleConn  := config.MinIdleConn
+    dialTimeout  := config.DialTimeout
+    readTimeout  := config.ReadTimeout
+    writeTimeout := config.WriteTimeout
+    poolSize     := config.PoolSize
+    poolTimeout  := config.PoolTimeout
+
+    enabletrace  := config.EnableTrace
+
+    client := redis.NewClient(&redis.Options{
+        Addr:     addr,
+        Password: password,
+        DB:       db,
+
+        MinIdleConns: minIdleConn,
+        DialTimeout:  dialTimeout,
+        ReadTimeout:  readTimeout,
+        WriteTimeout: writeTimeout,
+        PoolSize:     poolSize,
+        PoolTimeout:  poolTimeout,
+    })
+
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    defer cancel()
+
+    if _, err := client.Ping(ctx).Result(); err != nil {
+        logger.New().Error(err.Error())
+    }
+
+    // 调试
+    if enabletrace {
+        client.AddHook(redisotel.NewTracingHook())
+    }
+
+    return &Redis{
+        ttl: ttl,
+        prefix: keyPrefix,
+        client: client,
+        cache: cache.New(&cache.Options{
+            Redis:      client,
+            LocalCache: cache.NewTinyLFU(1000, time.Minute),
+        }),
+    }
+}
+
+// 缓存配置
+type Config struct {
+    Addr     string
+    Password string
+    DB       int
+
+    MinIdleConn  int
+    DialTimeout  time.Duration
+    ReadTimeout  time.Duration
+    WriteTimeout time.Duration
+    PoolSize     int
+    PoolTimeout  time.Duration
+
+    EnableTrace  bool
+
+    KeyPrefix    string
+    TTL          int
+}
 
 /**
  * Redis 存储
@@ -21,78 +95,22 @@ type Redis struct {
     // 继承默认
     store.Store
 
-    // 配置
-    config map[string]any
-
     // 缓存
     cache *cache.Cache
 
     // 客户端
     client *redis.Client
-}
 
-// 设置配置
-func (this *Redis) WithConfig(config map[string]any) *Redis {
-    this.config = config
+    // 前缀
+    prefix string
 
-    return this
-}
-
-// 初始化
-func (this *Redis) Init() {
-    db := this.config["db"].(int)
-    addr := this.config["addr"].(string)
-    password := this.config["password"].(string)
-
-    minIdleConn := this.config["minidleconn"].(int)
-    dialTimeout, _ := time.ParseDuration(this.config["dialtimeout"].(string))
-    readTimeout, _ := time.ParseDuration(this.config["readtimeout"].(string))
-    writeTimeout, _ := time.ParseDuration(this.config["writetimeout"].(string))
-    poolSize := this.config["poolsize"].(int)
-    poolTimeout, _ := time.ParseDuration(this.config["pooltimeout"].(string))
-
-    enabletrace := this.config["enabletrace"].(bool)
-
-    client := redis.NewClient(&redis.Options{
-        DB:       db,
-        Addr:     addr,
-        Password: password,
-
-        MinIdleConns: minIdleConn,
-        DialTimeout:  dialTimeout,
-        ReadTimeout:  readTimeout,
-        WriteTimeout: writeTimeout,
-        PoolSize:     poolSize,
-        PoolTimeout:  poolTimeout,
-    })
-
-    ctx, cancel := context.WithTimeout(context.Background(), 3 * time.Second)
-    defer cancel()
-
-    if _, err := client.Ping(ctx).Result(); err != nil {
-        panic("验证码 redis 连接失败")
-    }
-
-    // 调试
-    if enabletrace {
-        client.AddHook(redisotel.NewTracingHook())
-    }
-
-    rcache := cache.New(&cache.Options{
-        Redis:      client,
-        LocalCache: cache.NewTinyLFU(1000, time.Minute),
-    })
-
-    // 保存缓存句柄
-    this.cache = rcache
-
-    // 保存客户端
-    this.client = client
+    // 过期时间
+    ttl int
 }
 
 // 设置
 func (this *Redis) Set(id string, value string) error {
-    ttl := time.Second * time.Duration(this.config["ttl"].(int))
+    ttl := time.Second * time.Duration(this.ttl)
 
     this.cache.Set(&cache.Item{
         Ctx:            context.TODO(),
@@ -132,6 +150,6 @@ func (this *Redis) Verify(id, answer string, clear bool) bool {
 
 // 获取格式化的值
 func (this *Redis) formatKey(v string) string {
-    return this.config["prefix"].(string) + ":" + v
+    return this.prefix + ":" + v
 }
 

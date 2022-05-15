@@ -12,17 +12,18 @@ import (
  * 构造函数
  *
  * redis.New().Set("go-redis", "go-redis-data", 60000)
+ * redis.New().Get("go-redis", &redisData)
  *
  * @create 2021-6-20
  * @author deatil
  */
-func New(defVal ...string) redis.Redis {
+func New(connect ...string) redis.Redis {
     conf := config.New("redis")
 
     // 默认
     defaultConnect := conf.GetString("default")
-    if len(defVal) > 0 {
-        defaultConnect = defVal[0]
+    if len(connect) > 0 {
+        defaultConnect = connect[0]
     }
 
     // 连接列表
@@ -37,22 +38,22 @@ func New(defVal ...string) redis.Redis {
     // 格式化转换
     connectConf := goch.ToStringMap(connectConfs)
 
-    addr := goch.ToString(array.ArrGet(connectConf, "addr"))
-    password := goch.ToString(array.ArrGet(connectConf, "password"))
+    addr := array.ArrGetWithGoch(connectConf, "addr").ToString()
+    password := array.ArrGetWithGoch(connectConf, "password").ToString()
 
-    db := goch.ToInt(array.ArrGet(connectConf, "db"))
+    db := array.ArrGetWithGoch(connectConf, "db").ToInt()
 
-    minIdleConn := goch.ToInt(array.ArrGet(connectConf, "minidle-conn"))
-    dialTimeout := goch.ToDuration(array.ArrGet(connectConf, "dial-timeout"))
-    readTimeout := goch.ToDuration(array.ArrGet(connectConf, "read-timeout"))
-    writeTimeout := goch.ToDuration(array.ArrGet(connectConf, "write-timeout"))
+    minIdleConn := array.ArrGetWithGoch(connectConf, "minidle-conn").ToInt()
+    dialTimeout := array.ArrGetWithGoch(connectConf, "dial-timeout").ToDuration()
+    readTimeout := array.ArrGetWithGoch(connectConf, "read-timeout").ToDuration()
+    writeTimeout := array.ArrGetWithGoch(connectConf, "write-timeout").ToDuration()
 
-    poolSize := goch.ToInt(array.ArrGet(connectConf, "pool-size"))
-    poolTimeout := goch.ToDuration(array.ArrGet(connectConf, "pool-timeout"))
+    poolSize := array.ArrGetWithGoch(connectConf, "pool-size").ToInt()
+    poolTimeout := array.ArrGetWithGoch(connectConf, "pool-timeout").ToDuration()
 
-    enabletrace := goch.ToBool(array.ArrGet(connectConf, "enabletrace"))
+    enabletrace := array.ArrGetWithGoch(connectConf, "enabletrace").ToBool()
 
-    keyPrefix := goch.ToString(array.ArrGet(connectConf, "key-prefix"))
+    keyPrefix := array.ArrGetWithGoch(connectConf, "key-prefix").ToString()
 
     return redis.New(redis.Config{
         DB:       db,

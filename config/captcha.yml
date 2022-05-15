@@ -1,124 +1,122 @@
 # 默认驱动
-DefaultDriver: "String"
+defaultdriver: "string"
 
 # 驱动列表
-Drivers:
+drivers:
   # 字符
-  String:
+  string:
     # 类型
-    Type: "string"
-    Height: 50
-    Width: 150
-    NoiseCount: 2
-    ShowLineOptions: 2
+    type: "string"
+    height: 50
+    width: 150
+    noise-count: 2
+    showline-options: 2
     # 长度
-    Length: 4
+    length: 4
     # 随机数
-    Source: "234567890abcdefghjkmnpqrstuvwxyz"
+    source: "234567890abcdefghjkmnpqrstuvwxyz"
     # 字体
     # RitaSmith.ttf | wqy-microhei.ttc | Flim-Flam.ttf | DENNEthree-dee.ttf
     # DeborahFancyDress.ttf | Comismsh.ttf | chromohv.ttf | ApothecaryFont.ttf
     # actionj.ttf | 3Dumb.ttf
-    Fonts: ["DENNEthree-dee.ttf"]
+    fonts: ["DENNEthree-dee.ttf"]
     # 颜色
-    BgColor:
-      R: 240
-      G: 240
-      B: 246
-      A: 246
+    bgcolor:
+      r: 240
+      g: 240
+      b: 246
+      a: 246
 
   # 中文
-  Chinese:
+  chinese:
     # 类型
-    Type: "chinese"
-    Height: 60
-    Width: 320
-    ShowLineOptions: 0
-    NoiseCount: 0
-    Source: "设想,你在,处理,消费者,的音,频输,出音,频可,能无,论什,么都,没有,任何,输出,或者,它可,能是,单声道,立体声,或是,环绕立,体声的,,不想要,的值"
-    Length: 2
-    Fonts: ["RitaSmith.ttf"]
-    BgColor:
-      R: 125
-      G: 125
-      B: 0
-      A: 118
+    type: "chinese"
+    height: 60
+    width: 320
+    showline-options: 0
+    noise-count: 0
+    source: "设想,你在,处理,消费者,的音,频输,出音,频可,能无,论什,么都,没有,任何,输出,或者,它可,能是,单声道,立体声,或是,环绕立,体声的,,不想要,的值"
+    length: 2
+    fonts: ["RitaSmith.ttf"]
+    bgcolor:
+      r: 125
+      g: 125
+      b: 0
+      a: 118
 
   # 数学公式
-  Math:
+  math:
     # 类型
-    Type: "math"
-    Height: 60
-    Width: 240
-    ShowLineOptions: 0
-    NoiseCount: 0
-    Length: 6
-    Fonts: ["wqy-microhei.ttc"]
-    BgColor:
-      R: 240
-      G: 240
-      B: 246
-      A: 246
+    type: "math"
+    height: 60
+    width: 240
+    showline-options: 0
+    noise-count: 0
+    length: 6
+    fonts: ["wqy-microhei.ttc"]
+    bgcolor:
+      r: 240
+      g: 240
+      b: 246
+      a: 246
 
   # 音频
-  Audio:
+  audio:
     # 类型
-    Type: "audio"
-    Length: 6
-    Language: 'zh'
+    type: "audio"
+    length: 6
+    language: 'zh'
 
-  # Digit 驱动
-  Digit:
+  # digit 驱动
+  digit:
     # 类型
-    Type: "digit"
-    Height: 80
-    Width: 240
-    Length: 4
-    MaxSkew: 0.7
-    DotCount: 80
+    type: "digit"
+    height: 80
+    width: 240
+    length: 4
+    max-skew: 0.7
+    dot-count: 80
 
 # 默认存储
-DefaultStore: "redis"
+defaultstore: "redis"
 
 # 存储列表
-Stores:
+stores:
   # redis 存储配置
-  Redis:
+  redis:
     # 类型
-    Type: "redis"
+    type: "redis"
     # 前缀
-    Prefix: "captcha"
-    # 过期时间
-    Ttl: 3600
+    prefix: "captcha"
     # redis 使用数据库
-    Db: 1
+    db: 1
     # 地址
-    Addr: "127.0.0.1:6379"
+    addr: "127.0.0.1:6379"
     # 密码
-    Password: "admin123"
+    password: "admin123"
+    # 过期时间
+    ttl: 3600
     # 其他配置
-    MinIdleConn: 200
-    DialTimeout: 60s
-    ReadTimeout: 500ms
-    WriteTimeout: 500ms
-    PoolSize: 100
-    PoolTimeout: 240s
-    Enabletrace: false
+    minidle-conn: 200
+    dial-timeout: 60s
+    read-timeout: 500ms
+    write-timeout: 500ms
+    pool-size: 100
+    pool-timeout: 240s
+    enabletrace: false
 
-  # Syncmap 配置
-  Syncmap:
+  # syncmap 配置
+  syncmap:
     # 类型
-    Type: "syncmap"
+    type: "syncmap"
     # 存活时间
-    LiveTime: 10
+    livetime: 10
 
-  # Memory 配置
-  Memory:
+  # memory 配置
+  memory:
     # 类型
-    Type: "memory"
+    type: "memory"
     # 数量
-    CollectNum: 10240
+    collect-num: 10240
     # 过期
-    Expiration: 10
-
-
+    expiration: 10
