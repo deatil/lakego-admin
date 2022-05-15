@@ -1,0 +1,21 @@
+name: 问题咨询
+description: 你有任何关于项目的问题都可以咨询
+title: "[Question]: "
+labels: [question]
+assignees:
+  - deatil
+body:
+  - type: textarea
+    id: place
+    attributes:
+      label: 疑惑的地方
+      description: 您对项目存在疑惑的地方?
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: 期望的结果
+      description: 您想要对疑惑的地方得到怎样的结果?
+    validations:
+      required: true
