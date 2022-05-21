@@ -2,9 +2,15 @@ package model
 
 import (
     "encoding/json"
+
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/facade/database"
+)
+
+type (
+    // gorm 的 Session
+    Session = gorm.Session
 )
 
 // 创建一个 db 连接

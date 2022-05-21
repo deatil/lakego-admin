@@ -4,6 +4,7 @@ import (
     "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
+    "github.com/deatil/lakego-filesystem/filesystem"
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/random"
@@ -40,6 +41,7 @@ type Attachment struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /attachment [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.index"}
 func (this *Attachment) Index(ctx *router.Context) {
     // 附件模型
     attachModel := model.NewAttachment()
@@ -136,6 +138,7 @@ func (this *Attachment) Index(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /attachment/{id} [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.detail"}
 func (this *Attachment) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -174,6 +177,7 @@ func (this *Attachment) Detail(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
 // @Router /attachment/{id} [delete]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.delete"}
 func (this *Attachment) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -222,6 +226,7 @@ func (this *Attachment) Delete(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
 // @Router /attachment/{id}/enable [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.enable"}
 func (this *Attachment) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -271,6 +276,7 @@ func (this *Attachment) Enable(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
 // @Router /attachment/{id}/disable [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.disable"}
 func (this *Attachment) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -320,6 +326,7 @@ func (this *Attachment) Disable(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
 // @Router /attachment/downcode/{id} [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.downcode"}
 func (this *Attachment) DownloadCode(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -359,6 +366,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
 // @Success 200 {string} string ""
 // @Router /attachment/download/{code} [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.attachment.download"}
 func (this *Attachment) Download(ctx *router.Context) {
     code := ctx.Param("code")
     if code == "" {
@@ -388,6 +396,12 @@ func (this *Attachment) Download(ctx *router.Context) {
     filePath := url.AttachmentPath(result["path"].(string), result["disk"].(string))
 
     if filePath == "" {
+        this.ReturnString(ctx, "文件不存在")
+        return
+    }
+
+    fs := filesystem.New()
+    if !fs.Exists(filePath) {
         this.ReturnString(ctx, "文件不存在")
         return
     }

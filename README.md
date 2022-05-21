@@ -1,5 +1,7 @@
 ## lakego-admin 后台管理系统
 
+lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
+
 
 ### 项目介绍
 
@@ -88,10 +90,10 @@ go run main.go lakego-admin:install
 go run main.go lakego:storage-link
 ```
 
-5. 如需导入新的权限规则则需要重新设置导入规则的相关内容
+5. 如需导入新的权限,可执行下面的脚本从 swagger 文档导入
 
 ```go
-go run main.go lakego-admin:import-route
+go run main.go lakego-admin:import-apiroute
 ```
 
 6. 运行测试
@@ -116,8 +118,6 @@ go run main.go
  - github.com/casbin/casbin
 
  - github.com/spf13/cobra
-
- - github.com/go-redis/redis
 
 
 ### 开源协议

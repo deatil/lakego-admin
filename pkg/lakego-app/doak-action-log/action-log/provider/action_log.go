@@ -3,7 +3,6 @@ package provider
 import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
-    routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 
     "github.com/deatil/lakego-doak-admin/admin/support/route"
 
@@ -51,7 +50,7 @@ func (this *ActionLog) Boot() {
  * 导入中间件
  */
 func (this *ActionLog) loadMiddleware() {
-    m := routerFacade.NewMiddleware()
+    m := router.NewMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

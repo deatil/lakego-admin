@@ -22,8 +22,10 @@ func New(adapter interfaces.Adapter, modelConf string) *Permission {
  * 权限
  *
  * rbac_model.conf 中 matchers 内置可用函数：
- *   keyMatch [匹配*号], keyMatch2 [匹配 :file]
- *   regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配]
+ *   keyMatch [匹配*号], keyMatch2 [匹配 :file],
+ *   keyMatch3 [匹配 {file}], keyMatch4 [匹配更严格 {file} ],
+ *   regexMatch [正则匹配], ipMatch [IP地址或者CIDR匹配],
+ *   globMatch, keyGet, keyGet2
  *
  * @create 2021-9-30
  * @author deatil
@@ -99,11 +101,21 @@ func (this *Permission) GetEnforcer() *casbin.Enforcer {
     return this.Enforcer
 }
 
+// 添加配置可用方法
+// this.GetEnforcer().AddFunction(name string, function govaluate.ExpressionFunction)
+
 /**
  * 添加用户角色
  */
-func (this *Permission) AddRoleForUser(user string, role string) (bool, error) {
-    return this.GetEnforcer().AddRoleForUser(user, role)
+func (this *Permission) AddRoleForUser(user string, role string, domain ...string) (bool, error) {
+    return this.GetEnforcer().AddRoleForUser(user, role, domain...)
+}
+
+/**
+ * 批量添加用户角色
+ */
+func (this *Permission) AddRolesForUser(user string, roles []string, domain ...string) (bool, error) {
+    return this.GetEnforcer().AddRolesForUser(user, roles, domain...)
 }
 
 /**
@@ -111,6 +123,20 @@ func (this *Permission) AddRoleForUser(user string, role string) (bool, error) {
  */
 func (this *Permission) HasRoleForUser(user string, role string) (bool, error) {
     return this.GetEnforcer().HasRoleForUser(user, role)
+}
+
+/**
+ * 用户的全部角色
+ */
+func (this *Permission) GetRolesForUser(name string, domain ...string) ([]string, error) {
+    return this.GetEnforcer().GetRolesForUser(name, domain...)
+}
+
+/**
+ * 角色的全部用户
+ */
+func (this *Permission) GetUsersForRole(name string, domain ...string) ([]string, error) {
+    return this.GetEnforcer().GetUsersForRole(name, domain...)
 }
 
 /**
@@ -163,10 +189,87 @@ func (this *Permission) HasPermissionForUser(user string, ptype string, rule str
 }
 
 /**
+ * 删除角色
+ */
+func (this *Permission) DeleteRole(role string) (bool, error) {
+    return this.GetEnforcer().DeleteRole(role)
+}
+
+/**
+ * 删除权限
+ */
+func (this *Permission) DeletePermission(permission ...string) (bool, error) {
+    return this.GetEnforcer().DeletePermission(permission...)
+}
+
+/**
+ * 添加用户权限
+ */
+func (this *Permission) AddPermissionForUser(user string, permission ...string) (bool, error) {
+    return this.GetEnforcer().AddPermissionForUser(user, permission...)
+}
+
+/**
+ * 删除用户的权限
+ */
+func (this *Permission) DeletePermissionForUser(user string, permission ...string) (bool, error) {
+    return this.GetEnforcer().DeletePermissionForUser(user, permission...)
+}
+
+/**
+ * 删除用户的所有权限
+ */
+func (this *Permission) DeletePermissionsForUser(user string) (bool, error) {
+    return this.GetEnforcer().DeletePermissionsForUser(user)
+}
+
+/**
  * 全部权限
  */
 func (this *Permission) GetPermissionsForUser(user string) [][]string {
     return this.GetEnforcer().GetPermissionsForUser(user)
+}
+
+/**
+ * 全部角色
+ */
+func (this *Permission) GetImplicitRolesForUser(user string, domain ...string) ([]string, error) {
+    return this.GetEnforcer().GetImplicitRolesForUser(user, domain...)
+}
+
+/**
+ * 角色的用户
+ */
+func (this *Permission) GetImplicitUsersForRole(user string, domain ...string) ([]string, error) {
+    return this.GetEnforcer().GetImplicitUsersForRole(user, domain...)
+}
+
+/**
+ * 用户的全部权限
+ */
+func (this *Permission) GetImplicitPermissionsForUser(user string, domain ...string) ([][]string, error) {
+    return this.GetEnforcer().GetImplicitPermissionsForUser(user, domain...)
+}
+
+/**
+ * 权限对应的用户
+ */
+func (this *Permission) GetImplicitUsersForPermission(permission ...string) ([]string, error) {
+    return this.GetEnforcer().GetImplicitUsersForPermission(permission...)
+}
+
+/**
+ * 用户的全部决策器
+ */
+func (this *Permission) GetImplicitResourcesForUser(user string, domain ...string) ([][]string, error) {
+    return this.GetEnforcer().GetImplicitResourcesForUser(user, domain...)
+}
+
+/**
+ * 用户的全部域名
+ */
+func (this *Permission) GetDomainsForUser(user string) ([]string, error) {
+    return this.GetEnforcer().GetDomainsForUser(user)
 }
 
 /**

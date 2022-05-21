@@ -38,6 +38,7 @@ type ActionLog struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /action-log [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.action-log.index"}
 func (this *ActionLog) Index(ctx *router.Context) {
     // 模型
     logModel := model.NewActionLog()
@@ -133,6 +134,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "30天前日志清除成功", "data": ""}"
 // @Router /action-log/clear [delete]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.action-log.clear"}
 func (this *ActionLog) Clear(ctx *router.Context) {
     // 清除
     err := model.NewActionLog().

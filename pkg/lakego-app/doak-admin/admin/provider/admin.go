@@ -9,7 +9,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
-    routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
     "github.com/deatil/lakego-doak-admin/admin/support/response"
@@ -148,7 +147,7 @@ func (this *Admin) loadRoute() {
         engine.Use(globalMiddlewares...)
 
         // 中间件
-        groupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("Route.Middleware"))
+        groupMiddlewares := router.GetMiddlewares(conf.GetString("Route.Middleware"))
 
         // 路由
         admin := engine.Group(conf.GetString("Route.Prefix"))
@@ -159,7 +158,7 @@ func (this *Admin) loadRoute() {
                 adminRoute.Route(admin)
 
                 // 管理员中间件
-                adminGroupMiddlewares := routerFacade.GetMiddlewares(conf.GetString("route.admin-middleware"))
+                adminGroupMiddlewares := router.GetMiddlewares(conf.GetString("route.admin-middleware"))
 
                 // 需要管理员权限
                 admin.Use(adminGroupMiddlewares...)
@@ -176,7 +175,7 @@ func (this *Admin) loadRoute() {
  * 导入中间件
  */
 func (this *Admin) loadMiddleware() {
-    m := routerFacade.NewMiddleware()
+    m := router.NewMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

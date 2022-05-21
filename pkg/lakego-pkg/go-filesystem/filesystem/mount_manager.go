@@ -4,15 +4,12 @@ import(
     "io"
     "os"
     "strings"
-
-    "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
 
 // 文件系统实例化
 func NewMountManager(filesystems ...map[string]any) *MountManager {
-    ifs := make(map[string]interfaces.Fllesystem)
     mm := &MountManager{
-        filesystems: ifs,
+        filesystems: make(FilesystemMap),
     }
 
     if len(filesystems) > 0{
@@ -22,6 +19,11 @@ func NewMountManager(filesystems ...map[string]any) *MountManager {
     return mm
 }
 
+type (
+    // 列表
+    FilesystemMap = map[string]*Fllesystem
+)
+
 /**
  * 文件系统
  *
@@ -29,27 +31,27 @@ func NewMountManager(filesystems ...map[string]any) *MountManager {
  * @author deatil
  */
 type MountManager struct {
-    filesystems map[string]interfaces.Fllesystem
+    filesystems FilesystemMap
 }
 
 // 批量
 func (this *MountManager) MountFilesystems(filesystems map[string]any) *MountManager {
     for prefix, filesystem := range filesystems {
-        this.MountFilesystem(prefix, filesystem.(interfaces.Fllesystem))
+        this.MountFilesystem(prefix, filesystem.(*Fllesystem))
     }
 
     return this
 }
 
 // 单独
-func (this *MountManager) MountFilesystem(prefix string, filesystem interfaces.Fllesystem) *MountManager {
+func (this *MountManager) MountFilesystem(prefix string, filesystem *Fllesystem) *MountManager {
     this.filesystems[prefix] = filesystem
 
     return this
 }
 
 // 获取文件管理器
-func (this *MountManager) GetFilesystem(prefix string) interfaces.Fllesystem {
+func (this *MountManager) GetFilesystem(prefix string) *Fllesystem {
     if _, ok := this.filesystems[prefix]; !ok {
         panic("[" + prefix + "]文件管理前缀不存在")
     }
@@ -301,7 +303,7 @@ func (this *MountManager) ReadAndDelete(path string) (any, error) {
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (this *MountManager) Get(path string, handler ...func(interfaces.Fllesystem, string) any) any {
+func (this *MountManager) Get(path string, handler ...func(*Fllesystem, string) any) any {
     prefix, newPath := this.GetPrefixAndPath(path)
 
     return this.GetFilesystem(prefix).Get(newPath, handler...)

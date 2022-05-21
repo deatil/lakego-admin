@@ -2,7 +2,6 @@ package authorization
 
 import (
     "strings"
-    "encoding/json"
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/auth"
@@ -64,7 +63,7 @@ func jwtCheck(ctx *router.Context) bool {
 
     // 用户信息
     adminInfo := new(model.Admin)
-    modelErr := model.NewAdmin().
+    modelErr := model.NewDB().
         Where(&model.Admin{ID: userId}).
         Preload("Groups").
         First(&adminInfo).
@@ -75,9 +74,7 @@ func jwtCheck(ctx *router.Context) bool {
     }
 
     // 结构体转map
-    data, _ := json.Marshal(&adminInfo)
-    adminData := map[string]any{}
-    json.Unmarshal(data, &adminData)
+    adminData := model.FormatStructToMap(adminInfo)
 
     // 头像
     adminData["avatar"] = model.AttachmentUrl(adminData["avatar"].(string))

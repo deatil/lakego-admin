@@ -44,6 +44,8 @@ func ShowVersion() {
 
     goVersion := runtime.Version()
 
+    serverUrl := config.New("server").GetString("server-url")
+
     color.Magenta("\n===========================\n")
 
     logo := `
@@ -73,6 +75,9 @@ func ShowVersion() {
 
     color.Cyan("Go  版本：");
     fmt.Println(goVersion);
+
+    color.Cyan("运行地址：");
+    fmt.Println(serverUrl);
 
     color.Magenta("\n===========================\n")
 }

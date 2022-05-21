@@ -177,6 +177,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // 签名
     hashData := hash.FromString("123").MD5().ToString()
+    hashData2 := hash.Murmur32("测试测试")
 
     // 编码
     encodeStr := encoding.FromString("test-data").ToBase64String()
@@ -251,6 +252,7 @@ func (this *Data) Error(ctx *gin.Context) {
         "rsaPubKey": rsaPubKey,
 
         "hashData": hashData,
+        "hashData2": hashData2,
 
         "encodeStr": encodeStr,
         "encodeStr2": encodeStr2,

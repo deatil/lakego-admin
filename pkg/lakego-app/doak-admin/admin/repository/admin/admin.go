@@ -52,24 +52,35 @@ func GetGroupIds(adminid string) []string {
 
 // 权限
 func GetRules(groupids []string) []map[string]any {
-    list := make([]map[string]any, 0)
+    // 规则列表
+    var ruleIds []string
+    model.NewAuthRuleAccess().
+        Where("group_id in ?", groupids).
+        Pluck("rule_id", &ruleIds)
+    if len(ruleIds) == 0 {
+        return make([]map[string]any, 0)
+    }
 
-    // 附件模型
-    err := model.NewAuthRule().
-        Preload("RuleAccesses", "group_id in (?)", groupids).
+    var data []model.AuthRule
+
+    // 规则
+    model.NewAuthRule().
         Select([]string{
             "id", "parentid",
             "title",
             "url", "method",
             "slug", "description",
         }).
+        Where("id in ?", ruleIds).
         Where("status = ?", 1).
         Order("listorder ASC").
-        Find(&list).
-        Error
-    if err != nil {
+        Find(&data)
+    if len(data) == 0 {
         return make([]map[string]any, 0)
     }
+
+    // 转为数组
+    list := model.FormatStructToArrayMap(data)
 
     return list
 }

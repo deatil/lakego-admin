@@ -2,6 +2,7 @@ package permission
 
 import (
     "strings"
+    gourl "net/url"
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -48,7 +49,12 @@ func permissionCheck(ctx *router.Context) bool {
     // 去除自定义分组前缀
     requestPaths := strings.Split(requestPath, "/")
     newRequestPaths := requestPaths[2:]
+
     newRequestPath := "/" + strings.Join(newRequestPaths, "/")
+
+    // 解析地址
+    u, _ := gourl.Parse(newRequestPath)
+    newRequestPath = u.Path
 
     // 先匹配分组
     group := config.New("admin").GetString("route.prefix")
@@ -58,12 +64,12 @@ func permissionCheck(ctx *router.Context) bool {
     }
 
     c := permission.New()
-    ok, err := c.Enforce(adminId.(string), newRequestPath, method)
+    ok2, err2 := c.Enforce(adminId.(string), newRequestPath, method)
 
-    if err != nil {
+    if err2 != nil {
         response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
-    } else if !ok {
+    } else if !ok2 {
         response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
@@ -110,13 +116,15 @@ func shouldPassThrough(ctx *router.Context) bool {
 
     // 只检测 url 中的 path 部分
     urlPath := ctx.Request.URL.String()
-    urlPaths := strings.Split(urlPath, "?")
+
+    u, _ := gourl.Parse(urlPath)
+    urlPath = u.Path
 
     for _, ae := range excepts {
         newStr := strings.SplitN(ae, ":", 2)
 
         newUrl := newStr[0] + ":" + url.AdminUrl(newStr[1])
-        if url.MatchPath(ctx, newUrl, urlPaths[0]) {
+        if url.MatchPath(ctx, newUrl, urlPath) {
             return true
         }
     }

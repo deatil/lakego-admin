@@ -13,7 +13,7 @@
             "name": "Apache2",
             "url": "https://github.com/deatil/lakego-admin/blob/main/LICENSE"
         },
-        "version": "1.0.2"
+        "version": "1.0.3"
     },
     "host": "127.0.0.1:8080",
     "basePath": "/admin-api",
@@ -93,6 +93,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.action-log.index"
                 }
             }
         },
@@ -121,6 +124,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.action-log.clear"
                 }
             }
         },
@@ -193,6 +199,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.index"
                 }
             },
             "post": {
@@ -256,6 +265,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.create"
                 }
             }
         },
@@ -284,6 +296,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.groups"
                 }
             }
         },
@@ -321,6 +336,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.logout"
                 }
             }
         },
@@ -349,6 +367,10 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.reset-permission",
+                    "sort": "200"
                 }
             }
         },
@@ -386,6 +408,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.detail"
                 }
             },
             "put": {
@@ -456,6 +481,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.update"
                 }
             },
             "delete": {
@@ -491,6 +519,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.delete"
                 }
             }
         },
@@ -535,6 +566,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.access"
                 }
             }
         },
@@ -579,6 +613,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.avatar"
                 }
             }
         },
@@ -616,6 +653,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.disable"
                 }
             }
         },
@@ -653,6 +693,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.enable"
                 }
             }
         },
@@ -697,6 +740,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.password"
                 }
             }
         },
@@ -734,6 +780,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.rules"
                 }
             }
         },
@@ -806,6 +855,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.index"
                 }
             }
         },
@@ -843,6 +895,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.downcode"
                 }
             }
         },
@@ -880,6 +935,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.download"
                 }
             }
         },
@@ -917,6 +975,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.detail"
                 }
             },
             "delete": {
@@ -952,6 +1013,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.delete"
                 }
             }
         },
@@ -989,6 +1053,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.disable"
                 }
             }
         },
@@ -1026,6 +1093,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.enable"
                 }
             }
         },
@@ -1098,6 +1168,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.index"
                 }
             },
             "post": {
@@ -1161,6 +1234,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.create"
                 }
             }
         },
@@ -1204,6 +1280,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.children"
                 }
             }
         },
@@ -1232,6 +1311,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.tree"
                 }
             }
         },
@@ -1269,6 +1351,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.detail"
                 }
             },
             "put": {
@@ -1339,6 +1424,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.update"
                 }
             },
             "delete": {
@@ -1374,6 +1462,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.delete"
                 }
             }
         },
@@ -1418,6 +1509,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.access"
                 }
             }
         },
@@ -1455,6 +1549,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.disable"
                 }
             }
         },
@@ -1492,6 +1589,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.enable"
                 }
             }
         },
@@ -1536,6 +1636,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.sort"
                 }
             }
         },
@@ -1614,6 +1717,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.index"
                 }
             },
             "post": {
@@ -1698,6 +1804,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.create"
                 }
             }
         },
@@ -1741,6 +1850,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.children"
                 }
             }
         },
@@ -1778,6 +1890,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.clear"
                 }
             }
         },
@@ -1806,6 +1921,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.tree"
                 }
             }
         },
@@ -1843,6 +1961,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.detail"
                 }
             },
             "put": {
@@ -1934,6 +2055,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.update"
                 }
             },
             "delete": {
@@ -1969,6 +2093,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.delete"
                 }
             }
         },
@@ -2006,6 +2133,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.disable"
                 }
             }
         },
@@ -2043,6 +2173,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.enable"
                 }
             }
         },
@@ -2087,6 +2220,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.sort"
                 }
             }
         },
@@ -2115,6 +2251,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.example.index"
                 }
             }
         },
@@ -2144,6 +2283,9 @@
                             }
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.captcha"
                 }
             }
         },
@@ -2197,6 +2339,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.login"
                 }
             }
         },
@@ -2240,6 +2385,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.logout"
                 }
             }
         },
@@ -2272,6 +2420,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.refresh-token"
                 }
             }
         },
@@ -2300,6 +2451,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.index"
                 }
             },
             "put": {
@@ -2349,6 +2503,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.update"
                 }
             }
         },
@@ -2386,6 +2543,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.avatar"
                 }
             }
         },
@@ -2437,6 +2597,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.password"
                 }
             }
         },
@@ -2465,6 +2628,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.rules"
                 }
             }
         },
@@ -2493,6 +2659,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.system.info"
                 }
             }
         },
@@ -2521,6 +2690,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.system.rules"
                 }
             }
         },
@@ -2564,6 +2736,9 @@
                             "type": "string"
                         }
                     }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.upload.file"
                 }
             }
         }

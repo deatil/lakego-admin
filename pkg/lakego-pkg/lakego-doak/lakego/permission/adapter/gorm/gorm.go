@@ -1,7 +1,6 @@
 package gorm
 
 import (
-    "time"
     "errors"
     "strings"
 
@@ -10,7 +9,7 @@ import (
     "github.com/casbin/casbin/v2/persist"
 
     "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/permission/adapter"
@@ -44,7 +43,7 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    this.ID = hash.MD5(goch.ToString(time.Nanosecond) + random.String(15))
+    this.ID = hash.MD5(datebin.Now().ToLayoutString(datebin.DatetimeNanoFormat) + random.String(15))
 
     return nil
 }

@@ -26,6 +26,7 @@ type Index struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "例子信息获取成功", "data": ""}"
 // @Router /example/index [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.example.index"}
 func (this *Index) Index(ctx *gin.Context) {
     this.Success(ctx, "例子信息获取成功")
 }

@@ -4,9 +4,9 @@ import(
     "sync"
     "strings"
 
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/register"
-    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/go-filesystem/filesystem"
@@ -68,7 +68,7 @@ func Disk(name string, once ...bool) *storage.Storage {
     disk := filesystem.New(driver.(interfaces.Adapter), diskConf)
 
     // 使用自定义文件管理器
-    disk2 := storage.NewWithFllesystem(disk.(*filesystem.Fllesystem))
+    disk2 := storage.NewWithFllesystem(disk)
 
     return disk2
 }

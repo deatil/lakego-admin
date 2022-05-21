@@ -3,7 +3,7 @@ paths:
   - "{resources}/view"
 
 # 默认适配器
-default-adapter: "Pongo2"
+default-adapter: "pongo2"
 
 # 适配器列表
 adapters:

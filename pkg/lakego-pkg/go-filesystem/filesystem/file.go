@@ -3,12 +3,10 @@ package filesystem
 import(
     "io"
     "os"
-
-    "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
 
 // new 文件管理器
-func NewFile(filesystem interfaces.Fllesystem, path ...string) *File {
+func NewFile(filesystem *Fllesystem, path ...string) *File {
     fs := &File{}
     fs.filesystem = filesystem
 
@@ -30,7 +28,7 @@ type File struct {
 }
 
 // 设置管理器
-func (this *File) SetFilesystem(filesystem interfaces.Fllesystem) *File {
+func (this *File) SetFilesystem(filesystem *Fllesystem) *File {
     this.filesystem = filesystem
 
     return this

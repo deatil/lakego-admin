@@ -1,9 +1,5 @@
 package filesystem
 
-import(
-    "github.com/deatil/go-filesystem/filesystem/interfaces"
-)
-
 /**
  * 扩展基础类
  *
@@ -11,7 +7,7 @@ import(
  * @author deatil
  */
 type Handler struct {
-    filesystem interfaces.Fllesystem
+    filesystem *Fllesystem
     path string
 }
 
@@ -36,14 +32,14 @@ func (this *Handler) GetType() string {
 }
 
 // 设置文件系统
-func (this *Handler) SetFilesystem(filesystem interfaces.Fllesystem) any {
+func (this *Handler) SetFilesystem(filesystem *Fllesystem) any {
     this.filesystem = filesystem
 
     return this
 }
 
 // 获取文件系统
-func (this *Handler) GetFilesystem() interfaces.Fllesystem {
+func (this *Handler) GetFilesystem() *Fllesystem {
     return this.filesystem
 }
 

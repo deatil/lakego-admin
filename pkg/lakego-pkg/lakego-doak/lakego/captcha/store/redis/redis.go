@@ -48,6 +48,7 @@ func New(config Config) interfaces.Store {
 
     if _, err := client.Ping(ctx).Result(); err != nil {
         logger.New().Error(err.Error())
+        panic("Redis服务没有启动")
     }
 
     // 调试

@@ -2,13 +2,13 @@ package scope
 
 import (
     "gorm.io/gorm"
-    
+
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
 )
 
 // 权限检测
-func AdminWithAccess(ctx *router.Context, ids ...[]string) func(*gorm.DB) *gorm.DB {
+func AdminWithAccess(ctx *router.Context, gadb *gorm.DB, ids ...[]string) func(*gorm.DB) *gorm.DB {
     return func(db *gorm.DB) *gorm.DB {
         adminInfo, _ := ctx.Get("admin")
 
@@ -28,11 +28,12 @@ func AdminWithAccess(ctx *router.Context, ids ...[]string) func(*gorm.DB) *gorm.
             newIds = append(newIds, ids[0]...)
         }
 
-        if len(newIds) > 0 {
-            return db.Preload("GroupAccesses", "group_id IN (?)", newIds)
-        } else {
-            return db.Preload("GroupAccesses")
-        }
+        // 规则列表
+        var adminIds []string
+        gadb.Where("group_id in ?", newIds).
+            Pluck("admin_id", &adminIds)
+
+        return db.Where("id in ?", adminIds)
     }
 }
 

@@ -11,7 +11,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
     appInterface "github.com/deatil/lakego-doak/lakego/app/interfaces"
-    routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
 )
 
 /**
@@ -90,7 +89,7 @@ func (this *ServiceProvider) AddGroup(conf map[string]string, f func(*router.Rou
     }
 
     // 中间件
-    groupMiddlewares := routerFacade.GetMiddlewares(middleware)
+    groupMiddlewares := router.GetMiddlewares(middleware)
 
     // 使用中间件
     this.AddRoute(func(engine *router.Engine) {

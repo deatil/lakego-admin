@@ -85,10 +85,10 @@ func Fetch(ctx *router.Context, template string, obj any, httpCode ...int) {
  * @author deatil
  */
 type JSONResult struct {
-    Success bool         `json:"success"`
-    Code    int          `json:"code"`
-    Message string       `json:"message"`
-    Data    any  `json:"data"`
+    Success bool   `json:"success"`
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    Data    any    `json:"data"`
 }
 
 /**

@@ -22,9 +22,6 @@ func New() *Auth {
     }
 }
 
-// 加密向量
-var cryptoIv = "hyju5yu7f0.gtr3e"
-
 type (
     // 配置
     ConfigMap = map[string]any
@@ -238,6 +235,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
     jti := this.GetStringConfig("passport.access-token-id", "")
     exp := this.GetAccessExpiresIn()
 
+    passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
     passphrase = encoding.Base64Decode(passphrase)
 
@@ -249,7 +247,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
     if len(claims) > 0 {
         for k, v := range claims {
             if passphrase != "" {
-                v = this.Encode(v, passphrase)
+                v = this.Encode(v, passphrase, passphraseIv)
             }
 
             jwtHandle.WithClaim(k, v)
@@ -268,6 +266,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
     jti := this.GetStringConfig("passport.refresh-token-id", "")
     exp := this.GetRefreshExpiresIn()
 
+    passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
     passphrase = encoding.Base64Decode(passphrase)
 
@@ -279,7 +278,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
     if len(claims) > 0 {
         for k, v := range claims {
             if passphrase != "" {
-                v = this.Encode(v, passphrase)
+                v = this.Encode(v, passphrase, passphraseIv)
             }
 
             jwtHandle.WithClaim(k, v)
@@ -419,21 +418,22 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
 
     data := claims[key].(string)
 
+    passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
     passphrase = encoding.Base64Decode(passphrase)
 
     if passphrase != "" {
-        data = this.Decode(data, passphrase)
+        data = this.Decode(data, passphrase, passphraseIv)
     }
 
     return data
 }
 
 // 加密
-func (this *Auth) Encode(data string, passphrase string) string {
+func (this *Auth) Encode(data string, passphrase string, iv string) string {
     data = cryptobin.
         FromString(data).
-        SetIv(cryptoIv).
+        SetIv(iv).
         SetKey(passphrase).
         Aes().
         CBC().
@@ -445,10 +445,10 @@ func (this *Auth) Encode(data string, passphrase string) string {
 }
 
 // 解密
-func (this *Auth) Decode(data string, passphrase string) string {
+func (this *Auth) Decode(data string, passphrase string, iv string) string {
     data = cryptobin.
         FromBase64String(data).
-        SetIv(cryptoIv).
+        SetIv(iv).
         SetKey(passphrase).
         Aes().
         CBC().

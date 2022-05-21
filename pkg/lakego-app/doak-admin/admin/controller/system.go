@@ -30,6 +30,7 @@ type System struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /system/info [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.system.info"}
 func (this *System) Info(ctx *router.Context) {
     hostname, _ := os.Hostname()
     // netInfo, _ := net.Interfaces()
@@ -77,6 +78,7 @@ func (this *System) Info(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /system/rules [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.system.rules"}
 func (this *System) Rules(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     rules := adminInfo.(*admin.Admin).GetRuleSlugs()

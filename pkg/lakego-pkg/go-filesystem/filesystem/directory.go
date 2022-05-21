@@ -1,11 +1,7 @@
 package filesystem
 
-import(
-    "github.com/deatil/go-filesystem/filesystem/interfaces"
-)
-
 // new 文件管理器
-func NewDirectory(filesystem interfaces.Fllesystem, path ...string) *Directory {
+func NewDirectory(filesystem *Fllesystem, path ...string) *Directory {
     fs := &Directory{}
     fs.filesystem = filesystem
 
@@ -27,7 +23,7 @@ type Directory struct {
 }
 
 // 设置管理器
-func (this *Directory) SetFilesystem(filesystem interfaces.Fllesystem) *Directory {
+func (this *Directory) SetFilesystem(filesystem *Fllesystem) *Directory {
     this.filesystem = filesystem
 
     return this

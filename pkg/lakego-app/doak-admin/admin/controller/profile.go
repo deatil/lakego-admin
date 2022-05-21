@@ -29,6 +29,7 @@ type Profile struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /profile [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.profile.index"}
 func (this *Profile) Index(ctx *router.Context) {
     adminInfo, ok := ctx.Get("admin")
     if !ok {
@@ -53,6 +54,7 @@ func (this *Profile) Index(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "修改信息成功", "data": ""}"
 // @Router /profile [put]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.profile.update"}
 func (this *Profile) Update(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
@@ -103,6 +105,7 @@ func (this *Profile) Update(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "修改头像成功", "data": ""}"
 // @Router /profile/avatar [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.profile.avatar"}
 func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
@@ -153,6 +156,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
 // @Router /profile/password [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.profile.password"}
 func (this *Profile) UpdatePasssword(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
@@ -224,6 +228,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /profile/rules [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.profile.rules"}
 func (this *Profile) Rules(ctx *router.Context) {
     adminInfo, ok := ctx.Get("admin")
     if !ok {

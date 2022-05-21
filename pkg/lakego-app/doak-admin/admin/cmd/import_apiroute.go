@@ -4,10 +4,14 @@ import (
     "fmt"
     "strings"
 
+    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
+
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/command"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -75,20 +79,67 @@ func ImportApiRoute() {
             data := vv.(map[string]any)
             title := data["summary"].(string)
 
+            slug := array.ArrGetWithGoch(data, "x-lakego.slug").ToString()
+            if slug == "" {
+                slug = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+            }
+
+            // 排序
+            sort := array.ArrGetWithGoch(data, "x-lakego.sort", "100").ToString()
+
             err := model.NewAuthRule().
                 Where("url = ?", url).
                 Where("method = ?", method).
                 First(&result).
                 Error
             if err != nil || len(result) < 1 {
+                tags := array.ArrGetWithGoch(data, "tags").ToStringSlice()
+
+                tag := ""
+                if len(tags) > 0 {
+                    tag = tags[0]
+                }
+
+                parentid := "0"
+                if tag != "" {
+                    result2 := map[string]any{}
+                    err = model.NewAuthRule().
+                        Where("title = ?", tag).
+                        Where("method = ?", "OPTIONS").
+                        First(&result2).
+                        Error
+                    if err != nil || len(result2) < 1 {
+                        insertDataP := model.AuthRule{
+                            Parentid: "0",
+                            Title: tag,
+                            Url: "#",
+                            Method: "OPTIONS",
+                            Slug: "#",
+                            Description: "",
+                            Listorder: "100",
+                            Status: 1,
+                            AddTime: int(datebin.NowTime()),
+                            AddIp: "127.0.0.1",
+                        }
+
+                        errP := model.NewDB().Create(&insertDataP).Error
+                        if errP == nil {
+                            parentid = insertDataP.ID
+                        }
+
+                    } else {
+                        parentid = result2["id"].(string)
+                    }
+                }
+
                 insertData := model.AuthRule{
-                    Parentid: "0",
+                    Parentid: parentid,
                     Title: title,
                     Url: url,
                     Method: method,
-                    Slug: url,
+                    Slug: slug,
                     Description: "",
-                    Listorder: "100",
+                    Listorder: sort,
                     Status: 1,
                     AddTime: int(datebin.NowTime()),
                     AddIp: "127.0.0.1",
@@ -101,6 +152,8 @@ func ImportApiRoute() {
                     Where("method = ?", method).
                     Updates(map[string]any{
                         "title": title,
+                        "slug": slug,
+                        "listorder": sort,
                     })
             }
 

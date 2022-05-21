@@ -11,7 +11,7 @@ import(
 )
 
 // new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]any) interfaces.Fllesystem {
+func New(adapters interfaces.Adapter, conf ...map[string]any) *Fllesystem {
     fs := &Fllesystem{
         adapter: adapters,
     }
@@ -55,7 +55,7 @@ func (this *Fllesystem) PrepareConfig(settings map[string]any) interfaces.Config
 }
 
 // 设置适配器
-func (this *Fllesystem) WithAdapter(adapters interfaces.Adapter) interfaces.Fllesystem {
+func (this *Fllesystem) WithAdapter(adapters interfaces.Adapter) *Fllesystem {
     this.adapter = adapters
     return this
 }
@@ -66,7 +66,7 @@ func (this *Fllesystem) GetAdapter() interfaces.Adapter {
 }
 
 // 获取文件系统
-func (this *Fllesystem) GetFllesystem() interfaces.Fllesystem {
+func (this *Fllesystem) GetFllesystem() *Fllesystem {
     return this
 }
 
@@ -395,7 +395,7 @@ func (this *Fllesystem) GetMetadata(path string) (map[string]any, error) {
 // 获取
 // Get("file.txt").(*fllesystem.File).Read()
 // Get("/file").(*fllesystem.Directory).Read()
-func (this *Fllesystem) Get(path string, handler ...func(interfaces.Fllesystem, string) any) any {
+func (this *Fllesystem) Get(path string, handler ...func(*Fllesystem, string) any) any {
     path = util.NormalizePath(path)
 
     if len(handler) > 0 {

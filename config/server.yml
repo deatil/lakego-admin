@@ -7,6 +7,9 @@ log-type: "stdout"
 # 日志显示方式 lakego | gin
 log-show-type: "gin"
 
+# 命令行显示时使用
+server-url: "http://127.0.0.1:8080"
+
 # 运行方式
 default: "http"
 types:

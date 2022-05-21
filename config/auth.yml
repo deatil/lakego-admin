@@ -30,7 +30,9 @@ jwt:
   public-key: "{config}/key/ed25519-public.pem"
   # 私钥密码，base64 编码后，适用类型 RS
   private-key-password: "MTIzNDU2"
-  # 载荷加密秘钥，为空或者 base64 后解码错误不加密，base64编码后
+  # 加密密码向量
+  passphrase-iv: "hyju5yu7f0.gtr3e"
+  # 载荷加密秘钥，base64编码后。为空或者 base64 后解码错误不加密
   passphrase: "YTY5YmNiZTgxMzVhMWY2MTA3Njc3NGY1YTE3MWI2MjQ="
 
 # 权限

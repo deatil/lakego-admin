@@ -34,6 +34,7 @@ type Upload struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
 // @Router /upload/file [post]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.upload.file"}
 func (this *Upload) File(ctx *router.Context) {
     // 账号信息
     adminInfo, _ := ctx.Get("admin")

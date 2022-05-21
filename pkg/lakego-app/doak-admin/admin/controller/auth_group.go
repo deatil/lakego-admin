@@ -41,6 +41,7 @@ type AuthGroup struct {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /auth/group [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.index"}
 func (this *AuthGroup) Index(ctx *router.Context) {
     // 模型
     groupModel := model.NewAuthGroup()
@@ -129,6 +130,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /auth/group/tree [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.tree"}
 func (this *AuthGroup) IndexTree(ctx *router.Context) {
     list := make([]map[string]any, 0)
 
@@ -161,6 +163,7 @@ func (this *AuthGroup) IndexTree(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /auth/group/children [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.children"}
 func (this *AuthGroup) IndexChildren(ctx *router.Context) {
     id := ctx.Query("id")
     if id == "" {
@@ -192,6 +195,7 @@ func (this *AuthGroup) IndexChildren(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
 // @Router /auth/group/{id} [get]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.detail"}
 func (this *AuthGroup) Detail(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -261,6 +265,7 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "信息添加成功", "data": ""}"
 // @Router /auth/group [post]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.create"}
 func (this *AuthGroup) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
@@ -319,6 +324,7 @@ func (this *AuthGroup) Create(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "信息修改成功", "data": ""}"
 // @Router /auth/group/{id} [put]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.update"}
 func (this *AuthGroup) Update(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -386,6 +392,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
 // @Router /auth/group/{id} [delete]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.delete"}
 func (this *AuthGroup) Delete(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -440,6 +447,7 @@ func (this *AuthGroup) Delete(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "更新排序成功", "data": ""}"
 // @Router /auth/group/{id}/sort [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.sort"}
 func (this *AuthGroup) Listorder(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -494,6 +502,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "启用成功", "data": ""}"
 // @Router /auth/group/{id}/enable [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.enable"}
 func (this *AuthGroup) Enable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -545,6 +554,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "禁用成功", "data": ""}"
 // @Router /auth/group/{id}/disable [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.disable"}
 func (this *AuthGroup) Disable(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {
@@ -597,6 +607,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "授权成功", "data": ""}"
 // @Router /auth/group/{id}/access [patch]
 // @Security Bearer
+// @x-lakego {"slug": "lakego-admin.auth-group.access"}
 func (this *AuthGroup) Access(ctx *router.Context) {
     id := ctx.Param("id")
     if id == "" {

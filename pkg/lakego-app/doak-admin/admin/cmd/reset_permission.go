@@ -63,22 +63,19 @@ func ResetPermission() {
 
     groupListMap := model.FormatStructToArrayMap(groupList)
 
-    // permission
-    cas := permission.New()
-
     // 添加权限
     if len(ruleListMap) > 0 {
         for _, rv := range ruleListMap {
             rule := rv["Rule"].(map[string]any)
 
-            cas.AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
+            permission.New().AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
         }
     }
 
     // 添加权限
     if len(groupListMap) > 0 {
         for _, gv := range groupListMap {
-            cas.AddRoleForUser(gv["admin_id"].(string), gv["group_id"].(string))
+            permission.New().AddRoleForUser(gv["admin_id"].(string), gv["group_id"].(string))
         }
     }
 

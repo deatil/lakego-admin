@@ -22,7 +22,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/middleware/event"
     "github.com/deatil/lakego-doak/lakego/middleware/recovery"
-    routerFacade "github.com/deatil/lakego-doak/lakego/facade/router"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
@@ -353,7 +352,7 @@ func (this *App) runApp() {
     this.loadServiceProvider()
 
     // 全局中间件
-    globalMiddlewares := routerFacade.GetGlobalMiddlewares()
+    globalMiddlewares := router.GetGlobalMiddlewares()
 
     // 设置全局中间件
     r.Use(globalMiddlewares...)
@@ -440,10 +439,13 @@ func (this *App) ServerRun() {
 }
 
 // 优雅地关机
-func (this *App) GraceRun(addr string) {
+func (this *App) GraceRun(address string) {
     srv := &http.Server{
-        Addr:    addr,
-        Handler: this.RouteEngine,
+        Addr:           address,
+        Handler:        this.RouteEngine,
+        ReadTimeout:    20 * time.Second,
+        WriteTimeout:   20 * time.Second,
+        MaxHeaderBytes: 1 << 20,
     }
 
     go func() {
