@@ -50,7 +50,7 @@ func (this *ActionLog) Boot() {
  * 导入中间件
  */
 func (this *ActionLog) loadMiddleware() {
-    m := router.NewMiddleware()
+    m := router.InstanceMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

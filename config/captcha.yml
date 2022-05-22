@@ -1,5 +1,5 @@
 # 默认驱动
-defaultdriver: "string"
+default-driver: "string"
 
 # 驱动列表
 drivers:
@@ -78,7 +78,7 @@ drivers:
     dot-count: 80
 
 # 默认存储
-defaultstore: "redis"
+default-store: "redis"
 
 # 存储列表
 stores:

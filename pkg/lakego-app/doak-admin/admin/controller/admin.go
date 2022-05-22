@@ -14,12 +14,12 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
-    "github.com/deatil/lakego-doak/lakego/facade/permission"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/model/scope"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/support/jwt"
+    "github.com/deatil/lakego-doak-admin/admin/permission"
     authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
     adminValidate "github.com/deatil/lakego-doak-admin/admin/validate/admin"
     adminRepository "github.com/deatil/lakego-doak-admin/admin/repository/admin"
@@ -985,49 +985,11 @@ func (this *Admin) Access(ctx *router.Context) {
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.reset-permission", "sort": "200"}
 func (this *Admin) ResetPermission(ctx *router.Context) {
-    // 清空原始数据
-    model.ClearRulesData()
-
-    // 权限
-    ruleList := make([]model.AuthRuleAccess, 0)
-    err := model.NewAuthRuleAccess().
-        Preload("Rule", "status = ?", 1).
-        Find(&ruleList).
-        Error
-    if err != nil {
+    // 重设权限
+    res := permission.ResetPermission()
+    if res == false {
         this.Error(ctx, "权限同步失败")
         return
-    }
-
-    ruleListMap := model.FormatStructToArrayMap(ruleList)
-
-    // 分组
-    groupList := make([]model.AuthGroupAccess, 0)
-    err2 := model.NewAuthGroupAccess().
-        Preload("Group", "status = ?", 1).
-        Find(&groupList).
-        Error
-    if err2 != nil {
-        this.Error(ctx, "权限同步失败")
-        return
-    }
-
-    groupListMap := model.FormatStructToArrayMap(groupList)
-
-    // 添加权限
-    if len(ruleListMap) > 0 {
-        for _, rv := range ruleListMap {
-            rule := rv["Rule"].(map[string]any)
-
-            permission.New().AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
-        }
-    }
-
-    // 添加权限
-    if len(groupListMap) > 0 {
-        for _, gv := range groupListMap {
-            permission.New().AddRoleForUser(gv["admin_id"].(string), gv["group_id"].(string))
-        }
     }
 
     this.Success(ctx, "权限同步成功")

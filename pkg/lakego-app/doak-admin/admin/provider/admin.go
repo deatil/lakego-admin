@@ -127,7 +127,7 @@ func (this *Admin) loadRoute() {
 
         conf := config.New("admin")
 
-        prefix := "/" + conf.GetString("Route.Prefix") + "/*"
+        prefix := "/" + conf.GetString("route.prefix") + "/*"
 
         // 未知路由处理
         engine.NoRoute(func (ctx *router.Context) {
@@ -147,10 +147,10 @@ func (this *Admin) loadRoute() {
         engine.Use(globalMiddlewares...)
 
         // 中间件
-        groupMiddlewares := router.GetMiddlewares(conf.GetString("Route.Middleware"))
+        groupMiddlewares := router.GetMiddlewares(conf.GetString("route.middleware"))
 
         // 路由
-        admin := engine.Group(conf.GetString("Route.Prefix"))
+        admin := engine.Group(conf.GetString("route.prefix"))
         {
             admin.Use(groupMiddlewares...)
             {
@@ -175,7 +175,7 @@ func (this *Admin) loadRoute() {
  * 导入中间件
  */
 func (this *Admin) loadMiddleware() {
-    m := router.NewMiddleware()
+    m := router.InstanceMiddleware()
 
     // 导入中间件
     for name, value := range routeMiddlewares {

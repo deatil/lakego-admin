@@ -94,14 +94,14 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
     return captcha.New(driver.(interfaces.Driver), store.(interfaces.Store))
 }
 
-// 默认存储
-func GetDefaultStore() string {
-    return config.New("captcha").GetString("DefaultStore")
-}
-
 // 默认驱动
 func GetDefaultDriver() string {
-    return config.New("captcha").GetString("DefaultDriver")
+    return config.New("captcha").GetString("default-driver")
+}
+
+// 默认存储
+func GetDefaultStore() string {
+    return config.New("captcha").GetString("default-store")
 }
 
 // 注册
