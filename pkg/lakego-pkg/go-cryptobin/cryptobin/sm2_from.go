@@ -41,7 +41,11 @@ func (this SM2) GenerateKey() SM2 {
 // 公钥字符 (hexStringX + hexStringY)
 // public-key: 047c********.
 func (this SM2) FromPublicKeyString(keyString string) SM2 {
-    publicKeyStr := strings.TrimLeft(strings.TrimPrefix(keyString, "04"), "0")
+    if len(keyString) == 130 && strings.HasPrefix(keyString, "04") {
+        keyString = strings.TrimPrefix(keyString, "04")
+    }
+
+    publicKeyStr := strings.TrimLeft(keyString, "0")
 
     x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
     y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
@@ -110,6 +114,9 @@ func (this SM2) FromPrivateKeyBytes(priByte []byte) SM2 {
     priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
 
     this.privateKey = priv
+
+    // 同时生成公钥
+    this.publicKey = &this.privateKey.PublicKey
 
     return this
 }

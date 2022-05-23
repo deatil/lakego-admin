@@ -7,10 +7,9 @@ import (
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
-
-    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/command"
 

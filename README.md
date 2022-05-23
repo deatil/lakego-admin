@@ -90,7 +90,7 @@ go run main.go lakego-admin:install
 go run main.go lakego:storage-link
 ```
 
-5. 如需导入新的权限,可执行下面的脚本从 swagger 文档导入
+5. 如需导入新的权限,可执行下面的脚本从 swagger 文档导入。swagger 文档需提前生成为最新版本，swagger 导入脚本 `swag init -o=./docs/swagger`
 
 ```go
 go run main.go lakego-admin:import-apiroute

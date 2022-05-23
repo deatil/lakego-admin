@@ -7,10 +7,10 @@ import (
     cmdTool "github.com/deatil/go-cmd/cmd"
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    pathTool "github.com/deatil/lakego-doak/lakego/path"
 )
 
 /**
@@ -45,7 +45,7 @@ func Stop() {
 
     if stopPid == "" {
         pidPath := config.New("admin").GetString("pid-path")
-        location := pathTool.FormatPath(pidPath)
+        location := path.FormatPath(pidPath)
 
         contents, err := filesystem.New().Get(location)
         if err != nil {

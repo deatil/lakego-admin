@@ -1,6 +1,7 @@
 package cryptobin
 
 import (
+    "strings"
     "encoding/hex"
     "encoding/base64"
 )
@@ -36,4 +37,19 @@ func (this Encoding) HexEncode(src []byte) string {
 // Hex 解码
 func (this Encoding) HexDecode(s string) ([]byte, error) {
     return hex.DecodeString(s)
+}
+
+// 补码
+func (this Encoding) RSHexPadding(text string) string {
+    n := len(text)
+
+    if n == 64 {
+        return text
+    }
+
+    if n < 64 {
+        return strings.Repeat("0", 64-n) + text
+    }
+
+    return text[n-64:]
 }

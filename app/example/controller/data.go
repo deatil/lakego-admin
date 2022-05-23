@@ -228,9 +228,23 @@ func (this *Data) Error(ctx *gin.Context) {
     // var redisData string
     // redis.New().Get("go-redis", &redisData)
 
+    // sm2 签名
+    sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
+    sm2keyBytes := encoding.FromBase64String(sm2key).ToBytes()
+    sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
+    sm2userid := "N0032612070000000000000000"
+    sm2userid = sm2userid[0:16]
+    sm2Sign := cryptobin.NewSM2().
+        FromPrivateKeyBytes(sm2keyBytes).
+        FromString(sm2data).
+        Sm2SignHex([]byte(sm2userid)).
+        ToBase64String()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         // "cacheData": cacheData,
         // "redisData": redisData,
+
+        "sm2Sign": sm2Sign,
 
         "error": data,
         "data2": data2,
