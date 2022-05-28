@@ -7,6 +7,9 @@ import (
     // 操作日志
     _ "github.com/deatil/lakego-doak-action-log/action-log/bootstrap"
 
+    // 数据库管理
+    _ "github.com/deatil/lakego-doak-database/database/bootstrap"
+
     // API 文档
     _ "github.com/deatil/lakego-admin/docs/swagger"
     _ "github.com/deatil/lakego-doak-swagger/swagger/bootstrap"

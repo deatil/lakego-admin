@@ -55,7 +55,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -74,7 +75,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "30天前日志清除成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -123,7 +124,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -167,7 +169,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -192,7 +195,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -216,7 +220,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -265,7 +270,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -295,7 +301,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -325,7 +332,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -350,7 +358,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -375,7 +384,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -405,7 +415,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -430,7 +441,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -449,7 +461,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -474,7 +487,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -493,7 +507,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -542,7 +557,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -552,6 +568,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.index
+        sort: "151"
   /attachment/{id}:
     delete:
       consumes:
@@ -567,7 +584,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -577,6 +595,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.delete
+        sort: "153"
     get:
       consumes:
       - application/json
@@ -591,7 +610,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -601,6 +621,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.detail
+        sort: "152"
   /attachment/{id}/disable:
     patch:
       consumes:
@@ -616,7 +637,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -626,6 +648,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.disable
+        sort: "155"
   /attachment/{id}/enable:
     patch:
       consumes:
@@ -641,7 +664,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -651,6 +675,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.enable
+        sort: "154"
   /attachment/downcode/{id}:
     get:
       consumes:
@@ -666,7 +691,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "...", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -676,6 +702,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.downcode
+        sort: "156"
   /attachment/download/{code}:
     get:
       consumes:
@@ -701,6 +728,7 @@ paths:
       - 附件
       x-lakego:
         slug: lakego-admin.attachment.download
+        sort: "157"
   /auth/group:
     get:
       consumes:
@@ -739,7 +767,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -767,7 +796,6 @@ paths:
       - description: 描述
         in: formData
         name: description
-        required: true
         type: string
       - description: 排序
         in: formData
@@ -783,7 +811,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息添加成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -809,7 +837,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息删除成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -834,7 +862,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -867,7 +896,6 @@ paths:
       - description: 描述
         in: formData
         name: description
-        required: true
         type: string
       - description: 排序
         in: formData
@@ -883,7 +911,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息修改成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -914,7 +942,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "授权成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -939,7 +968,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "禁用成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -964,7 +994,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "启用成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -994,7 +1025,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "更新排序成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1024,7 +1055,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1043,7 +1075,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1095,7 +1128,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1138,7 +1172,6 @@ paths:
       - description: 描述
         in: formData
         name: description
-        required: true
         type: string
       - description: 排序
         in: formData
@@ -1154,7 +1187,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息添加成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1180,7 +1213,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息删除成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1205,7 +1238,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1253,7 +1287,6 @@ paths:
       - description: 描述
         in: formData
         name: description
-        required: true
         type: string
       - description: 排序
         in: formData
@@ -1269,7 +1302,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "信息修改成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1295,7 +1328,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "禁用成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1320,7 +1354,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "启用成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1350,7 +1385,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "更新排序成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1380,7 +1415,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1405,7 +1441,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "删除特定权限成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1425,7 +1461,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1435,6 +1472,104 @@ paths:
       - 权限菜单
       x-lakego:
         slug: lakego-admin.auth-rule.tree
+  /database:
+    get:
+      consumes:
+      - application/json
+      description: 数据库列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 数据库列表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.index
+  /database/{name}:
+    get:
+      consumes:
+      - application/json
+      description: 数据库表详情
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 数据库表详情
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.detail
+  /database/{name}/optimize:
+    post:
+      consumes:
+      - application/json
+      description: 优化数据表
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 优化数据表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.optimize
+  /database/{name}/repair:
+    post:
+      consumes:
+      - application/json
+      description: 修复数据表
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修复数据表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.repair
   /example/index:
     get:
       consumes:
@@ -1444,7 +1579,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "例子信息获取成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1464,7 +1599,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           headers:
             string:
               description: Lakego-Admin-Captcha-Id
@@ -1506,7 +1642,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "登录成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       summary: 账号登陆
@@ -1533,7 +1670,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1558,7 +1696,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       summary: 刷新 token
@@ -1575,7 +1714,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1609,7 +1749,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "修改信息成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1635,7 +1775,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "修改头像成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1671,7 +1811,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "密码修改成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string
@@ -1691,7 +1831,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1710,7 +1851,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1729,7 +1871,8 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "获取成功", "data": ""}'
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
           schema:
             type: string
       security:
@@ -1758,7 +1901,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: '{"success": true, "code": 0, "message": "密码修改成功", "data":
+          description: '{"success": true, "code": 0, "message": "string", "data":
             ""}'
           schema:
             type: string

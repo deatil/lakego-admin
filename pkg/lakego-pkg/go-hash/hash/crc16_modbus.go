@@ -40,7 +40,7 @@ var MbTable = []uint16{
 }
 
 // CRC16/modbus
-func CRC16Modbus(s string) string {
+func CRC16_Modbus(s string) string {
     data := []byte(s)
 
     var crc16 uint16
@@ -55,14 +55,14 @@ func CRC16Modbus(s string) string {
     return strconv.FormatInt(int64(crc16), 16)
 }
 
-// CRC16Modbus 哈希值
-func (this Hash) CRC16Modbus() Hash {
+// CRC16_Modbus 哈希值
+func (this Hash) CRC16_Modbus() Hash {
     return this.FuncHash(func(data ...[]byte) (string, error) {
         newData := ""
         for _, v := range data {
             newData += string(v)
         }
 
-        return CRC16Modbus(newData), nil
+        return CRC16_Modbus(newData), nil
     })
 }

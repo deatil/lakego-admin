@@ -35,7 +35,7 @@ type ActionLog struct {
 // @Param status query string false "状态"
 // @Param start query string false "开始数据量"
 // @Param limit query string false "每页数量"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /action-log [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.action-log.index"}
@@ -131,7 +131,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 // @Tags 操作日志
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "30天前日志清除成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /action-log/clear [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.action-log.clear"}

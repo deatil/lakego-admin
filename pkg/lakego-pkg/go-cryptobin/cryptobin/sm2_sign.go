@@ -13,7 +13,6 @@ import (
 func (this SM2) Sign() SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
-
         return this
     }
 
@@ -27,7 +26,6 @@ func (this SM2) Sign() SM2 {
 func (this SM2) Very(data []byte) SM2 {
     if this.publicKey == nil {
         this.Error = errors.New("publicKey error.")
-
         return this
     }
 
@@ -43,7 +41,12 @@ type sm2Signature struct {
 }
 
 // 私钥签名
-func (this SM2) Sm2Sign(uid []byte) SM2 {
+func (this SM2) SignAsn1(uid []byte) SM2 {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     r, s, err := sm2.Sm2Sign(this.privateKey, this.data, uid, rand.Reader)
     if err != nil {
         this.Error = err
@@ -58,7 +61,12 @@ func (this SM2) Sm2Sign(uid []byte) SM2 {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this SM2) Sm2Verify(data []byte, uid []byte) SM2 {
+func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
+    if this.publicKey == nil {
+        this.Error = errors.New("publicKey error.")
+        return this
+    }
+
     var sm2Sign sm2Signature
     _, err := asn1.Unmarshal(this.data, &sm2Sign)
     if err != nil {
@@ -76,10 +84,9 @@ func (this SM2) Sm2Verify(data []byte, uid []byte) SM2 {
 
 // 私钥签名
 // 兼容[招行]
-func (this SM2) Sm2SignHex(uid []byte) SM2 {
+func (this SM2) SignHex(uid []byte) SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
-
         return this
     }
 
@@ -94,7 +101,7 @@ func (this SM2) Sm2SignHex(uid []byte) SM2 {
     rHex := encoding.HexEncode(r.Bytes())
     sHex := encoding.HexEncode(s.Bytes())
 
-    sign := encoding.RSHexPadding(rHex) + encoding.RSHexPadding(sHex)
+    sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
     this.paredData, this.Error = encoding.HexDecode(sign)
 
@@ -104,10 +111,9 @@ func (this SM2) Sm2SignHex(uid []byte) SM2 {
 // 公钥验证
 // 兼容[招行]
 // 使用原始数据[data]对比签名后数据
-func (this SM2) Sm2VerifyHex(data []byte, uid []byte) SM2 {
+func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
         this.Error = errors.New("publicKey error.")
-
         return this
     }
 

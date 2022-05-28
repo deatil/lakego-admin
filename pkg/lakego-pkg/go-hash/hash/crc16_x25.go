@@ -40,7 +40,7 @@ var crctab16 = []uint16{
 }
 
 // CRC16 / x25
-func CRC16X25(s string) string {
+func CRC16_X25(s string) string {
     bs := []byte(s)
 
     // 初始化
@@ -56,14 +56,14 @@ func CRC16X25(s string) string {
     return strconv.FormatInt(int64(res), 16)
 }
 
-// CRC16X25 哈希值
-func (this Hash) CRC16X25() Hash {
+// CRC16_X25 哈希值
+func (this Hash) CRC16_X25() Hash {
     return this.FuncHash(func(data ...[]byte) (string, error) {
         newData := ""
         for _, v := range data {
             newData += string(v)
         }
 
-        return CRC16X25(newData), nil
+        return CRC16_X25(newData), nil
     })
 }

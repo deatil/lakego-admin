@@ -21,6 +21,7 @@ replace (
 	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
+	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
@@ -30,6 +31,7 @@ require (
 	app v0.0.3
 	github.com/deatil/lakego-doak v0.0.3
 	github.com/deatil/lakego-doak-action-log v0.0.3
+	github.com/deatil/lakego-doak-database v0.0.3
 	github.com/deatil/lakego-doak-admin v0.0.3
 	github.com/deatil/lakego-doak-statics v0.0.0-00010101000000-000000000000
 	github.com/deatil/lakego-doak-swagger v0.0.3

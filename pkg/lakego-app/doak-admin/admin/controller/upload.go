@@ -31,7 +31,7 @@ type Upload struct {
 // @Produce application/json
 // @Param type query string false "文件类型，可选数据：image | media | file。默认：file"
 // @Param file formData string true "文件数据"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /upload/file [post]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.upload.file"}

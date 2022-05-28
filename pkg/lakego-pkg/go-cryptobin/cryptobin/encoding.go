@@ -40,16 +40,20 @@ func (this Encoding) HexDecode(s string) ([]byte, error) {
 }
 
 // 补码
-func (this Encoding) RSHexPadding(text string) string {
-    n := len(text)
-
-    if n == 64 {
+func (this Encoding) HexPadding(text string, size int) string {
+    if size < 1 {
         return text
     }
 
-    if n < 64 {
-        return strings.Repeat("0", 64-n) + text
+    n := len(text)
+
+    if n == size {
+        return text
     }
 
-    return text[n-64:]
+    if n < size {
+        return strings.Repeat("0", size-n) + text
+    }
+
+    return text[n-size:]
 }

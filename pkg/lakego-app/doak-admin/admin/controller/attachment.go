@@ -38,7 +38,7 @@ type Attachment struct {
 // @Param status query string false "状态"
 // @Param start query string false "开始数据量"
 // @Param limit query string false "每页数量"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.index","sort":"151"}
@@ -135,7 +135,7 @@ func (this *Attachment) Index(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment/{id} [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.detail","sort":"152"}
@@ -174,7 +174,7 @@ func (this *Attachment) Detail(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment/{id} [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.delete","sort":"153"}
@@ -223,7 +223,7 @@ func (this *Attachment) Delete(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment/{id}/enable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.enable","sort":"154"}
@@ -273,7 +273,7 @@ func (this *Attachment) Enable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment/{id}/disable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.disable","sort":"155"}
@@ -323,7 +323,7 @@ func (this *Attachment) Disable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment/downcode/{id} [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.attachment.downcode","sort":"156"}

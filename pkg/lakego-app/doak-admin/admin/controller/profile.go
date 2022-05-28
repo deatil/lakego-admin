@@ -26,7 +26,7 @@ type Profile struct {
 // @Tags 个人信息
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.profile.index"}
@@ -51,7 +51,7 @@ func (this *Profile) Index(ctx *router.Context) {
 // @Param nickname formData string true "昵称"
 // @Param email formData string true "邮箱"
 // @Param introduce formData string true "简介"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "修改信息成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile [put]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.profile.update"}
@@ -102,7 +102,7 @@ func (this *Profile) Update(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param avatar formData string true "头像数据ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "修改头像成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile/avatar [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.profile.avatar"}
@@ -153,7 +153,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 // @Param oldpassword formData string true "旧密码"
 // @Param newpassword formData string true "新密码"
 // @Param newpassword_confirm formData string true "确认新密码"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "密码修改成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile/password [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.profile.password"}
@@ -225,7 +225,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
 // @Tags 个人信息
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile/rules [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.profile.rules"}

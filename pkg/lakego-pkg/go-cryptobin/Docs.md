@@ -463,7 +463,7 @@ func main() {
     sm2Sign := cryptobin.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
-        Sm2SignHex([]byte(sm2userid)).
+        SignHex([]byte(sm2userid)).
         ToBase64String()
 
     // =====
@@ -479,7 +479,7 @@ func main() {
     sm2Sign := cryptobin.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromBase64String(sm2signdata).
-        Sm2VerifyHex([]byte(sm2data), []byte(sm2userid)).
+        VerifyHex([]byte(sm2data), []byte(sm2userid)).
         ToVeryed()
 
 }

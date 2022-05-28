@@ -27,7 +27,7 @@ type System struct {
 // @Tags 系统
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /system/info [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.system.info"}
@@ -75,7 +75,7 @@ func (this *System) Info(ctx *router.Context) {
 // @Tags 系统
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /system/rules [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.system.rules"}

@@ -23,7 +23,7 @@ type Index struct {
 // @Tags 例子
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "例子信息获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /example/index [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.example.index"}

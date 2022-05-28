@@ -15,7 +15,7 @@ lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
 ### 环境要求
 
  - Go >= 1.18
- - Gorm >= v1.21.10
+ - Myql
  - Redis
 
 

@@ -237,7 +237,7 @@ func (this *Data) Error(ctx *gin.Context) {
     sm2Sign := cryptobin.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
-        Sm2SignHex([]byte(sm2userid)).
+        SignHex([]byte(sm2userid)).
         ToBase64String()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{

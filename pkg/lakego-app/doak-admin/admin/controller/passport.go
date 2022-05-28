@@ -34,7 +34,7 @@ type Passport struct {
 // @Tags 登陆相关
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Header 200 {string} string "Lakego-Admin-Captcha-Id"
 // @Router /passport/captcha [get]
 // @x-lakego {"slug": "lakego-admin.passport.captcha"}
@@ -63,7 +63,7 @@ func (this *Passport) Captcha(ctx *router.Context) {
 // @Param name formData string true "账号"
 // @Param password formData string true "密码"
 // @Param captcha formData string true "验证码"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "登录成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /passport/login [post]
 // @x-lakego {"slug": "lakego-admin.passport.login"}
 func (this *Passport) Login(ctx *router.Context) {
@@ -165,7 +165,7 @@ func (this *Passport) Login(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param refresh_token formData string true "刷新 Token"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /passport/refresh-token [post]
 // @x-lakego {"slug": "lakego-admin.passport.refresh-token"}
 func (this *Passport) RefreshToken(ctx *router.Context) {
@@ -232,7 +232,7 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
 // @Produce application/json
 // @Param Authorization header string false "Bearer 用户令牌"
 // @Param refresh_token formData string true "刷新 Token"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /passport/logout [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.passport.logout"}

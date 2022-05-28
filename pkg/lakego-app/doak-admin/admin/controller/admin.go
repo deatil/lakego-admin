@@ -48,7 +48,7 @@ type Admin struct {
 // @Param status query string false "状态"
 // @Param start query string false "开始数据量"
 // @Param limit query string false "每页数量"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.index"}
@@ -161,7 +161,7 @@ func (this *Admin) Index(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id} [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.detail"}
@@ -226,7 +226,7 @@ func (this *Admin) Detail(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/rules [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.rules"}
@@ -276,7 +276,7 @@ func (this *Admin) Rules(ctx *router.Context) {
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/groups [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.groups"}
@@ -341,7 +341,7 @@ func (this *Admin) Groups(ctx *router.Context) {
 // @Param nickname formData string true "昵称"
 // @Param introduce formData string true "描述"
 // @Param status formData string true "状态"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin [post]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.create"}
@@ -413,7 +413,7 @@ func (this *Admin) Create(ctx *router.Context) {
 // @Param nickname formData string true "昵称"
 // @Param introduce formData string true "描述"
 // @Param status formData string true "状态"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id} [put]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.update"}
@@ -503,7 +503,7 @@ func (this *Admin) Update(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id} [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.delete"}
@@ -565,7 +565,7 @@ func (this *Admin) Delete(ctx *router.Context) {
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Param avatar formData string true "头像数据ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/avatar [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.avatar"}
@@ -630,7 +630,7 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Param password formData string true "新密码"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/password [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.password"}
@@ -698,7 +698,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/enable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.enable"}
@@ -761,7 +761,7 @@ func (this *Admin) Enable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/disable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.disable"}
@@ -824,7 +824,7 @@ func (this *Admin) Disable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param refreshToken path string true "刷新 token"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/logout/{refreshToken} [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.logout"}
@@ -887,7 +887,7 @@ func (this *Admin) Logout(ctx *router.Context) {
 // @Produce application/json
 // @Param id path string true "刷新 token"
 // @Param access formData string true "权限列表，半角逗号分隔"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/access [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.access"}
@@ -980,7 +980,7 @@ func (this *Admin) Access(ctx *router.Context) {
 // @Tags 管理员
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "...", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/reset-permission [put]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.admin.reset-permission", "sort": "200"}

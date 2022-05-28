@@ -38,7 +38,7 @@ type AuthGroup struct {
 // @Param status query string false "状态"
 // @Param start query string false "开始数据量"
 // @Param limit query string false "每页数量"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.index"}
@@ -127,7 +127,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
 // @Tags 权限分组
 // @Accept application/json
 // @Produce application/json
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/tree [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.tree"}
@@ -160,7 +160,7 @@ func (this *AuthGroup) IndexTree(ctx *router.Context) {
 // @Produce application/json
 // @Param id query string true "权限分组ID"
 // @Param type query string false "数据类型，可选值：list | ids"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/children [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.children"}
@@ -192,7 +192,7 @@ func (this *AuthGroup) IndexChildren(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "获取成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id} [get]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.detail"}
@@ -259,10 +259,10 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
 // @Produce application/json
 // @Param parentid formData string true "父级ID"
 // @Param title formData string true "名称"
-// @Param description formData string true "描述"
+// @Param description formData string false "描述"
 // @Param listorder formData string true "排序"
 // @Param status formData string true "状态"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息添加成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group [post]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.create"}
@@ -318,10 +318,10 @@ func (this *AuthGroup) Create(ctx *router.Context) {
 // @Param id path string true "权限分组ID"
 // @Param parentid formData string true "父级ID"
 // @Param title formData string true "名称"
-// @Param description formData string true "描述"
+// @Param description formData string false "描述"
 // @Param listorder formData string true "排序"
 // @Param status formData string true "状态"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息修改成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id} [put]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.update"}
@@ -389,7 +389,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "信息删除成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id} [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.delete"}
@@ -444,7 +444,7 @@ func (this *AuthGroup) Delete(ctx *router.Context) {
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Param listorder formData string true "排序值"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "更新排序成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/sort [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.sort"}
@@ -499,7 +499,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "启用成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/enable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.enable"}
@@ -551,7 +551,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
 // @Accept application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "禁用成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/disable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.disable"}
@@ -604,7 +604,7 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Param access formData string true "权限列表，半角逗号分隔"
-// @Success 200 {string} json "{"success": true, "code": 0, "message": "授权成功", "data": ""}"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/access [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.auth-group.access"}

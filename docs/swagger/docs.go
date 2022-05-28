@@ -95,7 +95,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -126,7 +126,7 @@ const docTemplate = `{
                 "summary": "清除 30 天前的日志数据",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"30天前日志清除成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -201,7 +201,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -267,7 +267,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -298,7 +298,7 @@ const docTemplate = `{
                 "summary": "添加账号所需分组",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -338,7 +338,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -369,7 +369,7 @@ const docTemplate = `{
                 "summary": "账号权限同步",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -410,7 +410,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -483,7 +483,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -521,7 +521,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -568,7 +568,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -615,7 +615,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -655,7 +655,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -695,7 +695,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -742,7 +742,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -782,7 +782,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -857,14 +857,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.index"
+                    "slug": "lakego-admin.attachment.index",
+                    "sort": "151"
                 }
             }
         },
@@ -897,14 +898,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.downcode"
+                    "slug": "lakego-admin.attachment.downcode",
+                    "sort": "156"
                 }
             }
         },
@@ -944,7 +946,8 @@ const docTemplate = `{
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.download"
+                    "slug": "lakego-admin.attachment.download",
+                    "sort": "157"
                 }
             }
         },
@@ -977,14 +980,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.detail"
+                    "slug": "lakego-admin.attachment.detail",
+                    "sort": "152"
                 }
             },
             "delete": {
@@ -1015,14 +1019,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.delete"
+                    "slug": "lakego-admin.attachment.delete",
+                    "sort": "153"
                 }
             }
         },
@@ -1055,14 +1060,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.disable"
+                    "slug": "lakego-admin.attachment.disable",
+                    "sort": "155"
                 }
             }
         },
@@ -1095,14 +1101,15 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"...\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
                     }
                 },
                 "x-lakego": {
-                    "slug": "lakego-admin.attachment.enable"
+                    "slug": "lakego-admin.attachment.enable",
+                    "sort": "154"
                 }
             }
         },
@@ -1170,7 +1177,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1216,8 +1223,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "描述",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1236,7 +1242,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息添加成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1282,7 +1288,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1313,7 +1319,7 @@ const docTemplate = `{
                 "summary": "权限分组树结构",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1353,7 +1359,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1406,8 +1412,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "描述",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1426,7 +1431,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息修改成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1464,7 +1469,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息删除成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1511,7 +1516,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"授权成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1551,7 +1556,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"禁用成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1591,7 +1596,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"启用成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1638,7 +1643,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"更新排序成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1719,7 +1724,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1786,8 +1791,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "描述",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -1806,7 +1810,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息添加成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1852,7 +1856,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1892,7 +1896,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"删除特定权限成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1923,7 +1927,7 @@ const docTemplate = `{
                 "summary": "权限菜单树结构",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -1963,7 +1967,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2037,8 +2041,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "描述",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
                     },
                     {
                         "type": "string",
@@ -2057,7 +2060,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息修改成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2095,7 +2098,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"信息删除成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2135,7 +2138,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"禁用成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2175,7 +2178,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"启用成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2222,7 +2225,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"更新排序成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2230,6 +2233,157 @@ const docTemplate = `{
                 },
                 "x-lakego": {
                     "slug": "lakego-admin.auth-rule.sort"
+                }
+            }
+        },
+        "/database": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "数据库列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "数据库列表",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.index"
+                }
+            }
+        },
+        "/database/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "数据库表详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "数据库表详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.detail"
+                }
+            }
+        },
+        "/database/{name}/optimize": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "优化数据表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "优化数据表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.optimize"
+                }
+            }
+        },
+        "/database/{name}/repair": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修复数据表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "修复数据表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.repair"
                 }
             }
         },
@@ -2253,7 +2407,7 @@ const docTemplate = `{
                 "summary": "首页信息",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"例子信息获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2279,7 +2433,7 @@ const docTemplate = `{
                 "summary": "登陆验证码",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         },
@@ -2341,7 +2495,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"登录成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2387,7 +2541,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2422,7 +2576,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2453,7 +2607,7 @@ const docTemplate = `{
                 "summary": "个人信息详情",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2505,7 +2659,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"修改信息成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2545,7 +2699,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"修改头像成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2599,7 +2753,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"密码修改成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2630,7 +2784,7 @@ const docTemplate = `{
                 "summary": "个人权限列表",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2661,7 +2815,7 @@ const docTemplate = `{
                 "summary": "系统信息",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2692,7 +2846,7 @@ const docTemplate = `{
                 "summary": "权限 slug 列表",
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"获取成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
@@ -2738,7 +2892,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"密码修改成功\", \"data\": \"\"}",
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
                         "schema": {
                             "type": "string"
                         }
