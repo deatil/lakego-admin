@@ -1,13 +1,15 @@
 package pipeline
 
 // 构造函数
-func New() *Pipeline {
+func New() Pipeline {
     return NewPipeline()
 }
 
 // 构造函数
-func NewPipeline() *Pipeline {
-    return &Pipeline{}
+func NewPipeline() Pipeline {
+    return Pipeline{
+        Pipes: make([]PipeItem, 0),
+    }
 }
 
 type (
@@ -60,28 +62,28 @@ type Pipeline struct {
 }
 
 // 设置数据
-func (this *Pipeline) Send(passable any) *Pipeline {
+func (this Pipeline) Send(passable any) Pipeline {
     this.Passable = passable
 
     return this
 }
 
 // 设置管道
-func (this *Pipeline) Through(pipes ...PipeItem) *Pipeline {
-    this.Pipes = pipes
+func (this Pipeline) Through(pipes ...PipeItem) Pipeline {
+    this.Pipes = append(this.Pipes, pipes...)
 
     return this
 }
 
 // 数组
-func (this *Pipeline) ThroughArray(pipes []PipeItem) *Pipeline {
-    this.Pipes = pipes
+func (this Pipeline) ThroughArray(pipes []PipeItem) Pipeline {
+    this.Pipes = append(this.Pipes, pipes...)
 
     return this
 }
 
 // 返回
-func (this *Pipeline) Then(destination DestinationFunc) any {
+func (this Pipeline) Then(destination DestinationFunc) any {
     pipeline := ArrayReduce(
         ArrayReverse(this.Pipes),
         this.Carry(),
@@ -94,21 +96,21 @@ func (this *Pipeline) Then(destination DestinationFunc) any {
 }
 
 // 返回数据
-func (this *Pipeline) ThenReturn() any {
+func (this Pipeline) ThenReturn() any {
     return this.Then(func(passable any) any {
         return passable
     })
 }
 
 // 包装
-func (this *Pipeline) PrepareDestination(destination DestinationFunc) NextFunc {
+func (this Pipeline) PrepareDestination(destination DestinationFunc) NextFunc {
     return func(passable any) any {
         return destination(passable)
     }
 }
 
 // 格式化数据
-func (this *Pipeline) Carry() CarryFunc {
+func (this Pipeline) Carry() CarryFunc {
     return func(stack any, pipe any) any {
         newStack := stack.(NextFunc)
 
@@ -138,12 +140,12 @@ func (this *Pipeline) Carry() CarryFunc {
 }
 
 // 获取设置的管道
-func (this *Pipeline) GetPipes() []PipeItem {
+func (this Pipeline) GetPipes() []PipeItem {
     return this.Pipes
 }
 
 // 返回数据
-func (this *Pipeline) HandleCarry(carry any) any {
+func (this Pipeline) HandleCarry(carry any) any {
     if this.CarryCallback != nil {
         callback := this.CarryCallback
 
@@ -154,7 +156,7 @@ func (this *Pipeline) HandleCarry(carry any) any {
 }
 
 // 报错信息
-func (this *Pipeline) HandleException(passable any, pipe any, stack NextFunc) any {
+func (this Pipeline) HandleException(passable any, pipe any, stack NextFunc) any {
     if this.ExceptionCallback != nil {
         callback := this.ExceptionCallback
 
@@ -165,14 +167,14 @@ func (this *Pipeline) HandleException(passable any, pipe any, stack NextFunc) an
 }
 
 // 设置 Carry 回调函数
-func (this *Pipeline) WithCarryCallback(callback CarryCallbackFunc) *Pipeline {
+func (this Pipeline) WithCarryCallback(callback CarryCallbackFunc) Pipeline {
     this.CarryCallback = callback
 
     return this
 }
 
 // 设置 Exception 回调函数
-func (this *Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) *Pipeline {
+func (this Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) Pipeline {
     this.ExceptionCallback = callback
 
     return this

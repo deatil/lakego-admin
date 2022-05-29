@@ -87,6 +87,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
                 return data2
             },
+        ).
+        Through(
             func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第2次数据1"
@@ -105,7 +107,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // hub 测试
     hub := pipeline.NewHub()
-    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object any) any {
+    hub.Pipeline("hub", func(pipe pipeline.Pipeline, object any) any {
         data := pipe.
             Send(object).
             Through(

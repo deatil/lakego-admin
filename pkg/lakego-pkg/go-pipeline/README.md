@@ -51,7 +51,7 @@ func main() {
 
     // hub 测试
     hub := pipeline.NewHub()
-    hub.Pipeline("hub", func(pipe *pipeline.Pipeline, object any) any {
+    hub.Pipeline("hub", func(pipe pipeline.Pipeline, object any) any {
         data := pipe.
             Send(object).
             Through(
