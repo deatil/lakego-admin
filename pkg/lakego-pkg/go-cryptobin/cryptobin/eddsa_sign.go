@@ -9,6 +9,11 @@ import (
 
 // 私钥签名
 func (this EdDSA) Sign() EdDSA {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     var key any
     key = this.privateKey
 
@@ -38,6 +43,11 @@ func (this EdDSA) Sign() EdDSA {
 
 // 公钥验证
 func (this EdDSA) Very(data []byte) EdDSA {
+    if this.publicKey == nil {
+        this.Error = errors.New("publicKey error.")
+        return this
+    }
+
     var key any
     key = this.publicKey
 

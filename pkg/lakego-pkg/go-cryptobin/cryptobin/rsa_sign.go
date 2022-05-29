@@ -1,12 +1,18 @@
 package cryptobin
 
 import (
+    "errors"
     "crypto/rsa"
     "crypto/rand"
 )
 
 // 私钥签名
 func (this Rsa) Sign() Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     newHash := NewHash()
 
     hasher := newHash.GetCryptoHash(this.signHash)
@@ -20,6 +26,11 @@ func (this Rsa) Sign() Rsa {
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) Very(data []byte) Rsa {
+    if this.publicKey == nil {
+        this.Error = errors.New("publicKey error.")
+        return this
+    }
+
     newHash := NewHash()
 
     hasher := newHash.GetCryptoHash(this.signHash)

@@ -1,6 +1,7 @@
 package cryptobin
 
 import (
+    "errors"
     "crypto/rand"
     "crypto/rsa"
 )
@@ -8,6 +9,11 @@ import (
 // 私钥签名
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
 func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     newHash := NewHash()
 
     hash := newHash.GetCryptoHash(this.signHash)
@@ -29,6 +35,11 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
+    if this.publicKey == nil {
+        this.Error = errors.New("publicKey error.")
+        return this
+    }
+
     newHash := NewHash()
 
     hash := newHash.GetCryptoHash(this.signHash)
