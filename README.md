@@ -37,7 +37,7 @@ lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
     <tr>
         <td width="50%">
             <center>
-                <img alt="操作日志" src="https://user-images.githubusercontent.com/24578855/168456599-8401a6ef-9b8a-4fd8-bb30-3978bf4b0ec7.png" />
+                <img alt="操作日志" src="https://user-images.githubusercontent.com/24578855/171014913-07c3447f-d90e-407b-899a-7eccb595ba81.png" />
             </center>
         </td>
         <td width="50%">
