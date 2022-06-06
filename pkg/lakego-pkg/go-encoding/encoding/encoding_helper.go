@@ -41,6 +41,21 @@ func FromBase85String(data string) Encoding {
     return New().FromBase85String(data)
 }
 
+// Base2
+func FromBase2String(data string) Encoding {
+    return New().FromBase2String(data)
+}
+
+// Base16
+func FromBase16String(data string) Encoding {
+    return New().FromBase16String(data)
+}
+
+// Base62
+func FromBase62String(data string) Encoding {
+    return New().FromBase62String(data)
+}
+
 // Hex
 func FromHexString(data string) Encoding {
     return New().FromHexString(data)

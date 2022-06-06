@@ -142,8 +142,7 @@ func (this *Data) Error(ctx *gin.Context) {
     // 时间
     date := datebin.
         Now().
-        AddDay().
-        ToDatetimeString()
+        Format("r")
     date2 := datebin.
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()
@@ -185,6 +184,9 @@ func (this *Data) Error(ctx *gin.Context) {
     encodeStr := encoding.FromString("test-data").ToBase64String()
     encodeStr2 := encoding.FromBase64String("dGVzdC1kYXRh").ToString()
     encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
+
+    // encodeStr3 = encoding.FromString("测试测试12121").ToBase62String()
+    // encodeStr3 = encoding.FromBase62String("sZxxLhTjAQ9Gtv93sEm8V6V").ToString()
 
     // 签名
     signData := sign.Sign("md5").

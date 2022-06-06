@@ -104,6 +104,27 @@ func (this Encoding) FromBase85String(data string) Encoding {
     return this
 }
 
+// Base2
+func (this Encoding) FromBase2String(data string) Encoding {
+    this.data, this.Error = NewBasex("01").Decode(data)
+
+    return this
+}
+
+// Base16
+func (this Encoding) FromBase16String(data string) Encoding {
+    this.data, this.Error = NewBasex("0123456789abcdef").Decode(data)
+
+    return this
+}
+
+// Base62
+func (this Encoding) FromBase62String(data string) Encoding {
+    this.data, this.Error = NewBasex("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").Decode(data)
+
+    return this
+}
+
 // Hex
 func (this Encoding) FromHexString(data string) Encoding {
     this.data, this.Error = hex.DecodeString(data)

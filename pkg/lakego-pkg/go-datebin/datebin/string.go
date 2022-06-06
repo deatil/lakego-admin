@@ -96,7 +96,7 @@ func (this Datebin) ToSeasonString(timezone ...string) string {
     month := this.Month()
 
     name := ""
-    switch true {
+    switch {
         // 春季
         case month == 3 || month == 4 || month == 5:
             name = "Spring"
@@ -204,11 +204,13 @@ func (this Datebin) Format(layout string, timezone ...string) string {
                     buffer.WriteString(strconv.Itoa(this.Quarter()))
                 case 'C': // 当前百年数
                     buffer.WriteString(strconv.Itoa(this.Century()))
+                case 'o': // 当前年数
+                    buffer.WriteString(strconv.Itoa(this.Year()))
                 case 'L': // 是否为闰年
                     if this.IsLeapYear() {
-                        buffer.WriteString("LeapYear")
+                        buffer.WriteString("ly")
                     } else {
-                        buffer.WriteString("NoLeapYear")
+                        buffer.WriteString("nly")
                     }
                 default:
                     buffer.WriteByte(layout[i])
