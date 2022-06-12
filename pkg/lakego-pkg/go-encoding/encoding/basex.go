@@ -1,8 +1,10 @@
 package encoding
 
 import (
+    "fmt"
     "bytes"
     "errors"
+    "strconv"
     "math/big"
 )
 
@@ -12,7 +14,7 @@ import (
 //   - base16: 0123456789abcdef
 //   - base32: 0123456789ABCDEFGHJKMNPQRSTVWXYZ
 //   - base58: 123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz
-//   - base62: 0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
+//   - base62: 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
 func NewBasex(alphabet string) Basex {
     runes := []rune(alphabet)
     runeMap := make(map[rune]int)
@@ -34,6 +36,18 @@ func NewBasex(alphabet string) Basex {
 
     return basex
 }
+
+// 常用 key
+const (
+    BasexBase2Key         = "01"
+    BasexBase16Key        = "0123456789ABCDEF"
+    BasexBase16InvalidKey = "0123456789abcdef"
+    BasexBase32Key        = "0123456789ABCDEFGHJKMNPQRSTVWXYZ"
+    BasexBase58Key        = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
+    BasexBase62Key        = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    BasexBase62_2Key      = "vPh7zZwA2LyU4bGq5tcVfIMxJi6XaSoK9CNp0OWljYTHQ8REnmu31BrdgeDkFs"
+    BasexBase62InvalidKey = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+)
 
 // Basex
 type Basex struct {
@@ -114,3 +128,14 @@ func (this Basex) Decode(source string) ([]byte, error) {
 
     return append(res, buf...), nil
 }
+
+// 补码
+func (this Basex) padding(s string, minlen int) string {
+    if len(s) >= minlen {
+        return s
+    }
+
+    format := fmt.Sprint(`%0`, strconv.Itoa(minlen), "s")
+    return fmt.Sprintf(format, s)
+}
+

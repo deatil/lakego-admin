@@ -78,17 +78,17 @@ func (this Encoding) ToBase85String() string {
 
 // 输出 Base2
 func (this Encoding) ToBase2String() string {
-    return NewBasex("01").Encode(this.data)
+    return NewBasex(BasexBase2Key).Encode(this.data)
 }
 
 // 输出 Base16
 func (this Encoding) ToBase16String() string {
-    return NewBasex("0123456789abcdef").Encode(this.data)
+    return NewBasex(BasexBase16Key).Encode(this.data)
 }
 
 // 输出 Base62
 func (this Encoding) ToBase62String() string {
-    return NewBasex("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").Encode(this.data)
+    return NewBasex(BasexBase62Key).Encode(this.data)
 }
 
 // 输出 Hex

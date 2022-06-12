@@ -186,7 +186,7 @@ func (this *Data) Error(ctx *gin.Context) {
     encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
 
     // encodeStr3 = encoding.FromString("测试测试12121").ToBase62String()
-    // encodeStr3 = encoding.FromBase62String("sZxxLhTjAQ9Gtv93sEm8V6V").ToString()
+    // encodeStr3 = encoding.FromBase62String("SzXXlHtJaq9gTV93SeM8v6v").ToString()
 
     // 签名
     signData := sign.Sign("md5").

@@ -2,13 +2,13 @@ package encoding
 
 // 加密
 func Base2Encode(str string) string {
-    newStr := NewBasex("01").Encode([]byte(str))
+    newStr := NewBasex(BasexBase2Key).Encode([]byte(str))
     return newStr
 }
 
 // 解密
 func Base2Decode(str string) string {
-    newStr, err := NewBasex("01").Decode(str)
+    newStr, err := NewBasex(BasexBase2Key).Decode(str)
     if err != nil {
         return ""
     }
@@ -20,13 +20,13 @@ func Base2Decode(str string) string {
 
 // 加密
 func Base16Encode(str string) string {
-    newStr := NewBasex("0123456789abcdef").Encode([]byte(str))
+    newStr := NewBasex(BasexBase16Key).Encode([]byte(str))
     return newStr
 }
 
 // 解密
 func Base16Decode(str string) string {
-    newStr, err := NewBasex("0123456789abcdef").Decode(str)
+    newStr, err := NewBasex(BasexBase16Key).Decode(str)
     if err != nil {
         return ""
     }
@@ -38,13 +38,13 @@ func Base16Decode(str string) string {
 
 // 加密
 func Base62Encode(str string) string {
-    newStr := NewBasex("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").Encode([]byte(str))
+    newStr := NewBasex(BasexBase62Key).Encode([]byte(str))
     return newStr
 }
 
 // 解密
 func Base62Decode(str string) string {
-    newStr, err := NewBasex("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").Decode(str)
+    newStr, err := NewBasex(BasexBase62Key).Decode(str)
     if err != nil {
         return ""
     }

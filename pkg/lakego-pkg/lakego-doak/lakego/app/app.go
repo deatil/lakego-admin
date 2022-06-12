@@ -28,11 +28,11 @@ import (
 // App结构体
 func New() *App {
     return &App{
-        Config: config.New("server"),
-        Lock: new(sync.RWMutex),
-        ServiceProviders: make(ServiceProviders, 0),
-        UsedServiceProviders: make(UsedServiceProviders, 0),
         Runned: false,
+        Config: config.New("server"),
+        Lock:   new(sync.RWMutex),
+        ServiceProviders:     make(ServiceProviders, 0),
+        UsedServiceProviders: make(UsedServiceProviders, 0),
     }
 }
 
@@ -113,7 +113,7 @@ func (this *App) WithConfig(conf *config.Config) *App {
 // 运行
 func (this *App) Run() {
     // 导入环境变量
-    this.LoadEnv()
+    this.loadEnv()
 
     // 初始化容器
     this.initDI()
@@ -154,37 +154,6 @@ func (this *App) Registers(providers ServiceProviders) {
             this.Register(provider)
         }
     }
-}
-
-// 加载服务提供者
-func (this *App) loadServiceProvider() {
-    if len(this.ServiceProviders) > 0 {
-        for _, provider := range this.ServiceProviders {
-            p := provider()
-
-            // 绑定 App 结构体
-            p.WithApp(this)
-
-            // 路由
-            p.WithRoute(this.RouteEngine)
-
-            p.Register()
-
-            this.UsedServiceProviders = append(this.UsedServiceProviders, p)
-        }
-    }
-
-    // 启动前
-    this.CallBootingCallbacks()
-
-    if len(this.UsedServiceProviders) > 0 {
-        for _, sp := range this.UsedServiceProviders {
-            this.BootService(sp)
-        }
-    }
-
-    // 启动后
-    this.CallBootedCallbacks()
 }
 
 // 引导服务
@@ -251,6 +220,8 @@ func (this *App) IsDev() bool {
         return false
     }
 }
+
+// ==================
 
 // 设置自定义监听
 func (this *App) WithNetListener(listener net.Listener) *App {
@@ -359,12 +330,43 @@ func (this *App) runApp() {
 
     // 不是命令行运行
     if !this.RunInConsole {
-        this.ServerRun()
+        this.serverRun()
     }
 }
 
+// 加载服务提供者
+func (this *App) loadServiceProvider() {
+    if len(this.ServiceProviders) > 0 {
+        for _, provider := range this.ServiceProviders {
+            p := provider()
+
+            // 绑定 App 结构体
+            p.WithApp(this)
+
+            // 路由
+            p.WithRoute(this.RouteEngine)
+
+            p.Register()
+
+            this.UsedServiceProviders = append(this.UsedServiceProviders, p)
+        }
+    }
+
+    // 启动前
+    this.CallBootingCallbacks()
+
+    if len(this.UsedServiceProviders) > 0 {
+        for _, sp := range this.UsedServiceProviders {
+            this.BootService(sp)
+        }
+    }
+
+    // 启动后
+    this.CallBootedCallbacks()
+}
+
 // 服务运行
-func (this *App) ServerRun() {
+func (this *App) serverRun() {
     conf := this.Config
 
     // 报错数据
@@ -382,7 +384,7 @@ func (this *App) ServerRun() {
 
             if servertype == "grace" {
                 // 优雅地关机
-                this.GraceRun(addr)
+                this.graceRun(addr)
             } else {
                 // gin 自带运行
                 err = this.RouteEngine.Run(addr)
@@ -396,8 +398,8 @@ func (this *App) ServerRun() {
             keyFile := conf.GetString("types.tls.key-file")
 
             // 格式化
-            certFile = this.FormatPath(certFile)
-            keyFile = this.FormatPath(keyFile)
+            certFile = this.formatPath(certFile)
+            keyFile = this.formatPath(keyFile)
 
             err = this.RouteEngine.RunTLS(addr, certFile, keyFile)
 
@@ -406,7 +408,7 @@ func (this *App) ServerRun() {
             file := conf.GetString("types.unix.file")
 
             // 格式化
-            file = this.FormatPath(file)
+            file = this.formatPath(file)
 
             err = this.RouteEngine.RunUnix(file)
 
@@ -439,7 +441,7 @@ func (this *App) ServerRun() {
 }
 
 // 优雅地关机
-func (this *App) GraceRun(address string) {
+func (this *App) graceRun(address string) {
     srv := &http.Server{
         Addr:           address,
         Handler:        this.RouteEngine,
@@ -488,7 +490,7 @@ func (this *App) initDI() {
 }
 
 // 导入 env 环境变量
-func (this *App) LoadEnv() {
+func (this *App) loadEnv() {
     // 环境变量
     err := env.Load()
     if err != nil {
@@ -497,7 +499,7 @@ func (this *App) LoadEnv() {
 }
 
 // 格式化文件路径
-func (this *App) FormatPath(file string) string {
+func (this *App) formatPath(file string) string {
     filename := path.FormatPath(file)
 
     return filename

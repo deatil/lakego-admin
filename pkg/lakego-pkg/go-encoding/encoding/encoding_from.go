@@ -106,21 +106,21 @@ func (this Encoding) FromBase85String(data string) Encoding {
 
 // Base2
 func (this Encoding) FromBase2String(data string) Encoding {
-    this.data, this.Error = NewBasex("01").Decode(data)
+    this.data, this.Error = NewBasex(BasexBase2Key).Decode(data)
 
     return this
 }
 
 // Base16
 func (this Encoding) FromBase16String(data string) Encoding {
-    this.data, this.Error = NewBasex("0123456789abcdef").Decode(data)
+    this.data, this.Error = NewBasex(BasexBase16Key).Decode(data)
 
     return this
 }
 
 // Base62
 func (this Encoding) FromBase62String(data string) Encoding {
-    this.data, this.Error = NewBasex("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ").Decode(data)
+    this.data, this.Error = NewBasex(BasexBase62Key).Decode(data)
 
     return this
 }
