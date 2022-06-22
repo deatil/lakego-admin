@@ -1,6 +1,6 @@
 ## lakego-admin 后台管理系统
 
-lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
+lakego-admin 是使用 gin、JWT 和 RBAC 的 go 后台管理系统
 
 
 ### 项目介绍

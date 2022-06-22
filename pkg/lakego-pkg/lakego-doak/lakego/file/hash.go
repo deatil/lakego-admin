@@ -4,11 +4,16 @@ import (
     "os"
     "io"
     "fmt"
-    "errors"
     "bufio"
+    "errors"
     "crypto/md5"
     "crypto/sha1"
 )
+
+// stream 使用接口
+type File interface {
+    io.Reader
+}
 
 // 文件 Md5
 func Md5(filename string) (string, error) {
@@ -22,7 +27,7 @@ func Md5(filename string) (string, error) {
 }
 
 // 文件 Md5
-func Md5WithStream(openfile *os.File) (string, error) {
+func Md5WithStream(openfile File) (string, error) {
     hash := md5.New()
     _, err := io.Copy(hash, openfile)
     if nil != err {
@@ -52,7 +57,7 @@ func Md5ForBig(filename string) (string, error) {
 }
 
 // 大文件 Md5
-func Md5ForBigWithStream(openfile *os.File) (string, error) {
+func Md5ForBigWithStream(openfile File) (string, error) {
     const bufferSize = 65536
 
     hash := md5.New()
@@ -84,7 +89,7 @@ func Sha1(filename string) (string, error) {
 }
 
 // 文件 Sha1
-func Sha1WithStream(openfile *os.File) (string, error) {
+func Sha1WithStream(openfile File) (string, error) {
     hash := sha1.New()
     _, err := io.Copy(hash, openfile)
     if nil != err {
@@ -114,7 +119,7 @@ func Sha1ForBig(filename string) (string, error) {
 }
 
 // 大文件 Sha1
-func Sha1ForBigWithStream(openfile *os.File) (string, error) {
+func Sha1ForBigWithStream(openfile File) (string, error) {
     const bufferSize = 65536
 
     hash := sha1.New()

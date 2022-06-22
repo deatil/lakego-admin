@@ -151,11 +151,12 @@ func (this *AuthRule) IndexTree(ctx *router.Context) {
         return
     }
 
-    newTree := tree.New()
-    list2 := newTree.WithData(list).Build("0", "", 1)
+    newList := tree.New().
+        WithData(list).
+        Build("0", "", 1)
 
     this.SuccessWithData(ctx, "获取成功", router.H{
-        "list": list2,
+        "list": newList,
     })
 }
 
