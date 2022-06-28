@@ -5,6 +5,8 @@ import (
 
     "github.com/deatil/go-datebin/datebin"
 
+    "github.com/deatil/lakego-doak/lakego/router"
+
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
 
@@ -16,6 +18,11 @@ import (
  */
 type Base struct {
     controller.Base
+}
+
+// 绑定数据
+func (this *Base) ShouldBindJSON(ctx *router.Context, obj any) error {
+    return this.Request(ctx).ShouldBindJSONWith(obj)
 }
 
 // 状态通用转换

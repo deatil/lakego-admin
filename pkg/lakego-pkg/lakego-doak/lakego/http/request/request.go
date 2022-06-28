@@ -4,7 +4,7 @@ import (
     "io"
     "net"
     "mime/multipart"
-    
+
     cast "github.com/deatil/go-goch/goch"
 
     "github.com/deatil/lakego-doak/lakego/router"
@@ -207,8 +207,12 @@ func (this *Request) ShouldBindWith(obj any, b router.Binding) error {
     return this.ctx.ShouldBindWith(obj, b)
 }
 
-func (this *Request) ShouldBindBodyWith(obj any, bb router.BindingBody) (err error) {
+func (this *Request) ShouldBindBodyWith(obj any, bb router.BindingBody) error {
     return this.ctx.ShouldBindBodyWith(obj, bb)
+}
+
+func (this *Request) ShouldBindJSONWith(obj any) error {
+    return this.ctx.ShouldBindBodyWith(obj, router.BindJSON)
 }
 
 // 客户端IP

@@ -69,7 +69,7 @@ func (this *Passport) Captcha(ctx *router.Context) {
 func (this *Passport) Login(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     validateErr := passportValidate.Login(post)
     if validateErr != "" {
@@ -171,7 +171,7 @@ func (this *Passport) Login(ctx *router.Context) {
 func (this *Passport) RefreshToken(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     var refreshToken any
     var ok bool
@@ -239,7 +239,7 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
 func (this *Passport) Logout(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     var refreshToken any
     var ok bool

@@ -348,7 +348,7 @@ func (this *Admin) Groups(ctx *router.Context) {
 func (this *Admin) Create(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     validateErr := adminValidate.Create(post)
     if validateErr != "" {
@@ -447,7 +447,7 @@ func (this *Admin) Update(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     validateErr := adminValidate.Update(post)
     if validateErr != "" {
@@ -599,7 +599,7 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     validateErr := adminValidate.UpdateAvatar(post)
     if validateErr != "" {
@@ -664,7 +664,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     password := post["password"].(string)
     if len(password) != 32 {
@@ -732,7 +732,7 @@ func (this *Admin) Enable(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     if result["status"] == 1 {
         this.Error(ctx, "账号已启用")
@@ -795,7 +795,7 @@ func (this *Admin) Disable(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     if result["status"] == 0 {
         this.Error(ctx, "账号已禁用")
@@ -931,7 +931,7 @@ func (this *Admin) Access(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     access := post["access"].(string)
     if access != "" {

@@ -7,6 +7,7 @@ import (
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/gmq"
     "github.com/deatil/lakego-doak/lakego/router"
+    "github.com/deatil/lakego-doak/lakego/http/request"
 
     "github.com/deatil/lakego-doak-action-log/action-log/model"
 )
@@ -35,8 +36,11 @@ func Handler() router.HandlerFunc {
     return func(ctx *router.Context) {
         ctx.Next()
 
-        MQ.Publish("action-log", func() {
-            recordLog(ctx)
+        // 协程使用 ctx
+        newCtx := ctx.Copy()
+
+        go MQ.Publish("action-log", func() {
+            recordLog(newCtx)
         })
     }
 }
@@ -50,7 +54,7 @@ func recordLog(ctx *router.Context) {
 
     // 接收数据
     post := make(map[string]any)
-    ctx.ShouldBind(&post)
+    request.New().WithContext(ctx).ShouldBindJSONWith(&post)
 
     if raw != "" {
         path = path + "?" + raw

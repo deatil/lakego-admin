@@ -140,11 +140,14 @@ func (this Cryptobin) CTR() Cryptobin {
 }
 
 // GCM
-func (this Cryptobin) GCM(nonce string, additional string) Cryptobin {
+func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
     this.mode = "GCM"
 
     this.config["nonce"] = []byte(nonce)
-    this.config["additional"] = []byte(additional)
+
+    if len(additional) > 0 {
+        this.config["additional"] = []byte(additional[0])
+    }
 
     return this
 }

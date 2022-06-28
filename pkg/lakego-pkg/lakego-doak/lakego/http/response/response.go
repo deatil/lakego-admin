@@ -76,7 +76,10 @@ func (this *Response) ReturnString(contents string) {
 
 // 返回 json
 func (this *Response) ReturnJson(data router.H) {
-    this.ctx.JSON(this.httpCode, data)
+    // this.ctx.JSON(this.httpCode, data)
+
+    // 输出未转义的原始字符
+    this.ctx.PureJSON(this.httpCode, data)
 }
 
 // 将json字符窜以标准json格式返回

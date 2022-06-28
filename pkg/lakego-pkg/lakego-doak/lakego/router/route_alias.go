@@ -112,7 +112,22 @@ type (
     StructValidator = binding.StructValidator
 )
 
-var Validator = binding.Validator
+var (
+    BindingValidator = binding.Validator
+
+    // ShouldBindBodyWith 使用参数
+    BindJSON          = binding.JSON
+    BindXML           = binding.XML
+    BindForm          = binding.Form
+    BindQuery         = binding.Query
+    BindFormPost      = binding.FormPost
+    BindFormMultipart = binding.FormMultipart
+    BindProtoBuf      = binding.ProtoBuf
+    BindMsgPack       = binding.MsgPack
+    BindYAML          = binding.YAML
+    BindUri           = binding.Uri
+    BindHeader        = binding.Header
+)
 
 // ===== gin 默认方法 =====
 

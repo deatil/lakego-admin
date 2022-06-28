@@ -58,7 +58,7 @@ func (this *Profile) Index(ctx *router.Context) {
 func (this *Profile) Update(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     // 检测
     validateErr := profileValidate.Update(post)
@@ -109,7 +109,7 @@ func (this *Profile) Update(ctx *router.Context) {
 func (this *Profile) UpdateAvatar(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     // 检测
     validateErr := profileValidate.UpdateAvatar(post)
@@ -160,7 +160,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 func (this *Profile) UpdatePasssword(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
-    ctx.BindJSON(&post)
+    this.ShouldBindJSON(ctx, &post)
 
     // 检测
     validateErr := profileValidate.UpdatePasssword(post)
