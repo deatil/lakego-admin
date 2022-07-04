@@ -102,6 +102,12 @@ go run main.go lakego-admin:import-apiroute
 go run main.go
 ```
 
+或者有其他参数编译时可以添加该参数
+
+```go
+go run main.go --lakego=start
+```
+
 6. 后台登录账号及密码：`admin` / `123456`
 
 

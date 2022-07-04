@@ -10,6 +10,9 @@ import (
     // 数据库管理
     _ "github.com/deatil/lakego-doak-database/database/bootstrap"
 
+    // 系统监控
+    _ "github.com/deatil/lakego-doak-monitor/monitor/bootstrap"
+
     // API 文档
     _ "github.com/deatil/lakego-admin/docs/swagger"
     _ "github.com/deatil/lakego-doak-swagger/swagger/bootstrap"

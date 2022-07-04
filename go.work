@@ -24,4 +24,5 @@ use (
 	./pkg/lakego-app/doak-database
 	./pkg/lakego-app/doak-swagger
 	./pkg/lakego-app/doak-statics
+	./pkg/lakego-app/doak-monitor
 )

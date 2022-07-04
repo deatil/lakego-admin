@@ -1,12 +1,93 @@
 package router
 
 import (
+    "net"
     "regexp"
     "strings"
     "net/url"
 
     "github.com/deatil/lakego-doak/lakego/array"
 )
+
+// 请求 IP
+func GetRequestIp(ctx *Context) string {
+    ip := ctx.ClientIP()
+
+    if ip == "::1" {
+        ip = "127.0.0.1"
+    }
+
+    return ip
+}
+
+// 获取真实IP
+func GetRealIP(ctx *Context) (ip string) {
+    var header = ctx.Request.Header
+    var index int
+
+    if ip = header.Get("X-Forwarded-For"); ip != "" {
+        index = strings.IndexByte(ip, ',')
+        if index < 0 {
+            return ip
+        }
+
+        if ip = ip[:index]; ip != "" {
+            return ip
+        }
+    }
+
+    if ip = header.Get("X-Real-Ip"); ip != "" {
+        index = strings.IndexByte(ip, ',')
+        if index < 0 {
+            return ip
+        }
+
+        if ip = ip[:index]; ip != "" {
+            return ip
+        }
+    }
+
+    if ip = header.Get("Proxy-Forwarded-For"); ip != "" {
+        index = strings.IndexByte(ip, ',')
+        if index < 0 {
+            return ip
+        }
+
+        if ip = ip[:index]; ip != "" {
+            return ip
+        }
+    }
+
+    ip, _, _ = net.SplitHostPort(ctx.Request.RemoteAddr)
+    return ip
+}
+
+// 获取本地IP
+func GetLocalIP() string {
+    inters, err := net.Interfaces()
+    if err != nil {
+        return ""
+    }
+
+    for _, inter := range inters {
+        if inter.Flags&net.FlagUp != 0 && !strings.HasPrefix(inter.Name, "lo") {
+            addrs, err := inter.Addrs()
+            if err != nil {
+                continue
+            }
+
+            for _, addr := range addrs {
+                if ipnet, ok := addr.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+                    if ipnet.IP.To4() != nil {
+                        return ipnet.IP.String()
+                    }
+                }
+            }
+        }
+    }
+
+    return ""
+}
 
 func FormatURL(u string) string {
     uarr := strings.Split(u, "?")
@@ -21,17 +102,6 @@ func FormatURL(u string) string {
 
     return url.QueryEscape(strings.ReplaceAll(uarr[0], "/", "_")) + "?" +
         strings.ReplaceAll(v.Encode(), "%7B%7B.Id%7D%7D", "{{.Id}}")
-}
-
-// 请求 IP
-func GetRequestIp(ctx *Context) string {
-    ip := ctx.ClientIP()
-
-    if ip == "::1" {
-        ip = "127.0.0.1"
-    }
-
-    return ip
 }
 
 // 获取 header 中指定 key 的值

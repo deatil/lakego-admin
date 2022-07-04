@@ -3,6 +3,7 @@ package kernel
 import (
     "os"
     "net"
+    "flag"
 
     "github.com/deatil/lakego-doak/lakego/app"
     "github.com/deatil/lakego-doak/lakego/command"
@@ -64,10 +65,14 @@ func (this *Kernel) LoadDefaultServiceProvider() *Kernel {
 func (this *Kernel) Terminate() {
     args := os.Args
 
-    if len(args) > 1 {
-        this.RunCmd()
-    } else {
+    // 系统启动参数
+    startName := flag.String("lakego", "", "系统启动参数")
+    flag.Parse()
+
+    if len(args) == 1 || *startName == "start" {
         this.RunServer()
+    } else {
+        this.RunCmd()
     }
 }
 

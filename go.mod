@@ -20,11 +20,12 @@ replace (
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
 	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
-	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
-	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
+	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
+	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
+	github.com/deatil/lakego-doak-monitor => ./pkg/lakego-app/doak-monitor
 )
 
 require (
