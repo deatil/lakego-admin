@@ -6,9 +6,6 @@ import(
     "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
-// 锁
-var lock = new(sync.RWMutex)
-
 var instance *Register
 var once sync.Once
 
@@ -50,14 +47,17 @@ type (
  * @author deatil
  */
 type Register struct {
+    // 锁定
+    mu sync.RWMutex
+
     // 服务提供者
     providers []Provider
 }
 
 // 注册
 func (this *Register) WithProvider(f func() any) *Register {
-    lock.Lock()
-    defer lock.Unlock()
+    this.mu.Lock()
+    defer this.mu.Unlock()
 
     addProvider := f()
 
@@ -76,5 +76,8 @@ func (this *Register) WithProvider(f func() any) *Register {
  * 获取注册的全部服务提供者
  */
 func (this *Register) GetRegisteredProviders() []Provider {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     return this.providers
 }

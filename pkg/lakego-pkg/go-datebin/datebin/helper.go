@@ -40,7 +40,7 @@ func Yesterday(timezone ...string) Datebin {
 // ====================
 
 // 时间
-func UseTime(t time.Time, timezone ...string) Datebin {
+func FromTimeTime(t time.Time, timezone ...string) Datebin {
     date := New().WithTime(t)
 
     if len(timezone) > 0 {
@@ -51,13 +51,13 @@ func UseTime(t time.Time, timezone ...string) Datebin {
 }
 
 // 时间戳
-func UseUnix(second int64, nsec int64, timezone ...string) Datebin {
-    return UseTime(time.Unix(second, nsec), timezone...)
+func FromTimeUnix(second int64, nsec int64, timezone ...string) Datebin {
+    return FromTimeTime(time.Unix(second, nsec), timezone...)
 }
 
 // 时间戳
 func FromTimestamp(timestamp int64, timezone ...string) Datebin {
-    return UseUnix(timestamp, 0, timezone...)
+    return FromTimeUnix(timestamp, 0, timezone...)
 }
 
 // 日期时间带纳秒
@@ -67,7 +67,7 @@ func FromDatetimeWithNanosecond(year, month, day, hour, minute, second, nanoseco
         monthData = Months[1]
     }
 
-    return UseTime(time.Date(year, monthData, day, hour, minute, second, nanosecond, time.Local), timezone...)
+    return FromTimeTime(time.Date(year, monthData, day, hour, minute, second, nanosecond, time.Local), timezone...)
 }
 
 // 日期时间带微秒
@@ -158,7 +158,7 @@ func TimestampToTime(timestamp int64, timezone ...string) time.Time {
 
 // 时间转换为时间戳
 func TimeToTimestamp(t time.Time, timezone ...string) int64 {
-    return UseTime(t, timezone...).Timestamp()
+    return FromTimeTime(t, timezone...).Timestamp()
 }
 
 // 时间字符转为时间
