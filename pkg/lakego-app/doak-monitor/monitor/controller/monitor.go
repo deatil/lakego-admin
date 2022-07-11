@@ -56,7 +56,7 @@ func (this *Monitor) Index(ctx *router.Context) {
     loadInfo, err := load.Avg()
     if err == nil {
         cpuAvg5, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", loadInfo.Load5), 64)
-        cpuAvg15, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", loadInfo.Load5), 64)
+        cpuAvg15, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", loadInfo.Load15), 64)
     }
 
     // 内存使用信息
