@@ -78,7 +78,6 @@ func main() {
     // TriDes 加密测试
     cypt := cryptobin.
         FromString("test-pass").
-        SetIv("ftr4tyew").
         SetKey("dfertf12dfertf12dfertf12").
         TriDes().
         ECB().
@@ -87,7 +86,6 @@ func main() {
         ToHexString()
     cyptde := cryptobin.
         FromHexString("6ef89f062bc9d46109d0dfd4899af2fc").
-        SetIv("ftr4tyew").
         SetKey("dfertf12dfertf12dfertf12").
         TriDes().
         ECB().

@@ -61,7 +61,6 @@ func main() {
     // TriDes 加密测试
     cypt := cryptobin.
         FromString("test-pass").
-        SetIv("ftr4tyew").
         SetKey("dfertf12dfertf12dfertf12").
         TriDes().
         ECB().
@@ -70,7 +69,6 @@ func main() {
         ToHexString()
     cyptde := cryptobin.
         FromHexString("6ef89f062bc9d46109d0dfd4899af2fc").
-        SetIv("ftr4tyew").
         SetKey("dfertf12dfertf12dfertf12").
         TriDes().
         ECB().
@@ -99,7 +97,6 @@ func main() {
     // 获取报错数据
     err := cryptobin.
         FromString("test-pass").
-        SetIv("ftr4tyew").
         SetKey("dfertf12dfertf12dfertf12ty").
         TriDes().
         ECB().
@@ -110,7 +107,7 @@ func main() {
 
     // =====
 
-    // 生成证书
+    // Rsa 生成证书
     rsa := cryptobin.NewRsa()
     rsaPriKey := rsa.
         GenerateKey(2048).

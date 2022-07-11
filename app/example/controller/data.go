@@ -4,6 +4,8 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-crc8/crc8"
+    "github.com/deatil/go-crc16/crc16"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-pipeline/pipeline"
@@ -244,7 +246,18 @@ func (this *Data) Error(ctx *gin.Context) {
         SignHex([]byte(sm2userid)).
         ToBase64String()
 
+    // crc8
+    crc8Data := crc8.ChecksumCRC8([]byte("aderf"))
+
+    // crc16
+    crc16Data := crc16.ChecksumMODBUS([]byte("aderf"))
+    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum([]byte("aderf"))
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "crc8Data": crc8Data,
+        "crc16Data": crc16Data,
+        "crc16HashData": crc16HashData,
+
         // "cacheData": cacheData,
         // "redisData": redisData,
 

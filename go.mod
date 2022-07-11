@@ -16,6 +16,8 @@ replace (
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-tree => ./pkg/lakego-pkg/go-tree
+	github.com/deatil/go-crc8 => ./pkg/lakego-pkg/go-crc8
+	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
 	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
@@ -59,6 +61,8 @@ require (
 	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/go-pipeline v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-sign v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/go-crc8 v0.0.3 // indirect
+	github.com/deatil/go-crc16 v0.0.3 // indirect
 	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/lakego-jwt v0.0.3 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
