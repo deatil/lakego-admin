@@ -1,4 +1,4 @@
-package view
+package finder
 
 import (
     "os"
@@ -12,16 +12,16 @@ var instance *ViewFinder
 var once sync.Once
 
 // 单例
-func InstanceViewFinder() *ViewFinder {
+func Instance() *ViewFinder {
     once.Do(func() {
-        instance = NewViewFinder()
+        instance = New()
     })
 
     return instance
 }
 
 // 构造函数
-func NewViewFinder() *ViewFinder {
+func New() *ViewFinder {
     return &ViewFinder{
         HintPathDelimiter: "::",
         Paths: make(PathsArray, 0),

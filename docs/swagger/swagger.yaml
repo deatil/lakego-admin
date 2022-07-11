@@ -1590,6 +1590,26 @@ paths:
       - 例子
       x-lakego:
         slug: lakego-admin.example.index
+  /monitor:
+    get:
+      consumes:
+      - application/json
+      description: 服务监控详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 服务监控详情
+      tags:
+      - 系统监控
+      x-lakego:
+        slug: lakego-admin.monitor.index
   /passport/captcha:
     get:
       consumes:

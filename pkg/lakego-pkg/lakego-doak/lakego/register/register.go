@@ -64,9 +64,7 @@ func (this *Register) With(name string, f RegisterFunc) {
     this.registers[name] = f
 }
 
-/**
- * 获取
- */
+// 获取
 func (this *Register) Get(name string, conf ConfigMap) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
@@ -79,9 +77,7 @@ func (this *Register) Get(name string, conf ConfigMap) any {
     return nil
 }
 
-/**
- * 获取单例
- */
+// 获取单例
 func (this *Register) GetOnce(name string, conf ConfigMap) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
@@ -103,39 +99,20 @@ func (this *Register) GetOnce(name string, conf ConfigMap) any {
     return nil
 }
 
-/**
- * 判断
- */
+// 判断
 func (this *Register) Exists(name string) bool {
-    var exists bool
+    this.mu.RLock()
+    defer this.mu.RUnlock()
 
-    this.WithRLock(func() {
-        _, exists = this.registers[name]
-    })
+    _, exists := this.registers[name]
 
     return exists
 }
 
-/**
- * 删除
- */
+// 删除
 func (this *Register) Delete(name string) {
-    this.WithRLock(func() {
-        delete(this.registers, name)
-    })
-}
-
-// 左
-func (this *Register) WithLock(f func()) {
     this.mu.Lock()
-    f()
-    this.mu.Unlock()
-}
+    defer this.mu.Unlock()
 
-// 右
-func (this *Register) WithRLock(f func()) {
-    this.mu.RLock()
-    f()
-    this.mu.RUnlock()
+    delete(this.registers, name)
 }
-

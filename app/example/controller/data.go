@@ -250,12 +250,14 @@ func (this *Data) Error(ctx *gin.Context) {
     crc8Data := crc8.ChecksumCRC8([]byte("aderf"))
 
     // crc16
-    crc16Data := crc16.ChecksumMODBUS([]byte("aderf"))
-    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum([]byte("aderf"))
+    crc16Data := crc16.ChecksumMODBUS([]byte("010f"))
+    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum([]byte("010f"))
+
+    crc16Data2 := crc16.ToHexString(crc16Data)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "crc8Data": crc8Data,
-        "crc16Data": crc16Data,
+        "crc16Data": crc16Data2,
         "crc16HashData": crc16HashData,
 
         // "cacheData": cacheData,

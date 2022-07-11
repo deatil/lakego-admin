@@ -3,13 +3,13 @@ package provider
 import (
     "path/filepath"
     "github.com/deatil/lakego-filesystem/filesystem"
-    "github.com/deatil/lakego-doak/lakego/view"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
+    viewFinder "github.com/deatil/lakego-doak/lakego/view/finder"
     appInterface "github.com/deatil/lakego-doak/lakego/app/interfaces"
 )
 
@@ -141,7 +141,7 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 
 // 注册视图
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
-    viewFinder := view.InstanceViewFinder()
+    viewFinder := viewFinder.Instance()
 
     paths := config.New("view").GetStringSlice("paths")
     if len(paths) > 0 {

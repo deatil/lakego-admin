@@ -5,10 +5,12 @@ import (
     "path/filepath"
     "net/http"
 
-    "github.com/flosch/pongo2/v4"
+    "github.com/flosch/pongo2/v6"
 
     "github.com/gin-gonic/gin"
     "github.com/gin-gonic/gin/render"
+
+    "github.com/deatil/lakego-doak/lakego/view/funcs"
 )
 
 // TemplatePath html files path
@@ -38,10 +40,26 @@ func (this *PongoRender) Instance(name string, data any) render.Render {
         fileName = name
     }
 
+    // 初始化视图
+    lakegoLoader := pongo2.MustNewLocalFileSystemLoader("")
+    lakegoSet := pongo2.NewSet("lakego", lakegoLoader)
+
+    // 获取已注册函数
+    allFuncs := funcs.New().GetAllFuncs()
+    newAllFuncs := make(pongo2.Context)
+    if len(allFuncs) > 0 {
+        for name, fn := range allFuncs {
+            newAllFuncs[name] = fn
+        }
+    }
+
+    // 添加自定义函数
+    lakegoSet.Globals.Update(newAllFuncs)
+
     if gin.Mode() == gin.DebugMode {
-        template = pongo2.Must(pongo2.FromFile(fileName))
+        template = pongo2.Must(lakegoSet.FromFile(fileName))
     } else {
-        template = pongo2.Must(pongo2.FromCache(fileName))
+        template = pongo2.Must(lakegoSet.FromCache(fileName))
     }
 
     return &PongoHTML{

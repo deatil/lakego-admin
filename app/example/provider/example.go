@@ -6,6 +6,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
+    "github.com/deatil/lakego-doak/lakego/view/funcs"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     "github.com/deatil/lakego-doak-admin/admin/support/route"
@@ -13,6 +14,7 @@ import (
     // 路由
     router "app/example/route"
     command "app/example/cmd"
+    exampleView "app/example/view"
 )
 
 /**
@@ -35,6 +37,9 @@ func (this *ExampleServiceProvider) Boot() {
 
     // 路由
     this.loadRoute()
+
+    // 导入视图方法
+    this.loadViewFuncs()
 
     // 注册额外服务提供者
     this.registerProviders()
@@ -101,6 +106,14 @@ func (this *ExampleServiceProvider) loadRoute() {
     this.AddRoute(func(engine *gin.Engine) {
         router.GinRoute(engine)
     })
+}
+
+/**
+ * 导入视图方法
+ */
+func (this *ExampleServiceProvider) loadViewFuncs() {
+    // 用户信息
+    funcs.New().AddFunc("formatData", exampleView.FormatData)
 }
 
 /**

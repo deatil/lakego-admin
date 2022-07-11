@@ -6,7 +6,7 @@ import (
     "net/http"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    viewFetch "github.com/deatil/lakego-doak/lakego/view"
+    viewFinder "github.com/deatil/lakego-doak/lakego/view/finder"
 )
 
 // 使用
@@ -93,7 +93,7 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
 func (this *Response) Fetch(template string, obj any) {
     hintPathDelimiter := "::"
     if strings.Contains(template, hintPathDelimiter) {
-        template = viewFetch.InstanceViewFinder().Find(template)
+        template = viewFinder.Instance().Find(template)
     }
 
     this.ctx.HTML(this.httpCode, template, obj)

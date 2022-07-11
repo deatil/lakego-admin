@@ -2411,6 +2411,37 @@
                 }
             }
         },
+        "/monitor": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "服务监控详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统监控"
+                ],
+                "summary": "服务监控详情",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.monitor.index"
+                }
+            }
+        },
         "/passport/captcha": {
             "get": {
                 "description": "登陆验证码",
