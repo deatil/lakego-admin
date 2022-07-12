@@ -41,6 +41,7 @@ func (this *PongoRender) Instance(name string, data any) render.Render {
     }
 
     // 初始化视图
+    // lakegoLoader := pongo2.NewHttpFileSystemLoader(fs, "")
     lakegoLoader := pongo2.MustNewLocalFileSystemLoader("")
     lakegoSet := pongo2.NewSet("lakego", lakegoLoader)
 

@@ -9,22 +9,21 @@ type Params struct {
     RefIn  bool
     RefOut bool
     XorOut uint8
-    Check  uint8
     Name   string
 }
 
 // crc8 类型列表
 var (
-    CRC8          = Params{0x07, 0x00, false, false, 0x00, 0xF4, "CRC-8"}
-    CRC8_CDMA2000 = Params{0x9B, 0xFF, false, false, 0x00, 0xDA, "CRC-8/CDMA2000"}
-    CRC8_DARC     = Params{0x39, 0x00, true, true, 0x00, 0x15, "CRC-8/DARC"}
-    CRC8_DVB_S2   = Params{0xD5, 0x00, false, false, 0x00, 0xBC, "CRC-8/DVB-S2"}
-    CRC8_EBU      = Params{0x1D, 0xFF, true, true, 0x00, 0x97, "CRC-8/EBU"}
-    CRC8_I_CODE   = Params{0x1D, 0xFD, false, false, 0x00, 0x7E, "CRC-8/I-CODE"}
-    CRC8_ITU      = Params{0x07, 0x00, false, false, 0x55, 0xA1, "CRC-8/ITU"}
-    CRC8_MAXIM    = Params{0x31, 0x00, true, true, 0x00, 0xA1, "CRC-8/MAXIM"}
-    CRC8_ROHC     = Params{0x07, 0xFF, true, true, 0x00, 0xD0, "CRC-8/ROHC"}
-    CRC8_WCDMA    = Params{0x9B, 0x00, true, true, 0x00, 0x25, "CRC-8/WCDMA"}
+    CRC8          = Params{0x07, 0x00, false, false, 0x00, "CRC-8"}
+    CRC8_CDMA2000 = Params{0x9B, 0xFF, false, false, 0x00, "CRC-8/CDMA2000"}
+    CRC8_DARC     = Params{0x39, 0x00, true, true, 0x00, "CRC-8/DARC"}
+    CRC8_DVB_S2   = Params{0xD5, 0x00, false, false, 0x00, "CRC-8/DVB-S2"}
+    CRC8_EBU      = Params{0x1D, 0xFF, true, true, 0x00, "CRC-8/EBU"}
+    CRC8_I_CODE   = Params{0x1D, 0xFD, false, false, 0x00, "CRC-8/I-CODE"}
+    CRC8_ITU      = Params{0x07, 0x00, false, false, 0x55, "CRC-8/ITU"}
+    CRC8_MAXIM    = Params{0x31, 0x00, true, true, 0x00, "CRC-8/MAXIM"}
+    CRC8_ROHC     = Params{0x07, 0xFF, true, true, 0x00, "CRC-8/ROHC"}
+    CRC8_WCDMA    = Params{0x9B, 0x00, true, true, 0x00, "CRC-8/WCDMA"}
 )
 
 // 表格

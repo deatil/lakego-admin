@@ -1,6 +1,7 @@
 package controller
 
 import (
+    "encoding/hex"
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/go-hash/hash"
@@ -247,16 +248,22 @@ func (this *Data) Error(ctx *gin.Context) {
         ToBase64String()
 
     // crc8
-    crc8Data := crc8.ChecksumCRC8([]byte("aderf"))
+    crc8Hex, _ := hex.DecodeString("010f00")
+    crc8Data := crc8.ChecksumROHC(crc8Hex)
+    crc8Data2 := crc8.ToHexString(crc8Data)
 
     // crc16
-    crc16Data := crc16.ChecksumMODBUS([]byte("010f"))
-    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum([]byte("010f"))
+    // 16进制字符转为 byte
+    crc16Hex, _ := hex.DecodeString("010f00")
+    crc16Data := crc16.ChecksumMODBUS(crc16Hex)
+    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum(crc16Hex)
 
+    // encodedStr := hex.EncodeToString(b)
     crc16Data2 := crc16.ToHexString(crc16Data)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
-        "crc8Data": crc8Data,
+        "crc8Data": crc8Data2,
+
         "crc16Data": crc16Data2,
         "crc16HashData": crc16HashData,
 
