@@ -2,8 +2,6 @@ package crc16
 
 import (
     "fmt"
-    "strconv"
-    "strings"
 )
 
 // 构造函数
@@ -77,28 +75,12 @@ func ToReverseHexString(data uint16) string {
 
 // 输出二进制字符
 func ToBinString(data uint16) string {
-    res := strconv.FormatInt(int64(data), 2)
-
-    needStr := ""
-    size := 16 - len(res)
-    if size > 0 {
-        needStr = strings.Repeat("0", size)
-    }
-
-    return needStr + res
+    return fmt.Sprintf("%016b", data)
 }
 
 // 输出二进制字符，高低字节对调
 func ToReverseHexBinString(data uint16) string {
     data = (data << 8) ^ (data >> 8)
 
-    res := strconv.FormatInt(int64(data), 2)
-
-    needStr := ""
-    size := 16 - len(res)
-    if size > 0 {
-        needStr = strings.Repeat("0", size)
-    }
-
-    return needStr + res
+    return fmt.Sprintf("%016b", data)
 }

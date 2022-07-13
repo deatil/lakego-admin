@@ -1,15 +1,15 @@
-## crc8
+## crc32
 
 
 ### 项目介绍
 
-*  crc8 相关算法
+*  crc32 相关算法
 
 
 ### 下载安装
 
 ~~~go
-go get -u github.com/deatil/go-crc8
+go get -u github.com/deatil/go-crc32
 ~~~
 
 
@@ -22,17 +22,17 @@ import (
     "fmt"
     "encoding/hex"
 
-    "github.com/deatil/go-crc8/crc8"
+    "github.com/deatil/go-crc32/crc32"
 )
 
 func main() {
     // 16进制字符转为 byte
-    crc8Hex, _ := hex.DecodeString("010f")
+    crc32Hex, _ := hex.DecodeString("020f")
 
-    crc8Data := crc8.ChecksumMAXIM(crc8Hex)
-    crc8Data2 := crc8.ToHexString(crc8Data)
+    crc32Data := crc32.ChecksumMPEG_2(crc32Hex)
+    crc32Data2 := crc32.ToHexString(crc32Data)
 
-    fmt.Println("计算结果为：", crc8Data2)
+    fmt.Println("计算结果为：", crc32Data2)
 }
 ~~~
 

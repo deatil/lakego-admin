@@ -6,8 +6,10 @@ use (
 	./pkg/lakego-pkg/go-hash
 	./pkg/lakego-pkg/go-goch
 	./pkg/lakego-pkg/go-sign
+	./pkg/lakego-pkg/go-crc
 	./pkg/lakego-pkg/go-crc8
 	./pkg/lakego-pkg/go-crc16
+	./pkg/lakego-pkg/go-crc32
 	./pkg/lakego-pkg/go-pipeline
 	./pkg/lakego-pkg/go-exception
 	./pkg/lakego-pkg/go-collection

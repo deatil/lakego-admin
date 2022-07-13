@@ -2,8 +2,6 @@ package crc8
 
 import (
     "fmt"
-    "strconv"
-    "strings"
 )
 
 // 构造函数
@@ -47,35 +45,19 @@ func ToHexString(data uint8) string {
 
 // 输出两位 16 进制字符，高低字节对调
 func ToReverseHexString(data uint8) string {
-    data = (data << 8) ^ (data >> 8)
+    data = (data << 4) ^ (data >> 4)
 
     return fmt.Sprintf("%02X", data)
 }
 
 // 输出二进制字符
 func ToBinString(data uint8) string {
-    res := strconv.FormatInt(int64(data), 2)
-
-    needStr := ""
-    size := 8 - len(res)
-    if size > 0 {
-        needStr = strings.Repeat("0", size)
-    }
-
-    return needStr + res
+    return fmt.Sprintf("%08b", data)
 }
 
 // 输出二进制字符，高低字节对调
 func ToReverseHexBinString(data uint8) string {
-    data = (data << 8) ^ (data >> 8)
+    data = (data << 4) ^ (data >> 4)
 
-    res := strconv.FormatInt(int64(data), 2)
-
-    needStr := ""
-    size := 8 - len(res)
-    if size > 0 {
-        needStr = strings.Repeat("0", size)
-    }
-
-    return needStr + res
+    return fmt.Sprintf("%08b", data)
 }

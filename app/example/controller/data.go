@@ -5,8 +5,10 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/go-hash/hash"
+    "github.com/deatil/go-crc/crc"
     "github.com/deatil/go-crc8/crc8"
     "github.com/deatil/go-crc16/crc16"
+    "github.com/deatil/go-crc32/crc32"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-pipeline/pipeline"
@@ -255,17 +257,31 @@ func (this *Data) Error(ctx *gin.Context) {
     // crc16
     // 16进制字符转为 byte
     crc16Hex, _ := hex.DecodeString("010f00")
-    crc16Data := crc16.ChecksumMODBUS(crc16Hex)
-    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum(crc16Hex)
-
     // encodedStr := hex.EncodeToString(b)
+    crc16Data := crc16.ChecksumMODBUS(crc16Hex)
     crc16Data2 := crc16.ToHexString(crc16Data)
 
+    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum(crc16Hex)
+
+    // crc32
+    crc32Hex, _ := hex.DecodeString("020fa1")
+    crc32Data := crc32.ChecksumMPEG_2(crc32Hex)
+    crc32Data2 := crc32.ToHexString(crc32Data)
+
+    // crc
+    crcHex, _ := hex.DecodeString("0208")
+    crcData := crc.Crc6Itu(crcHex)
+    crcData2 := crc.ToHexString(crcData, "crc6")
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "crcData": crcData2,
+
         "crc8Data": crc8Data2,
 
         "crc16Data": crc16Data2,
         "crc16HashData": crc16HashData,
+
+        "crc32Data": crc32Data2,
 
         // "cacheData": cacheData,
         // "redisData": redisData,

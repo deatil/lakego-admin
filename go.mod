@@ -16,8 +16,10 @@ replace (
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-tree => ./pkg/lakego-pkg/go-tree
+	github.com/deatil/go-crc => ./pkg/lakego-pkg/go-crc
 	github.com/deatil/go-crc8 => ./pkg/lakego-pkg/go-crc8
 	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
+	github.com/deatil/go-crc32 => ./pkg/lakego-pkg/go-crc32
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
 	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
