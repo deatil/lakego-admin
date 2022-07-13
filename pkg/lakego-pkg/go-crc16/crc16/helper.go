@@ -24,9 +24,109 @@ func Checksum(data []byte, params Params) uint16 {
     return NewTable(params).Checksum(data)
 }
 
+// 生成 IBM
+func ChecksumIBM(data []byte) uint16 {
+    return NewTable(CRC16_IBM).Checksum(data)
+}
+
+// 生成 ARC
+func ChecksumARC(data []byte) uint16 {
+    return NewTable(CRC16_ARC).Checksum(data)
+}
+
+// 生成 AUG_CCITT
+func ChecksumAUG_CCITT(data []byte) uint16 {
+    return NewTable(CRC16_AUG_CCITT).Checksum(data)
+}
+
 // 生成 BUYPASS
 func ChecksumBUYPASS(data []byte) uint16 {
     return NewTable(CRC16_BUYPASS).Checksum(data)
+}
+
+// 生成 CCITT
+func ChecksumCCITT(data []byte) uint16 {
+    return NewTable(CRC16_CCITT).Checksum(data)
+}
+
+// 生成 CCITT_FALSE
+func ChecksumCCITT_FALSE(data []byte) uint16 {
+    return NewTable(CRC16_CCITT_FALSE).Checksum(data)
+}
+
+// 生成 CDMA2000
+func ChecksumCDMA2000(data []byte) uint16 {
+    return NewTable(CRC16_CDMA2000).Checksum(data)
+}
+
+// 生成 DDS_110
+func ChecksumDDS_110(data []byte) uint16 {
+    return NewTable(CRC16_DDS_110).Checksum(data)
+}
+
+// 生成 DECT_R
+func ChecksumDECT_R(data []byte) uint16 {
+    return NewTable(CRC16_DECT_R).Checksum(data)
+}
+
+// 生成 DECT_X
+func ChecksumDECT_X(data []byte) uint16 {
+    return NewTable(CRC16_DECT_X).Checksum(data)
+}
+
+// 生成 DNP
+func ChecksumDNP(data []byte) uint16 {
+    return NewTable(CRC16_DNP).Checksum(data)
+}
+
+// 生成 GENIBUS
+func ChecksumGENIBUS(data []byte) uint16 {
+    return NewTable(CRC16_GENIBUS).Checksum(data)
+}
+
+// 生成 MAXIM
+func ChecksumMAXIM(data []byte) uint16 {
+    return NewTable(CRC16_MAXIM).Checksum(data)
+}
+
+// 生成 MCRF4XX
+func ChecksumMCRF4XX(data []byte) uint16 {
+    return NewTable(CRC16_MCRF4XX).Checksum(data)
+}
+
+// 生成 RIELLO
+func ChecksumRIELLO(data []byte) uint16 {
+    return NewTable(CRC16_RIELLO).Checksum(data)
+}
+
+// 生成 T10_DIF
+func ChecksumT10_DIF(data []byte) uint16 {
+    return NewTable(CRC16_T10_DIF).Checksum(data)
+}
+
+// 生成 TELEDISK
+func ChecksumTELEDISK(data []byte) uint16 {
+    return NewTable(CRC16_TELEDISK).Checksum(data)
+}
+
+// 生成 TMS37157
+func ChecksumTMS37157(data []byte) uint16 {
+    return NewTable(CRC16_TMS37157).Checksum(data)
+}
+
+// 生成 USB
+func ChecksumUSB(data []byte) uint16 {
+    return NewTable(CRC16_USB).Checksum(data)
+}
+
+// 生成 CRC_A
+func ChecksumCRC_A(data []byte) uint16 {
+    return NewTable(CRC16_CRC_A).Checksum(data)
+}
+
+// 生成 KERMIT
+func ChecksumKERMIT(data []byte) uint16 {
+    return NewTable(CRC16_KERMIT).Checksum(data)
 }
 
 // 生成 MODBUS
@@ -42,21 +142,6 @@ func ChecksumX_25(data []byte) uint16 {
 // 生成 XMODEM
 func ChecksumXMODEM(data []byte) uint16 {
     return NewTable(CRC16_XMODEM).Checksum(data)
-}
-
-// 生成 CCITT
-func ChecksumCCITT(data []byte) uint16 {
-    return NewTable(CRC16_CCITT).Checksum(data)
-}
-
-// 生成 CCITT_FALSE
-func ChecksumCCITT_FALSE(data []byte) uint16 {
-    return NewTable(CRC16_CCITT_FALSE).Checksum(data)
-}
-
-// 生成 DNP
-func ChecksumDNP(data []byte) uint16 {
-    return NewTable(CRC16_DNP).Checksum(data)
 }
 
 // =======================

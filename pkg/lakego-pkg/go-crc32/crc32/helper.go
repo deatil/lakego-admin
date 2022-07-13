@@ -9,6 +9,14 @@ func NewCRC32(params ...Params) *Table {
     return NewTable(params...)
 }
 
+// Hash
+func NewCRC32Hash(params Params) Hash32 {
+    table := &Table{}
+    table.params = params
+
+    return NewHash(table.MakeData())
+}
+
 // =======================
 
 // 生成

@@ -254,6 +254,11 @@ func (this *Data) Error(ctx *gin.Context) {
     crc8Data := crc8.ChecksumROHC(crc8Hex)
     crc8Data2 := crc8.ToHexString(crc8Data)
 
+    crc8Hash := crc8.NewCRC8Hash(crc8.CRC8_ROHC)
+    crc8Hash.Write(crc8Hex)
+    crc8HashData := crc8Hash.Sum(nil)
+    crc8HashData2 := hex.EncodeToString(crc8HashData)
+
     // crc16
     // 16进制字符转为 byte
     crc16Hex, _ := hex.DecodeString("010f00")
@@ -261,12 +266,20 @@ func (this *Data) Error(ctx *gin.Context) {
     crc16Data := crc16.ChecksumMODBUS(crc16Hex)
     crc16Data2 := crc16.ToHexString(crc16Data)
 
-    crc16HashData := crc16.NewCRC16Hash(crc16.CRC16_MODBUS).Sum(crc16Hex)
+    crc16Hash := crc16.NewCRC16Hash(crc16.CRC16_MODBUS)
+    crc16Hash.Write(crc16Hex)
+    crc16HashData := crc16Hash.Sum16()
+    crc16HashData2 := crc16.ToHexString(crc16HashData)
 
     // crc32
-    crc32Hex, _ := hex.DecodeString("020fa1")
+    crc32Hex, _ := hex.DecodeString("020fa15673")
     crc32Data := crc32.ChecksumMPEG_2(crc32Hex)
     crc32Data2 := crc32.ToHexString(crc32Data)
+
+    crc32Hash := crc32.NewCRC32Hash(crc32.CRC32_MPEG_2)
+    crc32Hash.Write(crc32Hex)
+    crc32HashData := crc32Hash.Sum(nil)
+    crc32HashData2 := hex.EncodeToString(crc32HashData)
 
     // crc
     crcHex, _ := hex.DecodeString("0208")
@@ -277,11 +290,13 @@ func (this *Data) Error(ctx *gin.Context) {
         "crcData": crcData2,
 
         "crc8Data": crc8Data2,
+        "crc8HashData": crc8HashData2,
 
         "crc16Data": crc16Data2,
-        "crc16HashData": crc16HashData,
+        "crc16HashData": crc16HashData2,
 
         "crc32Data": crc32Data2,
+        "crc32HashData": crc32HashData2,
 
         // "cacheData": cacheData,
         // "redisData": redisData,

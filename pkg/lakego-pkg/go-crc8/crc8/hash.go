@@ -1,18 +1,18 @@
-package crc16
+package crc8
 
 import "hash"
 
-// crc16 hash
-type Hash16 interface {
+// crc8 hash
+type Hash8 interface {
     hash.Hash
-    Sum16() uint16
+    Sum8() uint8
 }
 
 // 大小
-const Size = 2
+const Size = 1
 
 type digest struct {
-    sum   uint16
+    sum   uint8
     table *Table
 }
 
@@ -25,8 +25,8 @@ func (this *digest) Write(data []byte) (int, error) {
 
 // Sum
 func (this *digest) Sum(b []byte) []byte {
-    s := this.Sum16()
-    return append(b, byte(s>>8), byte(s))
+    s := this.Sum8()
+    return append(b, byte(s))
 }
 
 // Reset
@@ -44,13 +44,13 @@ func (this *digest) BlockSize() int {
     return 1
 }
 
-// Sum16
-func (this *digest) Sum16() uint16 {
+// Sum8
+func (this *digest) Sum8() uint8 {
     return this.table.Complete(this.sum)
 }
 
 // 构造函数
-func NewHash(table *Table) Hash16 {
+func NewHash(table *Table) Hash8 {
     h := &digest{
         table: table,
     }
