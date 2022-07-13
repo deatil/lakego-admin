@@ -9,7 +9,7 @@ type Hash8 interface {
 }
 
 // 大小
-const Size = 1
+const Size = 2
 
 type digest struct {
     sum   uint8
