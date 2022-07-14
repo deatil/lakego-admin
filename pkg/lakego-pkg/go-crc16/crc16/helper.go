@@ -144,6 +144,11 @@ func ChecksumXMODEM(data []byte) uint16 {
     return NewTable(CRC16_XMODEM).Checksum(data)
 }
 
+// 生成 XMODEM2
+func ChecksumXMODEM2(data []byte) uint16 {
+    return NewTable(CRC16_XMODEM2).Checksum(data)
+}
+
 // =======================
 
 // 输出四位 16 进制字符

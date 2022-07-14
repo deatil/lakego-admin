@@ -76,6 +76,8 @@ var (
     CRC16_X_25        = Params{0x1021, 0xFFFF, true, true, 0xFFFF}
     // "CRC-16/XMODEM" x16 + x15 + x2 + 1
     CRC16_XMODEM      = Params{0x1021, 0x0000, false, false, 0x0000}
+    // "CRC-16/XMODEM2" x16 + x15 + x2 + 1
+    CRC16_XMODEM2     = Params{0x8408, 0x0000, true, true, 0x0000}
 )
 
 // 表格

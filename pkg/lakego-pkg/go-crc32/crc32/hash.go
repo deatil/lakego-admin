@@ -26,7 +26,8 @@ func (this *digest) Write(data []byte) (int, error) {
 // Sum
 func (this *digest) Sum(b []byte) []byte {
     s := this.Sum32()
-	return append(b, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
+
+    return append(b, byte(s>>24), byte(s>>16), byte(s>>8), byte(s))
 }
 
 // Reset

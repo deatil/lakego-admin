@@ -263,20 +263,20 @@ func (this *Data) Error(ctx *gin.Context) {
     // 16进制字符转为 byte
     crc16Hex, _ := hex.DecodeString("010f00")
     // encodedStr := hex.EncodeToString(b)
-    crc16Data := crc16.ChecksumMODBUS(crc16Hex)
+    crc16Data := crc16.ChecksumXMODEM2(crc16Hex)
     crc16Data2 := crc16.ToHexString(crc16Data)
 
-    crc16Hash := crc16.NewCRC16Hash(crc16.CRC16_MODBUS)
+    crc16Hash := crc16.NewCRC16Hash(crc16.CRC16_XMODEM2)
     crc16Hash.Write(crc16Hex)
-    crc16HashData := crc16Hash.Sum16()
-    crc16HashData2 := crc16.ToHexString(crc16HashData)
+    crc16HashData := crc16Hash.Sum(nil)
+    crc16HashData2 := hex.EncodeToString(crc16HashData)
 
     // crc32
-    crc32Hex, _ := hex.DecodeString("020fa15673")
-    crc32Data := crc32.ChecksumMPEG_2(crc32Hex)
+    crc32Hex, _ := hex.DecodeString("020fa156739865e221")
+    crc32Data := crc32.ChecksumKoopman(crc32Hex)
     crc32Data2 := crc32.ToHexString(crc32Data)
 
-    crc32Hash := crc32.NewCRC32Hash(crc32.CRC32_MPEG_2)
+    crc32Hash := crc32.NewCRC32Hash(crc32.CRC32_Koopman)
     crc32Hash.Write(crc32Hex)
     crc32HashData := crc32Hash.Sum(nil)
     crc32HashData2 := hex.EncodeToString(crc32HashData)
@@ -285,6 +285,9 @@ func (this *Data) Error(ctx *gin.Context) {
     crcHex, _ := hex.DecodeString("0208")
     crcData := crc.Crc6Itu(crcHex)
     crcData2 := crc.ToHexString(crcData, "crc6")
+
+    // hashCrc32Data
+    hashCrc32Data := hash.CRC32Koopman(string(crc32Hex))
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "crcData": crcData2,
@@ -297,6 +300,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "crc32Data": crc32Data2,
         "crc32HashData": crc32HashData2,
+
+        "hashCrc32Data": hashCrc32Data,
 
         // "cacheData": cacheData,
         // "redisData": redisData,

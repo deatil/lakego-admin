@@ -4,6 +4,7 @@
 ### 项目介绍
 
 *  crc32 相关算法
+*  可用检验方法：`ChecksumCRC32`, `ChecksumMPEG_2`, `ChecksumBZIP2`, `ChecksumPOSIX`, `ChecksumJAMCRC`, `ChecksumCRC32A`, `ChecksumIEEE`, `ChecksumCastagnoli`, `ChecksumCRC32C`, `ChecksumKoopman`
 
 
 ### 下载安装

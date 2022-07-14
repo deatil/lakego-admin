@@ -4,6 +4,7 @@
 ### 项目介绍
 
 *  crc8 相关算法
+*  可用检验方法：`ChecksumCRC8`, `ChecksumCDMA2000`, `ChecksumDARC`, `ChecksumDVB_S2`, `ChecksumEBU`, `ChecksumI_CODE`, `ChecksumITU`, `ChecksumMAXIM`, `ChecksumROHC`, `ChecksumWCDMA`
 
 
 ### 下载安装

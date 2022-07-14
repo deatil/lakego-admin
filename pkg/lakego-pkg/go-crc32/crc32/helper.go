@@ -49,6 +49,31 @@ func ChecksumJAMCRC(data []byte) uint32 {
     return NewTable(CRC32_JAMCRC).Checksum(data)
 }
 
+// 生成 CRC32A
+func ChecksumCRC32A(data []byte) uint32 {
+    return NewTable(CRC32_CRC32A).Checksum(data)
+}
+
+// 生成 IEEE
+func ChecksumIEEE(data []byte) uint32 {
+    return NewTable(CRC32_IEEE).Checksum(data)
+}
+
+// 生成 Castagnoli
+func ChecksumCastagnoli(data []byte) uint32 {
+    return NewTable(CRC32_Castagnoli).Checksum(data)
+}
+
+// 生成 CRC32C
+func ChecksumCRC32C(data []byte) uint32 {
+    return NewTable(CRC32_CRC32C).Checksum(data)
+}
+
+// 生成 Koopman
+func ChecksumKoopman(data []byte) uint32 {
+    return NewTable(CRC32_Koopman).Checksum(data)
+}
+
 // =======================
 
 // 输出四位 16 进制字符
