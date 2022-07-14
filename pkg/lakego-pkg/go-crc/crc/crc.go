@@ -1,5 +1,33 @@
 package crc
 
+// Name:    Crc3     x^3 + x^1 + x^0
+// Poly:    0x03
+// Init:    0x00
+// Refin:   False
+// Refout:  False
+// Xorout:  0x00
+func Crc3(data []byte) uint8 {
+    // 5 = 8 - 3
+    var poly = uint8(0x03) << 5
+
+    var i uint8
+    var crc = uint8(0x00)
+
+    for _, d := range data {
+        crc ^= d
+        for i = 0; i < 8; i++ {
+            if (crc & 0x80) != 0 {
+                crc = (crc << 1) ^ poly
+            } else {
+                crc <<= 1
+            }
+        }
+    }
+
+    // 计算出的 crc 在高5位，要右移恢复
+    return crc >> 5
+}
+
 // Name:    CRC-4/ITU           x4+x+1
 // Poly:    0x03
 // Init:    0x00

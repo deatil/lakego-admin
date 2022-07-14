@@ -8,9 +8,9 @@ import (
 func ToHexString(data uint8, typ ...string) string {
     if len(typ) > 0 {
         switch typ[0] {
-            case "crc4":
+            case "crc3", "crc4":
                 return fmt.Sprintf("%01X", data)
-            case "crc5", "crc6", "crc7":
+            case "crc5", "crc6", "crc7", "lrc", "bcc":
                 return fmt.Sprintf("%02X", data)
         }
     }
@@ -22,7 +22,7 @@ func ToHexString(data uint8, typ ...string) string {
 func ToBinString(data uint8, typ ...string) string {
     if len(typ) > 0 {
         switch typ[0] {
-            case "crc4":
+            case "crc3", "crc4":
                 return fmt.Sprintf("%04b", data)
             case "crc5":
                 return fmt.Sprintf("%05b", data)
@@ -30,6 +30,8 @@ func ToBinString(data uint8, typ ...string) string {
                 return fmt.Sprintf("%06b", data)
             case "crc7":
                 return fmt.Sprintf("%07b", data)
+            case "lrc", "bcc":
+                return fmt.Sprintf("%08b", data)
         }
     }
 
