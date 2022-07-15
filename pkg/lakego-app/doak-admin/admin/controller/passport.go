@@ -228,10 +228,10 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
 // @Summary 当前账号退出
 // @Description 当前账号退出
 // @Tags 登陆相关
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param Authorization header string false "Bearer 用户令牌"
-// @Param refresh_token formData string true "刷新 Token"
+// @Param Authorization header   string false "Bearer 用户令牌"
+// @Param refresh_token formData string true  "刷新 Token"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /passport/logout [delete]
 // @Security Bearer

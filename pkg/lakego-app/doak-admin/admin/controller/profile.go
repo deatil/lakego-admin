@@ -24,7 +24,7 @@ type Profile struct {
 // @Summary 个人信息详情
 // @Description 个人信息详情
 // @Tags 个人信息
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile [get]
@@ -46,10 +46,10 @@ func (this *Profile) Index(ctx *router.Context) {
 // @Summary 修改个人信息详情
 // @Description 修改个人信息详情
 // @Tags 个人信息
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param nickname formData string true "昵称"
-// @Param email formData string true "邮箱"
+// @Param nickname  formData string true "昵称"
+// @Param email     formData string true "邮箱"
 // @Param introduce formData string true "简介"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile [put]
@@ -99,7 +99,7 @@ func (this *Profile) Update(ctx *router.Context) {
 // @Summary 修改个人头像
 // @Description 修改个人头像
 // @Tags 个人信息
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param avatar formData string true "头像数据ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -148,10 +148,10 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
 // @Summary 修改密码
 // @Description 修改密码
 // @Tags 个人信息
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param oldpassword formData string true "旧密码"
-// @Param newpassword formData string true "新密码"
+// @Param oldpassword         formData string true "旧密码"
+// @Param newpassword         formData string true "新密码"
 // @Param newpassword_confirm formData string true "确认新密码"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile/password [patch]
@@ -223,7 +223,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
 // @Summary 个人权限列表
 // @Description 个人权限列表
 // @Tags 个人信息
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /profile/rules [get]

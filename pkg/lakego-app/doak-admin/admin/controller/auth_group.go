@@ -29,15 +29,15 @@ type AuthGroup struct {
 // @Summary 权限分组列表
 // @Description 权限分组列表
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param order query string false "排序，示例：id__DESC"
+// @Param order      query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
 // @Param start_time query string false "开始时间"
-// @Param end_time query string false "结束时间"
-// @Param status query string false "状态"
-// @Param start query string false "开始数据量"
-// @Param limit query string false "每页数量"
+// @Param end_time   query string false "结束时间"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group [get]
 // @Security Bearer
@@ -125,7 +125,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
 // @Summary 权限分组树结构
 // @Description 权限分组树结构
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/tree [get]
@@ -157,9 +157,9 @@ func (this *AuthGroup) IndexTree(ctx *router.Context) {
 // @Summary 权限分组子列表
 // @Description 权限分组子列表
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id query string true "权限分组ID"
+// @Param id   query string true  "权限分组ID"
 // @Param type query string false "数据类型，可选值：list | ids"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/children [get]
@@ -190,7 +190,7 @@ func (this *AuthGroup) IndexChildren(ctx *router.Context) {
 // @Summary 权限分组详情
 // @Description 权限分组详情
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -256,13 +256,13 @@ func (this *AuthGroup) Detail(ctx *router.Context) {
 // @Summary 权限分组添加
 // @Description 权限分组添加
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param parentid formData string true "父级ID"
-// @Param title formData string true "名称"
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
 // @Param description formData string false "描述"
-// @Param listorder formData string true "排序"
-// @Param status formData string true "状态"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group [post]
 // @Security Bearer
@@ -314,14 +314,14 @@ func (this *AuthGroup) Create(ctx *router.Context) {
 // @Summary 权限分组更新
 // @Description 权限分组更新
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "权限分组ID"
-// @Param parentid formData string true "父级ID"
-// @Param title formData string true "名称"
+// @Param id          path     string true "权限分组ID"
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
 // @Param description formData string false "描述"
-// @Param listorder formData string true "排序"
-// @Param status formData string true "状态"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id} [put]
 // @Security Bearer
@@ -387,7 +387,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
 // @Summary 权限分组删除
 // @Description 权限分组删除
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -441,9 +441,9 @@ func (this *AuthGroup) Delete(ctx *router.Context) {
 // @Summary 权限分组排序
 // @Description 权限分组排序
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "权限分组ID"
+// @Param id        path     string true "权限分组ID"
 // @Param listorder formData string true "排序值"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/sort [patch]
@@ -497,7 +497,7 @@ func (this *AuthGroup) Listorder(ctx *router.Context) {
 // @Summary 权限分组启用
 // @Description 权限分组启用
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -549,7 +549,7 @@ func (this *AuthGroup) Enable(ctx *router.Context) {
 // @Summary 权限分组禁用
 // @Description 权限分组禁用
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限分组ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -601,9 +601,9 @@ func (this *AuthGroup) Disable(ctx *router.Context) {
 // @Summary 权限分组授权
 // @Description 权限分组授权
 // @Tags 权限分组
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "权限分组ID"
+// @Param id     path     string true "权限分组ID"
 // @Param access formData string true "权限列表，半角逗号分隔"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/group/{id}/access [patch]

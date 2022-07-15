@@ -5,6 +5,8 @@
 
 *  crc 相关算法
 *  可用检验方法：`Crc3`, `Crc4Itu`, `Crc5Epc`, `Crc5Itu`, `Crc5Usb`, `Crc6Itu`, `Crc7Mmc`, `BCC`, `LRC`
+*  `crc24` 可用检验方法：`ChecksumCRC24`, `ChecksumFLEXRAY_A`, `ChecksumFLEXRAY_B`
+*  `crc40` 可用检验方法：`ChecksumGSM`
 
 
 ### 下载安装

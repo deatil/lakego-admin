@@ -28,16 +28,16 @@ type AuthRule struct {
 // @Summary 权限菜单列表
 // @Description 权限菜单列表
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param order query string false "排序，示例：id__DESC"
+// @Param order      query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
-// @Param method query string false "请求方式"
+// @Param method     query string false "请求方式"
 // @Param start_time query string false "开始时间"
-// @Param end_time query string false "结束时间"
-// @Param status query string false "状态"
-// @Param start query string false "开始数据量"
-// @Param limit query string false "每页数量"
+// @Param end_time   query string false "结束时间"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule [get]
 // @Security Bearer
@@ -132,7 +132,7 @@ func (this *AuthRule) Index(ctx *router.Context) {
 // @Summary 权限菜单树结构
 // @Description 权限菜单树结构
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule/tree [get]
@@ -164,9 +164,9 @@ func (this *AuthRule) IndexTree(ctx *router.Context) {
 // @Summary 权限菜单子列表
 // @Description 权限菜单子列表
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id query string true "权限菜单ID"
+// @Param id   query string true "权限菜单ID"
 // @Param type query string false "数据类型，可选值：list | ids"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule/children [get]
@@ -197,7 +197,7 @@ func (this *AuthRule) IndexChildren(ctx *router.Context) {
 // @Summary 权限菜单详情
 // @Description 权限菜单详情
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限菜单ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -233,16 +233,16 @@ func (this *AuthRule) Detail(ctx *router.Context) {
 // @Summary 权限菜单添加
 // @Description 权限菜单添加
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param parentid formData string true "父级ID"
-// @Param title formData string true "名称"
-// @Param url formData string true "URL链接"
-// @Param method formData string true "请求方式"
-// @Param slug formData string true "别名 Slug"
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
+// @Param url         formData string true "URL链接"
+// @Param method      formData string true "请求方式"
+// @Param slug        formData string true "别名 Slug"
 // @Param description formData string false "描述"
-// @Param listorder formData string true "排序"
-// @Param status formData string true "状态"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule [post]
 // @Security Bearer
@@ -307,15 +307,15 @@ func (this *AuthRule) Create(ctx *router.Context) {
 // @Tags 权限菜单
 // @Accept application/json
 // @Produce application/json
-// @Param id path string true "权限菜单ID"
-// @Param parentid formData string true "父级ID"
-// @Param title formData string true "名称"
-// @Param url formData string true "URL链接"
-// @Param method formData string true "请求方式"
-// @Param slug formData string true "别名 Slug"
+// @Param id          path     string true "权限菜单ID"
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
+// @Param url         formData string true "URL链接"
+// @Param method      formData string true "请求方式"
+// @Param slug        formData string true "别名 Slug"
 // @Param description formData string false "描述"
-// @Param listorder formData string true "排序"
-// @Param status formData string true "状态"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule/{id} [put]
 // @Security Bearer
@@ -387,7 +387,7 @@ func (this *AuthRule) Update(ctx *router.Context) {
 // @Summary 权限菜单删除
 // @Description 权限菜单删除
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限菜单ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -441,9 +441,9 @@ func (this *AuthRule) Delete(ctx *router.Context) {
 // @Summary 权限菜单排序
 // @Description 权限菜单排序
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "权限菜单ID"
+// @Param id        path     string true "权限菜单ID"
 // @Param listorder formData string true "排序值"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /auth/rule/{id}/sort [patch]
@@ -497,7 +497,7 @@ func (this *AuthRule) Listorder(ctx *router.Context) {
 // @Summary 权限菜单启用
 // @Description 权限菜单启用
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限菜单ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -549,7 +549,7 @@ func (this *AuthRule) Enable(ctx *router.Context) {
 // @Summary 权限菜单禁用
 // @Description 权限菜单禁用
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "权限菜单ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -601,7 +601,7 @@ func (this *AuthRule) Disable(ctx *router.Context) {
 // @Summary 清空特定ID权限
 // @Description 清空特定ID权限
 // @Tags 权限菜单
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param ids formData string true "权限ID列表"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"

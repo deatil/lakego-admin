@@ -25,7 +25,7 @@ type System struct {
 // @Summary 系统信息
 // @Description 系统信息
 // @Tags 系统
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /system/info [get]

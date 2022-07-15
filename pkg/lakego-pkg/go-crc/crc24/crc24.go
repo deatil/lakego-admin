@@ -1,10 +1,10 @@
-package crc32
+package crc24
 
 import "math/bits"
 
 // 参数
 // NAME：参数模型名称。
-// WIDTH：宽度，即CRC比特数。位数为：32
+// WIDTH：宽度，即CRC比特数
 type Params struct {
     // 生成项的简写，以16进制表示。
     // 例如：CRC-32 即是0x04C11DB7，
@@ -26,37 +26,12 @@ type Params struct {
 
 // 类型列表
 var (
-    // "CRC-32" x32 + x26 + x23 + x22 + x16 + x12 + x11 + x10 + x8 + x7 + x5 + x4 + x2 + x + 1
-    CRC32        = Params{0x04C11DB7, 0xFFFFFFFF, true, true, 0xFFFFFFFF}
-    // "CRC-32/MPEG-2" x32 + x26 + x23 + x22 + x16 + x12 + x11 + x10 + x8 + x7 + x5 + x4 + x2 + x + 1
-    CRC32_MPEG_2 = Params{0x04C11DB7, 0xFFFFFFFF, false, false, 0x00000000}
-    // "CRC-32/BZIP2" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_BZIP2  = Params{0x04C11DB7, 0xFFFFFFFF, false, false, 0xFFFFFFFF}
-    // "CRC-32/POSIX" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_POSIX  = Params{0x04C11DB7, 0x00000000, false, false, 0xFFFFFFFF}
-    // "CRC-32/CKSUM" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_CKSUM  = CRC32_POSIX
-    // "CRC-32/JAMCRC" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_JAMCRC = Params{0x04C11DB7, 0xFFFFFFFF, true, true, 0x00000000}
-    // "CRC-32/CRC32A" (ITU I.363.5 algorithm, popularized by BZIP2) checksum.
-    // X32+X26+X23+X22+X16+X12+X11+X10+X8+X7+X5+X4+X2+X+1
-    CRC32_CRC32A = CRC32_BZIP2
-
-    // "CRC-32/IEEE" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_IEEE       = CRC32
-    // "CRC-32/Castagnoli" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_Castagnoli = Params{0x1EDC6F41, 0xFFFFFFFF, true, true, 0xFFFFFFFF}
-    // "CRC-32/CRC32C" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_CRC32C     = CRC32_Castagnoli
-    // "CRC-32/Koopman" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_Koopman    = Params{0x741B8CD7, 0xFFFFFFFF, true, true, 0xFFFFFFFF}
-
-    // "CRC-32/XFER" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_XFER   = Params{0x000000AF, 0x00000000, false, false, 0x00000000}
-    // "CRC-32/CRC32Q" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_CRC32Q = Params{0x814141AB, 0x00000000, false, false, 0x00000000}
-    // "CRC-32/CRC32D" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
-    CRC32_CRC32D = Params{0xA833982B, 0xFFFFFFFF, true, true, 0xFFFFFFFF}
+    // "CRC-24"
+    CRC24           = Params{0x864CFB, 0xB704CE, false, false, 0x000000}
+    // "CRC-24/FLEXRAY-A"
+    CRC24_FLEXRAY_A = Params{0x5D6DCB, 0xFEDCBA, false, false, 0x000000}
+    // "CRC-24/FLEXRAY-B"
+    CRC24_FLEXRAY_B = Params{0x5D6DCB, 0xABCDEF, false, false, 0x000000}
 )
 
 // 表格
@@ -92,10 +67,10 @@ func (this *Table) GetData() [256]uint32 {
 // 生成数值
 func (this *Table) MakeData() *Table {
     for n := 0; n < 256; n++ {
-        crc := uint32(n) << 24
+        crc := uint32(n) << 16
 
         for i := 0; i < 8; i++ {
-            bit := (crc & 0x80000000) != 0
+            bit := (crc & 0x800000) != 0
             crc <<= 1
             if bit {
                 crc ^= this.params.Poly
@@ -120,7 +95,7 @@ func (this *Table) Update(crc uint32, data []byte) uint32 {
             d = bits.Reverse8(d)
         }
 
-        crc = (crc << 8) ^ this.data[byte(crc >> 24) ^ d]
+        crc = (crc << 8) ^ this.data[byte(crc >> 16) ^ d]
     }
 
     return crc

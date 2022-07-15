@@ -24,7 +24,7 @@ type Params struct {
     XorOut uint16
 }
 
-// crc16 类型列表
+// 类型列表
 var (
     // "CRC-16/IBM" x16 + x15 + x2 + 1
     CRC16_IBM         = Params{0x8005, 0x0000, true, true, 0x0000}

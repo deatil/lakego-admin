@@ -74,14 +74,34 @@ func ChecksumKoopman(data []byte) uint32 {
     return NewTable(CRC32_Koopman).Checksum(data)
 }
 
+// 生成 CKSUM
+func ChecksumCKSUM(data []byte) uint32 {
+    return NewTable(CRC32_CKSUM).Checksum(data)
+}
+
+// 生成 XFER
+func ChecksumXFER(data []byte) uint32 {
+    return NewTable(CRC32_XFER).Checksum(data)
+}
+
+// 生成 CRC32D
+func ChecksumCRC32D(data []byte) uint32 {
+    return NewTable(CRC32_CRC32D).Checksum(data)
+}
+
+// 生成 CRC32Q
+func ChecksumCRC32Q(data []byte) uint32 {
+    return NewTable(CRC32_CRC32Q).Checksum(data)
+}
+
 // =======================
 
-// 输出四位 16 进制字符
+// 输出 16 进制字符
 func ToHexString(data uint32) string {
     return fmt.Sprintf("%08X", data)
 }
 
-// 输出四位 16 进制字符，高低字节对调
+// 输出 16 进制字符，高低字节对调
 func ToReverseHexString(data uint32) string {
     data = (data << 16) ^ (data >> 16)
 

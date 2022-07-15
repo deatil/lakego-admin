@@ -39,15 +39,15 @@ type Admin struct {
 // @Summary 账号列表
 // @Description 管理员账号列表
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param order query string false "排序，示例：id__DESC"
+// @Param order      query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
 // @Param start_time query string false "开始时间"
-// @Param end_time query string false "结束时间"
-// @Param status query string false "状态"
-// @Param start query string false "开始数据量"
-// @Param limit query string false "每页数量"
+// @Param end_time   query string false "结束时间"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin [get]
 // @Security Bearer
@@ -158,7 +158,7 @@ func (this *Admin) Index(ctx *router.Context) {
 // @Summary 账号详情
 // @Description 管理员账号详情
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -223,7 +223,7 @@ func (this *Admin) Detail(ctx *router.Context) {
 // @Summary 账号权限
 // @Description 账号权限
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -274,7 +274,7 @@ func (this *Admin) Rules(ctx *router.Context) {
 // @Summary 添加账号所需分组
 // @Description 添加账号所需分组
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/groups [get]
@@ -334,13 +334,13 @@ func (this *Admin) Groups(ctx *router.Context) {
 // @Summary 添加账号
 // @Description 添加账号
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param name formData string true "名称"
-// @Param email formData string true "邮箱"
-// @Param nickname formData string true "昵称"
+// @Param name      formData string true "名称"
+// @Param email     formData string true "邮箱"
+// @Param nickname  formData string true "昵称"
 // @Param introduce formData string true "描述"
-// @Param status formData string true "状态"
+// @Param status    formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin [post]
 // @Security Bearer
@@ -405,14 +405,14 @@ func (this *Admin) Create(ctx *router.Context) {
 // @Summary 更新账号
 // @Description 管理员更新信息
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "管理员ID"
-// @Param name formData string true "名称"
-// @Param email formData string true "邮箱"
-// @Param nickname formData string true "昵称"
+// @Param id        path string true "管理员ID"
+// @Param name      formData string true "名称"
+// @Param email     formData string true "邮箱"
+// @Param nickname  formData string true "昵称"
 // @Param introduce formData string true "描述"
-// @Param status formData string true "状态"
+// @Param status    formData string true "状态"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id} [put]
 // @Security Bearer
@@ -500,7 +500,7 @@ func (this *Admin) Update(ctx *router.Context) {
 // @Summary 删除账号
 // @Description 管理员账号删除
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -561,9 +561,9 @@ func (this *Admin) Delete(ctx *router.Context) {
 // @Summary 修改账号头像
 // @Description 修改管理员账号头像
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "管理员ID"
+// @Param id     path     string true "管理员ID"
 // @Param avatar formData string true "头像数据ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/avatar [patch]
@@ -626,9 +626,9 @@ func (this *Admin) UpdateAvatar(ctx *router.Context) {
 // @Summary 修改账号密码
 // @Description 修改管理员账号密码
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "管理员ID"
+// @Param id       path string true "管理员ID"
 // @Param password formData string true "新密码"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/password [patch]
@@ -695,7 +695,7 @@ func (this *Admin) UpdatePasssword(ctx *router.Context) {
 // @Summary 账号启用
 // @Description 管理员账号启用
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -758,7 +758,7 @@ func (this *Admin) Enable(ctx *router.Context) {
 // @Summary 账号禁用
 // @Description 管理员账号禁用
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "管理员ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -821,7 +821,7 @@ func (this *Admin) Disable(ctx *router.Context) {
 // @Summary 账号退出
 // @Description 管理员账号退出
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param refreshToken path string true "刷新 token"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -883,9 +883,9 @@ func (this *Admin) Logout(ctx *router.Context) {
 // @Summary 账号授权
 // @Description 管理员账号授权
 // @Tags 管理员
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param id path string true "刷新 token"
+// @Param id     path string true "刷新 token"
 // @Param access formData string true "权限列表，半角逗号分隔"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /admin/{id}/access [patch]

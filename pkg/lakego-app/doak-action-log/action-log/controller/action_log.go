@@ -25,16 +25,16 @@ type ActionLog struct {
 // @Summary 操作日志列表
 // @Description 操作日志列表
 // @Tags 操作日志
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param searchword query string false "搜索关键字"
-// @Param order query string false "排序，示例：id__DESC"
+// @Param order      query string false "排序，示例：id__DESC"
 // @Param start_time query string false "开始时间"
-// @Param end_time query string false "结束时间"
-// @Param method query string false "请求方法"
-// @Param status query string false "状态"
-// @Param start query string false "开始数据量"
-// @Param limit query string false "每页数量"
+// @Param end_time   query string false "结束时间"
+// @Param method     query string false "请求方法"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /action-log [get]
 // @Security Bearer
@@ -129,7 +129,7 @@ func (this *ActionLog) Index(ctx *router.Context) {
 // @Summary 清除 30 天前的日志数据
 // @Description 清除 30 天前的日志数据
 // @Tags 操作日志
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /action-log/clear [delete]

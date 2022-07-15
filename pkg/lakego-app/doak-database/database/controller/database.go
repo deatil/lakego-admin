@@ -22,7 +22,7 @@ type Database struct {
 // @Summary 数据库列表
 // @Description 数据库列表
 // @Tags 数据库管理
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /database [get]
@@ -40,7 +40,7 @@ func (this *Database) Index(ctx *router.Context) {
 // @Summary 数据库表详情
 // @Description 数据库表详情
 // @Tags 数据库管理
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param name path string true "数据表名"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -65,7 +65,7 @@ func (this *Database) Detail(ctx *router.Context) {
 // @Summary 优化数据表
 // @Description 优化数据表
 // @Tags 数据库管理
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param name path string true "数据表名"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -92,7 +92,7 @@ func (this *Database) Optimize(ctx *router.Context) {
 // @Summary 修复数据表
 // @Description 修复数据表
 // @Tags 数据库管理
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param name path string true "数据表名"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"

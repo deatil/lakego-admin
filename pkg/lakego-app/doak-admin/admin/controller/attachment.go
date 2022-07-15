@@ -29,15 +29,15 @@ type Attachment struct {
 // @Summary 附件列表
 // @Description 附件列表
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param order query string false "排序，示例：id__DESC"
+// @Param order      query string false "排序，示例：id__DESC"
 // @Param searchword query string false "搜索关键字"
 // @Param start_time query string false "开始时间"
-// @Param end_time query string false "结束时间"
-// @Param status query string false "状态"
-// @Param start query string false "开始数据量"
-// @Param limit query string false "每页数量"
+// @Param end_time   query string false "结束时间"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /attachment [get]
 // @Security Bearer
@@ -132,7 +132,7 @@ func (this *Attachment) Index(ctx *router.Context) {
 // @Summary 附件详情
 // @Description 附件详情
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -171,7 +171,7 @@ func (this *Attachment) Detail(ctx *router.Context) {
 // @Summary 附件删除
 // @Description 附件删除
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -220,7 +220,7 @@ func (this *Attachment) Delete(ctx *router.Context) {
 // @Summary 附件启用
 // @Description 附件启用
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -270,7 +270,7 @@ func (this *Attachment) Enable(ctx *router.Context) {
 // @Summary 附件禁用
 // @Description 附件禁用
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -320,7 +320,7 @@ func (this *Attachment) Disable(ctx *router.Context) {
 // @Summary 附件下载码
 // @Description 附件下载码
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
 // @Param id path string true "附件ID"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
@@ -360,7 +360,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
 // @Summary 附件下载
 // @Description 附件下载
 // @Tags 附件
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/force-download
 // @Param code path string true "附件下载码"
 // @Success 200 {string} string ""

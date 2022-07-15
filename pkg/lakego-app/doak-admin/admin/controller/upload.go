@@ -27,10 +27,10 @@ type Upload struct {
 // @Summary 上传文件
 // @Description 上传文件
 // @Tags 上传
-// @Accept application/json
+// @Accept  application/json
 // @Produce application/json
-// @Param type query string false "文件类型，可选数据：image | media | file。默认：file"
-// @Param file formData string true "文件数据"
+// @Param type query    string false "文件类型，可选数据：image | media | file。默认：file"
+// @Param file formData string true  "文件数据"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
 // @Router /upload/file [post]
 // @Security Bearer
