@@ -46,7 +46,13 @@ func (this Padding) PKCS7UnPadding(src []byte) []byte {
     }
 
     count := int(src[n-1])
-    text := src[:n-count]
+
+    num := n-count
+    if num < 0 {
+        return src
+    }
+
+    text := src[:num]
     return text
 }
 
@@ -114,7 +120,13 @@ func (this Padding) X923UnPadding(src []byte) []byte {
     }
 
     count := int(src[n-1])
-    text := src[:n-count]
+
+    num := n-count
+    if num < 0 {
+        return src
+    }
+
+    text := src[:num]
     return text
 }
 
@@ -151,7 +163,13 @@ func (this Padding) ISO10126UnPadding(src []byte) []byte {
     }
 
     count := int(src[n-1])
-    text := src[:n-count]
+
+    num := n-count
+    if num < 0 {
+        return src
+    }
+
+    text := src[:num]
     return text
 }
 

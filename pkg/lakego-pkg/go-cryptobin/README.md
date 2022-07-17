@@ -55,43 +55,56 @@ func main() {
 
     // =====
 
-    // Des 加密测试
-    cypt := cryptobin.
+    // Des-CBC 加密测试
+    cypt2 := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12").
+        SetIv("dfertf12").
         Des().
-        ECB().
+        CBC().
         PKCS7Padding().
         Encrypt().
         ToBase64String()
-    cyptde := cryptobin.
-        FromBase64String("bvifBivJ1GEJ0N/UiZry/A==").
+    cyptde2 := cryptobin.
+        FromBase64String("W9LgNgPy/GBU635SnbdSgA==").
         SetKey("dfertf12").
+        SetIv("dfertf12").
         Des().
-        ECB().
+        CBC().
         PKCS7Padding().
         Decrypt().
         ToString()
 
     // =====
 
-    // TriDes 加密测试
-    cypt := cryptobin.
+    // TriDes-CFB 加密测试
+    var cypt2Err error
+    var cypt2Err2 error
+    cypt2 := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
         TriDes().
-        ECB().
+        CFB().
         PKCS7Padding().
         Encrypt().
-        ToHexString()
-    cyptde := cryptobin.
-        FromHexString("6ef89f062bc9d46109d0dfd4899af2fc").
+        OnError(func(err error) {
+            cypt2Err = err
+        }).
+        ToBase64String()
+    cyptde2 := cryptobin.
+        FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
         SetKey("dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
         TriDes().
-        ECB().
+        CFB().
         PKCS7Padding().
         Decrypt().
+        OnError(func(err error) {
+            cypt2Err2 = err
+        }).
         ToString()
+
 
 }
 

@@ -1,4 +1,4 @@
-package crc
+package lrc
 
 // LRC 算法
 func LRC(data []byte) uint8 {

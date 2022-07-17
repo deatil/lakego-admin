@@ -6,6 +6,7 @@ import (
 
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-crc/crc"
+    "github.com/deatil/go-crc/crc12"
     "github.com/deatil/go-crc8/crc8"
     "github.com/deatil/go-crc16/crc16"
     "github.com/deatil/go-crc32/crc32"
@@ -289,8 +290,21 @@ func (this *Data) Error(ctx *gin.Context) {
     // hashCrc32Data
     hashCrc32Data := hash.CRC32Koopman(string(crc32Hex))
 
+    // crc12
+    crc12Hex, _ := hex.DecodeString("31303432")
+    crc12Data := crc12.ChecksumCRC12(crc12Hex)
+    crc12Data2 := crc12.ToHexString(crc12Data) // 3CD
+
+    crc12Hash := crc12.NewCRC12Hash(crc12.CRC12)
+    crc12Hash.Write(crc12Hex)
+    crc12HashData := crc12Hash.Sum(nil)
+    crc12HashData2 := crc12.ToHexStringFromBytes(crc12HashData)
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "crcData": crcData2,
+
+        "crc12Data": crc12Data2,
+        "crc12HashData": crc12HashData2,
 
         "crc8Data": crc8Data2,
         "crc8HashData": crc8HashData2,

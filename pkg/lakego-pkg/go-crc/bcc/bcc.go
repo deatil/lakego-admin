@@ -1,4 +1,4 @@
-package crc
+package bcc
 
 // BCC 算法
 func BCC(data []byte) uint8 {
