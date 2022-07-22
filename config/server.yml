@@ -19,6 +19,12 @@ types:
     addr: ":8080"
     # 运行方式 gin | grace
     server-type: "grace"
+    # 读取超时时间
+    grace-read-timeout: "20s"
+    # 读取超时时间
+    grace-write-timeout: "20s"
+    # 超时时间
+    grace-timeout: "5s"
 
   # https
   tls:

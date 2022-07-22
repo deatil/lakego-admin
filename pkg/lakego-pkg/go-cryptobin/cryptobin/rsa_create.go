@@ -10,11 +10,11 @@ import (
 
 // PKCS1 私钥
 func (this Rsa) CreatePKCS1() Rsa {
-    X509PrivateKey := x509.MarshalPKCS1PrivateKey(this.privateKey)
+    x509PrivateKey := x509.MarshalPKCS1PrivateKey(this.privateKey)
 
     privateBlock := &pem.Block{
         Type: "RSA PRIVATE KEY",
-        Bytes: X509PrivateKey,
+        Bytes: x509PrivateKey,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)

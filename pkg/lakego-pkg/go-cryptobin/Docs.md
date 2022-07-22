@@ -120,6 +120,42 @@ func main() {
 
     // =====
 
+    // Rsa 加密解密 - 公钥加密/私钥解密
+    rsa := cryptobin.NewRsa()
+
+    enkey, _ := fs.Get("./runtime/key/rsa_key.pub")
+    cypt := rsa.
+        FromString("test-pass").
+        FromPublicKey([]byte(enkey)).
+        Encrypt().
+        ToBase64String()
+    dekey, _ := fs.Get("./runtime/key/rsa_key")
+    cyptde := rsa.
+        FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
+        FromPrivateKey([]byte(dekey)).
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // Rsa 加密解密 - 私钥加密/公钥解密
+    rsa := cryptobin.NewRsa()
+
+    enkey, _ := fs.Get("./runtime/key/rsa_key")
+    cypt := rsa.
+        FromString("test-pass").
+        FromPrivateKey([]byte(enkey)).
+        PriKeyEncrypt().
+        ToBase64String()
+    dekey, _ := fs.Get("./runtime/key/rsa_key.pub")
+    cyptde := rsa.
+        FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
+        FromPublicKey([]byte(dekey)).
+        PubKeyDecrypt().
+        ToString()
+
+    // =====
+
     // Ecdsa
     ecdsa := cryptobin.NewEcdsa()
     rsaPriKey := ecdsa.
@@ -478,6 +514,34 @@ func main() {
         FromBase64String(sm2signdata).
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
         ToVeryed()
+
+    // ca 证书生成
+    caSubj := &cryptobin.CAPkixName{
+        CommonName:    "github.com",
+        Organization:  []string{"Company, INC."},
+        Country:       []string{"US"},
+        Province:      []string{""},
+        Locality:      []string{"San Francisco"},
+        StreetAddress: []string{"Golden Gate Bridge"},
+        PostalCode:    []string{"94016"},
+    }
+    ca := cryptobin.NewCA().GenerateKey(4096)
+
+    // ca
+    ca1 := ca.MakeCa(caSubj, 1)
+    ca1String := ca1.CreateCA().ToKeyString()
+    ca1KeyString := ca1.CreatePrivateKey().ToKeyString()
+
+    // tls
+    ca1Csr := ca1.GetCsr()
+    ca2 := ca.MakeTLS(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{})
+    ca2String := ca2.CreateTLS(ca1Csr).ToKeyString()
+    ca2KeyString := ca2.CreatePrivateKey().ToKeyString()
+
+    // fs.Put("./runtime/key/ca.cst", ca1String)
+    // fs.Put("./runtime/key/ca.key", ca1KeyString)
+    // fs.Put("./runtime/key/ca_tls.cst", ca2String)
+    // fs.Put("./runtime/key/ca_tls.key", ca2KeyString)
 
 }
 

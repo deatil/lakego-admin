@@ -8,7 +8,6 @@ import (
     "fmt"
     "log"
     "sync"
-    "time"
     "errors"
     "context"
 
@@ -442,11 +441,13 @@ func (this *App) serverRun() {
 
 // 优雅地关机
 func (this *App) graceRun(address string) {
+    conf := this.Config
+
     srv := &http.Server{
         Addr:           address,
         Handler:        this.RouteEngine,
-        ReadTimeout:    20 * time.Second,
-        WriteTimeout:   20 * time.Second,
+        ReadTimeout:    conf.GetDuration("types.http.grace-read-timeout"),
+        WriteTimeout:   conf.GetDuration("types.http.grace-write-timeout"),
         MaxHeaderBytes: 1 << 20,
     }
 
@@ -463,7 +464,7 @@ func (this *App) graceRun(address string) {
     <-quit
     log.Println("Shutdown Server ...")
 
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    ctx, cancel := context.WithTimeout(context.Background(), conf.GetDuration("types.http.grace-timeout"))
     defer cancel()
     if err := srv.Shutdown(ctx); err != nil {
         log.Fatal("Server Shutdown:", err)
