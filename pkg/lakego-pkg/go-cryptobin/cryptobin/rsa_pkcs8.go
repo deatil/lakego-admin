@@ -205,7 +205,7 @@ var rfc1423Algos = []rfc1423Algo{
 }
 
 // 最加数据为新的 Identifier
-func appendOID(b asn1.ObjectIdentifier, v ...int) asn1.ObjectIdentifier {
+func AppendOID(b asn1.ObjectIdentifier, v ...int) asn1.ObjectIdentifier {
     n := make(asn1.ObjectIdentifier, len(b), len(b) + len(v))
     copy(n, b)
     return append(n, v...)

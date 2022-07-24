@@ -36,14 +36,7 @@ func (this Ecdsa) CreatePublicKey() Ecdsa {
             return this
         }
 
-        x := this.privateKey.X
-        y := this.privateKey.Y
-
-        publicKey = &ecdsa.PublicKey{
-            Curve: this.curve,
-            X: x,
-            Y: y,
-        }
+        publicKey = &this.privateKey.PublicKey
     } else {
         publicKey = this.publicKey
     }

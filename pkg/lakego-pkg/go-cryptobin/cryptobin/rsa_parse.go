@@ -5,6 +5,7 @@ import (
     "crypto/rsa"
     "crypto/x509"
     "encoding/pem"
+    "golang.org/x/crypto/pkcs12"
 )
 
 var (
@@ -95,6 +96,21 @@ func (this Rsa) ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key []byte, password 
     var pkey *rsa.PrivateKey
     var ok bool
     if pkey, ok = parsedKey.(*rsa.PrivateKey); !ok {
+        return nil, ErrNotRSAPrivateKey
+    }
+
+    return pkey, nil
+}
+
+// 解析 pkf 证书
+func (this Rsa) ParseRSAPKCS12PrivateKeyFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
+    privateKey, _, err := pkcs12.Decode(pfxData, password)
+    if err != nil {
+        return nil, err
+    }
+
+    pkey, ok := privateKey.(*rsa.PrivateKey)
+    if !ok {
         return nil, ErrNotRSAPrivateKey
     }
 
