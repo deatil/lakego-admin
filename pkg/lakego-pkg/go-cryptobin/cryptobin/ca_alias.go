@@ -45,6 +45,9 @@ type (
     // 证书请求
     CACertificateRequest = x509.CertificateRequest
 
+    // 配置别名
+    CAVerifyOptions = x509.VerifyOptions
+
     // KeyUsage
     CAKeyUsage = x509.KeyUsage
 
@@ -65,6 +68,9 @@ type (
 
     // SM2 证书请求
     CASM2CertificateRequest = sm2X509.CertificateRequest
+
+    // 配置别名
+    CASM2VerifyOptions = sm2X509.VerifyOptions
 
     // KeyUsage
     CASM2KeyUsage = sm2X509.KeyUsage

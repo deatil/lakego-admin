@@ -20,7 +20,7 @@ func (this DSA) CreatePrivateKey() DSA {
     }
 
     privateBlock := &pem.Block{
-        Type: "PRIVATE KEY",
+        Type: "DSA PRIVATE KEY",
         Bytes: privateKeyBytes,
     }
 

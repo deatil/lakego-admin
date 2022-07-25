@@ -175,26 +175,39 @@ func (this CA) CreatePrivateKey() CA {
         return this
     }
 
-    var x509PrivateKey []byte
+    var privateBlock *pem.Block
 
     switch privateKey := this.privateKey.(type) {
         case *rsa.PrivateKey:
-            x509PrivateKey = x509.MarshalPKCS1PrivateKey(privateKey)
+            x509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
+
+            privateBlock = &pem.Block{
+                Type: "RSA PRIVATE KEY",
+                Bytes: x509PrivateKey,
+            }
 
         case *ecdsa.PrivateKey:
-            var err error
-            x509PrivateKey, err = x509.MarshalECPrivateKey(privateKey)
+            x509PrivateKey, err := x509.MarshalECPrivateKey(privateKey)
             if err != nil {
                 this.Error = err
                 return this
             }
 
+            privateBlock = &pem.Block{
+                Type: "EC PRIVATE KEY",
+                Bytes: x509PrivateKey,
+            }
+
         case ed25519.PrivateKey:
-            var err error
-            x509PrivateKey, err = x509.MarshalPKCS8PrivateKey(privateKey)
+            x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
             if err != nil {
                 this.Error = err
                 return this
+            }
+
+            privateBlock = &pem.Block{
+                Type: "ED PRIVATE KEY",
+                Bytes: x509PrivateKey,
             }
 
         case *sm2.PrivateKey:
@@ -204,11 +217,6 @@ func (this CA) CreatePrivateKey() CA {
         default:
             this.Error = fmt.Errorf("x509: unsupported private key type: %T", privateKey)
             return this
-    }
-
-    privateBlock := &pem.Block{
-        Type: "PRIVATE KEY",
-        Bytes: x509PrivateKey,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)

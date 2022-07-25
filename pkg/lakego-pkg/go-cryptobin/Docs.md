@@ -657,7 +657,7 @@ func main() {
         ToBase64String()
     dsaPub, _ := fs.Get("./runtime/key/dsa.pub")
     dsacyptde := dsa.
-        FromBase64String("MEUCIQCDbQnS7obfU4yZCXPRROE3ki9/LYaaQ90KqicZRt95kAIgcjddd1BTOFkublWHeZk10XpKG4HOH/5T9kwhhirq8kg=").
+        FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
         FromPublicKey([]byte(dsaPub)).
         Very([]byte("test-pass")).
         ToVeryed()
