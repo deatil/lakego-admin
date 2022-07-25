@@ -25,6 +25,9 @@ func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
 func (this Ecdsa) GenerateKey() Ecdsa {
     this.privateKey, this.Error = ecdsa.GenerateKey(this.curve, rand.Reader)
 
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
     return this
 }
 

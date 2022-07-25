@@ -38,6 +38,9 @@ func (this Rsa) FromPublicKey(key []byte) Rsa {
 func (this Rsa) GenerateKey(bits int) Rsa {
     this.privateKey, this.Error = rsa.GenerateKey(rand.Reader, bits)
 
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
     return this
 }
 

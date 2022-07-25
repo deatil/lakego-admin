@@ -120,6 +120,17 @@ func main() {
 
     // =====
 
+    // Rsa 生成证书2
+    rsa22 := cryptobin.NewRsa().GenerateKey(2048)
+    rsaPriKey22 := rsa22.
+        CreatePKCS1().
+        ToKeyString()
+    rsaPubKey22 := rsa22.
+        CreatePublicKey().
+        ToKeyString()
+
+    // =====
+
     // Rsa 加密解密 - 公钥加密/私钥解密
     rsa := cryptobin.NewRsa()
 

@@ -32,7 +32,7 @@ func (this CA) MakeSM2CSR(
             PostalCode: postalCode,
             CommonName: commonName,
 
-            // SerialNumber: serialNumber,
+            // SerialNumber: string,
             // Names: []pkix.AttributeTypeAndValue{}
             // ExtraNames: []pkix.AttributeTypeAndValue{}
         },

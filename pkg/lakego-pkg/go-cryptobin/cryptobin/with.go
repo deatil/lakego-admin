@@ -42,6 +42,13 @@ func (this Cryptobin) WithPadding(padding string) Cryptobin {
     return this
 }
 
+// 补码算法
+func (this Cryptobin) WithParsedData(data []byte) Cryptobin {
+    this.parsedData = data
+
+    return this
+}
+
 // 配置
 func (this Cryptobin) WithConfig(config map[string]any) Cryptobin {
     this.config = config
