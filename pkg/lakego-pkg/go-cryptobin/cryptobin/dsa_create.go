@@ -2,19 +2,18 @@ package cryptobin
 
 import (
     "errors"
-    "crypto/x509"
-    "crypto/ed25519"
+    "crypto/dsa"
     "encoding/pem"
 )
 
 // 私钥
-func (this EdDSA) CreatePrivateKey() EdDSA {
+func (this DSA) CreatePrivateKey() DSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
     }
 
-    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := this.MarshalPrivateKey(*this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -22,7 +21,7 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 
     privateBlock := &pem.Block{
         Type: "PRIVATE KEY",
-        Bytes: x509PrivateKey,
+        Bytes: privateKeyBytes,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -31,8 +30,8 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 }
 
 // 公钥
-func (this EdDSA) CreatePublicKey() EdDSA {
-    var publicKey ed25519.PublicKey
+func (this DSA) CreatePublicKey() DSA {
+    var publicKey *dsa.PublicKey
 
     if this.publicKey == nil {
         if this.privateKey == nil {
@@ -41,12 +40,12 @@ func (this EdDSA) CreatePublicKey() EdDSA {
             return this
         }
 
-        publicKey = this.privateKey.Public().(ed25519.PublicKey)
+        publicKey = &this.privateKey.PublicKey
     } else {
         publicKey = this.publicKey
     }
 
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(publicKey)
+    publicKeyBytes, err := this.MarshalPublicKey(*publicKey)
     if err != nil {
         this.Error = err
         return this
@@ -54,7 +53,7 @@ func (this EdDSA) CreatePublicKey() EdDSA {
 
     publicBlock := &pem.Block{
         Type: "PUBLIC KEY",
-        Bytes: x509PublicKey,
+        Bytes: publicKeyBytes,
     }
 
     this.keyData = pem.EncodeToMemory(publicBlock)

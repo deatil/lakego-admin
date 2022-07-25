@@ -9,6 +9,12 @@ import (
 
 // 私钥
 func (this Ecdsa) CreatePrivateKey() Ecdsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+
+        return this
+    }
+
     x509PrivateKey, err := x509.MarshalECPrivateKey(this.privateKey)
     if err != nil {
         this.Error = err

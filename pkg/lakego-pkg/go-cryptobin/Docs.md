@@ -178,14 +178,13 @@ func main() {
 
     // Ecdsa
     ecdsa := cryptobin.NewEcdsa()
-    rsaPriKey := ecdsa.
+    ecdsaPriKey := ecdsa.
         WithCurve("P521").
         GenerateKey().
         CreatePrivateKey().
         ToKeyString()
-    rsaPubKey := ecdsa.
-        FromPrivateKey([]byte(rsaPriKey)).
-        WithCurve("P521").
+    ecdsaPubKey := ecdsa.
+        FromPrivateKey([]byte(ecdsaPriKey)).
         CreatePublicKey().
         ToKeyString()
 
@@ -546,21 +545,111 @@ func main() {
         PostalCode:    []string{"94016"},
     }
     ca := cryptobin.NewCA().GenerateRsaKey(4096)
+    ca1KeyString := ca.CreatePrivateKey().ToKeyString()
 
     // ca
-    ca1 := ca.MakeCA(caSubj, 1)
+    ca1 := ca.MakeCA(caSubj, 1, "SHA256WithRSA")
     ca1String := ca1.CreateCA().ToKeyString()
-    ca1KeyString := ca1.CreatePrivateKey().ToKeyString()
 
     // tls
     ca1Csr := ca1.GetCert()
-    ca2 := ca.MakeCert(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{})
+    ca2 := ca.MakeCert(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{}, "SHA256WithRSA")
     ca2String := ca2.CreateCert(ca1Csr).ToKeyString()
 
     // fs.Put("./runtime/key/ca.cst", ca1String)
     // fs.Put("./runtime/key/ca.key", ca1KeyString)
     // fs.Put("./runtime/key/ca_tls.cst", ca2String)
     // fs.Put("./runtime/key/ca_tls.key", ca2KeyString)
+
+    // =====
+
+    // sm2 pkcs12 证书生成
+    caSubj := &cryptobin.CAPkixName{
+        CommonName:    "github.com",
+        Organization:  []string{"Company, INC."},
+        Country:       []string{"US"},
+        Province:      []string{""},
+        Locality:      []string{"San Francisco"},
+        StreetAddress: []string{"Golden Gate Bridge"},
+        PostalCode:    []string{"94016"},
+    }
+    ca := cryptobin.NewCA().GenerateSM2Key()
+    cert := ca.MakeSM2Cert(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{}, "SM2WithSHA1")
+
+    pkcs12Data := cert.CreatePKCS12(nil, "123456").ToKeyString()
+
+    // fs.Put("./runtime/key/ec-pkcs12.pfx", pkcs12Data)
+
+    // =====
+
+    // sm2 pkcs12 证书生成2
+    str := "MIICiTCCAi6gAwIBAgIIICAEFwACVjAwCgYIKoEcz1UBg3UwdjEcMBoGA1UEAwwTU21hcnRDQV9UZXN0X1NNMl9DQTEVMBMGA1UECwwMU21hcnRDQV9UZXN0MRAwDgYDVQQKDAdTbWFydENBMQ8wDQYDVQQHDAbljZfkuqwxDzANBgNVBAgMBuaxn+iLjzELMAkGA1UEBhMCQ04wHhcNMjAwNDE3MDYwNjA4WhcNMTkwOTAzMDE1MzE5WjCBrjFGMEQGA1UELQw9YXBpX2NhX1RFU1RfVE9fUEhfUkFfVE9OR0pJX2FlNTA3MGNiY2E4NTQyYzliYmJmOTRmZjcwNThkNmEzMTELMAkGA1UEBhMCQ04xDTALBgNVBAgMBG51bGwxDTALBgNVBAcMBG51bGwxFTATBgNVBAoMDENGQ0FTTTJBR0VOVDENMAsGA1UECwwEbnVsbDETMBEGA1UEAwwKY2hlbnh1QDEwNDBZMBMGByqGSM49AgEGCCqBHM9VAYItA0IABAWeikXULbz1RqgmVzJWtSDMa3f9wirzwnceb1WIWxTqJaY+3xNlsM63oaIKJCD6pZu14EDkLS0FTP1uX3EySOajbTBrMAsGA1UdDwQEAwIGwDAdBgNVHQ4EFgQUbMrrNQDS1B1yjyrkgq2FWGi5zRcwHwYDVR0jBBgwFoAUXPO6JYzCZQzsZ+++3Y1rp16v46wwDAYDVR0TBAUwAwEB/zAOBggqgRzQFAQBAQQCBQAwCgYIKoEcz1UBg3UDSQAwRgIhAMcbwSDvL78qDSoqQh/019EEk4UNHP7zko0t1GueffTnAiEAupHr3k4vWSWV1SEqds+q8u4CbRuuRDvBOQ6od8vGzjM="
+    decodeString := encoding.Base64Decode(str)
+    x, _ := x509.ParseCertificate([]byte(decodeString))
+
+    ca := cryptobin.NewCA().GenerateSM2Key()
+    ca = ca.WithCert(x)
+
+    pkcs12Data := ca.CreatePKCS12(nil, "123456").ToKeyString()
+
+    // fs.Put("./runtime/key/ec-pkcs12.pfx", pkcs12Data)
+
+    // =====
+
+    // pkcs12 证书生成2
+    caSubj := &cryptobin.CAPkixName{
+        CommonName:    "github.com",
+        Organization:  []string{"Company, INC."},
+        Country:       []string{"US"},
+        Province:      []string{""},
+        Locality:      []string{"San Francisco"},
+        StreetAddress: []string{"Golden Gate Bridge"},
+        PostalCode:    []string{"94016"},
+    }
+    ca := cryptobin.NewCA().GenerateEcdsaKey("P256")
+    cert := ca.MakeCert(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{}, "ECDSAWithSHA256")
+
+    pkcs12Data := cert.CreatePKCS12(nil, "123456").ToKeyString()
+
+    fs.Put("./runtime/key/ec-pkcs12.pfx", pkcs12Data)
+
+    // =====
+
+    // pkcs12 证书解析
+    pfxData, _ := fs.Get("./runtime/key/sm2-pkcs12.pfx")
+    ca := cryptobin.NewCA().FromSM2PKCS12OneCert([]byte(pfxData), "123456")
+    pkcs12PrivData := ca.CreatePrivateKey().ToKeyString()
+
+    // =====
+
+    // DSA 生成证书
+    dsa := cryptobin.NewDSA()
+    dsaPriKey := dsa.
+        GenerateKey("L2048N256").
+        CreatePrivateKey().
+        ToKeyString()
+    dsaPubKey := dsa.
+        FromPrivateKey([]byte(dsaPriKey)).
+        CreatePublicKey().
+        ToKeyString()
+    // fs.Put("./runtime/key/dsa", dsaPriKey)
+    // fs.Put("./runtime/key/dsa.pub", dsaPubKey)
+
+    // DSA 验证
+    dsa := cryptobin.NewDSA()
+
+    dsaPri, _ := fs.Get("./runtime/key/dsa")
+    dsacypt := dsa.
+        FromString("test-pass").
+        FromPrivateKey([]byte(dsaPri)).
+        Sign().
+        ToBase64String()
+    dsaPub, _ := fs.Get("./runtime/key/dsa.pub")
+    dsacyptde := dsa.
+        FromBase64String("MEUCIQCDbQnS7obfU4yZCXPRROE3ki9/LYaaQ90KqicZRt95kAIgcjddd1BTOFkublWHeZk10XpKG4HOH/5T9kwhhirq8kg=").
+        FromPublicKey([]byte(dsaPub)).
+        Very([]byte("test-pass")).
+        ToVeryed()
 
 }
 

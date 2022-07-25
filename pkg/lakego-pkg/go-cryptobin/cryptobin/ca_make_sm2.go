@@ -43,7 +43,13 @@ func (this CA) MakeSM2CSR(
 
 
 // 生成 CA 证书
-func (this CA) MakeSM2CA(subject *pkix.Name, expire int) CA {
+func (this CA) MakeSM2CA(
+    subject *pkix.Name,
+    expire int,
+    signAlgName string,
+) CA {
+    signAlg := this.GetSM2SignatureAlgorithm(signAlgName)
+
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
         Subject:      *subject,
@@ -66,14 +72,22 @@ func (this CA) MakeSM2CA(subject *pkix.Name, expire int) CA {
         BasicConstraintsValid: true,
 
         // 签名方式
-        SignatureAlgorithm: x509.SM2WithSHA256,
+        SignatureAlgorithm: signAlg,
     }
 
     return this
 }
 
 // 生成自签名证书
-func (this CA) MakeSM2Cert(subject *pkix.Name, expire int, dns []string, ip []net.IP) CA {
+func (this CA) MakeSM2Cert(
+    subject *pkix.Name,
+    expire int,
+    dns []string,
+    ip []net.IP,
+    signAlgName string,
+) CA {
+    signAlg := this.GetSM2SignatureAlgorithm(signAlgName)
+
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
         Subject:      *subject,
@@ -93,13 +107,13 @@ func (this CA) MakeSM2Cert(subject *pkix.Name, expire int, dns []string, ip []ne
         KeyUsage:     x509.KeyUsageDigitalSignature,
 
         // 签名方式
-        SignatureAlgorithm: x509.SM2WithSHA256,
+        SignatureAlgorithm: signAlg,
     }
 
     return this
 }
 
-// 更新 CSR 数据
+// 更新 Cert 数据
 func (this CA) UpdateSM2Cert(fn func(*x509.Certificate) *x509.Certificate) CA {
     this.cert = fn(this.cert.(*x509.Certificate))
 

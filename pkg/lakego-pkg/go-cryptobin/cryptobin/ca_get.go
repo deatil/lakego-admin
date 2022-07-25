@@ -2,6 +2,8 @@ package cryptobin
 
 import (
     "crypto/x509"
+
+    sm2X509 "github.com/tjfoc/gmsm/x509"
 )
 
 // 获取 cert
@@ -62,4 +64,35 @@ func (this CA) GetSignatureAlgorithm(name string) x509.SignatureAlgorithm {
     }
 
     return data["SHA256WithRSA"]
+}
+
+// 获取 SM2 签名 alg
+func (this CA) GetSM2SignatureAlgorithm(name string) sm2X509.SignatureAlgorithm {
+    data := map[string]sm2X509.SignatureAlgorithm {
+        "MD2WithRSA":       sm2X509.MD2WithRSA,
+        "MD5WithRSA":       sm2X509.MD5WithRSA,
+        // "MD2WithRSA":    sm2X509.MD2WithRSA,  // Unsupported.
+        "SHA1WithRSA":      sm2X509.SHA1WithRSA,
+        "SHA256WithRSA":    sm2X509.SHA256WithRSA,
+        "SHA384WithRSA":    sm2X509.SHA384WithRSA,
+        "SHA512WithRSA":    sm2X509.SHA512WithRSA,
+        // "DSAWithSHA1":   x509.DSAWithSHA1,   // Unsupported.
+        // "DSAWithSHA256": x509.DSAWithSHA256, // Unsupported.
+        "ECDSAWithSHA1":    sm2X509.ECDSAWithSHA1,
+        "ECDSAWithSHA256":  sm2X509.ECDSAWithSHA256,
+        "ECDSAWithSHA384":  sm2X509.ECDSAWithSHA384,
+        "ECDSAWithSHA512":  sm2X509.ECDSAWithSHA512,
+        "SHA256WithRSAPSS": sm2X509.SHA256WithRSAPSS,
+        "SHA384WithRSAPSS": sm2X509.SHA384WithRSAPSS,
+        "SHA512WithRSAPSS": sm2X509.SHA512WithRSAPSS,
+        "SM2WithSM3":       sm2X509.SM2WithSM3,
+        "SM2WithSHA1":      sm2X509.SM2WithSHA1,
+        "SM2WithSHA256":    sm2X509.SM2WithSHA256,
+    }
+
+    if alg, ok := data[name]; ok {
+        return alg
+    }
+
+    return data["SM2WithSHA1"]
 }

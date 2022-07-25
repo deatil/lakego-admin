@@ -53,6 +53,11 @@ func RsaFromPKCS8WithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPKCS8WithPassword(key, password)
 }
 
+// Pkcs12
+func RsaFromPKCS12(key []byte) Rsa {
+    return NewRsa().FromPKCS12(key)
+}
+
 // Pkcs12WithPassword
 func RsaFromPKCS12WithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPKCS12WithPassword(key, password)

@@ -32,6 +32,13 @@ func (this SM2) WithParedData(data []byte) SM2 {
     return this
 }
 
+// 设置 veryed
+func (this SM2) WithVeryed(data bool) SM2 {
+    this.veryed = data
+
+    return this
+}
+
 // 设置错误
 func (this SM2) WithError(err error) SM2 {
     this.Error = err

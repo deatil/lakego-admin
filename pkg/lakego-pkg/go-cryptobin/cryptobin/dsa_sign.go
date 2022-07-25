@@ -4,13 +4,13 @@ import (
     "errors"
     "strings"
     "math/big"
+    "crypto/dsa"
     "crypto/rand"
-    "crypto/ecdsa"
     "encoding/asn1"
 )
 
 // 私钥签名
-func (this Ecdsa) Sign(separator ...string) Ecdsa {
+func (this DSA) Sign(separator ...string) DSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
@@ -18,7 +18,7 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 
     hashData := this.DataHash(this.signHash, this.data)
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
         this.Error = err
         return this
@@ -49,7 +49,8 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 }
 
 // 公钥验证
-func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
+// 使用原始数据[data]对比签名后数据
+func (this DSA) Very(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
         this.Error = errors.New("publicKey error.")
         return this
@@ -85,19 +86,19 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
         return this
     }
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, rr, ss)
+    this.veryed = dsa.Verify(this.publicKey, hashData, rr, ss)
 
     return this
 }
 
 // ===============
 
-type ecdsaSignature struct {
+type DSASignature struct {
     R, S *big.Int
 }
 
 // 私钥签名
-func (this Ecdsa) SignAsn1() Ecdsa {
+func (this DSA) SignAsn1() DSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
@@ -105,40 +106,39 @@ func (this Ecdsa) SignAsn1() Ecdsa {
 
     hashData := this.DataHash(this.signHash, this.data)
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
         this.Error = err
-
         return this
     }
 
-    this.paredData, this.Error = asn1.Marshal(ecdsaSignature{r, s})
+    this.paredData, this.Error = asn1.Marshal(DSASignature{r, s})
 
     return this
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
+func (this DSA) VerifyAsn1(data []byte) DSA {
     if this.publicKey == nil {
         this.Error = errors.New("publicKey error.")
         return this
     }
 
-    var ecdsaSign ecdsaSignature
-    _, err := asn1.Unmarshal(this.data, &ecdsaSign)
+    var dsaSign DSASignature
+    _, err := asn1.Unmarshal(this.data, &dsaSign)
     if err != nil {
         this.Error = err
 
         return this
     }
 
-    r := ecdsaSign.R
-    s := ecdsaSign.S
-
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, r, s)
+    r := dsaSign.R
+    s := dsaSign.S
+
+    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }
@@ -146,7 +146,7 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
 // ===============
 
 // 私钥签名
-func (this Ecdsa) SignHex() Ecdsa {
+func (this DSA) SignHex() DSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
@@ -154,7 +154,7 @@ func (this Ecdsa) SignHex() Ecdsa {
 
     hashData := this.DataHash(this.signHash, this.data)
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
         this.Error = err
         return this
@@ -174,7 +174,7 @@ func (this Ecdsa) SignHex() Ecdsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
+func (this DSA) VerifyHex(data []byte) DSA {
     if this.publicKey == nil {
         this.Error = errors.New("publicKey error.")
         return this
@@ -187,7 +187,7 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
 
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, r, s)
+    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }
@@ -195,6 +195,6 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
 // ===============
 
 // 签名后数据
-func (this Ecdsa) DataHash(signHash string, data []byte) []byte {
+func (this DSA) DataHash(signHash string, data []byte) []byte {
     return NewHash().DataHash(signHash, data)
 }

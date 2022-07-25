@@ -71,6 +71,13 @@ func (this Rsa) FromPKCS8WithPassword(key []byte, password string) Rsa {
     return this
 }
 
+// Pkcs12
+func (this Rsa) FromPKCS12(key []byte) Rsa {
+    this.privateKey, this.Error = this.ParseRSAPKCS12PrivateKeyFromPEMWithPassword(key, "")
+
+    return this
+}
+
 // Pkcs12WithPassword
 func (this Rsa) FromPKCS12WithPassword(key []byte, password string) Rsa {
     this.privateKey, this.Error = this.ParseRSAPKCS12PrivateKeyFromPEMWithPassword(key, password)

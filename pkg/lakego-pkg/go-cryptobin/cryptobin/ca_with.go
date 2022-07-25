@@ -2,7 +2,7 @@ package cryptobin
 
 // 设置 cert
 // 可用 [*x509.Certificate | *sm2X509.Certificate]
-func (this CA) WithCsr(data any) CA {
+func (this CA) WithCert(data any) CA {
     this.cert = data
 
     return this

@@ -32,6 +32,13 @@ func (this EdDSA) WithParedData(data []byte) EdDSA {
     return this
 }
 
+// 设置 veryed
+func (this EdDSA) WithVeryed(data bool) EdDSA {
+    this.veryed = data
+
+    return this
+}
+
 // 设置错误
 func (this EdDSA) WithError(err error) EdDSA {
     this.Error = err

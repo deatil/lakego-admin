@@ -57,6 +57,13 @@ func (this Ecdsa) WithSignHash(hash string) Ecdsa {
     return this
 }
 
+// 设置 veryed
+func (this Ecdsa) WithVeryed(data bool) Ecdsa {
+    this.veryed = data
+
+    return this
+}
+
 // 设置错误
 func (this Ecdsa) WithError(err error) Ecdsa {
     this.Error = err

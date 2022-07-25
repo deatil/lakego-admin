@@ -32,6 +32,13 @@ func (this Rsa) WithParedData(data []byte) Rsa {
     return this
 }
 
+// 设置 veryed
+func (this Rsa) WithVeryed(data bool) Rsa {
+    this.veryed = data
+
+    return this
+}
+
 // 设置 hash 类型
 func (this Rsa) WithSignHash(data string) Rsa {
     this.signHash = data

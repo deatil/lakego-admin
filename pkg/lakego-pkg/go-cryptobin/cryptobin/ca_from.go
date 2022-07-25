@@ -1,6 +1,7 @@
 package cryptobin
 
 import (
+    "errors"
     "crypto/rsa"
     "crypto/ecdsa"
     "crypto/ed25519"
@@ -9,6 +10,8 @@ import (
     "crypto/x509"
 
     "github.com/tjfoc/gmsm/sm2"
+    sm2Pkcs12 "github.com/tjfoc/gmsm/pkcs12"
+    sslmatePkcs12 "software.sslmate.com/src/go-pkcs12"
 )
 
 // 证书
@@ -53,6 +56,117 @@ func (this CA) FromPublicKey(key any) CA {
     this.publicKey = key
 
     return this
+}
+
+// =======================
+
+// pkcs12
+func (this CA) FromSM2PKCS12(pfxData []byte, password string) CA {
+    pv, certs, err := sm2Pkcs12.DecodeAll(pfxData, password)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    switch k := pv.(type) {
+        case *ecdsa.PrivateKey:
+            switch k.Curve {
+                case sm2.P256Sm2():
+                    sm2pub := &sm2.PublicKey{
+                        Curve: k.Curve,
+                        X:     k.X,
+                        Y:     k.Y,
+                    }
+
+                    sm2Pri := &sm2.PrivateKey{
+                        PublicKey: *sm2pub,
+                        D:         k.D,
+                    }
+
+                    if !k.IsOnCurve(k.X, k.Y) {
+                        this.Error = errors.New("error while validating SM2 private key: %v")
+                        return this
+                    }
+
+                    this.privateKey = sm2Pri
+                    this.cert = certs[0]
+
+                    return this
+                default:
+                    // other
+            }
+        default:
+            // other
+    }
+
+    this.Error = errors.New("unexpected type for p12 private key")
+
+    return this
+}
+
+// pkcs12
+func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
+    pv, cert, err := sm2Pkcs12.Decode(pfxData, password)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    switch k := pv.(type) {
+        case *ecdsa.PrivateKey:
+            switch k.Curve {
+                case sm2.P256Sm2():
+                    sm2pub := &sm2.PublicKey{
+                        Curve: k.Curve,
+                        X:     k.X,
+                        Y:     k.Y,
+                    }
+
+                    sm2Pri := &sm2.PrivateKey{
+                        PublicKey: *sm2pub,
+                        D:         k.D,
+                    }
+
+                    if !k.IsOnCurve(k.X, k.Y) {
+                        this.Error = errors.New("error while validating SM2 private key: %v")
+                        return this
+                    }
+
+                    this.privateKey = sm2Pri
+                    this.cert = cert
+
+                    return this
+                default:
+                    // other
+            }
+        default:
+            // other
+    }
+
+    this.Error = errors.New("unexpected type for p12 private key")
+
+    return this
+}
+
+// pkcs12
+func (this CA) FromPKCS12(pfxData []byte, password string) CA {
+    this.privateKey, this.cert, this.Error = sslmatePkcs12.Decode(pfxData, password)
+
+    return this
+}
+
+// 解析 pkcs12
+func (this CA) DecodePKCS12Chain(pfxData []byte, password string) (privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, err error) {
+    privateKey, certificate, caCerts, err = sslmatePkcs12.DecodeChain(pfxData, password)
+
+    return
+}
+
+// 解析 pkcs12
+func (this CA) DecodePKCS12TrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
+    certs, err = sslmatePkcs12.DecodeTrustStore(pfxData, password)
+
+    return
 }
 
 // =======================

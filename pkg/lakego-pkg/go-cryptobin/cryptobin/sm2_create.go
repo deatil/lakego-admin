@@ -9,6 +9,11 @@ import (
 
 // 国密 PKCS8 私钥
 func (this SM2) CreatePrivateKey() SM2 {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     this.keyData, this.Error = x509.WritePrivateKeyToPem(this.privateKey, nil)
 
     return this
@@ -16,6 +21,11 @@ func (this SM2) CreatePrivateKey() SM2 {
 
 // 国密 PKCS8 私钥带密码
 func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     this.keyData, this.Error = x509.WritePrivateKeyToPem(this.privateKey, []byte(password))
 
     return this

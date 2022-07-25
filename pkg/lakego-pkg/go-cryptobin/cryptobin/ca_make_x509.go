@@ -31,7 +31,7 @@ func (this CA) MakeCSR(
             PostalCode: postalCode,
             CommonName: commonName,
 
-            // SerialNumber: serialNumber,
+            // SerialNumber: string,
             // Names: []pkix.AttributeTypeAndValue{}
             // ExtraNames: []pkix.AttributeTypeAndValue{}
         },
@@ -42,7 +42,13 @@ func (this CA) MakeCSR(
 
 
 // 生成 CA 证书
-func (this CA) MakeCA(subject *pkix.Name, expire int) CA {
+func (this CA) MakeCA(
+    subject *pkix.Name,
+    expire int,
+    signAlgName string,
+) CA {
+    signAlg := this.GetSignatureAlgorithm(signAlgName)
+
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
         Subject:      *subject,
@@ -65,14 +71,22 @@ func (this CA) MakeCA(subject *pkix.Name, expire int) CA {
         BasicConstraintsValid: true,
 
         // 签名方式
-        SignatureAlgorithm: x509.SHA256WithRSA,
+        SignatureAlgorithm: signAlg,
     }
 
     return this
 }
 
 // 生成自签名证书
-func (this CA) MakeCert(subject *pkix.Name, expire int, dns []string, ip []net.IP) CA {
+func (this CA) MakeCert(
+    subject *pkix.Name,
+    expire int,
+    dns []string,
+    ip []net.IP,
+    signAlgName string,
+) CA {
+    signAlg := this.GetSignatureAlgorithm(signAlgName)
+
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
         Subject:      *subject,
@@ -92,13 +106,13 @@ func (this CA) MakeCert(subject *pkix.Name, expire int, dns []string, ip []net.I
         KeyUsage:     x509.KeyUsageDigitalSignature,
 
         // 签名方式
-        SignatureAlgorithm: x509.SHA256WithRSA,
+        SignatureAlgorithm: signAlg,
     }
 
     return this
 }
 
-// 更新 CSR 数据
+// 更新 Cert 数据
 func (this CA) UpdateCert(fn func(*x509.Certificate) *x509.Certificate) CA {
     this.cert = fn(this.cert.(*x509.Certificate))
 

@@ -10,6 +10,11 @@ import (
 
 // PKCS1 私钥
 func (this Rsa) CreatePKCS1() Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     x509PrivateKey := x509.MarshalPKCS1PrivateKey(this.privateKey)
 
     privateBlock := &pem.Block{
@@ -25,6 +30,11 @@ func (this Rsa) CreatePKCS1() Rsa {
 // PKCS1 私钥带密码
 // CreatePKCS1WithPassword("123", "AES256CBC")
 func (this Rsa) CreatePKCS1WithPassword(password string, opts ...string) Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     // DESCBC | DESEDE3CBC | AES128CBC
     // AES192CBC | AES256CBC
     opt := "AES256CBC"
@@ -62,6 +72,11 @@ func (this Rsa) CreatePKCS1WithPassword(password string, opts ...string) Rsa {
 
 // PKCS8 私钥
 func (this Rsa) CreatePKCS8() Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     x509PublicKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
@@ -81,6 +96,11 @@ func (this Rsa) CreatePKCS8() Rsa {
 // PKCS8 私钥带密码
 // CreatePKCS8WithPassword("123", "AES256CBC", "SHA256")
 func (this Rsa) CreatePKCS8WithPassword(password string, opts ...string) Rsa {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
     // DESCBC | DESEDE3CBC | AES128CBC
     // AES192CBC | AES256CBC
     opt := "AES256CBC"
