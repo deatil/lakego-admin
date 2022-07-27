@@ -75,6 +75,47 @@ func (this DSA) GenerateKey(ln string) DSA {
 
 // ==========
 
+// PKCS8 私钥
+func (this DSA) FromPKCS8PrivateKey(key []byte) DSA {
+    parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.privateKey = parsedKey
+
+    return this
+}
+
+// PKCS8 私钥带密码
+func (this DSA) FromPKCS8PrivateKeyWithPassword(key []byte, password string) DSA {
+    parsedKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.privateKey = parsedKey
+
+    return this
+}
+
+// PKCS8 公钥
+func (this DSA) FromPKCS8PublicKey(key []byte) DSA {
+    parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.publicKey = parsedKey
+
+    return this
+}
+
+// ==========
+
 // 字节
 func (this DSA) FromBytes(data []byte) DSA {
     this.data = data

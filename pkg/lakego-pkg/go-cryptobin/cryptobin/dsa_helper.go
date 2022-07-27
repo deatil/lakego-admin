@@ -33,6 +33,23 @@ func DSAGenerateKey(ln string) DSA {
 
 // ==========
 
+// PKCS8 私钥
+func DSAFromPKCS8PrivateKey(key []byte) DSA {
+    return NewDSA().FromPKCS8PrivateKey(key)
+}
+
+// PKCS8 私钥带密码
+func DSAFromPKCS8PrivateKeyWithPassword(key []byte, password string) DSA {
+    return NewDSA().FromPKCS8PrivateKeyWithPassword(key, password)
+}
+
+// PKCS8 公钥
+func DSAFromPKCS8PublicKey(key []byte) DSA {
+    return NewDSA().FromPKCS8PublicKey(key)
+}
+
+// ==========
+
 // 字节
 func DSAFromBytes(data []byte) DSA {
     return NewDSA().FromBytes(data)

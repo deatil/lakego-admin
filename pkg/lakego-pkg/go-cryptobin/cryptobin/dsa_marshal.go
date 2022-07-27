@@ -31,9 +31,9 @@ type dsaPublicKey struct {
 // 包装公钥
 func (this DSA) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     publicKey := dsaPublicKey{
-        P: key.Parameters.P,
-        Q: key.Parameters.Q,
-        G: key.Parameters.G,
+        P: key.P,
+        Q: key.Q,
+        G: key.G,
         Y: key.Y,
     }
 
@@ -71,16 +71,13 @@ func (this DSA) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     // 版本号
     version := dsaPrivKeyVersion
 
-    // 公钥
-    publicKey := key.PublicKey
-
     // 构造私钥信息
     privateKey := dsaPrivateKey{
         Version: version,
-        P:       publicKey.Parameters.P,
-        Q:       publicKey.Parameters.Q,
-        G:       publicKey.Parameters.G,
-        Y:       publicKey.Y,
+        P:       key.P,
+        Q:       key.Q,
+        G:       key.G,
+        Y:       key.Y,
         X:       key.X,
     }
 

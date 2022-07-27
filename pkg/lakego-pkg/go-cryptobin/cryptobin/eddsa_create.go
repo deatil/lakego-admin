@@ -63,7 +63,7 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) 
     // 生成加密数据
     privateBlock, err := x509.EncryptPEMBlock(
         rand.Reader,
-        "ED PRIVATE KEY",
+        "ENCRYPTED PRIVATE KEY",
         x509PrivateKey,
         []byte(password),
         cipher,
