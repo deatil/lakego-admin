@@ -48,13 +48,13 @@ func (this EdDSA) ParseEdPrivateKeyFromPEMWithPassword(key []byte, password stri
         return nil, ErrKeyMustBePEMEncoded
     }
 
+    var parsedKey any
+
     var blockDecrypted []byte
-    if blockDecrypted, err = x509.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = DecryptPKCS8PrivateKey(block.Bytes, []byte(password)); err != nil {
         return nil, err
     }
 
-    // Parse the key
-    var parsedKey any
     if parsedKey, err = x509.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
         return nil, err
     }

@@ -144,7 +144,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
     var pkey *dsa.PrivateKey
     var ok bool
     if pkey, ok = parsedKey.(*dsa.PrivateKey); !ok {
-        return nil, ErrNotRSAPrivateKey
+        return nil, ErrNotDSAPrivateKey
     }
 
     return pkey, nil

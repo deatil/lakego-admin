@@ -156,10 +156,10 @@ func (this DSA) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
         },
     }
 
-    var b cryptobyte.Builder
-    b.AddASN1BigInt(key.X)
+    var xInt cryptobyte.Builder
+    xInt.AddASN1BigInt(key.X)
 
-    builderResult, err := b.Bytes()
+    builderResult, err := xInt.Bytes()
     if err != nil {
         return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
     }

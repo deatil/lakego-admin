@@ -95,7 +95,7 @@ func (this Ecdsa) ParseECPKCS8PrivateKeyFromPEMWithPassword(key []byte, password
     var pkey *ecdsa.PrivateKey
     var ok bool
     if pkey, ok = parsedKey.(*ecdsa.PrivateKey); !ok {
-        return nil, ErrNotRSAPrivateKey
+        return nil, ErrNotECPrivateKey
     }
 
     return pkey, nil

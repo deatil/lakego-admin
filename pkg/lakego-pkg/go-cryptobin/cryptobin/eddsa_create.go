@@ -32,7 +32,7 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 }
 
 // 私钥带密码
-// CreatePrivateKeyWithPassword("123", "AES256CBC")
+// CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) EdDSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
@@ -44,6 +44,13 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) 
     opt := "AES256CBC"
     if len(opts) > 0 {
         opt = opts[0]
+    }
+
+    // MD5 | SHA1 | SHA224 | SHA256 | SHA384
+    // SHA512 | SHA512_224 | SHA512_256
+    encryptHash := "SHA1"
+    if len(opts) > 1 {
+        encryptHash = opts[1]
     }
 
     // 具体方式
@@ -61,12 +68,13 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) 
     }
 
     // 生成加密数据
-    privateBlock, err := x509.EncryptPEMBlock(
+    privateBlock, err := EncryptPKCS8PrivateKey(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
         x509PrivateKey,
         []byte(password),
         cipher,
+        encryptHash,
     )
     if err != nil {
         this.Error = err
