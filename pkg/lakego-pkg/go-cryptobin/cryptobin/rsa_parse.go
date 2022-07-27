@@ -50,13 +50,13 @@ func (this Rsa) ParseRSAPrivateKeyFromPEMWithPassword(key []byte, password strin
         return nil, ErrKeyMustBePEMEncoded
     }
 
-    var parsedKey any
-
     var blockDecrypted []byte
     if blockDecrypted, err = x509.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 
+    // Parse the key
+    var parsedKey any
     if parsedKey, err = x509.ParsePKCS1PrivateKey(blockDecrypted); err != nil {
         if parsedKey, err = x509.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
             return nil, err
@@ -103,7 +103,7 @@ func (this Rsa) ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key []byte, password 
 }
 
 // 解析 pkf 证书
-func (this Rsa) ParseRSAPKCS12PrivateKeyFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
+func (this Rsa) ParseRSAPKCS12CertFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
     privateKey, _, err := pkcs12.Decode(pfxData, password)
     if err != nil {
         return nil, err

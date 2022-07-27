@@ -14,6 +14,27 @@ func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
     return this
 }
 
+// 私钥带密码
+func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    this.privateKey, this.Error = this.ParseECPrivateKeyFromPEMWithPassword(key, password)
+
+    return this
+}
+
+// PKCS8 私钥
+func (this Ecdsa) FromPKCS8PrivateKey(key []byte) Ecdsa {
+    this.privateKey, this.Error = this.ParseECPrivateKeyFromPEM(key)
+
+    return this
+}
+
+// Pkcs8WithPassword
+func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    this.privateKey, this.Error = this.ParseECPKCS8PrivateKeyFromPEMWithPassword(key, password)
+
+    return this
+}
+
 // 公钥
 func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
     this.publicKey, this.Error = this.ParseECPublicKeyFromPEM(key)

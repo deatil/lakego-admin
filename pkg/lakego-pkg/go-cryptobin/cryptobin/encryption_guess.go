@@ -4,6 +4,7 @@ import (
     "fmt"
     "crypto/rc4"
 
+    "golang.org/x/crypto/xts"
     "golang.org/x/crypto/chacha20"
     "golang.org/x/crypto/chacha20poly1305"
 )
@@ -67,6 +68,40 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
             dst := make([]byte, len(this.data))
 
             rc.XORKeyStream(dst, this.data)
+
+            this.parsedData = dst
+
+            return this
+        // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
+        case "Xts":
+            cipher, ok := this.config["cipher"]
+            if !ok {
+                this.Error = fmt.Errorf("Xts error: cipher is empty.")
+                return this
+            }
+
+            sectorNum, ok := this.config["sector_num"]
+            if !ok {
+                this.Error = fmt.Errorf("Xts error: sector_num is empty.")
+                return this
+            }
+
+            cipherFunc := NewCipher().GetFunc(cipher.(string))
+
+            xc, err := xts.NewCipher(cipherFunc, this.key)
+            if err != nil {
+                this.Error = fmt.Errorf("xts.NewCipher(),error:%w", err)
+                return this
+            }
+
+            // 大小
+            bs := 16
+
+            plainPadding := this.Padding(this.data, bs)
+
+            dst := make([]byte, len(plainPadding))
+
+            xc.Encrypt(dst, plainPadding, sectorNum.(uint64))
 
             this.parsedData = dst
 
@@ -145,6 +180,35 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
             rc.XORKeyStream(dst, this.data)
 
             this.parsedData = dst
+
+            return this
+        // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
+        case "Xts":
+            cipher, ok := this.config["cipher"]
+            if !ok {
+                this.Error = fmt.Errorf("Xts error: cipher is empty.")
+                return this
+            }
+
+            sectorNum, ok := this.config["sector_num"]
+            if !ok {
+                this.Error = fmt.Errorf("Xts error: sector_num is empty.")
+                return this
+            }
+
+            cipherFunc := NewCipher().GetFunc(cipher.(string))
+
+            xc, err := xts.NewCipher(cipherFunc, this.key)
+            if err != nil {
+                this.Error = fmt.Errorf("xts.NewCipher(),error:%w", err)
+                return this
+            }
+
+            dst := make([]byte, len(this.data))
+
+            xc.Decrypt(dst, this.data, sectorNum.(uint64))
+
+            this.parsedData = this.UnPadding(dst)
 
             return this
         default:

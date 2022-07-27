@@ -2,17 +2,17 @@ package cryptobin
 
 import (
     "errors"
-    "crypto/rsa"
+    "crypto/ecdsa"
     "encoding/pem"
 )
 
 // 设置私钥带密码
-func RsaFromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromYoumarkPKCS8PrivateKeyWithPassword(key, password)
+func EcdsaFromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    return NewEcdsa().FromYoumarkPKCS8PrivateKeyWithPassword(key, password)
 }
 
 // 设置私钥带密码
-func (this Rsa) FromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
+func (this Ecdsa) FromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
     var err error
 
     // 解析 PEM block
@@ -30,10 +30,10 @@ func (this Rsa) FromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password stri
         return this
     }
 
-    var pkey *rsa.PrivateKey
+    var pkey *ecdsa.PrivateKey
     var ok bool
-    if pkey, ok = parsedKey.(*rsa.PrivateKey); !ok {
-        this.Error = errors.New("key is not a valid RSA private key")
+    if pkey, ok = parsedKey.(*ecdsa.PrivateKey); !ok {
+        this.Error = errors.New("key is not a valid Ecdsa private key")
 
         return this
     }
@@ -44,7 +44,7 @@ func (this Rsa) FromYoumarkPKCS8PrivateKeyWithPassword(key []byte, password stri
 }
 
 // 创建私钥带密码
-func (this Rsa) CreateYoumarkPKCS8PrivateKeyWithPassword(password string, opt ...YoumarkPKCS8Opts) Rsa {
+func (this Ecdsa) CreateYoumarkPKCS8PrivateKeyWithPassword(password string, opt ...YoumarkPKCS8Opts) Ecdsa {
     var opts YoumarkPKCS8Opts
 
     if len(opt) > 0 {

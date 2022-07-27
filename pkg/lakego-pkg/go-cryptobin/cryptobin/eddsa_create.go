@@ -2,6 +2,7 @@ package cryptobin
 
 import (
     "errors"
+    "crypto/rand"
     "crypto/x509"
     "crypto/ed25519"
     "encoding/pem"
@@ -23,6 +24,53 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
     privateBlock := &pem.Block{
         Type: "ED PRIVATE KEY",
         Bytes: x509PrivateKey,
+    }
+
+    this.keyData = pem.EncodeToMemory(privateBlock)
+
+    return this
+}
+
+// 私钥带密码
+// CreatePrivateKeyWithPassword("123", "AES256CBC")
+func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) EdDSA {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
+    // DESCBC | DESEDE3CBC | AES128CBC
+    // AES192CBC | AES256CBC
+    opt := "AES256CBC"
+    if len(opts) > 0 {
+        opt = opts[0]
+    }
+
+    // 具体方式
+    cipher, ok := PEMCiphers[opt]
+    if !ok {
+        this.Error = errors.New("PEMCipher not exists.")
+        return this
+    }
+
+    // 生成私钥
+    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    // 生成加密数据
+    privateBlock, err := x509.EncryptPEMBlock(
+        rand.Reader,
+        "ED PRIVATE KEY",
+        x509PrivateKey,
+        []byte(password),
+        cipher,
+    )
+    if err != nil {
+        this.Error = err
+        return this
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)

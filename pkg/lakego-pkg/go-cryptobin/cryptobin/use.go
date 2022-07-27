@@ -102,6 +102,17 @@ func (this Cryptobin) RC4() Cryptobin {
     return this
 }
 
+// Xts
+// cipher 可用 [ Aes | Des | TriDes | Tea | Xtea | Twofish | Blowfish | Cast5 | SM4]
+func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
+    this.multiple = "Xts"
+
+    this.config["cipher"] = cipher
+    this.config["sector_num"] = sectorNum
+
+    return this
+}
+
 // ==========
 
 // ECB

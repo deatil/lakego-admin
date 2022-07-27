@@ -38,8 +38,7 @@ var InstallCmd = &command.Command{
 
 // 运行安装
 func runInsatll() {
-    fmt.Println("开始安装并导入数据...")
-    fmt.Println("")
+    fmt.Println("开始安装并导入数据...\n")
 
     fs := filesystem.New()
 
@@ -56,10 +55,15 @@ func runInsatll() {
     }
 
     sqls, _ := os.ReadFile(sqlFile)
+    if len(sqls) == 0 {
+        fmt.Println("数据库文件 [lakego_admin.sql] 数据为空！")
+        os.Exit(1)
+    }
+
     sqlArr := strings.Split(string(sqls), ";")
     for _, sql := range sqlArr {
         sql = strings.Trim(sql, " ")
-        if sql == "" {
+        if len(sql) == 0 || sql == "\r\n" {
             continue
         }
 
@@ -74,13 +78,11 @@ func runInsatll() {
             fmt.Println(sql, "\t 添加成功！")
         } else {
             fmt.Println(sql, err, "\t 添加失败！")
-            os.Exit(1)
         }
     }
 
     installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
     installFile.WriteString("")
 
-    fmt.Println("")
-    fmt.Println("安装成功。")
+    fmt.Println("\n安装成功。\n")
 }

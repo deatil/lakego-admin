@@ -47,43 +47,43 @@ func (this Rsa) GenerateKey(bits int) Rsa {
 // ==========
 
 // Pkcs1
-func (this Rsa) FromPKCS1(key []byte) Rsa {
+func (this Rsa) FromPKCS1PrivateKey(key []byte) Rsa {
     this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEM(key)
 
     return this
 }
 
 // Pkcs1WithPassword
-func (this Rsa) FromPKCS1WithPassword(key []byte, password string) Rsa {
+func (this Rsa) FromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
     this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEMWithPassword(key, password)
 
     return this
 }
 
 // Pkcs8
-func (this Rsa) FromPKCS8(key []byte) Rsa {
+func (this Rsa) FromPKCS8PrivateKey(key []byte) Rsa {
     this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEM(key)
 
     return this
 }
 
 // Pkcs8WithPassword
-func (this Rsa) FromPKCS8WithPassword(key []byte, password string) Rsa {
+func (this Rsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
     this.privateKey, this.Error = this.ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key, password)
 
     return this
 }
 
-// Pkcs12
-func (this Rsa) FromPKCS12(key []byte) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPKCS12PrivateKeyFromPEMWithPassword(key, "")
+// Pkcs12 Cert
+func (this Rsa) FromPKCS12Cert(key []byte) Rsa {
+    this.privateKey, this.Error = this.ParseRSAPKCS12CertFromPEMWithPassword(key, "")
 
     return this
 }
 
-// Pkcs12WithPassword
-func (this Rsa) FromPKCS12WithPassword(key []byte, password string) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPKCS12PrivateKeyFromPEMWithPassword(key, password)
+// Pkcs12CertWithPassword
+func (this Rsa) FromPKCS12CertWithPassword(key []byte, password string) Rsa {
+    this.privateKey, this.Error = this.ParseRSAPKCS12CertFromPEMWithPassword(key, password)
 
     return this
 }

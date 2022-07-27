@@ -18,6 +18,19 @@ func (this DSA) FromPrivateKey(key []byte) DSA {
     return this
 }
 
+// 私钥带密码
+func (this DSA) FromPrivateKeyWithPassword(key []byte, password string) DSA {
+    parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.privateKey = parsedKey
+
+    return this
+}
+
 // 公钥
 func (this DSA) FromPublicKey(key []byte) DSA {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)

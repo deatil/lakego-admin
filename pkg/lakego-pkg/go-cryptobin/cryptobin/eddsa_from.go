@@ -18,6 +18,19 @@ func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
     return this
 }
 
+// 私钥带密码
+func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
+    parsedKey, err := this.ParseEdPrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.privateKey = parsedKey.(ed25519.PrivateKey)
+
+    return this
+}
+
 // 公钥
 func (this EdDSA) FromPublicKey(key []byte) EdDSA {
     parsedKey, err := this.ParseEdPublicKeyFromPEM(key)

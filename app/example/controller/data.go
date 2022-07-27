@@ -175,10 +175,10 @@ func (this *Data) Error(ctx *gin.Context) {
     rsa := cryptobin.NewRsa()
     rsaPriKey := rsa.
         GenerateKey(2048).
-        CreatePKCS8WithPassword("123", "AES256CBC", "SHA256").
+        CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
         ToKeyString()
     rsaPubKey := rsa.
-        FromPKCS8WithPassword([]byte(rsaPriKey), "123").
+        FromPKCS8PrivateKeyWithPassword([]byte(rsaPriKey), "123").
         CreatePublicKey().
         ToKeyString()
 

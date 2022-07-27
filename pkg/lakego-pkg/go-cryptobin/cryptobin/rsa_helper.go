@@ -34,33 +34,33 @@ func RsaGenerateKey(bits int) Rsa {
 // ==========
 
 // Pkcs1
-func RsaFromPKCS1(key []byte) Rsa {
-    return NewRsa().FromPKCS1(key)
+func RsaFromPKCS1PrivateKey(key []byte) Rsa {
+    return NewRsa().FromPKCS1PrivateKey(key)
 }
 
 // Pkcs1WithPassword
-func RsaFromPKCS1WithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS1WithPassword(key, password)
+func RsaFromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
+    return NewRsa().FromPKCS1PrivateKeyWithPassword(key, password)
 }
 
 // Pkcs8
-func RsaFromPKCS8(key []byte) Rsa {
-    return NewRsa().FromPKCS8(key)
+func RsaFromPKCS8PrivateKey(key []byte) Rsa {
+    return NewRsa().FromPKCS8PrivateKey(key)
 }
 
 // Pkcs8WithPassword
-func RsaFromPKCS8WithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS8WithPassword(key, password)
+func RsaFromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
+    return NewRsa().FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
-// Pkcs12
-func RsaFromPKCS12(key []byte) Rsa {
-    return NewRsa().FromPKCS12(key)
+// Pkcs12 Cert
+func RsaFromPKCS12Cert(key []byte) Rsa {
+    return NewRsa().FromPKCS12Cert(key)
 }
 
-// Pkcs12WithPassword
-func RsaFromPKCS12WithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS12WithPassword(key, password)
+// Pkcs12CertWithPassword
+func RsaFromPKCS12CertWithPassword(key []byte, password string) Rsa {
+    return NewRsa().FromPKCS12CertWithPassword(key, password)
 }
 
 // ==========

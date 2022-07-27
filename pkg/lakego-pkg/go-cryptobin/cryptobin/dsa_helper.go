@@ -15,6 +15,11 @@ func DSAFromPrivateKey(key []byte) DSA {
     return NewDSA().FromPrivateKey(key)
 }
 
+// 私钥带密码
+func DSAFromPrivateKeyWithPassword(key []byte, password string) DSA {
+    return NewDSA().FromPrivateKeyWithPassword(key, password)
+}
+
 // 公钥
 func DSAFromPublicKey(key []byte) DSA {
     return NewDSA().FromPublicKey(key)

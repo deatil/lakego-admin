@@ -194,6 +194,71 @@ func (this DSA) VerifyHex(data []byte) DSA {
 
 // ===============
 
+const (
+    // 字节大小
+    dsaSubgroupBytes = 32
+)
+
+// 私钥签名
+func (this DSA) SignBytes() DSA {
+    if this.privateKey == nil {
+        this.Error = errors.New("privateKey error.")
+        return this
+    }
+
+    hashData := this.DataHash(this.signHash, this.data)
+
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    rBytes := r.Bytes()
+    sBytes := s.Bytes()
+    if len(rBytes) > dsaSubgroupBytes || len(sBytes) > dsaSubgroupBytes {
+        this.Error = errors.New("DSA signature too large.")
+        return this
+    }
+
+    out := make([]byte, 2*dsaSubgroupBytes)
+    copy(out[dsaSubgroupBytes-len(rBytes):], rBytes)
+    copy(out[len(out)-len(sBytes):], sBytes)
+
+    this.paredData = out
+
+    return this
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this DSA) VerifyBytes(data []byte) DSA {
+    if this.publicKey == nil {
+        this.Error = errors.New("publicKey error.")
+        return this
+    }
+
+    // 签名结果数据
+    sig := this.data
+
+    if len(sig) != 2*dsaSubgroupBytes {
+        this.Error = errors.New("sig data error.")
+
+        return this
+    }
+
+    r := new(big.Int).SetBytes(sig[:dsaSubgroupBytes])
+    s := new(big.Int).SetBytes(sig[dsaSubgroupBytes:])
+
+    hashData := this.DataHash(this.signHash, data)
+
+    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
+
+    return this
+}
+
+// ===============
+
 // 签名后数据
 func (this DSA) DataHash(signHash string, data []byte) []byte {
     return NewHash().DataHash(signHash, data)

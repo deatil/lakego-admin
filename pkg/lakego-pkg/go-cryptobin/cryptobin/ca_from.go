@@ -61,7 +61,7 @@ func (this CA) FromPublicKey(key any) CA {
 // =======================
 
 // pkcs12
-func (this CA) FromSM2PKCS12(pfxData []byte, password string) CA {
+func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
     pv, certs, err := sm2Pkcs12.DecodeAll(pfxData, password)
     if err != nil {
         this.Error = err
@@ -149,21 +149,21 @@ func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
 }
 
 // pkcs12
-func (this CA) FromPKCS12(pfxData []byte, password string) CA {
+func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
     this.privateKey, this.cert, this.Error = sslmatePkcs12.Decode(pfxData, password)
 
     return this
 }
 
-// 解析 pkcs12
-func (this CA) DecodePKCS12Chain(pfxData []byte, password string) (privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, err error) {
+// 解析 pkcs12 cert
+func (this CA) DecodePKCS12CertChain(pfxData []byte, password string) (privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, err error) {
     privateKey, certificate, caCerts, err = sslmatePkcs12.DecodeChain(pfxData, password)
 
     return
 }
 
-// 解析 pkcs12
-func (this CA) DecodePKCS12TrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
+// 解析 pkcs12 cert
+func (this CA) DecodePKCS12CertTrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
     certs, err = sslmatePkcs12.DecodeTrustStore(pfxData, password)
 
     return

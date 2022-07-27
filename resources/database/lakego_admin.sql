@@ -1,12 +1,12 @@
 DROP TABLE IF EXISTS `pre__action_log`;
 CREATE TABLE `pre__action_log` (
-  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '日志ID',
-  `name` varchar(250) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '操作账号信息',
+  `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '日志id',
+  `name` varchar(250) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '操作账号信息',
   `url` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '请求类型',
   `info` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '内容信息',
-  `useragent` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'User-Agent',
-  `time` int(10) DEFAULT NULL,
+  `useragent` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'user-agent',
+  `time` int(10) DEFAULT NULL COMMENT '记录时间',
   `ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
   `status` char(3) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '输出状态',
   PRIMARY KEY (`id`)
@@ -15,7 +15,7 @@ CREATE TABLE `pre__action_log` (
 DROP TABLE IF EXISTS `pre__admin`;
 CREATE TABLE `pre__admin` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
   `password` char(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password_salt` char(6) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `nickname` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -25,9 +25,9 @@ CREATE TABLE `pre__admin` (
   `is_root` tinyint(1) DEFAULT NULL,
   `status` tinyint(1) NOT NULL,
   `refresh_time` int(10) NOT NULL DEFAULT '0' COMMENT '刷新时间',
-  `refresh_ip` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '刷新IP',
+  `refresh_ip` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '刷新ip',
   `last_active` int(10) DEFAULT NULL,
-  `last_ip` varchar(50) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `last_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `update_time` int(10) DEFAULT NULL,
   `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `add_time` int(10) DEFAULT NULL,
@@ -38,21 +38,21 @@ CREATE TABLE `pre__admin` (
 DROP TABLE IF EXISTS `pre__attachment`;
 CREATE TABLE `pre__attachment` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
-  `owner_id` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '关联类型ID',
-  `owner_type` varchar(50) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '附件关联类型',
-  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件名',
+  `owner_id` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '关联类型id',
+  `owner_type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '附件关联类型',
+  `name` mediumtext CHARACTER SET utf8mb4 NOT NULL COMMENT '文件名',
   `path` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件路径',
   `mime` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件mime类型',
-  `extension` varchar(15) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '文件类型',
+  `extension` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件类型',
   `size` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '文件大小',
   `md5` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '文件md5',
   `sha1` char(40) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT 'sha1 散列值',
-  `disk` varchar(16) CHARACTER SET utf8mb4 NOT NULL DEFAULT 'public' COMMENT '上传驱动',
+  `disk` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'public' COMMENT '上传驱动',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `update_time` int(10) NOT NULL DEFAULT '0' COMMENT '更新时间',
   `create_time` int(10) NOT NULL DEFAULT '0' COMMENT '上传时间',
   `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
-  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加IP',
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加ip',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='附件表';
 
@@ -81,18 +81,18 @@ CREATE TABLE `pre__auth_group_access` (
 DROP TABLE IF EXISTS `pre__auth_rule`;
 CREATE TABLE `pre__auth_rule` (
   `id` char(32) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则id',
-  `parentid` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '上级ID',
+  `parentid` char(32) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '上级id',
   `title` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '规则中文描述',
   `url` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '访问地址',
-  `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'GET' COMMENT '请求类型',
-  `slug` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '地址鉴权标识',
-  `description` varchar(255) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '描述',
-  `listorder` int(10) NOT NULL DEFAULT '100' COMMENT '排序ID',
+  `method` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'get' COMMENT '请求类型',
+  `slug` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '地址鉴权标识',
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '描述',
+  `listorder` int(10) NOT NULL DEFAULT '100' COMMENT '排序id',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '状态',
   `update_time` int(10) DEFAULT '0' COMMENT '更新时间',
-  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '更新IP',
+  `update_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '0' COMMENT '更新ip',
   `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
-  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加IP',
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加ip',
   PRIMARY KEY (`id`),
   KEY `module` (`status`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC COMMENT='规则表';

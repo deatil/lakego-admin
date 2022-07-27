@@ -14,6 +14,11 @@ func EdDSAFromPrivateKey(key []byte) EdDSA {
     return NewEdDSA().FromPrivateKey(key)
 }
 
+// 私钥
+func EdDSAFromPrivateKeyWithPassword(key []byte, password string) EdDSA {
+    return NewEdDSA().FromPrivateKeyWithPassword(key, password)
+}
+
 // 公钥
 func EdDSAFromPublicKey(key []byte) EdDSA {
     return NewEdDSA().FromPublicKey(key)

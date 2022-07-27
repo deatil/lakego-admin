@@ -2,8 +2,8 @@ package cryptobin
 
 import (
     "crypto"
-    "crypto/ed25519"
     "crypto/x509"
+    "crypto/ed25519"
     "encoding/pem"
     "errors"
 )
@@ -26,6 +26,36 @@ func (this EdDSA) ParseEdPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error
     // Parse the key
     var parsedKey any
     if parsedKey, err = x509.ParsePKCS8PrivateKey(block.Bytes); err != nil {
+        return nil, err
+    }
+
+    var pkey ed25519.PrivateKey
+    var ok bool
+    if pkey, ok = parsedKey.(ed25519.PrivateKey); !ok {
+        return nil, ErrNotEdPrivateKey
+    }
+
+    return pkey, nil
+}
+
+// 解析私钥带密码
+func (this EdDSA) ParseEdPrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
+    var err error
+
+    // Parse PEM block
+    var block *pem.Block
+    if block, _ = pem.Decode(key); block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    var blockDecrypted []byte
+    if blockDecrypted, err = x509.DecryptPEMBlock(block, []byte(password)); err != nil {
+        return nil, err
+    }
+
+    // Parse the key
+    var parsedKey any
+    if parsedKey, err = x509.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 

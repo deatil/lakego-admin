@@ -229,7 +229,7 @@ func (this CA) CreatePrivateKey() CA {
 // pkcs12 密钥
 // caCerts 通常保留为空
 // 支持 [rsa | ecdsa | sm2]
-func (this CA) CreatePKCS12(caCerts []*x509.Certificate, pwd string) CA {
+func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
@@ -269,7 +269,7 @@ func (this CA) CreatePKCS12(caCerts []*x509.Certificate, pwd string) CA {
 }
 
 // pkcs12 密钥
-func (this CA) CreatePKCS12TrustStore(certs []*x509.Certificate, password string) CA {
+func (this CA) CreatePKCS12CertTrustStore(certs []*x509.Certificate, password string) CA {
     pfxData, err := sslmatePkcs12.EncodeTrustStore(rand.Reader, certs, password)
     if err != nil {
         this.Error = err

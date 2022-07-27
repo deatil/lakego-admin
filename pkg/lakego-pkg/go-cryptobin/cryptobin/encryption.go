@@ -2,29 +2,36 @@ package cryptobin
 
 // 加密
 func (this Cryptobin) Encrypt() Cryptobin {
-    switch this.multiple {
-        // 不通用的处理
-        case "Chacha20",
-            "Chacha20poly1305",
-            "RC4":
-            return this.GuessEncrypt()
-        // 默认通用
-        default:
-            return this.CipherEncrypt()
+    guessMultiple := this.CheckGuessMultiple()
+    if guessMultiple {
+        return this.GuessEncrypt()
+    } else {
+        return this.CipherEncrypt()
     }
 }
 
 // 解密
 func (this Cryptobin) Decrypt() Cryptobin {
+    guessMultiple := this.CheckGuessMultiple()
+    if guessMultiple {
+        return this.GuessDecrypt()
+    } else {
+        return this.CipherDecrypt()
+    }
+}
+
+// 检测 guess 方式
+func (this Cryptobin) CheckGuessMultiple() bool {
     switch this.multiple {
         // 不通用的处理
         case "Chacha20",
             "Chacha20poly1305",
-            "RC4":
-            return this.GuessDecrypt()
+            "RC4",
+            "Xts":
+            return true
         // 默认通用
         default:
-            return this.CipherDecrypt()
+            return false
     }
 }
 
