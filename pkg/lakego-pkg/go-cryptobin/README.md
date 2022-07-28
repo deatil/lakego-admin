@@ -85,8 +85,9 @@ cyptde := cryptobin.
 ret := cryptobin.
     FromString("string"). // 数据来源, 待加密数据
     SetKey("key").        // 设置密码
+    SetIv("iv_string").   // 设置向量
     Aes().                // 加密类型
-    ECB().                // 加密模式
+    CBC().                // 加密模式
     PKCS7Padding().       // 补码方式
     Encrypt().            // 操作类型, 加密或者解密
     ToBase64String()      // 返回数据类型
@@ -95,13 +96,26 @@ ret := cryptobin.
 
 ### 可用方法
 
-*  数据来源: `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
-*  设置密码: `SetKey(data string)`, `WithKey(key []byte)`
-*  加密类型: `Aes()`, `Des()`, `TriDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `RC4()`, `Xts(cipher string, sectorNum uint64)`
-*  加密模式: `ECB()`, `CBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`
-*  补码方式: `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
-*  操作类型: `Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
-*  返回数据类型: `ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
+*  数据来源:
+`FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
+*  设置密码:
+`SetKey(data string)`, `WithKey(key []byte)`
+*  设置向量:
+`SetIv(data string)`, `WithIv(iv []byte)`
+*  加密类型:
+`Aes()`, `Des()`, `TriDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `RC4()`, `Xts(cipher string, sectorNum uint64)`
+*  加密模式:
+`ECB()`, `CBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`
+*  补码方式:
+`NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
+*  操作类型:
+`Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
+`RsaEncrypt()`, `RsaDecrypt(password ...string)`,
+`RsaPrikeyEncrypt(password ...string)`, `RsaPubkeyDecrypt()`,
+`RsaOAEPEncrypt(typ string)`, `RsaOAEPDecrypt(typ string, password ...string)`,
+`SM2Encrypt()`, `SM2Decrypt(password ...string)`,
+*  返回数据类型:
+`ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
 
 
 ### 开源协议

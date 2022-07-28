@@ -7,7 +7,7 @@ import (
     "github.com/tjfoc/gmsm/x509"
 )
 
-// 国密 PKCS8 私钥
+// 国密私钥
 func (this SM2) CreatePrivateKey() SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
@@ -19,7 +19,7 @@ func (this SM2) CreatePrivateKey() SM2 {
     return this
 }
 
-// 国密 PKCS8 私钥带密码
+// 国密私钥带密码
 func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
@@ -31,7 +31,7 @@ func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     return this
 }
 
-// 国密 公钥
+// 国密公钥
 func (this SM2) CreatePublicKey() SM2 {
     var publicKey *sm2.PublicKey
 

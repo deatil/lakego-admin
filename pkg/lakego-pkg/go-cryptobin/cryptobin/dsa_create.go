@@ -15,7 +15,7 @@ func (this DSA) CreatePrivateKey() DSA {
         return this
     }
 
-    privateKeyBytes, err := this.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := NewDsaPkcs1Key().MarshalPrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -54,7 +54,7 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
     }
 
     // 生成私钥
-    x509PrivateKey, err := this.MarshalPrivateKey(this.privateKey)
+    x509PrivateKey, err := NewDsaPkcs1Key().MarshalPrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -94,7 +94,7 @@ func (this DSA) CreatePublicKey() DSA {
         publicKey = this.publicKey
     }
 
-    publicKeyBytes, err := this.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := NewDsaPkcs1Key().MarshalPublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this
@@ -119,7 +119,7 @@ func (this DSA) CreatePKCS8PrivateKey() DSA {
         return this
     }
 
-    privateKeyBytes, err := this.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -165,7 +165,7 @@ func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...strin
     }
 
     // 生成私钥
-    x509PrivateKey, err := this.MarshalPKCS8PrivateKey(this.privateKey)
+    x509PrivateKey, err := NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -206,7 +206,7 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
         publicKey = this.publicKey
     }
 
-    publicKeyBytes, err := this.MarshalPKCS8PublicKey(publicKey)
+    publicKeyBytes, err := NewDsaPkcs8Key().MarshalPKCS8PublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this

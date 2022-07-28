@@ -195,3 +195,8 @@ func (this Encoding) Asn1To(val any, params ...string) ([]byte, error) {
         return asn1.Unmarshal(this.data, val)
     }
 }
+
+// 序列化输出
+func (this Encoding) SerializeTo(val any) error {
+    return Unserialize(this.data, val)
+}

@@ -24,7 +24,7 @@ func (this DSA) ParsePrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = this.ParsePrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = NewDsaPkcs1Key().ParsePrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -54,7 +54,7 @@ func (this DSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) 
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = this.ParsePrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = NewDsaPkcs1Key().ParsePrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -79,7 +79,7 @@ func (this DSA) ParsePublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = this.ParsePublicKey(block.Bytes); err != nil {
+    if parsedKey, err = NewDsaPkcs1Key().ParsePublicKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -107,7 +107,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error)
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = this.ParsePKCS8PrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = NewDsaPkcs8Key().ParsePKCS8PrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -137,7 +137,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
         return nil, err
     }
 
-    if parsedKey, err = this.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = NewDsaPkcs8Key().ParsePKCS8PrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -162,7 +162,7 @@ func (this DSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = this.ParsePKCS8PublicKey(block.Bytes); err != nil {
+    if parsedKey, err = NewDsaPkcs8Key().ParsePKCS8PublicKey(block.Bytes); err != nil {
         return nil, err
     }
 

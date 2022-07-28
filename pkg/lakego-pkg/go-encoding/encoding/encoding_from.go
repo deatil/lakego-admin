@@ -288,3 +288,10 @@ func (this Encoding) ForAsn1(data any, params ...string) Encoding {
 
     return this
 }
+
+// 序列化
+func (this Encoding) ForSerialize(data any) Encoding {
+    this.data, this.Error = Serialize(data)
+
+    return this
+}
