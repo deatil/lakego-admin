@@ -22,7 +22,7 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
     }
 
     privateBlock := &pem.Block{
-        Type: "ED PRIVATE KEY",
+        Type: "PRIVATE KEY",
         Bytes: x509PrivateKey,
     }
 

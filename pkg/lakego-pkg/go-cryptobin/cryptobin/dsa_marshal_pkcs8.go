@@ -77,8 +77,7 @@ func (this DSA) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error) {
         },
     }
 
-    ret, _ := asn1.Marshal(pkix)
-    return ret, nil
+    return asn1.Marshal(pkix)
 }
 
 // PKCS8 解析公钥
@@ -159,12 +158,12 @@ func (this DSA) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     var xInt cryptobyte.Builder
     xInt.AddASN1BigInt(key.X)
 
-    builderResult, err := xInt.Bytes()
+    privateKeyBytes, err := xInt.Bytes()
     if err != nil {
         return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
     }
 
-    privKey.PrivateKey = builderResult
+    privKey.PrivateKey = privateKeyBytes
 
     return asn1.Marshal(privKey)
 }
@@ -198,6 +197,7 @@ func (this DSA) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err 
                 X: x,
             }
 
+            // 找出 p,q,g 数据
             paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
             if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
                 !paramsDer.ReadASN1Integer(priv.PublicKey.Parameters.P) ||
@@ -206,7 +206,7 @@ func (this DSA) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err 
                 return nil, errors.New("x509: invalid DSA parameters")
             }
 
-            priv.Y = new(big.Int)
+            // 算出 Y 值
             priv.Y.Exp(priv.G, x, priv.P)
 
             if priv.PublicKey.Y.Sign() <= 0 || priv.PublicKey.Parameters.P.Sign() <= 0 ||

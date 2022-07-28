@@ -78,6 +78,58 @@ func main() {
 
     // =====
 
+    // Des-CBC 加密测试
+    cypt2 := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12").
+        SetIv("dfertf12").
+        Des().
+        CBC().
+        PKCS7Padding().
+        Encrypt().
+        ToBase64String()
+    cyptde2 := cryptobin.
+        FromBase64String("W9LgNgPy/GBU635SnbdSgA==").
+        SetKey("dfertf12").
+        SetIv("dfertf12").
+        Des().
+        CBC().
+        PKCS7Padding().
+        Decrypt().
+        ToString()
+
+    // =====
+
+    // TriDes-CFB 加密测试
+    var cypt2Err error
+    var cypt2Err2 error
+    cypt2 := cryptobin.
+        FromString("test-pass").
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        TriDes().
+        CFB().
+        PKCS7Padding().
+        Encrypt().
+        OnError(func(err error) {
+            cypt2Err = err
+        }).
+        ToBase64String()
+    cyptde2 := cryptobin.
+        FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        TriDes().
+        CFB().
+        PKCS7Padding().
+        Decrypt().
+        OnError(func(err error) {
+            cypt2Err2 = err
+        }).
+        ToString()
+
+    // =====
+
     // RSA 加密测试
     enkey, _ := fs.Get("./config/key/encrypted-public.key")
     cypt := cryptobin.

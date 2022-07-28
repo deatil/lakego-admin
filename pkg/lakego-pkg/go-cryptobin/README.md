@@ -20,7 +20,7 @@ go get -u github.com/deatil/go-cryptobin
 ~~~
 
 
-### 使用
+### 开始使用
 
 ~~~go
 package main
@@ -41,6 +41,8 @@ func main() {
         PKCS7Padding().
         Encrypt().
         ToBase64String()
+
+    // 解密
     cyptde := cryptobin.
         FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
         SetKey("dfertf12dfertf12").
@@ -53,61 +55,53 @@ func main() {
     // i3FhtTp5v6aPJx0wTbarwg==
     fmt.Println("加密结果：", cypt)
     fmt.Println("解密结果：", cyptde)
-
-    // =====
-
-    // Des-CBC 加密测试
-    cypt2 := cryptobin.
-        FromString("test-pass").
-        SetKey("dfertf12").
-        SetIv("dfertf12").
-        Des().
-        CBC().
-        PKCS7Padding().
-        Encrypt().
-        ToBase64String()
-    cyptde2 := cryptobin.
-        FromBase64String("W9LgNgPy/GBU635SnbdSgA==").
-        SetKey("dfertf12").
-        SetIv("dfertf12").
-        Des().
-        CBC().
-        PKCS7Padding().
-        Decrypt().
-        ToString()
-
-    // =====
-
-    // TriDes-CFB 加密测试
-    var cypt2Err error
-    var cypt2Err2 error
-    cypt2 := cryptobin.
-        FromString("test-pass").
-        SetKey("dfertf12dfertf12dfertf12").
-        SetIv("dfertf12").
-        TriDes().
-        CFB().
-        PKCS7Padding().
-        Encrypt().
-        OnError(func(err error) {
-            cypt2Err = err
-        }).
-        ToBase64String()
-    cyptde2 := cryptobin.
-        FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
-        SetKey("dfertf12dfertf12dfertf12").
-        SetIv("dfertf12").
-        TriDes().
-        CFB().
-        PKCS7Padding().
-        Decrypt().
-        OnError(func(err error) {
-            cypt2Err2 = err
-        }).
-        ToString()
 }
 
 ~~~
+
+
+### 结构说明
+
+*  默认方式 `Aes`, `ECB`, `NoPadding`
+~~~go
+// 加密数据
+cypt := cryptobin.
+    FromString("useData").
+    SetKey("dfertf12dfertf12").
+    Encrypt().
+    ToBase64String()
+// 解密数据
+cyptde := cryptobin.
+    FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
+    SetKey("dfertf12dfertf12").
+    Decrypt().
+    ToString()
+~~~
+
+*  结构说明
+~~~go
+// 使用代码
+// 注意: 数据来源,设置密码,加密类型,加密模式,补码方式 在 操作类型 之前, 可以调换顺序
+ret := cryptobin.
+    FromString("string"). // 数据来源, 待加密数据
+    SetKey("key").        // 设置密码
+    Aes().                // 加密类型
+    ECB().                // 加密模式
+    PKCS7Padding().       // 补码方式
+    Encrypt().            // 操作类型, 加密或者解密
+    ToBase64String()      // 返回数据类型
+~~~
+
+
+### 可用方法
+
+*  数据来源: `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
+*  设置密码: `SetKey(data string)`, `WithKey(key []byte)`
+*  加密类型: `Aes()`, `Des()`, `TriDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `RC4()`, `Xts(cipher string, sectorNum uint64)`
+*  加密模式: `ECB()`, `CBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`
+*  补码方式: `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
+*  操作类型: `Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
+*  返回数据类型: `ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
 
 
 ### 开源协议
