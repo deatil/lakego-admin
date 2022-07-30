@@ -7,7 +7,7 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/cryptobin"
+    cryptobin "github.com/deatil/go-cryptobin/cryptobin/rsa"
     "github.com/deatil/lakego-filesystem/filesystem"
 )
 
@@ -19,7 +19,7 @@ func main() {
     obj := cryptobin.
         NewRsa().
         GenerateKey(2048)
-    
+
     objPriKey := obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123", "AES256CBC").
@@ -58,7 +58,7 @@ func main() {
         Very([]byte("test-pass")).
         // PSSVery([]byte("测试")).
         ToVeryed()
-        
+
     // Rsa 加密解密 - 公钥加密/私钥解密
     rsa := cryptobin.NewRsa()
 

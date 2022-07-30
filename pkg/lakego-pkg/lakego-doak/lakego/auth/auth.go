@@ -7,7 +7,7 @@ import (
     "errors"
 
     "github.com/deatil/go-encoding/encoding"
-    "github.com/deatil/go-cryptobin/cryptobin"
+    "github.com/deatil/go-cryptobin/cryptobin/crypto"
 
     "github.com/deatil/lakego-jwt/jwt"
     "github.com/deatil/lakego-doak/lakego/path"
@@ -431,7 +431,7 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
 
 // 加密
 func (this *Auth) Encode(data string, passphrase string, iv string) string {
-    data = cryptobin.
+    data = crypto.
         FromString(data).
         SetIv(iv).
         SetKey(passphrase).
@@ -446,7 +446,7 @@ func (this *Auth) Encode(data string, passphrase string, iv string) string {
 
 // 解密
 func (this *Auth) Decode(data string, passphrase string, iv string) string {
-    data = cryptobin.
+    data = crypto.
         FromBase64String(data).
         SetIv(iv).
         SetKey(passphrase).

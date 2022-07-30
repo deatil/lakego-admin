@@ -7,8 +7,9 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/cryptobin"
     "github.com/deatil/lakego-filesystem/filesystem"
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
 )
 
 func main() {
@@ -16,10 +17,10 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
-    obj := cryptobin.
+    obj := cryptobin_sm2.
         NewSM2().
         GenerateKey()
-    
+
     objPriKey := obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123").
@@ -50,7 +51,7 @@ func main() {
     // =====
 
     // SM2 加密
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
 
     enkey2, _ := fs.Get("./runtime/key/sm2_en_key.pub")
     sm2cypt := sm2.
@@ -68,7 +69,7 @@ func main() {
     // =====
 
     // SM2 加密2
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
 
     enkey2, _ := fs.Get("./runtime/key/sm2_key.pub")
     sm2cypt := sm2.
@@ -86,7 +87,7 @@ func main() {
     // =====
 
     // SM2 验证
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
 
     enkey2, _ := fs.Get("./runtime/key/sm2_key")
     sm2cypt := sm2.
@@ -104,7 +105,7 @@ func main() {
     // =====
 
     // SM2 验证2
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
 
     enkey2, _ := fs.Get("./runtime/key/sm2_en_key")
     sm2cypt := sm2.
@@ -123,13 +124,13 @@ func main() {
 
     // 国密 SM2 加密测试
     enkey, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    cypt := cryptobin.
+    cypt := cryptobin_sm2.
         FromString("test-pass").
         SetKey(enkey).
         SM2Encrypt().
         ToBase64String()
     dekey, _ := fs.Get("./runtime/key/sm2_en_key")
-    cyptde := cryptobin.
+    cyptde := cryptobin_sm2.
         FromBase64String("MHECIELEZVMkhELFI5Anm+ReTOTvLErLhdVRthyfB0xgmfqSAiBeGAcCcqG04t+JFmQcpWhYnfS+y8V/LrD4pz5TNoZLWgQgHMMWWPA/puupOlcxpfuOxnauNA2K/dFOiFkW8m8A1vEECQrM2LIoXdHS0A==").
         SetKey(dekey).
         SM2Decrypt("123").
@@ -138,7 +139,7 @@ func main() {
     // =====
 
     // SM2 生成 byte
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
 
     dekey2, _ := fs.Get("./runtime/key/sm2_key")
     sm2PrivateKeyX := sm2.
@@ -154,9 +155,9 @@ func main() {
         GetPrivateKeyD().
         Bytes()
 
-    x := cryptobin.NewEncoding().HexEncode(sm2a)
-    y := cryptobin.NewEncoding().HexEncode(sm2b)
-    d := cryptobin.NewEncoding().HexEncode(sm2c)
+    x := cryptobin_tool.NewEncoding().HexEncode(sm2a)
+    y := cryptobin_tool.NewEncoding().HexEncode(sm2b)
+    d := cryptobin_tool.NewEncoding().HexEncode(sm2c)
 
     // =====
 
@@ -165,7 +166,7 @@ func main() {
     sm2PublicKeyY  := "d521f5e8249de7a405f254a9888cbb8e651fd60c50bd22bd182a4bc7d1261c94"
     sm2PrivateKeyD := "0f495b5445eb59ddecf0626f5ca0041c550584f0189e89d95f8d4c52499ff838"
 
-    sm2 := cryptobin.NewSM2()
+    sm2 := cryptobin_sm2.NewSM2()
     sm2PriKey := sm2.
         FromPublicKeyString(sm2PublicKeyX + sm2PublicKeyY).
         CreatePublicKey().
@@ -176,35 +177,48 @@ func main() {
         CreatePrivateKey().
         ToKeyString()
 
-    // =====
+}
+~~~
 
-    // sm2 签名【招行】
+* 【招商银行】支付签名验证
+~~~go
+package main
+
+import (
+    "fmt"
+    "encoding/base64"
+
+    cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
+)
+
+func main() {
+    // sm2 签名【招商银行】
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
-    sm2keyBytes := encoding.FromBase64String(sm2key).ToBytes()
+    sm2keyBytes, _ := base64.StdEncoding.DecodeString(sm2key)
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
-    sm2Sign := cryptobin.NewSM2().
+    sm2Sign := cryptobin_sm2.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
         SignHex([]byte(sm2userid)).
         ToBase64String()
 
-    // =====
-
-    // sm2 验证【招行】
+    // sm2 验证【招商银行】
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
-    sm2keyBytes := encoding.FromBase64String(sm2key).ToBytes()
+    sm2keyBytes, _ := base64.StdEncoding.DecodeString(sm2key)
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
-
     sm2signdata := "CDAYcxm3jM+65XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
-    sm2Sign := cryptobin.NewSM2().
+    sm2Very := cryptobin.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromBase64String(sm2signdata).
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
         ToVeryed()
+
+    fmt.Println("签名结果：", sm2Sign)
+    fmt.Println("验证结果：", sm2Very)
 
 }
 ~~~

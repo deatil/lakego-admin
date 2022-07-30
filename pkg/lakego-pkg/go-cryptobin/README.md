@@ -28,12 +28,12 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/cryptobin"
+    "github.com/deatil/go-cryptobin/cryptobin/crypto"
 )
 
 func main() {
     // 加密
-    cypt := cryptobin.
+    cypt := crypto.
         FromString("useData").
         SetKey("dfertf12dfertf12").
         Aes().
@@ -43,7 +43,7 @@ func main() {
         ToBase64String()
 
     // 解密
-    cyptde := cryptobin.
+    cyptde := crypto.
         FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
         SetKey("dfertf12dfertf12").
         Aes().
@@ -65,13 +65,13 @@ func main() {
 *  默认方式 `Aes`, `ECB`, `NoPadding`
 ~~~go
 // 加密数据
-cypt := cryptobin.
+cypt := crypto.
     FromString("useData").
     SetKey("dfertf12dfertf12").
     Encrypt().
     ToBase64String()
 // 解密数据
-cyptde := cryptobin.
+cyptde := crypto.
     FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
     SetKey("dfertf12dfertf12").
     Decrypt().
@@ -82,7 +82,7 @@ cyptde := cryptobin.
 ~~~go
 // 使用代码
 // 注意: 数据来源,设置密码,加密类型,加密模式,补码方式 在 操作类型 之前, 可以调换顺序
-ret := cryptobin.
+ret := crypto.
     FromString("string"). // 数据来源, 待加密数据
     SetKey("key").        // 设置密码
     SetIv("iv_string").   // 设置向量

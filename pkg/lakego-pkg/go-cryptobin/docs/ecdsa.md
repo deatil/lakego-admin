@@ -7,7 +7,7 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/cryptobin"
+    cryptobin "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
     "github.com/deatil/lakego-filesystem/filesystem"
 )
 
@@ -20,7 +20,7 @@ func main() {
         NewEcdsa().
         WithCurve("P521").
         GenerateKey()
-    
+
     objPriKey := obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123", "AES256CBC").

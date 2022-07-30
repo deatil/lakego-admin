@@ -7,7 +7,7 @@ package main
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/cryptobin"
+    cryptobin "github.com/deatil/go-cryptobin/cryptobin/ca"
     "github.com/deatil/lakego-filesystem/filesystem"
 )
 

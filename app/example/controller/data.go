@@ -14,8 +14,15 @@ import (
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-pipeline/pipeline"
     "github.com/deatil/go-exception/exception"
-    "github.com/deatil/go-cryptobin/cryptobin"
     "github.com/deatil/lakego-filesystem/filesystem"
+
+    _ "github.com/deatil/go-cryptobin/cryptobin/ca"
+    _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
+    _ "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
+    _ "github.com/deatil/go-cryptobin/cryptobin/eddsa"
+    cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
+    cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
+    cryptobin_crypto "github.com/deatil/go-cryptobin/cryptobin/crypto"
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
@@ -154,7 +161,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ToDatetimeString()
 
     // SM4 加密测试
-    cypt := cryptobin.
+    cypt := cryptobin_crypto.
         FromString("test-pass").
         SetKey("dfertf12").
         Des().
@@ -162,7 +169,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ISO10126Padding().
         Encrypt().
         ToBase64String()
-    cyptde := cryptobin.
+    cyptde := cryptobin_crypto.
         FromBase64String("bvifBivJ1GEXAEgBAo9OoA==").
         SetKey("dfertf12").
         Des().
@@ -172,7 +179,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ToString()
 
     // 生成证书
-    rsa := cryptobin.NewRsa()
+    rsa := cryptobin_rsa.NewRsa()
     rsaPriKey := rsa.
         GenerateKey(2048).
         CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
@@ -244,7 +251,7 @@ func (this *Data) Error(ctx *gin.Context) {
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
-    sm2Sign := cryptobin.NewSM2().
+    sm2Sign := cryptobin_sm2.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
         SignHex([]byte(sm2userid)).
