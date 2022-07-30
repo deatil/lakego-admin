@@ -8,79 +8,84 @@ func NewRsa() Rsa {
     }
 }
 
+// 构造函数
+func New() Rsa {
+    return NewRsa()
+}
+
 // ==========
 
 // 私钥
-func RsaFromPrivateKey(key []byte) Rsa {
+func FromPrivateKey(key []byte) Rsa {
     return NewRsa().FromPrivateKey(key)
 }
 
 // 私钥带密码
-func RsaFromPrivateKeyWithPassword(key []byte, password string) Rsa {
+func FromPrivateKeyWithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPrivateKeyWithPassword(key, password)
 }
 
 // 公钥
-func RsaFromPublicKey(key []byte) Rsa {
+func FromPublicKey(key []byte) Rsa {
     return NewRsa().FromPublicKey(key)
 }
 
 // 生成密钥
 // bits = 512 | 1024 | 2048 | 4096
-func RsaGenerateKey(bits int) Rsa {
+func GenerateKey(bits int) Rsa {
     return NewRsa().GenerateKey(bits)
 }
 
 // ==========
 
 // Pkcs1
-func RsaFromPKCS1PrivateKey(key []byte) Rsa {
+func FromPKCS1PrivateKey(key []byte) Rsa {
     return NewRsa().FromPKCS1PrivateKey(key)
 }
 
 // Pkcs1WithPassword
-func RsaFromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
+func FromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPKCS1PrivateKeyWithPassword(key, password)
 }
 
 // Pkcs8
-func RsaFromPKCS8PrivateKey(key []byte) Rsa {
+func FromPKCS8PrivateKey(key []byte) Rsa {
     return NewRsa().FromPKCS8PrivateKey(key)
 }
 
 // Pkcs8WithPassword
-func RsaFromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
+func FromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
 // Pkcs12 Cert
-func RsaFromPKCS12Cert(key []byte) Rsa {
+func FromPKCS12Cert(key []byte) Rsa {
     return NewRsa().FromPKCS12Cert(key)
 }
 
 // Pkcs12CertWithPassword
-func RsaFromPKCS12CertWithPassword(key []byte, password string) Rsa {
+func FromPKCS12CertWithPassword(key []byte, password string) Rsa {
     return NewRsa().FromPKCS12CertWithPassword(key, password)
 }
 
 // ==========
 
 // 字节
-func RsaFromBytes(data []byte) Rsa {
+func FromBytes(data []byte) Rsa {
     return NewRsa().FromBytes(data)
 }
 
 // 字符
-func RsaFromString(data string) Rsa {
+func FromString(data string) Rsa {
     return NewRsa().FromString(data)
 }
 
 // Base64
-func RsaFromBase64String(data string) Rsa {
+func FromBase64String(data string) Rsa {
     return NewRsa().FromBase64String(data)
 }
 
 // Hex
-func RsaFromHexString(data string) Rsa {
+func FromHexString(data string) Rsa {
     return NewRsa().FromHexString(data)
 }

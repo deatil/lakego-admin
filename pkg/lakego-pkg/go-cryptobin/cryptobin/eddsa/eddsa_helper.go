@@ -7,46 +7,51 @@ func NewEdDSA() EdDSA {
     }
 }
 
+// 构造函数
+func New() EdDSA {
+    return NewEdDSA()
+}
+
 // ==========
 
 // 私钥
-func EdDSAFromPrivateKey(key []byte) EdDSA {
+func FromPrivateKey(key []byte) EdDSA {
     return NewEdDSA().FromPrivateKey(key)
 }
 
 // 私钥
-func EdDSAFromPrivateKeyWithPassword(key []byte, password string) EdDSA {
+func FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
     return NewEdDSA().FromPrivateKeyWithPassword(key, password)
 }
 
 // 公钥
-func EdDSAFromPublicKey(key []byte) EdDSA {
+func FromPublicKey(key []byte) EdDSA {
     return NewEdDSA().FromPublicKey(key)
 }
 
 // 生成密钥
-func EdDSAGenerateKey() EdDSA {
+func GenerateKey() EdDSA {
     return NewEdDSA().GenerateKey()
 }
 
 // ==========
 
 // 字节
-func EdDSAFromBytes(data []byte) EdDSA {
+func FromBytes(data []byte) EdDSA {
     return NewEdDSA().FromBytes(data)
 }
 
 // 字符
-func EdDSAFromString(data string) EdDSA {
+func FromString(data string) EdDSA {
     return NewEdDSA().FromString(data)
 }
 
 // Base64
-func EdDSAFromBase64String(data string) EdDSA {
+func FromBase64String(data string) EdDSA {
     return NewEdDSA().FromBase64String(data)
 }
 
 // Hex
-func EdDSAFromHexString(data string) EdDSA {
+func FromHexString(data string) EdDSA {
     return NewEdDSA().FromHexString(data)
 }

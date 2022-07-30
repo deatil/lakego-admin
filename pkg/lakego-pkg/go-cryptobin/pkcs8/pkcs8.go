@@ -27,55 +27,25 @@ const PBKDF2SaltSize = 16
 // iterations. Nist recommends at least 10k, 1Passsword uses 100k.
 const PBKDF2Iterations = 10000
 
-// pkcs8 reflects an ASN.1, PKCS#8 PrivateKey. See
-// ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-8/pkcs-8v1_2.asn
-// and RFC 5208.
-type pkcs8 struct {
-    Version    int
-    Algo       pkix.AlgorithmIdentifier
-    PrivateKey []byte
+// 结构体数据可以查看以下文档
+// RFC5208 at https://tools.ietf.org/html/rfc5208
+// RFC5958 at https://tools.ietf.org/html/rfc5958
+type encryptedPrivateKeyInfo struct {
+    EncryptionAlgorithm pkix.AlgorithmIdentifier
+    EncryptedData       []byte
 }
 
-type publicKeyInfo struct {
-    Raw       asn1.RawContent
-    Algo      pkix.AlgorithmIdentifier
-    PublicKey asn1.BitString
+// pbes2 数据
+type pbes2Params struct {
+    KeyDerivationFunc pkix.AlgorithmIdentifier
+    EncryptionScheme  pkix.AlgorithmIdentifier
 }
 
-type prfParam struct {
-    Algo      asn1.ObjectIdentifier
-    NullParam asn1.RawValue
-}
-
+// pbkdf2 数据
 type pbkdf2Params struct {
     Salt           []byte
     IterationCount int
-    PrfParam       prfParam `asn1:"optional"`
-}
-
-type pbkdf2Algorithms struct {
-    Algo         asn1.ObjectIdentifier
-    PBKDF2Params pbkdf2Params
-}
-
-type pbkdf2Encs struct {
-    EncryAlgo asn1.ObjectIdentifier
-    IV        []byte
-}
-
-type pbes2Params struct {
-    KeyDerivationFunc pbkdf2Algorithms
-    EncryptionScheme  pbkdf2Encs
-}
-
-type encryptedlAlgorithmIdentifier struct {
-    Algorithm  asn1.ObjectIdentifier
-    Parameters pbes2Params
-}
-
-type encryptedPrivateKeyInfo struct {
-    Algo       encryptedlAlgorithmIdentifier
-    PrivateKey []byte
+    PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
 }
 
 var (
@@ -300,23 +270,34 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
         return nil, errors.New(err.Error() + " failed to unmarshal private key")
     }
 
-    if !pki.Algo.Algorithm.Equal(oidPBES2) {
+    if !pki.EncryptionAlgorithm.Algorithm.Equal(oidPBES2) {
         return nil, errors.New("unsupported encrypted PEM: only PBES2 is supported")
     }
 
-    if !pki.Algo.Parameters.KeyDerivationFunc.Algo.Equal(oidPKCS5PBKDF2) {
+    var params pbes2Params
+    if _, err := asn1.Unmarshal(pki.EncryptionAlgorithm.Parameters.FullBytes, &params); err != nil {
+        return nil, errors.New("pkcs8: invalid PBES2 parameters")
+    }
+
+    if !params.KeyDerivationFunc.Algorithm.Equal(oidPKCS5PBKDF2) {
         return nil, errors.New("unsupported encrypted PEM: only PBKDF2 is supported")
     }
 
-    encParam := pki.Algo.Parameters.EncryptionScheme
-    kdfParam := pki.Algo.Parameters.KeyDerivationFunc.PBKDF2Params
+    var iv []byte
+    if _, err := asn1.Unmarshal(params.EncryptionScheme.Parameters.FullBytes, &iv); err != nil {
+        return nil, errors.New("pkcs8: invalid PBES2 iv")
+    }
 
-    iv := encParam.IV
+    var kdfParam pbkdf2Params
+    if _, err := asn1.Unmarshal(params.KeyDerivationFunc.Parameters.FullBytes, &kdfParam); err != nil {
+        return nil, errors.New("pkcs8: invalid PBES2 parameters")
+    }
+
     salt := kdfParam.Salt
     iter := kdfParam.IterationCount
 
     // pbkdf2 hash function
-    keyHash := prfByOID(kdfParam.PrfParam.Algo)
+    keyHash := prfByOID(kdfParam.PrfParam.Algorithm)
     if keyHash == nil {
         return nil, errors.New("unsupported PRF")
     }
@@ -326,40 +307,36 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var err error
     switch {
         // AES-128-CBC, AES-192-CBC, AES-256-CBC
-        case encParam.EncryAlgo.Equal(oidAES128CBC):
+        case params.EncryptionScheme.Algorithm.Equal(oidAES128CBC):
             symkey = pbkdf2.Key(password, salt, iter, 16, keyHash)
             block, err = aes.NewCipher(symkey)
-        case encParam.EncryAlgo.Equal(oidAES192CBC):
+        case params.EncryptionScheme.Algorithm.Equal(oidAES192CBC):
             symkey = pbkdf2.Key(password, salt, iter, 24, keyHash)
             block, err = aes.NewCipher(symkey)
-        case encParam.EncryAlgo.Equal(oidAES256CBC):
+        case params.EncryptionScheme.Algorithm.Equal(oidAES256CBC):
             symkey = pbkdf2.Key(password, salt, iter, 32, keyHash)
             block, err = aes.NewCipher(symkey)
         // DES, TripleDES
-        case encParam.EncryAlgo.Equal(oidDESCBC):
+        case params.EncryptionScheme.Algorithm.Equal(oidDESCBC):
             symkey = pbkdf2.Key(password, salt, iter, 8, keyHash)
             block, err = des.NewCipher(symkey)
-        case encParam.EncryAlgo.Equal(oidDESEDE3CBC):
+        case params.EncryptionScheme.Algorithm.Equal(oidDESEDE3CBC):
             symkey = pbkdf2.Key(password, salt, iter, 24, keyHash)
             block, err = des.NewTripleDESCipher(symkey)
         default:
-            return nil, errors.New(fmt.Sprintf("unsupported encrypted PEM: unknown algorithm %v", encParam.EncryAlgo))
+            return nil, errors.New(fmt.Sprintf("unsupported encrypted PEM: unknown algorithm %v", params.EncryptionScheme.Algorithm))
     }
 
     if err != nil {
         return nil, err
     }
 
-    data = pki.PrivateKey
+    data = pki.EncryptedData
+
     mode := cipher.NewCBCDecrypter(block, iv)
     mode.CryptBlocks(data, data)
 
-    // Blocks are padded using a scheme where the last n bytes of padding are all
-    // equal to n. It can pad from 1 to blocksize bytes inclusive. See RFC 1423.
-    // For example:
-    // [x y z 2 2]
-    // [x y 7 7 7 7 7 7 7]
-    // If we detect a bad padding, we assume it is an invalid password.
+    // 解析加密数据
     blockSize := block.BlockSize()
     dlen := len(data)
     if dlen == 0 || dlen%blockSize != 0 {
@@ -465,28 +442,62 @@ func EncryptPKCS8PrivateKey(
     }
     enc.CryptBlocks(encrypted, encrypted)
 
-    // Build encrypted ans1 data
-    pki := encryptedPrivateKeyInfo{
-        Algo: encryptedlAlgorithmIdentifier{
-            Algorithm: oidPBES2,
-            Parameters: pbes2Params{
-                KeyDerivationFunc: pbkdf2Algorithms{
-                    Algo: oidPKCS5PBKDF2,
-                    PBKDF2Params: pbkdf2Params{
-                        Salt:           salt,
-                        IterationCount: iterationCount,
-                        PrfParam: prfParam{
-                            Algo: oidUseAsn1,
-                        },
-                    },
-                },
-                EncryptionScheme: pbkdf2Encs{
-                    EncryAlgo: ciph.identifier,
-                    IV:        iv,
-                },
+    // 生成 asn1 数据开始
+    kdfParams := pbkdf2Params{
+        Salt:           salt,
+        IterationCount: iterationCount,
+        PrfParam: pkix.AlgorithmIdentifier{
+            Algorithm:  oidUseAsn1,
+            Parameters: asn1.RawValue{
+                Tag: asn1.TagNull,
             },
         },
-        PrivateKey: encrypted,
+    }
+
+    marshalledParams, err := asn1.Marshal(kdfParams)
+    if err != nil {
+        return nil, err
+    }
+
+    keyDerivationFunc := pkix.AlgorithmIdentifier{
+        Algorithm:  oidPKCS5PBKDF2,
+        Parameters: asn1.RawValue{
+            FullBytes: marshalledParams,
+        },
+    }
+
+    marshalledIV, err := asn1.Marshal(iv)
+    if err != nil {
+        return nil, err
+    }
+
+    encryptionScheme := pkix.AlgorithmIdentifier{
+        Algorithm:  ciph.identifier,
+        Parameters: asn1.RawValue{
+            FullBytes: marshalledIV,
+        },
+    }
+
+    encryptionAlgorithmParams := pbes2Params{
+        EncryptionScheme:  encryptionScheme,
+        KeyDerivationFunc: keyDerivationFunc,
+    }
+    marshalledEncryptionAlgorithmParams, err := asn1.Marshal(encryptionAlgorithmParams)
+    if err != nil {
+        return nil, err
+    }
+
+    encryptionAlgorithm := pkix.AlgorithmIdentifier{
+        Algorithm:  oidPBES2,
+        Parameters: asn1.RawValue{
+            FullBytes: marshalledEncryptionAlgorithmParams,
+        },
+    }
+
+    // 生成 ans1 数据
+    pki := encryptedPrivateKeyInfo{
+        EncryptionAlgorithm: encryptionAlgorithm,
+        EncryptedData:       encrypted,
     }
 
     b, err := asn1.Marshal(pki)

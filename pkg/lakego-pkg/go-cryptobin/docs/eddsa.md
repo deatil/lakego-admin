@@ -23,7 +23,6 @@ func main() {
     objPriKey := obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123", "AES256CBC").
-        // CreateYoumarkPKCS8PrivateKeyWithPassword("123", Youmark_PKCS8_AES256CBC_SHA256).
         ToKeyString()
     objPubKey := obj.
         CreatePublicKey().
@@ -39,7 +38,6 @@ func main() {
         FromString("test-pass").
         FromPrivateKey([]byte(obj2Pri)).
         // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
-        // FromYoumarkPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         ToBase64String()
     obj2Pub, _ := fs.Get("./runtime/key/eddsa.pub")

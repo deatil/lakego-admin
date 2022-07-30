@@ -27,7 +27,6 @@ func main() {
         // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC").
         // CreatePKCS8PrivateKey().
         // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
-        // CreateYoumarkPKCS8PrivateKeyWithPassword("123", Youmark_PKCS8_AES256CBC_SHA256).
         ToKeyString()
     objPubKey := obj.
         CreatePublicKey().
@@ -47,7 +46,6 @@ func main() {
         // FromPKCS1PrivateKeyWithPassword([]byte(obj2Pri), "123").
         // FromPKCS8PrivateKey([]byte(obj2Pri)).
         // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
-        // FromYoumarkPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         // PSSSign().
         ToBase64String()
