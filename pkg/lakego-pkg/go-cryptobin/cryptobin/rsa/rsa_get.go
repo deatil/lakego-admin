@@ -2,6 +2,8 @@ package rsa
 
 import (
     "crypto/rsa"
+
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -12,6 +14,22 @@ func (this Rsa) GetPrivateKey() *rsa.PrivateKey {
 // 获取 PublicKey
 func (this Rsa) GetPublicKey() *rsa.PublicKey {
     return this.publicKey
+}
+
+// 获取 PublicKeyN
+func (this Rsa) GetPublicKeyNHexString() string {
+    data := this.publicKey.N
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
+}
+
+// 获取 PublicKeyE
+func (this Rsa) GetPublicKeyE() int {
+    return this.publicKey.E
 }
 
 // 获取 keyData

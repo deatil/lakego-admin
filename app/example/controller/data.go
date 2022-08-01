@@ -257,6 +257,15 @@ func (this *Data) Error(ctx *gin.Context) {
         SignHex([]byte(sm2userid)).
         ToBase64String()
 
+    // sm2 验证【招商银行】
+    sm2signdata := "WHqK4u0GmYMZaquvV+ZIxVkRGCW6UOlLlX/OPgJ89rDj81fPRcN9K8+4SuvwlpXK7iVvxf7LGL8auE7ofnzEig=="
+    sm2Very := cryptobin_sm2.NewSM2().
+        FromPrivateKeyBytes(sm2keyBytes).
+        MakePublicKey().
+        FromBase64String(sm2signdata).
+        VerifyHex([]byte(sm2data), []byte(sm2userid)).
+        ToVeryed()
+
     // crc8
     crc8Hex, _ := hex.DecodeString("010f00")
     crc8Data := crc8.ChecksumROHC(crc8Hex)
@@ -347,6 +356,7 @@ func (this *Data) Error(ctx *gin.Context) {
         // "redisData": redisData,
 
         "sm2Sign": sm2Sign,
+        "sm2Very": sm2Very,
 
         "error": data,
         "data2": data2,

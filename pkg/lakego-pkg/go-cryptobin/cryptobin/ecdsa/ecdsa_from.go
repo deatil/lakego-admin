@@ -5,7 +5,7 @@ import (
     "math/big"
     "crypto/rand"
     "crypto/ecdsa"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -66,6 +66,21 @@ func (this Ecdsa) FromPublicKeyString(keyString string) Ecdsa {
 
     x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
     y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
+
+    this.publicKey = &ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 公钥 x,y 16进制字符对
+// [xString: xHexString, yString: yHexString]
+func (this Ecdsa) FromPublicKeyXYString(xString string, yString string) Ecdsa {
+    x, _ := new(big.Int).SetString(xString[:], 16)
+    y, _ := new(big.Int).SetString(yString[:], 16)
 
     this.publicKey = &ecdsa.PublicKey{
         Curve: this.curve,

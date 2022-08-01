@@ -22,14 +22,14 @@ func (this Ecdsa) WithPublicKey(data *ecdsa.PublicKey) Ecdsa {
 // 设置 data
 // 可选 [P521 | P384 | P256 | P224]
 func (this Ecdsa) WithCurve(curve string) Ecdsa {
-    switch {
-        case curve == "P521":
+    switch curve {
+        case "P521":
             this.curve = elliptic.P521()
-        case curve == "P384":
+        case "P384":
             this.curve = elliptic.P384()
-        case curve == "P256":
+        case "P256":
             this.curve = elliptic.P256()
-        case curve == "P224":
+        case "P224":
             this.curve = elliptic.P224()
     }
 

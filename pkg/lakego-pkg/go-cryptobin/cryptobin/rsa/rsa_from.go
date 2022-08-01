@@ -1,9 +1,10 @@
 package rsa
 
 import (
+    "math/big"
     "crypto/rsa"
     "crypto/rand"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -42,6 +43,21 @@ func (this Rsa) GenerateKey(bits int) Rsa {
 
     // 生成公钥
     this.publicKey = &this.privateKey.PublicKey
+
+    return this
+}
+
+// ==========
+
+// 模数、指数生成公钥
+// 指数默认为 10001
+func (this Rsa) FromPublicKeyNE(nString string, e int) Rsa {
+    n, _ := new(big.Int).SetString(nString[:], 16)
+
+    this.publicKey = &rsa.PublicKey{
+        N: n,
+        E: e,
+    }
 
     return this
 }

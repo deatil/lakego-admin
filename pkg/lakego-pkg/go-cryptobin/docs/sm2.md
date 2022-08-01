@@ -205,14 +205,10 @@ func main() {
         ToBase64String()
 
     // sm2 验证【招商银行】
-    sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
-    sm2keyBytes, _ := base64.StdEncoding.DecodeString(sm2key)
-    sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
-    sm2userid := "N0032612070000000000000000"
-    sm2userid = sm2userid[0:16]
     sm2signdata := "CDAYcxm3jM+65XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
-    sm2Very := cryptobin.NewSM2().
+    sm2Very := cryptobin_sm2.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
+        MakePublicKey().
         FromBase64String(sm2signdata).
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
         ToVeryed()

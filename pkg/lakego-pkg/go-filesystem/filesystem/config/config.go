@@ -32,7 +32,7 @@ type Config struct {
 /**
  * 覆盖旧数据
  */
-func (this Config) Set(data DataMap) interfaces.Config {
+func (this Config) With(data DataMap) interfaces.Config {
     this.Data = data
 
     return this
@@ -41,7 +41,7 @@ func (this Config) Set(data DataMap) interfaces.Config {
 /**
  * 设置单个新数据
  */
-func (this Config) With(key string, value any) interfaces.Config {
+func (this Config) Set(key string, value any) interfaces.Config {
     this.Data[key] = value
 
     return this

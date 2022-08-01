@@ -89,14 +89,14 @@ func (this Ecdh) ComputeSecret(private PrivateKey, peersPublic PublicKey) (secre
 func New(curve string) Ecdh {
     var c elliptic.Curve
 
-    switch {
-        case curve == "P521":
+    switch curve {
+        case "P521":
             c = elliptic.P521()
-        case curve == "P384":
+        case "P384":
             c = elliptic.P384()
-        case curve == "P256":
+        case "P256":
             c = elliptic.P256()
-        case curve == "P224":
+        case "P224":
             c = elliptic.P224()
         default:
             c = elliptic.P256()

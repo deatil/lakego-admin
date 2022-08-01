@@ -1,9 +1,10 @@
 package ecdsa
 
 import (
-    "math/big"
     "crypto/ecdsa"
     "crypto/elliptic"
+
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -17,21 +18,36 @@ func (this Ecdsa) GetPrivateKeyCurve() elliptic.Curve {
 }
 
 // 获取 PrivateKeyX
-// privateKeyXHex := cryptobin_tool.NewEncoding().HexEncode(GetPrivateKeyX().Bytes())
-func (this Ecdsa) GetPrivateKeyX() *big.Int {
-    return this.privateKey.X
+func (this Ecdsa) GetPrivateKeyXHexString() string {
+    data := this.privateKey.X
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
 }
 
 // 获取 PrivateKeyY
-// privateKeyYHex := cryptobin_tool.NewEncoding().HexEncode(GetPrivateKeyY().Bytes())
-func (this Ecdsa) GetPrivateKeyY() *big.Int {
-    return this.privateKey.Y
+func (this Ecdsa) GetPrivateKeyYHexString() string {
+    data := this.privateKey.Y
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
 }
 
 // 获取 PrivateKeyD
-// privateKeyDHex := cryptobin_tool.NewEncoding().HexEncode(GetPrivateKeyD().Bytes())
-func (this Ecdsa) GetPrivateKeyD() *big.Int {
-    return this.privateKey.D
+func (this Ecdsa) GetPrivateKeyDHexString() string {
+    data := this.privateKey.D
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
 }
 
 // 获取 PublicKey
@@ -45,15 +61,25 @@ func (this Ecdsa) GetPublicKeyCurve() elliptic.Curve {
 }
 
 // 获取 PublicKeyX
-// publicKeyXHex := cryptobin_tool.NewEncoding().HexEncode(GetPublicKeyX().Bytes())
-func (this Ecdsa) GetPublicKeyX() *big.Int {
-    return this.publicKey.X
+func (this Ecdsa) GetPublicKeyXHexString() string {
+    data := this.publicKey.X
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
 }
 
 // 获取 PublicKeyY
-// publicKeyYHex := cryptobin_tool.NewEncoding().HexEncode(GetPublicKeyY().Bytes())
-func (this Ecdsa) GetPublicKeyY() *big.Int {
-    return this.publicKey.Y
+func (this Ecdsa) GetPublicKeyYHexString() string {
+    data := this.publicKey.Y
+
+    dataHex := cryptobin_tool.
+        NewEncoding().
+        HexEncode(data.Bytes())
+
+    return dataHex
 }
 
 // 获取 keyData

@@ -6,7 +6,7 @@ import (
     "crypto/rand"
 
     "github.com/tjfoc/gmsm/sm2"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -54,6 +54,21 @@ func (this SM2) FromPublicKeyString(keyString string) SM2 {
 
     x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
     y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
+
+    this.publicKey = &sm2.PublicKey{
+        Curve: sm2.P256Sm2(),
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 公钥 x,y 16进制字符对
+// [xString: xHexString, yString: yHexString]
+func (this SM2) FromPublicKeyXYString(xString string, yString string) SM2 {
+    x, _ := new(big.Int).SetString(xString[:], 16)
+    y, _ := new(big.Int).SetString(yString[:], 16)
 
     this.publicKey = &sm2.PublicKey{
         Curve: sm2.P256Sm2(),
@@ -119,9 +134,6 @@ func (this SM2) FromPrivateKeyBytes(priByte []byte) SM2 {
     priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
 
     this.privateKey = priv
-
-    // 同时生成公钥
-    this.publicKey = &this.privateKey.PublicKey
 
     return this
 }

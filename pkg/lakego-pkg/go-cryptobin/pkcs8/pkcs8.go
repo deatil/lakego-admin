@@ -64,7 +64,7 @@ var DefaultOpts = Opts{
     KDFOpts: PBKDF2Opts{
         SaltSize:       16,
         IterationCount: 10000,
-        HMACHash:       crypto.MD5,
+        HMACHash:       crypto.SHA256,
     },
 }
 
