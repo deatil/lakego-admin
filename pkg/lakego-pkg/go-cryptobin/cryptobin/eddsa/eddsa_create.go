@@ -6,9 +6,78 @@ import (
     "crypto/x509"
     "crypto/ed25519"
     "encoding/pem"
-    
+
     "github.com/deatil/go-cryptobin/pkcs8"
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
+
+// Cipher 列表
+var CipherMap = map[string]pkcs8.CipherBlock{
+    "DESCBC":     pkcs8.DESCBC,
+    "DESEDE3CBC": pkcs8.DESEDE3CBC,
+    "AES128CBC":  pkcs8.AES128CBC,
+    "AES192CBC":  pkcs8.AES192CBC,
+    "AES256CBC":  pkcs8.AES256CBC,
+}
+
+type (
+    // 配置
+    Opts = pkcs8.Opts
+    // PBKDF2 配置
+    PBKDF2Opts = pkcs8.PBKDF2Opts
+    // Scrypt 配置
+    ScryptOpts = pkcs8.ScryptOpts
+)
+
+// 解析配置
+func parseOpt(opts ...any) (pkcs8.Opts, error) {
+    if len(opts) == 0 {
+        return pkcs8.DefaultOpts, nil
+    }
+
+    switch newOpt := opts[0].(type) {
+        case pkcs8.Opts:
+            return newOpt, nil
+        case string:
+            // DESCBC | DESEDE3CBC | AES128CBC
+            // AES192CBC | AES256CBC
+            opt := "AES256CBC"
+            if len(opts) > 0 {
+                opt = opts[0].(string)
+            }
+
+            // MD5 | SHA1 | SHA224 | SHA256 | SHA384
+            // SHA512 | SHA512_224 | SHA512_256
+            encryptHash := "SHA1"
+            if len(opts) > 1 {
+                encryptHash = opts[1].(string)
+            }
+
+            // 具体方式
+            cipher, ok := CipherMap[opt]
+            if !ok {
+                return pkcs8.Opts{}, errors.New("PEMCipher not exists.")
+            }
+
+            hmacHash := cryptobin_tool.NewHash().
+                GetCryptoHash(encryptHash)
+
+            // 设置
+            enOpt := pkcs8.Opts{
+                Cipher:  cipher,
+                KDFOpts: pkcs8.PBKDF2Opts{
+                    SaltSize:       16,
+                    IterationCount: 10000,
+                    HMACHash:       hmacHash,
+                },
+            }
+
+            return enOpt, nil
+        default:
+            return pkcs8.DefaultOpts, nil
+    }
+}
+
 
 // 私钥
 func (this EdDSA) CreatePrivateKey() EdDSA {
@@ -35,30 +104,15 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 
 // 私钥带密码
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) EdDSA {
+func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
         this.Error = errors.New("privateKey error.")
         return this
     }
 
-    // DESCBC | DESEDE3CBC | AES128CBC
-    // AES192CBC | AES256CBC
-    opt := "AES256CBC"
-    if len(opts) > 0 {
-        opt = opts[0]
-    }
-
-    // MD5 | SHA1 | SHA224 | SHA256 | SHA384
-    // SHA512 | SHA512_224 | SHA512_256
-    encryptHash := "SHA1"
-    if len(opts) > 1 {
-        encryptHash = opts[1]
-    }
-
-    // 具体方式
-    cipher, ok := PEMCiphers[opt]
-    if !ok {
-        this.Error = errors.New("PEMCipher not exists.")
+    opt, err := parseOpt(opts...)
+    if err != nil {
+        this.Error = err
         return this
     }
 
@@ -75,8 +129,7 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...string) 
         "ENCRYPTED PRIVATE KEY",
         x509PrivateKey,
         []byte(password),
-        cipher,
-        encryptHash,
+        opt,
     )
     if err != nil {
         this.Error = err

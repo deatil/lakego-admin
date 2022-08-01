@@ -57,6 +57,30 @@ func main() {
         // PSSVery([]byte("测试")).
         ToVeryed()
 
+    // =====
+
+    // 生成证书
+    obj := cryptobin_rsa.New().GenerateKey(2048)
+
+    objPriKey := obj.
+        CreatePKCS8PrivateKeyWithPassword("123", cryptobin_rsa.Opts{
+            Cipher:  cryptobin_rsa.CipherMap["AES256CBC"],
+            KDFOpts: cryptobin_rsa.ScryptOpts{
+                CostParameter:            1 << 15,
+                BlockSize:                8,
+                ParallelizationParameter: 1,
+                SaltSize:                 8,
+            },
+        }).
+        ToKeyString()
+    objPubKey := obj.
+        CreatePublicKey().
+        ToKeyString()
+    fs.Put("./runtime/key/rsa_pkcs8_en11", objPriKey)
+    fs.Put("./runtime/key/rsa_pkcs8_en11.pub", objPubKey)
+
+    // =====
+
     // Rsa 加密解密 - 公钥加密/私钥解密
     rsa := cryptobin.NewRsa()
 

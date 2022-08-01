@@ -307,7 +307,26 @@ func (this *Data) Error(ctx *gin.Context) {
     crc12HashData := crc12Hash.Sum(nil)
     crc12HashData2 := crc12.ToHexStringFromBytes(crc12HashData)
 
+    // 验证
+    obj2 := cryptobin_rsa.New()
+
+    obj2Pri, _ := fs.Get("./runtime/key/rsa_pkcs8_en55")
+    obj2cypt := obj2.
+        FromString("test-pass").
+        FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        Sign().
+        ToBase64String()
+    obj2Pub, _ := fs.Get("./runtime/key/rsa_pkcs8_en55.pub")
+    obj2cyptde := obj2.
+        FromBase64String("qlhbWcgPwvspaE4qiDTk8EVNUq/DKnvkwFDtejRLk6pbktXHQwuEDrglvB5WB9OJEAueg5ZU4Pyx9E5vpoCGYKVhT9Q3LjlHl9klcXQZLuXn+7rF/5tLLyZhveyCMPiZxjLCP9nYZvJVLhZ9kpn6Iye//h8NODl3v8EN4H5S64lPEtryFjfRSm5r4b80/WiDqrVNZDKyRpdNg6Rp66oK3TOMe5OUX0oxq1DVEEvd5G1IqXjMwEsBvLmnuA7V3EBN1Uq/SjNZR7P0S8/ArT6LytwwBQ5vURXVYE0Km9qJeGok4a2pna3eNROLVfzOyeO6kap8i8Hb0rJ9xOZK+57dNA==").
+        FromPublicKey([]byte(obj2Pub)).
+        Very([]byte("test-pass")).
+        ToVeryed()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "obj2cypt": obj2cypt,
+        "obj2cyptde": obj2cyptde,
+
         "crcData": crcData2,
 
         "crc12Data": crc12Data2,
