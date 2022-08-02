@@ -9,6 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     pathTool "github.com/deatil/lakego-doak/lakego/path"
+    viewFunc "github.com/deatil/lakego-doak/lakego/view/funcs"
     viewFinder "github.com/deatil/lakego-doak/lakego/view/finder"
     appInterface "github.com/deatil/lakego-doak/lakego/app/interfaces"
 )
@@ -158,6 +159,11 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
     path = pathTool.FormatPath(path)
 
     viewFinder.AddNamespace(namespace, []string{path})
+}
+
+// 添加视图用方法
+func (this *ServiceProvider) AddViewFunc(name string, fn any) {
+    viewFunc.Instance().AddFunc(name, fn)
 }
 
 // 推送

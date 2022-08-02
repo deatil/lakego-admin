@@ -46,7 +46,7 @@ func (this *PongoRender) Instance(name string, data any) render.Render {
     lakegoSet := pongo2.NewSet("lakego", lakegoLoader)
 
     // 获取已注册函数
-    allFuncs := funcs.New().GetAllFuncs()
+    allFuncs := funcs.Instance().GetAllFuncs()
     newAllFuncs := make(pongo2.Context)
     if len(allFuncs) > 0 {
         for name, fn := range allFuncs {

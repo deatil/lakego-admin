@@ -62,10 +62,8 @@ func (this Ecdsa) FromPublicKeyString(keyString string) Ecdsa {
         keyString = strings.TrimPrefix(keyString, "04")
     }
 
-    publicKeyStr := strings.TrimLeft(keyString, "0")
-
-    x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
-    y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
+    x, _ := new(big.Int).SetString(keyString[:64], 16)
+    y, _ := new(big.Int).SetString(keyString[64:], 16)
 
     this.publicKey = &ecdsa.PublicKey{
         Curve: this.curve,
@@ -93,8 +91,7 @@ func (this Ecdsa) FromPublicKeyXYString(xString string, yString string) Ecdsa {
 
 // 私钥字符，必须先添加公钥 (hexStringD)
 func (this Ecdsa) FromPrivateKeyString(keyString string) Ecdsa {
-    privateKeyStr := strings.TrimLeft(keyString, "0")
-    d, _ := new(big.Int).SetString(privateKeyStr[:], 16)
+    d, _ := new(big.Int).SetString(keyString[:], 16)
 
     this.privateKey = &ecdsa.PrivateKey{
         PublicKey: *this.publicKey,
@@ -145,9 +142,6 @@ func (this Ecdsa) FromPrivateKeyBytes(priByte []byte) Ecdsa {
     priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
 
     this.privateKey = priv
-
-    // 同时生成公钥
-    this.publicKey = &this.privateKey.PublicKey
 
     return this
 }

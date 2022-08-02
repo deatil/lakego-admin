@@ -7,18 +7,26 @@ import(
 var instance *Funcs
 var once sync.Once
 
-/**
- * 单例模式
- */
-func New() *Funcs {
+// 单例
+func Instance() *Funcs {
     once.Do(func() {
-        instance = &Funcs{
-            fns: make(map[string]any),
-        }
+        instance = New()
     })
 
     return instance
 }
+
+// 构造函数
+func New() *Funcs {
+    return &Funcs{
+        fns: make(FuncMap),
+    }
+}
+
+type (
+    // 方法列表
+    FuncMap = map[string]any
+)
 
 /**
  * 函数
@@ -28,10 +36,10 @@ func New() *Funcs {
  */
 type Funcs struct {
     // 锁定
-    mu sync.RWMutex
+    mu  sync.RWMutex
 
     // 已注册函数
-    fns map[string]any
+    fns FuncMap
 }
 
 // 添加函数
@@ -49,7 +57,7 @@ func (this *Funcs) AddFunc(name string, fn any) *Funcs {
 }
 
 // 批量添加函数
-func (this *Funcs) AddFuncs(data map[string]any) *Funcs {
+func (this *Funcs) AddFuncs(data FuncMap) *Funcs {
     if len(data) > 0 {
         for name, fn := range data {
             this.AddFunc(name, fn)
@@ -78,7 +86,7 @@ func (this *Funcs) RemoveFunc(name string) {
 }
 
 // 获取全部注册函数
-func (this *Funcs) GetAllFuncs() map[string]any {
+func (this *Funcs) GetAllFuncs() FuncMap {
     this.mu.Lock()
     defer this.mu.Unlock()
 

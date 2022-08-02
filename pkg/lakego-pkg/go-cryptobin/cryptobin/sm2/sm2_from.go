@@ -50,10 +50,8 @@ func (this SM2) FromPublicKeyString(keyString string) SM2 {
         keyString = strings.TrimPrefix(keyString, "04")
     }
 
-    publicKeyStr := strings.TrimLeft(keyString, "0")
-
-    x, _ := new(big.Int).SetString(publicKeyStr[:64], 16)
-    y, _ := new(big.Int).SetString(publicKeyStr[64:], 16)
+    x, _ := new(big.Int).SetString(keyString[:64], 16)
+    y, _ := new(big.Int).SetString(keyString[64:], 16)
 
     this.publicKey = &sm2.PublicKey{
         Curve: sm2.P256Sm2(),
@@ -82,8 +80,7 @@ func (this SM2) FromPublicKeyXYString(xString string, yString string) SM2 {
 // 私钥字符，必须先添加公钥 (hexStringD)
 // private-key: 07e4********;
 func (this SM2) FromPrivateKeyString(keyString string) SM2 {
-    privateKeyStr := strings.TrimLeft(keyString, "0")
-    d, _ := new(big.Int).SetString(privateKeyStr[:], 16)
+    d, _ := new(big.Int).SetString(keyString[:], 16)
 
     this.privateKey = &sm2.PrivateKey{
         PublicKey: *this.publicKey,

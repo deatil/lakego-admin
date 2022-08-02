@@ -122,42 +122,19 @@ func main() {
 
     // =====
 
-    // 国密 SM2 加密测试
-    enkey, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    cypt := cryptobin_sm2.
-        FromString("test-pass").
-        SetKey(enkey).
-        SM2Encrypt().
-        ToBase64String()
-    dekey, _ := fs.Get("./runtime/key/sm2_en_key")
-    cyptde := cryptobin_sm2.
-        FromBase64String("MHECIELEZVMkhELFI5Anm+ReTOTvLErLhdVRthyfB0xgmfqSAiBeGAcCcqG04t+JFmQcpWhYnfS+y8V/LrD4pz5TNoZLWgQgHMMWWPA/puupOlcxpfuOxnauNA2K/dFOiFkW8m8A1vEECQrM2LIoXdHS0A==").
-        SetKey(dekey).
-        SM2Decrypt("123").
-        ToString()
-
-    // =====
-
-    // SM2 生成 byte
+    // SM2 生成 x,y,d 16进制
     sm2 := cryptobin_sm2.NewSM2()
 
     dekey2, _ := fs.Get("./runtime/key/sm2_key")
-    sm2PrivateKeyX := sm2.
+    x := sm2.
         FromPrivateKey([]byte(dekey2)).
-        GetPrivateKeyX().
-        Bytes()
-    sm2PrivateKeyY := sm2.
+        GetPrivateKeyXHexString()
+    y := sm2.
         FromPrivateKey([]byte(dekey2)).
-        GetPrivateKeyY().
-        Bytes()
-    sm2PrivateKeyD := sm2.
+        GetPrivateKeyYHexString()
+    d := sm2.
         FromPrivateKey([]byte(dekey2)).
-        GetPrivateKeyD().
-        Bytes()
-
-    x := cryptobin_tool.NewEncoding().HexEncode(sm2a)
-    y := cryptobin_tool.NewEncoding().HexEncode(sm2b)
-    d := cryptobin_tool.NewEncoding().HexEncode(sm2c)
+        GetPrivateKeyDHexString()
 
     // =====
 
@@ -168,11 +145,11 @@ func main() {
 
     sm2 := cryptobin_sm2.NewSM2()
     sm2PriKey := sm2.
-        FromPublicKeyString(sm2PublicKeyX + sm2PublicKeyY).
+        FromPublicKeyXYString(sm2PublicKeyX, sm2PublicKeyY).
         CreatePublicKey().
         ToKeyString()
     sm2PubKey := sm2.
-        FromPublicKeyString(sm2PublicKeyX + sm2PublicKeyY).
+        FromPublicKeyXYString(sm2PublicKeyX, sm2PublicKeyY).
         FromPrivateKeyString(sm2PrivateKeyD).
         CreatePrivateKey().
         ToKeyString()

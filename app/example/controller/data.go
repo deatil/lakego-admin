@@ -155,7 +155,7 @@ func (this *Data) Error(ctx *gin.Context) {
     // 时间
     date := datebin.
         Now().
-        Format("r")
+        ToFormatString("Y/m/d H:i:s")
     date2 := datebin.
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()

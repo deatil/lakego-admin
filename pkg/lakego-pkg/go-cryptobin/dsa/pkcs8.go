@@ -14,7 +14,7 @@ import (
 
 var (
     // dsa 公钥 oid
-    dsaOidPublicKeyDSA = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
+    oidPublicKeyDSA = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
 )
 
 // dsa Parameters
@@ -23,20 +23,20 @@ type dsaAlgorithmParameters struct {
 }
 
 // 私钥 - 包装
-type dsaPkcs8 struct {
+type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
 }
 
 // 公钥 - 包装
-type dsaPkixPublicKey struct {
+type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
 // 公钥信息 - 解析
-type dsaPublicKeyInfo struct {
+type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
     PublicKey asn1.BitString
@@ -61,7 +61,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error
         return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
     }
 
-    publicKeyAlgorithm.Algorithm = dsaOidPublicKeyDSA
+    publicKeyAlgorithm.Algorithm = oidPublicKeyDSA
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     var yInt cryptobyte.Builder
@@ -72,7 +72,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error
         return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
     }
 
-    pkix := dsaPkixPublicKey{
+    pkix := pkixPublicKey{
         Algo: publicKeyAlgorithm,
         BitString: asn1.BitString{
             Bytes:     publicKeyBytes,
@@ -85,7 +85,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error
 
 // PKCS8 解析公钥
 func (this DsaPkcs8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, error) {
-    var pki dsaPublicKeyInfo
+    var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
     if err != nil {
         return nil, err
@@ -95,7 +95,7 @@ func (this DsaPkcs8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, er
         return nil, asn1.SyntaxError{Msg: "trailing data"}
     }
 
-    algoEq := pki.Algorithm.Algorithm.Equal(dsaOidPublicKeyDSA)
+    algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyDSA)
     if !algoEq {
         return nil, errors.New("dsa: unknown public key algorithm")
     }
@@ -139,7 +139,7 @@ func (this DsaPkcs8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, er
 
 // PKCS8 包装私钥
 func (this DsaPkcs8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
-    var privKey dsaPkcs8
+    var privKey pkcs8
 
     // 创建数据
     paramBytes, err := asn1.Marshal(dsaAlgorithmParameters{
@@ -152,7 +152,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, err
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  dsaOidPublicKeyDSA,
+        Algorithm:  oidPublicKeyDSA,
         Parameters: asn1.RawValue{
             FullBytes: paramBytes,
         },
@@ -173,14 +173,14 @@ func (this DsaPkcs8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, err
 
 // PKCS8 解析私钥
 func (this DsaPkcs8Key) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err error) {
-    var privKey dsaPkcs8
+    var privKey pkcs8
     _, err = asn1.Unmarshal(derBytes, &privKey)
     if err != nil {
         return nil, err
     }
 
     switch {
-        case privKey.Algo.Algorithm.Equal(dsaOidPublicKeyDSA):
+        case privKey.Algo.Algorithm.Equal(oidPublicKeyDSA):
             der := cryptobyte.String(string(privKey.PrivateKey))
 
             x := new(big.Int)

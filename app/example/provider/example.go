@@ -6,7 +6,6 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
-    "github.com/deatil/lakego-doak/lakego/view/funcs"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     "github.com/deatil/lakego-doak-admin/admin/support/route"
@@ -112,8 +111,8 @@ func (this *ExampleServiceProvider) loadRoute() {
  * 导入视图方法
  */
 func (this *ExampleServiceProvider) loadViewFuncs() {
-    // 用户信息
-    funcs.New().AddFunc("formatData", exampleView.FormatData)
+    // 添加自定义方法
+    this.AddViewFunc("formatData", exampleView.FormatData)
 }
 
 /**

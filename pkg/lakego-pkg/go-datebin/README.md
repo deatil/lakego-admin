@@ -34,7 +34,7 @@ func main() {
         ToDatetimeString()
     date3 := datebin.
         FromDatetime(2032, 3, 15, 12, 56, 5).
-        ToDatetimeString()
+        ToFormatString("Y/m/d H:i:s")
 
     fmt.Println("当前的时间：", date)
     fmt.Println("解析的时间：", date2)
