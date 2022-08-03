@@ -1,5 +1,9 @@
 package pipeline
 
+import(
+    "reflect"
+)
+
 // 构造函数
 func New() Pipeline {
     return NewPipeline()
@@ -54,6 +58,9 @@ type Pipeline struct {
     // 管道
     Pipes []PipeItem
 
+    // 自定义方法
+    Method string
+
     // Carry 回调函数
     CarryCallback CarryCallbackFunc
 
@@ -70,14 +77,35 @@ func (this Pipeline) Send(passable any) Pipeline {
 
 // 设置管道
 func (this Pipeline) Through(pipes ...PipeItem) Pipeline {
-    this.Pipes = append(this.Pipes, pipes...)
+    this.Pipes = pipes
 
     return this
 }
 
 // 数组
 func (this Pipeline) ThroughArray(pipes []PipeItem) Pipeline {
+    this.Pipes = pipes
+
+    return this
+}
+
+// 添加管道
+func (this Pipeline) Pipe(pipes ...PipeItem) Pipeline {
     this.Pipes = append(this.Pipes, pipes...)
+
+    return this
+}
+
+// 添加管道
+func (this Pipeline) PipeArray(pipes []PipeItem) Pipeline {
+    this.Pipes = append(this.Pipes, pipes...)
+
+    return this
+}
+
+// 设置自定义方法
+func (this Pipeline) Via(method string) Pipeline {
+    this.Method = method
 
     return this
 }
@@ -117,21 +145,24 @@ func (this Pipeline) Carry() CarryFunc {
         return func(passable any) any {
 
             // 判断类型
-            switch pipe.(type) {
+            switch newPipe := pipe.(type) {
                 // 回调方法
                 case PipeFunc:
-                    newPipe := pipe.(PipeFunc)
                     return newPipe(passable, newStack)
 
                 // 结构体
                 case PipeInterface:
-                    newPipe := pipe.(PipeInterface)
                     carry := newPipe.Handle(passable, newStack)
 
                     return this.HandleCarry(carry)
 
                 // 默认报错
                 default:
+                    // 执行自定义函数
+                    if carry, ok := this.pipeCallMethod(pipe, this.Method, []any{passable, newStack}); ok {
+                        return this.HandleCarry(carry)
+                    }
+
                     return this.HandleException(passable, pipe, newStack)
             }
 
@@ -179,3 +210,44 @@ func (this Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) Pipel
 
     return this
 }
+
+// 执行自定义方法
+func (this Pipeline) pipeCallMethod(pipe any, method string, params []any) (any, bool) {
+    if method == "" {
+        return nil, false
+    }
+
+    // 不是结构体时
+    pipeKind := reflect.TypeOf(pipe).Kind()
+    if pipeKind != reflect.Struct {
+        return nil, false
+    }
+
+    pipeObject := reflect.ValueOf(pipe)
+
+    // 获取到方法
+    newPipe := pipeObject.MethodByName(method)
+    if !newPipe.IsValid() {
+        return nil, false
+    }
+
+    // 添加参数
+    pipeParams := make([]reflect.Value, 0)
+
+    if len(params) > 0 {
+        for _, param := range params {
+            pipeParams = append(pipeParams, reflect.ValueOf(param))
+        }
+    }
+
+    // 执行并获取结果
+    carrys := newPipe.Call(pipeParams)
+    if len(carrys) == 0 {
+        return nil, false
+    }
+
+    carry := carrys[0].Interface()
+
+    return carry, true
+}
+

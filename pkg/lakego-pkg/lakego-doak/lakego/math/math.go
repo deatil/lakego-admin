@@ -90,6 +90,16 @@ func Min(nums ...float64) float64 {
     return min
 }
 
+// 判断数字是否是奇数
+func IsOdd(number int) bool {
+    return !IsEven(number)
+}
+
+// 判断数字是否是偶数
+func IsEven(number int) bool {
+    return number%2 == 0
+}
+
 // IsNan
 func IsNan(val float64) bool {
     return math.IsNaN(val)

@@ -27,6 +27,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
     "github.com/deatil/lakego-doak/lakego/array"
+    "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/snowflake"
     "github.com/deatil/lakego-doak/lakego/facade/sign"
     // "github.com/deatil/lakego-doak/lakego/facade/cache"
@@ -89,6 +90,7 @@ func (this *Data) Error(ctx *gin.Context) {
         WithCarryCallback(func(carry any) any {
             return carry
         }).
+        Via("Handles").
         Send("开始的数据").
         Through(
             func(data any, next pipeline.NextFunc) any {
@@ -101,7 +103,7 @@ func (this *Data) Error(ctx *gin.Context) {
                 return data2
             },
         ).
-        Through(
+        Pipe(
             func(data any, next pipeline.NextFunc) any {
                 old := data.(string)
                 old = old + ", 第2次数据1"
@@ -332,7 +334,14 @@ func (this *Data) Error(ctx *gin.Context) {
         Very([]byte("test-pass")).
         ToVeryed()
 
+    // 调用测试
+    refData, _ := container.CallMethod(RefData{}, "Show", []any{"数据1", "数据2"})
+    reffuncData, _ := container.CallFunc(FuncShow, []any{"FuncShow数据1", "FuncShow数据2"})
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "refData": refData,
+        "reffuncData": reffuncData,
+
         "obj2cypt": obj2cypt,
         "obj2cyptde": obj2cyptde,
 
@@ -398,14 +407,30 @@ func (this *Data) Error(ctx *gin.Context) {
 // 管道测试
 type PipelineEx struct {}
 
-func (this PipelineEx) Handle(data any, next pipeline.NextFunc) any {
+func (this PipelineEx) Handles(data any, next pipeline.NextFunc) any {
     old := data.(string)
 
-    old = old + ", struct 数据开始"
+    old = old + ", struct Handles 数据开始"
 
     data2 := next(old)
 
-    data2 = data2.(string) + ", struct 数据结束"
+    data2 = data2.(string) + ", struct Handles 数据结束"
+
+    return data2
+}
+
+// 结构体方法调用测试
+type RefData struct {}
+
+func (this RefData) Show(data any, name string) string {
+    data2 := data.(string) + "===" + name
+
+    return data2
+}
+
+// 函数调用测试
+func FuncShow(data any, name string) string {
+    data2 := data.(string) + "===" + name
 
     return data2
 }

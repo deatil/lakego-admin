@@ -10,6 +10,7 @@ use (
 	./pkg/lakego-pkg/go-crc8
 	./pkg/lakego-pkg/go-crc16
 	./pkg/lakego-pkg/go-crc32
+	./pkg/lakego-pkg/go-array
 	./pkg/lakego-pkg/go-pipeline
 	./pkg/lakego-pkg/go-exception
 	./pkg/lakego-pkg/go-collection

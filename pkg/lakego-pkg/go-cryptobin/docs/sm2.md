@@ -184,9 +184,9 @@ func main() {
     // sm2 验证【招商银行】
     sm2signdata := "CDAYcxm3jM+65XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
     sm2Very := cryptobin_sm2.NewSM2().
+        FromBase64String(sm2signdata).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        FromBase64String(sm2signdata).
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
         ToVeryed()
 
