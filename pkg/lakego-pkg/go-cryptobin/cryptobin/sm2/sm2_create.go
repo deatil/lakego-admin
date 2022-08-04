@@ -10,7 +10,7 @@ import (
 // 国密私钥
 func (this SM2) CreatePrivateKey() SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("SM2: [CreatePrivateKey()] privateKey error.")
         return this
     }
 
@@ -22,7 +22,7 @@ func (this SM2) CreatePrivateKey() SM2 {
 // 国密私钥带密码
 func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("SM2: [CreatePrivateKeyWithPassword()] privateKey error.")
         return this
     }
 
@@ -37,7 +37,7 @@ func (this SM2) CreatePublicKey() SM2 {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("privateKey error.")
+            this.Error = errors.New("SM2: [CreatePublicKey()] privateKey error.")
 
             return this
         }

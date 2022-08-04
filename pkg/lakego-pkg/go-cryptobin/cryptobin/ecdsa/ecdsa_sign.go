@@ -7,14 +7,14 @@ import (
     "crypto/rand"
     "crypto/ecdsa"
     "encoding/asn1"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
 func (this Ecdsa) Sign(separator ...string) Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Ecdsa: [Sign()] privateKey error.")
         return this
     }
 
@@ -53,7 +53,7 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 // 公钥验证
 func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Ecdsa: [Very()] publicKey error.")
         return this
     }
 
@@ -66,7 +66,7 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        this.Error = errors.New("sign data is error.")
+        this.Error = errors.New("Ecdsa: [Very()] sign data is error.")
         return this
     }
 
@@ -101,7 +101,7 @@ type ecdsaSignature struct {
 // 私钥签名
 func (this Ecdsa) SignAsn1() Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Ecdsa: [SignAsn1()] privateKey error.")
         return this
     }
 
@@ -123,7 +123,7 @@ func (this Ecdsa) SignAsn1() Ecdsa {
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Ecdsa: [VerifyAsn1()] publicKey error.")
         return this
     }
 
@@ -150,7 +150,7 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
 // 私钥签名
 func (this Ecdsa) SignHex() Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Ecdsa: [SignHex()] privateKey error.")
         return this
     }
 
@@ -178,7 +178,7 @@ func (this Ecdsa) SignHex() Ecdsa {
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Ecdsa: [VerifyHex()] publicKey error.")
         return this
     }
 

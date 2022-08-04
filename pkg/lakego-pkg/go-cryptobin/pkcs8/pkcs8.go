@@ -4,7 +4,6 @@ import (
     "io"
     "fmt"
     "errors"
-    "crypto"
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
@@ -19,23 +18,35 @@ var (
 
 // KDF 设置接口
 type KDFOpts interface {
-    DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error)
-    GetSaltSize() int
+    // oid
     OID() asn1.ObjectIdentifier
+
+    // 生成密钥
+    DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error)
+
+    // 随机数大小
+    GetSaltSize() int
 }
 
 // 数据接口
 type KDFParameters interface {
+    // 生成密钥
     DeriveKey(password []byte, size int) (key []byte, err error)
 }
 
 // 加密接口
 type Cipher interface {
-    BlockSize() int
-    KeySize() int
-    Encrypt(key, iv, plaintext []byte) ([]byte, error)
-    Decrypt(key, iv, ciphertext []byte) ([]byte, error)
+    // oid
     OID() asn1.ObjectIdentifier
+
+    // 值大小
+    KeySize() int
+
+    // 加密, 返回: [加密后数据, 参数, error]
+    Encrypt(key, plaintext []byte) ([]byte, []byte, error)
+
+    // 解密
+    Decrypt(key, params, ciphertext []byte) ([]byte, error)
 }
 
 var kdfs = make(map[string]KDFParameters)
@@ -64,7 +75,7 @@ var DefaultOpts = Opts{
     KDFOpts: PBKDF2Opts{
         SaltSize:       16,
         IterationCount: 10000,
-        HMACHash:       crypto.SHA256,
+        HMACHash:       SHA256,
     },
 }
 
@@ -105,17 +116,12 @@ func EncryptPKCS8PrivateKey(
         return nil, errors.New(err.Error() + " failed to generate salt")
     }
 
-    iv := make([]byte, cipher.BlockSize())
-    if _, err := io.ReadFull(rand, iv); err != nil {
-        return nil, errors.New(err.Error() + " failed to generate IV")
-    }
-
     key, kdfParams, err := opt.KDFOpts.DeriveKey(password, salt, cipher.KeySize())
     if err != nil {
         return nil, err
     }
 
-    encrypted, err := opt.Cipher.Encrypt(key, iv, data)
+    encrypted, encryptedParams, err := cipher.Encrypt(key, data)
     if err != nil {
         return nil, err
     }
@@ -133,15 +139,10 @@ func EncryptPKCS8PrivateKey(
         },
     }
 
-    marshalledIV, err := asn1.Marshal(iv)
-    if err != nil {
-        return nil, err
-    }
-
     encryptionScheme := pkix.AlgorithmIdentifier{
         Algorithm:  cipher.OID(),
         Parameters: asn1.RawValue{
-            FullBytes: marshalledIV,
+            FullBytes: encryptedParams,
         },
     }
 
@@ -195,7 +196,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
         return nil, errors.New("pkcs8: invalid PBES2 parameters")
     }
 
-    cipher, iv, err := parseEncryptionScheme(params.EncryptionScheme)
+    cipher, cipherParams, err := parseEncryptionScheme(params.EncryptionScheme)
     if err != nil {
         return nil, err
     }
@@ -216,7 +217,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
 
     data = pki.EncryptedData
 
-    decryptedKey, err := cipher.Decrypt(symkey, iv, data)
+    decryptedKey, err := cipher.Decrypt(symkey, cipherParams, data)
     if err != nil {
         return nil, err
     }
@@ -260,10 +261,7 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
 
-    var iv []byte
-    if _, err := asn1.Unmarshal(encryptionScheme.Parameters.FullBytes, &iv); err != nil {
-        return nil, nil, errors.New("pkcs8: invalid cipher parameters")
-    }
+    params := encryptionScheme.Parameters.FullBytes
 
-    return cipher, iv, nil
+    return cipher, params, nil
 }

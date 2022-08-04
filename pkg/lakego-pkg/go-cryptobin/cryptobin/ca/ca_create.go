@@ -19,7 +19,7 @@ import (
 // 证书请求
 func (this CA) CreateCSR() CA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("CA: [CreateCSR()] privateKey error.")
         return this
     }
 
@@ -30,7 +30,7 @@ func (this CA) CreateCSR() CA {
         case *sm2.PrivateKey:
             certRequest, ok := this.certRequest.(*sm2X509.CertificateRequest)
             if !ok {
-                this.Error = errors.New("sm2 certRequest error.")
+                this.Error = errors.New("CA: [CreateCSR()] sm2 certRequest error.")
                 return this
             }
 
@@ -39,7 +39,7 @@ func (this CA) CreateCSR() CA {
         default:
             certRequest, ok := this.certRequest.(*x509.CertificateRequest)
             if !ok {
-                this.Error = errors.New("certRequest error.")
+                this.Error = errors.New("CA: [CreateCSR()] certRequest error.")
                 return this
             }
 
@@ -64,7 +64,7 @@ func (this CA) CreateCSR() CA {
 // CA 证书
 func (this CA) CreateCA() CA {
     if this.publicKey == nil || this.privateKey == nil {
-        this.Error = errors.New("publicKey or privateKey error.")
+        this.Error = errors.New("CA: [CreateCA()] publicKey or privateKey error.")
         return this
     }
 
@@ -75,7 +75,7 @@ func (this CA) CreateCA() CA {
         case *sm2.PrivateKey:
             cert, ok := this.cert.(*sm2X509.Certificate)
             if !ok {
-                this.Error = errors.New("sm2 cert error.")
+                this.Error = errors.New("CA: [CreateCA()] sm2 cert error.")
                 return this
             }
 
@@ -86,7 +86,7 @@ func (this CA) CreateCA() CA {
         default:
             cert, ok := this.cert.(*x509.Certificate)
             if !ok {
-                this.Error = errors.New("cert error.")
+                this.Error = errors.New("CA: [CreateCA()] cert error.")
                 return this
             }
 
@@ -111,7 +111,7 @@ func (this CA) CreateCA() CA {
 // 自签名证书
 func (this CA) CreateCert(ca any) CA {
     if this.publicKey == nil || this.privateKey == nil {
-        this.Error = errors.New("publicKey or privateKey error.")
+        this.Error = errors.New("CA: [CreateCert()] publicKey or privateKey error.")
         return this
     }
 
@@ -122,13 +122,13 @@ func (this CA) CreateCert(ca any) CA {
         case *sm2.PrivateKey:
             newCert, certOk := this.cert.(*sm2X509.Certificate)
             if !certOk {
-                this.Error = errors.New("sm2 cert error.")
+                this.Error = errors.New("CA: [CreateCert()] sm2 cert error.")
                 return this
             }
 
             newCa, caOk := ca.(*sm2X509.Certificate)
             if !caOk {
-                this.Error = errors.New("sm2 ca error.")
+                this.Error = errors.New("CA: [CreateCert()] sm2 ca error.")
                 return this
             }
 
@@ -139,13 +139,13 @@ func (this CA) CreateCert(ca any) CA {
         default:
             newCert, certOk := this.cert.(*x509.Certificate)
             if !certOk {
-                this.Error = errors.New("cert error.")
+                this.Error = errors.New("CA: [CreateCert()] cert error.")
                 return this
             }
 
             newCa, caOk := ca.(*x509.Certificate)
             if !caOk {
-                this.Error = errors.New("ca error.")
+                this.Error = errors.New("CA: [CreateCert()] ca error.")
                 return this
             }
 
@@ -170,7 +170,7 @@ func (this CA) CreateCert(ca any) CA {
 // 私钥
 func (this CA) CreatePrivateKey() CA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("CA: [CreatePrivateKey()] privateKey error.")
 
         return this
     }
@@ -215,7 +215,7 @@ func (this CA) CreatePrivateKey() CA {
             return this
 
         default:
-            this.Error = fmt.Errorf("x509: unsupported private key type: %T", privateKey)
+            this.Error = fmt.Errorf("CA: [CreatePrivateKey()] unsupported private key type: %T", privateKey)
             return this
     }
 

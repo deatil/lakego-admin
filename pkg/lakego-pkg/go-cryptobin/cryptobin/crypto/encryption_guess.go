@@ -7,7 +7,7 @@ import (
     "golang.org/x/crypto/xts"
     "golang.org/x/crypto/chacha20"
     "golang.org/x/crypto/chacha20poly1305"
-    
+
     "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -18,13 +18,13 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
         case "Chacha20":
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("chacha20 error: nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20 error: nonce is empty.")
                 return this
             }
 
             chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce.([]byte))
             if err != nil {
-                this.Error = fmt.Errorf("chacha20.New(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20.New(),error:%w", err)
                 return this
             }
 
@@ -44,13 +44,13 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
         case "Chacha20poly1305":
             chacha, err := chacha20poly1305.New(this.key)
             if err != nil {
-                this.Error = fmt.Errorf("chacha20poly1305.New(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.New(),error:%w", err)
                 return this
             }
 
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("chacha20poly1305 error: nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305 error: nonce is empty.")
                 return this
             }
 
@@ -63,7 +63,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
         case "RC4":
             rc, err := rc4.NewCipher(this.key)
             if err != nil {
-                this.Error = fmt.Errorf("rc4.NewCipher(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] rc4.NewCipher(),error:%w", err)
                 return this
             }
 
@@ -78,13 +78,13 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
         case "Xts":
             cipher, ok := this.config["cipher"]
             if !ok {
-                this.Error = fmt.Errorf("Xts error: cipher is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] Xts error: cipher is empty.")
                 return this
             }
 
             sectorNum, ok := this.config["sector_num"]
             if !ok {
-                this.Error = fmt.Errorf("Xts error: sector_num is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] Xts error: sector_num is empty.")
                 return this
             }
 
@@ -92,7 +92,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {
-                this.Error = fmt.Errorf("xts.NewCipher(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] xts.NewCipher(),error:%w", err)
                 return this
             }
 
@@ -109,7 +109,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             return this
         default:
-            this.Error = fmt.Errorf("Multiple [%s] is error.", this.multiple)
+            this.Error = fmt.Errorf("Cryptobin: [GuessEncrypt()] Multiple [%s] is error.", this.multiple)
 
             return this
     }
@@ -122,13 +122,13 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
         case "Chacha20":
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("chacha20 error: nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20 error: nonce is empty.")
                 return this
             }
 
             chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce.([]byte))
             if err != nil {
-                this.Error = fmt.Errorf("chacha20.New(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20.New(),error:%w", err)
                 return this
             }
 
@@ -148,13 +148,13 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
         case "Chacha20poly1305":
             chacha, err := chacha20poly1305.New(this.key)
             if err != nil {
-                this.Error = fmt.Errorf("chacha20poly1305.New(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305.New(),error:%w", err)
                 return this
             }
 
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("chacha20poly1305 error: nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305 error: nonce is empty.")
                 return this
             }
 
@@ -173,7 +173,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
         case "RC4":
             rc, err := rc4.NewCipher(this.key)
             if err != nil {
-                this.Error = fmt.Errorf("rc4.NewCipher(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] rc4.NewCipher(),error:%w", err)
                 return this
             }
 
@@ -188,13 +188,13 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
         case "Xts":
             cipher, ok := this.config["cipher"]
             if !ok {
-                this.Error = fmt.Errorf("Xts error: cipher is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] Xts error: cipher is empty.")
                 return this
             }
 
             sectorNum, ok := this.config["sector_num"]
             if !ok {
-                this.Error = fmt.Errorf("Xts error: sector_num is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] Xts error: sector_num is empty.")
                 return this
             }
 
@@ -202,7 +202,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {
-                this.Error = fmt.Errorf("xts.NewCipher(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] xts.NewCipher(),error:%w", err)
                 return this
             }
 
@@ -214,7 +214,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
 
             return this
         default:
-            this.Error = fmt.Errorf("Multiple [%s] is error.", this.multiple)
+            this.Error = fmt.Errorf("Cryptobin: [GuessDecrypt()] Multiple [%s] is error.", this.multiple)
             return this
     }
 }

@@ -4,14 +4,14 @@ import (
     "errors"
     "crypto/rsa"
     "crypto/rand"
-    
+
     "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
 func (this Rsa) Sign() Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [Sign()] privateKey error.")
         return this
     }
 
@@ -29,7 +29,7 @@ func (this Rsa) Sign() Rsa {
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) Very(data []byte) Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Rsa: [Very()] publicKey error.")
         return this
     }
 

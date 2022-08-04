@@ -13,6 +13,8 @@ import (
     "golang.org/x/crypto/blake2s"
     "golang.org/x/crypto/blake2b"
     "golang.org/x/crypto/ripemd160"
+
+    "github.com/tjfoc/gmsm/sm3"
 )
 
 type (
@@ -65,6 +67,7 @@ var defaultHashes = HashMap{
     "BLAKE2b_256": newBlake2bHash256,
     "BLAKE2b_384": newBlake2bHash384,
     "BLAKE2b_512": newBlake2bHash512,
+    "SM3": sm3.New,
 }
 
 // hash 官方默认
@@ -138,7 +141,7 @@ func (this Hash) GetHash(typ string) hashFunc {
         return sha
     }
 
-    return this.hashes["SHA512"]
+    return this.hashes["SHA256"]
 }
 
 // 类型
@@ -148,7 +151,7 @@ func (this Hash) GetCryptoHash(typ string) crypto.Hash {
         return sha
     }
 
-    return this.cryptoHashes["SHA512"]
+    return this.cryptoHashes["SHA256"]
 }
 
 // 签名后数据

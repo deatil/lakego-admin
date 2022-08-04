@@ -7,6 +7,11 @@ import (
 
 // 构造函数
 func New() Arr {
+    return NewArr()
+}
+
+// 构造函数
+func NewArr() Arr {
     return Arr{
         keyDelim: ".",
     }

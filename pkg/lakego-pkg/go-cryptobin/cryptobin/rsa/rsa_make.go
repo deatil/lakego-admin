@@ -7,7 +7,7 @@ import(
 // 生成公钥
 func (this Rsa) MakePublicKey() Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [MakePublicKey()] privateKey error.")
         return this
     }
 

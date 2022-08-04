@@ -117,6 +117,8 @@ ret := crypto.
 *  返回数据类型:
 `ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
 
+*  更多信息可以查看 [文档](docs/README.md)
+
 
 ### 开源协议
 

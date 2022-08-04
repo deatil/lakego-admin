@@ -7,7 +7,7 @@ import (
 // 生成公钥
 func (this DSA) MakePublicKey() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("dsa: [MakePublicKey()] privateKey error.")
         return this
     }
 

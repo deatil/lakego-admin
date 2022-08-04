@@ -8,7 +8,7 @@ import (
 // 生成公钥
 func (this EdDSA) MakePublicKey() EdDSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("EdDSA: [MakePublicKey()] privateKey error.")
         return this
     }
 

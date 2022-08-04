@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto/rand"
     "crypto/rsa"
-    
+
     "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -12,7 +12,7 @@ import (
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
 func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [PSSSign()] privateKey error.")
         return this
     }
 
@@ -38,7 +38,7 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Rsa: [PSSVery()] publicKey error.")
         return this
     }
 

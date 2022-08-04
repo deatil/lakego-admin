@@ -4,14 +4,14 @@ import (
     "errors"
     "crypto/rsa"
     "crypto/rand"
-    
+
     "github.com/deatil/go-cryptobin/tool"
 )
 
 // 公钥加密
 func (this Rsa) Encrypt() Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Rsa: [Encrypt()] publicKey error.")
         return this
     }
 
@@ -23,7 +23,7 @@ func (this Rsa) Encrypt() Rsa {
 // 私钥解密
 func (this Rsa) Decrypt() Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [Decrypt()] privateKey error.")
         return this
     }
 
@@ -37,7 +37,7 @@ func (this Rsa) Decrypt() Rsa {
 // 私钥加密
 func (this Rsa) PriKeyEncrypt() Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [PriKeyEncrypt()] privateKey error.")
         return this
     }
 
@@ -49,7 +49,7 @@ func (this Rsa) PriKeyEncrypt() Rsa {
 // 公钥解密
 func (this Rsa) PubKeyDecrypt() Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Rsa: [PubKeyDecrypt()] publicKey error.")
         return this
     }
 
@@ -63,7 +63,7 @@ func (this Rsa) PubKeyDecrypt() Rsa {
 // OAEP公钥加密
 func (this Rsa) EncryptOAEP(typ ...string) Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("Rsa: [EncryptOAEP()] publicKey error.")
         return this
     }
 
@@ -82,7 +82,7 @@ func (this Rsa) EncryptOAEP(typ ...string) Rsa {
 // OAEP私钥解密
 func (this Rsa) DecryptOAEP(typ ...string) Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Rsa: [DecryptOAEP()] privateKey error.")
         return this
     }
 

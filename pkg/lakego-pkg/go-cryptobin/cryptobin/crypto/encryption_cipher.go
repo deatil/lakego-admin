@@ -30,7 +30,7 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
     // 加密数据
     plainPadding := this.Padding(this.data, bs)
     if len(plainPadding)%bs != 0 {
-        this.Error = errors.New(fmt.Sprintf("the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
+        this.Error = errors.New(fmt.Sprintf("Cryptobin: [CipherEncrypt()] the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
 
         return this
     }
@@ -59,13 +59,13 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
         case "GCM":
             gcm, err := cipher.NewGCM(block)
             if err != nil {
-                this.Error = fmt.Errorf("cipher.NewGCM(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [CipherEncrypt()] cipher.NewGCM(),error:%w", err)
                 return this
             }
 
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("GCM error:nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [CipherEncrypt()] GCM error:nonce is empty.")
                 return this
             }
 
@@ -77,7 +77,7 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
 
             cryptText = gcm.Seal(nil, nonce.([]byte), plainPadding, additionalBytes)
         default:
-            this.Error = fmt.Errorf("Mode [%s] is error.", this.mode)
+            this.Error = fmt.Errorf("Cryptobin: [CipherEncrypt()] Mode [%s] is error.", this.mode)
             return this
     }
 
@@ -102,7 +102,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
     // 解密数据
     cipherText := this.data
     if len(cipherText)%bs != 0 {
-        this.Error = errors.New(fmt.Sprintf("improper decrypt type, block size is %d", bs))
+        this.Error = errors.New(fmt.Sprintf("Cryptobin: [CipherDecrypt()] improper decrypt type, block size is %d", bs))
         return this
     }
 
@@ -131,13 +131,13 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
         case "GCM":
             gcm, err := cipher.NewGCM(block)
             if err != nil {
-                this.Error = fmt.Errorf("cipher.NewGCM(),error:%w", err)
+                this.Error = fmt.Errorf("Cryptobin: [CipherDecrypt()] cipher.NewGCM(),error:%w", err)
                 return this
             }
 
             nonce, ok := this.config["nonce"]
             if !ok {
-                this.Error = fmt.Errorf("GCM error:nonce is empty.")
+                this.Error = fmt.Errorf("Cryptobin: [CipherDecrypt()] GCM error:nonce is empty.")
                 return this
             }
 
@@ -153,7 +153,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
                 return this
             }
         default:
-            this.Error = fmt.Errorf("Mode [%s] is error.", this.mode)
+            this.Error = fmt.Errorf("Cryptobin: [CipherDecrypt()] Mode [%s] is error.", this.mode)
             return this
     }
 

@@ -7,14 +7,14 @@ import (
     "crypto/dsa"
     "crypto/rand"
     "encoding/asn1"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
 func (this DSA) Sign(separator ...string) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("dsa: [Sign()] privateKey error.")
         return this
     }
 
@@ -54,7 +54,7 @@ func (this DSA) Sign(separator ...string) DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) Very(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("dsa: [Very()] publicKey error.")
         return this
     }
 
@@ -67,7 +67,7 @@ func (this DSA) Very(data []byte, separator ...string) DSA {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        this.Error = errors.New("sign data is error.")
+        this.Error = errors.New("dsa: [Very()] sign data is error.")
         return this
     }
 
@@ -102,7 +102,7 @@ type DSASignature struct {
 // 私钥签名
 func (this DSA) SignAsn1() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("dsa: [SignAsn1()] privateKey error.")
         return this
     }
 
@@ -123,7 +123,7 @@ func (this DSA) SignAsn1() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyAsn1(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("dsa: [VerifyAsn1()] publicKey error.")
         return this
     }
 
@@ -150,7 +150,7 @@ func (this DSA) VerifyAsn1(data []byte) DSA {
 // 私钥签名
 func (this DSA) SignHex() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("dsa: [SignHex()] privateKey error.")
         return this
     }
 
@@ -178,7 +178,7 @@ func (this DSA) SignHex() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyHex(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("dsa: [VerifyHex()] publicKey error.")
         return this
     }
 
@@ -204,7 +204,7 @@ const (
 // 私钥签名
 func (this DSA) SignBytes() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("dsa: [SignBytes()] privateKey error.")
         return this
     }
 
@@ -219,7 +219,7 @@ func (this DSA) SignBytes() DSA {
     rBytes := r.Bytes()
     sBytes := s.Bytes()
     if len(rBytes) > dsaSubgroupBytes || len(sBytes) > dsaSubgroupBytes {
-        this.Error = errors.New("DSA signature too large.")
+        this.Error = errors.New("dsa: [SignBytes()] DSA signature too large.")
         return this
     }
 
@@ -236,7 +236,7 @@ func (this DSA) SignBytes() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyBytes(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("dsa: [VerifyBytes()] publicKey error.")
         return this
     }
 
@@ -244,7 +244,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
     sig := this.data
 
     if len(sig) != 2*dsaSubgroupBytes {
-        this.Error = errors.New("sig data error.")
+        this.Error = errors.New("dsa: [VerifyBytes()] sig data error.")
 
         return this
     }

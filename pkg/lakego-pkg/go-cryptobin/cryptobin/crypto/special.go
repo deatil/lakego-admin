@@ -47,7 +47,7 @@ func (this Cryptobin) AesCFBDecrypt() Cryptobin {
     }
 
     if len(encrypted) < aes.BlockSize {
-        this.Error = errors.New("ciphertext too short")
+        this.Error = errors.New("Cryptobin: [AesCFBDecrypt()] ciphertext too short")
         return this
     }
 

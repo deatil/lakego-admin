@@ -7,7 +7,7 @@ import(
 // 生成公钥
 func (this Ecdsa) MakePublicKey() Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("Ecdsa: [MakePublicKey()] privateKey error.")
         return this
     }
 

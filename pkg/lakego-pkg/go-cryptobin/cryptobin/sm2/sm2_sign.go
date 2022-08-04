@@ -7,14 +7,14 @@ import (
     "encoding/asn1"
 
     "github.com/tjfoc/gmsm/sm2"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
 func (this SM2) Sign() SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("SM2: [Sign()] privateKey error.")
         return this
     }
 
@@ -27,7 +27,7 @@ func (this SM2) Sign() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) Very(data []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("SM2: [Very()] publicKey error.")
         return this
     }
 
@@ -45,7 +45,7 @@ type sm2Signature struct {
 // 私钥签名
 func (this SM2) SignAsn1(uid []byte) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("SM2: [SignAsn1()] privateKey error.")
         return this
     }
 
@@ -65,7 +65,7 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("SM2: [VerifyAsn1()] publicKey error.")
         return this
     }
 
@@ -88,7 +88,7 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
 // 兼容[招行]
 func (this SM2) SignHex(uid []byte) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
+        this.Error = errors.New("SM2: [SignHex()] privateKey error.")
         return this
     }
 
@@ -115,7 +115,7 @@ func (this SM2) SignHex(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("publicKey error.")
+        this.Error = errors.New("SM2: [VerifyHex()] publicKey error.")
         return this
     }
 
