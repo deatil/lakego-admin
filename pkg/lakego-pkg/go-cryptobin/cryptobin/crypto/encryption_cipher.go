@@ -14,6 +14,8 @@ import (
     "golang.org/x/crypto/blowfish"
 
     "github.com/tjfoc/gmsm/sm4"
+
+    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
 // 加密
@@ -52,8 +54,12 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
             cipher.NewCBCEncrypter(block, iv).CryptBlocks(cryptText, plainPadding)
         case "CFB":
             cipher.NewCFBEncrypter(block, iv).XORKeyStream(cryptText, plainPadding)
+        case "CFB8":
+            cryptobin_cipher.NewCFB8Encrypter(block, iv).XORKeyStream(cryptText, plainPadding)
         case "OFB":
             cipher.NewOFB(block, iv).XORKeyStream(cryptText, plainPadding)
+        case "OFB8":
+            cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(cryptText, plainPadding)
         case "CTR":
             cipher.NewCTR(block, iv).XORKeyStream(cryptText, plainPadding)
         case "GCM":
@@ -124,8 +130,12 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
             cipher.NewCBCDecrypter(block, iv).CryptBlocks(dst, cipherText)
         case "CFB":
             cipher.NewCFBDecrypter(block, iv).XORKeyStream(dst, cipherText)
+        case "CFB8":
+            cryptobin_cipher.NewCFB8Decrypter(block, iv).XORKeyStream(dst, cipherText)
         case "OFB":
             cipher.NewOFB(block, iv).XORKeyStream(dst, cipherText)
+        case "OFB8":
+            cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(dst, cipherText)
         case "CTR":
             cipher.NewCTR(block, iv).XORKeyStream(dst, cipherText)
         case "GCM":

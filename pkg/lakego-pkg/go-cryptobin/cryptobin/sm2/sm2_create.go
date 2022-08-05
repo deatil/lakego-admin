@@ -7,7 +7,10 @@ import (
     "github.com/tjfoc/gmsm/x509"
 )
 
-// 国密私钥
+// 生成私钥 pem 数据
+// 使用:
+// obj := New().GenerateKey()
+// priKey := obj.CreatePrivateKey().ToKeyString()
 func (this SM2) CreatePrivateKey() SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("SM2: [CreatePrivateKey()] privateKey error.")
@@ -19,7 +22,7 @@ func (this SM2) CreatePrivateKey() SM2 {
     return this
 }
 
-// 国密私钥带密码
+// 生成私钥带密码 pem 数据
 func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     if this.privateKey == nil {
         this.Error = errors.New("SM2: [CreatePrivateKeyWithPassword()] privateKey error.")
@@ -31,7 +34,7 @@ func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     return this
 }
 
-// 国密公钥
+// 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
     var publicKey *sm2.PublicKey
 

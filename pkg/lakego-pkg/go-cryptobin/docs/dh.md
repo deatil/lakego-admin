@@ -27,6 +27,7 @@ func main() {
         dhStatus = true
     }
 
+    fmt.Println("生成的密钥是否相同结果: ", dhStatus)
 }
 ~~~
 
@@ -51,6 +52,13 @@ func main() {
 
     dh1secret := dh1.ComputeSecret(dh1pri, dh2pub)
     dh2secret := dh2.ComputeSecret(dh2pri, dh1pub)
+
+    dhStatus := false
+    if string(dh1secret) == string(dh2secret) {
+        dhStatus = true
+    }
+
+    fmt.Println("生成的密钥是否相同结果: ", dhStatus)
 }
 ~~~
 
@@ -74,5 +82,12 @@ func main() {
 
     dh1secret := dh1.ComputeSecret(dh1pri, dh2pub)
     dh2secret := dh2.ComputeSecret(dh2pri, dh1pub)
+
+    dhStatus := false
+    if string(dh1secret) == string(dh2secret) {
+        dhStatus = true
+    }
+
+    fmt.Println("生成的密钥是否相同结果: ", dhStatus)
 }
 ~~~

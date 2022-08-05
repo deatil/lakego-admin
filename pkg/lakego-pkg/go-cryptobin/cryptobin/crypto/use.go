@@ -136,9 +136,23 @@ func (this Cryptobin) CFB() Cryptobin {
     return this
 }
 
+// 密码反馈模式, 8字节
+func (this Cryptobin) CFB8() Cryptobin {
+    this.mode = "CFB8"
+
+    return this
+}
+
 // 输出反馈模式
 func (this Cryptobin) OFB() Cryptobin {
     this.mode = "OFB"
+
+    return this
+}
+
+// 输出反馈模式, 8字节
+func (this Cryptobin) OFB8() Cryptobin {
+    this.mode = "OFB8"
 
     return this
 }

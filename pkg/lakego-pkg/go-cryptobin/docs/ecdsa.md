@@ -16,6 +16,7 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
+    // 可选参数 [P521 | P384 | P256 | P224]
     obj := cryptobin.
         NewEcdsa().
         WithCurve("P521").

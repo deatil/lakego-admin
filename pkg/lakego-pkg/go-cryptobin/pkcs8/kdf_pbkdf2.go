@@ -10,7 +10,6 @@ import (
     "crypto/x509/pkix"
     "encoding/asn1"
 
-    "golang.org/x/crypto/md4"
     "golang.org/x/crypto/pbkdf2"
     "github.com/tjfoc/gmsm/sm3"
 )
@@ -19,9 +18,7 @@ import (
 type Hash uint
 
 const (
-    MD2 Hash = 1 + iota // 暂时没有提供
-    MD4
-    MD5
+    MD5 Hash = 1 + iota
     SHA1
     SHA224
     SHA256
@@ -39,9 +36,7 @@ var (
 
     // hash 方式
     oidDigestAlgorithm     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2}
-    oidHMACWithMD2         = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 2}
-    oidHMACWithMD4         = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 4}
-    oidHMACWithMD5         = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 5}
+    oidHMACWithMD5         = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 6}
     oidHMACWithSHA1        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
     oidHMACWithSHA224      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 8}
     oidHMACWithSHA256      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 9}
@@ -55,8 +50,6 @@ var (
 // 返回使用的 Hash 方式
 func prfByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
-        case oid.Equal(oidHMACWithMD4):
-            return md4.New, nil
         case oid.Equal(oidHMACWithMD5):
             return md5.New, nil
         case oid.Equal(oidHMACWithSHA1):
@@ -83,8 +76,6 @@ func prfByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
 // 返回使用的 Hash 对应的 asn1
 func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
     switch h {
-        case MD4:
-            return oidHMACWithMD4, nil
         case MD5:
             return oidHMACWithMD5, nil
         case SHA1:

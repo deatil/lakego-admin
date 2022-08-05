@@ -16,6 +16,7 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
+    // 可用参数 [L1024N160 | L2048N224 | L2048N256 | L3072N256]
     dsa := cryptobin_dsa.New().GenerateKey("L2048N256")
     dsaPriKey := dsa.
         CreatePrivateKey().

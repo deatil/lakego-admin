@@ -26,17 +26,20 @@ var (
     GetHashFromName   = cryptobin_pkcs8.GetHashFromName
 )
 
-// 私钥, PKCS1 别名
+// 生成私钥 pem 数据, PKCS1 别名
+// 使用:
+// obj := New().GenerateKey(2048)
+// priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Rsa) CreatePrivateKey() Rsa {
     return this.CreatePKCS1PrivateKey()
 }
 
-// 私钥带密码, PKCS1 别名
+// 生成私钥带密码 pem 数据, PKCS1 别名
 func (this Rsa) CreatePrivateKeyWithPassword(password string, opts ...string) Rsa {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
-// PKCS1 私钥
+// 生成 PKCS1 私钥
 func (this Rsa) CreatePKCS1PrivateKey() Rsa {
     if this.privateKey == nil {
         this.Error = errors.New("Rsa: [CreatePKCS1PrivateKey()] privateKey error.")
@@ -55,7 +58,7 @@ func (this Rsa) CreatePKCS1PrivateKey() Rsa {
     return this
 }
 
-// PKCS1 私钥带密码
+// 生成 PKCS1 私钥带密码 pem 数据
 // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
 func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Rsa {
     if this.privateKey == nil {
@@ -98,7 +101,7 @@ func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     return this
 }
 
-// PKCS8 私钥
+// 生成 PKCS8 私钥 pem 数据
 func (this Rsa) CreatePKCS8PrivateKey() Rsa {
     if this.privateKey == nil {
         this.Error = errors.New("Rsa: [CreatePKCS8PrivateKey()] privateKey error.")
@@ -121,7 +124,7 @@ func (this Rsa) CreatePKCS8PrivateKey() Rsa {
     return this
 }
 
-// PKCS8 私钥带密码
+// 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Rsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Rsa {
     if this.privateKey == nil {
@@ -160,7 +163,7 @@ func (this Rsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
     return this
 }
 
-// 公钥
+// 生成公钥 pem 数据
 func (this Rsa) CreatePublicKey() Rsa {
     var publicKey *rsa.PublicKey
 

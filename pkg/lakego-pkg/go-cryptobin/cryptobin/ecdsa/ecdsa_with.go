@@ -19,8 +19,8 @@ func (this Ecdsa) WithPublicKey(data *ecdsa.PublicKey) Ecdsa {
     return this
 }
 
-// 设置 data
-// 可选 [P521 | P384 | P256 | P224]
+// 设置曲线类型
+// 可选参数 [P521 | P384 | P256 | P224]
 func (this Ecdsa) WithCurve(curve string) Ecdsa {
     switch curve {
         case "P521":
@@ -57,7 +57,7 @@ func (this Ecdsa) WithSignHash(hash string) Ecdsa {
     return this
 }
 
-// 设置 veryed
+// 设置验证结果
 func (this Ecdsa) WithVeryed(data bool) Ecdsa {
     this.veryed = data
 

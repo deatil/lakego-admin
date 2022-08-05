@@ -16,6 +16,9 @@ import (
     "github.com/deatil/go-exception/exception"
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    _ "github.com/deatil/go-cryptobin/dh/dh"
+    _ "github.com/deatil/go-cryptobin/dh/ecdh"
+    _ "github.com/deatil/go-cryptobin/dh/curve25519"
     _ "github.com/deatil/go-cryptobin/cryptobin/ca"
     _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
     _ "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
@@ -162,21 +165,23 @@ func (this *Data) Error(ctx *gin.Context) {
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()
 
-    // SM4 加密测试
+    // 加密测试
     cypt := cryptobin_crypto.
         FromString("test-pass").
         SetKey("dfertf12").
+        SetIv("dfertf12").
         Des().
-        ECB().
-        ISO10126Padding().
+        CFB().
+        PKCS7Padding().
         Encrypt().
         ToBase64String()
     cyptde := cryptobin_crypto.
-        FromBase64String("bvifBivJ1GEXAEgBAo9OoA==").
+        FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
         SetKey("dfertf12").
+        SetIv("dfertf12").
         Des().
-        ECB().
-        ISO10126Padding().
+        CFB().
+        PKCS7Padding().
         Decrypt().
         ToString()
 
@@ -321,15 +326,15 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/rsa_pkcs8_en55")
+    obj2Pri, _ := fs.Get("./runtime/key/rsa_pkcs8_en11s")
     obj2cypt := obj2.
         FromString("test-pass").
         FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/rsa_pkcs8_en55.pub")
+    obj2Pub, _ := fs.Get("./runtime/key/rsa_pkcs8_en11s.pub")
     obj2cyptde := obj2.
-        FromBase64String("qlhbWcgPwvspaE4qiDTk8EVNUq/DKnvkwFDtejRLk6pbktXHQwuEDrglvB5WB9OJEAueg5ZU4Pyx9E5vpoCGYKVhT9Q3LjlHl9klcXQZLuXn+7rF/5tLLyZhveyCMPiZxjLCP9nYZvJVLhZ9kpn6Iye//h8NODl3v8EN4H5S64lPEtryFjfRSm5r4b80/WiDqrVNZDKyRpdNg6Rp66oK3TOMe5OUX0oxq1DVEEvd5G1IqXjMwEsBvLmnuA7V3EBN1Uq/SjNZR7P0S8/ArT6LytwwBQ5vURXVYE0Km9qJeGok4a2pna3eNROLVfzOyeO6kap8i8Hb0rJ9xOZK+57dNA==").
+        FromBase64String("UuryJgEboeD/S/WiJD3OTxJIoPS6BfnHduz3BGd6Svx2AMeBbzsjpWzxaFE++Qd+OeyfPuYC8jmYd+zpcbbkk6Lf9GUdnNNrZBgJ7sxIhiwFwXUDyuXTzX3P+7vCUgOntHaupxLtcfFbA10lWuhkcJCctgKhDvKoNYymzOPLXyPwYoG8Aa52+ZIOafZ6ikX8IbQmCu9/3E6jx04YDajCQD6U9Xy2VsljnoYCNmjUUm+pYkAMz+jqccSLwUweszjEUKt92MwnlL4E/wXolwrOCezpQKELoerBlNjruALR6EHfzHP2fqTbTZL6MhORc2NF10nGgdmW0uiczIhI8I1QKg==").
         FromPublicKey([]byte(obj2Pub)).
         Very([]byte("test-pass")).
         ToVeryed()

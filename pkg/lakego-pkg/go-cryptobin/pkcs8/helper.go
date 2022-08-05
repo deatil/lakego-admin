@@ -5,21 +5,38 @@ var CipherMap = map[string]Cipher{
     "DESCBC":     DESCBC,
     "DESEDE3CBC": DESEDE3CBC,
 
+    "AES128ECB":  AES128ECB,
     "AES128CBC":  AES128CBC,
-    "AES192CBC":  AES192CBC,
-    "AES256CBC":  AES256CBC,
-
+    "AES128OFB":  AES128OFB,
+    "AES128CFB":  AES128CFB,
     "AES128GCM":  AES128GCM,
-    "AES192GCM":  AES192GCM,
-    "AES256GCM":  AES256GCM,
+    "AES128CCM":  AES128CCM,
 
+    "AES192ECB":  AES192ECB,
+    "AES192CBC":  AES192CBC,
+    "AES192OFB":  AES192OFB,
+    "AES192CFB":  AES192CFB,
+    "AES192GCM":  AES192GCM,
+    "AES192CCM":  AES192CCM,
+
+    "AES256ECB":  AES256ECB,
+    "AES256CBC":  AES256CBC,
+    "AES256OFB":  AES256OFB,
+    "AES256CFB":  AES256CFB,
+    "AES256GCM":  AES256GCM,
+    "AES256CCM":  AES256CCM,
+
+    "SM4ECB":     SM4ECB,
     "SM4CBC":     SM4CBC,
+    "SM4OFB":     SM4OFB,
+    "SM4CFB":     SM4CFB,
+    "SM4CFB8":    SM4CFB8,
     "SM4GCM":     SM4GCM,
+    "SM4CCM":     SM4CCM,
 }
 
 // hash 列表
 var HashMap = map[string]Hash{
-    "MD4":        MD4,
     "MD5":        MD5,
     "SHA1":       SHA1,
     "SHA224":     SHA224,

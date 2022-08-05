@@ -16,6 +16,7 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
+    // bits = 512 | 1024 | 2048 | 4096
     obj := cryptobin.
         NewRsa().
         GenerateKey(2048)
@@ -64,7 +65,7 @@ func main() {
 
     objPriKey := obj.
         CreatePKCS8PrivateKeyWithPassword("123", cryptobin_rsa.Opts{
-            Cipher:  cryptobin_rsa.CipherMap["AES256CBC"],
+            Cipher:  cryptobin_rsa.GetCipherFromName("AES256CBC"),
             KDFOpts: cryptobin_rsa.ScryptOpts{
                 CostParameter:            1 << 15,
                 BlockSize:                8,

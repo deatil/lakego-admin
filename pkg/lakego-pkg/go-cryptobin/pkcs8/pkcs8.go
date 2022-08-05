@@ -108,15 +108,20 @@ func EncryptPKCS8PrivateKey(
 
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("failed to encrypt PEM: unknown algorithm")
+        return nil, errors.New("failed to encrypt PEM: unknown opts cipher")
     }
 
-    salt := make([]byte, opt.KDFOpts.GetSaltSize())
+    kdfOpts := opt.KDFOpts
+    if kdfOpts == nil {
+        return nil, errors.New("failed to encrypt PEM: unknown opts kdfOpts")
+    }
+
+    salt := make([]byte, kdfOpts.GetSaltSize())
     if _, err := io.ReadFull(rand, salt); err != nil {
         return nil, errors.New(err.Error() + " failed to generate salt")
     }
 
-    key, kdfParams, err := opt.KDFOpts.DeriveKey(password, salt, cipher.KeySize())
+    key, kdfParams, err := kdfOpts.DeriveKey(password, salt, cipher.KeySize())
     if err != nil {
         return nil, err
     }
@@ -133,7 +138,7 @@ func EncryptPKCS8PrivateKey(
     }
 
     keyDerivationFunc := pkix.AlgorithmIdentifier{
-        Algorithm:  opt.KDFOpts.OID(),
+        Algorithm:  kdfOpts.OID(),
         Parameters: asn1.RawValue{
             FullBytes: marshalledParams,
         },
@@ -180,7 +185,11 @@ func EncryptPKCS8PrivateKey(
 }
 
 // 解出 PKCS8 密钥
-// 加密方式: AES-128-CBC | AES-192-CBC | AES-256-CBC | DES | 3DES
+// 加密方式:
+// DESCBC | DESEDE3CBC
+// AES128CBC | AES192CBC | AES256CBC
+// AES128GCM | AES192GCM | AES256GCM
+// SM4CBC | SM4GCM
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
@@ -208,8 +217,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
 
     keySize := cipher.KeySize()
 
-    // AES-128-CBC, AES-192-CBC, AES-256-CBC
-    // DES, TripleDES
+    // 生成密钥
     symkey, err := kdfParam.DeriveKey(password, keySize)
     if err != nil {
         return nil, err

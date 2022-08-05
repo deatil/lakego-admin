@@ -26,7 +26,10 @@ var (
     GetHashFromName   = cryptobin_pkcs8.GetHashFromName
 )
 
-// 私钥
+// 生成私钥 pem 数据
+// 使用:
+// obj := New().WithCurve("P521").GenerateKey()
+// priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Ecdsa) CreatePrivateKey() Ecdsa {
     if this.privateKey == nil {
         this.Error = errors.New("Ecdsa: [CreatePrivateKey()] privateKey error.")
@@ -50,7 +53,7 @@ func (this Ecdsa) CreatePrivateKey() Ecdsa {
     return this
 }
 
-// 私钥带密码
+// 生成私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC")
 func (this Ecdsa) CreatePrivateKeyWithPassword(password string, opts ...string) Ecdsa {
     if this.privateKey == nil {
@@ -97,7 +100,7 @@ func (this Ecdsa) CreatePrivateKeyWithPassword(password string, opts ...string) 
     return this
 }
 
-// PKCS8 私钥
+// 生成 PKCS8 私钥 pem 数据
 func (this Ecdsa) CreatePKCS8PrivateKey() Ecdsa {
     if this.privateKey == nil {
         this.Error = errors.New("Ecdsa: [CreatePKCS8PrivateKey()] privateKey error.")
@@ -121,7 +124,7 @@ func (this Ecdsa) CreatePKCS8PrivateKey() Ecdsa {
     return this
 }
 
-// PKCS8 私钥带密码
+// 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Ecdsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Ecdsa {
     if this.privateKey == nil {
@@ -160,7 +163,7 @@ func (this Ecdsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any
     return this
 }
 
-// 公钥
+// 生成公钥 pem 数据
 func (this Ecdsa) CreatePublicKey() Ecdsa {
     var publicKey *ecdsa.PublicKey
 
