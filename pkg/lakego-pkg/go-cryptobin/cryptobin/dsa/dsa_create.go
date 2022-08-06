@@ -9,6 +9,7 @@ import (
 
     cryptobin_dsa "github.com/deatil/go-cryptobin/dsa"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
+    cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 )
 
 type (
@@ -160,8 +161,25 @@ func (this DSA) CreatePKCS8PrivateKey() DSA {
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) DSA {
+    if len(opts) > 0 {
+        switch optString := opts[0].(type) {
+            case string:
+                isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
+
+                if isPkcs8Pbe {
+                    return this.CreatePKCS8PbePrivateKeyWithPassword(password, optString)
+                }
+        }
+    }
+
+    return this.CreatePKCS8KdfPrivateKeyWithPassword(password, opts...)
+}
+
+// 生成 PKCS8 私钥带密码 pem 数据
+// CreatePKCS8KdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
+func (this DSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [CreatePKCS8PrivateKeyWithPassword()] privateKey error.")
+        this.Error = errors.New("DSA: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
         return this
     }
 
@@ -185,6 +203,40 @@ func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
         x509PrivateKey,
         []byte(password),
         opt,
+    )
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.keyData = pem.EncodeToMemory(privateBlock)
+
+    return this
+}
+
+// 生成 PKCS8 私钥带密码 pem 数据
+func (this DSA) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) DSA {
+    if this.privateKey == nil {
+        this.Error = errors.New("DSA: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        return this
+    }
+
+    // 生成私钥
+    x509PrivateKey, err := cryptobin_dsa.NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
+
+    // 生成加密数据
+    privateBlock, err := cryptobin_pkcs8pbe.EncryptPKCS8PrivateKey(
+        rand.Reader,
+        "ENCRYPTED PRIVATE KEY",
+        x509PrivateKey,
+        []byte(password),
+        pemCipher,
     )
     if err != nil {
         this.Error = err

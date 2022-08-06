@@ -62,20 +62,21 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
         return nil, err
     }
 
-    plaintext := make([]byte, len(ciphertext))
     bs := block.BlockSize()
+
+    // 判断数据是否为填充数据
+    dlen := len(ciphertext)
+    if dlen == 0 || dlen%bs != 0 {
+        return nil, errors.New("pkcs8: invalid padding")
+    }
+
+    plaintext := make([]byte, len(ciphertext))
 
     dstTmp := plaintext
     for len(ciphertext) > 0 {
         block.Decrypt(dstTmp, ciphertext[:bs])
         ciphertext = ciphertext[bs:]
         dstTmp = dstTmp[bs:]
-    }
-
-    // 判断数据是否为填充数据
-    dlen := len(plaintext)
-    if dlen == 0 || dlen%bs != 0 {
-        return nil, errors.New("pkcs8: invalid padding")
     }
 
     // 解析加密数据

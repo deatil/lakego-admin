@@ -76,15 +76,15 @@ func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
         return nil, err
     }
 
-    mode := cryptobin_cipher.NewCFB8Decrypter(block, iv)
-    mode.XORKeyStream(plaintext, ciphertext)
-
     // 判断数据是否为填充数据
     blockSize := block.BlockSize()
-    dlen := len(plaintext)
+    dlen := len(ciphertext)
     if dlen == 0 || dlen%blockSize != 0 {
         return nil, errors.New("pkcs8: invalid padding")
     }
+
+    mode := cryptobin_cipher.NewCFB8Decrypter(block, iv)
+    mode.XORKeyStream(plaintext, ciphertext)
 
     // 解析加密数据
     plaintext = pkcs7UnPadding(plaintext)

@@ -9,6 +9,7 @@ import (
 )
 
 // ccm 模式加密参数
+// http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/CCMParameters.html
 type ccmParams struct {
     Nonce  []byte `asn1:"tag:4"`
     ICVLen int

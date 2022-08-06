@@ -223,9 +223,9 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
         return nil, err
     }
 
-    data = pki.EncryptedData
+    encryptedKey := pki.EncryptedData
 
-    decryptedKey, err := cipher.Decrypt(symkey, cipherParams, data)
+    decryptedKey, err := cipher.Decrypt(symkey, cipherParams, encryptedKey)
     if err != nil {
         return nil, err
     }
