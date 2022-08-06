@@ -54,27 +54,27 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-// CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this EdDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) EdDSA {
+// CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
+func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if len(opts) > 0 {
         switch optString := opts[0].(type) {
             case string:
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePKCS8PbePrivateKeyWithPassword(password, optString)
+                    return this.CreatePbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreatePKCS8KdfPrivateKeyWithPassword(password, opts...)
+    return this.CreateKdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成私钥带密码 pem 数据
-// CreatePKCS8KdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this EdDSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) EdDSA {
+// CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
+func (this EdDSA) CreateKdfPrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
-        this.Error = errors.New("EdDSA: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
+        this.Error = errors.New("EdDSA: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
         return this
     }
 
@@ -110,9 +110,9 @@ func (this EdDSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this EdDSA) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) EdDSA {
+func (this EdDSA) CreatePbePrivateKeyWithPassword(password string, alg string) EdDSA {
     if this.privateKey == nil {
-        this.Error = errors.New("EdDSA: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        this.Error = errors.New("EdDSA: [CreatePbePrivateKeyWithPassword()] privateKey error.")
         return this
     }
 
