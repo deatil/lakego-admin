@@ -29,7 +29,7 @@ func (this DSA) ParsePrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs1Key().ParsePrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -59,7 +59,7 @@ func (this DSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) 
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs1Key().ParsePrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -84,7 +84,7 @@ func (this DSA) ParsePublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs1Key().ParsePublicKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePublicKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -112,7 +112,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error)
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs8Key().ParsePKCS8PrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS8PrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -144,7 +144,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
         }
     }
 
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs8Key().ParsePKCS8PrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -169,7 +169,7 @@ func (this DSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.NewDsaPkcs8Key().ParsePKCS8PublicKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS8PublicKey(block.Bytes); err != nil {
         return nil, err
     }
 

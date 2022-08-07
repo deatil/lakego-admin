@@ -46,16 +46,16 @@ type publicKeyInfo struct {
 type DsaPkcs8Key struct {}
 
 // PKCS8 包装公钥
-func (this DsaPkcs8Key) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error) {
+func (this DsaPkcs8Key) MarshalPKCS8PublicKey(key *dsa.PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
     // 创建数据
     paramBytes, err := asn1.Marshal(dsaAlgorithmParameters{
-        P: pub.P,
-        Q: pub.Q,
-        G: pub.G,
+        P: key.P,
+        Q: key.Q,
+        G: key.G,
     })
     if err != nil {
         return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
@@ -65,7 +65,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     var yInt cryptobyte.Builder
-    yInt.AddASN1BigInt(pub.Y)
+    yInt.AddASN1BigInt(key.Y)
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {

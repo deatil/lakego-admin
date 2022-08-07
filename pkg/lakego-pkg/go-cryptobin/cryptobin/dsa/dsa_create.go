@@ -38,7 +38,7 @@ func (this DSA) CreatePrivateKey() DSA {
         return this
     }
 
-    privateKeyBytes, err := cryptobin_dsa.NewDsaPkcs1Key().MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -77,7 +77,7 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
     }
 
     // 生成私钥
-    x509PrivateKey, err := cryptobin_dsa.NewDsaPkcs1Key().MarshalPrivateKey(this.privateKey)
+    x509PrivateKey, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -117,7 +117,7 @@ func (this DSA) CreatePublicKey() DSA {
         publicKey = this.publicKey
     }
 
-    publicKeyBytes, err := cryptobin_dsa.NewDsaPkcs1Key().MarshalPublicKey(publicKey)
+    publicKeyBytes, err := cryptobin_dsa.MarshalPublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this
@@ -142,7 +142,7 @@ func (this DSA) CreatePKCS8PrivateKey() DSA {
         return this
     }
 
-    privateKeyBytes, err := cryptobin_dsa.NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -190,7 +190,7 @@ func (this DSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...an
     }
 
     // 生成私钥
-    x509PrivateKey, err := cryptobin_dsa.NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
+    x509PrivateKey, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -222,7 +222,7 @@ func (this DSA) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
     }
 
     // 生成私钥
-    x509PrivateKey, err := cryptobin_dsa.NewDsaPkcs8Key().MarshalPKCS8PrivateKey(this.privateKey)
+    x509PrivateKey, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         this.Error = err
         return this
@@ -264,7 +264,7 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
         publicKey = this.publicKey
     }
 
-    publicKeyBytes, err := cryptobin_dsa.NewDsaPkcs8Key().MarshalPKCS8PublicKey(publicKey)
+    publicKeyBytes, err := cryptobin_dsa.MarshalPKCS8PublicKey(publicKey)
     if err != nil {
         this.Error = err
         return this
