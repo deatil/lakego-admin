@@ -10,6 +10,7 @@
 * sm2 文档: [sm2.md](sm2.md)
 * ca 文档: [ca.md](ca.md)
 * dh 文档: [dh.md](dh.md)
+* dh pem 使用文档: [dhd.md](dhd.md)
 
 
 

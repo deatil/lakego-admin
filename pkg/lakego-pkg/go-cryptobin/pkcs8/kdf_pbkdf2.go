@@ -30,6 +30,11 @@ const (
 )
 
 var (
+    // 默认 hash
+    DefaultHash = SHA1
+)
+
+var (
     // key derivation functions
     oidPKCS5          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5}
     oidPKCS5PBKDF2    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12}
@@ -107,12 +112,35 @@ type pbkdf2Params struct {
 }
 
 func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err error) {
-    h, err := prfByOID(this.PrfParam.Algorithm)
-    if err != nil {
-        return nil, err
+    var alg asn1.ObjectIdentifier
+    var h func() hash.Hash
+
+    if this.PrfParam.Algorithm.String() != "" {
+        h, err = prfByOID(this.PrfParam.Algorithm)
+        if err != nil {
+            return nil, err
+        }
+    } else {
+        alg, err = oidByHash(DefaultHash)
+        if err != nil {
+            return nil, err
+        }
+
+        h, err = prfByOID(alg)
+        if err != nil {
+            return nil, err
+        }
     }
 
-    return pbkdf2.Key(password, this.Salt, this.IterationCount, size, h), nil
+    key = pbkdf2.Key(password, this.Salt, this.IterationCount, size, h)
+
+    return
+}
+
+func (this pbkdf2Params) Reset() {
+    this.Salt = nil
+    this.IterationCount = 0
+    this.PrfParam = pkix.AlgorithmIdentifier{}
 }
 
 // PBKDF2 配置
@@ -123,9 +151,28 @@ type PBKDF2Opts struct {
 }
 
 func (this PBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error) {
-    alg, err := oidByHash(this.HMACHash)
-    if err != nil {
-        return nil, nil, err
+    var alg asn1.ObjectIdentifier
+    var prfParam pkix.AlgorithmIdentifier
+
+    if this.HMACHash != 0 {
+        alg, err = oidByHash(this.HMACHash)
+        if err != nil {
+            return nil, nil, err
+        }
+
+        prfParam = pkix.AlgorithmIdentifier{
+            Algorithm:  alg,
+            Parameters: asn1.RawValue{
+                Tag: asn1.TagNull,
+            },
+        }
+    } else {
+        alg, err = oidByHash(DefaultHash)
+        if err != nil {
+            return nil, nil, err
+        }
+
+        prfParam = pkix.AlgorithmIdentifier{}
     }
 
     h, err := prfByOID(alg)
@@ -133,16 +180,10 @@ func (this PBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte, p
         return nil, nil, err
     }
 
+    params = pbkdf2Params{salt, this.IterationCount, prfParam}
+
     key = pbkdf2.Key(password, salt, this.IterationCount, size, h)
 
-    prfParam := pkix.AlgorithmIdentifier{
-        Algorithm:  alg,
-        Parameters: asn1.RawValue{
-            Tag: asn1.TagNull,
-        },
-    }
-
-    params = pbkdf2Params{salt, this.IterationCount, prfParam}
     return key, params, nil
 }
 

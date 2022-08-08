@@ -1,0 +1,33 @@
+package curve25519
+
+import (
+    "github.com/deatil/go-cryptobin/dhd/curve25519"
+)
+
+// 设置 PrivateKey
+func (this Curve25519) WithPrivateKey(data *curve25519.PrivateKey) Curve25519 {
+    this.privateKey = data
+
+    return this
+}
+
+// 设置 PublicKey
+func (this Curve25519) WithPublicKey(data *curve25519.PublicKey) Curve25519 {
+    this.publicKey = data
+
+    return this
+}
+
+// 设置 keyData
+func (this Curve25519) WithKeyData(data []byte) Curve25519 {
+    this.keyData = data
+
+    return this
+}
+
+// 设置错误
+func (this Curve25519) WithError(err error) Curve25519 {
+    this.Error = err
+
+    return this
+}

@@ -26,6 +26,13 @@ func (this scryptParams) DeriveKey(password []byte, size int) (key []byte, err e
     )
 }
 
+func (this scryptParams) Reset() {
+    this.Salt = nil
+    this.CostParameter = 0
+    this.BlockSize = 0
+    this.ParallelizationParameter = 0
+}
+
 // ScryptOpts 设置
 type ScryptOpts struct {
     SaltSize                 int

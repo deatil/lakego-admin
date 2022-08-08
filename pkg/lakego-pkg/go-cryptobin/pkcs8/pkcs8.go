@@ -32,6 +32,9 @@ type KDFOpts interface {
 type KDFParameters interface {
     // 生成密钥
     DeriveKey(password []byte, size int) (key []byte, err error)
+
+    // 清空数据
+    Reset()
 }
 
 // 加密接口
@@ -75,7 +78,6 @@ var DefaultOpts = Opts{
     KDFOpts: PBKDF2Opts{
         SaltSize:       16,
         IterationCount: 10000,
-        HMACHash:       SHA256,
     },
 }
 
@@ -134,7 +136,7 @@ func EncryptPKCS8PrivateKey(
     // 生成 asn1 数据开始
     marshalledParams, err := asn1.Marshal(kdfParams)
     if err != nil {
-        return nil, err
+        return nil, errors.New("pkcs8: " + err.Error())
     }
 
     keyDerivationFunc := pkix.AlgorithmIdentifier{
@@ -253,6 +255,9 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
     if !ok {
         return nil, fmt.Errorf("pkcs8: unsupported KDF (OID: %s)", oid)
     }
+
+    // 清空数据
+    params.Reset()
 
     _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, params)
     if err != nil {
