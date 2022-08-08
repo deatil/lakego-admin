@@ -16,7 +16,7 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
-    // 可用参数 [P512 | P1024 | P2048_2 | P2048 | P3072 | P4096]
+    // 可用参数 [P1001 | P1002 | P1536 | P2048 | P3072 | P4096 | P6144 | P8192]
     obj := cryptobin_dh.New().
         GenerateKey("P512")
 

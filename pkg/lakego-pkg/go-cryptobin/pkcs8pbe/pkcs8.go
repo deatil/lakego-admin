@@ -25,10 +25,10 @@ type PEMCipher interface {
     Decrypt(key, params, ciphertext []byte) ([]byte, error)
 }
 
-var ciphers = make(map[string]PEMCipher)
+var ciphers = make(map[string]func() PEMCipher)
 
 // 添加加密
-func AddCipher(oid asn1.ObjectIdentifier, cipher PEMCipher) {
+func AddCipher(oid asn1.ObjectIdentifier, cipher func() PEMCipher) {
     ciphers[oid.String()] = cipher
 }
 
@@ -124,7 +124,9 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (PEMCipher
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
 
+    newCipher := cipher()
+
     params := encryptionScheme.Parameters.FullBytes
 
-    return cipher, params, nil
+    return newCipher, params, nil
 }

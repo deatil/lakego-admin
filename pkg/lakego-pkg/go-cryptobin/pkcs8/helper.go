@@ -85,24 +85,25 @@ func ParseOpts(opts ...any) (Opts, error) {
                 opt = opts[0].(string)
             }
 
+            kdfOpts := PBKDF2Opts{
+                SaltSize:       16,
+                IterationCount: 10000,
+            }
+
             // MD4 | MD5 | SHA1 | SHA224 | SHA256 | SHA384
             // SHA512 | SHA512_224 | SHA512_256 | SM3
-            hash := "SHA256"
             if len(opts) > 1 {
-                hash = opts[1].(string)
+                hash := opts[1].(string)
+
+                kdfOpts.HMACHash = GetHashFromName(hash)
             }
 
             cipher := GetCipherFromName(opt)
-            hmacHash := GetHashFromName(hash)
 
             // 设置
             newOpts := Opts{
                 Cipher:  cipher,
-                KDFOpts: PBKDF2Opts{
-                    SaltSize:       16,
-                    IterationCount: 10000,
-                    HMACHash:       hmacHash,
-                },
+                KDFOpts: kdfOpts,
             }
 
             return newOpts, nil

@@ -250,39 +250,93 @@ var SM4CCM = CipherCCM{
 
 func init() {
     // des
-    AddCipher(oidDESCBC, DESCBC)
-    AddCipher(oidDESEDE3CBC, DESEDE3CBC)
+    AddCipher(oidDESCBC, func() Cipher {
+        return DESCBC
+    })
+    AddCipher(oidDESEDE3CBC, func() Cipher {
+        return DESEDE3CBC
+    })
 
     // aes128
-    AddCipher(oidAES128ECB, AES128ECB)
-    AddCipher(oidAES128CBC, AES128CBC)
-    AddCipher(oidAES128OFB, AES128OFB)
-    AddCipher(oidAES128CFB, AES128CFB)
-    AddCipher(oidAES128GCM, AES128GCM)
-    AddCipher(oidAES128CCM, AES128CCM)
+    AddCipher(oidAES128ECB, func() Cipher {
+        return AES128ECB
+    })
+    AddCipher(oidAES128CBC, func() Cipher {
+        return AES128CBC
+    })
+    AddCipher(oidAES128OFB, func() Cipher {
+        return AES128OFB
+    })
+    AddCipher(oidAES128CFB, func() Cipher {
+        return AES128CFB
+    })
+    AddCipher(oidAES128GCM, func() Cipher {
+        return AES128GCM
+    })
+    AddCipher(oidAES128CCM, func() Cipher {
+        return AES128CCM
+    })
 
     // aes192
-    AddCipher(oidAES192ECB, AES192ECB)
-    AddCipher(oidAES192CBC, AES192CBC)
-    AddCipher(oidAES192OFB, AES192OFB)
-    AddCipher(oidAES192CFB, AES192CFB)
-    AddCipher(oidAES192GCM, AES192GCM)
-    AddCipher(oidAES192CCM, AES192CCM)
+    AddCipher(oidAES192ECB, func() Cipher {
+        return AES192ECB
+    })
+    AddCipher(oidAES192CBC, func() Cipher {
+        return AES192CBC
+    })
+    AddCipher(oidAES192OFB, func() Cipher {
+        return AES192OFB
+    })
+    AddCipher(oidAES192CFB, func() Cipher {
+        return AES192CFB
+    })
+    AddCipher(oidAES192GCM, func() Cipher {
+        return AES192GCM
+    })
+    AddCipher(oidAES192CCM, func() Cipher {
+        return AES192CCM
+    })
 
     // aes256
-    AddCipher(oidAES256ECB, AES256ECB)
-    AddCipher(oidAES256CBC, AES256CBC)
-    AddCipher(oidAES256OFB, AES256OFB)
-    AddCipher(oidAES256CFB, AES256CFB)
-    AddCipher(oidAES256GCM, AES256GCM)
-    AddCipher(oidAES256CCM, AES256CCM)
+    AddCipher(oidAES256ECB, func() Cipher {
+        return AES256ECB
+    })
+    AddCipher(oidAES256CBC, func() Cipher {
+        return AES256CBC
+    })
+    AddCipher(oidAES256OFB, func() Cipher {
+        return AES256OFB
+    })
+    AddCipher(oidAES256CFB, func() Cipher {
+        return AES256CFB
+    })
+    AddCipher(oidAES256GCM, func() Cipher {
+        return AES256GCM
+    })
+    AddCipher(oidAES256CCM, func() Cipher {
+        return AES256CCM
+    })
 
     // sm4
-    AddCipher(oidSM4ECB, SM4ECB)
-    AddCipher(oidSM4CBC, SM4CBC)
-    AddCipher(oidSM4OFB, SM4OFB)
-    AddCipher(oidSM4CFB, SM4CFB)
-    AddCipher(oidSM4CFB8, SM4CFB8)
-    AddCipher(oidSM4GCM, SM4GCM)
-    AddCipher(oidSM4CCM, SM4CCM)
+    AddCipher(oidSM4ECB, func() Cipher {
+        return SM4ECB
+    })
+    AddCipher(oidSM4CBC, func() Cipher {
+        return SM4CBC
+    })
+    AddCipher(oidSM4OFB, func() Cipher {
+        return SM4OFB
+    })
+    AddCipher(oidSM4CFB, func() Cipher {
+        return SM4CFB
+    })
+    AddCipher(oidSM4CFB8, func() Cipher {
+        return SM4CFB8
+    })
+    AddCipher(oidSM4GCM, func() Cipher {
+        return SM4GCM
+    })
+    AddCipher(oidSM4CCM, func() Cipher {
+        return SM4CCM
+    })
 }

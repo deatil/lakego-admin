@@ -67,9 +67,19 @@ var PEMCipherSHA1AndRC4_40 = CipherRC4{
 }
 
 func init() {
-    AddCipher(oidPbeWithMD5AndDES, PEMCipherMD5AndDES)
-    AddCipher(oidPbeWithSHA1AndDES, PEMCipherSHA1AndDES)
-    AddCipher(oidPbeWithSHA1And3DES, PEMCipherSHA1And3DES)
-    AddCipher(oidPbeWithSHA1AndRC4_128, PEMCipherSHA1AndRC4_128)
-    AddCipher(oidPbeWithSHA1AndRC4_40, PEMCipherSHA1AndRC4_40)
+    AddCipher(oidPbeWithMD5AndDES, func() PEMCipher {
+        return PEMCipherMD5AndDES
+    })
+    AddCipher(oidPbeWithSHA1AndDES, func() PEMCipher {
+        return PEMCipherSHA1AndDES
+    })
+    AddCipher(oidPbeWithSHA1And3DES, func() PEMCipher {
+        return PEMCipherSHA1And3DES
+    })
+    AddCipher(oidPbeWithSHA1AndRC4_128, func() PEMCipher {
+        return PEMCipherSHA1AndRC4_128
+    })
+    AddCipher(oidPbeWithSHA1AndRC4_40, func() PEMCipher {
+        return PEMCipherSHA1AndRC4_40
+    })
 }

@@ -137,12 +137,6 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     return
 }
 
-func (this pbkdf2Params) Reset() {
-    this.Salt = nil
-    this.IterationCount = 0
-    this.PrfParam = pkix.AlgorithmIdentifier{}
-}
-
 // PBKDF2 配置
 type PBKDF2Opts struct {
     SaltSize       int
@@ -196,5 +190,7 @@ func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
 }
 
 func init() {
-    AddKDF(oidPKCS5PBKDF2, new(pbkdf2Params))
+    AddKDF(oidPKCS5PBKDF2, func() KDFParameters {
+        return new(pbkdf2Params)
+    })
 }

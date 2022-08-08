@@ -23,6 +23,9 @@ import (
     _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
     _ "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
     _ "github.com/deatil/go-cryptobin/cryptobin/eddsa"
+    cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
+    _ "github.com/deatil/go-cryptobin/cryptobin/dh/ecdh"
+    _ "github.com/deatil/go-cryptobin/cryptobin/dh/curve25519"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
     cryptobin_crypto "github.com/deatil/go-cryptobin/cryptobin/crypto"
@@ -343,7 +346,30 @@ func (this *Data) Error(ctx *gin.Context) {
     refData, _ := container.CallMethod(RefData{}, "Show", []any{"数据1", "数据2"})
     reffuncData, _ := container.CallFunc(FuncShow, []any{"FuncShow数据1", "FuncShow数据2"})
 
+    obj := cryptobin_dh.New()
+
+    objPri1, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048_2")
+    objPub1, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048_2.pub")
+
+    objPri2, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048")
+    objPub2, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048.pub")
+
+    objSecret1 := obj.
+        FromPrivateKeyWithPassword([]byte(objPri1), "123").
+        FromPublicKey([]byte(objPub2)).
+        CreateSecret().
+        ToHexString()
+
+    objSecret2 := obj.
+        FromPrivateKeyWithPassword([]byte(objPri2), "123").
+        FromPublicKey([]byte(objPub1)).
+        CreateSecret().
+        ToHexString()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "objSecret1": objSecret1,
+        "objSecret2": objSecret2,
+
         "refData": refData,
         "reffuncData": reffuncData,
 

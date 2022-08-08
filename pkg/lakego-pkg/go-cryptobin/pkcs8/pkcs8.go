@@ -32,9 +32,6 @@ type KDFOpts interface {
 type KDFParameters interface {
     // 生成密钥
     DeriveKey(password []byte, size int) (key []byte, err error)
-
-    // 清空数据
-    Reset()
 }
 
 // 加密接口
@@ -52,17 +49,17 @@ type Cipher interface {
     Decrypt(key, params, ciphertext []byte) ([]byte, error)
 }
 
-var kdfs = make(map[string]KDFParameters)
+var kdfs = make(map[string]func() KDFParameters)
 
 // 添加 kdf 方式
-func AddKDF(oid asn1.ObjectIdentifier, params KDFParameters) {
+func AddKDF(oid asn1.ObjectIdentifier, params func() KDFParameters) {
     kdfs[oid.String()] = params
 }
 
-var ciphers = make(map[string]Cipher)
+var ciphers = make(map[string]func() Cipher)
 
 // 添加加密
-func AddCipher(oid asn1.ObjectIdentifier, cipher Cipher) {
+func AddCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
     ciphers[oid.String()] = cipher
 }
 
@@ -256,15 +253,14 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
         return nil, fmt.Errorf("pkcs8: unsupported KDF (OID: %s)", oid)
     }
 
-    // 清空数据
-    params.Reset()
+    newParams := params()
 
-    _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, params)
+    _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, newParams)
     if err != nil {
         return nil, errors.New("pkcs8: invalid KDF parameters")
     }
 
-    return params, nil
+    return newParams, nil
 }
 
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
@@ -274,7 +270,9 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
 
+    newCipher := cipher()
+
     params := encryptionScheme.Parameters.FullBytes
 
-    return cipher, params, nil
+    return newCipher, params, nil
 }
