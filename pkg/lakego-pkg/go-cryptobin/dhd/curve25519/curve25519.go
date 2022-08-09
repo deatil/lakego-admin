@@ -34,6 +34,26 @@ func (this *PrivateKey) Public() crypto.PublicKey {
     return &this.PublicKey
 }
 
+// 生成密码
+func (this *PrivateKey) ComputeSecret(peersPublic *PublicKey) (secret []byte) {
+    if len(this.X) != 32 {
+        panic("ecdh: private key is not 32 byte")
+    }
+
+    if len(peersPublic.Y) != 32 {
+        panic("ecdh: peers public key is not 32 byte")
+    }
+
+    var sec, pri, pub [32]byte
+    copy(pri[:], this.X)
+    copy(pub[:], peersPublic.Y)
+
+    curve25519.ScalarMult(&sec, &pri, &pub)
+
+    secret = sec[:]
+    return
+}
+
 // 生成密钥对
 func GenerateKey(rand io.Reader) (*PrivateKey, *PublicKey, error) {
     if rand == nil {

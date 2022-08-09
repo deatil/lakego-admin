@@ -184,3 +184,45 @@ func main() {
     fmt.Println("生成的密钥是否相同结果: ", dhStatus)
 }
 ~~~
+
+* 自定义使用使用
+~~~go
+package main
+
+import (
+    "fmt"
+
+    "github.com/deatil/lakego-filesystem/filesystem"
+    dhd_dh "github.com/deatil/go-cryptobin/dhd/dh"
+    cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
+)
+
+func main() {
+    // 文件管理器
+    fs := filesystem.New()
+
+    // 自定义生成证书
+    gp, _ := dhd_dh.GetMODPGroup(dhd_dh.P3072)
+    priv := &dhd_dh.PrivateKey{}
+    priv.X, _ = new(big.Int).SetString("b4d8c5ed186d7ae4538003b390467195f907f1ae30bb14d0a6a17325d43deec9", 16)
+    priv.PublicKey.Y, _ = new(big.Int).SetString("b10700012504a616b799ff09f29b8fac42a9e37bd2c64150bfe7b788a041e75e82934565db76cd6fa346b140e3448b01c93dc7eb9193800ffb73dde828566922a0aed9d913af6be383461f0bcb48347dc1183b2815b9dc82136bcfc2de0a25573def474f56e864f769c1aa5e27b70d2843e36f3de69375824556ccc9e9e15abfb4792973b5d95124742d72bc90cc109e802018c087a9942439d2adf3568a58249f59e6f8c6de55b5f2d30cf6235b61a6bc2d2ecbc44b42e0f5d228fae745c5f31699a7a53bb33c48e4ff811e2453df4a547c82bd4283e195a38f9af23a1668b45705865243490a3c5a90e7f82373c9ef01dea457472f0d31a4cfb3b42b75a4864f16adee1323f6479f058cf22e6dc3e575ba650e043a8ac0ab78db5fbfa912aab938f37d110afd800a4897f01785b1c63a83064945b677418a27db2f51828f10ca69d0cc6910a5d6709cecdbfc7b326278e2a7f69151a6dc011e9fe8a286f016898d8c52fe24f041a9db7f60b6378dc644050c4db009a1ae817dab5fafd4338b", 16)
+    priv.PublicKey.Parameters = dhd_dh.Parameters{
+        P: gp.P,
+        G: gp.G,
+    }
+
+    obj22 := cryptobin_dh.New().
+        WithPrivateKey(priv)
+
+    objPriKey := obj22.
+        CreatePrivateKeyWithPassword("123", "AES256CBC").
+        ToKeyString()
+    objPubKey := obj22.
+        MakePublicKey().
+        CreatePublicKey().
+        ToKeyString()
+
+    fs.Put("./runtime/key/dhd2/dh1_dhkey", objPriKey)
+    fs.Put("./runtime/key/dhd2/dh1_dhkey.pub", objPubKey)
+}
+~~~

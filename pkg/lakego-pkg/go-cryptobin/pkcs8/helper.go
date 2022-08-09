@@ -10,21 +10,27 @@ var CipherMap = map[string]Cipher{
     "AES128OFB":  AES128OFB,
     "AES128CFB":  AES128CFB,
     "AES128GCM":  AES128GCM,
+    "AES128GCMb": AES128GCMb,
     "AES128CCM":  AES128CCM,
+    "AES128CCMb": AES128CCMb,
 
     "AES192ECB":  AES192ECB,
     "AES192CBC":  AES192CBC,
     "AES192OFB":  AES192OFB,
     "AES192CFB":  AES192CFB,
     "AES192GCM":  AES192GCM,
+    "AES192GCMb": AES192GCMb,
     "AES192CCM":  AES192CCM,
+    "AES192CCMb": AES192CCMb,
 
     "AES256ECB":  AES256ECB,
     "AES256CBC":  AES256CBC,
     "AES256OFB":  AES256OFB,
     "AES256CFB":  AES256CFB,
     "AES256GCM":  AES256GCM,
+    "AES256GCMb": AES256GCMb,
     "AES256CCM":  AES256CCM,
+    "AES256CCMb": AES256CCMb,
 
     "SM4ECB":     SM4ECB,
     "SM4CBC":     SM4CBC,
@@ -32,7 +38,9 @@ var CipherMap = map[string]Cipher{
     "SM4CFB":     SM4CFB,
     "SM4CFB8":    SM4CFB8,
     "SM4GCM":     SM4GCM,
+    "SM4GCMb":    SM4GCMb,
     "SM4CCM":     SM4CCM,
+    "SM4CCMb":    SM4CCMb,
 }
 
 // hash 列表
@@ -63,7 +71,7 @@ func GetHashFromName(name string) Hash {
         return data
     }
 
-    return HashMap["SHA256"]
+    return HashMap["SHA1"]
 }
 
 // 解析配置
@@ -90,7 +98,7 @@ func ParseOpts(opts ...any) (Opts, error) {
                 IterationCount: 10000,
             }
 
-            // MD4 | MD5 | SHA1 | SHA224 | SHA256 | SHA384
+            // MD5 | SHA1 | SHA224 | SHA256 | SHA384
             // SHA512 | SHA512_224 | SHA512_256 | SM3
             if len(opts) > 1 {
                 hash := opts[1].(string)

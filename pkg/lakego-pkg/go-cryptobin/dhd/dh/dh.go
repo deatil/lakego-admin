@@ -64,6 +64,13 @@ func (this *PrivateKey) Public() crypto.PublicKey {
     return &this.PublicKey
 }
 
+// 生成密钥
+func (this *PrivateKey) ComputeSecret(peersPublic *PublicKey) *big.Int {
+    secret := new(big.Int).Exp(peersPublic.Y, this.X, this.P)
+
+    return secret
+}
+
 // 生成证书
 func GenerateKey(groupID GroupID, rand io.Reader) (*PrivateKey, *PublicKey, error) {
     param, err := GetMODPGroup(groupID)
