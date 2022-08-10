@@ -51,12 +51,7 @@ func (this *PrivateKey) Public() crypto.PublicKey {
 
 // 生成密码
 func (this *PrivateKey) ComputeSecret(peersPublic *PublicKey) (secret []byte) {
-    x, y := unmarshal(this.Curve, peersPublic.Y)
-
-    sX, _ := this.Curve.ScalarMult(x, y, this.X)
-
-    secret = sX.Bytes()
-    return
+    return ComputeSecret(this, peersPublic)
 }
 
 // 生成密钥对
@@ -79,6 +74,26 @@ func GenerateKey(curve elliptic.Curve, rand io.Reader) (*PrivateKey, *PublicKey,
     private.PublicKey = *public
 
     return private, public, nil
+}
+
+// 从私钥获取公钥
+func GeneratePublicKey(private *PrivateKey) (*PublicKey, error) {
+    curve := private.Curve
+
+    N := curve.Params().N
+
+    if new(big.Int).SetBytes(private.X).Cmp(N) >= 0 {
+        err := errors.New("ecdh: private key cannot used with given curve")
+        return nil, err
+    }
+
+    x, y := curve.ScalarBaseMult(private.X)
+
+    public := &PublicKey{}
+    public.Y = elliptic.Marshal(curve, x, y)
+    public.Curve = curve
+
+    return public, nil
 }
 
 // 生成密码

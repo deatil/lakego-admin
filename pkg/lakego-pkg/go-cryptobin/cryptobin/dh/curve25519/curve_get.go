@@ -1,18 +1,18 @@
-package ecdh
+package curve25519
 
 import (
-    "github.com/deatil/go-cryptobin/dhd/ecdh"
+    "github.com/deatil/go-cryptobin/dhd/curve25519"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
-func (this Ecdh) GetPrivateKey() *ecdh.PrivateKey {
+func (this Curve25519) GetPrivateKey() *curve25519.PrivateKey {
     return this.privateKey
 }
 
 // 获取 X 16进制字符
-func (this Ecdh) GetPrivateKeyXHexString() string {
+func (this Curve25519) GetPrivateKeyXHexString() string {
     data := this.privateKey.X
 
     dataHex := cryptobin_tool.
@@ -23,12 +23,12 @@ func (this Ecdh) GetPrivateKeyXHexString() string {
 }
 
 // 获取 PublicKey
-func (this Ecdh) GetPublicKey() *ecdh.PublicKey {
+func (this Curve25519) GetPublicKey() *curve25519.PublicKey {
     return this.publicKey
 }
 
 // 获取 Y 16进制字符
-func (this Ecdh) GetPublicKeyYHexString() string {
+func (this Curve25519) GetPublicKeyYHexString() string {
     data := this.publicKey.Y
 
     dataHex := cryptobin_tool.
@@ -39,11 +39,11 @@ func (this Ecdh) GetPublicKeyYHexString() string {
 }
 
 // 获取 keyData
-func (this Ecdh) GetKeyData() []byte {
+func (this Curve25519) GetKeyData() []byte {
     return this.keyData
 }
 
 // 获取错误
-func (this Ecdh) GetError() error {
+func (this Curve25519) GetError() error {
     return this.Error
 }

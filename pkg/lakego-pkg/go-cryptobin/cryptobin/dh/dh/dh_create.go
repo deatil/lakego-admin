@@ -5,10 +5,9 @@ import (
     "crypto/rand"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/dhd/dh"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
-
-    "github.com/deatil/go-cryptobin/dhd/dh"
 )
 
 type (
@@ -187,9 +186,7 @@ func (this Dh) CreateSecret() Dh {
         return this
     }
 
-    secret := dh.ComputeSecret(this.privateKey, this.publicKey)
-
-    this.secretData = secret.Bytes()
+    this.secretData = dh.ComputeSecret(this.privateKey, this.publicKey)
 
     return this
 }

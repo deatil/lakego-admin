@@ -61,8 +61,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     publicKeyAlgorithm.Algorithm = oidPublicKeyDH
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
-    x, y := unmarshal(key.Curve, key.Y)
-    publicKeyBytes = elliptic.Marshal(key.Curve, x, y)
+    publicKeyBytes = key.Y
 
     pkix := pkixPublicKey{
         Algo: publicKeyAlgorithm,
@@ -110,16 +109,10 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         return
     }
 
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
-
-    x, y := elliptic.Unmarshal(namedCurve, der)
-    if x == nil {
-        err = errors.New("ecdh: failed to unmarshal elliptic curve point")
-        return
-    }
+    y := []byte(keyData.PublicKey.RightAlign())
 
     pub = &PublicKey{}
-    pub.Y = elliptic.Marshal(namedCurve, x, y)
+    pub.Y = y
     pub.Curve = namedCurve
 
     return
