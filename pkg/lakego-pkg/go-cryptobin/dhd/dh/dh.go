@@ -71,7 +71,7 @@ func (this *PrivateKey) ComputeSecret(peersPublic *PublicKey) (secret []byte) {
 
 // 生成证书
 func GenerateKey(groupID GroupID, rand io.Reader) (*PrivateKey, *PublicKey, error) {
-    param, err := GetMODPGroup(groupID)
+    param, err := GetMODGroup(groupID)
     if err != nil {
         return nil, nil, err
     }
@@ -148,7 +148,8 @@ func ComputeSecret(private *PrivateKey, peersPublic *PublicKey) []byte {
     return secret.Bytes()
 }
 
-func IsSafePrimeGroup(param *Group, n int) bool {
+// 判断是否为安全数据
+func IsSafePrimeParameters(param Parameters, n int) bool {
     q := new(big.Int).Sub(param.P, one)
     q = q.Div(q, two)
 

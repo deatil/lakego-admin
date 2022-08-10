@@ -228,6 +228,13 @@ func (this Cryptobin) ISO7816_4Padding() Cryptobin {
     return this
 }
 
+// ISO97971 补码
+func (this Cryptobin) ISO97971Padding() Cryptobin {
+    this.padding = "ISO97971"
+
+    return this
+}
+
 // TBC 补码
 func (this Cryptobin) TBCPadding() Cryptobin {
     this.padding = "TBC"

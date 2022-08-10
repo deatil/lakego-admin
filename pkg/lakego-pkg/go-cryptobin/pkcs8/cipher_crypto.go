@@ -13,37 +13,37 @@ var (
     oidDESCBC     = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 7}
     oidDESEDE3CBC = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 7}
 
-    oidAES       = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1}
-    oidAES128ECB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 1}
-    oidAES128CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 2}
-    oidAES128OFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 3}
-    oidAES128CFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 4}
-    oidAES128GCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 6}
-    oidAES128CCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 7}
+    oidAES        = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1}
+    oidAES128ECB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 1}
+    oidAES128CBC  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 2}
+    oidAES128OFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 3}
+    oidAES128CFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 4}
+    oidAES128GCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 6}
+    oidAES128CCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 7}
 
-    oidAES192ECB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 21}
-    oidAES192CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 22}
-    oidAES192OFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 23}
-    oidAES192CFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 24}
-    oidAES192GCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 26}
-    oidAES192CCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 27}
+    oidAES192ECB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 21}
+    oidAES192CBC  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 22}
+    oidAES192OFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 23}
+    oidAES192CFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 24}
+    oidAES192GCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 26}
+    oidAES192CCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 27}
 
-    oidAES256ECB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 41}
-    oidAES256CBC = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 42}
-    oidAES256OFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 43}
-    oidAES256CFB = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 44}
-    oidAES256GCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 46}
-    oidAES256CCM = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 47}
+    oidAES256ECB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 41}
+    oidAES256CBC  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 42}
+    oidAES256OFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 43}
+    oidAES256CFB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 44}
+    oidAES256GCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 46}
+    oidAES256CCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 47}
 
-    oidSM4ECB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 1}
-    oidSM4CBC  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
-    oidSM4OFB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
-    oidSM4CFB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 4}
+    oidSM4ECB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 1}
+    oidSM4CBC     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
+    oidSM4OFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
+    oidSM4CFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 4}
     // CFB1 暂时不提供
-    oidSM4CFB1 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 5}
-    oidSM4CFB8 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
-    oidSM4GCM  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
-    oidSM4CCM  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
+    oidSM4CFB1    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 5}
+    oidSM4CFB8    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
+    oidSM4GCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
+    oidSM4CCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
 )
 
 // DESCBC is the 56-bit key 3DES cipher in CBC mode.

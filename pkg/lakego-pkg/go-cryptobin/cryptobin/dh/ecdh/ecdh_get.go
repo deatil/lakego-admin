@@ -38,9 +38,19 @@ func (this Ecdh) GetPublicKeyYHexString() string {
     return dataHex
 }
 
+// 获取散列方式
+func (this Ecdh) GetCurve() ecdh.Curve {
+    return this.curve
+}
+
 // 获取 keyData
 func (this Ecdh) GetKeyData() []byte {
     return this.keyData
+}
+
+// 获取 secretData
+func (this Ecdh) GetSecretData() []byte {
+    return this.secretData
 }
 
 // 获取错误

@@ -25,6 +25,13 @@ func (this Curve25519) WithKeyData(data []byte) Curve25519 {
     return this
 }
 
+// 设置 secretData
+func (this Curve25519) WithSecretData(data []byte) Curve25519 {
+    this.secretData = data
+
+    return this
+}
+
 // 设置错误
 func (this Curve25519) WithError(err error) Curve25519 {
     this.Error = err

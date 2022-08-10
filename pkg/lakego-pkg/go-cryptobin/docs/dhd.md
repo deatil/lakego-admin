@@ -18,7 +18,8 @@ func main() {
     // 生成证书
     // 可用参数 [P1001 | P1002 | P1536 | P2048 | P3072 | P4096 | P6144 | P8192]
     obj := cryptobin_dh.New().
-        GenerateKey("P512")
+        SetGroup("P512").
+        GenerateKey()
 
     objPriKey := obj.
         CreatePrivateKey().
@@ -80,7 +81,8 @@ func main() {
     // 生成证书
     // 可用参数 [P521 | P384 | P256 | P224]
     obj := cryptobin_ecdh.New().
-        GenerateKey("P521")
+        SetCurve("P521").
+        GenerateKey()
 
     objPriKey := obj.
         CreatePrivateKey().
@@ -191,6 +193,7 @@ package main
 
 import (
     "fmt"
+    "math/big"
 
     "github.com/deatil/lakego-filesystem/filesystem"
     dhd_dh "github.com/deatil/go-cryptobin/dhd/dh"
@@ -224,5 +227,40 @@ func main() {
 
     fs.Put("./runtime/key/dhd2/dh1_dhkey", objPriKey)
     fs.Put("./runtime/key/dhd2/dh1_dhkey.pub", objPubKey)
+}
+~~~
+
+* 自定义使用使用2
+~~~go
+package main
+
+import (
+    "fmt"
+    "math/big"
+
+    "github.com/deatil/lakego-filesystem/filesystem"
+    cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
+)
+
+func main() {
+    // 文件管理器
+    fs := filesystem.New()
+
+    obj222P, _ := new(big.Int).SetString("952d7308282592a9a3230623985e1029a9ce3a51845f90047ad4fca9c587042fbe04219ed80e86a5610b180b8da38d5f4ed6ab10bc356b99021d3497cf280e0e40dc4520293870db44425903febcb9e5e12d55921e69057552cf8859a3d4dc3b3f588f733bffe991962ece8df0458bc79d07054582349a214ed52889b60821a3", 16)
+    obj222 := cryptobin_dh.New().
+        WithGroup(&cryptobin_dh.Group{
+            P: obj222P,
+            G: big.NewInt(2),
+        }).
+        GenerateKey()
+
+    objPriKey := obj222.
+        CreatePrivateKey().
+        ToKeyString()
+    objPubKey := obj222.
+        CreatePublicKey().
+        ToKeyString()
+    fs.Put("./runtime/key/dhd5/dh_web2", objPriKey)
+    fs.Put("./runtime/key/dhd5/dh_web2.pub", objPubKey)
 }
 ~~~

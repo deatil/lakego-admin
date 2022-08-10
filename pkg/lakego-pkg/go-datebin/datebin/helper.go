@@ -6,42 +6,42 @@ import (
 
 // 构造函数
 func New() Datebin {
+    return NewDatebin()
+}
+
+// 构造函数
+func NewDatebin() Datebin {
     return Datebin{
         weekStartAt: time.Monday,
         loc: time.Local,
     }
 }
 
-// 构造函数
-func NewDatebin() Datebin {
-    return New()
-}
-
 // 当前
 func Now(timezone ...string) Datebin {
-    return New().Now(timezone...)
+    return NewDatebin().Now(timezone...)
 }
 
 // 今天
 func Today(timezone ...string) Datebin {
-    return New().Today(timezone...)
+    return NewDatebin().Today(timezone...)
 }
 
 // 明天
 func Tomorrow(timezone ...string) Datebin {
-    return New().Tomorrow(timezone...)
+    return NewDatebin().Tomorrow(timezone...)
 }
 
 // 昨天
 func Yesterday(timezone ...string) Datebin {
-    return New().Yesterday(timezone...)
+    return NewDatebin().Yesterday(timezone...)
 }
 
 // ====================
 
 // 时间
 func FromTimeTime(t time.Time, timezone ...string) Datebin {
-    date := New().WithTime(t)
+    date := NewDatebin().WithTime(t)
 
     if len(timezone) > 0 {
         date = date.ReplaceTimezone(timezone[0])
@@ -101,17 +101,17 @@ func FromTime(hour, minute, second int, timezone ...string) Datebin {
 
 // 解析时间字符
 func Parse(date string) Datebin {
-    return New().Parse(date)
+    return NewDatebin().Parse(date)
 }
 
 // 用布局字符解析时间字符
 func ParseWithLayout(date string, layout string, timezone ...string) Datebin {
-    return New().ParseWithLayout(date, layout, timezone...)
+    return NewDatebin().ParseWithLayout(date, layout, timezone...)
 }
 
 // 用格式化字符解析时间字符
 func ParseWithFormat(date string, format string, timezone ...string) Datebin {
-    return New().ParseWithFormat(date, format, timezone...)
+    return NewDatebin().ParseWithFormat(date, format, timezone...)
 }
 
 // 时间字符

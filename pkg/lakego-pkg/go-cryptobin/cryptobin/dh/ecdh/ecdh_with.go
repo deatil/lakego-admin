@@ -18,9 +18,46 @@ func (this Ecdh) WithPublicKey(data *ecdh.PublicKey) Ecdh {
     return this
 }
 
+// 设置散列方式
+func (this Ecdh) WithCurve(data ecdh.Curve) Ecdh {
+    this.curve = data
+
+    return this
+}
+
+// 设置散列方式
+// 可用参数 [P521 | P384 | P256 | P224]
+func (this Ecdh) SetCurve(name string) Ecdh {
+    var curve ecdh.Curve
+
+    switch name {
+        case "P521":
+            curve = ecdh.P521()
+        case "P384":
+            curve = ecdh.P384()
+        case "P256":
+            curve = ecdh.P256()
+        case "P224":
+            curve = ecdh.P224()
+        default:
+            curve = ecdh.P224()
+    }
+
+    this.curve = curve
+
+    return this
+}
+
 // 设置 keyData
 func (this Ecdh) WithKeyData(data []byte) Ecdh {
     this.keyData = data
+
+    return this
+}
+
+// 设置 secretData
+func (this Ecdh) WithSecretData(data []byte) Ecdh {
+    this.secretData = data
 
     return this
 }

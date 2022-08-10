@@ -15,6 +15,11 @@ var PEMCiphers = map[string]x509.PEMCipher{
     "AES256CBC":  x509.PEMCipherAES256,
 }
 
+type (
+    // Group 别名
+    Group = cryptobin_dh.Group
+)
+
 /**
  * dh
  *
@@ -27,6 +32,9 @@ type Dh struct {
 
     // 公钥
     publicKey *cryptobin_dh.PublicKey
+
+    // 分组
+    group *cryptobin_dh.Group
 
     // [私钥/公钥]数据
     keyData []byte

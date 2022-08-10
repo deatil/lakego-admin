@@ -36,20 +36,20 @@ var (
 
 var (
     // key derivation functions
-    oidPKCS5          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5}
-    oidPKCS5PBKDF2    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12}
+    oidPKCS5       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5}
+    oidPKCS5PBKDF2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12}
 
     // hash 方式
-    oidDigestAlgorithm     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2}
-    oidHMACWithMD5         = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 6}
-    oidHMACWithSHA1        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
-    oidHMACWithSHA224      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 8}
-    oidHMACWithSHA256      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 9}
-    oidHMACWithSHA384      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 10}
-    oidHMACWithSHA512      = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 11}
-    oidHMACWithSHA512_224  = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 12}
-    oidHMACWithSHA512_256  = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 13}
-    oidHMACWithSM3         = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401, 2}
+    oidDigestAlgorithm    = asn1.ObjectIdentifier{1, 2, 840, 113549, 2}
+    oidHMACWithMD5        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 6}
+    oidHMACWithSHA1       = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
+    oidHMACWithSHA224     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 8}
+    oidHMACWithSHA256     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 9}
+    oidHMACWithSHA384     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 10}
+    oidHMACWithSHA512     = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 11}
+    oidHMACWithSHA512_224 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 12}
+    oidHMACWithSHA512_256 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 13}
+    oidHMACWithSM3        = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401, 2}
 )
 
 // 返回使用的 Hash 方式

@@ -43,6 +43,11 @@ func (this Curve25519) GetKeyData() []byte {
     return this.keyData
 }
 
+// 获取 secretData
+func (this Curve25519) GetSecretData() []byte {
+    return this.secretData
+}
+
 // 获取错误
 func (this Curve25519) GetError() error {
     return this.Error

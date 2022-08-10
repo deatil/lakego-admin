@@ -24,6 +24,8 @@ func (this Cryptobin) Padding(plainText []byte, blockSize int) []byte {
             plainPadding = padding.ISO10126Padding(plainText, blockSize)
         case "ISO7816_4":
             plainPadding = padding.ISO7816_4Padding(plainText, blockSize)
+        case "ISO97971":
+            plainPadding = padding.ISO97971Padding(plainText, blockSize)
         case "TBC":
             plainPadding = padding.TBCPadding(plainText, blockSize)
         case "PKCS1":
@@ -61,6 +63,8 @@ func (this Cryptobin) UnPadding(cipherText []byte) []byte {
             dst = padding.ISO10126UnPadding(cipherText)
         case "ISO7816_4":
             dst = padding.ISO7816_4UnPadding(cipherText)
+        case "ISO97971":
+            dst = padding.ISO97971UnPadding(cipherText)
         case "TBC":
             dst = padding.TBCUnPadding(cipherText)
         case "PKCS1":

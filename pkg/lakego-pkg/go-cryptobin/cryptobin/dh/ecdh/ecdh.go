@@ -28,6 +28,9 @@ type Ecdh struct {
     // 公钥
     publicKey *cryptobin_ecdh.PublicKey
 
+    // 散列方式
+    curve cryptobin_ecdh.Curve
+
     // [私钥/公钥]数据
     keyData []byte
 

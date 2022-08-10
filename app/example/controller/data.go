@@ -348,11 +348,11 @@ func (this *Data) Error(ctx *gin.Context) {
 
     obj := cryptobin_dh.New()
 
-    objPri1, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048_2")
-    objPub1, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048_2.pub")
+    objPri1, _ := fs.Get("./runtime/key/dhd2/dh1222")
+    objPub1, _ := fs.Get("./runtime/key/dhd2/dh1222.pub")
 
-    objPri2, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048")
-    objPub2, _ := fs.Get("./runtime/key/dhd2/dh_en_P2048.pub")
+    objPri2, _ := fs.Get("./runtime/key/dhd2/dh1223")
+    objPub2, _ := fs.Get("./runtime/key/dhd2/dh1223.pub")
 
     objSecret1 := obj.
         FromPrivateKeyWithPassword([]byte(objPri1), "123").

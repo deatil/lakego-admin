@@ -47,9 +47,7 @@ func (this Ecdh) FromPublicKey(key []byte) Ecdh {
 }
 
 // 根据私钥 x, y 生成
-func (this Ecdh) FromKeyXYHexString(curve string, xString string, yString string) Ecdh {
-    c := GetCurveFromName(curve)
-
+func (this Ecdh) FromKeyXYHexString(xString string, yString string) Ecdh {
     encoding := cryptobin_tool.NewEncoding()
 
     x, _ := encoding.HexDecode(xString)
@@ -58,7 +56,7 @@ func (this Ecdh) FromKeyXYHexString(curve string, xString string, yString string
     priv := &ecdh.PrivateKey{}
     priv.X = x
     priv.PublicKey.Y = y
-    priv.PublicKey.Curve = c
+    priv.PublicKey.Curve = this.curve
 
     this.privateKey = priv
     this.publicKey  = &priv.PublicKey
@@ -67,16 +65,14 @@ func (this Ecdh) FromKeyXYHexString(curve string, xString string, yString string
 }
 
 // 根据私钥 x 生成
-func (this Ecdh) FromPrivateKeyXHexString(curve string, xString string) Ecdh {
-    c := GetCurveFromName(curve)
-
+func (this Ecdh) FromPrivateKeyXHexString(xString string) Ecdh {
     encoding := cryptobin_tool.NewEncoding()
 
     x, _ := encoding.HexDecode(xString)
 
     priv := &ecdh.PrivateKey{}
     priv.X = x
-    priv.PublicKey.Curve = c
+    priv.PublicKey.Curve = this.curve
 
     public, _ := ecdh.GeneratePublicKey(priv)
     priv.PublicKey = *public
@@ -87,16 +83,14 @@ func (this Ecdh) FromPrivateKeyXHexString(curve string, xString string) Ecdh {
 }
 
 // 根据公钥 y 生成
-func (this Ecdh) FromPublicKeyYHexString(curve string, yString string) Ecdh {
-    c := GetCurveFromName(curve)
-
+func (this Ecdh) FromPublicKeyYHexString(yString string) Ecdh {
     encoding := cryptobin_tool.NewEncoding()
 
     y, _ := encoding.HexDecode(yString)
 
     public := &ecdh.PublicKey{}
     public.Y = y
-    public.Curve = c
+    public.Curve = this.curve
 
     this.publicKey = public
 
@@ -104,31 +98,8 @@ func (this Ecdh) FromPublicKeyYHexString(curve string, yString string) Ecdh {
 }
 
 // 生成密钥
-// 可用参数 [P521 | P384 | P256 | P224]
-func (this Ecdh) GenerateKey(curve string) Ecdh {
-    c := GetCurveFromName(curve)
-
-    this.privateKey, this.publicKey, this.Error = ecdh.GenerateKey(c, rand.Reader)
+func (this Ecdh) GenerateKey() Ecdh {
+    this.privateKey, this.publicKey, this.Error = ecdh.GenerateKey(this.curve, rand.Reader)
 
     return this
-}
-
-// 获取 Curve
-func GetCurveFromName(name string) ecdh.Curve {
-    var curve ecdh.Curve
-
-    switch name {
-        case "P521":
-            curve = ecdh.P521()
-        case "P384":
-            curve = ecdh.P384()
-        case "P256":
-            curve = ecdh.P256()
-        case "P224":
-            curve = ecdh.P224()
-        default:
-            curve = ecdh.P224()
-    }
-
-    return curve
 }

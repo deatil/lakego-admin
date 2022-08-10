@@ -81,6 +81,16 @@ func (this Dh) GetKeyData() []byte {
     return this.keyData
 }
 
+// 获取分组
+func (this Dh) GetGroup() *dh.Group {
+    return this.group
+}
+
+// 获取 secretData
+func (this Dh) GetSecretData() []byte {
+    return this.secretData
+}
+
 // 获取错误
 func (this Dh) GetError() error {
     return this.Error

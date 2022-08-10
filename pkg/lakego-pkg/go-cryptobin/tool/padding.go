@@ -51,6 +51,8 @@ func (this Padding) PKCS7UnPadding(src []byte) []byte {
     return text
 }
 
+// ==================
+
 // PKCS7Padding的子集，块大小固定为8字节
 func (this Padding) PKCS5Padding(text []byte) []byte {
     return this.PKCS7Padding(text, 8)
@@ -59,6 +61,8 @@ func (this Padding) PKCS5Padding(text []byte) []byte {
 func (this Padding) PKCS5UnPadding(src []byte) []byte {
     return this.PKCS7UnPadding(src)
 }
+
+// ==================
 
 // 数据长度不对齐时使用0填充，否则不填充
 func (this Padding) ZeroPadding(text []byte, blockSize int) []byte {
@@ -81,6 +85,19 @@ func (this Padding) ZeroPadding(text []byte, blockSize int) []byte {
 
 func (this Padding) ZeroUnPadding(src []byte) []byte {
     return bytes.TrimRight(src, string([]byte{0}))
+}
+
+// ==================
+
+// ISO/IEC 9797-1 Padding Method 2
+func (this Padding) ISO97971Padding(text []byte, blockSize int) []byte {
+    return this.ZeroPadding(append(text, 0x80), blockSize)
+}
+
+func (this Padding) ISO97971UnPadding(src []byte) []byte {
+    data := this.ZeroUnPadding(src)
+
+    return data[:len(data)-1]
 }
 
 // ==================
