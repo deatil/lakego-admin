@@ -23,7 +23,12 @@ func (this CA) FromCert(cert *x509.Certificate) CA {
 
 // 解析证书导入
 func (this CA) FromCertificateDer(der []byte) CA {
-    this.cert, this.Error = x509.ParseCertificate(der)
+    cert, err := x509.ParseCertificate(der)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.cert = cert
 
     return this
 }
@@ -37,7 +42,12 @@ func (this CA) FromCertRequest(cert *x509.CertificateRequest) CA {
 
 // 解析证书导入
 func (this CA) FromCertificateRequestDer(asn1Data []byte) CA {
-    this.certRequest, this.Error = x509.ParseCertificateRequest(asn1Data)
+    certRequest, err := x509.ParseCertificateRequest(asn1Data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.certRequest = certRequest
 
     return this
 }
@@ -64,8 +74,7 @@ func (this CA) FromPublicKey(key any) CA {
 func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
     pv, certs, err := sm2Pkcs12.DecodeAll(pfxData, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     switch k := pv.(type) {
@@ -84,8 +93,8 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
                     }
 
                     if !k.IsOnCurve(k.X, k.Y) {
-                        this.Error = errors.New("error while validating SM2 private key: %v")
-                        return this
+                        err := errors.New("error while validating SM2 private key: %v")
+                        return this.AppendError(err)
                     }
 
                     this.privateKey = sm2Pri
@@ -99,17 +108,16 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
             // other
     }
 
-    this.Error = errors.New("unexpected type for p12 private key")
+    err = errors.New("unexpected type for p12 private key")
 
-    return this
+    return this.AppendError(err)
 }
 
 // pkcs12
 func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
     pv, cert, err := sm2Pkcs12.Decode(pfxData, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     switch k := pv.(type) {
@@ -128,8 +136,8 @@ func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
                     }
 
                     if !k.IsOnCurve(k.X, k.Y) {
-                        this.Error = errors.New("error while validating SM2 private key: %v")
-                        return this
+                        err := errors.New("error while validating SM2 private key: %v")
+                        return this.AppendError(err)
                     }
 
                     this.privateKey = sm2Pri
@@ -143,14 +151,20 @@ func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
             // other
     }
 
-    this.Error = errors.New("unexpected type for p12 private key")
+    err = errors.New("unexpected type for p12 private key")
 
-    return this
+    return this.AppendError(err)
 }
 
 // pkcs12
 func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
-    this.privateKey, this.cert, this.Error = sslmatePkcs12.Decode(pfxData, password)
+    privateKey, cert, err := sslmatePkcs12.Decode(pfxData, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+    this.cert = cert
 
     return this
 }
@@ -176,9 +190,11 @@ func (this CA) DecodePKCS12CertTrustStore(pfxData []byte, password string) (cert
 func (this CA) GenerateRsaKey(bits int) CA {
     // 生成私钥
     privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     this.privateKey = privateKey
-    this.Error = err
 
     // 生成公钥
     this.publicKey = &privateKey.PublicKey
@@ -206,9 +222,11 @@ func (this CA) GenerateEcdsaKey(curve string) CA {
 
     // 生成私钥
     privateKey, err := ecdsa.GenerateKey(useCurve, rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     this.privateKey = privateKey
-    this.Error = err
 
     // 生成公钥
     this.publicKey = &privateKey.PublicKey
@@ -218,7 +236,13 @@ func (this CA) GenerateEcdsaKey(curve string) CA {
 
 // 生成密钥 EdDSA
 func (this CA) GenerateEdDSAKey() CA {
-    this.publicKey, this.privateKey, this.Error = ed25519.GenerateKey(rand.Reader)
+    publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey  = publicKey
+    this.privateKey = privateKey
 
     return this
 }
@@ -227,9 +251,11 @@ func (this CA) GenerateEdDSAKey() CA {
 func (this CA) GenerateSM2Key() CA {
     // 生成私钥
     privateKey, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     this.privateKey = privateKey
-    this.Error = err
 
     // 生成公钥
     this.publicKey = &privateKey.PublicKey

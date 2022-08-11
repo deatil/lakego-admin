@@ -64,8 +64,15 @@ func (this Cryptobin) WithOneConfig(key string, value any) Cryptobin {
 }
 
 // 设置错误
-func (this Cryptobin) WithError(err error) Cryptobin {
-    this.Error = err
+func (this Cryptobin) WithErrors(errs []error) Cryptobin {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this Cryptobin) AppendError(err ...error) Cryptobin {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

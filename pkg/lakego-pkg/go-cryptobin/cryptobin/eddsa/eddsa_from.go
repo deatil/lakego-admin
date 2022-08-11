@@ -11,8 +11,7 @@ import (
 func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
     parsedKey, err := this.ParseEdPrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(ed25519.PrivateKey)
@@ -24,8 +23,7 @@ func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
 func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
     parsedKey, err := this.ParseEdPrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(ed25519.PrivateKey)
@@ -37,8 +35,7 @@ func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA 
 func (this EdDSA) FromPublicKey(key []byte) EdDSA {
     parsedKey, err := this.ParseEdPublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey.(ed25519.PublicKey)
@@ -48,7 +45,13 @@ func (this EdDSA) FromPublicKey(key []byte) EdDSA {
 
 // 生成密钥
 func (this EdDSA) GenerateKey() EdDSA {
-    this.publicKey, this.privateKey, this.Error = ed25519.GenerateKey(rand.Reader)
+    publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.publicKey  = publicKey
+    this.privateKey = privateKey
 
     return this
 }
@@ -71,14 +74,18 @@ func (this EdDSA) FromString(data string) EdDSA {
 
 // Base64
 func (this EdDSA) FromBase64String(data string) EdDSA {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
 
-    return this
+    this.data = newData
+
+    return this.AppendError(err)
 }
 
 // Hex
 func (this EdDSA) FromHexString(data string) EdDSA {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
 
-    return this
+    this.data = newData
+    
+    return this.AppendError(err)
 }

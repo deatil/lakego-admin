@@ -43,5 +43,5 @@ type DSA struct {
     veryed bool
 
     // 错误
-    Error error
+    Errors []error
 }

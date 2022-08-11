@@ -54,6 +54,11 @@ func (this Ecdh) GetSecretData() []byte {
 }
 
 // 获取错误
-func (this Ecdh) GetError() error {
-    return this.Error
+func (this Ecdh) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this Ecdh) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

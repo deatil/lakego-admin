@@ -43,5 +43,5 @@ type Rsa struct {
     signHash string
 
     // 错误
-    Error error
+    Errors []error
 }

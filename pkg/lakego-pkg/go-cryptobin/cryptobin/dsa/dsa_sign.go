@@ -14,28 +14,25 @@ import (
 // 私钥签名
 func (this DSA) Sign(separator ...string) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [Sign()] privateKey error.")
-        return this
+        err := errors.New("dsa: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     rt, err := r.MarshalText()
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     st, err := s.MarshalText()
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     sep := "+"
@@ -54,8 +51,8 @@ func (this DSA) Sign(separator ...string) DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) Very(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("dsa: [Very()] publicKey error.")
-        return this
+        err := errors.New("dsa: [Very()] publicKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, data)
@@ -67,8 +64,8 @@ func (this DSA) Very(data []byte, separator ...string) DSA {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        this.Error = errors.New("dsa: [Very()] sign data is error.")
-        return this
+        err := errors.New("dsa: [Very()] sign data is error.")
+        return this.AppendError(err)
     }
 
     rStr := split[0]
@@ -78,14 +75,12 @@ func (this DSA) Very(data []byte, separator ...string) DSA {
 
     err := rr.UnmarshalText([]byte(rStr))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     err = ss.UnmarshalText([]byte(sStr))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.veryed = dsa.Verify(this.publicKey, hashData, rr, ss)
@@ -102,37 +97,36 @@ type DSASignature struct {
 // 私钥签名
 func (this DSA) SignAsn1() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [SignAsn1()] privateKey error.")
-        return this
+        err := errors.New("dsa: [SignAsn1()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = asn1.Marshal(DSASignature{r, s})
+    paredData, err := asn1.Marshal(DSASignature{r, s})
 
-    return this
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyAsn1(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("dsa: [VerifyAsn1()] publicKey error.")
-        return this
+        err := errors.New("dsa: [VerifyAsn1()] publicKey error.")
+        return this.AppendError(err)
     }
 
     var dsaSign DSASignature
     _, err := asn1.Unmarshal(this.data, &dsaSign)
     if err != nil {
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, data)
@@ -150,16 +144,15 @@ func (this DSA) VerifyAsn1(data []byte) DSA {
 // 私钥签名
 func (this DSA) SignHex() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [SignHex()] privateKey error.")
-        return this
+        err := errors.New("dsa: [SignHex()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     encoding := cryptobin_tool.NewEncoding()
@@ -169,17 +162,19 @@ func (this DSA) SignHex() DSA {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    this.paredData, this.Error = encoding.HexDecode(sign)
-
-    return this
+    paredData, err := encoding.HexDecode(sign)
+    
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyHex(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("dsa: [VerifyHex()] publicKey error.")
-        return this
+        err := errors.New("dsa: [VerifyHex()] publicKey error.")
+        return this.AppendError(err)
     }
 
     signData := cryptobin_tool.NewEncoding().HexEncode(this.data)
@@ -204,23 +199,22 @@ const (
 // 私钥签名
 func (this DSA) SignBytes() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [SignBytes()] privateKey error.")
-        return this
+        err := errors.New("dsa: [SignBytes()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     rBytes := r.Bytes()
     sBytes := s.Bytes()
     if len(rBytes) > dsaSubgroupBytes || len(sBytes) > dsaSubgroupBytes {
-        this.Error = errors.New("dsa: [SignBytes()] DSA signature too large.")
-        return this
+        err := errors.New("dsa: [SignBytes()] DSA signature too large.")
+        return this.AppendError(err)
     }
 
     out := make([]byte, 2*dsaSubgroupBytes)
@@ -236,17 +230,16 @@ func (this DSA) SignBytes() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyBytes(data []byte) DSA {
     if this.publicKey == nil {
-        this.Error = errors.New("dsa: [VerifyBytes()] publicKey error.")
-        return this
+        err := errors.New("dsa: [VerifyBytes()] publicKey error.")
+        return this.AppendError(err)
     }
 
     // 签名结果数据
     sig := this.data
 
     if len(sig) != 2*dsaSubgroupBytes {
-        this.Error = errors.New("dsa: [VerifyBytes()] sig data error.")
-
-        return this
+        err := errors.New("dsa: [VerifyBytes()] sig data error.")
+        return this.AppendError(err)
     }
 
     r := new(big.Int).SetBytes(sig[:dsaSubgroupBytes])

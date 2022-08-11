@@ -34,14 +34,13 @@ var (
 // priKey := dsa.CreatePrivateKey().ToKeyString()
 func (this DSA) CreatePrivateKey() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [CreatePrivateKey()] privateKey error.")
-        return this
+        err := errors.New("dsa: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     privateKeyBytes, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
@@ -58,8 +57,8 @@ func (this DSA) CreatePrivateKey() DSA {
 // CreatePrivateKeyWithPassword("123", "AES256CBC")
 func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [CreatePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("dsa: [CreatePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     // DESCBC | DESEDE3CBC | AES128CBC
@@ -72,15 +71,14 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
     // 具体方式
     cipher, ok := PEMCiphers[opt]
     if !ok {
-        this.Error = errors.New("dsa: [CreatePrivateKeyWithPassword()] PEMCipher not exists.")
-        return this
+        err := errors.New("dsa: [CreatePrivateKeyWithPassword()] PEMCipher not exists.")
+        return this.AppendError(err)
     }
 
     // 生成私钥
     x509PrivateKey, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成加密数据
@@ -92,8 +90,7 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
         cipher,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -107,9 +104,8 @@ func (this DSA) CreatePublicKey() DSA {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("dsa: [CreatePublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("dsa: [CreatePublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -119,8 +115,7 @@ func (this DSA) CreatePublicKey() DSA {
 
     publicKeyBytes, err := cryptobin_dsa.MarshalPublicKey(publicKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
@@ -138,14 +133,13 @@ func (this DSA) CreatePublicKey() DSA {
 // 生成 pkcs8 私钥 pem 数据
 func (this DSA) CreatePKCS8PrivateKey() DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("dsa: [CreatePKCS8PrivateKey()] privateKey error.")
-        return this
+        err := errors.New("dsa: [CreatePKCS8PrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     privateKeyBytes, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
@@ -179,21 +173,19 @@ func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // CreatePKCS8KdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this DSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("DSA: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("DSA: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     opt, err := cryptobin_pkcs8.ParseOpts(opts...)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成私钥
     x509PrivateKey, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成加密数据
@@ -205,8 +197,7 @@ func (this DSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...an
         opt,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -217,15 +208,14 @@ func (this DSA) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...an
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this DSA) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) DSA {
     if this.privateKey == nil {
-        this.Error = errors.New("DSA: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("DSA: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     // 生成私钥
     x509PrivateKey, err := cryptobin_dsa.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
@@ -239,8 +229,7 @@ func (this DSA) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
         pemCipher,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -254,9 +243,8 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("dsa: [CreatePKCS8PublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("dsa: [CreatePKCS8PublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -266,8 +254,7 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
 
     publicKeyBytes, err := cryptobin_dsa.MarshalPKCS8PublicKey(publicKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{

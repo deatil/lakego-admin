@@ -32,14 +32,13 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Curve25519) CreatePrivateKey() Curve25519 {
     if this.privateKey == nil {
-        this.Error = errors.New("Curve25519: [CreatePrivateKey()] privateKey error.")
-        return this
+        err := errors.New("Curve25519: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
@@ -73,21 +72,19 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
 // CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Curve25519 {
     if this.privateKey == nil {
-        this.Error = errors.New("Curve25519: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Curve25519: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     opt, err := cryptobin_pkcs8.ParseOpts(opts...)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成加密数据
@@ -99,8 +96,7 @@ func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...
         opt,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -111,15 +107,14 @@ func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg string) Curve25519 {
     if this.privateKey == nil {
-        this.Error = errors.New("Curve25519: [CreatePbePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Curve25519: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
@@ -133,8 +128,7 @@ func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg stri
         pemCipher,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -148,9 +142,8 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -160,8 +153,7 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 
     publicKeyBytes, err := curve25519.MarshalPublicKey(publicKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
@@ -177,13 +169,13 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 // 根据公钥和私钥生成密钥
 func (this Curve25519) CreateSecret() Curve25519 {
     if this.privateKey == nil {
-        this.Error = errors.New("Curve25519: [CreateSecret()] privateKey error.")
-        return this
+        err := errors.New("Curve25519: [CreateSecret()] privateKey error.")
+        return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        this.Error = errors.New("Curve25519: [CreateSecret()] publicKey error.")
-        return this
+        err := errors.New("Curve25519: [CreateSecret()] publicKey error.")
+        return this.AppendError(err)
     }
 
     this.secretData = curve25519.ComputeSecret(this.privateKey, this.publicKey)

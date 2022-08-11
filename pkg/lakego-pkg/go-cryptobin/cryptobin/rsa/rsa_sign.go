@@ -11,8 +11,8 @@ import (
 // 私钥签名
 func (this Rsa) Sign() Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("Rsa: [Sign()] privateKey error.")
-        return this
+        err := errors.New("Rsa: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     newHash := tool.NewHash()
@@ -20,17 +20,19 @@ func (this Rsa) Sign() Rsa {
     hasher := newHash.GetCryptoHash(this.signHash)
     hashData := newHash.DataCryptoHash(this.signHash, this.data)
 
-    this.paredData, this.Error = rsa.SignPKCS1v15(rand.Reader, this.privateKey, hasher, hashData)
+    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, hasher, hashData)
 
-    return this
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) Very(data []byte) Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("Rsa: [Very()] publicKey error.")
-        return this
+        err := errors.New("Rsa: [Very()] publicKey error.")
+        return this.AppendError(err)
     }
 
     newHash := tool.NewHash()
@@ -41,9 +43,7 @@ func (this Rsa) Very(data []byte) Rsa {
     err := rsa.VerifyPKCS1v15(this.publicKey, hasher, hashData, this.data)
     if err != nil {
         this.veryed = false
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
     this.veryed = true

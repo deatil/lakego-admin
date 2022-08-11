@@ -10,10 +10,8 @@ func (this Cryptobin) SM2Encrypt() Cryptobin {
         FromPublicKey(this.key).
         FromBytes(this.data).
         Encrypt()
-    if sm2.Error != nil {
-        this.Error = sm2.Error
-
-        return this
+    if len(sm2.Errors) > 0 {
+        return this.AppendError(sm2.Errors...)
     }
 
     this.parsedData = sm2.ToBytes()
@@ -34,10 +32,8 @@ func (this Cryptobin) SM2Decrypt(password ...string) Cryptobin {
     sm2 = sm2.
         FromBytes(this.data).
         Decrypt()
-    if sm2.Error != nil {
-        this.Error = sm2.Error
-
-        return this
+    if len(sm2.Errors) > 0 {
+        return this.AppendError(sm2.Errors...)
     }
 
     this.parsedData = sm2.ToBytes()

@@ -10,6 +10,7 @@ func NewDh() Dh {
 
     return Dh{
         group: group,
+        Errors: make([]error, 0),
     }
 }
 

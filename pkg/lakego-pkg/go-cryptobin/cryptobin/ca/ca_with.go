@@ -38,8 +38,15 @@ func (this CA) WithKeyData(data []byte) CA {
 }
 
 // 设置错误
-func (this CA) WithError(err error) CA {
-    this.Error = err
+func (this CA) WithErrors(errs []error) CA {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this CA) AppendError(err ...error) CA {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

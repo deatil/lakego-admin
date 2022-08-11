@@ -13,24 +13,34 @@ import (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this SM2) CreatePrivateKey() SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [CreatePrivateKey()] privateKey error.")
-        return this
+        err := errors.New("SM2: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    this.keyData, this.Error = x509.WritePrivateKeyToPem(this.privateKey, nil)
-
+    keyData, err := x509.WritePrivateKeyToPem(this.privateKey, nil)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.keyData = keyData
+    
     return this
 }
 
 // 生成私钥带密码 pem 数据
 func (this SM2) CreatePrivateKeyWithPassword(password string) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [CreatePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("SM2: [CreatePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    this.keyData, this.Error = x509.WritePrivateKeyToPem(this.privateKey, []byte(password))
-
+    keyData, err := x509.WritePrivateKeyToPem(this.privateKey, []byte(password))
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.keyData = keyData
+    
     return this
 }
 
@@ -40,9 +50,8 @@ func (this SM2) CreatePublicKey() SM2 {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("SM2: [CreatePublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("SM2: [CreatePublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -50,7 +59,12 @@ func (this SM2) CreatePublicKey() SM2 {
         publicKey = this.publicKey
     }
 
-    this.keyData, this.Error = x509.WritePublicKeyToPem(publicKey)
+    keyData, err := x509.WritePublicKeyToPem(publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.keyData = keyData
 
     return this
 }

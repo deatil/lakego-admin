@@ -4,6 +4,8 @@ import (
     "crypto/x509"
 
     sm2X509 "github.com/tjfoc/gmsm/x509"
+
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 cert
@@ -32,8 +34,13 @@ func (this CA) GetKeyData() []byte {
 }
 
 // 获取错误
-func (this CA) GetError() error {
-    return this.Error
+func (this CA) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this CA) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }
 
 // =========================

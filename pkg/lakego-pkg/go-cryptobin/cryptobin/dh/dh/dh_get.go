@@ -92,6 +92,11 @@ func (this Dh) GetSecretData() []byte {
 }
 
 // 获取错误
-func (this Dh) GetError() error {
-    return this.Error
+func (this Dh) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this Dh) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

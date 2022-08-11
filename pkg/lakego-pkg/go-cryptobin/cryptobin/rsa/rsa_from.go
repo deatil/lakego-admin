@@ -10,7 +10,12 @@ import (
 
 // 私钥
 func (this Rsa) FromPrivateKey(key []byte) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEM(key)
+    privateKey, err := this.ParseRSAPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
@@ -24,14 +29,24 @@ func (this Rsa) FromPrivateKeyWithPassword(key []byte, password string) Rsa {
         return this
     }
 
-    this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err = this.ParseRSAPrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // 公钥
 func (this Rsa) FromPublicKey(key []byte) Rsa {
-    this.publicKey, this.Error = this.ParseRSAPublicKeyFromPEM(key)
+    publicKey, err := this.ParseRSAPublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
 
     return this
 }
@@ -39,7 +54,12 @@ func (this Rsa) FromPublicKey(key []byte) Rsa {
 // 生成密钥
 // bits = 512 | 1024 | 2048 | 4096
 func (this Rsa) GenerateKey(bits int) Rsa {
-    this.privateKey, this.Error = rsa.GenerateKey(rand.Reader, bits)
+    privateKey, err := rsa.GenerateKey(rand.Reader, bits)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     // 生成公钥
     this.publicKey = &this.privateKey.PublicKey
@@ -66,42 +86,72 @@ func (this Rsa) FromPublicKeyNE(nString string, e int) Rsa {
 
 // Pkcs1
 func (this Rsa) FromPKCS1PrivateKey(key []byte) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEM(key)
+    privateKey, err := this.ParseRSAPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs1WithPassword
 func (this Rsa) FromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParseRSAPrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs8
 func (this Rsa) FromPKCS8PrivateKey(key []byte) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPrivateKeyFromPEM(key)
+    privateKey, err := this.ParseRSAPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs8WithPassword
 func (this Rsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs12 Cert
 func (this Rsa) FromPKCS12Cert(key []byte) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPKCS12CertFromPEMWithPassword(key, "")
+    privateKey, err := this.ParseRSAPKCS12CertFromPEMWithPassword(key, "")
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs12CertWithPassword
 func (this Rsa) FromPKCS12CertWithPassword(key []byte, password string) Rsa {
-    this.privateKey, this.Error = this.ParseRSAPKCS12CertFromPEMWithPassword(key, password)
+    privateKey, err := this.ParseRSAPKCS12CertFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
@@ -124,14 +174,24 @@ func (this Rsa) FromString(data string) Rsa {
 
 // Base64
 func (this Rsa) FromBase64String(data string) Rsa {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.data = newData
 
     return this
 }
 
 // Hex
 func (this Rsa) FromHexString(data string) Rsa {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.data = newData
 
     return this
 }

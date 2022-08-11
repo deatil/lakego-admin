@@ -23,11 +23,11 @@ func main() {
         ECB().
         PKCS7Padding().
         Encrypt().
-        Error.
-        Error()
+        Error().
+        String()
 
     // 获取报错数据2
-    var cypt2Err error
+    var cypt2Err []error
     cypt2 := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
@@ -36,8 +36,8 @@ func main() {
         CFB().
         PKCS7Padding().
         Encrypt().
-        OnError(func(err error) {
-            cypt2Err = err
+        OnError(func(errs []error) {
+            cypt2Err = errs
         }).
         ToBase64String()
 
@@ -130,8 +130,8 @@ func main() {
     // =====
 
     // TriDes-CFB 加密测试
-    var cypt2Err error
-    var cypt2Err2 error
+    var cypt2Err []error
+    var cypt2Err2 []error
     cypt2 := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
@@ -140,8 +140,8 @@ func main() {
         CFB().
         PKCS7Padding().
         Encrypt().
-        OnError(func(err error) {
-            cypt2Err = err
+        OnError(func(errs []error) {
+            cypt2Err = errs
         }).
         ToBase64String()
     cyptde2 := cryptobin.
@@ -152,8 +152,8 @@ func main() {
         CFB().
         PKCS7Padding().
         Decrypt().
-        OnError(func(err error) {
-            cypt2Err2 = err
+        OnError(func(errs []error) {
+            cypt2Err2 = errs
         }).
         ToString()
 

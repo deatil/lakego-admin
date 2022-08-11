@@ -4,108 +4,108 @@ import (
     "time"
 )
 
-// 默认常量
+// 时间常量
 const (
     // 纳秒 [Nanosecond time.Duration = 1]
-    Nanosecond = time.Nanosecond
+    Nanosecond  = time.Nanosecond
     // 微妙 [Microsecond = Nanosecond * 1000]
     Microsecond = time.Microsecond
     // 毫秒 [Millisecond = Microsecond * 1000]
     Millisecond = time.Millisecond
     // 秒 [Second = Millisecond * 1000]
-    Second = time.Second
+    Second      = time.Second
     // 分钟 [Minute = Second * 60]
-    Minute = time.Minute
+    Minute      = time.Minute
     // 小时 [Hour = Minute * 60]
-    Hour = time.Hour
+    Hour        = time.Hour
     // 天 [Day = Hour * 24]
-    Day = time.Hour * 24
+    Day         = time.Hour * 24
 )
 
 // 时区常量
 const (
-    LocLocal = "Local"
-    LocCET   = "CET"
-    LocEET   = "EET"
-    LocEST   = "EST"
-    LocGMT   = "GMT"
-    LocUTC   = "UTC"
-    LocUCT   = "UCT"
-    LocMST   = "MST"
+    Local = "Local"
+    CET   = "CET"
+    EET   = "EET"
+    EST   = "EST"
+    GMT   = "GMT"
+    UTC   = "UTC"
+    UCT   = "UCT"
+    MST   = "MST"
 
-    LocCuba      = "Cuba"      // 古巴
-    LocEgypt     = "Egypt"     // 埃及
-    LocEire      = "Eire"      // 爱尔兰
-    LocGreenwich = "Greenwich" // 格林尼治
-    LocIceland   = "Iceland"   // 冰岛
-    LocIran      = "Iran"      // 伊朗
-    LocIsrael    = "Israel"    // 以色列
-    LocJamaica   = "Jamaica"   // 牙买加
-    LocJapan     = "Japan"     // 日本
-    LocLibya     = "Libya"     // 利比亚
-    LocPoland    = "Poland"    // 波兰
-    LocPortugal  = "Portugal"  // 葡萄牙
-    LocPRC       = "PRC"       // 中国
-    LocSingapore = "Singapore" // 新加坡
-    LocTurkey    = "Turkey"    // 土耳其
+    Cuba      = "Cuba"      // 古巴
+    Egypt     = "Egypt"     // 埃及
+    Eire      = "Eire"      // 爱尔兰
+    Greenwich = "Greenwich" // 格林尼治
+    Iceland   = "Iceland"   // 冰岛
+    Iran      = "Iran"      // 伊朗
+    Israel    = "Israel"    // 以色列
+    Jamaica   = "Jamaica"   // 牙买加
+    Japan     = "Japan"     // 日本
+    Libya     = "Libya"     // 利比亚
+    Poland    = "Poland"    // 波兰
+    Portugal  = "Portugal"  // 葡萄牙
+    PRC       = "PRC"       // 中国
+    Singapore = "Singapore" // 新加坡
+    Turkey    = "Turkey"    // 土耳其
 
-    LocMajuro     = "Pacific/Majuro"      // 马朱罗
-    LocMidway     = "Pacific/Midway"      // 中途岛
-    LocHonolulu   = "Pacific/Honolulu"    // 檀香山
-    LocShanghai   = "Asia/Shanghai"       // 上海
-    LocChongqing  = "Asia/Chongqing"      // 重庆
-    LocHarbin     = "Asia/Harbin"         // 哈尔滨
-    LocHongKong   = "Asia/Hong_Kong"      // 香港
-    LocMacao      = "Asia/Macao"          // 澳门
-    LocTaipei     = "Asia/Taipei"         // 台北
-    LocTokyo      = "Asia/Tokyo"          // 日本-东京
-    LocSaigon     = "Asia/Saigon"         // 西贡
-    LocSeoul      = "Asia/Seoul"          // 首尔
-    LocBangkok    = "Asia/Bangkok"        // 泰国-曼谷
-    LocHoChiMinh  = "Asia/Ho_Chi_Minh"    // 越南
-    LocPyongyang  = "Asia/Pyongyang"      // 韩国
-    LocDubai      = "Asia/Dubai"          // 迪拜
-    LocNewYork    = "America/New_York"    // 纽约
-    LocLosAngeles = "America/Los_Angeles" // 洛杉矶
-    LocChicago    = "America/Chicago"     // 芝加哥
-    LocSantiago   = "America/Santiago"    // 圣地亚哥
-    LocSaoPaulo   = "America/Sao_Paulo"   // 圣保罗
-    LocMoscow     = "Europe/Moscow"       // 莫斯科
-    LocLondon     = "Europe/London"       // 欧洲-伦敦
-    LocBerlin     = "Europe/Berlin"       // 柏林
-    LocParis      = "Europe/Paris"        // 巴黎
-    LocRome       = "Europe/Rome"         // 罗马
-    LocAthens     = "Europe/Athens"       // 东欧标准时间 (雅典)
-    LocHelsinki   = "Europe/Helsinki"     // 东欧标准时间 (赫尔辛基)
-    LocMinsk      = "Europe/Minsk"        // 明斯克
-    LocAmsterdam  = "Europe/Amsterdam"    // 中欧标准时间 (阿姆斯特丹)
+    Majuro     = "Pacific/Majuro"      // 马朱罗
+    Midway     = "Pacific/Midway"      // 中途岛
+    Honolulu   = "Pacific/Honolulu"    // 檀香山
+    Shanghai   = "Asia/Shanghai"       // 上海
+    Chongqing  = "Asia/Chongqing"      // 重庆
+    Harbin     = "Asia/Harbin"         // 哈尔滨
+    HongKong   = "Asia/Hong_Kong"      // 香港
+    Macao      = "Asia/Macao"          // 澳门
+    Taipei     = "Asia/Taipei"         // 台北
+    Tokyo      = "Asia/Tokyo"          // 日本-东京
+    Saigon     = "Asia/Saigon"         // 西贡
+    Seoul      = "Asia/Seoul"          // 首尔
+    Bangkok    = "Asia/Bangkok"        // 泰国-曼谷
+    HoChiMinh  = "Asia/Ho_Chi_Minh"    // 越南
+    Pyongyang  = "Asia/Pyongyang"      // 韩国
+    Dubai      = "Asia/Dubai"          // 迪拜
+    NewYork    = "America/New_York"    // 纽约
+    LosAngeles = "America/Los_Angeles" // 洛杉矶
+    Chicago    = "America/Chicago"     // 芝加哥
+    Santiago   = "America/Santiago"    // 圣地亚哥
+    SaoPaulo   = "America/Sao_Paulo"   // 圣保罗
+    Moscow     = "Europe/Moscow"       // 莫斯科
+    London     = "Europe/London"       // 欧洲-伦敦
+    Berlin     = "Europe/Berlin"       // 柏林
+    Paris      = "Europe/Paris"        // 巴黎
+    Rome       = "Europe/Rome"         // 罗马
+    Athens     = "Europe/Athens"       // 东欧标准时间 (雅典)
+    Helsinki   = "Europe/Helsinki"     // 东欧标准时间 (赫尔辛基)
+    Minsk      = "Europe/Minsk"        // 明斯克
+    Amsterdam  = "Europe/Amsterdam"    // 中欧标准时间 (阿姆斯特丹)
 )
 
 // 周常量
 const (
-    WeekMonday    = "Monday"
-    WeekTuesday   = "Tuesday"
-    WeekWednesday = "Wednesday"
-    WeekThursday  = "Thursday"
-    WeekFriday    = "Friday"
-    WeekSaturday  = "Saturday"
-    WeekSunday    = "Sunday"
+    Monday    = "Monday"
+    Tuesday   = "Tuesday"
+    Wednesday = "Wednesday"
+    Thursday  = "Thursday"
+    Friday    = "Friday"
+    Saturday  = "Saturday"
+    Sunday    = "Sunday"
 )
 
 // 月份常量
 const (
-    DateJanuary   = "January"   // 一月
-    DateFebruary  = "February"  // 二月
-    DateMarch     = "March"     // 三月
-    DateApril     = "April"     // 四月
-    DateMay       = "May"       // 五月
-    DateJune      = "June"      // 六月
-    DateJuly      = "July"      // 七月
-    DateAugust    = "August"    // 八月
-    DateSeptember = "September" // 九月
-    DateOctober   = "October"   // 十月
-    DateNovember  = "November"  // 十一月
-    DateDecember  = "December"  // 十二月
+    January   = "January"   // 一月
+    February  = "February"  // 二月
+    March     = "March"     // 三月
+    April     = "April"     // 四月
+    May       = "May"       // 五月
+    June      = "June"      // 六月
+    July      = "July"      // 七月
+    August    = "August"    // 八月
+    September = "September" // 九月
+    October   = "October"   // 十月
+    November  = "November"  // 十一月
+    December  = "December"  // 十二月
 )
 
 // 数字常量

@@ -3,7 +3,7 @@ package dsa
 import (
     "crypto/dsa"
     "crypto/rand"
-    
+
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -11,8 +11,7 @@ import (
 func (this DSA) FromPrivateKey(key []byte) DSA {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey
@@ -24,8 +23,7 @@ func (this DSA) FromPrivateKey(key []byte) DSA {
 func (this DSA) FromPrivateKeyWithPassword(key []byte, password string) DSA {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey
@@ -37,8 +35,7 @@ func (this DSA) FromPrivateKeyWithPassword(key []byte, password string) DSA {
 func (this DSA) FromPublicKey(key []byte) DSA {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey
@@ -81,8 +78,7 @@ func (this DSA) GenerateKey(ln string) DSA {
 func (this DSA) FromPKCS8PrivateKey(key []byte) DSA {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey
@@ -94,8 +90,7 @@ func (this DSA) FromPKCS8PrivateKey(key []byte) DSA {
 func (this DSA) FromPKCS8PrivateKeyWithPassword(key []byte, password string) DSA {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey
@@ -107,8 +102,7 @@ func (this DSA) FromPKCS8PrivateKeyWithPassword(key []byte, password string) DSA
 func (this DSA) FromPKCS8PublicKey(key []byte) DSA {
     parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey
@@ -134,14 +128,18 @@ func (this DSA) FromString(data string) DSA {
 
 // Base64
 func (this DSA) FromBase64String(data string) DSA {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
 
-    return this
+    this.data = newData
+
+    return this.AppendError(err)
 }
 
 // Hex
 func (this DSA) FromHexString(data string) DSA {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
 
-    return this
+    this.data = newData
+
+    return this.AppendError(err)
 }

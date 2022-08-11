@@ -65,8 +65,15 @@ func (this Ecdsa) WithVeryed(data bool) Ecdsa {
 }
 
 // 设置错误
-func (this Ecdsa) WithError(err error) Ecdsa {
-    this.Error = err
+func (this Ecdsa) WithErrors(errs []error) Ecdsa {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this Ecdsa) AppendError(err ...error) Ecdsa {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

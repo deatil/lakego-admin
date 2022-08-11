@@ -11,8 +11,7 @@ import (
 func (this Ecdh) FromPrivateKey(key []byte) Ecdh {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*ecdh.PrivateKey)
@@ -24,8 +23,7 @@ func (this Ecdh) FromPrivateKey(key []byte) Ecdh {
 func (this Ecdh) FromPrivateKeyWithPassword(key []byte, password string) Ecdh {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*ecdh.PrivateKey)
@@ -37,8 +35,7 @@ func (this Ecdh) FromPrivateKeyWithPassword(key []byte, password string) Ecdh {
 func (this Ecdh) FromPublicKey(key []byte) Ecdh {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey.(*ecdh.PublicKey)
@@ -99,7 +96,10 @@ func (this Ecdh) FromPublicKeyYHexString(yString string) Ecdh {
 
 // 生成密钥
 func (this Ecdh) GenerateKey() Ecdh {
-    this.privateKey, this.publicKey, this.Error = ecdh.GenerateKey(this.curve, rand.Reader)
+    privateKey, publicKey, err := ecdh.GenerateKey(this.curve, rand.Reader)
 
-    return this
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
 }

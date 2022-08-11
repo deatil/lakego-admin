@@ -20,14 +20,24 @@ func (this Cryptobin) FromString(data string) Cryptobin {
 
 // Base64
 func (this Cryptobin) FromBase64String(data string) Cryptobin {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.data = newData
 
     return this
 }
 
 // Hex
 func (this Cryptobin) FromHexString(data string) Cryptobin {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
-
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.data = newData
+    
     return this
 }

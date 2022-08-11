@@ -10,10 +10,8 @@ func (this Cryptobin) RsaEncrypt() Cryptobin {
         FromPublicKey(this.key).
         FromBytes(this.data).
         Encrypt()
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()
@@ -35,10 +33,8 @@ func (this Cryptobin) RsaDecrypt(password ...string) Cryptobin {
     rsa = rsa.
         FromBytes(this.data).
         Decrypt()
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()
@@ -62,10 +58,8 @@ func (this Cryptobin) RsaPrikeyEncrypt(password ...string) Cryptobin {
     rsa = rsa.
         FromBytes(this.data).
         PriKeyEncrypt()
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()
@@ -79,9 +73,8 @@ func (this Cryptobin) RsaPubkeyDecrypt() Cryptobin {
         FromPublicKey(this.key).
         FromBytes(this.data).
         PubKeyDecrypt()
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()
@@ -98,10 +91,8 @@ func (this Cryptobin) RsaOAEPEncrypt(typ string) Cryptobin {
         FromPublicKey(this.key).
         FromBytes(this.data).
         EncryptOAEP(typ)
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()
@@ -124,10 +115,8 @@ func (this Cryptobin) RsaOAEPDecrypt(typ string, password ...string) Cryptobin {
     rsa = rsa.
         FromBytes(this.data).
         DecryptOAEP(typ)
-    if rsa.Error != nil {
-        this.Error = rsa.Error
-
-        return this
+    if len(rsa.Errors) > 0 {
+        return this.AppendError(rsa.Errors...)
     }
 
     this.parsedData = rsa.ToBytes()

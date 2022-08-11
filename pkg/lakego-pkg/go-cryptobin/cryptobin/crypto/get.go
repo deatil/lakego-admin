@@ -1,5 +1,9 @@
 package crypto
 
+import (
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+)
+
 // 数据
 func (this Cryptobin) GetData() []byte {
     return this.data
@@ -50,6 +54,11 @@ func (this Cryptobin) GetOneConfig(key string) any {
 }
 
 // 错误信息
-func (this Cryptobin) GetError() error {
-    return this.Error
+func (this Cryptobin) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this Cryptobin) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

@@ -63,8 +63,15 @@ func (this Ecdh) WithSecretData(data []byte) Ecdh {
 }
 
 // 设置错误
-func (this Ecdh) WithError(err error) Ecdh {
-    this.Error = err
+func (this Ecdh) WithErrors(errs []error) Ecdh {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this Ecdh) AppendError(err ...error) Ecdh {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

@@ -2,9 +2,7 @@ package sm2
 
 import (
     "crypto/elliptic"
-
     "github.com/tjfoc/gmsm/sm2"
-
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -104,6 +102,11 @@ func (this SM2) GetVeryed() bool {
 }
 
 // 获取错误
-func (this SM2) GetError() error {
-    return this.Error
+func (this SM2) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this SM2) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

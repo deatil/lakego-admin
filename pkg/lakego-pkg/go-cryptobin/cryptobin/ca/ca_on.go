@@ -2,12 +2,12 @@ package ca
 
 type (
     // 错误方法
-    CAErrorFunc = func(error)
+    CAErrorFunc = func([]error)
 )
 
 // 引出错误信息
 func (this CA) OnError(fn CAErrorFunc) CA {
-    fn(this.Error)
+    fn(this.Errors)
 
     return this
 }

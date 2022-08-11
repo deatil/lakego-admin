@@ -14,12 +14,17 @@ import (
 // 私钥签名
 func (this SM2) Sign() SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [Sign()] privateKey error.")
-        return this
+        err := errors.New("SM2: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = this.privateKey.Sign(rand.Reader, this.data, nil)
-
+    paredData, err := this.privateKey.Sign(rand.Reader, this.data, nil)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.paredData = paredData
+    
     return this
 }
 
@@ -27,8 +32,8 @@ func (this SM2) Sign() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) Very(data []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("SM2: [Very()] publicKey error.")
-        return this
+        err := errors.New("SM2: [Very()] publicKey error.")
+        return this.AppendError(err)
     }
 
     this.veryed = this.publicKey.Verify(data, this.data)
@@ -45,19 +50,22 @@ type sm2Signature struct {
 // 私钥签名
 func (this SM2) SignAsn1(uid []byte) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [SignAsn1()] privateKey error.")
-        return this
+        err := errors.New("SM2: [SignAsn1()] privateKey error.")
+        return this.AppendError(err)
     }
 
     r, s, err := sm2.Sm2Sign(this.privateKey, this.data, uid, rand.Reader)
     if err != nil {
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = asn1.Marshal(sm2Signature{r, s})
-
+    paredData, err := asn1.Marshal(sm2Signature{r, s})
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.paredData = paredData
+    
     return this
 }
 
@@ -65,16 +73,14 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("SM2: [VerifyAsn1()] publicKey error.")
-        return this
+        err := errors.New("SM2: [VerifyAsn1()] publicKey error.")
+        return this.AppendError(err)
     }
 
     var sm2Sign sm2Signature
     _, err := asn1.Unmarshal(this.data, &sm2Sign)
     if err != nil {
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
     this.veryed = sm2.Sm2Verify(this.publicKey, data, uid, sm2Sign.R, sm2Sign.S)
@@ -88,14 +94,13 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
 // 兼容[招行]
 func (this SM2) SignHex(uid []byte) SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [SignHex()] privateKey error.")
-        return this
+        err := errors.New("SM2: [SignHex()] privateKey error.")
+        return this.AppendError(err)
     }
 
     r, s, err := sm2.Sm2Sign(this.privateKey, this.data, uid, rand.Reader)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     encoding := cryptobin_tool.NewEncoding()
@@ -105,7 +110,12 @@ func (this SM2) SignHex(uid []byte) SM2 {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    this.paredData, this.Error = encoding.HexDecode(sign)
+    paredData, err := encoding.HexDecode(sign)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.paredData = paredData
 
     return this
 }
@@ -115,8 +125,8 @@ func (this SM2) SignHex(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("SM2: [VerifyHex()] publicKey error.")
-        return this
+        err := errors.New("SM2: [VerifyHex()] publicKey error.")
+        return this.AppendError(err)
     }
 
     signData := cryptobin_tool.NewEncoding().HexEncode(this.data)

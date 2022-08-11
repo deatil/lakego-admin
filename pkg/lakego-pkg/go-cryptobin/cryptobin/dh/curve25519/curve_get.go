@@ -49,6 +49,11 @@ func (this Curve25519) GetSecretData() []byte {
 }
 
 // 获取错误
-func (this Curve25519) GetError() error {
-    return this.Error
+func (this Curve25519) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this Curve25519) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

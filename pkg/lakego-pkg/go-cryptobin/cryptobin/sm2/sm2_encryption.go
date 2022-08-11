@@ -10,23 +10,33 @@ import (
 // 公钥加密
 func (this SM2) Encrypt() SM2 {
     if this.publicKey == nil {
-        this.Error = errors.New("SM2: [Encrypt()] publicKey error.")
-        return this
+        err := errors.New("SM2: [Encrypt()] publicKey error.")
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = sm2.EncryptAsn1(this.publicKey, this.data, rand.Reader)
+    paredData, err := sm2.EncryptAsn1(this.publicKey, this.data, rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
+    this.paredData = paredData
+    
     return this
 }
 
 // 私钥解密
 func (this SM2) Decrypt() SM2 {
     if this.privateKey == nil {
-        this.Error = errors.New("SM2: [Decrypt()] privateKey error.")
-        return this
+        err := errors.New("SM2: [Decrypt()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = sm2.DecryptAsn1(this.privateKey, this.data)
+    paredData, err := sm2.DecryptAsn1(this.privateKey, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.paredData = paredData
 
     return this
 }

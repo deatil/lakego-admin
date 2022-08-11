@@ -12,29 +12,49 @@ import (
 
 // 私钥
 func (this SM2) FromPrivateKey(key []byte) SM2 {
-    this.privateKey, this.Error = this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // 私钥带密码
 func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
-    this.privateKey, this.Error = this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // 公钥
 func (this SM2) FromPublicKey(key []byte) SM2 {
-    this.publicKey, this.Error = this.ParsePublicKeyFromPEM(key)
+    publicKey, err := this.ParsePublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.publicKey = publicKey
 
     return this
 }
 
 // 生成密钥
 func (this SM2) GenerateKey() SM2 {
-    this.privateKey, this.Error = sm2.GenerateKey(rand.Reader)
-
+    privateKey, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
+    
     // 生成公钥
     this.publicKey = &this.privateKey.PublicKey
 
@@ -153,14 +173,24 @@ func (this SM2) FromString(data string) SM2 {
 
 // Base64
 func (this SM2) FromBase64String(data string) SM2 {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
-
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.data = newData
+    
     return this
 }
 
 // Hex
 func (this SM2) FromHexString(data string) SM2 {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
-
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.data = newData
+    
     return this
 }

@@ -19,8 +19,8 @@ import (
 // 证书请求
 func (this CA) CreateCSR() CA {
     if this.privateKey == nil {
-        this.Error = errors.New("CA: [CreateCSR()] privateKey error.")
-        return this
+        err := errors.New("CA: [CreateCSR()] privateKey error.")
+        return this.AppendError(err)
     }
 
     var csrBytes []byte
@@ -30,8 +30,8 @@ func (this CA) CreateCSR() CA {
         case *sm2.PrivateKey:
             certRequest, ok := this.certRequest.(*sm2X509.CertificateRequest)
             if !ok {
-                this.Error = errors.New("CA: [CreateCSR()] sm2 certRequest error.")
-                return this
+                err := errors.New("CA: [CreateCSR()] sm2 certRequest error.")
+                return this.AppendError(err)
             }
 
             csrBytes, err = sm2X509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
@@ -39,16 +39,15 @@ func (this CA) CreateCSR() CA {
         default:
             certRequest, ok := this.certRequest.(*x509.CertificateRequest)
             if !ok {
-                this.Error = errors.New("CA: [CreateCSR()] certRequest error.")
-                return this
+                err := errors.New("CA: [CreateCSR()] certRequest error.")
+                return this.AppendError(err)
             }
 
             csrBytes, err = x509.CreateCertificateRequest(rand.Reader, certRequest, this.privateKey)
     }
 
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     csrBlock := &pem.Block{
@@ -64,8 +63,8 @@ func (this CA) CreateCSR() CA {
 // CA 证书
 func (this CA) CreateCA() CA {
     if this.publicKey == nil || this.privateKey == nil {
-        this.Error = errors.New("CA: [CreateCA()] publicKey or privateKey error.")
-        return this
+        err := errors.New("CA: [CreateCA()] publicKey or privateKey error.")
+        return this.AppendError(err)
     }
 
     var caBytes []byte
@@ -75,8 +74,8 @@ func (this CA) CreateCA() CA {
         case *sm2.PrivateKey:
             cert, ok := this.cert.(*sm2X509.Certificate)
             if !ok {
-                this.Error = errors.New("CA: [CreateCA()] sm2 cert error.")
-                return this
+                err := errors.New("CA: [CreateCA()] sm2 cert error.")
+                return this.AppendError(err)
             }
 
             publicKey := &privateKey.PublicKey
@@ -86,16 +85,15 @@ func (this CA) CreateCA() CA {
         default:
             cert, ok := this.cert.(*x509.Certificate)
             if !ok {
-                this.Error = errors.New("CA: [CreateCA()] cert error.")
-                return this
+                err := errors.New("CA: [CreateCA()] cert error.")
+                return this.AppendError(err)
             }
 
             caBytes, err = x509.CreateCertificate(rand.Reader, cert, cert, this.publicKey, this.privateKey)
     }
 
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     caBlock := &pem.Block{
@@ -111,8 +109,8 @@ func (this CA) CreateCA() CA {
 // 自签名证书
 func (this CA) CreateCert(ca any) CA {
     if this.publicKey == nil || this.privateKey == nil {
-        this.Error = errors.New("CA: [CreateCert()] publicKey or privateKey error.")
-        return this
+        err := errors.New("CA: [CreateCert()] publicKey or privateKey error.")
+        return this.AppendError(err)
     }
 
     var certBytes []byte
@@ -122,14 +120,14 @@ func (this CA) CreateCert(ca any) CA {
         case *sm2.PrivateKey:
             newCert, certOk := this.cert.(*sm2X509.Certificate)
             if !certOk {
-                this.Error = errors.New("CA: [CreateCert()] sm2 cert error.")
-                return this
+                err := errors.New("CA: [CreateCert()] sm2 cert error.")
+                return this.AppendError(err)
             }
 
             newCa, caOk := ca.(*sm2X509.Certificate)
             if !caOk {
-                this.Error = errors.New("CA: [CreateCert()] sm2 ca error.")
-                return this
+                err := errors.New("CA: [CreateCert()] sm2 ca error.")
+                return this.AppendError(err)
             }
 
             publicKey := &privateKey.PublicKey
@@ -139,22 +137,21 @@ func (this CA) CreateCert(ca any) CA {
         default:
             newCert, certOk := this.cert.(*x509.Certificate)
             if !certOk {
-                this.Error = errors.New("CA: [CreateCert()] cert error.")
-                return this
+                err := errors.New("CA: [CreateCert()] cert error.")
+                return this.AppendError(err)
             }
 
             newCa, caOk := ca.(*x509.Certificate)
             if !caOk {
-                this.Error = errors.New("CA: [CreateCert()] ca error.")
-                return this
+                err := errors.New("CA: [CreateCert()] ca error.")
+                return this.AppendError(err)
             }
 
             certBytes, err = x509.CreateCertificate(rand.Reader, newCert, newCa, this.publicKey, this.privateKey)
     }
 
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     certBlock := &pem.Block{
@@ -170,9 +167,8 @@ func (this CA) CreateCert(ca any) CA {
 // 私钥
 func (this CA) CreatePrivateKey() CA {
     if this.privateKey == nil {
-        this.Error = errors.New("CA: [CreatePrivateKey()] privateKey error.")
-
-        return this
+        err := errors.New("CA: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     var privateBlock *pem.Block
@@ -189,8 +185,7 @@ func (this CA) CreatePrivateKey() CA {
         case *ecdsa.PrivateKey:
             x509PrivateKey, err := x509.MarshalECPrivateKey(privateKey)
             if err != nil {
-                this.Error = err
-                return this
+                return this.AppendError(err)
             }
 
             privateBlock = &pem.Block{
@@ -201,8 +196,7 @@ func (this CA) CreatePrivateKey() CA {
         case ed25519.PrivateKey:
             x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
             if err != nil {
-                this.Error = err
-                return this
+                return this.AppendError(err)
             }
 
             privateBlock = &pem.Block{
@@ -211,12 +205,18 @@ func (this CA) CreatePrivateKey() CA {
             }
 
         case *sm2.PrivateKey:
-            this.keyData, this.Error = sm2X509.WritePrivateKeyToPem(privateKey, nil)
+            keyData, err := sm2X509.WritePrivateKeyToPem(privateKey, nil)
+            if err != nil {
+                return this.AppendError(err)
+            }
+            
+            this.keyData = keyData
+            
             return this
 
         default:
-            this.Error = fmt.Errorf("CA: [CreatePrivateKey()] unsupported private key type: %T", privateKey)
-            return this
+            err := fmt.Errorf("CA: [CreatePrivateKey()] unsupported private key type: %T", privateKey)
+            return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -231,8 +231,8 @@ func (this CA) CreatePrivateKey() CA {
 // 支持 [rsa | ecdsa | sm2]
 func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
     if this.privateKey == nil {
-        this.Error = errors.New("privateKey error.")
-        return this
+        err := errors.New("privateKey error.")
+        return this.AppendError(err)
     }
 
     var pfxData []byte
@@ -242,8 +242,8 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
         case *sm2.PrivateKey:
             cert, ok := this.cert.(*sm2X509.Certificate)
             if !ok {
-                this.Error = errors.New("sm2 cert error.")
-                return this
+                err := errors.New("sm2 cert error.")
+                return this.AppendError(err)
             }
 
             pfxData, err = sm2Pkcs12.Encode(privateKey, cert, caCerts, pwd)
@@ -251,16 +251,15 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
         default:
             cert, ok := this.cert.(*x509.Certificate)
             if !ok {
-                this.Error = errors.New("cert error.")
-                return this
+                err := errors.New("cert error.")
+                return this.AppendError(err)
             }
 
             pfxData, err = sslmatePkcs12.Encode(rand.Reader, privateKey, cert, caCerts, pwd)
     }
 
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pfxData
@@ -272,8 +271,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
 func (this CA) CreatePKCS12CertTrustStore(certs []*x509.Certificate, password string) CA {
     pfxData, err := sslmatePkcs12.EncodeTrustStore(rand.Reader, certs, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pfxData

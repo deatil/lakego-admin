@@ -52,8 +52,7 @@ func (this Dh) SetGroup(name string) Dh {
 
     paramGroup, err := dh.GetMODGroup(param)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.group = paramGroup
@@ -76,8 +75,15 @@ func (this Dh) WithSecretData(data []byte) Dh {
 }
 
 // 设置错误
-func (this Dh) WithError(err error) Dh {
-    this.Error = err
+func (this Dh) WithError(errs []error) Dh {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this Dh) AppendError(err ...error) Dh {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

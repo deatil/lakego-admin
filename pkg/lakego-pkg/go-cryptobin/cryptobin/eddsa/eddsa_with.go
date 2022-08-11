@@ -40,8 +40,15 @@ func (this EdDSA) WithVeryed(data bool) EdDSA {
 }
 
 // 设置错误
-func (this EdDSA) WithError(err error) EdDSA {
-    this.Error = err
+func (this EdDSA) WithErrors(errs []error) EdDSA {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this EdDSA) AppendError(err ...error) EdDSA {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

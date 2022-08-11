@@ -12,8 +12,8 @@ import (
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
 func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
     if this.privateKey == nil {
-        this.Error = errors.New("Rsa: [PSSSign()] privateKey error.")
-        return this
+        err := errors.New("Rsa: [PSSSign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     newHash := tool.NewHash()
@@ -29,17 +29,19 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
         options = opts[0]
     }
 
-    this.paredData, this.Error = rsa.SignPSS(rand.Reader, this.privateKey, hash, hashed, &options)
+    paredData, err := rsa.SignPSS(rand.Reader, this.privateKey, hash, hashed, &options)
 
-    return this
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
     if this.publicKey == nil {
-        this.Error = errors.New("Rsa: [PSSVery()] publicKey error.")
-        return this
+        err := errors.New("Rsa: [PSSVery()] publicKey error.")
+        return this.AppendError(err)
     }
 
     newHash := tool.NewHash()
@@ -58,9 +60,7 @@ func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
     err := rsa.VerifyPSS(this.publicKey, hash, hashed, this.data, &options)
     if err != nil {
         this.veryed = false
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
     this.veryed = true

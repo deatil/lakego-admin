@@ -108,6 +108,11 @@ func (this Ecdsa) GetVeryed() bool {
 }
 
 // 获取错误
-func (this Ecdsa) GetError() error {
-    return this.Error
+func (this Ecdsa) GetErrors() []error {
+    return this.Errors
+}
+
+// 获取错误
+func (this Ecdsa) Error() cryptobin_tool.Errors {
+    return cryptobin_tool.NewErrors(this.Errors)
 }

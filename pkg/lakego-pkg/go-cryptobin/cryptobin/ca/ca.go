@@ -25,5 +25,5 @@ type CA struct {
     keyData []byte
 
     // 错误
-    Error error
+    Errors []error
 }

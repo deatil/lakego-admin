@@ -35,5 +35,5 @@ type Curve25519 struct {
     secretData []byte
 
     // 错误
-    Error error
+    Errors []error
 }

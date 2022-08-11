@@ -20,7 +20,7 @@ func (this Datebin) IsInvalid() bool {
 
 // 是否是 Utc 时区
 func (this Datebin) IsUtc() bool {
-    return this.GetTimezone() == LocUTC
+    return this.GetTimezone() == UTC
 }
 
 // 是否是本地时区

@@ -11,45 +11,75 @@ import (
 
 // 私钥
 func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
-    this.privateKey, this.Error = this.ParseECPrivateKeyFromPEM(key)
+    privateKey, err := this.ParseECPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // 私钥带密码
 func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa {
-    this.privateKey, this.Error = this.ParseECPrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParseECPrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // PKCS8 私钥
 func (this Ecdsa) FromPKCS8PrivateKey(key []byte) Ecdsa {
-    this.privateKey, this.Error = this.ParseECPrivateKeyFromPEM(key)
+    privateKey, err := this.ParseECPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // Pkcs8WithPassword
 func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
-    this.privateKey, this.Error = this.ParseECPKCS8PrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParseECPKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     return this
 }
 
 // 公钥
 func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
-    this.publicKey, this.Error = this.ParseECPublicKeyFromPEM(key)
+    publicKey, err := this.ParseECPublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
 
     return this
 }
 
 // 生成密钥
 func (this Ecdsa) GenerateKey() Ecdsa {
-    this.privateKey, this.Error = ecdsa.GenerateKey(this.curve, rand.Reader)
+    privateKey, err := ecdsa.GenerateKey(this.curve, rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+    
+    this.privateKey = privateKey
 
     // 生成公钥
-    this.publicKey = &this.privateKey.PublicKey
+    this.publicKey = &privateKey.PublicKey
 
     return this
 }
@@ -164,14 +194,18 @@ func (this Ecdsa) FromString(data string) Ecdsa {
 
 // Base64
 func (this Ecdsa) FromBase64String(data string) Ecdsa {
-    this.data, this.Error = cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
 
-    return this
+    this.data = newData
+    
+    return this.AppendError(err)
 }
 
 // Hex
 func (this Ecdsa) FromHexString(data string) Ecdsa {
-    this.data, this.Error = cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
 
-    return this
+    this.data = newData
+    
+    return this.AppendError(err)
 }

@@ -47,8 +47,15 @@ func (this Rsa) WithSignHash(data string) Rsa {
 }
 
 // 设置错误
-func (this Rsa) WithError(err error) Rsa {
-    this.Error = err
+func (this Rsa) WithError(errs []error) Rsa {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this Rsa) AppendError(err ...error) Rsa {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

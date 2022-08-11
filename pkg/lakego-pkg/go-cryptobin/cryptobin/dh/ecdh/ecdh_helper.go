@@ -10,6 +10,7 @@ func NewEcdh() Ecdh {
 
     return Ecdh{
         curve: curve,
+        Errors: make([]error, 0),
     }
 }
 

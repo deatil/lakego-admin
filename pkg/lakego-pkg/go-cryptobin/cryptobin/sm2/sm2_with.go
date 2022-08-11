@@ -40,8 +40,15 @@ func (this SM2) WithVeryed(data bool) SM2 {
 }
 
 // 设置错误
-func (this SM2) WithError(err error) SM2 {
-    this.Error = err
+func (this SM2) WithErrors(errs []error) SM2 {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this SM2) AppendError(errs ...error) SM2 {
+    this.Errors = append(this.Errors, errs...)
 
     return this
 }

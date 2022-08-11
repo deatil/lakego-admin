@@ -32,14 +32,13 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Ecdh) CreatePrivateKey() Ecdh {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdh: [CreatePrivateKey()] privateKey error.")
-        return this
+        err := errors.New("Ecdh: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     privateKey, err := ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
@@ -73,21 +72,19 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
 // CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Ecdh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     opt, err := cryptobin_pkcs8.ParseOpts(opts...)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成加密数据
@@ -99,8 +96,7 @@ func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) E
         opt,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -111,15 +107,14 @@ func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) E
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ecdh {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Ecdh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
@@ -133,8 +128,7 @@ func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ec
         pemCipher,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -148,9 +142,8 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -160,8 +153,7 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 
     publicKeyBytes, err := ecdh.MarshalPublicKey(publicKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
@@ -177,13 +169,13 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 // 根据公钥和私钥生成密钥
 func (this Ecdh) CreateSecret() Ecdh {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdh: [CreateSecret()] privateKey error.")
-        return this
+        err := errors.New("Ecdh: [CreateSecret()] privateKey error.")
+        return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        this.Error = errors.New("Ecdh: [CreateSecret()] publicKey error.")
-        return this
+        err := errors.New("Ecdh: [CreateSecret()] publicKey error.")
+        return this.AppendError(err)
     }
 
     this.secretData = ecdh.ComputeSecret(this.privateKey, this.publicKey)

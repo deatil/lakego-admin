@@ -14,28 +14,25 @@ import (
 // 私钥签名
 func (this Ecdsa) Sign(separator ...string) Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdsa: [Sign()] privateKey error.")
-        return this
+        err := errors.New("Ecdsa: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     rt, err := r.MarshalText()
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     st, err := s.MarshalText()
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     sep := "+"
@@ -53,8 +50,8 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 // 公钥验证
 func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("Ecdsa: [Very()] publicKey error.")
-        return this
+        err := errors.New("Ecdsa: [Very()] publicKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, data)
@@ -66,8 +63,8 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        this.Error = errors.New("Ecdsa: [Very()] sign data is error.")
-        return this
+        err := errors.New("Ecdsa: [Very()] sign data is error.")
+        return this.AppendError(err)
     }
 
     rStr := split[0]
@@ -77,14 +74,12 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
 
     err := rr.UnmarshalText([]byte(rStr))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     err = ss.UnmarshalText([]byte(sStr))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.veryed = ecdsa.Verify(this.publicKey, hashData, rr, ss)
@@ -101,38 +96,36 @@ type ecdsaSignature struct {
 // 私钥签名
 func (this Ecdsa) SignAsn1() Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdsa: [SignAsn1()] privateKey error.")
-        return this
+        err := errors.New("Ecdsa: [SignAsn1()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
-    this.paredData, this.Error = asn1.Marshal(ecdsaSignature{r, s})
+    paredData, err := asn1.Marshal(ecdsaSignature{r, s})
 
-    return this
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("Ecdsa: [VerifyAsn1()] publicKey error.")
-        return this
+        err := errors.New("Ecdsa: [VerifyAsn1()] publicKey error.")
+        return this.AppendError(err)
     }
 
     var ecdsaSign ecdsaSignature
     _, err := asn1.Unmarshal(this.data, &ecdsaSign)
     if err != nil {
-        this.Error = err
-
-        return this
+        return this.AppendError(err)
     }
 
     r := ecdsaSign.R
@@ -150,16 +143,15 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
 // 私钥签名
 func (this Ecdsa) SignHex() Ecdsa {
     if this.privateKey == nil {
-        this.Error = errors.New("Ecdsa: [SignHex()] privateKey error.")
-        return this
+        err := errors.New("Ecdsa: [SignHex()] privateKey error.")
+        return this.AppendError(err)
     }
 
     hashData := this.DataHash(this.signHash, this.data)
 
     r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     encoding := cryptobin_tool.NewEncoding()
@@ -169,17 +161,19 @@ func (this Ecdsa) SignHex() Ecdsa {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    this.paredData, this.Error = encoding.HexDecode(sign)
+    paredData, err := encoding.HexDecode(sign)
 
-    return this
+    this.paredData = paredData
+    
+    return this.AppendError(err)
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
     if this.publicKey == nil {
-        this.Error = errors.New("Ecdsa: [VerifyHex()] publicKey error.")
-        return this
+        err := errors.New("Ecdsa: [VerifyHex()] publicKey error.")
+        return this.AppendError(err)
     }
 
     signData := cryptobin_tool.NewEncoding().HexEncode(this.data)

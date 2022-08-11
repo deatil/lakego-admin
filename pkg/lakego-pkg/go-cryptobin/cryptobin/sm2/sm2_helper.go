@@ -4,6 +4,7 @@ package sm2
 func NewSM2() SM2 {
     return SM2{
         veryed: false,
+        Errors: make([]error, 0),
     }
 }
 

@@ -11,8 +11,7 @@ import (
 func (this Curve25519) FromPrivateKey(key []byte) Curve25519 {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*curve25519.PrivateKey)
@@ -24,8 +23,7 @@ func (this Curve25519) FromPrivateKey(key []byte) Curve25519 {
 func (this Curve25519) FromPrivateKeyWithPassword(key []byte, password string) Curve25519 {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*curve25519.PrivateKey)
@@ -37,8 +35,7 @@ func (this Curve25519) FromPrivateKeyWithPassword(key []byte, password string) C
 func (this Curve25519) FromPublicKey(key []byte) Curve25519 {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey.(*curve25519.PublicKey)
@@ -96,7 +93,10 @@ func (this Curve25519) FromPublicKeyYHexString(yString string) Curve25519 {
 
 // 生成密钥
 func (this Curve25519) GenerateKey() Curve25519 {
-    this.privateKey, this.publicKey, this.Error = curve25519.GenerateKey(rand.Reader)
+    privateKey, publicKey, err := curve25519.GenerateKey(rand.Reader)
+    
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
 
-    return this
+    return this.AppendError(err)
 }

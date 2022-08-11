@@ -30,5 +30,5 @@ type SM2 struct {
     veryed bool
 
     // 错误
-    Error error
+    Errors []error
 }

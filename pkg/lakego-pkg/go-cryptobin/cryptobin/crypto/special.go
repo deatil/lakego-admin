@@ -15,16 +15,14 @@ func (this Cryptobin) AesCFBEncrypt() Cryptobin {
 
     block, err := aes.NewCipher(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     encrypted := make([]byte, aes.BlockSize + len(origData))
 
     iv := encrypted[:aes.BlockSize]
     if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     stream := cipher.NewCFBEncrypter(block, iv)
@@ -42,13 +40,12 @@ func (this Cryptobin) AesCFBDecrypt() Cryptobin {
 
     block, err := aes.NewCipher(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     if len(encrypted) < aes.BlockSize {
-        this.Error = errors.New("Cryptobin: [AesCFBDecrypt()] ciphertext too short")
-        return this
+        err := errors.New("Cryptobin: [AesCFBDecrypt()] ciphertext too short")
+        return this.AppendError(err)
     }
 
     iv := encrypted[:aes.BlockSize]
@@ -68,8 +65,7 @@ func (this Cryptobin) AesECBEncrypt() Cryptobin {
 
     cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     length := (len(origData) + aes.BlockSize) / aes.BlockSize
@@ -98,8 +94,7 @@ func (this Cryptobin) AesECBDecrypt() Cryptobin {
 
     cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     decrypted := make([]byte, len(encrypted))

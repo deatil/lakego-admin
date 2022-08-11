@@ -3,8 +3,9 @@ package rsa
 // 构造函数
 func NewRsa() Rsa {
     return Rsa{
-        veryed:   false,
         signHash: "SHA512",
+        veryed:   false,
+        Errors:   make([]error, 0),
     }
 }
 

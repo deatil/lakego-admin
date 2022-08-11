@@ -48,8 +48,15 @@ func (this DSA) WithVeryed(data bool) DSA {
 }
 
 // 设置错误
-func (this DSA) WithError(err error) DSA {
-    this.Error = err
+func (this DSA) WithErrors(errs []error) DSA {
+    this.Errors = errs
+
+    return this
+}
+
+// 添加错误
+func (this DSA) AppendError(err ...error) DSA {
+    this.Errors = append(this.Errors, err...)
 
     return this
 }

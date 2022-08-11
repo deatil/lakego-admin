@@ -32,14 +32,13 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Dh) CreatePrivateKey() Dh {
     if this.privateKey == nil {
-        this.Error = errors.New("Dh: [CreatePrivateKey()] privateKey error.")
-        return this
+        err := errors.New("Dh: [CreatePrivateKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
     privateKey, err := dh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
@@ -73,21 +72,19 @@ func (this Dh) CreatePrivateKeyWithPassword(password string, opts ...any) Dh {
 // CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Dh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Dh {
     if this.privateKey == nil {
-        this.Error = errors.New("Dh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Dh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     opt, err := cryptobin_pkcs8.ParseOpts(opts...)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := dh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     // 生成加密数据
@@ -99,8 +96,7 @@ func (this Dh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Dh 
         opt,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -111,15 +107,14 @@ func (this Dh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Dh 
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this Dh) CreatePbePrivateKeyWithPassword(password string, alg string) Dh {
     if this.privateKey == nil {
-        this.Error = errors.New("Dh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
-        return this
+        err := errors.New("Dh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        return this.AppendError(err)
     }
 
     // 生成私钥
     privateKey, err := dh.MarshalPrivateKey(this.privateKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
@@ -133,8 +128,7 @@ func (this Dh) CreatePbePrivateKeyWithPassword(password string, alg string) Dh {
         pemCipher,
     )
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -148,9 +142,8 @@ func (this Dh) CreatePublicKey() Dh {
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            this.Error = errors.New("Dh: [CreatePublicKey()] privateKey error.")
-
-            return this
+            err := errors.New("Dh: [CreatePublicKey()] privateKey error.")
+            return this.AppendError(err)
         }
 
         publicKey = &this.privateKey.PublicKey
@@ -160,8 +153,7 @@ func (this Dh) CreatePublicKey() Dh {
 
     publicKeyBytes, err := dh.MarshalPublicKey(publicKey)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
@@ -177,13 +169,13 @@ func (this Dh) CreatePublicKey() Dh {
 // 根据公钥和私钥生成密钥
 func (this Dh) CreateSecret() Dh {
     if this.privateKey == nil {
-        this.Error = errors.New("Dh: [CreateSecret()] privateKey error.")
-        return this
+        err := errors.New("Dh: [CreateSecret()] privateKey error.")
+        return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        this.Error = errors.New("Dh: [CreateSecret()] publicKey error.")
-        return this
+        err := errors.New("Dh: [CreateSecret()] publicKey error.")
+        return this.AppendError(err)
     }
 
     this.secretData = dh.ComputeSecret(this.privateKey, this.publicKey)

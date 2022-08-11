@@ -7,6 +7,7 @@ func NewCryptobin() Cryptobin {
         mode:     "ECB",
         padding:  "",
         config:   make(map[string]any),
+        Errors:   make([]error, 0),
     }
 }
 

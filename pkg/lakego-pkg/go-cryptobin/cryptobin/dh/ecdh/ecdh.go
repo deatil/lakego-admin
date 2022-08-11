@@ -38,5 +38,5 @@ type Ecdh struct {
     secretData []byte
 
     // 错误
-    Error error
+    Errors []error
 }

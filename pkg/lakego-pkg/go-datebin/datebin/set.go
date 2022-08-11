@@ -12,19 +12,19 @@ func (this Datebin) SetWeekStartsAt(day string) Datebin {
 
     // 判断周几
     switch day {
-        case WeekMonday:
+        case Monday:
             this.weekStartAt = time.Monday
-        case WeekTuesday:
+        case Tuesday:
             this.weekStartAt = time.Tuesday
-        case WeekWednesday:
+        case Wednesday:
             this.weekStartAt = time.Wednesday
-        case WeekThursday:
+        case Thursday:
             this.weekStartAt = time.Thursday
-        case WeekFriday:
+        case Friday:
             this.weekStartAt = time.Friday
-        case WeekSaturday:
+        case Saturday:
             this.weekStartAt = time.Saturday
-        case WeekSunday:
+        case Sunday:
             this.weekStartAt = time.Sunday
     }
 

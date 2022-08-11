@@ -32,5 +32,5 @@ type Cryptobin struct {
     config map[string]any
 
     // 错误
-    Error error
+    Errors []error
 }

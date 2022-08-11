@@ -10,8 +10,8 @@ import (
 // 私钥签名
 func (this EdDSA) Sign() EdDSA {
     if this.privateKey == nil {
-        this.Error = errors.New("EdDSA: [Sign()] privateKey error.")
-        return this
+        err := errors.New("EdDSA: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     var key any
@@ -21,19 +21,18 @@ func (this EdDSA) Sign() EdDSA {
     var ok bool
 
     if ed25519Key, ok = key.(crypto.Signer); !ok {
-        this.Error = errors.New("EdDSA: [Sign()] privateKey type error.")
-        return this
+        err := errors.New("EdDSA: [Sign()] privateKey type error.")
+        return this.AppendError(err)
     }
 
     if _, ok := ed25519Key.Public().(ed25519.PublicKey); !ok {
-        this.Error = errors.New("EdDSA: [Sign()] privateKey error.")
-        return this
+        err := errors.New("EdDSA: [Sign()] privateKey error.")
+        return this.AppendError(err)
     }
 
     sig, err := ed25519Key.Sign(rand.Reader, this.data, crypto.Hash(0))
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.paredData = []byte(sig)
@@ -44,8 +43,8 @@ func (this EdDSA) Sign() EdDSA {
 // 公钥验证
 func (this EdDSA) Very(data []byte) EdDSA {
     if this.publicKey == nil {
-        this.Error = errors.New("EdDSA: [Very()] publicKey error.")
-        return this
+        err := errors.New("EdDSA: [Very()] publicKey error.")
+        return this.AppendError(err)
     }
 
     var key any
@@ -55,8 +54,8 @@ func (this EdDSA) Very(data []byte) EdDSA {
     var ok bool
 
     if ed25519Key, ok = key.(ed25519.PublicKey); !ok {
-        this.Error = errors.New("EdDSA: [Very()] publicKey type error.")
-        return this
+        err := errors.New("EdDSA: [Very()] publicKey type error.")
+        return this.AppendError(err)
     }
 
     this.veryed = ed25519.Verify(ed25519Key, data, this.data)

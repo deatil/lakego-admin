@@ -5,6 +5,7 @@ func NewDSA() DSA {
     return DSA{
         signHash: "SHA512",
         veryed:   false,
+        Errors:   make([]error, 0),
     }
 }
 

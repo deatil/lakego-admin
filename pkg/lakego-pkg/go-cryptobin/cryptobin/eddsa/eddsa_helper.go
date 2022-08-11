@@ -4,6 +4,7 @@ package eddsa
 func NewEdDSA() EdDSA {
     return EdDSA{
         veryed: false,
+        Errors: make([]error, 0),
     }
 }
 

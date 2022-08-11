@@ -11,8 +11,7 @@ import (
 func (this Dh) FromPrivateKey(key []byte) Dh {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*dh.PrivateKey)
@@ -24,8 +23,7 @@ func (this Dh) FromPrivateKey(key []byte) Dh {
 func (this Dh) FromPrivateKeyWithPassword(key []byte, password string) Dh {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.privateKey = parsedKey.(*dh.PrivateKey)
@@ -37,8 +35,7 @@ func (this Dh) FromPrivateKeyWithPassword(key []byte, password string) Dh {
 func (this Dh) FromPublicKey(key []byte) Dh {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
-        this.Error = err
-        return this
+        return this.AppendError(err)
     }
 
     this.publicKey = parsedKey.(*dh.PublicKey)
@@ -114,7 +111,10 @@ func (this Dh) FromPublicKeyYHexString(yString string) Dh {
 
 // 生成密钥
 func (this Dh) GenerateKey() Dh {
-    this.privateKey, this.publicKey, this.Error = dh.GenerateKeyWithGroup(this.group, rand.Reader)
+    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, rand.Reader)
+    
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
 
-    return this
+    return this.AppendError(err)
 }
