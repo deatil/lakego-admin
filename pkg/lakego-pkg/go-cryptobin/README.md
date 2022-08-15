@@ -7,7 +7,7 @@ go-cryptobin 是 go 的常用加密解密库
 *  go-cryptobin 包括常用的对称加密和非对称加密及签名验证
 *  对称加密解密（Aes/Des/TriDes/SM4/Tea/Twofish/Xts）
 *  对称加密解密模式（ECB/CBC/CFB/OFB/CTR/GCM）
-*  对称加密解密补码（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO7816_4Padding/ISO97971Padding/TBCPadding/PKCS1Padding）
+*  对称加密解密补码（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/TBCPadding/PKCS1Padding）
 *  非对称加密解密（RSA/SM2）
 *  非对称签名验证（RSA/PSS/DSA/Ecdsa/EdDSA/SM2）
 *  默认 `Aes`, `ECB`, `NoPadding`

@@ -11,7 +11,7 @@ type Errors struct {
     errors []error
 }
 
-// 添加
+// 设置
 func (this Errors) WithErrors(errors []error) Errors {
     this.errors = errors
 
@@ -54,7 +54,7 @@ func (this Errors) Last() error {
     return nil
 }
 
-// 获取一个
+// 获取其中一个
 func (this Errors) Get(n int) error {
     num := len(this.errors)
     if (num > 0 && n > 0 && num > n) {
@@ -69,7 +69,12 @@ func (this Errors) All() []error {
     return this.errors
 }
 
-// 获取全部
+// 总数
+func (this Errors) Count() int {
+    return len(this.errors)
+}
+
+// 循环
 func (this Errors) Each(fn func(int, error)) {
     num := len(this.errors)
     if (num > 0) {
@@ -79,7 +84,7 @@ func (this Errors) Each(fn func(int, error)) {
     }
 }
 
-// 返回字符
+// 返回第一个错误字符
 func (this Errors) Error() string {
     err := this.First()
     if err != nil {
@@ -89,7 +94,7 @@ func (this Errors) Error() string {
     return ""
 }
 
-// 返回字符
+// 返回第一个错误字符
 func (this Errors) String() string {
     return this.Error()
 }
