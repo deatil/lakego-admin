@@ -2,5 +2,5 @@
 name: "LakegoAdmin"
 name-mini: "Lakego"
 logo: "<b>Lakego</b> admin"
-release: "20220521"
-version: "1.0.5"
+release: "20220812"
+version: "1.0.6"

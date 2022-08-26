@@ -50,7 +50,7 @@ func (this KeySignWithRsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
     return hashData, signData, err
 }
 
-// 签名
+// 验证
 func (this KeySignWithRsa) Verify(pkey crypto.PublicKey, data []byte, signature []byte) (bool, error) {
     var pub *rsa.PublicKey
     var ok bool

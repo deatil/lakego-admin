@@ -5,93 +5,92 @@ import (
 )
 
 // 构造函数
-func NewCRC32(params ...Params) *Table {
-    return NewTable(params...)
+func NewCRC32(params ...Params) *CRC {
+    return NewCRC(params...)
 }
 
 // Hash
 func NewCRC32Hash(params Params) Hash32 {
-    table := &Table{}
-    table.params = params
+    crc := NewCRC32(params).MakeTable()
 
-    return NewHash(table.MakeData())
+    return NewHash(crc)
 }
 
 // =======================
 
 // 生成
 func Checksum(data []byte, params Params) uint32 {
-    return NewTable(params).Checksum(data)
+    return NewCRC32(params).Checksum(data)
 }
 
 // 生成 CRC32
 func ChecksumCRC32(data []byte) uint32 {
-    return NewTable(CRC32).Checksum(data)
+    return NewCRC32(CRC32).Checksum(data)
 }
 
 // 生成 MPEG_2
 func ChecksumMPEG_2(data []byte) uint32 {
-    return NewTable(CRC32_MPEG_2).Checksum(data)
+    return NewCRC32(CRC32_MPEG_2).Checksum(data)
 }
 
 // 生成 BZIP2
 func ChecksumBZIP2(data []byte) uint32 {
-    return NewTable(CRC32_BZIP2).Checksum(data)
+    return NewCRC32(CRC32_BZIP2).Checksum(data)
 }
 
 // 生成 POSIX
 func ChecksumPOSIX(data []byte) uint32 {
-    return NewTable(CRC32_POSIX).Checksum(data)
+    return NewCRC32(CRC32_POSIX).Checksum(data)
 }
 
 // 生成 JAMCRC
 func ChecksumJAMCRC(data []byte) uint32 {
-    return NewTable(CRC32_JAMCRC).Checksum(data)
+    return NewCRC32(CRC32_JAMCRC).Checksum(data)
 }
 
 // 生成 CRC32A
 func ChecksumCRC32A(data []byte) uint32 {
-    return NewTable(CRC32_CRC32A).Checksum(data)
+    return NewCRC32(CRC32_CRC32A).Checksum(data)
 }
 
 // 生成 IEEE
 func ChecksumIEEE(data []byte) uint32 {
-    return NewTable(CRC32_IEEE).Checksum(data)
+    return NewCRC32(CRC32_IEEE).Checksum(data)
 }
 
 // 生成 Castagnoli
 func ChecksumCastagnoli(data []byte) uint32 {
-    return NewTable(CRC32_Castagnoli).Checksum(data)
+    return NewCRC32(CRC32_Castagnoli).Checksum(data)
 }
 
 // 生成 CRC32C
 func ChecksumCRC32C(data []byte) uint32 {
-    return NewTable(CRC32_CRC32C).Checksum(data)
+    return NewCRC32(CRC32_CRC32C).Checksum(data)
 }
 
 // 生成 Koopman
 func ChecksumKoopman(data []byte) uint32 {
-    return NewTable(CRC32_Koopman).Checksum(data)
+    return NewCRC32(CRC32_Koopman).Checksum(data)
 }
 
 // 生成 CKSUM
 func ChecksumCKSUM(data []byte) uint32 {
-    return NewTable(CRC32_CKSUM).Checksum(data)
+    return NewCRC32(CRC32_CKSUM).Checksum(data)
 }
 
 // 生成 XFER
 func ChecksumXFER(data []byte) uint32 {
-    return NewTable(CRC32_XFER).Checksum(data)
+    return NewCRC32(CRC32_XFER).Checksum(data)
 }
 
 // 生成 CRC32D
 func ChecksumCRC32D(data []byte) uint32 {
-    return NewTable(CRC32_CRC32D).Checksum(data)
+    return NewCRC32(CRC32_CRC32D).Checksum(data)
 }
 
 // 生成 CRC32Q
 func ChecksumCRC32Q(data []byte) uint32 {
-    return NewTable(CRC32_CRC32Q).Checksum(data)
+    return NewCRC32(CRC32_CRC32Q).Checksum(data)
 }
 
 // =======================

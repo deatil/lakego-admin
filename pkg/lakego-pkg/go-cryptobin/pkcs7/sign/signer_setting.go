@@ -2,27 +2,39 @@ package sign
 
 import (
     "crypto"
+    _ "crypto/md5"
     _ "crypto/sha1"
     _ "crypto/sha256"
     _ "crypto/sha512"
     "encoding/asn1"
+
+    "github.com/tjfoc/gmsm/sm3"
 )
 
 var (
-    // 签名
+    // dsa 签名
     oidDigestAlgorithmDSASHA1   = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 3}
     oidDigestAlgorithmDSASHA256 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 3, 2}
 
+    // ecdsa 签名
     oidDigestAlgorithmECDSASHA1   = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 1}
     oidDigestAlgorithmECDSASHA256 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 2}
     oidDigestAlgorithmECDSASHA384 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 3}
     oidDigestAlgorithmECDSASHA512 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 4}
 
-    // Signature Algorithms
+    // rsa 签名
+    oidDigestAlgorithmRSAMD5    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 4}
     oidDigestAlgorithmRSASHA1   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 5}
     oidDigestAlgorithmRSASHA256 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 11}
     oidDigestAlgorithmRSASHA384 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 12}
     oidDigestAlgorithmRSASHA512 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 13}
+    oidDigestAlgorithmRSASM3    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 504}
+
+    // eddsa 签名
+    oidDigestAlgorithmEd25519   = asn1.ObjectIdentifier{1, 3, 101, 112}
+
+    // sm2 签名
+    oidDigestAlgorithmSM2SM3    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 501}
 )
 
 var KeySignWithDSASHA1 = KeySignWithDSA{
@@ -57,6 +69,11 @@ var KeySignWithEcdsaSHA512 = KeySignWithEcdsa{
     identifier: oidDigestAlgorithmECDSASHA512,
 }
 
+var KeySignWithRsaMD5 = KeySignWithRsa{
+    hashFunc:   crypto.SHA1,
+    hashId:     oidDigestAlgorithmMd5,
+    identifier: oidDigestAlgorithmRSAMD5,
+}
 var KeySignWithRsaSHA1 = KeySignWithRsa{
     hashFunc:   crypto.SHA1,
     hashId:     oidDigestAlgorithmSHA1,
@@ -76,6 +93,18 @@ var KeySignWithRsaSHA512 = KeySignWithRsa{
     hashFunc:   crypto.SHA512,
     hashId:     oidDigestAlgorithmSHA512,
     identifier: oidDigestAlgorithmRSASHA512,
+}
+
+var KeySignWithEdDsaSHA1 = KeySignWithRsa{
+    hashFunc:   crypto.SHA1,
+    hashId:     oidDigestAlgorithmSHA1,
+    identifier: oidDigestAlgorithmEd25519,
+}
+
+var KeySignWithSM2SM3 = KeySignWithSM2{
+    hashFunc:   sm3.New,
+    hashId:     oidDigestAlgorithmSM3,
+    identifier: oidDigestAlgorithmSM2SM3,
 }
 
 func init() {
@@ -99,6 +128,9 @@ func init() {
         return KeySignWithEcdsaSHA512
     })
 
+    AddKeySign(oidDigestAlgorithmRSAMD5, func() KeySign {
+        return KeySignWithRsaMD5
+    })
     AddKeySign(oidDigestAlgorithmRSASHA1, func() KeySign {
         return KeySignWithRsaSHA1
     })
@@ -110,6 +142,14 @@ func init() {
     })
     AddKeySign(oidDigestAlgorithmRSASHA512, func() KeySign {
         return KeySignWithRsaSHA512
+    })
+
+    AddKeySign(oidDigestAlgorithmEd25519, func() KeySign {
+        return KeySignWithEdDsaSHA1
+    })
+
+    AddKeySign(oidDigestAlgorithmSM2SM3, func() KeySign {
+        return KeySignWithSM2SM3
     })
 }
 

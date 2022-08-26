@@ -54,7 +54,7 @@ func (this KeySignWithDSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
     return hashData, signData, nil
 }
 
-// 签名
+// 验证
 func (this KeySignWithDSA) Verify(pkey crypto.PublicKey, signed []byte, signature []byte) (bool, error) {
     var pub *dsa.PublicKey
     var ok bool

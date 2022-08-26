@@ -5,38 +5,37 @@ import (
 )
 
 // 构造函数
-func NewCRC24(params ...Params) *Table {
-    return NewTable(params...)
+func NewCRC24(params ...Params) *CRC {
+    return NewCRC(params...)
 }
 
 // Hash
 func NewCRC24Hash(params Params) Hash24 {
-    table := &Table{}
-    table.params = params
+    crc := NewCRC24(params).MakeTable()
 
-    return NewHash(table.MakeData())
+    return NewHash(crc)
 }
 
 // =======================
 
 // 生成
 func Checksum(data []byte, params Params) uint32 {
-    return NewTable(params).Checksum(data)
+    return NewCRC24(params).Checksum(data)
 }
 
 // 生成 CRC24
 func ChecksumCRC24(data []byte) uint32 {
-    return NewTable(CRC24).Checksum(data)
+    return NewCRC24(CRC24).Checksum(data)
 }
 
 // 生成 FLEXRAY_A
 func ChecksumFLEXRAY_A(data []byte) uint32 {
-    return NewTable(CRC24_FLEXRAY_A).Checksum(data)
+    return NewCRC24(CRC24_FLEXRAY_A).Checksum(data)
 }
 
 // 生成 FLEXRAY_B
 func ChecksumFLEXRAY_B(data []byte) uint32 {
-    return NewTable(CRC24_FLEXRAY_B).Checksum(data)
+    return NewCRC24(CRC24_FLEXRAY_B).Checksum(data)
 }
 
 // =======================

@@ -12,13 +12,13 @@ type Hash8 interface {
 const Size = 1
 
 type digest struct {
-    sum   uint8
-    table *Table
+    sum uint8
+    crc *CRC
 }
 
 // Write
 func (this *digest) Write(data []byte) (int, error) {
-    this.sum = this.table.Update(this.sum, data)
+    this.sum = this.crc.Update(this.sum, data)
 
     return len(data), nil
 }
@@ -32,7 +32,7 @@ func (this *digest) Sum(b []byte) []byte {
 
 // Reset
 func (this *digest) Reset() {
-    this.sum = this.table.params.Init
+    this.sum = this.crc.params.Init
 }
 
 // Size
@@ -47,13 +47,13 @@ func (this *digest) BlockSize() int {
 
 // Sum8
 func (this *digest) Sum8() uint8 {
-    return this.table.Complete(this.sum)
+    return this.crc.Complete(this.sum)
 }
 
 // 构造函数
-func NewHash(table *Table) Hash8 {
+func NewHash(crc *CRC) Hash8 {
     h := &digest{
-        table: table,
+        crc: crc,
     }
     h.Reset()
 

@@ -49,37 +49,37 @@ var (
 )
 
 // 表格
-type Table struct {
+type CRC struct {
     params Params
-    data   [256]uint8
+    table  [256]uint8
 }
 
 // 设置参数
-func (this *Table) WithParams(params Params) *Table {
+func (this *CRC) WithParams(params Params) *CRC {
     this.params = params
 
     return this
 }
 
 // 获取参数
-func (this *Table) GetParams() Params {
+func (this *CRC) GetParams() Params {
     return this.params
 }
 
 // 设置数据
-func (this *Table) WithData(data [256]uint8) *Table {
-    this.data = data
+func (this *CRC) WithTable(table [256]uint8) *CRC {
+    this.table = table
 
     return this
 }
 
 // 获取数据
-func (this *Table) GetData() [256]uint8 {
-    return this.data
+func (this *CRC) GetTable() [256]uint8 {
+    return this.table
 }
 
 // 生成数值
-func (this *Table) MakeData() *Table {
+func (this *CRC) MakeTable() *CRC {
     for n := 0; n < 256; n++ {
         crc := uint8(n)
         for i := 0; i < 8; i++ {
@@ -90,27 +90,27 @@ func (this *Table) MakeData() *Table {
             }
         }
 
-        this.data[n] = crc
+        this.table[n] = crc
     }
 
     return this
 }
 
 // 初始值
-func (this *Table) Init() uint8 {
+func (this *CRC) Init() uint8 {
     return this.params.Init
 }
 
 // 更新
-func (this *Table) Update(crc uint8, data []byte) uint8 {
+func (this *CRC) Update(crc uint8, data []byte) uint8 {
     if this.params.RefIn {
         for _, d := range data {
             d = bits.Reverse8(d)
-            crc = this.data[crc^d]
+            crc = this.table[crc^d]
         }
     } else {
         for _, d := range data {
-            crc = this.data[crc^d]
+            crc = this.table[crc^d]
         }
     }
 
@@ -118,7 +118,7 @@ func (this *Table) Update(crc uint8, data []byte) uint8 {
 }
 
 // 完成
-func (this *Table) Complete(crc uint8) uint8 {
+func (this *CRC) Complete(crc uint8) uint8 {
     if this.params.RefOut {
         crc = bits.Reverse8(crc)
     }
@@ -127,20 +127,20 @@ func (this *Table) Complete(crc uint8) uint8 {
 }
 
 // Checksum
-func (this *Table) Checksum(data []byte) uint8 {
-    crc := this.MakeData().Init()
+func (this *CRC) Checksum(data []byte) uint8 {
+    crc := this.MakeTable().Init()
     crc = this.Update(crc, data)
 
     return this.Complete(crc)
 }
 
 // 构造函数
-func NewTable(params ...Params) *Table {
-    table := &Table{}
+func NewCRC(params ...Params) *CRC {
+    crc := &CRC{}
 
     if len(params) > 0 {
-        table.WithParams(params[0])
+        crc.WithParams(params[0])
     }
 
-    return table
+    return crc
 }

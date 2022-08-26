@@ -17,13 +17,9 @@ func (this Dh) GetPrivateKeyXHexString() string {
         return ""
     }
 
-    data := this.privateKey.X
+    data := this.privateKey.X.Text(16)
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
+    return data
 }
 
 // 获取 PublicKey
@@ -37,13 +33,9 @@ func (this Dh) GetPublicKeyYHexString() string {
         return ""
     }
 
-    data := this.publicKey.Y
+    data := this.publicKey.Y.Text(16)
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
+    return data
 }
 
 // 获取 P 16进制字符
@@ -52,13 +44,9 @@ func (this Dh) GetPublicKeyParametersPHexString() string {
         return ""
     }
 
-    data := this.publicKey.Parameters.P
+    data := this.publicKey.Parameters.P.Text(16)
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
+    return data
 }
 
 // 获取 G 16进制字符
@@ -67,13 +55,9 @@ func (this Dh) GetPublicKeyParametersGHexString() string {
         return ""
     }
 
-    data := this.publicKey.Parameters.G
+    data := this.publicKey.Parameters.G.Text(16)
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
+    return data
 }
 
 // 获取 keyData

@@ -5,28 +5,27 @@ import (
 )
 
 // 构造函数
-func NewCRC40(params ...Params) *Table {
-    return NewTable(params...)
+func NewCRC40(params ...Params) *CRC {
+    return NewCRC(params...)
 }
 
 // Hash
 func NewCRC40Hash(params Params) Hash40 {
-    table := &Table{}
-    table.params = params
+    crc := NewCRC40(params).MakeTable()
 
-    return NewHash(table.MakeData())
+    return NewHash(crc)
 }
 
 // =======================
 
 // 生成
 func Checksum(data []byte, params Params) uint64 {
-    return NewTable(params).Checksum(data)
+    return NewCRC40(params).Checksum(data)
 }
 
 // 生成 GSM
 func ChecksumGSM(data []byte) uint64 {
-    return NewTable(CRC40_GSM).Checksum(data)
+    return NewCRC40(CRC40_GSM).Checksum(data)
 }
 
 // =======================

@@ -35,37 +35,37 @@ var (
 )
 
 // 表格
-type Table struct {
+type CRC struct {
     params Params
-    data   [256]uint32
+    table  [256]uint32
 }
 
 // 设置参数
-func (this *Table) WithParams(params Params) *Table {
+func (this *CRC) WithParams(params Params) *CRC {
     this.params = params
 
     return this
 }
 
 // 获取参数
-func (this *Table) GetParams() Params {
+func (this *CRC) GetParams() Params {
     return this.params
 }
 
 // 设置数据
-func (this *Table) WithData(data [256]uint32) *Table {
-    this.data = data
+func (this *CRC) WithTable(table [256]uint32) *CRC {
+    this.table = table
 
     return this
 }
 
 // 获取数据
-func (this *Table) GetData() [256]uint32 {
-    return this.data
+func (this *CRC) GetTable() [256]uint32 {
+    return this.table
 }
 
 // 生成数值
-func (this *Table) MakeData() *Table {
+func (this *CRC) MakeTable() *CRC {
     for n := 0; n < 256; n++ {
         crc := uint32(n) << 16
 
@@ -77,32 +77,32 @@ func (this *Table) MakeData() *Table {
             }
         }
 
-        this.data[n] = crc
+        this.table[n] = crc
     }
 
     return this
 }
 
 // 初始值
-func (this *Table) Init() uint32 {
+func (this *CRC) Init() uint32 {
     return this.params.Init
 }
 
 // 更新
-func (this *Table) Update(crc uint32, data []byte) uint32 {
+func (this *CRC) Update(crc uint32, data []byte) uint32 {
     for _, d := range data {
         if this.params.RefIn {
             d = bits.Reverse8(d)
         }
 
-        crc = (crc << 8) ^ this.data[byte(crc >> 16) ^ d]
+        crc = (crc << 8) ^ this.table[byte(crc >> 16) ^ d]
     }
 
     return crc
 }
 
 // 完成
-func (this *Table) Complete(crc uint32) uint32 {
+func (this *CRC) Complete(crc uint32) uint32 {
     if this.params.RefOut {
         return bits.Reverse32(crc) ^ this.params.XorOut
     }
@@ -113,20 +113,20 @@ func (this *Table) Complete(crc uint32) uint32 {
 // Checksum
 // LSB-MSB，即低字节在前
 // Modbus，即高字节在前
-func (this *Table) Checksum(data []byte) uint32 {
-    crc := this.MakeData().Init()
+func (this *CRC) Checksum(data []byte) uint32 {
+    crc := this.MakeTable().Init()
     crc = this.Update(crc, data)
 
     return this.Complete(crc)
 }
 
 // 构造函数
-func NewTable(params ...Params) *Table {
-    table := &Table{}
+func NewCRC(params ...Params) *CRC {
+    crc := &CRC{}
 
     if len(params) > 0 {
-        table.WithParams(params[0])
+        crc.WithParams(params[0])
     }
 
-    return table
+    return crc
 }

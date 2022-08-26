@@ -12,13 +12,13 @@ type Hash32 interface {
 const Size = 4
 
 type digest struct {
-    sum   uint32
-    table *Table
+    sum uint32
+    crc *CRC
 }
 
 // Write
 func (this *digest) Write(data []byte) (int, error) {
-    this.sum = this.table.Update(this.sum, data)
+    this.sum = this.crc.Update(this.sum, data)
 
     return len(data), nil
 }
@@ -32,7 +32,7 @@ func (this *digest) Sum(b []byte) []byte {
 
 // Reset
 func (this *digest) Reset() {
-    this.sum = this.table.params.Init
+    this.sum = this.crc.params.Init
 }
 
 // Size
@@ -47,13 +47,13 @@ func (this *digest) BlockSize() int {
 
 // Sum32
 func (this *digest) Sum32() uint32 {
-    return this.table.Complete(this.sum)
+    return this.crc.Complete(this.sum)
 }
 
 // 构造函数
-func NewHash(table *Table) Hash32 {
+func NewHash(crc *CRC) Hash32 {
     h := &digest{
-        table: table,
+        crc: crc,
     }
     h.Reset()
 

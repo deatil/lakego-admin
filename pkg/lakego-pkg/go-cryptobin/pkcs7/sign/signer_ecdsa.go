@@ -41,7 +41,7 @@ func (this KeySignWithEcdsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, 
     return hashData, signData, err
 }
 
-// 签名
+// 验证
 func (this KeySignWithEcdsa) Verify(pkey crypto.PublicKey, signed []byte, signature []byte) (bool, error) {
     var pub *ecdsa.PublicKey
     var ok bool

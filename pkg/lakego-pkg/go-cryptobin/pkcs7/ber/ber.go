@@ -19,12 +19,14 @@ type asn1Structured struct {
 func (s asn1Structured) EncodeTo(out *bytes.Buffer) error {
     encodeIndent++
     inner := new(bytes.Buffer)
+
     for _, obj := range s.content {
         err := obj.EncodeTo(inner)
         if err != nil {
             return err
         }
     }
+
     encodeIndent--
     out.Write(s.tagBytes)
     encodeLength(out, inner.Len())
@@ -66,7 +68,7 @@ func Ber2der(ber []byte) ([]byte, error) {
     obj.EncodeTo(out)
 
     // if offset < len(ber) {
-    //	return nil, fmt.Errorf("ber2der: Content longer than expected. Got %d, expected %d", offset, len(ber))
+    //    return nil, fmt.Errorf("ber2der: Content longer than expected. Got %d, expected %d", offset, len(ber))
     //}
 
     return out.Bytes(), nil
@@ -178,19 +180,19 @@ func readObject(ber []byte, offset int) (asn1Object, int, error) {
         if numberOfBytes > 4 { // int is only guaranteed to be 32bit
             return nil, 0, errors.New("ber2der: BER tag length too long")
         }
+        if offset+numberOfBytes > berLen {
+            return nil, 0, errors.New("ber2der: cannot move offset forward, end of ber data reached")
+        }
         if numberOfBytes == 4 && (int)(ber[offset]) > 0x7F {
             return nil, 0, errors.New("ber2der: BER tag length is negative")
         }
-        if (int)(ber[offset]) == 0x0 {
+        if (int)(ber[offset]) == 0x0 && (numberOfBytes == 1 || (int)(ber[offset+1]) <= 0x7F) {
             return nil, 0, errors.New("ber2der: BER tag length has leading zero")
         }
 
         for i := 0; i < numberOfBytes; i++ {
             length = length*256 + (int)(ber[offset])
             offset++
-            if offset > berLen {
-                return nil, 0, errors.New("ber2der: cannot move offset forward, end of ber data reached")
-            }
         }
     } else if l == 0x80 {
         indefinite = true

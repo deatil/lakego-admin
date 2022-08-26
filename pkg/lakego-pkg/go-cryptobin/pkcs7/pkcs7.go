@@ -54,7 +54,7 @@ func EncodePkcs7ToPem(data []byte, pemType string) []byte {
 func ParsePkcs7Pem(data []byte) ([]byte, error) {
     var block *pem.Block
     if block, _ = pem.Decode(data); block == nil {
-        return nil, errors.New("输入数据错误")
+        return nil, errors.New("pkcs7: data is not pem")
     }
 
     keyData := block.Bytes

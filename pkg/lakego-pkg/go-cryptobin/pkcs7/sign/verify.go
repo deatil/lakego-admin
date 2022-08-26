@@ -66,7 +66,6 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
     }
 
     if len(signer.AuthenticatedAttributes) > 0 {
-        // TODO(fullsailor): First check the content type match
         var (
             digest      []byte
             signingTime time.Time

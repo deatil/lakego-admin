@@ -273,6 +273,12 @@ func (this *SignedData) AddCertificate(cert *x509.Certificate) {
     this.certs = append(this.certs, cert)
 }
 
+// SetContentType sets the content type of the SignedData. For example to specify the
+// content type of a time-stamp token according to RFC 3161 section 2.4.2.
+func (this *SignedData) SetContentType(contentType asn1.ObjectIdentifier) {
+    this.sd.ContentInfo.ContentType = contentType
+}
+
 // Detach removes content from the signed data struct to make it a detached signature.
 // This must be called right before Finish()
 func (this *SignedData) Detach() {

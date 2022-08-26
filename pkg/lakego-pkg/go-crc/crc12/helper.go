@@ -6,29 +6,28 @@ import (
 )
 
 // 构造函数
-func NewCRC12(params ...Params) *Table {
-    return NewTable(params...)
+func NewCRC12(params ...Params) *CRC {
+    return NewCRC(params...)
 }
 
 // Hash
 func NewCRC12Hash(params Params) Hash12 {
-    table := &Table{}
-    table.params = params
+    crc := NewCRC12(params).MakeTable()
 
-    return NewHash(table.MakeData())
+    return NewHash(crc)
 }
 
 // =======================
 
 // 生成
 func Checksum(data []byte, params Params) uint16 {
-    return NewTable(params).Checksum(data)
+    return NewCRC12(params).Checksum(data)
 }
 
 // 生成 CRC12
 // 31303432 => 3CD
 func ChecksumCRC12(data []byte) uint16 {
-    return NewTable(CRC12).Checksum(data)
+    return NewCRC12(CRC12).Checksum(data)
 }
 
 // =======================

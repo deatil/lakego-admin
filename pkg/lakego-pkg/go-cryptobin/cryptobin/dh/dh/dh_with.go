@@ -77,7 +77,7 @@ func (this Dh) SetGroupPG(p string, g int64) Dh {
 
 // 随机数
 func (this Dh) SetRandGroup(num int64) Dh {
-    // 生成密钥
+    // p 值
     p := make([]byte, num)
 
     _, err := rand.Read(p)

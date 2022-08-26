@@ -10,18 +10,18 @@ import (
 )
 
 // key 用 rsa 加密
-type KeyEncryptRsa struct {
+type KeyEncryptWithRsa struct {
     hashFunc   func() hash.Hash
     identifier asn1.ObjectIdentifier
 }
 
 // oid
-func (this KeyEncryptRsa) OID() asn1.ObjectIdentifier {
+func (this KeyEncryptWithRsa) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this KeyEncryptRsa) Encrypt(plaintext []byte, pkey crypto.PublicKey) ([]byte, error) {
+func (this KeyEncryptWithRsa) Encrypt(plaintext []byte, pkey crypto.PublicKey) ([]byte, error) {
     var pub *rsa.PublicKey
     var ok bool
 
@@ -38,7 +38,7 @@ func (this KeyEncryptRsa) Encrypt(plaintext []byte, pkey crypto.PublicKey) ([]by
 }
 
 // 解密
-func (this KeyEncryptRsa) Decrypt(ciphertext []byte, pkey crypto.PrivateKey) ([]byte, error) {
+func (this KeyEncryptWithRsa) Decrypt(ciphertext []byte, pkey crypto.PrivateKey) ([]byte, error) {
     var priv *rsa.PrivateKey
     var ok bool
 
