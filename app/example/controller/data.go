@@ -37,6 +37,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
+    "github.com/deatil/lakego-doak/lakego/slice"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/container"
     "github.com/deatil/lakego-doak/lakego/snowflake"
@@ -371,7 +372,11 @@ func (this *Data) Error(ctx *gin.Context) {
         CreateSecret().
         ToHexString()
 
+    sliceData := slice.Min(12, 13)
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "sliceData": sliceData,
+
         "objSecret1": objSecret1,
         "objSecret2": objSecret2,
 
