@@ -87,7 +87,11 @@ func (this EdDSA) ParseEdPublicKeyFromPEM(key []byte) (crypto.PublicKey, error) 
     // Parse the key
     var parsedKey any
     if parsedKey, err = x509.ParsePKIXPublicKey(block.Bytes); err != nil {
-        return nil, err
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
     }
 
     var pkey ed25519.PublicKey

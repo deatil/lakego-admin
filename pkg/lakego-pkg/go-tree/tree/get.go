@@ -1,7 +1,7 @@
 package tree
 
 // 所有父节点
-func (this *Tree) GetListParents(id string, sort ...string) []map[string]any {
+func (this *Tree[K]) GetListParents(id K, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -16,7 +16,8 @@ func (this *Tree) GetListParents(id string, sort ...string) []map[string]any {
         return nil
     }
 
-    parentid := self[this.parentidKey].(string)
+    parentid := self[this.parentidKey].(K)
+
     newData := make([]map[string]any, 0)
     for _, v := range this.data {
         // 不存在跳过
@@ -24,24 +25,22 @@ func (this *Tree) GetListParents(id string, sort ...string) []map[string]any {
             continue
         }
 
-        switch v[this.idKey].(type) {
-            case string:
-                dataId := v[this.idKey].(string)
+        dataId, ok2 := v[this.idKey].(K)
+        if !ok2 {
+            continue
+        }
 
-                if dataId == parentid {
-                    newData = append(newData, v)
+        if dataId == parentid {
+            newData = append(newData, v)
 
-                    parents := this.GetListParents(v[this.idKey].(string), sort...)
-                    if len(parents) > 0{
-                        if order == "asc" {
-                            newData = append(newData, parents...)
-                        } else {
-                            newData = append(parents, newData...)
-                        }
-                    }
+            parents := this.GetListParents(dataId, sort...)
+            if len(parents) > 0{
+                if order == "asc" {
+                    newData = append(newData, parents...)
+                } else {
+                    newData = append(parents, newData...)
                 }
-            default:
-                continue
+            }
         }
     }
 
@@ -49,27 +48,32 @@ func (this *Tree) GetListParents(id string, sort ...string) []map[string]any {
 }
 
 // 获取所有父节点ID列表
-func (this *Tree) GetListParentIds(id string) []any {
+func (this *Tree[K]) GetListParentIds(id K) []K {
     data := this.GetListParents(id)
     if len(data) <= 0 {
         return nil
     }
 
-    ids := make([]any, 0)
+    ids := make([]K, 0)
     for _, v := range data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
             continue
         }
 
-        ids = append(ids, v[this.idKey])
+        dataId, ok2 := v[this.idKey].(K)
+        if !ok2 {
+            continue
+        }
+
+        ids = append(ids, dataId)
     }
 
     return ids
 }
 
 // 获取当前ID的所有子节点
-func (this *Tree) GetListChildren(id string, sort ...string) []map[string]any {
+func (this *Tree[K]) GetListChildren(id K, sort ...string) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -86,23 +90,22 @@ func (this *Tree) GetListChildren(id string, sort ...string) []map[string]any {
             continue
         }
 
-        switch v[this.parentidKey].(type) {
-            case string:
-                dataParentId := v[this.parentidKey].(string)
-                if dataParentId == id {
-                    newData = append(newData, v)
+        dataParentId, ok2 := v[this.parentidKey].(K)
+        if !ok2 {
+            continue
+        }
 
-                    children := this.GetListChildren(v[this.idKey].(string), sort...)
-                    if len(children) > 0{
-                        if order == "asc" {
-                            newData = append(newData, children...)
-                        } else {
-                            newData = append(children, newData...)
-                        }
-                    }
+        if dataParentId == id {
+            newData = append(newData, v)
+
+            children := this.GetListChildren(dataParentId, sort...)
+            if len(children) > 0{
+                if order == "asc" {
+                    newData = append(newData, children...)
+                } else {
+                    newData = append(children, newData...)
                 }
-            default:
-                continue
+            }
         }
 
     }
@@ -111,27 +114,32 @@ func (this *Tree) GetListChildren(id string, sort ...string) []map[string]any {
 }
 
 // 获取当前ID的所有子节点id列表
-func (this *Tree) GetListChildIds(id string) []any {
+func (this *Tree[K]) GetListChildIds(id K) []K {
     data := this.GetListChildren(id)
     if len(data) <= 0 {
         return nil
     }
 
-    ids := make([]any, 0)
+    ids := make([]K, 0)
     for _, v := range data {
         // 不存在跳过
         if _, ok := v[this.idKey]; !ok {
             continue
         }
 
-        ids = append(ids, v[this.idKey])
+        dataId, ok2 := v[this.idKey].(K)
+        if !ok2 {
+            continue
+        }
+
+        ids = append(ids, dataId)
     }
 
     return ids
 }
 
 // 得到子级第一级数组
-func (this *Tree) GetListChild(id string) []map[string]any {
+func (this *Tree[K]) GetListChild(id K) []map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -143,7 +151,11 @@ func (this *Tree) GetListChild(id string) []map[string]any {
             continue
         }
 
-        dataParentId := v[this.parentidKey].(string)
+        dataParentId, ok2 := v[this.parentidKey].(K)
+        if !ok2 {
+            continue
+        }
+
         if dataParentId == id {
             newData = append(newData, v)
         }
@@ -153,7 +165,7 @@ func (this *Tree) GetListChild(id string) []map[string]any {
 }
 
 // 获取ID自己的数据
-func (this *Tree) GetListSelf(id string) map[string]any {
+func (this *Tree[K]) GetListSelf(id K) map[string]any {
     if len(this.data) <= 0 {
         return nil
     }
@@ -164,7 +176,11 @@ func (this *Tree) GetListSelf(id string) map[string]any {
             continue
         }
 
-        dataId := v[this.idKey].(string)
+        dataId, ok2 := v[this.idKey].(K)
+        if !ok2 {
+            continue
+        }
+
         if dataId == id {
             return v
         }

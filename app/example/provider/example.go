@@ -50,6 +50,9 @@ func (this *ExampleServiceProvider) Boot() {
 func (this *ExampleServiceProvider) loadCommand() {
     // 用户信息
     this.AddCommand(command.ExampleCmd)
+
+    // 生成各种证书
+    this.AddCommand(command.MakeKeyCmd)
 }
 
 /**

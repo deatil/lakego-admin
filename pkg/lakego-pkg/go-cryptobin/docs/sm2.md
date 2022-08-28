@@ -24,6 +24,7 @@ func main() {
     objPriKey := obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123").
+        // CreatePrivateKeyWithPassword("123", "AES256CBC").
         ToKeyString()
     objPubKey := obj.
         CreatePublicKey().

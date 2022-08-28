@@ -27,8 +27,8 @@ func (this Goch) WithData(data any) Goch {
     return this
 }
 
-// 返回数据
-func (this Goch) ToData() any {
+// 获取原始数据
+func (this Goch) GetData() any {
     return this.data
 }
 

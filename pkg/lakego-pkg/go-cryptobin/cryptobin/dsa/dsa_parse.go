@@ -85,7 +85,11 @@ func (this DSA) ParsePublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
     // Parse the key
     var parsedKey any
     if parsedKey, err = cryptobin_dsa.ParsePublicKey(block.Bytes); err != nil {
-        return nil, err
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
     }
 
     var pkey *dsa.PublicKey
@@ -170,7 +174,11 @@ func (this DSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
     // Parse the key
     var parsedKey any
     if parsedKey, err = cryptobin_dsa.ParsePKCS8PublicKey(block.Bytes); err != nil {
-        return nil, err
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
     }
 
     var pkey *dsa.PublicKey

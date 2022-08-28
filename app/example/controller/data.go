@@ -195,13 +195,11 @@ func (this *Data) Error(ctx *gin.Context) {
         ToString()
 
     // 生成证书
-    rsa := cryptobin_rsa.NewRsa()
+    rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
     rsaPriKey := rsa.
-        GenerateKey(2048).
-        CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
+        CreatePKCS8PrivateKeyWithPassword("123", "AES128GCM", "SHA256").
         ToKeyString()
     rsaPubKey := rsa.
-        FromPKCS8PrivateKeyWithPassword([]byte(rsaPriKey), "123").
         CreatePublicKey().
         ToKeyString()
 

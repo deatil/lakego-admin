@@ -2,7 +2,6 @@ package dh
 
 import (
     "math/big"
-    "crypto/rand"
 
     "github.com/deatil/go-cryptobin/dhd/dh"
 )
@@ -77,15 +76,12 @@ func (this Dh) SetGroupPG(p string, g int64) Dh {
 
 // 随机数
 func (this Dh) SetRandGroup(num int64) Dh {
+    hexLetters := []rune("abcdef0123456789")
+
     // p 值
-    p := make([]byte, num)
+    p := RandomString(num, hexLetters)
 
-    _, err := rand.Read(p)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    pInt, _ := new(big.Int).SetString(string(p), 16)
+    pInt, _ := new(big.Int).SetString(p, 16)
 
     this.group = &dh.Group{
         P: pInt,

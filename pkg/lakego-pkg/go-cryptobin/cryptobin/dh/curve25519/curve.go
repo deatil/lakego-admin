@@ -1,19 +1,8 @@
 package curve25519
 
 import (
-    "crypto/x509"
-
     cryptobin_curve25519 "github.com/deatil/go-cryptobin/dhd/curve25519"
 )
-
-// pem 加密方式
-var PEMCiphers = map[string]x509.PEMCipher{
-    "DESCBC":     x509.PEMCipherDES,
-    "DESEDE3CBC": x509.PEMCipher3DES,
-    "AES128CBC":  x509.PEMCipherAES128,
-    "AES192CBC":  x509.PEMCipherAES192,
-    "AES256CBC":  x509.PEMCipherAES256,
-}
 
 /**
  * curve25519

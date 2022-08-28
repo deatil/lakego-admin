@@ -22,11 +22,11 @@ func GetChildren(groupid string) []map[string]any {
         return make([]map[string]any, 0)
     }
 
-    res := tree.New().
+    res := tree.New[string]().
         WithData(list).
         Build(groupid, "", 0)
 
-    childrenList := tree.New().
+    childrenList := tree.New[string]().
         BuildFormatList(res, groupid)
 
     return childrenList
@@ -77,7 +77,7 @@ func GetChildrenIdsFromGroupids(groupids []string) []string {
 
 // 获取 Children
 func GetChildrenFromData(data []map[string]any, groupid string) []map[string]any {
-    childrenList := tree.New().
+    childrenList := tree.New[string]().
         WithData(data).
         GetListChildren(groupid, "asc")
 

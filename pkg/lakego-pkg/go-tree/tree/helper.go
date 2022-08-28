@@ -1,8 +1,8 @@
 package tree
 
 // 构造函数
-func New() *Tree {
-    return &Tree{
+func New[K Ordered]() *Tree[K] {
+    return &Tree[K]{
         icon: []string{
             "│",
             "├",

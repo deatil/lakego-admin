@@ -317,7 +317,7 @@ func (this *Admin) Groups(ctx *router.Context) {
             }).
             ToMapArray()
 
-        newTree := tree.New()
+        newTree := tree.New[string]()
         list2 := newTree.WithData(list).Build("0", "", 1)
 
         list = newTree.BuildFormatList(list2, "0")

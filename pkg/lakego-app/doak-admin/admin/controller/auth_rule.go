@@ -151,7 +151,7 @@ func (this *AuthRule) IndexTree(ctx *router.Context) {
         return
     }
 
-    newList := tree.New().
+    newList := tree.New[string]().
         WithData(list).
         Build("0", "", 1)
 

@@ -16,7 +16,7 @@ func (this SM2) FromPrivateKey(key []byte) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.privateKey = privateKey
 
     return this
@@ -24,11 +24,15 @@ func (this SM2) FromPrivateKey(key []byte) SM2 {
 
 // 私钥带密码
 func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
-    privateKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
-    if err != nil {
-        return this.AppendError(err)
+    var err error
+
+    var privateKey *sm2.PrivateKey
+    if privateKey, err = this.ParsePrivateKeyFromPEMWithPassword(key, password); err != nil {
+        if privateKey, err = this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password); err != nil {
+            return this.AppendError(err)
+        }
     }
-    
+
     this.privateKey = privateKey
 
     return this
@@ -40,7 +44,7 @@ func (this SM2) FromPublicKey(key []byte) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.publicKey = publicKey
 
     return this
@@ -52,9 +56,9 @@ func (this SM2) GenerateKey() SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.privateKey = privateKey
-    
+
     // 生成公钥
     this.publicKey = &this.privateKey.PublicKey
 
@@ -177,9 +181,9 @@ func (this SM2) FromBase64String(data string) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.data = newData
-    
+
     return this
 }
 
@@ -189,8 +193,8 @@ func (this SM2) FromHexString(data string) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.data = newData
-    
+
     return this
 }

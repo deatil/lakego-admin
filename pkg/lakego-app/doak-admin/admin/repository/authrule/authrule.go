@@ -46,11 +46,11 @@ func GetChildren(ruleid string) []map[string]any {
         return make([]map[string]any, 0)
     }
 
-    res := tree.New().
+    res := tree.New[string]().
         WithData(list).
         Build(ruleid, "", 0)
 
-    childrenList := tree.New().
+    childrenList := tree.New[string]().
         BuildFormatList(res, ruleid)
 
     return childrenList
@@ -103,7 +103,7 @@ func GetChildrenIdsFromRuleids(ruleids []string) []string {
 
 // 获取 Children
 func GetChildrenFromData(data []map[string]any, ruleid string) []map[string]any {
-    childrenList := tree.New().
+    childrenList := tree.New[string]().
         WithData(data).
         GetListChildren(ruleid, "asc")
 

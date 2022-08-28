@@ -1,7 +1,7 @@
 package tree
 
 // 构建数组
-func (this *Tree) Build(id string, itemprefix string, depth int) []map[string]any {
+func (this *Tree[K]) Build(id K, itemprefix string, depth int) []map[string]any {
     children := this.GetListChild(id)
     if len(children) <= 0 {
         return nil
@@ -47,7 +47,7 @@ func (this *Tree) Build(id string, itemprefix string, depth int) []map[string]an
         // 深度
         info[this.depthKey] = depth
 
-        childList := this.Build(v[this.idKey].(string), itemprefix + k + this.blankspace, depth + 1)
+        childList := this.Build(v[this.idKey].(K), itemprefix + k + this.blankspace, depth + 1)
         if len(childList) > 0{
             info[this.buildChildKey] = childList
         }
@@ -60,7 +60,7 @@ func (this *Tree) Build(id string, itemprefix string, depth int) []map[string]an
 }
 
 // 将 build 的结果返回为二维数组
-func (this *Tree) BuildFormatList(data []map[string]any, parentid string) []map[string]any {
+func (this *Tree[K]) BuildFormatList(data []map[string]any, parentid K) []map[string]any {
     if len(data) <= 0 {
         return nil
     }
@@ -91,7 +91,7 @@ func (this *Tree) BuildFormatList(data []map[string]any, parentid string) []map[
             if child != nil {
                 children := child.([]map[string]any)
                 if len(children) > 0 {
-                    childData := this.BuildFormatList(children, v[this.idKey].(string))
+                    childData := this.BuildFormatList(children, v[this.idKey].(K))
                     list = append(list, childData...)
                 }
             }

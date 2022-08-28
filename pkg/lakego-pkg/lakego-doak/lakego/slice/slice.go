@@ -76,6 +76,15 @@ func Sum[T MathInteger](s ...T) (sum T) {
     return
 }
 
+// 合并
+func Merge[T any](items ...[]T) (c []T) {
+    for _, item := range items {
+        c = append(c, item...)
+    }
+
+    return
+}
+
 // 排除相同数据
 func Unique[T Ordered](s []T) []T {
     size := len(s)
@@ -98,11 +107,4 @@ func Unique[T Ordered](s []T) []T {
     }
 
     return ret
-}
-
-// 合并
-func Merge[T any](slice1, slice2 []T) (c []T) {
-    c = append(slice1, slice2...)
-
-    return
 }
