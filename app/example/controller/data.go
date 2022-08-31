@@ -18,6 +18,7 @@ import (
     "github.com/deatil/go-exception/exception"
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    _ "github.com/deatil/go-cryptobin/ssh"
     _ "github.com/deatil/go-cryptobin/dh/dh"
     _ "github.com/deatil/go-cryptobin/dh/ecdh"
     _ "github.com/deatil/go-cryptobin/dh/curve25519"
@@ -294,6 +295,7 @@ func (this *Data) Error(ctx *gin.Context) {
     // 16进制字符转为 byte
     crc16Hex, _ := hex.DecodeString("010f00")
     // encodedStr := hex.EncodeToString(b)
+
     crc16Data := crc16.ChecksumXMODEM2(crc16Hex)
     crc16Data2 := crc16.ToHexString(crc16Data)
 

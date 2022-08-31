@@ -76,7 +76,7 @@ func (this Dh) SetGroupPG(p string, g int64) Dh {
 
 // 随机数
 func (this Dh) SetRandGroup(num int64) Dh {
-    hexLetters := []rune("abcdef0123456789")
+    hexLetters := []rune("0123456789abcdef")
 
     // p 值
     p := RandomString(num, hexLetters)

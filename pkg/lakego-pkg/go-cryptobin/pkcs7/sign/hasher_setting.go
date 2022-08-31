@@ -16,6 +16,7 @@ var (
     oidDigestAlgorithmSHA256 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}
     oidDigestAlgorithmSHA384 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 2}
     oidDigestAlgorithmSHA512 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 3}
+    oidDigestAlgorithmSHA224 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 4}
 
     oidDigestAlgorithmSM3    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401}
 )
@@ -41,6 +42,11 @@ var SignHashWithSHA512 = SignHashWithFunc{
     identifier: oidDigestAlgorithmSHA512,
 }
 
+var SignHashWithSHA224 = SignHashWithFunc{
+    hashFunc:   sha256.New224,
+    identifier: oidDigestAlgorithmSHA224,
+}
+
 var SignHashWithSM3 = SignHashWithFunc{
     hashFunc:   sm3.New,
     identifier: oidDigestAlgorithmSM3,
@@ -58,6 +64,9 @@ func init() {
     })
     AddSignHash(oidDigestAlgorithmSHA512, func() SignHash {
         return SignHashWithSHA512
+    })
+    AddSignHash(oidDigestAlgorithmSHA224, func() SignHash {
+        return SignHashWithSHA224
     })
     AddSignHash(oidDigestAlgorithmSM3, func() SignHash {
         return SignHashWithSM3
