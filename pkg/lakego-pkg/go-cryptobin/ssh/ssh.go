@@ -126,6 +126,13 @@ func MarshalOpenSSHPrivateKey(key crypto.PrivateKey, password string, opts ...Op
         w.CipherName = "none"
         w.KdfName = "none"
     } else {
+        if opt.Cipher == nil {
+            return nil, errors.New("error opt Cipher is nil")
+        }
+        if opt.KDFOpts == nil {
+            return nil, errors.New("error opt KDFOpts is nil")
+        }
+
         w.CipherName = opt.Cipher.Name()
         w.KdfName = opt.KDFOpts.Name()
     }

@@ -30,8 +30,11 @@ func (this CipherCBC) Name() string {
 
 // 加密
 func (this CipherCBC) Encrypt(key, plaintext []byte) ([]byte, error) {
-    // 加密数据补码
-    plaintext = pkcs7Padding(plaintext, this.blockSize)
+    // Add padding until the private key block matches the block size,
+    // 16 with AES encryption, 8 without.
+    for i, l := 0, len(plaintext); (l+i)%this.blockSize != 0; i++ {
+        plaintext = append(plaintext, byte(i+1))
+    }
 
     iv := key[this.keySize : this.keySize+this.blockSize]
 
@@ -69,9 +72,6 @@ func (this CipherCBC) Decrypt(key, ciphertext []byte) ([]byte, error) {
 
     mode := cipher.NewCBCDecrypter(block, iv)
     mode.CryptBlocks(plaintext, ciphertext)
-
-    // 解析加密数据
-    plaintext = pkcs7UnPadding(plaintext)
 
     return plaintext, nil
 }

@@ -71,10 +71,8 @@ func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, error) {
         return nil, err
     }
 
-    for i, b := range key.Pad {
-        if int(b) != i+1 {
-            return nil, errors.New("error decoding key: padding not as expected")
-        }
+    if err := checkOpenSSHKeyPadding(key.Pad); err != nil {
+        return nil, err
     }
 
     pk := &rsa.PrivateKey{
