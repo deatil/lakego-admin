@@ -70,9 +70,3 @@ func AddKey(name string, key func() Key) {
     keys[name] = key
 }
 
-// 配置
-type Options struct {
-    Cipher  Cipher
-    KDFOpts KDFOpts
-}
-

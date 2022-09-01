@@ -50,9 +50,3 @@ var ciphers = make(map[string]func() Cipher)
 func AddCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
     ciphers[oid.String()] = cipher
 }
-
-// 配置
-type Opts struct {
-    Cipher  Cipher
-    KDFOpts KDFOpts
-}

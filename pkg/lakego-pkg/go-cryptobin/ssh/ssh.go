@@ -14,8 +14,14 @@ const (
     sshMagic = "openssh-key-v1\x00"
 )
 
+// 配置
+type Opts struct {
+    Cipher  Cipher
+    KDFOpts KDFOpts
+}
+
 // 默认配置
-var DefaultOptions = Options{
+var DefaultOpts = Opts{
     Cipher:  AES256CTR,
     KDFOpts: BcryptOpts{
         SaltSize: 16,
@@ -112,7 +118,7 @@ func MarshalOpenSSHPrivateKey(key crypto.PrivateKey, comment string) (*pem.Block
 }
 
 // 编码
-func MarshalOpenSSHPrivateKeyWithPassword(key crypto.PrivateKey, comment string, password []byte, opts ...Options) (*pem.Block, error) {
+func MarshalOpenSSHPrivateKeyWithPassword(key crypto.PrivateKey, comment string, password []byte, opts ...Opts) (*pem.Block, error) {
     var check uint32
     if err := binary.Read(rand.Reader, binary.BigEndian, &check); err != nil {
         return nil, errors.Wrap(err, "error generating random check ")
@@ -126,7 +132,7 @@ func MarshalOpenSSHPrivateKeyWithPassword(key crypto.PrivateKey, comment string,
         Check2: check,
     }
 
-    opt := DefaultOptions
+    opt := DefaultOpts
     if len(opts) > 0 {
         opt = opts[0]
     }

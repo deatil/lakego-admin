@@ -25,7 +25,7 @@ func main() {
         rsa.GetPrivateKey(),
         "ssh",
         []byte("123"),
-        cryptobin_ssh.Options{
+        cryptobin_ssh.Opts{
             // cryptobin_ssh.AES256CBC
             Cipher:  cryptobin_ssh.AES256CTR,
             KDFOpts: cryptobin_ssh.BcryptOpts{

@@ -16,6 +16,12 @@ var (
     oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 )
 
+// 配置
+type Opts struct {
+    Cipher  Cipher
+    KDFOpts KDFOpts
+}
+
 // 默认配置
 var DefaultOpts = Opts{
     Cipher:  AES256CBC,
