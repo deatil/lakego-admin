@@ -14,29 +14,52 @@ import (
     cryptobin_eddsa "github.com/deatil/go-cryptobin/cryptobin/eddsa"
 )
 
+func MakeUnenSSHKey() {
+    fs := filesystem.New()
+
+    obj := cryptobin_rsa.NewRsa().GenerateKey(2048)
+
+    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "ssh")
+    blockkeyData := pem.EncodeToMemory(block)
+    fs.Put("./runtime/key/ssh/rsa-unen-sshkey", string(blockkeyData))
+
+    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    if err == nil {
+        sshRsaPriKey := cryptobin_rsa.NewRsa().
+            WithPrivateKey(sshRsaKey.(*go_rsa.PrivateKey)).
+            CreatePKCS8PrivateKey().
+            ToKeyString()
+
+        fs.Put("./runtime/key/ssh/rsa-unen-sshkey-pkcs8", sshRsaPriKey)
+    } else {
+        fs.Put("./runtime/key/ssh/rsa-unen-sshkey-pkcs8", err.Error())
+    }
+}
+
 // rsaName := "AES256CBC"
 func MakeSSHKey(rsaName string) {
     fs := filesystem.New()
 
     rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
 
-    // rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(rsa.GetPrivateKey(), "123")
-    rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "ssh")
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(obj.GetPrivateKey(), "ssh", "123")
+    rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
         rsa.GetPrivateKey(),
-        "123",
+        "ssh",
+        []byte("123"),
         cryptobin_ssh.Options{
             Cipher:  cryptobin_ssh.GetCipherFromName(rsaName),
             KDFOpts: cryptobin_ssh.BcryptOpts{
                 SaltSize: 16,
                 Rounds:   16,
             },
-            Comment: "ssh",
         },
     )
     rsaBlockkeyData := pem.EncodeToMemory(rsaBlock)
     fs.Put("./runtime/key/ssh/rsa-en-"+rsaName+"", string(rsaBlockkeyData))
 
-    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(rsaBlock.Bytes, "123")
+    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(rsaBlock.Bytes, []byte("123"))
     if err == nil {
         sshRsaPriKey := cryptobin_rsa.NewRsa().
             WithPrivateKey(sshRsaKey.(*go_rsa.PrivateKey)).
@@ -50,39 +73,40 @@ func MakeSSHKey(rsaName string) {
 }
 
 // name := "AES256CBC"
-func MakeEcdsaSSHKey(name string) {
+// curve := P521 | P384 | P256
+func MakeEcdsaSSHKey(name string, curve string) {
     fs := filesystem.New()
 
+    // P521 | P384 | P256
     obj := cryptobin_ecdsa.New().
-        WithCurve("P521").
+        WithCurve(curve).
         GenerateKey()
 
-    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "123")
-    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
         obj.GetPrivateKey(),
-        "123",
+        "ssh",
+        []byte("123"),
         cryptobin_ssh.Options{
             Cipher:  cryptobin_ssh.GetCipherFromName(name),
             KDFOpts: cryptobin_ssh.BcryptOpts{
                 SaltSize: 16,
                 Rounds:   16,
             },
-            Comment: "ssh",
         },
     )
     rsaBlockkeyData := pem.EncodeToMemory(block)
-    fs.Put("./runtime/key/ssh/ecdsa-en-"+name+"", string(rsaBlockkeyData))
+    fs.Put("./runtime/key/ssh/ecdsa-en-"+curve+"-"+name+"", string(rsaBlockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes, "123")
+    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
     if err == nil {
         sshPriKey := cryptobin_ecdsa.New().
             WithPrivateKey(sshKey.(*go_ecdsa.PrivateKey)).
             CreatePKCS8PrivateKey().
             ToKeyString()
 
-        fs.Put("./runtime/key/ssh/ecdsa-key-"+name+"-pkcs8", sshPriKey)
+        fs.Put("./runtime/key/ssh/ecdsa-key-"+curve+"-"+name+"-pkcs8", sshPriKey)
     } else {
-        fs.Put("./runtime/key/ssh/ecdsa-key-"+name+"-pkcs8", err.Error())
+        fs.Put("./runtime/key/ssh/ecdsa-key-"+curve+"-"+name+"-pkcs8", err.Error())
     }
 }
 
@@ -93,23 +117,22 @@ func MakeEdDsaSSHKey(name string) {
     obj := cryptobin_eddsa.New().
         GenerateKey()
 
-    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "123")
-    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
         obj.GetPrivateKey(),
-        "123",
+        "ssh",
+        []byte("123"),
         cryptobin_ssh.Options{
             Cipher:  cryptobin_ssh.GetCipherFromName(name),
             KDFOpts: cryptobin_ssh.BcryptOpts{
                 SaltSize: 16,
                 Rounds:   16,
             },
-            Comment: "ssh",
         },
     )
     blockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/eddsa-en-"+name+"", string(blockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes, "123")
+    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
     if err == nil {
         sshPriKey := cryptobin_eddsa.New().
             WithPrivateKey(sshKey.(go_eddsa.PrivateKey)).
@@ -179,6 +202,27 @@ func MakeEdDsaSSHKey2(name string) {
         fs.Put("./runtime/key/ssh/eddsa-key-crypto_ssh-"+name+"-pkcs8", sshPriKey)
     } else {
         fs.Put("./runtime/key/ssh/eddsa-key-crypto_ssh-"+name+"-pkcs8", err.Error())
+    }
+
+}
+
+// name := "AES256CBC" | "AES256CTR"
+// curve := P521 | P384 | P256
+func MakeEcdsaSSHKey3(name string, curve string) {
+    fs := filesystem.New()
+
+    // ssh
+    sshKeyEn, _ := fs.Get("./runtime/key/ssh/ecdsa-en-"+curve+"-"+name)
+    sshKey, err := ssh.ParseRawPrivateKeyWithPassphrase([]byte(sshKeyEn), []byte("123"))
+    if err == nil {
+        sshRsaPriKey := cryptobin_ecdsa.New().
+            WithPrivateKey(sshKey.(*go_ecdsa.PrivateKey)).
+            CreatePKCS8PrivateKey().
+            ToKeyString()
+
+        fs.Put("./runtime/key/ssh/ecdsa-key-crypto_ssh-"+curve+"-"+name+"-pkcs8", sshRsaPriKey)
+    } else {
+        fs.Put("./runtime/key/ssh/ecdsa-key-crypto_ssh-"+curve+"-"+name+"-pkcs8", err.Error())
     }
 
 }

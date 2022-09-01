@@ -19,17 +19,19 @@ func main() {
 
     rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
 
-    // rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(rsa.GetPrivateKey(), "123")
-    rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "ssh")
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(obj.GetPrivateKey(), "ssh", "123")
+    rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
         rsa.GetPrivateKey(),
-        "123",
+        "ssh",
+        []byte("123"),
         cryptobin_ssh.Options{
+            // cryptobin_ssh.AES256CBC
             Cipher:  cryptobin_ssh.AES256CTR,
             KDFOpts: cryptobin_ssh.BcryptOpts{
                 SaltSize: 16,
                 Rounds:   16,
             },
-            Comment: "ssh",
         },
     )
     rsaBlockkeyData := pem.EncodeToMemory(rsaBlock)
@@ -62,7 +64,8 @@ func main() {
     // ssh
     sshRsaEn, _ := fs.Get("./runtime/key/ssh/rsa-en")
     sshRsaEnBlock, _ := pem.Decode([]byte(sshRsaEn))
-    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(sshRsaEnBlock.Bytes, "123")
+    // sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(sshRsaEnBlock.Bytes)
+    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(sshRsaEnBlock.Bytes, []byte("123"))
 
     if err == nil {
         sshRsaPriKey := cryptobin_rsa.NewRsa().

@@ -74,6 +74,5 @@ func AddKey(name string, key func() Key) {
 type Options struct {
     Cipher  Cipher
     KDFOpts KDFOpts
-    Comment string
 }
 

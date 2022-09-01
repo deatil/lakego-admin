@@ -16,6 +16,15 @@ var (
     oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 )
 
+// 默认配置
+var DefaultOpts = Opts{
+    Cipher:  AES256CBC,
+    KDFOpts: PBKDF2Opts{
+        SaltSize:       16,
+        IterationCount: 10000,
+    },
+}
+
 // 结构体数据可以查看以下文档
 // RFC5208 at https://tools.ietf.org/html/rfc5208
 // RFC5958 at https://tools.ietf.org/html/rfc5958

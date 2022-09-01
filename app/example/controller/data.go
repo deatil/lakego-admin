@@ -47,6 +47,8 @@ import (
     // "github.com/deatil/lakego-doak/lakego/facade/redis"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
+
+    "app/example/key"
 )
 
 /**
@@ -373,6 +375,8 @@ func (this *Data) Error(ctx *gin.Context) {
         ToHexString()
 
     sliceData := slice.Min(12, 13)
+
+    key.MakeUnenSSHKey()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "sliceData": sliceData,

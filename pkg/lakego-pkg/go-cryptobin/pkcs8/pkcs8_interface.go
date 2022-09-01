@@ -56,12 +56,3 @@ type Opts struct {
     Cipher  Cipher
     KDFOpts KDFOpts
 }
-
-// 默认配置
-var DefaultOpts = Opts{
-    Cipher:  AES256CBC,
-    KDFOpts: PBKDF2Opts{
-        SaltSize:       16,
-        IterationCount: 10000,
-    },
-}
