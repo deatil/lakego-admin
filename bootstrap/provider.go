@@ -20,6 +20,9 @@ import (
     // 静态文件代理模块
     _ "github.com/deatil/lakego-doak-statics/statics/bootstrap"
 
+    // 默认模块
+    _ "app/index/bootstrap"
+
     // 例子，不用时可以注释该引入
     _ "app/example/bootstrap"
 )

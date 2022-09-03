@@ -64,8 +64,8 @@ func main() {
     // ssh
     sshRsaEn, _ := fs.Get("./runtime/key/ssh/rsa-en")
     sshRsaEnBlock, _ := pem.Decode([]byte(sshRsaEn))
-    // sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(sshRsaEnBlock.Bytes)
-    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(sshRsaEnBlock.Bytes, []byte("123"))
+    // sshRsaKey, comment, err := cryptobin_ssh.ParseOpenSSHPrivateKey(sshRsaEnBlock.Bytes)
+    sshRsaKey, comment, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(sshRsaEnBlock.Bytes, []byte("123"))
 
     if err == nil {
         sshRsaPriKey := cryptobin_rsa.NewRsa().
@@ -79,6 +79,7 @@ func main() {
     }
 
     fmt.Println("解析 key 成功")
+    fmt.Println("证书 comment 为: " + comment)
 }
 
 ~~~

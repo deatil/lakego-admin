@@ -46,7 +46,7 @@ type Key interface {
     Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error)
 
     // 解析
-    Parse(data []byte) (crypto.PrivateKey, error)
+    Parse(data []byte) (crypto.PrivateKey, string, error)
 }
 
 var ciphers = make(map[string]func() Cipher)

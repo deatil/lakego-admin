@@ -8,12 +8,12 @@ import (
     "github.com/deatil/lakego-doak/lakego/provider"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
-    "github.com/deatil/lakego-doak-admin/admin/support/route"
+    admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
 
     // 路由
-    router "app/example/route"
-    command "app/example/cmd"
-    exampleView "app/example/view"
+    example_route "app/example/route"
+    example_command "app/example/cmd"
+    example_view "app/example/view"
 )
 
 /**
@@ -49,10 +49,10 @@ func (this *ExampleServiceProvider) Boot() {
  */
 func (this *ExampleServiceProvider) loadCommand() {
     // 用户信息
-    this.AddCommand(command.ExampleCmd)
+    this.AddCommand(example_command.ExampleCmd)
 
     // 生成各种证书
-    this.AddCommand(command.MakeKeyCmd)
+    this.AddCommand(example_command.MakeKeyCmd)
 }
 
 /**
@@ -100,13 +100,13 @@ func (this *ExampleServiceProvider) loadSetting() {
  */
 func (this *ExampleServiceProvider) loadRoute() {
     // 后台路由，包括后台使用的所有中间件
-    route.AddRoute(func(engine *gin.RouterGroup) {
-        router.Route(engine)
+    admin_route.AddRoute(func(engine *gin.RouterGroup) {
+        example_route.Route(engine)
     })
 
     // 常规 gin 路由，除 gin 自带外没有任何中间件
     this.AddRoute(func(engine *gin.Engine) {
-        router.GinRoute(engine)
+        example_route.GinRoute(engine)
     })
 }
 
@@ -115,7 +115,7 @@ func (this *ExampleServiceProvider) loadRoute() {
  */
 func (this *ExampleServiceProvider) loadViewFuncs() {
     // 添加自定义方法
-    this.AddViewFunc("formatData", exampleView.FormatData)
+    this.AddViewFunc("formatData", example_view.FormatData)
 }
 
 /**

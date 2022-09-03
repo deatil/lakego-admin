@@ -4,9 +4,9 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
 
-    "github.com/deatil/lakego-doak-admin/admin/support/route"
+    admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
 
-    monitorRouter "github.com/deatil/lakego-doak-monitor/monitor/route"
+    monitor_router "github.com/deatil/lakego-doak-monitor/monitor/route"
 )
 
 /**
@@ -30,8 +30,8 @@ func (this *Monitor) Boot() {
  */
 func (this *Monitor) loadRoute() {
     // 后台路由
-    route.AddRoute(func(engine *router.RouterGroup) {
-        monitorRouter.Route(engine)
+    admin_route.AddRoute(func(engine *router.RouterGroup) {
+        monitor_router.Route(engine)
     })
 }
 

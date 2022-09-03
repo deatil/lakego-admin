@@ -53,7 +53,7 @@ func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byt
 }
 
 // 包装
-func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, error) {
+func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte
         D       *big.Int
@@ -62,29 +62,29 @@ func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, error) {
     }{}
 
     if err := ssh.Unmarshal(rest, &key); err != nil {
-        return nil, errors.Wrap(err, "error unmarshaling key")
+        return nil, "", errors.Wrap(err, "error unmarshaling key")
     }
 
     if err := checkOpenSSHKeyPadding(key.Pad); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     curve := sm2.P256Sm2()
 
     X, Y := elliptic.Unmarshal(curve, key.Pub)
     if X == nil || Y == nil {
-        return nil, errors.New("error decoding key: failed to unmarshal public key")
+        return nil, "", errors.New("error decoding key: failed to unmarshal public key")
     }
 
     N := curve.Params().N
 
     if key.D.Cmp(N) >= 0 {
-        return nil, errors.New("error decoding key: scalar is out of range")
+        return nil, "", errors.New("error decoding key: scalar is out of range")
     }
 
     x, y := curve.ScalarBaseMult(key.D.Bytes())
     if x.Cmp(X) != 0 || y.Cmp(Y) != 0 {
-        return nil, errors.New("error decoding key: public key does not match private key")
+        return nil, "", errors.New("error decoding key: public key does not match private key")
     }
 
     return &sm2.PrivateKey{
@@ -94,5 +94,5 @@ func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, error) {
             Y:     Y,
         },
         D: key.D,
-    }, nil
+    }, key.Comment, nil
 }

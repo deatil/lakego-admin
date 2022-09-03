@@ -46,44 +46,44 @@ type openSSHPrivateKeyBlock struct {
 }
 
 // 解析
-func ParseOpenSSHPrivateKey(key []byte) (crypto.PrivateKey, error) {
+func ParseOpenSSHPrivateKey(key []byte) (crypto.PrivateKey, string, error) {
     return ParseOpenSSHPrivateKeyWithPassword(key, nil)
 }
 
 // 解析带密码
-func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.PrivateKey, error) {
+func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.PrivateKey, string, error) {
     if len(key) < len(sshMagic) || string(key[:len(sshMagic)]) != sshMagic {
-        return nil, errors.New("invalid openssh private key format")
+        return nil, "", errors.New("invalid openssh private key format")
     }
 
     remaining := key[len(sshMagic):]
 
     var w openSSHPrivateKey
     if err := ssh.Unmarshal(remaining, &w); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     if w.KdfName != "none" || w.CipherName != "none" {
         newCipher, err := ParseCipher(w.CipherName)
         if err != nil {
-            return nil, err
+            return nil, "", err
         }
 
         newKdf, err := ParsePbkdf(w.KdfName)
         if err != nil {
-            return nil, err
+            return nil, "", err
         }
 
         size := newCipher.KeySize() + newCipher.BlockSize()
 
         k, err := newKdf.DeriveKey(password, w.KdfOpts, size)
         if err != nil {
-            return nil, errors.Wrap(err, "error deriving password")
+            return nil, "", errors.Wrap(err, "error deriving password")
         }
 
         dst, err := newCipher.Decrypt(k, w.PrivKeyBlock)
         if err != nil {
-            return nil, err
+            return nil, "", err
         }
 
         w.PrivKeyBlock = dst
@@ -92,24 +92,31 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
     var pk1 openSSHPrivateKeyBlock
     if err := ssh.Unmarshal(w.PrivKeyBlock, &pk1); err != nil {
         if w.KdfName != "none" || w.CipherName != "none" {
-            return nil, errors.New("incorrect passphrase supplied")
+            return nil, "", errors.New("incorrect passphrase supplied")
         }
-        return nil, err
+
+        return nil, "", err
     }
 
     if pk1.Check1 != pk1.Check2 {
         if w.KdfName != "none" || w.CipherName != "none" {
-            return nil, errors.New("incorrect passphrase supplied")
+            return nil, "", errors.New("incorrect passphrase supplied")
         }
-        return nil, errors.New("error decoding key: check mismatch")
+
+        return nil, "", errors.New("error decoding key: check mismatch")
     }
 
-    parsedKey, err := ParseKeytype(pk1.Keytype)
+    newKey, err := ParseKeytype(pk1.Keytype)
     if err != nil {
-        return nil, err
+        return nil, "", err
     }
 
-    return parsedKey.Parse(pk1.Rest)
+    parsedKey, comment, err := newKey.Parse(pk1.Rest)
+    if err != nil {
+        return nil, "", err
+    }
+
+    return parsedKey, comment, nil
 }
 
 // 编码

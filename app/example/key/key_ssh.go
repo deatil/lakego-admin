@@ -1,6 +1,7 @@
 package key
 
 import (
+    "fmt"
     "encoding/pem"
     go_rsa "crypto/rsa"
     go_ecdsa "crypto/ecdsa"
@@ -68,7 +69,7 @@ func MakeRsaUnenSSHKey() {
     blockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/rsa-unen-sshkey", string(blockkeyData))
 
-    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    sshRsaKey, comment, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
     if err == nil {
         sshRsaPriKey := cryptobin_rsa.NewRsa().
             WithPrivateKey(sshRsaKey.(*go_rsa.PrivateKey)).
@@ -79,6 +80,8 @@ func MakeRsaUnenSSHKey() {
     } else {
         fs.Put("./runtime/key/ssh/rsa-unen-sshkey-pkcs8", err.Error())
     }
+
+    fmt.Println("Rsa 证书 comment 为: " + comment)
 }
 
 // curve := P521 | P384 | P256
@@ -97,7 +100,7 @@ func MakeEcdsaUnenSSHKey(curve string) {
     rsaBlockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/ecdsa-unen-sshkey-"+curve, string(rsaBlockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
     if err == nil {
         sshPriKey := cryptobin_ecdsa.New().
             WithPrivateKey(sshKey.(*go_ecdsa.PrivateKey)).
@@ -123,7 +126,7 @@ func MakeEdDsaUnenSSHKey() {
     blockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/eddsa-unen-sshkey", string(blockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
     if err == nil {
         sshPriKey := cryptobin_eddsa.New().
             WithPrivateKey(sshKey.(go_eddsa.PrivateKey)).
@@ -151,7 +154,7 @@ func MakeSM2UnenSSHKey() {
 
     sshPriKey := ""
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
     if err == nil {
         sshPriKey = cryptobin_sm2.New().
             WithPrivateKey(sshKey.(*sm2.PrivateKey)).
@@ -188,7 +191,7 @@ func MakeRsaSSHKey(rsaName string) {
     rsaBlockkeyData := pem.EncodeToMemory(rsaBlock)
     fs.Put("./runtime/key/ssh/rsa-en-"+rsaName+"", string(rsaBlockkeyData))
 
-    sshRsaKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(rsaBlock.Bytes, []byte("123"))
+    sshRsaKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(rsaBlock.Bytes, []byte("123"))
     if err == nil {
         sshRsaPriKey := cryptobin_rsa.NewRsa().
             WithPrivateKey(sshRsaKey.(*go_rsa.PrivateKey)).
@@ -226,7 +229,7 @@ func MakeEcdsaSSHKey(name string, curve string) {
     rsaBlockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/ecdsa-en-"+curve+"-"+name+"", string(rsaBlockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
     if err == nil {
         sshPriKey := cryptobin_ecdsa.New().
             WithPrivateKey(sshKey.(*go_ecdsa.PrivateKey)).
@@ -261,7 +264,7 @@ func MakeEdDsaSSHKey(name string) {
     blockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/eddsa-en-"+name+"", string(blockkeyData))
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
     if err == nil {
         sshPriKey := cryptobin_eddsa.New().
             WithPrivateKey(sshKey.(go_eddsa.PrivateKey)).
@@ -298,7 +301,7 @@ func MakeSM2SSHKey(name string) {
 
     sshPriKey := ""
 
-    sshKey, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
+    sshKey, _, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte("123"))
     if err == nil {
         sshPriKey = cryptobin_sm2.New().
             WithPrivateKey(sshKey.(*sm2.PrivateKey)).

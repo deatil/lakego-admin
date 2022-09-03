@@ -4,9 +4,9 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
 
-    "github.com/deatil/lakego-doak-admin/admin/support/route"
+    admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
 
-    databaseRouter "github.com/deatil/lakego-doak-database/database/route"
+    database_router "github.com/deatil/lakego-doak-database/database/route"
 )
 
 /**
@@ -34,8 +34,8 @@ func (this *Database) Boot() {
  */
 func (this *Database) loadRoute() {
     // 后台路由
-    route.AddRoute(func(engine *router.RouterGroup) {
-        databaseRouter.Route(engine)
+    admin_route.AddRoute(func(engine *router.RouterGroup) {
+        database_router.Route(engine)
     })
 }
 

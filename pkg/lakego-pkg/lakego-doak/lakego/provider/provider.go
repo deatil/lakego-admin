@@ -69,14 +69,14 @@ func (this *ServiceProvider) AddCommands(cmds []any) {
 }
 
 // 添加路由
-func (this *ServiceProvider) AddRoute(f func(*router.Engine)) {
+func (this *ServiceProvider) AddRoute(fn func(*router.Engine)) {
     if this.Route != nil {
-        f(this.Route)
+        fn(this.Route)
     }
 }
 
 // 添加路由分组
-func (this *ServiceProvider) AddGroup(conf map[string]string, f func(*router.RouterGroup)) {
+func (this *ServiceProvider) AddGroup(conf map[string]string, fn func(*router.RouterGroup)) {
     // 分组前缀
     prefix, ok := conf["prefix"]
     if !ok {
@@ -99,7 +99,7 @@ func (this *ServiceProvider) AddGroup(conf map[string]string, f func(*router.Rou
         {
             group.Use(groupMiddlewares...)
             {
-                f(group)
+                fn(group)
             }
         }
     })

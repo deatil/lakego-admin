@@ -50,7 +50,7 @@ func (this KeyEdDsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
 }
 
 // 包装
-func (this KeyEdDsa) Parse(rest []byte) (crypto.PrivateKey, error) {
+func (this KeyEdDsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte
         Priv    []byte
@@ -59,18 +59,19 @@ func (this KeyEdDsa) Parse(rest []byte) (crypto.PrivateKey, error) {
     }{}
 
     if err := ssh.Unmarshal(rest, &key); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     if err := checkOpenSSHKeyPadding(key.Pad); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     if len(key.Priv) != ed25519.PrivateKeySize {
-        return nil, errors.New("private key unexpected length")
+        return nil, "", errors.New("private key unexpected length")
     }
 
     pk := ed25519.PrivateKey(make([]byte, ed25519.PrivateKeySize))
     copy(pk, key.Priv)
-    return pk, nil
+
+    return pk, key.Comment, nil
 }

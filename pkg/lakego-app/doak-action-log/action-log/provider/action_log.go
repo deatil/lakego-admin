@@ -4,16 +4,16 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
 
-    "github.com/deatil/lakego-doak-admin/admin/support/route"
+    admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
 
-    logRouter "github.com/deatil/lakego-doak-action-log/action-log/route"
-    logMiddleware "github.com/deatil/lakego-doak-action-log/action-log/middleware/actionlog"
+    log_router "github.com/deatil/lakego-doak-action-log/action-log/route"
+    log_middleware "github.com/deatil/lakego-doak-action-log/action-log/middleware/actionlog"
 )
 
 // 路由中间件
 var routeMiddlewares = map[string]router.HandlerFunc{
     // 操作日志
-    "lakego-admin.action-log": logMiddleware.Handler(),
+    "lakego-admin.action-log": log_middleware.Handler(),
 }
 
 // 中间件分组
@@ -70,8 +70,8 @@ func (this *ActionLog) loadMiddleware() {
  */
 func (this *ActionLog) loadRoute() {
     // 后台路由
-    route.AddRoute(func(engine *router.RouterGroup) {
-        logRouter.Route(engine)
+    admin_route.AddRoute(func(engine *router.RouterGroup) {
+        log_router.Route(engine)
     })
 }
 

@@ -54,7 +54,7 @@ func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byt
 }
 
 // 包装
-func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, error) {
+func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     // https://github.com/openssh/openssh-portable/blob/master/sshkey.c
     key := struct {
         N       *big.Int
@@ -68,11 +68,11 @@ func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, error) {
     }{}
 
     if err := ssh.Unmarshal(rest, &key); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     if err := checkOpenSSHKeyPadding(key.Pad); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     pk := &rsa.PrivateKey{
@@ -85,10 +85,10 @@ func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, error) {
     }
 
     if err := pk.Validate(); err != nil {
-        return nil, err
+        return nil, "", err
     }
 
     pk.Precompute()
 
-    return pk, nil
+    return pk, key.Comment, nil
 }
