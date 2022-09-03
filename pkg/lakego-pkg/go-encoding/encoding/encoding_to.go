@@ -14,6 +14,8 @@ import (
     "encoding/base64"
     "encoding/ascii85"
     "encoding/binary"
+
+    "github.com/deatil/go-encoding/basex"
 )
 
 // 输出原始字符
@@ -34,6 +36,16 @@ func (this Encoding) ToString() string {
 // 输出 Base32
 func (this Encoding) ToBase32String() string {
     return base32.StdEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base32Hex
+func (this Encoding) ToBase32HexString() string {
+    return base32.HexEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base32Encoder
+func (this Encoding) ToBase32EncoderString(encoder string) string {
+    return base32.NewEncoding(encoder).EncodeToString(this.data)
 }
 
 // 输出 Base58
@@ -63,7 +75,12 @@ func (this Encoding) ToBase64RawURLString() string {
 
 // 输出 Base64Segment
 func (this Encoding) ToBase64SegmentString() string {
-    return strings.TrimRight(base64.URLEncoding.EncodeToString(this.data), "=")
+    return base64.RawURLEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base64Encoder
+func (this Encoding) ToBase64EncoderString(encoder string) string {
+    return base64.NewEncoding(encoder).EncodeToString(this.data)
 }
 
 // 输出 Base85
@@ -78,17 +95,22 @@ func (this Encoding) ToBase85String() string {
 
 // 输出 Base2
 func (this Encoding) ToBase2String() string {
-    return NewBasex(BasexBase2Key).Encode(this.data)
+    return basex.Base2Encoding.Encode(this.data)
 }
 
 // 输出 Base16
 func (this Encoding) ToBase16String() string {
-    return NewBasex(BasexBase16Key).Encode(this.data)
+    return basex.Base16Encoding.Encode(this.data)
 }
 
 // 输出 Base62
 func (this Encoding) ToBase62String() string {
-    return NewBasex(BasexBase62Key).Encode(this.data)
+    return basex.Base62Encoding.Encode(this.data)
+}
+
+// 输出 BasexEncoder
+func (this Encoding) ToBasexEncoderString(encoder string) string {
+    return basex.NewEncoding(encoder).Encode(this.data)
 }
 
 // 输出 Hex

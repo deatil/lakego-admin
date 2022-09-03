@@ -95,6 +95,17 @@ func (this Cryptobin) Chacha20poly1305(nonce string, additional string) Cryptobi
     return this
 }
 
+// Chacha20poly1305X
+// nonce is 24 bytes
+func (this Cryptobin) Chacha20poly1305X(nonce string, additional string) Cryptobin {
+    this.multiple = "Chacha20poly1305X"
+
+    this.config["nonce"] = []byte(nonce)
+    this.config["additional"] = []byte(additional)
+
+    return this
+}
+
 // RC4
 func (this Cryptobin) RC4() Cryptobin {
     this.multiple = "RC4"

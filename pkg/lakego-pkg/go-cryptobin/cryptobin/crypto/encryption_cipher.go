@@ -211,6 +211,7 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             // XTEA only supports 128 bit (16 byte) keys.
             block, err = xtea.NewCipher(key)
         case "Cast5":
+            // Cast5 only supports 128 bit (16 byte) keys.
             block, err = cast5.NewCipher(key)
         case "SM4":
             // 国密 sm4 加密

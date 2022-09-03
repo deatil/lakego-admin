@@ -5,8 +5,13 @@ import (
 )
 
 // 构造函数
-func New() Encoding {
+func NewEncoding() Encoding {
     return Encoding{}
+}
+
+// 构造函数
+func New() Encoding {
+    return NewEncoding()
 }
 
 // ==========
@@ -26,6 +31,16 @@ func FromBase32String(data string) Encoding {
     return New().FromBase32String(data)
 }
 
+// Base32
+func FromBase32HexString(data string) Encoding {
+    return New().FromBase32HexString(data)
+}
+
+// Base32
+func FromBase32EncoderString(data string, encoder string) Encoding {
+    return New().FromBase32EncoderString(data, encoder)
+}
+
 // Base58
 func FromBase58String(data string) Encoding {
     return New().FromBase58String(data)
@@ -34,6 +49,31 @@ func FromBase58String(data string) Encoding {
 // Base64
 func FromBase64String(data string) Encoding {
     return New().FromBase64String(data)
+}
+
+// Base64
+func FromBase64URLString(data string) Encoding {
+    return New().FromBase64URLString(data)
+}
+
+// Base64
+func FromBase64RawString(data string) Encoding {
+    return New().FromBase64RawString(data)
+}
+
+// FromBase64RawURLString
+func FromBase64RawURLString(data string) Encoding {
+    return New().FromBase64RawURLString(data)
+}
+
+// FromBase64SegmentString
+func FromBase64SegmentString(data string) Encoding {
+    return New().FromBase64SegmentString(data)
+}
+
+// FromBase64EncoderString
+func FromBase64EncoderString(data string, encoder string) Encoding {
+    return New().FromBase64EncoderString(data, encoder)
 }
 
 // Base85
@@ -54,6 +94,11 @@ func FromBase16String(data string) Encoding {
 // Base62
 func FromBase62String(data string) Encoding {
     return New().FromBase62String(data)
+}
+
+// FromBasexEncoderString
+func FromBasexEncoderString(data string, encoder string) Encoding {
+    return New().FromBasexEncoderString(data, encoder)
 }
 
 // Hex
@@ -124,4 +169,9 @@ func ForCsv(data [][]string) Encoding {
 // Asn1
 func ForAsn1(data any, params ...string) Encoding {
     return New().ForAsn1(data, params...)
+}
+
+// ForSerialize
+func ForSerialize(data any) Encoding {
+    return New().ForSerialize(data)
 }

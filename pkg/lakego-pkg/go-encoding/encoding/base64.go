@@ -5,6 +5,13 @@ import (
     "encoding/base64"
 )
 
+var (
+    // 自定义编码表
+    // newStr := NewBase64Encoding(encoder string).WithPadding(NoPadding).EncodeToString(src []byte)
+    // newStr, err := NewBase64Encoding(encoder string).WithPadding(NoPadding).DecodeString(src string)
+    NewBase64Encoding = base64.NewEncoding
+)
+
 // 加密
 func Base64Encode(str string) string {
     newStr := base64.StdEncoding.EncodeToString([]byte(str))

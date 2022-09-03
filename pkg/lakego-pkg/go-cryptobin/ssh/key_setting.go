@@ -6,6 +6,8 @@ import (
     "crypto/ed25519"
 
     "golang.org/x/crypto/ssh"
+
+    "github.com/tjfoc/gmsm/sm2"
 )
 
 func init() {
@@ -34,5 +36,12 @@ func init() {
     })
     AddKey(ssh.KeyAlgoED25519, func() Key {
         return new(KeyEdDsa)
+    })
+
+    AddKey(GetStructName(&sm2.PrivateKey{}), func() Key {
+        return new(KeySM2)
+    })
+    AddKey(KeyAlgoSM2, func() Key {
+        return new(KeySM2)
     })
 }

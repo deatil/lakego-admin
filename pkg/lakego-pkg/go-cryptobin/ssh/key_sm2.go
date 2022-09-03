@@ -3,58 +3,48 @@ package ssh
 import (
     "math/big"
     "crypto"
-    "crypto/ecdsa"
     "crypto/elliptic"
 
     "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
+
+    "github.com/tjfoc/gmsm/sm2"
 )
 
-// ecdsa
-type KeyEcdsa struct {}
+var (
+    KeyAlgoSM2 = "ssh-sm2"
+)
+
+// SM2
+type KeySM2 struct {}
 
 // 包装
-func (this KeyEcdsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
-    k, ok := key.(*ecdsa.PrivateKey)
+func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
+    k, ok := key.(*sm2.PrivateKey)
     if !ok {
         return "", nil, nil, errors.Errorf("unsupported key type %T", key)
     }
 
-    var curve, keyType string
-    switch k.Curve.Params().Name {
-        case "P-256":
-            curve = "nistp256"
-            keyType = ssh.KeyAlgoECDSA256
-        case "P-384":
-            curve = "nistp384"
-            keyType = ssh.KeyAlgoECDSA384
-        case "P-521":
-            curve = "nistp521"
-            keyType = ssh.KeyAlgoECDSA521
-        default:
-            return "", nil, nil, errors.Errorf("error serializing key: unsupported curve %s", k.Curve.Params().Name)
-    }
+    keyType := KeyAlgoSM2
 
     pub := elliptic.Marshal(k.Curve, k.PublicKey.X, k.PublicKey.Y)
 
     // Marshal public key.
     pubKey := struct {
         KeyType string
-        Curve   string
         Pub     []byte
     }{
-        keyType, curve, pub,
+        keyType, pub,
     }
     pubkey := ssh.Marshal(pubKey)
 
     // Marshal private key.
     prikey := struct {
-        Curve   string
         Pub     []byte
         D       *big.Int
         Comment string
     }{
-        curve, pub, k.D,
+        pub, k.D,
         comment,
     }
     rest := ssh.Marshal(prikey)
@@ -63,9 +53,8 @@ func (this KeyEcdsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
 }
 
 // 包装
-func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, error) {
+func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, error) {
     key := struct {
-        Curve   string
         Pub     []byte
         D       *big.Int
         Comment string
@@ -80,24 +69,14 @@ func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, error) {
         return nil, err
     }
 
-    var curve elliptic.Curve
-    switch key.Curve {
-        case "nistp256":
-            curve = elliptic.P256()
-        case "nistp384":
-            curve = elliptic.P384()
-        case "nistp521":
-            curve = elliptic.P521()
-        default:
-            return nil, errors.Errorf("error decoding key: unsupported elliptic curve %s", key.Curve)
-    }
-
-    N := curve.Params().N
+    curve := sm2.P256Sm2()
 
     X, Y := elliptic.Unmarshal(curve, key.Pub)
     if X == nil || Y == nil {
         return nil, errors.New("error decoding key: failed to unmarshal public key")
     }
+
+    N := curve.Params().N
 
     if key.D.Cmp(N) >= 0 {
         return nil, errors.New("error decoding key: scalar is out of range")
@@ -108,8 +87,8 @@ func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, error) {
         return nil, errors.New("error decoding key: public key does not match private key")
     }
 
-    return &ecdsa.PrivateKey{
-        PublicKey: ecdsa.PublicKey{
+    return &sm2.PrivateKey{
+        PublicKey: sm2.PublicKey{
             Curve: curve,
             X:     X,
             Y:     Y,

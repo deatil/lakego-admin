@@ -75,3 +75,36 @@ var Pkcs8Hashes = []string{
     "SM3",
 }
 
+// SSHKey Cipher 列表
+var SSHKeyCiphers = []string{
+    "DESEDE3CBC",
+    "BlowfishCBC",
+    "Chacha20poly1305",
+
+    "Cast128CBC",
+
+    "AES128CBC",
+    "AES192CBC",
+    "AES256CBC",
+
+    "AES128CTR",
+    "AES192CTR",
+    "AES256CTR",
+
+    "AES128GCM",
+    "AES256GCM",
+
+    "Arcfour",
+    "Arcfour128",
+    "Arcfour256",
+
+    "SM4CBC",
+    "SM4CTR",
+}
+
+// SSHKey Cipher 列表
+var SSHKeyGoCiphers = []string{
+    "AES256CBC",
+    "AES256CTR",
+}
+

@@ -7,13 +7,29 @@ import (
 
 // Cipher 列表
 var CipherMap = map[string]Cipher{
-    "AES128CTR": AES128CTR,
-    "AES192CTR": AES192CTR,
-    "AES256CTR": AES256CTR,
+    "DESEDE3CBC":       DESEDE3CBC,
+    "BlowfishCBC":      BlowfishCBC,
+    "Chacha20poly1305": Chacha20poly1305,
+
+    "Cast128CBC": Cast128CBC,
 
     "AES128CBC": AES128CBC,
     "AES192CBC": AES192CBC,
     "AES256CBC": AES256CBC,
+
+    "AES128CTR": AES128CTR,
+    "AES192CTR": AES192CTR,
+    "AES256CTR": AES256CTR,
+
+    "AES128GCM": AES128GCM,
+    "AES256GCM": AES256GCM,
+
+    "Arcfour":    Arcfour,
+    "Arcfour128": Arcfour128,
+    "Arcfour256": Arcfour256,
+
+    "SM4CBC": SM4CBC,
+    "SM4CTR": SM4CTR,
 }
 
 // 获取 Cipher 类型

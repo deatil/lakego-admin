@@ -15,6 +15,8 @@ import (
     "encoding/base64"
     "encoding/ascii85"
     "encoding/binary"
+
+    "github.com/deatil/go-encoding/basex"
 )
 
 // 字节
@@ -34,6 +36,20 @@ func (this Encoding) FromString(data string) Encoding {
 // Base32
 func (this Encoding) FromBase32String(data string) Encoding {
     this.data, this.Error = base32.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base32Hex
+func (this Encoding) FromBase32HexString(data string) Encoding {
+    this.data, this.Error = base32.HexEncoding.DecodeString(data)
+
+    return this
+}
+
+// FromBase32EncoderString
+func (this Encoding) FromBase32EncoderString(data string, encoder string) Encoding {
+    this.data, this.Error = base32.NewEncoding(encoder).DecodeString(data)
 
     return this
 }
@@ -76,12 +92,25 @@ func (this Encoding) FromBase64RawURLString(data string) Encoding {
 }
 
 // Base64Segment
-func (this Encoding) FromBase64SegmentString(data string) Encoding {
-    if l := len(data) % 4; l > 0 {
-        data += strings.Repeat("=", 4-l)
+func (this Encoding) FromBase64SegmentString(data string, paddingAllowed ...bool) Encoding {
+    if len(paddingAllowed) > 0 && paddingAllowed[0] {
+        if l := len(data) % 4; l > 0 {
+            data += strings.Repeat("=", 4-l)
+        }
+
+        this.data, this.Error = base64.URLEncoding.DecodeString(data)
+
+        return this
     }
 
-    this.data, this.Error = base64.RawStdEncoding.DecodeString(data)
+    this.data, this.Error = base64.RawURLEncoding.DecodeString(data)
+
+    return this
+}
+
+// FromBase64EncoderString
+func (this Encoding) FromBase64EncoderString(data string, encoder string) Encoding {
+    this.data, this.Error = base64.NewEncoding(encoder).DecodeString(data)
 
     return this
 }
@@ -106,21 +135,28 @@ func (this Encoding) FromBase85String(data string) Encoding {
 
 // Base2
 func (this Encoding) FromBase2String(data string) Encoding {
-    this.data, this.Error = NewBasex(BasexBase2Key).Decode(data)
+    this.data, this.Error = basex.Base2Encoding.Decode(data)
 
     return this
 }
 
 // Base16
 func (this Encoding) FromBase16String(data string) Encoding {
-    this.data, this.Error = NewBasex(BasexBase16Key).Decode(data)
+    this.data, this.Error = basex.Base16Encoding.Decode(data)
 
     return this
 }
 
 // Base62
 func (this Encoding) FromBase62String(data string) Encoding {
-    this.data, this.Error = NewBasex(BasexBase62Key).Decode(data)
+    this.data, this.Error = basex.Base62Encoding.Decode(data)
+
+    return this
+}
+
+// FromBasexEncoderString
+func (this Encoding) FromBasexEncoderString(data string, encoder string) Encoding {
+    this.data, this.Error = basex.NewEncoding(encoder).Decode(data)
 
     return this
 }

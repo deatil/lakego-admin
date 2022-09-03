@@ -42,7 +42,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
             return this
         // 32 bytes
         case "Chacha20poly1305":
-            chacha, err := chacha20poly1305.New(this.key)
+            aead, err := chacha20poly1305.New(this.key)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.New(),error:%w", err)
                 return this.AppendError(err)
@@ -56,7 +56,26 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             additional, _ := this.config["additional"]
 
-            this.parsedData = chacha.Seal(nil, nonce.([]byte), this.data, additional.([]byte))
+            this.parsedData = aead.Seal(nil, nonce.([]byte), this.data, additional.([]byte))
+
+            return this
+        // 32 bytes
+        case "Chacha20poly1305X":
+            aead, err := chacha20poly1305.NewX(this.key)
+            if err != nil {
+                err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.New(),error:%w", err)
+                return this.AppendError(err)
+            }
+
+            nonce, ok := this.config["nonce"]
+            if !ok {
+                err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305 error: nonce is empty.")
+                return this.AppendError(err)
+            }
+
+            additional, _ := this.config["additional"]
+
+            this.parsedData = aead.Seal(nil, nonce.([]byte), this.data, additional.([]byte))
 
             return this
         // RC4 key, at least 1 byte and at most 256 bytes.

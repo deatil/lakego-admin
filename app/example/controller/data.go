@@ -48,7 +48,7 @@ import (
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 
-    "app/example/key"
+    // "app/example/key"
 )
 
 /**
@@ -376,7 +376,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
     sliceData := slice.Min(12, 13)
 
-    key.MakeUnenSSHKey()
+    // key.MakeSSHKey("AES256GCM")
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "sliceData": sliceData,
