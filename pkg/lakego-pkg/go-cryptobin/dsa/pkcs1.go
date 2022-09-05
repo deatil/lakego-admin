@@ -29,10 +29,10 @@ type dsaPublicKey struct {
 }
 
 // dsa pkcs1 密钥
-type DsaPkcs1Key struct {}
+type PKCS1Key struct {}
 
 // 包装公钥
-func (this DsaPkcs1Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
+func (this PKCS1Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     publicKey := dsaPublicKey{
         P: key.P,
         Q: key.Q,
@@ -44,7 +44,7 @@ func (this DsaPkcs1Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
 }
 
 // 解析公钥
-func (this DsaPkcs1Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) {
+func (this PKCS1Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) {
     var key dsaPublicKey
     rest, err := asn1.Unmarshal(derBytes, &key)
     if err != nil {
@@ -70,7 +70,7 @@ func (this DsaPkcs1Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) 
 // ====================
 
 // 包装私钥
-func (this DsaPkcs1Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
+func (this PKCS1Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     // 版本号
     version := dsaPrivKeyVersion
 
@@ -88,7 +88,7 @@ func (this DsaPkcs1Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
 }
 
 // 解析私钥
-func (this DsaPkcs1Key) ParsePrivateKey(derBytes []byte) (*dsa.PrivateKey, error) {
+func (this PKCS1Key) ParsePrivateKey(derBytes []byte) (*dsa.PrivateKey, error) {
     var key dsaPrivateKey
     rest, err := asn1.Unmarshal(derBytes, &key)
     if err != nil {
@@ -119,6 +119,6 @@ func (this DsaPkcs1Key) ParsePrivateKey(derBytes []byte) (*dsa.PrivateKey, error
 }
 
 // 构造函数
-func NewDsaPkcs1Key() DsaPkcs1Key {
-    return DsaPkcs1Key{}
+func NewPKCS1Key() PKCS1Key {
+    return PKCS1Key{}
 }

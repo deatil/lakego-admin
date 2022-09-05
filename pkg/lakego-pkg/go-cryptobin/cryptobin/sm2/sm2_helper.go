@@ -3,7 +3,7 @@ package sm2
 // 构造函数
 func NewSM2() SM2 {
     return SM2{
-        veryed: false,
+        verify: false,
         Errors: make([]error, 0),
     }
 }

@@ -39,6 +39,6 @@ func (this EdDSA) ToHexString() string {
 // ==========
 
 // 验证结果
-func (this EdDSA) ToVeryed() bool {
-    return this.veryed
+func (this EdDSA) ToVerify() bool {
+    return this.verify
 }

@@ -2,6 +2,8 @@ package pkcs8pbe
 
 import (
     "hash"
+
+    "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )
 
 // 单个加密
@@ -21,7 +23,7 @@ func derivedKey(password string, salt string, iter int, keyLen int, h func() has
         key = hashKey(h, key)
     }
 
-    return key[:keyLen], key[keyLen:]
+    return key[:keyLen], key[keyLen:len(salt)+keyLen]
 }
 
 // 生成密钥2
@@ -43,21 +45,15 @@ func derivedKey2(password string, salt string, iter int, keyLen int, h func() ha
     }
 
     key := append(derived[0][:], derived[1][:]...)
-    iv := derived[1][8:]
+    iv := derived[1][8:len(salt)+8]
 
     return key[:keyLen], iv
 }
 
-// 生成密钥3
-func derivedKey3(password string, salt string, iter int, keyLen int, h func() hash.Hash) ([]byte, []byte) {
-    key := hashKey(h, []byte(password + salt))
+// 生成密钥
+func derivedKeyWithPbkdf(password string, salt string, iter int, keyLen int, h func() hash.Hash) ([]byte, []byte) {
+    key := pbkdf.Key(h, 20, 64, []byte(salt), []byte(password), iter, 1, keyLen)
+    iv := pbkdf.Key(h, 20, 64, []byte(salt), []byte(password), iter, 2, len(salt))
 
-    for i := 0; i < iter - 1; i++ {
-        key = hashKey(h, key)
-    }
-
-    newKey := append(key[:8], key[:8]...)
-    newKey = append(newKey, key[:8]...)
-
-    return newKey, key[8:]
+    return key, iv
 }

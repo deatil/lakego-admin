@@ -10,7 +10,7 @@ import (
 func NewCurve25519() Curve25519 {
     fs := filesystem.New()
 
-    path := "./runtime/key/key-pem/curve25519"
+    path := "./runtime/key/key-pem/dh/curve25519"
 
     return Curve25519{fs, "123", path, "curve25519"}
 }

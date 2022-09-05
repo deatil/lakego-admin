@@ -53,8 +53,6 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
 
     key, iv := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.hashFunc)
 
-    iv = iv[:this.blockSize]
-
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
@@ -86,8 +84,6 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
     }
 
     key, iv := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.hashFunc)
-
-    iv = iv[:this.blockSize]
 
     block, err := this.cipherFunc(key)
     if err != nil {

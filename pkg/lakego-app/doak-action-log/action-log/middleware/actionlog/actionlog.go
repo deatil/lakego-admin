@@ -45,6 +45,14 @@ func Handler() router.HandlerFunc {
     }
 }
 
+func filterPassword(data map[string]any, key string) map[string]any {
+    if _, ok := data[key]; ok {
+        data[key] = ""
+    }
+
+    return data
+}
+
 // 记录日志
 func recordLog(ctx *router.Context) {
     path := ctx.Request.URL.Path
@@ -59,6 +67,11 @@ func recordLog(ctx *router.Context) {
     if raw != "" {
         path = path + "?" + raw
     }
+
+    post = filterPassword(post, "password")
+    post = filterPassword(post, "oldpassword")
+    post = filterPassword(post, "newpassword")
+    post = filterPassword(post, "newpassword_confirm")
 
     // 请求数据
     info, _ := json.Marshal(&post)

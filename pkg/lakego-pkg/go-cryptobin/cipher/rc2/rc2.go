@@ -8,18 +8,18 @@ import (
 // The rc2 block size in bytes
 const BlockSize = 8
 
-type rc2Cipher struct {
+type Cipher struct {
     k [64]uint16
 }
 
 // New returns a new rc2 cipher with the given key and effective key length t1
-func New(key []byte, t1 int) (cipher.Block, error) {
-    return &rc2Cipher{
+func NewCipher(key []byte, t1 int) (cipher.Block, error) {
+    return &Cipher{
         k: expandKey(key, t1),
     }, nil
 }
 
-func (*rc2Cipher) BlockSize() int { return BlockSize }
+func (*Cipher) BlockSize() int { return BlockSize }
 
 var piTable = [256]byte{
     0xd9, 0x78, 0xf9, 0xc4, 0x19, 0xdd, 0xb5, 0xed, 0x28, 0xe9, 0xfd, 0x79, 0x4a, 0xa0, 0xd8, 0x9d,
@@ -72,7 +72,7 @@ func rotl16(x uint16, b uint) uint16 {
     return (x >> (16 - b)) | (x << b)
 }
 
-func (c *rc2Cipher) Encrypt(dst, src []byte) {
+func (c *Cipher) Encrypt(dst, src []byte) {
 
     r0 := binary.LittleEndian.Uint16(src[0:])
     r1 := binary.LittleEndian.Uint16(src[2:])
@@ -167,7 +167,7 @@ func (c *rc2Cipher) Encrypt(dst, src []byte) {
     binary.LittleEndian.PutUint16(dst[6:], r3)
 }
 
-func (c *rc2Cipher) Decrypt(dst, src []byte) {
+func (c *Cipher) Decrypt(dst, src []byte) {
 
     r0 := binary.LittleEndian.Uint16(src[0:])
     r1 := binary.LittleEndian.Uint16(src[2:])

@@ -32,9 +32,9 @@ func (this SM2) WithParedData(data []byte) SM2 {
     return this
 }
 
-// 设置 veryed
-func (this SM2) WithVeryed(data bool) SM2 {
-    this.veryed = data
+// 设置 verify
+func (this SM2) WithVerify(data bool) SM2 {
+    this.verify = data
 
     return this
 }

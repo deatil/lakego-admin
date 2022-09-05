@@ -10,7 +10,7 @@ import (
 func NewDH() DH {
     fs := filesystem.New()
 
-    path := "./runtime/key/key-pem/dh"
+    path := "./runtime/key/key-pem/dh/dh"
 
     return DH{fs, "123", path, "dh"}
 }

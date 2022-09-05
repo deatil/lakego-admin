@@ -180,20 +180,20 @@ func (this *Data) Error(ctx *gin.Context) {
     // 加密测试
     cypt := cryptobin_crypto.
         FromString("test-pass").
-        SetKey("dfertf12").
-        SetIv("dfertf12").
-        Des().
-        CFB().
-        PKCS7Padding().
+        SetKey("123").
+        SetIv("asdfasdf").
+        RC2().
+        CBC().
+        ZeroPadding().
         Encrypt().
         ToBase64String()
     cyptde := cryptobin_crypto.
-        FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
-        SetKey("dfertf12").
-        SetIv("dfertf12").
-        Des().
-        CFB().
-        PKCS7Padding().
+        FromBase64String("DzZK5nJaBHR3WZu6RBNq+Q==").
+        SetKey("123").
+        SetIv("asdfasdf").
+        RC2().
+        CBC().
+        ZeroPadding().
         Decrypt().
         ToString()
 
@@ -207,7 +207,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ToKeyString()
 
     // 签名
-    hashData := hash.FromString("123").MD5().ToString()
+    hashData := hash.FromString("123测试abc").MD2().ToString()
     hashData2 := hash.Murmur32("测试测试")
 
     // 编码
@@ -281,7 +281,7 @@ func (this *Data) Error(ctx *gin.Context) {
         MakePublicKey().
         FromBase64String(sm2signdata).
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
-        ToVeryed()
+        ToVerify()
 
     // crc8
     crc8Hex, _ := hex.DecodeString("010f00")
@@ -348,7 +348,7 @@ func (this *Data) Error(ctx *gin.Context) {
         FromBase64String("mllibXO11/ppsr4x60NPuj/J47E1W3w+rHP3dHwNR2hjZynGVFcLxf3YHUngj+C0trBcP8+7+PQdg2Yc4m375crdLeM6/BT/tof3HdrCGFCnvMhq4RlsHwwgPdWxkcZ/J/zpfI9N7AjHM6C0Lg93EeHFYZBOVrc/x+7n+Pmaur0aXdNT234NRLwBTCLHhrBcn9te7DGzDIC82Y0YZ0GY6FRbg8sR6SJpgR81xh9VON+5/5Z4oyUCqaKiW481qozzNM+1j4WnptGiLH1xdzppGrZKjem4+9XaFJu7QPLDHggpzbp188p+TUOZGI45mJW+jUT3B3PrXtLeeXSAXB9TFw==").
         FromPublicKey([]byte(obj2Pub)).
         Very([]byte("test-pass")).
-        ToVeryed()
+        ToVerify()
 
     // 调用测试
     refData, _ := container.CallMethod(RefData{}, "Show", []any{"数据1", "数据2"})

@@ -58,7 +58,7 @@ func (this EdDSA) Very(data []byte) EdDSA {
         return this.AppendError(err)
     }
 
-    this.veryed = ed25519.Verify(ed25519Key, data, this.data)
+    this.verify = ed25519.Verify(ed25519Key, data, this.data)
 
     return this
 }

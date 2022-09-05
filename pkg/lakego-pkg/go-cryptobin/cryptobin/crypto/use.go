@@ -113,6 +113,13 @@ func (this Cryptobin) RC4() Cryptobin {
     return this
 }
 
+// RC2
+func (this Cryptobin) RC2() Cryptobin {
+    this.multiple = "RC2"
+
+    return this
+}
+
 // Xts
 // cipher 可用 [ Aes | Des | TriDes | Tea | Xtea | Twofish | Blowfish | Cast5 | SM4]
 func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
@@ -178,6 +185,20 @@ func (this Cryptobin) CTR() Cryptobin {
 // GCM
 func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
     this.mode = "GCM"
+
+    this.config["nonce"] = []byte(nonce)
+
+    if len(additional) > 0 {
+        this.config["additional"] = []byte(additional[0])
+    }
+
+    return this
+}
+
+// CCM
+// ccm nounce size, should be in [7,13]
+func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
+    this.mode = "CCM"
 
     this.config["nonce"] = []byte(nonce)
 

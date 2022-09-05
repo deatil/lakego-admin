@@ -4,7 +4,7 @@ package dsa
 func NewDSA() DSA {
     return DSA{
         signHash: "SHA512",
-        veryed:   false,
+        verify:   false,
         Errors:   make([]error, 0),
     }
 }

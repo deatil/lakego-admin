@@ -6,7 +6,7 @@ import (
 
     "github.com/pkg/errors"
 
-    "github.com/deatil/go-cryptobin/bcrypt_pbkdf"
+    "github.com/deatil/go-cryptobin/kdf/bcrypt_pbkdf"
 )
 
 var (

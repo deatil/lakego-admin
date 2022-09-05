@@ -42,11 +42,10 @@ func (this Rsa) Very(data []byte) Rsa {
 
     err := rsa.VerifyPKCS1v15(this.publicKey, hasher, hashData, this.data)
     if err != nil {
-        this.veryed = false
         return this.AppendError(err)
     }
 
-    this.veryed = true
+    this.verify = true
 
     return this
 }

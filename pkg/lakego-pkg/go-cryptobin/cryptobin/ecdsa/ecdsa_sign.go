@@ -82,7 +82,7 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
         return this.AppendError(err)
     }
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, rr, ss)
+    this.verify = ecdsa.Verify(this.publicKey, hashData, rr, ss)
 
     return this
 }
@@ -133,7 +133,7 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
 
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = ecdsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }
@@ -183,7 +183,7 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
 
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = ecdsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = ecdsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }

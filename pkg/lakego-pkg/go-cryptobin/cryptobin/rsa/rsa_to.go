@@ -39,6 +39,6 @@ func (this Rsa) ToHexString() string {
 // ==========
 
 // 验证结果
-func (this Rsa) ToVeryed() bool {
-    return this.veryed
+func (this Rsa) ToVerify() bool {
+    return this.verify
 }

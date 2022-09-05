@@ -12,11 +12,18 @@ var Pkcs1Ciphers = []string{
 
 // Pkcs8Pbe Cipher 列表
 var Pkcs8PbeCiphers = []string{
+    "MD2AndDES",
     "MD5AndDES",
     "SHA1AndDES",
     "SHA1And3DES",
     "SHA1AndRC4_128",
     "SHA1AndRC4_40",
+
+    "SHA1AndRC2_128",
+    "SHA1AndRC2_40",
+    "SHA1AndRC2_64",
+    "MD2AndRC2_64",
+    "MD5AndRC2_64",
 }
 
 // Pkcs8 Cipher 列表

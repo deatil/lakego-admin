@@ -37,8 +37,8 @@ func (this DSA) GetSignHash() string {
 }
 
 // 获取验证后情况
-func (this DSA) GetVeryed() bool {
-    return this.veryed
+func (this DSA) GetVerify() bool {
+    return this.verify
 }
 
 // 获取错误

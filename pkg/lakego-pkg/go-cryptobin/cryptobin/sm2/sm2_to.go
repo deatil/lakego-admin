@@ -39,6 +39,6 @@ func (this SM2) ToHexString() string {
 // ==========
 
 // 验证结果
-func (this SM2) ToVeryed() bool {
-    return this.veryed
+func (this SM2) ToVerify() bool {
+    return this.verify
 }

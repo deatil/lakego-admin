@@ -8,15 +8,13 @@ import (
 )
 
 // pbe 数据
-type pbeRc4Params struct {
+type pbeRC4Params struct {
     Salt           []byte
     IterationCount int
 }
 
-// cbc 模式加密
+// rc4 模式加密
 type CipherRC4 struct {
-    // 对称加密
-    cipherFunc     func(key []byte) (*rc4.Cipher, error)
     // hash 摘要
     hashFunc       func() hash.Hash
     // 密钥生成
@@ -50,7 +48,7 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
 
     key, _ := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.hashFunc)
 
-    rc, err := this.cipherFunc(key)
+    rc, err := rc4.NewCipher(key)
     if err != nil {
         return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
     }
@@ -61,7 +59,7 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
     rc.XORKeyStream(encrypted, plaintext)
 
     // 返回数据
-    paramBytes, err := asn1.Marshal(pbeRc4Params{
+    paramBytes, err := asn1.Marshal(pbeRC4Params{
         Salt:           salt,
         IterationCount: this.iterationCount,
     })
@@ -74,14 +72,14 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
 
 // 解密
 func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
-    var param pbeRc4Params
+    var param pbeRC4Params
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs8: invalid PBES2 parameters")
+        return nil, errors.New("pkcs8: invalid PBE parameters")
     }
 
     key, _ := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.hashFunc)
 
-    rc, err := this.cipherFunc(key)
+    rc, err := rc4.NewCipher(key)
     if err != nil {
         return nil, err
     }

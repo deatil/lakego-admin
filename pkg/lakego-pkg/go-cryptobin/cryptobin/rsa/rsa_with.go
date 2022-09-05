@@ -32,9 +32,9 @@ func (this Rsa) WithParedData(data []byte) Rsa {
     return this
 }
 
-// 设置 veryed
-func (this Rsa) WithVeryed(data bool) Rsa {
-    this.veryed = data
+// 设置 verify
+func (this Rsa) WithVerify(data bool) Rsa {
+    this.verify = data
 
     return this
 }

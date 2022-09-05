@@ -59,11 +59,10 @@ func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
 
     err := rsa.VerifyPSS(this.publicKey, hash, hashed, this.data, &options)
     if err != nil {
-        this.veryed = false
         return this.AppendError(err)
     }
 
-    this.veryed = true
+    this.verify = true
 
     return this
 }

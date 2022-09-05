@@ -10,7 +10,7 @@ import (
 func NewEcdh() Ecdh {
     fs := filesystem.New()
 
-    path := "./runtime/key/key-pem/ecdh"
+    path := "./runtime/key/key-pem/dh/ecdh"
 
     return Ecdh{fs, "123", path, "ecdh"}
 }

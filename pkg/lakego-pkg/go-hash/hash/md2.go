@@ -8,10 +8,10 @@ import (
 
 // md2 签名
 func MD2(data string) string {
-    m := md2.New()
-    m.Write([]byte(data))
+    h := md2.New()
+    h.Write([]byte(data))
 
-    return hex.EncodeToString(m.Sum(nil))
+    return hex.EncodeToString(h.Sum(nil))
 }
 
 // md2 签名

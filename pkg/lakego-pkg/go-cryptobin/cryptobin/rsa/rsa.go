@@ -36,8 +36,8 @@ type Rsa struct {
     // 解析后的数据
     paredData []byte
 
-    // 验证后情况
-    veryed bool
+    // 验证结果
+    verify bool
 
     // 签名验证类型
     signHash string

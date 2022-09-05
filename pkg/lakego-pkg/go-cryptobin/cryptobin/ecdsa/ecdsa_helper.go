@@ -9,7 +9,7 @@ func NewEcdsa() Ecdsa {
     return Ecdsa{
         curve:    elliptic.P256(),
         signHash: "SHA512",
-        veryed:   false,
+        verify:   false,
         Errors:   make([]error, 0),
     }
 }

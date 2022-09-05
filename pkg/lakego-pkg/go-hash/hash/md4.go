@@ -7,9 +7,9 @@ import (
 
 // MD4 哈希值
 func MD4(data string) string {
-    m := md4.New()
-    m.Write([]byte(data))
-    return hex.EncodeToString(m.Sum(nil))
+    h := md4.New()
+    h.Write([]byte(data))
+    return hex.EncodeToString(h.Sum(nil))
 }
 
 // MD4 哈希值

@@ -97,8 +97,8 @@ func (this SM2) GetParedData() []byte {
 }
 
 // 获取验证后情况
-func (this SM2) GetVeryed() bool {
-    return this.veryed
+func (this SM2) GetVerify() bool {
+    return this.verify
 }
 
 // 获取错误

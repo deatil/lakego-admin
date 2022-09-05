@@ -15,6 +15,7 @@ import (
 
     "github.com/tjfoc/gmsm/sm4"
 
+    cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
@@ -69,9 +70,9 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
 
             nonceBytes := nonce.([]byte)
 
-            gcm, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+            aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
-                err = fmt.Errorf("Cryptobin: [CipherEncrypt()] cipher.NewGCM(),error:%w", err)
+                err = fmt.Errorf("Cryptobin: [CipherEncrypt()] cipher.NewGCMWithNonceSize(),error:%w", err)
                 return this.AppendError(err)
             }
 
@@ -81,7 +82,29 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
                 additionalBytes = additional.([]byte)
             }
 
-            cryptText = gcm.Seal(nil, nonceBytes, plainPadding, additionalBytes)
+            cryptText = aead.Seal(nil, nonceBytes, plainPadding, additionalBytes)
+        case "CCM":
+            nonce, ok := this.config["nonce"]
+            if !ok {
+                err := fmt.Errorf("Cryptobin: [CipherEncrypt()] CCM error:nonce is empty.")
+                return this.AppendError(err)
+            }
+
+            nonceBytes := nonce.([]byte)
+
+            aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonceBytes))
+            if err != nil {
+                err = fmt.Errorf("Cryptobin: [CipherEncrypt()] cipher.NewCCMWithNonceSize(),error:%w", err)
+                return this.AppendError(err)
+            }
+
+            var additionalBytes []byte
+            additional, _ := this.config["additional"]
+            if additional != nil {
+                additionalBytes = additional.([]byte)
+            }
+
+            cryptText = aead.Seal(nil, nonceBytes, plainPadding, additionalBytes)
         default:
             err := fmt.Errorf("Cryptobin: [CipherEncrypt()] Mode [%s] is error.", this.mode)
             return this.AppendError(err)
@@ -140,7 +163,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
         case "GCM":
             nonce, ok := this.config["nonce"]
             if !ok {
-                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] GCM error:nonce is empty.")
+                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] CCM error:nonce is empty.")
                 return this.AppendError(err)
             }
 
@@ -148,7 +171,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
 
             gcm, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
-                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] cipher.NewGCM(),error:%w", err)
+                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] cipher.NewGCMWithNonceSize(),error:%w", err)
                 return this.AppendError(err)
             }
 
@@ -159,6 +182,32 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
             }
 
             dst, err = gcm.Open(nil, nonceBytes, cipherText, additionalBytes)
+            if err != nil {
+                return this.AppendError(err)
+            }
+        case "CCM":
+            // ccm nounce size, should be in [7,13]
+            nonce, ok := this.config["nonce"]
+            if !ok {
+                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] GCM error:nonce is empty.")
+                return this.AppendError(err)
+            }
+
+            nonceBytes := nonce.([]byte)
+
+            aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonceBytes))
+            if err != nil {
+                err = fmt.Errorf("Cryptobin: [CipherDecrypt()] cipher.NewCCMWithNonceSize(),error:%w", err)
+                return this.AppendError(err)
+            }
+
+            var additionalBytes []byte
+            additional, _ := this.config["additional"]
+            if additional != nil {
+                additionalBytes = additional.([]byte)
+            }
+
+            dst, err = aead.Open(nil, nonceBytes, cipherText, additionalBytes)
             if err != nil {
                 return this.AppendError(err)
             }
@@ -213,6 +262,9 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
         case "Cast5":
             // Cast5 only supports 128 bit (16 byte) keys.
             block, err = cast5.NewCipher(key)
+        case "RC2":
+            // RC2 key, at least 1 byte and at most 128 bytes.
+            block, err = cryptobin_rc2.NewCipher(key, len(key)*8)
         case "SM4":
             // 国密 sm4 加密
             block, err = sm4.NewCipher(key)

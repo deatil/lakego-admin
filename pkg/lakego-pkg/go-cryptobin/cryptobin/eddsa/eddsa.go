@@ -36,8 +36,8 @@ type EdDSA struct {
     // 解析后的数据
     paredData []byte
 
-    // 验证后情况
-    veryed bool
+    // 验证结果
+    verify bool
 
     // 错误
     Errors []error

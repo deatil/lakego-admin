@@ -36,7 +36,7 @@ func (this SM2) Very(data []byte) SM2 {
         return this.AppendError(err)
     }
 
-    this.veryed = this.publicKey.Verify(data, this.data)
+    this.verify = this.publicKey.Verify(data, this.data)
 
     return this
 }
@@ -83,7 +83,7 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
         return this.AppendError(err)
     }
 
-    this.veryed = sm2.Sm2Verify(this.publicKey, data, uid, sm2Sign.R, sm2Sign.S)
+    this.verify = sm2.Sm2Verify(this.publicKey, data, uid, sm2Sign.R, sm2Sign.S)
 
     return this
 }
@@ -134,7 +134,7 @@ func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
     r, _ := new(big.Int).SetString(signData[:64], 16)
     s, _ := new(big.Int).SetString(signData[64:], 16)
 
-    this.veryed = sm2.Sm2Verify(this.publicKey, data, uid, r, s)
+    this.verify = sm2.Sm2Verify(this.publicKey, data, uid, r, s)
 
     return this
 }

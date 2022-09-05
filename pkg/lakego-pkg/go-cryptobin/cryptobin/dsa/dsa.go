@@ -39,8 +39,8 @@ type DSA struct {
     // 签名验证类型
     signHash string
 
-    // 验证后情况
-    veryed bool
+    // 验证结果
+    verify bool
 
     // 错误
     Errors []error

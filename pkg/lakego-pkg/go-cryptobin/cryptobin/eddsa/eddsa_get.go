@@ -32,8 +32,8 @@ func (this EdDSA) GetParedData() []byte {
 }
 
 // 获取验证后情况
-func (this EdDSA) GetVeryed() bool {
-    return this.veryed
+func (this EdDSA) GetVerify() bool {
+    return this.verify
 }
 
 // 获取错误

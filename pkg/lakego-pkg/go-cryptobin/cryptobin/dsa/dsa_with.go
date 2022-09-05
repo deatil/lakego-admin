@@ -40,9 +40,9 @@ func (this DSA) WithSignHash(data string) DSA {
     return this
 }
 
-// 设置 veryed
-func (this DSA) WithVeryed(data bool) DSA {
-    this.veryed = data
+// 设置 verify
+func (this DSA) WithVerify(data bool) DSA {
+    this.verify = data
 
     return this
 }

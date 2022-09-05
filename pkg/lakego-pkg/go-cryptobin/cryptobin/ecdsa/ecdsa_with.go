@@ -58,8 +58,8 @@ func (this Ecdsa) WithSignHash(hash string) Ecdsa {
 }
 
 // 设置验证结果
-func (this Ecdsa) WithVeryed(data bool) Ecdsa {
-    this.veryed = data
+func (this Ecdsa) WithVerify(data bool) Ecdsa {
+    this.verify = data
 
     return this
 }

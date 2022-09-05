@@ -32,9 +32,9 @@ func (this EdDSA) WithParedData(data []byte) EdDSA {
     return this
 }
 
-// 设置 veryed
-func (this EdDSA) WithVeryed(data bool) EdDSA {
-    this.veryed = data
+// 设置 verify
+func (this EdDSA) WithVerify(data bool) EdDSA {
+    this.verify = data
 
     return this
 }

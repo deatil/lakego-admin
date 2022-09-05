@@ -8,7 +8,7 @@ import (
     "golang.org/x/crypto/chacha20"
     "golang.org/x/crypto/chacha20poly1305"
 
-    "github.com/deatil/go-cryptobin/tool"
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 加密
@@ -107,7 +107,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            cipherFunc := tool.NewCipher().GetFunc(cipher.(string))
+            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher.(string))
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {
@@ -215,7 +215,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            cipherFunc := tool.NewCipher().GetFunc(cipher.(string))
+            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher.(string))
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {

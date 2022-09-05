@@ -27,7 +27,7 @@ var MakeKeyCmd = &cobra.Command{
 
     },
     Run: func(cmd *cobra.Command, args []string) {
-        key.MakeAllSSHKey()
+        key.NewRsa().Make()
 
         fmt.Println("生成各种证书成功")
     },

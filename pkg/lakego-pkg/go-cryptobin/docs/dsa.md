@@ -49,7 +49,7 @@ func main() {
         FromPublicKey([]byte(dsaPub)).
         // FromPKCS8PublicKey([]byte(dsaPub)).
         Very([]byte("test-pass")).
-        ToVeryed()
+        ToVerify()
 
 }
 ~~~

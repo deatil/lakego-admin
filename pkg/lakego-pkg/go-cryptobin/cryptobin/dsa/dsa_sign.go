@@ -83,7 +83,7 @@ func (this DSA) Very(data []byte, separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    this.veryed = dsa.Verify(this.publicKey, hashData, rr, ss)
+    this.verify = dsa.Verify(this.publicKey, hashData, rr, ss)
 
     return this
 }
@@ -134,7 +134,7 @@ func (this DSA) VerifyAsn1(data []byte) DSA {
     r := dsaSign.R
     s := dsaSign.S
 
-    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }
@@ -184,7 +184,7 @@ func (this DSA) VerifyHex(data []byte) DSA {
 
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }
@@ -247,7 +247,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
 
     hashData := this.DataHash(this.signHash, data)
 
-    this.veryed = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
 
     return this
 }

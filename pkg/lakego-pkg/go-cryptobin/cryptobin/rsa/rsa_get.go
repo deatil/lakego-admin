@@ -48,8 +48,8 @@ func (this Rsa) GetParedData() []byte {
 }
 
 // 获取验证后情况
-func (this Rsa) GetVeryed() bool {
-    return this.veryed
+func (this Rsa) GetVerify() bool {
+    return this.verify
 }
 
 // 获取 hash 类型

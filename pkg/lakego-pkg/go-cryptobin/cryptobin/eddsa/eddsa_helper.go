@@ -3,7 +3,7 @@ package eddsa
 // 构造函数
 func NewEdDSA() EdDSA {
     return EdDSA{
-        veryed: false,
+        verify: false,
         Errors: make([]error, 0),
     }
 }

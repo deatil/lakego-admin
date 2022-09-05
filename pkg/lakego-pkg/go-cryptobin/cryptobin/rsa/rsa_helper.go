@@ -4,7 +4,7 @@ package rsa
 func NewRsa() Rsa {
     return Rsa{
         signHash: "SHA512",
-        veryed:   false,
+        verify:   false,
         Errors:   make([]error, 0),
     }
 }

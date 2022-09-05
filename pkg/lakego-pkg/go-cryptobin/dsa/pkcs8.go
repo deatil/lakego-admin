@@ -43,10 +43,10 @@ type publicKeyInfo struct {
 }
 
 // dsa pkcs8 密钥
-type DsaPkcs8Key struct {}
+type PKCS8Key struct {}
 
 // PKCS8 包装公钥
-func (this DsaPkcs8Key) MarshalPKCS8PublicKey(key *dsa.PublicKey) ([]byte, error) {
+func (this PKCS8Key) MarshalPKCS8PublicKey(key *dsa.PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
@@ -84,7 +84,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PublicKey(key *dsa.PublicKey) ([]byte, error
 }
 
 // PKCS8 解析公钥
-func (this DsaPkcs8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, error) {
+func (this PKCS8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
     if err != nil {
@@ -138,7 +138,7 @@ func (this DsaPkcs8Key) ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, er
 // ====================
 
 // PKCS8 包装私钥
-func (this DsaPkcs8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
+func (this PKCS8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
     // 创建数据
@@ -172,7 +172,7 @@ func (this DsaPkcs8Key) MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, err
 }
 
 // PKCS8 解析私钥
-func (this DsaPkcs8Key) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err error) {
+func (this PKCS8Key) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err error) {
     var privKey pkcs8
     _, err = asn1.Unmarshal(derBytes, &privKey)
     if err != nil {
@@ -225,6 +225,6 @@ func (this DsaPkcs8Key) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateK
 }
 
 // 构造函数
-func NewDsaPkcs8Key() DsaPkcs8Key {
-    return DsaPkcs8Key{}
+func NewPKCS8Key() PKCS8Key {
+    return PKCS8Key{}
 }

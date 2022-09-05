@@ -56,7 +56,7 @@ func main() {
         FromPublicKey([]byte(obj2Pub)).
         Very([]byte("test-pass")).
         // PSSVery([]byte("测试")).
-        ToVeryed()
+        ToVerify()
 
     // =====
 
@@ -166,6 +166,6 @@ func main() {
         FromPublicKey([]byte(pub)).
         WithSignHash("SHA256").
         PSSVery([]byte("测试")).
-        ToVeryed()
+        ToVerify()
 }
 ~~~
