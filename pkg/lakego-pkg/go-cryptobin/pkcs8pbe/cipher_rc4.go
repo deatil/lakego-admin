@@ -18,7 +18,9 @@ type CipherRC4 struct {
     // hash 摘要
     hashFunc       func() hash.Hash
     // 密钥生成
-    derivedKeyFunc func(password string, salt string, iter int, keyLen int, h func() hash.Hash) ([]byte, []byte)
+    derivedKeyFunc func(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte)
+    // salt 长度
+    saltSize       int
     // 与 key 长度相关
     keySize        int
     // 与 iv 长度相关
@@ -41,12 +43,12 @@ func (this CipherRC4) OID() asn1.ObjectIdentifier {
 
 // 加密
 func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error) {
-    salt, err := genRandom(this.blockSize)
+    salt, err := genRandom(this.saltSize)
     if err != nil {
         return nil, nil, errors.New(err.Error() + " failed to generate salt")
     }
 
-    key, _ := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.hashFunc)
+    key, _ := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.blockSize, this.hashFunc)
 
     rc, err := rc4.NewCipher(key)
     if err != nil {
@@ -77,7 +79,7 @@ func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, erro
         return nil, errors.New("pkcs8: invalid PBE parameters")
     }
 
-    key, _ := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.hashFunc)
+    key, _ := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)
 
     rc, err := rc4.NewCipher(key)
     if err != nil {
@@ -89,4 +91,11 @@ func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, erro
     rc.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil
+}
+
+// 设置 saltSize
+func (this CipherRC4) WithSaltSize(saltSize int) CipherRC4 {
+    this.saltSize = saltSize
+
+    return this
 }

@@ -29,9 +29,9 @@ func (this Rsa) Sign() Rsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Rsa) Very(data []byte) Rsa {
+func (this Rsa) Verify(data []byte) Rsa {
     if this.publicKey == nil {
-        err := errors.New("Rsa: [Very()] publicKey error.")
+        err := errors.New("Rsa: [Verify()] publicKey error.")
         return this.AppendError(err)
     }
 

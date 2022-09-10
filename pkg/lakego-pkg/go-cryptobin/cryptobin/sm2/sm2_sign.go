@@ -22,17 +22,17 @@ func (this SM2) Sign() SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this SM2) Very(data []byte) SM2 {
+func (this SM2) Verify(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [Very()] publicKey error.")
+        err := errors.New("SM2: [Verify()] publicKey error.")
         return this.AppendError(err)
     }
 
@@ -63,9 +63,9 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
@@ -114,7 +114,7 @@ func (this SM2) SignHex(uid []byte) SM2 {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
 
     return this

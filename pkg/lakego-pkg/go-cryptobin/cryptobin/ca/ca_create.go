@@ -11,9 +11,10 @@ import (
     "encoding/pem"
 
     "github.com/tjfoc/gmsm/sm2"
-    sm2X509 "github.com/tjfoc/gmsm/x509"
-    sm2Pkcs12 "github.com/tjfoc/gmsm/pkcs12"
-    sslmatePkcs12 "software.sslmate.com/src/go-pkcs12"
+    sm2_x509 "github.com/tjfoc/gmsm/x509"
+    sm2_pkcs12 "github.com/tjfoc/gmsm/pkcs12"
+
+    cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
 )
 
 // 证书请求
@@ -28,13 +29,13 @@ func (this CA) CreateCSR() CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            certRequest, ok := this.certRequest.(*sm2X509.CertificateRequest)
+            certRequest, ok := this.certRequest.(*sm2_x509.CertificateRequest)
             if !ok {
                 err := errors.New("CA: [CreateCSR()] sm2 certRequest error.")
                 return this.AppendError(err)
             }
 
-            csrBytes, err = sm2X509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
+            csrBytes, err = sm2_x509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
 
         default:
             certRequest, ok := this.certRequest.(*x509.CertificateRequest)
@@ -72,7 +73,7 @@ func (this CA) CreateCA() CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            cert, ok := this.cert.(*sm2X509.Certificate)
+            cert, ok := this.cert.(*sm2_x509.Certificate)
             if !ok {
                 err := errors.New("CA: [CreateCA()] sm2 cert error.")
                 return this.AppendError(err)
@@ -80,7 +81,7 @@ func (this CA) CreateCA() CA {
 
             publicKey := &privateKey.PublicKey
 
-            caBytes, err = sm2X509.CreateCertificate(cert, cert, publicKey, privateKey)
+            caBytes, err = sm2_x509.CreateCertificate(cert, cert, publicKey, privateKey)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -118,13 +119,13 @@ func (this CA) CreateCert(ca any) CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            newCert, certOk := this.cert.(*sm2X509.Certificate)
+            newCert, certOk := this.cert.(*sm2_x509.Certificate)
             if !certOk {
                 err := errors.New("CA: [CreateCert()] sm2 cert error.")
                 return this.AppendError(err)
             }
 
-            newCa, caOk := ca.(*sm2X509.Certificate)
+            newCa, caOk := ca.(*sm2_x509.Certificate)
             if !caOk {
                 err := errors.New("CA: [CreateCert()] sm2 ca error.")
                 return this.AppendError(err)
@@ -132,7 +133,7 @@ func (this CA) CreateCert(ca any) CA {
 
             publicKey := &privateKey.PublicKey
 
-            certBytes, err = sm2X509.CreateCertificate(newCert, newCa, publicKey, privateKey)
+            certBytes, err = sm2_x509.CreateCertificate(newCert, newCa, publicKey, privateKey)
 
         default:
             newCert, certOk := this.cert.(*x509.Certificate)
@@ -205,13 +206,13 @@ func (this CA) CreatePrivateKey() CA {
             }
 
         case *sm2.PrivateKey:
-            keyData, err := sm2X509.WritePrivateKeyToPem(privateKey, nil)
+            keyData, err := sm2_x509.WritePrivateKeyToPem(privateKey, nil)
             if err != nil {
                 return this.AppendError(err)
             }
-            
+
             this.keyData = keyData
-            
+
             return this
 
         default:
@@ -240,13 +241,13 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            cert, ok := this.cert.(*sm2X509.Certificate)
+            cert, ok := this.cert.(*sm2_x509.Certificate)
             if !ok {
                 err := errors.New("sm2 cert error.")
                 return this.AppendError(err)
             }
 
-            pfxData, err = sm2Pkcs12.Encode(privateKey, cert, caCerts, pwd)
+            pfxData, err = sm2_pkcs12.Encode(privateKey, cert, caCerts, pwd)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -255,7 +256,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
                 return this.AppendError(err)
             }
 
-            pfxData, err = sslmatePkcs12.Encode(rand.Reader, privateKey, cert, caCerts, pwd)
+            pfxData, err = cryptobin_pkcs12.Encode(rand.Reader, privateKey, cert, caCerts, pwd)
     }
 
     if err != nil {
@@ -269,7 +270,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
 
 // pkcs12 密钥
 func (this CA) CreatePKCS12CertTrustStore(certs []*x509.Certificate, password string) CA {
-    pfxData, err := sslmatePkcs12.EncodeTrustStore(rand.Reader, certs, password)
+    pfxData, err := cryptobin_pkcs12.EncodeTrustStore(rand.Reader, certs, password)
     if err != nil {
         return this.AppendError(err)
     }

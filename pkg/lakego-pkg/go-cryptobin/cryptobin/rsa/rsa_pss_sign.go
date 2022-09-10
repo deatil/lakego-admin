@@ -38,9 +38,9 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Rsa) PSSVery(data []byte, opts ...rsa.PSSOptions) Rsa {
+func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
     if this.publicKey == nil {
-        err := errors.New("Rsa: [PSSVery()] publicKey error.")
+        err := errors.New("Rsa: [PSSVerify()] publicKey error.")
         return this.AppendError(err)
     }
 

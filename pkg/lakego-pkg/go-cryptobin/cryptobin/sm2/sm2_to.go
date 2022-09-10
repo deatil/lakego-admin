@@ -42,3 +42,12 @@ func (this SM2) ToHexString() string {
 func (this SM2) ToVerify() bool {
     return this.verify
 }
+
+// 验证结果，返回 int 类型
+func (this SM2) ToVerifyInt() int {
+    if this.verify {
+        return 1
+    }
+
+    return 0
+}

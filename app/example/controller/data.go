@@ -22,6 +22,7 @@ import (
     _ "github.com/deatil/go-cryptobin/dh/dh"
     _ "github.com/deatil/go-cryptobin/dh/ecdh"
     _ "github.com/deatil/go-cryptobin/dh/curve25519"
+    // cryptobin_tool "github.com/deatil/go-cryptobin/tool"
     _ "github.com/deatil/go-cryptobin/pkcs7"
     _ "github.com/deatil/go-cryptobin/pkcs7/sign"
     _ "github.com/deatil/go-cryptobin/pkcs7/encrypt"
@@ -48,7 +49,7 @@ import (
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 
-    // "app/example/key"
+    "app/example/key"
 )
 
 /**
@@ -201,10 +202,18 @@ func (this *Data) Error(ctx *gin.Context) {
     rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
     rsaPriKey := rsa.
         CreatePKCS8PrivateKeyWithPassword("123", "AES128GCM", "SHA256").
+        // MakeKeyDer().
         ToKeyString()
     rsaPubKey := rsa.
         CreatePublicKey().
+        // MakeKeyDer().
         ToKeyString()
+
+    // fs.Put("./runtime/key/rsa/der/rsa_en_pri.der", rsaPriKey)
+    // fs.Put("./runtime/key/rsa/der/rsa_en_pub.der", rsaPubKey)
+
+    // rsaPriDer, _ := fs.Get("./runtime/key/rsa/der/rsa_en_pri.der")
+    // rsaEnKey := cryptobin_tool.EncodeDerToPem([]byte(rsaPriDer), "ENCRYPTED PRIVATE KEY")
 
     // 签名
     hashData := hash.FromString("123测试abc").MD2().ToString()
@@ -276,7 +285,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // sm2 验证【招商银行】
     sm2signdata := "WHqK4u0GmYMZaquvV+ZIxVkRGCW6UOlLlX/OPgJ89rDj81fPRcN9K8+4SuvwlpXK7iVvxf7LGL8auE7ofnzEig=="
-    sm2Very := cryptobin_sm2.NewSM2().
+    sm2Verify := cryptobin_sm2.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
         FromBase64String(sm2signdata).
@@ -347,7 +356,7 @@ func (this *Data) Error(ctx *gin.Context) {
     obj2cyptde := obj2.
         FromBase64String("mllibXO11/ppsr4x60NPuj/J47E1W3w+rHP3dHwNR2hjZynGVFcLxf3YHUngj+C0trBcP8+7+PQdg2Yc4m375crdLeM6/BT/tof3HdrCGFCnvMhq4RlsHwwgPdWxkcZ/J/zpfI9N7AjHM6C0Lg93EeHFYZBOVrc/x+7n+Pmaur0aXdNT234NRLwBTCLHhrBcn9te7DGzDIC82Y0YZ0GY6FRbg8sR6SJpgR81xh9VON+5/5Z4oyUCqaKiW481qozzNM+1j4WnptGiLH1xdzppGrZKjem4+9XaFJu7QPLDHggpzbp188p+TUOZGI45mJW+jUT3B3PrXtLeeXSAXB9TFw==").
         FromPublicKey([]byte(obj2Pub)).
-        Very([]byte("test-pass")).
+        Verify([]byte("test-pass")).
         ToVerify()
 
     // 调用测试
@@ -376,9 +385,17 @@ func (this *Data) Error(ctx *gin.Context) {
 
     sliceData := slice.Min(12, 13)
 
-    // key.MakeSSHKey("AES256GCM")
+    sshFile := "./runtime/key/webssh/id_rsa"
+    sshkeyName, sshComment, _ := key.ParseSSHKey(sshFile, "")
+
+    // pkcs12Err := key.MakePKCS12Web()
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        // "pkcs12Err": pkcs12Err,
+
+        "sshkeyName": sshkeyName,
+        "sshComment": sshComment,
+
         "sliceData": sliceData,
 
         "objSecret1": objSecret1,
@@ -410,7 +427,7 @@ func (this *Data) Error(ctx *gin.Context) {
         // "redisData": redisData,
 
         "sm2Sign": sm2Sign,
-        "sm2Very": sm2Very,
+        "sm2Verify": sm2Verify,
 
         "error": data,
         "data2": data2,

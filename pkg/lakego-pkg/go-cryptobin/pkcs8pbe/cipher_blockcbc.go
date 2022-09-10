@@ -8,7 +8,7 @@ import (
 )
 
 // pbe 数据
-type pbeBlockParams struct {
+type pbeParams struct {
     Salt           []byte
     IterationCount int
 }
@@ -20,7 +20,9 @@ type CipherBlockCBC struct {
     // hash 摘要
     hashFunc       func() hash.Hash
     // 密钥生成
-    derivedKeyFunc func(password string, salt string, iter int, keyLen int, h func() hash.Hash) ([]byte, []byte)
+    derivedKeyFunc func(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte)
+    // salt 长度
+    saltSize       int
     // 与 key 长度相关
     keySize        int
     // 与 iv 长度相关
@@ -46,12 +48,12 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
     // 加密数据补码
     plaintext = pkcs7Padding(plaintext, this.blockSize)
 
-    salt, err := genRandom(this.blockSize)
+    salt, err := genRandom(this.saltSize)
     if err != nil {
         return nil, nil, errors.New(err.Error() + " failed to generate salt")
     }
 
-    key, iv := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.hashFunc)
+    key, iv := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.blockSize, this.hashFunc)
 
     block, err := this.cipherFunc(key)
     if err != nil {
@@ -65,7 +67,7 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
     enc.CryptBlocks(encrypted, plaintext)
 
     // 返回数据
-    paramBytes, err := asn1.Marshal(pbeBlockParams{
+    paramBytes, err := asn1.Marshal(pbeParams{
         Salt:           salt,
         IterationCount: this.iterationCount,
     })
@@ -78,12 +80,12 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
 
 // 解密
 func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
-    var param pbeBlockParams
+    var param pbeParams
     if _, err := asn1.Unmarshal(params, &param); err != nil {
         return nil, errors.New("pkcs8: invalid PBES2 parameters")
     }
 
-    key, iv := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.hashFunc)
+    key, iv := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)
 
     block, err := this.cipherFunc(key)
     if err != nil {
@@ -106,4 +108,11 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
     plaintext = pkcs7UnPadding(plaintext)
 
     return plaintext, nil
+}
+
+// 设置 saltSize
+func (this CipherBlockCBC) WithSaltSize(saltSize int) CipherBlockCBC {
+    this.saltSize = saltSize
+
+    return this
 }

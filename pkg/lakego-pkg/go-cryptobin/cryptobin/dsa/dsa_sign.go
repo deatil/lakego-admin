@@ -49,9 +49,9 @@ func (this DSA) Sign(separator ...string) DSA {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this DSA) Very(data []byte, separator ...string) DSA {
+func (this DSA) Verify(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
-        err := errors.New("dsa: [Very()] publicKey error.")
+        err := errors.New("dsa: [Verify()] publicKey error.")
         return this.AppendError(err)
     }
 
@@ -64,7 +64,7 @@ func (this DSA) Very(data []byte, separator ...string) DSA {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        err := errors.New("dsa: [Very()] sign data is error.")
+        err := errors.New("dsa: [Verify()] sign data is error.")
         return this.AppendError(err)
     }
 

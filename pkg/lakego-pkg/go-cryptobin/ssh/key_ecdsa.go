@@ -62,7 +62,7 @@ func (this KeyEcdsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
     return keyType, pubkey, rest, nil
 }
 
-// 包装
+// 解析
 func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Curve   string

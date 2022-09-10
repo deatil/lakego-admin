@@ -42,3 +42,12 @@ func (this Rsa) ToHexString() string {
 func (this Rsa) ToVerify() bool {
     return this.verify
 }
+
+// 验证结果，返回 int 类型
+func (this Rsa) ToVerifyInt() int {
+    if this.verify {
+        return 1
+    }
+
+    return 0
+}

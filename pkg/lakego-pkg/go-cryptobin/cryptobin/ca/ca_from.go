@@ -10,8 +10,9 @@ import (
     "crypto/x509"
 
     "github.com/tjfoc/gmsm/sm2"
-    sm2Pkcs12 "github.com/tjfoc/gmsm/pkcs12"
-    sslmatePkcs12 "software.sslmate.com/src/go-pkcs12"
+    sm2_pkcs12 "github.com/tjfoc/gmsm/pkcs12"
+
+    cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
 )
 
 // 证书
@@ -72,7 +73,7 @@ func (this CA) FromPublicKey(key any) CA {
 
 // pkcs12
 func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
-    pv, certs, err := sm2Pkcs12.DecodeAll(pfxData, password)
+    pv, certs, err := sm2_pkcs12.DecodeAll(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -115,7 +116,7 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
 
 // pkcs12
 func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
-    pv, cert, err := sm2Pkcs12.Decode(pfxData, password)
+    pv, cert, err := sm2_pkcs12.Decode(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -158,7 +159,7 @@ func (this CA) FromSM2PKCS12OneCert(pfxData []byte, password string) CA {
 
 // pkcs12
 func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
-    privateKey, cert, err := sslmatePkcs12.Decode(pfxData, password)
+    privateKey, cert, err := cryptobin_pkcs12.Decode(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -171,14 +172,14 @@ func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
 
 // 解析 pkcs12 cert
 func (this CA) DecodePKCS12CertChain(pfxData []byte, password string) (privateKey interface{}, certificate *x509.Certificate, caCerts []*x509.Certificate, err error) {
-    privateKey, certificate, caCerts, err = sslmatePkcs12.DecodeChain(pfxData, password)
+    privateKey, certificate, caCerts, err = cryptobin_pkcs12.DecodeChain(pfxData, password)
 
     return
 }
 
 // 解析 pkcs12 cert
 func (this CA) DecodePKCS12CertTrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
-    certs, err = sslmatePkcs12.DecodeTrustStore(pfxData, password)
+    certs, err = cryptobin_pkcs12.DecodeTrustStore(pfxData, password)
 
     return
 }

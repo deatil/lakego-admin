@@ -1,4 +1,4 @@
-package serviceprovider
+package service_provider
 
 import (
     "github.com/deatil/lakego-doak/lakego/provider"

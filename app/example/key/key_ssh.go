@@ -2,6 +2,8 @@ package key
 
 import (
     "fmt"
+    "errors"
+    "crypto"
     "encoding/pem"
     go_rsa "crypto/rsa"
     go_ecdsa "crypto/ecdsa"
@@ -375,4 +377,34 @@ func MakeEcdsaSSHKey2(name string, curve string) {
         fs.Put("./runtime/key/ssh/ecdsa-key-crypto_ssh-"+curve+"-"+name+"-pkcs8", err.Error())
     }
 
+}
+
+// file 路径
+// sshFile := "./runtime/key/webssh/id_rsa"
+func ParseSSHKey(file string, pass string) (string, string, error) {
+    fs := filesystem.New()
+
+    fileData, _ := fs.Get(file)
+
+    var block *pem.Block
+    if block, _ = pem.Decode([]byte(fileData)); block == nil {
+        return "", "", errors.New("ssh: data is not pem")
+    }
+
+    var sshKey crypto.PrivateKey
+    var comment string
+    var err error
+
+    if pass != "" {
+        sshKey, comment, err = cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, []byte(pass))
+    } else {
+        sshKey, comment, err = cryptobin_ssh.ParseOpenSSHPrivateKey(block.Bytes)
+    }
+
+    if err != nil {
+        return "", "", errors.New("ssh: sshKey is error. " + err.Error())
+    }
+
+    sshkeyData := fmt.Sprintf("%#v", sshKey)
+    return sshkeyData, comment, nil
 }

@@ -49,7 +49,7 @@ func (this KeyEdDsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
     return keyType, pubkey, rest, nil
 }
 
-// 包装
+// 解析
 func (this KeyEdDsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte

@@ -104,7 +104,7 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
     return nil, errors.New("pkcs8: unsupported hash function")
 }
 
-// pbkdf2 数据
+// pbkdf2 数据，作为包装
 type pbkdf2Params struct {
     Salt           []byte
     IterationCount int
@@ -135,6 +135,20 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     key = pbkdf2.Key(password, this.Salt, this.IterationCount, size, h)
 
     return
+}
+
+// pbkdf2 数据，作为接收
+type pbkdf2ParamsWithKeyLength struct {
+    Salt           []byte
+    IterationCount int
+    KeyLength      int `asn1:"optional"`
+    PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
+}
+
+func (this pbkdf2ParamsWithKeyLength) DeriveKey(password []byte, size int) (key []byte, err error) {
+    param := pbkdf2Params{this.Salt, this.IterationCount, this.PrfParam}
+
+    return param.DeriveKey(password, size)
 }
 
 // PBKDF2 配置
@@ -189,8 +203,38 @@ func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
     return oidPKCS5PBKDF2
 }
 
+// PBKDF2 配置，带KeyLength
+type PBKDF2OptsWithKeyLength struct {
+    SaltSize       int
+    IterationCount int
+    HMACHash       Hash
+}
+
+func (this PBKDF2OptsWithKeyLength) DeriveKey(password, salt []byte, size int) ([]byte, KDFParameters, error) {
+    opts := PBKDF2Opts{this.SaltSize, this.IterationCount, this.HMACHash}
+
+    key, params, err := opts.DeriveKey(password, salt, size)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    keyParams := params.(pbkdf2Params)
+
+    newParams := pbkdf2ParamsWithKeyLength{salt, this.IterationCount, size, keyParams.PrfParam}
+
+    return key, newParams, nil
+}
+
+func (this PBKDF2OptsWithKeyLength) GetSaltSize() int {
+    return this.SaltSize
+}
+
+func (this PBKDF2OptsWithKeyLength) OID() asn1.ObjectIdentifier {
+    return oidPKCS5PBKDF2
+}
+
 func init() {
     AddKDF(oidPKCS5PBKDF2, func() KDFParameters {
-        return new(pbkdf2Params)
+        return new(pbkdf2ParamsWithKeyLength)
     })
 }

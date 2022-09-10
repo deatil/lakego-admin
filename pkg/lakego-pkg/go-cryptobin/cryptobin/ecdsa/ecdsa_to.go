@@ -42,3 +42,12 @@ func (this Ecdsa) ToHexString() string {
 func (this Ecdsa) ToVerify() bool {
     return this.verify
 }
+
+// 验证结果，返回 int 类型
+func (this Ecdsa) ToVerifyInt() int {
+    if this.verify {
+        return 1
+    }
+
+    return 0
+}

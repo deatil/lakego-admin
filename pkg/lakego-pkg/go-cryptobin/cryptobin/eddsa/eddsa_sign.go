@@ -41,9 +41,9 @@ func (this EdDSA) Sign() EdDSA {
 }
 
 // 公钥验证
-func (this EdDSA) Very(data []byte) EdDSA {
+func (this EdDSA) Verify(data []byte) EdDSA {
     if this.publicKey == nil {
-        err := errors.New("EdDSA: [Very()] publicKey error.")
+        err := errors.New("EdDSA: [Verify()] publicKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this EdDSA) Very(data []byte) EdDSA {
     var ok bool
 
     if ed25519Key, ok = key.(ed25519.PublicKey); !ok {
-        err := errors.New("EdDSA: [Very()] publicKey type error.")
+        err := errors.New("EdDSA: [Verify()] publicKey type error.")
         return this.AppendError(err)
     }
 

@@ -35,6 +35,15 @@ func (this Arr) WithKeyDelim(data string) Arr {
     return this
 }
 
+// 判断是否存在
+func (this Arr) Exists(source map[string]any, key string) bool {
+    if this.Find(source, key) != nil {
+        return true
+    }
+
+    return false
+}
+
 // 获取
 func (this Arr) Get(source map[string]any, key string, defVal ...any) any {
     data := this.Find(source, key)

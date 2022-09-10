@@ -53,7 +53,7 @@ func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byt
     return keyType, pubkey, rest, nil
 }
 
-// 包装
+// 解析
 func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     // https://github.com/openssh/openssh-portable/blob/master/sshkey.c
     key := struct {

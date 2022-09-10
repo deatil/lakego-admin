@@ -46,7 +46,7 @@ func main() {
     obj2cyptde := obj2.
         FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
         FromPublicKey([]byte(obj2Pub)).
-        Very([]byte("test-pass")).
+        Verify([]byte("test-pass")).
         ToVerify()
 
     // =====
@@ -100,7 +100,7 @@ func main() {
     sm2cyptde := sm2.
         FromBase64String("MEUCIDztMEbHBdSeU2xxM93nsluloXB06k8Tt62hW+3t1vOHAiEA8r+9O0zIe5hpB7MmT7NCw/bhwVJbBh6hNtgjSFilzrU=").
         FromPublicKey([]byte(dekey2)).
-        Very([]byte("test-pass")).
+        Verify([]byte("test-pass")).
         ToVerify()
 
     // =====
@@ -118,7 +118,7 @@ func main() {
     sm2cyptde := sm2.
         FromBase64String("MEQCIE4DzLVkR9W+zQfXiwfwcOe/mk6PUNHBrSJIRdHT7diaAiAHaNNSxgwVLkZzXoHV4Tgqsim7c4ZwaPF+mca4mFZxLw==").
         FromPublicKey([]byte(dekey2)).
-        Very([]byte("test-pass")).
+        Verify([]byte("test-pass")).
         ToVerify()
 
     // =====
@@ -184,7 +184,7 @@ func main() {
 
     // sm2 验证【招商银行】
     sm2signdata := "CDAYcxm3jM+65XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
-    sm2Very := cryptobin_sm2.NewSM2().
+    sm2Verify := cryptobin_sm2.NewSM2().
         FromBase64String(sm2signdata).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
@@ -192,7 +192,7 @@ func main() {
         ToVerify()
 
     fmt.Println("签名结果：", sm2Sign)
-    fmt.Println("验证结果：", sm2Very)
+    fmt.Println("验证结果：", sm2Verify)
 
 }
 ~~~

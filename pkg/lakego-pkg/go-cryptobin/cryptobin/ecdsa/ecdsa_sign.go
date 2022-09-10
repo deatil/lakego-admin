@@ -48,9 +48,9 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 }
 
 // 公钥验证
-func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
+func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [Very()] publicKey error.")
+        err := errors.New("Ecdsa: [Verify()] publicKey error.")
         return this.AppendError(err)
     }
 
@@ -63,7 +63,7 @@ func (this Ecdsa) Very(data []byte, separator ...string) Ecdsa {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        err := errors.New("Ecdsa: [Very()] sign data is error.")
+        err := errors.New("Ecdsa: [Verify()] sign data is error.")
         return this.AppendError(err)
     }
 

@@ -10,28 +10,6 @@ import (
     "encoding/pem"
 )
 
-// 加密接口
-type PEMCipher interface {
-    // oid
-    OID() asn1.ObjectIdentifier
-
-    // 值大小
-    KeySize() int
-
-    // 加密, 返回: [加密后数据, 参数, error]
-    Encrypt(key, plaintext []byte) ([]byte, []byte, error)
-
-    // 解密
-    Decrypt(key, params, ciphertext []byte) ([]byte, error)
-}
-
-var ciphers = make(map[string]func() PEMCipher)
-
-// 添加加密
-func AddCipher(oid asn1.ObjectIdentifier, cipher func() PEMCipher) {
-    ciphers[oid.String()] = cipher
-}
-
 // 结构体数据可以查看以下文档
 // RFC5208 at https://tools.ietf.org/html/rfc5208
 // RFC5958 at https://tools.ietf.org/html/rfc5958

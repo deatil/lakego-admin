@@ -25,7 +25,7 @@ func GetCipherFromName(name string) PEMCipher {
     return PEMCipherMap["MD5AndDES"]
 }
 
-// 获取 Cipher 类型
+// 检测 Cipher 类型
 func CheckCipherFromName(name string) bool {
     if _, ok := PEMCipherMap[name]; ok {
         return true

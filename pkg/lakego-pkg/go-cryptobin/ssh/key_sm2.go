@@ -52,7 +52,7 @@ func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byt
     return keyType, pubkey, rest, nil
 }
 
-// 包装
+// 解析
 func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte

@@ -72,7 +72,7 @@ func (this *ExampleServiceProvider) loadSetting() {
     // > go run main.go lakego:publish --all
 
     // 推送当前服务提供者已注册数据
-    // > go run main.go lakego:publish --provider=app/example/provider/app/ServiceProvider
+    // > go run main.go lakego:publish --provider=app/example/provider.ExampleServiceProvider
 
     // 推送文件
     // > go run main.go lakego:publish --tag=example-config --force
