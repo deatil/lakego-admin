@@ -51,12 +51,12 @@ type encryptedContentInfo struct {
     EncryptedContent           []byte `asn1:"tag:0,optional"`
 }
 
-func (i encryptedContentInfo) Algorithm() pkix.AlgorithmIdentifier {
-    return i.ContentEncryptionAlgorithm
+func (this encryptedContentInfo) Algorithm() pkix.AlgorithmIdentifier {
+    return this.ContentEncryptionAlgorithm
 }
 
-func (i encryptedContentInfo) Data() []byte {
-    return i.EncryptedContent
+func (this encryptedContentInfo) Data() []byte {
+    return this.EncryptedContent
 }
 
 type safeBag struct {
@@ -196,7 +196,11 @@ func convertAttribute(attribute *pkcs12Attribute) (key, value string, err error)
 // assumes that there is only one certificate and only one private key in the
 // pfxData.  Since PKCS#12 files often contain more than one certificate, you
 // probably want to use DecodeChain instead.
-func Decode(pfxData []byte, password string) (privateKey any, certificate *x509.Certificate, err error) {
+func Decode(pfxData []byte, password string) (
+    privateKey any,
+    certificate *x509.Certificate,
+    err error,
+) {
     var caCerts []*x509.Certificate
 
     privateKey, certificate, caCerts, err = DecodeChain(pfxData, password)
@@ -212,7 +216,12 @@ func Decode(pfxData []byte, password string) (privateKey any, certificate *x509.
 // and only one private key in the pfxData.  The first certificate is assumed to
 // be the leaf certificate, and subsequent certificates, if any, are assumed to
 // comprise the CA certificate chain.
-func DecodeChain(pfxData []byte, password string) (privateKey any, certificate *x509.Certificate, caCerts []*x509.Certificate, err error) {
+func DecodeChain(pfxData []byte, password string) (
+    privateKey any,
+    certificate *x509.Certificate,
+    caCerts []*x509.Certificate,
+    err error,
+) {
     encodedPassword, err := bmpStringZeroTerminated(password)
     if err != nil {
         return nil, nil, nil, err
@@ -225,34 +234,35 @@ func DecodeChain(pfxData []byte, password string) (privateKey any, certificate *
 
     for _, bag := range bags {
         switch {
-        case bag.Id.Equal(oidCertBag):
-            certsData, err := decodeCertBag(bag.Value.Bytes)
-            if err != nil {
-                return nil, nil, nil, err
-            }
-            certs, err := x509.ParseCertificates(certsData)
-            if err != nil {
-                return nil, nil, nil, err
-            }
-            if len(certs) != 1 {
-                err = errors.New("pkcs12: expected exactly one certificate in the certBag")
-                return nil, nil, nil, err
-            }
-            if certificate == nil {
-                certificate = certs[0]
-            } else {
-                caCerts = append(caCerts, certs[0])
-            }
+            case bag.Id.Equal(oidCertBag):
+                certsData, err := decodeCertBag(bag.Value.Bytes)
+                if err != nil {
+                    return nil, nil, nil, err
+                }
 
-        case bag.Id.Equal(oidPKCS8ShroundedKeyBag):
-            if privateKey != nil {
-                err = errors.New("pkcs12: expected exactly one key bag")
-                return nil, nil, nil, err
-            }
+                certs, err := x509.ParseCertificates(certsData)
+                if err != nil {
+                    return nil, nil, nil, err
+                }
+                if len(certs) != 1 {
+                    err = errors.New("pkcs12: expected exactly one certificate in the certBag")
+                    return nil, nil, nil, err
+                }
+                if certificate == nil {
+                    certificate = certs[0]
+                } else {
+                    caCerts = append(caCerts, certs[0])
+                }
 
-            if privateKey, err = decodePkcs8ShroudedKeyBag(bag.Value.Bytes, encodedPassword); err != nil {
-                return nil, nil, nil, err
-            }
+            case bag.Id.Equal(oidPKCS8ShroundedKeyBag):
+                if privateKey != nil {
+                    err = errors.New("pkcs12: expected exactly one key bag")
+                    return nil, nil, nil, err
+                }
+
+                if privateKey, err = decodePkcs8ShroudedKeyBag(bag.Value.Bytes, encodedPassword); err != nil {
+                    return nil, nil, nil, err
+                }
         }
     }
 
@@ -282,28 +292,72 @@ func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificat
 
     for _, bag := range bags {
         switch {
-        case bag.Id.Equal(oidCertBag):
-            if !bag.hasAttribute(oidJavaTrustStore) {
-                return nil, errors.New("pkcs12: trust store contains a certificate that is not marked as trusted")
-            }
-            certsData, err := decodeCertBag(bag.Value.Bytes)
-            if err != nil {
-                return nil, err
-            }
-            parsedCerts, err := x509.ParseCertificates(certsData)
-            if err != nil {
-                return nil, err
-            }
+            case bag.Id.Equal(oidCertBag):
+                if !bag.hasAttribute(oidJavaTrustStore) {
+                    return nil, errors.New("pkcs12: trust store contains a certificate that is not marked as trusted")
+                }
+                certsData, err := decodeCertBag(bag.Value.Bytes)
+                if err != nil {
+                    return nil, err
+                }
+                parsedCerts, err := x509.ParseCertificates(certsData)
+                if err != nil {
+                    return nil, err
+                }
 
-            if len(parsedCerts) != 1 {
-                err = errors.New("pkcs12: expected exactly one certificate in the certBag")
-                return nil, err
-            }
+                if len(parsedCerts) != 1 {
+                    err = errors.New("pkcs12: expected exactly one certificate in the certBag")
+                    return nil, err
+                }
 
-            certs = append(certs, parsedCerts[0])
+                certs = append(certs, parsedCerts[0])
 
-        default:
-            return nil, errors.New("pkcs12: expected only certificate bags")
+            default:
+                return nil, errors.New("pkcs12: expected only certificate bags")
+        }
+    }
+
+    return
+}
+
+// 解析出 Secret
+func DecodeSecret(pfxData []byte, password string) (secretKeys []SecretKey, err error) {
+    encodedPassword, err := bmpStringZeroTerminated(password)
+    if err != nil {
+        return nil, err
+    }
+
+    bags, encodedPassword, err := getSafeContents(pfxData, encodedPassword, 1)
+    if err != nil {
+        return nil, err
+    }
+
+    for _, bag := range bags {
+        switch {
+            case bag.Id.Equal(oidSecretBag):
+                seckey := &secretkey{
+                    attrs: make(map[string]string),
+                }
+
+                for _, attr := range bag.Attributes {
+                    attr := attr
+                    k, v, err := convertAttribute(&attr)
+                    if err != nil {
+                        return nil, err
+                    }
+
+                    seckey.attrs[k] = v
+                }
+
+                seckey.key, err = decodeSecretBag(bag.Value.Bytes, encodedPassword)
+                if err != nil {
+                    return nil, err
+                }
+
+                secretKeys = append(secretKeys, seckey)
+
+            default:
+                return nil, errors.New("pkcs12: expected only secret bags")
         }
     }
 
@@ -404,7 +458,18 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
     return bags, password, nil
 }
 
-// Encode produces pfxData containing one private key (privateKey), an
+// 兼容 go 默认包
+func Encode(
+    rand io.Reader,
+    privateKey any,
+    certificate *x509.Certificate,
+    password string,
+    opts ...Opts,
+) (pfxData []byte, err error) {
+    return EncodeChain(rand, privateKey, certificate, nil, password, opts...)
+}
+
+// EncodeChain produces pfxData containing one private key (privateKey), an
 // end-entity certificate (certificate), and any number of CA certificates
 // (caCerts).
 //
@@ -416,13 +481,13 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
 // The rand argument is used to provide entropy for the encryption, and
 // can be set to rand.Reader from the crypto/rand package.
 //
-// Encode emulates the behavior of OpenSSL's PKCS12_create: it creates two
+// EncodeChain emulates the behavior of OpenSSL's PKCS12_create: it creates two
 // SafeContents: one that's encrypted with RC2 and contains the certificates,
 // and another that is unencrypted and contains the private key shrouded with
 // 3DES  The private key bag and the end-entity certificate bag have the
 // LocalKeyId attribute set to the SHA-1 fingerprint of the end-entity
 // certificate.
-func Encode(
+func EncodeChain(
     rand io.Reader,
     privateKey any,
     certificate *x509.Certificate,
@@ -681,6 +746,90 @@ func EncodeTrustStoreEntries(
     // The SafeContents is encrypted and contains the cert bags.
     var authenticatedSafe [1]contentInfo
     if authenticatedSafe[0], err = makeSafeContents(rand, certBags, encodedPassword, opt.Cipher); err != nil {
+        return nil, err
+    }
+
+    var authenticatedSafeBytes []byte
+    if authenticatedSafeBytes, err = asn1.Marshal(authenticatedSafe[:]); err != nil {
+        return nil, err
+    }
+
+    // compute the MAC
+    var kdfMacData KDFParameters
+    kdfMacData, err = opt.KDFOpts.Compute(authenticatedSafeBytes, encodedPassword)
+    if err != nil {
+        return nil, err
+    }
+
+    pfx.MacData = kdfMacData.(macData)
+
+    pfx.AuthSafe.ContentType = oidDataContentType
+    pfx.AuthSafe.Content.Class = 2
+    pfx.AuthSafe.Content.Tag = 0
+    pfx.AuthSafe.Content.IsCompound = true
+    if pfx.AuthSafe.Content.Bytes, err = asn1.Marshal(authenticatedSafeBytes); err != nil {
+        return nil, err
+    }
+
+    if pfxData, err = asn1.Marshal(pfx); err != nil {
+        return nil, errors.New("pkcs12: error writing P12 data: " + err.Error())
+    }
+
+    return
+}
+
+// 编码 Secret
+func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opts) (pfxData []byte, err error) {
+    var opt = DefaultOpts
+    if len(opts) > 0 {
+        opt = opts[0]
+    }
+
+    cipher := opt.Cipher
+    if cipher == nil {
+        return nil, errors.New("pkcs12: unknown opts cipher")
+    }
+
+    kdfOpts := opt.KDFOpts
+    if kdfOpts == nil {
+        return nil, errors.New("pkcs12: unknown opts kdfOpts")
+    }
+
+    pkcs8Cipher := opt.PKCS8Cipher
+    if pkcs8Cipher == nil {
+        return nil, errors.New("pkcs12: unknown opts pkcs8Cipher")
+    }
+
+    encodedPassword, err := bmpStringZeroTerminated(password)
+    if err != nil {
+        return nil, err
+    }
+
+    var pfx pfxPdu
+    pfx.Version = 3
+
+    var secretFingerprint = sha1.Sum(secretKey)
+    var localKeyIdAttr pkcs12Attribute
+    localKeyIdAttr.Id = oidLocalKeyID
+    localKeyIdAttr.Value.Class = 0
+    localKeyIdAttr.Value.Tag = 17
+    localKeyIdAttr.Value.IsCompound = true
+    if localKeyIdAttr.Value.Bytes, err = asn1.Marshal(secretFingerprint[:]); err != nil {
+        return nil, err
+    }
+
+    var keyBag safeBag
+    keyBag.Id = oidSecretBag
+    keyBag.Value.Class = 2
+    keyBag.Value.Tag = 0
+    keyBag.Value.IsCompound = true
+    if keyBag.Value.Bytes, err = encodeSecretBag(rand, secretKey, encodedPassword, opt); err != nil {
+        return nil, err
+    }
+    keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
+
+    var authenticatedSafe [1]contentInfo
+    if authenticatedSafe[0], err = makeSafeContents(rand, []safeBag{keyBag}, nil, nil); err != nil {
         return nil, err
     }
 

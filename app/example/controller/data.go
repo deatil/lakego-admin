@@ -346,15 +346,15 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/rsa/rsa_en2_pkcs8_cfb")
+    obj2Pri, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-MD5AndDES")
     obj2cypt := obj2.
         FromString("test-pass").
         FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/rsa/rsa_en2_pkcs8_cfb.pub")
+    obj2Pub, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-MD5AndDES.pub")
     obj2cyptde := obj2.
-        FromBase64String("mllibXO11/ppsr4x60NPuj/J47E1W3w+rHP3dHwNR2hjZynGVFcLxf3YHUngj+C0trBcP8+7+PQdg2Yc4m375crdLeM6/BT/tof3HdrCGFCnvMhq4RlsHwwgPdWxkcZ/J/zpfI9N7AjHM6C0Lg93EeHFYZBOVrc/x+7n+Pmaur0aXdNT234NRLwBTCLHhrBcn9te7DGzDIC82Y0YZ0GY6FRbg8sR6SJpgR81xh9VON+5/5Z4oyUCqaKiW481qozzNM+1j4WnptGiLH1xdzppGrZKjem4+9XaFJu7QPLDHggpzbp188p+TUOZGI45mJW+jUT3B3PrXtLeeXSAXB9TFw==").
+        FromBase64String("IsWEcgW9WR0Ct4Wf9qriA5nNYzMDd1t9sVVyRLTxRg7JhbpMAjZHpTIC77kcJ4AySo6iYkm5e1NmJ6jqAIUfFM6gFIi9Ybm4WMAMo1dxxD8FbR3kYgs1pFGXsRCNiwUaQvG1WuLPG2XUXkNQfaTr0fEYuNfkc7hTe8NmOfTTqgZS3MFELf6J4VUhzSal3qgNj9X7SmEjLAadFPsrhxiah2D2MOngwa9IxakIu3ubECJAdqFLUivel+LZlhGQdLpe1z6it+B1LefqCn2c54MVZIMDZ5Jf1rIG+wN+swU7fFNVqwTNqZFX/ySgAyErP2ls2Ydgwp2Tblef/9hYG1jKPQ==").
         FromPublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()
@@ -388,10 +388,14 @@ func (this *Data) Error(ctx *gin.Context) {
     sshFile := "./runtime/key/webssh/id_rsa"
     sshkeyName, sshComment, _ := key.ParseSSHKey(sshFile, "")
 
-    // pkcs12Err := key.MakePKCS12Web()
+    jceksErr := key.ShowJceks()
+    jceksErrData := ""
+    if jceksErr != nil {
+        jceksErrData = jceksErr.Error()
+    }
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
-        // "pkcs12Err": pkcs12Err,
+        "jceksErr": jceksErrData,
 
         "sshkeyName": sshkeyName,
         "sshComment": sshComment,

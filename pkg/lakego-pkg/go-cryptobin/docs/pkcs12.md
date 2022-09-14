@@ -63,8 +63,10 @@ func MakePKCS12() error {
         FromPrivateKey([]byte(privateKeyData)).
         GetPrivateKey()
 
-    // pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "123")
-    pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "123", cryptobin_pkcs12.Opts{
+    // [Encode] 兼容官方库
+    // pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123")
+    // pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123")
+    pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123", cryptobin_pkcs12.Opts{
         PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
         Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
         KDFOpts: cryptobin_pkcs12.MacOpts{
@@ -104,6 +106,7 @@ func MakePKCS12() error {
 
     // 解析测试
     p12, _ := fs.Get(pkcs12File)
+    // priv, cert, err := cryptobin_pkcs12.Decode([]byte(p12), "123")
     priv, cert, caCerts, err := cryptobin_pkcs12.DecodeChain([]byte(p12), "123")
     if err != nil {
         fmt.Println("err =====")
@@ -138,6 +141,4 @@ func MakePKCS12() error {
 
     return nil
 }
-
-
 ~~~

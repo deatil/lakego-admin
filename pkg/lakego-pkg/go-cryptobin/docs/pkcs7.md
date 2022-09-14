@@ -1,6 +1,6 @@
 ### pkcs7 使用文档
 
-* DH 使用
+* 使用
 ~~~go
 package main
 

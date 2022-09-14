@@ -11,6 +11,8 @@ import (
     "encoding/asn1"
     "encoding/base64"
 
+    "golang.org/x/crypto/pkcs12"
+
     "github.com/deatil/lakego-filesystem/filesystem"
 
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
@@ -98,8 +100,8 @@ func MakePKCS12() error {
         FromPrivateKey([]byte(privateKeyData)).
         GetPrivateKey()
 
-    // pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "123")
-    pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "", cryptobin_pkcs12.Opts{
+    // pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123")
+    pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "", cryptobin_pkcs12.Opts{
         PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
         Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
         KDFOpts: cryptobin_pkcs12.MacOpts{
@@ -173,6 +175,116 @@ func MakePKCS12() error {
     fmt.Println("TrustStore certs =====")
     fmt.Printf("%#v", certs[0])
     fmt.Println("")
+
+    return nil
+}
+
+func MakePKCS12_2() error {
+    fs := filesystem.New()
+
+    path := "./runtime/key/pkcs12/ca2/%s"
+
+    certificateFile := fmt.Sprintf(path, "certificate.cer")
+    privateKeyFile := fmt.Sprintf(path, "private.key")
+
+    certificateData, _ := fs.Get(certificateFile)
+    privateKeyData, _ := fs.Get(privateKeyFile)
+
+    // Parse PEM block
+    var certificateBlock *pem.Block
+    if certificateBlock, _ = pem.Decode([]byte(certificateData)); certificateBlock == nil {
+        return errors.New("certificate err")
+    }
+
+    certificates, err := x509.ParseCertificates(certificateBlock.Bytes)
+    if err != nil {
+        return err
+    }
+
+    privateKey := cryptobin_rsa.NewRsa().
+        FromPrivateKey([]byte(privateKeyData)).
+        GetPrivateKey()
+
+    pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123", cryptobin_pkcs12.Opts{
+        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
+        Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
+        KDFOpts: cryptobin_pkcs12.MacOpts{
+            SaltSize: 8,
+            IterationCount: 1,
+            HMACHash: cryptobin_pkcs12.SHA1,
+        },
+    })
+    if err != nil {
+        return err
+    }
+
+    pkcs12File := fmt.Sprintf(path, "pkcs12.p12")
+    fs.Put(pkcs12File, string(pfxData))
+
+    // 解析测试
+    p12, _ := fs.Get(pkcs12File)
+    priv, cert, caCerts, err := cryptobin_pkcs12.DecodeChain([]byte(p12), "123")
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+    }
+
+    fmt.Println("priv =====")
+    fmt.Printf("%#v", priv)
+    fmt.Println("")
+
+    fmt.Println("cert =====")
+    fmt.Printf("%#v", cert)
+    fmt.Println("")
+
+    fmt.Println("caCerts =====")
+    fmt.Printf("%#v", caCerts)
+    fmt.Println("")
+
+    fmt.Println("")
+    fmt.Println("")
+
+    return nil
+}
+
+func MakePKCS12Secret() error {
+    fs := filesystem.New()
+
+    path := "./runtime/key/pkcs12/ca/%s"
+
+    secretKey := []byte("as23erfd")
+
+    pfxData, err := cryptobin_pkcs12.EncodeSecret(rand.Reader, secretKey, "123", cryptobin_pkcs12.Opts{
+        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
+        Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
+        KDFOpts: cryptobin_pkcs12.MacOpts{
+            SaltSize: 8,
+            IterationCount: 1,
+            HMACHash: cryptobin_pkcs12.SHA1,
+        },
+    })
+    if err != nil {
+        return err
+    }
+
+    pkcs12File := fmt.Sprintf(path, "pkcs12-secretKey.p12")
+    fs.Put(pkcs12File, string(pfxData))
+
+    // 解析测试
+    p12, _ := fs.Get(pkcs12File)
+    secretKeys, err := cryptobin_pkcs12.DecodeSecret([]byte(p12), "123")
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+    }
+
+    if len(secretKeys) > 0 {
+        fmt.Println("secretKey =====")
+        fmt.Printf(string(secretKeys[0].Key()))
+        fmt.Println("")
+    }
 
     return nil
 }
@@ -244,8 +356,8 @@ func MakePKCS12Web2() error {
         return errors.New("Rsa error")
     }
 
-    // pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "123")
-    pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], caCerts, "", cryptobin_pkcs12.Opts{
+    // pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123")
+    pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "", cryptobin_pkcs12.Opts{
         PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
         Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
         KDFOpts: cryptobin_pkcs12.MacOpts{
@@ -318,6 +430,32 @@ func MakePKCS12Web2() error {
 
     fmt.Println("TrustStore certs =====")
     fmt.Printf("%#v", certs[0])
+    fmt.Println("")
+
+    return nil
+}
+
+func ShowMakedPKCS12() error {
+    fs := filesystem.New()
+
+    path := "./runtime/key/pkcs12/ca2/%s"
+
+    pkcs12File := fmt.Sprintf(path, "pkcs12.p12")
+    p12, _ := fs.Get(pkcs12File)
+
+    // 解析测试
+    priv, cert, err := pkcs12.Decode([]byte(p12), "123")
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+    }
+
+    fmt.Println("priv =====")
+    fmt.Printf("%#v", priv)
+    fmt.Println("")
+
+    fmt.Println("cert =====")
+    fmt.Printf("%#v", cert)
     fmt.Println("")
 
     return nil

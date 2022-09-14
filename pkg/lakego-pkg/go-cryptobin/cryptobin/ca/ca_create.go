@@ -256,7 +256,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
                 return this.AppendError(err)
             }
 
-            pfxData, err = cryptobin_pkcs12.Encode(rand.Reader, privateKey, cert, caCerts, pwd)
+            pfxData, err = cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, cert, caCerts, pwd)
     }
 
     if err != nil {

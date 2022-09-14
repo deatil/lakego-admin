@@ -5,6 +5,7 @@ import (
     "errors"
     "encoding/pem"
     "encoding/asn1"
+    "crypto/x509/pkix"
 
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
@@ -15,7 +16,7 @@ var (
     oidCertTypeX509Certificate = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 22, 1})
     oidPKCS8ShroundedKeyBag    = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 2})
     oidCertBag                 = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 3})
-    oidSecretKeyBag            = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 5})
+    oidSecretBag               = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 5})
 )
 
 type certBag struct {
@@ -73,6 +74,8 @@ func encodePkcs8ShroudedKeyBag(
     return asn1Data, nil
 }
 
+// ============
+
 func decodeCertBag(asn1Data []byte) (x509Certificates []byte, err error) {
     bag := new(certBag)
     if err := unmarshal(asn1Data, bag); err != nil {
@@ -94,6 +97,83 @@ func encodeCertBag(x509Certificates []byte) (asn1Data []byte, err error) {
 
     if asn1Data, err = asn1.Marshal(bag); err != nil {
         return nil, errors.New("pkcs12: error encoding cert bag: " + err.Error())
+    }
+
+    return asn1Data, nil
+}
+
+// ============
+
+func decodeSecretBag(asn1Data []byte, password []byte) (secretKey []byte, err error) {
+    bag := new(secretBag)
+    if err := unmarshal(asn1Data, bag); err != nil {
+        return nil, errors.New("pkcs12: error decoding secret bag: " + err.Error())
+    }
+    if !bag.SecretTypeID.Equal(oidPKCS8ShroundedKeyBag) {
+        return nil, NotImplementedError("only PKCS#8 shrouded key bag secretTypeID are supported")
+    }
+
+    data := bag.SecretValue
+
+    var decrypted []byte
+
+    decrypted, err = cryptobin_pkcs8pbe.DecryptPKCS8PrivateKey(data, password)
+    if err != nil {
+        decrypted, err = cryptobin_pkcs8.DecryptPKCS8PrivateKey(data, password)
+        if err != nil {
+            return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+        }
+    }
+
+    s := new(pkcs8)
+    if err = unmarshal(decrypted, s); err != nil {
+        return nil, errors.New("pkcs12: error unmarshaling decrypted secret key: " + err.Error())
+    }
+
+    if s.Version != 0 {
+        return nil, NotImplementedError("only secret key v0 are supported")
+    }
+
+    return s.PrivateKey, nil
+}
+
+func encodeSecretBag(rand io.Reader, secretKey []byte, password []byte, opt Opts) (asn1Data []byte, err error) {
+    var s pkcs8
+    s.Version = 0
+    s.Algo = pkix.AlgorithmIdentifier{
+        Algorithm:  oidSecretBag,
+        Parameters: asn1.RawValue{
+            Tag: asn1.TagNull,
+        },
+    }
+    s.PrivateKey = secretKey
+
+    pkData, err := asn1.Marshal(s)
+    if err != nil {
+        return nil, errors.New("pkcs12: " + err.Error())
+    }
+
+    var keyBlock *pem.Block
+
+    if opt.PKCS8KDFOpts != nil {
+        keyBlock, err = cryptobin_pkcs8.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, cryptobin_pkcs8.Opts{
+            opt.PKCS8Cipher,
+            opt.PKCS8KDFOpts,
+        })
+    } else {
+        keyBlock, err = cryptobin_pkcs8pbe.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.PKCS8Cipher)
+    }
+
+    if err != nil {
+        return nil, errors.New("pkcs12: " + err.Error())
+    }
+
+    var bag secretBag
+    bag.SecretTypeID = oidPKCS8ShroundedKeyBag
+    bag.SecretValue = keyBlock.Bytes
+
+    if asn1Data, err = asn1.Marshal(bag); err != nil {
+        return nil, errors.New("pkcs12: error encoding secret bag: " + err.Error())
     }
 
     return asn1Data, nil

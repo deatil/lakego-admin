@@ -27,7 +27,7 @@ func derivedKey(password string, salt string, iter int, keyLen int, ivLen int, h
 }
 
 // 生成密钥2
-func derivedKey2(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte) {
+func derivedKeyWithHalves(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte) {
     newPassword := []byte(password)
     newSalt := []byte(salt)
 
