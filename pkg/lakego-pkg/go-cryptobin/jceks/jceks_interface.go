@@ -29,18 +29,6 @@ type Key interface {
     ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error)
 }
 
-// 数据接口
-type KDFParameters interface {
-    // 验证
-    Verify(message []byte, password []byte) (err error)
-}
-
-// KDF 设置接口
-type KDFOpts interface {
-    // 构造
-    Compute(message []byte, password []byte) (data KDFParameters, err error)
-}
-
 var keys = make(map[string]func() Key)
 
 // 添加Key

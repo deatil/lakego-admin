@@ -83,14 +83,14 @@ cyptde := crypto.
 // 使用代码
 // 注意: 数据来源,设置密码,加密类型,加密模式,补码方式 在 操作类型 之前, 可以调换顺序
 ret := crypto.
-    FromString("string"). // 数据来源, 待加密数据
+    FromString("string"). // 数据来源, 待加密数据/待解密数据
     SetKey("key").        // 设置密码
     SetIv("iv_string").   // 设置向量
     Aes().                // 加密类型
     CBC().                // 加密模式
     PKCS7Padding().       // 补码方式
     Encrypt().            // 操作类型, 加密或者解密
-    ToBase64String()      // 返回数据类型
+    ToBase64String()      // 返回结果数据类型
 ~~~
 
 
