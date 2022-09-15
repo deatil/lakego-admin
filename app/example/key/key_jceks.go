@@ -82,7 +82,7 @@ func ShowJksData(conf jksConfig) error {
     }
 
     if typ == "private" {
-        key, err := ks.GetKey(alias, keypass)
+        key, err := ks.GetPrivateKey(alias, keypass)
         if err != nil {
             fmt.Println("key err =====")
             fmt.Println(err.Error())

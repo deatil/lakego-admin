@@ -183,7 +183,7 @@ func (this *JksDecode) Parse(r io.Reader, password string) error {
 }
 
 // GetKey
-func (this *JksDecode) GetKey(alias string, password string) (crypto.PrivateKey, error) {
+func (this *JksDecode) GetPrivateKey(alias string, password string) (crypto.PrivateKey, error) {
     encodedKey := this.privateKeys[alias]
     if encodedKey == nil {
         return nil, errors.New("no data")

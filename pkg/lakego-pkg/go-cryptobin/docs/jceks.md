@@ -53,7 +53,7 @@ func main() {
     var jceksData []byte
     var passwd string
     var reader io.Reader
-    
+
     ks, err := cryptobin_jceks.LoadFromBytes(jceksData, passwd)
     // ks, err := cryptobin_jceks.LoadFromReader(reader, passwd)
 
@@ -143,7 +143,7 @@ func main() {
     var jceksData []byte
     var passwd string
     var reader io.Reader
-    
+
     ks, err := cryptobin_jceks.LoadJksFromBytes(jceksData, passwd)
     // ks, err := cryptobin_jceks.LoadJksFromReader(reader, passwd)
 
@@ -152,7 +152,7 @@ func main() {
     // 获取私钥
     var keypass string
     var key crypto.PrivateKey
-    key, err := ks.GetKey(alias, keypass)
+    key, err := ks.GetPrivateKey(alias, keypass)
 
     // 获取证书链
     var certs []*x509.Certificate
