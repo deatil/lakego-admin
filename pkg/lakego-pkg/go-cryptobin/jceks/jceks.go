@@ -6,7 +6,7 @@ import (
 )
 
 // LoadFromReader loads the key store from the specified file.
-func LoadFromReader(reader io.Reader, password string) (*JceksDecode, error) {
+func LoadJceksFromReader(reader io.Reader, password string) (*JceksDecode, error) {
     ks := &JceksDecode{
         entries: make(map[string]interface{}),
     }
@@ -20,7 +20,7 @@ func LoadFromReader(reader io.Reader, password string) (*JceksDecode, error) {
 }
 
 // LoadFromBytes loads the key store from the bytes data.
-func LoadFromBytes(data []byte, password string) (*JceksDecode, error) {
+func LoadJceksFromBytes(data []byte, password string) (*JceksDecode, error) {
     buf := bytes.NewReader(data)
 
     return LoadFromReader(buf, password)
@@ -35,3 +35,8 @@ func NewJceksEncode() *JceksEncode {
         count:        0,
     }
 }
+
+// 别名
+var LoadFromReader = LoadJceksFromReader
+var LoadFromBytes  = LoadJceksFromBytes
+var NewEncode      = NewJceksEncode
