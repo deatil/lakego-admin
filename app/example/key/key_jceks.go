@@ -50,11 +50,11 @@ type jksConfig struct {
 func ShowJks() error {
     conf := jksConfig{
         // filename: "trusted-cert",
-        filename: "data/newdata/trusted-cert",
-        passwd: "trusted-cert-store-password",
-        keypass: "trusted-cert-key-password",
-        alias: "trusted-cert-some-alias",
-        typ: "other", // private | other
+        filename: "data/newdata/pri-key",
+        passwd: "pri-key-store-password",
+        keypass: "pri-key-key-password",
+        alias: "pri-key-some-alias",
+        typ: "private", // private | other
     }
 
     return ShowJksData(conf)
@@ -102,6 +102,16 @@ func ShowJksData(conf jksConfig) error {
         fmt.Printf("%#v", certs)
         fmt.Println("")
 
+        certsBytes, err := ks.GetCertChainBytes(alias)
+        if err != nil {
+            fmt.Println("certsBytes err =====")
+            fmt.Println(err.Error())
+        }
+
+        fmt.Println("certsBytes =====")
+        fmt.Printf("%#v", certsBytes)
+        fmt.Println("")
+
         date, err := ks.GetCreateDate(alias)
         if err != nil {
             fmt.Println("date err =====")
@@ -125,6 +135,16 @@ func ShowJksData(conf jksConfig) error {
 
         fmt.Println("cert =====")
         fmt.Printf("%#v", cert)
+        fmt.Println("")
+
+        certBytes, err := ks.GetCertBytes(alias)
+        if err != nil {
+            fmt.Println("certBytes err =====")
+            fmt.Println(err.Error())
+        }
+
+        fmt.Println("certBytes =====")
+        fmt.Printf("%#v", certBytes)
         fmt.Println("")
 
         date, err := ks.GetCreateDate(alias)
@@ -229,8 +249,8 @@ func MakeJksTrustedCert() error {
 }
 
 func ShowJceks() error {
-    filename := "private-key"
-    typ := "private" // private | secret | other
+    filename := "trusted-cert"
+    typ := "other" // private | secret | other
 
     return ShowJceksData(filename, typ)
 }
@@ -271,6 +291,15 @@ func ShowJceksData(filename string, typ string) error {
         fmt.Printf("%#v", certs[0])
         fmt.Println("")
 
+        _, certsBytes, err := ks.GetPrivateKeyAndCertsBytes(alias, keypass)
+        if err != nil {
+            return err
+        }
+
+        fmt.Println("certsBytes =====")
+        fmt.Printf("%#v", certsBytes)
+        fmt.Println("")
+
         keyAliases := ks.ListPrivateKeys()
 
         fmt.Println("keyAliases =====")
@@ -302,6 +331,15 @@ func ShowJceksData(filename string, typ string) error {
 
         fmt.Println("cert =====")
         fmt.Printf("%#v", cert)
+        fmt.Println("")
+
+        certBytes, err := ks.GetCertBytes(alias)
+        if err != nil {
+            return err
+        }
+
+        fmt.Println("certBytes =====")
+        fmt.Printf("%#v", certBytes)
         fmt.Println("")
 
         certAliases := ks.ListCerts()

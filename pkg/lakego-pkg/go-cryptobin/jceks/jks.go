@@ -4,16 +4,15 @@ import (
     "io"
     "time"
     "bytes"
-    "crypto/x509"
 )
 
 // LoadJksFromReader loads the key store from the specified file.
 func LoadJksFromReader(reader io.Reader, password string) (*JksDecode, error) {
     ks := &JksDecode{
         aliases:      make([]string, 0),
-        trustedCerts: make(map[string]*x509.Certificate),
+        trustedCerts: make(map[string][]byte),
         privateKeys:  make(map[string][]byte),
-        certChains:   make(map[string][]*x509.Certificate),
+        certChains:   make(map[string][][]byte),
         dates:        make(map[string]time.Time),
     }
 

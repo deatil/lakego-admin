@@ -388,7 +388,7 @@ func (this *Data) Error(ctx *gin.Context) {
     sshFile := "./runtime/key/webssh/id_rsa"
     sshkeyName, sshComment, _ := key.ParseSSHKey(sshFile, "")
 
-    jceksErr := key.ShowJceks()
+    jceksErr := key.ShowJks()
     jceksErrData := ""
     if jceksErr != nil {
         jceksErrData = jceksErr.Error()

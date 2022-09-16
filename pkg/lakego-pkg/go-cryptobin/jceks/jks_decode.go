@@ -17,13 +17,13 @@ type JksDecode struct {
     aliases      []string
 
     // 证书
-    trustedCerts map[string]*x509.Certificate
+    trustedCerts map[string][]byte
 
     // 私钥
     privateKeys  map[string][]byte
 
     // 证书链
-    certChains   map[string][]*x509.Certificate
+    certChains   map[string][][]byte
 
     // 时间
     dates        map[string]time.Time
@@ -52,7 +52,7 @@ func (this *JksDecode) parsePrivateKey(r io.Reader) error {
         return err
     }
 
-    var chain []*x509.Certificate
+    var chain [][]byte
 
     for j := 0; j < int(n); j++ {
         readCertType, err := readUTF(r)
@@ -64,12 +64,7 @@ func (this *JksDecode) parsePrivateKey(r io.Reader) error {
             return fmt.Errorf("unable to handle certificate type: %s", certType)
         }
 
-        certBytes, err := readBytes(r)
-        if err != nil {
-            return err
-        }
-
-        cert, err := x509.ParseCertificate(certBytes)
+        cert, err := readBytes(r)
         if err != nil {
             return err
         }
@@ -108,11 +103,7 @@ func (this *JksDecode) parseTrustedCert(r io.Reader) error {
         return err
     }
 
-    this.trustedCerts[alias], err = x509.ParseCertificate(certBytes)
-    if err != nil {
-        return err
-    }
-
+    this.trustedCerts[alias] = certBytes
     return nil
 }
 
@@ -182,10 +173,10 @@ func (this *JksDecode) Parse(r io.Reader, password string) error {
     return nil
 }
 
-// GetKey
+// GetPrivateKey
 func (this *JksDecode) GetPrivateKey(alias string, password string) (crypto.PrivateKey, error) {
-    encodedKey := this.privateKeys[alias]
-    if encodedKey == nil {
+    encodedKey, ok := this.privateKeys[alias]
+    if !ok {
         return nil, errors.New("no data")
     }
 
@@ -204,42 +195,78 @@ func (this *JksDecode) GetPrivateKey(alias string, password string) (crypto.Priv
 
 // GetEncodedKey
 func (this *JksDecode) GetEncodedKey(alias string) ([]byte, error) {
-    encodedKey := this.privateKeys[alias]
-    if encodedKey == nil {
+    encodedKey, ok := this.privateKeys[alias]
+    if !ok {
         return nil, errors.New("no data")
     }
 
     return encodedKey, nil
 }
 
-// GetCertificateChain
+// GetCertChain
 func (this *JksDecode) GetCertChain(alias string) ([]*x509.Certificate, error) {
-    chain := this.certChains[alias]
-    if chain != nil {
-        return chain, nil
+    chain, ok := this.certChains[alias]
+    if !ok {
+        return nil, errors.New("no data")
     }
 
-    return nil, errors.New("no data")
+    var certs []*x509.Certificate
+
+    for _, cert := range chain {
+        parsedCert, err := x509.ParseCertificate(cert)
+        if err != nil {
+            return nil, err
+        }
+
+        certs = append(certs, parsedCert)
+    }
+
+    return certs, nil
 }
 
-// GetCertificate
+// GetCertChainBytes
+func (this *JksDecode) GetCertChainBytes(alias string) ([][]byte, error) {
+    chain, ok := this.certChains[alias]
+    if !ok {
+        return nil, errors.New("no data")
+    }
+
+    return chain, nil
+}
+
+// GetCert
 func (this *JksDecode) GetCert(alias string) (*x509.Certificate, error) {
-    cert := this.trustedCerts[alias]
-    if cert != nil {
-        return cert, nil
+    cert, ok := this.trustedCerts[alias]
+    if !ok {
+        return nil, errors.New("no data")
     }
 
-    return nil, errors.New("no data")
+    parsedCert, err := x509.ParseCertificate(cert)
+    if err != nil {
+        return nil, err
+    }
+
+    return parsedCert, nil
 }
 
-// GetCreationDate
+// GetCertBytes
+func (this *JksDecode) GetCertBytes(alias string) ([]byte, error) {
+    cert, ok := this.trustedCerts[alias]
+    if !ok {
+        return nil, errors.New("no data")
+    }
+
+    return cert, nil
+}
+
+// GetCreateDate
 func (this *JksDecode) GetCreateDate(alias string) (time.Time, error) {
     date, ok := this.dates[alias]
     if ok {
         return date, nil
     }
 
-    return time.Unix(0, 0), errors.New("no data")
+    return time.Time{}, errors.New("no data")
 }
 
 // ListPrivateKeys

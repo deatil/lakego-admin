@@ -4,13 +4,12 @@ import (
     "fmt"
     "time"
     "crypto"
-    "crypto/x509"
 )
 
 type privateKeyEntry struct {
     date       time.Time
     encodedKey []byte
-    certs      []*x509.Certificate
+    certs      [][]byte
 }
 
 func (this *privateKeyEntry) String() string {
@@ -49,7 +48,7 @@ func (this *privateKeyEntry) Encode(privateKey crypto.PrivateKey, password strin
 
 type trustedCertEntry struct {
     date time.Time
-    cert *x509.Certificate
+    cert []byte
 }
 
 func (this *trustedCertEntry) String() string {

@@ -5,6 +5,7 @@ import (
     "fmt"
     "hash"
     "bytes"
+    "errors"
     "crypto"
     "crypto/subtle"
     "crypto/x509"
@@ -22,7 +23,7 @@ func (this *JceksDecode) parsePrivateKey(r io.Reader) error {
     }
 
     entry := &privateKeyEntry{
-        certs: []*x509.Certificate{},
+        certs: make([][]byte, 0),
     }
 
     entry.date, err = readDate(r)
@@ -50,12 +51,7 @@ func (this *JceksDecode) parsePrivateKey(r io.Reader) error {
             return fmt.Errorf("unable to handle certificate type: %s", certType)
         }
 
-        certBytes, err := readBytes(r)
-        if err != nil {
-            return err
-        }
-
-        cert, err := x509.ParseCertificate(certBytes)
+        cert, err := readBytes(r)
         if err != nil {
             return err
         }
@@ -89,15 +85,12 @@ func (this *JceksDecode) parseTrustedCert(r io.Reader) error {
         return fmt.Errorf("unable to handle certificate type: %s", certType)
     }
 
-    certBytes, err := readBytes(r)
+    cert, err := readBytes(r)
     if err != nil {
         return err
     }
 
-    entry.cert, err = x509.ParseCertificate(certBytes)
-    if err != nil {
-        return err
-    }
+    entry.cert = cert
 
     this.entries[alias] = entry
     return nil
@@ -199,8 +192,46 @@ func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
     certs []*x509.Certificate,
     err error,
 ) {
-    entry := this.entries[alias]
-    if entry == nil {
+    entry, ok := this.entries[alias]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    switch t := entry.(type) {
+        case *privateKeyEntry:
+            if len(t.certs) < 1 {
+                return nil, nil, fmt.Errorf("key has no certificates")
+            }
+
+            key, err = t.Recover([]byte(password))
+            if err == nil {
+                for _, cert := range t.certs {
+                    parsedCert, parseErr := x509.ParseCertificate(cert)
+                    if parseErr != nil {
+                        err = parseErr
+                        return
+                    }
+
+                    certs = append(certs, parsedCert)
+                }
+
+                return
+            }
+    }
+
+    return
+}
+
+// GetPrivateKeyAndCertsBytes
+func (this *JceksDecode) GetPrivateKeyAndCertsBytes(alias string, password string) (
+    key crypto.PrivateKey,
+    certs [][]byte,
+    err error,
+) {
+    entry, ok := this.entries[alias]
+    if !ok {
+        err = errors.New("no data")
         return
     }
 
@@ -213,6 +244,7 @@ func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
             key, err = t.Recover([]byte(password))
             if err == nil {
                 certs = t.certs
+
                 return
             }
     }
@@ -222,9 +254,29 @@ func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
 
 // GetCert
 func (this *JceksDecode) GetCert(alias string) (*x509.Certificate, error) {
-    entry := this.entries[alias]
-    if entry == nil {
-        return nil, nil
+    entry, ok := this.entries[alias]
+    if !ok {
+        return nil, errors.New("no data")
+    }
+
+    switch t := entry.(type) {
+        case *trustedCertEntry:
+            parsedCert, err := x509.ParseCertificate(t.cert)
+            if err != nil {
+                return nil, err
+            }
+
+            return parsedCert, nil
+    }
+
+    return nil, nil
+}
+
+// GetCertBytes
+func (this *JceksDecode) GetCertBytes(alias string) ([]byte, error) {
+    entry, ok := this.entries[alias]
+    if !ok {
+        return nil, errors.New("no data")
     }
 
     switch t := entry.(type) {
@@ -237,8 +289,9 @@ func (this *JceksDecode) GetCert(alias string) (*x509.Certificate, error) {
 
 // GetSecretKey
 func (this *JceksDecode) GetSecretKey(alias string, password string) (key []byte, err error) {
-    entry := this.entries[alias]
-    if entry == nil {
+    entry, ok := this.entries[alias]
+    if !ok {
+        err = errors.New("no data")
         return
     }
 
