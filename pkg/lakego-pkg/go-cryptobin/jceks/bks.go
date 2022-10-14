@@ -22,13 +22,13 @@ const (
 // 编码
 type BKS struct {
     // 版本号
-    version    uint32
+    version   uint32
 
     // 存储类型
-    storeType  string
+    storeType string
 
-    // 解析后数据
-    entries    map[string]any
+    // 数据
+    entries   map[string]any
 }
 
 // 构造函数

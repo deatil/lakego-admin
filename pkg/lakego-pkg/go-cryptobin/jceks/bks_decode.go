@@ -251,7 +251,7 @@ func (this *BKS) GetKeySecretWithPassword(alias string, password string) (secret
     return
 }
 
-// GetKeyTypeString
+// GetKeyType
 func (this *BKS) GetKeyType(alias string) (keyType string, err error) {
     entry, ok := this.entries[alias]
     if !ok {
@@ -345,8 +345,8 @@ func (this *BKS) GetCertBytes(alias string) (
     return
 }
 
-// GetSecretKey
-func (this *BKS) GetSecretKey(alias string) (
+// GetSecret
+func (this *BKS) GetSecret(alias string) (
     secret []byte,
     err error,
 ) {

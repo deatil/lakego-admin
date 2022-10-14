@@ -23,12 +23,15 @@ type bksConfig struct {
 func ShowBks() error {
     conf := bksConfig{
         // custom_entry_passwords.bksv1 | christmas.bksv2 | uber
-        filename: "testdata/bks/empty.bksv1",
-        passwd: "", // store_password | 12345678
+        filename: "testdata/bks/christmas.bksv1",
+        passwd: "12345678", // store_password | 12345678
         typ: "private", // list | private | other
 
-        sealedType: "sealed_private_key",
-        sealedpasswd: "",
+        // sealed_private_key [private_password]
+        // sealed_public_key [public_password]
+        // sealed_secret_key [secret_password]
+        sealedType: "sealed_public_key",
+        sealedpasswd: "12345678",
     }
 
     return ShowBksData(conf)
@@ -49,7 +52,7 @@ func ShowBksData(conf bksConfig) error {
     passwd := conf.passwd
 
     // LoadUber | LoadBksFromBytes
-    ks, err := cryptobin_jceks.LoadUber([]byte(bksData), passwd)
+    ks, err := cryptobin_jceks.LoadBksFromBytes([]byte(bksData), passwd)
     if err != nil {
         return err
     }
@@ -97,7 +100,7 @@ func ShowBksData(conf bksConfig) error {
 
         date, err = ks.GetCreateDate("stored_value")
         certChain, err = ks.GetCertChain("stored_value")
-        secret, err = ks.GetSecretKey("stored_value")
+        secret, err = ks.GetSecret("stored_value")
 
         fmt.Println("===== secret =====")
         fmt.Printf("secret: %#v", secret)

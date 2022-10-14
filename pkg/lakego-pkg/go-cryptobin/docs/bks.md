@@ -85,7 +85,7 @@ func main() {
 
     cert, err := ks.GetCert(alias)
     certBytes, err := ks.GetCertBytes(alias)
-    secret, err = ks.GetSecretKey(alias)
+    secret, err = ks.GetSecret(alias)
 
     keyType, err := ks.GetKeyType(alias)
     privateKey, err := ks.GetKeyPrivate(alias)
@@ -202,7 +202,7 @@ func main() {
 
     cert, err := ks.GetCert(alias)
     certBytes, err := ks.GetCertBytes(alias)
-    secret, err = ks.GetSecretKey(alias)
+    secret, err = ks.GetSecret(alias)
 
     keyType, err := ks.GetKeyType(alias)
     privateKey, err := ks.GetKeyPrivate(alias)
