@@ -1,11 +1,12 @@
-package curve25519
+package ecdh
 
 import (
     "errors"
     "crypto/rand"
+    "crypto/ecdh"
     "encoding/pem"
 
-    "github.com/deatil/go-cryptobin/dhd/curve25519"
+    cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 )
@@ -28,15 +29,15 @@ var (
 
 // 生成私钥 pem 数据
 // 使用:
-// obj := New().GenerateKey("P2048")
+// obj := New().SetCurve("P256").GenerateKey()
 // priKey := obj.CreatePrivateKey().ToKeyString()
-func (this Curve25519) CreatePrivateKey() Curve25519 {
+func (this Ecdh) CreatePrivateKey() Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("Ecdh: [CreatePrivateKey()] privateKey error.")
         return this.AppendError(err)
     }
 
-    privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
+    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -53,7 +54,7 @@ func (this Curve25519) CreatePrivateKey() Curve25519 {
 
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any) Curve25519 {
+func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if len(opts) > 0 {
         switch optString := opts[0].(type) {
             case string:
@@ -70,9 +71,9 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
 
 // 生成私钥带密码 pem 数据
 // CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Curve25519 {
+func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
@@ -82,7 +83,7 @@ func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...
     }
 
     // 生成私钥
-    privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
+    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -105,14 +106,14 @@ func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg string) Curve25519 {
+func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
     // 生成私钥
-    privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
+    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -137,27 +138,27 @@ func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg stri
 }
 
 // 生成公钥 pem 数据
-func (this Curve25519) CreatePublicKey() Curve25519 {
-    var publicKey *curve25519.PublicKey
+func (this Ecdh) CreatePublicKey() Ecdh {
+    var publicKey *ecdh.PublicKey
 
     if this.publicKey == nil {
         if this.privateKey == nil {
-            err := errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
+            err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
             return this.AppendError(err)
         }
 
-        publicKey = &this.privateKey.PublicKey
+        publicKey = this.privateKey.PublicKey()
     } else {
         publicKey = this.publicKey
     }
 
-    publicKeyBytes, err := curve25519.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := cryptobin_ecdh.MarshalPublicKey(publicKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
-        Type: "PUBLIC KEY",
+        Type:  "PUBLIC KEY",
         Bytes: publicKeyBytes,
     }
 
@@ -167,18 +168,31 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 }
 
 // 根据公钥和私钥生成密钥
-func (this Curve25519) CreateSecretKey() Curve25519 {
+func (this Ecdh) CreateSecretKey(isCurve ...bool) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreateSecretKey()] privateKey error.")
+        err := errors.New("Ecdh: [CreateSecretKey()] privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Curve25519: [CreateSecretKey()] publicKey error.")
+        err := errors.New("Ecdh: [CreateSecretKey()] publicKey error.")
         return this.AppendError(err)
     }
 
-    this.secretData = curve25519.ComputeSecret(this.privateKey, this.publicKey)
+    // 使用私钥 Curve 作为核心生成密钥
+    curve := this.privateKey.Curve()
+
+    // 自定义
+    if len(isCurve) > 0 && isCurve[0] {
+        curve = this.curve
+    }
+
+    secretKey, err := curve.ECDH(this.privateKey, this.publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.secretData = secretKey
 
     return this
 }

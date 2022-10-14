@@ -28,6 +28,7 @@ import (
     _ "github.com/deatil/go-cryptobin/pkcs7/encrypt"
     _ "github.com/deatil/go-cryptobin/cryptobin/ca"
     _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
+    _ "github.com/deatil/go-cryptobin/cryptobin/ecdh"
     _ "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
     _ "github.com/deatil/go-cryptobin/cryptobin/eddsa"
     cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
@@ -374,13 +375,13 @@ func (this *Data) Error(ctx *gin.Context) {
     objSecret1 := obj.
         FromPrivateKeyWithPassword([]byte(objPri1), "123").
         FromPublicKey([]byte(objPub2)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     objSecret2 := obj.
         FromPrivateKeyWithPassword([]byte(objPri2), "123").
         FromPublicKey([]byte(objPub1)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     sliceData := slice.Min(12, 13)
@@ -388,14 +389,14 @@ func (this *Data) Error(ctx *gin.Context) {
     sshFile := "./runtime/key/webssh/id_rsa"
     sshkeyName, sshComment, _ := key.ParseSSHKey(sshFile, "")
 
-    jceksErr := key.ShowJks()
-    jceksErrData := ""
-    if jceksErr != nil {
-        jceksErrData = jceksErr.Error()
+    bksErr := key.ShowBks()
+    bksErrData := ""
+    if bksErr != nil {
+        bksErrData = bksErr.Error()
     }
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
-        "jceksErr": jceksErrData,
+        "bksErr": bksErrData,
 
         "sshkeyName": sshkeyName,
         "sshComment": sshComment,

@@ -7,26 +7,8 @@ import (
     "crypto"
 )
 
-// 编码
-type JksEncode struct {
-    // 别名
-    aliases      []string
-
-    // 证书
-    trustedCerts map[string][]byte
-
-    // 私钥
-    privateKeys  map[string][]byte
-
-    // 证书链
-    certChains   map[string][][]byte
-
-    // 时间
-    dates        map[string]time.Time
-}
-
 // 添加私钥
-func (this *JksEncode) AddPrivateKey(
+func (this *JKS) AddPrivateKey(
     alias string,
     privateKey crypto.PrivateKey,
     password string,
@@ -64,7 +46,7 @@ func (this *JksEncode) AddPrivateKey(
 }
 
 // 添加私钥
-func (this *JksEncode) AddEncodedPrivateKey(
+func (this *JKS) AddEncodedPrivateKey(
     alias string,
     encodedKey []byte,
     certChain [][]byte,
@@ -90,7 +72,7 @@ func (this *JksEncode) AddEncodedPrivateKey(
 }
 
 // 添加密钥
-func (this *JksEncode) AddTrustedCert(
+func (this *JKS) AddTrustedCert(
     alias string,
     cert []byte,
 ) error {
@@ -112,7 +94,7 @@ func (this *JksEncode) AddTrustedCert(
     return nil
 }
 
-func (this *JksEncode) Marshal(password string) ([]byte, error) {
+func (this *JKS) Marshal(password string) ([]byte, error) {
     buf := bytes.NewBuffer(nil)
 
     var err error

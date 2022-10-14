@@ -13,7 +13,7 @@ import (
 
 var (
     // DH 公钥 oid
-    oidPublicKeyDH = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 3, 1}
+    oidPublicKeyDH = asn1.ObjectIdentifier{1, 3, 132, 1, 12}
 
     oidNamedCurveP224 = asn1.ObjectIdentifier{1, 3, 132, 0, 33}
     oidNamedCurveP256 = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}

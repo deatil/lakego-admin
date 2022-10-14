@@ -35,3 +35,35 @@ func (this KeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
 
     return privateKey, nil
 }
+
+// ============
+
+// 包装公钥
+func (this KeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
+    pubKey, ok := publicKey.(*dsa.PublicKey)
+    if !ok {
+        return nil, errors.New("jceks: public key is err")
+    }
+
+    pkData, err := cryptobin_dsa.MarshalPKCS8PublicKey(pubKey)
+    if err != nil {
+        return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
+    }
+
+    return pkData, nil
+}
+
+// 解析公钥
+func (this KeyDSA) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
+    publicKey, err := cryptobin_dsa.ParsePKCS8PublicKey(pkData)
+    if err != nil {
+        return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
+    }
+
+    return publicKey, nil
+}
+
+// 名称
+func (this KeyDSA) Algorithm() string {
+    return "DSA"
+}

@@ -11,12 +11,7 @@ import (
     "crypto/x509"
 )
 
-// Jceks 解析
-type JceksDecode struct {
-    entries map[string]interface{}
-}
-
-func (this *JceksDecode) parsePrivateKey(r io.Reader) error {
+func (this *JCEKS) parsePrivateKey(r io.Reader) error {
     alias, err := readUTF(r)
     if err != nil {
         return err
@@ -63,7 +58,7 @@ func (this *JceksDecode) parsePrivateKey(r io.Reader) error {
     return nil
 }
 
-func (this *JceksDecode) parseTrustedCert(r io.Reader) error {
+func (this *JCEKS) parseTrustedCert(r io.Reader) error {
     alias, err := readUTF(r)
     if err != nil {
         return err
@@ -96,7 +91,7 @@ func (this *JceksDecode) parseTrustedCert(r io.Reader) error {
     return nil
 }
 
-func (this *JceksDecode) parseSecretKey(r io.Reader) error {
+func (this *JCEKS) parseSecretKey(r io.Reader) error {
     alias, err := readUTF(r)
     if err != nil {
         return err
@@ -119,7 +114,7 @@ func (this *JceksDecode) parseSecretKey(r io.Reader) error {
 }
 
 // 解析
-func (this *JceksDecode) Parse(r io.Reader, password string) error {
+func (this *JCEKS) Parse(r io.Reader, password string) error {
     var md hash.Hash
     if password != "" {
         md = getPreKeyedHash([]byte(password))
@@ -187,7 +182,7 @@ func (this *JceksDecode) Parse(r io.Reader, password string) error {
 }
 
 // GetPrivateKeyAndCerts
-func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
+func (this *JCEKS) GetPrivateKeyAndCerts(alias string, password string) (
     key crypto.PrivateKey,
     certs []*x509.Certificate,
     err error,
@@ -207,9 +202,9 @@ func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
             key, err = t.Recover([]byte(password))
             if err == nil {
                 for _, cert := range t.certs {
-                    parsedCert, parseErr := x509.ParseCertificate(cert)
-                    if parseErr != nil {
-                        err = parseErr
+                    var parsedCert *x509.Certificate
+                    parsedCert, err = x509.ParseCertificate(cert)
+                    if err != nil {
                         return
                     }
 
@@ -224,7 +219,7 @@ func (this *JceksDecode) GetPrivateKeyAndCerts(alias string, password string) (
 }
 
 // GetPrivateKeyAndCertsBytes
-func (this *JceksDecode) GetPrivateKeyAndCertsBytes(alias string, password string) (
+func (this *JCEKS) GetPrivateKeyAndCertsBytes(alias string, password string) (
     key crypto.PrivateKey,
     certs [][]byte,
     err error,
@@ -253,7 +248,7 @@ func (this *JceksDecode) GetPrivateKeyAndCertsBytes(alias string, password strin
 }
 
 // GetCert
-func (this *JceksDecode) GetCert(alias string) (*x509.Certificate, error) {
+func (this *JCEKS) GetCert(alias string) (*x509.Certificate, error) {
     entry, ok := this.entries[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -273,7 +268,7 @@ func (this *JceksDecode) GetCert(alias string) (*x509.Certificate, error) {
 }
 
 // GetCertBytes
-func (this *JceksDecode) GetCertBytes(alias string) ([]byte, error) {
+func (this *JCEKS) GetCertBytes(alias string) ([]byte, error) {
     entry, ok := this.entries[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -288,7 +283,7 @@ func (this *JceksDecode) GetCertBytes(alias string) ([]byte, error) {
 }
 
 // GetSecretKey
-func (this *JceksDecode) GetSecretKey(alias string, password string) (key []byte, err error) {
+func (this *JCEKS) GetSecretKey(alias string, password string) (key []byte, err error) {
     entry, ok := this.entries[alias]
     if !ok {
         err = errors.New("no data")
@@ -305,7 +300,7 @@ func (this *JceksDecode) GetSecretKey(alias string, password string) (key []byte
 }
 
 // ListPrivateKeys
-func (this *JceksDecode) ListPrivateKeys() []string {
+func (this *JCEKS) ListPrivateKeys() []string {
     var r []string
     for k, v := range this.entries {
         if _, ok := v.(*privateKeyEntry); ok {
@@ -316,7 +311,7 @@ func (this *JceksDecode) ListPrivateKeys() []string {
 }
 
 // ListCerts
-func (this *JceksDecode) ListCerts() []string {
+func (this *JCEKS) ListCerts() []string {
     var r []string
 
     for k, v := range this.entries {
@@ -329,7 +324,7 @@ func (this *JceksDecode) ListCerts() []string {
 }
 
 // ListSecretKeys lists the names of the SecretKey stored in the key store.
-func (this *JceksDecode) ListSecretKeys() []string {
+func (this *JCEKS) ListSecretKeys() []string {
     var r []string
 
     for k, v := range this.entries {
@@ -341,7 +336,7 @@ func (this *JceksDecode) ListSecretKeys() []string {
     return r
 }
 
-func (this *JceksDecode) String() string {
+func (this *JCEKS) String() string {
     var buf bytes.Buffer
 
     for k, v := range this.entries {

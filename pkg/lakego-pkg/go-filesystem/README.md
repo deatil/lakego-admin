@@ -35,7 +35,7 @@ func goFilesystem() {
     fs := filesystem.New(adapter)
 
     // 使用
-    fs.Write(path string, contents string) bool
+    fs.Write(path string, contents string) (bool, error)
 }
 ~~~
 
@@ -44,43 +44,43 @@ func goFilesystem() {
 
 ~~~go
 // 写入
-fs.Write(path, contents string) bool
+fs.Write(path, contents string) (bool, error)
 
 // 写入数据流
-fs.WriteStream(path string, resource io.Reader) bool
+fs.WriteStream(path string, resource io.Reader) (bool, error)
 
 // 添加数据
-fs.Put(path, contents string) bool
+fs.Put(path, contents string) (bool, error)
 
 // 添加数据流
-fs.PutStream(path string, resource io.Reader) bool
+fs.PutStream(path string, resource io.Reader) (bool, error)
 
 // 读取后删除
 fs.ReadAndDelete(path string) (any, error)
 
 // 更新
-fs.Update(path, contents string) bool
+fs.Update(path, contents string) (bool, error)
 
 // 读取
-fs.Read(path string) any
+fs.Read(path string) (string, error)
 
 // 重命名
-fs.Rename(path, newpath string) bool
+fs.Rename(path, newpath string) (bool, error)
 
 // 复制
-fs.Copy(path, newpath string) bool
+fs.Copy(path, newpath string) (bool, error)
 
 // 删除
-fs.Delete(path string) bool
+fs.Delete(path string) (bool, error)
 
 // 删除文件夹
-fs.DeleteDir(dirname string) bool
+fs.DeleteDir(dirname string) (bool, error)
 
 // 创建文件夹
-fs.CreateDir(dirname string) bool
+fs.CreateDir(dirname string) (bool, error)
 
 // 列出内容
-fs.ListContents(dirname string) bool
+fs.ListContents(dirname string) ([]map[string]any, error)
 ~~~
 
 

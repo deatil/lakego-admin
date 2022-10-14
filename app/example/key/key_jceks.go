@@ -4,6 +4,7 @@ import (
     "fmt"
     "bytes"
     "errors"
+    "crypto/x509"
     "encoding/pem"
     "encoding/asn1"
     "encoding/binary"
@@ -108,8 +109,14 @@ func ShowJksData(conf jksConfig) error {
             fmt.Println(err.Error())
         }
 
+        parsedCert, err := x509.ParseCertificate(certsBytes[0])
+        if err != nil {
+            fmt.Println("certsBytes parsedCert err =====")
+            fmt.Println(err.Error())
+        }
+
         fmt.Println("certsBytes =====")
-        fmt.Printf("%#v", certsBytes)
+        fmt.Printf("%#v", parsedCert)
         fmt.Println("")
 
         date, err := ks.GetCreateDate(alias)
@@ -250,7 +257,7 @@ func MakeJksTrustedCert() error {
 
 func ShowJceks() error {
     filename := "trusted-cert"
-    typ := "other" // private | secret | other
+    typ := "trusted" // private | secret | trusted
 
     return ShowJceksData(filename, typ)
 }
@@ -258,8 +265,8 @@ func ShowJceks() error {
 func ShowJceksData(filename string, typ string) error {
     fs := filesystem.New()
 
-    path := "./runtime/key/jceks/testdata/%s"
-    // path := "./runtime/key/jceks/testdata/newdata/%s"
+    // path := "./runtime/key/jceks/testdata/%s"
+    path := "./runtime/key/jceks/testdata/newdata/%s"
 
     jceksFile := fmt.Sprintf(path, filename + ".jceks")
     jceksData, _ := fs.Get(jceksFile)

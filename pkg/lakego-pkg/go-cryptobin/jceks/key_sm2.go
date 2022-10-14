@@ -35,3 +35,35 @@ func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
 
     return privateKey, nil
 }
+
+// ============
+
+// 包装公钥
+func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
+    pubKey, ok := publicKey.(*sm2.PublicKey)
+    if !ok {
+        return nil, errors.New("jceks: public key is err")
+    }
+
+    pkData, err := x509.MarshalSm2PublicKey(pubKey)
+    if err != nil {
+        return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
+    }
+
+    return pkData, nil
+}
+
+// 解析公钥
+func (this KeySM2) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
+    publicKey, err := x509.ParseSm2PublicKey(pkData)
+    if err != nil {
+        return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
+    }
+
+    return publicKey, nil
+}
+
+// 名称
+func (this KeySM2) Algorithm() string {
+    return "SM2"
+}

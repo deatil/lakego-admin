@@ -11,25 +11,7 @@ import (
     "crypto/x509"
 )
 
-// Jks 解析
-type JksDecode struct {
-    // 别名
-    aliases      []string
-
-    // 证书
-    trustedCerts map[string][]byte
-
-    // 私钥
-    privateKeys  map[string][]byte
-
-    // 证书链
-    certChains   map[string][][]byte
-
-    // 时间
-    dates        map[string]time.Time
-}
-
-func (this *JksDecode) parsePrivateKey(r io.Reader) error {
+func (this *JKS) parsePrivateKey(r io.Reader) error {
     alias, err := readUTF(r)
     if err != nil {
         return err
@@ -76,7 +58,7 @@ func (this *JksDecode) parsePrivateKey(r io.Reader) error {
     return nil
 }
 
-func (this *JksDecode) parseTrustedCert(r io.Reader) error {
+func (this *JKS) parseTrustedCert(r io.Reader) error {
     alias, err := readUTF(r)
     if err != nil {
         return err
@@ -108,7 +90,7 @@ func (this *JksDecode) parseTrustedCert(r io.Reader) error {
 }
 
 // 解析
-func (this *JksDecode) Parse(r io.Reader, password string) error {
+func (this *JKS) Parse(r io.Reader, password string) error {
     var md hash.Hash
     md = getJksPreKeyedHash([]byte(password))
     r = io.TeeReader(r, md)
@@ -174,7 +156,7 @@ func (this *JksDecode) Parse(r io.Reader, password string) error {
 }
 
 // GetPrivateKey
-func (this *JksDecode) GetPrivateKey(alias string, password string) (crypto.PrivateKey, error) {
+func (this *JKS) GetPrivateKey(alias string, password string) (crypto.PrivateKey, error) {
     encodedKey, ok := this.privateKeys[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -194,7 +176,7 @@ func (this *JksDecode) GetPrivateKey(alias string, password string) (crypto.Priv
 }
 
 // GetEncodedKey
-func (this *JksDecode) GetEncodedKey(alias string) ([]byte, error) {
+func (this *JKS) GetEncodedKey(alias string) ([]byte, error) {
     encodedKey, ok := this.privateKeys[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -204,7 +186,7 @@ func (this *JksDecode) GetEncodedKey(alias string) ([]byte, error) {
 }
 
 // GetCertChain
-func (this *JksDecode) GetCertChain(alias string) ([]*x509.Certificate, error) {
+func (this *JKS) GetCertChain(alias string) ([]*x509.Certificate, error) {
     chain, ok := this.certChains[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -225,7 +207,7 @@ func (this *JksDecode) GetCertChain(alias string) ([]*x509.Certificate, error) {
 }
 
 // GetCertChainBytes
-func (this *JksDecode) GetCertChainBytes(alias string) ([][]byte, error) {
+func (this *JKS) GetCertChainBytes(alias string) ([][]byte, error) {
     chain, ok := this.certChains[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -235,7 +217,7 @@ func (this *JksDecode) GetCertChainBytes(alias string) ([][]byte, error) {
 }
 
 // GetCert
-func (this *JksDecode) GetCert(alias string) (*x509.Certificate, error) {
+func (this *JKS) GetCert(alias string) (*x509.Certificate, error) {
     cert, ok := this.trustedCerts[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -250,7 +232,7 @@ func (this *JksDecode) GetCert(alias string) (*x509.Certificate, error) {
 }
 
 // GetCertBytes
-func (this *JksDecode) GetCertBytes(alias string) ([]byte, error) {
+func (this *JKS) GetCertBytes(alias string) ([]byte, error) {
     cert, ok := this.trustedCerts[alias]
     if !ok {
         return nil, errors.New("no data")
@@ -260,7 +242,7 @@ func (this *JksDecode) GetCertBytes(alias string) ([]byte, error) {
 }
 
 // GetCreateDate
-func (this *JksDecode) GetCreateDate(alias string) (time.Time, error) {
+func (this *JKS) GetCreateDate(alias string) (time.Time, error) {
     date, ok := this.dates[alias]
     if ok {
         return date, nil
@@ -270,7 +252,7 @@ func (this *JksDecode) GetCreateDate(alias string) (time.Time, error) {
 }
 
 // ListPrivateKeys
-func (this *JksDecode) ListPrivateKeys() []string {
+func (this *JKS) ListPrivateKeys() []string {
     var r []string
     for k, _ := range this.privateKeys {
         r = append(r, k)
@@ -280,7 +262,7 @@ func (this *JksDecode) ListPrivateKeys() []string {
 }
 
 // ListCerts
-func (this *JksDecode) ListCerts() []string {
+func (this *JKS) ListCerts() []string {
     var r []string
 
     for k, _ := range this.trustedCerts {
@@ -290,6 +272,6 @@ func (this *JksDecode) ListCerts() []string {
     return r
 }
 
-func (this *JksDecode) String() string {
+func (this *JKS) String() string {
     return "JKS Decode"
 }

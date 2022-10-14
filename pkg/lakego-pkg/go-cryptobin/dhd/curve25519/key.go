@@ -11,7 +11,7 @@ import (
 
 var (
     // DH 公钥 oid
-    oidPublicKeyDH = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 3, 1}
+    oidPublicKeyDH = asn1.ObjectIdentifier{1, 3, 132, 1, 12}
 )
 
 // 私钥 - 包装

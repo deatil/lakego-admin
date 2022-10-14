@@ -25,4 +25,20 @@ func init() {
     AddKey(GetStructName(&sm2.PrivateKey{}), func() Key {
         return new(KeySM2)
     })
+
+    AddKey(GetStructName(&dsa.PublicKey{}), func() Key {
+        return new(KeyDSA)
+    })
+    AddKey(GetStructName(&rsa.PublicKey{}), func() Key {
+        return new(KeyRsa)
+    })
+    AddKey(GetStructName(&ecdsa.PublicKey{}), func() Key {
+        return new(KeyEcdsa)
+    })
+    AddKey(GetStructName(ed25519.PublicKey{}), func() Key {
+        return new(KeyEdDSA)
+    })
+    AddKey(GetStructName(&sm2.PublicKey{}), func() Key {
+        return new(KeySM2)
+    })
 }

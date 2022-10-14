@@ -6,6 +6,17 @@ import (
     "encoding/binary"
 )
 
+func readUint8(r io.Reader) (uint8, error) {
+    var v uint8
+    err := binary.Read(r, binary.BigEndian, &v)
+
+    return v, err
+}
+
+func writeUint8(w io.Writer, v uint8) error {
+    return binary.Write(w, binary.BigEndian, v)
+}
+
 func readUint16(r io.Reader) (uint16, error) {
     var v uint16
     err := binary.Read(r, binary.BigEndian, &v)

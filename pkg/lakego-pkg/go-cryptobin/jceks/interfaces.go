@@ -22,11 +22,20 @@ type Cipher interface {
 
 // Key 接口
 type Key interface {
-    // 包装 PKCS8 证书
+    // 包装 PKCS8 私钥证书
     MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) (pkData []byte, err error)
 
-    // 解析 PKCS8 证书
+    // 解析 PKCS8 私钥证书
     ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error)
+
+    // 包装 PKCS8 公钥证书
+    MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error)
+
+    // 解析 PKCS8 公钥证书
+    ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error)
+
+    // 名称
+    Algorithm() string
 }
 
 var keys = make(map[string]func() Key)

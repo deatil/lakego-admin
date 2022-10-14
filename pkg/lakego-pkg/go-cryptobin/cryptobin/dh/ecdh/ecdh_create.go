@@ -167,14 +167,14 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 }
 
 // 根据公钥和私钥生成密钥
-func (this Ecdh) CreateSecret() Ecdh {
+func (this Ecdh) CreateSecretKey() Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreateSecret()] privateKey error.")
+        err := errors.New("Ecdh: [CreateSecretKey()] privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Ecdh: [CreateSecret()] publicKey error.")
+        err := errors.New("Ecdh: [CreateSecretKey()] publicKey error.")
         return this.AppendError(err)
     }
 

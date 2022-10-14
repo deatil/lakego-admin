@@ -44,14 +44,14 @@ func main() {
         FromPrivateKey([]byte(objPri1)).
         // FromPrivateKeyWithPassword([]byte(objPri1), "123").
         FromPublicKey([]byte(objPub2)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     objSecret2 := obj.
         FromPrivateKey([]byte(objPri2)).
         // FromPrivateKeyWithPassword([]byte(objPri2), "123").
         FromPublicKey([]byte(objPub1)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     dhStatus := false
@@ -107,14 +107,14 @@ func main() {
         FromPrivateKey([]byte(objPri1)).
         // FromPrivateKeyWithPassword([]byte(objPri1), "123").
         FromPublicKey([]byte(objPub2)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     objSecret2 := obj.
         FromPrivateKey([]byte(objPri2)).
         // FromPrivateKeyWithPassword([]byte(objPri2), "123").
         FromPublicKey([]byte(objPub1)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     dhStatus := false
@@ -168,14 +168,14 @@ func main() {
         FromPrivateKey([]byte(objPri1)).
         // FromPrivateKeyWithPassword([]byte(objPri1), "123").
         FromPublicKey([]byte(objPub2)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     objSecret2 := obj.
         FromPrivateKey([]byte(objPri2)).
         // FromPrivateKeyWithPassword([]byte(objPri2), "123").
         FromPublicKey([]byte(objPub1)).
-        CreateSecret().
+        CreateSecretKey().
         ToHexString()
 
     dhStatus := false

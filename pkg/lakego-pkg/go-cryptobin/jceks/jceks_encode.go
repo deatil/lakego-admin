@@ -8,39 +8,8 @@ import (
     "crypto"
 )
 
-type privateKeyEntryData struct {
-    date       time.Time
-    encodedKey []byte
-    certs      [][]byte
-}
-
-type trustedCertEntryData struct {
-    date time.Time
-    cert []byte
-}
-
-type secretKeyEntryData struct {
-    date       time.Time
-    encodedKey []byte
-}
-
-// 编码
-type JceksEncode struct {
-    // 私钥加证书
-    privateKeys  map[string]privateKeyEntryData
-
-    // 证书
-    trustedCerts map[string]trustedCertEntryData
-
-    // 密钥
-    secretKeys   map[string]secretKeyEntryData
-
-    // 数量统计
-    count        int
-}
-
 // 添加私钥
-func (this *JceksEncode) AddPrivateKey(
+func (this *JCEKS) AddPrivateKey(
     alias string,
     privateKey crypto.PrivateKey,
     password string,
@@ -53,35 +22,31 @@ func (this *JceksEncode) AddPrivateKey(
         return err
     }
 
-    data := privateKeyEntryData{}
-    data.date = time.Now()
-    data.encodedKey = encodedKey
-    data.certs = certs
+    entry.date = time.Now()
+    entry.encodedKey = encodedKey
+    entry.certs = certs
 
-    this.privateKeys[alias] = data
-    this.count++
+    this.entries[alias] = entry
 
     return nil
 }
 
 // 添加证书
-func (this *JceksEncode) AddTrustedCert(
+func (this *JCEKS) AddTrustedCert(
     alias string,
     cert []byte,
-    cipher ...Cipher,
 ) error {
-    data := trustedCertEntryData{}
-    data.date = time.Now()
-    data.cert = cert
+    entry := trustedCertEntry{}
+    entry.date = time.Now()
+    entry.cert = cert
 
-    this.trustedCerts[alias] = data
-    this.count++
+    this.entries[alias] = entry
 
     return nil
 }
 
 // 添加密钥
-func (this *JceksEncode) AddSecretKey(
+func (this *JCEKS) AddSecretKey(
     alias string,
     secretKey []byte,
     password string,
@@ -93,92 +58,54 @@ func (this *JceksEncode) AddSecretKey(
         return err
     }
 
-    data := secretKeyEntryData{}
-    data.date = time.Now()
-    data.encodedKey = encodedKey
+    entry.date = time.Now()
+    entry.encodedKey = encodedKey
 
-    this.secretKeys[alias] = data
-    this.count++
+    this.entries[alias] = entry
 
     return nil
 }
 
-func (this *JceksEncode) marshalPrivateKey(w io.Writer) error {
-    for alias, data := range this.privateKeys {
-        certLen := len(data.certs)
-        if certLen == 0 {
-            return errors.New("privateKey cert is empty.")
-        }
-
-        var err error
-
-        err = writeInt32(w, int32(jceksPrivateKeyId))
-        if err != nil {
-            return err
-        }
-
-        err = writeUTF(w, alias)
-        if err != nil {
-            return err
-        }
-
-        err = writeDate(w, data.date)
-        if err != nil {
-            return err
-        }
-
-        err = writeBytes(w, data.encodedKey)
-        if err != nil {
-            return err
-        }
-
-        err = writeInt32(w, int32(certLen))
-        if err != nil {
-            return err
-        }
-
-        for _, cert := range data.certs {
-            err = writeUTF(w, certType)
-            if err != nil {
-                return err
-            }
-
-            err = writeBytes(w, cert)
-            if err != nil {
-                return err
-            }
-        }
-
+func (this *JCEKS) marshalPrivateKey(w io.Writer, alias string, data privateKeyEntry) error {
+    certLen := len(data.certs)
+    if certLen == 0 {
+        return errors.New("privateKey cert is empty.")
     }
 
-    return nil
-}
+    var err error
 
-func (this *JceksEncode) marshalTrustedCert(w io.Writer) error {
-    for alias, data := range this.trustedCerts {
-        var err error
+    err = writeInt32(w, int32(jceksPrivateKeyId))
+    if err != nil {
+        return err
+    }
 
-        err = writeInt32(w, int32(jceksTrustedCertId))
-        if err != nil {
-            return err
-        }
+    err = writeUTF(w, alias)
+    if err != nil {
+        return err
+    }
 
-        err = writeUTF(w, alias)
-        if err != nil {
-            return err
-        }
+    err = writeDate(w, data.date)
+    if err != nil {
+        return err
+    }
 
-        err = writeDate(w, data.date)
-        if err != nil {
-            return err
-        }
+    err = writeBytes(w, data.encodedKey)
+    if err != nil {
+        return err
+    }
 
+    err = writeInt32(w, int32(certLen))
+    if err != nil {
+        return err
+    }
+
+    for _, cert := range data.certs {
         err = writeUTF(w, certType)
         if err != nil {
             return err
         }
 
-        err = writeBytes(w, data.cert)
+        err = writeBytes(w, cert)
         if err != nil {
             return err
         }
@@ -187,35 +114,64 @@ func (this *JceksEncode) marshalTrustedCert(w io.Writer) error {
     return nil
 }
 
-func (this *JceksEncode) marshalSecretKey(w io.Writer) error {
-    for alias, data := range this.secretKeys {
-        var err error
+func (this *JCEKS) marshalTrustedCert(w io.Writer, alias string, data trustedCertEntry) error {
+    var err error
 
-        err = writeInt32(w, int32(jceksSecretKeyId))
-        if err != nil {
-            return err
-        }
+    err = writeInt32(w, int32(jceksTrustedCertId))
+    if err != nil {
+        return err
+    }
 
-        err = writeUTF(w, alias)
-        if err != nil {
-            return err
-        }
+    err = writeUTF(w, alias)
+    if err != nil {
+        return err
+    }
 
-        err = writeDate(w, data.date)
-        if err != nil {
-            return err
-        }
+    err = writeDate(w, data.date)
+    if err != nil {
+        return err
+    }
 
-        err = writeBytes(w, data.encodedKey)
-        if err != nil {
-            return err
-        }
+    err = writeUTF(w, certType)
+    if err != nil {
+        return err
+    }
+
+    err = writeBytes(w, data.cert)
+    if err != nil {
+        return err
     }
 
     return nil
 }
 
-func (this *JceksEncode) Marshal(password string) ([]byte, error) {
+func (this *JCEKS) marshalSecretKey(w io.Writer, alias string, data secretKeyEntry) error {
+    var err error
+
+    err = writeInt32(w, int32(jceksSecretKeyId))
+    if err != nil {
+        return err
+    }
+
+    err = writeUTF(w, alias)
+    if err != nil {
+        return err
+    }
+
+    err = writeDate(w, data.date)
+    if err != nil {
+        return err
+    }
+
+    err = writeBytes(w, data.encodedKey)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+func (this *JCEKS) Marshal(password string) ([]byte, error) {
     buf := bytes.NewBuffer(nil)
 
     var err error
@@ -225,22 +181,23 @@ func (this *JceksEncode) Marshal(password string) ([]byte, error) {
         return nil, err
     }
 
-    err = writeInt32(buf, int32(this.count))
+    count := len(this.entries)
+    err = writeInt32(buf, int32(count))
     if err != nil {
         return nil, err
     }
 
-    err = this.marshalPrivateKey(buf)
-    if err != nil {
-        return nil, err
+    for alias, entry := range this.entries {
+        switch e := entry.(type) {
+            case privateKeyEntry:
+                err = this.marshalPrivateKey(buf, alias, e)
+            case trustedCertEntry:
+                err = this.marshalTrustedCert(buf, alias, e)
+            case secretKeyEntry:
+                err = this.marshalSecretKey(buf, alias, e)
+        }
     }
 
-    err = this.marshalTrustedCert(buf)
-    if err != nil {
-        return nil, err
-    }
-
-    err = this.marshalSecretKey(buf)
     if err != nil {
         return nil, err
     }

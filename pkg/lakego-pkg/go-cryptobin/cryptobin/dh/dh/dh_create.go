@@ -167,14 +167,14 @@ func (this Dh) CreatePublicKey() Dh {
 }
 
 // 根据公钥和私钥生成密钥
-func (this Dh) CreateSecret() Dh {
+func (this Dh) CreateSecretKey() Dh {
     if this.privateKey == nil {
-        err := errors.New("Dh: [CreateSecret()] privateKey error.")
+        err := errors.New("Dh: [CreateSecretKey()] privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Dh: [CreateSecret()] publicKey error.")
+        err := errors.New("Dh: [CreateSecretKey()] publicKey error.")
         return this.AppendError(err)
     }
 

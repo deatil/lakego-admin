@@ -4,6 +4,11 @@ import (
     "fmt"
     "hash"
     "bytes"
+
+    "golang.org/x/text/encoding/unicode"
+    "golang.org/x/text/transform"
+
+    "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )
 
 func formatPassword(password []byte) []byte {
@@ -69,4 +74,49 @@ func derivedKey(
     iv := derivedKey[keyLen:]
 
     return cipherKey, iv
+}
+
+func bksFormatPassword(password []byte) []byte {
+    if len(password) == 0 {
+        return password
+    }
+
+    passwordUTF16BE, _, _ := transform.Bytes(unicode.UTF16(unicode.BigEndian, unicode.IgnoreBOM).NewEncoder(), password)
+    passwordUTF16BE = append(passwordUTF16BE, []byte{0x00, 0x00}...)
+
+    return passwordUTF16BE
+}
+
+// 生成密钥
+func derivedKeyWithPbkdf(
+    password string,
+    salt string,
+    iter int,
+    keyLen int,
+    ivLen int,
+    h func() hash.Hash,
+) ([]byte, []byte) {
+    passwdBytes := bksFormatPassword([]byte(password))
+    saltBytes := []byte(salt)
+
+    key := pbkdf.Key(h, 20, 64, saltBytes, passwdBytes, iter, 1, keyLen)
+    iv := pbkdf.Key(h, 20, 64, saltBytes, passwdBytes, iter, 2, ivLen)
+
+    return key, iv
+}
+
+// 生成密钥
+func derivedHmacKey(
+    password string,
+    salt string,
+    iter int,
+    keyLen int,
+    h func() hash.Hash,
+) []byte {
+    passwdBytes := bksFormatPassword([]byte(password))
+    saltBytes := []byte(salt)
+
+    hmacKey := pbkdf.Key(h, 20, 64, saltBytes, passwdBytes, iter, 3, keyLen)
+
+    return hmacKey
 }
