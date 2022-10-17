@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    cryptobin_ecdh "github.com/deatil/go-cryptobin/dhd/ecdh"
+    cryptobin_ecdh "github.com/deatil/go-cryptobin/dh/ecdh"
 )
 
 // 构造函数

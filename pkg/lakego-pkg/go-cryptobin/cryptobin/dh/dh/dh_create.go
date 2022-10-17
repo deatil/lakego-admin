@@ -5,7 +5,7 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    "github.com/deatil/go-cryptobin/dhd/dh"
+    "github.com/deatil/go-cryptobin/dh/dh"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 )

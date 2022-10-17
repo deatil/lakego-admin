@@ -472,24 +472,12 @@ func (this *BKS) ListCerts() []string {
     return r
 }
 
-// ListSecretKeys lists the names of the SecretKey stored in the key store.
-func (this *BKS) ListSecretKeys() []string {
+// ListSecrets lists the names of the SecretKey stored in the key store.
+func (this *BKS) ListSecrets() []string {
     var r []string
 
     for k, v := range this.entries {
         if _, ok := v.(*bksSecretKeyEntry); ok {
-            r = append(r, k)
-        }
-    }
-
-    return r
-}
-
-// ListSealedKeys
-func (this *BKS) ListSealedKeys() []string {
-    var r []string
-    for k, v := range this.entries {
-        if _, ok := v.(*bksSealedKeyEntry); ok {
             r = append(r, k)
         }
     }
@@ -502,6 +490,18 @@ func (this *BKS) ListKeys() []string {
     var r []string
     for k, v := range this.entries {
         if _, ok := v.(*bksKeyEntry); ok {
+            r = append(r, k)
+        }
+    }
+
+    return r
+}
+
+// ListSealedKeys
+func (this *BKS) ListSealedKeys() []string {
+    var r []string
+    for k, v := range this.entries {
+        if _, ok := v.(*bksSealedKeyEntry); ok {
             r = append(r, k)
         }
     }

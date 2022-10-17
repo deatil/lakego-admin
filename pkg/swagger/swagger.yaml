@@ -13,6 +13,24 @@ info:
   title: lakego-admin API文档
   version: 1.0.3
 paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: 默认模块首页信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      summary: 默认模块首页
+      tags:
+      - 默认模块
+      x-lakego:
+        slug: lakego-admin.index.index
   /action-log:
     get:
       consumes:

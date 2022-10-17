@@ -25,7 +25,7 @@ func ShowBks() error {
         // custom_entry_passwords.bksv1 | christmas.bksv2 | uber
         filename: "testdata/bks/christmas.bksv1",
         passwd: "12345678", // store_password | 12345678
-        typ: "private", // list | private | other
+        typ: "list", // list | private | other
 
         // sealed_private_key [private_password]
         // sealed_public_key [public_password]
@@ -151,22 +151,22 @@ func ShowBksData(conf bksConfig) error {
         fmt.Printf("%#v", certsAliases)
         fmt.Println("")
 
-        secretKeysAliases := ks.ListSecretKeys()
+        secretsAliases := ks.ListSecrets()
 
-        fmt.Println("===== secretKeysAliases =====")
-        fmt.Printf("%#v", secretKeysAliases)
-        fmt.Println("")
-
-        sealedKeysAliases := ks.ListSealedKeys()
-
-        fmt.Println("===== sealedKeysAliases =====")
-        fmt.Printf("%#v", sealedKeysAliases)
+        fmt.Println("===== secretsAliases =====")
+        fmt.Printf("%#v", secretsAliases)
         fmt.Println("")
 
         keyAliases := ks.ListKeys()
 
         fmt.Println("===== keyAliases =====")
         fmt.Printf("%#v", keyAliases)
+        fmt.Println("")
+
+        sealedKeysAliases := ks.ListSealedKeys()
+
+        fmt.Println("===== sealedKeysAliases =====")
+        fmt.Printf("%#v", sealedKeysAliases)
         fmt.Println("")
     } else {
 

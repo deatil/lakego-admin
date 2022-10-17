@@ -1,7 +1,7 @@
 package dh
 
 import (
-    "github.com/deatil/go-cryptobin/dhd/dh"
+    "github.com/deatil/go-cryptobin/dh/dh"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )

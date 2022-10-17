@@ -104,16 +104,16 @@ func main() {
     var certsAliases []string
     certsAliases := ks.ListCerts()
 
-    var secretKeysAliases []string
-    secretKeysAliases := ks.ListSecretKeys()
-
-    // 加密的别名列表
-    var sealedKeysAliases []string
-    sealedKeysAliases := ks.ListSealedKeys()
+    var secretsAliases []string
+    secretsAliases := ks.ListSecrets()
 
     // 未加密的别名列表
     var keysAliases []string
     keysAliases := ks.ListKeys()
+
+    // 加密的别名列表
+    var sealedKeysAliases []string
+    sealedKeysAliases := ks.ListSealedKeys()
 
     fmt.Println("解析 bks 成功")
 }
@@ -221,16 +221,16 @@ func main() {
     var certsAliases []string
     certsAliases := ks.ListCerts()
 
-    var secretKeysAliases []string
-    secretKeysAliases := ks.ListSecretKeys()
-
-    // 加密的别名列表
-    var sealedKeysAliases []string
-    sealedKeysAliases := ks.ListSealedKeys()
+    var secretsAliases []string
+    secretsAliases := ks.ListSecrets()
 
     // 未加密的别名列表
     var keysAliases []string
     keysAliases := ks.ListKeys()
+
+    // 加密的别名列表
+    var sealedKeysAliases []string
+    sealedKeysAliases := ks.ListSealedKeys()
 
     fmt.Println("解析 uber 成功")
 }

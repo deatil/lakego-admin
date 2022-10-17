@@ -3,7 +3,7 @@ package dh
 import (
     "math/big"
 
-    "github.com/deatil/go-cryptobin/dhd/dh"
+    "github.com/deatil/go-cryptobin/dh/dh"
 )
 
 // 设置 PrivateKey

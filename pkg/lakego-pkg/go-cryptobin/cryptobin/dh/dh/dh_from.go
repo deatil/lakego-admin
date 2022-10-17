@@ -4,7 +4,7 @@ import (
     "math/big"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/dhd/dh"
+    "github.com/deatil/go-cryptobin/dh/dh"
 )
 
 // 私钥

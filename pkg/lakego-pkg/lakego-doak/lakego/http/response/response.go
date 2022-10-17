@@ -75,9 +75,7 @@ func (this *Response) ReturnString(contents string) {
 }
 
 // 返回 json
-func (this *Response) ReturnJson(data router.H) {
-    // this.ctx.JSON(this.httpCode, data)
-
+func (this *Response) ReturnJson(data any) {
     // 输出未转义的原始字符
     this.ctx.PureJSON(this.httpCode, data)
 }
@@ -170,6 +168,11 @@ func (this *Response) Render(code int, r router.Render) {
 // HTML
 func (this *Response) HTML(code int, name string, obj any) {
     this.ctx.HTML(code, name, obj)
+}
+
+// JSON
+func (this *Response) JSON(code int, obj any) {
+    this.ctx.JSON(code, obj)
 }
 
 // IndentedJSON

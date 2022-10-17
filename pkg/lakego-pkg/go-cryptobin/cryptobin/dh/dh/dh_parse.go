@@ -8,7 +8,7 @@ import (
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 
-    "github.com/deatil/go-cryptobin/dhd/dh"
+    "github.com/deatil/go-cryptobin/dh/dh"
 )
 
 var (

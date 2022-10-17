@@ -1,7 +1,7 @@
 package curve25519
 
 import (
-    "github.com/deatil/go-cryptobin/dhd/curve25519"
+    "github.com/deatil/go-cryptobin/dh/curve25519"
 )
 
 // 设置 PrivateKey

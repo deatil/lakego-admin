@@ -1,7 +1,7 @@
 package dh
 
 import (
-    cryptobin_dh "github.com/deatil/go-cryptobin/dhd/dh"
+    cryptobin_dh "github.com/deatil/go-cryptobin/dh/dh"
 )
 
 // 构造函数

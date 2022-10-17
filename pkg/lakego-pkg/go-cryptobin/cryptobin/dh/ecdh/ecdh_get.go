@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    "github.com/deatil/go-cryptobin/dhd/ecdh"
+    "github.com/deatil/go-cryptobin/dh/ecdh"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )

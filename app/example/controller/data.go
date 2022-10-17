@@ -180,20 +180,24 @@ func (this *Data) Error(ctx *gin.Context) {
         ToDatetimeString()
 
     // 加密测试
+    var cyptErrs []error
     cypt := cryptobin_crypto.
         FromString("test-pass").
-        SetKey("123").
+        SetKey("asdfasdfasdfasdf").
         SetIv("asdfasdf").
-        RC2().
+        RC5(uint(32), uint(30)).
         CBC().
         ZeroPadding().
         Encrypt().
+        OnError(func(errs []error) {
+            cyptErrs = errs
+        }).
         ToBase64String()
     cyptde := cryptobin_crypto.
-        FromBase64String("DzZK5nJaBHR3WZu6RBNq+Q==").
-        SetKey("123").
+        FromBase64String("h7gIVv1dMZMgmXEFala0Wg==").
+        SetKey("asdfasdfasdfasdf").
         SetIv("asdfasdf").
-        RC2().
+        RC5(uint(32), uint(30)).
         CBC().
         ZeroPadding().
         Decrypt().
@@ -449,6 +453,8 @@ func (this *Data) Error(ctx *gin.Context) {
 
         "cypt": cypt,
         "cyptde": cyptde,
+        "cyptErr": cyptErrs,
+        // "cyptErr": cyptErrs[0].Error(),
 
         "rsaPriKey": rsaPriKey,
         "rsaPubKey": rsaPubKey,

@@ -1,7 +1,7 @@
 package curve25519
 
 import (
-    cryptobin_curve25519 "github.com/deatil/go-cryptobin/dhd/curve25519"
+    cryptobin_curve25519 "github.com/deatil/go-cryptobin/dh/curve25519"
 )
 
 /**

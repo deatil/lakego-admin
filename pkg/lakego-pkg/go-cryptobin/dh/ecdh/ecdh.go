@@ -4,15 +4,107 @@ import (
     "io"
     "errors"
     "math/big"
+    "crypto"
     "crypto/elliptic"
-    cryptorand "crypto/rand"
+    crypto_rand "crypto/rand"
+)
+
+type (
+    Curve = elliptic.Curve
+)
+
+var (
+    // 方式
+    P521 = elliptic.P521
+    P384 = elliptic.P384
+    P256 = elliptic.P256
+    P224 = elliptic.P224
 )
 
 // 公钥
-type PublicKey []byte
+type PublicKey struct {
+    elliptic.Curve
+
+    Y []byte
+}
+
+// 检测
+func (this *PublicKey) Check() (err error) {
+    x, y := unmarshal(this.Curve, this.Y)
+    if !this.Curve.IsOnCurve(x, y) {
+        err = errors.New("peer's public key is not on curve")
+    }
+
+    return
+}
 
 // 私钥
-type PrivateKey []byte
+type PrivateKey struct {
+    PublicKey
+
+    X []byte
+}
+
+func (this *PrivateKey) Public() crypto.PublicKey {
+    return &this.PublicKey
+}
+
+// 生成密码
+func (this *PrivateKey) ComputeSecret(peersPublic *PublicKey) (secret []byte) {
+    return ComputeSecret(this, peersPublic)
+}
+
+// 生成密钥对
+func GenerateKey(curve elliptic.Curve, rand io.Reader) (*PrivateKey, *PublicKey, error) {
+    if rand == nil {
+        rand = crypto_rand.Reader
+    }
+
+    priv, x, y, err := elliptic.GenerateKey(curve, rand)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    public := &PublicKey{}
+    public.Y = elliptic.Marshal(curve, x, y)
+    public.Curve = curve
+
+    private := &PrivateKey{}
+    private.X = priv
+    private.PublicKey = *public
+
+    return private, public, nil
+}
+
+// 从私钥获取公钥
+func GeneratePublicKey(private *PrivateKey) (*PublicKey, error) {
+    curve := private.Curve
+
+    N := curve.Params().N
+
+    if new(big.Int).SetBytes(private.X).Cmp(N) >= 0 {
+        err := errors.New("ecdh: private key cannot used with given curve")
+        return nil, err
+    }
+
+    x, y := curve.ScalarBaseMult(private.X)
+
+    public := &PublicKey{}
+    public.Y = elliptic.Marshal(curve, x, y)
+    public.Curve = curve
+
+    return public, nil
+}
+
+// 生成密码
+func ComputeSecret(private *PrivateKey, peersPublic *PublicKey) (secret []byte) {
+    x, y := unmarshal(private.Curve, peersPublic.Y)
+
+    sX, _ := private.Curve.ScalarMult(x, y, private.X)
+
+    secret = sX.Bytes()
+    return
+}
 
 // 解出 x,y 数据
 func unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
@@ -30,77 +122,3 @@ func unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
     return
 }
 
-// ecdh
-type Ecdh struct {
-    curve elliptic.Curve
-}
-
-// 生成密钥对
-func (this Ecdh) GenerateKey(rand io.Reader) (private PrivateKey, public PublicKey, err error) {
-    if rand == nil {
-        rand = cryptorand.Reader
-    }
-
-    private, x, y, err := elliptic.GenerateKey(this.curve, rand)
-    if err != nil {
-        private = nil
-        return
-    }
-
-    public = elliptic.Marshal(this.curve, x, y)
-    return
-}
-
-// 生成公钥
-func (this Ecdh) PublicKey(private PrivateKey) (public PublicKey) {
-    N := this.curve.Params().N
-
-    if new(big.Int).SetBytes(private).Cmp(N) >= 0 {
-        panic("ecdh: private key cannot used with given curve")
-    }
-
-    x, y := this.curve.ScalarBaseMult(private)
-    public = elliptic.Marshal(this.curve, x, y)
-    return
-}
-
-// 检测
-func (this Ecdh) Check(peersPublic PublicKey) (err error) {
-    x, y := unmarshal(this.curve, peersPublic)
-    if !this.curve.IsOnCurve(x, y) {
-        err = errors.New("peer's public key is not on curve")
-    }
-
-    return
-}
-
-// 生成密码
-func (this Ecdh) ComputeSecret(private PrivateKey, peersPublic PublicKey) (secret []byte) {
-    x, y := unmarshal(this.curve, peersPublic)
-
-    sX, _ := this.curve.ScalarMult(x, y, private)
-
-    secret = sX.Bytes()
-    return
-}
-
-// 构造函数
-// 可选 [P521 | P384 | P256 | P224]
-func New(curve string) Ecdh {
-    var c elliptic.Curve
-
-    switch curve {
-        case "P521":
-            c = elliptic.P521()
-        case "P384":
-            c = elliptic.P384()
-        case "P256":
-            c = elliptic.P256()
-        case "P224":
-            c = elliptic.P224()
-        default:
-            c = elliptic.P256()
-    }
-
-    return Ecdh{curve: c}
-}

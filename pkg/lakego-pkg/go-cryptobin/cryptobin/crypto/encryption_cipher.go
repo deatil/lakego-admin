@@ -16,6 +16,7 @@ import (
     "github.com/tjfoc/gmsm/sm4"
 
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
+    cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
     cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
@@ -265,6 +266,22 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
         case "RC2":
             // RC2 key, at least 1 byte and at most 128 bytes.
             block, err = cryptobin_rc2.NewCipher(key, len(key)*8)
+        case "RC5":
+            // wordSize is 32 or 64
+            wordSize, ok := this.config["wordSize"]
+            if !ok {
+                wordSize = uint(32)
+            }
+
+            // rounds at least 8 byte and at most 127 bytes.
+            rounds, ok := this.config["rounds"]
+            if ok {
+                rounds = uint(64)
+            }
+
+            // RC5 key is 16, 24 or 32 bytes.
+            // iv is 8 with 32, 16 with 64
+            block, err = cryptobin_rc5.NewCipher(key, wordSize.(uint), rounds.(uint))
         case "SM4":
             // 国密 sm4 加密
             block, err = sm4.NewCipher(key)
