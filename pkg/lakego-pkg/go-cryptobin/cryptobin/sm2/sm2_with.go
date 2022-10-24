@@ -18,6 +18,26 @@ func (this SM2) WithPublicKey(data *sm2.PublicKey) SM2 {
     return this
 }
 
+// 设置 mode
+func (this SM2) WithMode(data int) SM2 {
+    this.mode = data
+
+    return this
+}
+
+// 设置 mode
+// C1C3C2 | C1C2C3
+func (this SM2) SetMode(data string) SM2 {
+    switch data {
+        case "C1C3C2":
+            this.mode = sm2.C1C3C2
+        case "C1C2C3":
+            this.mode = sm2.C1C2C3
+    }
+
+    return this
+}
+
 // 设置 data
 func (this SM2) WithData(data []byte) SM2 {
     this.data = data

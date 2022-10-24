@@ -86,6 +86,11 @@ func (this SM2) GetKeyData() []byte {
     return this.keyData
 }
 
+// 获取 mode
+func (this SM2) GetMode() int {
+    return this.mode
+}
+
 // 获取 data
 func (this SM2) GetData() []byte {
     return this.data

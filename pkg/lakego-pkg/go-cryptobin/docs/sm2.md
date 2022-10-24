@@ -76,12 +76,14 @@ func main() {
     sm2cypt := sm2.
         FromString("test-pass").
         FromPublicKey([]byte(enkey2)).
+        SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Encrypt().
         ToBase64String()
     dekey2, _ := fs.Get("./runtime/key/sm2_key")
     sm2cyptde := sm2.
         FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
         FromPrivateKey([]byte(dekey2)).
+        SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Decrypt().
         ToString()
 

@@ -84,17 +84,25 @@ func (this Errors) Each(fn func(int, error)) {
     }
 }
 
-// 返回第一个错误字符
+// 实现 error 接口
 func (this Errors) Error() string {
-    err := this.First()
-    if err != nil {
-        return err.Error()
+    err := ""
+
+    i := 1
+    for _, v := range this.errors {
+        if i == 1 {
+            err = v.Error() + ";"
+        } else {
+            err += v.Error() + ";"
+        }
+
+        i++
     }
 
-    return ""
+    return err
 }
 
-// 返回第一个错误字符
+// 返回全部错误字符
 func (this Errors) String() string {
     return this.Error()
 }

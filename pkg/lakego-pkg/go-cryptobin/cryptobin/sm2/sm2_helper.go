@@ -3,6 +3,7 @@ package sm2
 // 构造函数
 func NewSM2() SM2 {
     return SM2{
+        mode:   0,
         verify: false,
         Errors: make([]error, 0),
     }

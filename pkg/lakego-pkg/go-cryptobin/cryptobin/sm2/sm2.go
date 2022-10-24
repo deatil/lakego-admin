@@ -17,6 +17,9 @@ type SM2 struct {
     // 公钥
     publicKey *sm2.PublicKey
 
+    // 加密模式
+    mode int
+
     // [私钥/公钥]数据
     keyData []byte
 

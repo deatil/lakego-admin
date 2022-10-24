@@ -28,7 +28,7 @@ import (
     _ "github.com/deatil/go-cryptobin/pkcs7/encrypt"
     _ "github.com/deatil/go-cryptobin/cryptobin/ca"
     _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
-    _ "github.com/deatil/go-cryptobin/cryptobin/ecdh"
+    // _ "github.com/deatil/go-cryptobin/cryptobin/ecdh"
     _ "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
     _ "github.com/deatil/go-cryptobin/cryptobin/eddsa"
     cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
