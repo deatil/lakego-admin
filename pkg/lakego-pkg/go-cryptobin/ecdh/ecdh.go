@@ -14,10 +14,10 @@ var (
     // ECMQV
     oidPublicKeyECMQV = asn1.ObjectIdentifier{1, 3, 132, 1, 13}
 
-    oidNamedCurveP256   = "P-256"
-    oidNamedCurveP384   = "P-384"
-    oidNamedCurveP521   = "P-521"
-    oidNamedCurveX25519 = "X25519"
+    namedCurveP256   = "P-256"
+    namedCurveP384   = "P-384"
+    namedCurveP521   = "P-521"
+    namedCurveX25519 = "X25519"
 )
 
 // 私钥 - 包装
@@ -46,7 +46,7 @@ func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
-    oid, ok := oidFromNamedCurve(key.Curve())
+    oid, ok := nameFromNamedCurve(key.Curve())
     if !ok {
         return nil, errors.New("x509: unsupported ecdh curve")
     }
@@ -95,8 +95,8 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
     // 解析
     keyData := &pki
 
-    var namedCurveOID []byte
-    rest, err = asn1.Unmarshal(keyData.Algorithm.Parameters.FullBytes, &namedCurveOID)
+    var curveName []byte
+    rest, err = asn1.Unmarshal(keyData.Algorithm.Parameters.FullBytes, &curveName)
     if err != nil {
         return
     }
@@ -106,7 +106,7 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
         return
     }
 
-    namedCurve := namedCurveFromOID(string(namedCurveOID))
+    namedCurve := namedCurveFromName(string(curveName))
     if namedCurve == nil {
         err = errors.New("ecdh: unsupported ecdh curve")
         return
@@ -128,7 +128,7 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
 func MarshalPrivateKey(key *ecdh.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
-    oid, ok := oidFromNamedCurve(key.Curve())
+    oid, ok := nameFromNamedCurve(key.Curve())
     if !ok {
         return nil, errors.New("x509: unsupported ecdh curve")
     }
@@ -167,8 +167,8 @@ func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
         return nil, err
     }
 
-    var namedCurveOID []byte
-    rest, err := asn1.Unmarshal(privKey.Algo.Parameters.FullBytes, &namedCurveOID)
+    var curveName []byte
+    rest, err := asn1.Unmarshal(privKey.Algo.Parameters.FullBytes, &curveName)
     if err != nil {
         return nil, err
     }
@@ -178,7 +178,7 @@ func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
         return nil, err
     }
 
-    namedCurve := namedCurveFromOID(string(namedCurveOID))
+    namedCurve := namedCurveFromName(string(curveName))
     if namedCurve == nil {
         err = errors.New("ecdh: unsupported ecdh curve")
         return nil, err
@@ -194,31 +194,31 @@ func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
 
 // ====================
 
-func namedCurveFromOID(oid string) ecdh.Curve {
-    switch oid {
-        case oidNamedCurveP256:
+func namedCurveFromName(name string) ecdh.Curve {
+    switch name {
+        case namedCurveP256:
             return ecdh.P256()
-        case oidNamedCurveP384:
+        case namedCurveP384:
             return ecdh.P384()
-        case oidNamedCurveP521:
+        case namedCurveP521:
             return ecdh.P521()
-        case oidNamedCurveX25519:
+        case namedCurveX25519:
             return ecdh.X25519()
     }
 
     return nil
 }
 
-func oidFromNamedCurve(curve ecdh.Curve) (string, bool) {
+func nameFromNamedCurve(curve ecdh.Curve) (string, bool) {
     switch curve {
         case ecdh.P256():
-            return oidNamedCurveP256, true
+            return namedCurveP256, true
         case ecdh.P384():
-            return oidNamedCurveP384, true
+            return namedCurveP384, true
         case ecdh.P521():
-            return oidNamedCurveP521, true
+            return namedCurveP521, true
         case ecdh.X25519():
-            return oidNamedCurveX25519, true
+            return namedCurveX25519, true
     }
 
     return "", false

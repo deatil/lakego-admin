@@ -14,7 +14,7 @@ import (
     _ "github.com/deatil/lakego-doak-monitor/monitor/bootstrap"
 
     // API 文档
-    _ "github.com/deatil/lakego-admin/pkg/swagger"
+    _ "github.com/deatil/lakego-admin/swagger"
     _ "github.com/deatil/lakego-doak-swagger/swagger/bootstrap"
 
     // 静态文件代理模块

@@ -11,7 +11,7 @@ info:
     url: https://github.com/deatil/lakego-admin/blob/main/LICENSE
   termsOfService: https://github.com/deatil
   title: lakego-admin API文档
-  version: 1.0.3
+  version: 1.0.5
 paths:
   /:
     get:

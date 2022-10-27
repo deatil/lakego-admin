@@ -44,7 +44,7 @@ func ImportApiRoute() {
     fs := filesystem.New()
 
     // api 文件
-    swaggerFile := "./docs/swagger/swagger.json"
+    swaggerFile := "./swagger/swagger.json"
     swaggerInfo, err := fs.Get(swaggerFile)
     if err != nil {
         fmt.Println("[swagger.json] 文件不存在")

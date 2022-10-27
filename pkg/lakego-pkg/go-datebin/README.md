@@ -25,13 +25,15 @@ import (
 )
 
 func main() {
-    // 时间
+    // 当前时间
     date := datebin.
         Now().
         ToDatetimeString()
+    // 解析时间
     date2 := datebin.
         Parse("2032-03-15 12:06:17").
         ToDatetimeString()
+    // 设置时间
     date3 := datebin.
         FromDatetime(2032, 3, 15, 12, 56, 5).
         ToFormatString("Y/m/d H:i:s")

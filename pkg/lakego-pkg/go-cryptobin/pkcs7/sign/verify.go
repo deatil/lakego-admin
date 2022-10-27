@@ -10,6 +10,8 @@ import (
     "crypto/x509"
 )
 
+type unsignedData []byte
+
 // Verify is a wrapper around VerifyWithChain() that initializes an empty
 // trust store, effectively disabling certificate verification when validating
 // a signature.

@@ -5,18 +5,6 @@ import (
     "strings"
 )
 
-// 构造函数
-func New() Arr {
-    return NewArr()
-}
-
-// 构造函数
-func NewArr() Arr {
-    return Arr{
-        keyDelim: ".",
-    }
-}
-
 /**
  * 获取数组数据
  *
@@ -215,4 +203,16 @@ func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]any) string 
     }
 
     return ""
+}
+
+// 构造函数
+func NewArr() Arr {
+    return Arr{
+        keyDelim: ".",
+    }
+}
+
+// 构造函数
+func New() Arr {
+    return NewArr()
 }
