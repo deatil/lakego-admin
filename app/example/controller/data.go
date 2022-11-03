@@ -40,6 +40,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
+    "github.com/deatil/lakego-doak/lakego/event"
     "github.com/deatil/lakego-doak/lakego/slice"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/container"
@@ -398,6 +399,10 @@ func (this *Data) Error(ctx *gin.Context) {
     if bksErr != nil {
         bksErrData = bksErr.Error()
     }
+
+    // 事件
+    eventData := "index data"
+    event.Dispatch("data.error2", eventData)
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
         "bksErr": bksErrData,

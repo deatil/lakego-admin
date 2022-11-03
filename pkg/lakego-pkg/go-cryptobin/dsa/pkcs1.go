@@ -28,7 +28,12 @@ type dsaPublicKey struct {
     Y *big.Int
 }
 
-// dsa pkcs1 密钥
+/**
+ * dsa pkcs1 密钥
+ *
+ * @create 2022-3-19
+ * @author deatil
+ */
 type PKCS1Key struct {}
 
 // 包装公钥

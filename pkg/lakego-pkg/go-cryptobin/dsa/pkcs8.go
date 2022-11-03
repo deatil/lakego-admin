@@ -42,7 +42,12 @@ type publicKeyInfo struct {
     PublicKey asn1.BitString
 }
 
-// dsa pkcs8 密钥
+/**
+ * dsa pkcs8 密钥
+ *
+ * @create 2022-3-19
+ * @author deatil
+ */
 type PKCS8Key struct {}
 
 // PKCS8 包装公钥

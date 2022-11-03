@@ -19,9 +19,8 @@ import (
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/middleware/event"
     "github.com/deatil/lakego-doak/lakego/middleware/recovery"
-    providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
+    iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
 // App结构体
@@ -37,13 +36,13 @@ func New() *App {
 
 type (
     // 服务提供者
-    ServiceProvider = func() providerInterface.ServiceProvider
+    ServiceProvider = func() iprovider.ServiceProvider
 
     // 服务提供者列表
     ServiceProviders = []ServiceProvider
 
     // 已使用服务提供者
-    UsedServiceProvider = providerInterface.ServiceProvider
+    UsedServiceProvider = iprovider.ServiceProvider
 
     // 已使用服务提供者列表
     UsedServiceProviders = []UsedServiceProvider
@@ -306,7 +305,6 @@ func (this *App) runApp() {
     }
 
     // 全局中间件
-    r.Use(event.Handler())
     r.Use(recovery.Handler())
 
     // 缓存路由信息

@@ -3,7 +3,6 @@ package encrypt
 import (
     "errors"
     "math/big"
-    "crypto"
     "crypto/rand"
     "crypto/x509"
     "crypto/x509/pkix"
@@ -16,59 +15,6 @@ var (
     oidEnvelopedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
     oidEncryptedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
 )
-
-// 加密接口
-type Cipher interface {
-    // oid
-    OID() asn1.ObjectIdentifier
-
-    // 值大小
-    KeySize() int
-
-    // 加密, 返回: [加密后数据, 参数, error]
-    Encrypt(key, plaintext []byte) ([]byte, []byte, error)
-
-    // 解密
-    Decrypt(key, params, ciphertext []byte) ([]byte, error)
-}
-
-// 非对称加密
-type KeyEncrypt interface {
-    // oid
-    OID() asn1.ObjectIdentifier
-
-    // 加密, 返回: [加密后数据, error]
-    Encrypt(plaintext []byte, pkey crypto.PublicKey) ([]byte, error)
-
-    // 解密
-    Decrypt(ciphertext []byte, pkey crypto.PrivateKey) ([]byte, error)
-}
-
-var ciphers = make(map[string]func() Cipher)
-
-// 添加加密
-func AddCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
-    ciphers[oid.String()] = cipher
-}
-
-var keyens = make(map[string]func() KeyEncrypt)
-
-// 添加 key 加密方式
-func AddkeyEncrypt(oid asn1.ObjectIdentifier, fn func() KeyEncrypt) {
-    keyens[oid.String()] = fn
-}
-
-// 配置
-type Opts struct {
-    Cipher     Cipher
-    KeyEncrypt KeyEncrypt
-}
-
-// 默认配置
-var DefaultOpts = Opts{
-    Cipher:     AES256CBC,
-    KeyEncrypt: KeyEncryptRSA,
-}
 
 type issuerAndSerial struct {
     IssuerName   asn1.RawValue
@@ -107,6 +53,18 @@ type contentInfo struct {
 var ErrUnsupportedEncryptionAlgorithm = errors.New("pkcs7: cannot encrypt content: only DES-CBC, AES-CBC, and AES-GCM supported")
 
 var ErrPSKNotProvided = errors.New("pkcs7: cannot encrypt content: PSK not provided")
+
+// 配置
+type Opts struct {
+    Cipher     Cipher
+    KeyEncrypt KeyEncrypt
+}
+
+// 默认配置
+var DefaultOpts = Opts{
+    Cipher:     AES256CBC,
+    KeyEncrypt: KeyEncryptRSA,
+}
 
 // 加密
 func Encrypt(content []byte, recipients []*x509.Certificate, opts ...Opts) ([]byte, error) {

@@ -5,7 +5,12 @@ import (
     "bytes"
 )
 
-// 编码
+/**
+ * JCEKS
+ *
+ * @create 2022-9-19
+ * @author deatil
+ */
 type JCEKS struct {
     // 解析后数据
     entries      map[string]any

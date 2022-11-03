@@ -19,7 +19,12 @@ const (
     bksKeyTypeSecret  = 2
 )
 
-// 编码
+/**
+ * BKS
+ *
+ * @create 2022-9-19
+ * @author deatil
+ */
 type BKS struct {
     // 版本号
     version   uint32

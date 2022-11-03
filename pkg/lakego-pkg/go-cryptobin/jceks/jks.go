@@ -6,7 +6,12 @@ import (
     "bytes"
 )
 
-// Jks
+/**
+ * Jks
+ *
+ * @create 2022-9-19
+ * @author deatil
+ */
 type JKS struct {
     // 别名
     aliases      []string

@@ -4,31 +4,8 @@ import (
     "fmt"
 )
 
-// 创建事件派发器
-func NewEventDispatcher() *EventDispatcher {
-    return new(EventDispatcher)
-}
-
-// 创建监听器
-func NewEventListener(h EventHandler) *EventListener {
-    l := new(EventListener)
-    l.Handler = h
-    return l
-}
-
-// 创建事件
-func NewEvent(eventType string, object any) Event {
-    e := Event{
-        Type: eventType,
-        Object: object,
-    }
-    return e
-}
-
-// =====
-
 // 监听器函数
-type EventHandler func(Event)
+type EventHandler = func(*Event)
 
 // 监听器
 type EventListener struct {
@@ -56,7 +33,7 @@ type IEventDispatcher interface {
     HasEventListener(string) bool
 
     // 事件派发
-    DispatchEvent(Event) bool
+    DispatchEvent(*Event) bool
 }
 
 // =====
@@ -82,7 +59,8 @@ type Event struct {
 func (this *Event) Clone() *Event {
     e := new(Event)
     e.Type = this.Type
-    e.Target = e.Target
+    e.Target = this.Target
+
     return e
 }
 
@@ -107,7 +85,11 @@ func (this *EventDispatcher) AddEventListener(eventType string, listener *EventL
         }
     }
 
-    saver := &EventSaver{Type:eventType, Listeners:[]*EventListener{listener}}
+    saver := &EventSaver{
+        Type:      eventType,
+        Listeners: []*EventListener{listener},
+    }
+
     this.savers = append(this.savers, saver)
 }
 
@@ -139,16 +121,45 @@ func (this *EventDispatcher) HasEventListener(eventType string) bool {
 }
 
 // 事件调度器派发事件
-func (this *EventDispatcher) DispatchEvent(event Event) bool {
+func (this *EventDispatcher) DispatchEvent(event *Event) bool {
     for _, saver := range this.savers {
-        if saver.Type == event.Type {
+        if MatchTypeName(event.Type, saver.Type) {
             for _, listener := range saver.Listeners {
                 event.Target = this
+
                 listener.Handler(event)
             }
+
             return true
         }
     }
 
     return false
+}
+
+// =====
+
+// 创建事件派发器
+func NewEventDispatcher() *EventDispatcher {
+    dispatcher := new(EventDispatcher)
+    dispatcher.savers = make([]*EventSaver, 0)
+
+    return dispatcher
+}
+
+// 创建监听器
+func NewEventListener(h EventHandler) *EventListener {
+    l := new(EventListener)
+    l.Handler = h
+    return l
+}
+
+// 创建事件
+func NewEvent(eventType string, object any) *Event {
+    e := &Event{
+        Type:   eventType,
+        Object: object,
+    }
+
+    return e
 }

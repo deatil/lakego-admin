@@ -4,8 +4,10 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/lakego-filesystem/filesystem"
+    "github.com/deatil/lakego-doak/lakego/event"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
@@ -42,6 +44,9 @@ func (this *ExampleServiceProvider) Boot() {
 
     // 注册额外服务提供者
     this.registerProviders()
+
+    // 注册事件
+    this.registerPEvents()
 }
 
 /**
@@ -125,6 +130,16 @@ func (this *ExampleServiceProvider) registerProviders() {
     // 注册
     this.GetApp().Register(func() providerInterface.ServiceProvider {
         return &OtherServiceProvider{}
+    })
+}
+
+/**
+ * 注册事件
+ */
+func (this *ExampleServiceProvider) registerPEvents() {
+    // 注册
+    event.Listen("data.error", func(data any) {
+        logger.New().Info(data)
     })
 }
 

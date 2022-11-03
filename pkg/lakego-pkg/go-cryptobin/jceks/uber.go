@@ -4,7 +4,12 @@ const (
     UberVersionV1 = 1
 )
 
-// UBER
+/**
+ * UBER
+ *
+ * @create 2022-9-19
+ * @author deatil
+ */
 type UBER struct {
     BKS
 }
