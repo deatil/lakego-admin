@@ -11,7 +11,7 @@ func AddProvider(f func() any) {
 
 // 执行
 func Execute() {
-    // 服务提供者文件夹
+    // 服务提供者
     providers := kernel.GetAllProvider()
 
     // 运行

@@ -4,10 +4,10 @@ import (
     "github.com/deatil/lakego-admin/bootstrap"
 )
 
-//go:generate swag init -o=./swagger --parseDependency --parseDepth=6
+//go:generate swag init -o=./swagger --parseDependency --parseDepth=1
 
 // @title lakego-admin API文档
-// @version 1.0.6
+// @version 1.0.7
 // @description lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
 // @termsOfService https://github.com/deatil
 

@@ -273,5 +273,5 @@ func (this *JKS) ListCerts() []string {
 }
 
 func (this *JKS) String() string {
-    return "JKS Decode"
+    return "JKS"
 }
