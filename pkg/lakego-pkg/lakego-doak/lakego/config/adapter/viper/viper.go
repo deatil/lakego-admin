@@ -11,6 +11,14 @@ import (
     "github.com/deatil/lakego-doak/lakego/config/adapter"
 )
 
+// 构造函数
+func New() *Viper {
+    conf := &Viper{}
+    conf.conf = viper.New()
+
+    return conf
+}
+
 /**
  * Viper 适配器
  *
@@ -24,11 +32,6 @@ type Viper struct {
 
     // 路径
     path string
-}
-
-// 初始化
-func (this *Viper) Init() {
-    this.conf = viper.New()
 }
 
 // 环境变量前缀

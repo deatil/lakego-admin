@@ -3,7 +3,7 @@
 ## 触发事件
 
 ~~~go
-import "github.com/deatil/lakego-doak/lakego/event"
+import "github.com/deatil/go-event/event"
 
 // 触发事件
 var eventData any
@@ -18,7 +18,7 @@ event.Dispatch("data.*", eventData)
 添加事件通常都在服务提供者添加
 
 ~~~go
-import "github.com/deatil/lakego-doak/lakego/event"
+import "github.com/deatil/go-event/event"
 
 // 添加监听事件
 // 方式1

@@ -20,6 +20,7 @@ replace (
 	github.com/deatil/go-crc8 => ./pkg/lakego-pkg/go-crc8
 	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
 	github.com/deatil/go-crc32 => ./pkg/lakego-pkg/go-crc32
+	github.com/deatil/go-event => ./pkg/lakego-pkg/go-event
 	github.com/deatil/go-array => ./pkg/lakego-pkg/go-array
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
 	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
@@ -66,6 +67,7 @@ require (
 	github.com/deatil/go-sign v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-crc8 v0.0.3 // indirect
 	github.com/deatil/go-crc16 v0.0.3 // indirect
+	github.com/deatil/go-event v0.0.3 // indirect
 	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/lakego-jwt v0.0.3 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect

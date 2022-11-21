@@ -1,7 +1,8 @@
 package controller
 
 import (
-    "github.com/deatil/lakego-doak/lakego/event"
+    "github.com/deatil/go-event/event"
+    
     "github.com/deatil/lakego-doak/lakego/router"
     authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
 

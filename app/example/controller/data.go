@@ -12,6 +12,7 @@ import (
     "github.com/deatil/go-crc8/crc8"
     "github.com/deatil/go-crc16/crc16"
     "github.com/deatil/go-crc32/crc32"
+    "github.com/deatil/go-event/event"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/go-pipeline/pipeline"
@@ -40,7 +41,6 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/math"
-    "github.com/deatil/lakego-doak/lakego/event"
     "github.com/deatil/lakego-doak/lakego/slice"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/container"
@@ -403,8 +403,18 @@ func (this *Data) Error(ctx *gin.Context) {
     // 事件
     eventData := "index data"
     event.Dispatch("data.error2", eventData)
+    hasEvent :=  event.HasListen("data.error")
+
+    /*
+    event.Dispatch("TestEvent", eventData)
+    event.Dispatch("TestEventName", eventData)
+    event.Dispatch("ABCTestEvent", eventData)
+    event.Dispatch("TestEventSubscribe", eventData)
+    */
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "hasEvent": hasEvent,
+
         "bksErr": bksErrData,
 
         "sshkeyName": sshkeyName,

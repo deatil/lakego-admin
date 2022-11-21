@@ -13,7 +13,7 @@ drivers:
     # 包括："panic", "fatal", "error", "warning", "info", "debug", "trace"
     level: "trace"
     # 日志存储位置
-    filepath: "{runtime}/log"
+    filepath: "{runtime}/log/log_%Y%m%d.log"
     # MaxAge
     max-age: 168
     # 单位：小时

@@ -3,8 +3,9 @@ package provider
 import (
     "github.com/gin-gonic/gin"
 
+    "github.com/deatil/go-event/event"
+    
     "github.com/deatil/lakego-filesystem/filesystem"
-    "github.com/deatil/lakego-doak/lakego/event"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/facade/logger"
@@ -16,6 +17,7 @@ import (
     example_route "app/example/route"
     example_command "app/example/cmd"
     example_view "app/example/view"
+    example_event "app/example/event"
 )
 
 /**
@@ -141,5 +143,9 @@ func (this *ExampleServiceProvider) registerPEvents() {
     event.Listen("data.error", func(data any) {
         logger.New().Info(data)
     })
+
+    event.Subscribe(&example_event.TestEvent{})
+    event.Subscribe(&example_event.TestEventPrefix{})
+    event.Subscribe(&example_event.TestEventSubscribe{})
 }
 

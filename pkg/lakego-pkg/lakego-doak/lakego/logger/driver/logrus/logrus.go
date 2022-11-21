@@ -249,13 +249,14 @@ func (this *Logrus) getLogger() *logrus.Logger {
     filepath := conf["filepath"].(string)
 
     // 日志文件
-    baseLogPath := path.FormatPath(filepath)
+    // log_%Y%m%d.log
+    logPath := path.FormatPath(filepath)
 
     maxAge := time.Duration(int64(conf["max-age"].(int)))
     rotationTime := time.Duration(int64(conf["rotation-time"].(int)))
 
     writer, err := rotatelogs.New(
-        baseLogPath + "/log_%Y%m%d.log",
+        logPath,
         // rotatelogs.WithLinkName(baseLogPath), // 生成软链，指向最新日志文件
         rotatelogs.WithMaxAge(maxAge * time.Hour), // 文件最大保存时间
         rotatelogs.WithRotationTime(rotationTime * time.Hour), // 日志切割时间间隔

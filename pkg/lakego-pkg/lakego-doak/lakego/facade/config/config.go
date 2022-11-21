@@ -8,7 +8,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/config"
     "github.com/deatil/lakego-doak/lakego/config/interfaces"
-    viperAdapter "github.com/deatil/lakego-doak/lakego/config/adapter/viper"
+    viper_adapter "github.com/deatil/lakego-doak/lakego/config/adapter/viper"
 )
 
 var once sync.Once
@@ -69,13 +69,13 @@ func Register() {
         register.
             NewManagerWithPrefix("config").
             Register("viper", func(conf map[string]any) any {
-                adapter := &viperAdapter.Viper{}
+                adapter := viper_adapter.New()
 
                 // 配置文件夹
                 configPath := path.FormatPath("{root}/config")
 
-                adapter.Init()
-                // adapter.SetEnvPrefix("LAKEGO")
+                // 设置 env 前缀
+                adapter.SetEnvPrefix("LAKEGO")
                 adapter.AutomaticEnv()
                 adapter.WithPath(configPath)
 
