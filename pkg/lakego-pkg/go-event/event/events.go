@@ -53,6 +53,8 @@ func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
         case 2:
             if fnType.In(1).String() == "interface {}" {
                 params = append(params, reflect.ValueOf(e.Object))
+            } else if fnType.In(1).String() == "*event.Event" {
+                params = append(params, reflect.ValueOf(e))
             }
         case 3:
             if fnType.In(1).String() == "interface {}" && fnType.In(2).String() == "string" {
