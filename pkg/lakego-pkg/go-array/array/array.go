@@ -90,11 +90,11 @@ func (this Arr) searchMap(source map[string]any, path []string) any {
         return next
     }
 
-    switch next.(type) {
+    switch n := next.(type) {
         case map[any]any:
-            return this.searchMap(toStringMap(next), path[1:])
+            return this.searchMap(toStringMap(n), path[1:])
         case map[string]any:
-            return this.searchMap(next.(map[string]any), path[1:])
+            return this.searchMap(n, path[1:])
         default:
     }
 

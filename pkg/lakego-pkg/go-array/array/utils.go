@@ -98,7 +98,10 @@ func indirectToStringerOrError(a any) any {
     var fmtStringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
 
     v := reflect.ValueOf(a)
-    for !v.Type().Implements(fmtStringerType) && !v.Type().Implements(errorType) && v.Kind() == reflect.Ptr && !v.IsNil() {
+    for !v.Type().Implements(fmtStringerType) &&
+        !v.Type().Implements(errorType) &&
+        v.Kind() == reflect.Ptr &&
+        !v.IsNil() {
         v = v.Elem()
     }
 

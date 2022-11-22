@@ -115,22 +115,24 @@ func (this *Events) Subscribe(subscribers ...any) *Events {
 // prefix   事件名前缀
 func (this *Events) Observe(observer any, prefix string) *Events {
     observerKind := reflect.TypeOf(observer).Kind()
-    if observerKind != reflect.Struct || observerKind != reflect.Pointer {
-        switch t := observer.(type) {
-            case ISubscribePrefix:
-                prefix = t.EventPrefix()
-        }
+    if observerKind != reflect.Struct && observerKind != reflect.Pointer {
+        return this
+    }
 
-        observerObject := reflect.TypeOf(observer)
-        for i := 0; i < observerObject.NumMethod(); i++ {
-            name := observerObject.Method(i).Name
+    switch t := observer.(type) {
+        case ISubscribePrefix:
+            prefix = t.EventPrefix()
+    }
 
-            if strings.HasPrefix(name, "On") {
-                this.Listen(prefix + name[2:], EventSubscribe{
-                    reflect.ValueOf(observer),
-                    observerObject.Method(i),
-                })
-            }
+    observerObject := reflect.TypeOf(observer)
+    for i := 0; i < observerObject.NumMethod(); i++ {
+        name := observerObject.Method(i).Name
+
+        if strings.HasPrefix(name, "On") {
+            this.Listen(prefix + name[2:], EventSubscribe{
+                reflect.ValueOf(observer),
+                observerObject.Method(i),
+            })
         }
     }
 

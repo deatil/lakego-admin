@@ -264,9 +264,14 @@ func (this *Data) Error(ctx *gin.Context) {
                 222: "fddddd",
                 333: "dfffff",
             },
+            "hh": map[any]any{
+                111: "hccccc",
+                222: "hddddd",
+                333: "hfffff",
+            },
         },
     }
-    arr := array.ArrGet(arrData, "b.d.e")
+    arr := array.ArrGet(arrData, "b.hh.222")
 
     // 缓存
     // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
