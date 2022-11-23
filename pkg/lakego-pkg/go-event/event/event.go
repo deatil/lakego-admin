@@ -2,6 +2,7 @@ package event
 
 import (
     "fmt"
+    "reflect"
 )
 
 // 监听器函数
@@ -98,8 +99,8 @@ func (this *EventDispatcher) RemoveEventListener(eventType string, listener *Eve
     for _, saver := range this.savers {
         if saver.Type == eventType {
             for i, l := range saver.Listeners {
-                if listener == l {
-                    saver.Listeners = append(saver.Listeners[:i], saver.Listeners[i + 1:]...)
+                if reflect.DeepEqual(listener, l) {
+                    saver.Listeners = append(saver.Listeners[:i], saver.Listeners[i+1:]...)
                     return true
                 }
             }

@@ -4,7 +4,7 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/go-event/event"
-    
+
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
@@ -145,7 +145,9 @@ func (this *ExampleServiceProvider) registerPEvents() {
     })
 
     event.Subscribe(&example_event.TestEvent{})
-    event.Subscribe(&example_event.TestEventPrefix{})
+    event.Subscribe(example_event.TestEventPrefix{})
     event.Subscribe(&example_event.TestEventSubscribe{})
+
+    event.Listen(example_event.TestEventStructData{}, example_event.TestEventStruct)
 }
 

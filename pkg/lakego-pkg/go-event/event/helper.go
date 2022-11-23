@@ -1,7 +1,7 @@
 package event
 
 // 监听
-func Listen(name string, handler any) {
+func Listen(name any, handler any) {
     NewEvents().Listen(name, handler)
 }
 
@@ -16,16 +16,16 @@ func Observe(observer any, prefix string) {
 }
 
 // 事件调度
-func Dispatch(name string, object ...any) bool {
+func Dispatch(name any, object ...any) bool {
     return NewEvents().Dispatch(name, object...)
 }
 
 // 移除
-func RemoveListen(name string, handler EventHandler) bool {
+func RemoveListen(name any, handler EventHandler) bool {
     return NewEvents().Remove(name, handler)
 }
 
 // 判断存在
-func HasListen(name string) bool {
+func HasListen(name any) bool {
     return NewEvents().Has(name)
 }

@@ -2,6 +2,7 @@ package event
 
 import(
     "regexp"
+    "reflect"
     "strings"
 )
 
@@ -19,4 +20,34 @@ func MatchTypeName(typeName string, current string) bool {
     }
 
     return true
+}
+
+// 反射获取结构体名称
+func GetStructName(name any) string {
+    var elem reflect.Type
+
+    nameKind := reflect.TypeOf(name).Kind()
+    if nameKind == reflect.Pointer {
+        elem = reflect.TypeOf(name).Elem()
+    } else {
+        elem = reflect.TypeOf(name)
+    }
+
+    return elem.PkgPath() + "." + elem.Name()
+}
+
+// 格式化名称
+func FormatName(name any) string {
+    if n, ok := name.(string); ok {
+        return n
+    }
+
+    nameKind := reflect.TypeOf(name).Kind()
+    if nameKind == reflect.Struct || nameKind == reflect.Pointer {
+        newName := GetStructName(name)
+
+        return newName
+    }
+
+    return ""
 }

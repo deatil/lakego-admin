@@ -1,6 +1,7 @@
 package array
 
 import (
+    "reflect"
     "strconv"
     "strings"
 )
@@ -96,6 +97,10 @@ func (this Arr) searchMap(source map[string]any, path []string) any {
         case map[string]any:
             return this.searchMap(n, path[1:])
         default:
+            nextMap := this.anyMapFormat(next)
+            if len(nextMap) > 0 {
+                return this.searchMap(toStringMap(nextMap), path[1:])
+            }
     }
 
     return nil
@@ -150,6 +155,10 @@ func (this Arr) searchSliceWithPathPrefixes(
         case map[string]any, []any:
             return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
         default:
+            nextMap := this.anyMapFormat(next)
+            if len(nextMap) > 0 {
+                return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
+            }
     }
 
     return nil
@@ -177,6 +186,10 @@ func (this Arr) searchMapWithPathPrefixes(
         case map[string]any, []any:
             return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
         default:
+            nextMap := this.anyMapFormat(next)
+            if len(nextMap) > 0 {
+                return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
+            }
     }
 
     return nil
@@ -198,11 +211,34 @@ func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]any) string 
             case map[string]any:
                 continue
             default:
+                parentValKind := reflect.TypeOf(parentVal).Kind()
+                if parentValKind == reflect.Map {
+                    continue
+                }
+
                 return strings.Join(path[0:i], this.keyDelim)
         }
     }
 
     return ""
+}
+
+// any map 数据格式化
+func (this Arr) anyMapFormat(data any) map[any]any {
+    m := make(map[any]any)
+
+    dataKind := reflect.TypeOf(data).Kind()
+    if dataKind == reflect.Map {
+        iter := reflect.ValueOf(data).MapRange()
+        for iter.Next() {
+            k := iter.Key().Interface()
+            v := iter.Value().Interface()
+
+            m[k] = v
+        }
+    }
+
+    return m
 }
 
 // 构造函数

@@ -52,6 +52,7 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 
     "app/example/key"
+    // example_event "app/example/event"
 )
 
 /**
@@ -264,14 +265,18 @@ func (this *Data) Error(ctx *gin.Context) {
                 222: "fddddd",
                 333: "dfffff",
             },
-            "hh": map[any]any{
+            "hh": map[int]any{
                 111: "hccccc",
                 222: "hddddd",
-                333: "hfffff",
+                333: map[any]any{
+                    "qq1": "qq1ccccc",
+                    "qq2": "qq2ddddd",
+                    "qq3": "qq3fffff",
+                },
             },
         },
     }
-    arr := array.ArrGet(arrData, "b.hh.222")
+    arr := array.ArrGet(arrData, "b.hh.333.qq3")
 
     // 缓存
     // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
@@ -408,7 +413,7 @@ func (this *Data) Error(ctx *gin.Context) {
     // 事件
     eventData := "index data"
     event.Dispatch("data.error2", eventData)
-    hasEvent :=  event.HasListen("data.error")
+    hasEvent := event.HasListen("data.error")
 
     /*
     event.Dispatch("TestEvent", eventData)
@@ -416,6 +421,9 @@ func (this *Data) Error(ctx *gin.Context) {
     event.Dispatch("TestEventName", eventData)
     event.Dispatch("ABCTestEvent", eventData)
     event.Dispatch("TestEventSubscribe", eventData)
+    event.Dispatch(example_event.TestEventStructData{
+        Data: eventData,
+    })
     */
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{

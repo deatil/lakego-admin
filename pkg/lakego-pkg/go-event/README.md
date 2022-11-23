@@ -38,11 +38,11 @@ func (this *TestEvent) OnTestEventName(data any, name string) {
 
 type TestEventPrefix struct {}
 
-func (this *TestEventPrefix) EventPrefix() string {
+func (this TestEventPrefix) EventPrefix() string {
     return "ABC"
 }
 
-func (this *TestEventPrefix) OnTestEvent(data any) {
+func (this TestEventPrefix) OnTestEvent(data any) {
     fmt.Println("TestEventPrefix: ")
     fmt.Println(data)
 }
@@ -67,12 +67,12 @@ func main() {
     // 事件触发
     eventData := "index data"
     event.Dispatch("data.error", eventData)
-    
+
     // ==================
 
     // 事件订阅
     event.Subscribe(&TestEvent{})
-    event.Subscribe(&TestEventPrefix{})
+    event.Subscribe(TestEventPrefix{})
     event.Subscribe(&TestEventSubscribe{})
 
     // 事件订阅触发

@@ -69,24 +69,34 @@ func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
 }
 
 // 监听
-func (this *Events) Listen(name string, handler any) {
+func (this *Events) Listen(name any, handler any) {
+    newName := FormatName(name)
+    if newName == "" {
+        return
+    }
+
     switch fn := handler.(type) {
         // func(*Event)
         case EventHandler:
-            this.listen(name, fn)
+            this.listen(newName, fn)
+
+        case func():
+            this.listen(newName, func(e *Event) {
+                fn()
+            })
 
         case func(any):
-            this.listen(name, func(e *Event) {
+            this.listen(newName, func(e *Event) {
                 fn(e.Object)
             })
 
         case func(any, string):
-            this.listen(name, func(e *Event) {
+            this.listen(newName, func(e *Event) {
                 fn(e.Object, e.Type)
             })
 
         case EventSubscribe:
-            this.listen(name, func(e *Event) {
+            this.listen(newName, func(e *Event) {
                 this.subscribeListen(fn, e)
             })
     }
@@ -140,25 +150,48 @@ func (this *Events) Observe(observer any, prefix string) *Events {
 }
 
 // 事件调度
-func (this *Events) Dispatch(name string, object ...any) bool {
+func (this *Events) Dispatch(name any, object ...any) bool {
     var eventObject any
     if len(object) > 0 {
         eventObject = object[0]
     }
 
-    cevent := NewEvent(name, eventObject)
+    var newName string
 
-    return this.dispatcher.DispatchEvent(cevent)
+    if n, ok := name.(string); ok {
+        newName = n
+    } else {
+        // 为结构体时
+        nameKind := reflect.TypeOf(name).Kind()
+        if nameKind == reflect.Struct || nameKind == reflect.Pointer {
+            newName = GetStructName(name)
+            eventObject = name
+        }
+    }
+
+    newEvent := NewEvent(newName, eventObject)
+
+    return this.dispatcher.DispatchEvent(newEvent)
 }
 
 // 移除
-func (this *Events) Remove(name string, handler any) bool {
+func (this *Events) Remove(name any, handler any) bool {
+    newName := FormatName(name)
+    if newName == "" {
+        return false
+    }
+
     var newHandler EventHandler
 
     switch fn := handler.(type) {
         // func(*Event)
         case EventHandler:
             newHandler = fn
+
+        case func():
+            newHandler = func(e *Event) {
+                fn()
+            }
 
         case func(any):
             newHandler = func(e *Event) {
@@ -178,10 +211,15 @@ func (this *Events) Remove(name string, handler any) bool {
 
     listener := NewEventListener(newHandler)
 
-    return this.dispatcher.RemoveEventListener(name, listener)
+    return this.dispatcher.RemoveEventListener(newName, listener)
 }
 
 // 判断存在
-func (this *Events) Has(name string) bool {
-    return this.dispatcher.HasEventListener(name)
+func (this *Events) Has(name any) bool {
+    newName := FormatName(name)
+    if newName == "" {
+        return false
+    }
+
+    return this.dispatcher.HasEventListener(newName)
 }
