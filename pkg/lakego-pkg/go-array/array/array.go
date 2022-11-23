@@ -97,8 +97,7 @@ func (this Arr) searchMap(source map[string]any, path []string) any {
         case map[string]any:
             return this.searchMap(n, path[1:])
         default:
-            nextMap := this.anyMapFormat(next)
-            if len(nextMap) > 0 {
+            if nextMap, isMap := this.anyMapFormat(next); isMap {
                 return this.searchMap(toStringMap(nextMap), path[1:])
             }
     }
@@ -155,8 +154,7 @@ func (this Arr) searchSliceWithPathPrefixes(
         case map[string]any, []any:
             return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
         default:
-            nextMap := this.anyMapFormat(next)
-            if len(nextMap) > 0 {
+            if nextMap, isMap := this.anyMapFormat(next); isMap {
                 return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
             }
     }
@@ -186,8 +184,7 @@ func (this Arr) searchMapWithPathPrefixes(
         case map[string]any, []any:
             return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
         default:
-            nextMap := this.anyMapFormat(next)
-            if len(nextMap) > 0 {
+            if nextMap, isMap := this.anyMapFormat(next); isMap {
                 return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
             }
     }
@@ -224,8 +221,9 @@ func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]any) string 
 }
 
 // any map 数据格式化
-func (this Arr) anyMapFormat(data any) map[any]any {
+func (this Arr) anyMapFormat(data any) (map[any]any, bool) {
     m := make(map[any]any)
+    isMap := false
 
     dataKind := reflect.TypeOf(data).Kind()
     if dataKind == reflect.Map {
@@ -236,9 +234,11 @@ func (this Arr) anyMapFormat(data any) map[any]any {
 
             m[k] = v
         }
+
+        isMap = true
     }
 
-    return m
+    return m, isMap
 }
 
 // 构造函数

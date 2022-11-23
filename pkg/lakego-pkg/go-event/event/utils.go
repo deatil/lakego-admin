@@ -22,18 +22,27 @@ func MatchTypeName(typeName string, current string) bool {
     return true
 }
 
-// 反射获取结构体名称
-func GetStructName(name any) string {
-    var elem reflect.Type
-
-    nameKind := reflect.TypeOf(name).Kind()
-    if nameKind == reflect.Pointer {
-        elem = reflect.TypeOf(name).Elem()
-    } else {
-        elem = reflect.TypeOf(name)
+// 获取类型唯一字符串
+func GetTypeKey(p reflect.Type) (key string) {
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+        key = "*"
     }
 
-    return elem.PkgPath() + "." + elem.Name()
+    pkgPath := p.PkgPath()
+
+    if pkgPath != "" {
+        key += pkgPath + "."
+    }
+
+    return key + p.Name()
+}
+
+// 反射获取结构体名称
+func GetStructName(data any) string {
+    key := reflect.TypeOf(data)
+
+    return GetTypeKey(key)
 }
 
 // 格式化名称
@@ -50,4 +59,36 @@ func FormatName(name any) string {
     }
 
     return ""
+}
+
+// 把变量转换成反射类型
+func ConvertToTypes(args ...any) []reflect.Type {
+    types := make([]reflect.Type, 0)
+
+    for _, arg := range args {
+        types = append(types, reflect.TypeOf(arg))
+    }
+
+    return types
+}
+
+// 解析结构体的tag
+func ParseStructTag(rawTag reflect.StructTag) map[string][]string {
+    results := make(map[string][]string, 0)
+
+    tags := strings.Split(string(rawTag), " ")
+
+    for _, tagString := range tags {
+        tag := strings.Split(tagString, ":")
+
+        if len(tag) > 1 {
+            tagValue := strings.ReplaceAll(tag[1], `"`, "")
+
+            results[tag[0]] = strings.Split(tagValue, ",")
+        } else {
+            results[tag[0]] = nil
+        }
+    }
+
+    return results
 }

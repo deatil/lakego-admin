@@ -31,74 +31,12 @@ type Events struct {
 }
 
 // 监听
-func (this *Events) listen(name string, handler EventHandler) {
-    listener := NewEventListener(handler)
-
-    this.dispatcher.AddEventListener(name, listener)
-}
-
-// 监听
-func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
-    fn := es.Method.Func
-
-    fnType := fn.Type()
-
-    numIn := fnType.NumIn()
-
-    // 参数
-    params := make([]reflect.Value, 0)
-    params = append(params, es.Struct)
-
-    switch numIn {
-        case 2:
-            if fnType.In(1).String() == "interface {}" {
-                params = append(params, reflect.ValueOf(e.Object))
-            } else if fnType.In(1).String() == "*event.Event" {
-                params = append(params, reflect.ValueOf(e))
-            }
-        case 3:
-            if fnType.In(1).String() == "interface {}" && fnType.In(2).String() == "string" {
-                params = append(params, reflect.ValueOf(e.Object))
-                params = append(params, reflect.ValueOf(e.Type))
-            }
-    }
-
-    if len(params) == numIn {
-        fn.Call(params)
-    }
-}
-
-// 监听
 func (this *Events) Listen(name any, handler any) {
     newName := FormatName(name)
-    if newName == "" {
-        return
-    }
+    if newName != "" {
+        listener := this.formatEventHandler(handler)
 
-    switch fn := handler.(type) {
-        // func(*Event)
-        case EventHandler:
-            this.listen(newName, fn)
-
-        case func():
-            this.listen(newName, func(e *Event) {
-                fn()
-            })
-
-        case func(any):
-            this.listen(newName, func(e *Event) {
-                fn(e.Object)
-            })
-
-        case func(any, string):
-            this.listen(newName, func(e *Event) {
-                fn(e.Object, e.Type)
-            })
-
-        case EventSubscribe:
-            this.listen(newName, func(e *Event) {
-                this.subscribeListen(fn, e)
-            })
+        this.dispatcher.AddEventListener(newName, listener)
     }
 }
 
@@ -181,6 +119,60 @@ func (this *Events) Remove(name any, handler any) bool {
         return false
     }
 
+    listener := this.formatEventHandler(handler)
+
+    return this.dispatcher.RemoveEventListener(newName, listener)
+}
+
+// 判断存在
+func (this *Events) Has(name any) bool {
+    newName := FormatName(name)
+    if newName == "" {
+        return false
+    }
+
+    return this.dispatcher.HasEventListener(newName)
+}
+
+// 监听
+func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
+    fn := es.Method.Func
+
+    fnType := fn.Type()
+
+    numIn := fnType.NumIn()
+
+    // 参数
+    params := make([]reflect.Value, 0)
+    params = append(params, es.Struct)
+
+    switch numIn {
+        case 2:
+            if GetTypeKey(fnType.In(1)) == GetStructName(&Event{}) {
+                params = append(params, reflect.ValueOf(e))
+            } else {
+                dataValue := this.convertTo(fnType.In(1), e.Object)
+                params = append(params, dataValue)
+            }
+        case 3:
+            if GetTypeKey(fnType.In(1)) == GetStructName(&Event{}) {
+                params = append(params, reflect.ValueOf(e))
+            } else {
+                dataValue := this.convertTo(fnType.In(1), e.Object)
+                params = append(params, dataValue)
+            }
+
+            nameValue := this.convertTo(fnType.In(2), e.Type)
+            params = append(params, nameValue)
+    }
+
+    if len(params) == numIn {
+        fn.Call(params)
+    }
+}
+
+// 格式化
+func (this *Events) formatEventHandler(handler any) *EventListener {
     var newHandler EventHandler
 
     switch fn := handler.(type) {
@@ -207,19 +199,58 @@ func (this *Events) Remove(name any, handler any) bool {
             newHandler = func(e *Event) {
                 this.subscribeListen(fn, e)
             }
+
+        default:
+            fnObject := reflect.ValueOf(fn)
+
+            if fnObject.IsValid() && fnObject.Kind() == reflect.Func {
+                newHandler = func(e *Event) {
+                    valueType := fnObject.Type()
+                    fieldNum := valueType.NumIn()
+
+                    newParams := make([]reflect.Value, 0)
+
+                    switch fieldNum {
+                        case 1:
+                            dataValue := this.convertTo(valueType.In(0), e.Object)
+                            newParams = append(newParams, dataValue)
+
+                        case 2:
+                            dataValue := this.convertTo(valueType.In(0), e.Object)
+                            newParams = append(newParams, dataValue)
+
+                            nameValue := this.convertTo(valueType.In(1), e.Type)
+                            newParams = append(newParams, nameValue)
+                    }
+
+                    if fieldNum == len(newParams) {
+                        fnObject.Call(newParams)
+                    }
+                }
+            }
+
     }
 
     listener := NewEventListener(newHandler)
 
-    return this.dispatcher.RemoveEventListener(newName, listener)
+    return listener
 }
 
-// 判断存在
-func (this *Events) Has(name any) bool {
-    newName := FormatName(name)
-    if newName == "" {
-        return false
+// 格式化
+func (this *Events) convertTo(src reflect.Type, dst any) reflect.Value {
+    dataKey := GetTypeKey(src)
+
+    fieldType := reflect.TypeOf(dst)
+    if !fieldType.ConvertibleTo(src) {
+        return reflect.New(src).Elem()
     }
 
-    return this.dispatcher.HasEventListener(newName)
+    fieldValue := reflect.ValueOf(dst)
+
+    if dataKey != GetTypeKey(fieldType) {
+        // 转换类型
+        fieldValue = fieldValue.Convert(src)
+    }
+
+    return fieldValue
 }

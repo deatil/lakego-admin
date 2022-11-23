@@ -13,17 +13,18 @@ func (this *TestEvent) OnTestEvent(data any) {
     logger.New().Info(data)
 }
 
-func (this *TestEvent) OnTestEventName(data any, name string) {
+func (this *TestEvent) OnTestEventName(data string, name any) {
     logger.New().Info("2-TestEventName start: ")
     logger.New().Info(data)
     logger.New().Info(name)
     logger.New().Info("2-TestEventName end: ")
 }
 
-func (this *TestEvent) OnTestEvents(e *event.Event) {
+func (this *TestEvent) OnTestEvents(e *event.Event, name string) {
     logger.New().Info("===== 3-TestEvents start: =====")
     logger.New().Info(e.Object)
     logger.New().Info(e.Type)
+    logger.New().Info(name)
     logger.New().Info("===== 3-TestEvents end: =====")
 }
 
@@ -55,9 +56,8 @@ type TestEventStructData struct {
     Data string
 }
 
-func TestEventStruct(data any) {
-    if newData, ok := data.(TestEventStructData); ok {
-        logger.New().Info("6-TestEventStruct: ")
-        logger.New().Info(newData.Data)
-    }
+func TestEventStruct(data TestEventStructData, name any) {
+    logger.New().Info("6-TestEventStruct: ")
+    logger.New().Info(data.Data)
+    logger.New().Info(name)
 }
