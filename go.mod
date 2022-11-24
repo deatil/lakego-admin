@@ -4,42 +4,42 @@ go 1.18
 
 replace (
 	app => ./app
+	github.com/deatil/go-array => ./pkg/lakego-pkg/go-array
+	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
+	github.com/deatil/go-crc => ./pkg/lakego-pkg/go-crc
+	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
+	github.com/deatil/go-crc32 => ./pkg/lakego-pkg/go-crc32
+	github.com/deatil/go-crc8 => ./pkg/lakego-pkg/go-crc8
 	github.com/deatil/go-cryptobin => ./pkg/lakego-pkg/go-cryptobin
 	github.com/deatil/go-datebin => ./pkg/lakego-pkg/go-datebin
 	github.com/deatil/go-encoding => ./pkg/lakego-pkg/go-encoding
+	github.com/deatil/go-event => ./pkg/lakego-pkg/go-event
 	github.com/deatil/go-exception => ./pkg/lakego-pkg/go-exception
 	github.com/deatil/go-filesystem => ./pkg/lakego-pkg/go-filesystem
 	github.com/deatil/go-goch => ./pkg/lakego-pkg/go-goch
 	github.com/deatil/go-hash => ./pkg/lakego-pkg/go-hash
 	github.com/deatil/go-pipeline => ./pkg/lakego-pkg/go-pipeline
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
-	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-tree => ./pkg/lakego-pkg/go-tree
-	github.com/deatil/go-crc => ./pkg/lakego-pkg/go-crc
-	github.com/deatil/go-crc8 => ./pkg/lakego-pkg/go-crc8
-	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
-	github.com/deatil/go-crc32 => ./pkg/lakego-pkg/go-crc32
-	github.com/deatil/go-event => ./pkg/lakego-pkg/go-event
-	github.com/deatil/go-array => ./pkg/lakego-pkg/go-array
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
-	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
-	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
+	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
+	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
+	github.com/deatil/lakego-doak-monitor => ./pkg/lakego-app/doak-monitor
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
-	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
-	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
-	github.com/deatil/lakego-doak-monitor => ./pkg/lakego-app/doak-monitor
+	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 )
 
 require (
 	app v0.0.3
 	github.com/deatil/lakego-doak v0.0.3
 	github.com/deatil/lakego-doak-action-log v0.0.3
-	github.com/deatil/lakego-doak-database v0.0.3
 	github.com/deatil/lakego-doak-admin v0.0.3
+	github.com/deatil/lakego-doak-database v0.0.3
 	github.com/deatil/lakego-doak-statics v0.0.0-00010101000000-000000000000
 	github.com/deatil/lakego-doak-swagger v0.0.3
 	github.com/swaggo/swag v1.8.0
@@ -53,21 +53,21 @@ require (
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/casbin/casbin/v2 v2.37.4 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/deatil/go-cmd v0.0.3 // indirect
 	github.com/deatil/go-collection v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/go-crc16 v0.0.3 // indirect
+	github.com/deatil/go-crc8 v0.0.3 // indirect
 	github.com/deatil/go-cryptobin v0.0.3 // indirect
 	github.com/deatil/go-datebin v0.0.3 // indirect
 	github.com/deatil/go-encoding v0.0.0-00010101000000-000000000000 // indirect
+	github.com/deatil/go-event v0.0.3 // indirect
 	github.com/deatil/go-exception v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-filesystem v0.0.3 // indirect
 	github.com/deatil/go-goch v0.0.3 // indirect
 	github.com/deatil/go-hash v0.0.3 // indirect
-	github.com/deatil/go-cmd v0.0.3 // indirect
-	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/go-pipeline v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-sign v0.0.0-00010101000000-000000000000 // indirect
-	github.com/deatil/go-crc8 v0.0.3 // indirect
-	github.com/deatil/go-crc16 v0.0.3 // indirect
-	github.com/deatil/go-event v0.0.3 // indirect
+	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/lakego-filesystem v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/lakego-jwt v0.0.3 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
@@ -91,6 +91,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/h2non/filetype v1.1.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect

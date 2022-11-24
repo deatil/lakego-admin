@@ -139,11 +139,12 @@ func (this *ExampleServiceProvider) registerProviders() {
  * 注册事件
  */
 func (this *ExampleServiceProvider) registerPEvents() {
-    // 注册
-    event.Listen("data.error", func(data any) {
+    dataFunc := func(data any) {
         logger.New().Info("0-Test Func: ")
         logger.New().Info(data)
-    })
+    }
+    // 注册
+    event.Listen("data.error", dataFunc)
 
     event.Subscribe(&example_event.TestEvent{})
     event.Subscribe(example_event.TestEventPrefix{})
@@ -151,7 +152,7 @@ func (this *ExampleServiceProvider) registerPEvents() {
 
     event.Listen(example_event.TestEventStructData{}, example_event.TestEventStruct)
 
-    // event.RemoveListen("TestEventName", (&example_event.TestEvent{}).OnTestEventName)
+    // event.RemoveListen("data.error", dataFunc)
     // event.RemoveEvent("TestEventName")
 
 }

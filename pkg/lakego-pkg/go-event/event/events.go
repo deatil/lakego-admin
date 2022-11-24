@@ -6,18 +6,13 @@ import(
     "reflect"
 )
 
-var instance *Events
-var once sync.Once
-
-// 单例模式
+// 构造函数
 func NewEvents() *Events {
-    once.Do(func() {
-        instance = &Events{
-            dispatcher: NewEventDispatcher(),
-        }
-    })
+    event := &Events{
+        dispatcher: NewEventDispatcher(),
+    }
 
-    return instance
+    return event
 }
 
 /**
@@ -74,9 +69,8 @@ func (this *Events) Observe(observer any, prefix string) *Events {
         return this
     }
 
-    switch t := observer.(type) {
-        case ISubscribePrefix:
-            prefix = t.EventPrefix()
+    if ob, ok := observer.(ISubscribePrefix); ok {
+        prefix = ob.EventPrefix()
     }
 
     observerObject := reflect.TypeOf(observer)
@@ -201,6 +195,13 @@ func (this *Events) EventListeners(name any) []*EventListener {
     }
 
     return this.dispatcher.EventListeners(newName)
+}
+
+// 重置
+func (this *Events) Reset() *Events {
+    this.dispatcher = NewEventDispatcher()
+
+    return this
 }
 
 // 监听

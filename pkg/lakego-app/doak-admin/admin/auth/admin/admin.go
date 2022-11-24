@@ -5,6 +5,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/permission"
 
+    "github.com/deatil/lakego-doak-admin/admin/model"
     adminRepository "github.com/deatil/lakego-doak-admin/admin/repository/admin"
     authruleRepository "github.com/deatil/lakego-doak-admin/admin/repository/authrule"
     authgroupRepository "github.com/deatil/lakego-doak-admin/admin/repository/authgroup"
@@ -15,6 +16,7 @@ type Admin struct {
     Id          string
     Data        map[string]any
     AccessToken string
+    Avatar      string
 }
 
 func New() *Admin {
@@ -23,6 +25,7 @@ func New() *Admin {
 
 func (this *Admin) WithAccessToken(accessToken string) *Admin {
     this.AccessToken = accessToken
+
     return this
 }
 
@@ -32,6 +35,7 @@ func (this *Admin) GetAccessToken() string {
 
 func (this *Admin) WithId(id string) *Admin {
     this.Id = id
+
     return this
 }
 
@@ -41,11 +45,27 @@ func (this *Admin) GetId() string {
 
 func (this *Admin) WithData(data map[string]any) *Admin {
     this.Data = data
+
     return this
 }
 
 func (this *Admin) GetData() map[string]any {
     return this.Data
+}
+
+func (this *Admin) WithAvatar(avatar string) *Admin {
+    this.Avatar = avatar
+
+    return this
+}
+
+func (this *Admin) GetAvatar() string {
+    if len(this.Data) > 0 && this.Avatar == "" {
+        // 头像
+        this.Avatar = model.AttachmentUrl(this.Data["avatar"].(string))
+    }
+
+    return this.Avatar
 }
 
 // 是否为超级管理员
@@ -116,6 +136,7 @@ func (this *Admin) GetProfile() map[string]any {
         }).
         ToMap()
 
+    profile["avatar"] = this.GetAvatar()
     profile["groups"] = this.GetGroups()
     profile["is_sa"] = this.IsSuperAdministrator()
 

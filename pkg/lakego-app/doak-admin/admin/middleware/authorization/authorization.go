@@ -76,9 +76,6 @@ func jwtCheck(ctx *router.Context) bool {
     // 结构体转map
     adminData := model.FormatStructToMap(adminInfo)
 
-    // 头像
-    adminData["avatar"] = model.AttachmentUrl(adminData["avatar"].(string))
-
     adminer := admin.New()
     adminer.WithAccessToken(accessToken).
         WithId(userId).
