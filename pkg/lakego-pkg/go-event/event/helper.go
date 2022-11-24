@@ -21,11 +21,31 @@ func Dispatch(name any, object ...any) bool {
 }
 
 // 移除
-func RemoveListen(name any, handler EventHandler) bool {
-    return NewEvents().Remove(name, handler)
+func RemoveEvent(name any) bool {
+    return NewEvents().RemoveEvent(name)
 }
 
 // 判断存在
-func HasListen(name any) bool {
-    return NewEvents().Has(name)
+func HasEvent(name any) bool {
+    return NewEvents().HasEvent(name)
+}
+
+// 移除
+func RemoveListen(name any, handler any) bool {
+    return NewEvents().RemoveListen(name, handler)
+}
+
+// 判断存在
+func HasListen(name any, handler any) bool {
+    return NewEvents().HasListen(name, handler)
+}
+
+// 事件列表
+func EventNames() []string {
+    return NewEvents().EventNames()
+}
+
+// 事件对应监听列表
+func EventListeners(name any) []*EventListener {
+    return NewEvents().EventListeners(name)
 }

@@ -27,11 +27,18 @@ func NewEvents() *Events {
  * @author deatil
  */
 type Events struct {
+    // 锁定
+    mu sync.RWMutex
+
+    // 调度器
     dispatcher *EventDispatcher
 }
 
 // 监听
 func (this *Events) Listen(name any, handler any) {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
     newName := FormatName(name)
     if newName != "" {
         listener := this.formatEventHandler(handler)
@@ -89,6 +96,9 @@ func (this *Events) Observe(observer any, prefix string) *Events {
 
 // 事件调度
 func (this *Events) Dispatch(name any, object ...any) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     var eventObject any
     if len(object) > 0 {
         eventObject = object[0]
@@ -107,13 +117,46 @@ func (this *Events) Dispatch(name any, object ...any) bool {
         }
     }
 
+    if newName == "" {
+        return false
+    }
+
     newEvent := NewEvent(newName, eventObject)
 
     return this.dispatcher.DispatchEvent(newEvent)
 }
 
 // 移除
-func (this *Events) Remove(name any, handler any) bool {
+func (this *Events) RemoveEvent(name any) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    newName := FormatName(name)
+    if newName == "" {
+        return false
+    }
+
+    return this.dispatcher.RemoveEvent(newName)
+}
+
+// 判断存在
+func (this *Events) HasEvent(name any) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    newName := FormatName(name)
+    if newName == "" {
+        return false
+    }
+
+    return this.dispatcher.HasEvent(newName)
+}
+
+// 移除
+func (this *Events) RemoveListen(name any, handler any) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     newName := FormatName(name)
     if newName == "" {
         return false
@@ -125,13 +168,39 @@ func (this *Events) Remove(name any, handler any) bool {
 }
 
 // 判断存在
-func (this *Events) Has(name any) bool {
+func (this *Events) HasListen(name any, handler any) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     newName := FormatName(name)
     if newName == "" {
         return false
     }
 
-    return this.dispatcher.HasEventListener(newName)
+    listener := this.formatEventHandler(handler)
+
+    return this.dispatcher.HasEventListener(newName, listener)
+}
+
+// 事件列表
+func (this *Events) EventNames() []string {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    return this.dispatcher.EventNames()
+}
+
+// 事件对应监听列表
+func (this *Events) EventListeners(name any) []*EventListener {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    newName := FormatName(name)
+    if newName == "" {
+        return nil
+    }
+
+    return this.dispatcher.EventListeners(newName)
 }
 
 // 监听

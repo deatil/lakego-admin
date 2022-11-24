@@ -413,7 +413,8 @@ func (this *Data) Error(ctx *gin.Context) {
     // 事件
     eventData := "index data"
     event.Dispatch("data.error2", eventData)
-    hasEvent := event.HasListen("data.error")
+    hasEvent := event.HasEvent("data.error")
+    eventNames := event.EventNames()
 
     /*
     event.Dispatch("TestEvent", eventData)
@@ -427,6 +428,7 @@ func (this *Data) Error(ctx *gin.Context) {
     */
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "eventNames": eventNames,
         "hasEvent": hasEvent,
 
         "bksErr": bksErrData,

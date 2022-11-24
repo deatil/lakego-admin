@@ -28,10 +28,16 @@ type IEventDispatcher interface {
     AddEventListener(string, *EventListener)
 
     // 移除事件监听
+    RemoveEvent(string) bool
+
+    // 是否包含事件
+    HasEvent(string) bool
+
+    // 移除事件监听
     RemoveEventListener(string, *EventListener) bool
 
     // 是否包含事件
-    HasEventListener(string) bool
+    HasEventListener(string, *EventListener) bool
 
     // 事件派发
     DispatchEvent(*Event) bool
@@ -94,6 +100,30 @@ func (this *EventDispatcher) AddEventListener(eventType string, listener *EventL
     this.savers = append(this.savers, saver)
 }
 
+// 移除事件
+func (this *EventDispatcher) RemoveEvent(eventType string) bool {
+    for i, saver := range this.savers {
+        if saver.Type == eventType {
+            this.savers = append(this.savers[:i], this.savers[i+1:]...)
+
+            return true
+        }
+    }
+
+    return false
+}
+
+// 是否有定义事件
+func (this *EventDispatcher) HasEvent(eventType string) bool {
+    for _, saver := range this.savers {
+        if saver.Type == eventType {
+            return true
+        }
+    }
+
+    return false
+}
+
 // 事件调度器移除某个监听
 func (this *EventDispatcher) RemoveEventListener(eventType string, listener *EventListener) bool {
     for _, saver := range this.savers {
@@ -110,11 +140,15 @@ func (this *EventDispatcher) RemoveEventListener(eventType string, listener *Eve
     return false
 }
 
-// 事件调度器是否包含某个类型的监听
-func (this *EventDispatcher) HasEventListener(eventType string) bool {
+// 是否存在
+func (this *EventDispatcher) HasEventListener(eventType string, listener *EventListener) bool {
     for _, saver := range this.savers {
         if saver.Type == eventType {
-            return true
+            for _, l := range saver.Listeners {
+                if reflect.DeepEqual(listener, l) {
+                    return true
+                }
+            }
         }
     }
 
@@ -136,6 +170,28 @@ func (this *EventDispatcher) DispatchEvent(event *Event) bool {
     }
 
     return false
+}
+
+// 事件类型列表
+func (this *EventDispatcher) EventNames() []string {
+    names := make([]string, 0)
+
+    for _, saver := range this.savers {
+        names = append(names, saver.Type)
+    }
+
+    return names
+}
+
+// 事件类型对应监听列表
+func (this *EventDispatcher) EventListeners(eventType string) []*EventListener {
+    for _, saver := range this.savers {
+        if saver.Type == eventType {
+            return saver.Listeners
+        }
+    }
+
+    return nil
 }
 
 // =====
