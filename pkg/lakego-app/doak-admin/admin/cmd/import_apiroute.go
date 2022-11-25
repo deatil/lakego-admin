@@ -9,8 +9,8 @@ import (
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/lakego-filesystem/filesystem"
 
-    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/array"
+    "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/command"
 
     "github.com/deatil/lakego-doak-admin/admin/model"

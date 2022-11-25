@@ -44,7 +44,7 @@ func FromTimeTime(t time.Time, timezone ...string) Datebin {
     date := NewDatebin().WithTime(t)
 
     if len(timezone) > 0 {
-        date = date.ReplaceTimezone(timezone[0])
+        date = date.SetTimezone(timezone[0])
     }
 
     return date
@@ -139,7 +139,7 @@ func NowDatetimeString(timezone ...string) string {
     return Now(timezone...).ToDatetimeString()
 }
 
-// 当前日期
+// 当前日期字符
 func NowDateString(timezone ...string) string {
     return Now(timezone...).ToDateString()
 }

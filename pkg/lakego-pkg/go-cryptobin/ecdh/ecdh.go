@@ -46,13 +46,13 @@ func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
-    oid, ok := nameFromNamedCurve(key.Curve())
+    name, ok := nameFromNamedCurve(key.Curve())
     if !ok {
         return nil, errors.New("x509: unsupported ecdh curve")
     }
 
     var paramBytes []byte
-    paramBytes, err = asn1.Marshal([]byte(oid))
+    paramBytes, err = asn1.Marshal([]byte(name))
     if err != nil {
         return nil, err
     }
@@ -128,13 +128,13 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
 func MarshalPrivateKey(key *ecdh.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
-    oid, ok := nameFromNamedCurve(key.Curve())
+    name, ok := nameFromNamedCurve(key.Curve())
     if !ok {
         return nil, errors.New("x509: unsupported ecdh curve")
     }
 
     // 创建数据
-    paramBytes, err := asn1.Marshal([]byte(oid))
+    paramBytes, err := asn1.Marshal([]byte(name))
     if err != nil {
         return nil, errors.New("ecdh: failed to marshal algo param: " + err.Error())
     }

@@ -38,11 +38,30 @@ arrData := map[string]any{
             222: "fddddd",
             333: "dfffff",
         },
+        "hh": map[int]any{
+            111: "hccccc",
+            222: "hddddd",
+            333: map[any]string{
+                "qq1": "qq1ccccc",
+                "qq2": "qq2ddddd",
+                "qq3": "qq3fffff",
+            },
+        },
+        "kJh21ay": map[string]any{
+            "Hjk2": "fccDcc",
+            "23rt": "^hgcF5c",
+        },
     },
 }
 
-arr := array.ArrGet(arrData, "b.d.e")
+data := array.ArrGet(arrData, "b.d.e")
 // output: eee
+
+data := array.ArrGet(arrData, "b.dd.1")
+// output: ddddd
+
+data := array.ArrGet(arrData, "b.kJh21ay.Hjk2")
+// output: fccDcc
 ~~~
 
 

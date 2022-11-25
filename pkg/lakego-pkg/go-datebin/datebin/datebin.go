@@ -167,14 +167,21 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
     return this
 }
 
-// 重新设置时区
-func (this Datebin) ReplaceTimezone(timezone string) Datebin {
+// 设置时区, 直接更改
+func (this Datebin) SetTimezone(timezone string) Datebin {
     date := this.WithTimezone(timezone)
 
     // 设置时区
     date.time = date.time.In(date.loc)
 
     return date
+}
+
+// 使用设置的时区时间
+func (this Datebin) UseLocTime() Datebin {
+    this.time = this.time.In(this.loc)
+
+    return this
 }
 
 // 获取时区
@@ -189,6 +196,11 @@ func (this Datebin) GetOffset() int {
     return offset
 }
 
+// 获取错误
+func (this Datebin) GetError() error {
+    return this.Error
+}
+
 // 通过时区获取 Location 实例
 func (this Datebin) GetLocationByTimezone(timezone string) (*time.Location, error) {
     return time.LoadLocation(timezone)
@@ -197,18 +209,6 @@ func (this Datebin) GetLocationByTimezone(timezone string) (*time.Location, erro
 // 通过持续时长解析
 func (this Datebin) ParseDuration(duration string) (time.Duration, error) {
     return time.ParseDuration(duration)
-}
-
-// 获取错误
-func (this Datebin) GetError() error {
-    return this.Error
-}
-
-// 使用设置的时区时间
-func (this Datebin) UseLocTime() Datebin {
-    this.time = this.time.In(this.loc)
-
-    return this
 }
 
 // 取绝对值

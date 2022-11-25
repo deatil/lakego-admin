@@ -49,11 +49,9 @@ func (this Arr) Get(source map[string]any, key string, defVal ...any) any {
 
 // 查找
 func (this Arr) Find(source map[string]any, key string) any {
-    lowerKey := strings.ToLower(key)
-
     var (
         val    any
-        path   = strings.Split(lowerKey, this.keyDelim)
+        path   = strings.Split(key, this.keyDelim)
         nested = len(path) > 1
     )
 
@@ -112,7 +110,7 @@ func (this Arr) searchIndexableWithPathPrefixes(source any, path []string) any {
     }
 
     for i := len(path); i > 0; i-- {
-        prefixKey := strings.ToLower(strings.Join(path[0:i], this.keyDelim))
+        prefixKey := strings.Join(path[0:i], this.keyDelim)
 
         var val any
         switch sourceIndexable := source.(type) {
