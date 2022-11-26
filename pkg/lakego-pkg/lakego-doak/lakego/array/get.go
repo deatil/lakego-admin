@@ -14,12 +14,12 @@ type (
 )
 
 // 获取
-func ArrGet(source map[string]any, key string, defVal ...any) any {
+func ArrGet(source any, key string, defVal ...any) any {
     return array.New().Get(source, key, defVal...)
 }
 
 // 获取
-func ArrGetWithGoch(source map[string]any, key string, defVal ...any) Goch {
+func ArrGetWithGoch(source any, key string, defVal ...any) Goch {
     data := array.New().Get(source, key, defVal...)
 
     return goch.New(data)

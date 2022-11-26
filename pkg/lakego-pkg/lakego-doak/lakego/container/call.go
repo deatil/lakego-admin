@@ -5,15 +5,46 @@ import(
     "reflect"
 )
 
+// 判断结构体方法是否存在
+func MethodExists(in any, method string) bool {
+    if method == "" {
+        return false
+    }
+
+    p := reflect.TypeOf(in)
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+    }
+
+    // 不是结构体时
+    if p.Kind() != reflect.Struct {
+        return false
+    }
+
+    object := reflect.ValueOf(in)
+
+    // 获取到方法
+    newMethod := object.MethodByName(method)
+    if !newMethod.IsValid() {
+        return false
+    }
+
+    return true
+}
+
 // 执行结构体方法
 func CallMethod(in any, method string, params []any) ([]any, error) {
     if method == "" {
         return nil, errors.New("method is empty.")
     }
 
+    p := reflect.TypeOf(in)
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+    }
+
     // 不是结构体时
-    kind := reflect.TypeOf(in).Kind()
-    if kind != reflect.Struct {
+    if p.Kind() != reflect.Struct {
         return nil, errors.New("in data is not struct.")
     }
 

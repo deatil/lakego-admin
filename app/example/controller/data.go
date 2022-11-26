@@ -12,6 +12,7 @@ import (
     "github.com/deatil/go-crc8/crc8"
     "github.com/deatil/go-crc16/crc16"
     "github.com/deatil/go-crc32/crc32"
+    "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-event/event"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
@@ -245,42 +246,46 @@ func (this *Data) Error(ctx *gin.Context) {
     mathData2 := math.Bindec("1111011")
 
     // 数组
-    arrData := map[string]any{
-        "a": 123,
-        "b": map[string]any{
-            "c": "ccc",
-            "d": map[string]any{
-                "e": "eee",
-                "f": map[string]any{
-                    "g": "ggg",
+    arrData := []any{
+        "Holl",
+        "d45dd",
+        map[string]any{
+            "a": 123,
+            "b": map[string]any{
+                "c": "ccc",
+                "d": map[string]any{
+                    "e": "eee",
+                    "f": map[string]any{
+                        "g": "ggg",
+                    },
                 },
-            },
-            "dd": []any{
-                "ccccc",
-                "ddddd",
-                "fffff",
-            },
-            "ff": map[any]any{
-                111: "fccccc",
-                222: "fddddd",
-                333: "dfffff",
-            },
-            "hh": map[int]any{
-                111: "hccccc",
-                222: "hddddd",
-                333: map[any]string{
-                    "qq1": "qq1ccccc",
-                    "qq2": "qq2ddddd",
-                    "qq3": "qq3fffff",
+                "dd": []any{
+                    "ccccc",
+                    "ddddd",
+                    "fffff",
                 },
-            },
-            "kJh21ay": map[string]any{
-                "Hjk2": "fccDcc",
-                "23rt": "^hgcF5c",
+                "ff": map[any]any{
+                    111: "fccccc",
+                    222: "fddddd",
+                    333: "dfffff",
+                },
+                "hh": map[int]any{
+                    111: "hccccc",
+                    222: "hddddd",
+                    333: map[any]string{
+                        "qq1": "qq1ccccc",
+                        "qq2": "qq2ddddd",
+                        "qq3": "qq3fffff",
+                    },
+                },
+                "kJh21ay": map[string]any{
+                    "Hjk2": "fccDcc",
+                    "23rt": "^hgcF5c",
+                },
             },
         },
     }
-    arr := array.ArrGet(arrData, "b.dd.13")
+    arr := array.ArrGet(arrData, "2.b.kJh21ay.Hjk2")
 
     // 缓存
     // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
@@ -379,9 +384,10 @@ func (this *Data) Error(ctx *gin.Context) {
         Verify([]byte("test-pass")).
         ToVerify()
 
-    // 调用测试
-    refData, _ := container.CallMethod(RefData{}, "Show", []any{"数据1", "数据2"})
-    reffuncData, _ := container.CallFunc(FuncShow, []any{"FuncShow数据1", "FuncShow数据2"})
+    // 调用测试 MethodExists
+    refData, _ := container.CallMethod(&RefData{}, "Show", []any{"数据1", "数据2", 12})
+    refDataExists := container.MethodExists(&RefData{}, "Show")
+    reffuncData, _ := container.CallFunc(FuncShow, []any{"FuncShow数据1", "FuncShow数据2", 66})
 
     obj := cryptobin_dh.New()
 
@@ -446,6 +452,7 @@ func (this *Data) Error(ctx *gin.Context) {
         "objSecret2": objSecret2,
 
         "refData": refData,
+        "refDataExists": refDataExists,
         "reffuncData": reffuncData,
 
         "obj2cypt": obj2cypt,
@@ -530,15 +537,15 @@ func (this PipelineEx) Handles(data any, next pipeline.NextFunc) any {
 // 结构体方法调用测试
 type RefData struct {}
 
-func (this RefData) Show(data any, name string) string {
-    data2 := data.(string) + "===" + name
+func (this *RefData) Show(data any, name string, num int) string {
+    data2 := data.(string) + "===" + name + "=== num: " + goch.ToString(num)
 
     return data2
 }
 
 // 函数调用测试
-func FuncShow(data any, name string) string {
-    data2 := data.(string) + "===" + name
+func FuncShow(data any, name string, num int) string {
+    data2 := data.(string) + "===" + name + "=== num: " + goch.ToString(num)
 
     return data2
 }
