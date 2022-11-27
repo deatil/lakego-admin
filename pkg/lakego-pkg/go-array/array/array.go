@@ -67,25 +67,26 @@ func (this Arr) Find(source any, key string) any {
         nested = len(path) > 1
     )
 
-    // 索引
-    val = this.searchIndexableWithPathPrefixes(source, path)
-    if val != nil {
-        return val
+    newSource, isMap := this.anyDataMapFormat(source)
+    if isMap {
+        // map
+        val = this.searchMap(newSource, path)
+        if val != nil {
+            return val
+        }
     }
 
-    newSource, ok := this.anyDataFormat(source)
-    if !ok {
-        return nil
+    // 格式化
+    source = this.anyDataFormat(source)
+
+    // 索引
+    val = this.searchIndexWithPathPrefixes(source, path)
+    if val != nil {
+        return val
     }
 
     if nested && this.isPathShadowedInDeepMap(path, newSource) != "" {
         return nil
-    }
-
-    // map
-    val = this.searchMap(newSource, path)
-    if val != nil {
-        return val
     }
 
     return nil
@@ -121,7 +122,7 @@ func (this Arr) searchMap(source map[string]any, path []string) any {
 }
 
 // 索引查询
-func (this Arr) searchIndexableWithPathPrefixes(source any, path []string) any {
+func (this Arr) searchIndexWithPathPrefixes(source any, path []string) any {
     if len(path) == 0 {
         return source
     }
@@ -163,19 +164,9 @@ func (this Arr) searchSliceWithPathPrefixes(
         return next
     }
 
-    switch n := next.(type) {
-        case map[any]any:
-            return this.searchIndexableWithPathPrefixes(toStringMap(n), path[pathIndex:])
-        case map[string]any, []any:
-            return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
-        default:
-            if nextMap, isMap := this.anyMapFormat(next); isMap {
-                return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
-            }
-
-            if nextSlice, isSlice := this.anySliceFormat(next); isSlice {
-                return this.searchIndexableWithPathPrefixes(nextSlice, path[pathIndex:])
-            }
+    n := this.anyDataFormat(next)
+    if n != nil {
+        return this.searchIndexWithPathPrefixes(n, path[pathIndex:])
     }
 
     return nil
@@ -197,19 +188,9 @@ func (this Arr) searchMapWithPathPrefixes(
         return next
     }
 
-    switch n := next.(type) {
-        case map[any]any:
-            return this.searchIndexableWithPathPrefixes(toStringMap(n), path[pathIndex:])
-        case map[string]any, []any:
-            return this.searchIndexableWithPathPrefixes(n, path[pathIndex:])
-        default:
-            if nextMap, isMap := this.anyMapFormat(next); isMap {
-                return this.searchIndexableWithPathPrefixes(toStringMap(nextMap), path[pathIndex:])
-            }
-
-            if nextSlice, isSlice := this.anySliceFormat(next); isSlice {
-                return this.searchIndexableWithPathPrefixes(nextSlice, path[pathIndex:])
-            }
+    n := this.anyDataFormat(next)
+    if n != nil {
+        return this.searchIndexWithPathPrefixes(n, path[pathIndex:])
     }
 
     return nil
@@ -244,7 +225,28 @@ func (this Arr) isPathShadowedInDeepMap(path []string, m map[string]any) string 
 }
 
 // any data 数据格式化
-func (this Arr) anyDataFormat(data any) (map[string]any, bool) {
+func (this Arr) anyDataFormat(data any) any {
+    switch n := data.(type) {
+        case map[any]any:
+            return toStringMap(n)
+        case map[string]any, []any:
+            return n
+        default:
+            dataMap, isMap := this.anyMapFormat(data)
+            if isMap {
+                return toStringMap(dataMap)
+            }
+
+            if dataSlice, isSlice := this.anySliceFormat(data); isSlice {
+                return dataSlice
+            }
+    }
+
+    return nil
+}
+
+// any data map 数据格式化
+func (this Arr) anyDataMapFormat(data any) (map[string]any, bool) {
     switch n := data.(type) {
         case map[any]any:
             return toStringMap(n), true

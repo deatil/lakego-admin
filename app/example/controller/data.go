@@ -246,46 +246,46 @@ func (this *Data) Error(ctx *gin.Context) {
     mathData2 := math.Bindec("1111011")
 
     // 数组
-    arrData := []any{
-        "Holl",
-        "d45dd",
-        map[string]any{
-            "a": 123,
-            "b": map[string]any{
-                "c": "ccc",
-                "d": map[string]any{
-                    "e": "eee",
-                    "f": map[string]any{
-                        "g": "ggg",
-                    },
+    arrData := map[string]any{
+        "a": 123,
+        "b": map[string]any{
+            "c": "ccc",
+            "d": map[string]any{
+                "e": "eee",
+                "f": map[string]any{
+                    "g": "ggg",
                 },
-                "dd": []any{
-                    "ccccc",
-                    "ddddd",
-                    "fffff",
+            },
+            "dd": []any{
+                "ccccc",
+                "ddddd",
+                "fffff",
+            },
+            "ff": map[any]any{
+                111: "fccccc",
+                222: "fddddd",
+                333: "dfffff",
+            },
+            "hhTy3": map[int]any{
+                111: "hccccc",
+                222: "hddddd",
+                333: map[any]string{
+                    "qq1": "qq1ccccc",
+                    "qq2": "qq2ddddd",
+                    "qq3": "qq3fffff",
                 },
-                "ff": map[any]any{
-                    111: "fccccc",
-                    222: "fddddd",
-                    333: "dfffff",
-                },
-                "hh": map[int]any{
-                    111: "hccccc",
-                    222: "hddddd",
-                    333: map[any]string{
-                        "qq1": "qq1ccccc",
-                        "qq2": "qq2ddddd",
-                        "qq3": "qq3fffff",
-                    },
-                },
-                "kJh21ay": map[string]any{
-                    "Hjk2": "fccDcc",
-                    "23rt": "^hgcF5c",
+            },
+            "kJh21ay": map[string]any{
+                "Hjk2": "fccDcc",
+                "23rt": "^hgcF5c",
+                "23rt5": []any{
+                    "adfa",
+                    1231,
                 },
             },
         },
     }
-    arr := array.ArrGet(arrData, "2.b.kJh21ay.Hjk2")
+    arr := array.ArrGet(arrData, "b.hhTy3.333.qq3")
 
     // 缓存
     // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
@@ -389,6 +389,14 @@ func (this *Data) Error(ctx *gin.Context) {
     refDataExists := container.MethodExists(&RefData{}, "Show")
     reffuncData, _ := container.CallFunc(FuncShow, []any{"FuncShow数据1", "FuncShow数据2", 66})
 
+    refDataExists2 := false
+    var RefDataOb any = &RefData{}
+    if _, ok := RefDataOb.(interface {
+        Show(any, string, int) string
+    }); ok {
+        refDataExists2 = true
+    }
+
     obj := cryptobin_dh.New()
 
     objPri1, _ := fs.Get("./runtime/key/dhd2/dh1222")
@@ -454,6 +462,7 @@ func (this *Data) Error(ctx *gin.Context) {
         "refData": refData,
         "refDataExists": refDataExists,
         "reffuncData": reffuncData,
+        "refDataExists2": refDataExists2,
 
         "obj2cypt": obj2cypt,
         "obj2cyptde": obj2cyptde,
@@ -532,6 +541,10 @@ func (this PipelineEx) Handles(data any, next pipeline.NextFunc) any {
     data2 = data2.(string) + ", struct Handles 数据结束"
 
     return data2
+}
+
+type IRefData interface {
+    Show(any, string, int) string
 }
 
 // 结构体方法调用测试
