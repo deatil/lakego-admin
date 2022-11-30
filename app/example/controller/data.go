@@ -266,13 +266,19 @@ func (this *Data) Error(ctx *gin.Context) {
                 222: "fddddd",
                 333: "dfffff",
             },
-            "hhTy3": map[int]any{
+            "hhTy3": &map[int]any{
                 111: "hccccc",
                 222: "hddddd",
                 333: map[any]string{
                     "qq1": "qq1ccccc",
                     "qq2": "qq2ddddd",
                     "qq3": "qq3fffff",
+                },
+                666: []float64{
+                    12.3,
+                    32.5,
+                    22.56,
+                    789.156,
                 },
             },
             "kJh21ay": map[string]any{
@@ -285,7 +291,7 @@ func (this *Data) Error(ctx *gin.Context) {
             },
         },
     }
-    arr := array.ArrGet(arrData, "b.hhTy3.333.qq3")
+    arr := array.ArrGet(arrData, "b.hhTy3.666.3")
 
     // 缓存
     // cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")

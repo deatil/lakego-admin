@@ -4,10 +4,11 @@ import (
     "github.com/gin-gonic/gin"
 
     "github.com/deatil/go-event/event"
-
     "github.com/deatil/lakego-filesystem/filesystem"
+
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
+    "github.com/deatil/lakego-doak/lakego/schedule"
     "github.com/deatil/lakego-doak/lakego/facade/logger"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
@@ -49,6 +50,13 @@ func (this *ExampleServiceProvider) Boot() {
 
     // 注册事件
     this.registerPEvents()
+}
+
+// 计划任务
+func (this *ExampleServiceProvider) Schedule(s *schedule.Schedule) {
+    s.AddFunc(func() {
+        logger.New().Info("计划任务运行中...")
+    }).EveryMinute()
 }
 
 /**

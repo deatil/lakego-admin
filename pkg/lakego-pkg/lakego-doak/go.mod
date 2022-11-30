@@ -47,6 +47,7 @@ require (
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/tebeka/strftime v0.1.5 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	go.uber.org/dig v1.13.0
 	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect

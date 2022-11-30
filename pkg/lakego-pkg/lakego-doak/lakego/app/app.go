@@ -15,9 +15,10 @@ import (
     "github.com/deatil/lakego-jwt/jwt"
     "github.com/deatil/lakego-doak/lakego/di"
     "github.com/deatil/lakego-doak/lakego/env"
+    "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/path"
+    "github.com/deatil/lakego-doak/lakego/schedule"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/middleware/recovery"
     iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
@@ -26,9 +27,10 @@ import (
 // App结构体
 func New() *App {
     return &App{
-        Runned: false,
-        Config: config.New("server"),
-        Lock:   new(sync.RWMutex),
+        Runned:   false,
+        Config:   config.New("server"),
+        Lock:     new(sync.RWMutex),
+        Schedule: schedule.New(),
         ServiceProviders:     make(ServiceProviders, 0),
         UsedServiceProviders: make(UsedServiceProviders, 0),
     }
@@ -60,6 +62,11 @@ type (
     BootedCallbacks = []BootedCallback
 )
 
+// 计划任务接口
+type ServiceProviderSchedule interface {
+    Schedule(*schedule.Schedule)
+}
+
 /**
  * App结构体
  *
@@ -90,6 +97,9 @@ type App struct {
 
     // 根脚本
     RootCmd *command.Command
+
+    // 计划任务
+    Schedule *schedule.Schedule
 
     // 启动前
     BootingCallbacks BootingCallbacks
@@ -140,6 +150,11 @@ func (this *App) Register(f ServiceProvider) {
         // 注册
         p.Register()
 
+        // 添加计划任务
+        if ps, ok := p.(ServiceProviderSchedule); ok {
+            ps.Schedule(this.Schedule)
+        }
+
         // 引导
         this.BootService(p)
     }
@@ -189,13 +204,23 @@ func (this *App) CallBootedCallbacks() {
 }
 
 // 设置根脚本
-func (this *App) WithRootCmd(root *command.Command) {
-    this.RootCmd = root
+func (this *App) WithRootCmd(cmd *command.Command) {
+    this.RootCmd = cmd
 }
 
 // 获取根脚本
 func (this *App) GetRootCmd() *command.Command {
     return this.RootCmd
+}
+
+// 设置计划任务
+func (this *App) WithSchedule(cron *schedule.Schedule) {
+    this.Schedule = cron
+}
+
+// 获取计划任务
+func (this *App) GetSchedule() *schedule.Schedule {
+    return this.Schedule
 }
 
 // 设置命令行状态
@@ -344,6 +369,11 @@ func (this *App) loadServiceProvider() {
             p.WithRoute(this.RouteEngine)
 
             p.Register()
+
+            // 添加计划任务
+            if ps, ok := p.(ServiceProviderSchedule); ok {
+                ps.Schedule(this.Schedule)
+            }
 
             this.UsedServiceProviders = append(this.UsedServiceProviders, p)
         }

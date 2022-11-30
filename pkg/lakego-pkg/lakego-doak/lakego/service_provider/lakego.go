@@ -1,11 +1,13 @@
 package service_provider
 
 import (
+    "github.com/deatil/lakego-doak/lakego/schedule"
     "github.com/deatil/lakego-doak/lakego/provider"
 
     // 脚本
     publishCmd "github.com/deatil/lakego-doak/lakego/console/publish"
     storageCmd "github.com/deatil/lakego-doak/lakego/console/storage"
+    scheduleCmd "github.com/deatil/lakego-doak/lakego/console/schedule"
 
     // 视图
     "github.com/deatil/lakego-doak/lakego/facade/view"
@@ -44,6 +46,12 @@ func (this *Lakego) loadCommand() {
 
     // 创建软连接
     this.AddCommand(storageCmd.StorageLinkCmd)
+}
+
+// 计划任务
+func (this *Lakego) Schedule(s *schedule.Schedule) {
+    // 计划任务命令
+    this.AddCommand(scheduleCmd.NewScheduleCmd(s))
 }
 
 /**

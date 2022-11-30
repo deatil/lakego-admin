@@ -267,9 +267,17 @@ func (this Arr) anyMapFormat(data any) (map[any]any, bool) {
     m := make(map[any]any)
     isMap := false
 
-    dataKind := reflect.TypeOf(data).Kind()
-    if dataKind == reflect.Map {
-        iter := reflect.ValueOf(data).MapRange()
+    dataValue := reflect.ValueOf(data)
+    for dataValue.Kind() == reflect.Pointer {
+        dataValue = dataValue.Elem()
+    }
+
+    // 获取最后的数据
+    newData := dataValue.Interface()
+
+    newDataKind := reflect.TypeOf(newData).Kind()
+    if newDataKind == reflect.Map {
+        iter := reflect.ValueOf(newData).MapRange()
         for iter.Next() {
             k := iter.Key().Interface()
             v := iter.Value().Interface()
@@ -288,13 +296,21 @@ func (this Arr) anySliceFormat(data any) ([]any, bool) {
     m := make([]any, 0)
     isSlice := false
 
-    dataKind := reflect.TypeOf(data).Kind()
-    if dataKind == reflect.Slice {
-        dataValue := reflect.ValueOf(data)
-        dataLen := dataValue.Len()
+    dataValue := reflect.ValueOf(data)
+    for dataValue.Kind() == reflect.Pointer {
+        dataValue = dataValue.Elem()
+    }
 
-        for i := 0; i < dataLen; i++ {
-            v := dataValue.Index(i).Interface()
+    // 获取最后的数据
+    newData := dataValue.Interface()
+
+    newDataKind := reflect.TypeOf(newData).Kind()
+    if newDataKind == reflect.Slice {
+        newDataValue := reflect.ValueOf(newData)
+        newDataLen := newDataValue.Len()
+
+        for i := 0; i < newDataLen; i++ {
+            v := newDataValue.Index(i).Interface()
 
             m = append(m, v)
         }
