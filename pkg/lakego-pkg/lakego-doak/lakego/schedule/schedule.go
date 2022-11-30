@@ -112,20 +112,23 @@ func (this *Schedule) AddSchedule(schedule ISchedule, cmd IJob) *Entry {
 
 // 开启
 func (this *Schedule) Start() {
-    for _, entry := range this.entries {
-        this.addEntry(entry)
-    }
+    this.addEntries()
 
     this.Cron.Start()
 }
 
 // 运行
 func (this *Schedule) Run() {
+    this.addEntries()
+
+    this.Cron.Run()
+}
+
+// 添加全部任务数据
+func (this *Schedule) addEntries() {
     for _, entry := range this.entries {
         this.addEntry(entry)
     }
-
-    this.Cron.Run()
 }
 
 // 添加任务数据

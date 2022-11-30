@@ -50,7 +50,7 @@ var pTag string
 func init() {
     // PersistentFlags() 表示该类参数可以被用于当前命令及其子命令。
     // Flags() 表示该类参数只能用于当前命令。
-    // cobra默认只解析当前命令的local flags，
+    // cobra 默认只解析当前命令的local flags，
     // 通过开启Command.TraverseChildren参数，可以解析每个命令的local flags。
     pf := PublishCmd.Flags()
     pf.BoolVarP(&pForce, "force", "f", false, "是否覆盖文件")

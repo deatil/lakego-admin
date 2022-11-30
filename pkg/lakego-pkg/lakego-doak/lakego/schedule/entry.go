@@ -12,7 +12,7 @@ func NewEntry() *Entry {
 }
 
 /**
- * 计划任务内容
+ * 计划任务内容，任务时间用的最低秒
  *
  * @create 2022-11-29
  * @author deatil
@@ -47,7 +47,7 @@ func (this *Entry) AddFunc(cmd func()) *Entry {
     return this.WithCmd(cmd)
 }
 
-// Job
+// Job 接口类
 func (this *Entry) AddJob(cmd IJob) *Entry {
     return this.WithCmd(cmd)
 }
@@ -123,6 +123,30 @@ func (this *Entry) EveryTwoSeconds() *Entry {
     return this.SpliceIntoPosition(1, "*/2")
 }
 
+func (this *Entry) EveryThreeSeconds() *Entry {
+    return this.SpliceIntoPosition(1, "*/3")
+}
+
+func (this *Entry) EveryFourSeconds() *Entry {
+    return this.SpliceIntoPosition(1, "*/4")
+}
+
+func (this *Entry) EveryFiveSeconds() *Entry {
+    return this.SpliceIntoPosition(1, "*/5")
+}
+
+func (this *Entry) EveryTenSeconds() *Entry {
+    return this.SpliceIntoPosition(1, "*/10")
+}
+
+func (this *Entry) EveryFifteenSeconds() *Entry {
+    return this.SpliceIntoPosition(1, "*/15")
+}
+
+func (this *Entry) EveryThirtySeconds() *Entry {
+    return this.SpliceIntoPosition(1, "0,30")
+}
+
 func (this *Entry) EveryMinute() *Entry {
     return this.SpliceIntoPosition(1, "0").
                 SpliceIntoPosition(2, "*")
@@ -168,17 +192,17 @@ func (this *Entry) Hourly() *Entry {
                 SpliceIntoPosition(2, "0")
 }
 
-func (this *Entry) HourlyAt(offset any) *Entry {
-    offsetString := ""
+func (this *Entry) HourlyAt(offset ...string) *Entry {
+    offsetString := "*"
 
-    switch o := offset.(type) {
-        case []string:
-            offsetString = strings.Join(o, ",")
-        case string:
-            offsetString = o
+    if len(offset) > 1 {
+        offsetString = strings.Join(offset, ",")
+    } else if len(offset) == 1 {
+        offsetString = offset[0]
     }
 
-    return this.SpliceIntoPosition(2, offsetString)
+    return this.SpliceIntoPosition(1, "0").
+                SpliceIntoPosition(2, offsetString)
 }
 
 func (this *Entry) EveryTwoHours() *Entry {
