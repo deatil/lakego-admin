@@ -26,11 +26,26 @@ import (
 
 // App结构体
 func New() *App {
+    cfg := config.New("server")
+
+    // 开发者模式
+    var dev bool
+    mode := cfg.GetString("mode")
+    if mode == "dev" {
+        dev = true
+    } else {
+        dev = false
+    }
+
+    // 计划任务
+    scheduler := schedule.New().SetShowLogInfo(dev)
+
     return &App{
+        Dev:      dev,
         Runned:   false,
-        Config:   config.New("server"),
+        Config:   cfg,
         Lock:     new(sync.RWMutex),
-        Schedule: schedule.New(),
+        Schedule: scheduler,
         ServiceProviders:     make(ServiceProviders, 0),
         UsedServiceProviders: make(UsedServiceProviders, 0),
     }
@@ -74,11 +89,14 @@ type ServiceProviderSchedule interface {
  * @author deatil
  */
 type App struct {
+    // 锁
+    Lock *sync.RWMutex
+
     // 配置
     Config *config.Config
 
-    // 锁
-    Lock *sync.RWMutex
+    // 开发者模式
+    Dev bool
 
     // 服务提供者
     ServiceProviders ServiceProviders
@@ -235,13 +253,7 @@ func (this *App) RunningInConsole() bool {
 
 // 是否为开发者模式
 func (this *App) IsDev() bool {
-    mode := this.Config.GetString("mode")
-
-    if mode == "dev" {
-        return true
-    } else {
-        return false
-    }
+    return this.Dev
 }
 
 // ==================

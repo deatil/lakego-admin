@@ -19,10 +19,15 @@ const (
 
 // 构造函数
 func New() *Schedule {
-    c := NewCron(WithSeconds())
+    logger := PrintfLogger(NewLogger())
+
+    cron := NewCron(
+        WithSeconds(),
+        WithChain(Recover(logger)),
+    )
 
     schedule := &Schedule{
-        Cron:    c,
+        Cron:    cron,
         entries: make([]*Entry, 0),
     }
 
@@ -81,6 +86,19 @@ func (this *Schedule) SetLocation(loc string) *Schedule {
     timeLoc, _ := time.LoadLocation(loc)
 
     return this.WithOption(WithLocation(timeLoc))
+}
+
+// 设置日志
+func (this *Schedule) SetShowLogInfo(logInfo bool) *Schedule {
+    var logger CronLogger
+
+    if logInfo {
+        logger = PrintfLogger(NewLogger())
+    } else {
+        logger = VerbosePrintfLogger(NewLogger())
+    }
+
+    return this.WithOption(WithLogger(logger))
 }
 
 // AddFunc

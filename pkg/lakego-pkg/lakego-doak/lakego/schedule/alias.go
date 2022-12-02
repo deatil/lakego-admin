@@ -21,15 +21,22 @@ var (
 
     // Chain
     NewChain = cron.NewChain
-    Recover = cron.Recover
+    Recover  = cron.Recover
     DelayIfStillRunning = cron.DelayIfStillRunning
-    SkipIfStillRunning = cron.SkipIfStillRunning
+    SkipIfStillRunning  = cron.SkipIfStillRunning
 
     // Every
     Every = cron.Every
+
+    // 日志
+    DefaultLogger = cron.DefaultLogger
+    DiscardLogger = cron.DiscardLogger
+
+    PrintfLogger        = cron.PrintfLogger
+    VerbosePrintfLogger = cron.VerbosePrintfLogger
 )
 
-// 使用方法
+// 结构体
 type (
     Cron         = cron.Cron
     Option       = cron.Option
@@ -44,6 +51,8 @@ type (
 
     CronEntryID = cron.EntryID
     CronEntry   = cron.Entry
+
+    CronLogger  = cron.Logger
 )
 
 // 接口

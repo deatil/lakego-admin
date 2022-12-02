@@ -29,6 +29,13 @@ type Entry struct {
 }
 
 // 设置计划时间
+func (this *Entry) Cron(spec string) *Entry {
+    this.Spec = spec
+
+    return this
+}
+
+// 设置计划时间
 func (this *Entry) WithSpec(spec string) *Entry {
     this.Spec = spec
 

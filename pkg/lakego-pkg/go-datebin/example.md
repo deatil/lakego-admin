@@ -43,7 +43,7 @@ timezone := datebin.UTC
 date := datebin.
     FromTimeTime(time.Now(), timezone).
     // FromTimeUnix(int64(1652587697), int64(0), timezone).
-    // FromTimestamp(int64(1652587697), timezone.
+    // FromTimestamp(int64(1652587697), timezone).
     // FromDatetimeWithNanosecond(2022, 10, 23, 22, 18, 56, 123, timezone).
     // FromDatetimeWithMicrosecond(2022, 10, 23, 22, 18, 56, 123, timezone).
     // FromDatetimeWithMillisecond(2022, 10, 23, 22, 18, 56, 123, timezone).
@@ -64,7 +64,7 @@ timezone := datebin.UTC
 date := datebin.
     Parse("2022-10-23 22:18:56").
     // ParseWithLayout("2022-10-23 22:18:56", "2006-01-02 15:04:05", timezone).
-    // ParseWithFormat("2022-10-23 22:18:56", "Y-m-d H:i:s", timezone.
+    // ParseWithFormat("2022-10-23 22:18:56", "Y-m-d H:i:s", timezone).
     // ParseDatetimeString("2022-10-23 22:18:56", "2006-01-02 15:04:05").
     // ParseDatetimeString("2022-10-23 22:18:56", "Y-m-d H:i:s", "u").
     ToDatetimeString()
@@ -131,7 +131,7 @@ data := datebin.NowTime(timezone)
 // 当前日期时间字符, string
 data := datebin.NowDatetimeString(timezone)
 
-// 当前日期, string
+// 当前日期字符, string
 data := datebin.NowDateString(timezone)
 
 // 当前时间字符, string
@@ -140,7 +140,7 @@ data := datebin.NowTimeString(timezone)
 // 时间戳转为 time.Time
 timeData := datebin.TimestampToTime(int64(1652587697), timezone)
 
-// 时间转换为时间戳
+// time.Time 转换为时间戳
 timestampData := datebin.TimeToTimestamp(timeData, timezone)
 
 // 时间字符转为时间
@@ -283,7 +283,12 @@ data := diffTime.Years()
 data := diffTime.YearsAbs()
 
 // 格式化输出
-data := diffTime.Format("相差时间: {Y}-{m}-{d} {H}:{i}:{s}")
+data := diffTime.Format("时间相差 {Y} 年")
+data := diffTime.Format("时间相差 {m} 月")
+data := diffTime.Format("时间相差 {d} 天")
+data := diffTime.Format("时间相差 {H} 小时")
+data := diffTime.Format("时间相差 {i} 分钟")
+data := diffTime.Format("时间相差 {s} 秒")
 ~~~
 
 
@@ -366,5 +371,6 @@ date := time.SubYears(uint(2)).
 
     // AddNanoseconds(uint(2))
     // AddNanosecond()
+
     ToDatetimeString()
 ~~~
