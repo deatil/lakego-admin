@@ -26,7 +26,7 @@ type Index struct {
 // @Router / [get]
 // @x-lakego {"slug": "lakego-admin.admin.index"}
 func (this *Index) Index(ctx *gin.Context) {
-    data := "admin index data"
+    data := "lakego-admin"
 
     this.SuccessWithData(ctx, "获取成功", gin.H{
         "data": data,

@@ -1,6 +1,6 @@
 package datebin
 
-// 通过格式比对是否相等
+// 通过格式字符比对是否相等
 func (this Datebin) IsSameAs(format string, date Datebin) bool {
     if this.IsInvalid() {
         return false
@@ -9,7 +9,17 @@ func (this Datebin) IsSameAs(format string, date Datebin) bool {
     return this.Format(format) == date.Format(format)
 }
 
-// 通过格式比对是否相等
+// 通过布局字符比对是否相等
+func (this Datebin) IsSameAsWithLayout(layout string, date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
+    return this.Layout(layout) == date.Layout(layout)
+}
+
+// 通过预设格式字符比对是否相等
+// unit 预设有: year | week | day | hour | minute | second | micro | microsecond
 func (this Datebin) IsSameUnit(unit string, date Datebin) bool {
     if this.IsInvalid() {
         return false

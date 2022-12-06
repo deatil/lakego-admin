@@ -58,6 +58,16 @@ func (this *TestEventSubscribe) OnTestEvent(data any) {
     fmt.Println(data)
 }
 
+type TestEventStructData struct {
+    Data string
+}
+
+func TestEventStruct(data TestEventStructData, name any) {
+    logger.New().Info("TestEventStruct: ")
+    logger.New().Info(data.Data)
+    logger.New().Info(name)
+}
+
 func main() {
     // 事件注册
     event.Listen("data.error", func(data any) {
@@ -67,6 +77,9 @@ func main() {
     // 事件触发
     eventData := "index data"
     event.Dispatch("data.error", eventData)
+
+    // 触发 `data.` 为前缀的全部事件
+    event.Dispatch("data.*", eventData)
 
     // ==================
 
@@ -80,6 +93,17 @@ func main() {
     event.Dispatch("TestEventName", eventData)
     event.Dispatch("ABCTestEvent", eventData)
     event.Dispatch("TestEventSubscribe", eventData)
+
+    // ==================
+
+    // 事件注册
+    event.Listen(TestEventStructData{}, TestEventStruct)
+
+    // 事件触发
+    eventData2 := "index data"
+    event.Dispatch(TestEventStructData{
+        Data: eventData2,
+    })
 
 }
 

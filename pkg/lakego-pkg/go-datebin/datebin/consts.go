@@ -12,13 +12,13 @@ const (
     Microsecond = time.Microsecond
     // 毫秒 [Millisecond = Microsecond * 1000]
     Millisecond = time.Millisecond
-    // 秒 [Second = Millisecond * 1000]
+    // 秒   [Second = Millisecond * 1000]
     Second      = time.Second
     // 分钟 [Minute = Second * 60]
     Minute      = time.Minute
     // 小时 [Hour = Minute * 60]
     Hour        = time.Hour
-    // 天 [Day = Hour * 24]
+    // 天   [Day = Hour * 24]
     Day         = time.Hour * 24
 )
 

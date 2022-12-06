@@ -130,13 +130,13 @@ func (this Datebin) GetTime() time.Time {
     return this.time
 }
 
-// 设置时间
+// 设置周开始时间
 func (this Datebin) WithWeekStartAt(weekday time.Weekday) Datebin {
     this.weekStartAt = weekday
     return this
 }
 
-// 获取时间
+// 获取周开始时间
 func (this Datebin) GetWeekStartAt() time.Weekday {
     return this.weekStartAt
 }
@@ -157,7 +157,7 @@ func (this Datebin) GetLocationString() string {
     return this.loc.String()
 }
 
-// 设置时区字符
+// 设置时区
 func (this Datebin) WithTimezone(timezone string) Datebin {
     location, err := this.GetLocationByTimezone(timezone)
     if err == nil {
@@ -177,14 +177,14 @@ func (this Datebin) SetTimezone(timezone string) Datebin {
     return date
 }
 
-// 使用设置的时区时间
+// 使用设置的时区
 func (this Datebin) UseLocTime() Datebin {
     this.time = this.time.In(this.loc)
 
     return this
 }
 
-// 获取时区
+// 获取时区 Zone 名称
 func (this Datebin) GetTimezone() string {
     name, _ := this.time.Zone()
     return name
@@ -196,7 +196,7 @@ func (this Datebin) GetOffset() int {
     return offset
 }
 
-// 获取错误
+// 获取错误信息
 func (this Datebin) GetError() error {
     return this.Error
 }

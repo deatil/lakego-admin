@@ -19,7 +19,7 @@ func (this Datebin) IsInvalid() bool {
 }
 
 // 是否是 Utc 时区
-func (this Datebin) IsUtc() bool {
+func (this Datebin) IsUTC() bool {
     return this.GetTimezone() == UTC
 }
 

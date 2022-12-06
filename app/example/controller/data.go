@@ -175,6 +175,7 @@ func (this *Data) Error(ctx *gin.Context) {
     newStrData := str.LowerCamel(strData)
 
     // 时间
+    datebin.SetTimezone(datebin.Eire)
     date := datebin.
         Now().
         ToFormatString("Y/m/d H:i:s")

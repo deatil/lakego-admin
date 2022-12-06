@@ -92,7 +92,7 @@ func (this Datebin) SetMonth(month int) Datebin {
     return this.SetDatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond)
 }
 
-// 设置日期
+// 设置天
 func (this Datebin) SetDay(day int) Datebin {
     year, month, _, hour, minute, second, nanosecond := this.DatetimeWithNanosecond()
 
