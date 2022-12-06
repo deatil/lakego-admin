@@ -18,8 +18,8 @@ func NewLogger() Logger {
 type Logger struct {}
 
 // 实现接口
-func (this Logger) Printf(msg string, keysAndValues ...any) {
+func (this Logger) Printf(msg string, v ...any) {
     msg = "schedule: " + msg
 
-    logger.New().Errorf(msg, keysAndValues...)
+    logger.New().Errorf(msg, v...)
 }
