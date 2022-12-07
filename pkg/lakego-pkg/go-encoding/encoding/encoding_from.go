@@ -16,7 +16,11 @@ import (
     "encoding/ascii85"
     "encoding/binary"
 
+    "github.com/deatil/go-encoding/morse"
     "github.com/deatil/go-encoding/basex"
+    "github.com/deatil/go-encoding/base62"
+    "github.com/deatil/go-encoding/base91"
+    "github.com/deatil/go-encoding/base100"
 )
 
 // 字节
@@ -147,8 +151,8 @@ func (this Encoding) FromBase16String(data string) Encoding {
     return this
 }
 
-// Base62
-func (this Encoding) FromBase62String(data string) Encoding {
+// Basex62
+func (this Encoding) FromBasex62String(data string) Encoding {
     this.data, this.Error = basex.Base62Encoding.Decode(data)
 
     return this
@@ -157,6 +161,37 @@ func (this Encoding) FromBase62String(data string) Encoding {
 // FromBasexEncoderString
 func (this Encoding) FromBasexEncoderString(data string, encoder string) Encoding {
     this.data, this.Error = basex.NewEncoding(encoder).Decode(data)
+
+    return this
+}
+
+// Base62
+func (this Encoding) FromBase62String(data string) Encoding {
+    this.data, this.Error = base62.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base91
+func (this Encoding) FromBase91String(data string) Encoding {
+    this.data, this.Error = base91.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base100
+func (this Encoding) FromBase100String(data string) Encoding {
+    this.data, this.Error = base100.Decode(data)
+
+    return this
+}
+
+// MorseITU
+func (this Encoding) FromMorseITUString(data string) Encoding {
+    data, err := morse.DecodeITU(data)
+
+    this.data = []byte(data)
+    this.Error = err
 
     return this
 }

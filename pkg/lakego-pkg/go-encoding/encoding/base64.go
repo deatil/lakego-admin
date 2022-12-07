@@ -14,8 +14,7 @@ var (
 
 // 加密
 func Base64Encode(str string) string {
-    newStr := base64.StdEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base64.StdEncoding.EncodeToString([]byte(str))
 }
 
 // 解密
@@ -30,8 +29,7 @@ func Base64Decode(str string) string {
 
 // URL 加密
 func Base64URLEncode(str string) string {
-    newStr := base64.URLEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base64.URLEncoding.EncodeToString([]byte(str))
 }
 
 // URL 解密
@@ -46,8 +44,7 @@ func Base64URLDecode(str string) string {
 
 // Raw 加密，无填充编码
 func Base64RawEncode(str string) string {
-    newStr := base64.RawStdEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base64.RawStdEncoding.EncodeToString([]byte(str))
 }
 
 // Raw 解密，无填充编码
@@ -62,8 +59,7 @@ func Base64RawDecode(str string) string {
 
 // RawURL 加密，无填充编码
 func Base64RawURLEncode(str string) string {
-    newStr := base64.RawURLEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base64.RawURLEncoding.EncodeToString([]byte(str))
 }
 
 // RawURL 解密，无填充编码

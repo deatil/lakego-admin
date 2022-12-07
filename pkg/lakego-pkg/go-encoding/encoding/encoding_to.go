@@ -15,12 +15,16 @@ import (
     "encoding/ascii85"
     "encoding/binary"
 
+    "github.com/deatil/go-encoding/morse"
     "github.com/deatil/go-encoding/basex"
+    "github.com/deatil/go-encoding/base62"
+    "github.com/deatil/go-encoding/base91"
+    "github.com/deatil/go-encoding/base100"
 )
 
 // 输出原始字符
 func (this Encoding) String() string {
-    return string(this.data)
+    return this.ToString()
 }
 
 // 输出字节
@@ -103,14 +107,34 @@ func (this Encoding) ToBase16String() string {
     return basex.Base16Encoding.Encode(this.data)
 }
 
-// 输出 Base62
-func (this Encoding) ToBase62String() string {
+// 输出 Basex62
+func (this Encoding) ToBasex62String() string {
     return basex.Base62Encoding.Encode(this.data)
 }
 
 // 输出 BasexEncoder
 func (this Encoding) ToBasexEncoderString(encoder string) string {
     return basex.NewEncoding(encoder).Encode(this.data)
+}
+
+// 输出 Base62
+func (this Encoding) ToBase62String() string {
+    return base62.StdEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base91
+func (this Encoding) ToBase91String() string {
+    return base91.StdEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base100
+func (this Encoding) ToBase100String() string {
+    return base100.Encode(this.data)
+}
+
+// 输出 MorseITU
+func (this Encoding) ToMorseITUString() string {
+    return morse.EncodeITU(string(this.data))
 }
 
 // 输出 Hex

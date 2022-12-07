@@ -233,8 +233,11 @@ func (this *Data) Error(ctx *gin.Context) {
     encodeStr2 := encoding.FromBase64String("dGVzdC1kYXRh").ToString()
     encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
 
-    // encodeStr3 = encoding.FromString("测试测试12121").ToBase62String()
-    // encodeStr3 = encoding.FromBase62String("SzXXlHtJaq9gTV93SeM8v6v").ToString()
+    /*
+    encodeStr3 = encoding.FromString("测试测试12121").ToBase91String()
+    encodeStr2 = encodeStr3
+    encodeStr3 = encoding.FromBase91String(encodeStr3).ToString()
+    */
 
     // 签名
     signData := sign.Sign("md5").
@@ -450,6 +453,7 @@ func (this *Data) Error(ctx *gin.Context) {
     event.Dispatch(example_event.TestEventStructData{
         Data: eventData,
     })
+    event.Dispatch("TestEventStructHandle", eventData)
     */
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{

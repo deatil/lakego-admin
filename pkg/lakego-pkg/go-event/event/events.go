@@ -241,6 +241,53 @@ func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
     }
 }
 
+// 函数反射监听
+func (this *Events) funcReflectListen(fn any, e *Event) {
+    fnObject := reflect.ValueOf(fn)
+
+    if !(fnObject.IsValid() && fnObject.Kind() == reflect.Func) {
+        return
+    }
+
+    valueType := fnObject.Type()
+    fieldNum := valueType.NumIn()
+
+    newParams := make([]reflect.Value, 0)
+
+    switch fieldNum {
+        case 1:
+            dataValue := this.convertTo(valueType.In(0), e.Object)
+            newParams = append(newParams, dataValue)
+
+        case 2:
+            dataValue := this.convertTo(valueType.In(0), e.Object)
+            newParams = append(newParams, dataValue)
+
+            nameValue := this.convertTo(valueType.In(1), e.Type)
+            newParams = append(newParams, nameValue)
+    }
+
+    if fieldNum == len(newParams) {
+        fnObject.Call(newParams)
+    }
+}
+
+// 结构体方法反射监听
+func (this *Events) structHandleReflectListen(fn any, e *Event) {
+    method := "Handle"
+
+    // 获取到方法
+    newMethod, ok := reflect.TypeOf(fn).MethodByName(method)
+    if !ok {
+        return
+    }
+
+    this.subscribeListen(EventSubscribe{
+        reflect.ValueOf(fn),
+        newMethod,
+    }, e)
+}
+
 // 格式化
 func (this *Events) formatEventHandler(handler any) *EventListener {
     var newHandler EventHandler
@@ -271,31 +318,15 @@ func (this *Events) formatEventHandler(handler any) *EventListener {
             }
 
         default:
-            fnObject := reflect.ValueOf(fn)
+            fnKind := reflect.TypeOf(fn).Kind()
 
-            if fnObject.IsValid() && fnObject.Kind() == reflect.Func {
+            if fnKind == reflect.Func {
                 newHandler = func(e *Event) {
-                    valueType := fnObject.Type()
-                    fieldNum := valueType.NumIn()
-
-                    newParams := make([]reflect.Value, 0)
-
-                    switch fieldNum {
-                        case 1:
-                            dataValue := this.convertTo(valueType.In(0), e.Object)
-                            newParams = append(newParams, dataValue)
-
-                        case 2:
-                            dataValue := this.convertTo(valueType.In(0), e.Object)
-                            newParams = append(newParams, dataValue)
-
-                            nameValue := this.convertTo(valueType.In(1), e.Type)
-                            newParams = append(newParams, nameValue)
-                    }
-
-                    if fieldNum == len(newParams) {
-                        fnObject.Call(newParams)
-                    }
+                    this.funcReflectListen(fn, e)
+                }
+            } else if fnKind == reflect.Struct || fnKind == reflect.Pointer {
+                newHandler = func(e *Event) {
+                    this.structHandleReflectListen(fn, e)
                 }
             }
 

@@ -13,8 +13,7 @@ var (
 
 // Base32 编码
 func Base32Encode(str string) string {
-    newStr := base32.StdEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base32.StdEncoding.EncodeToString([]byte(str))
 }
 
 // Base32 解码
@@ -29,8 +28,7 @@ func Base32Decode(str string) string {
 
 // Base32Hex 编码
 func Base32HexEncode(str string) string {
-    newStr := base32.HexEncoding.EncodeToString([]byte(str))
-    return newStr
+    return base32.HexEncoding.EncodeToString([]byte(str))
 }
 
 // Base32Hex 解码

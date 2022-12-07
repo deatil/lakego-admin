@@ -61,3 +61,12 @@ func TestEventStruct(data TestEventStructData, name any) {
     logger.New().Info(data.Data)
     logger.New().Info(name)
 }
+
+// ====================
+
+type TestEventStructHandle struct {}
+
+func (this *TestEventStructHandle) Handle(data any) {
+    logger.New().Info("7-TestEventStructHandle: ")
+    logger.New().Info(data)
+}

@@ -165,5 +165,7 @@ func (this *ExampleServiceProvider) registerPEvents() {
     // event.RemoveListen("data.error", dataFunc)
     // event.RemoveEvent("TestEventName")
 
+    event.Listen("TestEventStructHandle", &example_event.TestEventStructHandle{})
+
 }
 

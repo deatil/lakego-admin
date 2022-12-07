@@ -12,7 +12,7 @@ func MethodExists(in any, method string) bool {
     }
 
     p := reflect.TypeOf(in)
-    if p.Kind() == reflect.Pointer {
+    for p.Kind() == reflect.Pointer {
         p = p.Elem()
     }
 
@@ -39,7 +39,7 @@ func CallMethod(in any, method string, params []any) ([]any, error) {
     }
 
     p := reflect.TypeOf(in)
-    if p.Kind() == reflect.Pointer {
+    for p.Kind() == reflect.Pointer {
         p = p.Elem()
     }
 
