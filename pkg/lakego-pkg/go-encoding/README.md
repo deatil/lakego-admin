@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-	oldData := "useData"
+    oldData := "useData"
 
     // Base32 编码
     base32Data := encoding.FromString(oldData).ToBase32String()
@@ -34,7 +34,7 @@ func main() {
     base64Data := encoding.FromString(oldData).ToBase64String()
     fmt.Println("Base64 编码为：", base64Data)
 
-	// =========================
+    // =========================
 
     // Base32 解码
     base32DecodeData := encoding.FromBase32String(base32Data).ToString()
@@ -50,11 +50,10 @@ func main() {
 ### 使用方法
 
 ~~~go
-	base64Data := encoding.
-		FromString(oldData). // 数据来源
-		ToBase64String()     // 输出结果，可为编码或者原始数据
+    base64Data := encoding.
+        FromString(oldData). // 数据来源
+        ToBase64String()     // 输出结果，可为编码或者原始数据
 ~~~
-
 
 
 ### 输入输出数据
