@@ -20,6 +20,8 @@ const (
     Hour        = time.Hour
     // 天   [Day = Hour * 24]
     Day         = time.Hour * 24
+    // 周   [Week = Day * 7]
+    Week        = Day * 7
 )
 
 // 时区常量

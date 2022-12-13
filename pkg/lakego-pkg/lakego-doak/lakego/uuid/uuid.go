@@ -12,7 +12,7 @@ func New() (UUID, error) {
 }
 
 // uuid 字符
-func String() string {
+func ToUUIDString() string {
     v, err := New()
 
     if err != nil {
@@ -34,6 +34,6 @@ func MustUUID() UUID {
 }
 
 // 创建会抛出异常的 uuid
-func MustString() string {
+func ToMustUUIDString() string {
     return MustUUID().String()
 }

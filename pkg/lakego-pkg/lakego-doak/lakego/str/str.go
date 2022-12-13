@@ -20,7 +20,7 @@ func Snake(str string) string {
     return strcase.ToSnake(str)
 }
 
-// SnakeWithIgnore
+// SnakeWithIgnore 分割线自定义
 func SnakeWithIgnore(s string, ignore string) string {
     return strcase.ToSnakeWithIgnore(s, ignore)
 }

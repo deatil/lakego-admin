@@ -3,16 +3,13 @@ package model
 import (
     "gorm.io/gorm"
 
-    "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
 // 授权权限
 type Rules struct {
-    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
+    ID    string `gorm:"primaryKey;autoIncrement:false;size:36"`
     Ptype string `gorm:"size:250;"`
     V0    string `gorm:"size:250;"`
     V1    string `gorm:"size:250;"`
@@ -23,7 +20,7 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    this.ID = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+    this.ID = uuid.ToUUIDString()
 
     return nil
 }

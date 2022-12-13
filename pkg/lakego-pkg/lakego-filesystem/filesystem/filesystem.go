@@ -9,16 +9,11 @@ import (
     "errors"
     "strings"
     "net/http"
-    "path/filepath"
     "crypto/md5"
+    "path/filepath"
 
     "github.com/h2non/filetype"
 )
-
-// 构造函数
-func New() *Filesystem {
-    return &Filesystem{}
-}
 
 // 文件信息
 type FileInfo = os.FileInfo
@@ -68,6 +63,19 @@ const (
     O_TRUNC  int = os.O_TRUNC
 )
 
+// 默认
+var defaultFilesystem *Filesystem
+
+// 初始化
+func init() {
+    defaultFilesystem = New()
+}
+
+// 构造函数
+func New() *Filesystem {
+    return &Filesystem{}
+}
+
 /**
  * 本地文件管理器
  *
@@ -81,9 +89,19 @@ func (this *Filesystem) Create(name string) (*os.File, error) {
     return os.Create(name)
 }
 
+// 创建
+func Create(name string) (*os.File, error) {
+    return defaultFilesystem.Create(name)
+}
+
 // 关闭
 func (this *Filesystem) Close(fd *os.File) error {
     return fd.Close()
+}
+
+// 关闭
+func Close(fd *os.File) error {
+    return defaultFilesystem.Close(fd)
 }
 
 // 判断
@@ -94,8 +112,18 @@ func (this *Filesystem) Exists(path string) bool {
 }
 
 // 判断
+func Exists(path string) bool {
+    return defaultFilesystem.Exists(path)
+}
+
+// 判断
 func (this *Filesystem) Missing(path string) bool {
     return !this.Exists(path)
+}
+
+// 判断
+func Missing(path string) bool {
+    return defaultFilesystem.Missing(path)
 }
 
 // 获取数据
@@ -119,6 +147,11 @@ func (this *Filesystem) Get(path string, lock ...bool) (string, error) {
 }
 
 // 获取数据
+func Get(path string, lock ...bool) (string, error) {
+    return defaultFilesystem.Get(path, lock...)
+}
+
+// 获取数据
 func (this *Filesystem) SharedGet(path string) (string, error) {
     file, err := os.Open(path)
     if err != nil {
@@ -132,6 +165,11 @@ func (this *Filesystem) SharedGet(path string) (string, error) {
     }
 
     return string(data), nil
+}
+
+// 获取数据
+func SharedGet(path string) (string, error) {
+    return defaultFilesystem.SharedGet(path)
 }
 
 // 行读取
@@ -160,6 +198,11 @@ func (this *Filesystem) Lines(path string) ([]string, error) {
     }
 
     return data, err
+}
+
+// 行读取
+func Lines(path string) ([]string, error) {
+    return defaultFilesystem.Lines(path)
 }
 
 // md5 值
@@ -195,6 +238,11 @@ func (this *Filesystem) Hash(path string) (string, error) {
     return checksum, nil
 }
 
+// md5 值
+func Hash(path string) (string, error) {
+    return defaultFilesystem.Hash(path)
+}
+
 // 添加数据
 func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
     out, createErr := os.Create(path)
@@ -210,6 +258,11 @@ func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
     }
 
     return nil
+}
+
+// 添加数据
+func Put(path string, contents string, lock ...bool) error {
+    return defaultFilesystem.Put(path, contents, lock...)
 }
 
 // 替换
@@ -250,11 +303,21 @@ func (this *Filesystem) Replace(path string, contents string) error {
 }
 
 // 替换
+func Replace(path string, contents string) error {
+    return defaultFilesystem.Replace(path, contents)
+}
+
+// 替换
 func (this *Filesystem) ReplaceInFile(search string, replace string, path string) error {
     data, _ := this.SharedGet(path)
     newData := strings.Replace(data, search, replace, -1)
 
     return this.Put(path, newData, false)
+}
+
+// 替换
+func ReplaceInFile(search string, replace string, path string) error {
+    return defaultFilesystem.ReplaceInFile(search, replace, path)
 }
 
 // 文件头添加
@@ -268,6 +331,11 @@ func (this *Filesystem) Prepend(path string, data string) error {
     return this.Put(path, data, false)
 }
 
+// 文件头添加
+func Prepend(path string, data string) error {
+    return defaultFilesystem.Prepend(path, data)
+}
+
 // 尾部添加
 func (this *Filesystem) Append(path string, data string) error {
     if this.Exists(path) {
@@ -277,6 +345,11 @@ func (this *Filesystem) Append(path string, data string) error {
     }
 
     return this.Put(path, data, false)
+}
+
+// 尾部添加
+func Append(path string, data string) error {
+    return defaultFilesystem.Append(path, data)
 }
 
 // 设置权限
@@ -289,6 +362,11 @@ func (this *Filesystem) Chmod(path string, mode uint32) error {
     return nil
 }
 
+// 设置权限
+func Chmod(path string, mode uint32) error {
+    return defaultFilesystem.Chmod(path, mode)
+}
+
 // 创建文件
 func (this *Filesystem) Touch(filename string) error {
     fd, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0666)
@@ -298,6 +376,11 @@ func (this *Filesystem) Touch(filename string) error {
 
     fd.Close()
     return nil
+}
+
+// 创建文件
+func Touch(filename string) error {
+    return defaultFilesystem.Touch(filename)
 }
 
 // 获取权限
@@ -312,6 +395,11 @@ func (this *Filesystem) Perm(path string) (uint32, error) {
     return uint32(perm), nil
 }
 
+// 获取权限
+func Perm(path string) (uint32, error) {
+    return defaultFilesystem.Perm(path)
+}
+
 // 获取权限 - 字符
 func (this *Filesystem) PermString(path string) (string, error) {
     f, err := os.Stat(path)
@@ -324,14 +412,29 @@ func (this *Filesystem) PermString(path string) (string, error) {
     return perm.String(), nil
 }
 
+// 获取权限 - 字符
+func PermString(path string) (string, error) {
+    return defaultFilesystem.PermString(path)
+}
+
 // 删除
 func (this *Filesystem) Delete(path string) error {
     return os.Remove(path)
 }
 
+// 删除
+func Delete(path string) error {
+    return defaultFilesystem.Delete(path)
+}
+
 // 移动
 func (this *Filesystem) Move(path string, target string) error {
     return os.Rename(path, target)
+}
+
+// 移动
+func Move(path string, target string) error {
+    return defaultFilesystem.Move(path, target)
 }
 
 // 文件复制
@@ -369,9 +472,19 @@ func (this *Filesystem) Copy(path string, target string) error {
     return nil
 }
 
+// 文件复制
+func Copy(path string, target string) error {
+    return defaultFilesystem.Copy(path, target)
+}
+
 // 设置软链接
 func (this *Filesystem) Link(target string, link string) error {
     return os.Symlink(target, link)
+}
+
+// 设置软链接
+func Link(target string, link string) error {
+    return defaultFilesystem.Link(target, link)
 }
 
 // 读取软链接于原始路径的相对地址
@@ -379,9 +492,19 @@ func (this *Filesystem) Readlink(path string) (string, error) {
     return os.Readlink(path)
 }
 
+// 读取软链接于原始路径的相对地址
+func Readlink(path string) (string, error) {
+    return defaultFilesystem.Readlink(path)
+}
+
 // 读取软链接的原始地址
 func (this *Filesystem) EvalSymlinks(path string) (string, error) {
     return filepath.EvalSymlinks(path)
+}
+
+// 读取软链接的原始地址
+func EvalSymlinks(path string) (string, error) {
+    return defaultFilesystem.EvalSymlinks(path)
 }
 
 // 是否为软链接
@@ -389,9 +512,19 @@ func (this *Filesystem) IsSymlink(m os.FileMode) bool {
     return m&os.ModeSymlink != 0
 }
 
+// 是否为软链接
+func IsSymlink(m os.FileMode) bool {
+    return defaultFilesystem.IsSymlink(m)
+}
+
 // 返回路径是否是一个绝对路径
 func (this *Filesystem) IsAbs(path string) bool {
     return filepath.IsAbs(path)
+}
+
+// 返回路径是否是一个绝对路径
+func IsAbs(path string) bool {
+    return defaultFilesystem.IsAbs(path)
 }
 
 // 返回 path 代表的绝对路径
@@ -399,9 +532,19 @@ func (this *Filesystem) Abs(path string) (string, error) {
     return filepath.Abs(path)
 }
 
+// 返回 path 代表的绝对路径
+func Abs(path string) (string, error) {
+    return defaultFilesystem.Abs(path)
+}
+
 // 返回一个相对路径
 func (this *Filesystem) Rel(basepath, targpath string) (string, error) {
     return filepath.Rel(basepath, targpath)
+}
+
+// 返回一个相对路径
+func Rel(basepath, targpath string) (string, error) {
+    return defaultFilesystem.Rel(basepath, targpath)
 }
 
 // 绝对路径
@@ -409,9 +552,19 @@ func (this *Filesystem) Realpath(path string) (string, error) {
     return filepath.Abs(path)
 }
 
+// 绝对路径
+func Realpath(path string) (string, error) {
+    return defaultFilesystem.Realpath(path)
+}
+
 // 规整化路径
 func (this *Filesystem) Clean(path string) string {
     return filepath.Clean(path)
+}
+
+// 规整化路径
+func Clean(path string) string {
+    return defaultFilesystem.Clean(path)
 }
 
 // 函数根据最后一个路径分隔符将路径 path 分隔为目录和文件名两部分（dir 和 file）
@@ -419,9 +572,19 @@ func (this *Filesystem) Split(path string) (string, string) {
     return filepath.Split(path)
 }
 
+// 函数根据最后一个路径分隔符将路径 path 分隔为目录和文件名两部分（dir 和 file）
+func Split(path string) (string, string) {
+    return defaultFilesystem.Split(path)
+}
+
 // 分割 PATH 或 GOPATH 之类的环境变量
 func (this *Filesystem) SplitList(path string) []string {
     return filepath.SplitList(path)
+}
+
+// 分割 PATH 或 GOPATH 之类的环境变量
+func SplitList(path string) []string {
+    return defaultFilesystem.SplitList(path)
 }
 
 // 将 path 中的 ‘/’ 转换为系统相关的路径分隔符
@@ -429,14 +592,29 @@ func (this *Filesystem) FromSlash(s string) string {
     return filepath.FromSlash(s)
 }
 
+// 将 path 中的 ‘/’ 转换为系统相关的路径分隔符
+func FromSlash(s string) string {
+    return defaultFilesystem.FromSlash(s)
+}
+
 // 将 path 中平台相关的路径分隔符转换为 ‘/’
 func (this *Filesystem) ToSlash(s string) string {
     return filepath.ToSlash(s)
 }
 
+// 将 path 中平台相关的路径分隔符转换为 ‘/’
+func ToSlash(s string) string {
+    return defaultFilesystem.ToSlash(s)
+}
+
 // 函数可以将任意数量的路径元素放入一个单一路径里，会根据需要添加路径分隔符
 func (this *Filesystem) Join(elem ...string) string {
     return filepath.Join(elem...)
+}
+
+// 将函数可以将任意数量的路径元素放入一个单一路径里，会根据需要添加路径分隔符
+func Join(elem ...string) string {
+    return defaultFilesystem.Join(elem...)
 }
 
 // 文件名称
@@ -448,9 +626,19 @@ func (this *Filesystem) Name(path string) string {
     return filePrefix
 }
 
+// 文件名称
+func Name(path string) string {
+    return defaultFilesystem.Name(path)
+}
+
 // 文件目录名称
 func (this *Filesystem) Basename(path string) string {
     return filepath.Base(path)
+}
+
+// 文件目录名称
+func Basename(path string) string {
+    return defaultFilesystem.Basename(path)
 }
 
 // 获取文件夹名称
@@ -458,9 +646,19 @@ func (this *Filesystem) Dirname(path string) string {
     return filepath.Dir(path)
 }
 
+// 获取文件夹名称
+func Dirname(path string) string {
+    return defaultFilesystem.Dirname(path)
+}
+
 // 后缀
 func (this *Filesystem) Extension(path string) string {
     return filepath.Ext(path)[1:]
+}
+
+// 后缀
+func Extension(path string) string {
+    return defaultFilesystem.Extension(path)
 }
 
 // 后缀
@@ -484,6 +682,11 @@ func (this *Filesystem) GuessExtension(path string) string {
     return kind.Extension
 }
 
+// 后缀
+func GuessExtension(path string) string {
+    return defaultFilesystem.GuessExtension(path)
+}
+
 // 类型，大类
 func (this *Filesystem) Type(path string) string {
     file, err := os.Open(path)
@@ -505,6 +708,11 @@ func (this *Filesystem) Type(path string) string {
     return kind.MIME.Type
 }
 
+// 类型，大类
+func Type(path string) string {
+    return defaultFilesystem.Type(path)
+}
+
 // MimeType
 func (this *Filesystem) MimeType(path string) string {
     f, err := os.Open(path)
@@ -524,6 +732,11 @@ func (this *Filesystem) MimeType(path string) string {
     return mimetype
 }
 
+// MimeType
+func MimeType(path string) string {
+    return defaultFilesystem.MimeType(path)
+}
+
 // 文件大小
 func (this *Filesystem) Size(path string) int64 {
     f, err := os.Stat(path)
@@ -534,6 +747,11 @@ func (this *Filesystem) Size(path string) int64 {
     return f.Size()
 }
 
+// 文件大小
+func Size(path string) int64 {
+    return defaultFilesystem.Size(path)
+}
+
 // 文件最后更新时间
 func (this *Filesystem) LastModified(path string) int64 {
     f, err := os.Stat(path)
@@ -542,6 +760,11 @@ func (this *Filesystem) LastModified(path string) int64 {
     }
 
     return f.ModTime().Unix()
+}
+
+// 文件最后更新时间
+func LastModified(path string) int64 {
+    return defaultFilesystem.LastModified(path)
 }
 
 // 是否是文件
@@ -555,6 +778,11 @@ func (this *Filesystem) IsFile(path string) bool {
     return !fm.IsDir()
 }
 
+// 是否是文件
+func IsFile(path string) bool {
+    return defaultFilesystem.IsFile(path)
+}
+
 // 是否为文件夹
 func (this *Filesystem) IsDirectory(path string) bool {
     fd, err := os.Stat(path)
@@ -564,6 +792,11 @@ func (this *Filesystem) IsDirectory(path string) bool {
 
     fm := fd.Mode()
     return fm.IsDir()
+}
+
+// 是否为文件夹
+func IsDirectory(path string) bool {
+    return defaultFilesystem.IsDirectory(path)
 }
 
 // 是否可读
@@ -576,6 +809,11 @@ func (this *Filesystem) IsReadable(path string) bool {
     return true
 }
 
+// 是否可读
+func IsReadable(path string) bool {
+    return defaultFilesystem.IsReadable(path)
+}
+
 // 是否可写
 func (this *Filesystem) IsWritable(path string) bool {
     perm, err := this.PermString(path)
@@ -586,14 +824,29 @@ func (this *Filesystem) IsWritable(path string) bool {
     return len(strings.Split(perm, "w")) == 4
 }
 
+// 是否可写
+func IsWritable(path string) bool {
+    return defaultFilesystem.IsWritable(path)
+}
+
 // 文件路径匹配
 func (this *Filesystem) Match(pattern, name string) (bool, error) {
     return filepath.Match(pattern, name)
 }
 
+// 文件路径匹配
+func Match(pattern, name string) (bool, error) {
+    return defaultFilesystem.Match(pattern, name)
+}
+
 // 查询
 func (this *Filesystem) Glob(pattern string) ([]string, error) {
     return filepath.Glob(pattern)
+}
+
+// 查询
+func Glob(pattern string) ([]string, error) {
+    return defaultFilesystem.Glob(pattern)
 }
 
 // 列出文件
@@ -622,6 +875,11 @@ func (this *Filesystem) Files(directory string) ([]string, error) {
     return ret, nil
 }
 
+// 列出文件
+func Files(directory string) ([]string, error) {
+    return defaultFilesystem.Files(directory)
+}
+
 // 全部文件
 func (this *Filesystem) AllFiles(directory string) ([]string, error) {
     if !this.Exists(directory) {
@@ -643,6 +901,11 @@ func (this *Filesystem) AllFiles(directory string) ([]string, error) {
     })
 
     return ret, err
+}
+
+// 全部文件
+func AllFiles(directory string) ([]string, error) {
+    return defaultFilesystem.AllFiles(directory)
 }
 
 // 列出文件夹
@@ -672,6 +935,11 @@ func (this *Filesystem) Directories(directory string) ([]string, error) {
     }
 
     return ret, nil
+}
+
+// 列出文件夹
+func Directories(directory string) ([]string, error) {
+    return defaultFilesystem.Directories(directory)
 }
 
 // 创建文件夹
@@ -713,6 +981,15 @@ func (this *Filesystem) EnsureDirectoryExists(
 }
 
 // 创建文件夹
+func EnsureDirectoryExists(
+    directory string,
+    mode uint32,
+    recursive ...bool,
+) error {
+    return defaultFilesystem.EnsureDirectoryExists(directory, mode, recursive...)
+}
+
+// 创建文件夹
 func (this *Filesystem) MakeDirectory(
     directory string,
     mode uint32,
@@ -723,6 +1000,15 @@ func (this *Filesystem) MakeDirectory(
     } else {
         return os.Mkdir(directory, os.FileMode(mode))
     }
+}
+
+// 创建文件夹
+func MakeDirectory(
+    directory string,
+    mode uint32,
+    recursive ...bool,
+) error {
+    return defaultFilesystem.MakeDirectory(directory, mode, recursive...)
 }
 
 // 移动文件夹
@@ -739,6 +1025,15 @@ func (this *Filesystem) MoveDirectory(
     }
 
     return os.Rename(from, to)
+}
+
+// 移动文件夹
+func MoveDirectory(
+    from string,
+    to string,
+    overwrite ...bool,
+) error {
+    return defaultFilesystem.MoveDirectory(from, to, overwrite...)
 }
 
 // 复制文件夹
@@ -793,6 +1088,11 @@ func (this *Filesystem) CopyDirectory(directory string, destination string) erro
     return err
 }
 
+// 复制文件夹
+func CopyDirectory(directory string, destination string) error {
+    return defaultFilesystem.CopyDirectory(directory, destination)
+}
+
 // 删除文件夹
 func (this *Filesystem) DeleteDirectory(directory string, preserve ...bool) error {
     if !this.IsDirectory(directory) {
@@ -816,6 +1116,11 @@ func (this *Filesystem) DeleteDirectory(directory string, preserve ...bool) erro
 }
 
 // 删除文件夹
+func DeleteDirectory(directory string, preserve ...bool) error {
+    return defaultFilesystem.DeleteDirectory(directory, preserve...)
+}
+
+// 删除文件夹
 func (this *Filesystem) DeleteDirectories(directory string) bool {
     allDirectories, _ := this.Directories(directory)
 
@@ -830,8 +1135,18 @@ func (this *Filesystem) DeleteDirectories(directory string) bool {
     return false
 }
 
+// 删除文件夹
+func DeleteDirectories(directory string) bool {
+    return defaultFilesystem.DeleteDirectories(directory)
+}
+
 // 清空文件夹
 func (this *Filesystem) CleanDirectory(directory string) error {
     return this.DeleteDirectory(directory, true)
+}
+
+// 清空文件夹
+func CleanDirectory(directory string) error {
+    return defaultFilesystem.CleanDirectory(directory)
 }
 

@@ -413,6 +413,8 @@ data := diffTime.Format("时间相差 {d} 天")
 data := diffTime.Format("时间相差 {H} 小时")
 data := diffTime.Format("时间相差 {i} 分钟")
 data := diffTime.Format("时间相差 {s} 秒")
+data := timeA.Diff(timeB).Format("时间相差 {dd} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
+data := timeA.Diff(timeB).Format("时间相差 {www} 周 {ddd} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
 ~~~
 
 

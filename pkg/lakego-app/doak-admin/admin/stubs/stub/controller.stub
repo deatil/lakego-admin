@@ -1,0 +1,351 @@
+package controller
+
+import (
+    "github.com/deatil/go-goch/goch"
+    "github.com/deatil/lakego-doak/lakego/router"
+
+    // "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/controller"
+)
+
+/**
+ * {controllerName} 控制器
+ *
+ * // {controllerName} 路由
+ * {controllerLowerName}Controller := new(controller.{controllerName})
+ * engine.GET("/{controllerPath}", {controllerLowerName}Controller.Index)
+ * engine.GET("/{controllerPath}/:id", {controllerLowerName}Controller.Detail)
+ * engine.POST("/{controllerPath}", {controllerLowerName}Controller.Create)
+ * engine.PUT("/{controllerPath}/:id", {controllerLowerName}Controller.Update)
+ * engine.DELETE("/{controllerPath}/:id", {controllerLowerName}Controller.Delete)
+ * engine.PATCH("/{controllerPath}/:id/sort", {controllerLowerName}Controller.Listorder)
+ * engine.PATCH("/{controllerPath}/:id/enable", {controllerLowerName}Controller.Enable)
+ * engine.PATCH("/{controllerPath}/:id/disable", {controllerLowerName}Controller.Disable)
+ *
+ * @create {datetime}
+ * @author deatil
+ */
+type {controllerName} struct {
+    controller.Base
+}
+
+// 数据列表
+// @Summary 数据列表
+// @Description 数据列表
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param order      query string false "排序，示例：id__DESC"
+// @Param searchword query string false "搜索关键字"
+// @Param start_time query string false "开始时间"
+// @Param end_time   query string false "结束时间"
+// @Param status     query string false "状态"
+// @Param start      query string false "开始数据量"
+// @Param limit      query string false "每页数量"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath} [get]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.index"}
+func (this *{controllerName}) Index(ctx *router.Context) {
+    // 排序
+    order := ctx.DefaultQuery("order", "add_time__DESC")
+    orders := this.FormatOrderBy(order)
+    if orders[0] == "" ||
+        (orders[0] != "id" &&
+        orders[0] != "title" &&
+        orders[0] != "listorder" &&
+        orders[0] != "add_time") {
+        orders[0] = "add_time"
+    }
+
+    // 搜索条件
+    searchword := ctx.DefaultQuery("searchword", "")
+    if searchword != "" {
+        searchword = "%" + searchword + "%"
+
+        // db = db.Where("title LIKE ?", searchword)
+    }
+
+    // 时间条件
+    startTime := ctx.DefaultQuery("start_time", "")
+    if startTime != "" {
+        // db = db.Where("add_time >= ?", this.FormatDate(startTime))
+    }
+
+    endTime := ctx.DefaultQuery("end_time", "")
+    if endTime != "" {
+        // db = db.Where("add_time <= ?", this.FormatDate(endTime))
+    }
+
+    status := this.SwitchStatus(ctx.DefaultQuery("status", ""))
+    if status != -1 {
+        // db = db.Where("status = ?", status)
+    }
+
+    // 分页相关
+    start := ctx.DefaultQuery("start", "0")
+    limit := ctx.DefaultQuery("limit", "10")
+
+    newStart := goch.ToInt(start)
+    newLimit := goch.ToInt(limit)
+
+    // db = db.Offset(newStart).Limit(newLimit)
+
+    // db = db.Offset(newStart).Limit(newLimit)
+
+    list := make([]map[string]any, 0)
+
+    // 列表
+    // db = db.Find(&list)
+
+    var total int64
+
+    // 业务代码
+
+    // 总数
+    /*
+    err := db.
+        Offset(-1).
+        Limit(-1).
+        Count(&total).
+        Error
+    */
+	var err error
+    if err != nil {
+        this.Error(ctx, "获取失败")
+        return
+    }
+
+    this.SuccessWithData(ctx, "获取成功", router.H{
+        "start": newStart,
+        "limit": newLimit,
+        "total": total,
+        "list": list,
+    })
+}
+
+// 数据详情
+// @Summary 数据详情
+// @Description 数据详情
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id path string true "数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id} [get]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.detail"}
+func (this *{controllerName}) Detail(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 数据
+    var data map[string]any
+
+    this.SuccessWithData(ctx, "获取成功", data)
+}
+
+// 添加数据
+// @Summary 添加数据
+// @Description 添加数据
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
+// @Param description formData string false "描述"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath} [post]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.create"}
+func (this *{controllerName}) Create(ctx *router.Context) {
+    // 接收数据
+    post := make(map[string]any)
+    this.ShouldBindJSON(ctx, &post)
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "数据添加失败")
+        return
+    }
+
+    insertId := "123"
+
+    this.SuccessWithData(ctx, "数据添加成功", router.H{
+        "id": insertId,
+    })
+}
+
+// 更新数据
+// @Summary 更新数据
+// @Description 更新数据
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id          path     string true "数据ID"
+// @Param parentid    formData string true "父级ID"
+// @Param title       formData string true "名称"
+// @Param description formData string false "描述"
+// @Param listorder   formData string true "排序"
+// @Param status      formData string true "状态"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id} [put]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.update"}
+func (this *{controllerName}) Update(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]any)
+    this.ShouldBindJSON(ctx, &post)
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "数据修改失败")
+        return
+    }
+
+    this.Success(ctx, "数据修改成功")
+}
+
+// 删除数据
+// @Summary 删除数据
+// @Description 删除数据
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id path string true "数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id} [delete]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.delete"}
+func (this *{controllerName}) Delete(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "数据删除失败")
+        return
+    }
+
+    this.Success(ctx, "数据删除成功")
+}
+
+// 数据排序
+// @Summary 数据排序
+// @Description 数据排序
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id        path     string true "数据ID"
+// @Param listorder formData string true "排序值"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id}/sort [patch]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.sort"}
+func (this *{controllerName}) Listorder(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]any)
+    this.ShouldBindJSON(ctx, &post)
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "更新排序失败")
+        return
+    }
+
+    this.Success(ctx, "更新排序成功")
+}
+
+// 数据启用
+// @Summary 数据启用
+// @Description 数据启用
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id path string true "数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id}/enable [patch]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.enable"}
+func (this *{controllerName}) Enable(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]any)
+    this.ShouldBindJSON(ctx, &post)
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "启用失败")
+        return
+    }
+
+    this.Success(ctx, "启用成功")
+}
+
+// 数据禁用
+// @Summary 数据禁用
+// @Description 数据禁用
+// @Tags {controllerName}
+// @Accept  application/json
+// @Produce application/json
+// @Param id path string true "数据ID"
+// @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
+// @Router /{controllerPath}/{id}/disable [patch]
+// @Security Bearer
+// @x-lakego {"slug": "app-admin.{controllerPath}.disable"}
+func (this *{controllerName}) Disable(ctx *router.Context) {
+    id := ctx.Param("id")
+    if id == "" {
+        this.Error(ctx, "ID不能为空")
+        return
+    }
+
+    // 接收数据
+    post := make(map[string]any)
+    this.ShouldBindJSON(ctx, &post)
+
+    // 业务代码
+
+    var err error
+    if err != nil {
+        this.Error(ctx, "禁用失败")
+        return
+    }
+
+    this.Success(ctx, "禁用成功")
+}

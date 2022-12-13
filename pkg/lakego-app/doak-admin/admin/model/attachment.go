@@ -3,10 +3,7 @@ package model
 import (
     "gorm.io/gorm"
 
-    "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
@@ -14,9 +11,9 @@ import (
 
 // 附件
 type Attachment struct {
-    ID              string      `gorm:"column:id;size:32;not null;index;" json:"id"`
+    ID              string      `gorm:"column:id;size:36;not null;index;" json:"id"`
     OwnerType       string      `gorm:"column:owner_type;size:50;not null;" json:"owner_type"`
-    OwnerID         string      `gorm:"column:owner_id;size:32;" json:"owner_id"`
+    OwnerID         string      `gorm:"column:owner_id;size:36;" json:"owner_id"`
     Name            string      `gorm:"column:name;size:50;" json:"name"`
     Path            string      `gorm:"column:path;size:255;" json:"path"`
     Mime            string      `gorm:"column:mime;size:100;" json:"mime"`
@@ -33,7 +30,7 @@ type Attachment struct {
 }
 
 func (this *Attachment) BeforeCreate(tx *gorm.DB) error {
-    this.ID = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+    this.ID = uuid.ToUUIDString()
 
     return nil
 }

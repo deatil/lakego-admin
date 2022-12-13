@@ -41,6 +41,7 @@ import (
     cryptobin_crypto "github.com/deatil/go-cryptobin/cryptobin/crypto"
 
     "github.com/deatil/lakego-doak/lakego/str"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/math"
     "github.com/deatil/lakego-doak/lakego/slice"
     "github.com/deatil/lakego-doak/lakego/array"
@@ -456,7 +457,18 @@ func (this *Data) Error(ctx *gin.Context) {
     event.Dispatch("TestEventStructHandle", eventData)
     */
 
+    timeA := datebin.Parse("2022-10-23 22:18:56")
+    timeB := datebin.Parse("2022-11-25 23:19:59")
+    diffTime := timeA.Diff(timeB).Format("时间相差 {dd} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
+
+    // uuid
+    uuidStr := uuid.ToUUIDString()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "uuidStr": uuidStr,
+
+        "diffTime": diffTime,
+
         "eventNames": eventNames,
         "hasEvent": hasEvent,
 

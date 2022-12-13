@@ -3,17 +3,14 @@ package model
 import (
     "gorm.io/gorm"
 
-    "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
 // 权限分组
 type AuthGroup struct {
-    ID              string      `gorm:"column:id;type:char(32);not null;primaryKey;" json:"id"`
-    Parentid        string      `gorm:"column:parentid;type:char(32);not null;" json:"parentid"`
+    ID              string      `gorm:"column:id;type:char(36);not null;primaryKey;" json:"id"`
+    Parentid        string      `gorm:"column:parentid;type:char(36);not null;" json:"parentid"`
     Title           string      `gorm:"column:title;type:varchar(50);" json:"title"`
     Description     string      `gorm:"column:description;type:varchar(80);" json:"description"`
     Listorder       string      `gorm:"column:listorder;type:int(10);" json:"listorder"`
@@ -31,7 +28,7 @@ type AuthGroup struct {
 }
 
 func (this *AuthGroup) BeforeCreate(tx *gorm.DB) error {
-    this.ID = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+    this.ID = uuid.ToUUIDString()
 
     return nil
 }

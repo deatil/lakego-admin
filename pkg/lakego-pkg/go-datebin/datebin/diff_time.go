@@ -143,6 +143,12 @@ func (this DiffTime) YearsAbs() int64 {
 
 // 格式化输出
 func (this DiffTime) Format(str string) string {
+    // 格式化
+    formatter := NewFormatter().FromSecond(this.SecondsAbs())
+
+    // 使用周数和天数
+    weeks, days := formatter.WeekAndDay()
+
     formatMap := map[string]int64{
         "{Y}": this.Years(),
         "{m}": this.Months(),
@@ -151,6 +157,13 @@ func (this DiffTime) Format(str string) string {
         "{i}": this.Minutes(),
         "{s}": this.Seconds(),
         "{w}": this.Weeks(),
+
+        "{www}": int64(weeks),
+        "{ddd}": int64(days),
+        "{dd}": int64(formatter.Day()),
+        "{HH}": int64(formatter.Hour()),
+        "{ii}": int64(formatter.Minute()),
+        "{ss}": int64(formatter.Second()),
     }
 
     for format, data := range formatMap {

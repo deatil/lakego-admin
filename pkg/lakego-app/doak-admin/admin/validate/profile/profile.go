@@ -39,7 +39,7 @@ func Update(data map[string]any) string {
 func UpdateAvatar(data map[string]any) string {
     // 规则
     rules := map[string]any{
-        "avatar": "required,len=32",
+        "avatar": "required,len=36",
     }
 
     // 错误提示

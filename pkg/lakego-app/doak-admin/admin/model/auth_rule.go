@@ -3,17 +3,14 @@ package model
 import (
     "gorm.io/gorm"
 
-    "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
 // 菜单权限
 type AuthRule struct {
-    ID          string      `gorm:"column:id;size:32;not null;index;" json:"id"`
-    Parentid    string      `gorm:"column:parentid;size:32;not null;" json:"parentid"`
+    ID          string      `gorm:"column:id;size:36;not null;index;" json:"id"`
+    Parentid    string      `gorm:"column:parentid;size:36;not null;" json:"parentid"`
     Title       string      `gorm:"column:title;not null;size:50;" json:"title"`
     Url         string      `gorm:"column:url;not null;" json:"url"`
     Method      string      `gorm:"column:method;not null;size:10;" json:"method"`
@@ -30,7 +27,7 @@ type AuthRule struct {
 }
 
 func (this *AuthRule) BeforeCreate(tx *gorm.DB) error {
-    this.ID = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+    this.ID = uuid.ToUUIDString()
 
     return nil
 }

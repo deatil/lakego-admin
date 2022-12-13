@@ -8,10 +8,7 @@ import (
     "github.com/casbin/casbin/v2/model"
     "github.com/casbin/casbin/v2/persist"
 
-    "github.com/deatil/go-hash/hash"
-    "github.com/deatil/go-datebin/datebin"
-
-    "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/permission/adapter"
 )
 
@@ -32,7 +29,7 @@ func New(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
 
 // 规则模型
 type Rules struct {
-    ID    string `gorm:"primaryKey;autoIncrement:false;size:32"`
+    ID    string `gorm:"primaryKey;autoIncrement:false;size:36"`
     Ptype string `gorm:"size:250;"`
     V0    string `gorm:"size:250;"`
     V1    string `gorm:"size:250;"`
@@ -43,7 +40,7 @@ type Rules struct {
 }
 
 func (this *Rules) BeforeCreate(db *gorm.DB) error {
-    this.ID = hash.MD5(datebin.Now().ToLayoutString(datebin.DatetimeNanoFormat) + random.String(15))
+    this.ID = uuid.ToUUIDString()
 
     return nil
 }
