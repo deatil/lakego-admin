@@ -7,13 +7,26 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
 
+// 获取全部用户组
+func GetAllGroup() ([]map[string]any, error) {
+    list := make([]map[string]any, 0)
+
+    // 附件模型
+    err := model.NewAuthGroup().
+        Order("listorder ASC").
+        Order("add_time ASC").
+        Find(&list).
+        Error
+
+    return list, err
+}
+
 // 获取 Children
 func GetChildren(groupid string) []map[string]any {
     list := make([]map[string]any, 0)
 
     // 附件模型
     err := model.NewAuthGroup().
-        Where("status = ?", 1).
         Order("listorder ASC").
         Order("add_time ASC").
         Find(&list).

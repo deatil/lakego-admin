@@ -3,6 +3,7 @@ package schedule
 import (
     "fmt"
     "time"
+    "sync"
     "context"
 )
 
@@ -29,6 +30,8 @@ func New() *Schedule {
     schedule := &Schedule{
         Cron:    cron,
         entries: make([]*Entry, 0),
+        cronIDs: make(map[string]CronEntryID),
+        stoped:  make(map[string]CronEntry),
     }
 
     return schedule
@@ -41,6 +44,9 @@ func New() *Schedule {
  * @author deatil
  */
 type Schedule struct {
+    // 锁定
+    mu sync.RWMutex
+
     // 计划任务
     Cron *Cron
 
@@ -48,7 +54,10 @@ type Schedule struct {
     entries []*Entry
 
     // 计划任务 id 列表
-    cronIDs []int
+    cronIDs map[string]CronEntryID
+
+    // 已停止的计划任务
+    stoped map[string]CronEntry
 }
 
 // 添加计划任务
@@ -86,6 +95,35 @@ func (this *Schedule) SetLocation(loc string) *Schedule {
     timeLoc, _ := time.LoadLocation(loc)
 
     return this.WithOption(WithLocation(timeLoc))
+}
+
+// 获取数据
+func (this *Schedule) GetEntry(name string) *Entry {
+    for _, entry := range this.entries {
+        if entry.Name == name {
+            return entry
+        }
+    }
+
+    return &Entry{}
+}
+
+// 移除数据
+func (this *Schedule) RemoveEntry(name string) {
+    var entries []*Entry
+
+    for _, entry := range this.entries {
+        if entry.Name != name {
+            entries = append(entries, entry)
+        }
+    }
+
+    this.entries = entries
+}
+
+// 全部任务数据
+func (this *Schedule) Entries() []*Entry {
+    return this.entries
 }
 
 // 设置日志
@@ -176,7 +214,15 @@ func (this *Schedule) addEntry(entry *Entry) {
     }
 
     if err == nil {
-        this.cronIDs = append(this.cronIDs, int(entryID))
+        this.mu.Lock()
+
+        if entry.Name != "" {
+            this.cronIDs[fmt.Sprintf("cron_run_%d", entryID)] = entryID
+        } else {
+            this.cronIDs[entry.Name] = entryID
+        }
+
+        this.mu.Unlock()
     }
 
     if err != nil {
@@ -189,7 +235,100 @@ func (this *Schedule) Stop() context.Context {
     return this.Cron.Stop()
 }
 
+// 任务时区
+func (this *Schedule) CronLocation() *time.Location {
+    return this.Cron.Location()
+}
+
+// 计划任务已添加任务列表
+func (this *Schedule) CronEntries() []CronEntry {
+    return this.Cron.Entries()
+}
+
+// 计划任务已添加单个任务
+func (this *Schedule) CronEntry(name string) CronEntry {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    if id, ok := this.cronIDs[name]; ok {
+        return this.Cron.Entry(id)
+    }
+
+    return CronEntry{}
+}
+
+// 任务删除
+func (this *Schedule) CronRemove(name string) {
+    if id, ok := this.cronIDs[name]; ok {
+        this.Cron.Remove(id)
+    }
+
+    this.mu.Lock()
+
+    delete(this.cronIDs, name)
+    delete(this.stoped, name)
+
+    this.mu.Unlock()
+}
+
+// 任务开启
+func (this *Schedule) CronStart(name string) {
+    if entry, ok := this.stoped[name]; ok {
+        if entry.Valid() {
+            // 添加计划任务
+            entryID := this.Cron.Schedule(entry.Schedule, entry.Job)
+
+            this.mu.Lock()
+
+            delete(this.stoped, name)
+            this.cronIDs[name] = entryID
+
+            this.mu.Unlock()
+        }
+    }
+}
+
+// 任务停止
+func (this *Schedule) CronStop(name string) {
+    if id, ok := this.cronIDs[name]; ok {
+        entry := this.Cron.Entry(id)
+        if entry.Valid() {
+            this.Cron.Remove(id)
+
+            this.mu.Lock()
+
+            this.stoped[name] = entry
+            delete(this.cronIDs, name)
+
+            this.mu.Unlock()
+        }
+    }
+}
+
 // 计划任务 ID 列表
-func (this *Schedule) CronIDs() []int {
+func (this *Schedule) CronIDs() map[string]CronEntryID {
     return this.cronIDs
+}
+
+// 计划任务名称列表
+func (this *Schedule) CronIDNames() []string {
+    var names []string
+
+    for name, _ := range this.cronIDs {
+        names = append(names, name)
+    }
+
+    return names
+}
+
+// 计划任务单个 ID
+func (this *Schedule) CronID(name string) CronEntryID {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    if id, ok := this.cronIDs[name]; ok {
+        return id
+    }
+
+    return 0
 }

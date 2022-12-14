@@ -55,10 +55,16 @@ func (this *ExampleServiceProvider) Boot() {
 // 计划任务
 func (this *ExampleServiceProvider) Schedule(s *schedule.Schedule) {
     s.AddFunc(func() {
-        logger.New().Info("计划任务运行中...")
+        logger.New().Info("计划任务111运行中...")
 
         // panic("errors")
-    }).EveryMinute()
+    }).EveryMinute().WithName("cron111")
+
+    s.AddFunc(func() {
+        logger.New().Info("计划任务222运行中...")
+    }).EveryMinute().WithName("cron222")
+
+    s.RemoveEntry("cron222")
 }
 
 /**

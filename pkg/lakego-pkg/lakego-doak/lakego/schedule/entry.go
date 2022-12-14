@@ -26,6 +26,9 @@ type Entry struct {
 
     // 脚本
     Cmd any
+
+    // 当前任务名称
+    Name string
 }
 
 // 设置计划时间
@@ -45,6 +48,13 @@ func (this *Entry) WithSpec(spec string) *Entry {
 // 设置脚本
 func (this *Entry) WithCmd(cmd any) *Entry {
     this.Cmd = cmd
+
+    return this
+}
+
+// 设置名称
+func (this *Entry) WithName(name string) *Entry {
+    this.Name = name
 
     return this
 }

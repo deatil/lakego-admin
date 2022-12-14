@@ -9,7 +9,7 @@ import (
 )
 
 /**
- * 构造函数
+ * Redis
  *
  * redis.New().Set("go-redis", "go-redis-data", 60000)
  * redis.New().Get("go-redis", &redisData)

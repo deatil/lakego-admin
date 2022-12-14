@@ -50,7 +50,7 @@ func NewScheduleCmd(s *schedule.Schedule) *command.Command {
                 color.BaseOption("bold"),
                 color.BaseOption("blinkRapid"),
             ).
-            Print("[" + nowDate + "] 计划任务共 " + cronCount + " 条已开始运行...")
+            Print("[" + nowDate + "] 计划任务共 " + cronCount + " 条已开始进行...")
         fmt.Print("\n")
 
         select {}

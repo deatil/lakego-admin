@@ -17,6 +17,7 @@ type Admin struct {
     Data        map[string]any
     AccessToken string
     Avatar      string
+    AllGroup    []map[string]any
 }
 
 func New() *Admin {
@@ -66,6 +67,20 @@ func (this *Admin) GetAvatar() string {
     }
 
     return this.Avatar
+}
+
+func (this *Admin) WithAllGroup(data []map[string]any) *Admin {
+    this.AllGroup = data
+
+    return this
+}
+
+func (this *Admin) GetAllGroup() []map[string]any {
+    if this.AllGroup == nil {
+        this.AllGroup, _ = authgroupRepository.GetAllGroup()
+    }
+
+    return this.AllGroup
 }
 
 // 是否为超级管理员
@@ -161,12 +176,21 @@ func (this *Admin) HasAccess(slug string, method string) bool {
 func (this *Admin) GetGroups() []map[string]any {
     groups := make([]map[string]any, 0)
 
-    // 格式化分组
-    adminGroups := this.Data["Groups"].([]any)
+    var adminGroups []any
+    if this.IsSuperAdministrator() {
+        allGroup := this.GetAllGroup()
+        for _, group := range allGroup {
+            adminGroups = append(adminGroups, group)
+        }
+    } else {
+        adminGroups = this.Data["Groups"].([]any)
+    }
+
     if len(adminGroups) == 0 {
         return groups
     }
 
+    // 格式化分组
     groups = collection.
         Collect(adminGroups).
         Each(func(item, value any) (any, bool) {

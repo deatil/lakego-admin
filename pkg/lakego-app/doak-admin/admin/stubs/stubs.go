@@ -37,7 +37,7 @@ type Stubs struct {
 func (this Stubs) MakeController(name string, data map[string]string, force bool) error {
     data["datetime"] = datebin.Now().ToDatetimeString()
 
-    srcData, err := this.readTplFile("controller")
+    srcData, err := this.readStubFile("controller")
     if err != nil {
         return err
     }
@@ -51,7 +51,7 @@ func (this Stubs) MakeController(name string, data map[string]string, force bool
 func (this Stubs) MakeModel(name string, data map[string]string, force bool) error {
     data["datetime"] = datebin.Now().ToDatetimeString()
 
-    srcData, err := this.readTplFile("model")
+    srcData, err := this.readStubFile("model")
     if err != nil {
         return err
     }
@@ -97,7 +97,7 @@ func (this Stubs) Exists(path string) bool {
 }
 
 // 读取模板文件
-func (this Stubs) readTplFile(name string) (string, error) {
+func (this Stubs) readStubFile(name string) (string, error) {
     fileName := fmt.Sprintf("%s/%s.stub", this.stubDir, name)
 
     bytes, err := fs.ReadFile(fileName)
