@@ -13,6 +13,7 @@ func GetAllGroup() ([]map[string]any, error) {
 
     // 附件模型
     err := model.NewAuthGroup().
+        Where("status = ?", 1).
         Order("listorder ASC").
         Order("add_time ASC").
         Find(&list).
@@ -27,6 +28,7 @@ func GetChildren(groupid string) []map[string]any {
 
     // 附件模型
     err := model.NewAuthGroup().
+        Where("status = ?", 1).
         Order("listorder ASC").
         Order("add_time ASC").
         Find(&list).
