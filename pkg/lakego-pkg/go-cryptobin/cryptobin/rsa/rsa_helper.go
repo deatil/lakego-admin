@@ -31,6 +31,16 @@ func FromPublicKey(key []byte) Rsa {
     return NewRsa().FromPublicKey(key)
 }
 
+// PKCS1 公钥
+func FromPKCS1PublicKey(key []byte) Rsa {
+    return NewRsa().FromPKCS1PublicKey(key)
+}
+
+// PKCS8 公钥
+func FromPKCS8PublicKey(key []byte) Rsa {
+    return NewRsa().FromPKCS8PublicKey(key)
+}
+
 // 生成密钥
 // bits = 512 | 1024 | 2048 | 4096
 func GenerateKey(bits int) Rsa {

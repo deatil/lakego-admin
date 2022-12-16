@@ -216,7 +216,7 @@ func (this *Data) Error(ctx *gin.Context) {
         // MakeKeyDer().
         ToKeyString()
     rsaPubKey := rsa.
-        CreatePublicKey().
+        CreatePKCS8PublicKey().
         // MakeKeyDer().
         ToKeyString()
 

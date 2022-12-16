@@ -208,8 +208,35 @@ func (this Rsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
     return this
 }
 
+// 生成 pcks1 公钥 pem 数据
+func (this Rsa) CreatePKCS1PublicKey() Rsa {
+    var publicKey *rsa.PublicKey
+
+    if this.publicKey == nil {
+        if this.privateKey == nil {
+            err := errors.New("Rsa: [CreatePKCS1PublicKey()] privateKey error.")
+            return this.AppendError(err)
+        }
+
+        publicKey = &this.privateKey.PublicKey
+    } else {
+        publicKey = this.publicKey
+    }
+
+    x509PublicKey := x509.MarshalPKCS1PublicKey(publicKey)
+
+    publicBlock := &pem.Block{
+        Type: "PUBLIC KEY",
+        Bytes: x509PublicKey,
+    }
+
+    this.keyData = pem.EncodeToMemory(publicBlock)
+
+    return this
+}
+
 // 生成公钥 pem 数据
-func (this Rsa) CreatePublicKey() Rsa {
+func (this Rsa) CreatePKCS8PublicKey() Rsa {
     var publicKey *rsa.PublicKey
 
     if this.publicKey == nil {

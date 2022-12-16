@@ -11,7 +11,7 @@ import (
 
 // 私钥
 func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
-    privateKey, err := this.ParseECPrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -23,7 +23,7 @@ func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
 
 // 私钥带密码
 func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa {
-    privateKey, err := this.ParseECPrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -35,7 +35,7 @@ func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa 
 
 // PKCS8 私钥
 func (this Ecdsa) FromPKCS8PrivateKey(key []byte) Ecdsa {
-    privateKey, err := this.ParseECPrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -47,7 +47,7 @@ func (this Ecdsa) FromPKCS8PrivateKey(key []byte) Ecdsa {
 
 // Pkcs8WithPassword
 func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
-    privateKey, err := this.ParseECPKCS8PrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -59,7 +59,7 @@ func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) E
 
 // 公钥
 func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
-    publicKey, err := this.ParseECPublicKeyFromPEM(key)
+    publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }

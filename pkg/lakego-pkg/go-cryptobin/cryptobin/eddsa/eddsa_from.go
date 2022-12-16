@@ -9,7 +9,7 @@ import (
 
 // 私钥
 func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
-    parsedKey, err := this.ParseEdPrivateKeyFromPEM(key)
+    parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -21,7 +21,7 @@ func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
 
 // 私钥带密码
 func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
-    parsedKey, err := this.ParseEdPrivateKeyFromPEMWithPassword(key, password)
+    parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -33,7 +33,7 @@ func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA 
 
 // 公钥
 func (this EdDSA) FromPublicKey(key []byte) EdDSA {
-    parsedKey, err := this.ParseEdPublicKeyFromPEM(key)
+    parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }

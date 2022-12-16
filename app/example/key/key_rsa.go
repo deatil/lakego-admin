@@ -42,7 +42,7 @@ func (this Rsa) pkcs1(rsa cryptobin_rsa.Rsa, bit int) {
         CreatePKCS1PrivateKey().
         ToKeyString()
     pubKey := rsa.
-        CreatePublicKey().
+        CreatePKCS1PublicKey().
         ToKeyString()
 
     file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs1", bit)
@@ -57,7 +57,7 @@ func (this Rsa) pkcs8(rsa cryptobin_rsa.Rsa, bit int) {
         CreatePKCS8PrivateKey().
         ToKeyString()
     pubKey := rsa.
-        CreatePublicKey().
+        CreatePKCS8PublicKey().
         ToKeyString()
 
     file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs8", bit)
@@ -73,7 +73,7 @@ func (this Rsa) pkcs1En(rsa cryptobin_rsa.Rsa, bit int) {
             CreatePKCS1PrivateKeyWithPassword(this.pass, c).
             ToKeyString()
         pubKey := rsa.
-            CreatePublicKey().
+            CreatePKCS8PublicKey().
             ToKeyString()
 
         file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs1-en-%s", bit, c)
@@ -91,7 +91,7 @@ func (this Rsa) pkcs8En(rsa cryptobin_rsa.Rsa, bit int) {
                 CreatePKCS8PrivateKeyWithPassword(this.pass, c, h).
                 ToKeyString()
             pubKey := rsa.
-                CreatePublicKey().
+                CreatePKCS8PublicKey().
                 ToKeyString()
 
             file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs8-en-%s-%s", bit, c, h)
@@ -107,7 +107,7 @@ func (this Rsa) pkcs8En(rsa cryptobin_rsa.Rsa, bit int) {
             CreatePKCS8PrivateKeyWithPassword(this.pass, c2).
             ToKeyString()
         pubKey := rsa.
-            CreatePublicKey().
+            CreatePKCS8PublicKey().
             ToKeyString()
 
         file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs8-pbe-en-%s", bit, c2)

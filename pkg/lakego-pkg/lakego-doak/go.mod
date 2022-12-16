@@ -49,7 +49,6 @@ require (
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	go.uber.org/dig v1.13.0
-	github.com/youmark/pkcs8 v0.0.0-20201027041543-1326539a0a0a // indirect
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/sys v0.0.0-20220315194320-039c03cc5b86 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect

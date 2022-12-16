@@ -18,7 +18,7 @@ var (
 )
 
 // 解析私钥
-func (this EdDSA) ParseEdPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
+func (this EdDSA) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -43,7 +43,7 @@ func (this EdDSA) ParseEdPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error
 }
 
 // 解析私钥带密码
-func (this EdDSA) ParseEdPrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
+func (this EdDSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -75,7 +75,7 @@ func (this EdDSA) ParseEdPrivateKeyFromPEMWithPassword(key []byte, password stri
 }
 
 // 解析公钥
-func (this EdDSA) ParseEdPublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
+func (this EdDSA) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     var err error
 
     // Parse PEM block

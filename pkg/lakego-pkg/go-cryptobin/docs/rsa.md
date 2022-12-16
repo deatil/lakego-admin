@@ -30,7 +30,8 @@ func main() {
         // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
         ToKeyString()
     objPubKey := obj.
-        CreatePublicKey().
+        CreatePKCS1PublicKey().
+        // CreatePKCS8PublicKey().
         ToKeyString()
     fs.Put("./runtime/key/rsa", objPriKey)
     fs.Put("./runtime/key/rsa.pub", objPubKey)
@@ -53,7 +54,9 @@ func main() {
     obj2Pub, _ := fs.Get("./runtime/key/rsa.pub")
     obj2cyptde := obj2.
         FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(obj2Pub)).
+        // FromPublicKey([]byte(obj2Pub)).
+        // FromPKCS1PublicKey([]byte(obj2Pub)).
+        FromPKCS8PublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         // PSSVerify([]byte("测试")).
         ToVerify()
@@ -75,7 +78,8 @@ func main() {
         }).
         ToKeyString()
     objPubKey := obj.
-        CreatePublicKey().
+        CreatePKCS1PublicKey().
+        // CreatePKCS8PublicKey().
         ToKeyString()
     fs.Put("./runtime/key/rsa_pkcs8_en11", objPriKey)
     fs.Put("./runtime/key/rsa_pkcs8_en11.pub", objPubKey)
@@ -88,7 +92,9 @@ func main() {
     enkey, _ := fs.Get("./runtime/key/rsa_key.pub")
     cypt := rsa.
         FromString("test-pass").
-        FromPublicKey([]byte(enkey)).
+        // FromPublicKey([]byte(enkey)).
+        // FromPKCS1PublicKey([]byte(enkey)).
+        FromPKCS8PublicKey([]byte(enkey)).
         Encrypt().
         // EncryptOAEP("SHA1")
         ToBase64String()
@@ -134,7 +140,9 @@ func main() {
     dekey, _ := fs.Get("./runtime/key/rsa_key.pub")
     cyptde := rsa.
         FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
-        FromPublicKey([]byte(dekey)).
+        // FromPublicKey([]byte(dekey)).
+        // FromPKCS1PublicKey([]byte(dekey)).
+        FromPKCS8PublicKey([]byte(dekey)).
         PubKeyDecrypt().
         ToString()
 
@@ -146,7 +154,7 @@ func main() {
         CreatePKCS1PrivateKey().
         ToKeyString()
     rsaPubKey22 := rsa22.
-        CreatePublicKey().
+        CreatePKCS1PublicKey().
         ToKeyString()
 
     // =====

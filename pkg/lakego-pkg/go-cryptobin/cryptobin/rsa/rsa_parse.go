@@ -18,7 +18,7 @@ var (
 )
 
 // 解析 PKCS1 / PKCS8 私钥
-func (this Rsa) ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
+func (this Rsa) ParsePrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -44,7 +44,7 @@ func (this Rsa) ParseRSAPrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
 }
 
 // 解析 PKCS1 带密码的私钥
-func (this Rsa) ParseRSAPrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
+func (this Rsa) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -76,7 +76,7 @@ func (this Rsa) ParseRSAPrivateKeyFromPEMWithPassword(key []byte, password strin
 }
 
 // 解析 PKCS8 带密码的私钥
-func (this Rsa) ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
+func (this Rsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -108,7 +108,7 @@ func (this Rsa) ParseRSAPKCS8PrivateKeyFromPEMWithPassword(key []byte, password 
 }
 
 // 解析 pkf 证书
-func (this Rsa) ParseRSAPKCS12CertFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
+func (this Rsa) ParsePKCS12CertFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
     privateKey, _, err := pkcs12.Decode(pfxData, password)
     if err != nil {
         return nil, err
@@ -122,8 +122,33 @@ func (this Rsa) ParseRSAPKCS12CertFromPEMWithPassword(pfxData []byte, password s
     return pkey, nil
 }
 
-// 解析 PKCS1 / PKCS8 公钥
-func (this Rsa) ParseRSAPublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
+// 解析 PKCS1 公钥
+func (this Rsa) ParsePKCS1PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
+    var err error
+
+    // Parse PEM block
+    var block *pem.Block
+    if block, _ = pem.Decode(key); block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    // Parse the key
+    var parsedKey any
+    if parsedKey, err = x509.ParsePKCS1PublicKey(block.Bytes); err != nil {
+        return nil, err
+    }
+
+    var pkey *rsa.PublicKey
+    var ok bool
+    if pkey, ok = parsedKey.(*rsa.PublicKey); !ok {
+        return nil, ErrNotRSAPublicKey
+    }
+
+    return pkey, nil
+}
+
+// 解析 PKCS8 公钥
+func (this Rsa) ParsePKCS8PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
     var err error
 
     // Parse PEM block

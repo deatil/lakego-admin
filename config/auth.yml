@@ -42,4 +42,4 @@ auth:
   # 权限过滤 ["GET:passport/login"]
   permission-excepts: []
   # 超级管理员
-  admin-id: "e92ba0a3f86f4a5693d8487eb8c632b5"
+  admin-id: "642eb7b3-91ea-4808-bba6-f5f10938929a"
