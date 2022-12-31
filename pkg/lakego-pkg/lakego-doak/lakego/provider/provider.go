@@ -163,7 +163,7 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
 
 // 添加视图用方法
 func (this *ServiceProvider) AddViewFunc(name string, fn any) {
-    viewFunc.Instance().AddFunc(name, fn)
+    viewFunc.AddFunc(name, fn)
 }
 
 // 推送

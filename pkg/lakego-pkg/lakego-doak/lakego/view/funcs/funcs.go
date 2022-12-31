@@ -4,16 +4,12 @@ import(
     "sync"
 )
 
-var instance *Funcs
-var once sync.Once
+// 默认
+var defaultFns *Funcs
 
-// 单例
-func Instance() *Funcs {
-    once.Do(func() {
-        instance = New()
-    })
-
-    return instance
+// 初始化
+func init() {
+    defaultFns = New()
 }
 
 // 构造函数
@@ -56,6 +52,11 @@ func (this *Funcs) AddFunc(name string, fn any) *Funcs {
     return this
 }
 
+// 添加函数
+func AddFunc(name string, fn any) *Funcs {
+    return defaultFns.AddFunc(name, fn)
+}
+
 // 批量添加函数
 func (this *Funcs) AddFuncs(data FuncMap) *Funcs {
     if len(data) > 0 {
@@ -65,6 +66,11 @@ func (this *Funcs) AddFuncs(data FuncMap) *Funcs {
     }
 
     return this
+}
+
+// 批量添加函数
+func AddFuncs(data FuncMap) *Funcs {
+    return defaultFns.AddFuncs(data)
 }
 
 // 是否存在
@@ -77,6 +83,11 @@ func (this *Funcs) HasFunc(name string) bool {
     return exists
 }
 
+// 是否存在
+func HasFunc(name string) bool {
+    return defaultFns.HasFunc(name)
+}
+
 // 移除已注册函数
 func (this *Funcs) RemoveFunc(name string) {
     this.mu.Lock()
@@ -85,10 +96,20 @@ func (this *Funcs) RemoveFunc(name string) {
     delete(this.fns, name)
 }
 
+// 移除已注册函数
+func RemoveFunc(name string) {
+    defaultFns.RemoveFunc(name)
+}
+
 // 获取全部注册函数
-func (this *Funcs) GetAllFuncs() FuncMap {
+func (this *Funcs) GetAllFunc() FuncMap {
     this.mu.Lock()
     defer this.mu.Unlock()
 
     return this.fns
+}
+
+// 获取全部注册函数
+func GetAllFunc() FuncMap {
+    return defaultFns.GetAllFunc()
 }

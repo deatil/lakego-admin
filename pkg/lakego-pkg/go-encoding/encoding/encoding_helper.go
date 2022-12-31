@@ -48,6 +48,11 @@ func FromBase32EncoderString(data string, encoder string) Encoding {
     return encode.FromBase32EncoderString(data, encoder)
 }
 
+// Base45
+func FromBase45String(data string) Encoding {
+    return encode.FromBase45String(data)
+}
+
 // Base58
 func FromBase58String(data string) Encoding {
     return encode.FromBase58String(data)

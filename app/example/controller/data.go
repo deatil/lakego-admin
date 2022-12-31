@@ -236,9 +236,9 @@ func (this *Data) Error(ctx *gin.Context) {
     encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
 
     /*
-    encodeStr3 = encoding.FromString("测试测试12121").ToBase91String()
+    encodeStr3 = encoding.FromString("asdsa123").ToBase45String()
     encodeStr2 = encodeStr3
-    encodeStr3 = encoding.FromBase91String(encodeStr3).ToString()
+    encodeStr3 = encoding.FromBase45String(encodeStr3).ToString()
     */
 
     // 签名

@@ -18,6 +18,7 @@ import (
 
     "github.com/deatil/go-encoding/morse"
     "github.com/deatil/go-encoding/basex"
+    "github.com/deatil/go-encoding/base45"
     "github.com/deatil/go-encoding/base62"
     "github.com/deatil/go-encoding/base91"
     "github.com/deatil/go-encoding/base100"
@@ -54,6 +55,16 @@ func (this Encoding) FromBase32HexString(data string) Encoding {
 // FromBase32EncoderString
 func (this Encoding) FromBase32EncoderString(data string, encoder string) Encoding {
     this.data, this.Error = base32.NewEncoding(encoder).DecodeString(data)
+
+    return this
+}
+
+// Base45
+func (this Encoding) FromBase45String(data string) Encoding {
+    decoded, err := base45.Decode(data)
+
+    this.data = []byte(decoded)
+    this.Error = err
 
     return this
 }
