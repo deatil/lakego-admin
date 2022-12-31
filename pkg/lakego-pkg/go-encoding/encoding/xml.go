@@ -24,3 +24,34 @@ func XmlDecode(src string, dst any) error {
     dec := xml.NewDecoder(buf)
     return dec.Decode(dst)
 }
+
+// ====================
+
+// Xml
+func (this Encoding) ForXML(data any) Encoding {
+    buf := bytes.NewBuffer(nil)
+
+    enc := xml.NewEncoder(buf)
+    err := enc.Encode(data)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.data = buf.Bytes()
+
+    return this
+}
+
+// Xml
+func ForXML(data any) Encoding {
+    return defaultEncode.ForXML(data)
+}
+
+// Xml 编码输出
+func (this Encoding) XMLTo(dst any) error {
+    buf := bytes.NewBuffer(this.data)
+    dec := xml.NewDecoder(buf)
+
+    return dec.Decode(dst)
+}

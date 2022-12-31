@@ -18,3 +18,22 @@ func Base91Decode(str string) string {
 
     return string(newStr)
 }
+
+// ====================
+
+// Base91
+func (this Encoding) FromBase91String(data string) Encoding {
+    this.data, this.Error = base91.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base91
+func FromBase91String(data string) Encoding {
+    return defaultEncode.FromBase91String(data)
+}
+
+// 输出 Base91
+func (this Encoding) ToBase91String() string {
+    return base91.StdEncoding.EncodeToString(this.data)
+}

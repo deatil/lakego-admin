@@ -88,3 +88,22 @@ func Unserialize(data []byte, ptr any) (err error) {
 
     return nil
 }
+
+// ====================
+
+// 序列化
+func (this Encoding) ForSerialize(data any) Encoding {
+    this.data, this.Error = Serialize(data)
+
+    return this
+}
+
+// ForSerialize
+func ForSerialize(data any) Encoding {
+    return defaultEncode.ForSerialize(data)
+}
+
+// 序列化输出
+func (this Encoding) SerializeTo(val any) error {
+    return Unserialize(this.data, val)
+}

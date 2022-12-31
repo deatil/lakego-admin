@@ -39,3 +39,22 @@ func Unmarshal(data []byte, v any) error {
 func NewDecoder(r io.Reader) *jsoniter.Decoder {
     return jsoniter.NewDecoder(r)
 }
+
+// ====================
+
+// JSON
+func (this Encoding) ForJSON(data any) Encoding {
+    this.data, this.Error = json.Marshal(data)
+
+    return this
+}
+
+// JSON
+func ForJSON(data any) Encoding {
+    return defaultEncode.ForJSON(data)
+}
+
+// JSON 编码输出
+func (this Encoding) JSONTo(dst any) error {
+    return json.Unmarshal(this.data, dst)
+}

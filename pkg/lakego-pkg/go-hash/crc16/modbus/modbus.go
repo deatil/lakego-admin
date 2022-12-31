@@ -1,4 +1,4 @@
-package hash
+package modbus
 
 import (
     "strconv"
@@ -39,8 +39,8 @@ var MbTable = []uint16{
     0X8201, 0X42C0, 0X4380, 0X8341, 0X4100, 0X81C1, 0X8081, 0X4040,
 }
 
-// CRC16/modbus
-func CRC16_Modbus(s string) string {
+// CRC16 / modbus
+func CRC16Modbus(s string) string {
     data := []byte(s)
 
     var crc16 uint16
@@ -53,16 +53,4 @@ func CRC16_Modbus(s string) string {
     }
 
     return strconv.FormatInt(int64(crc16), 16)
-}
-
-// CRC16_Modbus 哈希值
-func (this Hash) CRC16_Modbus() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
-
-        return CRC16_Modbus(newData), nil
-    })
 }

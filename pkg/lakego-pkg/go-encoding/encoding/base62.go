@@ -18,3 +18,22 @@ func Base62Decode(str string) string {
 
     return string(newStr)
 }
+
+// ====================
+
+// Base62
+func (this Encoding) FromBase62String(data string) Encoding {
+    this.data, this.Error = base62.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base62
+func FromBase62String(data string) Encoding {
+    return defaultEncode.FromBase62String(data)
+}
+
+// 输出 Base62
+func (this Encoding) ToBase62String() string {
+    return base62.StdEncoding.EncodeToString(this.data)
+}

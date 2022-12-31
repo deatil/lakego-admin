@@ -40,3 +40,58 @@ func Base32HexDecode(str string) string {
 
     return string(newStr)
 }
+
+// ====================
+
+// Base32
+func (this Encoding) FromBase32String(data string) Encoding {
+    this.data, this.Error = base32.StdEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base32
+func FromBase32String(data string) Encoding {
+    return defaultEncode.FromBase32String(data)
+}
+
+// Base32Hex
+func (this Encoding) FromBase32HexString(data string) Encoding {
+    this.data, this.Error = base32.HexEncoding.DecodeString(data)
+
+    return this
+}
+
+// Base32
+func FromBase32HexString(data string) Encoding {
+    return defaultEncode.FromBase32HexString(data)
+}
+
+// FromBase32EncoderString
+func (this Encoding) FromBase32EncoderString(data string, encoder string) Encoding {
+    this.data, this.Error = base32.NewEncoding(encoder).DecodeString(data)
+
+    return this
+}
+
+// Base32
+func FromBase32EncoderString(data string, encode string) Encoding {
+    return defaultEncode.FromBase32EncoderString(data, encode)
+}
+
+// 输出 Base32
+func (this Encoding) ToBase32String() string {
+    return base32.StdEncoding.EncodeToString(this.data)
+}
+
+// ====================
+
+// 输出 Base32Hex
+func (this Encoding) ToBase32HexString() string {
+    return base32.HexEncoding.EncodeToString(this.data)
+}
+
+// 输出 Base32Encoder
+func (this Encoding) ToBase32EncoderString(encoder string) string {
+    return base32.NewEncoding(encoder).EncodeToString(this.data)
+}

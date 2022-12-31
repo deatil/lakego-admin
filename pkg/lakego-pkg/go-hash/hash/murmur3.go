@@ -1,7 +1,7 @@
 package hash
 
 import (
-    "github.com/spaolacci/murmur3"
+    "github.com/deatil/go-hash/murmur3"
 )
 
 // murmur32

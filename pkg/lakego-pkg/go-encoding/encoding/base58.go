@@ -15,3 +15,24 @@ func Base58Decode(str string) string {
 
     return string(decoded)
 }
+
+// ====================
+
+// Base58
+func (this Encoding) FromBase58String(data string) Encoding {
+    data = Base58Decode(data)
+
+    this.data = []byte(data)
+
+    return this
+}
+
+// Base58
+func FromBase58String(data string) Encoding {
+    return defaultEncode.FromBase58String(data)
+}
+
+// 输出 Base58
+func (this Encoding) ToBase58String() string {
+    return Base58Encode(string(this.data))
+}

@@ -18,3 +18,25 @@ func MorseITUDecode(str string) string {
 
     return newStr
 }
+
+// ====================
+
+// MorseITU
+func (this Encoding) FromMorseITUString(data string) Encoding {
+    data, err := morse.DecodeITU(data)
+
+    this.data = []byte(data)
+    this.Error = err
+
+    return this
+}
+
+// MorseITU
+func FromMorseITUString(data string) Encoding {
+    return defaultEncode.FromMorseITUString(data)
+}
+
+// 输出 MorseITU
+func (this Encoding) ToMorseITUString() string {
+    return morse.EncodeITU(string(this.data))
+}
