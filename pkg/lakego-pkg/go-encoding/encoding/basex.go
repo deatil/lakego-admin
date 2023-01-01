@@ -5,12 +5,12 @@ import (
 )
 
 // 加密
-func Base2Encode(str string) string {
+func Basex2Encode(str string) string {
     return basex.Base2Encoding.Encode([]byte(str))
 }
 
 // 解密
-func Base2Decode(str string) string {
+func Basex2Decode(str string) string {
     newStr, err := basex.Base2Encoding.Decode(str)
     if err != nil {
         return ""
@@ -22,12 +22,12 @@ func Base2Decode(str string) string {
 // =============================
 
 // 加密
-func Base16Encode(str string) string {
+func Basex16Encode(str string) string {
     return basex.Base16Encoding.Encode([]byte(str))
 }
 
 // 解密
-func Base16Decode(str string) string {
+func Basex16Decode(str string) string {
     newStr, err := basex.Base16Encoding.Decode(str)
     if err != nil {
         return ""
