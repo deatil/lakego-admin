@@ -653,7 +653,9 @@ func Dirname(path string) string {
 
 // 后缀
 func (this *Filesystem) Extension(path string) string {
-    return filepath.Ext(path)[1:]
+    ext := filepath.Ext(path)
+
+    return strings.TrimPrefix(ext, ".")
 }
 
 // 后缀
