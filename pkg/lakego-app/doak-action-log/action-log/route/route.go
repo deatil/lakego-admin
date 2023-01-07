@@ -9,7 +9,7 @@ import (
 /**
  * 路由
  */
-func Route(engine *gin.RouterGroup) {
+func Route(engine gin.IRouter) {
     // 操作日志
     actionLogController := new(controller.ActionLog)
     engine.GET("/action-log", actionLogController.Index)

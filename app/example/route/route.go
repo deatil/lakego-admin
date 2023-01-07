@@ -11,7 +11,7 @@ import (
 /**
  * 路由
  */
-func Route(engine *gin.RouterGroup) {
+func Route(engine gin.IRouter) {
     // 例子
     indexController := new(controller.Index)
     engine.GET("/example/index", indexController.Index)
@@ -20,7 +20,7 @@ func Route(engine *gin.RouterGroup) {
 /**
  * 常规 gin 路由
  */
-func GinRoute(engine *gin.Engine) {
+func GinRoute(engine gin.IRouter) {
     engine.GET("/example", func(ctx *gin.Context) {
         // 测试自定义配置数据
         exampleData := config.New("example").GetString("Default")

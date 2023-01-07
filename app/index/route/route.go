@@ -9,7 +9,7 @@ import (
 /**
  * 路由
  */
-func Route(engine *gin.Engine) {
+func Route(engine gin.IRouter) {
     // 路由
     indexController := new(index_controller.Index)
     engine.GET("/", indexController.Index)

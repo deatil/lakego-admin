@@ -9,7 +9,7 @@ import (
 /**
  * 后台路由
  */
-func Route(engine *router.RouterGroup) {
+func Route(engine router.IRouter) {
     // 登陆
     passportController := new(controller.Passport)
     engine.GET("/passport/captcha", passportController.Captcha)
@@ -65,7 +65,7 @@ func Route(engine *router.RouterGroup) {
 /**
  * 后台管理员路由
  */
-func AdminRoute(engine *router.RouterGroup) {
+func AdminRoute(engine router.IRouter) {
     // 权限菜单
     authRuleController := new(controller.AuthRule)
     engine.GET("/auth/rule", authRuleController.Index)

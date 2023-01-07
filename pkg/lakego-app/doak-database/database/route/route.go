@@ -7,7 +7,7 @@ import (
 )
 
 // 路由
-func Route(engine *gin.RouterGroup) {
+func Route(engine gin.IRouter) {
     // 数据库管理
     databaseController := new(controller.Database)
     engine.GET("/database", databaseController.Index)

@@ -9,7 +9,7 @@ import (
 /**
  * 路由
  */
-func Route(engine *gin.RouterGroup) {
+func Route(engine gin.IRouter) {
     // 系统监控
     monitorController := new(controller.Monitor)
     engine.GET("/monitor", monitorController.Index)
