@@ -400,6 +400,21 @@ func Perm(path string) (uint32, error) {
     return defaultFilesystem.Perm(path)
 }
 
+// 权限数字转为字符
+func (this *Filesystem) PermIntString(path string) (string, error) {
+    perm, err := this.Perm(path)
+    if err != nil {
+        return "", err
+    }
+
+    return fmt.Sprintf("%o", perm), nil
+}
+
+// 权限数字转为字符
+func PermIntString(path string) (string, error) {
+    return defaultFilesystem.PermIntString(path)
+}
+
 // 获取权限 - 字符
 func (this *Filesystem) PermString(path string) (string, error) {
     f, err := os.Stat(path)
@@ -435,6 +450,16 @@ func (this *Filesystem) Move(path string, target string) error {
 // 移动
 func Move(path string, target string) error {
     return defaultFilesystem.Move(path, target)
+}
+
+// 重命名
+func (this *Filesystem) Rename(path string, target string) error {
+    return os.Rename(path, target)
+}
+
+// 重命名
+func Rename(path string, target string) error {
+    return defaultFilesystem.Rename(path, target)
 }
 
 // 文件复制
