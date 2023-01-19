@@ -2,7 +2,6 @@ package request
 
 import (
     "io"
-    "net"
     "mime/multipart"
 
     cast "github.com/deatil/go-goch/goch"
@@ -221,7 +220,7 @@ func (this *Request) ClientIP() string {
 }
 
 // RemoteIP
-func (this *Request) RemoteIP() (net.IP, bool) {
+func (this *Request) RemoteIP() string {
     return this.ctx.RemoteIP()
 }
 

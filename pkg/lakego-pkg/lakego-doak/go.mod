@@ -3,7 +3,7 @@ module github.com/deatil/lakego-doak
 go 1.18
 
 require (
-	github.com/casbin/casbin/v2 v2.37.4
+	github.com/casbin/casbin/v2 v2.60.0
 	github.com/deatil/go-goch v0.0.3
 	github.com/deatil/go-hash v0.0.3
 	github.com/deatil/go-cryptobin v0.0.3
@@ -12,7 +12,7 @@ require (
 	github.com/deatil/go-validator v0.0.3 // indirect
 	github.com/deatil/lakego-jwt v0.0.3
 	github.com/fsnotify/fsnotify v1.5.1
-	github.com/gin-gonic/gin v1.7.4
+	github.com/gin-gonic/gin v1.8.2
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.9.0
@@ -26,9 +26,9 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
-	github.com/spf13/viper v1.9.0
-	gorm.io/driver/mysql v1.1.2
-	gorm.io/gorm v1.21.16
+	github.com/spf13/viper v1.14.0 // indirect
+	gorm.io/driver/mysql v1.4.5
+	gorm.io/gorm v1.24.3 // indirect
 )
 
 require (
@@ -48,7 +48,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/tebeka/strftime v0.1.5 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	go.uber.org/dig v1.13.0
+	go.uber.org/dig v1.16.1
 	golang.org/x/crypto v0.0.0-20220321153916-2c7772ba3064 // indirect
 	golang.org/x/sys v0.0.0-20220315194320-039c03cc5b86 // indirect
 	golang.org/x/term v0.0.0-20210927222741-03fcf44c2211 // indirect
