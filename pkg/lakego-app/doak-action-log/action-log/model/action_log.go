@@ -19,6 +19,13 @@ type ActionLog struct {
     Status    string `gorm:"column:status;type:char(3);" json:"status"`
 }
 
+/*
+// 自定义表名
+func (this *ActionLog) TableName() string {
+    return "lakego_action_log"
+}
+*/
+
 func (this *ActionLog) BeforeCreate(tx *gorm.DB) error {
     this.ID = uuid.ToUUIDString()
 
