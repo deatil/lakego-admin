@@ -14,11 +14,6 @@ type AuthRuleAccess struct {
     Group AuthGroup `gorm:"foreignKey:ID;references:GroupId"`
 }
 
-// 自定义表名
-func (this *AuthRuleAccess) TableName() string {
-    return "lakego_auth_rule_access"
-}
-
 func NewAuthRuleAccess() *gorm.DB {
     return database.New().Model(&AuthRuleAccess{})
 }

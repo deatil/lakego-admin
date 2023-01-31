@@ -14,11 +14,6 @@ type AuthGroupAccess struct {
     Group AuthGroup `gorm:"foreignKey:ID;references:GroupId"`
 }
 
-// 自定义表名
-func (this *AuthGroupAccess) TableName() string {
-    return "lakego_auth_group_access"
-}
-
 func NewAuthGroupAccess() *gorm.DB {
     return database.New().Model(&AuthGroupAccess{})
 }
