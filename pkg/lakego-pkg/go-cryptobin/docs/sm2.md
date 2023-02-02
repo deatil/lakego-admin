@@ -157,6 +157,19 @@ func main() {
         CreatePrivateKey().
         ToKeyString()
 
+    // =====
+
+    // 检测私钥公钥是否匹配
+    pri, _ := fs.Get(prifile)
+    pub, _ := fs.Get(pubfile)
+
+    res := cryptobin_sm2.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Printf("check res: %#v", res)
+
 }
 ~~~
 

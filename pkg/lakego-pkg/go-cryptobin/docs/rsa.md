@@ -175,5 +175,28 @@ func main() {
         WithSignHash("SHA256").
         PSSVerify([]byte("测试")).
         ToVerify()
+
+    // =====
+
+    // 检测私钥公钥是否匹配
+    pri, _ := fs.Get(prifile)
+    pub, _ := fs.Get(pubfile)
+
+    res := cryptobin_rsa.New().
+        FromPKCS8PrivateKey([]byte(pri)).
+        FromPKCS8PublicKey([]byte(pub)).
+        // FromPrivateKey([]byte(obj2Pri)).
+        // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
+        // FromPKCS1PrivateKey([]byte(obj2Pri)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        // FromPKCS8PrivateKey([]byte(obj2Pri)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        // FromPublicKey([]byte(dekey)).
+        // FromPKCS1PublicKey([]byte(dekey)).
+        // FromPKCS8PublicKey([]byte(dekey)).
+        CheckKeyPair()
+
+    fmt.Printf("check res: %#v", res)
+
 }
 ~~~

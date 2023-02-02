@@ -4,7 +4,6 @@ import (
     "errors"
     "crypto/rand"
     "crypto/x509"
-    "crypto/ed25519"
     "encoding/pem"
 
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
@@ -139,20 +138,12 @@ func (this EdDSA) CreatePbePrivateKeyWithPassword(password string, alg string) E
 
 // 生成公钥 pem 数据
 func (this EdDSA) CreatePublicKey() EdDSA {
-    var publicKey ed25519.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("EdDSA: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = this.privateKey.Public().(ed25519.PublicKey)
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("EdDSA: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(publicKey)
+    x509PublicKey, err := x509.MarshalPKIXPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

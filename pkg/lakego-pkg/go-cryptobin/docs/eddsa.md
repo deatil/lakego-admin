@@ -47,5 +47,16 @@ func main() {
         Verify([]byte("test-pass")).
         ToVerify()
 
+    // 检测私钥公钥是否匹配
+    pri, _ := fs.Get(prifile)
+    pub, _ := fs.Get(pubfile)
+
+    res := cryptobin_eddsa.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Printf("check res: %#v", res)
+
 }
 ~~~

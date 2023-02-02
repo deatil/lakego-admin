@@ -21,6 +21,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
 
     _ "github.com/deatil/go-cryptobin/ssh"
+    _ "github.com/deatil/go-cryptobin/bencode"
     _ "github.com/deatil/go-cryptobin/dh/dh"
     _ "github.com/deatil/go-cryptobin/dh/ecdh"
     _ "github.com/deatil/go-cryptobin/dh/curve25519"

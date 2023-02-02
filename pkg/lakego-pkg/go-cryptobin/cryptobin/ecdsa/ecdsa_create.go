@@ -3,7 +3,6 @@ package ecdsa
 import (
     "errors"
     "crypto/rand"
-    "crypto/ecdsa"
     "crypto/x509"
     "encoding/pem"
 
@@ -219,20 +218,12 @@ func (this Ecdsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg stri
 
 // 生成公钥 pem 数据
 func (this Ecdsa) CreatePublicKey() Ecdsa {
-    var publicKey *ecdsa.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("Ecdsa: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = &this.privateKey.PublicKey
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("Ecdsa: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(publicKey)
+    x509PublicKey, err := x509.MarshalPKIXPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

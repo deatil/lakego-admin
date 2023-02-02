@@ -51,5 +51,20 @@ func main() {
         Verify([]byte("test-pass")).
         ToVerify()
 
+    // 检测私钥公钥是否匹配
+    pri, _ := fs.Get(prifile)
+    pub, _ := fs.Get(pubfile)
+
+    res := cryptobin_dsa.New().
+        FromPKCS8PrivateKey([]byte(pri)).
+        // FromPrivateKey([]byte(pri)).
+        // FromPrivateKeyWithPassword([]byte(pri), "123").
+        // FromPKCS8PrivateKeyWithPassword([]byte(pri), "123").
+        // FromPublicKey([]byte(pub)).
+        FromPKCS8PublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Printf("check res: %#v", res)
+
 }
 ~~~

@@ -5,7 +5,6 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    "github.com/tjfoc/gmsm/sm2"
     "github.com/tjfoc/gmsm/x509"
 
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
@@ -160,20 +159,12 @@ func (this SM2) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
 
 // 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
-    var publicKey *sm2.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("SM2: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = &this.privateKey.PublicKey
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("SM2: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    keyData, err := x509.WritePublicKeyToPem(publicKey)
+    keyData, err := x509.WritePublicKeyToPem(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }
