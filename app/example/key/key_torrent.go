@@ -25,25 +25,50 @@ func writeFile(filename string, data []byte) error {
 func ParseTorrent(filename string) {
     data := loadFile(filename)
 
-    var iface any
-    err := cryptobin_bencode.Unmarshal(data, &iface)
+    var list cryptobin_bencode.Data
+    err := cryptobin_bencode.Unmarshal(data, &list)
 
     fmt.Println("===== Torrent =====")
-    fmt.Printf("Torrent err: %#v", err)
-    fmt.Println("")
+    fmt.Println(fmt.Sprintf("Torrent err: %#v", err))
 
-    fmt.Println("Data Item: ")
-    if list, ok := iface.(map[string]any); ok {
-        fmt.Println(fmt.Sprintf("announce: %s", list["announce"]))
-        fmt.Println(fmt.Sprintf("comment: %s", list["comment"]))
-        fmt.Println(fmt.Sprintf("created by: %s", list["created by"]))
-        fmt.Println(fmt.Sprintf("creation date: %s", list["creation date"]))
-        // fmt.Println(fmt.Sprintf("announce-list: %#v", list["announce-list"]))
-        // fmt.Println(fmt.Sprintf("url-list: %#v", list["url-list"]))
-        // fmt.Println(fmt.Sprintf("info date: %s", list["info"]))
-        fmt.Println(fmt.Sprintf("encoding: %s", list["encoding"]))
-        fmt.Println(fmt.Sprintf("publisher: %s", list["publisher"]))
-        fmt.Println(fmt.Sprintf("publisher-url: %s", list["publisher-url"]))
-    }
+    fmt.Println("===== Torrent Keys =====")
+    fmt.Println(fmt.Sprintf("keys: %#v", list.GetKeys()))
+
+    fmt.Println("===== Torrent Data =====")
+    fmt.Println(fmt.Sprintf("announce: %s", list["announce"]))
+    fmt.Println(fmt.Sprintf("comment: %s", list["comment"]))
+    fmt.Println(fmt.Sprintf("created by: %s", list["created by"]))
+    fmt.Println(fmt.Sprintf("creation date: %s", list.GetCreationDateTime()))
+    // fmt.Println(fmt.Sprintf("creation date: %s", list["creation date"]))
+    // fmt.Println(fmt.Sprintf("announce-list: %#v", list["announce-list"]))
+    // fmt.Println(fmt.Sprintf("url-list: %#v", list["url-list"]))
+    // fmt.Println(fmt.Sprintf("info date: %s", list["info"]))
+    fmt.Println(fmt.Sprintf("encoding: %s", list["encoding"]))
+    fmt.Println(fmt.Sprintf("publisher: %s", list["publisher"]))
+    fmt.Println(fmt.Sprintf("publisher-url: %s", list["publisher-url"]))
+
+    fmt.Println("===== Torrent Info Keys =====")
+    fmt.Println(fmt.Sprintf("Info keys: %#v", list.GetInfoKeys()))
+    fmt.Println(fmt.Sprintf("Info name: %s", list.GetInfoItem("name")))
+
+    /*
+    // 更改后保存到文件
+    list = list.SetAnnounce("http://baidu.com/abcde")
+    newData, _ := cryptobin_bencode.Marshal(list)
+    writeFile("./runtime/key/torrent/continuum-new.torrent", newData)
+    */
+
+
+    var list2 cryptobin_bencode.SingleTorrent
+    err2 := cryptobin_bencode.Unmarshal(data, &list2)
+
+    fmt.Println("===== Torrent2 =====")
+    fmt.Println(fmt.Sprintf("Torrent err: %#v", err2))
+
+    fmt.Println("===== Torrent2 Data =====")
+    fmt.Println(fmt.Sprintf("announce: %s", list2.Announce))
+    fmt.Println(fmt.Sprintf("creation date: %s", list2.GetCreationDateTime()))
+    fmt.Println(fmt.Sprintf("info hash: %s", list2.GetInfoHashString()))
+    fmt.Println(fmt.Sprintf("AnnounceList: %#v", list2.GetAnnounceList()))
 
 }

@@ -1,5 +1,14 @@
 package tool
 
+// 构造函数
+func NewErrors(errs []error) Errors {
+    e := Errors{
+        errors: make([]error, 0),
+    }
+
+    return e.Append(errs...)
+}
+
 /**
  * 错误记录
  *
@@ -12,25 +21,32 @@ type Errors struct {
 }
 
 // 设置
-func (this Errors) WithErrors(errors []error) Errors {
-    this.errors = errors
-
-    return this
+func (this Errors) WithErrors(errs []error) Errors {
+    return this.Reset().Append(errs...)
 }
 
 // 添加
-func (this Errors) Append(err ...error) Errors {
-    this.errors = append(this.errors, err...)
+func (this Errors) Append(errs ...error) Errors {
+    for _, err := range errs {
+        if err != nil {
+            this.errors = append(this.errors, err)
+        }
+    }
 
     return this
 }
 
 // 前置添加
-func (this Errors) Prepend(err ...error) Errors {
-    newErrors := make([]error, 0)
-    newErrors = append(newErrors, err...)
+func (this Errors) Prepend(errs ...error) Errors {
+    errors := make([]error, 0)
 
-    this.errors = append(newErrors, this.errors...)
+    for _, err := range errs {
+        if err != nil {
+            errors = append(errors, err)
+        }
+    }
+
+    this.errors = append(errors, this.errors...)
 
     return this
 }
@@ -86,20 +102,17 @@ func (this Errors) Each(fn func(int, error)) {
 
 // 实现 error 接口
 func (this Errors) Error() string {
-    err := ""
+    var b []byte
 
-    i := 1
-    for _, v := range this.errors {
-        if i == 1 {
-            err = v.Error() + ";"
-        } else {
-            err += v.Error() + ";"
+    for i, err := range this.errors {
+        if i > 0 {
+            b = append(b, '\n')
         }
 
-        i++
+        b = append(b, err.Error()...)
     }
 
-    return err
+    return string(b)
 }
 
 // 返回全部错误字符
@@ -107,18 +120,13 @@ func (this Errors) String() string {
     return this.Error()
 }
 
+func (this Errors) Unwrap() []error {
+    return this.errors
+}
+
 // 清空
 func (this Errors) Reset() Errors {
     this.errors = make([]error, 0)
 
     return this
-}
-
-// 构造函数
-func NewErrors(errs []error) Errors {
-    err := Errors{
-        errors: errs,
-    }
-
-    return err
 }
