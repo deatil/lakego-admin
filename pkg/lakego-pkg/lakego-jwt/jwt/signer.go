@@ -8,27 +8,6 @@ import(
     "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
-var instanceSigner *Signer
-var onceSigner sync.Once
-
-/**
- * 签名
- */
-func NewSigner() *Signer {
-    onceSigner.Do(func() {
-        instanceSigner = &Signer{
-            signers: DefaultSignerList,
-        }
-    })
-
-    return instanceSigner
-}
-
-// 添加签名
-func AddSigner(name string, signer SignerMethod) {
-    NewSigner().Add(name, signer)
-}
-
 // 验证方式列表
 var DefaultSignerList = map[string]SignerMethod {
     // Hmac
@@ -58,15 +37,32 @@ var DefaultSignerList = map[string]SignerMethod {
     "GmSM2": signer.SignerGmSM2,
 }
 
+// 默认
+var DefaultSigner *Signer
+
+func init() {
+    DefaultSigner = NewSigner()
+    DefaultSigner.signers = DefaultSignerList
+}
+
+/**
+ * 签名
+ */
+func NewSigner() *Signer {
+    return &Signer{
+        signers: make(map[string]SignerMethod),
+    }
+}
+
 type (
     // 签名方法
     SignerMethod = func(config.SignerConfig) interfaces.Signer
 )
 
 /**
- * 注册器
+ * 签名
  *
- * @create 2021-9-6
+ * @create 2023-2-5
  * @author deatil
  */
 type Signer struct {
@@ -78,7 +74,7 @@ type Signer struct {
 }
 
 // 注册
-func (this *Signer) Add(name string, signer SignerMethod) {
+func (this *Signer) AddSigner(name string, signer SignerMethod) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
@@ -89,8 +85,13 @@ func (this *Signer) Add(name string, signer SignerMethod) {
     this.signers[name] = signer
 }
 
+// 添加签名
+func AddSigner(name string, signer SignerMethod) {
+    DefaultSigner.AddSigner(name, signer)
+}
+
 // 获取
-func (this *Signer) Get(name string) SignerMethod {
+func (this *Signer) GetSigner(name string) SignerMethod {
     this.mu.RLock()
     defer this.mu.RUnlock()
 
@@ -102,13 +103,23 @@ func (this *Signer) Get(name string) SignerMethod {
     return nil
 }
 
+// 获取签名
+func GetSigner(name string) SignerMethod {
+    return DefaultSigner.GetSigner(name)
+}
+
 // 获取全部
-func (this *Signer) GetAll() map[string]SignerMethod {
+func (this *Signer) GetAllSigner() map[string]SignerMethod {
     return this.signers
 }
 
+// 获取全部签名
+func GetAllSigner() map[string]SignerMethod {
+    return DefaultSigner.GetAllSigner()
+}
+
 // 判断
-func (this *Signer) Exists(name string) bool {
+func (this *Signer) HasSigner(name string) bool {
     this.mu.RLock()
     defer this.mu.RUnlock()
 
@@ -117,10 +128,20 @@ func (this *Signer) Exists(name string) bool {
     return exists
 }
 
+// 判断签名
+func HasSigner(name string) bool {
+    return DefaultSigner.HasSigner(name)
+}
+
 // 删除
-func (this *Signer) Delete(name string) {
+func (this *Signer) DeleteSigner(name string) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
     delete(this.signers, name)
+}
+
+// 判断签名
+func DeleteSigner(name string) {
+    DefaultSigner.DeleteSigner(name)
 }

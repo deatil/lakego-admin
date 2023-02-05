@@ -24,7 +24,7 @@ func (this *JWT) MakeToken() (token string, err error) {
         }
     }
 
-    signer := NewSigner().Get(this.SigningMethod)
+    signer := GetSigner(this.SigningMethod)
     if signer == nil {
         err = errors.New("签名类型错误")
         return
