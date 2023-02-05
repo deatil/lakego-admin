@@ -5,17 +5,12 @@ import (
     "errors"
 
     "github.com/golang-jwt/jwt/v4"
+
+    "github.com/deatil/lakego-jwt/jwt/config"
 )
 
 // 生成token
 func (this *JWT) MakeToken() (token string, err error) {
-    var signingMethod jwt.SigningMethod
-    if method, ok := this.SigningMethods[this.SigningMethod]; ok {
-        signingMethod = method
-    } else {
-        signingMethod = jwt.SigningMethodHS256
-    }
-
     // 签发时间没设置时重新设置
     if this.Claims["iat"] == "" {
         this.Claims["iat"] = time.Now().Unix()
@@ -29,125 +24,34 @@ func (this *JWT) MakeToken() (token string, err error) {
         }
     }
 
-    jwtToken := jwt.NewWithClaims(signingMethod, claims)
+    signer := NewSigner().Get(this.SigningMethod)
+    if signer == nil {
+        err = errors.New("签名类型错误")
+        return
+    }
+
+    newSigner := signer(config.SignerConfig{
+        Secret:     this.Secret,
+        PrivateKey: this.PrivateKey,
+        PublicKey:  this.PublicKey,
+        PrivateKeyPassword: this.PrivateKeyPassword,
+    })
+
+    jwtToken := jwt.NewWithClaims(newSigner.GetSigner(), claims)
 
     // 设置自定义 Header
     if len(this.Headers) > 0 {
-        for k2, v2 := range this.Headers {
-            jwtToken.Header[k2] = v2
+        for kk, vv := range this.Headers {
+            jwtToken.Header[kk] = vv
         }
     }
 
     // 密码
     var secret any
 
-    // 判断类型
-    switch this.SigningMethod {
-        // Hmac
-        case "HS256", "HS384", "HS512":
-            // 密码
-            hmacSecret := this.Secret
-            if hmacSecret == "" {
-                err = errors.New("Hmac 密码内容不能为空")
-                return
-            }
-
-            secret = []byte(hmacSecret)
-
-        // RSA
-        case "RS256", "RS384", "RS512":
-            // 获取秘钥数据
-            keyByte := this.PrivateKey
-            if len(keyByte) == 0 {
-                err = errors.New("RSA 私钥内容不能为空")
-                return
-            }
-
-            if this.PrivateKeyPassword != "" {
-                secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyByte, this.PrivateKeyPassword)
-            } else {
-                secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyByte)
-            }
-
-            if err != nil {
-                return
-            }
-
-        // PSS
-        case "PS256", "PS384", "PS512":
-            // 秘钥
-            keyByte := this.PrivateKey
-            if len(keyByte) == 0 {
-                err = errors.New("PSS 私钥内容不能为空")
-                return
-            }
-
-            secret, err = jwt.ParseRSAPrivateKeyFromPEM(keyByte)
-            if err != nil {
-                return
-            }
-
-        // ECDSA
-        case "ES256", "ES384", "ES512":
-            // 私钥
-            keyByte := this.PrivateKey
-            if len(keyByte) == 0 {
-                err = errors.New("ECDSA 私钥内容不能为空")
-                return
-            }
-
-            secret, err = jwt.ParseECPrivateKeyFromPEM(keyByte)
-            if err != nil {
-                return
-            }
-
-        // EdDSA
-        case "EdDSA":
-            // 私钥
-            keyByte := this.PrivateKey
-            if len(keyByte) == 0 {
-                err = errors.New("EdDSA 私钥内容不能为空")
-                return
-            }
-
-            secret, err = jwt.ParseEdPrivateKeyFromPEM(keyByte)
-            if err != nil {
-                return
-            }
-
-        // 国密 SM2
-        case "GmSM2":
-            // 私钥
-            keyByte := this.PrivateKey
-            if len(keyByte) == 0 {
-                err = errors.New("GmSM2 私钥内容不能为空")
-                return
-            }
-
-            if this.PrivateKeyPassword != "" {
-                secret, err = ParseSM2PrivateKeyFromPEMWithPassword(keyByte, this.PrivateKeyPassword)
-            } else {
-                secret, err = ParseSM2PrivateKeyFromPEM(keyByte)
-            }
-
-            if err != nil {
-                return
-            }
-
-        // 默认先检查自定义签名方式
-        default:
-            // 检查自定义签名
-            f, ok := this.SigningFuncs[this.SigningMethod]
-            if !ok {
-                err = errors.New("签名类型错误")
-                return
-            }
-
-            secret, err = f(this)
-            if err != nil {
-                return
-            }
-
+    secret, err = newSigner.GetSignSecrect()
+    if err != nil {
+        return
     }
 
     token, err = jwtToken.SignedString(secret)

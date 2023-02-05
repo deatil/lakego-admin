@@ -1,21 +1,19 @@
 package jwt
 
 // JWT
-func New() *JWT {
-    jwter := &JWT{
+func New(opts ...Option) *JWT {
+    jwt := &JWT{
         Secret: "123456",
         SigningMethod: "HS256",
         Headers: make(HeaderMap),
-        Claims: make(ClaimMap),
-        SigningMethods: make(SigningMethodMap),
-        SigningFuncs: make(SigningFuncMap),
-        ParseFuncs: make(ParseFuncMap),
+        Claims:  make(ClaimMap),
     }
 
-    // 设置签名方式
-    jwter.WithSignMethodMany(signingMethodList)
+    for _, opt := range opts {
+        opt(jwt)
+    }
 
-    return jwter
+    return jwt
 }
 
 type (
@@ -24,15 +22,6 @@ type (
 
     // jwt 载荷
     ClaimMap = map[string]any
-
-    // 验证方式列表
-    SigningMethodMap = map[string]SigningMethod
-
-    // 自定义签名方式
-    SigningFuncMap = map[string]func(*JWT) (any, error)
-
-    // 自定义解析方式
-    ParseFuncMap = map[string]func(*JWT) (any, error)
 
     // jwt 解析后的头数据 map
     ParsedHeaderMap = map[string]any
@@ -65,13 +54,4 @@ type JWT struct {
 
     // 私钥密码
     PrivateKeyPassword string
-
-    // 验证方式列表
-    SigningMethods SigningMethodMap
-
-    // 自定义签名方式
-    SigningFuncs SigningFuncMap
-
-    // 自定义解析方式
-    ParseFuncs ParseFuncMap
 }

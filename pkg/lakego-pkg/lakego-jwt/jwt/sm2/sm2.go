@@ -1,10 +1,11 @@
-package jwt
+package sm2
 
 import (
     "errors"
     "crypto/rand"
 
     "github.com/tjfoc/gmsm/sm2"
+    "github.com/golang-jwt/jwt/v4"
 )
 
 var (
@@ -19,7 +20,7 @@ var (
 
 func init() {
     SigningMethodGmSM2 = &SigningMethodSM2{}
-    RegisterSigningMethod(SigningMethodGmSM2.Alg(), func() SigningMethod {
+    jwt.RegisterSigningMethod(SigningMethodGmSM2.Alg(), func() jwt.SigningMethod {
         return SigningMethodGmSM2
     })
 }
@@ -48,7 +49,7 @@ func (this *SigningMethodSM2) Verify(signingString, signature string, key any) e
     }
 
     var sig []byte
-    if sig, err = DecodeSegment(signature); err != nil {
+    if sig, err = jwt.DecodeSegment(signature); err != nil {
         return err
     }
 
@@ -75,5 +76,5 @@ func (this *SigningMethodSM2) Sign(signingString string, key any) (string, error
         return "", err
     }
 
-    return EncodeSegment(sig), nil
+    return jwt.EncodeSegment(sig), nil
 }

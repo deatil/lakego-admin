@@ -24,7 +24,7 @@ import (
 )
 
 func main() {
-    token := jwt.New().
+    jwter := jwt.New().
         WithAud(aud).
         WithIat(nowTime).
         WithExp(int64(exp)).
@@ -37,10 +37,19 @@ func main() {
         WithPrivateKey(string(privateKeyData)).
         WithPublicKey(string(publicKeyData)).
         WithPrivateKeyPassword(privateKeyPassword).
-        WithClaim(k, v).
-        MakeToken()
+        WithClaim(k, v)
 
-	fmt.Println("生成的 Token 为：", token)
+    token := jwter.MakeToken()
+    fmt.Println("生成的 Token 为：", token)
+
+    // 解析 token
+    parsedToken, err := jwter.WithJti(jti).ParseToken(token)
+
+    // 验证数据
+    ok, err := jwter.Validate(parsedToken)
+
+    // 验证是否过期相关
+    ok, err := jwter.Verify(parsedToken)
 }
 
 ~~~

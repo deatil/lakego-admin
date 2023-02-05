@@ -1,4 +1,4 @@
-package jwt
+package sm2
 
 import (
     "github.com/tjfoc/gmsm/sm2"

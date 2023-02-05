@@ -4,6 +4,15 @@ import (
     "time"
 )
 
+// 设置
+func (this *JWT) WithOption(opts ...Option) *JWT {
+    for _, opt := range opts {
+        opt(this)
+    }
+
+    return this
+}
+
 // (Issuer) 签发者
 func (this *JWT) WithIss(iss string) *JWT {
     this.Claims["iss"] = iss
