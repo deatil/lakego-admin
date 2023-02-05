@@ -71,10 +71,10 @@ type Adapter struct {
     adapter.Adapter
 
     // 模型
-    model          *Rules
+    model      *Rules
 
-    db             *gorm.DB
-    isFiltered     bool
+    db         *gorm.DB
+    isFiltered bool
 }
 
 // 默认模型

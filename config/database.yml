@@ -16,7 +16,7 @@ connections:
     password: "123456"
     database: "lakego_admin"
     charset: "utf8mb4"
-    prefix: "lakego_lakego_"
+    prefix: "lakego_"
     max-idle-conns: 10
     max-open-conns: 128
     conn-max-lifetime: 60      # 连接不活动时的最大生存时间(秒)
