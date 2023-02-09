@@ -125,7 +125,7 @@ func (this Hash) HmacSha512(secret string) Hash {
     })
 }
 
-// HmacSha512 签名
+// HmacRipemd160 签名
 func HmacRipemd160(message string, secret string) string {
     return HmacHash(crypto.RIPEMD160, message, secret)
 }

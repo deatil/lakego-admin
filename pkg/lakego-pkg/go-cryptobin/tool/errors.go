@@ -91,7 +91,7 @@ func (this Errors) Count() int {
 }
 
 // 循环
-func (this Errors) Each(fn func(int, error)) {
+func (this Errors) Range(fn func(int, error)) {
     num := len(this.errors)
     if (num > 0) {
         for k, v := range this.errors {

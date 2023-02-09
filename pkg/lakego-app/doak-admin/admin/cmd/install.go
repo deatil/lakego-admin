@@ -67,8 +67,6 @@ func runInsatll() {
             continue
         }
 
-        sql = strings.ToLower(sql)
-
         // 替换前缀
         prefix := model.GetConfig("prefix")
         sql = strings.ReplaceAll(sql, "pre__", prefix.(string))

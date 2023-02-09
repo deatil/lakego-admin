@@ -20,17 +20,17 @@ func (this Cryptobin) GetIv() []byte {
 }
 
 // 加密类型
-func (this Cryptobin) GetMultiple() string {
+func (this Cryptobin) GetMultiple() Multiple {
     return this.multiple
 }
 
 // 加密方式
-func (this Cryptobin) GetMode() string {
+func (this Cryptobin) GetMode() Mode {
     return this.mode
 }
 
 // 补码算法
-func (this Cryptobin) GetPadding() string {
+func (this Cryptobin) GetPadding() Padding {
     return this.padding
 }
 

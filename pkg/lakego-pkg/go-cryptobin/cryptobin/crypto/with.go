@@ -22,21 +22,21 @@ func (this Cryptobin) WithIv(iv []byte) Cryptobin {
 }
 
 // 加密类型
-func (this Cryptobin) WithMultiple(multiple string) Cryptobin {
+func (this Cryptobin) WithMultiple(multiple Multiple) Cryptobin {
     this.multiple = multiple
 
     return this
 }
 
 // 加密方式
-func (this Cryptobin) WithMode(mode string) Cryptobin {
+func (this Cryptobin) WithMode(mode Mode) Cryptobin {
     this.mode = mode
 
     return this
 }
 
 // 补码算法
-func (this Cryptobin) WithPadding(padding string) Cryptobin {
+func (this Cryptobin) WithPadding(padding Padding) Cryptobin {
     this.padding = padding
 
     return this

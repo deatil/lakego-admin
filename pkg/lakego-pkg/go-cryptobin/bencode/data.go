@@ -119,7 +119,7 @@ func (this Data) ToArray() map[string]any {
 
 // 返回 json 字符数据
 func (this Data) ToJSON() string {
-    data, _ := json.Marshal(this)
+    data, _ := json.Marshal(this.ToArray())
 
     return string(data)
 }
@@ -138,7 +138,7 @@ func (this Data) ToInfoJSON() string {
 
 // 返回字符
 func (this Data) String() string {
-    return this.GetAnnounce()
+    return this.ToJSON()
 }
 
 // ==================

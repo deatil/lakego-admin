@@ -2,6 +2,7 @@
 passport:
   # 密码全局盐
   password-salt: "e6c2ea864004a461e744b28a394df50c"
+
   # 验证码字段
   header-captcha-key: "Lakego-Admin-Captcha-Id"
   access-token-id: "lakego-passport-access-token"
@@ -22,14 +23,15 @@ jwt:
   # HS256,HS384,HS512; ES256,ES384,ES512;
   # RS256,RS384,RS512; PS256,PS384,PS512;
   # EdDSA;GmSM2(国密)
-  signing-method: "HS512"
+  signing-method: "HS256"
   # 密码，base64 编码后，适用类型 HS
   secret: "MTIzNDU2"
-  # 公钥和私钥，适用类型 ES, RS, PS, EdDSA
-  private-key: "{config}/key/ed25519-private.pem"
-  public-key: "{config}/key/ed25519-public.pem"
-  # 私钥密码，base64 编码后，适用类型 RS
-  private-key-password: "MTIzNDU2"
+  # 公钥和私钥，适用类型 ES, RS, PS, EdDSA, GmSM2
+  private-key: "{config}/key/sm2-pkcs8"
+  public-key: "{config}/key/sm2-pkcs8.pub"
+  # 私钥密码，base64 编码后，适用类型 RS, PS
+  private-key-password: ""
+
   # 加密密码向量
   passphrase-iv: "hyju5yu7f0.gtr3e"
   # 载荷加密秘钥，base64编码后。为空或者 base64 后解码错误不加密

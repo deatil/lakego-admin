@@ -24,10 +24,11 @@ func (this Cryptobin) Decrypt() Cryptobin {
 func (this Cryptobin) CheckGuessMultiple() bool {
     switch this.multiple {
         // 不通用的处理
-        case "Chacha20",
-            "Chacha20poly1305",
-            "RC4",
-            "Xts":
+        case Chacha20,
+            Chacha20poly1305,
+            Chacha20poly1305X,
+            RC4,
+            Xts:
             return true
         // 默认通用
         default:

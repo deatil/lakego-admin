@@ -15,7 +15,7 @@ import (
 func (this Cryptobin) GuessEncrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
-        case "Chacha20":
+        case Chacha20:
             nonce, ok := this.config["nonce"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20 error: nonce is empty.")
@@ -41,7 +41,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             return this
         // 32 bytes
-        case "Chacha20poly1305":
+        case Chacha20poly1305:
             aead, err := chacha20poly1305.New(this.key)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.New(),error:%w", err)
@@ -60,10 +60,10 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             return this
         // 32 bytes
-        case "Chacha20poly1305X":
+        case Chacha20poly1305X:
             aead, err := chacha20poly1305.NewX(this.key)
             if err != nil {
-                err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.New(),error:%w", err)
+                err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305.NewX(),error:%w", err)
                 return this.AppendError(err)
             }
 
@@ -79,7 +79,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             return this
         // RC4 key, at least 1 byte and at most 256 bytes.
-        case "RC4":
+        case RC4:
             rc, err := rc4.NewCipher(this.key)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] rc4.NewCipher(),error:%w", err)
@@ -94,7 +94,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             return this
         // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
-        case "Xts":
+        case Xts:
             cipher, ok := this.config["cipher"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] Xts error: cipher is empty.")
@@ -137,7 +137,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 func (this Cryptobin) GuessDecrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
-        case "Chacha20":
+        case Chacha20:
             nonce, ok := this.config["nonce"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20 error: nonce is empty.")
@@ -163,7 +163,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
 
             return this
         // 32 bytes
-        case "Chacha20poly1305":
+        case Chacha20poly1305:
             chacha, err := chacha20poly1305.New(this.key)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305.New(),error:%w", err)
@@ -186,8 +186,32 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
             this.parsedData = dst
 
             return this
+        // 32 bytes
+        case Chacha20poly1305X:
+            chacha, err := chacha20poly1305.NewX(this.key)
+            if err != nil {
+                err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305.NewX(),error:%w", err)
+                return this.AppendError(err)
+            }
+
+            nonce, ok := this.config["nonce"]
+            if !ok {
+                err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305 error: nonce is empty.")
+                return this.AppendError(err)
+            }
+
+            additional, _ := this.config["additional"]
+
+            dst, err := chacha.Open(nil, nonce.([]byte), this.data, additional.([]byte))
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.parsedData = dst
+
+            return this
         // RC4 key, at least 1 byte and at most 256 bytes.
-        case "RC4":
+        case RC4:
             rc, err := rc4.NewCipher(this.key)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] rc4.NewCipher(),error:%w", err)
@@ -202,7 +226,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
 
             return this
         // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
-        case "Xts":
+        case Xts:
             cipher, ok := this.config["cipher"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] Xts error: cipher is empty.")

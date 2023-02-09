@@ -32,9 +32,13 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
 
     // 加密数据
     plainPadding := this.Padding(this.data, bs)
-    if len(plainPadding)%bs != 0 {
-        err := errors.New(fmt.Sprintf("Cryptobin: [CipherEncrypt()] the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
-        return this.AppendError(err)
+
+    // 补码后需要验证
+    if this.padding != NoPadding {
+        if len(plainPadding)%bs != 0 {
+            err := errors.New(fmt.Sprintf("Cryptobin: [CipherEncrypt()] the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
+            return this.AppendError(err)
+        }
     }
 
     // 向量
@@ -43,26 +47,26 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
     // 模式
     cryptText := make([]byte, len(plainPadding))
     switch this.mode {
-        case "ECB":
+        case ECB:
             dst := cryptText
             for len(plainPadding) > 0 {
                 block.Encrypt(dst, plainPadding[:bs])
                 plainPadding = plainPadding[bs:]
                 dst = dst[bs:]
             }
-        case "CBC":
+        case CBC:
             cipher.NewCBCEncrypter(block, iv).CryptBlocks(cryptText, plainPadding)
-        case "CFB":
+        case CFB:
             cipher.NewCFBEncrypter(block, iv).XORKeyStream(cryptText, plainPadding)
-        case "CFB8":
+        case CFB8:
             cryptobin_cipher.NewCFB8Encrypter(block, iv).XORKeyStream(cryptText, plainPadding)
-        case "OFB":
+        case OFB:
             cipher.NewOFB(block, iv).XORKeyStream(cryptText, plainPadding)
-        case "OFB8":
+        case OFB8:
             cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(cryptText, plainPadding)
-        case "CTR":
+        case CTR:
             cipher.NewCTR(block, iv).XORKeyStream(cryptText, plainPadding)
-        case "GCM":
+        case GCM:
             nonce, ok := this.config["nonce"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [CipherEncrypt()] GCM error:nonce is empty.")
@@ -84,7 +88,7 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
             }
 
             cryptText = aead.Seal(nil, nonceBytes, plainPadding, additionalBytes)
-        case "CCM":
+        case CCM:
             nonce, ok := this.config["nonce"]
             if !ok {
                 err := fmt.Errorf("Cryptobin: [CipherEncrypt()] CCM error:nonce is empty.")
@@ -130,9 +134,13 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
 
     // 解密数据
     cipherText := this.data
-    if len(cipherText)%bs != 0 {
-        err := errors.New(fmt.Sprintf("Cryptobin: [CipherDecrypt()] improper decrypt type, block size is %d", bs))
-        return this.AppendError(err)
+
+    // 补码后需要验证
+    if this.padding != NoPadding {
+        if len(cipherText)%bs != 0 {
+            err := errors.New(fmt.Sprintf("Cryptobin: [CipherDecrypt()] improper decrypt type, block size is %d", bs))
+            return this.AppendError(err)
+        }
     }
 
     // 向量
@@ -142,26 +150,26 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
 
     // 加密模式
     switch this.mode {
-        case "ECB":
+        case ECB:
             dstTmp := dst
             for len(cipherText) > 0 {
                 block.Decrypt(dstTmp, cipherText[:bs])
                 cipherText = cipherText[bs:]
                 dstTmp = dstTmp[bs:]
             }
-        case "CBC":
+        case CBC:
             cipher.NewCBCDecrypter(block, iv).CryptBlocks(dst, cipherText)
-        case "CFB":
+        case CFB:
             cipher.NewCFBDecrypter(block, iv).XORKeyStream(dst, cipherText)
-        case "CFB8":
+        case CFB8:
             cryptobin_cipher.NewCFB8Decrypter(block, iv).XORKeyStream(dst, cipherText)
-        case "OFB":
+        case OFB:
             cipher.NewOFB(block, iv).XORKeyStream(dst, cipherText)
-        case "OFB8":
+        case OFB8:
             cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(dst, cipherText)
-        case "CTR":
+        case CTR:
             cipher.NewCTR(block, iv).XORKeyStream(dst, cipherText)
-        case "GCM":
+        case GCM:
             nonce, ok := this.config["nonce"]
             if !ok {
                 err = fmt.Errorf("Cryptobin: [CipherDecrypt()] CCM error:nonce is empty.")
@@ -186,7 +194,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
             if err != nil {
                 return this.AppendError(err)
             }
-        case "CCM":
+        case CCM:
             // ccm nounce size, should be in [7,13]
             nonce, ok := this.config["nonce"]
             if !ok {
@@ -230,43 +238,43 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
 
     // 加密类型
     switch this.multiple {
-        case "Aes":
+        case Aes:
             // NewCipher creates and returns a new cipher.Block.
             // The key argument should be the AES key,
             // either 16, 24, or 32 bytes to select
             // AES-128, AES-192, or AES-256.
             block, err = aes.NewCipher(key)
-        case "Des":
+        case Des:
             block, err = des.NewCipher(key)
-        case "TriDes":
+        case TriDes:
             block, err = des.NewTripleDESCipher(key)
-        case "Twofish":
+        case Twofish:
             // The key argument should be the Twofish key,
             // 16, 24 or 32 bytes.
             block, err = twofish.NewCipher(key)
-        case "Blowfish":
+        case Blowfish:
             if salt, ok := this.config["salt"]; ok {
                 block, err = blowfish.NewSaltedCipher(key, salt.([]byte))
             } else {
                 block, err = blowfish.NewCipher(key)
             }
-        case "Tea":
+        case Tea:
             // key is 16 bytes
             if rounds, ok := this.config["rounds"]; ok {
                 block, err = tea.NewCipherWithRounds(key, rounds.(int))
             } else {
                 block, err = tea.NewCipher(key)
             }
-        case "Xtea":
+        case Xtea:
             // XTEA only supports 128 bit (16 byte) keys.
             block, err = xtea.NewCipher(key)
-        case "Cast5":
+        case Cast5:
             // Cast5 only supports 128 bit (16 byte) keys.
             block, err = cast5.NewCipher(key)
-        case "RC2":
+        case RC2:
             // RC2 key, at least 1 byte and at most 128 bytes.
             block, err = cryptobin_rc2.NewCipher(key, len(key)*8)
-        case "RC5":
+        case RC5:
             // wordSize is 32 or 64
             wordSize, ok := this.config["wordSize"]
             if !ok {
@@ -282,7 +290,7 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             // RC5 key is 16, 24 or 32 bytes.
             // iv is 8 with 32, 16 with 64
             block, err = cryptobin_rc5.NewCipher(key, wordSize.(uint), rounds.(uint))
-        case "SM4":
+        case SM4:
             // 国密 sm4 加密
             block, err = sm4.NewCipher(key)
     }

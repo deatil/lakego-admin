@@ -3,9 +3,9 @@ package crypto
 // 构造函数
 func NewCryptobin() Cryptobin {
     return Cryptobin{
-        multiple: "Aes",
-        mode:     "ECB",
-        padding:  "",
+        multiple: Aes,
+        mode:     ECB,
+        padding:  NoPadding,
         config:   make(map[string]any),
         Errors:   make([]error, 0),
     }

@@ -21,7 +21,7 @@ func CheckPassword(password string, needPassword string, needSalt string) bool {
 // 生成密码
 func EncryptPassword(password string) (pass string, encrypt string) {
     encrypt = random.String(6)
-    pass = hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt());
+    pass = EncryptPasswordWithEncrypt(password, encrypt);
     return
 }
 
@@ -33,12 +33,10 @@ func EncryptPassword(password string) (pass string, encrypt string) {
  * @return password, encrypt
  */
 func EncryptPasswordWithEncrypt(password string, encrypt string) string {
-    newPassword := hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt());
-    return newPassword
+    return hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt())
 }
 
 // 密码通用盐
 func GetPasswordSalt() string {
-    salt := config.New("auth").GetString("passport.password-salt")
-    return salt
+    return config.New("auth").GetString("passport.password-salt")
 }
