@@ -105,7 +105,7 @@ ret := crypto.
 *  加密类型:
 `Aes()`, `Des()`, `TriDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `RC4()`, `Xts(cipher string, sectorNum uint64)`
 *  加密模式:
-`ECB()`, `CBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`
+`ECB()`, `CBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`, `CCM(nonce string, additional ...string)`
 *  补码方式:
 `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
 *  操作类型:

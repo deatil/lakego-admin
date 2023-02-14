@@ -7,26 +7,26 @@ import (
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
 
-    "github.com/deatil/lakego-doak-admin/admin/stubs"
+    "github.com/deatil/lakego-doak-devtool/devtool/stubs"
 )
 
 /**
  * 脚手架
  *
- * > ./main lakego-admin:app-admin --type=[type] --name=[name] [--force]
- * > main.exe lakego-admin:app-admin --type=[type] --name=[name] [--force]
- * > go run main.go lakego-admin:app-admin --type=[type] --name=[name] [--force]
+ * > ./main lakego-devtool:app-admin --type=[type] --name=[name] [--force]
+ * > main.exe lakego-devtool:app-admin --type=[type] --name=[name] [--force]
+ * > go run main.go lakego-devtool:app-admin --type=[type] --name=[name] [--force]
  *
- * > go run main.go lakego-admin:app-admin --type=create_controller --name=HotBook
- * > go run main.go lakego-admin:app-admin --type=create_model --name=HotBook
+ * > go run main.go lakego-devtool:app-admin --type=create_controller --name=HotBook
+ * > go run main.go lakego-devtool:app-admin --type=create_model --name=HotBook
  *
  * @create 2022-12-12
  * @author deatil
  */
 var AppAdminCmd = &command.Command{
-    Use: "lakego-admin:app-admin",
-    Short: "lakego-admin app-admin.",
-    Example: "{execfile} lakego-admin:app-admin --type=[type] --name=[name]",
+    Use: "lakego-devtool:app-admin",
+    Short: "lakego-devtool app-admin.",
+    Example: "{execfile} lakego-devtool:app-admin --type=[type] --name=[name]",
     SilenceUsage: true,
     PreRun: func(cmd *command.Command, args []string) {
 

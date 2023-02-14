@@ -30,7 +30,11 @@ var MakeKeyCmd = &cobra.Command{
         // key.NewRsa().Make()
         // key.KeyCheck()
 
-        key.ShowTorrent()
+        // key.ShowTorrent()
+
+        key.NewGoEcdh().Make()
+
+        // key.NewEcdh().Make()
 
         fmt.Println("生成各种证书成功")
     },

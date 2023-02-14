@@ -7,6 +7,8 @@ import (
 
 // 生成公钥
 func (this Curve25519) MakePublicKey() Curve25519 {
+    this.publicKey = nil
+
     if this.privateKey == nil {
         err := errors.New("Curve25519: [MakePublicKey()] privateKey error.")
         return this.AppendError(err)

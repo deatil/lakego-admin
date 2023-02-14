@@ -7,6 +7,8 @@ import(
 
 // 生成公钥
 func (this SM2) MakePublicKey() SM2 {
+    this.publicKey = nil
+
     if this.privateKey == nil {
         err := errors.New("SM2: [MakePublicKey()] privateKey error.")
         return this.AppendError(err)

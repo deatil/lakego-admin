@@ -110,9 +110,6 @@ func (this *Admin) loadCommand() {
     // 重置密码
     this.AddCommand(cmd.ResetPasswordCmd)
 
-    // 脚手架
-    this.AddCommand(cmd.AppAdminCmd)
-
     // 系统信息
     this.AddCommand(cmd.VersionCmd)
 

@@ -1,7 +1,7 @@
 package crypto
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 字节
@@ -20,11 +20,11 @@ func (this Cryptobin) FromString(data string) Cryptobin {
 
 // Base64
 func (this Cryptobin) FromBase64String(data string) Cryptobin {
-    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := tool.NewEncoding().Base64Decode(data)
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.data = newData
 
     return this
@@ -32,12 +32,12 @@ func (this Cryptobin) FromBase64String(data string) Cryptobin {
 
 // Hex
 func (this Cryptobin) FromHexString(data string) Cryptobin {
-    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := tool.NewEncoding().HexDecode(data)
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.data = newData
-    
+
     return this
 }

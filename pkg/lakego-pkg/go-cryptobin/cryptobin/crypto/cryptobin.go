@@ -2,6 +2,8 @@ package crypto
 
 import (
     "strconv"
+
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 /**
@@ -33,7 +35,7 @@ type Cryptobin struct {
     parsedData []byte
 
     // 额外配置
-    config map[string]any
+    config *cryptobin_tool.Config
 
     // 错误
     Errors []error

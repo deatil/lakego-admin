@@ -138,20 +138,12 @@ func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ec
 
 // 生成公钥 pem 数据
 func (this Ecdh) CreatePublicKey() Ecdh {
-    var publicKey *ecdh.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = &this.privateKey.PublicKey
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    publicKeyBytes, err := ecdh.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := ecdh.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

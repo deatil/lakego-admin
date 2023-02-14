@@ -67,13 +67,11 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
         case CTR:
             cipher.NewCTR(block, iv).XORKeyStream(cryptText, plainPadding)
         case GCM:
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            nonceBytes := this.config.GetBytes("nonce")
+            if nonceBytes == nil {
                 err := fmt.Errorf("Cryptobin: [CipherEncrypt()] GCM error:nonce is empty.")
                 return this.AppendError(err)
             }
-
-            nonceBytes := nonce.([]byte)
 
             aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
@@ -81,21 +79,15 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            var additionalBytes []byte
-            additional, _ := this.config["additional"]
-            if additional != nil {
-                additionalBytes = additional.([]byte)
-            }
+            additionalBytes := this.config.GetBytes("additional")
 
             cryptText = aead.Seal(nil, nonceBytes, plainPadding, additionalBytes)
         case CCM:
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            nonceBytes := this.config.GetBytes("nonce")
+            if nonceBytes == nil {
                 err := fmt.Errorf("Cryptobin: [CipherEncrypt()] CCM error:nonce is empty.")
                 return this.AppendError(err)
             }
-
-            nonceBytes := nonce.([]byte)
 
             aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
@@ -103,11 +95,7 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            var additionalBytes []byte
-            additional, _ := this.config["additional"]
-            if additional != nil {
-                additionalBytes = additional.([]byte)
-            }
+            additionalBytes := this.config.GetBytes("additional")
 
             cryptText = aead.Seal(nil, nonceBytes, plainPadding, additionalBytes)
         default:
@@ -170,13 +158,11 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
         case CTR:
             cipher.NewCTR(block, iv).XORKeyStream(dst, cipherText)
         case GCM:
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            nonceBytes := this.config.GetBytes("nonce")
+            if nonceBytes == nil {
                 err = fmt.Errorf("Cryptobin: [CipherDecrypt()] CCM error:nonce is empty.")
                 return this.AppendError(err)
             }
-
-            nonceBytes := nonce.([]byte)
 
             gcm, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
@@ -184,11 +170,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            var additionalBytes []byte
-            additional, _ := this.config["additional"]
-            if additional != nil {
-                additionalBytes = additional.([]byte)
-            }
+            additionalBytes := this.config.GetBytes("additional")
 
             dst, err = gcm.Open(nil, nonceBytes, cipherText, additionalBytes)
             if err != nil {
@@ -196,13 +178,11 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
             }
         case CCM:
             // ccm nounce size, should be in [7,13]
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            nonceBytes := this.config.GetBytes("nonce")
+            if nonceBytes == nil {
                 err = fmt.Errorf("Cryptobin: [CipherDecrypt()] GCM error:nonce is empty.")
                 return this.AppendError(err)
             }
-
-            nonceBytes := nonce.([]byte)
 
             aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonceBytes))
             if err != nil {
@@ -210,11 +190,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            var additionalBytes []byte
-            additional, _ := this.config["additional"]
-            if additional != nil {
-                additionalBytes = additional.([]byte)
-            }
+            additionalBytes := this.config.GetBytes("additional")
 
             dst, err = aead.Open(nil, nonceBytes, cipherText, additionalBytes)
             if err != nil {
@@ -253,15 +229,15 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             // 16, 24 or 32 bytes.
             block, err = twofish.NewCipher(key)
         case Blowfish:
-            if salt, ok := this.config["salt"]; ok {
-                block, err = blowfish.NewSaltedCipher(key, salt.([]byte))
+            if this.config.Has("salt") {
+                block, err = blowfish.NewSaltedCipher(key, this.config.GetBytes("salt"))
             } else {
                 block, err = blowfish.NewCipher(key)
             }
         case Tea:
             // key is 16 bytes
-            if rounds, ok := this.config["rounds"]; ok {
-                block, err = tea.NewCipherWithRounds(key, rounds.(int))
+            if this.config.Has("rounds") {
+                block, err = tea.NewCipherWithRounds(key, this.config.GetInt("rounds"))
             } else {
                 block, err = tea.NewCipher(key)
             }
@@ -276,20 +252,20 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             block, err = cryptobin_rc2.NewCipher(key, len(key)*8)
         case RC5:
             // wordSize is 32 or 64
-            wordSize, ok := this.config["wordSize"]
-            if !ok {
-                wordSize = uint(32)
+            wordSize := uint(32)
+            if this.config.Has("word_size") {
+                wordSize = this.config.GetUint("word_size")
             }
 
             // rounds at least 8 byte and at most 127 bytes.
-            rounds, ok := this.config["rounds"]
-            if ok {
-                rounds = uint(64)
+            rounds := uint(64)
+            if this.config.Has("rounds") {
+                rounds = this.config.GetUint("rounds")
             }
 
             // RC5 key is 16, 24 or 32 bytes.
             // iv is 8 with 32, 16 with 64
-            block, err = cryptobin_rc5.NewCipher(key, wordSize.(uint), rounds.(uint))
+            block, err = cryptobin_rc5.NewCipher(key, wordSize, rounds)
         case SM4:
             // 国密 sm4 加密
             block, err = sm4.NewCipher(key)

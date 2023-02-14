@@ -138,20 +138,12 @@ func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg stri
 
 // 生成公钥 pem 数据
 func (this Curve25519) CreatePublicKey() Curve25519 {
-    var publicKey *curve25519.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = &this.privateKey.PublicKey
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    publicKeyBytes, err := curve25519.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := curve25519.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

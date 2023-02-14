@@ -201,7 +201,7 @@ func (this *Data) Error(ctx *gin.Context) {
         }).
         ToBase64String()
     cyptde := cryptobin_crypto.
-        FromBase64String("h7gIVv1dMZMgmXEFala0Wg==").
+        FromBase64String("a2RMvd39EOtJU5p+jd6dIg==").
         SetKey("asdfasdfasdfasdf").
         SetIv("asdfasdf").
         RC5(uint(32), uint(30)).

@@ -29,12 +29,12 @@ func (this Cryptobin) Padding(plainText []byte, blockSize int) []byte {
         case TBCPadding:
             plainPadding = padding.TBCPadding(plainText, blockSize)
         case PKCS1Padding:
-            bt, ok := this.config["pkcs1_padding_bt"]
-            if !ok {
-                bt = "02"
+            bt := "02"
+            if !this.config.Has("pkcs1_padding_bt") {
+                bt = this.config.GetString("pkcs1_padding_bt")
             }
 
-            plainPadding = padding.PKCS1Padding(plainText, blockSize, bt.(string))
+            plainPadding = padding.PKCS1Padding(plainText, blockSize, bt)
         default:
             plainPadding = plainText
     }

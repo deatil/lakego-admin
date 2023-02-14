@@ -1,5 +1,9 @@
 package crypto
 
+import (
+    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+)
+
 // 设置数据
 func (this Cryptobin) WithData(data []byte) Cryptobin {
     this.data = data
@@ -50,15 +54,22 @@ func (this Cryptobin) WithParsedData(data []byte) Cryptobin {
 }
 
 // 配置
-func (this Cryptobin) WithConfig(config map[string]any) Cryptobin {
+func (this Cryptobin) WithConfig(config *cryptobin_tool.Config) Cryptobin {
     this.config = config
+
+    return this
+}
+
+// 设置配置
+func (this Cryptobin) SetConfig(data map[string]any) Cryptobin {
+    this.config.WithData(data)
 
     return this
 }
 
 // 设置一个配置
 func (this Cryptobin) WithOneConfig(key string, value any) Cryptobin {
-    this.config[key] = value
+    this.config.Set(key, value)
 
     return this
 }

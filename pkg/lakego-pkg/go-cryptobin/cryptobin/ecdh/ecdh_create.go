@@ -3,7 +3,6 @@ package ecdh
 import (
     "errors"
     "crypto/rand"
-    "crypto/ecdh"
     "encoding/pem"
 
     cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
@@ -139,20 +138,12 @@ func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ec
 
 // 生成公钥 pem 数据
 func (this Ecdh) CreatePublicKey() Ecdh {
-    var publicKey *ecdh.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = this.privateKey.PublicKey()
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    publicKeyBytes, err := cryptobin_ecdh.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := cryptobin_ecdh.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

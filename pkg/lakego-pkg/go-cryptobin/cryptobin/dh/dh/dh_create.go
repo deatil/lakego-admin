@@ -138,20 +138,12 @@ func (this Dh) CreatePbePrivateKeyWithPassword(password string, alg string) Dh {
 
 // 生成公钥 pem 数据
 func (this Dh) CreatePublicKey() Dh {
-    var publicKey *dh.PublicKey
-
     if this.publicKey == nil {
-        if this.privateKey == nil {
-            err := errors.New("Dh: [CreatePublicKey()] privateKey error.")
-            return this.AppendError(err)
-        }
-
-        publicKey = &this.privateKey.PublicKey
-    } else {
-        publicKey = this.publicKey
+        err := errors.New("Dh: [CreatePublicKey()] privateKey error.")
+        return this.AppendError(err)
     }
 
-    publicKeyBytes, err := dh.MarshalPublicKey(publicKey)
+    publicKeyBytes, err := dh.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

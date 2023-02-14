@@ -16,21 +16,21 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
         case Chacha20:
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce.([]byte))
+            nonce := this.config.GetBytes("nonce")
+
+            chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20.New(),error:%w", err)
                 return this.AppendError(err)
             }
 
-            counter, ok := this.config["counter"]
-            if ok {
-                chacha.SetCounter(counter.(uint32))
+            if this.config.Has("counter") {
+                chacha.SetCounter(this.config.GetUint32("counter"))
             }
 
             dst := make([]byte, len(this.data))
@@ -48,15 +48,15 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            additional, _ := this.config["additional"]
+            nonce := this.config.GetBytes("nonce")
+            additional := this.config.GetBytes("additional")
 
-            this.parsedData = aead.Seal(nil, nonce.([]byte), this.data, additional.([]byte))
+            this.parsedData = aead.Seal(nil, nonce, this.data, additional)
 
             return this
         // 32 bytes
@@ -67,15 +67,15 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] chacha20poly1305 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            additional, _ := this.config["additional"]
+            nonce := this.config.GetBytes("nonce")
+            additional := this.config.GetBytes("additional")
 
-            this.parsedData = aead.Seal(nil, nonce.([]byte), this.data, additional.([]byte))
+            this.parsedData = aead.Seal(nil, nonce, this.data, additional)
 
             return this
         // RC4 key, at least 1 byte and at most 256 bytes.
@@ -95,19 +95,20 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
             return this
         // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
         case Xts:
-            cipher, ok := this.config["cipher"]
-            if !ok {
+            if !this.config.Has("cipher") {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] Xts error: cipher is empty.")
                 return this.AppendError(err)
             }
 
-            sectorNum, ok := this.config["sector_num"]
-            if !ok {
+            if !this.config.Has("sector_num") {
                 err := fmt.Errorf("Cryptobin: [GuessEncrypt()] Xts error: sector_num is empty.")
                 return this.AppendError(err)
             }
 
-            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher.(string))
+            cipher := this.config.GetString("cipher")
+            sectorNum := this.config.GetUint64("sector_num")
+
+            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher)
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {
@@ -122,7 +123,7 @@ func (this Cryptobin) GuessEncrypt() Cryptobin {
 
             dst := make([]byte, len(plainPadding))
 
-            xc.Encrypt(dst, plainPadding, sectorNum.(uint64))
+            xc.Encrypt(dst, plainPadding, sectorNum)
 
             this.parsedData = dst
 
@@ -138,21 +139,21 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
     switch this.multiple {
         // 32 bytes key and a 12 or 24 bytes nonce
         case Chacha20:
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce.([]byte))
+            nonce := this.config.GetBytes("nonce")
+
+            chacha, err := chacha20.NewUnauthenticatedCipher(this.key, nonce)
             if err != nil {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20.New(),error:%w", err)
                 return this.AppendError(err)
             }
 
-            counter, ok := this.config["counter"]
-            if ok {
-                chacha.SetCounter(counter.(uint32))
+            if this.config.Has("counter") {
+                chacha.SetCounter(this.config.GetUint32("counter"))
             }
 
             dst := make([]byte, len(this.data))
@@ -170,15 +171,15 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            additional, _ := this.config["additional"]
+            nonce := this.config.GetBytes("nonce")
+            additional := this.config.GetBytes("additional")
 
-            dst, err := chacha.Open(nil, nonce.([]byte), this.data, additional.([]byte))
+            dst, err := chacha.Open(nil, nonce, this.data, additional)
             if err != nil {
                 return this.AppendError(err)
             }
@@ -194,15 +195,15 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
                 return this.AppendError(err)
             }
 
-            nonce, ok := this.config["nonce"]
-            if !ok {
+            if !this.config.Has("nonce") {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] chacha20poly1305 error: nonce is empty.")
                 return this.AppendError(err)
             }
 
-            additional, _ := this.config["additional"]
+            nonce := this.config.GetBytes("nonce")
+            additional := this.config.GetBytes("additional")
 
-            dst, err := chacha.Open(nil, nonce.([]byte), this.data, additional.([]byte))
+            dst, err := chacha.Open(nil, nonce, this.data, additional)
             if err != nil {
                 return this.AppendError(err)
             }
@@ -227,19 +228,20 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
             return this
         // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
         case Xts:
-            cipher, ok := this.config["cipher"]
-            if !ok {
+            if !this.config.Has("cipher") {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] Xts error: cipher is empty.")
                 return this.AppendError(err)
             }
 
-            sectorNum, ok := this.config["sector_num"]
-            if !ok {
+            if !this.config.Has("sector_num") {
                 err := fmt.Errorf("Cryptobin: [GuessDecrypt()] Xts error: sector_num is empty.")
                 return this.AppendError(err)
             }
 
-            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher.(string))
+            cipher := this.config.GetString("cipher")
+            sectorNum := this.config.GetUint64("sector_num")
+
+            cipherFunc := cryptobin_tool.NewCipher().GetFunc(cipher)
 
             xc, err := xts.NewCipher(cipherFunc, this.key)
             if err != nil {
@@ -249,7 +251,7 @@ func (this Cryptobin) GuessDecrypt() Cryptobin {
 
             dst := make([]byte, len(this.data))
 
-            xc.Decrypt(dst, this.data, sectorNum.(uint64))
+            xc.Decrypt(dst, this.data, sectorNum)
 
             this.parsedData = this.UnPadding(dst)
 

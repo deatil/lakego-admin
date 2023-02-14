@@ -33,7 +33,7 @@ func (this Cryptobin) Blowfish(salt ...string) Cryptobin {
     this.multiple = Blowfish
 
     if len(salt) > 0 {
-        this.config["salt"] = []byte(salt[0])
+        this.config.Set("salt", []byte(salt[0]))
     }
 
     return this
@@ -44,7 +44,7 @@ func (this Cryptobin) Tea(rounds ...int) Cryptobin {
     this.multiple = Tea
 
     if len(rounds) > 0 {
-        this.config["rounds"] = rounds[0]
+        this.config.Set("rounds", rounds[0])
     }
 
     return this
@@ -75,10 +75,10 @@ func (this Cryptobin) SM4() Cryptobin {
 func (this Cryptobin) Chacha20(nonce string, counter ...uint32) Cryptobin {
     this.multiple = Chacha20
 
-    this.config["nonce"] = []byte(nonce)
+    this.config.Set("nonce", []byte(nonce))
 
     if len(counter) > 0 {
-        this.config["counter"] = counter[0]
+        this.config.Set("counter", counter[0])
     }
 
     return this
@@ -89,8 +89,8 @@ func (this Cryptobin) Chacha20(nonce string, counter ...uint32) Cryptobin {
 func (this Cryptobin) Chacha20poly1305(nonce string, additional string) Cryptobin {
     this.multiple = Chacha20poly1305
 
-    this.config["nonce"] = []byte(nonce)
-    this.config["additional"] = []byte(additional)
+    this.config.Set("nonce", []byte(nonce))
+    this.config.Set("additional", []byte(additional))
 
     return this
 }
@@ -100,8 +100,8 @@ func (this Cryptobin) Chacha20poly1305(nonce string, additional string) Cryptobi
 func (this Cryptobin) Chacha20poly1305X(nonce string, additional string) Cryptobin {
     this.multiple = Chacha20poly1305X
 
-    this.config["nonce"] = []byte(nonce)
-    this.config["additional"] = []byte(additional)
+    this.config.Set("nonce", []byte(nonce))
+    this.config.Set("additional", []byte(additional))
 
     return this
 }
@@ -124,8 +124,8 @@ func (this Cryptobin) RC4() Cryptobin {
 func (this Cryptobin) RC5(wordSize, rounds uint) Cryptobin {
     this.multiple = RC5
 
-    this.config["wordSize"] = wordSize
-    this.config["rounds"] = rounds
+    this.config.Set("word_size", wordSize)
+    this.config.Set("rounds", rounds)
 
     return this
 }
@@ -135,8 +135,8 @@ func (this Cryptobin) RC5(wordSize, rounds uint) Cryptobin {
 func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
     this.multiple = Xts
 
-    this.config["cipher"] = cipher
-    this.config["sector_num"] = sectorNum
+    this.config.Set("cipher", cipher)
+    this.config.Set("sector_num", sectorNum)
 
     return this
 }
@@ -196,10 +196,10 @@ func (this Cryptobin) CTR() Cryptobin {
 func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
     this.mode = GCM
 
-    this.config["nonce"] = []byte(nonce)
+    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config["additional"] = []byte(additional[0])
+        this.config.Set("additional", []byte(additional[0]))
     }
 
     return this
@@ -210,10 +210,10 @@ func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
 func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
     this.mode = CCM
 
-    this.config["nonce"] = []byte(nonce)
+    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config["additional"] = []byte(additional[0])
+        this.config.Set("additional", []byte(additional[0]))
     }
 
     return this
@@ -289,7 +289,7 @@ func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
     this.padding = PKCS1Padding
 
     if len(bt) > 0 {
-        this.config["pkcs1_padding_bt"] = bt[0]
+        this.config.Set("pkcs1_padding_bt", bt[0])
     }
 
     return this

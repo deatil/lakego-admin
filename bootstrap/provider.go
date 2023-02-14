@@ -13,6 +13,9 @@ import (
     // 系统监控
     _ "github.com/deatil/lakego-doak-monitor/monitor/bootstrap"
 
+    // 开发工具
+    _ "github.com/deatil/lakego-doak-devtool/devtool/bootstrap"
+
     // API 文档
     _ "github.com/deatil/lakego-admin/swagger"
     _ "github.com/deatil/lakego-doak-swagger/swagger/bootstrap"

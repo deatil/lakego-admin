@@ -79,12 +79,12 @@ func FromBase32EncoderString(data string, encode string) Encoding {
     return defaultEncode.FromBase32EncoderString(data, encode)
 }
 
+// ====================
+
 // 输出 Base32
 func (this Encoding) ToBase32String() string {
     return base32.StdEncoding.EncodeToString(this.data)
 }
-
-// ====================
 
 // 输出 Base32Hex
 func (this Encoding) ToBase32HexString() string {

@@ -9,6 +9,10 @@ import (
     cryptobin_eddsa "github.com/deatil/go-cryptobin/cryptobin/eddsa"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
+    cryptobin_ecdh "github.com/deatil/go-cryptobin/cryptobin/ecdh"
+    cryptobin_dh1 "github.com/deatil/go-cryptobin/cryptobin/dh/curve25519"
+    cryptobin_dh2 "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
+    cryptobin_dh3 "github.com/deatil/go-cryptobin/cryptobin/dh/ecdh"
 )
 
 // 检测测试
@@ -18,6 +22,11 @@ func KeyCheck() {
     CheckEdDSA()
     CheckRSA()
     CheckSM2()
+    CheckEcdh()
+
+    CheckDh1()
+    CheckDh2()
+    CheckDh3()
 }
 
 func CheckDSA() {
@@ -86,6 +95,62 @@ func CheckSM2() {
         CheckKeyPair()
 
     fmt.Println("===== sm2 =====")
+    fmt.Printf("check res: %#v", res)
+    fmt.Println("")
+}
+
+func CheckEcdh() {
+    pri := ReadFile("./runtime/key/key-pem/ecdh/ecdh-pkcs8")
+    pub := ReadFile("./runtime/key/key-pem/ecdh/ecdh-pkcs8.pub")
+
+    res := cryptobin_ecdh.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Println("===== ecdh =====")
+    fmt.Printf("check res: %#v", res)
+    fmt.Println("")
+}
+
+func CheckDh1() {
+    pri := ReadFile("./runtime/key/key-pem/dh/curve25519/curve25519-pkcs8")
+    pub := ReadFile("./runtime/key/key-pem/dh/curve25519/curve25519-pkcs8.pub")
+
+    res := cryptobin_dh1.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Println("===== dh1 =====")
+    fmt.Printf("check res: %#v", res)
+    fmt.Println("")
+}
+
+func CheckDh2() {
+    pri := ReadFile("./runtime/key/key-pem/dh/dh/P2048/dh-pkcs8")
+    pub := ReadFile("./runtime/key/key-pem/dh/dh/P2048/dh-pkcs8.pub")
+
+    res := cryptobin_dh2.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Println("===== dh2 =====")
+    fmt.Printf("check res: %#v", res)
+    fmt.Println("")
+}
+
+func CheckDh3() {
+    pri := ReadFile("./runtime/key/key-pem/dh/ecdh/P256/ecdh-pkcs8")
+    pub := ReadFile("./runtime/key/key-pem/dh/ecdh/P256/ecdh-pkcs8.pub")
+
+    res := cryptobin_dh3.New().
+        FromPrivateKey([]byte(pri)).
+        FromPublicKey([]byte(pub)).
+        CheckKeyPair()
+
+    fmt.Println("===== dh3 =====")
     fmt.Printf("check res: %#v", res)
     fmt.Println("")
 }
