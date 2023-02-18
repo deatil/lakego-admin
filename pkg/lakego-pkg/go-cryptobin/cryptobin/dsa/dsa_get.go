@@ -47,6 +47,6 @@ func (this DSA) GetErrors() []error {
 }
 
 // 获取错误
-func (this DSA) Error() cryptobin_tool.Errors {
-    return cryptobin_tool.NewErrors(this.Errors)
+func (this DSA) Error() *cryptobin_tool.Errors {
+    return cryptobin_tool.NewError(this.Errors...)
 }

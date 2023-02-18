@@ -39,8 +39,8 @@ func (this CA) GetErrors() []error {
 }
 
 // 获取错误
-func (this CA) Error() cryptobin_tool.Errors {
-    return cryptobin_tool.NewErrors(this.Errors)
+func (this CA) Error() *cryptobin_tool.Errors {
+    return cryptobin_tool.NewError(this.Errors...)
 }
 
 // =========================

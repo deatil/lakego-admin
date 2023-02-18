@@ -59,6 +59,6 @@ func (this Ecdh) GetErrors() []error {
 }
 
 // 获取错误
-func (this Ecdh) Error() cryptobin_tool.Errors {
-    return cryptobin_tool.NewErrors(this.Errors)
+func (this Ecdh) Error() *cryptobin_tool.Errors {
+    return cryptobin_tool.NewError(this.Errors...)
 }

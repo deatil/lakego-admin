@@ -55,6 +55,6 @@ func (this Cryptobin) GetErrors() []error {
 }
 
 // 获取错误
-func (this Cryptobin) Error() cryptobin_tool.Errors {
-    return cryptobin_tool.NewErrors(this.Errors)
+func (this Cryptobin) Error() *cryptobin_tool.Errors {
+    return cryptobin_tool.NewError(this.Errors...)
 }

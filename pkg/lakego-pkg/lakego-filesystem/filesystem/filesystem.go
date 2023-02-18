@@ -354,8 +354,8 @@ func Append(path string, data string) error {
 
 // 设置权限
 func (this *Filesystem) Chmod(path string, mode uint32) error {
-    e := os.Chmod(path, os.FileMode(mode))
-    if e != nil {
+    err := os.Chmod(path, os.FileMode(mode))
+    if err != nil {
         return errors.New("设置文件权限失败")
     }
 

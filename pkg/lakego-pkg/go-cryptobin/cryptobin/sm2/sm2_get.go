@@ -112,6 +112,6 @@ func (this SM2) GetErrors() []error {
 }
 
 // 获取错误
-func (this SM2) Error() cryptobin_tool.Errors {
-    return cryptobin_tool.NewErrors(this.Errors)
+func (this SM2) Error() *cryptobin_tool.Errors {
+    return cryptobin_tool.NewError(this.Errors...)
 }
