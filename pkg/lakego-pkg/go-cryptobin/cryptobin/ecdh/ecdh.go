@@ -6,6 +6,7 @@ import (
 
 /**
  * ecdh
+ * go 最低版本需要 `1.20rc1`。
  *
  * @create 2022-8-7
  * @author deatil
