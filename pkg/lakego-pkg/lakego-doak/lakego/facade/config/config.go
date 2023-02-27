@@ -10,6 +10,9 @@ import (
 )
 
 var (
+    // 默认驱动
+    defaultAdapter = "viper"
+
     // 配置目录
     defaultConfigPath = "{root}/config"
 )
@@ -30,7 +33,7 @@ type Config = config.Config
  * @author deatil
  */
 func New(name ...string) *config.Config {
-    adapter := GetDefaultAdapter()
+    adapter := defaultAdapter
 
     if len(name) > 0 {
         return NewConfig(adapter).WithFile(name[0])
@@ -59,8 +62,9 @@ func NewConfig(name string, once ...bool) *config.Config {
     return conf
 }
 
-func GetDefaultAdapter() string {
-    return "viper"
+// 设置默认驱动
+func SetAdapter(name string) {
+    defaultAdapter = name
 }
 
 // 设置配置路径

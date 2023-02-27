@@ -1,0 +1,2964 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统",
+        "title": "lakego-admin API文档",
+        "termsOfService": "https://github.com/deatil",
+        "contact": {
+            "name": "deatil",
+            "url": "https://github.com/deatil",
+            "email": "deatil@github.com"
+        },
+        "license": {
+            "name": "Apache2",
+            "url": "https://github.com/deatil/lakego-admin/blob/main/LICENSE"
+        },
+        "version": "1.0.7"
+    },
+    "host": "127.0.0.1:8080",
+    "basePath": "/admin-api",
+    "paths": {
+        "/": {
+            "get": {
+                "description": "默认模块首页信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "默认模块"
+                ],
+                "summary": "默认模块首页",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.index.index"
+                }
+            }
+        },
+        "/action-log": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "操作日志列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "操作日志"
+                ],
+                "summary": "操作日志列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "搜索关键字",
+                        "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方法",
+                        "name": "method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始数据量",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.action-log.index"
+                }
+            }
+        },
+        "/action-log/clear": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "清除 30 天前的日志数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "操作日志"
+                ],
+                "summary": "清除 30 天前的日志数据",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.action-log.clear"
+                }
+            }
+        },
+        "/admin": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键字",
+                        "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始数据量",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.index"
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "添加账号",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "添加账号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nickname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "introduce",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.create"
+                }
+            }
+        },
+        "/admin/groups": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "添加账号所需分组",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "添加账号所需分组",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.groups"
+                }
+            }
+        },
+        "/admin/logout/{refreshToken}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号退出",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号退出",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "刷新 token",
+                        "name": "refreshToken",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.logout"
+                }
+            }
+        },
+        "/admin/reset-permission": {
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号权限同步",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号权限同步",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.reset-permission",
+                    "sort": "200"
+                }
+            }
+        },
+        "/admin/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.detail"
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员更新信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "更新账号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nickname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "introduce",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.update"
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "删除账号",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.delete"
+                }
+            }
+        },
+        "/admin/{id}/access": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号授权",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号授权",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "刷新 token",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "权限列表，半角逗号分隔",
+                        "name": "access",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.access"
+                }
+            }
+        },
+        "/admin/{id}/avatar": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改管理员账号头像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "修改账号头像",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "头像数据ID",
+                        "name": "avatar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.avatar"
+                }
+            }
+        },
+        "/admin/{id}/disable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号禁用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号禁用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.disable"
+                }
+            }
+        },
+        "/admin/{id}/enable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "管理员账号启用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号启用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.enable"
+                }
+            }
+        },
+        "/admin/{id}/password": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改管理员账号密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "修改账号密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.password"
+                }
+            }
+        },
+        "/admin/{id}/rules": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "账号权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "管理员"
+                ],
+                "summary": "账号权限",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "管理员ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.admin.rules"
+                }
+            }
+        },
+        "/attachment": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键字",
+                        "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始数据量",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.index",
+                    "sort": "151"
+                }
+            }
+        },
+        "/attachment/downcode/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件下载码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件下载码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.downcode",
+                    "sort": "156"
+                }
+            }
+        },
+        "/attachment/download/{code}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件下载",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/force-download"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件下载",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件下载码",
+                        "name": "code",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.download",
+                    "sort": "157"
+                }
+            }
+        },
+        "/attachment/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.detail",
+                    "sort": "152"
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件删除",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.delete",
+                    "sort": "153"
+                }
+            }
+        },
+        "/attachment/{id}/disable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件禁用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件禁用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.disable",
+                    "sort": "155"
+                }
+            }
+        },
+        "/attachment/{id}/enable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "附件启用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "附件"
+                ],
+                "summary": "附件启用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "附件ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.attachment.enable",
+                    "sort": "154"
+                }
+            }
+        },
+        "/auth/group": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键字",
+                        "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始数据量",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.index"
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组添加",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组添加",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "父级ID",
+                        "name": "parentid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.create"
+                }
+            }
+        },
+        "/auth/group/children": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组子列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组子列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "数据类型，可选值：list | ids",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.children"
+                }
+            }
+        },
+        "/auth/group/tree": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组树结构",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组树结构",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.tree"
+                }
+            }
+        },
+        "/auth/group/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.detail"
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组更新",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "父级ID",
+                        "name": "parentid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.update"
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组删除",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.delete"
+                }
+            }
+        },
+        "/auth/group/{id}/access": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组授权",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组授权",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "权限列表，半角逗号分隔",
+                        "name": "access",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.access"
+                }
+            }
+        },
+        "/auth/group/{id}/disable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组禁用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组禁用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.disable"
+                }
+            }
+        },
+        "/auth/group/{id}/enable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组启用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组启用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.enable"
+                }
+            }
+        },
+        "/auth/group/{id}/sort": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限分组排序",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限分组"
+                ],
+                "summary": "权限分组排序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限分组ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序值",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-group.sort"
+                }
+            }
+        },
+        "/auth/rule": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "排序，示例：id__DESC",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "搜索关键字",
+                        "name": "searchword",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方式",
+                        "name": "method",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始时间",
+                        "name": "start_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "结束时间",
+                        "name": "end_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "开始数据量",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "每页数量",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.index"
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单添加",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单添加",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "父级ID",
+                        "name": "parentid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "URL链接",
+                        "name": "url",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方式",
+                        "name": "method",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "别名 Slug",
+                        "name": "slug",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.create"
+                }
+            }
+        },
+        "/auth/rule/children": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单子列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单子列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "数据类型，可选值：list | ids",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.children"
+                }
+            }
+        },
+        "/auth/rule/clear": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "清空特定ID权限",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "清空特定ID权限",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限ID列表",
+                        "name": "ids",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.clear"
+                }
+            }
+        },
+        "/auth/rule/tree": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单树结构",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单树结构",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.tree"
+                }
+            }
+        },
+        "/auth/rule/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.detail"
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单更新",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单更新",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "父级ID",
+                        "name": "parentid",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "名称",
+                        "name": "title",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "URL链接",
+                        "name": "url",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "请求方式",
+                        "name": "method",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "别名 Slug",
+                        "name": "slug",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "描述",
+                        "name": "description",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "状态",
+                        "name": "status",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.update"
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单删除",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单删除",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.delete"
+                }
+            }
+        },
+        "/auth/rule/{id}/disable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单禁用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单禁用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.disable"
+                }
+            }
+        },
+        "/auth/rule/{id}/enable": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单启用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单启用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.enable"
+                }
+            }
+        },
+        "/auth/rule/{id}/sort": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限菜单排序",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "权限菜单"
+                ],
+                "summary": "权限菜单排序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "权限菜单ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "排序值",
+                        "name": "listorder",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.auth-rule.sort"
+                }
+            }
+        },
+        "/database": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "数据库列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "数据库列表",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.index"
+                }
+            }
+        },
+        "/database/{name}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "数据库表详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "数据库表详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.detail"
+                }
+            }
+        },
+        "/database/{name}/optimize": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "优化数据表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "优化数据表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.optimize"
+                }
+            }
+        },
+        "/database/{name}/repair": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修复数据表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据库管理"
+                ],
+                "summary": "修复数据表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "数据表名",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.database.repair"
+                }
+            }
+        },
+        "/example/index": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "首页信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "例子"
+                ],
+                "summary": "首页信息",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.example.index"
+                }
+            }
+        },
+        "/monitor": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "服务监控详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统监控"
+                ],
+                "summary": "服务监控详情",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.monitor.index"
+                }
+            }
+        },
+        "/passport/captcha": {
+            "get": {
+                "description": "登陆验证码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登陆相关"
+                ],
+                "summary": "登陆验证码",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "string": {
+                                "type": "string",
+                                "description": "Lakego-Admin-Captcha-Id"
+                            }
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.captcha"
+                }
+            }
+        },
+        "/passport/login": {
+            "post": {
+                "description": "账号登陆",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登陆相关"
+                ],
+                "summary": "账号登陆",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "验证码字段",
+                        "name": "Lakego-Admin-Captcha-Id",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "账号",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "验证码",
+                        "name": "captcha",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.login"
+                }
+            }
+        },
+        "/passport/logout": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "当前账号退出",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登陆相关"
+                ],
+                "summary": "当前账号退出",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "刷新 Token",
+                        "name": "refresh_token",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.logout"
+                }
+            }
+        },
+        "/passport/refresh-token": {
+            "post": {
+                "description": "刷新 token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "登陆相关"
+                ],
+                "summary": "刷新 token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "刷新 Token",
+                        "name": "refresh_token",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.passport.refresh-token"
+                }
+            }
+        },
+        "/profile": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "个人信息详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "个人信息详情",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.index"
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改个人信息详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "修改个人信息详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "昵称",
+                        "name": "nickname",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "邮箱",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "简介",
+                        "name": "introduce",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.update"
+                }
+            }
+        },
+        "/profile/avatar": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改个人头像",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "修改个人头像",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "头像数据ID",
+                        "name": "avatar",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.avatar"
+                }
+            }
+        },
+        "/profile/password": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "修改密码",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "修改密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "旧密码",
+                        "name": "oldpassword",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "新密码",
+                        "name": "newpassword",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "确认新密码",
+                        "name": "newpassword_confirm",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.password"
+                }
+            }
+        },
+        "/profile/rules": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "个人权限列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "个人信息"
+                ],
+                "summary": "个人权限列表",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.profile.rules"
+                }
+            }
+        },
+        "/system/info": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "系统信息",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统"
+                ],
+                "summary": "系统信息",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.system.info"
+                }
+            }
+        },
+        "/system/rules": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "权限 slug 列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "系统"
+                ],
+                "summary": "权限 slug 列表",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.system.rules"
+                }
+            }
+        },
+        "/upload/file": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "上传文件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "上传"
+                ],
+                "summary": "上传文件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "文件类型，可选数据：image | media | file。默认：file",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "文件数据",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.upload.file"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

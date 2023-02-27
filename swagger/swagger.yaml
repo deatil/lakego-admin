@@ -1,0 +1,1958 @@
+basePath: /admin-api
+host: 127.0.0.1:8080
+info:
+  contact:
+    email: deatil@github.com
+    name: deatil
+    url: https://github.com/deatil
+  description: lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统
+  license:
+    name: Apache2
+    url: https://github.com/deatil/lakego-admin/blob/main/LICENSE
+  termsOfService: https://github.com/deatil
+  title: lakego-admin API文档
+  version: 1.0.7
+paths:
+  /:
+    get:
+      consumes:
+      - application/json
+      description: 默认模块首页信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      summary: 默认模块首页
+      tags:
+      - 默认模块
+      x-lakego:
+        slug: lakego-admin.index.index
+  /action-log:
+    get:
+      consumes:
+      - application/json
+      description: 操作日志列表
+      parameters:
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 请求方法
+        in: query
+        name: method
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 操作日志列表
+      tags:
+      - 操作日志
+      x-lakego:
+        slug: lakego-admin.action-log.index
+  /action-log/clear:
+    delete:
+      consumes:
+      - application/json
+      description: 清除 30 天前的日志数据
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 清除 30 天前的日志数据
+      tags:
+      - 操作日志
+      x-lakego:
+        slug: lakego-admin.action-log.clear
+  /admin:
+    get:
+      consumes:
+      - application/json
+      description: 管理员账号列表
+      parameters:
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号列表
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.index
+    post:
+      consumes:
+      - application/json
+      description: 添加账号
+      parameters:
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 邮箱
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 昵称
+        in: formData
+        name: nickname
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: introduce
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 添加账号
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.create
+  /admin/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理员账号删除
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 删除账号
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.delete
+    get:
+      consumes:
+      - application/json
+      description: 管理员账号详情
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号详情
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.detail
+    put:
+      consumes:
+      - application/json
+      description: 管理员更新信息
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 邮箱
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 昵称
+        in: formData
+        name: nickname
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: introduce
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 更新账号
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.update
+  /admin/{id}/access:
+    patch:
+      consumes:
+      - application/json
+      description: 管理员账号授权
+      parameters:
+      - description: 刷新 token
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 权限列表，半角逗号分隔
+        in: formData
+        name: access
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号授权
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.access
+  /admin/{id}/avatar:
+    patch:
+      consumes:
+      - application/json
+      description: 修改管理员账号头像
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 头像数据ID
+        in: formData
+        name: avatar
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修改账号头像
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.avatar
+  /admin/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: 管理员账号禁用
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号禁用
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.disable
+  /admin/{id}/enable:
+    patch:
+      consumes:
+      - application/json
+      description: 管理员账号启用
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号启用
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.enable
+  /admin/{id}/password:
+    patch:
+      consumes:
+      - application/json
+      description: 修改管理员账号密码
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 新密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修改账号密码
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.password
+  /admin/{id}/rules:
+    get:
+      consumes:
+      - application/json
+      description: 账号权限
+      parameters:
+      - description: 管理员ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号权限
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.rules
+  /admin/groups:
+    get:
+      consumes:
+      - application/json
+      description: 添加账号所需分组
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 添加账号所需分组
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.groups
+  /admin/logout/{refreshToken}:
+    delete:
+      consumes:
+      - application/json
+      description: 管理员账号退出
+      parameters:
+      - description: 刷新 token
+        in: path
+        name: refreshToken
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号退出
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.logout
+  /admin/reset-permission:
+    put:
+      consumes:
+      - application/json
+      description: 管理员账号权限同步
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 账号权限同步
+      tags:
+      - 管理员
+      x-lakego:
+        slug: lakego-admin.admin.reset-permission
+        sort: "200"
+  /attachment:
+    get:
+      consumes:
+      - application/json
+      description: 附件列表
+      parameters:
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件列表
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.index
+        sort: "151"
+  /attachment/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 附件删除
+      parameters:
+      - description: 附件ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件删除
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.delete
+        sort: "153"
+    get:
+      consumes:
+      - application/json
+      description: 附件详情
+      parameters:
+      - description: 附件ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件详情
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.detail
+        sort: "152"
+  /attachment/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: 附件禁用
+      parameters:
+      - description: 附件ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件禁用
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.disable
+        sort: "155"
+  /attachment/{id}/enable:
+    patch:
+      consumes:
+      - application/json
+      description: 附件启用
+      parameters:
+      - description: 附件ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件启用
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.enable
+        sort: "154"
+  /attachment/downcode/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 附件下载码
+      parameters:
+      - description: 附件ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件下载码
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.downcode
+        sort: "156"
+  /attachment/download/{code}:
+    get:
+      consumes:
+      - application/json
+      description: 附件下载
+      parameters:
+      - description: 附件下载码
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/force-download
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 附件下载
+      tags:
+      - 附件
+      x-lakego:
+        slug: lakego-admin.attachment.download
+        sort: "157"
+  /auth/group:
+    get:
+      consumes:
+      - application/json
+      description: 权限分组列表
+      parameters:
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组列表
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.index
+    post:
+      consumes:
+      - application/json
+      description: 权限分组添加
+      parameters:
+      - description: 父级ID
+        in: formData
+        name: parentid
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: description
+        type: string
+      - description: 排序
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组添加
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.create
+  /auth/group/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 权限分组删除
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组删除
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.delete
+    get:
+      consumes:
+      - application/json
+      description: 权限分组详情
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组详情
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.detail
+    put:
+      consumes:
+      - application/json
+      description: 权限分组更新
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 父级ID
+        in: formData
+        name: parentid
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: description
+        type: string
+      - description: 排序
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组更新
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.update
+  /auth/group/{id}/access:
+    patch:
+      consumes:
+      - application/json
+      description: 权限分组授权
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 权限列表，半角逗号分隔
+        in: formData
+        name: access
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组授权
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.access
+  /auth/group/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: 权限分组禁用
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组禁用
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.disable
+  /auth/group/{id}/enable:
+    patch:
+      consumes:
+      - application/json
+      description: 权限分组启用
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组启用
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.enable
+  /auth/group/{id}/sort:
+    patch:
+      consumes:
+      - application/json
+      description: 权限分组排序
+      parameters:
+      - description: 权限分组ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 排序值
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组排序
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.sort
+  /auth/group/children:
+    get:
+      consumes:
+      - application/json
+      description: 权限分组子列表
+      parameters:
+      - description: 权限分组ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: 数据类型，可选值：list | ids
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组子列表
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.children
+  /auth/group/tree:
+    get:
+      consumes:
+      - application/json
+      description: 权限分组树结构
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限分组树结构
+      tags:
+      - 权限分组
+      x-lakego:
+        slug: lakego-admin.auth-group.tree
+  /auth/rule:
+    get:
+      consumes:
+      - application/json
+      description: 权限菜单列表
+      parameters:
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 请求方式
+        in: query
+        name: method
+        type: string
+      - description: 开始时间
+        in: query
+        name: start_time
+        type: string
+      - description: 结束时间
+        in: query
+        name: end_time
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单列表
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.index
+    post:
+      consumes:
+      - application/json
+      description: 权限菜单添加
+      parameters:
+      - description: 父级ID
+        in: formData
+        name: parentid
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: URL链接
+        in: formData
+        name: url
+        required: true
+        type: string
+      - description: 请求方式
+        in: formData
+        name: method
+        required: true
+        type: string
+      - description: 别名 Slug
+        in: formData
+        name: slug
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: description
+        type: string
+      - description: 排序
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单添加
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.create
+  /auth/rule/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 权限菜单删除
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单删除
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.delete
+    get:
+      consumes:
+      - application/json
+      description: 权限菜单详情
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单详情
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.detail
+    put:
+      consumes:
+      - application/json
+      description: 权限菜单更新
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 父级ID
+        in: formData
+        name: parentid
+        required: true
+        type: string
+      - description: 名称
+        in: formData
+        name: title
+        required: true
+        type: string
+      - description: URL链接
+        in: formData
+        name: url
+        required: true
+        type: string
+      - description: 请求方式
+        in: formData
+        name: method
+        required: true
+        type: string
+      - description: 别名 Slug
+        in: formData
+        name: slug
+        required: true
+        type: string
+      - description: 描述
+        in: formData
+        name: description
+        type: string
+      - description: 排序
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      - description: 状态
+        in: formData
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单更新
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.update
+  /auth/rule/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: 权限菜单禁用
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单禁用
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.disable
+  /auth/rule/{id}/enable:
+    patch:
+      consumes:
+      - application/json
+      description: 权限菜单启用
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单启用
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.enable
+  /auth/rule/{id}/sort:
+    patch:
+      consumes:
+      - application/json
+      description: 权限菜单排序
+      parameters:
+      - description: 权限菜单ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: 排序值
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单排序
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.sort
+  /auth/rule/children:
+    get:
+      consumes:
+      - application/json
+      description: 权限菜单子列表
+      parameters:
+      - description: 权限菜单ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: 数据类型，可选值：list | ids
+        in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单子列表
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.children
+  /auth/rule/clear:
+    delete:
+      consumes:
+      - application/json
+      description: 清空特定ID权限
+      parameters:
+      - description: 权限ID列表
+        in: formData
+        name: ids
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 清空特定ID权限
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.clear
+  /auth/rule/tree:
+    get:
+      consumes:
+      - application/json
+      description: 权限菜单树结构
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限菜单树结构
+      tags:
+      - 权限菜单
+      x-lakego:
+        slug: lakego-admin.auth-rule.tree
+  /database:
+    get:
+      consumes:
+      - application/json
+      description: 数据库列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 数据库列表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.index
+  /database/{name}:
+    get:
+      consumes:
+      - application/json
+      description: 数据库表详情
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 数据库表详情
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.detail
+  /database/{name}/optimize:
+    post:
+      consumes:
+      - application/json
+      description: 优化数据表
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 优化数据表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.optimize
+  /database/{name}/repair:
+    post:
+      consumes:
+      - application/json
+      description: 修复数据表
+      parameters:
+      - description: 数据表名
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修复数据表
+      tags:
+      - 数据库管理
+      x-lakego:
+        slug: lakego-admin.database.repair
+  /example/index:
+    get:
+      consumes:
+      - application/json
+      description: 首页信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 首页信息
+      tags:
+      - 例子
+      x-lakego:
+        slug: lakego-admin.example.index
+  /monitor:
+    get:
+      consumes:
+      - application/json
+      description: 服务监控详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 服务监控详情
+      tags:
+      - 系统监控
+      x-lakego:
+        slug: lakego-admin.monitor.index
+  /passport/captcha:
+    get:
+      consumes:
+      - application/json
+      description: 登陆验证码
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          headers:
+            string:
+              description: Lakego-Admin-Captcha-Id
+              type: string
+          schema:
+            type: string
+      summary: 登陆验证码
+      tags:
+      - 登陆相关
+      x-lakego:
+        slug: lakego-admin.passport.captcha
+  /passport/login:
+    post:
+      consumes:
+      - application/json
+      description: 账号登陆
+      parameters:
+      - description: 验证码字段
+        in: header
+        name: Lakego-Admin-Captcha-Id
+        required: true
+        type: string
+      - description: 账号
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: 密码
+        in: formData
+        name: password
+        required: true
+        type: string
+      - description: 验证码
+        in: formData
+        name: captcha
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      summary: 账号登陆
+      tags:
+      - 登陆相关
+      x-lakego:
+        slug: lakego-admin.passport.login
+  /passport/logout:
+    delete:
+      consumes:
+      - application/json
+      description: 当前账号退出
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        type: string
+      - description: 刷新 Token
+        in: formData
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 当前账号退出
+      tags:
+      - 登陆相关
+      x-lakego:
+        slug: lakego-admin.passport.logout
+  /passport/refresh-token:
+    post:
+      consumes:
+      - application/json
+      description: 刷新 token
+      parameters:
+      - description: 刷新 Token
+        in: formData
+        name: refresh_token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      summary: 刷新 token
+      tags:
+      - 登陆相关
+      x-lakego:
+        slug: lakego-admin.passport.refresh-token
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: 个人信息详情
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 个人信息详情
+      tags:
+      - 个人信息
+      x-lakego:
+        slug: lakego-admin.profile.index
+    put:
+      consumes:
+      - application/json
+      description: 修改个人信息详情
+      parameters:
+      - description: 昵称
+        in: formData
+        name: nickname
+        required: true
+        type: string
+      - description: 邮箱
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 简介
+        in: formData
+        name: introduce
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修改个人信息详情
+      tags:
+      - 个人信息
+      x-lakego:
+        slug: lakego-admin.profile.update
+  /profile/avatar:
+    patch:
+      consumes:
+      - application/json
+      description: 修改个人头像
+      parameters:
+      - description: 头像数据ID
+        in: formData
+        name: avatar
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修改个人头像
+      tags:
+      - 个人信息
+      x-lakego:
+        slug: lakego-admin.profile.avatar
+  /profile/password:
+    patch:
+      consumes:
+      - application/json
+      description: 修改密码
+      parameters:
+      - description: 旧密码
+        in: formData
+        name: oldpassword
+        required: true
+        type: string
+      - description: 新密码
+        in: formData
+        name: newpassword
+        required: true
+        type: string
+      - description: 确认新密码
+        in: formData
+        name: newpassword_confirm
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 修改密码
+      tags:
+      - 个人信息
+      x-lakego:
+        slug: lakego-admin.profile.password
+  /profile/rules:
+    get:
+      consumes:
+      - application/json
+      description: 个人权限列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 个人权限列表
+      tags:
+      - 个人信息
+      x-lakego:
+        slug: lakego-admin.profile.rules
+  /system/info:
+    get:
+      consumes:
+      - application/json
+      description: 系统信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 系统信息
+      tags:
+      - 系统
+      x-lakego:
+        slug: lakego-admin.system.info
+  /system/rules:
+    get:
+      consumes:
+      - application/json
+      description: 权限 slug 列表
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 权限 slug 列表
+      tags:
+      - 系统
+      x-lakego:
+        slug: lakego-admin.system.rules
+  /upload/file:
+    post:
+      consumes:
+      - application/json
+      description: 上传文件
+      parameters:
+      - description: 文件类型，可选数据：image | media | file。默认：file
+        in: query
+        name: type
+        type: string
+      - description: 文件数据
+        in: formData
+        name: file
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 上传文件
+      tags:
+      - 上传
+      x-lakego:
+        slug: lakego-admin.upload.file
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
