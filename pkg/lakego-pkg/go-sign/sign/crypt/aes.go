@@ -16,7 +16,7 @@ func AesEncrypt(encryptStr string, key []byte, iv string) (string, error) {
     }
 
     blockSize := block.BlockSize()
-    encryptBytes = pkcs5Padding(encryptBytes, blockSize)
+    encryptBytes = pkcs7Padding(encryptBytes, blockSize)
 
     blockMode := cipher.NewCBCEncrypter(block, []byte(iv))
     encrypted := make([]byte, len(encryptBytes))
@@ -40,17 +40,17 @@ func AesDecrypt(decryptStr string, key []byte, iv string) (string, error) {
     decrypted := make([]byte, len(decryptBytes))
 
     blockMode.CryptBlocks(decrypted, decryptBytes)
-    decrypted = pkcs5UnPadding(decrypted)
+    decrypted = pkcs7UnPadding(decrypted)
     return string(decrypted), nil
 }
 
-func pkcs5Padding(cipherText []byte, blockSize int) []byte {
+func pkcs7Padding(cipherText []byte, blockSize int) []byte {
     padding := blockSize - len(cipherText)%blockSize
     padText := bytes.Repeat([]byte{byte(padding)}, padding)
     return append(cipherText, padText...)
 }
 
-func pkcs5UnPadding(decrypted []byte) []byte {
+func pkcs7UnPadding(decrypted []byte) []byte {
     length := len(decrypted)
     unPadding := int(decrypted[length-1])
     return decrypted[:(length - unPadding)]
