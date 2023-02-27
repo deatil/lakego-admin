@@ -253,12 +253,12 @@ func (this Goch) ToStringMapInt64E() (map[string]int64, error) {
 }
 
 // map[string]any
-func (this Goch) ToStringMap(i any) map[string]any {
+func (this Goch) ToStringMap() map[string]any {
     return ToStringMap(this.data)
 }
 
 // map[string]any
-func (this Goch) ToStringMapE(i any) (map[string]any, error) {
+func (this Goch) ToStringMapE() (map[string]any, error) {
     return ToStringMapE(this.data)
 }
 

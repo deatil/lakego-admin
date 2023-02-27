@@ -14,20 +14,20 @@ import (
 // 当存在 translation 时, 其他均为可选, 表示重写一个 tag 的翻译器
 type Validation struct {
     // 标签名称
-    tag string
+    tag         string
     // 表示该标 Validate 的描述/解释
     translation string
     // 是否覆盖已存在的验证器
-    override bool
+    override    bool
     // 用于验证字段的函数
-    validateFn validator.Func
+    validateFn    validator.Func
     // 翻译注册函数
-    registerFn validator.RegisterTranslationsFunc
+    registerFn    validator.RegisterTranslationsFunc
     // 翻译函数
     translationFn validator.TranslationFunc
 }
 
-func (this Validation) registerCustom(v customValidator) error {
+func (this Validation) registerCustom(v validate) error {
     return this.register(v.validate, v.trans)
 }
 
@@ -45,19 +45,12 @@ func (this *Validation) register(v *validator.Validate, t ut.Translator) (err er
 
 // 以下方法支持
 func (this *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {
-
     if this.translationFn != nil && this.registerFn != nil {
-
         err = v.RegisterTranslation(this.tag, t, this.registerFn, this.translationFn)
-
     } else if this.translationFn != nil && this.registerFn == nil {
-
         err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), this.translationFn)
-
     } else if this.translationFn == nil && this.registerFn != nil {
-
         err = v.RegisterTranslation(this.tag, t, this.registerFn, translateFunc)
-
     } else {
         err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), translateFunc)
     }

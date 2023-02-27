@@ -1,7 +1,7 @@
 package passport
 
 import (
-    "github.com/deatil/lakego-doak/lakego/facade/validate"
+    "github.com/deatil/lakego-doak/lakego/validate"
 )
 
 // 账号信息更新
@@ -24,15 +24,12 @@ func Update(data map[string]any) string {
         "introduce.max": "简介字数超过了限制",
     }
 
-    _, errs := validate.ValidateMap(data, rules, messages)
-
-    if len(errs) > 0 {
-        for _, err := range errs {
-            return err
-        }
+    ok, err := validate.ValidateMapError(data, rules, messages)
+    if ok {
+        return ""
     }
 
-    return ""
+    return err
 }
 
 // 更新头像
@@ -48,15 +45,12 @@ func UpdateAvatar(data map[string]any) string {
         "avatar.len": "头像数据错误",
     }
 
-    _, errs := validate.ValidateMap(data, rules, messages)
-
-    if len(errs) > 0 {
-        for _, err := range errs {
-            return err
-        }
+    ok, err := validate.ValidateMapError(data, rules, messages)
+    if ok {
+        return ""
     }
 
-    return ""
+    return err
 }
 
 // 修改密码
@@ -78,13 +72,10 @@ func UpdatePasssword(data map[string]any) string {
         "newpassword_confirm.len": "确认密码错误",
     }
 
-    _, errs := validate.ValidateMap(data, rules, messages)
-
-    if len(errs) > 0 {
-        for _, err := range errs {
-            return err
-        }
+    ok, err := validate.ValidateMapError(data, rules, messages)
+    if ok {
+        return ""
     }
 
-    return ""
+    return err
 }

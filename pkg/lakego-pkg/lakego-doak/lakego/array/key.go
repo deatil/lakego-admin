@@ -28,3 +28,8 @@ func (this Key) Value(key string, defVal ...any) goch.Goch {
 
     return goch.New(data)
 }
+
+// 全部
+func (this Key) All() goch.Goch {
+    return goch.New(this.source)
+}

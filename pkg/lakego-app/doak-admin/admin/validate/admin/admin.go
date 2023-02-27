@@ -1,7 +1,7 @@
 package admin
 
 import (
-    "github.com/deatil/lakego-doak/lakego/facade/validate"
+    "github.com/deatil/lakego-doak/lakego/validate"
 )
 
 // 创建验证
@@ -35,7 +35,7 @@ func Create(data map[string]any) string {
         "status.required": "状态选项不能为空",
     }
 
-    ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
+    ok, err := validate.ValidateMapError(data, rules, messages)
     if ok {
         return ""
     }
@@ -71,7 +71,7 @@ func Update(data map[string]any) string {
         "status.required": "状态选项不能为空",
     }
 
-    ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
+    ok, err := validate.ValidateMapError(data, rules, messages)
     if ok {
         return ""
     }
@@ -92,7 +92,7 @@ func UpdateAvatar(data map[string]any) string {
         "avatar.len": "头像数据错误",
     }
 
-    ok, err := validate.ValidateMapReturnOneError(data, rules, messages)
+    ok, err := validate.ValidateMapError(data, rules, messages)
     if ok {
         return ""
     }

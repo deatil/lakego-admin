@@ -9,6 +9,11 @@ import (
     viper_adapter "github.com/deatil/lakego-doak/lakego/config/adapter/viper"
 )
 
+var (
+    // 配置目录
+    defaultConfigPath = "{root}/config"
+)
+
 // 初始化
 func init() {
     // 注册默认
@@ -58,6 +63,11 @@ func GetDefaultAdapter() string {
     return "viper"
 }
 
+// 设置配置路径
+func SetConfigPath(cfgPath string) {
+    defaultConfigPath = cfgPath
+}
+
 // 注册磁盘
 func Register() {
     // 注册可用驱动
@@ -67,7 +77,7 @@ func Register() {
             adapter := viper_adapter.New()
 
             // 配置文件夹
-            configPath := path.FormatPath("{root}/config")
+            configPath := path.FormatPath(defaultConfigPath)
 
             // 设置 env 前缀
             adapter.SetEnvPrefix("LAKEGO")
