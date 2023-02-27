@@ -36,40 +36,24 @@ func New(connect ...string) redis.Redis {
     }
 
     // 格式化转换
-    connectConf := goch.ToStringMap(connectConfs)
-
-    addr := array.ArrGetWithGoch(connectConf, "addr").ToString()
-    password := array.ArrGetWithGoch(connectConf, "password").ToString()
-
-    db := array.ArrGetWithGoch(connectConf, "db").ToInt()
-
-    minIdleConn := array.ArrGetWithGoch(connectConf, "minidle-conn").ToInt()
-    dialTimeout := array.ArrGetWithGoch(connectConf, "dial-timeout").ToDuration()
-    readTimeout := array.ArrGetWithGoch(connectConf, "read-timeout").ToDuration()
-    writeTimeout := array.ArrGetWithGoch(connectConf, "write-timeout").ToDuration()
-
-    poolSize := array.ArrGetWithGoch(connectConf, "pool-size").ToInt()
-    poolTimeout := array.ArrGetWithGoch(connectConf, "pool-timeout").ToDuration()
-
-    enabletrace := array.ArrGetWithGoch(connectConf, "enabletrace").ToBool()
-
-    keyPrefix := array.ArrGetWithGoch(connectConf, "key-prefix").ToString()
+    cfg := array.ArrayFrom(connectConfs)
 
     return redis.New(redis.Config{
-        DB:       db,
-        Addr:     addr,
-        Password: password,
+        DB:       cfg.Value("db").ToInt(),
+        Addr:     cfg.Value("addr").ToString(),
+        Password: cfg.Value("password").ToString(),
 
-        MinIdleConn:  minIdleConn,
-        DialTimeout:  dialTimeout,
-        ReadTimeout:  readTimeout,
-        WriteTimeout: writeTimeout,
-        PoolSize:     poolSize,
-        PoolTimeout:  poolTimeout,
+        MinIdleConn:  cfg.Value("minidle-conn").ToInt(),
+        DialTimeout:  cfg.Value("dial-timeout").ToDuration(),
+        ReadTimeout:  cfg.Value("read-timeout").ToDuration(),
+        WriteTimeout: cfg.Value("write-timeout").ToDuration(),
 
-        EnableTrace:  enabletrace,
+        PoolSize:     cfg.Value("pool-size").ToInt(),
+        PoolTimeout:  cfg.Value("pool-timeout").ToDuration(),
 
-        KeyPrefix:    keyPrefix,
+        EnableTrace:  cfg.Value("enabletrace").ToBool(),
+
+        KeyPrefix:    cfg.Value("key-prefix").ToString(),
     })
 }
 

@@ -78,7 +78,7 @@ func (this *Fllesystem) Has(path string) bool {
         return false
     }
 
-    return this.GetAdapter().Has(path)
+    return this.adapter.Has(path)
 }
 
 // 写入文件
@@ -92,7 +92,7 @@ func (this *Fllesystem) Write(path string, contents string, conf ...map[string]a
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().Write(path, contents, configs); err != nil {
+    if _, err := this.adapter.Write(path, contents, configs); err != nil {
         return false, err
     }
 
@@ -110,7 +110,7 @@ func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
+    if _, err := this.adapter.WriteStream(path, resource, configs); err != nil {
         return false, err
     }
 
@@ -129,14 +129,14 @@ func (this *Fllesystem) Put(path string, contents string, conf ...map[string]any
     configs := this.PrepareConfig(newConf)
 
     if this.Has(path) {
-        if _, err := this.GetAdapter().Update(path, contents, configs); err != nil {
+        if _, err := this.adapter.Update(path, contents, configs); err != nil {
             return false, err
         }
 
         return true, nil
     }
 
-    if _, err := this.GetAdapter().Write(path, contents, configs); err != nil {
+    if _, err := this.adapter.Write(path, contents, configs); err != nil {
         return false, err
     }
 
@@ -155,14 +155,14 @@ func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[s
     configs := this.PrepareConfig(newConf)
 
     if this.Has(path) {
-        if _, err := this.GetAdapter().UpdateStream(path, resource, configs); err != nil {
+        if _, err := this.adapter.UpdateStream(path, resource, configs); err != nil {
             return false, err
         }
 
         return true, nil
     }
 
-    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
+    if _, err := this.adapter.WriteStream(path, resource, configs); err != nil {
         return false, err
     }
 
@@ -194,7 +194,7 @@ func (this *Fllesystem) Update(path string, contents string, conf ...map[string]
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().Update(path, contents, configs); err != nil {
+    if _, err := this.adapter.Update(path, contents, configs); err != nil {
         return false, err
     }
 
@@ -212,7 +212,7 @@ func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...ma
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().WriteStream(path, resource, configs); err != nil {
+    if _, err := this.adapter.WriteStream(path, resource, configs); err != nil {
         return false, err
     }
 
@@ -222,7 +222,7 @@ func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...ma
 // 文件到字符
 func (this *Fllesystem) Read(path string) (string, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().Read(path)
+    object, err := this.adapter.Read(path)
 
     if err != nil {
         return "", err
@@ -234,7 +234,7 @@ func (this *Fllesystem) Read(path string) (string, error) {
 // 读取成数据流
 func (this *Fllesystem) ReadStream(path string) (*os.File, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().ReadStream(path)
+    object, err := this.adapter.ReadStream(path)
 
     if err != nil {
         return nil, err
@@ -248,7 +248,7 @@ func (this *Fllesystem) Rename(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
-    if err := this.GetAdapter().Rename(path, newpath); err != nil {
+    if err := this.adapter.Rename(path, newpath); err != nil {
         return false, err
     }
 
@@ -260,7 +260,7 @@ func (this *Fllesystem) Copy(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
-    if err := this.GetAdapter().Copy(path, newpath); err != nil {
+    if err := this.adapter.Copy(path, newpath); err != nil {
         return false, err
     }
 
@@ -271,7 +271,7 @@ func (this *Fllesystem) Copy(path string, newpath string) (bool, error) {
 func (this *Fllesystem) Delete(path string) (bool, error) {
     path = util.NormalizePath(path)
 
-    if err := this.GetAdapter().Delete(path); err != nil {
+    if err := this.adapter.Delete(path); err != nil {
         return false, err
     }
 
@@ -285,7 +285,7 @@ func (this *Fllesystem) DeleteDir(dirname string) (bool, error) {
         return false, errors.New("文件夹路径错误")
     }
 
-    if err := this.GetAdapter().DeleteDir(dirname); err != nil {
+    if err := this.adapter.DeleteDir(dirname); err != nil {
         return false, err
     }
 
@@ -303,7 +303,7 @@ func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]any) (bool,
 
     configs := this.PrepareConfig(newConf)
 
-    if _, err := this.GetAdapter().CreateDir(dirname, configs); err != nil {
+    if _, err := this.adapter.CreateDir(dirname, configs); err != nil {
         return false, err
     }
 
@@ -314,7 +314,7 @@ func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]any) (bool,
 func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[string]any, error) {
     dirname = util.NormalizePath(dirname)
 
-    result, err := this.GetAdapter().ListContents(dirname, recursive...)
+    result, err := this.adapter.ListContents(dirname, recursive...)
     if err != nil {
         return nil, err
     }
@@ -325,7 +325,7 @@ func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[s
 // 类型
 func (this *Fllesystem) GetMimetype(path string) (string, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().GetMimetype(path)
+    object, err := this.adapter.GetMimetype(path)
 
     if err != nil {
         return "", err
@@ -337,7 +337,7 @@ func (this *Fllesystem) GetMimetype(path string) (string, error) {
 // 时间戳
 func (this *Fllesystem) GetTimestamp(path string) (int64, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().GetTimestamp(path)
+    object, err := this.adapter.GetTimestamp(path)
 
     if err != nil {
         return 0, err
@@ -349,7 +349,7 @@ func (this *Fllesystem) GetTimestamp(path string) (int64, error) {
 // 权限
 func (this *Fllesystem) GetVisibility(path string) (string, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().GetVisibility(path)
+    object, err := this.adapter.GetVisibility(path)
 
     if err != nil {
         return "", err
@@ -361,7 +361,7 @@ func (this *Fllesystem) GetVisibility(path string) (string, error) {
 // 大小
 func (this *Fllesystem) GetSize(path string) (int64, error) {
     path = util.NormalizePath(path)
-    object, err := this.GetAdapter().GetSize(path)
+    object, err := this.adapter.GetSize(path)
 
     if err != nil {
         return 0, err
@@ -374,7 +374,7 @@ func (this *Fllesystem) GetSize(path string) (int64, error) {
 func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, error) {
     path = util.NormalizePath(path)
 
-    if _, err := this.GetAdapter().SetVisibility(path, visibility); err != nil {
+    if _, err := this.adapter.SetVisibility(path, visibility); err != nil {
         return false, err
     }
 
@@ -385,7 +385,7 @@ func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, err
 func (this *Fllesystem) GetMetadata(path string) (map[string]any, error) {
     path = util.NormalizePath(path)
 
-    if info, err := this.GetAdapter().GetMetadata(path); err != nil {
+    if info, err := this.adapter.GetMetadata(path); err != nil {
         return nil, err
     } else {
         return info, nil

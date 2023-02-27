@@ -39,15 +39,15 @@ var (
 
 // 默认列表
 var defaultCipherFuncs = CipherFuncMap{
-    "Aes":      aes.NewCipher,
-    "Des":      des.NewCipher,
-    "TriDes":   des.NewTripleDESCipher,
-    "Tea":      tea.NewCipher,
-    "Xtea":     newXteaCipher,
-    "Twofish":  newTwofishCipher,
-    "Blowfish": newBlowfishCipher,
-    "Cast5":    newCast5Cipher,
-    "SM4":      sm4.NewCipher,
+    "Aes":       aes.NewCipher,
+    "Des":       des.NewCipher,
+    "TripleDes": des.NewTripleDESCipher,
+    "Tea":       tea.NewCipher,
+    "Xtea":      newXteaCipher,
+    "Twofish":   newTwofishCipher,
+    "Blowfish":  newBlowfishCipher,
+    "Cast5":     newCast5Cipher,
+    "SM4":       sm4.NewCipher,
 }
 
 /**

@@ -1,7 +1,6 @@
 package database
 
 import (
-    "sync"
     "strings"
     "gorm.io/gorm"
 
@@ -11,8 +10,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/interfaces"
     mysqlDriver "github.com/deatil/lakego-doak/lakego/database/driver/mysql"
 )
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -27,16 +24,16 @@ func init() {
  * @author deatil
  */
 func New(once ...bool) *gorm.DB {
-    var once2 bool
+    var o bool
     if len(once) > 0 {
-        once2 = once[0]
+        o = once[0]
     } else {
-        once2 = true
+        o = true
     }
 
     database := GetDefaultDatabase()
 
-    return Database(database, once2)
+    return Database(database, o)
 }
 
 // 实例化
@@ -107,17 +104,15 @@ func GetConfig(key string, typ ...string) (any, map[string]any) {
 
 // 注册
 func Register() {
-    once.Do(func() {
-        // 注册驱动
-        register.
-            NewManagerWithPrefix("database").
-            RegisterMany(map[string]func(map[string]any) any {
-                "mysql": func(conf map[string]any) any {
-                    driver := mysqlDriver.New(conf)
+    // 注册驱动
+    register.
+        NewManagerWithPrefix("database").
+        RegisterMany(map[string]func(map[string]any) any {
+            "mysql": func(conf map[string]any) any {
+                driver := mysqlDriver.New(conf)
 
-                    return driver
-                },
-            })
-    })
+                return driver
+            },
+        })
 }
 

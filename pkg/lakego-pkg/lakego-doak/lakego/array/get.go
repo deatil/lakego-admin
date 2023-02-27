@@ -15,18 +15,23 @@ type (
 
 var (
     // 获取
-    ArrGet    = array.Get
+    ArrGet = array.Get
 
     // 查找
-    ArrFind   = array.Find
+    ArrFind = array.Find
 
     // 判断
     ArrExists = array.Exists
 )
 
 // 获取
-func ArrGetWithGoch(source any, key string, defVal ...any) Goch {
-    data := ArrGet(source, key, defVal...)
+func ArrayFrom(source any) Key {
+    return newKey(source)
+}
+
+// 获取
+func ArrayGet(source any, key string, defVal ...any) goch.Goch {
+    data := array.Get(source, key, defVal...)
 
     return goch.New(data)
 }

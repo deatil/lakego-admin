@@ -1,7 +1,6 @@
 package view
 
 import (
-    "sync"
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
@@ -10,8 +9,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/view/html/interfaces"
     pongo2Adapter "github.com/deatil/lakego-doak/lakego/view/html/adapter/pongo2"
 )
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -68,18 +65,16 @@ func GetDefaultAdapter() string {
 
 // 注册
 func Register() {
-    once.Do(func() {
-        // 注册驱动
-        register.
-            NewManagerWithPrefix("view").
-            RegisterMany(map[string]func(map[string]any) any {
-                "pongo2": func(conf map[string]any) any {
-                    path := conf["tmpl-dir"].(string)
-                    adapter := pongo2Adapter.New(path)
+    // 注册驱动
+    register.
+        NewManagerWithPrefix("view").
+        RegisterMany(map[string]func(map[string]any) any {
+            "pongo2": func(conf map[string]any) any {
+                path := conf["tmpl-dir"].(string)
+                adapter := pongo2Adapter.New(path)
 
-                    return adapter
-                },
-            })
-    })
+                return adapter
+            },
+        })
 }
 

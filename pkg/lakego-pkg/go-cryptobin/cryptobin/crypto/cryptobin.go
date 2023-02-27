@@ -41,49 +41,6 @@ type Cryptobin struct {
     Errors []error
 }
 
-// 补码类型
-type Padding uint
-
-func (this Padding) String() string {
-    switch this {
-        case NoPadding:
-            return "NoPadding"
-        case ZeroPadding:
-            return "ZeroPadding"
-        case PKCS5Padding:
-            return "PKCS5Padding"
-        case PKCS7Padding:
-            return "PKCS7Padding"
-        case X923Padding:
-            return "X923Padding"
-        case ISO10126Padding:
-            return "ISO10126Padding"
-        case ISO7816_4Padding:
-            return "ISO7816_4Padding"
-        case ISO97971Padding:
-            return "ISO97971Padding"
-        case TBCPadding:
-            return "TBCPadding"
-        case PKCS1Padding:
-            return "PKCS1Padding"
-        default:
-            return "unknown padding value " + strconv.Itoa(int(this))
-    }
-}
-
-const (
-    NoPadding Padding = 1 + iota
-    ZeroPadding
-    PKCS5Padding
-    PKCS7Padding
-    X923Padding
-    ISO10126Padding
-    ISO7816_4Padding
-    ISO97971Padding
-    TBCPadding
-    PKCS1Padding
-)
-
 // 加密类型
 type Multiple uint
 
@@ -93,8 +50,8 @@ func (this Multiple) String() string {
             return "Aes"
         case Des:
             return "Des"
-        case TriDes:
-            return "TriDes"
+        case TripleDes:
+            return "TripleDes"
         case Twofish:
             return "Twofish"
         case Blowfish:
@@ -129,7 +86,7 @@ func (this Multiple) String() string {
 const (
     Aes Multiple = 1 + iota
     Des
-    TriDes
+    TripleDes
     Twofish
     Blowfish
     Tea
@@ -183,5 +140,48 @@ const (
     CTR
     GCM
     CCM
+)
+
+// 补码类型
+type Padding uint
+
+func (this Padding) String() string {
+    switch this {
+        case NoPadding:
+            return "NoPadding"
+        case ZeroPadding:
+            return "ZeroPadding"
+        case PKCS5Padding:
+            return "PKCS5Padding"
+        case PKCS7Padding:
+            return "PKCS7Padding"
+        case X923Padding:
+            return "X923Padding"
+        case ISO10126Padding:
+            return "ISO10126Padding"
+        case ISO7816_4Padding:
+            return "ISO7816_4Padding"
+        case ISO97971Padding:
+            return "ISO97971Padding"
+        case TBCPadding:
+            return "TBCPadding"
+        case PKCS1Padding:
+            return "PKCS1Padding"
+        default:
+            return "unknown padding value " + strconv.Itoa(int(this))
+    }
+}
+
+const (
+    NoPadding Padding = 1 + iota
+    ZeroPadding
+    PKCS5Padding
+    PKCS7Padding
+    X923Padding
+    ISO10126Padding
+    ISO7816_4Padding
+    ISO97971Padding
+    TBCPadding
+    PKCS1Padding
 )
 

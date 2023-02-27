@@ -110,7 +110,7 @@ stores:
     # 类型
     type: "syncmap"
     # 存活时间
-    livetime: 10
+    livetime: 10m
 
   # memory 配置
   memory:
@@ -119,4 +119,4 @@ stores:
     # 数量
     collect-num: 10240
     # 过期
-    expiration: 10
+    expiration: 10m

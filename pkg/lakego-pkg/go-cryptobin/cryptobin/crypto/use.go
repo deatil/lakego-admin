@@ -14,9 +14,9 @@ func (this Cryptobin) Des() Cryptobin {
     return this
 }
 
-// TriDes
-func (this Cryptobin) TriDes() Cryptobin {
-    this.multiple = TriDes
+// TripleDes
+func (this Cryptobin) TripleDes() Cryptobin {
+    this.multiple = TripleDes
 
     return this
 }
@@ -131,7 +131,7 @@ func (this Cryptobin) RC5(wordSize, rounds uint) Cryptobin {
 }
 
 // Xts
-// cipher 可用 [ Aes | Des | TriDes | Tea | Xtea | Twofish | Blowfish | Cast5 | SM4]
+// cipher 可用 [ Aes | Des | TripleDes | Tea | Xtea | Twofish | Blowfish | Cast5 | SM4]
 func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
     this.multiple = Xts
 

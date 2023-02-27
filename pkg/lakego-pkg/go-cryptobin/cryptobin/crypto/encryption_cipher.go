@@ -222,7 +222,7 @@ func (this Cryptobin) CipherBlock(key []byte) (cipher.Block, error) {
             block, err = aes.NewCipher(key)
         case Des:
             block, err = des.NewCipher(key)
-        case TriDes:
+        case TripleDes:
             block, err = des.NewTripleDESCipher(key)
         case Twofish:
             // The key argument should be the Twofish key,

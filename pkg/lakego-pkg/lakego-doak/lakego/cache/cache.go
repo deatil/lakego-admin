@@ -66,7 +66,7 @@ func (this *Cache) WithConfig(config Config) *Cache {
 
 // 获取配置
 func (this *Cache) GetConfig(name string) goch.Goch {
-    return array.ArrGetWithGoch(this.config, name)
+    return array.ArrayGet(this.config, name)
 }
 
 // 设置前缀

@@ -1,7 +1,6 @@
 package sign
 
 import (
-    "sync"
     "strings"
 
     "github.com/deatil/go-sign/sign"
@@ -19,8 +18,6 @@ import (
  * @create 2021-8-29
  * @author deatil
  */
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -72,67 +69,6 @@ func Check(name string) *sign.Check {
     return s
 }
 
-// 注册
-func Register() {
-    once.Do(func() {
-        // 注册驱动
-        register.
-            NewManagerWithPrefix("sign").
-            RegisterMany(map[string]func(map[string]any) any {
-                "aes": func(conf map[string]any) any {
-                    driver := &signDriver.Aes{}
-
-                    driver.Init(conf)
-
-                    return driver
-                },
-
-                "hmac": func(conf map[string]any) any {
-                    driver := &signDriver.Hmac{}
-
-                    driver.Init(conf)
-
-                    return driver
-                },
-
-                "md5": func(conf map[string]any) any {
-                    driver := &signDriver.MD5{}
-
-                    return driver
-                },
-
-                "sha1": func(conf map[string]any) any {
-                    driver := &signDriver.SHA1{}
-
-                    return driver
-                },
-
-                "rsa": func(conf map[string]any) any {
-                    driver := &signDriver.Rsa{}
-
-                    publicKey := conf["publickey"].(string)
-                    privateKey := conf["privatekey"].(string)
-
-                    publicKey = path.FormatPath(publicKey)
-                    privateKey = path.FormatPath(privateKey)
-
-                    driver.Init(map[string]any{
-                        "publickey": publicKey,
-                        "privatekey": privateKey,
-                    })
-
-                    return driver
-                },
-
-                "bcrypt": func(conf map[string]any) any {
-                    driver := &signDriver.Bcrypt{}
-
-                    return driver
-                },
-            })
-    })
-}
-
 func GetDriver(name string) (interfaces.Driver, map[string]any) {
     // 驱动列表
     crypts := config.New("sign").GetStringMap("crypts")
@@ -163,4 +99,63 @@ func GetDriver(name string) (interfaces.Driver, map[string]any) {
 // 默认签名
 func GetDefaultCrypt() string {
     return config.New("sign").GetString("default")
+}
+
+// 注册
+func Register() {
+    // 注册驱动
+    register.
+        NewManagerWithPrefix("sign").
+        RegisterMany(map[string]func(map[string]any) any {
+            "aes": func(conf map[string]any) any {
+                driver := &signDriver.Aes{}
+
+                driver.Init(conf)
+
+                return driver
+            },
+
+            "hmac": func(conf map[string]any) any {
+                driver := &signDriver.Hmac{}
+
+                driver.Init(conf)
+
+                return driver
+            },
+
+            "md5": func(conf map[string]any) any {
+                driver := &signDriver.MD5{}
+
+                return driver
+            },
+
+            "sha1": func(conf map[string]any) any {
+                driver := &signDriver.SHA1{}
+
+                return driver
+            },
+
+            "rsa": func(conf map[string]any) any {
+                driver := &signDriver.Rsa{}
+
+                publicKey := conf["publickey"].(string)
+                privateKey := conf["privatekey"].(string)
+
+                publicKey = path.FormatPath(publicKey)
+                privateKey = path.FormatPath(privateKey)
+
+                driver.Init(map[string]any{
+                    "publickey": publicKey,
+                    "privatekey": privateKey,
+                })
+
+                return driver
+            },
+
+            "bcrypt": func(conf map[string]any) any {
+                driver := &signDriver.Bcrypt{}
+
+                return driver
+            },
+        })
 }

@@ -1,7 +1,6 @@
 package permission
 
 import (
-    "sync"
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
@@ -20,7 +19,6 @@ import (
  * @create 2021-9-30
  * @author deatil
  */
-var once sync.Once
 
 // 初始化
 func init() {
@@ -81,16 +79,14 @@ func GetDefaultAdapter() string {
 
 // 注册
 func Register() {
-    once.Do(func() {
-        // 注册可用驱动
-        register.
-            NewManagerWithPrefix("permission").
-            Register("gorm", func(conf map[string]any) any {
-                newDb := database.New()
+    // 注册可用驱动
+    register.
+        NewManagerWithPrefix("permission").
+        Register("gorm", func(conf map[string]any) any {
+            newDb := database.New()
 
-                a, _ := gormAdapter.New(newDb)
+            a, _ := gormAdapter.New(newDb)
 
-                return a
-            })
-    })
+            return a
+        })
 }

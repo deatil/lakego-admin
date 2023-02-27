@@ -19,7 +19,7 @@ func main() {
     err := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12ty").
-        TriDes().
+        TripleDes().
         ECB().
         PKCS7Padding().
         Encrypt().
@@ -32,7 +32,7 @@ func main() {
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
         SetIv("dfertf12").
-        TriDes().
+        TripleDes().
         CFB().
         PKCS7Padding().
         Encrypt().
@@ -87,11 +87,11 @@ func main() {
 
     // =====
 
-    // TriDes 加密测试
+    // TripleDes 加密测试
     cypt := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
-        TriDes().
+        TripleDes().
         ECB().
         PKCS7Padding().
         Encrypt().
@@ -99,7 +99,7 @@ func main() {
     cyptde := cryptobin.
         FromHexString("6ef89f062bc9d46109d0dfd4899af2fc").
         SetKey("dfertf12dfertf12dfertf12").
-        TriDes().
+        TripleDes().
         ECB().
         PKCS7Padding().
         Decrypt().
@@ -129,14 +129,14 @@ func main() {
 
     // =====
 
-    // TriDes-CFB 加密测试
+    // TripleDes-CFB 加密测试
     var cypt2Err []error
     var cypt2Err2 []error
     cypt2 := cryptobin.
         FromString("test-pass").
         SetKey("dfertf12dfertf12dfertf12").
         SetIv("dfertf12").
-        TriDes().
+        TripleDes().
         CFB().
         PKCS7Padding().
         Encrypt().
@@ -148,7 +148,7 @@ func main() {
         FromBase64String("oCqlh4iTOp5+i5SVLN/KUw==").
         SetKey("dfertf12dfertf12dfertf12").
         SetIv("dfertf12").
-        TriDes().
+        TripleDes().
         CFB().
         PKCS7Padding().
         Decrypt().

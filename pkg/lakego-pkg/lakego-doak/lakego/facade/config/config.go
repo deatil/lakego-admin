@@ -1,8 +1,6 @@
 package config
 
 import (
-    "sync"
-
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/path"
 
@@ -10,8 +8,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/config/interfaces"
     viper_adapter "github.com/deatil/lakego-doak/lakego/config/adapter/viper"
 )
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -64,23 +60,21 @@ func GetDefaultAdapter() string {
 
 // 注册磁盘
 func Register() {
-    once.Do(func() {
-        // 注册可用驱动
-        register.
-            NewManagerWithPrefix("config").
-            Register("viper", func(conf map[string]any) any {
-                adapter := viper_adapter.New()
+    // 注册可用驱动
+    register.
+        NewManagerWithPrefix("config").
+        Register("viper", func(conf map[string]any) any {
+            adapter := viper_adapter.New()
 
-                // 配置文件夹
-                configPath := path.FormatPath("{root}/config")
+            // 配置文件夹
+            configPath := path.FormatPath("{root}/config")
 
-                // 设置 env 前缀
-                adapter.SetEnvPrefix("LAKEGO")
-                adapter.AutomaticEnv()
-                adapter.WithPath(configPath)
+            // 设置 env 前缀
+            adapter.SetEnvPrefix("LAKEGO")
+            adapter.AutomaticEnv()
+            adapter.WithPath(configPath)
 
-                return adapter
-            })
-    })
+            return adapter
+        })
 }
 

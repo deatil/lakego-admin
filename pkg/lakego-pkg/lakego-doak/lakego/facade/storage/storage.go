@@ -1,7 +1,6 @@
 package storage
 
 import(
-    "sync"
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/path"
@@ -13,8 +12,6 @@ import(
     "github.com/deatil/go-filesystem/filesystem/interfaces"
     localAdapter "github.com/deatil/go-filesystem/filesystem/adapter/local"
 )
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -79,19 +76,17 @@ func GetDefaultDisk() string {
 
 // 注册磁盘
 func Register() {
-    once.Do(func() {
-        // 注册可用驱动
-        register.
-            NewManagerWithPrefix("database").
-            Register("local", func(conf map[string]any) any {
-                root := conf["root"].(string)
+    // 注册可用驱动
+    register.
+        NewManagerWithPrefix("database").
+        Register("local", func(conf map[string]any) any {
+            root := conf["root"].(string)
 
-                // 根目录
-                root = path.FormatPath(root)
+            // 根目录
+            root = path.FormatPath(root)
 
-                driver := localAdapter.New(root)
+            driver := localAdapter.New(root)
 
-                return driver
-            })
-    })
+            return driver
+        })
 }

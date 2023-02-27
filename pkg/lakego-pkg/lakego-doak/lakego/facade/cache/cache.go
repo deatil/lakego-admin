@@ -1,7 +1,6 @@
 package cache
 
 import (
-    "sync"
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/array"
@@ -22,8 +21,6 @@ import (
  * @create 2021-7-3
  * @author deatil
  */
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -84,42 +81,29 @@ func GetDefaultCache() string {
 
 // 注册
 func Register() {
-    once.Do(func() {
-        // 注册缓存驱动
-        register.
-            NewManagerWithPrefix("cache").
-            Register("redis", func(conf map[string]any) any {
-                addr     := array.ArrGetWithGoch(conf, "addr").ToString()
-                password := array.ArrGetWithGoch(conf, "password").ToString()
-                db       := array.ArrGetWithGoch(conf, "db").ToInt()
+    // 注册缓存驱动
+    register.
+        NewManagerWithPrefix("cache").
+        Register("redis", func(conf map[string]any) any {
+            cfg := array.ArrayFrom(conf)
 
-                minIdleConn  := array.ArrGetWithGoch(conf, "minidle-conn").ToInt()
-                dialTimeout  := array.ArrGetWithGoch(conf, "dial-timeout").ToDuration()
-                readTimeout  := array.ArrGetWithGoch(conf, "read-timeout").ToDuration()
-                writeTimeout := array.ArrGetWithGoch(conf, "write-timeout").ToDuration()
+            driver := redisDriver.New(redisDriver.Config{
+                DB:       cfg.Value("db").ToInt(),
+                Addr:     cfg.Value("addr").ToString(),
+                Password: cfg.Value("password").ToString(),
 
-                poolSize    := array.ArrGetWithGoch(conf, "pool-size").ToInt()
-                poolTimeout := array.ArrGetWithGoch(conf, "pool-timeout").ToDuration()
+                MinIdleConn:  cfg.Value("minidle-conn").ToInt(),
+                DialTimeout:  cfg.Value("dial-timeout").ToDuration(),
+                ReadTimeout:  cfg.Value("read-timeout").ToDuration(),
+                WriteTimeout: cfg.Value("write-timeout").ToDuration(),
 
-                enabletrace := array.ArrGetWithGoch(conf, "enabletrace").ToBool()
+                PoolSize:     cfg.Value("pool-size").ToInt(),
+                PoolTimeout:  cfg.Value("pool-timeout").ToDuration(),
 
-                driver := redisDriver.New(redisDriver.Config{
-                    DB:       db,
-                    Addr:     addr,
-                    Password: password,
-
-                    MinIdleConn:  minIdleConn,
-                    DialTimeout:  dialTimeout,
-                    ReadTimeout:  readTimeout,
-                    WriteTimeout: writeTimeout,
-                    PoolSize:     poolSize,
-                    PoolTimeout:  poolTimeout,
-
-                    EnableTrace:  enabletrace,
-                })
-
-                return driver
+                EnableTrace:  cfg.Value("enabletrace").ToBool(),
             })
-    })
+
+            return driver
+        })
 }
 

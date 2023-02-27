@@ -2,7 +2,6 @@ package logger
 
 import (
     "log"
-    "sync"
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/register"
@@ -11,8 +10,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/logger/interfaces"
     logrusDriver "github.com/deatil/lakego-doak/lakego/logger/driver/logrus"
 )
-
-var once sync.Once
 
 // 初始化
 func init() {
@@ -83,21 +80,17 @@ func GetDefaultDriver() string {
 
 // 注册
 func Register() {
-    once.Do(func() {
-        // 注册驱动
-        register.
-            NewManagerWithPrefix("logger").
-            RegisterMany(map[string]func(map[string]any) any {
-                // logrus 日志
-                "logrus": func(conf map[string]any) any {
-                    driver := logrusDriver.New()
+    // 注册驱动
+    register.
+        NewManagerWithPrefix("logger").
+        RegisterMany(map[string]func(map[string]any) any {
+            // logrus 日志
+            "logrus": func(conf map[string]any) any {
+                driver := logrusDriver.New()
 
-                    driver.WithConfig(conf)
+                driver.WithConfig(conf)
 
-                    return driver
-                },
-            })
-    })
+                return driver
+            },
+        })
 }
-
-
