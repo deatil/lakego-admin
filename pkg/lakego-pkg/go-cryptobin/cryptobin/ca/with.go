@@ -43,10 +43,3 @@ func (this CA) WithErrors(errs []error) CA {
 
     return this
 }
-
-// 添加错误
-func (this CA) AppendError(err ...error) CA {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

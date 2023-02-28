@@ -111,8 +111,3 @@ func (this Ecdsa) GetVerify() bool {
 func (this Ecdsa) GetErrors() []error {
     return this.Errors
 }
-
-// 获取错误
-func (this Ecdsa) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
-}

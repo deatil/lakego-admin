@@ -38,10 +38,3 @@ func (this Curve25519) WithErrors(errs []error) Curve25519 {
 
     return this
 }
-
-// 添加错误
-func (this Curve25519) AppendError(err ...error) Curve25519 {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

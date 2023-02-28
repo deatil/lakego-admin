@@ -2,8 +2,6 @@ package ecdh
 
 import (
     "crypto/ecdh"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -34,9 +32,4 @@ func (this Ecdh) GetSecretData() []byte {
 // 获取错误
 func (this Ecdh) GetErrors() []error {
     return this.Errors
-}
-
-// 获取错误
-func (this Ecdh) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
 }

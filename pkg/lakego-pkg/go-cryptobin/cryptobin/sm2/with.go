@@ -65,10 +65,3 @@ func (this SM2) WithErrors(errs []error) SM2 {
 
     return this
 }
-
-// 添加错误
-func (this SM2) AppendError(errs ...error) SM2 {
-    this.Errors = append(this.Errors, errs...)
-
-    return this
-}

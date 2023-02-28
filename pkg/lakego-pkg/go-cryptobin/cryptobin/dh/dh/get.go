@@ -2,8 +2,6 @@ package dh
 
 import (
     "github.com/deatil/go-cryptobin/dh/dh"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -78,9 +76,4 @@ func (this Dh) GetSecretData() []byte {
 // 获取错误
 func (this Dh) GetErrors() []error {
     return this.Errors
-}
-
-// 获取错误
-func (this Dh) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
 }

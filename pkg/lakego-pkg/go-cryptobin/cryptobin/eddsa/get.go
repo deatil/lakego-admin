@@ -2,8 +2,6 @@ package eddsa
 
 import (
     "crypto/ed25519"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -39,9 +37,4 @@ func (this EdDSA) GetVerify() bool {
 // 获取错误
 func (this EdDSA) GetErrors() []error {
     return this.Errors
-}
-
-// 获取错误
-func (this EdDSA) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
 }

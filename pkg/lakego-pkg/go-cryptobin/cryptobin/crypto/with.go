@@ -80,10 +80,3 @@ func (this Cryptobin) WithErrors(errs []error) Cryptobin {
 
     return this
 }
-
-// 添加错误
-func (this Cryptobin) AppendError(err ...error) Cryptobin {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

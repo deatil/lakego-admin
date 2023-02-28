@@ -111,10 +111,3 @@ func (this Dh) WithError(errs []error) Dh {
 
     return this
 }
-
-// 添加错误
-func (this Dh) AppendError(err ...error) Dh {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

@@ -45,10 +45,3 @@ func (this EdDSA) WithErrors(errs []error) EdDSA {
 
     return this
 }
-
-// 添加错误
-func (this EdDSA) AppendError(err ...error) EdDSA {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

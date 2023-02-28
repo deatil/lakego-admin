@@ -2,8 +2,6 @@ package dsa
 
 import (
     "crypto/dsa"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -44,9 +42,4 @@ func (this DSA) GetVerify() bool {
 // 获取错误
 func (this DSA) GetErrors() []error {
     return this.Errors
-}
-
-// 获取错误
-func (this DSA) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
 }

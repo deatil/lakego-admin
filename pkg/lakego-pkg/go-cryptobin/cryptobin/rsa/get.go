@@ -61,8 +61,3 @@ func (this Rsa) GetSignHash() string {
 func (this Rsa) GetErrors() []error {
     return this.Errors
 }
-
-// 获取错误
-func (this Rsa) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
-}

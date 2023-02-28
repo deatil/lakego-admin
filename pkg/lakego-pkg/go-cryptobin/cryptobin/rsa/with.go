@@ -52,10 +52,3 @@ func (this Rsa) WithError(errs []error) Rsa {
 
     return this
 }
-
-// 添加错误
-func (this Rsa) AppendError(err ...error) Rsa {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

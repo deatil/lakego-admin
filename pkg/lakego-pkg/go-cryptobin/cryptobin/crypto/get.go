@@ -53,8 +53,3 @@ func (this Cryptobin) GetOneConfig(key string) any {
 func (this Cryptobin) GetErrors() []error {
     return this.Errors
 }
-
-// 获取错误
-func (this Cryptobin) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
-}

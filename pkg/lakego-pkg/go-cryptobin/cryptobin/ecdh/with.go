@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    "github.com/deatil/go-cryptobin/dh/ecdh"
+    "crypto/ecdh"
 )
 
 // 设置 PrivateKey
@@ -26,7 +26,7 @@ func (this Ecdh) WithCurve(data ecdh.Curve) Ecdh {
 }
 
 // 设置散列方式
-// 可用参数 [P521 | P384 | P256 | P224]
+// 可用参数 [P521 | P384 | P256 | X25519]
 func (this Ecdh) SetCurve(name string) Ecdh {
     var curve ecdh.Curve
 
@@ -37,10 +37,10 @@ func (this Ecdh) SetCurve(name string) Ecdh {
             curve = ecdh.P384()
         case "P256":
             curve = ecdh.P256()
-        case "P224":
-            curve = ecdh.P224()
+        case "X25519":
+            curve = ecdh.X25519()
         default:
-            curve = ecdh.P224()
+            curve = ecdh.P256()
     }
 
     this.curve = curve
@@ -65,13 +65,6 @@ func (this Ecdh) WithSecretData(data []byte) Ecdh {
 // 设置错误
 func (this Ecdh) WithErrors(errs []error) Ecdh {
     this.Errors = errs
-
-    return this
-}
-
-// 添加错误
-func (this Ecdh) AppendError(err ...error) Ecdh {
-    this.Errors = append(this.Errors, err...)
 
     return this
 }

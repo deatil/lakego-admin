@@ -70,10 +70,3 @@ func (this Ecdsa) WithErrors(errs []error) Ecdsa {
 
     return this
 }
-
-// 添加错误
-func (this Ecdsa) AppendError(err ...error) Ecdsa {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}

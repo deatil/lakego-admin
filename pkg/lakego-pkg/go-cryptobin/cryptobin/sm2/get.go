@@ -110,8 +110,3 @@ func (this SM2) GetVerify() bool {
 func (this SM2) GetErrors() []error {
     return this.Errors
 }
-
-// 获取错误
-func (this SM2) Error() *cryptobin_tool.Errors {
-    return cryptobin_tool.NewError(this.Errors...)
-}

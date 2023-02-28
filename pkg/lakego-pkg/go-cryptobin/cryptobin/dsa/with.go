@@ -53,10 +53,3 @@ func (this DSA) WithErrors(errs []error) DSA {
 
     return this
 }
-
-// 添加错误
-func (this DSA) AppendError(err ...error) DSA {
-    this.Errors = append(this.Errors, err...)
-
-    return this
-}
