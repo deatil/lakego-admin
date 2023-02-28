@@ -9,7 +9,6 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/support/url"
-    "github.com/deatil/lakego-doak-admin/admin/support/jwt"
     "github.com/deatil/lakego-doak-admin/admin/support/except"
     "github.com/deatil/lakego-doak-admin/admin/support/response"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
@@ -48,7 +47,7 @@ func jwtCheck(ctx *router.Context) bool {
     // 授权 token
     accessToken := strings.TrimPrefix(authJwt, prefix)
 
-    aud := jwt.GetJwtAud(ctx)
+    aud := auth.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
     // 解析 token

@@ -1,8 +1,6 @@
 package mysql
 
 import (
-    "fmt"
-
     "gorm.io/driver/mysql"
 
     "github.com/deatil/lakego-doak/lakego/database/driver"
@@ -41,11 +39,8 @@ func (this *Mysql) CreateConnection() {
     // 配置
     conf := this.Config
 
-    // dsn 判断
+    // 连接配置
     dsn = conf["dsn"].(string)
-    if dsn == "" {
-        dsn = this.getDSN()
-    }
 
     mc := mysql.Config{
         DSN:                       dsn,
@@ -60,29 +55,4 @@ func (this *Mysql) CreateConnection() {
     dialector := mysql.New(mc)
 
     this.CreateOpenConnection(dialector)
-}
-
-/**
- * 连接 DSN
- */
-func (this *Mysql) getDSN() string {
-    // 配置
-    conf := this.Config
-
-    Host := conf["host"].(string)
-    Port := conf["port"].(int)
-    Username := conf["username"].(string)
-    Password := conf["password"].(string)
-    Charset := conf["charset"].(string)
-    Database := conf["database"].(string)
-
-    return fmt.Sprintf(
-        "%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
-        Username,
-        Password,
-        Host,
-        Port,
-        Database,
-        Charset,
-    )
 }

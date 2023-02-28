@@ -12,7 +12,6 @@ import (
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
-    "github.com/deatil/lakego-doak-admin/admin/support/jwt"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
     passport_validate "github.com/deatil/lakego-doak-admin/admin/validate/passport"
@@ -110,7 +109,7 @@ func (this *Passport) Login(ctx *router.Context) {
     }
 
     // 生成 token
-    aud := jwt.GetJwtAud(ctx)
+    aud := auth.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
     // 账号ID
@@ -190,7 +189,7 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     }
 
     // jwt
-    aud := jwt.GetJwtAud(ctx)
+    aud := auth.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
     // 拿取数据
@@ -258,7 +257,7 @@ func (this *Passport) Logout(ctx *router.Context) {
     }
 
     // jwt
-    aud := jwt.GetJwtAud(ctx)
+    aud := auth.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
     // 拿取数据

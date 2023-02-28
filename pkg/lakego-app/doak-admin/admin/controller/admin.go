@@ -19,7 +19,6 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/permission"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
-    "github.com/deatil/lakego-doak-admin/admin/support/jwt"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
     admin_validate "github.com/deatil/lakego-doak-admin/admin/validate/admin"
     admin_repository "github.com/deatil/lakego-doak-admin/admin/repository/admin"
@@ -843,7 +842,7 @@ func (this *Admin) Logout(ctx *router.Context) {
     }
 
     // jwt
-    aud := jwt.GetJwtAud(ctx)
+    aud := auth.GetJwtAud(ctx)
     jwter := auth.NewWithAud(aud)
 
     // 拿取数据

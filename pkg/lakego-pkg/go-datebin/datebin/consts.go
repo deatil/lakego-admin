@@ -6,21 +6,23 @@ import (
 
 // 时间常量
 const (
-    // 纳秒 [Nanosecond time.Duration = 1]
+    // 皮秒[ps] [Picosecond = Nanosecond * 0.001]
+    Picosecond  = time.Nanosecond / 1000
+    // 纳秒[ns] [Nanosecond time.Duration = 1]
     Nanosecond  = time.Nanosecond
-    // 微妙 [Microsecond = Nanosecond * 1000]
+    // 微妙[µs] [Microsecond = Nanosecond * 1000]
     Microsecond = time.Microsecond
-    // 毫秒 [Millisecond = Microsecond * 1000]
+    // 毫秒[ms] [Millisecond = Microsecond * 1000]
     Millisecond = time.Millisecond
-    // 秒   [Second = Millisecond * 1000]
+    // 秒[s]    [Second = Millisecond * 1000]
     Second      = time.Second
-    // 分钟 [Minute = Second * 60]
+    // 分钟[m]  [Minute = Second * 60]
     Minute      = time.Minute
-    // 小时 [Hour = Minute * 60]
+    // 小时[h]  [Hour = Minute * 60]
     Hour        = time.Hour
-    // 天   [Day = Hour * 24]
+    // 天[d]    [Day = Hour * 24]
     Day         = time.Hour * 24
-    // 周   [Week = Day * 7]
+    // 周[w]    [Week = Day * 7]
     Week        = Day * 7
 )
 

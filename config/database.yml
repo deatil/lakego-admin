@@ -8,17 +8,20 @@ debug: false
 connections:
   mysql:
     type: "mysql"
-    # 填写替换其他配置
-    dsn: ""
-    host: "127.0.0.1"
-    port: 3306
-    username: "root"
-    password: "123456"
-    database: "lakego_admin"
-    charset: "utf8mb4"
+    # 连接配置
+    dsn: "root:123456@tcp(127.0.0.1:3306)/lakego_admin?charset=utf8mb4&parseTime=True&loc=Local"
+    # 前缀
     prefix: "lakego_"
     max-idle-conns: 10
     max-open-conns: 128
-    conn-max-lifetime: 60      # 连接不活动时的最大生存时间(秒)
-    #reconnectinterval: 1    # 保留项,重连数据库间隔秒数
-    #pingfailretrytimes: 3   # 保留项,最大重连次数
+    conn-max-idle-time: 30s
+    conn-max-lifetime: 60s    # 连接不活动时的最大生存时间(秒)
+    # reconnectinterval: 1    # 保留项,重连数据库间隔秒数
+    # pingfailretrytimes: 3   # 保留项,最大重连次数
+    # 日志
+    log-slow-threshold: 200ms
+    # silent | error | warn | info
+    log-level: "warn"
+    log-ignore-not-found-error: true
+    log-parameterized-queries: false
+    log-colorful: false
