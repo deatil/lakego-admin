@@ -5,17 +5,17 @@ import (
     "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/facade/captcha"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
     "github.com/deatil/lakego-doak/lakego/facade/logger"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/support/jwt"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
-    authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
-    passportValidate "github.com/deatil/lakego-doak-admin/admin/validate/passport"
+    auth_password "github.com/deatil/lakego-doak-admin/admin/password"
+    passport_validate "github.com/deatil/lakego-doak-admin/admin/validate/passport"
 )
 
 /**
@@ -71,7 +71,7 @@ func (this *Passport) Login(ctx *router.Context) {
     post := make(map[string]any)
     this.ShouldBindJSON(ctx, &post)
 
-    validateErr := passportValidate.Login(post)
+    validateErr := passport_validate.Login(post)
     if validateErr != "" {
         this.Error(ctx, validateErr, code.LoginError)
         return
@@ -103,7 +103,7 @@ func (this *Passport) Login(ctx *router.Context) {
     }
 
     // 验证密码
-    checkStatus := authPassword.CheckPassword(admin["password"].(string), password, admin["password_salt"].(string))
+    checkStatus := auth_password.CheckPassword(admin["password"].(string), password, admin["password_salt"].(string))
     if !checkStatus {
         this.Error(ctx, "账号或者密码错误", code.LoginError)
         return

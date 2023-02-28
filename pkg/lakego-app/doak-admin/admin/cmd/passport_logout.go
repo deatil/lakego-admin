@@ -6,10 +6,10 @@ import (
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/auth/auth"
 )
 
 /**

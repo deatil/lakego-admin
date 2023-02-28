@@ -4,9 +4,9 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/auth"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
+    "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/support/url"
     "github.com/deatil/lakego-doak-admin/admin/support/jwt"

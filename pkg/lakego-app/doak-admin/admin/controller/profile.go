@@ -4,11 +4,11 @@ import (
     "github.com/deatil/go-event/event"
     
     "github.com/deatil/lakego-doak/lakego/router"
-    authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
-    profileValidate "github.com/deatil/lakego-doak-admin/admin/validate/profile"
+    auth_password "github.com/deatil/lakego-doak-admin/admin/password"
+    profile_validate "github.com/deatil/lakego-doak-admin/admin/validate/profile"
 )
 
 /**
@@ -62,7 +62,7 @@ func (this *Profile) Update(ctx *router.Context) {
     this.ShouldBindJSON(ctx, &post)
 
     // 检测
-    validateErr := profileValidate.Update(post)
+    validateErr := profile_validate.Update(post)
     if validateErr != "" {
         this.Error(ctx, validateErr)
         return
@@ -113,7 +113,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
     this.ShouldBindJSON(ctx, &post)
 
     // 检测
-    validateErr := profileValidate.UpdateAvatar(post)
+    validateErr := profile_validate.UpdateAvatar(post)
     if validateErr != "" {
         this.Error(ctx, validateErr)
         return
@@ -164,7 +164,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     this.ShouldBindJSON(ctx, &post)
 
     // 检测
-    validateErr := profileValidate.UpdatePasssword(post)
+    validateErr := profile_validate.UpdatePasssword(post)
     if validateErr != "" {
         this.Error(ctx, validateErr)
         return
@@ -193,14 +193,14 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     }
 
     // 验证密码
-    checkStatus := authPassword.CheckPassword(admin["password"].(string), oldpassword, admin["password_salt"].(string))
+    checkStatus := auth_password.CheckPassword(admin["password"].(string), oldpassword, admin["password_salt"].(string))
     if !checkStatus {
         this.Error(ctx, "用户密码错误")
         return
     }
 
     // 生成密码
-    pass, encrypt := authPassword.MakePassword(newpassword)
+    pass, encrypt := auth_password.MakePassword(newpassword)
 
     err := model.NewAdmin().
         Where("id = ?", adminid).

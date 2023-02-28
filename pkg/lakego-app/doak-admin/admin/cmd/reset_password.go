@@ -5,9 +5,9 @@ import (
 
     "github.com/deatil/go-hash/hash"
     "github.com/deatil/lakego-doak/lakego/command"
-    authPassword "github.com/deatil/lakego-doak/lakego/auth/password"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    auth_password "github.com/deatil/lakego-doak-admin/admin/password"
 )
 
 /**
@@ -73,7 +73,7 @@ func ResetPassword() {
     }
 
     // 生成密码
-    pass, encrypt := authPassword.MakePassword(password)
+    pass, encrypt := auth_password.MakePassword(password)
 
     err3 := model.NewAdmin().
         Where("name = ?", userName).

@@ -1,4 +1,4 @@
-package auth
+package token
 
 import (
     "os"
@@ -15,8 +15,9 @@ import (
 )
 
 // 授权结构体
-func New() *Auth {
-    return &Auth{
+func New(j *jwt.JWT) *Token {
+    return &Token{
+        JWT: j,
         Config: make(ConfigMap),
         Claims: make(ClaimMap),
     }
@@ -36,7 +37,7 @@ type (
  * @create 2021-6-19
  * @author deatil
  */
-type Auth struct {
+type Token struct {
     // 锁定
     mu sync.RWMutex
 
@@ -51,25 +52,22 @@ type Auth struct {
 }
 
 /**
- * 设置 JWT
+ * 批量设置配置
  */
-func (this *Auth) WithJWT(JWT *jwt.JWT) *Auth {
-    this.JWT = JWT
+func (this *Token) WithConfig(configs ConfigMap) *Token {
+    if len(configs) > 0 {
+        for k, v := range configs {
+            this.SetConfig(k, v)
+        }
+    }
 
     return this
 }
 
 /**
- * 获取设置的JWT
- */
-func (this *Auth) GetJWT() *jwt.JWT {
-    return this.JWT
-}
-
-/**
  * 设置配置
  */
-func (this *Auth) WithOneConfig(key string, value any) *Auth {
+func (this *Token) SetConfig(key string, value any) *Token {
     this.mu.Lock()
     defer this.mu.Unlock()
 
@@ -79,22 +77,9 @@ func (this *Auth) WithOneConfig(key string, value any) *Auth {
 }
 
 /**
- * 批量设置配置
- */
-func (this *Auth) WithConfig(configs ConfigMap) *Auth {
-    if len(configs) > 0 {
-        for k, v := range configs {
-            this.WithOneConfig(k, v)
-        }
-    }
-
-    return this
-}
-
-/**
  * 获取配置
  */
-func (this *Auth) GetConfig(key string) any {
+func (this *Token) GetConfig(key string) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
 
@@ -104,7 +89,7 @@ func (this *Auth) GetConfig(key string) any {
 /**
  * 获取配置
  */
-func (this *Auth) GetStringConfig(key string, defVal string) string {
+func (this *Token) GetStringConfig(key string, defVal string) string {
     conf := this.GetConfig(key)
     if conf == nil {
         return defVal
@@ -116,7 +101,7 @@ func (this *Auth) GetStringConfig(key string, defVal string) string {
 /**
  * 获取配置
  */
-func (this *Auth) GetIntConfig(key string, defVal int) int {
+func (this *Token) GetIntConfig(key string, defVal int) int {
     conf := this.GetConfig(key)
     if conf == nil {
         return defVal
@@ -128,7 +113,7 @@ func (this *Auth) GetIntConfig(key string, defVal int) int {
 /**
  * 获取鉴权 token 过期时间
  */
-func (this *Auth) GetAccessExpiresIn() int {
+func (this *Token) GetAccessExpiresIn() int {
     // 过期时间
     time := this.GetIntConfig("passport.access-expires-in", 0)
 
@@ -138,7 +123,7 @@ func (this *Auth) GetAccessExpiresIn() int {
 /**
  * 获取刷新 token 过期时间
  */
-func (this *Auth) GetRefreshExpiresIn() int {
+func (this *Token) GetRefreshExpiresIn() int {
     // 过期时间
     time := this.GetIntConfig("passport.refresh-expires-in", 0)
 
@@ -146,7 +131,7 @@ func (this *Auth) GetRefreshExpiresIn() int {
 }
 
 // 设置自定义载荷
-func (this *Auth) WithClaim(key string, value any) *Auth {
+func (this *Token) WithClaim(key string, value any) *Token {
     this.mu.Lock()
     defer this.mu.Unlock()
 
@@ -158,7 +143,7 @@ func (this *Auth) WithClaim(key string, value any) *Auth {
 /**
  * 生成鉴权 token
  */
-func (this *Auth) MakeJWT() *jwt.JWT {
+func (this *Token) MakeJWT() *jwt.JWT {
     aud := this.GetStringConfig("jwt.aud", "")
     iss := this.GetStringConfig("jwt.iss", "")
     sub := this.GetStringConfig("jwt.sub", "")
@@ -214,7 +199,7 @@ func (this *Auth) MakeJWT() *jwt.JWT {
 /**
  * 生成 token
  */
-func (this *Auth) MakeToken(claims map[string]string) (token string, err error) {
+func (this *Token) MakeToken(claims map[string]string) (token string, err error) {
     jwtHandle := this.MakeJWT()
 
     if len(claims) > 0 {
@@ -231,7 +216,7 @@ func (this *Auth) MakeToken(claims map[string]string) (token string, err error) 
 /**
  * 生成鉴权 token
  */
-func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err error) {
+func (this *Token) MakeAccessToken(claims map[string]string) (token string, err error) {
     jti := this.GetStringConfig("passport.access-token-id", "")
     exp := this.GetAccessExpiresIn()
 
@@ -262,7 +247,7 @@ func (this *Auth) MakeAccessToken(claims map[string]string) (token string, err e
 /**
  * 生成刷新 token
  */
-func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err error) {
+func (this *Token) MakeRefreshToken(claims map[string]string) (token string, err error) {
     jti := this.GetStringConfig("passport.refresh-token-id", "")
     exp := this.GetRefreshExpiresIn()
 
@@ -293,7 +278,7 @@ func (this *Auth) MakeRefreshToken(claims map[string]string) (token string, err 
 /**
  * 获取鉴权 token
  */
-func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
+func (this *Token) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := this.GetStringConfig("passport.access-token-id", "")
 
     jwter := this.MakeJWT().WithJti(jti)
@@ -332,7 +317,7 @@ func (this *Auth) GetAccessTokenClaims(token string, verify ...bool) (jwt.MapCla
 /**
  * 获取刷新 token
  */
-func (this *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
+func (this *Token) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapClaims, error) {
     jti := this.GetStringConfig("passport.refresh-token-id", "")
 
     jwter := this.MakeJWT().WithJti(jti)
@@ -371,7 +356,7 @@ func (this *Auth) GetRefreshTokenClaims(token string, verify ...bool) (jwt.MapCl
 /**
  * 获取鉴权 token 所在 userid
  */
-func (this *Auth) GetAccessTokenData(token string, key string, verify ...bool) string {
+func (this *Token) GetAccessTokenData(token string, key string, verify ...bool) string {
     claims, err := this.GetAccessTokenClaims(token, verify...)
     if err != nil {
         return ""
@@ -385,7 +370,7 @@ func (this *Auth) GetAccessTokenData(token string, key string, verify ...bool) s
 /**
  * 获取刷新 token 所在 userid
  */
-func (this *Auth) GetRefreshTokenData(token string, key string, verify ...bool) string {
+func (this *Token) GetRefreshTokenData(token string, key string, verify ...bool) string {
     claims, err := this.GetRefreshTokenClaims(token, verify...)
     if err != nil {
         return ""
@@ -400,7 +385,7 @@ func (this *Auth) GetRefreshTokenData(token string, key string, verify ...bool) 
 /**
  * 从 Claims 获取数据
  */
-func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) any {
+func (this *Token) GetFromTokenClaims(claims jwt.MapClaims, key string) any {
     if _, ok := claims[key]; !ok {
         return nil
     }
@@ -411,7 +396,7 @@ func (this *Auth) GetFromTokenClaims(claims jwt.MapClaims, key string) any {
 /**
  * 从 TokenClaims 获取数据
  */
-func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
+func (this *Token) GetDataFromTokenClaims(claims jwt.MapClaims, key string) string {
     if _, ok := claims[key]; !ok {
         return ""
     }
@@ -430,7 +415,7 @@ func (this *Auth) GetDataFromTokenClaims(claims jwt.MapClaims, key string) strin
 }
 
 // 加密
-func (this *Auth) Encode(data string, passphrase string, iv string) string {
+func (this *Token) Encode(data string, passphrase string, iv string) string {
     data = crypto.
         FromString(data).
         SetIv(iv).
@@ -445,7 +430,7 @@ func (this *Auth) Encode(data string, passphrase string, iv string) string {
 }
 
 // 解密
-func (this *Auth) Decode(data string, passphrase string, iv string) string {
+func (this *Token) Decode(data string, passphrase string, iv string) string {
     data = crypto.
         FromBase64String(data).
         SetIv(iv).
@@ -460,7 +445,7 @@ func (this *Auth) Decode(data string, passphrase string, iv string) string {
 }
 
 // 从文件读取数据
-func (this *Auth) ReadDataFromFile(file string) ([]byte, error) {
+func (this *Token) ReadDataFromFile(file string) ([]byte, error) {
     if !this.FileExist(file) {
         return []byte(""), errors.New("秘钥或者私钥文件不存在")
     }
@@ -470,13 +455,13 @@ func (this *Auth) ReadDataFromFile(file string) ([]byte, error) {
 }
 
 // 文件判断
-func (this *Auth) FileExist(fp string) bool {
+func (this *Token) FileExist(fp string) bool {
     _, err := os.Stat(fp)
     return err == nil || os.IsExist(err)
 }
 
 // 格式化文件路径
-func (this *Auth) FormatPath(file string) string {
+func (this *Token) FormatPath(file string) string {
     filename := path.FormatPath(file)
 
     return filename
