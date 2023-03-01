@@ -4,7 +4,6 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 菜单权限
@@ -33,5 +32,5 @@ func (this *AuthRule) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewAuthRule() *gorm.DB {
-    return facade.DB.Model(&AuthRule{})
+    return NewDB().Model(&AuthRule{})
 }

@@ -4,7 +4,6 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 授权权限
@@ -26,7 +25,7 @@ func (this *Rules) BeforeCreate(db *gorm.DB) error {
 }
 
 func NewRules() *gorm.DB {
-    return facade.DB.Model(&Rules{})
+    return NewDB().Model(&Rules{})
 }
 
 // 清空数据

@@ -4,7 +4,6 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 type Admin struct {
@@ -39,6 +38,6 @@ func (this *Admin) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewAdmin() *gorm.DB {
-    return facade.DB.Model(&Admin{})
+    return NewDB().Model(&Admin{})
 }
 

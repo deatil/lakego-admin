@@ -4,7 +4,6 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 权限分组
@@ -34,5 +33,5 @@ func (this *AuthGroup) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewAuthGroup() *gorm.DB {
-    return facade.DB.Model(&AuthGroup{})
+    return NewDB().Model(&AuthGroup{})
 }

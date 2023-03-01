@@ -4,7 +4,6 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
 )
@@ -36,7 +35,7 @@ func (this *Attachment) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewAttachment() *gorm.DB {
-    return facade.DB.Model(&Attachment{})
+    return NewDB().Model(&Attachment{})
 }
 
 // 附件链接
