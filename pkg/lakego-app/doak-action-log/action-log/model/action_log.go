@@ -4,7 +4,7 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade/database"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 type ActionLog struct {
@@ -33,10 +33,10 @@ func (this *ActionLog) BeforeCreate(tx *gorm.DB) error {
 }
 
 func NewActionLog() *gorm.DB {
-    return database.New().Model(&ActionLog{})
+    return facade.DB.Model(&ActionLog{})
 }
 
 func NewDB() *gorm.DB {
-    return database.New()
+    return facade.DB
 }
 

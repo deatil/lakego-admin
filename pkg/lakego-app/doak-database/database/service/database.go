@@ -4,12 +4,12 @@ import (
     "gorm.io/gorm"
     "github.com/deatil/go-goch/goch"
 
-    "github.com/deatil/lakego-doak/lakego/facade/database"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 创建一个 db 连接
 func NewDB() *gorm.DB {
-    return database.New()
+    return facade.DB
 }
 
 // 构造函数

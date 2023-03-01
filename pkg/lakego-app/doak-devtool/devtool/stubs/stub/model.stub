@@ -4,7 +4,7 @@ import (
     "gorm.io/gorm"
 
     "github.com/deatil/lakego-doak/lakego/uuid"
-    "github.com/deatil/lakego-doak/lakego/facade/database"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // {modelName} 模型
@@ -26,5 +26,5 @@ func (this *{modelName}) BeforeCreate(tx *gorm.DB) error {
 }
 
 func New{modelName}() *gorm.DB {
-    return database.New().Model(&{modelName}{})
+    return facade.DB.Model(&{modelName}{})
 }

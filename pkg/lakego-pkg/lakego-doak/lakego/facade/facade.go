@@ -41,7 +41,7 @@ var Upload *upload.Upload
 var Storage *storage.Storage
 
 // 配置
-var Config func(...string) *config.Config
+var Config func(string) *config.Config
 
 // 验证码
 var Captcha captcha.Captcha

@@ -519,11 +519,6 @@ func (this *App) graceRun(address string) {
 func (this *App) initDI() {
     d := di.New()
 
-    // 配置
-    d.Provide(func() *config.Config {
-        return config.New()
-    })
-
     // jwt
     d.Provide(func() *jwt.JWT {
         return jwt.New()

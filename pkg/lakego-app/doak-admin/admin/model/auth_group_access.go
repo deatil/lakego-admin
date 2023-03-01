@@ -2,7 +2,7 @@ package model
 
 import (
     "gorm.io/gorm"
-    "github.com/deatil/lakego-doak/lakego/facade/database"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 管理员管理分组
@@ -15,5 +15,5 @@ type AuthGroupAccess struct {
 }
 
 func NewAuthGroupAccess() *gorm.DB {
-    return database.New().Model(&AuthGroupAccess{})
+    return facade.DB.Model(&AuthGroupAccess{})
 }

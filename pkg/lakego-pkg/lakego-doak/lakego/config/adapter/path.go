@@ -1,27 +1,18 @@
 package adapter
 
-import (
-    "sync"
+var (
+    // 默认
+    defaultPath *Path
 )
-
-var instance *Path
-var once sync.Once
-
-// 单例
-func InstancePath() *Path {
-    once.Do(func() {
-        instance = &Path{
-            Pathes: make(PathesMap),
-        }
-    })
-
-    return instance
-}
 
 type (
     // 路径类型
     PathesMap = map[string][]string
 )
+
+func init() {
+    defaultPath = NewPath()
+}
 
 /**
  * 配置路径
@@ -32,6 +23,15 @@ type (
 type Path struct {
     // 路径
     Pathes PathesMap
+}
+
+// 单例
+func NewPath() *Path {
+    path := &Path{
+        Pathes: make(PathesMap),
+    }
+
+    return path
 }
 
 // 添加
@@ -45,6 +45,11 @@ func (this *Path) WithPath(name string, path string) *Path {
     return this
 }
 
+// 添加
+func WithPath(name string, path string) *Path {
+    return defaultPath.WithPath(name, path)
+}
+
 // 获取
 func (this *Path) GetPath(name string) []string {
     if paths, ok := this.Pathes[name]; ok {
@@ -52,4 +57,9 @@ func (this *Path) GetPath(name string) []string {
     }
 
     return make([]string, 0)
+}
+
+// 获取
+func GetPath(name string) []string {
+    return defaultPath.GetPath(name)
 }

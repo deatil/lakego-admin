@@ -75,16 +75,18 @@ func ImportApiRoute() {
             url := k
             method := strings.ToUpper(kk)
 
-            data := vv.(map[string]any)
-            title := data["summary"].(string)
+            data := array.ArrayFrom(vv)
 
-            slug := array.ArrayGet(data, "x-lakego.slug").ToString()
+            title := data.Value("summary").ToString()
+            description := data.Value("description").ToString()
+
+            slug := data.Value("x-lakego.slug").ToString()
             if slug == "" {
                 slug = hash.MD5(datebin.NowDatetimeString() + random.String(15))
             }
 
             // 排序
-            sort := array.ArrayGet(data, "x-lakego.sort", "100").ToString()
+            sort := data.Value("x-lakego.sort", "100").ToString()
 
             err := model.NewAuthRule().
                 Where("url = ?", url).
@@ -92,7 +94,7 @@ func ImportApiRoute() {
                 First(&result).
                 Error
             if err != nil || len(result) < 1 {
-                tags := array.ArrayGet(data, "tags").ToStringSlice()
+                tags := data.Value("tags").ToStringSlice()
 
                 tag := ""
                 if len(tags) > 0 {
@@ -137,7 +139,7 @@ func ImportApiRoute() {
                     Url: url,
                     Method: method,
                     Slug: slug,
-                    Description: "",
+                    Description: description,
                     Listorder: sort,
                     Status: 1,
                     AddTime: int(datebin.NowTime()),
@@ -151,6 +153,7 @@ func ImportApiRoute() {
                     Where("method = ?", method).
                     Updates(map[string]any{
                         "title": title,
+                        "description": description,
                         "slug": slug,
                         "listorder": sort,
                     })

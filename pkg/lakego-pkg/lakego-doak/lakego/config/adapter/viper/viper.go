@@ -93,7 +93,7 @@ func (this *Viper) WithFile(fileName ...string) {
 
     if len(fileName) > 0 {
         // 导入自定义配置
-        configFiles := adapter.InstancePath().GetPath(fileName[0])
+        configFiles := adapter.GetPath(fileName[0])
         if len(configFiles) > 0 {
             for _, configFile := range configFiles {
                 // 指定配置文件路径
@@ -132,6 +132,18 @@ func (this *Viper) Get(keyName string) any {
     value := this.conf.Get(keyName)
     return value
 }
+
+// 事件
+func (this *Viper) OnConfigChange(f func(string)) {
+    // 事件
+    this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
+        // WRITE
+        opString := changeEvent.Op.String()
+        f(opString)
+    })
+}
+
+// ================================================
 
 // GetString
 func (this *Viper) GetString(keyName string) string {
@@ -229,25 +241,8 @@ func (this *Viper) GetStringMapStringSlice(keyName string) map[string][]string {
     return value
 }
 
-// GetSizeInBytes
+// GetSizeInBytes, 暂未使用
 func (this *Viper) GetSizeInBytes(keyName string) uint {
     value := this.conf.GetSizeInBytes(keyName)
     return value
-}
-
-// 事件
-func (this *Viper) OnConfigChange(f func(string)) {
-    // 事件
-    this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
-        opString := changeEvent.Op.String()
-        f(opString)
-    })
-
-    /*
-    this.conf.OnConfigChange(func(changeEvent fsnotify.Event) {
-        if changeEvent.Op.String() == "WRITE" {
-            //
-        }
-    })
-    */
 }

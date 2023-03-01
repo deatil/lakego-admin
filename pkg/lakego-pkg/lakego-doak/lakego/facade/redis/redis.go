@@ -1,8 +1,6 @@
 package redis
 
 import (
-    "github.com/deatil/go-goch/goch"
-
     "github.com/deatil/lakego-doak/lakego/redis"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/facade/config"

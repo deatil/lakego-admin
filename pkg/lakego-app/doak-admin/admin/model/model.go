@@ -5,6 +5,7 @@ import (
 
     "gorm.io/gorm"
 
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
@@ -15,7 +16,7 @@ type (
 
 // 创建一个 db 连接
 func NewDB() *gorm.DB {
-    return database.New()
+    return facade.DB
 }
 
 // 获取配置

@@ -136,7 +136,7 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 
     newPath, err := filepath.Abs(path)
     if err == nil {
-        adapter.InstancePath().WithPath(key, newPath)
+        adapter.WithPath(key, newPath)
     }
 }
 

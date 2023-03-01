@@ -2,6 +2,7 @@ package config
 
 import (
     "time"
+    "github.com/deatil/go-goch/goch"
 
     "github.com/deatil/lakego-doak/lakego/config/interfaces"
 )
@@ -17,6 +18,13 @@ type Config struct {
     adapter interfaces.Adapter
 }
 
+// 构造函数
+func New(adapter interfaces.Adapter) *Config {
+    return &Config{
+        adapter: adapter,
+    }
+}
+
 // 添加适配器
 func (this *Config) WithAdapter(adapter interfaces.Adapter) *Config {
     this.adapter = adapter
@@ -27,27 +35,6 @@ func (this *Config) WithAdapter(adapter interfaces.Adapter) *Config {
 // 获取适配器
 func (this *Config) GetAdapter() interfaces.Adapter {
     return this.adapter
-}
-
-// 设置文件夹
-func (this *Config) WithPath(path string) *Config {
-    this.adapter.WithPath(path)
-
-    return this
-}
-
-// 设置读取文件
-func (this *Config) WithFile(fileName ...string) *Config {
-    this.adapter.WithFile(fileName...)
-
-    return this
-}
-
-// 设置读取文件
-func (this *Config) Use(fileName ...string) *Config {
-    this.WithFile(fileName...)
-
-    return this
 }
 
 // 设置默认值
@@ -76,87 +63,82 @@ func (this *Config) Get(keyName string) any {
 
 // GetString
 func (this *Config) GetString(keyName string) string {
-    return this.adapter.GetString(keyName)
+    return goch.ToString(this.Get(keyName))
 }
 
 // GetBool
 func (this *Config) GetBool(keyName string) bool {
-    return this.adapter.GetBool(keyName)
+    return goch.ToBool(this.Get(keyName))
 }
 
 // GetInt
 func (this *Config) GetInt(keyName string) int {
-    return this.adapter.GetInt(keyName)
+    return goch.ToInt(this.Get(keyName))
 }
 
 // GetInt32
 func (this *Config) GetInt32(keyName string) int32 {
-    return this.adapter.GetInt32(keyName)
+    return goch.ToInt32(this.Get(keyName))
 }
 
 // GetInt64
 func (this *Config) GetInt64(keyName string) int64 {
-    return this.adapter.GetInt64(keyName)
+    return goch.ToInt64(this.Get(keyName))
 }
 
 // GetUint
 func (this *Config) GetUint(keyName string) uint {
-    return this.adapter.GetUint(keyName)
+    return goch.ToUint(this.Get(keyName))
 }
 
 // GetUint32
 func (this *Config) GetUint32(keyName string) uint32 {
-    return this.adapter.GetUint32(keyName)
+    return goch.ToUint32(this.Get(keyName))
 }
 
 // GetUint64
 func (this *Config) GetUint64(keyName string) uint64 {
-    return this.adapter.GetUint64(keyName)
+    return goch.ToUint64(this.Get(keyName))
 }
 
 // float64
 func (this *Config) GetFloat64(keyName string) float64 {
-    return this.adapter.GetFloat64(keyName)
+    return goch.ToFloat64(this.Get(keyName))
 }
 
 // GetTime
 func (this *Config) GetTime(keyName string) time.Time {
-    return this.adapter.GetTime(keyName)
+    return goch.ToTime(this.Get(keyName))
 }
 
 // GetDuration
 func (this *Config) GetDuration(keyName string) time.Duration {
-    return this.adapter.GetDuration(keyName)
+    return goch.ToDuration(this.Get(keyName))
 }
 
 // GetIntSlice
 func (this *Config) GetIntSlice(keyName string) []int {
-    return this.adapter.GetIntSlice(keyName)
+    return goch.ToIntSlice(this.Get(keyName))
 }
 
 // GetStringSlice
 func (this *Config) GetStringSlice(keyName string) []string {
-    return this.adapter.GetStringSlice(keyName)
+    return goch.ToStringSlice(this.Get(keyName))
 }
 
 // GetStringMap
 func (this *Config) GetStringMap(keyName string) map[string]any {
-    return this.adapter.GetStringMap(keyName)
+    return goch.ToStringMap(this.Get(keyName))
 }
 
 // GetStringMapString
 func (this *Config) GetStringMapString(keyName string) map[string]string {
-    return this.adapter.GetStringMapString(keyName)
+    return goch.ToStringMapString(this.Get(keyName))
 }
 
 // GetStringMapStringSlice
 func (this *Config) GetStringMapStringSlice(keyName string) map[string][]string {
-    return this.adapter.GetStringMapStringSlice(keyName)
-}
-
-// GetSizeInBytes
-func (this *Config) GetSizeInBytes(keyName string) uint {
-    return this.adapter.GetSizeInBytes(keyName)
+    return goch.ToStringMapStringSlice(this.Get(keyName))
 }
 
 // 事件

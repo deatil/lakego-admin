@@ -6,12 +6,12 @@ import (
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
-    "github.com/deatil/lakego-doak/lakego/facade/database"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/database"
 
     "github.com/deatil/lakego-doak/lakego/permission"
     "github.com/deatil/lakego-doak/lakego/permission/interfaces"
-    gormAdapter "github.com/deatil/lakego-doak/lakego/permission/adapter/gorm"
+    gorm_adapter "github.com/deatil/lakego-doak/lakego/permission/adapter/gorm"
 )
 
 /**
@@ -86,9 +86,7 @@ func Register() {
     register.
         NewManagerWithPrefix("permission").
         Register("gorm", func(conf map[string]any) any {
-            newDb := database.New()
-
-            a, _ := gormAdapter.New(newDb)
+            a, _ := gorm_adapter.New(database.New())
 
             return a
         })
