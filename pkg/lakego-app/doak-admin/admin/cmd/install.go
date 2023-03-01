@@ -60,6 +60,8 @@ func runInsatll() {
         os.Exit(1)
     }
 
+    db := model.NewDB()
+
     sqlArr := strings.Split(string(sqls), ";")
     for _, sql := range sqlArr {
         sql = strings.Trim(sql, " ")
@@ -71,7 +73,7 @@ func runInsatll() {
         prefix := model.GetConfig("prefix")
         sql = strings.ReplaceAll(sql, "pre__", prefix.(string))
 
-        err := model.NewDB().Exec(sql).Error
+        err := db.Exec(sql).Error
         if err == nil {
             fmt.Println(sql, "\t 添加成功！")
         } else {
@@ -82,5 +84,5 @@ func runInsatll() {
     installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
     installFile.WriteString("")
 
-    fmt.Println("\n安装成功。\n")
+    fmt.Println("\n导入数据完成并安装成功。\n")
 }
