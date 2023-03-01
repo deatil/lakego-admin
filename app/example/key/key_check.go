@@ -9,7 +9,7 @@ import (
     cryptobin_eddsa "github.com/deatil/go-cryptobin/cryptobin/eddsa"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
-    cryptobin_ecdh "github.com/deatil/go-cryptobin/cryptobin/ecdh"
+    // cryptobin_ecdh "github.com/deatil/go-cryptobin/cryptobin/ecdh"
     cryptobin_dh1 "github.com/deatil/go-cryptobin/cryptobin/dh/curve25519"
     cryptobin_dh2 "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
     cryptobin_dh3 "github.com/deatil/go-cryptobin/cryptobin/dh/ecdh"
@@ -22,7 +22,8 @@ func KeyCheck() {
     CheckEdDSA()
     CheckRSA()
     CheckSM2()
-    CheckEcdh()
+
+    // CheckEcdh()
 
     CheckDh1()
     CheckDh2()
@@ -99,6 +100,7 @@ func CheckSM2() {
     fmt.Println("")
 }
 
+/*
 func CheckEcdh() {
     pri := ReadFile("./runtime/key/key-pem/ecdh/ecdh-pkcs8")
     pub := ReadFile("./runtime/key/key-pem/ecdh/ecdh-pkcs8.pub")
@@ -112,6 +114,7 @@ func CheckEcdh() {
     fmt.Printf("check res: %#v", res)
     fmt.Println("")
 }
+*/
 
 func CheckDh1() {
     pri := ReadFile("./runtime/key/key-pem/dh/curve25519/curve25519-pkcs8")
