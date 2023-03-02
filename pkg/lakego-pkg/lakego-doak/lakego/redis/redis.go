@@ -14,57 +14,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
-// 构造函数
-func New(config Config) Redis {
-    db := config.DB
-    addr := config.Addr
-    password := config.Password
-    keyPrefix := config.KeyPrefix
-
-    minIdleConn := config.MinIdleConn
-    dialTimeout := config.DialTimeout
-    readTimeout := config.ReadTimeout
-    writeTimeout := config.WriteTimeout
-    poolSize := config.PoolSize
-    poolTimeout := config.PoolTimeout
-
-    enabletrace := config.EnableTrace
-
-    client := redis.NewClient(&redis.Options{
-        Addr:     addr,
-        Password: password,
-        DB:       db,
-
-        MinIdleConns: minIdleConn,
-        DialTimeout:  dialTimeout,
-        ReadTimeout:  readTimeout,
-        WriteTimeout: writeTimeout,
-        PoolSize:     poolSize,
-        PoolTimeout:  poolTimeout,
-    })
-
-    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-    defer cancel()
-
-    if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.New().Error(err.Error())
-    }
-
-    // 调试
-    if enabletrace {
-        client.AddHook(redisotel.NewTracingHook())
-    }
-
-    return Redis{
-        prefix: keyPrefix,
-        client: client,
-        cache: cache.New(&cache.Options{
-            Redis:      client,
-            LocalCache: cache.NewTinyLFU(1000, time.Minute),
-        }),
-    }
-}
-
 // 缓存配置
 type Config struct {
     Addr     string
@@ -90,6 +39,9 @@ type Config struct {
  * @author deatil
  */
 type Redis struct {
+    // 上下文
+    ctx context.Context
+
     // 前缀
     prefix string
 
@@ -100,12 +52,50 @@ type Redis struct {
     client *redis.Client
 }
 
+// 构造函数
+func New(config Config) Redis {
+    client := redis.NewClient(&redis.Options{
+        Addr:     config.Addr,
+        Password: config.Password,
+        DB:       config.DB,
+
+        MinIdleConns: config.MinIdleConn,
+        DialTimeout:  config.DialTimeout,
+        ReadTimeout:  config.ReadTimeout,
+        WriteTimeout: config.WriteTimeout,
+        PoolSize:     config.PoolSize,
+        PoolTimeout:  config.PoolTimeout,
+    })
+
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    defer cancel()
+
+    if _, err := client.Ping(ctx).Result(); err != nil {
+        logger.New().Error(fmt.Sprintf("redis: %s", err.Error()))
+    }
+
+    // 调试
+    if config.EnableTrace {
+        client.AddHook(redisotel.NewTracingHook())
+    }
+
+    return Redis{
+        ctx:    context.TODO(),
+        prefix: config.KeyPrefix,
+        client: client,
+        cache:  cache.New(&cache.Options{
+            Redis:      client,
+            LocalCache: cache.NewTinyLFU(1000, time.Minute),
+        }),
+    }
+}
+
 // 设置
 func (this Redis) Set(key string, value any, expiration any) error {
-    ttl := this.formatTime(expiration)
+    ttl := goch.ToDuration(expiration)
 
     return this.cache.Set(&cache.Item{
-        Ctx:            context.TODO(),
+        Ctx:            this.ctx,
         Key:            this.wrapperKey(key),
         Value:          value,
         TTL:            ttl,
@@ -115,7 +105,7 @@ func (this Redis) Set(key string, value any, expiration any) error {
 
 // 获取
 func (this Redis) Get(key string, value any) error {
-    err := this.cache.Get(context.TODO(), this.wrapperKey(key), value)
+    err := this.cache.Get(this.ctx, this.wrapperKey(key), value)
     if err == cache.ErrCacheMiss {
         err = errors.New("Redis Key No Exist")
     }
@@ -129,7 +119,7 @@ func (this Redis) Delete(keys ...string) (bool, error) {
         wrapperKeys[index] = this.wrapperKey(key)
     }
 
-    cmd := this.client.Del(context.TODO(), wrapperKeys...)
+    cmd := this.client.Del(this.ctx, wrapperKeys...)
     if err := cmd.Err(); err != nil {
         return false, err
     }
@@ -143,7 +133,7 @@ func (this Redis) Check(keys ...string) (bool, error) {
         wrapperKeys[index] = this.wrapperKey(key)
     }
 
-    cmd := this.client.Exists(context.TODO(), wrapperKeys...)
+    cmd := this.client.Exists(this.ctx, wrapperKeys...)
     if err := cmd.Err(); err != nil {
         return false, err
     }
@@ -165,9 +155,4 @@ func (this Redis) wrapperKey(key string) string {
     }
 
     return fmt.Sprintf("%s:%s", this.prefix, key)
-}
-
-// 时间格式化
-func (this Redis) formatTime(t any) time.Duration {
-    return time.Second * goch.ToDuration(t)
 }

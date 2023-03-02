@@ -1,6 +1,7 @@
 package redis
 
 import (
+    "fmt"
     "time"
     "context"
 
@@ -15,52 +16,36 @@ import (
 
 // 构造函数
 func New(config Config) interfaces.Store {
-    db        := config.DB
-    addr      := config.Addr
-    password  := config.Password
-    keyPrefix := config.KeyPrefix
-    ttl       := config.TTL
-
-    minIdleConn  := config.MinIdleConn
-    dialTimeout  := config.DialTimeout
-    readTimeout  := config.ReadTimeout
-    writeTimeout := config.WriteTimeout
-    poolSize     := config.PoolSize
-    poolTimeout  := config.PoolTimeout
-
-    enabletrace  := config.EnableTrace
-
     client := redis.NewClient(&redis.Options{
-        Addr:     addr,
-        Password: password,
-        DB:       db,
+        Addr:     config.Addr,
+        Password: config.Password,
+        DB:       config.DB,
 
-        MinIdleConns: minIdleConn,
-        DialTimeout:  dialTimeout,
-        ReadTimeout:  readTimeout,
-        WriteTimeout: writeTimeout,
-        PoolSize:     poolSize,
-        PoolTimeout:  poolTimeout,
+        MinIdleConns: config.MinIdleConn,
+        DialTimeout:  config.DialTimeout,
+        ReadTimeout:  config.ReadTimeout,
+        WriteTimeout: config.WriteTimeout,
+        PoolSize:     config.PoolSize,
+        PoolTimeout:  config.PoolTimeout,
     })
 
     ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.New().Error(err.Error())
-        panic("Redis服务没有启动")
+        logger.New().Error(fmt.Sprintf("captcha-redis: %s", err.Error()))
     }
 
     // 调试
-    if enabletrace {
+    if config.EnableTrace {
         client.AddHook(redisotel.NewTracingHook())
     }
 
     return &Redis{
-        ttl: ttl,
-        prefix: keyPrefix,
+        ttl:    config.TTL,
+        prefix: config.KeyPrefix,
         client: client,
-        cache: cache.New(&cache.Options{
+        cache:  cache.New(&cache.Options{
             Redis:      client,
             LocalCache: cache.NewTinyLFU(1000, time.Minute),
         }),
