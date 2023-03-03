@@ -797,12 +797,11 @@ func LastModified(path string) int64 {
 // 是否是文件
 func (this *Filesystem) IsFile(path string) bool {
     fd, err := os.Stat(path)
-    if err != nil && os.IsNotExist(err) {
+    if err != nil {
         return false
     }
 
-    fm := fd.Mode()
-    return !fm.IsDir()
+    return !fd.Mode().IsDir()
 }
 
 // 是否是文件
@@ -817,8 +816,7 @@ func (this *Filesystem) IsDirectory(path string) bool {
         return false
     }
 
-    fm := fd.Mode()
-    return fm.IsDir()
+    return fd.Mode().IsDir()
 }
 
 // 是否为文件夹

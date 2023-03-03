@@ -1,7 +1,7 @@
 package filesystem
 
 // 后缀对应的格式
-var MimeTypes = map[string]string{
+var mimeTypes = map[string]string{
     "323":                    "text/h323",
     "3g2":                    "video/3gpp2",
     "3gp":                    "video/3gpp",
@@ -614,11 +614,27 @@ var MimeTypes = map[string]string{
     "zip":                    "application/zip",
 }
 
+// 添加数据
+func AddMimeType(ext string, mime string) {
+    mimeTypes[ext] = mime
+}
+
 // 获取后缀对应的格式
 func GetMimeType(extension string) string {
-    if mimeType, ok := MimeTypes[extension]; ok {
+    if mimeType, ok := mimeTypes[extension]; ok {
         return mimeType
     } else {
         return "Unknown"
     }
+}
+
+// 获取格式对应的后缀
+func GetMimeExtension(mime string) string {
+    for ext, mimeType := range mimeTypes {
+        if mimeType == mime {
+            return ext
+        }
+    }
+
+    return "Unknown"
 }
