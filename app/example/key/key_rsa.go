@@ -73,7 +73,7 @@ func (this Rsa) pkcs1En(rsa cryptobin_rsa.Rsa, bit int) {
             CreatePKCS1PrivateKeyWithPassword(this.pass, c).
             ToKeyString()
         pubKey := rsa.
-            CreatePKCS8PublicKey().
+            CreatePKCS1PublicKey().
             ToKeyString()
 
         file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-pkcs1-en-%s", bit, c)

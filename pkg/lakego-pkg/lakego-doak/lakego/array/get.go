@@ -25,7 +25,7 @@ var (
 )
 
 // 获取
-func ArrayFrom(source any) Key {
+func ArrayFrom(source any) key {
     return newKey(source)
 }
 

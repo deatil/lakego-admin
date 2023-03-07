@@ -1,20 +1,17 @@
 package assert
 
-/**
- * 条件断言
- *
- * @create 2021-8-26
- * @author deatil
- */
+// 条件断言
 func Assert(condition bool, message string) {
     if !condition {
         panic("Error#" + message)
     }
 }
 
-// 断言加默认返回
-func AssertDefault(condition bool, def any) any {
-    if !condition {
-        return def
+// 断言
+func AssertIf[T any](condition bool, trueData T, falseData T) T {
+    if condition {
+        return trueData
     }
+
+    return falseData
 }

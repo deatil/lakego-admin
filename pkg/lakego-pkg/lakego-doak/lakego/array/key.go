@@ -6,30 +6,30 @@ import (
 )
 
 /**
- * Key
+ * key
  *
  * @create 2023-2-27
  * @author deatil
  */
-type Key struct {
+type key struct {
     source any
 }
 
 // 使用
-func newKey(source any) Key {
-    return Key{
+func newKey(source any) key {
+    return key{
         source: source,
     }
 }
 
 // 获取数据
-func (this Key) Value(key string, defVal ...any) goch.Goch {
-    data := array.Get(this.source, key, defVal...)
+func (this key) Value(name string, defVal ...any) goch.Goch {
+    data := array.Get(this.source, name, defVal...)
 
     return goch.New(data)
 }
 
 // 全部
-func (this Key) All() goch.Goch {
+func (this key) All() goch.Goch {
     return goch.New(this.source)
 }

@@ -15,10 +15,10 @@ func (this *Store) Set(id string, value string) error {
 
 // 获取
 func (this *Store) Get(id string, clear bool) string {
-    panic("接口未定义")
+    return ""
 }
 
 // 验证
 func (this *Store) Verify(id string, answer string, clear bool) bool {
-    panic("接口未定义")
+    return false
 }

@@ -44,6 +44,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/uuid"
     "github.com/deatil/lakego-doak/lakego/math"
+    _ "github.com/deatil/lakego-doak/lakego/assert"
     "github.com/deatil/lakego-doak/lakego/slice"
     "github.com/deatil/lakego-doak/lakego/array"
     // _ "github.com/deatil/lakego-doak/lakego/facade"
