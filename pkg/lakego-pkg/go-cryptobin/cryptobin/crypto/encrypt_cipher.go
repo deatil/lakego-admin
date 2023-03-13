@@ -48,12 +48,7 @@ func (this Cryptobin) CipherEncrypt() Cryptobin {
     cryptText := make([]byte, len(plainPadding))
     switch this.mode {
         case ECB:
-            dst := cryptText
-            for len(plainPadding) > 0 {
-                block.Encrypt(dst, plainPadding[:bs])
-                plainPadding = plainPadding[bs:]
-                dst = dst[bs:]
-            }
+            cryptobin_cipher.NewECBEncrypter(block).CryptBlocks(cryptText, plainPadding)
         case CBC:
             cipher.NewCBCEncrypter(block, iv).CryptBlocks(cryptText, plainPadding)
         case CFB:
@@ -139,12 +134,7 @@ func (this Cryptobin) CipherDecrypt() Cryptobin {
     // 加密模式
     switch this.mode {
         case ECB:
-            dstTmp := dst
-            for len(cipherText) > 0 {
-                block.Decrypt(dstTmp, cipherText[:bs])
-                cipherText = cipherText[bs:]
-                dstTmp = dstTmp[bs:]
-            }
+            cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(dst, cipherText)
         case CBC:
             cipher.NewCBCDecrypter(block, iv).CryptBlocks(dst, cipherText)
         case CFB:
