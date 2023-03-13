@@ -14,7 +14,7 @@ func (this Datebin) MarshalJSON() ([]byte, error) {
 // 解出
 func (this *Datebin) UnmarshalJSON(val []byte) error {
     c := Parse(string(bytes.Trim(val, `"`)))
-    if c.Error == nil {
+    if c.Error() == nil {
         *this = c
     }
 
@@ -36,7 +36,7 @@ func (this DateTime) MarshalJSON() ([]byte, error) {
 // 解出
 func (this *DateTime) UnmarshalJSON(val []byte) error {
     c := Parse(string(bytes.Trim(val, `"`)))
-    if c.Error == nil {
+    if c.Error() == nil {
         *this = DateTime{c}
     }
 
@@ -58,7 +58,7 @@ func (this Date) MarshalJSON() ([]byte, error) {
 // 解出
 func (this *Date) UnmarshalJSON(val []byte) error {
     c := Parse(string(bytes.Trim(val, `"`)))
-    if c.Error == nil {
+    if c.Error() == nil {
         *this = Date{c}
     }
 
@@ -85,7 +85,7 @@ func (this *Timestamp) UnmarshalJSON(val []byte) error {
     }
 
     c := FromTimestamp(ts)
-    if c.Error == nil {
+    if c.Error() == nil {
         *this = Timestamp{c}
     }
 

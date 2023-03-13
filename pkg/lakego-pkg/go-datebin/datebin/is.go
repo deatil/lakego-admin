@@ -11,7 +11,7 @@ func (this Datebin) IsZero() bool {
 
 // 是否是无效时间
 func (this Datebin) IsInvalid() bool {
-    if this.Error != nil || this.IsZero() {
+    if this.Error() != nil || this.IsZero() {
         return true
     }
 

@@ -8,11 +8,12 @@ import (
 // 间隔
 func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
-
-    if this.Error != nil {
-        return this
+        loc, error := this.GetLocationByTimezone(timezone[0])
+        if error == nil {
+            this.loc = loc
+        }
+        
+        this.AppendError(error)
     }
 
     // 设置时区
@@ -74,10 +75,6 @@ func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin
 
 // 不溢出增加/减少 n 年
 func (this Datebin) OffsetYearsNoOverflow(years int) Datebin {
-    if this.IsInvalid() {
-        return this
-    }
-
     // N年后本月的最后一天
     last := time.Date(this.Year() + years, time.Month(this.Month()), 1, this.Hour(), this.Minute(), this.Second(), this.Nanosecond(), this.loc).AddDate(0, 1, -1)
     day := this.Day()
@@ -91,10 +88,6 @@ func (this Datebin) OffsetYearsNoOverflow(years int) Datebin {
 
 // 不溢出增加/减少 n 月
 func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
-    if this.IsInvalid() {
-        return this
-    }
-
     month := this.Month() + months
 
     // n+1月第一天减一天
@@ -110,13 +103,9 @@ func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 
 // 按照持续时长字符串增加时间
 func (this Datebin) AddDuration(duration string) Datebin {
-    if this.IsInvalid() {
-        return this
-    }
-
     td, err := this.ParseDuration(duration)
     this.time = this.time.In(this.loc).Add(td)
-    this.Error = err
+    this.AppendError(err)
 
     return this
 }

@@ -6,10 +6,6 @@ import (
 
 // 设置一周的开始日期
 func (this Datebin) SetWeekStartsAt(day string) Datebin {
-    if this.IsInvalid() {
-        return this
-    }
-
     // 判断周几
     switch day {
         case Monday:
@@ -33,10 +29,6 @@ func (this Datebin) SetWeekStartsAt(day string) Datebin {
 
 // 日期时间带纳秒
 func (this Datebin) SetDatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond int) Datebin {
-    if this.IsInvalid() {
-        return this
-    }
-
     this.time = time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, this.loc)
     return this
 }

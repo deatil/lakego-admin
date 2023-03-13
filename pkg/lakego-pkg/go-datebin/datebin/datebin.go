@@ -116,7 +116,7 @@ type Datebin struct {
     loc *time.Location
 
     // 错误
-    Error error
+    Errors []error
 }
 
 // 设置时间
@@ -197,8 +197,8 @@ func (this Datebin) GetOffset() int {
 }
 
 // 获取错误信息
-func (this Datebin) GetError() error {
-    return this.Error
+func (this Datebin) GetErrors() []error {
+    return this.Errors
 }
 
 // 通过时区获取 Location 实例

@@ -1,25 +1,8 @@
 package register
 
-import(
+import (
     "sync"
 )
-
-var instance *Register
-var once sync.Once
-
-/**
- * 单例模式
- */
-func New() *Register {
-    once.Do(func() {
-        instance = &Register{
-            registers: make(RegistersMap),
-            used:      make(UsedMap),
-        }
-    })
-
-    return instance
-}
 
 type (
     // 配置 Map
@@ -34,6 +17,13 @@ type (
     // 已使用 Map
     UsedMap = map[string]any
 )
+
+// 默认
+var defaultRegister *Register
+
+func init() {
+    defaultRegister = New()
+}
 
 /**
  * 注册器
@@ -52,8 +42,18 @@ type Register struct {
     used UsedMap
 }
 
+// 构造函数
+func New() *Register {
+    reg := &Register{
+        registers: make(RegistersMap),
+        used:      make(UsedMap),
+    }
+
+    return reg
+}
+
 // 注册
-func (this *Register) With(name string, f RegisterFunc) {
+func (this *Register) With(name string, fn RegisterFunc) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
@@ -61,7 +61,11 @@ func (this *Register) With(name string, f RegisterFunc) {
         delete(this.registers, name)
     }
 
-    this.registers[name] = f
+    this.registers[name] = fn
+}
+
+func With(name string, fn RegisterFunc) {
+    defaultRegister.With(name, fn)
 }
 
 // 获取
@@ -77,26 +81,41 @@ func (this *Register) Get(name string, conf ConfigMap) any {
     return nil
 }
 
+func Get(name string, conf ConfigMap) any {
+    return defaultRegister.Get(name, conf)
+}
+
 // 获取单例
 func (this *Register) GetOnce(name string, conf ConfigMap) any {
-    this.mu.RLock()
-    defer this.mu.RUnlock()
-
     // 存在
+    this.mu.RLock()
     value, exists := this.used[name]
+    this.mu.RUnlock()
+
     if exists {
         return value
     }
 
     // 不存在
-    value2, exists2 := this.registers[name]
-    if exists2 {
-        this.used[name] = value2(conf)
+    this.mu.RLock()
+    fn, ok := this.registers[name]
+    this.mu.RUnlock()
 
-        return this.used[name]
+    if !ok {
+        return nil
     }
 
-    return nil
+    newFn := fn(conf)
+
+    this.mu.Lock()
+    this.used[name] = newFn
+    this.mu.Unlock()
+
+    return newFn
+}
+
+func GetOnce(name string, conf ConfigMap) any {
+    return defaultRegister.GetOnce(name, conf)
 }
 
 // 判断
@@ -109,10 +128,18 @@ func (this *Register) Exists(name string) bool {
     return exists
 }
 
+func Exists(name string) bool {
+    return defaultRegister.Exists(name)
+}
+
 // 删除
 func (this *Register) Delete(name string) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
     delete(this.registers, name)
+}
+
+func Delete(name string) {
+    defaultRegister.Delete(name)
 }

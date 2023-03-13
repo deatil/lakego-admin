@@ -55,17 +55,16 @@ func (this Datebin) Parse(date string) Datebin {
 // 用布局字符解析时间字符
 func (this Datebin) ParseWithLayout(date string, layout string, timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
-
-    if this.Error != nil {
-        return this
+        loc, err := this.GetLocationByTimezone(timezone[0])
+        if err == nil {
+            this.loc = loc
+        }
+        
+        this.AppendError(err)
     }
 
     time, err := time.ParseInLocation(layout, date, this.loc)
-    if err != nil {
-        return this
-    }
+    this.AppendError(err)
 
     this.time = time
 

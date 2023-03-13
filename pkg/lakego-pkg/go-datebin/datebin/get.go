@@ -7,11 +7,12 @@ import (
 // 当前
 func (this Datebin) Now(timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
+        loc, err := this.GetLocationByTimezone(timezone[0])
+        if err == nil {
+            this.loc = loc
+        }
 
-    if this.Error != nil {
-        return this
+        this.AppendError(err)
     }
 
     this.time = time.Now().In(this.loc)
@@ -21,11 +22,12 @@ func (this Datebin) Now(timezone ...string) Datebin {
 // 今天
 func (this Datebin) Today(timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
+        loc, err := this.GetLocationByTimezone(timezone[0])
+        if err == nil {
+            this.loc = loc
+        }
 
-    if this.Error != nil {
-        return this
+        this.AppendError(err)
     }
 
     var datetime Datebin
@@ -43,11 +45,12 @@ func (this Datebin) Today(timezone ...string) Datebin {
 // 明天
 func (this Datebin) Tomorrow(timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
+        loc, err := this.GetLocationByTimezone(timezone[0])
+        if err == nil {
+            this.loc = loc
+        }
 
-    if this.Error != nil {
-        return this
+        this.AppendError(err)
     }
 
     var datetime Datebin
@@ -65,11 +68,12 @@ func (this Datebin) Tomorrow(timezone ...string) Datebin {
 // 昨天
 func (this Datebin) Yesterday(timezone ...string) Datebin {
     if len(timezone) > 0 {
-        this.loc, this.Error = this.GetLocationByTimezone(timezone[0])
-    }
+        loc, err := this.GetLocationByTimezone(timezone[0])
+        if err == nil {
+            this.loc = loc
+        }
 
-    if this.Error != nil {
-        return this
+        this.AppendError(err)
     }
 
     var datetime Datebin

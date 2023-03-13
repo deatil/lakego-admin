@@ -1,6 +1,7 @@
 package controller
 
 import (
+    // "fmt"
     "encoding/hex"
     "github.com/gin-gonic/gin"
 
@@ -21,6 +22,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
 
     _ "github.com/deatil/go-cryptobin/ssh"
+    _ "github.com/deatil/go-cryptobin/argon2"
     _ "github.com/deatil/go-cryptobin/bencode"
     _ "github.com/deatil/go-cryptobin/dh/dh"
     _ "github.com/deatil/go-cryptobin/dh/ecdh"
