@@ -1,16 +1,16 @@
 name: Bug 反馈
-description: 提交你的 Bug 反馈给我们以便我们改进系统
+description: 提交你的 Bug 反馈给我们
 title: "[Bug]: "
 labels: [bug]
 assignees:
   - deatil
 body:
   - type: input
-    id: lakego
+    id: ver
     attributes:
-      label: lakego-admin 版本
+      label: 当前版本
       description: 请输入您当前使用的项目版本?
-      placeholder: 1.0.5
+      placeholder: v1.0.1047
     validations:
       required: true
   - type: input

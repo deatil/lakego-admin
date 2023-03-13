@@ -1,7 +1,7 @@
 package tool
 
 // 构造函数
-func NewError(errs ...error) *Errors {
+func NewError(errs ...error) error {
     n := 0
     for _, err := range errs {
         if err != nil {

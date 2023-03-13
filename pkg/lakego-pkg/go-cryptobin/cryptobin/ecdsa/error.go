@@ -12,6 +12,6 @@ func (this Ecdsa) AppendError(err ...error) Ecdsa {
 }
 
 // 获取错误
-func (this Ecdsa) Error() *cryptobin_tool.Errors {
+func (this Ecdsa) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }

@@ -12,6 +12,6 @@ func (this SM2) AppendError(errs ...error) SM2 {
 }
 
 // 获取错误
-func (this SM2) Error() *cryptobin_tool.Errors {
+func (this SM2) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }

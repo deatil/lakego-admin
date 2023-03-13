@@ -12,6 +12,6 @@ func (this Cryptobin) AppendError(err ...error) Cryptobin {
 }
 
 // 获取错误
-func (this Cryptobin) Error() *cryptobin_tool.Errors {
+func (this Cryptobin) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }

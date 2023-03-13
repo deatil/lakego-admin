@@ -12,6 +12,6 @@ func (this Rsa) AppendError(err ...error) Rsa {
 }
 
 // 获取错误
-func (this Rsa) Error() *cryptobin_tool.Errors {
+func (this Rsa) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }

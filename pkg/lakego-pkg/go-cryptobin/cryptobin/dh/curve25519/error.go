@@ -12,6 +12,6 @@ func (this Curve25519) AppendError(err ...error) Curve25519 {
 }
 
 // 获取错误
-func (this Curve25519) Error() *cryptobin_tool.Errors {
+func (this Curve25519) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }
