@@ -18,10 +18,10 @@ func (this Datebin) ToString(timezone ...string) string {
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }
@@ -36,10 +36,10 @@ func (this Datebin) ToStarString(timezone ...string) string {
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }
@@ -99,10 +99,10 @@ func (this Datebin) ToSeasonString(timezone ...string) string {
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }
@@ -136,10 +136,10 @@ func (this Datebin) ToWeekdayString(timezone ...string) string {
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }
@@ -156,10 +156,10 @@ func (this Datebin) Layout(layout string, timezone ...string) string {
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }
@@ -176,11 +176,11 @@ func (this Datebin) ToLayoutString(layout string, timezone ...string) string {
 func (this Datebin) Format(layout string, timezone ...string) string {
     if len(timezone) > 0 {
         loc, error := this.GetLocationByTimezone(timezone[0])
-        
+
         this.loc = loc
         this.AppendError(error)
     }
-    
+
     if this.IsInvalid() {
         return ""
     }

@@ -38,20 +38,27 @@ import (
 #### 获取错误信息及常规数据获取和设置
 
 ~~~go
-var datebinErr error
-
 // 方式1
+var datebinErrs []error
 date := datebin.
     Now().
-    OnError(func(err error) {
-        datebinErr = err
+    OnError(func(err []error) {
+        datebinErrs = err
     }).
     ToDatetimeString()
 
 // 方式2
+errs := datebin.
+    Parse("2022-101-23 22:18:56").
+    GetErrors()
+
+// 方式3
 err := datebin.
     Parse("2022-101-23 22:18:56").
-    GetError()
+    Error()
+if err != nil {
+    // todo
+}
 
 // 常规数据设置及获取
 datebin.WithTime(time time.Time) # 设置时间

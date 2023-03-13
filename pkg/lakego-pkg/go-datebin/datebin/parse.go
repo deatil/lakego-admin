@@ -43,9 +43,7 @@ func (this Datebin) Parse(date string) Datebin {
     }
 
     time, err := time.Parse(layout, date)
-    if err != nil {
-        return this
-    }
+    this.AppendError(err)
 
     this.time = time
 
@@ -59,7 +57,7 @@ func (this Datebin) ParseWithLayout(date string, layout string, timezone ...stri
         if err == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(err)
     }
 
@@ -73,11 +71,11 @@ func (this Datebin) ParseWithLayout(date string, layout string, timezone ...stri
 
 // 用格式化字符解析时间字符
 func (this Datebin) ParseWithFormat(date string, format string, timezone ...string) Datebin {
-    return this.ParseWithLayout(date, this.FormatParseLayout(format), timezone...)
+    return this.ParseWithLayout(date, this.formatParseLayout(format), timezone...)
 }
 
 // 格式化解析 layout
-func (this Datebin) FormatParseLayout(str string) string {
+func (this Datebin) formatParseLayout(str string) string {
     var buffer bytes.Buffer
 
     for i := 0; i < len(str); i++ {

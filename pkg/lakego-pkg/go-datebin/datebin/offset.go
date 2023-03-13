@@ -12,7 +12,7 @@ func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin
         if error == nil {
             this.loc = loc
         }
-        
+
         this.AppendError(error)
     }
 

@@ -11,4 +11,3 @@ func (this Datebin) OnError(fn ErrorFunc) Datebin {
 
     return this
 }
-
