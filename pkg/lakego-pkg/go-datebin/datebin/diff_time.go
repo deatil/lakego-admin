@@ -158,8 +158,8 @@ func (this DiffTime) Format(str string) string {
         "{s}": this.Seconds(),
         "{w}": this.Weeks(),
 
-        "{www}": int64(weeks),
-        "{ddd}": int64(days),
+        "{WW}": int64(weeks),
+        "{DD}": int64(days),
         "{dd}": int64(formatter.Day()),
         "{HH}": int64(formatter.Hour()),
         "{ii}": int64(formatter.Minute()),

@@ -2,6 +2,8 @@ package datebin
 
 import (
     "time"
+
+    "github.com/deatil/go-datebin/errors"
 )
 
 var (
@@ -160,9 +162,11 @@ func (this Datebin) GetLocationString() string {
 // 设置时区
 func (this Datebin) WithTimezone(timezone string) Datebin {
     loc, err := this.GetLocationByTimezone(timezone)
-    if err == nil {
-        this.loc = loc
+    if err != nil {
+        return this.AppendError(err)
     }
+    
+    this.loc = loc
 
     return this
 }
@@ -199,6 +203,18 @@ func (this Datebin) GetOffset() int {
 // 获取错误信息
 func (this Datebin) GetErrors() []error {
     return this.Errors
+}
+
+// 添加错误
+func (this Datebin) AppendError(err ...error) Datebin {
+    this.Errors = append(this.Errors, err...)
+
+    return this
+}
+
+// 获取错误
+func (this Datebin) Error() error {
+    return errors.New(this.Errors...)
 }
 
 // 通过时区获取 Location 实例

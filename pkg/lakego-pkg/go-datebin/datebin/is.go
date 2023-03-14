@@ -1,6 +1,7 @@
 package datebin
 
 import (
+    "fmt"
     "time"
 )
 
@@ -183,5 +184,5 @@ func (this Datebin) IsMidday(midDay ...string) bool {
         midDayAt = midDay[0]
     }
 
-    return this.Format("H:i:s") == midDayAt + ":00:00"
+    return this.Format("H:i:s") == fmt.Sprintf("%s:00:00", midDayAt)
 }

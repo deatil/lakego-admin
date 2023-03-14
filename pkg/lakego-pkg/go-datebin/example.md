@@ -71,9 +71,10 @@ datebin.GetLocationString() string # 获取时区字符
 datebin.WithTimezone(timezone string) # 设置时区
 datebin.SetTimezone(timezone string) # 设置时区, 直接更改
 datebin.UseLocTime() # 使用设置的时区
-datebin.GetTimezone() # 获取时区 Zone 名称
-datebin.GetOffset() # 获取距离UTC时区的偏移量，单位秒
-datebin.GetError() # 获取错误信息
+datebin.GetTimezone() string # 获取时区 Zone 名称
+datebin.GetOffset() int # 获取距离UTC时区的偏移量，单位秒
+datebin.GetErrors() []error # 获取错误信息
+datebin.Error() error # 获取错误, `error` 接口错误
 ~~~
 
 
@@ -421,7 +422,7 @@ data := diffTime.Format("时间相差 {H} 小时")
 data := diffTime.Format("时间相差 {i} 分钟")
 data := diffTime.Format("时间相差 {s} 秒")
 data := timeA.Diff(timeB).Format("时间相差 {dd} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
-data := timeA.Diff(timeB).Format("时间相差 {www} 周 {ddd} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
+data := timeA.Diff(timeB).Format("时间相差 {WW} 周 {DD} 天 {HH} 小时 {ii} 分钟 {ss} 秒")
 ~~~
 
 

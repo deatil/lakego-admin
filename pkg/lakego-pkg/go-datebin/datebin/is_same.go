@@ -27,13 +27,13 @@ func (this Datebin) IsSameUnit(unit string, date Datebin) bool {
 
     // 默认比对列表
     units := map[string]string{
-        "year": "Y",
-        "week": "o-W",
-        "day": "Y-m-d",
-        "hour": "Y-m-d H",
+        "year":   "Y",
+        "week":   "o-W",
+        "day":    "Y-m-d",
+        "hour":   "Y-m-d H",
         "minute": "Y-m-d H:i",
         "second": "Y-m-d H:i:s",
-        "micro": "Y-m-d H:i:s.u",
+        "micro":  "Y-m-d H:i:s.u",
         "microsecond": "Y-m-d H:i:s.u",
     }
 
