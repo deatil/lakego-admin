@@ -159,9 +159,9 @@ func (this Datebin) GetLocationString() string {
 
 // 设置时区
 func (this Datebin) WithTimezone(timezone string) Datebin {
-    location, err := this.GetLocationByTimezone(timezone)
+    loc, err := this.GetLocationByTimezone(timezone)
     if err == nil {
-        this.loc = location
+        this.loc = loc
     }
 
     return this

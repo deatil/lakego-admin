@@ -2,6 +2,7 @@ package tool
 
 import (
     "time"
+    "sync"
     "encoding/json"
 )
 
@@ -18,11 +19,18 @@ func NewConfig() *Config {
  * @author deatil
  */
 type Config struct {
+    // 锁定
+    mu sync.RWMutex
+
+    // 数据
     data map[string]any
 }
 
 // 设置
 func (this *Config) WithData(data map[string]any) *Config {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
     this.data = data
 
     return this
@@ -30,12 +38,28 @@ func (this *Config) WithData(data map[string]any) *Config {
 
 // 设置
 func (this *Config) Set(name string, data any) *Config {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
     this.data[name] = data
 
     return this
 }
 
+// 删除
+func (this *Config) Remove(name string) *Config {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
+    delete(this.data, name)
+
+    return this
+}
+
 func (this *Config) Has(name string) bool {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     if _, ok := this.data[name]; ok {
         return true
     }
@@ -44,11 +68,46 @@ func (this *Config) Has(name string) bool {
 }
 
 func (this *Config) Get(name string) any {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     if data, ok := this.data[name]; ok {
         return data
     }
 
     return nil
+}
+
+func (this *Config) All() map[string]any {
+    return this.data
+}
+
+func (this *Config) Names() []string {
+    names := make([]string, 0)
+    for name, _ := range this.data {
+        names = append(names, name)
+    }
+
+    return names
+}
+
+func (this *Config) Len() int {
+    return len(this.data)
+}
+
+func (this *Config) Clean() {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
+    for name, _ := range this.data {
+        delete(this.data, name)
+    }
+}
+
+func (this *Config) String() string {
+    data, _ := json.Marshal(this.data)
+
+    return string(data)
 }
 
 func (this *Config) GetString(name string) string {
@@ -273,18 +332,4 @@ func (this *Config) GetDurationSlice(name string) []time.Duration {
     }
 
     return make([]time.Duration, 0)
-}
-
-func (this *Config) All() map[string]any {
-    return this.data
-}
-
-func (this *Config) String() string {
-    data, _ := json.Marshal(this.data)
-
-    return string(data)
-}
-
-func (this *Config) Reset() {
-    this.data = make(map[string]any)
 }

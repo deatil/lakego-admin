@@ -8,12 +8,7 @@ import (
 // 间隔
 func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     // 设置时区
@@ -104,10 +99,10 @@ func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 // 按照持续时长字符串增加时间
 func (this Datebin) AddDuration(duration string) Datebin {
     td, err := this.ParseDuration(duration)
+    
     this.time = this.time.In(this.loc).Add(td)
-    this.AppendError(err)
 
-    return this
+    return this.AppendError(err)
 }
 
 // 按照持续时长字符串减少时间

@@ -14,12 +14,7 @@ func (this Datebin) String() string {
 // 返回字符
 func (this Datebin) ToString(timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
@@ -32,12 +27,7 @@ func (this Datebin) ToString(timezone ...string) string {
 // 返回星座名称
 func (this Datebin) ToStarString(timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
@@ -95,12 +85,7 @@ func (this Datebin) ToStarString(timezone ...string) string {
 // 返回当前季节，以气象划分
 func (this Datebin) ToSeasonString(timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
@@ -132,12 +117,7 @@ func (this Datebin) ToSeasonString(timezone ...string) string {
 // 周几
 func (this Datebin) ToWeekdayString(timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
@@ -152,12 +132,7 @@ func (this Datebin) ToWeekdayString(timezone ...string) string {
 // 原始格式
 func (this Datebin) Layout(layout string, timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-        if error == nil {
-            this.loc = loc
-        }
-
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
@@ -175,10 +150,7 @@ func (this Datebin) ToLayoutString(layout string, timezone ...string) string {
 // 输出指定布局的时间字符串
 func (this Datebin) Format(layout string, timezone ...string) string {
     if len(timezone) > 0 {
-        loc, error := this.GetLocationByTimezone(timezone[0])
-
-        this.loc = loc
-        this.AppendError(error)
+        this = this.WithTimezone(timezone[0])
     }
 
     if this.IsInvalid() {
