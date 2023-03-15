@@ -6,7 +6,8 @@ go-datebin 常用的一些使用示例。更多未提及方法可以 [点击文�
 ### 目录
 
 - [引入包](#引入包)
-- [获取错误信息及常规数据获取和设置](#获取错误信息及常规数据获取和设置)
+- [获取错误信息](#获取错误信息)
+- [常规数据获取和设置](#常规数据获取和设置)
 - [固定时间使用](#固定时间使用)
 - [输入时间](#输入时间)
 - [解析使用](#解析使用)
@@ -35,7 +36,7 @@ import (
 ~~~
 
 
-#### 获取错误信息及常规数据获取和设置
+#### 获取错误信息
 
 ~~~go
 // 方式1
@@ -57,24 +58,44 @@ err := datebin.
     Parse("2022-101-23 22:18:56").
     Error()
 if err != nil {
-    // todo
+    errStr := err.Error()
 }
+~~~
 
-// 常规数据设置及获取
-datebin.WithTime(time time.Time) # 设置时间
-datebin.GetTime() time.Time # 获取时间
-datebin.WithWeekStartAt(weekday time.Weekday) # 设置周开始时间
-datebin.GetWeekStartAt() time.Weekday # 获取周开始时间
-datebin.WithLocation(loc *time.Location) # 设置时区
-datebin.GetLocation() *time.Location # 获取时区
-datebin.GetLocationString() string # 获取时区字符
-datebin.WithTimezone(timezone string) # 设置时区
-datebin.SetTimezone(timezone string) # 设置时区, 直接更改
-datebin.UseLocTime() # 使用设置的时区
-datebin.GetTimezone() string # 获取时区 Zone 名称
-datebin.GetOffset() int # 获取距离UTC时区的偏移量，单位秒
-datebin.GetErrors() []error # 获取错误信息
-datebin.Error() error # 获取错误, `error` 接口错误
+
+#### 常规数据获取和设置
+
+~~~go
+// 设置时间
+datebin.WithTime(time time.Time) 
+// 获取时间
+datebin.GetTime() time.Time 
+// 设置周开始时间
+datebin.WithWeekStartAt(weekday time.Weekday) 
+// 获取周开始时间
+datebin.GetWeekStartAt() time.Weekday 
+// 设置时区
+datebin.WithLocation(loc *time.Location) 
+// 获取时区
+datebin.GetLocation() *time.Location 
+// 获取时区字符
+datebin.GetLocationString() string 
+// 设置时区
+datebin.WithTimezone(timezone string) 
+// 设置时区, 直接更改
+datebin.SetTimezone(timezone string) 
+// 使用设置的时区
+datebin.UseLocTime() 
+// 获取时区 Zone 名称
+datebin.GetTimezone() string 
+// 获取距离UTC时区的偏移量，单位秒
+datebin.GetOffset() int 
+// 获取错误信息
+datebin.GetErrors() []error 
+// 添加错误信息
+datebin.AppendError(err ...error) Datebin
+// 获取错误, `error` 接口错误
+datebin.Error() error 
 ~~~
 
 

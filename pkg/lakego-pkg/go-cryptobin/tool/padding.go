@@ -5,6 +5,11 @@ import (
     "math/rand"
 )
 
+// 构造函数
+func NewPadding() Padding {
+    return Padding{}
+}
+
 /**
  * 补码
  *
@@ -362,9 +367,4 @@ func (this Padding) RandomBytes(length uint) []byte {
     }
 
     return b
-}
-
-// 构造函数
-func NewPadding() Padding {
-    return Padding{}
 }

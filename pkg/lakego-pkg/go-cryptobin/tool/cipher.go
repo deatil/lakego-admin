@@ -50,6 +50,15 @@ var defaultCipherFuncs = CipherFuncMap{
     "SM4":       sm4.NewCipher,
 }
 
+// 构造函数
+func NewCipher() Cipher {
+    cipher := Cipher{
+        funcs: defaultCipherFuncs,
+    }
+
+    return cipher
+}
+
 /**
  * 加密方式
  *
@@ -82,13 +91,4 @@ func (this Cipher) GetFunc(name string) CipherFunc {
     }
 
     return this.funcs["Aes"]
-}
-
-// 构造函数
-func NewCipher() Cipher {
-    cipher := Cipher{
-        funcs: defaultCipherFuncs,
-    }
-
-    return cipher
 }

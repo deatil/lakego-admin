@@ -1,4 +1,4 @@
-## go-datebin 时间处理库
+## go-datebin
 
 
 ### 项目介绍
@@ -45,7 +45,7 @@ func main() {
 
 ~~~
 
-更多示例可点击 [使用文档](example.md) 查看
+更多示例可点击查看 [使用文档](example.md)
 
 
 ### 开源协议

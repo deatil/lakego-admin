@@ -92,6 +92,16 @@ var defaultCryptoHashes = CryptoHashMap{
     "BLAKE2b_512": crypto.BLAKE2b_512,
 }
 
+// 构造函数
+func NewHash() Hash {
+    sha := Hash{
+        hashes: defaultHashes,
+        cryptoHashes: defaultCryptoHashes,
+    }
+
+    return sha
+}
+
 /**
  * 摘要
  *
@@ -176,14 +186,4 @@ func (this Hash) DataCryptoHash(typ string, slices ...[]byte) []byte {
     }
 
     return f.Sum(nil)
-}
-
-// 构造函数
-func NewHash() Hash {
-    sha := Hash{
-        hashes: defaultHashes,
-        cryptoHashes: defaultCryptoHashes,
-    }
-
-    return sha
 }
