@@ -34,7 +34,11 @@ func NewWithAud(aud string) *token.Token {
 
 // 获取接收方
 func GetJwtAud(ctx *router.Context) string {
-    aud := hash.MD5(router.GetRequestIp(ctx) + router.GetHeaderByName(ctx, "HTTP_USER_AGENT"))
+    aud := md5(router.GetRequestIp(ctx) + router.GetHeaderByName(ctx, "HTTP_USER_AGENT"))
 
     return aud
+}
+
+func md5(data string) string {
+    return hash.FromString(data).MD5().ToHexString()
 }

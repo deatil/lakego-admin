@@ -2,7 +2,6 @@ package controller
 
 import (
     "github.com/deatil/go-goch/goch"
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-filesystem/filesystem"
 
@@ -13,6 +12,7 @@ import (
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/support/url"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
 /**
@@ -347,7 +347,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
     }
 
     // 添加到缓存
-    code := hash.MD5(goch.ToString(datebin.NowTime()) + random.String(10))
+    code := utils.MD5(goch.ToString(datebin.NowTime()) + random.String(10))
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出

@@ -1,27 +1,22 @@
 package hash
 
 import (
-    "strconv"
     "hash/adler32"
 )
 
 // Adler32
-func Adler32(s string) string {
-    data := []byte(s)
+func (this Hash) Adler32() Hash {
+    h := adler32.New()
+    h.Write(this.data)
 
-    res := adler32.Checksum(data)
+    this.data = h.Sum(nil)
 
-    return strconv.FormatInt(int64(res), 16)
+    return this
 }
 
-// Adler32
-func (this Hash) Adler32() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+// NewAdler32
+func (this Hash) NewAdler32() Hash {
+    this.hash = adler32.New()
 
-        return Adler32(newData), nil
-    })
+    return this
 }

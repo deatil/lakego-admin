@@ -1,6 +1,7 @@
 package encoding
 
 import (
+    "io"
     "bytes"
 )
 
@@ -28,14 +29,23 @@ func FromString(data string) Encoding {
     return defaultEncode.FromString(data)
 }
 
-// BytesBuffer
-func (this Encoding) FromBytesBuffer(data *bytes.Buffer) Encoding {
-    this.data = data.Bytes()
+// FromReader
+func (this Encoding) FromReader(reader io.Reader) Encoding {
+    buf := bytes.NewBuffer(nil)
+
+    // 保存
+    if _, err := io.Copy(buf, reader); err != nil {
+        this.Error = err
+
+        return this
+    }
+
+    this.data = buf.Bytes()
 
     return this
 }
 
-// Hex
-func FromBytesBuffer(data *bytes.Buffer) Encoding {
-    return defaultEncode.FromBytesBuffer(data)
+// FromReader
+func FromReader(reader io.Reader) Encoding {
+    return defaultEncode.FromReader(reader)
 }

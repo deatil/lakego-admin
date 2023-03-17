@@ -1,7 +1,6 @@
 package controller
 
 import (
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak/lakego/router"
@@ -12,6 +11,7 @@ import (
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
     passport_validate "github.com/deatil/lakego-doak-admin/admin/validate/passport"
@@ -181,7 +181,7 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     }
 
     c := cache.New()
-    refreshTokenPutTime, _ := c.Get(hash.MD5(refreshToken.(string)))
+    refreshTokenPutTime, _ := c.Get(utils.MD5(refreshToken.(string)))
     refreshTokenPutTime = refreshTokenPutTime.(string)
     if refreshTokenPutTime != "" {
         this.Error(ctx, "refreshToken已失效", code.JwtRefreshTokenFail)
@@ -249,7 +249,7 @@ func (this *Passport) Logout(ctx *router.Context) {
     }
 
     c := cache.New()
-    refreshTokenPutString, _ := c.Get(hash.MD5(refreshToken.(string)))
+    refreshTokenPutString, _ := c.Get(utils.MD5(refreshToken.(string)))
     refreshTokenPutString = refreshTokenPutString.(string)
     if refreshTokenPutString != "" {
         this.Error(ctx, "refreshToken 已失效", code.JwtRefreshTokenFail)
@@ -285,8 +285,8 @@ func (this *Passport) Logout(ctx *router.Context) {
     accessToken, _ := ctx.Get("access_token")
 
     // 加入黑名单
-    c.Put(hash.MD5(accessToken.(string)), "no", int64(refreshTokenExpiresIn))
-    c.Put(hash.MD5(refreshToken.(string)), "no", int64(refreshTokenExpiresIn))
+    c.Put(utils.MD5(accessToken.(string)), "no", int64(refreshTokenExpiresIn))
+    c.Put(utils.MD5(refreshToken.(string)), "no", int64(refreshTokenExpiresIn))
 
     // 数据输出
     this.Success(ctx, "退出成功")

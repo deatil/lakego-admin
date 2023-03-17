@@ -5,30 +5,9 @@ import (
     "encoding/ascii85"
 )
 
-// Base85 编码
-func Base85Encode(src string) string {
-    text := []byte(src)
-
-    dest := make([]byte, ascii85.MaxEncodedLen(len(text)))
-    ascii85.Encode(dest, text)
-
-    return string(dest)
-}
-
-// Base85 解码
-func Base85Decode(s string) string {
-    decodedText := make([]byte, len([]byte(s)))
-    decoded, _, _ := ascii85.Decode(decodedText, []byte(s), true)
-    decodedText = decodedText[:decoded]
-
-    return string(bytes.Trim(decodedText, "\x00"))
-}
-
-// ====================
-
 // Base85
-func (this Encoding) FromBase85String(data string) Encoding {
-    src := []byte(data)
+func (this Encoding) Base85Decode() Encoding {
+    src := this.data
 
     decodedText := make([]byte, len(src))
     decoded, _, err := ascii85.Decode(decodedText, src, true)
@@ -44,17 +23,14 @@ func (this Encoding) FromBase85String(data string) Encoding {
     return this
 }
 
-// Base85
-func FromBase85String(data string) Encoding {
-    return defaultEncode.FromBase85String(data)
-}
-
-// 输出 Base85
-func (this Encoding) ToBase85String() string {
+// 编码 Base85
+func (this Encoding) Base85Encode() Encoding {
     text := this.data
 
     dest := make([]byte, ascii85.MaxEncodedLen(len(text)))
     ascii85.Encode(dest, text)
 
-    return string(dest)
+    this.data = dest
+
+    return this
 }

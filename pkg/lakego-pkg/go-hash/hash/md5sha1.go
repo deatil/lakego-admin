@@ -3,42 +3,32 @@ package hash
 import (
     "crypto/md5"
     "crypto/sha1"
-    "encoding/hex"
 )
 
-func sha1Hash(slices ...string) []byte {
-    hsha1 := sha1.New()
-    for _, slice := range slices {
-        hsha1.Write([]byte(slice))
-    }
+func sha1Hash(slice []byte) []byte {
+    h := sha1.New()
+    h.Write(slice)
 
-    return hsha1.Sum(nil)
+    return h.Sum(nil)
 }
 
 // MD5SHA1 哈希值
-func MD5SHA1(slices ...string) string {
+func md5Sha1(slice []byte) []byte {
     md5sha1 := make([]byte, md5.Size + sha1.Size)
 
-    hmd5 := md5.New()
-    for _, slice := range slices {
-        hmd5.Write([]byte(slice))
-    }
+    h := md5.New()
+    h.Write(slice)
 
-    copy(md5sha1, hmd5.Sum(nil))
-    copy(md5sha1[md5.Size:], sha1Hash(slices...))
+    copy(md5sha1, h.Sum(nil))
+    copy(md5sha1[md5.Size:], sha1Hash(slice))
 
-    return hex.EncodeToString(md5sha1[:])
+    return md5sha1[:]
 }
 
 // MD5SHA1 哈希值
 func (this Hash) MD5SHA1() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        var newData []string
-        for _, v := range data {
-            newData = append(newData, string(v))
-        }
+    this.data = md5Sha1(this.data)
 
-        return MD5SHA1(newData...), nil
-    })
+    return this
 }
 

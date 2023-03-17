@@ -1,20 +1,22 @@
 package hash
 
 import (
-    "encoding/hex"
-
     "github.com/tjfoc/gmsm/sm3"
 )
 
 // 国密 sm3 签名
-func SM3(data string) string {
-    m := sm3.New()
-    m.Write([]byte(data))
+func (this Hash) SM3() Hash {
+    h := sm3.New()
+    h.Write(this.data)
 
-    return hex.EncodeToString(m.Sum(nil))
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// 国密 sm3 签名
-func (this Hash) SM3() Hash {
-    return this.UseHash(sm3.New)
+// NewSM3
+func (this Hash) NewSM3() Hash {
+    this.hash = sm3.New()
+
+    return this
 }

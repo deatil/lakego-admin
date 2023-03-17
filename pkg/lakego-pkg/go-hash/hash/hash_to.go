@@ -1,35 +1,36 @@
 package hash
 
-// 输出原始字符
+import (
+    "io"
+    "bytes"
+)
+
+// 输出字符
 func (this Hash) String() string {
-    if len(this.data) == 0 {
-        return ""
-    }
-
-    res := ""
-    for _, data := range this.data {
-        res += string(data)
-    }
-
-    return res
+    return this.ToString()
 }
 
 // 输出字节
 func (this Hash) ToBytes() []byte {
-    return []byte(this.hashedData)
+    return this.data
 }
 
 // 输出字符
 func (this Hash) ToString() string {
-    return this.hashedData
+    return string(this.data)
 }
 
 // 输出Base64
 func (this Hash) ToBase64String() string {
-    return this.Base64Encode([]byte(this.hashedData))
+    return this.Base64Encode(this.data)
 }
 
 // 输出Hex
 func (this Hash) ToHexString() string {
-    return this.HexEncode([]byte(this.hashedData))
+    return this.HexEncode(this.data)
+}
+
+// 输出 io.Reader
+func (this Hash) ToReader() io.Reader {
+    return bytes.NewBuffer(this.data)
 }

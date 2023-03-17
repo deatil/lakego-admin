@@ -1,50 +1,73 @@
 package hash
 
 import (
-    "encoding/hex"
     "golang.org/x/crypto/sha3"
 )
 
 // SHA3_224 哈希值
-func SHA3_224(s string) string {
-    sum := sha3.Sum224([]byte(s))
-    return hex.EncodeToString(sum[:])
-}
-
-// SHA3_224 哈希值
 func (this Hash) SHA3_224() Hash {
-    return this.UseHash(sha3.New224)
+    h := sha3.New224()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// SHA3_256 哈希值
-func SHA3_256(s string) string {
-    sum := sha3.Sum256([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewSHA3_224
+func (this Hash) NewSHA3_224() Hash {
+    this.hash = sha3.New224()
+
+    return this
 }
 
 // SHA3_256 哈希值
 func (this Hash) SHA3_256() Hash {
-    return this.UseHash(sha3.New256)
+    h := sha3.New256()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// SHA3_384 哈希值
-func SHA3_384(s string) string {
-    sum := sha3.Sum384([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewSHA3_256
+func (this Hash) NewSHA3_256() Hash {
+    this.hash = sha3.New256()
+
+    return this
 }
 
 // SHA3_384 哈希值
 func (this Hash) SHA3_384() Hash {
-    return this.UseHash(sha3.New384)
+    h := sha3.New384()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// SHA3_512 哈希值
-func SHA3_512(s string) string {
-    sum := sha3.Sum512([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewSHA3_384
+func (this Hash) NewSHA3_384() Hash {
+    this.hash = sha3.New384()
+
+    return this
 }
 
 // SHA3_512 哈希值
 func (this Hash) SHA3_512() Hash {
-    return this.UseHash(sha3.New512)
+    h := sha3.New512()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewSHA3_512
+func (this Hash) NewSHA3_512() Hash {
+    this.hash = sha3.New512()
+
+    return this
 }

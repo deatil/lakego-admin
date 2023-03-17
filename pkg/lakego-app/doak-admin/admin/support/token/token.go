@@ -158,7 +158,7 @@ func (this *Token) MakeJWT() *jwt.JWT {
     privateKeyPassword := this.GetStringConfig("jwt.private-key-password", "")
 
     // 解析 base64
-    secret = encoding.Base64Decode(secret)
+    secret = base64Decode(secret)
 
     // 格式化公钥和私钥
     privateKey = this.FormatPath(privateKey)
@@ -169,7 +169,7 @@ func (this *Token) MakeJWT() *jwt.JWT {
     publicKeyData, _ := this.ReadDataFromFile(publicKey)
 
     // 私钥密码
-    privateKeyPassword = encoding.Base64Decode(privateKeyPassword)
+    privateKeyPassword = base64Decode(privateKeyPassword)
 
     nowTime := time.Now().Unix()
 
@@ -222,7 +222,7 @@ func (this *Token) MakeAccessToken(claims map[string]string) (token string, err 
 
     passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
-    passphrase = encoding.Base64Decode(passphrase)
+    passphrase = base64Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
@@ -253,7 +253,7 @@ func (this *Token) MakeRefreshToken(claims map[string]string) (token string, err
 
     passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
-    passphrase = encoding.Base64Decode(passphrase)
+    passphrase = base64Decode(passphrase)
 
     jwtHandle := this.
         MakeJWT().
@@ -405,7 +405,7 @@ func (this *Token) GetDataFromTokenClaims(claims jwt.MapClaims, key string) stri
 
     passphraseIv := this.GetStringConfig("jwt.passphrase-iv", "")
     passphrase := this.GetStringConfig("jwt.passphrase", "")
-    passphrase = encoding.Base64Decode(passphrase)
+    passphrase = base64Decode(passphrase)
 
     if passphrase != "" {
         data = this.Decode(data, passphrase, passphraseIv)
@@ -465,4 +465,11 @@ func (this *Token) FormatPath(file string) string {
     filename := path.FormatPath(file)
 
     return filename
+}
+
+func base64Decode(data string) string {
+    return encoding.
+        FromString(data).
+        Base64Decode().
+        ToString()
 }

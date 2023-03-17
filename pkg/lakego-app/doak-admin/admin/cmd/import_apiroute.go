@@ -4,7 +4,6 @@ import (
     "fmt"
     "strings"
 
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/go-encoding/encoding"
     "github.com/deatil/lakego-filesystem/filesystem"
@@ -14,6 +13,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/command"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
 /**
@@ -54,7 +54,8 @@ func ImportApiRoute() {
     var routes map[string]any
 
     // 转换为 map
-    err = encoding.Unmarshal([]byte(swaggerInfo), &routes)
+    err = encoding.FromString(swaggerInfo).
+        JSONIteratorDecode(&routes).Error
     if err != nil {
         fmt.Println("api 信息错误")
         return
@@ -82,7 +83,7 @@ func ImportApiRoute() {
 
             slug := data.Value("x-lakego.slug").ToString()
             if slug == "" {
-                slug = hash.MD5(datebin.NowDatetimeString() + random.String(15))
+                slug = utils.MD5(datebin.NowDatetimeString() + random.String(15))
             }
 
             // 排序

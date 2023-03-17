@@ -113,7 +113,8 @@ func (this *Rename) SequenceName() *Rename {
 
 // 唯一命名
 func (this *Rename) GenerateUniqueName() string {
-    name := hash.MD5(strconv.FormatInt(time.Now().Unix(), 10))
+    name := strconv.FormatInt(time.Now().Unix(), 10)
+    name = hash.FromString(name).MD5().ToHexString()
 
     return name + "." + this.GetDefaultExtension()
 }

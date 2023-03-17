@@ -5,29 +5,8 @@ import (
     "encoding/binary"
 )
 
-// Binary 编码
-func BinaryEncode(src any) (string, error) {
-    buf := bytes.NewBuffer(nil)
-
-    err := binary.Write(buf, binary.LittleEndian, src)
-    if err != nil {
-        return "", err
-    }
-
-    return buf.String(), nil
-}
-
-// Binary 解码
-func BinaryDecode(src string, dst any) error {
-    buf := bytes.NewBuffer([]byte(src))
-
-    return binary.Read(buf, binary.LittleEndian, dst)
-}
-
-// ====================
-
-// Binary
-func (this Encoding) ForBinary(data any) Encoding {
+// Binary 小端编码
+func (this Encoding) BinaryLittleEndianEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
 
     err := binary.Write(buf, binary.LittleEndian, data)
@@ -41,14 +20,37 @@ func (this Encoding) ForBinary(data any) Encoding {
     return this
 }
 
-// Binary
-func ForBinary(data any) Encoding {
-    return defaultEncode.ForBinary(data)
-}
-
-// Binary 编码输出
-func (this Encoding) BinaryTo(dst any) error {
+// Binary 小端解码
+func (this Encoding) BinaryLittleEndianDecode(dst any) Encoding {
     buf := bytes.NewBuffer(this.data)
 
-    return binary.Read(buf, binary.LittleEndian, dst)
+    this.Error = binary.Read(buf, binary.LittleEndian, dst)
+
+    return this
+}
+
+// ====================
+
+// Binary 大端编码
+func (this Encoding) BinaryBigEndianEncode(data any) Encoding {
+    buf := bytes.NewBuffer(nil)
+
+    err := binary.Write(buf, binary.BigEndian, data)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    this.data = buf.Bytes()
+
+    return this
+}
+
+// Binary 大端加码
+func (this Encoding) BinaryBigEndianDecode(dst any) Encoding {
+    buf := bytes.NewBuffer(this.data)
+
+    this.Error = binary.Read(buf, binary.BigEndian, dst)
+
+    return this
 }

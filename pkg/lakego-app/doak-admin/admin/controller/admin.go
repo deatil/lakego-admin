@@ -5,7 +5,6 @@ import (
     "encoding/json"
 
     "github.com/deatil/go-goch/goch"
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-tree/tree"
     "github.com/deatil/go-datebin/datebin"
 
@@ -19,6 +18,7 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/permission"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
     admin_validate "github.com/deatil/lakego-doak-admin/admin/validate/admin"
     admin_repository "github.com/deatil/lakego-doak-admin/admin/repository/admin"
@@ -836,7 +836,7 @@ func (this *Admin) Logout(ctx *router.Context) {
 
     c := cache.New()
 
-    if c.Has(hash.MD5(refreshToken)) {
+    if c.Has(utils.MD5(refreshToken)) {
         this.Error(ctx, "refreshToken已失效")
         return
     }
@@ -866,7 +866,7 @@ func (this *Admin) Logout(ctx *router.Context) {
         return
     }
 
-    c.Put(hash.MD5(refreshToken), "no", int64(refreshTokenExpiresIn))
+    c.Put(utils.MD5(refreshToken), "no", int64(refreshTokenExpiresIn))
 
     model.NewAdmin().
         Where("id = ?", refreshAdminid).

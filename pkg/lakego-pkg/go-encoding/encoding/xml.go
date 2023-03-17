@@ -5,30 +5,8 @@ import (
     "encoding/xml"
 )
 
-// xml 编码
-func XmlEncode(src any) (string, error) {
-    buf := bytes.NewBuffer(nil)
-
-    enc := xml.NewEncoder(buf)
-    err := enc.Encode(src)
-    if err != nil {
-        return "", err
-    }
-
-    return buf.String(), nil
-}
-
-// xml 解码
-func XmlDecode(src string, dst any) error {
-    buf := bytes.NewBuffer([]byte(src))
-    dec := xml.NewDecoder(buf)
-    return dec.Decode(dst)
-}
-
-// ====================
-
-// Xml
-func (this Encoding) ForXML(data any) Encoding {
+// Xml 编码
+func (this Encoding) XmlEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
 
     enc := xml.NewEncoder(buf)
@@ -43,15 +21,12 @@ func (this Encoding) ForXML(data any) Encoding {
     return this
 }
 
-// Xml
-func ForXML(data any) Encoding {
-    return defaultEncode.ForXML(data)
-}
-
-// Xml 编码输出
-func (this Encoding) XMLTo(dst any) error {
+// Xml 解码
+func (this Encoding) XmlDecode(dst any) Encoding {
     buf := bytes.NewBuffer(this.data)
     dec := xml.NewDecoder(buf)
 
-    return dec.Decode(dst)
+    this.Error = dec.Decode(dst)
+
+    return this
 }

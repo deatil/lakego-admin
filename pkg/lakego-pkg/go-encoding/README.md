@@ -26,22 +26,12 @@ import (
 func main() {
     oldData := "useData"
 
-    // Base32 编码
-    base32Data := encoding.FromString(oldData).ToBase32String()
-    fmt.Println("Base32 编码为：", base32Data)
-
     // Base64 编码
-    base64Data := encoding.FromString(oldData).ToBase64String()
+    base64Data := encoding.FromString(oldData).Base64Encode().ToString()
     fmt.Println("Base64 编码为：", base64Data)
 
-    // =========================
-
-    // Base32 解码
-    base32DecodeData := encoding.FromBase32String(base32Data).ToString()
-    fmt.Println("Base32 解码为：", base32DecodeData)
-
     // Base64 解码
-    base64DecodeData := encoding.FromBase64String(base64Data).ToString()
+    base64DecodeData := encoding.FromString(base64Data).Base64Decode().ToString()
     fmt.Println("Base64 解码为：", base64DecodeData)
 }
 ~~~
@@ -52,24 +42,50 @@ func main() {
 ~~~go
     base64Data := encoding.
         FromString(oldData). // 数据来源
-        ToBase64String()     // 输出结果，可为编码或者原始数据
+        Base64Encode().      // 编码或者解码方式
+        ToString()           // 输出结果
 ~~~
 
 
 ### 输入输出数据
 
 *  输入数据:
-`FromBytes(data []byte)`, `FromString(data string)`
+`FromBytes(data []byte)`, `FromString(data string)`, `FromReader(reader io.Reader)`
 *  输出数据:
-`ToBytes()`, `ToString()`, `String()`
+`String() string`, `ToBytes() []byte`, `ToString() string`, `ToReader() io.Reader`
 
 
 ### 常用解码编码
 
-*  常用解码:
-`FromBase32String(data string)`, `FromBase32HexString(data string)`, `FromBase32EncoderString(data string, encoder string)`, `FromBase58String(data string)`, `FromBase64String(data string)`, `FromBase64URLString(data string)`, `FromBase64RawString(data string)`, `FromBase64RawURLString(data string)`, `FromBase64SegmentString(data string)`, `FromBase64EncoderString(data string, encoder string) `, `FromBase85String(data string)`, `FromBase2String(data string)`, `FromBase16String(data string)`, `FromBasex62String(data string)`, `FromBasexEncoderString(data string, encoder string)`, `FromBase62String(data string)`, `FromBase91String(data string)`, `FromBase100String(data string)`, `FromMorseITUString(data string)`, `FromHexString(data string)`
 *  常用编码:
-`ToBase32String()`, `ToBase32HexString()`, `ToBase32EncoderString(encoder string)`, `ToBase58String()`, `ToBase64String()`, `ToBase64URLString()`, `ToBase64RawString()`, `ToBase64RawURLString()`, `ToBase64SegmentString()`, `ToBase64EncoderString(encoder string)`, `ToBase85String()`, `ToBase2String()`, `ToBase16String()`, `ToBasex62String()`, `ToBasexEncoderString(encoder string)`, `ToBase62String()`, `ToBase91String()`, `ToBase100String()`, `ToMorseITUString()`, `ToHexString()`
+`Base32Encode()`, `Base32HexEncode()`, `Base32EncodeWithEncoder(encoder string)`,
+`Base45Encode()`,
+`Base58Encode()`,
+`Base62Encode()`,
+`Base64Encode()`, `Base64URLEncode()`, `Base64RawEncode()`, `Base64RawURLEncode()`, `Base64SegmentEncode()`, `Base64EncodeWithEncoder(encoder string)`,
+`Base85Encode()`,
+`Base91Encode()`,
+`Base100Encode()`,
+`Basex2Encode()`, `Basex16Encode()`, `Basex62Encode()`, `BasexEncodeWithEncoder(encoder string)`,
+`HexEncode()`,
+`MorseITUEncode()`,
+`SafeURLEncode()`,
+`SerializeEncode()`
+
+*  常用解码:
+`Base32Decode()`, `Base32HexDecode()`, `Base32DecodeWithEncoder(encoder string)`,
+`Base45Decode()`,
+`Base58Decode()`,
+`Base62Decode()`,
+`Base64Decode()`, `Base64URLDecode()`, `Base64RawDecode()`, `Base64RawURLDecode()`, `Base64SegmentDecode(paddingAllowed ...bool)`, `Base64DecodeWithEncoder(encoder string)`,
+`Base85Encode()`,
+`Base91Decode()`,
+`Base100Decode()`,
+`Basex2Decode()`, `Basex16Decode()`, `Basex62Decode()`, `BasexDecodeWithEncoder(encoder string)`,
+`HexDecode()`,
+`MorseITUDecode()`,
+`SafeURLDecode()`,
+`SerializeDecode()`
 
 
 ### 开源协议

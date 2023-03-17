@@ -3,13 +3,13 @@ package cmd
 import (
     "fmt"
 
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/cache"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
 /**
@@ -52,7 +52,7 @@ func init() {
 func PassportLogout() {
     c := cache.New()
 
-    if c.Has(hash.MD5(refreshToken)) {
+    if c.Has(utils.MD5(refreshToken)) {
         fmt.Println("refreshToken 已失效")
         return
     }
@@ -75,7 +75,7 @@ func PassportLogout() {
     iat := jwter.GetFromTokenClaims(claims, "iat")
     refreshTokenExpiresIn := exp.(float64) - iat.(float64)
 
-    c.Put(hash.MD5(refreshToken), "no", int64(refreshTokenExpiresIn))
+    c.Put(utils.MD5(refreshToken), "no", int64(refreshTokenExpiresIn))
 
     model.NewAdmin().
         Where("id = ?", refreshAdminid).

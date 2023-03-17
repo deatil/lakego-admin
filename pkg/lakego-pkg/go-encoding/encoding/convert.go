@@ -60,7 +60,7 @@ func BaseConvert(number string, frombase, tobase int) string {
 // bitSize 限制长度
 // ParseBool()、ParseFloat()、ParseInt()、ParseUint()。
 // FormatBool()、FormatInt()、FormatUint()、FormatFloat()、
-func (this Encoding) FromConvert(input any, base int, bitSize ...int) Encoding {
+func (this Encoding) ConvertDecode(input any, base int, bitSize ...int) Encoding {
     newBitSize := 0
     if len(bitSize) > 0 {
         newBitSize = bitSize[0]
@@ -87,7 +87,7 @@ func (this Encoding) FromConvert(input any, base int, bitSize ...int) Encoding {
                 return this
             }
         default:
-            this.Error = errors.New("数据输入格式错误")
+            this.Error = errors.New("data error.")
             return this
     }
 
@@ -99,65 +99,35 @@ func (this Encoding) FromConvert(input any, base int, bitSize ...int) Encoding {
     return this
 }
 
-// Hex
-func FromConvert(data any, base int, bitSize ...int) Encoding {
-    return defaultEncode.FromConvert(data, base, bitSize...)
-}
-
 // 二进制
-func (this Encoding) FromConvertBin(data string) Encoding {
-    return this.FromConvert(data, 2)
-}
-
-// 二进制
-func FromConvertBin(data string) Encoding {
-    return defaultEncode.FromConvertBin(data)
+func (this Encoding) ConvertBinDecode(data string) Encoding {
+    return this.ConvertDecode(data, 2)
 }
 
 // 八进制
-func (this Encoding) FromConvertOct(data string) Encoding {
-    return this.FromConvert(data, 8)
-}
-
-// 八进制
-func FromConvertOct(data string) Encoding {
-    return defaultEncode.FromConvertOct(data)
+func (this Encoding) ConvertOctDecode(data string) Encoding {
+    return this.ConvertDecode(data, 8)
 }
 
 // 十进制
-func (this Encoding) FromConvertDec(data int64) Encoding {
-    return this.FromConvert(data, 10)
-}
-
-// 十进制
-func FromConvertDec(data int64) Encoding {
-    return defaultEncode.FromConvertDec(data)
+func (this Encoding) ConvertDecDecode(data int64) Encoding {
+    return this.ConvertDecode(data, 10)
 }
 
 // 十进制字符
-func (this Encoding) FromConvertDecString(data string) Encoding {
-    return this.FromConvert(data, 10)
-}
-
-// 十进制字符
-func FromConvertDecString(data string) Encoding {
-    return defaultEncode.FromConvertDecString(data)
+func (this Encoding) ConvertDecStringDecode(data string) Encoding {
+    return this.ConvertDecode(data, 10)
 }
 
 // 十六进制
-func (this Encoding) FromConvertHex(data string) Encoding {
-    return this.FromConvert(data, 16)
-}
-
-// 十六进制
-func FromConvertHex(data string) Encoding {
-    return defaultEncode.FromConvertHex(data)
+func (this Encoding) ConvertHexDecode(data string) Encoding {
+    return this.ConvertDecode(data, 16)
 }
 
 // ====================
 
 // 输出进制编码
-func (this Encoding) ToConvert(base int) string {
+func (this Encoding) ConvertEncode(base int) string {
     number, err := strconv.ParseInt(string(this.data), 10, 0)
     if err != nil {
         return ""
@@ -167,17 +137,17 @@ func (this Encoding) ToConvert(base int) string {
 }
 
 // 输出 二进制
-func (this Encoding) ToConvertBin() string {
-    return this.ToConvert(2)
+func (this Encoding) ConvertBinEncode() string {
+    return this.ConvertEncode(2)
 }
 
 // 输出 八进制
-func (this Encoding) ToConvertOct() string {
-    return this.ToConvert(8)
+func (this Encoding) ConvertOctEncode() string {
+    return this.ConvertEncode(8)
 }
 
 // 输出 十进制
-func (this Encoding) ToConvertDec() int64 {
+func (this Encoding) ConvertDecEncode() int64 {
     number, err := strconv.ParseInt(string(this.data), 10, 0)
     if err != nil {
         return 0
@@ -187,11 +157,11 @@ func (this Encoding) ToConvertDec() int64 {
 }
 
 // 输出 十进制
-func (this Encoding) ToConvertDecString() string {
-    return this.ToConvert(10)
+func (this Encoding) ConvertDecStringEncode() string {
+    return this.ConvertEncode(10)
 }
 
 // 输出 十六进制
-func (this Encoding) ToConvertHex() string {
-    return this.ToConvert(16)
+func (this Encoding) ConvertHexEncode() string {
+    return this.ConvertEncode(16)
 }

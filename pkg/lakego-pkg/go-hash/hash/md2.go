@@ -1,20 +1,22 @@
 package hash
 
 import (
-    "encoding/hex"
-
     "github.com/deatil/go-hash/md2"
 )
 
 // md2 签名
-func MD2(data string) string {
+func (this Hash) MD2() Hash {
     h := md2.New()
-    h.Write([]byte(data))
+    h.Write(this.data)
 
-    return hex.EncodeToString(h.Sum(nil))
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// md2 签名
-func (this Hash) MD2() Hash {
-    return this.UseHash(md2.New)
+// NewMD2
+func (this Hash) NewMD2() Hash {
+    this.hash = md2.New()
+
+    return this
 }

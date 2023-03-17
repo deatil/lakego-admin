@@ -10,7 +10,7 @@ body:
     attributes:
       label: lakego-admin 版本
       description: 请输入您当前使用的项目版本?
-      placeholder: 1.0.5
+      placeholder: 1.0.1
     validations:
       required: true
   - type: input
@@ -18,7 +18,7 @@ body:
     attributes:
       label: Golang 版本
       description: 请输入您当前使用的 Golang 版本?
-      placeholder: go 1.18
+      placeholder: go 1.16
     validations:
       required: true
   - type: dropdown

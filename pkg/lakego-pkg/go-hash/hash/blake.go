@@ -1,79 +1,88 @@
 package hash
 
 import (
-    "encoding/hex"
     "golang.org/x/crypto/blake2b"
     "golang.org/x/crypto/blake2s"
 )
 
 // Blake2b_256 哈希值
-func Blake2b_256(s string) string {
-    sum := blake2b.Sum256([]byte(s))
-    return hex.EncodeToString(sum[:])
-}
-
-// Blake2b_256 哈希值
 func (this Hash) Blake2b_256() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    sum := blake2b.Sum256(this.data)
+    this.data = sum[:]
 
-        return Blake2b_256(newData), nil
-    })
+    return this
 }
 
-// Blake2b_384 哈希值
-func Blake2b_384(s string) string {
-    sum := blake2b.Sum384([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewBlake2b_256
+func (this Hash) NewBlake2b_256(key []byte) Hash {
+    this.hash, this.Error = blake2b.New256(key)
+
+    return this
 }
 
 // Blake2b_384 哈希值
 func (this Hash) Blake2b_384() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    sum := blake2b.Sum384(this.data)
+    this.data = sum[:]
 
-        return Blake2b_384(newData), nil
-    })
+    return this
 }
 
-// Blake2b_512 哈希值
-func Blake2b_512(s string) string {
-    sum := blake2b.Sum512([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewBlake2b_384
+func (this Hash) NewBlake2b_384(key []byte) Hash {
+    this.hash, this.Error = blake2b.New384(key)
+
+    return this
 }
 
 // Blake2b_512 哈希值
 func (this Hash) Blake2b_512() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    sum := blake2b.Sum512(this.data)
+    this.data = sum[:]
 
-        return Blake2b_512(newData), nil
-    })
+    return this
 }
 
-// Blake2s_256 哈希值
-func Blake2s_256(s string) string {
-    sum := blake2s.Sum256([]byte(s))
-    return hex.EncodeToString(sum[:])
+// NewBlake2b_512
+func (this Hash) NewBlake2b_512(key []byte) Hash {
+    this.hash, this.Error = blake2b.New512(key)
+
+    return this
 }
 
 // Blake2s_256 哈希值
 func (this Hash) Blake2s_256() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    sum := blake2s.Sum256(this.data)
+    this.data = sum[:]
 
-        return Blake2s_256(newData), nil
-    })
+    return this
+}
+
+// NewBlake2s_256
+func (this Hash) NewBlake2s_256(key []byte) Hash {
+    this.hash, this.Error = blake2s.New256(key)
+
+    return this
+}
+
+// Blake2s_128 哈希值
+func (this Hash) Blake2s_128() Hash {
+    h, err := blake2s.New128(nil)
+    if err != nil {
+        this.Error = err
+        return this
+    }
+
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewBlake2s_128
+func (this Hash) NewBlake2s_128(key []byte) Hash {
+    this.hash, this.Error = blake2s.New128(key)
+
+    return this
 }

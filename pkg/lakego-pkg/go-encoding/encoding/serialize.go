@@ -8,7 +8,21 @@ import (
 )
 
 // 序列化
-func Serialize(value any) ([]byte, error) {
+func (this Encoding) SerializeEncode(data any) Encoding {
+    this.data, this.Error = serialize(data)
+
+    return this
+}
+
+// 序列化输出
+func (this Encoding) SerializeDecode(val any) Encoding {
+    this.Error = unserialize(this.data, val)
+
+    return this
+}
+
+// 序列化
+func serialize(value any) ([]byte, error) {
     if bytes, ok := value.([]byte); ok {
         return bytes, nil
     }
@@ -40,7 +54,7 @@ func Serialize(value any) ([]byte, error) {
 }
 
 // 反序列化
-func Unserialize(data []byte, ptr any) (err error) {
+func unserialize(data []byte, ptr any) (err error) {
     if bytes, ok := ptr.(*[]byte); ok {
         *bytes = data
         return nil
@@ -87,23 +101,4 @@ func Unserialize(data []byte, ptr any) (err error) {
     }
 
     return nil
-}
-
-// ====================
-
-// 序列化
-func (this Encoding) ForSerialize(data any) Encoding {
-    this.data, this.Error = Serialize(data)
-
-    return this
-}
-
-// ForSerialize
-func ForSerialize(data any) Encoding {
-    return defaultEncode.ForSerialize(data)
-}
-
-// 序列化输出
-func (this Encoding) SerializeTo(val any) error {
-    return Unserialize(this.data, val)
 }

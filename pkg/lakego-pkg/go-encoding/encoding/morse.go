@@ -4,25 +4,9 @@ import (
     "github.com/deatil/go-encoding/morse"
 )
 
-// 加密
-func MorseITUEncode(str string) string {
-    return morse.EncodeITU(str)
-}
-
-// 解密
-func MorseITUDecode(str string) string {
-    newStr, err := morse.DecodeITU(str)
-    if err != nil {
-        return ""
-    }
-
-    return newStr
-}
-
-// ====================
-
 // MorseITU
-func (this Encoding) FromMorseITUString(data string) Encoding {
+func (this Encoding) MorseITUDecode() Encoding {
+    data := string(this.data)
     data, err := morse.DecodeITU(data)
 
     this.data = []byte(data)
@@ -31,12 +15,10 @@ func (this Encoding) FromMorseITUString(data string) Encoding {
     return this
 }
 
-// MorseITU
-func FromMorseITUString(data string) Encoding {
-    return defaultEncode.FromMorseITUString(data)
-}
+// 编码 MorseITU
+func (this Encoding) MorseITUEncode() Encoding {
+    data := morse.EncodeITU(string(this.data))
+    this.data = []byte(data)
 
-// 输出 MorseITU
-func (this Encoding) ToMorseITUString() string {
-    return morse.EncodeITU(string(this.data))
+    return this
 }

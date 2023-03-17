@@ -33,10 +33,14 @@ func EncryptPassword(password string) (pass string, encrypt string) {
  * @return password, encrypt
  */
 func EncryptPasswordWithEncrypt(password string, encrypt string) string {
-    return hash.MD5(hash.MD5(password + encrypt) + GetPasswordSalt())
+    return md5(md5(password + encrypt) + GetPasswordSalt())
 }
 
 // 密码通用盐
 func GetPasswordSalt() string {
     return config.New("auth").GetString("passport.password-salt")
+}
+
+func md5(data string) string {
+    return hash.FromString(data).MD5().ToHexString()
 }

@@ -1,5 +1,10 @@
 package jceks
 
+import (
+    "io"
+    "bytes"
+)
+
 const (
     UberVersionV1 = 1
 )
@@ -23,6 +28,18 @@ func NewUBER() *UBER {
     }
 
     return uber
+}
+
+// LoadUberFromReader
+func LoadUberFromReader(reader io.Reader, password string) (*UBER, error) {
+    buf := bytes.NewBuffer(nil)
+
+    // 保存
+    if _, err := io.Copy(buf, reader); err != nil {
+        return nil, err
+    }
+
+    return LoadUberFromBytes(buf.Bytes(), password)
 }
 
 // LoadUberFromBytes loads the key store from the bytes data.

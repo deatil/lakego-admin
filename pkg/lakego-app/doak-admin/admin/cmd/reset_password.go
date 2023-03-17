@@ -3,10 +3,10 @@ package cmd
 import (
     "fmt"
 
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/lakego-doak/lakego/command"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
 )
 
@@ -59,7 +59,7 @@ func ResetPassword() {
         return
     }
 
-    password = hash.MD5(password)
+    password = utils.MD5(password)
 
     // 查询
     result := map[string]any{}

@@ -1,145 +1,107 @@
 package hash
 
 import (
-    "strconv"
     "hash/fnv"
-    "encoding/hex"
 )
 
 // Fnv32
-func Fnv32(data string) string {
-    m := fnv.New32()
-    m.Write([]byte(data))
-
-    res := m.Sum32()
-
-    return strconv.FormatInt(int64(res), 16)
-}
-
-// Fnv32
 func (this Hash) Fnv32() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New32()
+    h.Write(this.data)
 
-        return Fnv32(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// =======================
+// NewFnv32
+func (this Hash) NewFnv32() Hash {
+    this.hash = fnv.New32()
 
-// Fnv32a
-func Fnv32a(data string) string {
-    m := fnv.New32a()
-    m.Write([]byte(data))
-
-    res := m.Sum32()
-
-    return strconv.FormatInt(int64(res), 16)
+    return this
 }
 
 // Fnv32a
 func (this Hash) Fnv32a() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New32a()
+    h.Write(this.data)
 
-        return Fnv32a(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// =======================
+// NewFnv32a
+func (this Hash) NewFnv32a() Hash {
+    this.hash = fnv.New32a()
 
-// Fnv64
-func Fnv64(data string) string {
-    m := fnv.New64()
-    m.Write([]byte(data))
-
-    res := m.Sum64()
-
-    return strconv.FormatInt(int64(res), 16)
+    return this
 }
 
 // Fnv64
 func (this Hash) Fnv64() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New64()
+    h.Write(this.data)
 
-        return Fnv64(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// =======================
+// NewFnv64
+func (this Hash) NewFnv64() Hash {
+    this.hash = fnv.New64()
 
-// Fnv64a
-func Fnv64a(data string) string {
-    m := fnv.New64a()
-    m.Write([]byte(data))
-
-    res := m.Sum64()
-
-    return strconv.FormatInt(int64(res), 16)
+    return this
 }
 
 // Fnv64a
 func (this Hash) Fnv64a() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New64a()
+    h.Write(this.data)
 
-        return Fnv64a(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// =======================
+// NewFnv64a
+func (this Hash) NewFnv64a() Hash {
+    this.hash = fnv.New64a()
 
-// Fnv128
-func Fnv128(data string) string {
-    m := fnv.New128()
-    m.Write([]byte(data))
-
-    return hex.EncodeToString(m.Sum(nil))
+    return this
 }
 
 // Fnv128
 func (this Hash) Fnv128() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New128()
+    h.Write(this.data)
 
-        return Fnv128(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// =======================
+// NewFnv128
+func (this Hash) NewFnv128() Hash {
+    this.hash = fnv.New128()
 
-// Fnv128a
-func Fnv128a(data string) string {
-    m := fnv.New128a()
-    m.Write([]byte(data))
-
-    return hex.EncodeToString(m.Sum(nil))
+    return this
 }
 
 // Fnv128a
 func (this Hash) Fnv128a() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := fnv.New128a()
+    h.Write(this.data)
 
-        return Fnv128a(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewFnv128a
+func (this Hash) NewFnv128a() Hash {
+    this.hash = fnv.New128a()
+
+    return this
 }

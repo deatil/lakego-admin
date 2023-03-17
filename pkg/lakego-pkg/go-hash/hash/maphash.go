@@ -1,28 +1,28 @@
 package hash
 
 import (
-    "strconv"
+    "hash"
     "hash/maphash"
 )
 
-// Maphash
-func Maphash(data string) string {
-    h := &maphash.Hash{}
-    h.WriteString(data)
-
-    res := h.Sum64()
-
-    return strconv.FormatInt(int64(res), 16)
+// newMaphash
+func newMaphash() hash.Hash64 {
+    return &maphash.Hash{}
 }
 
 // Maphash
 func (this Hash) Maphash() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+    h := newMaphash()
+    h.Write(this.data)
 
-        return Maphash(newData), nil
-    })
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMaphash
+func (this Hash) NewMaphash() Hash {
+    this.hash = newMaphash()
+
+    return this
 }

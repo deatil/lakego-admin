@@ -3,149 +3,115 @@ package hash
 import (
     "crypto"
     "crypto/hmac"
-    "encoding/hex"
 )
 
-// HmacMd4 签名
-func HmacMd4(message string, secret string) string {
-    return HmacHash(crypto.MD4, message, secret)
+// NewHmac
+func (this Hash) NewHmac(hash crypto.Hash, secret []byte) Hash {
+    this.hash = hmac.New(hash.New, secret)
+
+    return this
 }
 
 // HmacMd4 哈希值
-func (this Hash) HmacMd4(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacMd4(secret []byte) Hash {
+    this.data = hmacHash(crypto.MD4, this.data, secret)
 
-        return HmacMd4(newData, secret), nil
-    })
+    return this
 }
 
-// HmacMd5 签名
-func HmacMd5(message string, secret string) string {
-    return HmacHash(crypto.MD5, message, secret)
+// NewHmacMd4
+func (this Hash) NewHmacMd4(secret []byte) Hash {
+    return this.NewHmac(crypto.MD4, secret)
 }
 
 // HmacMd5 哈希值
-func (this Hash) HmacMd5(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacMd5(secret []byte) Hash {
+    this.data = hmacHash(crypto.MD5, this.data, secret)
 
-        return HmacMd5(newData, secret), nil
-    })
+    return this
 }
 
-// HmacSHA1 签名
-func HmacSHA1(message string, secret string) string {
-    return HmacHash(crypto.SHA1, message, secret)
+// NewHmacMd5
+func (this Hash) NewHmacMd5(secret []byte) Hash {
+    return this.NewHmac(crypto.MD5, secret)
 }
 
 // HmacSHA1 哈希值
-func (this Hash) HmacSHA1(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacSHA1(secret []byte) Hash {
+    this.data = hmacHash(crypto.SHA1, this.data, secret)
 
-        return HmacSHA1(newData, secret), nil
-    })
+    return this
 }
 
-// HmacSha224 签名
-func HmacSha224(message string, secret string) string {
-    return HmacHash(crypto.SHA224, message, secret)
+// NewHmacSHA1
+func (this Hash) NewHmacSHA1(secret []byte) Hash {
+    return this.NewHmac(crypto.SHA1, secret)
 }
 
 // HmacSha224 哈希值
-func (this Hash) HmacSha224(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacSha224(secret []byte) Hash {
+    this.data = hmacHash(crypto.SHA224, this.data, secret)
 
-        return HmacSha224(newData, secret), nil
-    })
+    return this
 }
 
-// HmacSha256 签名
-func HmacSha256(message string, secret string) string {
-    return HmacHash(crypto.SHA256, message, secret)
+// NewHmacSha224
+func (this Hash) NewHmacSha224(secret []byte) Hash {
+    return this.NewHmac(crypto.SHA224, secret)
 }
 
 // HmacSha256 哈希值
-func (this Hash) HmacSha256(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacSha256(secret []byte) Hash {
+    this.data = hmacHash(crypto.SHA256, this.data, secret)
 
-        return HmacSha256(newData, secret), nil
-    })
+    return this
 }
 
-// HmacSha384 签名
-func HmacSha384(message string, secret string) string {
-    return HmacHash(crypto.SHA384, message, secret)
+// NewHmacSha256
+func (this Hash) NewHmacSha256(secret []byte) Hash {
+    return this.NewHmac(crypto.SHA256, secret)
 }
 
 // HmacSha384 哈希值
-func (this Hash) HmacSha384(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacSha384(secret []byte) Hash {
+    this.data = hmacHash(crypto.SHA384, this.data, secret)
 
-        return HmacSha384(newData, secret), nil
-    })
+    return this
 }
 
-// HmacSha512 签名
-func HmacSha512(message string, secret string) string {
-    return HmacHash(crypto.SHA512, message, secret)
+// NewHmacSha384
+func (this Hash) NewHmacSha384(secret []byte) Hash {
+    return this.NewHmac(crypto.SHA384, secret)
 }
 
 // HmacSha512 哈希值
-func (this Hash) HmacSha512(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacSha512(secret []byte) Hash {
+    this.data = hmacHash(crypto.SHA512, this.data, secret)
 
-        return HmacSha512(newData, secret), nil
-    })
+    return this
 }
 
-// HmacRipemd160 签名
-func HmacRipemd160(message string, secret string) string {
-    return HmacHash(crypto.RIPEMD160, message, secret)
+// NewHmacSha512
+func (this Hash) NewHmacSha512(secret []byte) Hash {
+    return this.NewHmac(crypto.SHA512, secret)
 }
 
 // HmacRipemd160 哈希值
-func (this Hash) HmacRipemd160(secret string) Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+func (this Hash) HmacRipemd160(secret []byte) Hash {
+    this.data = hmacHash(crypto.RIPEMD160, this.data, secret)
 
-        return HmacRipemd160(newData, secret), nil
-    })
+    return this
+}
+
+// NewHmacRipemd160
+func (this Hash) NewHmacRipemd160(secret []byte) Hash {
+    return this.NewHmac(crypto.RIPEMD160, secret)
 }
 
 // 签名
-func HmacHash(hash crypto.Hash, message string, secret string) string {
-    hasher := hmac.New(hash.New, []byte(secret))
-    hasher.Write([]byte(message))
-    return hex.EncodeToString(hasher.Sum(nil))
-}
+func hmacHash(hash crypto.Hash, message, secret []byte) []byte {
+    h := hmac.New(hash.New, secret)
+    h.Write(message)
 
+    return h.Sum(nil)
+}

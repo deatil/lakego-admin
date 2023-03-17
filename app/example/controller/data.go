@@ -182,7 +182,7 @@ func (this *Data) Error(ctx *gin.Context) {
     newStrData := str.LowerCamel(strData)
 
     // 时间
-    datebin.SetTimezone(datebin.Eire)
+    datebin.SetTimezone(datebin.Chongqing)
     date := datebin.
         Now().
         ToFormatString("Y/m/d H:i:s")
@@ -232,13 +232,13 @@ func (this *Data) Error(ctx *gin.Context) {
     // rsaEnKey := cryptobin_tool.EncodeDerToPem([]byte(rsaPriDer), "ENCRYPTED PRIVATE KEY")
 
     // 签名
-    hashData := hash.FromString("123测试abc").MD2().ToString()
-    hashData2 := hash.Murmur32("测试测试")
+    hashData := hash.FromString("123测试abc").MD2().ToHexString()
+    hashData2 := hash.FromString("测试测试").Murmur32().ToHexString()
 
     // 编码
-    encodeStr := encoding.FromString("test-data").ToBase64String()
-    encodeStr2 := encoding.FromBase64String("dGVzdC1kYXRh").ToString()
-    encodeStr3 := encoding.FromConvertHex("573d").ToConvertDecString()
+    encodeStr := encoding.FromString("test-data").Base64Encode().ToString()
+    encodeStr2 := encoding.FromString("dGVzdC1kYXRh").Base64Decode().ToString()
+    encodeStr3 := encoding.New().ConvertHexDecode("573d").ConvertDecStringEncode()
 
     /*
     encodeStr3 = encoding.FromString("asdsa123").ToBase45String()
@@ -315,7 +315,7 @@ func (this *Data) Error(ctx *gin.Context) {
 
     // sm2 签名
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
-    sm2keyBytes := encoding.FromBase64String(sm2key).ToBytes()
+    sm2keyBytes := encoding.FromString(sm2key).Base64Decode().ToBytes()
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
@@ -373,7 +373,9 @@ func (this *Data) Error(ctx *gin.Context) {
     crcData2 := crc.ToHexString(crcData, "crc6")
 
     // hashCrc32Data
-    hashCrc32Data := hash.CRC32Koopman(string(crc32Hex))
+    hashCrc32Data := hash.FromBytes(crc32Hex).
+        CRC32_Koopman().
+        ToHexString()
 
     // crc12
     crc12Hex, _ := hex.DecodeString("31303432")

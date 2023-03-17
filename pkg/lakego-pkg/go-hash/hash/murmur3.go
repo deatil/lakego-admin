@@ -5,35 +5,107 @@ import (
 )
 
 // murmur32
-func Murmur32(data string) uint32 {
-    return murmur3.Sum32([]byte(data))
+func (this Hash) Murmur32() Hash {
+    h := murmur3.New32()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur32
+func (this Hash) NewMurmur32() Hash {
+    this.hash = murmur3.New32()
+
+    return this
 }
 
 // murmur32
-func Murmur32WithSeed(data string, seed uint32) uint32 {
-    return murmur3.Sum32WithSeed([]byte(data), seed)
+func (this Hash) Murmur32WithSeed(seed uint32) Hash {
+    h := murmur3.New32WithSeed(seed)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur32WithSeed
+func (this Hash) NewMurmur32WithSeed(seed uint32) Hash {
+    this.hash = murmur3.New32WithSeed(seed)
+
+    return this
 }
 
 // ================
 
 // murmur64
-func Murmur64(data string) uint64 {
-    return murmur3.Sum64([]byte(data))
+func (this Hash) Murmur64() Hash {
+    h := murmur3.New64()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur64
+func (this Hash) NewMurmur64() Hash {
+    this.hash = murmur3.New64()
+
+    return this
 }
 
 // murmur64
-func Murmur64WithSeed(data string, seed uint32) uint64 {
-    return murmur3.Sum64WithSeed([]byte(data), seed)
+func (this Hash) Murmur64WithSeed(seed uint32) Hash {
+    h := murmur3.New64WithSeed(seed)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur64WithSeed
+func (this Hash) NewMurmur64WithSeed(seed uint32) Hash {
+    this.hash = murmur3.New64WithSeed(seed)
+
+    return this
 }
 
 // ================
 
 // murmur128
-func Murmur128(data string) (uint64, uint64) {
-    return murmur3.Sum128([]byte(data))
+func (this Hash) Murmur128() Hash {
+    h := murmur3.New128()
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur128
+func (this Hash) NewMurmur128() Hash {
+    this.hash = murmur3.New128()
+
+    return this
 }
 
 // murmur128
-func Murmur128WithSeed(data string, seed uint32) (uint64, uint64) {
-    return murmur3.Sum128WithSeed([]byte(data), seed)
+func (this Hash) Murmur128WithSeed(seed uint32) Hash {
+    h := murmur3.New128WithSeed(seed)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewMurmur128WithSeed
+func (this Hash) NewMurmur128WithSeed(seed uint32) Hash {
+    this.hash = murmur3.New128WithSeed(seed)
+
+    return this
 }

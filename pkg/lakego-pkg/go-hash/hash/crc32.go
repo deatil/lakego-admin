@@ -1,75 +1,64 @@
 package hash
 
 import (
-    "strconv"
     "hash/crc32"
 )
 
 // CRC32IEEE 哈希值
-func CRC32IEEE(s string) string {
-    data := []byte(s)
+func (this Hash) CRC32_IEEE() Hash {
+    h := crc32.NewIEEE()
+    h.Write(this.data)
 
-    res := crc32.ChecksumIEEE(data)
+    this.data = h.Sum(nil)
 
-    return strconv.FormatInt(int64(res), 16)
+    return this
 }
 
-// CRC32IEEE 哈希值
-func (this Hash) CRC32IEEE() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+// NewCRC32_IEEE
+func (this Hash) NewCRC32_IEEE() Hash {
+    this.hash = crc32.NewIEEE()
 
-        return CRC32IEEE(newData), nil
-    })
+    return this
 }
-
-// =======================
 
 // CRC32Castagnoli 哈希值
-func CRC32Castagnoli(s string) string {
-    data := []byte(s)
-
+func (this Hash) CRC32_Castagnoli() Hash {
     tab := crc32.MakeTable(crc32.Castagnoli)
-    res := crc32.Checksum(data, tab)
 
-    return strconv.FormatInt(int64(res), 16)
+    h := crc32.New(tab)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// CRC32Castagnoli 哈希值
-func (this Hash) CRC32Castagnoli() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+// CRC32_Castagnoli
+func (this Hash) NewCRC32_Castagnoli() Hash {
+    tab := crc32.MakeTable(crc32.Castagnoli)
 
-        return CRC32Castagnoli(newData), nil
-    })
+    this.hash = crc32.New(tab)
+
+    return this
 }
-
-// =======================
 
 // CRC32Koopman 哈希值
-func CRC32Koopman(s string) string {
-    data := []byte(s)
-
+func (this Hash) CRC32_Koopman() Hash {
     tab := crc32.MakeTable(crc32.Koopman)
-    res := crc32.Checksum(data, tab)
 
-    return strconv.FormatInt(int64(res), 16)
+    h := crc32.New(tab)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
 }
 
-// CRC32Koopman 哈希值
-func (this Hash) CRC32Koopman() Hash {
-    return this.FuncHash(func(data ...[]byte) (string, error) {
-        newData := ""
-        for _, v := range data {
-            newData += string(v)
-        }
+// NewCRC32_Koopman
+func (this Hash) NewCRC32_Koopman() Hash {
+    tab := crc32.MakeTable(crc32.Koopman)
 
-        return CRC32Koopman(newData), nil
-    })
+    this.hash = crc32.New(tab)
+
+    return this
 }

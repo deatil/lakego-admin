@@ -1,6 +1,7 @@
 package encoding
 
 import (
+    "io"
     "bytes"
 )
 
@@ -19,7 +20,7 @@ func (this Encoding) ToString() string {
     return string(this.data)
 }
 
-// 输出 BytesBuffer
-func (this Encoding) ToBytesBuffer() *bytes.Buffer {
+// 输出 io.Reader
+func (this Encoding) ToReader() io.Reader {
     return bytes.NewBuffer(this.data)
 }

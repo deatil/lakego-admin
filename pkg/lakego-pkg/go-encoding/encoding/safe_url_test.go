@@ -35,7 +35,7 @@ func TestSafeURL_From(t *testing.T) {
     assertError := assertErrorT(t)
 
     for index, test := range safeUrlTests {
-        e := FromSafeURL(test.output)
+        e := FromString(test.output).SafeURLDecode()
 
         t.Run(fmt.Sprintf("test_%d", index), func(t *testing.T) {
             assertError(e.Error, "SafeURL_From")
@@ -49,11 +49,11 @@ func TestSafeURL_To(t *testing.T) {
     assertError := assertErrorT(t)
 
     for index, test := range safeUrlTests {
-        e := FromString(test.input)
+        e := FromString(test.input).SafeURLEncode()
 
         t.Run(fmt.Sprintf("test_%d", index), func(t *testing.T) {
             assertError(e.Error, "SafeURL_To")
-            assert(test.output, e.ToSafeURL(), "SafeURL_To")
+            assert(test.output, e.ToString(), "SafeURL_To")
         })
     }
 }
