@@ -1,9 +1,9 @@
-## 编码算法
+## 编码解码算法
 
 
 ### 项目介绍
 
-*  常用的编码算法
+*  常用的编码解码算法 (Hex/Base32/Base45/Base58/Base62/Base64/Base85/Base91/Base100/MorseITU/JSON)
 
 
 ### 下载安装
@@ -13,7 +13,7 @@ go get -u github.com/deatil/go-encoding
 ~~~
 
 
-### 使用
+### 开始使用
 
 ~~~go
 package main
@@ -37,13 +37,13 @@ func main() {
 ~~~
 
 
-### 使用方法
+### 格式说明
 
 ~~~go
     base64Data := encoding.
-        FromString(oldData). // 数据来源
-        Base64Encode().      // 编码或者解码方式
-        ToString()           // 输出结果
+        FromString(oldData). // 输入数据
+        Base64Encode().      // 编码方式/解码方式
+        ToString()           // 输出数据
 ~~~
 
 
@@ -57,7 +57,7 @@ func main() {
 
 ### 常用解码编码
 
-*  常用编码:
+*  编码方式:
 `Base32Encode()`, `Base32HexEncode()`, `Base32EncodeWithEncoder(encoder string)`,
 `Base45Encode()`,
 `Base58Encode()`,
@@ -70,9 +70,11 @@ func main() {
 `HexEncode()`,
 `MorseITUEncode()`,
 `SafeURLEncode()`,
-`SerializeEncode()`
+`SerializeEncode()`,
+`JSONEncode(data any)`, `JSONIteratorEncode(data any)`, `JSONIteratorIndentEncode(v any, prefix, indent string)`, 
+`GobEncode(data any)`
 
-*  常用解码:
+*  解码方式:
 `Base32Decode()`, `Base32HexDecode()`, `Base32DecodeWithEncoder(encoder string)`,
 `Base45Decode()`,
 `Base58Decode()`,
@@ -85,7 +87,9 @@ func main() {
 `HexDecode()`,
 `MorseITUDecode()`,
 `SafeURLDecode()`,
-`SerializeDecode()`
+`SerializeDecode()`,
+`JSONDecode(dst any)`, `JSONIteratorDecode(dst any)`,
+`SGobDecode(dst any)`
 
 
 ### 开源协议

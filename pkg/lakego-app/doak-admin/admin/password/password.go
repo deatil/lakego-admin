@@ -1,10 +1,10 @@
 package password
 
 import (
-    "github.com/deatil/go-hash/hash"
-
     "github.com/deatil/lakego-doak/lakego/random"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
 // 生成密码，密码为 MD5 加密后
@@ -33,14 +33,10 @@ func EncryptPassword(password string) (pass string, encrypt string) {
  * @return password, encrypt
  */
 func EncryptPasswordWithEncrypt(password string, encrypt string) string {
-    return md5(md5(password + encrypt) + GetPasswordSalt())
+    return utils.MD5(utils.MD5(password + encrypt) + GetPasswordSalt())
 }
 
 // 密码通用盐
 func GetPasswordSalt() string {
     return config.New("auth").GetString("passport.password-salt")
-}
-
-func md5(data string) string {
-    return hash.FromString(data).MD5().ToHexString()
 }

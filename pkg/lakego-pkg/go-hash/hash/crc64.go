@@ -25,6 +25,8 @@ func (this Hash) NewCRC64_ISO() Hash {
     return this
 }
 
+// ============================================
+
 // CRC64ECMA 哈希值
 func (this Hash) CRC64_ECMA() Hash {
     tab := crc64.MakeTable(crc64.ECMA)

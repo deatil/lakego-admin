@@ -21,6 +21,8 @@ func (this Hash) NewCRC32_IEEE() Hash {
     return this
 }
 
+// ============================================
+
 // CRC32Castagnoli 哈希值
 func (this Hash) CRC32_Castagnoli() Hash {
     tab := crc32.MakeTable(crc32.Castagnoli)
@@ -33,7 +35,7 @@ func (this Hash) CRC32_Castagnoli() Hash {
     return this
 }
 
-// CRC32_Castagnoli
+// NewCRC32_Castagnoli
 func (this Hash) NewCRC32_Castagnoli() Hash {
     tab := crc32.MakeTable(crc32.Castagnoli)
 
@@ -41,6 +43,8 @@ func (this Hash) NewCRC32_Castagnoli() Hash {
 
     return this
 }
+
+// ============================================
 
 // CRC32Koopman 哈希值
 func (this Hash) CRC32_Koopman() Hash {

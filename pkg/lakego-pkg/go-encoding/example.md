@@ -15,15 +15,18 @@ type Per struct {
 
 func main() {
     // Base64 编码后结果
-    base64Data := encoding.Base64Encode("useData").
+    base64Data := encoding.
+        FromString("use-data"). // 数据来源
+        Base64Encode().      // 编码或者解码方式
+        ToString()           // 输出结果
     fmt.Println("Base64 编码后结果：", base64Data)
 
     // =====
 
     // Asn1 编码
     var p string
-    encodeStr := encoding.ForAsn1("test-data").ToBase64String()
-    encoding.FromBase64String("Ewl0ZXN0LWRhdGE=").Asn1To(&p)
+    encodeStr := encoding.Asn1Encode("test-data").Base64Encode().ToString()
+    encoding.FromString("Ewl0ZXN0LWRhdGE=").Base64Decode().Asn1Decode(&p)
     encodeStr2 := p
 
     // XML 编码
@@ -35,15 +38,15 @@ func main() {
     var p2 Per
 
     // 编码
-    encodeStr := encoding.ForXML(p).ToBase64String()
-    encoding.FromBase64String("PFBlcj48TmFtZT5ra2s8L05hbWU+PEFnZT4xMjwvQWdlPjwvUGVyPg==").XMLTo(&p2)
+    encodeStr := encoding.XmlEncode(p).Base64Encode().ToString()
+    encoding.FromString("PFBlcj48TmFtZT5ra2s8L05hbWU+PEFnZT4xMjwvQWdlPjwvUGVyPg==").Base64Decode().XmlDecode(&p2)
 
     encodeStr2 := p2.Name
 
     // Binary 编码
     var p uint16
-    encodeStr := encoding.ForBinary(uint16(61374)).ToBase64String()
-    encoding.FromBase64String("vu8=").BinaryTo(&p)
+    encodeStr := encoding.BinaryLittleEndianEncode(uint16(61374)).Base64Encode().ToString()
+    encoding.FromString("vu8=").Base64Decode().XmlDecode(&p)
 
     // Csv 编码
     records := [][]string{
@@ -57,8 +60,8 @@ func main() {
 Ken,Thompson,ken
 "Robert","Griesemer","gri"
 `
-    encodeStr := encoding.ForCsv(records).ToString()
-    encodeStr2, _ := encoding.FromString(in).CsvTo()
+    encodeStr := encoding.CsvEncode(records).ToString()
+    encodeStr2, _ := encoding.FromString(in).CsvDecode()
 
 
     // Csv 编码2
@@ -74,8 +77,8 @@ Ken,Thompson,ken
 Ken;Thompson;ken
 "Robert";"Griesemer";"gri"
 `
-    encodeStr := encoding.ForCsv(records).ToString()
-    encodeStr2, _ := encoding.FromString(in).CsvTo(';', '#')
+    encodeStr := encoding.CsvEncode(records).ToString()
+    encodeStr2, _ := encoding.FromString(in).CsvDecode(';', '#')
 }
 
 ~~~

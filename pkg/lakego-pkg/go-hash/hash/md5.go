@@ -5,7 +5,6 @@ import (
 )
 
 // MD5
-// MD5_16() = data[8:24]
 func (this Hash) MD5() Hash {
     h := md5.New()
     h.Write(this.data)

@@ -20,6 +20,8 @@ func (this Hash) NewBlake2b_256(key []byte) Hash {
     return this
 }
 
+// ===========
+
 // Blake2b_384 哈希值
 func (this Hash) Blake2b_384() Hash {
     sum := blake2b.Sum384(this.data)
@@ -34,6 +36,8 @@ func (this Hash) NewBlake2b_384(key []byte) Hash {
 
     return this
 }
+
+// ===========
 
 // Blake2b_512 哈希值
 func (this Hash) Blake2b_512() Hash {
@@ -50,6 +54,8 @@ func (this Hash) NewBlake2b_512(key []byte) Hash {
     return this
 }
 
+// ===========
+
 // Blake2s_256 哈希值
 func (this Hash) Blake2s_256() Hash {
     sum := blake2s.Sum256(this.data)
@@ -64,6 +70,8 @@ func (this Hash) NewBlake2s_256(key []byte) Hash {
 
     return this
 }
+
+// ===========
 
 // Blake2s_128 哈希值
 func (this Hash) Blake2s_128() Hash {

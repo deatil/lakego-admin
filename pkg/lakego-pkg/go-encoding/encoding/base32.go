@@ -19,22 +19,6 @@ func (this Encoding) Base32Decode() Encoding {
     return this
 }
 
-// Base32Hex
-func (this Encoding) Base32HexDecode() Encoding {
-    data := string(this.data)
-    this.data, this.Error = base32.HexEncoding.DecodeString(data)
-
-    return this
-}
-
-// Base32Encoder
-func (this Encoding) Base32DecodeWithEncoder(encoder string) Encoding {
-    data := string(this.data)
-    this.data, this.Error = base32.NewEncoding(encoder).DecodeString(data)
-
-    return this
-}
-
 // 编码 Base32
 func (this Encoding) Base32Encode() Encoding {
     data := base32.StdEncoding.EncodeToString(this.data)
@@ -43,10 +27,30 @@ func (this Encoding) Base32Encode() Encoding {
     return this
 }
 
+// ===========
+
+// Base32Hex
+func (this Encoding) Base32HexDecode() Encoding {
+    data := string(this.data)
+    this.data, this.Error = base32.HexEncoding.DecodeString(data)
+
+    return this
+}
+
 // 编码 Base32Hex
 func (this Encoding) Base32HexEncode() Encoding {
     data := base32.HexEncoding.EncodeToString(this.data)
     this.data = []byte(data)
+
+    return this
+}
+
+// ===========
+
+// Base32Encoder
+func (this Encoding) Base32DecodeWithEncoder(encoder string) Encoding {
+    data := string(this.data)
+    this.data, this.Error = base32.NewEncoding(encoder).DecodeString(data)
 
     return this
 }

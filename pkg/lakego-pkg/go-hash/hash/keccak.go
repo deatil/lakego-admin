@@ -21,6 +21,8 @@ func (this Hash) NewKeccak256() Hash {
     return this
 }
 
+// ============================================
+
 // Keccak512 哈希值
 func (this Hash) Keccak512() Hash {
     h := sha3.NewLegacyKeccak512()

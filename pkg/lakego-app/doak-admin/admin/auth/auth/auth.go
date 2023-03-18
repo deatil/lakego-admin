@@ -1,13 +1,13 @@
 package auth
 
 import (
-    "github.com/deatil/go-hash/hash"
     "github.com/deatil/lakego-jwt/jwt"
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/lakego-doak-admin/admin/support/token"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
 /**
@@ -34,11 +34,7 @@ func NewWithAud(aud string) *token.Token {
 
 // 获取接收方
 func GetJwtAud(ctx *router.Context) string {
-    aud := md5(router.GetRequestIp(ctx) + router.GetHeaderByName(ctx, "HTTP_USER_AGENT"))
+    aud := utils.MD5(router.GetRequestIp(ctx) + router.GetHeaderByName(ctx, "HTTP_USER_AGENT"))
 
     return aud
-}
-
-func md5(data string) string {
-    return hash.FromString(data).MD5().ToHexString()
 }

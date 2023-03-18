@@ -5,6 +5,16 @@ import (
     "encoding/xml"
 )
 
+// Xml 解码
+func (this Encoding) XmlDecode(dst any) Encoding {
+    buf := bytes.NewBuffer(this.data)
+    dec := xml.NewDecoder(buf)
+
+    this.Error = dec.Decode(dst)
+
+    return this
+}
+
 // Xml 编码
 func (this Encoding) XmlEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
@@ -17,16 +27,6 @@ func (this Encoding) XmlEncode(data any) Encoding {
     }
 
     this.data = buf.Bytes()
-
-    return this
-}
-
-// Xml 解码
-func (this Encoding) XmlDecode(dst any) Encoding {
-    buf := bytes.NewBuffer(this.data)
-    dec := xml.NewDecoder(buf)
-
-    this.Error = dec.Decode(dst)
 
     return this
 }

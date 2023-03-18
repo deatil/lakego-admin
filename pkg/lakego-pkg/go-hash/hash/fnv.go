@@ -21,6 +21,8 @@ func (this Hash) NewFnv32() Hash {
     return this
 }
 
+// ============================================
+
 // Fnv32a
 func (this Hash) Fnv32a() Hash {
     h := fnv.New32a()
@@ -37,6 +39,8 @@ func (this Hash) NewFnv32a() Hash {
 
     return this
 }
+
+// ============================================
 
 // Fnv64
 func (this Hash) Fnv64() Hash {
@@ -55,6 +59,8 @@ func (this Hash) NewFnv64() Hash {
     return this
 }
 
+// ============================================
+
 // Fnv64a
 func (this Hash) Fnv64a() Hash {
     h := fnv.New64a()
@@ -72,6 +78,8 @@ func (this Hash) NewFnv64a() Hash {
     return this
 }
 
+// ============================================
+
 // Fnv128
 func (this Hash) Fnv128() Hash {
     h := fnv.New128()
@@ -88,6 +96,8 @@ func (this Hash) NewFnv128() Hash {
 
     return this
 }
+
+// ============================================
 
 // Fnv128a
 func (this Hash) Fnv128a() Hash {

@@ -23,6 +23,8 @@ func (this Hash) NewSHA1() Hash {
     return this
 }
 
+// ===========
+
 // SHA224 哈希值
 func (this Hash) SHA224() Hash {
     h := sha256.New224()
@@ -39,6 +41,8 @@ func (this Hash) NewSHA224() Hash {
 
     return this
 }
+
+// ===========
 
 // SHA256 哈希值
 func (this Hash) SHA256() Hash {
@@ -57,6 +61,8 @@ func (this Hash) NewSHA256() Hash {
     return this
 }
 
+// ===========
+
 // SHA384 哈希值
 func (this Hash) SHA384() Hash {
     h := sha512.New384()
@@ -73,6 +79,8 @@ func (this Hash) NewSHA384() Hash {
 
     return this
 }
+
+// ===========
 
 // SHA512 哈希值
 func (this Hash) SHA512() Hash {
@@ -91,6 +99,8 @@ func (this Hash) NewSHA512() Hash {
     return this
 }
 
+// ===========
+
 // SHA512_224 哈希值
 func (this Hash) SHA512_224() Hash {
     h := sha512.New512_224()
@@ -107,6 +117,8 @@ func (this Hash) NewSHA512_224() Hash {
 
     return this
 }
+
+// ===========
 
 // SHA512_256 哈希值
 func (this Hash) SHA512_256() Hash {

@@ -11,16 +11,18 @@ func (this Encoding) Asn1Encode(data any) Encoding {
     return this
 }
 
-// Asn1 编码
-func (this Encoding) Asn1EncodeWithParams(data any, params string) Encoding {
-    this.data, this.Error = asn1.MarshalWithParams(data, params)
+// Asn1 解码
+func (this Encoding) Asn1Decode(val any) Encoding {
+    this.data, this.Error = asn1.Unmarshal(this.data, val)
 
     return this
 }
 
-// Asn1 解码
-func (this Encoding) Asn1Decode(val any) Encoding {
-    this.data, this.Error = asn1.Unmarshal(this.data, val)
+// =============
+
+// Asn1 编码
+func (this Encoding) Asn1EncodeWithParams(data any, params string) Encoding {
+    this.data, this.Error = asn1.MarshalWithParams(data, params)
 
     return this
 }

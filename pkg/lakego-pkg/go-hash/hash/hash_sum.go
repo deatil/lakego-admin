@@ -60,3 +60,8 @@ func (this Hash) Size() int {
 func (this Hash) BlockSize() int {
     return this.hash.BlockSize()
 }
+
+// Hash
+func (this Hash) Hash() hash.Hash {
+    return this.hash
+}
