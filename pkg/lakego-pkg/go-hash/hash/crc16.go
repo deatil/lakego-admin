@@ -9,7 +9,7 @@ import (
 func (this Hash) CRC16_X25() Hash {
     data := x25.CRC16X25(string(this.data))
 
-    this.data = []byte(data)
+    this.data, this.Error = this.HexDecode(data)
 
     return this
 }
@@ -18,7 +18,7 @@ func (this Hash) CRC16_X25() Hash {
 func (this Hash) CRC16_Modbus() Hash {
     data := modbus.CRC16Modbus(string(this.data))
 
-    this.data = []byte(data)
+    this.data, this.Error = this.HexDecode(data)
 
     return this
 }

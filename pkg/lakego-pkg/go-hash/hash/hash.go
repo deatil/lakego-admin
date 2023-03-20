@@ -10,12 +10,22 @@ import (
 var defaultHash Hash
 
 func init() {
-    defaultHash = New()
+    defaultHash = NewHash()
+}
+
+// 构造函数
+func NewHash() Hash {
+    return Hash{}
 }
 
 // 构造函数
 func New() Hash {
-    return Hash{}
+    return NewHash()
+}
+
+// 构造函数
+func Hashing() Hash {
+    return NewHash()
 }
 
 /**
@@ -55,9 +65,18 @@ func (this Hash) HexDecode(s string) ([]byte, error) {
     return hex.DecodeString(s)
 }
 
-// 默认方式
-func (this Hash) MakeHash(f func() hash.Hash) Hash {
-    this.hash = f()
+// NewHash
+func (this Hash) NewHash(h hash.Hash) Hash {
+    this.hash = h
+
+    return this
+}
+
+// CheckSum
+func (this Hash) Checksum(h hash.Hash) Hash {
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
 
     return this
 }

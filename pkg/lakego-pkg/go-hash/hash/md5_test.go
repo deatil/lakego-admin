@@ -33,7 +33,7 @@ func Test_NewMD5(t *testing.T) {
     assertError := assertErrorT(t)
 
     for index, test := range md5Tests {
-        e := FromString("").NewMD5().Write([]byte(test.input)).Sum(nil)
+        e := Hashing().NewMD5().Write([]byte(test.input)).Sum(nil)
 
         t.Run(fmt.Sprintf("NewMD5_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "NewMD5")

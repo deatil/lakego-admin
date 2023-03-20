@@ -26,13 +26,8 @@ func (this Padding) PKCS7Padding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
-
     paddingText := bytes.Repeat([]byte{byte(paddingSize)}, paddingSize)
 
     return append(text, paddingText...)
@@ -76,13 +71,8 @@ func (this Padding) ZeroPadding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
-
     paddingText := bytes.Repeat([]byte{byte(0)}, paddingSize)
 
     return append(text, paddingText...)
@@ -115,16 +105,11 @@ func (this Padding) X923Padding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
-
     paddingText := bytes.Repeat([]byte{byte(0)}, paddingSize - 1)
-    text = append(text, paddingText...)
 
+    text = append(text, paddingText...)
     text = append(text, byte(paddingSize))
 
     return text
@@ -157,12 +142,8 @@ func (this Padding) ISO10126Padding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
 
     for i := 0; i < paddingSize - 1; i++ {
         text = append(text, this.RandomBytes(1)...)
@@ -200,12 +181,8 @@ func (this Padding) ISO7816_4Padding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
 
     text = append(text, 0x80)
 
@@ -239,12 +216,8 @@ func (this Padding) TBCPadding(text []byte, blockSize int) []byte {
         return text
     }
 
+    // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
-
-    // 为 0 时补位 blockSize 值
-    if paddingSize == 0 {
-        paddingSize = blockSize
-    }
 
     lastBit := text[n - 1] & 0x1
 

@@ -1,9 +1,10 @@
-## 编码解码算法
+## go-encoding
 
 
 ### 项目介绍
 
-*  常用的编码解码算法 (Hex/Base32/Base45/Base58/Base62/Base64/Base85/Base91/Base100/MorseITU/JSON)
+*  常用的编码解码算法
+*  算法包括: (Hex/Base32/Base45/Base58/Base62/Base64/Base85/Base91/Base100/MorseITU/JSON)
 
 
 ### 下载安装
