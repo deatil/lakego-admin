@@ -72,7 +72,7 @@ func main() {
 `MorseITUEncode()`,
 `SafeURLEncode()`,
 `SerializeEncode()`,
-`JSONEncode(data any)`, `JSONIteratorEncode(data any)`, `JSONIteratorIndentEncode(v any, prefix, indent string)`, 
+`JSONEncode(data any)`, `JSONIteratorEncode(data any)`, `JSONIteratorIndentEncode(v any, prefix, indent string)`,
 `GobEncode(data any)`
 
 *  解码方式:
@@ -90,7 +90,7 @@ func main() {
 `SafeURLDecode()`,
 `SerializeDecode()`,
 `JSONDecode(dst any)`, `JSONIteratorDecode(dst any)`,
-`SGobDecode(dst any)`
+`GobDecode(dst any)`
 
 
 ### 开源协议

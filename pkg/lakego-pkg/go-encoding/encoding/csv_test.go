@@ -28,8 +28,9 @@ Robert,Griesemer,gri
     assertError(en.Error, name + " Encode error")
     assert(in, enStr, name + " Encode")
 
-    deStr, deErr := FromString(in).CsvDecode()
+    var deStr [][]string
+    de := FromString(in).CsvDecode(&deStr)
 
-    assertError(deErr, name + " Decode error")
+    assertError(de.Error, name + " Decode error")
     assert(records, deStr, name + " Decode")
 }

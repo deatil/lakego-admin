@@ -61,7 +61,9 @@ Ken,Thompson,ken
 "Robert","Griesemer","gri"
 `
     encodeStr := encoding.CsvEncode(records).ToString()
-    encodeStr2, _ := encoding.FromString(in).CsvDecode()
+
+    var encodeStr2 [][]string
+    encoding.FromString(in).CsvDecode(&encodeStr2)
 
 
     // Csv 编码2
@@ -78,7 +80,9 @@ Ken;Thompson;ken
 "Robert";"Griesemer";"gri"
 `
     encodeStr := encoding.CsvEncode(records).ToString()
-    encodeStr2, _ := encoding.FromString(in).CsvDecode(';', '#')
+
+    var encodeStr2 [][]string
+    encoding.FromString(in).CsvDecode(&encodeStr2, ';', '#')
 }
 
 ~~~
