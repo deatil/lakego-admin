@@ -28,22 +28,16 @@ func (this Ecdh) WithCurve(data ecdh.Curve) Ecdh {
 // 设置散列方式
 // 可用参数 [P521 | P384 | P256 | X25519]
 func (this Ecdh) SetCurve(name string) Ecdh {
-    var curve ecdh.Curve
-
     switch name {
         case "P521":
-            curve = ecdh.P521()
+            this.curve = ecdh.P521()
         case "P384":
-            curve = ecdh.P384()
+            this.curve = ecdh.P384()
         case "P256":
-            curve = ecdh.P256()
+            this.curve = ecdh.P256()
         case "X25519":
-            curve = ecdh.X25519()
-        default:
-            curve = ecdh.P256()
+            this.curve = ecdh.X25519()
     }
-
-    this.curve = curve
 
     return this
 }

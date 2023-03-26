@@ -89,6 +89,42 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
 
 // ===============
 
+// 私钥签名, 官方默认
+func (this Ecdsa) SignASN1() Ecdsa {
+    if this.privateKey == nil {
+        err := errors.New("Ecdsa: [SignASN1()] privateKey error.")
+        return this.AppendError(err)
+    }
+
+    hashData := this.DataHash(this.signHash, this.data)
+
+    paredData, err := ecdsa.SignASN1(rand.Reader, this.privateKey, hashData)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.paredData = paredData
+
+    return this.AppendError(err)
+}
+
+// 公钥验证, 官方默认
+// 使用原始数据[data]对比签名后数据
+func (this Ecdsa) VerifyASN1(data []byte) Ecdsa {
+    if this.publicKey == nil {
+        err := errors.New("Ecdsa: [VerifyASN1()] publicKey error.")
+        return this.AppendError(err)
+    }
+
+    hashData := this.DataHash(this.signHash, data)
+
+    this.verify = ecdsa.VerifyASN1(this.publicKey, hashData, this.data)
+
+    return this
+}
+
+// ===============
+
 type ecdsaSignature struct {
     R, S *big.Int
 }
@@ -110,7 +146,7 @@ func (this Ecdsa) SignAsn1() Ecdsa {
     paredData, err := asn1.Marshal(ecdsaSignature{r, s})
 
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 
@@ -164,7 +200,7 @@ func (this Ecdsa) SignHex() Ecdsa {
     paredData, err := encoding.HexDecode(sign)
 
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 

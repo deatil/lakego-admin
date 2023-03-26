@@ -73,6 +73,21 @@ func (this Rsa) GenerateKey(bits int) Rsa {
     return this
 }
 
+// 生成密钥
+func (this Rsa) GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
+    privateKey, err := rsa.GenerateMultiPrimeKey(rand.Reader, nprimes, bits)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
+    return this
+}
+
 // ==========
 
 // 模数、指数生成公钥

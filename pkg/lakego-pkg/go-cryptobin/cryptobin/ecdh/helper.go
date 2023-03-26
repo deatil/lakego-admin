@@ -6,10 +6,8 @@ import (
 
 // 构造函数
 func NewEcdh() Ecdh {
-    curve := ecdh.P256()
-
     return Ecdh{
-        curve: curve,
+        curve:  ecdh.P256(),
         Errors: make([]error, 0),
     }
 }

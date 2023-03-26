@@ -60,19 +60,18 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePbePrivateKeyWithPassword(password, optString)
+                    return this.createPbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreateKdfPrivateKeyWithPassword(password, opts...)
+    return this.createKdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成私钥带密码 pem 数据
-// CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Ecdh {
+func (this Ecdh) createKdfPrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: [CreatePrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
@@ -105,9 +104,9 @@ func (this Ecdh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) E
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Ecdh) CreatePbePrivateKeyWithPassword(password string, alg string) Ecdh {
+func (this Ecdh) createPbePrivateKeyWithPassword(password string, alg string) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: [CreatePrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
@@ -158,8 +157,8 @@ func (this Ecdh) CreatePublicKey() Ecdh {
     return this
 }
 
-// 根据公钥和私钥生成密钥
-func (this Ecdh) CreateSecretKey(isCurve ...bool) Ecdh {
+// 根据公钥和私钥生成对称密钥
+func (this Ecdh) CreateSecretKey() Ecdh {
     if this.privateKey == nil {
         err := errors.New("Ecdh: [CreateSecretKey()] privateKey error.")
         return this.AppendError(err)
@@ -170,15 +169,7 @@ func (this Ecdh) CreateSecretKey(isCurve ...bool) Ecdh {
         return this.AppendError(err)
     }
 
-    // 使用私钥 Curve 作为核心生成密钥
-    curve := this.privateKey.Curve()
-
-    // 自定义
-    if len(isCurve) > 0 && isCurve[0] {
-        curve = this.curve
-    }
-
-    secretKey, err := curve.ECDH(this.privateKey, this.publicKey)
+    secretKey, err := this.privateKey.ECDH(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

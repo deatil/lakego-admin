@@ -192,8 +192,8 @@ func main() {
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
     sm2Sign := cryptobin_sm2.NewSM2().
-        FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
+        FromPrivateKeyBytes(sm2keyBytes).
         SignHex([]byte(sm2userid)).
         ToBase64String()
 
