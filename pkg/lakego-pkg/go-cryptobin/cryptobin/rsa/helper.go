@@ -47,6 +47,11 @@ func GenerateKey(bits int) Rsa {
     return NewRsa().GenerateKey(bits)
 }
 
+// 生成密钥
+func GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
+    return NewRsa().GenerateMultiPrimeKey(nprimes, bits)
+}
+
 // ==========
 
 // Pkcs1

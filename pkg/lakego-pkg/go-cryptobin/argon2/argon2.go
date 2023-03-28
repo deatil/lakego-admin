@@ -13,26 +13,50 @@ import (
     "golang.org/x/crypto/argon2"
 )
 
-const (
-    passwordType = "argon2id"
-    saltLen      = 32
-    argon2KeyLen = 32
-    argon2Time   = 1
-    argon2Memory = 64 * 1024
-)
+// 配置
+type Opt struct {
+    SaltLen int
+    Time    uint32
+    Memory  uint32
+    Threads uint8
+    KeyLen  uint32
+}
 
-var argon2Threads = uint8(runtime.NumCPU())
+var (
+    // 默认类型
+    defaultType = "argon2id"
+
+    // 默认配置
+    defaultOpt = Opt{
+        SaltLen: 32,
+        Time:    1,
+        Memory:  64 * 1024,
+        Threads: uint8(runtime.NumCPU()),
+        KeyLen:  32,
+    }
+)
 
 // 生成密钥
 func GenerateSaltedHash(password string) (string, error) {
-    return GenerateSaltedHashWithType(password, passwordType)
+    return GenerateSaltedHashWithTypeAndOpt(password, defaultType, defaultOpt)
 }
 
 // 生成密钥带类型
 func GenerateSaltedHashWithType(password string, typ string) (string, error) {
+    return GenerateSaltedHashWithTypeAndOpt(password, typ, defaultOpt)
+}
+
+// 生成密钥带类型和设置
+func GenerateSaltedHashWithTypeAndOpt(password string, typ string, opt Opt) (string, error) {
     if len(password) == 0 {
         return "", errors.New("Password length cannot be 0")
     }
+
+    saltLen       := opt.SaltLen
+    argon2Time    := opt.Time
+    argon2Memory  := opt.Memory
+    argon2Threads := opt.Threads
+    argon2KeyLen  := opt.KeyLen
 
     salt, _ := generateSalt(saltLen)
 
@@ -75,7 +99,7 @@ func CompareHashWithPassword(hash, password string) (bool, error) {
 
     hashParts := strings.Split(hash, "$")
     if len(hashParts) != 7 {
-        return false, errors.New("Invalid Password Hash")
+        return false, errors.New("Invalid Data Len")
     }
 
     passwordType := hashParts[0]
@@ -89,9 +113,17 @@ func CompareHashWithPassword(hash, password string) (bool, error) {
     var calculatedKey []byte
     switch passwordType {
         case "argon2id":
-            calculatedKey = argon2.IDKey([]byte(password), salt, uint32(time), uint32(memory), uint8(threads), uint32(keyLen))
+            calculatedKey = argon2.IDKey(
+                []byte(password), salt,
+                uint32(time), uint32(memory),
+                uint8(threads), uint32(keyLen),
+            )
         case "argon2i", "argon2":
-            calculatedKey = argon2.Key([]byte(password), salt, uint32(time), uint32(memory), uint8(threads), uint32(keyLen))
+            calculatedKey = argon2.Key(
+                []byte(password), salt,
+                uint32(time), uint32(memory),
+                uint8(threads), uint32(keyLen),
+            )
         default:
             return false, errors.New("Invalid Password Hash")
     }

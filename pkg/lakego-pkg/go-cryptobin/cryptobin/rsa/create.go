@@ -39,6 +39,8 @@ func (this Rsa) CreatePrivateKeyWithPassword(password string, opts ...string) Rs
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
+// ====================
+
 // 生成 PKCS1 私钥
 func (this Rsa) CreatePKCS1PrivateKey() Rsa {
     if this.privateKey == nil {
@@ -100,6 +102,27 @@ func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     return this
 }
 
+// 生成 pcks1 公钥 pem 数据
+func (this Rsa) CreatePKCS1PublicKey() Rsa {
+    if this.publicKey == nil {
+        err := errors.New("Rsa: [CreatePKCS1PublicKey()] privateKey error.")
+        return this.AppendError(err)
+    }
+
+    x509PublicKey := x509.MarshalPKCS1PublicKey(this.publicKey)
+
+    publicBlock := &pem.Block{
+        Type: "RSA PUBLIC KEY",
+        Bytes: x509PublicKey,
+    }
+
+    this.keyData = pem.EncodeToMemory(publicBlock)
+
+    return this
+}
+
+// ====================
+
 // 生成 PKCS8 私钥 pem 数据
 func (this Rsa) CreatePKCS8PrivateKey() Rsa {
     if this.privateKey == nil {
@@ -131,19 +154,18 @@ func (this Rsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePKCS8PbePrivateKeyWithPassword(password, optString)
+                    return this.createPKCS8PbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreatePKCS8KdfPrivateKeyWithPassword(password, opts...)
+    return this.createPKCS8KdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-// CreatePKCS8KdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Rsa) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) Rsa {
+func (this Rsa) createPKCS8KdfPrivateKeyWithPassword(password string, opts ...any) Rsa {
     if this.privateKey == nil {
-        err := errors.New("Rsa: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Rsa: [CreatePKCS8PrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
@@ -176,9 +198,9 @@ func (this Rsa) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...an
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Rsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) Rsa {
+func (this Rsa) createPKCS8PbePrivateKeyWithPassword(password string, alg string) Rsa {
     if this.privateKey == nil {
-        err := errors.New("Rsa: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Rsa: [CreatePKCS8PrivateKeyWithPassword()] privateKey error.")
         return this.AppendError(err)
     }
 
@@ -203,25 +225,6 @@ func (this Rsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
-
-    return this
-}
-
-// 生成 pcks1 公钥 pem 数据
-func (this Rsa) CreatePKCS1PublicKey() Rsa {
-    if this.publicKey == nil {
-        err := errors.New("Rsa: [CreatePKCS1PublicKey()] privateKey error.")
-        return this.AppendError(err)
-    }
-
-    x509PublicKey := x509.MarshalPKCS1PublicKey(this.publicKey)
-
-    publicBlock := &pem.Block{
-        Type: "RSA PUBLIC KEY",
-        Bytes: x509PublicKey,
-    }
-
-    this.keyData = pem.EncodeToMemory(publicBlock)
 
     return this
 }

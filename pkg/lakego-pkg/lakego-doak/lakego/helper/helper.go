@@ -229,3 +229,21 @@ func MemoryPeakUsage() uint64 {
     return stat.TotalAlloc
 }
 
+// 美化阅读量
+func FormatViews(views int64) string {
+    units := []string{"", "k", "M", "G", "T", "P", "E"}
+
+    s := float64(views)
+
+    i := 0
+    for ; s >= 1000 && i < len(units) - 1; i++ {
+        s /= 1000
+    }
+
+    if i > 0 {
+        return fmt.Sprintf("%.1f%s", s, units[i])
+    }
+
+    return fmt.Sprintf("%f", s)
+}
+

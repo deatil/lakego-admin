@@ -39,8 +39,8 @@ func TestGenerateSaltedHash(t *testing.T) {
 func TestCompareHashWithPassword(t *testing.T) {
     tests := []struct {
         name     string
-        password string
         hash     string
+        password string
         isValid  bool
         wantErr  bool
     }{

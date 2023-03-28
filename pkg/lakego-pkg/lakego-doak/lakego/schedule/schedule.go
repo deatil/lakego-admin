@@ -217,9 +217,9 @@ func (this *Schedule) addEntry(entry *Entry) {
         this.mu.Lock()
 
         if entry.Name != "" {
-            this.cronIDs[fmt.Sprintf("cron_run_%d", entryID)] = entryID
-        } else {
             this.cronIDs[entry.Name] = entryID
+        } else {
+            this.cronIDs[fmt.Sprintf("cron_run_%d", entryID)] = entryID
         }
 
         this.mu.Unlock()

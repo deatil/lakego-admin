@@ -21,9 +21,9 @@ func AssertErrorT(t *testing.T) func(error, string) {
     }
 }
 
-func AssertEmptyT(t *testing.T) func(string, string) {
-    return func(data string, msg string) {
-        if data == "" {
+func AssertEmptyT(t *testing.T) func(any, string) {
+    return func(data any, msg string) {
+        if isEmpty(data) {
             t.Errorf("Failed %s: error: data empty", msg)
         }
     }
@@ -35,4 +35,22 @@ func AssertBoolT(t *testing.T) func(bool, string) {
             t.Errorf("Failed %s: error: data not true", msg)
         }
     }
+}
+
+// 为空
+func isEmpty(x any) bool {
+    rt := reflect.TypeOf(x)
+    if rt == nil {
+        return true
+    }
+
+    rv := reflect.ValueOf(x)
+    switch rv.Kind() {
+        case reflect.Array,
+            reflect.Map,
+            reflect.Slice:
+            return rv.Len() == 0
+    }
+
+    return reflect.DeepEqual(x, reflect.Zero(rt).Interface())
 }
