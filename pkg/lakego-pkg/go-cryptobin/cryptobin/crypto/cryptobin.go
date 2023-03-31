@@ -31,11 +31,11 @@ type Cryptobin struct {
     // 填充模式
     padding Padding
 
-    // 解析后的数据
-    parsedData []byte
-
     // 额外配置
     config *cryptobin_tool.Config
+
+    // 解析后的数据
+    parsedData []byte
 
     // 错误
     Errors []error

@@ -1,9 +1,12 @@
 package pkcs8
 
 import (
+    "fmt"
     "errors"
     "crypto/cipher"
     "encoding/asn1"
+
+    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
 // ecb 模式加密
@@ -35,16 +38,14 @@ func (this CipherECB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     }
 
     bs := block.BlockSize()
+    if len(plaintext)%bs != 0 {
+        err := errors.New(fmt.Sprintf("pkcs8: the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plaintext), bs))
+        return nil, nil, err
+    }
 
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
-
-    dst := encrypted
-    for len(plaintext) > 0 {
-        block.Encrypt(dst, plaintext[:bs])
-        plaintext = plaintext[bs:]
-        dst = dst[bs:]
-    }
+    cryptobin_cipher.NewECBEncrypter(block).CryptBlocks(encrypted, plaintext)
 
     // 返回数据
     paramBytes, err := asn1.Marshal([]byte(""))
@@ -71,13 +72,7 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     plaintext := make([]byte, len(ciphertext))
-
-    dstTmp := plaintext
-    for len(ciphertext) > 0 {
-        block.Decrypt(dstTmp, ciphertext[:bs])
-        ciphertext = ciphertext[bs:]
-        dstTmp = dstTmp[bs:]
-    }
+    cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(plaintext, ciphertext)
 
     // 解析加密数据
     plaintext = pkcs7UnPadding(plaintext)

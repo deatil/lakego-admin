@@ -45,7 +45,7 @@ func (this Ecdsa) CreatePrivateKeyWithPassword(password string, opts ...string) 
 // priKey := obj.CreatePKCS1PrivateKey().ToKeyString()
 func (this Ecdsa) CreatePKCS1PrivateKey() Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [CreatePKCS1PrivateKey()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this Ecdsa) CreatePKCS1PrivateKey() Ecdsa {
 // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
 func (this Ecdsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [CreatePKCS1PrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -82,7 +82,7 @@ func (this Ecdsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...str
     // 具体方式
     cipher, ok := PEMCiphers[opt]
     if !ok {
-        err := errors.New("Ecdsa: [CreatePrivateKeyWithPassword()] PEMCipher not exists.")
+        err := errors.New("Ecdsa: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this Ecdsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...str
 // 生成 PKCS8 私钥 pem 数据
 func (this Ecdsa) CreatePKCS8PrivateKey() Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [CreatePKCS8PrivateKey()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -140,19 +140,18 @@ func (this Ecdsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePKCS8PbePrivateKeyWithPassword(password, optString)
+                    return this.createPKCS8PbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreatePKCS8KdfPrivateKeyWithPassword(password, opts...)
+    return this.createPKCS8KdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-// CreatePKCS8KdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Ecdsa) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) Ecdsa {
+func (this Ecdsa) createPKCS8KdfPrivateKeyWithPassword(password string, opts ...any) Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -185,9 +184,9 @@ func (this Ecdsa) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Ecdsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) Ecdsa {
+func (this Ecdsa) createPKCS8PbePrivateKeyWithPassword(password string, alg string) Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -219,7 +218,7 @@ func (this Ecdsa) CreatePKCS8PbePrivateKeyWithPassword(password string, alg stri
 // 生成公钥 pem 数据
 func (this Ecdsa) CreatePublicKey() Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [CreatePublicKey()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 

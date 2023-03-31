@@ -23,8 +23,10 @@ func main() {
         ECB().
         PKCS7Padding().
         Encrypt().
-        Error().
-        String()
+        Error()
+    if err != nil {
+        fmt.Println(err.String())
+    }
 
     // 获取报错数据2
     var cypt2Err []error
@@ -242,23 +244,6 @@ func main() {
         Xts("Aes", 0x3333333333).
         Decrypt().
         ToString()
-
-    // =====
-
-    // 国密 SM2 加密测试
-    enkey, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    cypt := cryptobin.
-        FromString("test-pass").
-        SetKey(enkey).
-        SM2Encrypt().
-        ToBase64String()
-    dekey, _ := fs.Get("./runtime/key/sm2_en_key")
-    cyptde := cryptobin.
-        FromBase64String("MHECIELEZVMkhELFI5Anm+ReTOTvLErLhdVRthyfB0xgmfqSAiBeGAcCcqG04t+JFmQcpWhYnfS+y8V/LrD4pz5TNoZLWgQgHMMWWPA/puupOlcxpfuOxnauNA2K/dFOiFkW8m8A1vEECQrM2LIoXdHS0A==").
-        SetKey(dekey).
-        SM2Decrypt("123").
-        ToString()
-
 }
 
 ~~~

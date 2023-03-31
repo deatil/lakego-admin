@@ -11,9 +11,23 @@ func (this Cryptobin) WithData(data []byte) Cryptobin {
     return this
 }
 
+// 设置数据
+func (this Cryptobin) SetData(data string) Cryptobin {
+    this.data = []byte(data)
+
+    return this
+}
+
 // 设置密钥
 func (this Cryptobin) WithKey(key []byte) Cryptobin {
     this.key = key
+
+    return this
+}
+
+// 密码
+func (this Cryptobin) SetKey(data string) Cryptobin {
+    this.key = []byte(data)
 
     return this
 }
@@ -25,9 +39,25 @@ func (this Cryptobin) WithIv(iv []byte) Cryptobin {
     return this
 }
 
+// 向量
+func (this Cryptobin) SetIv(data string) Cryptobin {
+    this.iv = []byte(data)
+
+    return this
+}
+
 // 加密类型
 func (this Cryptobin) WithMultiple(multiple Multiple) Cryptobin {
     this.multiple = multiple
+
+    return this
+}
+
+// 设置加密类型带参数
+func (this Cryptobin) SetMultiple(multiple Multiple, cfg map[string]any) Cryptobin {
+    this.multiple = multiple
+
+    this.config.WithData(cfg)
 
     return this
 }
@@ -39,6 +69,15 @@ func (this Cryptobin) WithMode(mode Mode) Cryptobin {
     return this
 }
 
+// 设置加密类型带参数
+func (this Cryptobin) SetMode(mode Mode, cfg map[string]any) Cryptobin {
+    this.mode = mode
+
+    this.config.WithData(cfg)
+
+    return this
+}
+
 // 补码算法
 func (this Cryptobin) WithPadding(padding Padding) Cryptobin {
     this.padding = padding
@@ -46,30 +85,46 @@ func (this Cryptobin) WithPadding(padding Padding) Cryptobin {
     return this
 }
 
-// 补码算法
-func (this Cryptobin) WithParsedData(data []byte) Cryptobin {
-    this.parsedData = data
+// 设置补码算法带参数
+func (this Cryptobin) SetPadding(padding Padding, cfg map[string]any) Cryptobin {
+    this.padding = padding
+
+    this.config.WithData(cfg)
 
     return this
 }
 
-// 配置
+// 设置配置
 func (this Cryptobin) WithConfig(config *cryptobin_tool.Config) Cryptobin {
     this.config = config
 
     return this
 }
 
-// 设置配置
-func (this Cryptobin) SetConfigMap(data map[string]any) Cryptobin {
+// 批量设置配置
+func (this Cryptobin) SetConfig(data map[string]any) Cryptobin {
     this.config.WithData(data)
 
     return this
 }
 
 // 设置一个配置
-func (this Cryptobin) SetConfig(key string, value any) Cryptobin {
+func (this Cryptobin) PutConfig(key string, value any) Cryptobin {
     this.config.Set(key, value)
+
+    return this
+}
+
+// 设置解析后的数据
+func (this Cryptobin) WithParsedData(data []byte) Cryptobin {
+    this.parsedData = data
+
+    return this
+}
+
+// 设置解析后的数据
+func (this Cryptobin) SetParsedData(data string) Cryptobin {
+    this.parsedData = []byte(data)
 
     return this
 }

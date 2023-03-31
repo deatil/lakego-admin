@@ -297,22 +297,6 @@ func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
 
 // ==========
 
-// 向量
-func (this Cryptobin) SetIv(data string) Cryptobin {
-    this.iv = []byte(data)
-
-    return this
-}
-
-// 密码
-func (this Cryptobin) SetKey(data string) Cryptobin {
-    this.key = []byte(data)
-
-    return this
-}
-
-// ==========
-
 // 不做处理
 func (this Cryptobin) NoParse() Cryptobin {
     this.parsedData = this.data

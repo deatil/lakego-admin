@@ -11,7 +11,7 @@ import (
 // 公钥加密
 func (this SM2) Encrypt() SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [Encrypt()] publicKey error.")
+        err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -28,7 +28,7 @@ func (this SM2) Encrypt() SM2 {
 // 私钥解密
 func (this SM2) Decrypt() SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [Decrypt()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 

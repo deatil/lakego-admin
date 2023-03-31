@@ -4,8 +4,8 @@ import (
     "io"
     "errors"
     "crypto/aes"
-    "crypto/cipher"
     "crypto/rand"
+    "crypto/cipher"
 )
 
 // 加密
@@ -44,7 +44,7 @@ func (this Cryptobin) AesCFBDecrypt() Cryptobin {
     }
 
     if len(encrypted) < aes.BlockSize {
-        err := errors.New("Cryptobin: [AesCFBDecrypt()] ciphertext too short")
+        err := errors.New("Cryptobin: ciphertext too short")
         return this.AppendError(err)
     }
 
@@ -59,11 +59,25 @@ func (this Cryptobin) AesCFBDecrypt() Cryptobin {
     return this
 }
 
+// ===================
+
+func aesECBGenerateKey(key []byte) (genKey []byte) {
+    genKey = make([]byte, 16)
+    copy(genKey, key)
+    for i := 16; i < len(key); {
+        for j := 0; j < 16 && i < len(key); j, i = j+1, i+1 {
+            genKey[j] ^= key[i]
+        }
+    }
+
+    return genKey
+}
+
 func (this Cryptobin) AesECBEncrypt() Cryptobin {
     origData := this.data
     key := this.key
 
-    cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
+    cipher, err := aes.NewCipher(aesECBGenerateKey(key))
     if err != nil {
         return this.AppendError(err)
     }
@@ -92,7 +106,7 @@ func (this Cryptobin) AesECBDecrypt() Cryptobin {
     encrypted := this.data
     key := this.key
 
-    cipher, err := aes.NewCipher(this.AesECBGenerateKey(key))
+    cipher, err := aes.NewCipher(aesECBGenerateKey(key))
     if err != nil {
         return this.AppendError(err)
     }
@@ -111,16 +125,4 @@ func (this Cryptobin) AesECBDecrypt() Cryptobin {
     this.parsedData = decrypted[:trim]
 
     return this
-}
-
-func (this Cryptobin) AesECBGenerateKey(key []byte) (genKey []byte) {
-    genKey = make([]byte, 16)
-    copy(genKey, key)
-    for i := 16; i < len(key); {
-        for j := 0; j < 16 && i < len(key); j, i = j+1, i+1 {
-            genKey[j] ^= key[i]
-        }
-    }
-
-    return genKey
 }

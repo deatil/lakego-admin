@@ -33,7 +33,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this SM2) CreatePrivateKey() SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -59,7 +59,7 @@ func (this SM2) CreatePrivateKeyWithPassword(password string, opts ...any) SM2 {
 // 生成私钥带密码 pem 数据
 func (this SM2) CreateSM2PrivateKeyWithPassword(password string) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [CreatePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -82,18 +82,18 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePKCS8PbePrivateKeyWithPassword(password, optString)
+                    return this.createPKCS8PbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreatePKCS8KdfPrivateKeyWithPassword(password, opts...)
+    return this.createPKCS8KdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this SM2) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...any) SM2 {
+func (this SM2) createPKCS8KdfPrivateKeyWithPassword(password string, opts ...any) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [CreatePKCS8KdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -126,9 +126,9 @@ func (this SM2) CreatePKCS8KdfPrivateKeyWithPassword(password string, opts ...an
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this SM2) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string) SM2 {
+func (this SM2) createPKCS8PbePrivateKeyWithPassword(password string, alg string) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [CreatePKCS8PbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -160,7 +160,7 @@ func (this SM2) CreatePKCS8PbePrivateKeyWithPassword(password string, alg string
 // 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [CreatePublicKey()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 

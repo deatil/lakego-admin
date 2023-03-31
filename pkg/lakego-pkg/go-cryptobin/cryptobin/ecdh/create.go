@@ -32,7 +32,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Ecdh) CreatePrivateKey() Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -71,7 +71,7 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
 // 生成私钥带密码 pem 数据
 func (this Ecdh) createKdfPrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreatePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -106,7 +106,7 @@ func (this Ecdh) createKdfPrivateKeyWithPassword(password string, opts ...any) E
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this Ecdh) createPbePrivateKeyWithPassword(password string, alg string) Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreatePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -138,7 +138,7 @@ func (this Ecdh) createPbePrivateKeyWithPassword(password string, alg string) Ec
 // 生成公钥 pem 数据
 func (this Ecdh) CreatePublicKey() Ecdh {
     if this.publicKey == nil {
-        err := errors.New("Ecdh: [CreatePublicKey()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -160,12 +160,12 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 // 根据公钥和私钥生成对称密钥
 func (this Ecdh) CreateSecretKey() Ecdh {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [CreateSecretKey()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Ecdh: [CreateSecretKey()] publicKey error.")
+        err := errors.New("Ecdh: publicKey error.")
         return this.AppendError(err)
     }
 

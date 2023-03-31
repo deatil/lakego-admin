@@ -110,10 +110,6 @@ ret := crypto.
 `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
 *  操作类型:
 `Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
-`RsaEncrypt()`, `RsaDecrypt(password ...string)`,
-`RsaPrikeyEncrypt(password ...string)`, `RsaPubkeyDecrypt()`,
-`RsaOAEPEncrypt(typ string)`, `RsaOAEPDecrypt(typ string, password ...string)`,
-`SM2Encrypt()`, `SM2Decrypt(password ...string)`,
 *  返回数据类型:
 `ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
 

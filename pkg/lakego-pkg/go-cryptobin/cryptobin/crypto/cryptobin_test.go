@@ -2,27 +2,12 @@ package crypto
 
 import (
     "testing"
-    "reflect"
+
+    cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
-func assertT(t *testing.T) func(any, any, string) {
-    return func(actual any, expected any, msg string) {
-        if !reflect.DeepEqual(actual, expected) {
-            t.Errorf("Failed %s: actual: %v, expected: %v", msg, actual, expected)
-        }
-    }
-}
-
-func assertErrorT(t *testing.T) func(error, string) {
-    return func(err error, msg string) {
-        if err != nil {
-            t.Errorf("Failed %s: error: %+v", msg, err)
-        }
-    }
-}
-
 func Test_TripleDesPKCS7Padding(t *testing.T) {
-    assert := assertT(t)
+    assert := cryptobin_test.AssertT(t)
 
     data := "test-pass"
     cyptStr := FromString(data).
@@ -47,8 +32,8 @@ func Test_TripleDesPKCS7Padding(t *testing.T) {
 }
 
 func Test_AesECBPKCS5Padding(t *testing.T) {
-    assert := assertT(t)
-    assertError := assertErrorT(t)
+    assert := cryptobin_test.AssertT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
     cypt := FromString(data).
@@ -72,4 +57,58 @@ func Test_AesECBPKCS5Padding(t *testing.T) {
     assertError(cyptde.Error(), "AesECBPKCS5Padding-Decode")
 
     assert(data, cyptdeStr, "AesECBPKCS5Padding")
+}
+
+func Test_SM4ECBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("1234567890abcdef").
+        SM4().
+        ECB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "SM4ECBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("1234567890abcdef").
+        SM4().
+        ECB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "SM4ECBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "SM4ECBPKCS7Padding")
+}
+
+func Test_XtsPKCS5Padding(t *testing.T) {
+    assert := cryptobin_test.AssertT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("1234567890abcdef1234567890abcdef").
+        Xts("Aes", 0x3333333333).
+        PKCS5Padding().
+        Encrypt()
+    cyptStr := cypt.ToHexString()
+
+    assertError(cypt.Error(), "XtsPKCS5Padding-Encode")
+
+    cyptde := FromHexString(cyptStr).
+        SetKey("1234567890abcdef1234567890abcdef").
+        PKCS5Padding().
+        Xts("Aes", 0x3333333333).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "XtsPKCS5Padding-Decode")
+
+    assert(data, cyptdeStr, "XtsPKCS5Padding")
 }
