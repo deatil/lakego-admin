@@ -14,7 +14,7 @@ import (
 // 私钥签名
 func (this SM2) Sign() SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [Sign()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -32,7 +32,7 @@ func (this SM2) Sign() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) Verify(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [Verify()] publicKey error.")
+        err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -50,7 +50,7 @@ type sm2Signature struct {
 // 私钥签名
 func (this SM2) SignAsn1(uid []byte) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [SignAsn1()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -73,7 +73,7 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [VerifyAsn1()] publicKey error.")
+        err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -94,7 +94,7 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
 // 兼容[招行]
 func (this SM2) SignHex(uid []byte) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: [SignHex()] privateKey error.")
+        err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -125,7 +125,7 @@ func (this SM2) SignHex(uid []byte) SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: [VerifyHex()] publicKey error.")
+        err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 

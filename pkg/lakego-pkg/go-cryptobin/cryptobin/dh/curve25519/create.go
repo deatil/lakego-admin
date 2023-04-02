@@ -32,7 +32,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Curve25519) CreatePrivateKey() Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("Curve25519: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -60,19 +60,18 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePbePrivateKeyWithPassword(password, optString)
+                    return this.createPbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreateKdfPrivateKeyWithPassword(password, opts...)
+    return this.createKdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成私钥带密码 pem 数据
-// CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Curve25519 {
+func (this Curve25519) createKdfPrivateKeyWithPassword(password string, opts ...any) Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Curve25519: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -105,9 +104,9 @@ func (this Curve25519) CreateKdfPrivateKeyWithPassword(password string, opts ...
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg string) Curve25519 {
+func (this Curve25519) createPbePrivateKeyWithPassword(password string, alg string) Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Curve25519: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -139,7 +138,7 @@ func (this Curve25519) CreatePbePrivateKeyWithPassword(password string, alg stri
 // 生成公钥 pem 数据
 func (this Curve25519) CreatePublicKey() Curve25519 {
     if this.publicKey == nil {
-        err := errors.New("Curve25519: [CreatePublicKey()] privateKey error.")
+        err := errors.New("Curve25519: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -161,12 +160,12 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 // 根据公钥和私钥生成密钥
 func (this Curve25519) CreateSecretKey() Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: [CreateSecretKey()] privateKey error.")
+        err := errors.New("Curve25519: privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Curve25519: [CreateSecretKey()] publicKey error.")
+        err := errors.New("Curve25519: publicKey error.")
         return this.AppendError(err)
     }
 

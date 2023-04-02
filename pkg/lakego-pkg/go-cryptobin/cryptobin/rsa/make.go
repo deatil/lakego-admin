@@ -10,7 +10,7 @@ func (this Rsa) MakePublicKey() Rsa {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Rsa: [MakePublicKey()] privateKey error.")
+        err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -23,7 +23,7 @@ func (this Rsa) MakePublicKey() Rsa {
 func (this Rsa) MakeKeyDer() Rsa {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Rsa: [MakeKeyDer()] keyData error.")
+        err := errors.New("Rsa: keyData error.")
         return this.AppendError(err)
     }
 

@@ -476,7 +476,11 @@ func (this *Data) Error(ctx *gin.Context) {
     // uuid
     uuidStr := uuid.ToUUIDString()
 
+    aesCFBStr := cryptobin_crypto.AesCFB.String()
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "aesCFBStr": aesCFBStr,
+
         "uuidStr": uuidStr,
 
         "diffTime": diffTime,

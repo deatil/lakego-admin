@@ -32,7 +32,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Dh) CreatePrivateKey() Dh {
     if this.privateKey == nil {
-        err := errors.New("Dh: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -60,19 +60,18 @@ func (this Dh) CreatePrivateKeyWithPassword(password string, opts ...any) Dh {
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePbePrivateKeyWithPassword(password, optString)
+                    return this.createPbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreateKdfPrivateKeyWithPassword(password, opts...)
+    return this.createKdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成私钥带密码 pem 数据
-// CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Dh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Dh {
+func (this Dh) createKdfPrivateKeyWithPassword(password string, opts ...any) Dh {
     if this.privateKey == nil {
-        err := errors.New("Dh: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -105,9 +104,9 @@ func (this Dh) CreateKdfPrivateKeyWithPassword(password string, opts ...any) Dh 
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this Dh) CreatePbePrivateKeyWithPassword(password string, alg string) Dh {
+func (this Dh) createPbePrivateKeyWithPassword(password string, alg string) Dh {
     if this.privateKey == nil {
-        err := errors.New("Dh: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -139,7 +138,7 @@ func (this Dh) CreatePbePrivateKeyWithPassword(password string, alg string) Dh {
 // 生成公钥 pem 数据
 func (this Dh) CreatePublicKey() Dh {
     if this.publicKey == nil {
-        err := errors.New("Dh: [CreatePublicKey()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -161,12 +160,12 @@ func (this Dh) CreatePublicKey() Dh {
 // 根据公钥和私钥生成密钥
 func (this Dh) CreateSecretKey() Dh {
     if this.privateKey == nil {
-        err := errors.New("Dh: [CreateSecretKey()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Dh: [CreateSecretKey()] publicKey error.")
+        err := errors.New("Dh: publicKey error.")
         return this.AppendError(err)
     }
 

@@ -10,7 +10,7 @@ func (this DSA) MakePublicKey() DSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("dsa: [MakePublicKey()] privateKey error.")
+        err := errors.New("dsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this DSA) MakePublicKey() DSA {
 func (this DSA) MakeKeyDer() DSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("DSA: [MakeKeyDer()] keyData error.")
+        err := errors.New("DSA: keyData error.")
         return this.AppendError(err)
     }
 

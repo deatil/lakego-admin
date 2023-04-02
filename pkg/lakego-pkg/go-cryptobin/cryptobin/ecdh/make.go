@@ -10,7 +10,7 @@ func (this Ecdh) MakePublicKey() Ecdh {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Ecdh: [MakePublicKey()] privateKey error.")
+        err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this Ecdh) MakePublicKey() Ecdh {
 func (this Ecdh) MakeKeyDer() Ecdh {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Ecdh: [MakeKeyDer()] keyData error.")
+        err := errors.New("Ecdh: keyData error.")
         return this.AppendError(err)
     }
 

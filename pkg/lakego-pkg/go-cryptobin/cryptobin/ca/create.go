@@ -20,7 +20,7 @@ import (
 // 证书请求
 func (this CA) CreateCSR() CA {
     if this.privateKey == nil {
-        err := errors.New("CA: [CreateCSR()] privateKey error.")
+        err := errors.New("CA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -31,7 +31,7 @@ func (this CA) CreateCSR() CA {
         case *sm2.PrivateKey:
             certRequest, ok := this.certRequest.(*sm2_x509.CertificateRequest)
             if !ok {
-                err := errors.New("CA: [CreateCSR()] sm2 certRequest error.")
+                err := errors.New("CA: sm2 certRequest error.")
                 return this.AppendError(err)
             }
 
@@ -40,7 +40,7 @@ func (this CA) CreateCSR() CA {
         default:
             certRequest, ok := this.certRequest.(*x509.CertificateRequest)
             if !ok {
-                err := errors.New("CA: [CreateCSR()] certRequest error.")
+                err := errors.New("CA: certRequest error.")
                 return this.AppendError(err)
             }
 
@@ -64,7 +64,7 @@ func (this CA) CreateCSR() CA {
 // CA 证书
 func (this CA) CreateCA() CA {
     if this.publicKey == nil || this.privateKey == nil {
-        err := errors.New("CA: [CreateCA()] publicKey or privateKey error.")
+        err := errors.New("CA: publicKey or privateKey error.")
         return this.AppendError(err)
     }
 
@@ -75,7 +75,7 @@ func (this CA) CreateCA() CA {
         case *sm2.PrivateKey:
             cert, ok := this.cert.(*sm2_x509.Certificate)
             if !ok {
-                err := errors.New("CA: [CreateCA()] sm2 cert error.")
+                err := errors.New("CA: sm2 cert error.")
                 return this.AppendError(err)
             }
 
@@ -86,7 +86,7 @@ func (this CA) CreateCA() CA {
         default:
             cert, ok := this.cert.(*x509.Certificate)
             if !ok {
-                err := errors.New("CA: [CreateCA()] cert error.")
+                err := errors.New("CA: cert error.")
                 return this.AppendError(err)
             }
 
@@ -168,7 +168,7 @@ func (this CA) CreateCert(ca any) CA {
 // 私钥
 func (this CA) CreatePrivateKey() CA {
     if this.privateKey == nil {
-        err := errors.New("CA: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("CA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -216,7 +216,7 @@ func (this CA) CreatePrivateKey() CA {
             return this
 
         default:
-            err := fmt.Errorf("CA: [CreatePrivateKey()] unsupported private key type: %T", privateKey)
+            err := fmt.Errorf("CA: unsupported private key type: %T", privateKey)
             return this.AppendError(err)
     }
 

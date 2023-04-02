@@ -100,7 +100,7 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
 // 生成公钥 pem 数据
 func (this DSA) CreatePublicKey() DSA {
     if this.publicKey == nil {
-        err := errors.New("dsa: [CreatePublicKey()] privateKey error.")
+        err := errors.New("dsa: privateKey error.")
         return this.AppendError(err)
     }
 

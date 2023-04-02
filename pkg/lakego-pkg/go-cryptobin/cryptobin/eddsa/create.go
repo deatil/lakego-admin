@@ -32,7 +32,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this EdDSA) CreatePrivateKey() EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: [CreatePrivateKey()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -60,19 +60,18 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdD
                 isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
 
                 if isPkcs8Pbe {
-                    return this.CreatePbePrivateKeyWithPassword(password, optString)
+                    return this.createPbePrivateKeyWithPassword(password, optString)
                 }
         }
     }
 
-    return this.CreateKdfPrivateKeyWithPassword(password, opts...)
+    return this.createKdfPrivateKeyWithPassword(password, opts...)
 }
 
 // 生成私钥带密码 pem 数据
-// CreateKdfPrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this EdDSA) CreateKdfPrivateKeyWithPassword(password string, opts ...any) EdDSA {
+func (this EdDSA) createKdfPrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: [CreateKdfPrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -105,9 +104,9 @@ func (this EdDSA) CreateKdfPrivateKeyWithPassword(password string, opts ...any) 
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-func (this EdDSA) CreatePbePrivateKeyWithPassword(password string, alg string) EdDSA {
+func (this EdDSA) createPbePrivateKeyWithPassword(password string, alg string) EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: [CreatePbePrivateKeyWithPassword()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -139,7 +138,7 @@ func (this EdDSA) CreatePbePrivateKeyWithPassword(password string, alg string) E
 // 生成公钥 pem 数据
 func (this EdDSA) CreatePublicKey() EdDSA {
     if this.publicKey == nil {
-        err := errors.New("EdDSA: [CreatePublicKey()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 

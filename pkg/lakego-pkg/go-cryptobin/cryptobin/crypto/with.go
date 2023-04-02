@@ -57,7 +57,11 @@ func (this Cryptobin) WithMultiple(multiple Multiple) Cryptobin {
 func (this Cryptobin) SetMultiple(multiple Multiple, cfg map[string]any) Cryptobin {
     this.multiple = multiple
 
-    this.config.WithData(cfg)
+    if len(cfg) > 0 {
+        for k, v := range cfg {
+            this.config.Set(k, v)
+        }
+    }
 
     return this
 }
@@ -69,11 +73,15 @@ func (this Cryptobin) WithMode(mode Mode) Cryptobin {
     return this
 }
 
-// 设置加密类型带参数
+// 设置加密模式带参数
 func (this Cryptobin) SetMode(mode Mode, cfg map[string]any) Cryptobin {
     this.mode = mode
 
-    this.config.WithData(cfg)
+    if len(cfg) > 0 {
+        for k, v := range cfg {
+            this.config.Set(k, v)
+        }
+    }
 
     return this
 }
@@ -89,7 +97,11 @@ func (this Cryptobin) WithPadding(padding Padding) Cryptobin {
 func (this Cryptobin) SetPadding(padding Padding, cfg map[string]any) Cryptobin {
     this.padding = padding
 
-    this.config.WithData(cfg)
+    if len(cfg) > 0 {
+        for k, v := range cfg {
+            this.config.Set(k, v)
+        }
+    }
 
     return this
 }

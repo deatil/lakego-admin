@@ -112,3 +112,51 @@ func Test_XtsPKCS5Padding(t *testing.T) {
 
     assert(data, cyptdeStr, "XtsPKCS5Padding")
 }
+
+func Test_AesCFB(t *testing.T) {
+    assert := cryptobin_test.AssertT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        AesCFB().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesCFB-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        AesCFB().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesCFB-Decode")
+
+    assert(data, cyptdeStr, "AesCFB")
+}
+
+func Test_AesECB(t *testing.T) {
+    assert := cryptobin_test.AssertT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        AesECB().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesECB-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        AesECB().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesECB-Decode")
+
+    assert(data, cyptdeStr, "AesECB")
+}

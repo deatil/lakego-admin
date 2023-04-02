@@ -11,7 +11,7 @@ import (
 // 公钥加密
 func (this Rsa) Encrypt() Rsa {
     if this.publicKey == nil {
-        err := errors.New("Rsa: [Encrypt()] publicKey error.")
+        err := errors.New("Rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -28,7 +28,7 @@ func (this Rsa) Encrypt() Rsa {
 // 私钥解密
 func (this Rsa) Decrypt() Rsa {
     if this.privateKey == nil {
-        err := errors.New("Rsa: [Decrypt()] privateKey error.")
+        err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -47,7 +47,7 @@ func (this Rsa) Decrypt() Rsa {
 // 私钥加密
 func (this Rsa) PriKeyEncrypt() Rsa {
     if this.privateKey == nil {
-        err := errors.New("Rsa: [PriKeyEncrypt()] privateKey error.")
+        err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -64,7 +64,7 @@ func (this Rsa) PriKeyEncrypt() Rsa {
 // 公钥解密
 func (this Rsa) PubKeyDecrypt() Rsa {
     if this.publicKey == nil {
-        err := errors.New("Rsa: [PubKeyDecrypt()] publicKey error.")
+        err := errors.New("Rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -83,7 +83,7 @@ func (this Rsa) PubKeyDecrypt() Rsa {
 // OAEP公钥加密
 func (this Rsa) EncryptOAEP(typ ...string) Rsa {
     if this.publicKey == nil {
-        err := errors.New("Rsa: [EncryptOAEP()] publicKey error.")
+        err := errors.New("Rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -107,7 +107,7 @@ func (this Rsa) EncryptOAEP(typ ...string) Rsa {
 // OAEP私钥解密
 func (this Rsa) DecryptOAEP(typ ...string) Rsa {
     if this.privateKey == nil {
-        err := errors.New("Rsa: [DecryptOAEP()] privateKey error.")
+        err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
     }
 

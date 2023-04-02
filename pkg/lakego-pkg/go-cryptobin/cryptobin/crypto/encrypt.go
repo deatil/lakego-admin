@@ -4,6 +4,15 @@ import (
     "fmt"
 )
 
+// 加密解密
+var UseEncrypt = NewDataSet[Multiple, IEncrypt]()
+
+// 模式
+var UseMode = NewDataSet[Mode, IMode]()
+
+// 补码
+var UsePadding = NewDataSet[Padding, IPadding]()
+
 // 获取加密解密方式
 func getEncrypt(m Multiple) (IEncrypt, error) {
     if !UseEncrypt.Has(m) {
@@ -30,7 +39,6 @@ func (this Cryptobin) Encrypt() Cryptobin {
         return this.AppendError(err)
     }
 
-    // 补码模式
     this.parsedData = dst
 
     return this
@@ -49,7 +57,6 @@ func (this Cryptobin) Decrypt() Cryptobin {
         return this.AppendError(err)
     }
 
-    // 补码模式
     this.parsedData = dst
 
     return this

@@ -141,6 +141,19 @@ func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
     return this
 }
 
+// 使用类型
+func (this Cryptobin) MultipleBy(multiple Multiple, cfg ...map[string]any) Cryptobin {
+    this.multiple = multiple
+
+    if len(cfg) > 0 && len(cfg[0]) > 0{
+        for k, v := range cfg[0] {
+            this.config.Set(k, v)
+        }
+    }
+
+    return this
+}
+
 // ==========
 
 // 电码本模式
@@ -219,6 +232,19 @@ func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
     return this
 }
 
+// 使用模式
+func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
+    this.mode = mode
+
+    if len(cfg) > 0 && len(cfg[0]) > 0{
+        for k, v := range cfg[0] {
+            this.config.Set(k, v)
+        }
+    }
+
+    return this
+}
+
 // ==========
 
 // 不补码
@@ -290,6 +316,19 @@ func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
 
     if len(bt) > 0 {
         this.config.Set("pkcs1_padding_bt", bt[0])
+    }
+
+    return this
+}
+
+// 使用补码算法
+func (this Cryptobin) PaddingBy(padding Padding, cfg ...map[string]any) Cryptobin {
+    this.padding = padding
+
+    if len(cfg) > 0 && len(cfg[0]) > 0{
+        for k, v := range cfg[0] {
+            this.config.Set(k, v)
+        }
     }
 
     return this

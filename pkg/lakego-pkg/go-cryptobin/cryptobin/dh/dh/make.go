@@ -10,7 +10,7 @@ func (this Dh) MakePublicKey() Dh {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Dh: [MakePublicKey()] privateKey error.")
+        err := errors.New("Dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this Dh) MakePublicKey() Dh {
 func (this Dh) MakeKeyDer() Dh {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Dh: [MakeKeyDer()] keyData error.")
+        err := errors.New("Dh: keyData error.")
         return this.AppendError(err)
     }
 

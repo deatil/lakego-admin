@@ -8,62 +8,89 @@ import (
     "crypto/cipher"
 )
 
+var (
+    AesCFB = TypeMultiple.Generate()
+    AesECB = TypeMultiple.Generate()
+)
+
+func init() {
+    TypeMultiple.Names().Add(AesCFB, func() string {
+        return "AesCFB"
+    })
+    TypeMultiple.Names().Add(AesECB, func() string {
+        return "AesECB"
+    })
+}
+
+type EncryptAesCFB struct {}
+
 // 加密
-func (this Cryptobin) AesCFBEncrypt() Cryptobin {
-    origData := this.data
-    key := this.key
+func (this EncryptAesCFB) Encrypt(origData []byte, opt IOption) ([]byte, error) {
+    key := opt.Key()
 
     block, err := aes.NewCipher(key)
     if err != nil {
-        return this.AppendError(err)
+        return nil, err
     }
 
     encrypted := make([]byte, aes.BlockSize + len(origData))
 
     iv := encrypted[:aes.BlockSize]
     if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-        return this.AppendError(err)
+        return nil, err
     }
 
     stream := cipher.NewCFBEncrypter(block, iv)
     stream.XORKeyStream(encrypted[aes.BlockSize:], origData)
 
-    this.parsedData = encrypted
-
-    return this
+    return encrypted, nil
 }
 
 // 解密
-func (this Cryptobin) AesCFBDecrypt() Cryptobin {
-    encrypted := this.data
-    key := this.key
+func (this EncryptAesCFB) Decrypt(encrypted []byte, opt IOption) ([]byte, error) {
+    key := opt.Key()
 
     block, err := aes.NewCipher(key)
     if err != nil {
-        return this.AppendError(err)
+        return nil, err
     }
 
     if len(encrypted) < aes.BlockSize {
         err := errors.New("Cryptobin: ciphertext too short")
-        return this.AppendError(err)
+        return nil, err
     }
 
     iv := encrypted[:aes.BlockSize]
-    encrypted = encrypted[aes.BlockSize:]
+    encoded := encrypted[aes.BlockSize:]
 
-    stream := cipher.NewCFBDecrypter(block, iv)
-    stream.XORKeyStream(encrypted, encrypted)
+    dst := make([]byte, len(encoded))
+    cipher.NewCFBDecrypter(block, iv).XORKeyStream(dst, encoded)
 
-    this.parsedData = encrypted
+    return dst, nil
+}
+
+func init() {
+    UseEncrypt.Add(AesCFB, func() IEncrypt {
+        return EncryptAesCFB{}
+    })
+}
+
+// 特殊的 AesCFB 组合模式
+// 也可以使用: MultipleBy(AesCFB)
+func (this Cryptobin) AesCFB() Cryptobin {
+    this.multiple = AesCFB
 
     return this
 }
 
 // ===================
 
+type EncryptAesECB struct {}
+
 func aesECBGenerateKey(key []byte) (genKey []byte) {
     genKey = make([]byte, 16)
     copy(genKey, key)
+
     for i := 16; i < len(key); {
         for j := 0; j < 16 && i < len(key); j, i = j+1, i+1 {
             genKey[j] ^= key[i]
@@ -73,18 +100,18 @@ func aesECBGenerateKey(key []byte) (genKey []byte) {
     return genKey
 }
 
-func (this Cryptobin) AesECBEncrypt() Cryptobin {
-    origData := this.data
-    key := this.key
+func (this EncryptAesECB) Encrypt(origData []byte, opt IOption) ([]byte, error) {
+    key := opt.Key()
 
     cipher, err := aes.NewCipher(aesECBGenerateKey(key))
     if err != nil {
-        return this.AppendError(err)
+        return nil, err
     }
 
     length := (len(origData) + aes.BlockSize) / aes.BlockSize
     plain := make([]byte, length*aes.BlockSize)
     copy(plain, origData)
+
     pad := byte(len(plain) - len(origData))
     for i := len(origData); i < len(plain); i++ {
         plain[i] = pad
@@ -97,18 +124,15 @@ func (this Cryptobin) AesECBEncrypt() Cryptobin {
         cipher.Encrypt(encrypted[bs:be], plain[bs:be])
     }
 
-    this.parsedData = encrypted
-
-    return this
+    return encrypted, nil
 }
 
-func (this Cryptobin) AesECBDecrypt() Cryptobin {
-    encrypted := this.data
-    key := this.key
+func (this EncryptAesECB) Decrypt(encrypted []byte, opt IOption) ([]byte, error) {
+    key := opt.Key()
 
     cipher, err := aes.NewCipher(aesECBGenerateKey(key))
     if err != nil {
-        return this.AppendError(err)
+        return nil, err
     }
 
     decrypted := make([]byte, len(encrypted))
@@ -122,7 +146,19 @@ func (this Cryptobin) AesECBDecrypt() Cryptobin {
         trim = len(decrypted) - int(decrypted[len(decrypted)-1])
     }
 
-    this.parsedData = decrypted[:trim]
+    return decrypted[:trim], nil
+}
+
+func init() {
+    UseEncrypt.Add(AesECB, func() IEncrypt {
+        return EncryptAesECB{}
+    })
+}
+
+// 特殊的 AesECB 组合模式
+// 也可以使用: MultipleBy(AesECB)
+func (this Cryptobin) AesECB() Cryptobin {
+    this.multiple = AesECB
 
     return this
 }

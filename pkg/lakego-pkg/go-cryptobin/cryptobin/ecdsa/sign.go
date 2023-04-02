@@ -14,7 +14,7 @@ import (
 // 私钥签名
 func (this Ecdsa) Sign(separator ...string) Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [Sign()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -50,7 +50,7 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 // 公钥验证
 func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [Verify()] publicKey error.")
+        err := errors.New("Ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -63,7 +63,7 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        err := errors.New("Ecdsa: [Verify()] sign data is error.")
+        err := errors.New("Ecdsa: sign data is error.")
         return this.AppendError(err)
     }
 
@@ -92,7 +92,7 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
 // 私钥签名, 官方默认
 func (this Ecdsa) SignASN1() Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [SignASN1()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this Ecdsa) SignASN1() Ecdsa {
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyASN1(data []byte) Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [VerifyASN1()] publicKey error.")
+        err := errors.New("Ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -132,7 +132,7 @@ type ecdsaSignature struct {
 // 私钥签名
 func (this Ecdsa) SignAsn1() Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [SignAsn1()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -154,7 +154,7 @@ func (this Ecdsa) SignAsn1() Ecdsa {
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [VerifyAsn1()] publicKey error.")
+        err := errors.New("Ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -179,7 +179,7 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
 // 私钥签名
 func (this Ecdsa) SignHex() Ecdsa {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [SignHex()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -208,7 +208,7 @@ func (this Ecdsa) SignHex() Ecdsa {
 // 使用原始数据[data]对比签名后数据
 func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: [VerifyHex()] publicKey error.")
+        err := errors.New("Ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 

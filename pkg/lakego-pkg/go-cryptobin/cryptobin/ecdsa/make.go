@@ -9,7 +9,7 @@ func (this Ecdsa) MakePublicKey() Ecdsa {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: [MakePublicKey()] privateKey error.")
+        err := errors.New("Ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 

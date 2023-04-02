@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this EdDSA) Sign() EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: [Sign()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -21,12 +21,12 @@ func (this EdDSA) Sign() EdDSA {
     var ok bool
 
     if ed25519Key, ok = key.(crypto.Signer); !ok {
-        err := errors.New("EdDSA: [Sign()] privateKey type error.")
+        err := errors.New("EdDSA: privateKey type error.")
         return this.AppendError(err)
     }
 
     if _, ok := ed25519Key.Public().(ed25519.PublicKey); !ok {
-        err := errors.New("EdDSA: [Sign()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -43,7 +43,7 @@ func (this EdDSA) Sign() EdDSA {
 // 公钥验证
 func (this EdDSA) Verify(data []byte) EdDSA {
     if this.publicKey == nil {
-        err := errors.New("EdDSA: [Verify()] publicKey error.")
+        err := errors.New("EdDSA: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this EdDSA) Verify(data []byte) EdDSA {
     var ok bool
 
     if ed25519Key, ok = key.(ed25519.PublicKey); !ok {
-        err := errors.New("EdDSA: [Verify()] publicKey type error.")
+        err := errors.New("EdDSA: publicKey type error.")
         return this.AppendError(err)
     }
 

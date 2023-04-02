@@ -11,7 +11,7 @@ func (this EdDSA) MakePublicKey() EdDSA {
     this.publicKey = ed25519.PublicKey{}
 
     if this.privateKey == nil {
-        err := errors.New("EdDSA: [MakePublicKey()] privateKey error.")
+        err := errors.New("EdDSA: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -25,7 +25,7 @@ func (this EdDSA) MakePublicKey() EdDSA {
 func (this EdDSA) MakeKeyDer() EdDSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("EdDSA: [MakeKeyDer()] keyData error.")
+        err := errors.New("EdDSA: keyData error.")
         return this.AppendError(err)
     }
 
