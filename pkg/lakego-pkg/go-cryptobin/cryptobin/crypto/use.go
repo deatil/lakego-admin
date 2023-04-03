@@ -145,9 +145,9 @@ func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
 func (this Cryptobin) MultipleBy(multiple Multiple, cfg ...map[string]any) Cryptobin {
     this.multiple = multiple
 
-    if len(cfg) > 0 && len(cfg[0]) > 0{
-        for k, v := range cfg[0] {
-            this.config.Set(k, v)
+    for _, v := range cfg {
+        for kk, vv := range v {
+            this.config.Set(kk, vv)
         }
     }
 
@@ -236,9 +236,9 @@ func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
 func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
     this.mode = mode
 
-    if len(cfg) > 0 && len(cfg[0]) > 0{
-        for k, v := range cfg[0] {
-            this.config.Set(k, v)
+    for _, v := range cfg {
+        for kk, vv := range v {
+            this.config.Set(kk, vv)
         }
     }
 
@@ -325,9 +325,9 @@ func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
 func (this Cryptobin) PaddingBy(padding Padding, cfg ...map[string]any) Cryptobin {
     this.padding = padding
 
-    if len(cfg) > 0 && len(cfg[0]) > 0{
-        for k, v := range cfg[0] {
-            this.config.Set(k, v)
+    for _, v := range cfg {
+        for kk, vv := range v {
+            this.config.Set(kk, vv)
         }
     }
 

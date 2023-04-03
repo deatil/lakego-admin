@@ -95,7 +95,7 @@ func Test_XtsPKCS5Padding(t *testing.T) {
     cypt := FromString(data).
         SetKey("1234567890abcdef1234567890abcdef").
         Xts("Aes", 0x3333333333).
-        PKCS5Padding().
+        PaddingBy(PKCS5Padding).
         Encrypt()
     cyptStr := cypt.ToHexString()
 
@@ -103,7 +103,7 @@ func Test_XtsPKCS5Padding(t *testing.T) {
 
     cyptde := FromHexString(cyptStr).
         SetKey("1234567890abcdef1234567890abcdef").
-        PKCS5Padding().
+        PaddingBy(PKCS5Padding).
         Xts("Aes", 0x3333333333).
         Decrypt()
     cyptdeStr := cyptde.ToString()
