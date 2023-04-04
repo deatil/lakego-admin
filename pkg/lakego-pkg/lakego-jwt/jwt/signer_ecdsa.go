@@ -1,15 +1,12 @@
-package signer
+package jwt
 
 import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
-
-    "github.com/deatil/lakego-jwt/jwt/config"
-    "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
 // SignerES256
-func SignerES256(conf config.SignerConfig) interfaces.Signer {
+func SignerES256(conf IConfig) ECDSA {
     return ECDSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodES256,
@@ -17,7 +14,7 @@ func SignerES256(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerES384
-func SignerES384(conf config.SignerConfig) interfaces.Signer {
+func SignerES384(conf IConfig) ECDSA {
     return ECDSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodES384,
@@ -25,11 +22,23 @@ func SignerES384(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerES512
-func SignerES512(conf config.SignerConfig) interfaces.Signer {
+func SignerES512(conf IConfig) ECDSA {
     return ECDSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodES512,
     }
+}
+
+func init() {
+    AddSigner("ES256", func(conf IConfig) ISigner {
+        return SignerES256(conf)
+    })
+    AddSigner("ES384", func(conf IConfig) ISigner {
+        return SignerES384(conf)
+    })
+    AddSigner("ES512", func(conf IConfig) ISigner {
+        return SignerES512(conf)
+    })
 }
 
 /**
@@ -40,7 +49,7 @@ func SignerES512(conf config.SignerConfig) interfaces.Signer {
  */
 type ECDSA struct {
     // 配置
-    Config config.SignerConfig
+    Config IConfig
 
     // 签名
     SigningMethod jwt.SigningMethod
@@ -54,7 +63,7 @@ func (this ECDSA) GetSigner() jwt.SigningMethod {
 // 签名密钥
 func (this ECDSA) GetSignSecrect() (secret any, err error) {
     // 私钥
-    keyByte := this.Config.PrivateKey
+    keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
         err = errors.New("ECDSA 私钥内容不能为空")
         return
@@ -67,7 +76,7 @@ func (this ECDSA) GetSignSecrect() (secret any, err error) {
 // 验证密钥
 func (this ECDSA) GetVerifySecrect() (secret any, err error) {
     // 公钥
-    keyByte := this.Config.PublicKey
+    keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
         err = errors.New("ECDSA 公钥内容不能为空")
         return nil, err

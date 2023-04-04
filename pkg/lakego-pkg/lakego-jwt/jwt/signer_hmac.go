@@ -1,15 +1,12 @@
-package signer
+package jwt
 
 import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
-
-    "github.com/deatil/lakego-jwt/jwt/config"
-    "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
 // SignerHS256
-func SignerHS256(conf config.SignerConfig) interfaces.Signer {
+func SignerHS256(conf IConfig) Hmac {
     return Hmac{
         Config: conf,
         SigningMethod: jwt.SigningMethodHS256,
@@ -17,7 +14,7 @@ func SignerHS256(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerHS384
-func SignerHS384(conf config.SignerConfig) interfaces.Signer {
+func SignerHS384(conf IConfig) Hmac {
     return Hmac{
         Config: conf,
         SigningMethod: jwt.SigningMethodHS384,
@@ -25,11 +22,23 @@ func SignerHS384(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerHS512
-func SignerHS512(conf config.SignerConfig) interfaces.Signer {
+func SignerHS512(conf IConfig) Hmac {
     return Hmac{
         Config: conf,
         SigningMethod: jwt.SigningMethodHS512,
     }
+}
+
+func init() {
+    AddSigner("HS256", func(conf IConfig) ISigner {
+        return SignerHS256(conf)
+    })
+    AddSigner("HS384", func(conf IConfig) ISigner {
+        return SignerHS384(conf)
+    })
+    AddSigner("HS512", func(conf IConfig) ISigner {
+        return SignerHS512(conf)
+    })
 }
 
 /**
@@ -40,7 +49,7 @@ func SignerHS512(conf config.SignerConfig) interfaces.Signer {
  */
 type Hmac struct {
     // 配置
-    Config config.SignerConfig
+    Config IConfig
 
     // 签名
     SigningMethod jwt.SigningMethod
@@ -54,7 +63,7 @@ func (this Hmac) GetSigner() jwt.SigningMethod {
 // 签名密钥
 func (this Hmac) GetSignSecrect() (secret any, err error) {
     // 密码
-    hmacSecret := this.Config.Secret
+    hmacSecret := this.Config.Secret()
     if hmacSecret == "" {
         err = errors.New("Hmac 密码内容不能为空")
         return
@@ -67,7 +76,7 @@ func (this Hmac) GetSignSecrect() (secret any, err error) {
 // 验证密钥
 func (this Hmac) GetVerifySecrect() (secret any, err error) {
     // 密码
-    hmacSecret := this.Config.Secret
+    hmacSecret := this.Config.Secret()
     if hmacSecret == "" {
         err = errors.New("Hmac 密码内容不能为空")
         return

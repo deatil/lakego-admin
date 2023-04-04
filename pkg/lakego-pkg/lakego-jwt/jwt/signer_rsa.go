@@ -1,15 +1,12 @@
-package signer
+package jwt
 
 import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
-
-    "github.com/deatil/lakego-jwt/jwt/config"
-    "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
 // SignerRS256
-func SignerRS256(conf config.SignerConfig) interfaces.Signer {
+func SignerRS256(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodRS256,
@@ -17,7 +14,7 @@ func SignerRS256(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerRS384
-func SignerRS384(conf config.SignerConfig) interfaces.Signer {
+func SignerRS384(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodRS384,
@@ -25,7 +22,7 @@ func SignerRS384(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerRS512
-func SignerRS512(conf config.SignerConfig) interfaces.Signer {
+func SignerRS512(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodRS512,
@@ -33,7 +30,7 @@ func SignerRS512(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerPS256
-func SignerPS256(conf config.SignerConfig) interfaces.Signer {
+func SignerPS256(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodPS256,
@@ -41,7 +38,7 @@ func SignerPS256(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerPS384
-func SignerPS384(conf config.SignerConfig) interfaces.Signer {
+func SignerPS384(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodPS384,
@@ -49,11 +46,33 @@ func SignerPS384(conf config.SignerConfig) interfaces.Signer {
 }
 
 // SignerPS512
-func SignerPS512(conf config.SignerConfig) interfaces.Signer {
+func SignerPS512(conf IConfig) RSA {
     return RSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodPS512,
     }
+}
+
+func init() {
+    AddSigner("RS256", func(conf IConfig) ISigner {
+        return SignerRS256(conf)
+    })
+    AddSigner("RS384", func(conf IConfig) ISigner {
+        return SignerRS384(conf)
+    })
+    AddSigner("RS512", func(conf IConfig) ISigner {
+        return SignerRS512(conf)
+    })
+
+    AddSigner("PS256", func(conf IConfig) ISigner {
+        return SignerPS256(conf)
+    })
+    AddSigner("PS384", func(conf IConfig) ISigner {
+        return SignerPS384(conf)
+    })
+    AddSigner("PS512", func(conf IConfig) ISigner {
+        return SignerPS512(conf)
+    })
 }
 
 /**
@@ -64,7 +83,7 @@ func SignerPS512(conf config.SignerConfig) interfaces.Signer {
  */
 type RSA struct {
     // 配置
-    Config config.SignerConfig
+    Config IConfig
 
     // 签名
     SigningMethod jwt.SigningMethod
@@ -78,13 +97,13 @@ func (this RSA) GetSigner() jwt.SigningMethod {
 // 签名密钥
 func (this RSA) GetSignSecrect() (secret any, err error) {
     // 获取秘钥数据
-    keyByte := this.Config.PrivateKey
+    keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
         err = errors.New("RSA 私钥内容不能为空")
         return
     }
 
-    password := this.Config.PrivateKeyPassword
+    password := this.Config.PrivateKeyPassword()
 
     if password != "" {
         secret, err = jwt.ParseRSAPrivateKeyFromPEMWithPassword(keyByte, password)
@@ -98,7 +117,7 @@ func (this RSA) GetSignSecrect() (secret any, err error) {
 // 验证密钥
 func (this RSA) GetVerifySecrect() (secret any, err error) {
     // 公钥
-    keyByte := this.Config.PublicKey
+    keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
         err = errors.New("RSA 公钥内容不能为空")
         return nil, err

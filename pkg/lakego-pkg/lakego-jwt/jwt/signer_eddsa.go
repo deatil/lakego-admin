@@ -1,19 +1,22 @@
-package signer
+package jwt
 
 import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
-
-    "github.com/deatil/lakego-jwt/jwt/config"
-    "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
 // SignerEdDSA
-func SignerEdDSA(conf config.SignerConfig) interfaces.Signer {
+func SignerEdDSA(conf IConfig) EdDSA {
     return EdDSA{
         Config: conf,
         SigningMethod: jwt.SigningMethodEdDSA,
     }
+}
+
+func init() {
+    AddSigner("EdDSA", func(conf IConfig) ISigner {
+        return SignerEdDSA(conf)
+    })
 }
 
 /**
@@ -24,7 +27,7 @@ func SignerEdDSA(conf config.SignerConfig) interfaces.Signer {
  */
 type EdDSA struct {
     // 配置
-    Config config.SignerConfig
+    Config IConfig
 
     // 签名
     SigningMethod jwt.SigningMethod
@@ -38,7 +41,7 @@ func (this EdDSA) GetSigner() jwt.SigningMethod {
 // 签名密钥
 func (this EdDSA) GetSignSecrect() (secret any, err error) {
     // 私钥
-    keyByte := this.Config.PrivateKey
+    keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
         err = errors.New("EdDSA 私钥内容不能为空")
         return
@@ -51,7 +54,7 @@ func (this EdDSA) GetSignSecrect() (secret any, err error) {
 // 验证密钥
 func (this EdDSA) GetVerifySecrect() (secret any, err error) {
     // 公钥
-    keyByte := this.Config.PublicKey
+    keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
         err = errors.New("EdDSA 公钥内容不能为空")
         return nil, err

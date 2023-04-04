@@ -2,48 +2,10 @@ package jwt
 
 import(
     "sync"
-
-    "github.com/deatil/lakego-jwt/jwt/signer"
-    "github.com/deatil/lakego-jwt/jwt/config"
-    "github.com/deatil/lakego-jwt/jwt/interfaces"
 )
 
-// 验证方式列表
-var DefaultSignerList = map[string]SignerMethod {
-    // Hmac
-    "HS256": signer.SignerHS256,
-    "HS384": signer.SignerHS384,
-    "HS512": signer.SignerHS512,
-
-    // RSA
-    "RS256": signer.SignerRS256,
-    "RS384": signer.SignerRS384,
-    "RS512": signer.SignerRS512,
-
-    // PSS
-    "PS256": signer.SignerPS256,
-    "PS384": signer.SignerPS384,
-    "PS512": signer.SignerPS512,
-
-    // ECDSA
-    "ES256": signer.SignerES256,
-    "ES384": signer.SignerES384,
-    "ES512": signer.SignerES512,
-
-    // EdDSA
-    "EdDSA": signer.SignerEdDSA,
-
-    // 国密 SM2
-    "GmSM2": signer.SignerGmSM2,
-}
-
 // 默认
-var DefaultSigner *Signer
-
-func init() {
-    DefaultSigner = NewSigner()
-    DefaultSigner.signers = DefaultSignerList
-}
+var defaultSigner = NewSigner()
 
 /**
  * 签名
@@ -56,7 +18,7 @@ func NewSigner() *Signer {
 
 type (
     // 签名方法
-    SignerMethod = func(config.SignerConfig) interfaces.Signer
+    SignerMethod = func(IConfig) ISigner
 )
 
 /**
@@ -74,7 +36,7 @@ type Signer struct {
 }
 
 // 注册
-func (this *Signer) AddSigner(name string, signer SignerMethod) {
+func (this *Signer) AddSigner(name string, method SignerMethod) {
     this.mu.Lock()
     defer this.mu.Unlock()
 
@@ -82,12 +44,12 @@ func (this *Signer) AddSigner(name string, signer SignerMethod) {
         delete(this.signers, name)
     }
 
-    this.signers[name] = signer
+    this.signers[name] = method
 }
 
 // 添加签名
-func AddSigner(name string, signer SignerMethod) {
-    DefaultSigner.AddSigner(name, signer)
+func AddSigner(name string, method SignerMethod) {
+    defaultSigner.AddSigner(name, method)
 }
 
 // 获取
@@ -105,7 +67,7 @@ func (this *Signer) GetSigner(name string) SignerMethod {
 
 // 获取签名
 func GetSigner(name string) SignerMethod {
-    return DefaultSigner.GetSigner(name)
+    return defaultSigner.GetSigner(name)
 }
 
 // 获取全部
@@ -115,7 +77,7 @@ func (this *Signer) GetAllSigner() map[string]SignerMethod {
 
 // 获取全部签名
 func GetAllSigner() map[string]SignerMethod {
-    return DefaultSigner.GetAllSigner()
+    return defaultSigner.GetAllSigner()
 }
 
 // 判断
@@ -130,7 +92,7 @@ func (this *Signer) HasSigner(name string) bool {
 
 // 判断签名
 func HasSigner(name string) bool {
-    return DefaultSigner.HasSigner(name)
+    return defaultSigner.HasSigner(name)
 }
 
 // 删除
@@ -143,5 +105,5 @@ func (this *Signer) DeleteSigner(name string) {
 
 // 判断签名
 func DeleteSigner(name string) {
-    DefaultSigner.DeleteSigner(name)
+    defaultSigner.DeleteSigner(name)
 }

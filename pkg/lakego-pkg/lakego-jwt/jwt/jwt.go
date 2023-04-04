@@ -2,7 +2,7 @@ package jwt
 
 // JWT
 func New(opts ...Option) *JWT {
-    jwt := &JWT{
+    j := &JWT{
         Secret: "123456",
         SigningMethod: "HS256",
         Headers: make(HeaderMap),
@@ -10,10 +10,10 @@ func New(opts ...Option) *JWT {
     }
 
     for _, opt := range opts {
-        opt(jwt)
+        opt(j)
     }
 
-    return jwt
+    return j
 }
 
 type (

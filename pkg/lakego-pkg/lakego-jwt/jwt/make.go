@@ -5,8 +5,6 @@ import (
     "errors"
 
     "github.com/golang-jwt/jwt/v4"
-
-    "github.com/deatil/lakego-jwt/jwt/config"
 )
 
 // 生成token
@@ -30,12 +28,12 @@ func (this *JWT) MakeToken() (token string, err error) {
         return
     }
 
-    newSigner := signer(config.SignerConfig{
-        Secret:     this.Secret,
-        PrivateKey: this.PrivateKey,
-        PublicKey:  this.PublicKey,
-        PrivateKeyPassword: this.PrivateKeyPassword,
-    })
+    newSigner := signer(NewConfig(
+        this.Secret,
+        this.PrivateKey,
+        this.PublicKey,
+        this.PrivateKeyPassword,
+    ))
 
     jwtToken := jwt.NewWithClaims(newSigner.GetSigner(), claims)
 
