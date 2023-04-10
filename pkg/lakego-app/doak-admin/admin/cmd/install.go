@@ -60,6 +60,8 @@ func runInsatll() {
         os.Exit(1)
     }
 
+    prefix := model.GetConfig("prefix").(string)
+
     db := model.NewDB()
 
     sqlArr := strings.Split(string(sqls), ";")
@@ -70,8 +72,7 @@ func runInsatll() {
         }
 
         // 替换前缀
-        prefix := model.GetConfig("prefix")
-        sql = strings.ReplaceAll(sql, "pre__", prefix.(string))
+        sql = strings.ReplaceAll(sql, "pre__", prefix)
 
         err := db.Exec(sql).Error
         if err == nil {

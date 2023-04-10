@@ -42,6 +42,11 @@ type publicKeyInfo struct {
     PublicKey asn1.BitString
 }
 
+// 构造函数
+func NewPKCS8Key() PKCS8Key {
+    return PKCS8Key{}
+}
+
 /**
  * dsa pkcs8 密钥
  *
@@ -227,9 +232,4 @@ func (this PKCS8Key) ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey,
         default:
             return nil, fmt.Errorf("dsa: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
-}
-
-// 构造函数
-func NewPKCS8Key() PKCS8Key {
-    return PKCS8Key{}
 }

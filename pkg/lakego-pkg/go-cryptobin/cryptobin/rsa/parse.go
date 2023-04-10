@@ -7,6 +7,7 @@ import (
     "encoding/pem"
     "golang.org/x/crypto/pkcs12"
 
+    cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 )
@@ -174,4 +175,16 @@ func (this Rsa) ParsePKCS8PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
     }
 
     return pkey, nil
+}
+
+// ============
+
+// 解析 xml 私钥
+func (this Rsa) ParsePrivateKeyFromXML(key []byte) (*rsa.PrivateKey, error) {
+    return cryptobin_rsa.ParseXMLPrivateKey(key)
+}
+
+// 解析 xml 公钥
+func (this Rsa) ParsePublicKeyFromXML(key []byte) (*rsa.PublicKey, error) {
+    return cryptobin_rsa.ParseXMLPublicKey(key)
 }

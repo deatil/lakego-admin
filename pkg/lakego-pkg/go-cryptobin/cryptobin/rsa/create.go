@@ -6,6 +6,7 @@ import (
     "crypto/x509"
     "encoding/pem"
 
+    cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
 )
@@ -247,6 +248,42 @@ func (this Rsa) CreatePKCS8PublicKey() Rsa {
     }
 
     this.keyData = pem.EncodeToMemory(publicBlock)
+
+    return this
+}
+
+// ====================
+
+// 生成 PKCS8 私钥 pem 数据
+func (this Rsa) CreateXMLPrivateKey() Rsa {
+    if this.privateKey == nil {
+        err := errors.New("Rsa: privateKey error.")
+        return this.AppendError(err)
+    }
+
+    xmlPublicKey, err := cryptobin_rsa.MarshalXMLPrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.keyData = xmlPublicKey
+
+    return this
+}
+
+// 生成公钥 pem 数据
+func (this Rsa) CreateXMLPublicKey() Rsa {
+    if this.publicKey == nil {
+        err := errors.New("Rsa: privateKey error.")
+        return this.AppendError(err)
+    }
+
+    xmlPublicKey, err := cryptobin_rsa.MarshalXMLPublicKey(this.publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.keyData = xmlPublicKey
 
     return this
 }

@@ -21,7 +21,7 @@ import (
     "github.com/deatil/go-exception/exception"
     "github.com/deatil/lakego-filesystem/filesystem"
 
-    _ "github.com/deatil/go-cryptobin/ssh"
+    "github.com/deatil/go-cryptobin/ssh"
     _ "github.com/deatil/go-cryptobin/argon2"
     _ "github.com/deatil/go-cryptobin/bencode"
     _ "github.com/deatil/go-cryptobin/dh/dh"
@@ -394,16 +394,16 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-MD5AndDES")
+    obj2Pri, _ := fs.Get("./runtime/key/rsa/xml/rsa_pri")
     obj2cypt := obj2.
         FromString("test-pass").
-        FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        FromXMLPrivateKey([]byte(obj2Pri)).
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-MD5AndDES.pub")
+    obj2Pub, _ := fs.Get("./runtime/key/rsa/xml/rsa_pub")
     obj2cyptde := obj2.
-        FromBase64String("IsWEcgW9WR0Ct4Wf9qriA5nNYzMDd1t9sVVyRLTxRg7JhbpMAjZHpTIC77kcJ4AySo6iYkm5e1NmJ6jqAIUfFM6gFIi9Ybm4WMAMo1dxxD8FbR3kYgs1pFGXsRCNiwUaQvG1WuLPG2XUXkNQfaTr0fEYuNfkc7hTe8NmOfTTqgZS3MFELf6J4VUhzSal3qgNj9X7SmEjLAadFPsrhxiah2D2MOngwa9IxakIu3ubECJAdqFLUivel+LZlhGQdLpe1z6it+B1LefqCn2c54MVZIMDZ5Jf1rIG+wN+swU7fFNVqwTNqZFX/ySgAyErP2ls2Ydgwp2Tblef/9hYG1jKPQ==").
-        FromPublicKey([]byte(obj2Pub)).
+        FromBase64String("KTJeGPu8/k+7HfQWlgz9P0YOvLo8Qiz3TKByk8t6vpEiX2c6kgCytGzO7IDGJpdssvyrJEv29PoS/mbD+yxa7+gr9BIkBiyfVk+GlvdwRqjCohuwFJMqlt97cGaFMv7VHBbKS3CL6IlIZoWPauaYTFrzqdG0C1iTuLwNwAYMyvLmaL2oXniPrBlETjYYM9eJhBg11ZhVGTcKuwmUP/oYzRX+KC/ZHNh2ftHUXRn//u3+9YR61X23OUAI9cO+PH3u66vJ8Stbk88VagpeDDTUS3uKytnuLWTFJSRRvQ5jA7OuENo6dEQxR0UbTcUKG9NNQKCk6DRvGM8BO/z3iGnLjA==").
+        FromXMLPublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 
@@ -478,7 +478,17 @@ func (this *Data) Error(ctx *gin.Context) {
 
     aesCFBStr := cryptobin_crypto.AesCFB.String()
 
+    sshRsaPubKey := cryptobin_rsa.NewRsa().
+        GenerateKey(2048).
+        GetPublicKey()
+    sshPubKey, _ := ssh.NewPublicKey(sshRsaPubKey)
+    sshAuthorizedKey := ssh.MarshalAuthorizedKey(sshPubKey)
+
+    // fs.Put("./runtime/key/ssh/pub/rsa.pub", string(sshAuthorizedKey))
+
     this.SuccessWithData(ctx, "Error 测试", gin.H{
+        "sshAuthorizedKey": string(sshAuthorizedKey),
+
         "aesCFBStr": aesCFBStr,
 
         "uuidStr": uuidStr,

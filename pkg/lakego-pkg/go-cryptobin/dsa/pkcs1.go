@@ -28,6 +28,11 @@ type dsaPublicKey struct {
     Y *big.Int
 }
 
+// 构造函数
+func NewPKCS1Key() PKCS1Key {
+    return PKCS1Key{}
+}
+
 /**
  * dsa pkcs1 密钥
  *
@@ -121,9 +126,4 @@ func (this PKCS1Key) ParsePrivateKey(derBytes []byte) (*dsa.PrivateKey, error) {
     }
 
     return privateKey, nil
-}
-
-// 构造函数
-func NewPKCS1Key() PKCS1Key {
-    return PKCS1Key{}
 }

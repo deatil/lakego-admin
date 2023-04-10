@@ -177,6 +177,34 @@ func (this Rsa) FromPKCS8PublicKey(key []byte) Rsa {
     return this
 }
 
+// ==========
+
+// XML 私钥
+func (this Rsa) FromXMLPrivateKey(key []byte) Rsa {
+    privateKey, err := this.ParsePrivateKeyFromXML(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// XML 公钥
+func (this Rsa) FromXMLPublicKey(key []byte) Rsa {
+    publicKey, err := this.ParsePublicKeyFromXML(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
+
+    return this
+}
+
+// ==========
+
 // Pkcs12 Cert
 func (this Rsa) FromPKCS12Cert(key []byte) Rsa {
     privateKey, err := this.ParsePKCS12CertFromPEMWithPassword(key, "")
