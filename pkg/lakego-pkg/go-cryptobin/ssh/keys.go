@@ -1,17 +1,57 @@
 package ssh
 
 import (
+    "bytes"
+    "encoding/base64"
+
     "golang.org/x/crypto/ssh"
+
     "github.com/tjfoc/gmsm/sm2"
 )
 
-var (
-    // ParseKnownHosts(in []byte) (marker string, hosts []string, pubKey PublicKey, comment string, rest []byte, err error)
-    ParseKnownHosts = ssh.ParseKnownHosts
+func ParseKnownHosts(in []byte) (marker string, hosts []string, pubKey ssh.PublicKey, comment string, rest []byte, err error) {
+    return ssh.ParseKnownHosts(in)
+}
 
-    // MarshalAuthorizedKey(key PublicKey) []byte
-    MarshalAuthorizedKey = ssh.MarshalAuthorizedKey
-)
+// 创建 key
+func MarshalAuthorizedKey(key ssh.PublicKey) []byte {
+    return ssh.MarshalAuthorizedKey(key)
+}
+
+// 创建带信息的 key
+func MarshalAuthorizedKeyWithComment(key ssh.PublicKey, comment string) []byte {
+    b := &bytes.Buffer{}
+
+    // type
+    b.WriteString(key.Type())
+    b.WriteByte(' ')
+
+    // key
+    e := base64.NewEncoder(base64.StdEncoding, b)
+    e.Write(key.Marshal())
+    e.Close()
+
+    // comment
+    b.WriteByte(' ')
+    b.WriteString(comment)
+
+    b.WriteByte('\n')
+    return b.Bytes()
+}
+
+// RSA | DSA | SM2 | ECDSA | SKECDSA | ED25519 | SKEd25519
+// CertAlgoRSAv01 | CertAlgoDSAv01
+// CertAlgoECDSA256v01 | CertAlgoECDSA384v01
+// CertAlgoECDSA521v01 | CertAlgoSKECDSA256v01
+// CertAlgoED25519v01 | CertAlgoSKED25519v01
+func NewPublicKey(key any) (out ssh.PublicKey, err error) {
+    switch k := key.(type) {
+        case *sm2.PublicKey:
+            return NewSM2PublicKey(k), nil
+    }
+
+    return ssh.NewPublicKey(key)
+}
 
 func ParseAuthorizedKey(in []byte) (out ssh.PublicKey, comment string, options []string, rest []byte, err error) {
     out, comment, options, rest, err = ssh.ParseAuthorizedKey(in)
@@ -29,15 +69,6 @@ func ParsePublicKey(in []byte) (out ssh.PublicKey, err error) {
     }
 
     return
-}
-
-func NewPublicKey(key any) (out ssh.PublicKey, err error) {
-    switch k := key.(type) {
-        case *sm2.PublicKey:
-            return NewSM2PublicKey(k), nil
-    }
-
-    return ssh.NewPublicKey(key)
 }
 
 func NewSignerFromKey(key any) (out ssh.Signer, err error) {

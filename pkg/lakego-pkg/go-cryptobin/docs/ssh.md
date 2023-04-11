@@ -83,3 +83,63 @@ func main() {
 }
 
 ~~~
+
+* ssh 生成公钥
+~~~go
+package main
+
+import (
+    "fmt"
+
+    "github.com/deatil/lakego-filesystem/filesystem"
+
+    "github.com/deatil/go-cryptobin/ssh"
+    cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
+)
+
+func main() {
+    fs := filesystem.New()
+
+    sshRsaPubKey := cryptobin_rsa.New().
+        GenerateKey().
+        GetPublicKey()
+    sshPubKey, _ := ssh.NewPublicKey(sshRsaPubKey)
+    sshAuthorizedKey := ssh.MarshalAuthorizedKeyWithComment(sshPubKey, "abc@email.com")
+
+    fs.Put("./runtime/key/ssh/pub/rsa.pub", string(sshAuthorizedKey))
+
+	fmt.Println("生成公钥成功")
+}
+~~~
+
+* ssh 解析
+~~~go
+package main
+
+import (
+    "fmt"
+
+    "github.com/deatil/lakego-filesystem/filesystem"
+
+    "github.com/deatil/go-cryptobin/ssh"
+    cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
+)
+
+func main() {
+    fs := filesystem.New()
+
+    sshPri1, _ := fs.Get("./runtime/key/ssh/pub/dsa.pub")
+    sshPubKey, sshcomment, sshoptions, sshrest, ssherr := ssh.ParseAuthorizedKey([]byte(sshPri1))
+
+    var sshAuthorizedKey []byte
+
+    if ssherr == nil {
+        sshAuthorizedKey = ssh.MarshalAuthorizedKeyWithComment(sshPubKey, "abc@qq.com")
+
+        fs.Put("./runtime/key/ssh/pub/dsa_2.pub", string(sshAuthorizedKey))
+    }
+
+	fmt.Println("解析公钥成功")
+}
+~~~
+

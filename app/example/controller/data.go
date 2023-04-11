@@ -478,16 +478,24 @@ func (this *Data) Error(ctx *gin.Context) {
 
     aesCFBStr := cryptobin_crypto.AesCFB.String()
 
-    sshRsaPubKey := cryptobin_rsa.NewRsa().
-        GenerateKey(2048).
-        GetPublicKey()
-    sshPubKey, _ := ssh.NewPublicKey(sshRsaPubKey)
-    sshAuthorizedKey := ssh.MarshalAuthorizedKey(sshPubKey)
+    sshPri1, _ := fs.Get("./runtime/key/ssh/pub/dsa.pub")
+    sshPubKey, sshcomment, sshoptions, sshrest, ssherr := ssh.ParseAuthorizedKey([]byte(sshPri1))
 
-    // fs.Put("./runtime/key/ssh/pub/rsa.pub", string(sshAuthorizedKey))
+    var sshAuthorizedKey []byte
+
+    if ssherr == nil {
+        sshAuthorizedKey = ssh.MarshalAuthorizedKeyWithComment(sshPubKey, "abc@email.com")
+
+        // fs.Put("./runtime/key/ssh/pub/dsa_2.pub", string(sshAuthorizedKey))
+    }
 
     this.SuccessWithData(ctx, "Error 测试", gin.H{
-        "sshAuthorizedKey": string(sshAuthorizedKey),
+        "sshkeyAuthorizedKey": string(sshAuthorizedKey),
+        "sshkeycomment": sshcomment,
+        "sshkeyoptions": sshoptions,
+        "sshkeyrest": string(sshrest),
+        "sshkeyerr": ssherr,
+        "sshkeysshPri1": sshPri1,
 
         "aesCFBStr": aesCFBStr,
 

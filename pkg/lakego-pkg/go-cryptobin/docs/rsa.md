@@ -29,12 +29,12 @@ func main() {
         // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC").
         // CreatePKCS8PrivateKey().
         // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
-		// CreateXMLPrivateKey().
+        // CreateXMLPrivateKey().
         ToKeyString()
     objPubKey := obj.
         CreatePKCS1PublicKey().
         // CreatePKCS8PublicKey().
-		// CreateXMLPublicKey().
+        // CreateXMLPublicKey().
         ToKeyString()
     fs.Put("./runtime/key/rsa", objPriKey)
     fs.Put("./runtime/key/rsa.pub", objPubKey)
@@ -51,7 +51,7 @@ func main() {
         // FromPKCS1PrivateKeyWithPassword([]byte(obj2Pri), "123").
         // FromPKCS8PrivateKey([]byte(obj2Pri)).
         // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
-		// FromXMLPrivateKey([]byte(obj2Pri)).
+        // FromXMLPrivateKey([]byte(obj2Pri)).
         Sign().
         // PSSSign().
         ToBase64String()
@@ -61,7 +61,7 @@ func main() {
         // FromPublicKey([]byte(obj2Pub)).
         // FromPKCS1PublicKey([]byte(obj2Pub)).
         FromPKCS8PublicKey([]byte(obj2Pub)).
-		// FromXMLPublicKey([]byte(obj2Pub)).
+        // FromXMLPublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         // PSSVerify([]byte("测试")).
         ToVerify()
