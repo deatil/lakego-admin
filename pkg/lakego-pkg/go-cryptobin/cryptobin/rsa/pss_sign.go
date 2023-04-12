@@ -16,10 +16,15 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    newHash := tool.NewHash()
+    hash, err := tool.GetCryptoHash(this.signHash)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    hash := newHash.GetCryptoHash(this.signHash)
-    hashed := newHash.DataCryptoHash(this.signHash, this.data)
+    hashed, err := tool.CryptoSum(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthEqualsHash,
@@ -44,10 +49,15 @@ func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    newHash := tool.NewHash()
+    hash, err := tool.GetCryptoHash(this.signHash)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    hash := newHash.GetCryptoHash(this.signHash)
-    hashed := newHash.DataCryptoHash(this.signHash, data)
+    hashed, err := tool.CryptoSum(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthAuto,
@@ -57,7 +67,7 @@ func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
         options = opts[0]
     }
 
-    err := rsa.VerifyPSS(this.publicKey, hash, hashed, this.data, &options)
+    err = rsa.VerifyPSS(this.publicKey, hash, hashed, this.data, &options)
     if err != nil {
         return this.AppendError(err)
     }

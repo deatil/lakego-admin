@@ -18,9 +18,12 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -54,7 +57,10 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     sep := "+"
     if len(separator) > 0 {
@@ -72,7 +78,7 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
     rr := new(big.Int)
     ss := new(big.Int)
 
-    err := rr.UnmarshalText([]byte(rStr))
+    err = rr.UnmarshalText([]byte(rStr))
     if err != nil {
         return this.AppendError(err)
     }
@@ -82,7 +88,7 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
         return this.AppendError(err)
     }
 
-    this.verify = ecdsa.Verify(this.publicKey, hashData, rr, ss)
+    this.verify = ecdsa.Verify(this.publicKey, hashed, rr, ss)
 
     return this
 }
@@ -96,9 +102,12 @@ func (this Ecdsa) SignASN1() Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    paredData, err := ecdsa.SignASN1(rand.Reader, this.privateKey, hashData)
+    paredData, err := ecdsa.SignASN1(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -116,9 +125,12 @@ func (this Ecdsa) VerifyASN1(data []byte) Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    this.verify = ecdsa.VerifyASN1(this.publicKey, hashData, this.data)
+    this.verify = ecdsa.VerifyASN1(this.publicKey, hashed, this.data)
 
     return this
 }
@@ -136,9 +148,12 @@ func (this Ecdsa) SignAsn1() Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -167,9 +182,12 @@ func (this Ecdsa) VerifyAsn1(data []byte) Ecdsa {
     r := ecdsaSign.R
     s := ecdsaSign.S
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    this.verify = ecdsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = ecdsa.Verify(this.publicKey, hashed, r, s)
 
     return this
 }
@@ -183,9 +201,12 @@ func (this Ecdsa) SignHex() Ecdsa {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := ecdsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -217,9 +238,12 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
     r, _ := new(big.Int).SetString(signData[:64], 16)
     s, _ := new(big.Int).SetString(signData[64:], 16)
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    this.verify = ecdsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = ecdsa.Verify(this.publicKey, hashed, r, s)
 
     return this
 }
@@ -227,6 +251,6 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
 // ===============
 
 // 签名后数据
-func (this Ecdsa) DataHash(signHash string, data []byte) []byte {
-    return cryptobin_tool.NewHash().DataHash(signHash, data)
+func (this Ecdsa) DataHash(signHash string, data []byte) ([]byte, error) {
+    return cryptobin_tool.HashSum(signHash, data)
 }

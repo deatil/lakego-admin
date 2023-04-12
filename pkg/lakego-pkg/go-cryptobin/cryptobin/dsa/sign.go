@@ -18,9 +18,12 @@ func (this DSA) Sign(separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -55,7 +58,10 @@ func (this DSA) Verify(data []byte, separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     sep := "+"
     if len(separator) > 0 {
@@ -73,7 +79,7 @@ func (this DSA) Verify(data []byte, separator ...string) DSA {
     rr := new(big.Int)
     ss := new(big.Int)
 
-    err := rr.UnmarshalText([]byte(rStr))
+    err = rr.UnmarshalText([]byte(rStr))
     if err != nil {
         return this.AppendError(err)
     }
@@ -83,7 +89,7 @@ func (this DSA) Verify(data []byte, separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    this.verify = dsa.Verify(this.publicKey, hashData, rr, ss)
+    this.verify = dsa.Verify(this.publicKey, hashed, rr, ss)
 
     return this
 }
@@ -101,9 +107,12 @@ func (this DSA) SignAsn1() DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -129,12 +138,15 @@ func (this DSA) VerifyAsn1(data []byte) DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     r := dsaSign.R
     s := dsaSign.S
 
-    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
 
     return this
 }
@@ -148,9 +160,12 @@ func (this DSA) SignHex() DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -182,9 +197,12 @@ func (this DSA) VerifyHex(data []byte) DSA {
     r, _ := new(big.Int).SetString(signData[:64], 16)
     s, _ := new(big.Int).SetString(signData[64:], 16)
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
 
     return this
 }
@@ -203,9 +221,12 @@ func (this DSA) SignBytes() DSA {
         return this.AppendError(err)
     }
 
-    hashData := this.DataHash(this.signHash, this.data)
+    hashed, err := this.DataHash(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashData)
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
@@ -245,9 +266,12 @@ func (this DSA) VerifyBytes(data []byte) DSA {
     r := new(big.Int).SetBytes(sig[:dsaSubgroupBytes])
     s := new(big.Int).SetBytes(sig[dsaSubgroupBytes:])
 
-    hashData := this.DataHash(this.signHash, data)
+    hashed, err := this.DataHash(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    this.verify = dsa.Verify(this.publicKey, hashData, r, s)
+    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
 
     return this
 }
@@ -255,6 +279,6 @@ func (this DSA) VerifyBytes(data []byte) DSA {
 // ===============
 
 // 签名后数据
-func (this DSA) DataHash(signHash string, data []byte) []byte {
-    return cryptobin_tool.NewHash().DataHash(signHash, data)
+func (this DSA) DataHash(signHash string, data []byte) ([]byte, error) {
+    return cryptobin_tool.HashSum(signHash, data)
 }

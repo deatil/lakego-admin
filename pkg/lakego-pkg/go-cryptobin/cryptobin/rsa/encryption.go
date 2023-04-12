@@ -92,7 +92,10 @@ func (this Rsa) EncryptOAEP(typ ...string) Rsa {
         hashType = typ[0]
     }
 
-    newHash := tool.NewHash().GetHash(hashType)
+    newHash, err := tool.GetHash(hashType)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     paredData, err := rsa.EncryptOAEP(newHash(), rand.Reader, this.publicKey, this.data, nil)
     if err != nil {
@@ -116,7 +119,10 @@ func (this Rsa) DecryptOAEP(typ ...string) Rsa {
         hashType = typ[0]
     }
 
-    newHash := tool.NewHash().GetHash(hashType)
+    newHash, err := tool.GetHash(hashType)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
     paredData, err := rsa.DecryptOAEP(newHash(), rand.Reader, this.privateKey, this.data, nil)
     if err != nil {

@@ -15,12 +15,17 @@ func (this Rsa) Sign() Rsa {
         return this.AppendError(err)
     }
 
-    newHash := tool.NewHash()
+    hash, err := tool.GetCryptoHash(this.signHash)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    hasher := newHash.GetCryptoHash(this.signHash)
-    hashData := newHash.DataCryptoHash(this.signHash, this.data)
+    hashed, err := tool.CryptoSum(this.signHash, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, hasher, hashData)
+    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, hash, hashed)
 
     this.paredData = paredData
     
@@ -35,12 +40,17 @@ func (this Rsa) Verify(data []byte) Rsa {
         return this.AppendError(err)
     }
 
-    newHash := tool.NewHash()
+    hash, err := tool.GetCryptoHash(this.signHash)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    hasher := newHash.GetCryptoHash(this.signHash)
-    hashData := newHash.DataCryptoHash(this.signHash, data)
+    hashed, err := tool.CryptoSum(this.signHash, data)
+    if err != nil {
+        return this.AppendError(err)
+    }
 
-    err := rsa.VerifyPKCS1v15(this.publicKey, hasher, hashData, this.data)
+    err = rsa.VerifyPKCS1v15(this.publicKey, hash, hashed, this.data)
     if err != nil {
         return this.AppendError(err)
     }
