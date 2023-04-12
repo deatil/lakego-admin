@@ -101,7 +101,7 @@ func GetCryptoHash(typ string) (crypto.Hash, error) {
 }
 
 // 签名后数据
-func CryptoSum(typ string, slices ...[]byte) ([]byte, error) {
+func CryptoHashSum(typ string, slices ...[]byte) ([]byte, error) {
     sha, err := GetCryptoHash(typ)
     if err != nil {
         return nil, err

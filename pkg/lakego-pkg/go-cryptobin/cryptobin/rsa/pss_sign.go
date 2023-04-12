@@ -21,7 +21,7 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    hashed, err := tool.CryptoSum(this.signHash, this.data)
+    hashed, err := tool.CryptoHashSum(this.signHash, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -54,7 +54,7 @@ func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    hashed, err := tool.CryptoSum(this.signHash, data)
+    hashed, err := tool.CryptoHashSum(this.signHash, data)
     if err != nil {
         return this.AppendError(err)
     }

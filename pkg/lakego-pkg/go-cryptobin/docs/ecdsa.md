@@ -7,7 +7,7 @@ package main
 import (
     "fmt"
 
-    cryptobin "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
+    "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
     "github.com/deatil/lakego-filesystem/filesystem"
 )
 
@@ -17,8 +17,8 @@ func main() {
 
     // 生成证书
     // 可选参数 [P521 | P384 | P256 | P224]
-    obj := cryptobin.
-        NewEcdsa().
+    obj := ecdsa.
+        New().
         WithCurve("P521").
         GenerateKey()
 
@@ -35,7 +35,7 @@ func main() {
     fs.Put("./runtime/key/ecdsa.pub", objPubKey)
 
     // 验证
-    obj2 := cryptobin.NewEcdsa()
+    obj2 := ecdsa.New()
 
     obj2Pri, _ := fs.Get("./runtime/key/ecdsa")
     obj2cypt := obj2.
@@ -63,12 +63,47 @@ func main() {
     pri, _ := fs.Get(prifile)
     pub, _ := fs.Get(pubfile)
 
-    res := cryptobin_ecdsa.New().
+    res := ecdsa.New().
         FromPrivateKey([]byte(pri)).
         FromPublicKey([]byte(pub)).
         CheckKeyPair()
 
     fmt.Printf("check res: %#v", res)
+
+    // =====
+
+    enprikey = `
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIGfqpFWW2kecvy/V0mxus+ZMuODGcqfyZVJMgBbWRhYJoAoGCCqGSM49
+AwEHoUQDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+Vu0zCh5hkl/0r9vPzPeqGpHJ
+v3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
+-----END EC PRIVATE KEY-----
+    `
+
+    enpubkey = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+
+Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
+-----END PUBLIC KEY-----
+    `
+
+    // 加密解密
+    obj := ecdsa.New()
+
+    // 加密
+    objcypt := obj.
+        FromString("test-pass").
+        FromPublicKey([]byte(enpubkey)).
+        Encrypt().
+        ToBase64String()
+
+    // 解密
+    endata := "BA6UmWJHLf/XOhge8ASuz11cMpX3YCu6Pfmp5tQ/OPK7rV27paYGB6V5vL/KhjVGznedvhGe0F3CNzoyxfp+r+41m+ehtIC0isWnDc8ZyZrmNVioOeaO5i6yEwiEwhTB8QzUSDE5JJB6ta0vObhBvFRVvgzv1VD0C4Y="
+    objcyptde := obj.
+        FromBase64String(endata).
+        FromPrivateKey([]byte(enprikey)).
+        Decrypt().
+        ToString()
 
 }
 ~~~

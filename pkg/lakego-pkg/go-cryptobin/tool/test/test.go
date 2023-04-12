@@ -5,13 +5,14 @@ import (
     "reflect"
 )
 
-func AssertT(t *testing.T) func(any, any, string) {
+func AssertEqualT(t *testing.T) func(any, any, string) {
     return func(actual any, expected any, msg string) {
         if !reflect.DeepEqual(actual, expected) {
             t.Errorf("Failed %s: actual: %v, expected: %v", msg, actual, expected)
         }
     }
 }
+var AssertT = AssertEqualT
 
 func AssertErrorT(t *testing.T) func(error, string) {
     return func(err error, msg string) {

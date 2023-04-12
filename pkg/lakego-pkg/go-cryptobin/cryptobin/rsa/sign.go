@@ -20,7 +20,7 @@ func (this Rsa) Sign() Rsa {
         return this.AppendError(err)
     }
 
-    hashed, err := tool.CryptoSum(this.signHash, this.data)
+    hashed, err := tool.CryptoHashSum(this.signHash, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -45,7 +45,7 @@ func (this Rsa) Verify(data []byte) Rsa {
         return this.AppendError(err)
     }
 
-    hashed, err := tool.CryptoSum(this.signHash, data)
+    hashed, err := tool.CryptoHashSum(this.signHash, data)
     if err != nil {
         return this.AppendError(err)
     }
