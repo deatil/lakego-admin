@@ -12,7 +12,6 @@ func AssertEqualT(t *testing.T) func(any, any, string) {
         }
     }
 }
-var AssertT = AssertEqualT
 
 func AssertErrorT(t *testing.T) func(error, string) {
     return func(err error, msg string) {

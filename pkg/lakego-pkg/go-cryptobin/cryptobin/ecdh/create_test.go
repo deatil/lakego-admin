@@ -55,7 +55,7 @@ func Test_CreateKey(t *testing.T) {
 func Test_CreateSecretKey(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
     assertEmpty := cryptobin_test.AssertEmptyT(t)
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
 
     objSecret1 := New().
         FromPrivateKey([]byte(prikey1)).

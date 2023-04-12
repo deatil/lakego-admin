@@ -7,7 +7,7 @@ import (
 )
 
 func Test_TripleDesPKCS7Padding(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
 
     data := "test-pass"
     cyptStr := FromString(data).
@@ -32,7 +32,7 @@ func Test_TripleDesPKCS7Padding(t *testing.T) {
 }
 
 func Test_AesECBPKCS5Padding(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -60,7 +60,7 @@ func Test_AesECBPKCS5Padding(t *testing.T) {
 }
 
 func Test_SM4ECBPKCS7Padding(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -88,7 +88,7 @@ func Test_SM4ECBPKCS7Padding(t *testing.T) {
 }
 
 func Test_XtsPKCS5Padding(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -116,7 +116,7 @@ func Test_XtsPKCS5Padding(t *testing.T) {
 }
 
 func Test_AesCFB(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -140,7 +140,7 @@ func Test_AesCFB(t *testing.T) {
 }
 
 func Test_AesECB(t *testing.T) {
-    assert := cryptobin_test.AssertT(t)
+    assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
