@@ -254,7 +254,7 @@ func (this Rsa) CreatePKCS8PublicKey() Rsa {
 
 // ====================
 
-// 生成 PKCS8 私钥 pem 数据
+// 生成私钥 xml 数据
 func (this Rsa) CreateXMLPrivateKey() Rsa {
     if this.privateKey == nil {
         err := errors.New("Rsa: privateKey error.")
@@ -271,7 +271,7 @@ func (this Rsa) CreateXMLPrivateKey() Rsa {
     return this
 }
 
-// 生成公钥 pem 数据
+// 生成公钥 xml 数据
 func (this Rsa) CreateXMLPublicKey() Rsa {
     if this.publicKey == nil {
         err := errors.New("Rsa: privateKey error.")
