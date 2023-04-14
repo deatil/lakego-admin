@@ -221,16 +221,18 @@ func (this *Data) Error(ctx *gin.Context) {
     // 生成证书
     rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
     rsaPriKey := rsa.
-        CreatePKCS8PrivateKeyWithPassword("123", "AES128GCM", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword("123", "AES128GCM", "SHA256").
         // MakeKeyDer().
+        CreateXMLPrivateKey().
         ToKeyString()
     rsaPubKey := rsa.
-        CreatePKCS8PublicKey().
+        // CreatePKCS8PublicKey().
         // MakeKeyDer().
+        CreateXMLPublicKey().
         ToKeyString()
 
-    // fs.Put("./runtime/key/rsa/der/rsa_en_pri.der", rsaPriKey)
-    // fs.Put("./runtime/key/rsa/der/rsa_en_pub.der", rsaPubKey)
+    // fs.Put("./runtime/key/rsa/xml/rsa_xml", rsaPriKey)
+    // fs.Put("./runtime/key/rsa/xml/rsa_xml.pub", rsaPubKey)
 
     // rsaPriDer, _ := fs.Get("./runtime/key/rsa/der/rsa_en_pri.der")
     // rsaEnKey := cryptobin_tool.EncodeDerToPem([]byte(rsaPriDer), "ENCRYPTED PRIVATE KEY")
@@ -394,15 +396,15 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/rsa/xml/rsa_pri")
+    obj2Pri, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml")
     obj2cypt := obj2.
         FromString("test-pass").
         FromXMLPrivateKey([]byte(obj2Pri)).
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/rsa/xml/rsa_pub")
+    obj2Pub, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml.pub")
     obj2cyptde := obj2.
-        FromBase64String("KTJeGPu8/k+7HfQWlgz9P0YOvLo8Qiz3TKByk8t6vpEiX2c6kgCytGzO7IDGJpdssvyrJEv29PoS/mbD+yxa7+gr9BIkBiyfVk+GlvdwRqjCohuwFJMqlt97cGaFMv7VHBbKS3CL6IlIZoWPauaYTFrzqdG0C1iTuLwNwAYMyvLmaL2oXniPrBlETjYYM9eJhBg11ZhVGTcKuwmUP/oYzRX+KC/ZHNh2ftHUXRn//u3+9YR61X23OUAI9cO+PH3u66vJ8Stbk88VagpeDDTUS3uKytnuLWTFJSRRvQ5jA7OuENo6dEQxR0UbTcUKG9NNQKCk6DRvGM8BO/z3iGnLjA==").
+        FromBase64String("IM8Hs9L7/VUuMuacQ1RZN2YtCnQpZgAYMby6gskPZy7eMktHIbnXLfU2gznkkUM15Kr5dgP+64Cz/cJvQRyNMK0it/GkBLaVAgrRd86XuKOFj9/ilEbHF0doRjsPjjpl+HzN5xDWkJCQ9Ag8Z9SplcFxO7svS1eV4mu0638wY9EmYW89JyEkN00ecps8sde0Ky+7zlqXjUqzLmte2+W7OdOq7+oezQmsKirmqjLuMywgFFax7yLy3+rZ2gvhQWu10PzePIRbssOCTLf2aSZbAKKuqBMwo3oWT9pZBUFKRCbR8KxqdAHou4haM9gxmDCrymdj+5Na+mNv7i4pkG8NOg==").
         FromXMLPublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()

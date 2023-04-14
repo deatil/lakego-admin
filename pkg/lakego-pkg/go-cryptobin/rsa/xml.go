@@ -2,12 +2,10 @@ package rsa
 
 import (
     "errors"
-    "strconv"
     "math/big"
     "crypto/rsa"
     "encoding/xml"
-
-    "github.com/deatil/go-cryptobin/tool"
+    "encoding/base64"
 )
 
 // 私钥
@@ -48,8 +46,8 @@ type XMLKey struct {}
 // 包装公钥
 func (this XMLKey) MarshalPublicKey(key *rsa.PublicKey) ([]byte, error) {
     publicKey := xmlPublicKey{
-        Modulus:  bigIntToString(key.N),
-        Exponent: intToString(key.E),
+        Modulus:  this.bigintToB64(key.N),
+        Exponent: this.bigintToB64(big.NewInt(int64(key.E))),
     }
 
     return xml.MarshalIndent(publicKey, "", "    ")
@@ -68,8 +66,8 @@ func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
     }
 
     publicKey := &rsa.PublicKey{
-        N: stringToBigInt(priv.Modulus),
-        E: stringToInt(priv.Exponent),
+        N: this.b64ToBigint(priv.Modulus),
+        E: int(this.b64ToBigint(priv.Exponent).Int64()),
     }
 
     return publicKey, nil
@@ -87,14 +85,14 @@ func (this XMLKey) MarshalPrivateKey(key *rsa.PrivateKey) ([]byte, error) {
 
     // 构造私钥信息
     priv := xmlPrivateKey{
-        Modulus:  bigIntToString(key.N),
-        Exponent: intToString(key.PublicKey.E),
-        D:        bigIntToString(key.D),
-        P:        bigIntToString(key.Primes[0]),
-        Q:        bigIntToString(key.Primes[1]),
-        DP:       bigIntToString(key.Precomputed.Dp),
-        DQ:       bigIntToString(key.Precomputed.Dq),
-        InverseQ: bigIntToString(key.Precomputed.Qinv),
+        Modulus:  this.bigintToB64(key.N),
+        Exponent: this.bigintToB64(big.NewInt(int64(key.E))),
+        D:        this.bigintToB64(key.D),
+        P:        this.bigintToB64(key.Primes[0]),
+        Q:        this.bigintToB64(key.Primes[1]),
+        DP:       this.bigintToB64(key.Precomputed.Dp),
+        DQ:       this.bigintToB64(key.Precomputed.Dq),
+        InverseQ: this.bigintToB64(key.Precomputed.Qinv),
     }
 
     return xml.MarshalIndent(priv, "", "    ")
@@ -112,11 +110,11 @@ func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
         return nil, err
     }
 
-    e := stringToInt(priv.Exponent)
-    n := stringToBigInt(priv.Modulus)
-    d := stringToBigInt(priv.D)
-    p := stringToBigInt(priv.P)
-    q := stringToBigInt(priv.Q)
+    e := int(this.b64ToBigint(priv.Exponent).Int64())
+    n := this.b64ToBigint(priv.Modulus)
+    d := this.b64ToBigint(priv.D)
+    p := this.b64ToBigint(priv.P)
+    q := this.b64ToBigint(priv.Q)
 
     if n.Sign() <= 0 || d.Sign() <= 0 || p.Sign() <= 0 || q.Sign() <= 0 {
         return nil, errors.New("rsa xml: private key contains zero or negative value")
@@ -147,47 +145,25 @@ func ParseXMLPrivateKey(der []byte) (*rsa.PrivateKey, error) {
     return defaultXMLKey.ParsePrivateKey(der)
 }
 
-func stringToInt(s string) int {
-    ds := Base64Decode(s)
+// ====================
 
-    return bytesToInt(ds)
+func (this XMLKey) b64d(str string) []byte {
+    decoded, _ := base64.StdEncoding.DecodeString(str)
+
+    return []byte(decoded)
 }
 
-func intToString(i int) string {
-    return Base64Encode(intToBytes(i))
+func (this XMLKey) b64e(src []byte) string {
+    return base64.StdEncoding.EncodeToString(src)
 }
 
-func stringToBigInt(s string) *big.Int {
-    ds := Base64Decode(s)
-
-    return new(big.Int).SetBytes(ds)
+func (this XMLKey) b64ToBigint(str string) *big.Int {
+    bInt := &big.Int{}
+    bInt.SetBytes(this.b64d(str))
+    return bInt
 }
 
-func bigIntToString(i *big.Int) string {
-    return Base64Encode(i.Bytes())
-}
-
-func intToBytes(i int) []byte {
-    s := strconv.Itoa(i)
-
-    return []byte(s)
-}
-
-func bytesToInt(b []byte) int {
-    v, err := strconv.ParseInt(string(b), 0, 0)
-    if err == nil {
-        return int(v)
-    }
-
-    return 0
-}
-
-func Base64Encode(src []byte) string {
-    return tool.Base64Encode(src)
-}
-
-func Base64Decode(s string) []byte {
-    b, _ := tool.Base64Decode(s)
-
-    return b
+// big.NewInt(int64)
+func (this XMLKey) bigintToB64(encoded *big.Int) string {
+    return this.b64e(encoded.Bytes())
 }
