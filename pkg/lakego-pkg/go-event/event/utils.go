@@ -40,9 +40,9 @@ func GetTypeKey(p reflect.Type) (key string) {
 
 // 反射获取结构体名称
 func GetStructName(data any) string {
-    key := reflect.TypeOf(data)
+    p := reflect.TypeOf(data)
 
-    return GetTypeKey(key)
+    return GetTypeKey(p)
 }
 
 // 格式化名称

@@ -170,9 +170,20 @@ func (this *Publish) PublishableGroups() []string {
 }
 
 // 反射获取结构体名称
-func (this *Publish) GetStructName(name any) string {
-    elem := reflect.TypeOf(name).Elem()
+func (this *Publish) GetStructName(s any) (name string) {
+    p := reflect.TypeOf(s)
 
-    return elem.PkgPath() + "." + elem.Name()
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+        name = "*"
+    }
+
+    pkgPath := p.PkgPath()
+
+    if pkgPath != "" {
+        name += pkgPath + "."
+    }
+
+    return name + p.Name()
 }
 

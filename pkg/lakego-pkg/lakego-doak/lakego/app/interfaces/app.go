@@ -6,6 +6,10 @@ import (
     provider_interface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
+type (
+    spFn = func() provider_interface.ServiceProvider
+)
+
 /**
  * App 接口
  *
@@ -14,10 +18,22 @@ import (
  */
 type App interface {
     // 注册服务提供者
-    Register(func() provider_interface.ServiceProvider)
+    Register(spFn) provider_interface.ServiceProvider
 
     // 批量注册服务提供者
-    Registers([]func() provider_interface.ServiceProvider)
+    Registers([]spFn)
+
+    // 获取
+    GetRegister(any) provider_interface.ServiceProvider
+
+    // 反射获取服务提供者名称
+    GetProviderName(any) string
+
+    // GetLoadedProviders
+    GetLoadedProviders() map[string]bool
+
+    // ProviderIsLoaded
+    ProviderIsLoaded(string) bool
 
     // 脚本
     WithRootCmd(*command.Command)

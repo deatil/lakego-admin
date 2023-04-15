@@ -6,10 +6,21 @@ import (
 )
 
 // 反射获取结构体名称
-func GetStructName(name any) string {
-    elem := reflect.TypeOf(name).Elem()
+func GetStructName(s any) (name string) {
+    p := reflect.TypeOf(s)
 
-    return elem.PkgPath() + "." + elem.Name()
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+        name = "*"
+    }
+
+    pkgPath := p.PkgPath()
+
+    if pkgPath != "" {
+        name += pkgPath + "."
+    }
+
+    return name + p.Name()
 }
 
 // 检测 padding
