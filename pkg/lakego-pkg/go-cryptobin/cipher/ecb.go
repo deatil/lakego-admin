@@ -27,11 +27,11 @@ func NewECBEncrypter(b cipher.Block) cipher.BlockMode {
 func (this *ecbEncrypter) BlockSize() int { return this.blockSize }
 func (this *ecbEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%this.blockSize != 0 {
-        panic("crypto/cipher: input not full blocks")
+        panic("cipher/ecb: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("crypto/cipher: output smaller than input")
+        panic("cipher/ecb: output smaller than input")
     }
 
     for len(src) > 0 {
@@ -52,11 +52,11 @@ func NewECBDecrypter(b cipher.Block) cipher.BlockMode {
 func (this *ecbDecrypter) BlockSize() int { return this.blockSize }
 func (this *ecbDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%this.blockSize != 0 {
-        panic("crypto/cipher: input not full blocks")
+        panic("cipher/ecb: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("crypto/cipher: output smaller than input")
+        panic("cipher/ecb: output smaller than input")
     }
 
     for len(src) > 0 {

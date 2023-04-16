@@ -14,7 +14,7 @@ type ofb8 struct {
 func NewOFB8(b cipher.Block, iv []byte) cipher.Stream {
     blockSize := b.BlockSize()
     if len(iv) != blockSize {
-        panic("crypto/ofb8.NewOFB: IV length must equal block size")
+        panic("crypto/ofb8: IV length must equal block size")
     }
 
     bufSize := streamBufferSize

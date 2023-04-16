@@ -177,9 +177,44 @@ func (this Cryptobin) CFB() Cryptobin {
     return this
 }
 
+// 密码反馈模式
+func (this Cryptobin) CFB1() Cryptobin {
+    this.mode = CFB1
+
+    return this
+}
+
 // 密码反馈模式, 8字节
 func (this Cryptobin) CFB8() Cryptobin {
     this.mode = CFB8
+
+    return this
+}
+
+// 密码反馈模式
+func (this Cryptobin) CFB16() Cryptobin {
+    this.mode = CFB16
+
+    return this
+}
+
+// 密码反馈模式
+func (this Cryptobin) CFB32() Cryptobin {
+    this.mode = CFB32
+
+    return this
+}
+
+// 密码反馈模式
+func (this Cryptobin) CFB64() Cryptobin {
+    this.mode = CFB64
+
+    return this
+}
+
+// 密码反馈模式, 标准库 CFB 别名
+func (this Cryptobin) CFB128() Cryptobin {
+    this.mode = CFB128
 
     return this
 }

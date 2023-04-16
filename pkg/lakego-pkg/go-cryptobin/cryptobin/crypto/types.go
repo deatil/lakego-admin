@@ -129,8 +129,18 @@ func (this Mode) String() string {
             return "CBC"
         case CFB:
             return "CFB"
+        case CFB1:
+            return "CFB1"
         case CFB8:
             return "CFB8"
+        case CFB16:
+            return "CFB16"
+        case CFB32:
+            return "CFB32"
+        case CFB64:
+            return "CFB64"
+        case CFB128:
+            return "CFB128"
         case OFB:
             return "OFB"
         case OFB8:
@@ -154,7 +164,12 @@ const (
     ECB  Mode = 1 + iota
     CBC
     CFB
+    CFB1
     CFB8
+    CFB16
+    CFB32
+    CFB64
+    CFB128
     OFB
     OFB8
     CTR

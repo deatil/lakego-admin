@@ -39,7 +39,6 @@ var (
     oidSM4CBC     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
     oidSM4OFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
     oidSM4CFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 4}
-    // CFB1 暂时不提供
     oidSM4CFB1    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 5}
     oidSM4CFB8    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
     oidSM4GCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
@@ -268,6 +267,13 @@ var SM4CFB = CipherCFB{
     blockSize:  sm4.BlockSize,
     identifier: oidSM4CFB,
 }
+// SM4CFB1 is the 128-bit key SM4 cipher in CFB mode.
+var SM4CFB1 = CipherCFB1{
+    cipherFunc: sm4.NewCipher,
+    keySize:    16,
+    blockSize:  sm4.BlockSize,
+    identifier: oidSM4CFB1,
+}
 // SM4CFB8 is the 128-bit key SM4 cipher in CFB mode.
 var SM4CFB8 = CipherCFB8{
     cipherFunc: sm4.NewCipher,
@@ -385,6 +391,9 @@ func init() {
     })
     AddCipher(oidSM4CFB, func() Cipher {
         return SM4CFB
+    })
+    AddCipher(oidSM4CFB1, func() Cipher {
+        return SM4CFB1
     })
     AddCipher(oidSM4CFB8, func() Cipher {
         return SM4CFB8

@@ -20,11 +20,30 @@ func (x *cfb8) XORKeyStream(dst, src []byte) {
         if x.decrypt {
             x.in[x.blockSize-1] = src[i]
         }
+
         dst[i] = src[i] ^ x.out[0]
         if !x.decrypt {
             x.in[x.blockSize-1] = dst[i]
         }
     }
+}
+
+func NewCFB8(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
+    blockSize := block.BlockSize()
+    if len(iv) != blockSize {
+        // stack trace will indicate whether it was de or encryption
+        panic("cipher/cfb8: IV length must equal block size")
+    }
+    x := &cfb8{
+        b:         block,
+        blockSize: blockSize,
+        out:       make([]byte, blockSize),
+        in:        make([]byte, blockSize),
+        decrypt:   decrypt,
+    }
+    copy(x.in, iv)
+
+    return x
 }
 
 // NewCFB8Encrypter returns a Stream which encrypts with cipher feedback mode
@@ -39,22 +58,4 @@ func NewCFB8Encrypter(block cipher.Block, iv []byte) cipher.Stream {
 // the Block's block size.
 func NewCFB8Decrypter(block cipher.Block, iv []byte) cipher.Stream {
     return NewCFB8(block, iv, true)
-}
-
-func NewCFB8(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
-    blockSize := block.BlockSize()
-    if len(iv) != blockSize {
-        // stack trace will indicate whether it was de or encryption
-        panic("cipher.newCFB: IV length must equal block size")
-    }
-    x := &cfb8{
-        b:         block,
-        blockSize: blockSize,
-        out:       make([]byte, blockSize),
-        in:        make([]byte, blockSize),
-        decrypt:   decrypt,
-    }
-    copy(x.in, iv)
-
-    return x
 }

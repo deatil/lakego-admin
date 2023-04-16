@@ -79,6 +79,32 @@ func (this ModeCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 // ===================
 
+type ModeCFB1 struct {}
+
+// 加密
+func (this ModeCFB1) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewCFB1Encrypter(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeCFB1) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewCFB1Decrypter(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
 type ModeCFB8 struct {}
 
 // 加密
@@ -99,6 +125,84 @@ func (this ModeCFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
     dst := make([]byte, len(data))
     cryptobin_cipher.NewCFB8Decrypter(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
+type ModeCFB16 struct {}
+
+// 加密
+func (this ModeCFB16) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewCFB16Encrypter(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeCFB16) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewCFB16Decrypter(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
+type ModeCFB32 struct {}
+
+// 加密
+func (this ModeCFB32) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewCFB32Encrypter(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeCFB32) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewCFB32Decrypter(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
+type ModeCFB64 struct {}
+
+// 加密
+func (this ModeCFB64) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewCFB64Encrypter(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeCFB64) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewCFB64Decrypter(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }
@@ -286,8 +390,23 @@ func init() {
     UseMode.Add(CFB, func() IMode {
         return ModeCFB{}
     })
+    UseMode.Add(CFB1, func() IMode {
+        return ModeCFB1{}
+    })
     UseMode.Add(CFB8, func() IMode {
         return ModeCFB8{}
+    })
+    UseMode.Add(CFB16, func() IMode {
+        return ModeCFB16{}
+    })
+    UseMode.Add(CFB32, func() IMode {
+        return ModeCFB32{}
+    })
+    UseMode.Add(CFB64, func() IMode {
+        return ModeCFB64{}
+    })
+    UseMode.Add(CFB128, func() IMode {
+        return ModeCFB{}
     })
     UseMode.Add(OFB, func() IMode {
         return ModeOFB{}
