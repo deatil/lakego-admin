@@ -42,31 +42,14 @@ func New() *App {
     scheduler := schedule.New().SetShowLogInfo(dev)
 
     return &App{
-        Dev:              dev,
-        Runned:           false,
-        Config:           cfg,
-        Schedule:         scheduler,
-        ServiceProviders: make(ServiceProviders, 0),
-        LoadedProviders:  make(map[string]bool),
+        dev:              dev,
+        runned:           false,
+        config:           cfg,
+        schedule:         scheduler,
+        serviceProviders: make([]iprovider.ServiceProvider, 0),
+        loadedProviders:  make(map[string]bool),
     }
 }
-
-type (
-    // 服务提供者列表
-    ServiceProviders = []iprovider.ServiceProvider
-
-    // 启动前
-    BootingCallback = func()
-
-    // 启动前列表
-    BootingCallbacks = []BootingCallback
-
-    // 启动后
-    BootedCallback = func()
-
-    // 启动后列表
-    BootedCallbacks = []BootedCallback
-)
 
 // 计划任务接口
 type ServiceProviderSchedule interface {
@@ -84,45 +67,45 @@ type App struct {
     mut sync.RWMutex
 
     // 配置
-    Config *config.Config
+    config *config.Config
 
     // 开发者模式
-    Dev bool
+    dev bool
 
     // 服务提供者
-    ServiceProviders ServiceProviders
+    serviceProviders []iprovider.ServiceProvider
 
     // 已经加载的服务提供者
-    LoadedProviders map[string]bool
+    loadedProviders map[string]bool
 
     // 运行状态
-    Runned bool
+    runned bool
 
     // 运行在命令行
-    RunInConsole bool
+    runningInConsole bool
 
     // 路由
-    RouteEngine *router.Engine
+    route *router.Engine
 
     // 根脚本
-    RootCmd *command.Command
+    rootCmd *command.Command
 
     // 计划任务
-    Schedule *schedule.Schedule
+    schedule *schedule.Schedule
 
     // 启动前
-    BootingCallbacks BootingCallbacks
+    bootingCallbacks []func()
 
     // 启动后
-    BootedCallbacks BootedCallbacks
+    bootedCallbacks []func()
 
     // 自定义运行监听
-    NetListener net.Listener
+    netListener net.Listener
 }
 
 // 设置配置
 func (this *App) WithConfig(conf *config.Config) *App {
-    this.Config = conf
+    this.config = conf
 
     return this
 }
@@ -150,19 +133,19 @@ func (this *App) Register(f func() iprovider.ServiceProvider) iprovider.ServiceP
     this.markAsRegistered(p)
 
     // 启动后注册，直接注册
-    if this.Runned {
+    if this.runned {
         // 绑定 App 结构体
         p.WithApp(this)
 
         // 路由
-        p.WithRoute(this.RouteEngine)
+        p.WithRoute(this.route)
 
         // 注册
         p.Register()
 
         // 添加计划任务
         if ps, ok := p.(ServiceProviderSchedule); ok {
-            ps.Schedule(this.Schedule)
+            ps.Schedule(this.schedule)
         }
 
         // 引导
@@ -182,19 +165,25 @@ func (this *App) Registers(providers []func() iprovider.ServiceProvider) {
 // 注册
 func (this *App) markAsRegistered(provider iprovider.ServiceProvider) {
     this.mut.Lock()
-    defer this.mut.Unlock()
+    this.serviceProviders = append(this.serviceProviders, provider)
+    this.mut.Unlock()
 
-    this.ServiceProviders = append(this.ServiceProviders, provider)
-
-    this.LoadedProviders[this.GetProviderName(provider)] = true
+    this.mut.Lock()
+    this.loadedProviders[this.GetProviderName(provider)] = true
+    this.mut.Unlock()
 }
 
+// GetLoadedProviders
 func (this *App) GetLoadedProviders() map[string]bool {
-    return this.LoadedProviders
+    return this.loadedProviders
 }
 
+// ProviderIsLoaded
 func (this *App) ProviderIsLoaded(provider string) bool {
-    if _, ok := this.LoadedProviders[provider]; ok {
+    this.mut.RLock()
+    defer this.mut.RUnlock()
+
+    if _, ok := this.loadedProviders[provider]; ok {
         return true
     }
 
@@ -231,7 +220,7 @@ func (this *App) GetRegister(p any) iprovider.ServiceProvider {
     }
 
     if name != "" {
-        for _, sp := range this.ServiceProviders {
+        for _, sp := range this.serviceProviders {
             if this.GetProviderName(sp) == name {
                 return sp
             }
@@ -252,81 +241,92 @@ func (this *App) BootService(s iprovider.ServiceProvider) {
 }
 
 // 设置启动前函数
-func (this *App) WithBooting(f BootingCallback) {
-    this.BootingCallbacks = append(this.BootingCallbacks, f)
+func (this *App) WithBooting(f func()) {
+    this.mut.Lock()
+    defer this.mut.Unlock()
+
+    this.bootingCallbacks = append(this.bootingCallbacks, f)
 }
 
 // 设置启动后函数
-func (this *App) WithBooted(f BootedCallback) {
-    this.BootedCallbacks = append(this.BootedCallbacks, f)
+func (this *App) WithBooted(f func()) {
+    this.mut.Lock()
+    defer this.mut.Unlock()
+
+    this.bootedCallbacks = append(this.bootedCallbacks, f)
 }
 
 // 启动前回调
 func (this *App) CallBootingCallbacks() {
-    for _, callback := range this.BootingCallbacks {
+    for _, callback := range this.bootingCallbacks {
         callback()
     }
 }
 
 // 启动后回调
 func (this *App) CallBootedCallbacks() {
-    for _, callback := range this.BootedCallbacks {
+    for _, callback := range this.bootedCallbacks {
         callback()
     }
 }
 
 // 设置根脚本
 func (this *App) WithRootCmd(cmd *command.Command) {
-    this.RootCmd = cmd
+    this.rootCmd = cmd
 }
 
 // 获取根脚本
 func (this *App) GetRootCmd() *command.Command {
-    return this.RootCmd
+    return this.rootCmd
 }
 
 // 设置计划任务
 func (this *App) WithSchedule(cron *schedule.Schedule) {
-    this.Schedule = cron
+    this.schedule = cron
 }
 
 // 获取计划任务
 func (this *App) GetSchedule() *schedule.Schedule {
-    return this.Schedule
+    return this.schedule
 }
 
 // 设置命令行状态
 func (this *App) WithRunningInConsole(console bool) {
-    this.RunInConsole = console
+    this.runningInConsole = console
 }
 
 // 获取命令行状态
 func (this *App) RunningInConsole() bool {
-    return this.RunInConsole
+    return this.runningInConsole
+}
+
+// 是否为已运行
+func (this *App) IsRunned() bool {
+    return this.runned
 }
 
 // 是否为开发者模式
 func (this *App) IsDev() bool {
-    return this.Dev
+    return this.dev
 }
-
-// ==================
 
 // 设置自定义监听
 func (this *App) WithNetListener(listener net.Listener) *App {
-    this.NetListener = listener
+    this.netListener = listener
 
     return this
 }
+
+// ==================
 
 // 初始化路由
 func (this *App) runApp() {
     var r *router.Engine
 
     // 配置
-    serverConf := this.Config
+    serverConf := this.config
 
-    if !this.RunInConsole {
+    if !this.runningInConsole {
         mode := serverConf.GetString("mode")
 
         // 模式
@@ -402,10 +402,10 @@ func (this *App) runApp() {
     router.NewRoute().With(r)
 
     // 绑定路由
-    this.RouteEngine = r
+    this.route = r
 
     // 设置已启动
-    this.Runned = true
+    this.runned = true
 
     // 加载服务提供者
     this.loadServiceProvider()
@@ -417,7 +417,7 @@ func (this *App) runApp() {
     r.Use(globalMiddlewares...)
 
     // 不是命令行运行
-    if !this.RunInConsole {
+    if !this.runningInConsole {
         this.serverRun()
     }
 }
@@ -426,18 +426,18 @@ func (this *App) runApp() {
 func (this *App) loadServiceProvider() {
     usedServiceProviders := make([]iprovider.ServiceProvider, 0)
 
-    for _, p := range this.ServiceProviders {
+    for _, p := range this.serviceProviders {
         // 绑定 App 结构体
         p.WithApp(this)
 
         // 路由
-        p.WithRoute(this.RouteEngine)
+        p.WithRoute(this.route)
 
         p.Register()
 
         // 添加计划任务
         if ps, ok := p.(ServiceProviderSchedule); ok {
-            ps.Schedule(this.Schedule)
+            ps.Schedule(this.schedule)
         }
 
         usedServiceProviders = append(usedServiceProviders, p)
@@ -456,7 +456,7 @@ func (this *App) loadServiceProvider() {
 
 // 服务运行
 func (this *App) serverRun() {
-    conf := this.Config
+    conf := this.config
 
     // 报错数据
     var err error
@@ -476,7 +476,7 @@ func (this *App) serverRun() {
                 this.graceRun(addr)
             } else {
                 // gin 自带运行
-                err = this.RouteEngine.Run(addr)
+                err = this.route.Run(addr)
             }
 
         case "tls":
@@ -490,7 +490,7 @@ func (this *App) serverRun() {
             certFile = this.formatPath(certFile)
             keyFile = this.formatPath(keyFile)
 
-            err = this.RouteEngine.RunTLS(addr, certFile, keyFile)
+            err = this.route.RunTLS(addr, certFile, keyFile)
 
         case "unix":
             // 文件
@@ -499,17 +499,17 @@ func (this *App) serverRun() {
             // 格式化
             file = this.formatPath(file)
 
-            err = this.RouteEngine.RunUnix(file)
+            err = this.route.RunUnix(file)
 
         case "fd":
             // fd
             fd := conf.GetInt("types.fd.fd")
 
-            err = this.RouteEngine.RunFd(fd)
+            err = this.route.RunFd(fd)
 
         case "net-listener":
-            if this.NetListener != nil {
-                err = this.RouteEngine.RunListener(this.NetListener)
+            if this.netListener != nil {
+                err = this.route.RunListener(this.netListener)
             } else {
                 // 监听
                 typ := conf.GetString("types.net-listener.type")
@@ -517,7 +517,7 @@ func (this *App) serverRun() {
 
                 netListener, _ := net.Listen(typ, addr)
 
-                err = this.RouteEngine.RunListener(netListener)
+                err = this.route.RunListener(netListener)
             }
 
         default:
@@ -531,11 +531,11 @@ func (this *App) serverRun() {
 
 // 优雅地关机
 func (this *App) graceRun(address string) {
-    conf := this.Config
+    conf := this.config
 
     srv := &http.Server{
         Addr:           address,
-        Handler:        this.RouteEngine,
+        Handler:        this.route,
         ReadTimeout:    conf.GetDuration("types.http.grace-read-timeout"),
         WriteTimeout:   conf.GetDuration("types.http.grace-write-timeout"),
         MaxHeaderBytes: 1 << 20,

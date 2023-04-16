@@ -14,14 +14,6 @@ import (
     _ "github.com/deatil/lakego-doak/lakego/facade/database"
 )
 
-// 实例化
-func New() *Kernel {
-    // 实例化核心
-    kernel := &Kernel{}
-
-    return kernel
-}
-
 // 脚本
 var rootCmd = &command.Command{
     Use: "lakego-admin",
@@ -36,6 +28,14 @@ var rootCmd = &command.Command{
     },
     Run: func(cmd *command.Command, args []string) {
     },
+}
+
+// 实例化
+func New() *Kernel {
+    // 实例化核心
+    kernel := &Kernel{}
+
+    return kernel
 }
 
 /**
@@ -61,23 +61,61 @@ func (this *Kernel) Terminate() {
     flag.Parse()
 
     if len(args) == 1 || *startName == "start" {
-        this.RunServer()
+        this.runServer()
     } else {
-        this.RunCmd()
+        this.runCmd()
     }
 }
 
 // 运行服务
-func (this *Kernel) RunServer() {
-    this.RunApp(false)
+func (this *Kernel) runServer() {
+    this.runApp(false)
 }
 
 // 加载脚本
-func (this *Kernel) RunCmd() {
-    this.RunApp(true)
+func (this *Kernel) runCmd() {
+    this.runApp(true)
 
     if err := rootCmd.Execute(); err != nil {
         os.Exit(-1)
+    }
+}
+
+// 运行
+func (this *Kernel) runApp(console bool) {
+    newApp := app.New()
+
+    // 导入服务提供者
+    this.loadServiceProvider()
+
+    // 注册
+    allProviders := provider.GetAllProvider()
+    newApp.Registers(allProviders)
+
+    // 脚本
+    newApp.WithRootCmd(rootCmd)
+
+    if console {
+        newApp.WithRunningInConsole(true)
+    } else {
+        newApp.WithRunningInConsole(false)
+    }
+
+    // 设置自定义监听
+    if this.NetListener != nil {
+        newApp.WithNetListener(this.NetListener)
+    }
+
+    // 运行
+    newApp.Run()
+}
+
+// 导入服务提供者
+func (this *Kernel) loadServiceProvider() {
+    if len(this.providers) > 0 {
+        for _, p := range this.providers {
+            provider.AppendProvider(p)
+        }
     }
 }
 
@@ -104,44 +142,6 @@ func (this *Kernel) WithNetListener(listener net.Listener) *Kernel {
     this.NetListener = listener
 
     return this
-}
-
-// 运行
-func (this *Kernel) RunApp(console bool) {
-    newApp := app.New()
-
-    // 导入服务提供者
-    this.LoadServiceProvider()
-
-    // 注册
-    allProviders := provider.GetAllProvider()
-    newApp.Registers(allProviders)
-
-    // 脚本
-    newApp.WithRootCmd(rootCmd)
-
-    if console {
-        newApp.WithRunningInConsole(true)
-    } else {
-        newApp.WithRunningInConsole(false)
-    }
-
-    // 设置自定义监听
-    if this.NetListener != nil {
-        newApp.WithNetListener(this.NetListener)
-    }
-
-    // 运行
-    newApp.Run()
-}
-
-// 导入服务提供者
-func (this *Kernel) LoadServiceProvider() {
-    if len(this.providers) > 0 {
-        for _, p := range this.providers {
-            provider.AppendProvider(p)
-        }
-    }
 }
 
 // 默认服务提供者

@@ -3,11 +3,7 @@ package interfaces
 import (
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/schedule"
-    provider_interface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
-)
-
-type (
-    spFn = func() provider_interface.ServiceProvider
+    iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
 /**
@@ -18,13 +14,13 @@ type (
  */
 type App interface {
     // 注册服务提供者
-    Register(spFn) provider_interface.ServiceProvider
+    Register(func() iprovider.ServiceProvider) iprovider.ServiceProvider
 
     // 批量注册服务提供者
-    Registers([]spFn)
+    Registers([]func() iprovider.ServiceProvider)
 
     // 获取
-    GetRegister(any) provider_interface.ServiceProvider
+    GetRegister(any) iprovider.ServiceProvider
 
     // 反射获取服务提供者名称
     GetProviderName(any) string
@@ -55,6 +51,9 @@ type App interface {
 
     // 获取命令行状态
     RunningInConsole() bool
+
+    // 是否为已运行
+    IsRunned() bool
 
     // 是否为开发者模式
     IsDev() bool
