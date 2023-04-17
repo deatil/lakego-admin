@@ -1,6 +1,10 @@
 package cipher
 
-import "crypto/cipher"
+import (
+    "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
+)
 
 // CFB stream with 8 bit segment size
 // See http://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf
@@ -14,6 +18,14 @@ type cfb8 struct {
 }
 
 func (x *cfb8) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cipher/cfb8: output smaller than input")
+    }
+
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cipher/cfb8: invalid buffer overlap")
+    }
+
     for i := range src {
         x.b.Encrypt(x.out, x.in)
         copy(x.in[:x.blockSize-1], x.in[1:])
@@ -34,6 +46,7 @@ func NewCFB8(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
         // stack trace will indicate whether it was de or encryption
         panic("cipher/cfb8: IV length must equal block size")
     }
+
     x := &cfb8{
         b:         block,
         blockSize: blockSize,

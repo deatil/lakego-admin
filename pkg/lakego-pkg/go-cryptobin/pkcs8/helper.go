@@ -36,6 +36,7 @@ var CipherMap = map[string]Cipher{
     "SM4CBC":     SM4CBC,
     "SM4OFB":     SM4OFB,
     "SM4CFB":     SM4CFB,
+    "SM4CFB1":    SM4CFB1,
     "SM4CFB8":    SM4CFB8,
     "SM4GCM":     SM4GCM,
     "SM4GCMb":    SM4GCMb,
