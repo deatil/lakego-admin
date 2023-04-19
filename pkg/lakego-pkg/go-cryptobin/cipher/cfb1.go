@@ -9,10 +9,9 @@ import (
 // cfb1 模式实现
 // 比对 openssl 测试数据通过
 type cfb1 struct {
-    b         cipher.Block
-    in        []byte
-    out       []byte
-
+    b       cipher.Block
+    in      []byte
+    out     []byte
     decrypt bool
 }
 
@@ -29,6 +28,7 @@ func (x *cfb1) XORKeyStream(dst, src []byte) {
         for j := 0; j < 8; j++ {
             x.b.Encrypt(x.out, x.in)
 
+            // 获取高位
             outbit := (x.out[0] >> 7) & 1
             srcbit := (src[i] >> (7 - j)) & 1
 
@@ -62,9 +62,6 @@ func leftShiftBytes(bytes []byte, carry byte) []byte {
 
     shiftedBytes := make([]byte, len(bytes))
 
-    // 获取高位
-    // carry := bytes[1] >> 7 & 1
-
     for i := 0; i < len(bytes)-1; i++ {
         currByte := bytes[i]
         nextByte := bytes[i+1]
@@ -86,10 +83,10 @@ func NewCFB1(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
     }
 
     x := &cfb1{
-        b:         block,
-        out:       make([]byte, blockSize),
-        in:        make([]byte, blockSize),
-        decrypt:   decrypt,
+        b:       block,
+        out:     make([]byte, blockSize),
+        in:      make([]byte, blockSize),
+        decrypt: decrypt,
     }
     copy(x.in, iv)
 

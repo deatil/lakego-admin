@@ -62,6 +62,7 @@ var Pkcs8Ciphers = []string{
     "SM4CBC",
     "SM4OFB",
     "SM4CFB",
+    "SM4CFB1",
     "SM4CFB8",
     "SM4GCM",
     "SM4GCMb",

@@ -36,7 +36,7 @@ func NewXMLKey() XMLKey {
 var defaultXMLKey = NewXMLKey()
 
 /**
- * rsa 密钥
+ * rsa xml密钥
  *
  * @create 2023-4-10
  * @author deatil
@@ -59,15 +59,15 @@ func MarshalXMLPublicKey(key *rsa.PublicKey) ([]byte, error) {
 
 // 解析公钥
 func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
-    var priv xmlPublicKey
-    err := xml.Unmarshal(der, &priv)
+    var pub xmlPublicKey
+    err := xml.Unmarshal(der, &pub)
     if err != nil {
         return nil, err
     }
 
     publicKey := &rsa.PublicKey{
-        N: this.b64ToBigint(priv.Modulus),
-        E: int(this.b64ToBigint(priv.Exponent).Int64()),
+        N: this.b64ToBigint(pub.Modulus),
+        E: int(this.b64ToBigint(pub.Exponent).Int64()),
     }
 
     return publicKey, nil

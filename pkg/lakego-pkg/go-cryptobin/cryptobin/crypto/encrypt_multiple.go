@@ -111,7 +111,7 @@ func BlockDecrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
     }
 
     // 去除补码数据
-    dst = newPadding.Unpadding(dst, opt)
+    dst = newPadding.UnPadding(dst, opt)
 
     return dst, nil
 }
@@ -715,7 +715,7 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     }
 
     // 解码数据
-    dst = newPadding.Unpadding(dst, opt)
+    dst = newPadding.UnPadding(dst, opt)
 
     return dst, nil
 }
