@@ -2,16 +2,18 @@ package provider
 
 import (
     "path/filepath"
+
     "github.com/deatil/lakego-filesystem/filesystem"
+
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/facade/config"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
-    pathTool "github.com/deatil/lakego-doak/lakego/path"
-    viewFunc "github.com/deatil/lakego-doak/lakego/view/funcs"
-    viewFinder "github.com/deatil/lakego-doak/lakego/view/finder"
-    appInterface "github.com/deatil/lakego-doak/lakego/app/interfaces"
+    path_tool "github.com/deatil/lakego-doak/lakego/path"
+    iapp "github.com/deatil/lakego-doak/lakego/app/interfaces"
+    view_func "github.com/deatil/lakego-doak/lakego/view/funcs"
+    view_finder "github.com/deatil/lakego-doak/lakego/view/finder"
 )
 
 /**
@@ -22,7 +24,7 @@ import (
  */
 type ServiceProvider struct {
     // 启动 app
-    App appInterface.App
+    App iapp.App
 
     // 路由
     Route *router.Engine
@@ -36,11 +38,11 @@ type ServiceProvider struct {
 
 // 设置
 func (this *ServiceProvider) WithApp(app any) {
-    this.App = app.(appInterface.App)
+    this.App = app.(iapp.App)
 }
 
 // 获取
-func (this *ServiceProvider) GetApp() appInterface.App {
+func (this *ServiceProvider) GetApp() iapp.App {
     return this.App
 }
 
@@ -132,7 +134,7 @@ func (this *ServiceProvider) CallBootedCallback() {
 // 配置信息
 func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
     // 格式化路径
-    path = pathTool.FormatPath(path)
+    path = path_tool.FormatPath(path)
 
     newPath, err := filepath.Abs(path)
     if err == nil {
@@ -142,12 +144,12 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 
 // 注册视图
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
-    viewFinder := viewFinder.Instance()
+    viewFinder := view_finder.Finder
 
     paths := config.New("view").GetStringSlice("paths")
     if len(paths) > 0 {
         for _, viewPath := range paths {
-            appPath := pathTool.FormatPath(viewPath) + "/pkg/" + namespace
+            appPath := path_tool.FormatPath(viewPath) + "/pkg/" + namespace
 
             if filesystem.New().Exists(appPath) {
                 viewFinder.AddNamespace(namespace, []string{appPath})
@@ -156,14 +158,14 @@ func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
     }
 
     // 格式化路径
-    path = pathTool.FormatPath(path)
+    path = path_tool.FormatPath(path)
 
     viewFinder.AddNamespace(namespace, []string{path})
 }
 
 // 添加视图用方法
 func (this *ServiceProvider) AddViewFunc(name string, fn any) {
-    viewFunc.AddFunc(name, fn)
+    view_func.AddFunc(name, fn)
 }
 
 // 推送

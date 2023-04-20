@@ -2,23 +2,13 @@ package finder
 
 import (
     "os"
-    "sync"
     "strings"
     "path"
     "path/filepath"
 )
 
-var instance *ViewFinder
-var once sync.Once
-
-// 单例
-func Instance() *ViewFinder {
-    once.Do(func() {
-        instance = New()
-    })
-
-    return instance
-}
+// 默认
+var Finder = New()
 
 // 构造函数
 func New() *ViewFinder {

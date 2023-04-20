@@ -2,54 +2,78 @@ package cipher
 
 import (
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 type cfb64 struct {
-    encrypt   bool
-    iv        []byte
-    block     cipher.Block
-    blockSize int
-    out       []byte
+    b       cipher.Block
+    in      []byte
+    out     []byte
+    decrypt bool
 }
 
-func (c *cfb64) XORKeyStream(dst, src []byte) {
-    for i := range src {
-        if len(c.out) == 0 {
-            c.block.Encrypt(c.out, c.iv)
+// 每个块都进行异或
+func (x *cfb64) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cipher/cfb64: output smaller than input")
+    }
+
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cipher/cfb64: invalid buffer overlap")
+    }
+
+    bs := 8
+    for i := 0; i < len(src); i += bs {
+        x.b.Encrypt(x.out, x.in)
+
+        end := i + bs
+        if end > len(src) {
+            end = len(src)
         }
 
-        b := src[i]
-        if c.encrypt {
-            b ^= c.out[0]
+        xorBytes := make([]byte, 0)
+        srcBytes := make([]byte, 0)
+
+        for j := i; j < end; j++ {
+            xorBytes = append(xorBytes, src[j] ^ x.out[j-i])
+            srcBytes = append(srcBytes, src[j])
+        }
+
+        startIn := end - i
+        copy(x.in, x.in[startIn:])
+
+        if x.decrypt {
+            copy(x.in[startIn:], srcBytes)
         } else {
-            c.out[0] ^= src[i]
-            b = c.out[0]
+            copy(x.in[startIn:], xorBytes)
         }
 
-        copy(c.out, c.out[1:])
-        c.iv[c.blockSize-1] = b
-        dst[i] = b
+        copy(dst[i:end], xorBytes)
     }
 }
 
-func NewCFB64(block cipher.Block, iv []byte, encrypt bool) cipher.Stream {
-    if len(iv) != block.BlockSize() {
+func NewCFB64(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
+    blockSize := block.BlockSize()
+    if len(iv) != blockSize {
         panic("cipher/cfb64: iv length must equal block size")
     }
 
-    return &cfb64{
-        encrypt:   encrypt,
-        iv:        iv,
-        block:     block,
-        blockSize: block.BlockSize(),
-        out:       make([]byte, block.BlockSize()),
+    x := &cfb64{
+        b:       block,
+        in:      make([]byte, blockSize),
+        out:     make([]byte, blockSize),
+        decrypt: decrypt,
     }
+    copy(x.in, iv)
+
+    return x
 }
 
 func NewCFB64Encrypter(block cipher.Block, iv []byte) cipher.Stream {
-    return NewCFB64(block, iv, true)
+    return NewCFB64(block, iv, false)
 }
 
 func NewCFB64Decrypter(block cipher.Block, iv []byte) cipher.Stream {
-    return NewCFB64(block, iv, false)
+    return NewCFB64(block, iv, true)
 }

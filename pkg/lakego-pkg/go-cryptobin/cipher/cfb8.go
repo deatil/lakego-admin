@@ -28,6 +28,7 @@ func (x *cfb8) XORKeyStream(dst, src []byte) {
 
     for i := range src {
         x.b.Encrypt(x.out, x.in)
+
         copy(x.in[:x.blockSize-1], x.in[1:])
         if x.decrypt {
             x.in[x.blockSize-1] = src[i]

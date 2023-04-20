@@ -84,8 +84,8 @@ func NewCFB1(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
 
     x := &cfb1{
         b:       block,
-        out:     make([]byte, blockSize),
         in:      make([]byte, blockSize),
+        out:     make([]byte, blockSize),
         decrypt: decrypt,
     }
     copy(x.in, iv)
