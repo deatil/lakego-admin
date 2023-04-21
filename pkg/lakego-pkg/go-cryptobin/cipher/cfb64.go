@@ -2,10 +2,17 @@ package cipher
 
 import (
     "crypto/cipher"
+    "crypto/subtle"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+/**
+ * cfb64 模式实现
+ *
+ * @create 2023-4-19
+ * @author deatil
+ */
 type cfb64 struct {
     b       cipher.Block
     in      []byte
@@ -32,13 +39,10 @@ func (x *cfb64) XORKeyStream(dst, src []byte) {
             end = len(src)
         }
 
-        xorBytes := make([]byte, 0)
-        srcBytes := make([]byte, 0)
+        dstBytes := make([]byte, end-i)
+        srcBytes := src[i:end]
 
-        for j := i; j < end; j++ {
-            xorBytes = append(xorBytes, src[j] ^ x.out[j-i])
-            srcBytes = append(srcBytes, src[j])
-        }
+        subtle.XORBytes(dstBytes, srcBytes, x.out[:])
 
         startIn := end - i
         copy(x.in, x.in[startIn:])
@@ -46,10 +50,10 @@ func (x *cfb64) XORKeyStream(dst, src []byte) {
         if x.decrypt {
             copy(x.in[startIn:], srcBytes)
         } else {
-            copy(x.in[startIn:], xorBytes)
+            copy(x.in[startIn:], dstBytes)
         }
 
-        copy(dst[i:end], xorBytes)
+        copy(dst[i:end], dstBytes)
     }
 }
 

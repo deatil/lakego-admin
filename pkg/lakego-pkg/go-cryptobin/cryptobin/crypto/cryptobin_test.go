@@ -167,7 +167,7 @@ func Test_AesCFB1PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
-    data := "test-pass"
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -193,7 +193,7 @@ func Test_AesCFB1PKCS7Padding(t *testing.T) {
     assert(data, cyptdeStr, "AesCFB1PKCS7Padding")
 
     // 根据具体数据测试
-    encrypted := "CaszhS+Z7fsG+EBEQwJgrA=="
+    encrypted := "CaszhS+Z7fsGvHgarlePOC3VumYR+LZbKiI3xuIk8yvX2NK1Wm7dFpysTvmTCJy3F1UOZaxSDVcbZk+s2lgSVzZ/14L90RB1q3+z8goz8gleb6G2ZKOgWYwby1g87ONrsNGz0IlG8YCI0iGzyE3U3DitLqRP/l9eYhHZXtnBSq1iZHyJ2BvI54YWTowmKqsDvPQkUicTUIHGziqvVsIHFy2ngT2uBvmBOIlYMkBwce20kaMfIHsmlGXMNHKcVBGS"
     cyptde2 := FromBase64String(encrypted).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -205,14 +205,14 @@ func Test_AesCFB1PKCS7Padding(t *testing.T) {
 
     assertError(cyptde2.Error(), "AesCFB1PKCS7Padding-2-Decode")
 
-    assert("pass-data", cyptdeStr2, "AesCFB1PKCS7Padding-2")
+    assert("pass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-datapass-data", cyptdeStr2, "AesCFB1PKCS7Padding-2")
 }
 
 func Test_AesCFB16PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
-    data := "test-pass"
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -242,7 +242,7 @@ func Test_AesCFB32PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
-    data := "test-pass"
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -272,7 +272,7 @@ func Test_AesCFB64PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
-    data := "test-pass"
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -302,7 +302,7 @@ func Test_AesCFB128PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
-    data := "test-pass"
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfertf12").
@@ -326,4 +326,50 @@ func Test_AesCFB128PKCS7Padding(t *testing.T) {
     assertError(cyptde.Error(), "AesCFB128PKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "AesCFB128PKCS7Padding")
+}
+
+func Test_AesPCBCPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        PCBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesPCBCPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        PCBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesPCBCPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "AesPCBCPKCS7Padding")
+
+    // 具体数据
+    src := "3y41ewE+O/VnVNIdRw2fp5HrqLekui64UAyKeZ0D0IH/3qXABrRXcG/Noizyzy5kMUOCwGrXFpTu7YgYakadznidUPENgxV8IPwaHF/G0eFVKScRLWJsGEE0NAqp075ea1ZZDA0jpB6NYs/5Y3T0fMcaXOx3eq7Gbt/trP3fSuPURID8eK8yr2UL9wRK7LV0i4f0AtT3Z/kmO0D6npRmD4m6nXKPck5mE56yRTyNI05f67Ifa7wF97Uceb/JHQwUugIPamE3C+JUVz8B+UHP93A6rU45+tGBpIh/zIKYqKtr3nUGsVzxdxr4MT1ciWws1mef1kzbedLrn7SXLEaptQ=="
+    cyptde2 := FromBase64String(src).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        PCBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr2 := cyptde2.ToString()
+
+    assertError(cyptde2.Error(), "AesPCBCPKCS7Padding-Decode")
+
+    testdata := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    assert(testdata, cyptdeStr2, "AesPCBCPKCS7Padding")
 }

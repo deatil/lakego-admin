@@ -53,6 +53,32 @@ func (this ModeCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 // ===================
 
+type ModePCBC struct {}
+
+// 加密
+func (this ModePCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewPCBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModePCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewPCBCDecrypter(block, iv).CryptBlocks(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
 type ModeCFB struct {}
 
 // 加密
@@ -386,6 +412,9 @@ func init() {
     })
     UseMode.Add(CBC, func() IMode {
         return ModeCBC{}
+    })
+    UseMode.Add(PCBC, func() IMode {
+        return ModePCBC{}
     })
     UseMode.Add(CFB, func() IMode {
         return ModeCFB{}

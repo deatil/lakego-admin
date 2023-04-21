@@ -170,6 +170,13 @@ func (this Cryptobin) CBC() Cryptobin {
     return this
 }
 
+// 填充密码块链接模式
+func (this Cryptobin) PCBC() Cryptobin {
+    this.mode = PCBC
+
+    return this
+}
+
 // 密码反馈模式
 func (this Cryptobin) CFB() Cryptobin {
     this.mode = CFB

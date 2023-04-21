@@ -127,6 +127,8 @@ func (this Mode) String() string {
             return "ECB"
         case CBC:
             return "CBC"
+        case PCBC:
+            return "PCBC"
         case CFB:
             return "CFB"
         case CFB1:
@@ -163,6 +165,7 @@ func (this Mode) String() string {
 const (
     ECB  Mode = 1 + iota
     CBC
+    PCBC
     CFB
     CFB1
     CFB8

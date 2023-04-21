@@ -6,8 +6,12 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-// cfb1 模式实现
-// 比对 openssl 测试数据通过
+/**
+ * cfb1 模式实现, 比对 openssl 测试数据通过
+ *
+ * @create 2023-4-19
+ * @author deatil
+ */
 type cfb1 struct {
     b       cipher.Block
     in      []byte

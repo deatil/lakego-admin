@@ -2,20 +2,25 @@ package cipher
 
 import (
     "crypto/cipher"
+    "crypto/subtle"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-// cfb16 is a custom CFB-16 cipher mode for Cipher.
+/**
+ * cfb16 模式实现
+ *
+ * @create 2023-4-19
+ * @author deatil
+ */
 type cfb16 struct {
-    Cipher     cipher.Block
-    Nonce      []byte
-    blockSize  int
-    blockIndex int
-    keyStream  []byte
+    b       cipher.Block
+    in      []byte
+    out     []byte
+    decrypt bool
 }
 
-func (c *cfb16) XORKeyStream(dst, src []byte) {
+func (x *cfb16) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cipher/cfb16: output smaller than input")
     }
@@ -24,51 +29,54 @@ func (c *cfb16) XORKeyStream(dst, src []byte) {
         panic("cipher/cfb16: invalid buffer overlap")
     }
 
-    if c.blockIndex == c.blockSize {
-        // Encrypt the nonce to generate the initial key stream.
-        c.Cipher.Encrypt(c.keyStream, c.Nonce)
-        c.blockIndex = 0
-    }
+    bs := 2
+    for i := 0; i < len(src); i += bs {
+        x.b.Encrypt(x.out, x.in)
 
-    for i := 0; i < len(src); i += c.blockSize {
-        if c.blockIndex == c.blockSize {
-            // Encrypt the previous ciphertext block to generate the key stream.
-            c.Cipher.Encrypt(c.keyStream, c.keyStream)
-            c.blockIndex = 0
-        }
-
-        // XOR the plaintext with the key stream.
-        end := i + c.blockSize
+        end := i + bs
         if end > len(src) {
             end = len(src)
         }
 
-        for j := i; j < end; j++ {
-            dst[j] = src[j] ^ c.keyStream[c.blockIndex]
-            c.Nonce[c.blockIndex] = dst[j]
-            c.blockIndex++
+        dstBytes := make([]byte, end-i)
+        srcBytes := src[i:end]
+
+        subtle.XORBytes(dstBytes, srcBytes, x.out[:])
+
+        startIn := end - i
+        copy(x.in, x.in[startIn:])
+
+        if x.decrypt {
+            copy(x.in[startIn:], srcBytes)
+        } else {
+            copy(x.in[startIn:], dstBytes)
         }
+
+        copy(dst[i:end], dstBytes)
     }
 }
 
-func NewCFB16(c cipher.Block, iv []byte) cipher.Stream {
-    if len(iv) != c.BlockSize() {
+func NewCFB16(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
+    blockSize := block.BlockSize()
+    if len(iv) != blockSize {
         panic("cipher/cfb16: iv length must equal block size")
     }
 
-    return &cfb16{
-        Cipher:     c,
-        Nonce:      iv[:c.BlockSize()],
-        blockSize:  c.BlockSize(),
-        blockIndex: c.BlockSize(),
-        keyStream:  make([]byte, c.BlockSize()),
+    x := &cfb16{
+        b:       block,
+        in:      make([]byte, blockSize),
+        out:     make([]byte, blockSize),
+        decrypt: decrypt,
     }
+    copy(x.in, iv)
+
+    return x
 }
 
 func NewCFB16Encrypter(block cipher.Block, iv []byte) cipher.Stream {
-    return NewCFB16(block, iv)
+    return NewCFB16(block, iv, false)
 }
 
 func NewCFB16Decrypter(block cipher.Block, iv []byte) cipher.Stream {
-    return NewCFB16(block, iv)
+    return NewCFB16(block, iv, true)
 }
