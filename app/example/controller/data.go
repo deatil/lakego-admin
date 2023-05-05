@@ -453,6 +453,9 @@ func (this *Data) Error(ctx *gin.Context) {
         bksErrData = bksErr.Error()
     }
 
+    // key.ShowBerP12()
+    // key.MakePKCS12_2()
+
     // 事件
     eventData := "index data"
     event.Dispatch("data.error2", eventData)

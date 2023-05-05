@@ -131,14 +131,14 @@ func (this Rsa) CreatePKCS8PrivateKey() Rsa {
         return this.AppendError(err)
     }
 
-    x509PublicKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
         Type: "PRIVATE KEY",
-        Bytes: x509PublicKey,
+        Bytes: x509PrivateKey,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -261,12 +261,12 @@ func (this Rsa) CreateXMLPrivateKey() Rsa {
         return this.AppendError(err)
     }
 
-    xmlPublicKey, err := cryptobin_rsa.MarshalXMLPrivateKey(this.privateKey)
+    xmlPrivateKey, err := cryptobin_rsa.MarshalXMLPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.keyData = xmlPublicKey
+    this.keyData = xmlPrivateKey
 
     return this
 }

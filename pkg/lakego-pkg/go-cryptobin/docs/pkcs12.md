@@ -141,4 +141,83 @@ func MakePKCS12() error {
 
     return nil
 }
+
+
+func MakePKCS12_2() error {
+    fs := filesystem.New()
+
+    path := "./runtime/key/pkcs12/ca2/%s"
+
+    certificateFile := fmt.Sprintf(path, "certificate.cer")
+    privateKeyFile := fmt.Sprintf(path, "private.key")
+
+    certificateData, _ := fs.Get(certificateFile)
+    privateKeyData, _ := fs.Get(privateKeyFile)
+
+    // Parse PEM block
+    var certificateBlock *pem.Block
+    if certificateBlock, _ = pem.Decode([]byte(certificateData)); certificateBlock == nil {
+        return errors.New("certificate err")
+    }
+
+    certificates, err := x509.ParseCertificates(certificateBlock.Bytes)
+    if err != nil {
+        return err
+    }
+
+    privateKey := cryptobin_rsa.NewRsa().
+        FromPrivateKey([]byte(privateKeyData)).
+        GetPrivateKey()
+
+    pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123", cryptobin_pkcs12.Opts{
+        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8CipherFromName("AES256CFB"),
+        PKCS8KDFOpts: cryptobin_pkcs12.PKCS8PBKDF2Opts{
+            SaltSize:       16,
+            IterationCount: 10000,
+        },
+        Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
+        KDFOpts: cryptobin_pkcs12.MacOpts{
+            SaltSize: 8,
+            IterationCount: 1024,
+            HMACHash: cryptobin_pkcs12.SHA512,
+        },
+    })
+    if err != nil {
+        fmt.Println("make err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+
+        return err
+    }
+
+    pkcs12File := fmt.Sprintf(path, "pkcs12_2_SHA512_2.p12")
+    fs.Put(pkcs12File, string(pfxData))
+
+    // 解析测试
+    p12, _ := fs.Get(pkcs12File)
+    priv, cert, caCerts, err := cryptobin_pkcs12.DecodeChain([]byte(p12), "123")
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+    }
+
+    fmt.Println("priv =====")
+    fmt.Printf("%#v", priv)
+    fmt.Println("")
+
+    fmt.Println("cert =====")
+    fmt.Printf("%#v", cert)
+    fmt.Println("")
+
+    fmt.Println("caCerts =====")
+    fmt.Printf("%#v", caCerts)
+    fmt.Println("")
+
+    fmt.Println("")
+    fmt.Println("")
+
+    return nil
+}
+
 ~~~

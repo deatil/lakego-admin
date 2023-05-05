@@ -15,6 +15,9 @@ import (
 
     "github.com/deatil/lakego-filesystem/filesystem"
 
+    _ "github.com/deatil/go-cryptobin/ber/encode"
+    _ "github.com/deatil/go-cryptobin/ber/decode"
+    pkcs7_ber "github.com/deatil/go-cryptobin/pkcs7/ber"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
 )
@@ -106,7 +109,7 @@ func MakePKCS12() error {
         Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
         KDFOpts: cryptobin_pkcs12.MacOpts{
             SaltSize: 8,
-            IterationCount: 1,
+            IterationCount: 1024,
             HMACHash: cryptobin_pkcs12.SHA1,
         },
     })
@@ -114,7 +117,7 @@ func MakePKCS12() error {
         return err
     }
 
-    pkcs12File := fmt.Sprintf(path, "pkcs12.p12")
+    pkcs12File := fmt.Sprintf(path, "pkcs12_SHA1.p12")
     fs.Put(pkcs12File, string(pfxData))
 
     // 保存为 pem 证书
@@ -206,19 +209,27 @@ func MakePKCS12_2() error {
         GetPrivateKey()
 
     pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123", cryptobin_pkcs12.Opts{
-        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
+        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8CipherFromName("AES256CFB"),
+        PKCS8KDFOpts: cryptobin_pkcs12.PKCS8PBKDF2Opts{
+            SaltSize:       16,
+            IterationCount: 10000,
+        },
         Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
         KDFOpts: cryptobin_pkcs12.MacOpts{
             SaltSize: 8,
-            IterationCount: 1,
-            HMACHash: cryptobin_pkcs12.SHA1,
+            IterationCount: 1024,
+            HMACHash: cryptobin_pkcs12.SHA512,
         },
     })
     if err != nil {
+        fmt.Println("make err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+
         return err
     }
 
-    pkcs12File := fmt.Sprintf(path, "pkcs12.p12")
+    pkcs12File := fmt.Sprintf(path, "pkcs12_2_SHA512_2.p12")
     fs.Put(pkcs12File, string(pfxData))
 
     // 解析测试
@@ -582,4 +593,39 @@ SbFQoJvdT46iBg1TTatlltpOiH2mFaxWVS0xYjAjBgkqhkiG9w0BCRUxFgQUdA9eVqvETX4an/c8
 p8SsTugkit8wOwYJKoZIhvcNAQkUMS4eLABGAHIAaQBlAG4AZABsAHkAIABuAGEAbQBlACAAZgBv
 AHIAIABjAGUAcgB0MDEwITAJBgUrDgMCGgUABBRFsNz3Zd1O1GI8GTuFwCWuDOjEEwQIuBEfIcAy
 HQ8CAggA`,
+}
+
+func MakeBerToDer() {
+    fs := filesystem.New()
+    p12, _ := fs.Get("./runtime/p12/testSM20210913-12345678.pfx")
+
+    der, err := pkcs7_ber.Ber2der([]byte(p12))
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+    }
+
+    p12Path := "./runtime/p12/testSM20210913_22-12345678.pfx"
+    fs.Put(p12Path, string(der))
+}
+
+func ShowBerP12() {
+    fs := filesystem.New()
+    p12, _ := fs.Get("./runtime/p12/TestCertificate-Password123.pfx")
+
+    priv, cert, err := cryptobin_pkcs12.Decode([]byte(p12), "Password123")
+    if err != nil {
+        fmt.Println("err =====")
+        fmt.Println(err.Error())
+        fmt.Println("")
+    }
+
+    fmt.Println("cert =====")
+    fmt.Printf("%#v", cert)
+    fmt.Println("")
+
+    fmt.Println("priv =====")
+    fmt.Printf("%#v", priv)
+    fmt.Println("")
 }

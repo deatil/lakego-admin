@@ -81,7 +81,7 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
 // 解密
 func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
     var param pbeParam
-    if _, err := asn1.Unmarshal(params, &param); err != nil {
+    if err := unmarshal(params, &param); err != nil {
         return nil, errors.New("pkcs8: invalid PBES2 parameters")
     }
 

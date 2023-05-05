@@ -1,0 +1,71 @@
+# Golang #
+######################
+# `go test -c` 生成的二进制文件
+*.test
+# go coverage 工具
+*.out
+*.prof
+*.cgo1.go
+*.cgo2.c
+_cgo_defun.c
+_cgo_gotypes.go
+_cgo_export.*
+
+# 编译文件 #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# 压缩包 #
+############
+# *.7z
+*.dmg
+# *.gz
+*.iso
+# *.jar
+# *.rar
+# *.tar
+# *.zip
+
+# 日志文件和数据库 #
+######################
+*.log
+*.sqlite
+*.db
+
+# 系统生成文件 #
+######################
+.DS_Store
+.DS_Store?
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.TemporaryItems
+.fseventsd
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# IDE 和编辑器 #
+######################
+.idea/
+/go_build_*
+out/
+.vscode/
+.vscode/settings.json
+*.sublime*
+__debug_bin
+.project
+
+# 临时文件 #
+######################
+tmp/
+.tmp/
+

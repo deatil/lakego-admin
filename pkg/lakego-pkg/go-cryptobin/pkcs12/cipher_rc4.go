@@ -75,7 +75,7 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
 // 解密
 func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
     var param pbeRC4Params
-    if _, err := asn1.Unmarshal(params, &param); err != nil {
+    if err := unmarshal(params, &param); err != nil {
         return nil, errors.New("pkcs8: invalid PBE parameters")
     }
 

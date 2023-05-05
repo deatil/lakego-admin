@@ -69,6 +69,10 @@ func encodePkcs8ShroudedKeyBag(
         keyBlock, err = cryptobin_pkcs8pbe.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.PKCS8Cipher)
     }
 
+    if err != nil {
+        return nil, err
+    }
+
     asn1Data = keyBlock.Bytes
 
     return asn1Data, nil

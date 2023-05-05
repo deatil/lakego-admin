@@ -137,11 +137,6 @@ func EncryptPKCS8PrivateKey(
 }
 
 // 解出 PKCS8 密钥
-// 加密方式:
-// DESCBC | DESEDE3CBC
-// AES128CBC | AES192CBC | AES256CBC
-// AES128GCM | AES192GCM | AES256GCM
-// SM4CBC | SM4GCM
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {

@@ -19,18 +19,20 @@ import (
     cryptobin_pbkdf "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )
 
-// pkcs8 可使用的 hash 方式
+// 可使用的 hash 方式
 type Hash uint
 
 const (
-    Md2 Hash = 1 + iota
-    Md4
+    MD2 Hash = 1 + iota
+    MD4
     MD5
     SHA1
     SHA224
     SHA256
     SHA384
     SHA512
+    SHA512_224
+    SHA512_256
     SM3
 )
 
@@ -40,25 +42,27 @@ var (
 )
 
 var (
-    oidSMd2   = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 2, 2})
-    oidSMd4   = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 2, 4})
-    oidSMd5   = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 2, 5})
-    oidSHA1   = asn1.ObjectIdentifier([]int{1, 3, 14, 3, 2, 26})
-    oidSHA224 = asn1.ObjectIdentifier([]int{2, 16, 840, 1, 101, 3, 4, 2, 4})
-    oidSHA256 = asn1.ObjectIdentifier([]int{2, 16, 840, 1, 101, 3, 4, 2, 1})
-    oidSHA384 = asn1.ObjectIdentifier([]int{2, 16, 840, 1, 101, 3, 4, 2, 2})
-    oidSHA512 = asn1.ObjectIdentifier([]int{2, 16, 840, 1, 101, 3, 4, 2, 3})
-    oidSM3    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401}
+    oidMD2        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 2}
+    oidMD4        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 4}
+    oidMD5        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 5}
+    oidSHA1       = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 26}
+    oidSHA224     = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 4}
+    oidSHA256     = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}
+    oidSHA384     = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 2}
+    oidSHA512     = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 3}
+    oidSHA512_224 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 5}
+    oidSHA512_256 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 6}
+    oidSM3        = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401}
 )
 
 // 返回使用的 Hash 方式
 func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
-        case oid.Equal(oidSMd2):
+        case oid.Equal(oidMD2):
             return cryptobin_md2.New, nil
-        case oid.Equal(oidSMd4):
+        case oid.Equal(oidMD4):
             return md4.New, nil
-        case oid.Equal(oidSMd5):
+        case oid.Equal(oidMD5):
             return md5.New, nil
         case oid.Equal(oidSHA1):
             return sha1.New, nil
@@ -70,6 +74,10 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return sha512.New384, nil
         case oid.Equal(oidSHA512):
             return sha512.New, nil
+        case oid.Equal(oidSHA512_224):
+            return sha512.New512_224, nil
+        case oid.Equal(oidSHA512_256):
+            return sha512.New512_256, nil
         case oid.Equal(oidSM3):
             return sm3.New, nil
     }
@@ -80,12 +88,12 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
 // 返回使用的 Hash 对应的 asn1
 func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
     switch h {
-        case Md2:
-            return oidSMd2, nil
-        case Md4:
-            return oidSMd4, nil
+        case MD2:
+            return oidMD2, nil
+        case MD4:
+            return oidMD4, nil
         case MD5:
-            return oidSMd5, nil
+            return oidMD5, nil
         case SHA1:
             return oidSHA1, nil
         case SHA224:
@@ -96,6 +104,10 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidSHA384, nil
         case SHA512:
             return oidSHA512, nil
+        case SHA512_224:
+            return oidSHA512_224, nil
+        case SHA512_256:
+            return oidSHA512_256, nil
         case SM3:
             return oidSM3, nil
     }
@@ -191,7 +203,7 @@ func (this MacOpts) Compute(message []byte, password []byte) (data KDFParameters
 
     hashSize := h().Size()
 
-    key := cryptobin_pbkdf.Key(sha1.New, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
+    key := cryptobin_pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
 
     mac := hmac.New(h, key)
     mac.Write(message)

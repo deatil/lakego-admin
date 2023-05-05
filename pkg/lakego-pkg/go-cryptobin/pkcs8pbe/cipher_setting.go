@@ -23,8 +23,8 @@ var (
     oidPbeWithSHA1AndRC2_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 5}
     oidPbeWithSHA1AndRC2_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 6}
     oidPbeWithSHA1AndRC2_64  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 11}
-    oidPbeWithMD2AndRC2_64  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 4}
-    oidPbeWithMD5AndRC2_64  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 6}
+    oidPbeWithMD2AndRC2_64   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 4}
+    oidPbeWithMD5AndRC2_64   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 6}
 )
 
 var (
@@ -88,7 +88,7 @@ var PEMCipherSHA1AndRC2_40 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
-    saltSize:      20,
+    saltSize:       20,
     keySize:        5,
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
@@ -98,7 +98,7 @@ var PEMCipherSHA1AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKey,
-    saltSize:      20,
+    saltSize:       20,
     keySize:        8,
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
