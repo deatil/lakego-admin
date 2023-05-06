@@ -453,7 +453,7 @@ func (this *Data) Error(ctx *gin.Context) {
         bksErrData = bksErr.Error()
     }
 
-    key.ShowBerP12_2()
+    // key.ShowBerP12()
     // key.MakePKCS12_2()
 
     // 事件

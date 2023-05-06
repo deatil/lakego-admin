@@ -20,7 +20,6 @@ import (
     pkcs7_ber "github.com/deatil/go-cryptobin/pkcs7/ber"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
-    cryptobin_pkcs12ber "github.com/deatil/go-cryptobin/pkcs12ber"
 )
 
 type Errs struct{
@@ -631,22 +630,3 @@ func ShowBerP12() {
     fmt.Println("")
 }
 
-func ShowBerP12_2() {
-    fs := filesystem.New()
-    p12, _ := fs.Get("./runtime/p12/testSM20210913-12345678.pfx")
-
-    priv, cert, err := cryptobin_pkcs12ber.Decode([]byte(p12), "12345678")
-    if err != nil {
-        fmt.Println("err =====")
-        fmt.Println(err.Error())
-        fmt.Println("")
-    }
-
-    fmt.Println("cert =====")
-    fmt.Printf("%#v", cert)
-    fmt.Println("")
-
-    fmt.Println("priv =====")
-    fmt.Printf("%#v", priv)
-    fmt.Println("")
-}
