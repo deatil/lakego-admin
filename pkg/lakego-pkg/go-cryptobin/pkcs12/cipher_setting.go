@@ -7,10 +7,12 @@ import (
     "encoding/asn1"
 
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
+    cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
 )
 
 var (
     oidPbeWithSHA1And3DES    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 3}
+    oidPbeWithSHA1And2DES    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 4}
     oidPbeWithSHA1AndRC2_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 5}
     oidPbeWithSHA1AndRC2_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 6}
     oidPbeWithSHA1AndRC4_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 1}
@@ -32,6 +34,16 @@ var CipherSHA1And3DES = CipherBlockCBC{
     blockSize:      des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And3DES,
+}
+var CipherSHA1And2DES = CipherBlockCBC{
+    cipherFunc:     cryptobin_des.NewTwoDESCipher,
+    hashFunc:       sha1.New,
+    derivedKeyFunc: derivedKey,
+    saltSize:       cryptobin_des.BlockSize,
+    keySize:        16,
+    blockSize:      cryptobin_des.BlockSize,
+    iterationCount: 2048,
+    oid:            oidPbeWithSHA1And2DES,
 }
 var CipherSHA1AndRC2_128 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -77,13 +89,15 @@ func init() {
     AddCipher(oidPbeWithSHA1And3DES, func() Cipher {
         return CipherSHA1And3DES
     })
+    AddCipher(oidPbeWithSHA1And2DES, func() Cipher {
+        return CipherSHA1And2DES
+    })
     AddCipher(oidPbeWithSHA1AndRC2_128, func() Cipher {
         return CipherSHA1AndRC2_128
     })
     AddCipher(oidPbeWithSHA1AndRC2_40, func() Cipher {
         return CipherSHA1AndRC2_40
     })
-
     AddCipher(oidPbeWithSHA1AndRC4_128, func() Cipher {
         return CipherSHA1AndRC4_128
     })

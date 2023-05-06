@@ -20,6 +20,7 @@ import (
     "github.com/tjfoc/gmsm/sm4"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
 )
@@ -161,6 +162,30 @@ func (this EncryptDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
 // 解密
 func (this EncryptDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := des.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
+type EncryptTwoDes struct {}
+
+// 加密
+func (this EncryptTwoDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_des.NewTwoDESCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptTwoDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_des.NewTwoDESCipher(opt.Key())
     if err != nil {
         return nil, err
     }
@@ -728,6 +753,9 @@ func init() {
     })
     UseEncrypt.Add(Des, func() IEncrypt {
         return EncryptDes{}
+    })
+    UseEncrypt.Add(TwoDes, func() IEncrypt {
+        return EncryptTwoDes{}
     })
     UseEncrypt.Add(TripleDes, func() IEncrypt {
         return EncryptTripleDes{}

@@ -13,7 +13,7 @@ import (
  */
 type JCEKS struct {
     // 解析后数据
-    entries      map[string]any
+    entries map[string]any
 }
 
 // 构造函数

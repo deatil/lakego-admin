@@ -59,6 +59,8 @@ func (this Multiple) String() string {
             return "Aes"
         case Des:
             return "Des"
+        case TwoDes:
+            return "TwoDes"
         case TripleDes:
             return "TripleDes"
         case Twofish:
@@ -99,6 +101,7 @@ func (this Multiple) String() string {
 const (
     Aes Multiple = 1 + iota
     Des
+    TwoDes
     TripleDes
     Twofish
     Blowfish

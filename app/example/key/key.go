@@ -15,6 +15,7 @@ var Pkcs8PbeCiphers = []string{
     "MD2AndDES",
     "MD5AndDES",
     "SHA1AndDES",
+    "SHA1And2DES",
     "SHA1And3DES",
     "SHA1AndRC4_128",
     "SHA1AndRC4_40",

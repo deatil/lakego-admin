@@ -14,6 +14,13 @@ func (this Cryptobin) Des() Cryptobin {
     return this
 }
 
+// TwoDes
+func (this Cryptobin) TwoDes() Cryptobin {
+    this.multiple = TwoDes
+
+    return this
+}
+
 // TripleDes
 func (this Cryptobin) TripleDes() Cryptobin {
     this.multiple = TripleDes
