@@ -25,12 +25,11 @@ func unmarshal(in []byte, out any) error {
 // 解析加密数据
 func parseContentEncryptionAlgorithm(contentEncryptionAlgorithm pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
     oid := contentEncryptionAlgorithm.Algorithm.String()
-    cipher, ok := ciphers[oid]
-    if !ok {
-        return nil, nil, fmt.Errorf("pkcs12: unsupported cipher (OID: %s)", oid)
-    }
 
-    newCipher := cipher()
+    newCipher, err := GetCipher(oid)
+    if err != nil {
+        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+    }
 
     params := contentEncryptionAlgorithm.Parameters.FullBytes
 

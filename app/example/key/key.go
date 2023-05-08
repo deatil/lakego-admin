@@ -31,6 +31,8 @@ var Pkcs8PbeCiphers = []string{
 var Pkcs8Ciphers = []string{
     "DESCBC",
     "DESEDE3CBC",
+    "RC2CBC",
+    "RC5CBC",
 
     "AES128ECB",
     "AES128CBC",

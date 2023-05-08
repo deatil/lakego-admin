@@ -1,4 +1,4 @@
-package pkcs8pbe
+package pbes1
 
 import (
     "crypto/des"
@@ -37,7 +37,7 @@ var (
 )
 
 // pkcs12 模式
-var PEMCipherSHA1And3DES = CipherBlockCBC{
+var SHA1And3DES = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
@@ -47,7 +47,7 @@ var PEMCipherSHA1And3DES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And3DES,
 }
-var PEMCipherSHA1And2DES = CipherBlockCBC{
+var SHA1And2DES = CipherBlockCBC{
     cipherFunc:     cryptobin_des.NewTwoDESCipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
@@ -57,7 +57,7 @@ var PEMCipherSHA1And2DES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And2DES,
 }
-var PEMCipherSHA1AndRC2_128 = CipherBlockCBC{
+var SHA1AndRC2_128 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
@@ -67,7 +67,7 @@ var PEMCipherSHA1AndRC2_128 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_128,
 }
-var PEMCipherSHA1AndRC2_40 = CipherBlockCBC{
+var SHA1AndRC2_40 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
@@ -77,7 +77,7 @@ var PEMCipherSHA1AndRC2_40 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_40,
 }
-var PEMCipherSHA1AndRC4_128 = CipherRC4{
+var SHA1AndRC4_128 = CipherRC4{
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
     saltSize:       20,
@@ -86,7 +86,7 @@ var PEMCipherSHA1AndRC4_128 = CipherRC4{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC4_128,
 }
-var PEMCipherSHA1AndRC4_40 = CipherRC4{
+var SHA1AndRC4_40 = CipherRC4{
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKeyWithPbkdf,
     saltSize:       20,
@@ -97,7 +97,7 @@ var PEMCipherSHA1AndRC4_40 = CipherRC4{
 }
 
 // pkcs5-v1.5 模式
-var PEMCipherMD2AndDES = CipherBlockCBC{
+var MD2AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       cryptobin_md2.New,
     derivedKeyFunc: derivedKey,
@@ -107,7 +107,7 @@ var PEMCipherMD2AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndDES,
 }
-var PEMCipherMD2AndRC2_64 = CipherBlockCBC{
+var MD2AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       cryptobin_md2.New,
     derivedKeyFunc: derivedKey,
@@ -117,7 +117,7 @@ var PEMCipherMD2AndRC2_64 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndRC2_64,
 }
-var PEMCipherMD5AndDES = CipherBlockCBC{
+var MD5AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       md5.New,
     derivedKeyFunc: derivedKey,
@@ -127,7 +127,7 @@ var PEMCipherMD5AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndDES,
 }
-var PEMCipherMD5AndRC2_64 = CipherBlockCBC{
+var MD5AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       md5.New,
     derivedKeyFunc: derivedKey,
@@ -137,7 +137,7 @@ var PEMCipherMD5AndRC2_64 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndRC2_64,
 }
-var PEMCipherSHA1AndDES = CipherBlockCBC{
+var SHA1AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKey,
@@ -147,7 +147,7 @@ var PEMCipherSHA1AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndDES,
 }
-var PEMCipherSHA1AndRC2_64 = CipherBlockCBC{
+var SHA1AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: derivedKey,
@@ -160,42 +160,42 @@ var PEMCipherSHA1AndRC2_64 = CipherBlockCBC{
 
 func init() {
     // pkcs12 模式
-    AddCipher(oidPbeWithSHA1And3DES, func() PEMCipher {
-        return PEMCipherSHA1And3DES
+    AddCipher(oidPbeWithSHA1And3DES, func() Cipher {
+        return SHA1And3DES
     })
-    AddCipher(oidPbeWithSHA1And2DES, func() PEMCipher {
-        return PEMCipherSHA1And2DES
+    AddCipher(oidPbeWithSHA1And2DES, func() Cipher {
+        return SHA1And2DES
     })
-    AddCipher(oidPbeWithSHA1AndRC2_128, func() PEMCipher {
-        return PEMCipherSHA1AndRC2_128
+    AddCipher(oidPbeWithSHA1AndRC2_128, func() Cipher {
+        return SHA1AndRC2_128
     })
-    AddCipher(oidPbeWithSHA1AndRC2_40, func() PEMCipher {
-        return PEMCipherSHA1AndRC2_40
+    AddCipher(oidPbeWithSHA1AndRC2_40, func() Cipher {
+        return SHA1AndRC2_40
     })
-    AddCipher(oidPbeWithSHA1AndRC4_128, func() PEMCipher {
-        return PEMCipherSHA1AndRC4_128
+    AddCipher(oidPbeWithSHA1AndRC4_128, func() Cipher {
+        return SHA1AndRC4_128
     })
-    AddCipher(oidPbeWithSHA1AndRC4_40, func() PEMCipher {
-        return PEMCipherSHA1AndRC4_40
+    AddCipher(oidPbeWithSHA1AndRC4_40, func() Cipher {
+        return SHA1AndRC4_40
     })
 
     // pkcs5-v1.5 模式
-    AddCipher(oidPbeWithMD2AndDES, func() PEMCipher {
-        return PEMCipherMD2AndDES
+    AddCipher(oidPbeWithMD2AndDES, func() Cipher {
+        return MD2AndDES
     })
-    AddCipher(oidPbeWithMD2AndRC2_64, func() PEMCipher {
-        return PEMCipherMD2AndRC2_64
+    AddCipher(oidPbeWithMD2AndRC2_64, func() Cipher {
+        return MD2AndRC2_64
     })
-    AddCipher(oidPbeWithMD5AndDES, func() PEMCipher {
-        return PEMCipherMD5AndDES
+    AddCipher(oidPbeWithMD5AndDES, func() Cipher {
+        return MD5AndDES
     })
-    AddCipher(oidPbeWithMD5AndRC2_64, func() PEMCipher {
-        return PEMCipherMD5AndRC2_64
+    AddCipher(oidPbeWithMD5AndRC2_64, func() Cipher {
+        return MD5AndRC2_64
     })
-    AddCipher(oidPbeWithSHA1AndDES, func() PEMCipher {
-        return PEMCipherSHA1AndDES
+    AddCipher(oidPbeWithSHA1AndDES, func() Cipher {
+        return SHA1AndDES
     })
-    AddCipher(oidPbeWithSHA1AndRC2_64, func() PEMCipher {
-        return PEMCipherSHA1AndRC2_64
+    AddCipher(oidPbeWithSHA1AndRC2_64, func() Cipher {
+        return SHA1AndRC2_64
     })
 }

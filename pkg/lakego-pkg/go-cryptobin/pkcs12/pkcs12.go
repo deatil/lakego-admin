@@ -892,11 +892,6 @@ func makeSafeContents(rand io.Reader, bags []safeBag, password []byte, cipher Ci
             return
         }
     } else {
-        randomSalt := make([]byte, 8)
-        if _, err = rand.Read(randomSalt); err != nil {
-            return
-        }
-
         var encrypted, params []byte
         encrypted, params, err = cipher.Encrypt(password, data)
         if err != nil {

@@ -1,17 +1,23 @@
-package pkcs8
+package pbes2
 
 import (
     "crypto/aes"
     "crypto/des"
+    "crypto/cipher"
     "encoding/asn1"
 
     "github.com/tjfoc/gmsm/sm4"
+
+    cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
+    cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
 )
 
 var (
     // 加密方式
     oidDESCBC     = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 7}
     oidDESEDE3CBC = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 7}
+    oidRC2CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 2}
+    oidRC5CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 9}
 
     oidAES        = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1}
     oidAES128ECB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 1}
@@ -45,6 +51,12 @@ var (
     oidSM4CCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
 )
 
+var (
+    newRC2Cipher = func(key []byte) (cipher.Block, error) {
+        return cryptobin_rc2.NewCipher(key, len(key)*8)
+    }
+)
+
 // DESCBC is the 56-bit key 3DES cipher in CBC mode.
 var DESCBC = CipherCBC{
     cipherFunc: des.NewCipher,
@@ -58,6 +70,24 @@ var DESEDE3CBC = CipherCBC{
     keySize:    24,
     blockSize:  des.BlockSize,
     identifier: oidDESEDE3CBC,
+}
+// RC2CBC is the [40-bit, 64-bit, 168-bit] key RC2 cipher in CBC mode.
+// [rc2Version, keySize] = [58, 16] | [120, 8] | [160, 5]
+var RC2CBC = CipherRC2CBC{
+    cipherFunc: newRC2Cipher,
+    rc2Version: 58,
+    keySize:    16,
+    blockSize:  cryptobin_rc2.BlockSize,
+    identifier: oidRC2CBC,
+}
+// RC5CBC is the [16, 24, 32] bytes key RC5 cipher in CBC mode.
+// wordSize = [32, 64] | rounds = [8, 127]
+var RC5CBC = CipherRC5CBC{
+    cipherFunc: cryptobin_rc5.NewCipher,
+    wordSize:   32,
+    rounds:     16,
+    keySize:    16,
+    identifier: oidRC5CBC,
 }
 
 // ==========
@@ -317,6 +347,12 @@ func init() {
     })
     AddCipher(oidDESEDE3CBC, func() Cipher {
         return DESEDE3CBC
+    })
+    AddCipher(oidRC2CBC, func() Cipher {
+        return RC2CBC
+    })
+    AddCipher(oidRC5CBC, func() Cipher {
+        return RC5CBC
     })
 
     // aes128

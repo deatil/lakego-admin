@@ -1,4 +1,4 @@
-package pkcs8
+package pbes2
 
 import (
     "errors"
@@ -6,11 +6,15 @@ import (
     "encoding/asn1"
 )
 
-// gcm 模式加密参数, 使用 iv 位置
-type gcmbParams []byte
+// gcm 模式加密参数
+// http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/GCMParameters.html
+type gcmParams struct {
+    Nonce  []byte `asn1:"tag:4"`
+    ICVLen int
+}
 
 // gcm 模式加密
-type CipherGCMb struct {
+type CipherGCM struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
     nonceSize  int
@@ -18,17 +22,17 @@ type CipherGCMb struct {
 }
 
 // 值大小
-func (this CipherGCMb) KeySize() int {
+func (this CipherGCM) KeySize() int {
     return this.keySize
 }
 
 // oid
-func (this CipherGCMb) OID() asn1.ObjectIdentifier {
+func (this CipherGCM) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, err
@@ -48,7 +52,10 @@ func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     ciphertext := aead.Seal(nil, nonce, plaintext, nil)
 
     // 需要编码的参数
-    paramSeq := nonce
+    paramSeq := gcmParams{
+        Nonce:  nonce,
+        ICVLen: aead.Overhead(),
+    }
 
     // 编码参数
     paramBytes, err := asn1.Marshal(paramSeq)
@@ -60,22 +67,39 @@ func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 }
 
 // 解密
-func (this CipherGCMb) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
+func (this CipherGCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, err
     }
 
+    var nonce []byte
+
+    isGcmICV := true
+
     // 解析参数
-    var nonce gcmbParams
-    _, err = asn1.Unmarshal(param, &nonce)
+    var params gcmParams
+    _, err = asn1.Unmarshal(param, &params)
     if err != nil {
-        return nil, errors.New("pkcs8: invalid param type")
+        isGcmICV = false
+
+        _, err = asn1.Unmarshal(param, &nonce)
+        if err != nil {
+            return nil, errors.New("pkcs/cipher: invalid param type")
+        }
+    } else {
+        nonce = params.Nonce
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonce))
     if err != nil {
         return nil, err
+    }
+
+    if isGcmICV {
+        if params.ICVLen != aead.Overhead() {
+            return nil, errors.New("pkcs/cipher: invalid tag size")
+        }
     }
 
     return aead.Open(nil, nonce, ciphertext, nil)

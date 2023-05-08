@@ -89,6 +89,11 @@ func (this Rsa) pkcs8En(rsa cryptobin_rsa.Rsa, bit int) {
             // 生成证书
             priKey := rsa.
                 CreatePKCS8PrivateKeyWithPassword(this.pass, c, h).
+                OnError(func(errs []error) {
+                    for _, err := range errs {
+                        fmt.Println(err.Error())
+                    }
+                }).
                 ToKeyString()
             pubKey := rsa.
                 CreatePKCS8PublicKey().

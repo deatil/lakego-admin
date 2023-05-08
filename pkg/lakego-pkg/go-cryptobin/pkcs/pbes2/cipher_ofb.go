@@ -1,4 +1,4 @@
-package encrypt
+package pbes2
 
 import (
     "errors"
@@ -7,11 +7,11 @@ import (
     "encoding/asn1"
 )
 
-// CFB 模式加密参数
-type cfbParams []byte
+// OFB 模式加密参数
+type ofbParams []byte
 
-// CFB 模式加密
-type CipherCFB struct {
+// OFB 模式加密
+type CipherOFB struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
     blockSize  int
@@ -19,35 +19,35 @@ type CipherCFB struct {
 }
 
 // 值大小
-func (this CipherCFB) KeySize() int {
+func (this CipherOFB) KeySize() int {
     return this.keySize
 }
 
 // oid
-func (this CipherCFB) OID() asn1.ObjectIdentifier {
+func (this CipherOFB) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this CipherCFB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherOFB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     // 加密数据补码
     plaintext = pkcs7Padding(plaintext, this.blockSize)
 
     // 随机生成 iv
-    iv := make(cfbParams, this.blockSize)
+    iv := make(ofbParams, this.blockSize)
     if _, err := rand.Read(iv); err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to generate IV")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to generate IV")
     }
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
     }
 
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
 
-    enc := cipher.NewCFBEncrypter(block, iv)
+    enc := cipher.NewOFB(block, iv)
     enc.XORKeyStream(encrypted, plaintext)
 
     // 编码 iv
@@ -60,11 +60,11 @@ func (this CipherCFB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 }
 
 // 解密
-func (this CipherCFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
+func (this CipherOFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     // 解析出 iv
-    var iv cfbParams
+    var iv ofbParams
     if _, err := asn1.Unmarshal(params, &iv); err != nil {
-        return nil, errors.New("pkcs8: invalid iv parameters")
+        return nil, errors.New("pkcs/cipher: invalid iv parameters")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -78,10 +78,10 @@ func (this CipherCFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     blockSize := block.BlockSize()
     dlen := len(ciphertext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs8: invalid padding")
+        return nil, errors.New("pkcs/cipher: invalid padding")
     }
 
-    mode := cipher.NewCFBDecrypter(block, iv)
+    mode := cipher.NewOFB(block, iv)
     mode.XORKeyStream(plaintext, ciphertext)
 
     // 解析加密数据

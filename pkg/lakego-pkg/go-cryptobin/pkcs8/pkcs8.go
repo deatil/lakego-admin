@@ -196,6 +196,7 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
 
 func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFParameters, error) {
     oid := keyDerivationFunc.Algorithm.String()
+
     params, ok := kdfs[oid]
     if !ok {
         return nil, fmt.Errorf("pkcs8: unsupported KDF (OID: %s)", oid)
@@ -213,12 +214,11 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
 
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
     oid := encryptionScheme.Algorithm.String()
-    cipher, ok := ciphers[oid]
-    if !ok {
+
+    newCipher, err := GetCipher(oid)
+    if err != nil {
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
-
-    newCipher := cipher()
 
     params := encryptionScheme.Parameters.FullBytes
 

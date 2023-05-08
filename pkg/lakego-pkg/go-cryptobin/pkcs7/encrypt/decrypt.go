@@ -103,6 +103,7 @@ func encryptedContentInfoDecrypt(eci encryptedContentInfo, key []byte) ([]byte, 
 
 func parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyEncrypt, error) {
     oid := keyEncrypt.Algorithm.String()
+
     fn, ok := keyens[oid]
     if !ok {
         return nil, fmt.Errorf("pkcs7: unsupported KDF (OID: %s)", oid)
@@ -115,12 +116,11 @@ func parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyEncrypt, error) {
 
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
     oid := encryptionScheme.Algorithm.String()
-    cipher, ok := ciphers[oid]
-    if !ok {
-        return nil, nil, fmt.Errorf("pkcs7: unsupported cipher (OID: %s)", oid)
-    }
 
-    newCipher := cipher()
+    newCipher, err := GetCipher(oid)
+    if err != nil {
+        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+    }
 
     params := encryptionScheme.Parameters.FullBytes
 

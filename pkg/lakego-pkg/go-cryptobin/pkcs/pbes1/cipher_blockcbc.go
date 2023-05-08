@@ -1,4 +1,4 @@
-package pkcs8pbe
+package pbes1
 
 import (
     "hash"
@@ -8,7 +8,7 @@ import (
 )
 
 // pbe 数据
-type pbeParams struct {
+type pbeCBCParams struct {
     Salt           []byte
     IterationCount int
 }
@@ -45,9 +45,6 @@ func (this CipherBlockCBC) OID() asn1.ObjectIdentifier {
 
 // 加密
 func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, error) {
-    // 加密数据补码
-    plaintext = pkcs7Padding(plaintext, this.blockSize)
-
     salt, err := genRandom(this.saltSize)
     if err != nil {
         return nil, nil, errors.New(err.Error() + " failed to generate salt")
@@ -57,8 +54,11 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
     }
+
+    // 加密数据补码
+    plaintext = pkcs7Padding(plaintext, this.blockSize)
 
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
@@ -67,7 +67,7 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
     enc.CryptBlocks(encrypted, plaintext)
 
     // 返回数据
-    paramBytes, err := asn1.Marshal(pbeParams{
+    paramBytes, err := asn1.Marshal(pbeCBCParams{
         Salt:           salt,
         IterationCount: this.iterationCount,
     })
@@ -80,9 +80,9 @@ func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, 
 
 // 解密
 func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
-    var param pbeParams
+    var param pbeCBCParams
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs8: invalid PBES2 parameters")
+        return nil, errors.New("pkcs/cipher: invalid PBES2 parameters")
     }
 
     key, iv := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)
@@ -96,7 +96,7 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
     blockSize := block.BlockSize()
     dlen := len(ciphertext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs8: invalid padding")
+        return nil, errors.New("pkcs/cipher: invalid padding")
     }
 
     plaintext := make([]byte, len(ciphertext))

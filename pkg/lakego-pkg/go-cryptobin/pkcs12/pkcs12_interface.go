@@ -54,13 +54,6 @@ func AddKey(name string, key func() Key) {
     keys[name] = key
 }
 
-var ciphers = make(map[string]func() Cipher)
-
-// 添加加密
-func AddCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
-    ciphers[oid.String()] = cipher
-}
-
 // ===============
 
 // KDF 设置接口
@@ -100,7 +93,7 @@ func (this Opts) WithKDFOpts(opts KDFOpts) Opts {
 
 // 默认配置
 var DefaultOpts = Opts{
-    PKCS8Cipher: cryptobin_pkcs8pbe.PEMCipherSHA1And3DES,
+    PKCS8Cipher: cryptobin_pkcs8pbe.SHA1And3DES,
     Cipher: CipherSHA1AndRC2_40,
     KDFOpts: MacOpts{
         SaltSize: 8,

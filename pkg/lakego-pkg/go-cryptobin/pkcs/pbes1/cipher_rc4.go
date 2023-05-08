@@ -1,4 +1,4 @@
-package pkcs8pbe
+package pbes1
 
 import (
     "hash"
@@ -52,7 +52,7 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
 
     rc, err := rc4.NewCipher(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
     }
 
     // 需要保存的加密数据
@@ -76,7 +76,7 @@ func (this CipherRC4) Encrypt(password, plaintext []byte) ([]byte, []byte, error
 func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
     var param pbeRC4Params
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs8: invalid PBE parameters")
+        return nil, errors.New("pkcs/cipher: invalid PBE parameters")
     }
 
     key, _ := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)

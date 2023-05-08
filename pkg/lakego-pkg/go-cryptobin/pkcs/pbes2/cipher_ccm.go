@@ -1,20 +1,22 @@
-package pkcs8
+package pbes2
 
 import (
     "errors"
     "crypto/cipher"
     "encoding/asn1"
+
+    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
-// gcm 模式加密参数
-// http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/GCMParameters.html
-type gcmParams struct {
+// ccm 模式加密参数
+// http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/CCMParameters.html
+type ccmParams struct {
     Nonce  []byte `asn1:"tag:4"`
     ICVLen int
 }
 
-// gcm 模式加密
-type CipherGCM struct {
+// ccm 模式加密
+type CipherCCM struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
     nonceSize  int
@@ -22,17 +24,17 @@ type CipherGCM struct {
 }
 
 // 值大小
-func (this CipherGCM) KeySize() int {
+func (this CipherCCM) KeySize() int {
     return this.keySize
 }
 
 // oid
-func (this CipherGCM) OID() asn1.ObjectIdentifier {
+func (this CipherCCM) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherCCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, err
@@ -43,7 +45,7 @@ func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
         return nil, nil, err
     }
 
-    aead, err := cipher.NewGCMWithNonceSize(block, this.nonceSize)
+    aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, this.nonceSize)
     if err != nil {
         return nil, nil, err
     }
@@ -52,7 +54,7 @@ func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     ciphertext := aead.Seal(nil, nonce, plaintext, nil)
 
     // 需要编码的参数
-    paramSeq := gcmParams{
+    paramSeq := ccmParams{
         Nonce:  nonce,
         ICVLen: aead.Overhead(),
     }
@@ -67,7 +69,7 @@ func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 }
 
 // 解密
-func (this CipherGCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
+func (this CipherCCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, err
@@ -78,27 +80,27 @@ func (this CipherGCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     isGcmICV := true
 
     // 解析参数
-    var params gcmParams
+    var params ccmParams
     _, err = asn1.Unmarshal(param, &params)
     if err != nil {
         isGcmICV = false
 
         _, err = asn1.Unmarshal(param, &nonce)
         if err != nil {
-            return nil, errors.New("pkcs8: invalid param type")
+            return nil, errors.New("pkcs/cipher: invalid param type")
         }
     } else {
         nonce = params.Nonce
     }
 
-    aead, err := cipher.NewGCMWithNonceSize(block, len(nonce))
+    aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonce))
     if err != nil {
         return nil, err
     }
 
     if isGcmICV {
         if params.ICVLen != aead.Overhead() {
-            return nil, errors.New("pkcs8: invalid tag size")
+            return nil, errors.New("pkcs/cipher: invalid tag size")
         }
     }
 

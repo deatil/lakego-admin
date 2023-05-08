@@ -1,17 +1,19 @@
-package pkcs8
+package pbes2
 
 import (
     "errors"
     "crypto/rand"
     "crypto/cipher"
     "encoding/asn1"
+
+    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
-// cbc 模式加密参数
-type cbcParams []byte
+// CFB8 模式加密参数
+type cfb8Params []byte
 
-// cbc 模式加密
-type CipherCBC struct {
+// CFB8 模式加密
+type CipherCFB8 struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
     blockSize  int
@@ -19,36 +21,36 @@ type CipherCBC struct {
 }
 
 // 值大小
-func (this CipherCBC) KeySize() int {
+func (this CipherCFB8) KeySize() int {
     return this.keySize
 }
 
 // oid
-func (this CipherCBC) OID() asn1.ObjectIdentifier {
+func (this CipherCFB8) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this CipherCBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherCFB8) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     // 加密数据补码
     plaintext = pkcs7Padding(plaintext, this.blockSize)
 
     // 随机生成 iv
-    iv := make(cbcParams, this.blockSize)
+    iv := make(cfb8Params, this.blockSize)
     if _, err := rand.Read(iv); err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to generate IV")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to generate IV")
     }
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
     }
 
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
 
-    enc := cipher.NewCBCEncrypter(block, iv)
-    enc.CryptBlocks(encrypted, plaintext)
+    enc := cryptobin_cipher.NewCFB8Encrypter(block, iv)
+    enc.XORKeyStream(encrypted, plaintext)
 
     // 编码 iv
     paramBytes, err := asn1.Marshal(iv)
@@ -60,11 +62,11 @@ func (this CipherCBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 }
 
 // 解密
-func (this CipherCBC) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
+func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     // 解析出 iv
-    var iv cbcParams
+    var iv cfb8Params
     if _, err := asn1.Unmarshal(params, &iv); err != nil {
-        return nil, errors.New("pkcs8: invalid iv parameters")
+        return nil, errors.New("pkcs/cipher: invalid iv parameters")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -78,11 +80,11 @@ func (this CipherCBC) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     blockSize := block.BlockSize()
     dlen := len(ciphertext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs8: invalid padding")
+        return nil, errors.New("pkcs/cipher: invalid padding")
     }
 
-    mode := cipher.NewCBCDecrypter(block, iv)
-    mode.CryptBlocks(plaintext, ciphertext)
+    mode := cryptobin_cipher.NewCFB8Decrypter(block, iv)
+    mode.XORKeyStream(plaintext, ciphertext)
 
     // 解析加密数据
     plaintext = pkcs7UnPadding(plaintext)

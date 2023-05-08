@@ -1,4 +1,4 @@
-package pkcs8pbe
+package pbes1
 
 import (
     "hash"
@@ -25,7 +25,7 @@ func hashKey(h func() hash.Hash, key []byte) []byte {
     return fn.Sum(nil)
 }
 
-// 生成密钥
+// Pbkdf 生成密钥
 func derivedKeyWithPbkdf(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte) {
     key := pbkdf.Key(h, 20, 64, []byte(salt), []byte(password), iter, 1, keyLen)
     iv := pbkdf.Key(h, 20, 64, []byte(salt), []byte(password), iter, 2, ivLen)

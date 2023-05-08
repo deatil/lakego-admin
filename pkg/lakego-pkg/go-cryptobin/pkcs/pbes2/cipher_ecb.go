@@ -1,4 +1,4 @@
-package encrypt
+package pbes2
 
 import (
     "fmt"
@@ -34,12 +34,12 @@ func (this CipherECB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs8:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
     }
 
     bs := block.BlockSize()
     if len(plaintext)%bs != 0 {
-        err := errors.New(fmt.Sprintf("pkcs8: the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plaintext), bs))
+        err := errors.New(fmt.Sprintf("pkcs/cipher: the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plaintext), bs))
         return nil, nil, err
     }
 
@@ -68,7 +68,7 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     // 判断数据是否为填充数据
     dlen := len(ciphertext)
     if dlen == 0 || dlen%bs != 0 {
-        return nil, errors.New("pkcs8: invalid padding")
+        return nil, errors.New("pkcs/cipher: invalid padding")
     }
 
     plaintext := make([]byte, len(ciphertext))

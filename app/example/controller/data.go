@@ -396,16 +396,16 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml")
+    obj2Pri, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-SHA1And3DES")
     obj2cypt := obj2.
         FromString("test-pass").
-        FromXMLPrivateKey([]byte(obj2Pri)).
+        FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml.pub")
+    obj2Pub, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-SHA1And3DES.pub")
     obj2cyptde := obj2.
-        FromBase64String("IM8Hs9L7/VUuMuacQ1RZN2YtCnQpZgAYMby6gskPZy7eMktHIbnXLfU2gznkkUM15Kr5dgP+64Cz/cJvQRyNMK0it/GkBLaVAgrRd86XuKOFj9/ilEbHF0doRjsPjjpl+HzN5xDWkJCQ9Ag8Z9SplcFxO7svS1eV4mu0638wY9EmYW89JyEkN00ecps8sde0Ky+7zlqXjUqzLmte2+W7OdOq7+oezQmsKirmqjLuMywgFFax7yLy3+rZ2gvhQWu10PzePIRbssOCTLf2aSZbAKKuqBMwo3oWT9pZBUFKRCbR8KxqdAHou4haM9gxmDCrymdj+5Na+mNv7i4pkG8NOg==").
-        FromXMLPublicKey([]byte(obj2Pub)).
+        FromBase64String("mk3FGB/6AYSYqtPmFgrQt8Nmn8RvRznyBhDOQzEDc2jsmZcsMmMfHPtvbZ96gAv0ezxiQuY/OlcPu+CMPNq6lrs2xDvhW25N9Of/a7GxfHVdKxntdZmrzbDUeNcr9UYc5fsWOff5b1DNzBbISR+VwIMF5O2AUzxyEEk20VdOxktdgPgMBHhoREAz/SZaKufD1R/8TS8uAOUAqjjFzTJXPjv0TTvPez1IvCKPzFp/mtb6q9P4rTd88ioYOuzbH6C3J2hwD9i4W+JeIdr/wHaMITBxqy8brgMhJjFRFLOV9XsMc1dKpYcvQt3kEijHVWj1RH22ZhkmfkIlpqOWCcQI3w==").
+        FromPublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 

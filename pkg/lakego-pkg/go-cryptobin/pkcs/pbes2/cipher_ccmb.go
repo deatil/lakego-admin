@@ -1,4 +1,4 @@
-package encrypt
+package pbes2
 
 import (
     "errors"
@@ -72,7 +72,7 @@ func (this CipherCCMb) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     var nonce ccmbParams
     _, err = asn1.Unmarshal(param, &nonce)
     if err != nil {
-        return nil, errors.New("pkcs8: invalid param type")
+        return nil, errors.New("pkcs/cipher: invalid param type")
     }
 
     aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonce))
