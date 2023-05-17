@@ -57,6 +57,8 @@ func (this Rsa) FromPublicKey(key []byte) Rsa {
     return this
 }
 
+// ==========
+
 // 生成密钥
 // bits = 512 | 1024 | 2048 | 4096
 func (this Rsa) GenerateKey(bits int) Rsa {
@@ -140,6 +142,8 @@ func (this Rsa) FromPKCS1PublicKey(key []byte) Rsa {
 
     return this
 }
+
+// ==========
 
 // Pkcs8
 func (this Rsa) FromPKCS8PrivateKey(key []byte) Rsa {

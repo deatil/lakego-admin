@@ -14,94 +14,117 @@ func New() Rsa {
     return NewRsa()
 }
 
+var (
+    // 默认
+    defaultRSA = NewRsa()
+)
+
 // ==========
 
 // 私钥
 func FromPrivateKey(key []byte) Rsa {
-    return NewRsa().FromPrivateKey(key)
+    return defaultRSA.FromPrivateKey(key)
 }
 
 // 私钥带密码
 func FromPrivateKeyWithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPrivateKeyWithPassword(key, password)
+    return defaultRSA.FromPrivateKeyWithPassword(key, password)
 }
 
 // 公钥
 func FromPublicKey(key []byte) Rsa {
-    return NewRsa().FromPublicKey(key)
-}
-
-// PKCS1 公钥
-func FromPKCS1PublicKey(key []byte) Rsa {
-    return NewRsa().FromPKCS1PublicKey(key)
-}
-
-// PKCS8 公钥
-func FromPKCS8PublicKey(key []byte) Rsa {
-    return NewRsa().FromPKCS8PublicKey(key)
-}
-
-// 生成密钥
-// bits = 512 | 1024 | 2048 | 4096
-func GenerateKey(bits int) Rsa {
-    return NewRsa().GenerateKey(bits)
-}
-
-// 生成密钥
-func GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
-    return NewRsa().GenerateMultiPrimeKey(nprimes, bits)
+    return defaultRSA.FromPublicKey(key)
 }
 
 // ==========
 
-// Pkcs1
+// 生成密钥
+// bits = 512 | 1024 | 2048 | 4096
+func GenerateKey(bits int) Rsa {
+    return defaultRSA.GenerateKey(bits)
+}
+
+// 生成密钥
+func GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
+    return defaultRSA.GenerateMultiPrimeKey(nprimes, bits)
+}
+
+// ==========
+
+// PKCS1 私钥
 func FromPKCS1PrivateKey(key []byte) Rsa {
-    return NewRsa().FromPKCS1PrivateKey(key)
+    return defaultRSA.FromPKCS1PrivateKey(key)
 }
 
-// Pkcs1WithPassword
+// PKCS1 私钥带密码
 func FromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS1PrivateKeyWithPassword(key, password)
+    return defaultRSA.FromPKCS1PrivateKeyWithPassword(key, password)
 }
 
-// Pkcs8
+// PKCS1 公钥
+func FromPKCS1PublicKey(key []byte) Rsa {
+    return defaultRSA.FromPKCS1PublicKey(key)
+}
+
+// ==========
+
+// PKCS8 私钥
 func FromPKCS8PrivateKey(key []byte) Rsa {
-    return NewRsa().FromPKCS8PrivateKey(key)
+    return defaultRSA.FromPKCS8PrivateKey(key)
 }
 
-// Pkcs8WithPassword
+// PKCS8 私钥带密码
 func FromPKCS8PrivateKeyWithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS8PrivateKeyWithPassword(key, password)
+    return defaultRSA.FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
-// Pkcs12 Cert
+// PKCS8 公钥
+func FromPKCS8PublicKey(key []byte) Rsa {
+    return defaultRSA.FromPKCS8PublicKey(key)
+}
+
+// ==========
+
+// XML 私钥
+func FromXMLPrivateKey(key []byte) Rsa {
+    return defaultRSA.FromXMLPrivateKey(key)
+}
+
+// XML 公钥
+func FromXMLPublicKey(key []byte) Rsa {
+    return defaultRSA.FromXMLPublicKey(key)
+}
+
+// ==========
+
+// Pkcs12Cert
 func FromPKCS12Cert(key []byte) Rsa {
-    return NewRsa().FromPKCS12Cert(key)
+    return defaultRSA.FromPKCS12Cert(key)
 }
 
-// Pkcs12CertWithPassword
+// Pkcs12Cert 带密码
 func FromPKCS12CertWithPassword(key []byte, password string) Rsa {
-    return NewRsa().FromPKCS12CertWithPassword(key, password)
+    return defaultRSA.FromPKCS12CertWithPassword(key, password)
 }
 
 // ==========
 
 // 字节
 func FromBytes(data []byte) Rsa {
-    return NewRsa().FromBytes(data)
+    return defaultRSA.FromBytes(data)
 }
 
 // 字符
 func FromString(data string) Rsa {
-    return NewRsa().FromString(data)
+    return defaultRSA.FromString(data)
 }
 
 // Base64
 func FromBase64String(data string) Rsa {
-    return NewRsa().FromBase64String(data)
+    return defaultRSA.FromBase64String(data)
 }
 
 // Hex
 func FromHexString(data string) Rsa {
-    return NewRsa().FromHexString(data)
+    return defaultRSA.FromHexString(data)
 }

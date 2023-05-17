@@ -28,10 +28,15 @@ type xmlPublicKey struct {
     Exponent string   `xml:"Exponent"`
 }
 
-// 构造函数
-func NewXMLKey() XMLKey {
-    return XMLKey{}
-}
+var (
+    errPublicKeyXMLValue = func(name string) error {
+        return errors.New("rsa xml: public key [" + name + "] value is error")
+    }
+
+    errPrivateKeyXMLValue = func(name string) error {
+        return errors.New("rsa xml: private key [" + name + "] value is error")
+    }
+)
 
 var defaultXMLKey = NewXMLKey()
 
@@ -42,6 +47,11 @@ var defaultXMLKey = NewXMLKey()
  * @author deatil
  */
 type XMLKey struct {}
+
+// 构造函数
+func NewXMLKey() XMLKey {
+    return XMLKey{}
+}
 
 // 包装公钥
 func (this XMLKey) MarshalPublicKey(key *rsa.PublicKey) ([]byte, error) {
@@ -65,9 +75,19 @@ func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
         return nil, err
     }
 
+    n, err := this.b64ToBigint(pub.Modulus)
+    if err != nil {
+        return nil, errPublicKeyXMLValue("Modulus")
+    }
+
+    e, err := this.b64ToBigint(pub.Exponent)
+    if err != nil {
+        return nil, errPublicKeyXMLValue("Exponent")
+    }
+
     publicKey := &rsa.PublicKey{
-        N: this.b64ToBigint(pub.Modulus),
-        E: int(this.b64ToBigint(pub.Exponent).Int64()),
+        N: n,
+        E: int(e.Int64()),
     }
 
     return publicKey, nil
@@ -110,11 +130,30 @@ func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
         return nil, err
     }
 
-    e := int(this.b64ToBigint(priv.Exponent).Int64())
-    n := this.b64ToBigint(priv.Modulus)
-    d := this.b64ToBigint(priv.D)
-    p := this.b64ToBigint(priv.P)
-    q := this.b64ToBigint(priv.Q)
+    n, err := this.b64ToBigint(priv.Modulus)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("Modulus")
+    }
+
+    e, err := this.b64ToBigint(priv.Exponent)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("Exponent")
+    }
+
+    d, err := this.b64ToBigint(priv.D)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("D")
+    }
+
+    p, err := this.b64ToBigint(priv.P)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("P")
+    }
+
+    q, err := this.b64ToBigint(priv.Q)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("Q")
+    }
 
     if n.Sign() <= 0 || d.Sign() <= 0 || p.Sign() <= 0 || q.Sign() <= 0 {
         return nil, errors.New("rsa xml: private key contains zero or negative value")
@@ -123,7 +162,7 @@ func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
     key := new(rsa.PrivateKey)
     key.PublicKey = rsa.PublicKey{
         N: n,
-        E: e,
+        E: int(e.Int64()),
     }
 
     key.D = d
@@ -147,20 +186,26 @@ func ParseXMLPrivateKey(der []byte) (*rsa.PrivateKey, error) {
 
 // ====================
 
-func (this XMLKey) b64d(str string) []byte {
-    decoded, _ := base64.StdEncoding.DecodeString(str)
+func (this XMLKey) b64d(str string) ([]byte, error) {
+    decoded, err := base64.StdEncoding.DecodeString(str)
 
-    return []byte(decoded)
+    return []byte(decoded), err
 }
 
 func (this XMLKey) b64e(src []byte) string {
     return base64.StdEncoding.EncodeToString(src)
 }
 
-func (this XMLKey) b64ToBigint(str string) *big.Int {
+func (this XMLKey) b64ToBigint(str string) (*big.Int, error) {
+    decoded, err := this.b64d(str)
+    if err != nil {
+        return nil, err
+    }
+
     bInt := &big.Int{}
-    bInt.SetBytes(this.b64d(str))
-    return bInt
+    bInt.SetBytes(decoded)
+
+    return bInt, nil
 }
 
 // big.NewInt(int64)
