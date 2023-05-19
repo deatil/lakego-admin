@@ -34,7 +34,7 @@ func NewTwoDESCipher(key []byte) (cipher.Block, error) {
 }
 
 func (c *twoDESCipher) BlockSize() int {
-    return des.BlockSize
+    return BlockSize
 }
 
 func (c *twoDESCipher) Encrypt(dst, src []byte) {

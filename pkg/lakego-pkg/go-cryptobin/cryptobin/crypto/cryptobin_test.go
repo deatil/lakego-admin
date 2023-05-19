@@ -406,3 +406,173 @@ func Test_TwoDesCFBPKCS7Padding(t *testing.T) {
 
     assert(data, cyptdeStr, "TwoDesCFBPKCS7Padding")
 }
+
+func Test_IdeaCBCPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("1234567890abcdef").
+        SetIv("jifu87uj").
+        Idea().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "IdeaCBCPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("1234567890abcdef").
+        SetIv("jifu87uj").
+        Idea().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "IdeaCBCPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "IdeaCBCPKCS7Padding")
+}
+
+func Test_RC4MD5(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("1234567890abcdef").
+        SetIv("jifu87uj").
+        RC4MD5().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "RC4MD5-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("1234567890abcdef").
+        SetIv("jifu87uj").
+        RC4MD5().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "RC4MD5-Decode")
+
+    assert(data, cyptdeStr, "RC4MD5")
+}
+
+func Test_Salsa20(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("1234567890abcdef1234567890abcdef").
+        Salsa20("1234567890abcdef").
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Salsa20-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("1234567890abcdef1234567890abcdef").
+        Salsa20("1234567890abcdef").
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Salsa20-Decode")
+
+    assert(data, cyptdeStr, "Salsa20")
+}
+
+func Test_SeedCFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Seed().
+        CFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "SeedCFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Seed().
+        CFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "SeedCFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "SeedCFBPKCS7Padding")
+}
+
+func Test_AriaCFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Aria().
+        CFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AriaCFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Aria().
+        CFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AriaCFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "AriaCFBPKCS7Padding")
+}
+
+func Test_CamelliaCFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Camellia().
+        CFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "CamelliaCFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12").
+        SetIv("jifu87ujjifu87uj").
+        Camellia().
+        CFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "CamelliaCFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "CamelliaCFBPKCS7Padding")
+}

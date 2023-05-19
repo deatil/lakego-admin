@@ -104,7 +104,7 @@ ret := crypto.
 *  设置向量:
 `SetIv(data string)`, `WithIv(iv []byte)`
 *  加密类型:
-`Aes()`, `Des()`, `TripleDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `RC4()`, `Xts(cipher string, sectorNum uint64)`
+`Aes()`, `Des()`, `TripleDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `RC4()`, `Idea()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `Xts(cipher string, sectorNum uint64)`
 *  加密模式:
 `ECB()`, `CBC()`, `PCBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`, `CCM(nonce string, additional ...string)`
 *  补码方式:

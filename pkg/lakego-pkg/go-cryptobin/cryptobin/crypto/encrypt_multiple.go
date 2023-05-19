@@ -3,6 +3,7 @@ package crypto
 import (
     "fmt"
     "errors"
+    "crypto/md5"
     "crypto/aes"
     "crypto/des"
     "crypto/rc4"
@@ -23,6 +24,11 @@ import (
     cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
+    cryptobin_idea "github.com/deatil/go-cryptobin/cipher/idea"
+    cryptobin_seed "github.com/deatil/go-cryptobin/cipher/seed"
+    cryptobin_aria "github.com/deatil/go-cryptobin/cipher/aria"
+    cryptobin_salsa20 "github.com/deatil/go-cryptobin/cipher/salsa20"
+    cryptobin_camellia "github.com/deatil/go-cryptobin/cipher/camellia"
 )
 
 // 获取模式方式
@@ -449,6 +455,36 @@ func (this EncryptRC5) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
+type EncryptIdea struct {}
+
+// 加密
+func (this EncryptIdea) getBlock(opt IOption) (cipher.Block, error) {
+    // Idea only supports 128 bit (16 byte) keys.
+    return cryptobin_idea.NewCipher(opt.Key())
+}
+
+// 加密
+func (this EncryptIdea) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := this.getBlock(opt)
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptIdea) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := this.getBlock(opt)
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
 type EncryptSM4 struct {}
 
 // 加密
@@ -661,6 +697,50 @@ func (this EncryptRC4) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
+// RC4 key, at least 1 byte and at most 256 bytes.
+type EncryptRC4MD5 struct {}
+
+// 加密
+func (this EncryptRC4MD5) getCipher(opt IOption) (cipher.Stream, error) {
+    h := md5.New()
+    h.Write(opt.Key())
+    h.Write(opt.Iv())
+
+    return rc4.NewCipher(h.Sum(nil))
+}
+
+// 加密
+func (this EncryptRC4MD5) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    rc, err := this.getCipher(opt)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: rc4.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    rc.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptRC4MD5) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    rc, err := this.getCipher(opt)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: rc4.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    rc.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
 // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
 type EncryptXts struct {}
 
@@ -747,6 +827,127 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
+// Salsa20 key is 32 bytes.
+// nonce is 16 bytes.
+type EncryptSalsa20 struct {}
+
+// 加密
+func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    nonce := opt.Config().GetBytes("nonce")
+
+    c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: salsa20.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    nonce := opt.Config().GetBytes("nonce")
+
+    c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: salsa20.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// ===================
+
+// Seed key is 16 bytes.
+type EncryptSeed struct {}
+
+// 加密
+func (this EncryptSeed) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_seed.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: seed.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptSeed) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_seed.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: seed.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
+// Aria key is 16, 24, or 32 bytes.
+type EncryptAria struct {}
+
+// 加密
+func (this EncryptAria) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_aria.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: aria.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptAria) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_aria.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: aria.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
+// Camellia key is 16, 24, or 32 bytes.
+type EncryptCamellia struct {}
+
+// 加密
+func (this EncryptCamellia) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_camellia.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: camellia.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptCamellia) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_camellia.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: camellia.NewCipher(),error:%w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
 func init() {
     UseEncrypt.Add(Aes, func() IEncrypt {
         return EncryptAes{}
@@ -781,11 +982,17 @@ func init() {
     UseEncrypt.Add(RC4, func() IEncrypt {
         return EncryptRC4{}
     })
+    UseEncrypt.Add(RC4MD5, func() IEncrypt {
+        return EncryptRC4MD5{}
+    })
     UseEncrypt.Add(RC5, func() IEncrypt {
         return EncryptRC5{}
     })
     UseEncrypt.Add(SM4, func() IEncrypt {
         return EncryptSM4{}
+    })
+    UseEncrypt.Add(Idea, func() IEncrypt {
+        return EncryptIdea{}
     })
     UseEncrypt.Add(Chacha20, func() IEncrypt {
         return EncryptChacha20{}
@@ -798,5 +1005,17 @@ func init() {
     })
     UseEncrypt.Add(Xts, func() IEncrypt {
         return EncryptXts{}
+    })
+    UseEncrypt.Add(Salsa20, func() IEncrypt {
+        return EncryptSalsa20{}
+    })
+    UseEncrypt.Add(Seed, func() IEncrypt {
+        return EncryptSeed{}
+    })
+    UseEncrypt.Add(Aria, func() IEncrypt {
+        return EncryptAria{}
+    })
+    UseEncrypt.Add(Camellia, func() IEncrypt {
+        return EncryptCamellia{}
     })
 }
