@@ -2,7 +2,7 @@ package pbes1
 
 // PEMCipher 列表
 var PEMCipherMap = map[string]Cipher{
-    // pcks12 模式
+    // pkcs12 模式
     "SHA1And3DES":    SHA1And3DES,
     "SHA1And2DES":    SHA1And2DES,
     "SHA1AndRC2_128": SHA1AndRC2_128,

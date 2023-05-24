@@ -27,7 +27,7 @@ var MakeKeyCmd = &cobra.Command{
 
     },
     Run: func(cmd *cobra.Command, args []string) {
-        key.NewCurve25519().Make()
+        key.NewRsa().Make()
 
         // key.KeyCheck()
 

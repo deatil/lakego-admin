@@ -31,6 +31,21 @@ func ParseOpts(opts ...any) (Opts, error) {
     switch newOpt := opts[0].(type) {
         case Opts:
             return newOpt, nil
+        case Cipher:
+            kdfOpts := PBKDF2Opts{
+                SaltSize:       16,
+                IterationCount: 10000,
+            }
+
+            cipher := newOpt
+
+            // 设置
+            newOpts := Opts{
+                Cipher:  cipher,
+                KDFOpts: kdfOpts,
+            }
+
+            return newOpts, nil
         case string:
             // DESCBC | DESEDE3CBC
             // AES128CBC | AES192CBC | AES256CBC

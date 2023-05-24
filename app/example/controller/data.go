@@ -33,6 +33,7 @@ import (
     _ "github.com/deatil/go-cryptobin/pkcs7/encrypt"
     _ "github.com/deatil/go-cryptobin/pkcs8"
     _ "github.com/deatil/go-cryptobin/pkcs8pbe"
+    _ "github.com/deatil/go-cryptobin/pkcs8s"
     _ "github.com/deatil/go-cryptobin/pkcs12"
     _ "github.com/deatil/go-cryptobin/jceks"
     _ "github.com/deatil/go-cryptobin/cryptobin/ca"
@@ -396,16 +397,16 @@ func (this *Data) Error(ctx *gin.Context) {
     // 验证
     obj2 := cryptobin_rsa.New()
 
-    obj2Pri, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml")
+    obj2Pri, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-SHA1AndDES")
     obj2cypt := obj2.
         FromString("test-pass").
-        FromXMLPrivateKey([]byte(obj2Pri)).
+        FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/rsa/xml/rsa_xml.pub")
+    obj2Pub, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-SHA1AndDES.pub")
     obj2cyptde := obj2.
-        FromBase64String("IM8Hs9L7/VUuMuacQ1RZN2YtCnQpZgAYMby6gskPZy7eMktHIbnXLfU2gznkkUM15Kr5dgP+64Cz/cJvQRyNMK0it/GkBLaVAgrRd86XuKOFj9/ilEbHF0doRjsPjjpl+HzN5xDWkJCQ9Ag8Z9SplcFxO7svS1eV4mu0638wY9EmYW89JyEkN00ecps8sde0Ky+7zlqXjUqzLmte2+W7OdOq7+oezQmsKirmqjLuMywgFFax7yLy3+rZ2gvhQWu10PzePIRbssOCTLf2aSZbAKKuqBMwo3oWT9pZBUFKRCbR8KxqdAHou4haM9gxmDCrymdj+5Na+mNv7i4pkG8NOg==").
-        FromXMLPublicKey([]byte(obj2Pub)).
+        FromBase64String("Pok10M8e9u1WicbS08/IvoKChoYXfKbljcJYr6srL5TkaAJTYD4thgPDV/EzRvCqfJsQyDb0cOqM2kmwKDt5zl+Amf6TitTPKb9LxCCuKcz6VKHtoUZ+t4ENZM4y2bjRNjkChWdjjEb0kjoljWoaZ+zoWl+6QWRRug6NQJag78J3crqVA34iulsygC/sVEy/LKSJ76PBDx9srdqXpf03HiJgYUSso7YnZ3RT+AS13GgZy7BFZskrjIX2Qw64X8Ydtt5TrfMckjxf0QWdNSwmFxSeNh1Cn2gozG9sJl7yiELNiG0JqRDIOYQTpszj314W5CYEIa/y4eRTDmiNiKr3cA==").
+        FromPKCS8PublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 

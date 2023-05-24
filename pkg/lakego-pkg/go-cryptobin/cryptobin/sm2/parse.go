@@ -7,8 +7,7 @@ import (
     "github.com/tjfoc/gmsm/sm2"
     "github.com/tjfoc/gmsm/x509"
 
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
+    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
 )
 
 var (
@@ -35,15 +34,12 @@ func (this SM2) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
         return nil, ErrKeyMustBePEMEncoded
     }
 
-    var pkey *sm2.PrivateKey
-
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPKCS8PrivateKey(block.Bytes, []byte(password)); err != nil {
-        if blockDecrypted, err = cryptobin_pkcs8pbe.DecryptPKCS8PrivateKey(block.Bytes, []byte(password)); err != nil {
-            return nil, err
-        }
+    if blockDecrypted, err = cryptobin_pkcs8s.DecryptPEMBlock(block, []byte(password)); err != nil {
+        return nil, err
     }
 
+    var pkey *sm2.PrivateKey
     if pkey, err = x509.ParsePKCS8UnecryptedPrivateKey(blockDecrypted); err != nil {
         return nil, err
     }

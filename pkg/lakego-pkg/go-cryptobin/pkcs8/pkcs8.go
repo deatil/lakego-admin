@@ -22,13 +22,24 @@ type Opts struct {
     KDFOpts KDFOpts
 }
 
+// 默认配置 PBKDF2
+var DefaultPBKDF2Opts = PBKDF2Opts{
+    SaltSize:       16,
+    IterationCount: 10000,
+}
+
+// 默认配置 Scrypt
+var DefaultScryptOpts = ScryptOpts{
+    SaltSize:                 16,
+    CostParameter:            1 << 2,
+    BlockSize:                8,
+    ParallelizationParameter: 1,
+}
+
 // 默认配置
 var DefaultOpts = Opts{
     Cipher:  AES256CBC,
-    KDFOpts: PBKDF2Opts{
-        SaltSize:       16,
-        IterationCount: 10000,
-    },
+    KDFOpts: DefaultPBKDF2Opts,
 }
 
 // 结构体数据可以查看以下文档
@@ -60,17 +71,17 @@ func EncryptPKCS8PrivateKey(
 
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("failed to encrypt PEM: unknown opts cipher")
+        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts cipher")
     }
 
     kdfOpts := opt.KDFOpts
     if kdfOpts == nil {
-        return nil, errors.New("failed to encrypt PEM: unknown opts kdfOpts")
+        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts kdfOpts")
     }
 
     salt := make([]byte, kdfOpts.GetSaltSize())
     if _, err := io.ReadFull(rand, salt); err != nil {
-        return nil, errors.New(err.Error() + " failed to generate salt")
+        return nil, errors.New("pkcs8: failed to generate salt." + err.Error())
     }
 
     key, kdfParams, err := kdfOpts.DeriveKey(password, salt, cipher.KeySize())
@@ -127,7 +138,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New(err.Error() + " error marshaling encrypted key")
+        return nil, errors.New("pkcs8: error marshaling encrypted key." + err.Error())
     }
 
     return &pem.Block{
@@ -140,11 +151,11 @@ func EncryptPKCS8PrivateKey(
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New(err.Error() + " failed to unmarshal private key")
+        return nil, errors.New("pkcs8: failed to unmarshal private key." + err.Error())
     }
 
     if !pki.EncryptionAlgorithm.Algorithm.Equal(oidPBES2) {
-        return nil, errors.New("unsupported encrypted PEM: only PBES2 is supported")
+        return nil, errors.New("pkcs8: unsupported encrypted PEM: only PBES2 is supported")
     }
 
     var params pbes2Params
@@ -191,7 +202,7 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         return DecryptPKCS8PrivateKey(block.Bytes, password)
     }
 
-    return nil, errors.New("unsupported encrypted PEM")
+    return nil, errors.New("pkcs8: unsupported encrypted PEM")
 }
 
 func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFParameters, error) {

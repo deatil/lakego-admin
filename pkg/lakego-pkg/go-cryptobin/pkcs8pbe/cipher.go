@@ -20,7 +20,7 @@ var (
 
 // 加密方式
 var (
-    // pcks12 模式
+    // pkcs12 模式
     SHA1And3DES    = pbes1.SHA1And3DES
     SHA1And2DES    = pbes1.SHA1And2DES
     SHA1AndRC2_128 = pbes1.SHA1AndRC2_128

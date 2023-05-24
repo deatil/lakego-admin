@@ -5,10 +5,9 @@ import (
     "crypto"
     "encoding/pem"
 
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
-
     "github.com/deatil/go-cryptobin/dh/ecdh"
+
+    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
 )
 
 var (
@@ -52,15 +51,12 @@ func (this Ecdh) ParsePrivateKeyFromPEMWithPassword(key []byte, password string)
         return nil, ErrKeyMustBePEMEncoded
     }
 
-    var parsedKey any
-
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPKCS8PrivateKey(block.Bytes, []byte(password)); err != nil {
-        if blockDecrypted, err = cryptobin_pkcs8pbe.DecryptPKCS8PrivateKey(block.Bytes, []byte(password)); err != nil {
-            return nil, err
-        }
+    if blockDecrypted, err = cryptobin_pkcs8s.DecryptPEMBlock(block, []byte(password)); err != nil {
+        return nil, err
     }
 
+    var parsedKey any
     if parsedKey, err = ecdh.ParsePrivateKey(blockDecrypted); err != nil {
         return nil, err
     }

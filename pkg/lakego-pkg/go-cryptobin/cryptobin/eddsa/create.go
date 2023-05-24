@@ -7,7 +7,7 @@ import (
     "encoding/pem"
 
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
+    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
 )
 
 type (
@@ -54,29 +54,8 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdDSA {
-    if len(opts) > 0 {
-        switch optString := opts[0].(type) {
-            case string:
-                isPkcs8Pbe := cryptobin_pkcs8pbe.CheckCipherFromName(optString)
-
-                if isPkcs8Pbe {
-                    return this.createPbePrivateKeyWithPassword(password, optString)
-                }
-        }
-    }
-
-    return this.createKdfPrivateKeyWithPassword(password, opts...)
-}
-
-// 生成私钥带密码 pem 数据
-func (this EdDSA) createKdfPrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
         err := errors.New("EdDSA: privateKey error.")
-        return this.AppendError(err)
-    }
-
-    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
-    if err != nil {
         return this.AppendError(err)
     }
 
@@ -86,45 +65,18 @@ func (this EdDSA) createKdfPrivateKeyWithPassword(password string, opts ...any) 
         return this.AppendError(err)
     }
 
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8.EncryptPKCS8PrivateKey(
+    privateBlock, err := cryptobin_pkcs8s.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
         x509PrivateKey,
         []byte(password),
         opt,
-    )
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.keyData = pem.EncodeToMemory(privateBlock)
-
-    return this
-}
-
-// 生成 PKCS8 私钥带密码 pem 数据
-func (this EdDSA) createPbePrivateKeyWithPassword(password string, alg string) EdDSA {
-    if this.privateKey == nil {
-        err := errors.New("EdDSA: privateKey error.")
-        return this.AppendError(err)
-    }
-
-    // 生成私钥
-    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    pemCipher := cryptobin_pkcs8pbe.GetCipherFromName(alg)
-
-    // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8pbe.EncryptPKCS8PrivateKey(
-        rand.Reader,
-        "ENCRYPTED PRIVATE KEY",
-        x509PrivateKey,
-        []byte(password),
-        pemCipher,
     )
     if err != nil {
         return this.AppendError(err)
