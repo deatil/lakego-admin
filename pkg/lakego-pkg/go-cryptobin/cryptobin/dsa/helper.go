@@ -1,21 +1,5 @@
 package dsa
 
-// 构造函数
-func NewDSA() DSA {
-    return DSA{
-        signHash: "SHA512",
-        verify:   false,
-        Errors:   make([]error, 0),
-    }
-}
-
-// 构造函数
-func New() DSA {
-    return NewDSA()
-}
-
-// ==========
-
 // 私钥
 func FromPrivateKey(key []byte) DSA {
     return NewDSA().FromPrivateKey(key)

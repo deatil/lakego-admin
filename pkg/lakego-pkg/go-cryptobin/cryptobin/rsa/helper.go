@@ -1,26 +1,5 @@
 package rsa
 
-// 构造函数
-func NewRsa() Rsa {
-    return Rsa{
-        signHash: "SHA512",
-        verify:   false,
-        Errors:   make([]error, 0),
-    }
-}
-
-// 构造函数
-func New() Rsa {
-    return NewRsa()
-}
-
-var (
-    // 默认
-    defaultRSA = NewRsa()
-)
-
-// ==========
-
 // 私钥
 func FromPrivateKey(key []byte) Rsa {
     return defaultRSA.FromPrivateKey(key)

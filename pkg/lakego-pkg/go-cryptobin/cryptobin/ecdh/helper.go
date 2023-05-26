@@ -1,18 +1,21 @@
 package ecdh
 
-import (
-    "crypto/ecdh"
-)
-
-// 构造函数
-func NewEcdh() Ecdh {
-    return Ecdh{
-        curve:  ecdh.P256(),
-        Errors: make([]error, 0),
-    }
+// 私钥
+func FromPrivateKey(key []byte) Ecdh {
+    return NewEcdh().FromPrivateKey(key)
 }
 
-// 构造函数
-func New() Ecdh {
-    return NewEcdh()
+// 私钥
+func FromPrivateKeyWithPassword(key []byte, password string) Ecdh {
+    return NewEcdh().FromPrivateKeyWithPassword(key, password)
+}
+
+// 公钥
+func FromPublicKey(key []byte) Ecdh {
+    return NewEcdh().FromPublicKey(key)
+}
+
+// 生成密钥
+func GenerateKey() Ecdh {
+    return NewEcdh().GenerateKey()
 }

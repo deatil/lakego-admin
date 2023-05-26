@@ -13,7 +13,7 @@ import (
 
 type (
     // 配置
-    Opts = cryptobin_pkcs8.Opts
+    Opts       = cryptobin_pkcs8.Opts
     // PBKDF2 配置
     PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
     // Scrypt 配置
@@ -81,13 +81,13 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
         return this.AppendError(err)
     }
 
-    // 生成私钥
-    x509PrivateKey, err := x509.MarshalSm2UnecryptedPrivateKey(this.privateKey)
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    // 生成私钥
+    x509PrivateKey, err := x509.MarshalSm2UnecryptedPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -112,7 +112,7 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: privateKey error.")
+        err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 

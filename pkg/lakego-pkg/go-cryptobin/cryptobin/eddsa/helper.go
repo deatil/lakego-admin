@@ -1,20 +1,5 @@
 package eddsa
 
-// 构造函数
-func NewEdDSA() EdDSA {
-    return EdDSA{
-        verify: false,
-        Errors: make([]error, 0),
-    }
-}
-
-// 构造函数
-func New() EdDSA {
-    return NewEdDSA()
-}
-
-// ==========
-
 // 私钥
 func FromPrivateKey(key []byte) EdDSA {
     return NewEdDSA().FromPrivateKey(key)

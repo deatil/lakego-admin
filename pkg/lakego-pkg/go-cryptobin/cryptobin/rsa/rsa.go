@@ -2,17 +2,7 @@ package rsa
 
 import (
     "crypto/rsa"
-    "crypto/x509"
 )
-
-// pem 加密方式
-var PEMCiphers = map[string]x509.PEMCipher{
-    "DESCBC":     x509.PEMCipherDES,
-    "DESEDE3CBC": x509.PEMCipher3DES,
-    "AES128CBC":  x509.PEMCipherAES128,
-    "AES192CBC":  x509.PEMCipherAES192,
-    "AES256CBC":  x509.PEMCipherAES256,
-}
 
 /**
  * Rsa 加密
@@ -45,3 +35,22 @@ type Rsa struct {
     // 错误
     Errors []error
 }
+
+// 构造函数
+func NewRsa() Rsa {
+    return Rsa{
+        signHash: "SHA512",
+        verify:   false,
+        Errors:   make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() Rsa {
+    return NewRsa()
+}
+
+var (
+    // 默认
+    defaultRSA = NewRsa()
+)

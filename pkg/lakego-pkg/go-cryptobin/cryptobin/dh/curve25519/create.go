@@ -12,7 +12,7 @@ import (
 
 type (
     // 配置
-    Opts = cryptobin_pkcs8.Opts
+    Opts       = cryptobin_pkcs8.Opts
     // PBKDF2 配置
     PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
     // Scrypt 配置
@@ -42,7 +42,7 @@ func (this Curve25519) CreatePrivateKey() Curve25519 {
     }
 
     privateBlock := &pem.Block{
-        Type: "PRIVATE KEY",
+        Type:  "PRIVATE KEY",
         Bytes: privateKey,
     }
 
@@ -59,13 +59,13 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
         return this.AppendError(err)
     }
 
-    // 生成私钥
-    privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    // 生成私钥
+    privateKey, err := curve25519.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -90,7 +90,7 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
 // 生成公钥 pem 数据
 func (this Curve25519) CreatePublicKey() Curve25519 {
     if this.publicKey == nil {
-        err := errors.New("Curve25519: privateKey error.")
+        err := errors.New("Curve25519: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -100,7 +100,7 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
     }
 
     publicBlock := &pem.Block{
-        Type: "PUBLIC KEY",
+        Type:  "PUBLIC KEY",
         Bytes: publicKeyBytes,
     }
 

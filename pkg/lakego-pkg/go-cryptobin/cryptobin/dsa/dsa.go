@@ -2,17 +2,7 @@ package dsa
 
 import (
     "crypto/dsa"
-    "crypto/x509"
 )
-
-// pem 加密方式
-var PEMCiphers = map[string]x509.PEMCipher{
-    "DESCBC":     x509.PEMCipherDES,
-    "DESEDE3CBC": x509.PEMCipher3DES,
-    "AES128CBC":  x509.PEMCipherAES128,
-    "AES192CBC":  x509.PEMCipherAES192,
-    "AES256CBC":  x509.PEMCipherAES256,
-}
 
 /**
  * DSA
@@ -44,4 +34,18 @@ type DSA struct {
 
     // 错误
     Errors []error
+}
+
+// 构造函数
+func NewDSA() DSA {
+    return DSA{
+        signHash: "SHA512",
+        verify:   false,
+        Errors:   make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() DSA {
+    return NewDSA()
 }

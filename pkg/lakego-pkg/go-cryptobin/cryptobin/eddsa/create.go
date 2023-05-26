@@ -12,7 +12,7 @@ import (
 
 type (
     // 配置
-    Opts = cryptobin_pkcs8.Opts
+    Opts       = cryptobin_pkcs8.Opts
     // PBKDF2 配置
     PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
     // Scrypt 配置
@@ -42,7 +42,7 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
     }
 
     privateBlock := &pem.Block{
-        Type: "PRIVATE KEY",
+        Type:  "PRIVATE KEY",
         Bytes: x509PrivateKey,
     }
 
@@ -59,13 +59,13 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdD
         return this.AppendError(err)
     }
 
-    // 生成私钥
-    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    // 生成私钥
+    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -90,7 +90,7 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdD
 // 生成公钥 pem 数据
 func (this EdDSA) CreatePublicKey() EdDSA {
     if this.publicKey == nil {
-        err := errors.New("EdDSA: privateKey error.")
+        err := errors.New("EdDSA: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -100,7 +100,7 @@ func (this EdDSA) CreatePublicKey() EdDSA {
     }
 
     publicBlock := &pem.Block{
-        Type: "PUBLIC KEY",
+        Type:  "PUBLIC KEY",
         Bytes: x509PublicKey,
     }
 

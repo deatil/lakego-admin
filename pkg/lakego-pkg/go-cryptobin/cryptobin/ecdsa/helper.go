@@ -1,26 +1,5 @@
 package ecdsa
 
-import (
-    "crypto/elliptic"
-)
-
-// 构造函数
-func NewEcdsa() Ecdsa {
-    return Ecdsa{
-        curve:    elliptic.P256(),
-        signHash: "SHA512",
-        verify:   false,
-        Errors:   make([]error, 0),
-    }
-}
-
-// 构造函数
-func New() Ecdsa {
-    return NewEcdsa()
-}
-
-// ==========
-
 // 私钥
 func FromPrivateKey(key []byte) Ecdsa {
     return NewEcdsa().FromPrivateKey(key)

@@ -35,3 +35,17 @@ type SM2 struct {
     // 错误
     Errors []error
 }
+
+// 构造函数
+func NewSM2() SM2 {
+    return SM2{
+        mode:   sm2.C1C3C2,
+        verify: false,
+        Errors: make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() SM2 {
+    return NewSM2()
+}

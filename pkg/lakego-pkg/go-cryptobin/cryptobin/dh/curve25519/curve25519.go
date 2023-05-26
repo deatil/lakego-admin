@@ -1,7 +1,7 @@
 package curve25519
 
 import (
-    cryptobin_curve25519 "github.com/deatil/go-cryptobin/dh/curve25519"
+    "github.com/deatil/go-cryptobin/dh/curve25519"
 )
 
 /**
@@ -12,10 +12,10 @@ import (
  */
 type Curve25519 struct {
     // 私钥
-    privateKey *cryptobin_curve25519.PrivateKey
+    privateKey *curve25519.PrivateKey
 
     // 公钥
-    publicKey *cryptobin_curve25519.PublicKey
+    publicKey *curve25519.PublicKey
 
     // [私钥/公钥]数据
     keyData []byte
@@ -25,4 +25,16 @@ type Curve25519 struct {
 
     // 错误
     Errors []error
+}
+
+// 构造函数
+func NewCurve25519() Curve25519 {
+    return Curve25519{
+        Errors: make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() Curve25519 {
+    return NewCurve25519()
 }

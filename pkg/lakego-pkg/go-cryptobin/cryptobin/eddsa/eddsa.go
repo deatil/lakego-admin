@@ -1,18 +1,8 @@
 package eddsa
 
 import (
-    "crypto/x509"
     "crypto/ed25519"
 )
-
-// pem 加密方式
-var PEMCiphers = map[string]x509.PEMCipher{
-    "DESCBC":     x509.PEMCipherDES,
-    "DESEDE3CBC": x509.PEMCipher3DES,
-    "AES128CBC":  x509.PEMCipherAES128,
-    "AES192CBC":  x509.PEMCipherAES192,
-    "AES256CBC":  x509.PEMCipherAES256,
-}
 
 /**
  * EdDSA
@@ -41,4 +31,17 @@ type EdDSA struct {
 
     // 错误
     Errors []error
+}
+
+// 构造函数
+func NewEdDSA() EdDSA {
+    return EdDSA{
+        verify: false,
+        Errors: make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() EdDSA {
+    return NewEdDSA()
 }

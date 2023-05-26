@@ -1,27 +1,5 @@
 package crypto
 
-import (
-    "github.com/deatil/go-cryptobin/tool"
-)
-
-// 构造函数
-func NewCryptobin() Cryptobin {
-    return Cryptobin{
-        multiple: Aes,
-        mode:     ECB,
-        padding:  NoPadding,
-        config:   tool.NewConfig(),
-        Errors:   make([]error, 0),
-    }
-}
-
-// 构造函数
-func New() Cryptobin {
-    return NewCryptobin()
-}
-
-// ==========
-
 // 字节
 func FromBytes(data []byte) Cryptobin {
     return NewCryptobin().FromBytes(data)

@@ -1,13 +1,36 @@
 package curve25519
 
-// 构造函数
-func NewEcdh() Curve25519 {
-    return Curve25519{
-        Errors: make([]error, 0),
-    }
+// 私钥
+func FromPrivateKey(key []byte) Curve25519 {
+    return NewCurve25519().FromPrivateKey(key)
 }
 
-// 构造函数
-func New() Curve25519 {
-    return NewEcdh()
+// 私钥
+func FromPrivateKeyWithPassword(key []byte, password string) Curve25519 {
+    return NewCurve25519().FromPrivateKeyWithPassword(key, password)
+}
+
+// 公钥
+func FromPublicKey(key []byte) Curve25519 {
+    return NewCurve25519().FromPublicKey(key)
+}
+
+// 根据私钥 x, y 生成
+func FromKeyXYHexString(xString string, yString string) Curve25519 {
+    return NewCurve25519().FromKeyXYHexString(xString, yString)
+}
+
+// 根据私钥 x 生成
+func FromPrivateKeyXHexString(xString string) Curve25519 {
+    return NewCurve25519().FromPrivateKeyXHexString(xString)
+}
+
+// 根据公钥 y 生成
+func FromPublicKeyYHexString(yString string) Curve25519 {
+    return NewCurve25519().FromPublicKeyYHexString(yString)
+}
+
+// 生成密钥
+func GenerateKey() Curve25519 {
+    return NewCurve25519().GenerateKey()
 }

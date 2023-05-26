@@ -12,7 +12,7 @@ import (
 
 type (
     // 配置
-    Opts = cryptobin_pkcs8.Opts
+    Opts       = cryptobin_pkcs8.Opts
     // PBKDF2 配置
     PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
     // Scrypt 配置
@@ -42,7 +42,7 @@ func (this Ecdh) CreatePrivateKey() Ecdh {
     }
 
     privateBlock := &pem.Block{
-        Type: "PRIVATE KEY",
+        Type:  "PRIVATE KEY",
         Bytes: privateKey,
     }
 
@@ -59,13 +59,13 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
         return this.AppendError(err)
     }
 
-    // 生成私钥
-    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    // 生成私钥
+    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -90,7 +90,7 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
 // 生成公钥 pem 数据
 func (this Ecdh) CreatePublicKey() Ecdh {
     if this.publicKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("Ecdh: publicKey error.")
         return this.AppendError(err)
     }
 

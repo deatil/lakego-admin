@@ -3,8 +3,8 @@ package curve25519
 import (
     "crypto/rand"
 
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/dh/curve25519"
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥
@@ -45,7 +45,7 @@ func (this Curve25519) FromPublicKey(key []byte) Curve25519 {
 
 // 根据私钥 x, y 生成
 func (this Curve25519) FromKeyXYHexString(xString string, yString string) Curve25519 {
-    encoding := cryptobin_tool.NewEncoding()
+    encoding := tool.NewEncoding()
 
     x, _ := encoding.HexDecode(xString)
     y, _ := encoding.HexDecode(yString)
@@ -62,7 +62,7 @@ func (this Curve25519) FromKeyXYHexString(xString string, yString string) Curve2
 
 // 根据私钥 x 生成
 func (this Curve25519) FromPrivateKeyXHexString(xString string) Curve25519 {
-    encoding := cryptobin_tool.NewEncoding()
+    encoding := tool.NewEncoding()
 
     x, _ := encoding.HexDecode(xString)
 
@@ -79,7 +79,7 @@ func (this Curve25519) FromPrivateKeyXHexString(xString string) Curve25519 {
 
 // 根据公钥 y 生成
 func (this Curve25519) FromPublicKeyYHexString(yString string) Curve25519 {
-    encoding := cryptobin_tool.NewEncoding()
+    encoding := tool.NewEncoding()
 
     y, _ := encoding.HexDecode(yString)
 
@@ -94,7 +94,7 @@ func (this Curve25519) FromPublicKeyYHexString(yString string) Curve25519 {
 // 生成密钥
 func (this Curve25519) GenerateKey() Curve25519 {
     privateKey, publicKey, err := curve25519.GenerateKey(rand.Reader)
-    
+
     this.privateKey = privateKey
     this.publicKey  = publicKey
 

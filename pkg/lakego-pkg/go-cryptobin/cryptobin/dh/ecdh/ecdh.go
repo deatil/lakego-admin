@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    cryptobin_ecdh "github.com/deatil/go-cryptobin/dh/ecdh"
+    "github.com/deatil/go-cryptobin/dh/ecdh"
 )
 
 /**
@@ -12,13 +12,13 @@ import (
  */
 type Ecdh struct {
     // 私钥
-    privateKey *cryptobin_ecdh.PrivateKey
+    privateKey *ecdh.PrivateKey
 
     // 公钥
-    publicKey *cryptobin_ecdh.PublicKey
+    publicKey *ecdh.PublicKey
 
     // 散列方式
-    curve cryptobin_ecdh.Curve
+    curve ecdh.Curve
 
     // [私钥/公钥]数据
     keyData []byte
@@ -28,4 +28,19 @@ type Ecdh struct {
 
     // 错误
     Errors []error
+}
+
+// 构造函数
+func NewEcdh() Ecdh {
+    curve := ecdh.P256()
+
+    return Ecdh{
+        curve: curve,
+        Errors: make([]error, 0),
+    }
+}
+
+// 构造函数
+func New() Ecdh {
+    return NewEcdh()
 }

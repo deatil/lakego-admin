@@ -26,7 +26,7 @@ func (this SM2) WithMode(data int) SM2 {
 }
 
 // 设置 mode
-// C1C3C2 | C1C2C3
+// C1C3C2 = 0 | C1C2C3 = 1
 func (this SM2) SetMode(data string) SM2 {
     switch data {
         case "C1C3C2":
