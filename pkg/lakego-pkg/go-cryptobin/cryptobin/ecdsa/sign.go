@@ -251,6 +251,9 @@ func (this Ecdsa) VerifyHex(data []byte) Ecdsa {
 // ===============
 
 // 签名后数据
-func (this Ecdsa) DataHash(signHash string, data []byte) ([]byte, error) {
-    return cryptobin_tool.HashSum(signHash, data)
+func (this Ecdsa) DataHash(fn HashFunc, data []byte) ([]byte, error) {
+    h := fn()
+    h.Write(data)
+
+    return h.Sum(nil), nil
 }

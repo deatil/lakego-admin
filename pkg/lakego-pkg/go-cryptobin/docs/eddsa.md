@@ -33,17 +33,27 @@ func main() {
     // 验证
     obj2 := cryptobin.NewEdDSA()
 
+    ctx := "123sedrftd35"
+
     obj2Pri, _ := fs.Get("./runtime/key/eddsa")
     obj2cypt := obj2.
         FromString("test-pass").
         FromPrivateKey([]byte(obj2Pri)).
         // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
+        // 其他设置, 默认为 Ed25519 模式
+        // SetOptions("Ed25519ph", ctx).
+        // SetOptions("Ed25519ctx", ctx).
+        // SetOptions("Ed25519").
         Sign().
         ToBase64String()
+
     obj2Pub, _ := fs.Get("./runtime/key/eddsa.pub")
     obj2cyptde := obj2.
         FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
         FromPublicKey([]byte(obj2Pub)).
+        // SetOptions("Ed25519ph", ctx).
+        // SetOptions("Ed25519ctx", ctx).
+        // SetOptions("Ed25519").
         Verify([]byte("test-pass")).
         ToVerify()
 

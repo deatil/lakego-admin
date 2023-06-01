@@ -32,7 +32,7 @@ type Ecdsa struct {
 func (this Ecdsa) Make() {
     for _, curve := range curves {
         obj := cryptobin_ecdsa.New().
-            WithCurve(curve).
+            SetCurve(curve).
             GenerateKey()
 
         this.pkcs1(obj, curve)

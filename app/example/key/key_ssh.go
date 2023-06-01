@@ -92,7 +92,7 @@ func MakeEcdsaUnenSSHKey(curve string) {
 
     // P521 | P384 | P256
     obj := cryptobin_ecdsa.New().
-        WithCurve(curve).
+        SetCurve(curve).
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
@@ -213,7 +213,7 @@ func MakeEcdsaSSHKey(name string, curve string) {
 
     // P521 | P384 | P256
     obj := cryptobin_ecdsa.New().
-        WithCurve(curve).
+        SetCurve(curve).
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(

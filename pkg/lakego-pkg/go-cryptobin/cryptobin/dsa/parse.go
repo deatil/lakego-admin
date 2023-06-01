@@ -17,7 +17,7 @@ var (
 )
 
 // 解析私钥
-func (this DSA) ParsePrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
+func (this DSA) ParsePKCS1PrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -28,7 +28,7 @@ func (this DSA) ParsePrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.ParsePrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS1PrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
@@ -42,7 +42,7 @@ func (this DSA) ParsePrivateKeyFromPEM(key []byte) (*dsa.PrivateKey, error) {
 }
 
 // 解析私钥带密码
-func (this DSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (*dsa.PrivateKey, error) {
+func (this DSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*dsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -58,7 +58,7 @@ func (this DSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) 
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.ParsePrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS1PrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -72,7 +72,7 @@ func (this DSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) 
 }
 
 // 解析公钥
-func (this DSA) ParsePublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
+func (this DSA) ParsePKCS1PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -83,7 +83,7 @@ func (this DSA) ParsePublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_dsa.ParsePublicKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_dsa.ParsePKCS1PublicKey(block.Bytes); err != nil {
         if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
             parsedKey = cert.PublicKey
         } else {
@@ -179,6 +179,7 @@ func (this DSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     var pkey *dsa.PublicKey
     var ok bool
+
     if pkey, ok = parsedKey.(*dsa.PublicKey); !ok {
         return nil, ErrNotDSAPublicKey
     }

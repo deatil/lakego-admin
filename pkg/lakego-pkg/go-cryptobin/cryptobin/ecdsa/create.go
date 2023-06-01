@@ -36,6 +36,8 @@ func (this Ecdsa) CreatePrivateKey() Ecdsa {
 }
 
 // 生成私钥带密码 pem 数据, PKCS1 别名
+// CreatePrivateKeyWithPassword("123", "AES256CBC")
+// PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this Ecdsa) CreatePrivateKeyWithPassword(password string, opts ...string) Ecdsa {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
@@ -43,9 +45,6 @@ func (this Ecdsa) CreatePrivateKeyWithPassword(password string, opts ...string) 
 // ====================
 
 // 生成私钥 pem 数据
-// 使用:
-// obj := New().WithCurve("P521").GenerateKey()
-// priKey := obj.CreatePKCS1PrivateKey().ToKeyString()
 func (this Ecdsa) CreatePKCS1PrivateKey() Ecdsa {
     if this.privateKey == nil {
         err := errors.New("Ecdsa: privateKey error.")
@@ -68,8 +67,6 @@ func (this Ecdsa) CreatePKCS1PrivateKey() Ecdsa {
 }
 
 // 生成私钥带密码 pem 数据
-// CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
-// PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this Ecdsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Ecdsa {
     if this.privateKey == nil {
         err := errors.New("Ecdsa: privateKey error.")
@@ -170,6 +167,8 @@ func (this Ecdsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any
 
     return this
 }
+
+// ====================
 
 // 生成公钥 pem 数据
 func (this Ecdsa) CreatePublicKey() Ecdsa {

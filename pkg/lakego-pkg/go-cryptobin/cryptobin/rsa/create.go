@@ -41,6 +41,11 @@ func (this Rsa) CreatePrivateKeyWithPassword(password string, opts ...string) Rs
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
+// 生成公钥 pem 数据
+func (this Rsa) CreatePublicKey() Rsa {
+    return this.CreatePKCS1PublicKey()
+}
+
 // ====================
 
 // 生成 PKCS1 私钥

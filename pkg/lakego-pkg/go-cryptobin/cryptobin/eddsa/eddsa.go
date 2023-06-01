@@ -1,7 +1,13 @@
 package eddsa
 
 import (
+    "crypto"
     "crypto/ed25519"
+)
+
+type (
+    // 设置
+    Options = ed25519.Options
 )
 
 /**
@@ -16,6 +22,9 @@ type EdDSA struct {
 
     // 公钥
     publicKey ed25519.PublicKey
+
+    // 设置
+    options *Options
 
     // [私钥/公钥]数据
     keyData []byte
@@ -36,8 +45,12 @@ type EdDSA struct {
 // 构造函数
 func NewEdDSA() EdDSA {
     return EdDSA{
-        verify: false,
-        Errors: make([]error, 0),
+        options: &Options{
+            Hash:    crypto.Hash(0),
+            Context: "",
+        },
+        verify:  false,
+        Errors:  make([]error, 0),
     }
 }
 

@@ -19,7 +19,7 @@ func main() {
     // 可选参数 [P521 | P384 | P256 | P224]
     obj := ecdsa.
         New().
-        WithCurve("P521").
+        SetCurve("P521").
         GenerateKey()
 
     objPriKey := obj.

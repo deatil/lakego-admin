@@ -1,7 +1,14 @@
 package dsa
 
 import (
+    "hash"
     "crypto/dsa"
+    "crypto/sha256"
+)
+
+type (
+    // HashFunc
+    HashFunc = func() hash.Hash
 )
 
 /**
@@ -17,6 +24,9 @@ type DSA struct {
     // 公钥
     publicKey *dsa.PublicKey
 
+    // 签名验证类型
+    signHash HashFunc
+
     // [私钥/公钥]数据
     keyData []byte
 
@@ -25,9 +35,6 @@ type DSA struct {
 
     // 解析后的数据
     paredData []byte
-
-    // 签名验证类型
-    signHash string
 
     // 验证结果
     verify bool
@@ -39,7 +46,7 @@ type DSA struct {
 // 构造函数
 func NewDSA() DSA {
     return DSA{
-        signHash: "SHA512",
+        signHash: sha256.New,
         verify:   false,
         Errors:   make([]error, 0),
     }

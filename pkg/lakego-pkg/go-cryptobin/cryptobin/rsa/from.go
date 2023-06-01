@@ -10,7 +10,14 @@ import (
 
 // 私钥
 func (this Rsa) FromPrivateKey(key []byte) Rsa {
-    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -29,7 +36,7 @@ func (this Rsa) FromPrivateKeyWithPassword(key []byte, password string) Rsa {
         return this
     }
 
-    privateKey, err = this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -44,9 +51,9 @@ func (this Rsa) FromPublicKey(key []byte) Rsa {
     var publicKey *rsa.PublicKey
     var err error
 
-    publicKey, err = this.ParsePKCS1PublicKeyFromPEM(key)
+    publicKey, err = this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
-        publicKey, err = this.ParsePKCS8PublicKeyFromPEM(key)
+        publicKey, err = this.ParsePKCS1PublicKeyFromPEM(key)
         if err != nil {
             return this.AppendError(err)
         }
@@ -109,7 +116,7 @@ func (this Rsa) FromPublicKeyNE(nString string, e int) Rsa {
 
 // Pkcs1
 func (this Rsa) FromPKCS1PrivateKey(key []byte) Rsa {
-    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -121,7 +128,7 @@ func (this Rsa) FromPKCS1PrivateKey(key []byte) Rsa {
 
 // Pkcs1WithPassword
 func (this Rsa) FromPKCS1PrivateKeyWithPassword(key []byte, password string) Rsa {
-    privateKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -147,7 +154,7 @@ func (this Rsa) FromPKCS1PublicKey(key []byte) Rsa {
 
 // Pkcs8
 func (this Rsa) FromPKCS8PrivateKey(key []byte) Rsa {
-    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }

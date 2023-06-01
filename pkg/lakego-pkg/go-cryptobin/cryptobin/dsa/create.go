@@ -29,16 +29,34 @@ var (
 )
 
 // 生成私钥 pem 数据
-// 使用:
 // dsa := New().GenerateKey("L2048N256")
 // priKey := dsa.CreatePrivateKey().ToKeyString()
 func (this DSA) CreatePrivateKey() DSA {
+    return this.CreatePKCS1PrivateKey()
+}
+
+// 生成私钥带密码 pem 数据
+// CreatePrivateKeyWithPassword("123", "AES256CBC")
+// PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
+func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DSA {
+    return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
+}
+
+// 生成公钥 pem 数据
+func (this DSA) CreatePublicKey() DSA {
+    return this.CreatePKCS1PublicKey()
+}
+
+// ==========
+
+// 生成 pkcs1 私钥 pem 数据
+func (this DSA) CreatePKCS1PrivateKey() DSA {
     if this.privateKey == nil {
         err := errors.New("dsa: privateKey error.")
         return this.AppendError(err)
     }
 
-    privateKeyBytes, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := cryptobin_dsa.MarshalPKCS1PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -53,10 +71,10 @@ func (this DSA) CreatePrivateKey() DSA {
     return this
 }
 
-// 生成私钥带密码 pem 数据
-// CreatePrivateKeyWithPassword("123", "AES256CBC")
+// 生成 pkcs1 私钥带密码 pem 数据
+// CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
-func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DSA {
+func (this DSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) DSA {
     if this.privateKey == nil {
         err := errors.New("dsa: privateKey error.")
         return this.AppendError(err)
@@ -75,7 +93,7 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
     }
 
     // 生成私钥
-    x509PrivateKey, err := cryptobin_dsa.MarshalPrivateKey(this.privateKey)
+    x509PrivateKey, err := cryptobin_dsa.MarshalPKCS1PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -97,14 +115,14 @@ func (this DSA) CreatePrivateKeyWithPassword(password string, opts ...string) DS
     return this
 }
 
-// 生成公钥 pem 数据
-func (this DSA) CreatePublicKey() DSA {
+// 生成 pkcs1 公钥 pem 数据
+func (this DSA) CreatePKCS1PublicKey() DSA {
     if this.publicKey == nil {
         err := errors.New("dsa: publicKey error.")
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := cryptobin_dsa.MarshalPublicKey(this.publicKey)
+    publicKeyBytes, err := cryptobin_dsa.MarshalPKCS1PublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

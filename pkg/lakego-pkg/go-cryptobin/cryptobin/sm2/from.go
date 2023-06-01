@@ -50,6 +50,8 @@ func (this SM2) FromPublicKey(key []byte) SM2 {
     return this
 }
 
+// ==========
+
 // 生成密钥
 func (this SM2) GenerateKey() SM2 {
     privateKey, err := sm2.GenerateKey(rand.Reader)

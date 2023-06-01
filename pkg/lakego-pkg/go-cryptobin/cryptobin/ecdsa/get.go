@@ -82,6 +82,11 @@ func (this Ecdsa) GetPublicKeyYHexString() string {
     return dataHex
 }
 
+// 获取 hash 类型
+func (this Ecdsa) GetSignHash() HashFunc {
+    return this.signHash
+}
+
 // 获取 keyData
 func (this Ecdsa) GetKeyData() []byte {
     return this.keyData
@@ -95,11 +100,6 @@ func (this Ecdsa) GetData() []byte {
 // 获取 paredData
 func (this Ecdsa) GetParedData() []byte {
     return this.paredData
-}
-
-// 获取 hash 类型
-func (this Ecdsa) GetSignHash() string {
-    return this.signHash
 }
 
 // 获取验证后情况

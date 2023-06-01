@@ -3,6 +3,8 @@ package ecdsa
 import (
     "crypto/ecdsa"
     "crypto/elliptic"
+
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 设置 PrivateKey
@@ -20,8 +22,15 @@ func (this Ecdsa) WithPublicKey(data *ecdsa.PublicKey) Ecdsa {
 }
 
 // 设置曲线类型
+func (this Ecdsa) WithCurve(curve elliptic.Curve) Ecdsa {
+    this.curve = curve
+
+    return this
+}
+
+// 设置曲线类型
 // 可选参数 [P521 | P384 | P256 | P224]
-func (this Ecdsa) WithCurve(curve string) Ecdsa {
+func (this Ecdsa) SetCurve(curve string) Ecdsa {
     switch curve {
         case "P521":
             this.curve = elliptic.P521()
@@ -36,6 +45,25 @@ func (this Ecdsa) WithCurve(curve string) Ecdsa {
     return this
 }
 
+// 设置 hash 类型
+func (this Ecdsa) WithSignHash(hash HashFunc) Ecdsa {
+    this.signHash = hash
+
+    return this
+}
+
+// 设置 hash 类型
+func (this Ecdsa) SetSignHash(hash string) Ecdsa {
+    h, err := tool.GetHash(hash)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.signHash = h
+
+    return this
+}
+
 // 设置 data
 func (this Ecdsa) WithData(data []byte) Ecdsa {
     this.data = data
@@ -46,13 +74,6 @@ func (this Ecdsa) WithData(data []byte) Ecdsa {
 // 设置 paredData
 func (this Ecdsa) WithParedData(data []byte) Ecdsa {
     this.paredData = data
-
-    return this
-}
-
-// 设置 hash 类型
-func (this Ecdsa) WithSignHash(hash string) Ecdsa {
-    this.signHash = hash
 
     return this
 }

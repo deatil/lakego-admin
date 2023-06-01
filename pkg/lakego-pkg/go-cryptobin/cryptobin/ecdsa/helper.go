@@ -28,7 +28,7 @@ func FromPublicKey(key []byte) Ecdsa {
 // 生成密钥
 // 可选 [P521 | P384 | P256 | P224]
 func GenerateKey(hash string) Ecdsa {
-    return NewEcdsa().WithCurve(hash).GenerateKey()
+    return NewEcdsa().SetCurve(hash).GenerateKey()
 }
 
 // ==========

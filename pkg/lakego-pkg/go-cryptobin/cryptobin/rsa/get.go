@@ -1,6 +1,7 @@
 package rsa
 
 import (
+    "crypto"
     "crypto/rsa"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
@@ -32,6 +33,11 @@ func (this Rsa) GetPublicKeyE() int {
     return this.publicKey.E
 }
 
+// 获取 hash 类型
+func (this Rsa) GetSignHash() crypto.Hash {
+    return this.signHash
+}
+
 // 获取 keyData
 func (this Rsa) GetKeyData() []byte {
     return this.keyData
@@ -50,11 +56,6 @@ func (this Rsa) GetParedData() []byte {
 // 获取验证后情况
 func (this Rsa) GetVerify() bool {
     return this.verify
-}
-
-// 获取 hash 类型
-func (this Rsa) GetSignHash() string {
-    return this.signHash
 }
 
 // 获取错误

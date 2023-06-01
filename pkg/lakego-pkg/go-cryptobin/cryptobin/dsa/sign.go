@@ -120,7 +120,7 @@ func (this DSA) SignAsn1() DSA {
     paredData, err := asn1.Marshal(DSASignature{r, s})
 
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 
@@ -178,9 +178,9 @@ func (this DSA) SignHex() DSA {
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
     paredData, err := encoding.HexDecode(sign)
-    
+
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 
@@ -279,6 +279,9 @@ func (this DSA) VerifyBytes(data []byte) DSA {
 // ===============
 
 // 签名后数据
-func (this DSA) DataHash(signHash string, data []byte) ([]byte, error) {
-    return cryptobin_tool.HashSum(signHash, data)
+func (this DSA) DataHash(fn HashFunc, data []byte) ([]byte, error) {
+    h := fn()
+    h.Write(data)
+
+    return h.Sum(nil), nil
 }

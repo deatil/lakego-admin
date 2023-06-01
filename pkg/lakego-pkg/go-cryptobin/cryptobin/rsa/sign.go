@@ -4,8 +4,6 @@ import (
     "errors"
     "crypto/rsa"
     "crypto/rand"
-
-    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
@@ -15,20 +13,14 @@ func (this Rsa) Sign() Rsa {
         return this.AppendError(err)
     }
 
-    hash, err := tool.GetCryptoHash(this.signHash)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    h := this.signHash.New()
+    h.Write(this.data)
+    hashed := h.Sum(nil)
 
-    hashed, err := tool.CryptoHashSum(this.signHash, this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, hash, hashed)
+    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, this.signHash, hashed)
 
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 
@@ -40,17 +32,11 @@ func (this Rsa) Verify(data []byte) Rsa {
         return this.AppendError(err)
     }
 
-    hash, err := tool.GetCryptoHash(this.signHash)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    h := this.signHash.New()
+    h.Write(data)
+    hashed := h.Sum(nil)
 
-    hashed, err := tool.CryptoHashSum(this.signHash, data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    err = rsa.VerifyPKCS1v15(this.publicKey, hash, hashed, this.data)
+    err := rsa.VerifyPKCS1v15(this.publicKey, this.signHash, hashed, this.data)
     if err != nil {
         return this.AppendError(err)
     }

@@ -9,9 +9,19 @@ func (this EdDSA) GetPrivateKey() ed25519.PrivateKey {
     return this.privateKey
 }
 
+// 获取 PrivateKeySeed
+func (this EdDSA) GetPrivateKeySeed() []byte {
+    return this.privateKey.Seed()
+}
+
 // 获取 PublicKey
 func (this EdDSA) GetPublicKey() ed25519.PublicKey {
     return this.publicKey
+}
+
+// 获取 Options
+func (this EdDSA) GetOptions() *Options {
+    return this.options
 }
 
 // 获取 keyData

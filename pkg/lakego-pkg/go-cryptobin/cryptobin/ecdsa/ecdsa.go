@@ -1,8 +1,15 @@
 package ecdsa
 
 import (
+    "hash"
     "crypto/ecdsa"
     "crypto/elliptic"
+    "crypto/sha256"
+)
+
+type (
+    // HashFunc
+    HashFunc = func() hash.Hash
 )
 
 /**
@@ -21,6 +28,9 @@ type Ecdsa struct {
     // 生成类型
     curve elliptic.Curve
 
+    // 签名验证类型
+    signHash HashFunc
+
     // [私钥/公钥]数据
     keyData []byte
 
@@ -29,9 +39,6 @@ type Ecdsa struct {
 
     // 解析后的数据
     paredData []byte
-
-    // 签名验证类型
-    signHash string
 
     // 验证结果
     verify bool
@@ -44,7 +51,7 @@ type Ecdsa struct {
 func NewEcdsa() Ecdsa {
     return Ecdsa{
         curve:    elliptic.P256(),
-        signHash: "SHA512",
+        signHash: sha256.New,
         verify:   false,
         Errors:   make([]error, 0),
     }

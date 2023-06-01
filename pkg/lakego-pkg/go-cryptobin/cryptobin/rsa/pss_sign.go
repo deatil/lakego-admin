@@ -2,10 +2,8 @@ package rsa
 
 import (
     "errors"
-    "crypto/rand"
     "crypto/rsa"
-
-    "github.com/deatil/go-cryptobin/tool"
+    "crypto/rand"
 )
 
 // 私钥签名
@@ -16,15 +14,9 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    hash, err := tool.GetCryptoHash(this.signHash)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    hashed, err := tool.CryptoHashSum(this.signHash, this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    h := this.signHash.New()
+    h.Write(this.data)
+    hashed := h.Sum(nil)
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthEqualsHash,
@@ -34,10 +26,10 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
         options = opts[0]
     }
 
-    paredData, err := rsa.SignPSS(rand.Reader, this.privateKey, hash, hashed, &options)
+    paredData, err := rsa.SignPSS(rand.Reader, this.privateKey, this.signHash, hashed, &options)
 
     this.paredData = paredData
-    
+
     return this.AppendError(err)
 }
 
@@ -49,15 +41,9 @@ func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
         return this.AppendError(err)
     }
 
-    hash, err := tool.GetCryptoHash(this.signHash)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    hashed, err := tool.CryptoHashSum(this.signHash, data)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    h := this.signHash.New()
+    h.Write(data)
+    hashed := h.Sum(nil)
 
     options := rsa.PSSOptions{
         SaltLength: rsa.PSSSaltLengthAuto,
@@ -67,7 +53,7 @@ func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
         options = opts[0]
     }
 
-    err = rsa.VerifyPSS(this.publicKey, hash, hashed, this.data, &options)
+    err := rsa.VerifyPSS(this.publicKey, this.signHash, hashed, this.data, &options)
     if err != nil {
         return this.AppendError(err)
     }

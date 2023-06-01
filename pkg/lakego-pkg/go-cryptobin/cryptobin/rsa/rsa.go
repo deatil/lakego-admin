@@ -1,6 +1,7 @@
 package rsa
 
 import (
+    "crypto"
     "crypto/rsa"
 )
 
@@ -17,6 +18,9 @@ type Rsa struct {
     // 公钥
     publicKey *rsa.PublicKey
 
+    // 签名验证类型
+    signHash crypto.Hash
+
     // [私钥/公钥]数据
     keyData []byte
 
@@ -29,9 +33,6 @@ type Rsa struct {
     // 验证结果
     verify bool
 
-    // 签名验证类型
-    signHash string
-
     // 错误
     Errors []error
 }
@@ -39,7 +40,7 @@ type Rsa struct {
 // 构造函数
 func NewRsa() Rsa {
     return Rsa{
-        signHash: "SHA512",
+        signHash: crypto.SHA256,
         verify:   false,
         Errors:   make([]error, 0),
     }

@@ -171,13 +171,13 @@ func main() {
     rsaPriKey := rsa.
         FromPrivateKey([]byte(pri)).
         FromString("测试").
-        WithSignHash("SHA256").
+        SetSignHash("SHA256").
         PSSSign().
         ToBase64String()
     rsaPubKey := rsa.
         FromBase64String(rsaPriKey).
         FromPublicKey([]byte(pub)).
-        WithSignHash("SHA256").
+        SetSignHash("SHA256").
         PSSVerify([]byte("测试")).
         ToVerify()
 
