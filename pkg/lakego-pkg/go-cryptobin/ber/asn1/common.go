@@ -1,4 +1,4 @@
-package ber
+package asn1
 
 import (
     "reflect"

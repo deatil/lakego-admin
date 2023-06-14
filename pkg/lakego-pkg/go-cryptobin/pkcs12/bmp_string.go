@@ -25,7 +25,7 @@ func bmpString(s string) ([]byte, error) {
     // https://tools.ietf.org/html/rfc7292#appendix-B.1
     // https://en.wikipedia.org/wiki/Plane_(Unicode)#Basic_Multilingual_Plane
     //  - non-BMP characters are encoded in UTF 16 by using a surrogate pair of 16-bit codes
-    //	  EncodeRune returns 0xfffd if the rune does not need special encoding
+    //    EncodeRune returns 0xfffd if the rune does not need special encoding
 
     ret := make([]byte, 0, 2*len(s)+2)
 

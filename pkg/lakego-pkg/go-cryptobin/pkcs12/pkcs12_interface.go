@@ -1,6 +1,7 @@
 package pkcs12
 
 import (
+    "errors"
     "crypto"
     "encoding/asn1"
 
@@ -52,6 +53,15 @@ var keys = make(map[string]func() Key)
 // 添加Key
 func AddKey(name string, key func() Key) {
     keys[name] = key
+}
+
+func GetKey(name string) (func() Key, error) {
+    key, ok := keys[name]
+    if !ok {
+        return nil, errors.New("pkcs12: unsupported key type " + name)
+    }
+
+    return key, nil
 }
 
 // ===============
