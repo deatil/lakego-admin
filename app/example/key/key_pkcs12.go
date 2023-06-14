@@ -15,8 +15,6 @@ import (
 
     "github.com/deatil/lakego-filesystem/filesystem"
 
-    _ "github.com/deatil/go-cryptobin/ber/encode"
-    _ "github.com/deatil/go-cryptobin/ber/decode"
     pkcs7_ber "github.com/deatil/go-cryptobin/pkcs7/ber"
     cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"

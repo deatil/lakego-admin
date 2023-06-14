@@ -48,7 +48,7 @@ func (this CA) MakeSM2CA(
     expire int,
     signAlgName string,
 ) CA {
-    signAlg := this.GetSM2SignatureAlgorithm(signAlgName)
+    signAlg := getSM2SignatureAlgorithm(signAlgName)
 
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
@@ -86,7 +86,7 @@ func (this CA) MakeSM2Cert(
     ip []net.IP,
     signAlgName string,
 ) CA {
-    signAlg := this.GetSM2SignatureAlgorithm(signAlgName)
+    signAlg := getSM2SignatureAlgorithm(signAlgName)
 
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
@@ -125,4 +125,35 @@ func (this CA) UpdateSM2CertRequest(fn func(*x509.CertificateRequest) *x509.Cert
     this.certRequest = fn(this.certRequest.(*x509.CertificateRequest))
 
     return this
+}
+
+// 获取 SM2 签名 alg
+func getSM2SignatureAlgorithm(name string) x509.SignatureAlgorithm {
+    data := map[string]x509.SignatureAlgorithm {
+        "MD2WithRSA":       x509.MD2WithRSA,
+        "MD5WithRSA":       x509.MD5WithRSA,
+        // "MD2WithRSA":    x509.MD2WithRSA,  // Unsupported.
+        "SHA1WithRSA":      x509.SHA1WithRSA,
+        "SHA256WithRSA":    x509.SHA256WithRSA,
+        "SHA384WithRSA":    x509.SHA384WithRSA,
+        "SHA512WithRSA":    x509.SHA512WithRSA,
+        // "DSAWithSHA1":   x509.DSAWithSHA1,   // Unsupported.
+        // "DSAWithSHA256": x509.DSAWithSHA256, // Unsupported.
+        "ECDSAWithSHA1":    x509.ECDSAWithSHA1,
+        "ECDSAWithSHA256":  x509.ECDSAWithSHA256,
+        "ECDSAWithSHA384":  x509.ECDSAWithSHA384,
+        "ECDSAWithSHA512":  x509.ECDSAWithSHA512,
+        "SHA256WithRSAPSS": x509.SHA256WithRSAPSS,
+        "SHA384WithRSAPSS": x509.SHA384WithRSAPSS,
+        "SHA512WithRSAPSS": x509.SHA512WithRSAPSS,
+        "SM2WithSM3":       x509.SM2WithSM3,
+        "SM2WithSHA1":      x509.SM2WithSHA1,
+        "SM2WithSHA256":    x509.SM2WithSHA256,
+    }
+
+    if alg, ok := data[name]; ok {
+        return alg
+    }
+
+    return data["SM2WithSHA1"]
 }

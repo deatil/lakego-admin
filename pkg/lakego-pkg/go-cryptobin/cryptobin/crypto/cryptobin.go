@@ -54,3 +54,8 @@ func NewCryptobin() Cryptobin {
 func New() Cryptobin {
     return NewCryptobin()
 }
+
+var (
+    // 默认
+    defaultCryptobin = NewCryptobin()
+)

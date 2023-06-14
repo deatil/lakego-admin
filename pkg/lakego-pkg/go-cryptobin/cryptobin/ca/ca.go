@@ -16,9 +16,11 @@ type CA struct {
     certRequest any
 
     // 私钥
+    // 可用 [*rsa.PrivateKey | *ecdsa.PrivateKey | ed25519.PrivateKey | *sm2.PrivateKey]
     privateKey any
 
     // 公钥
+    // 可用 [*rsa.PublicKey | *ecdsa.PublicKey | ed25519.PublicKey | *sm2.PublicKey]
     publicKey any
 
     // [私钥/公钥/cert]数据
@@ -39,3 +41,8 @@ func NewCA() CA {
 func New() CA {
     return NewCA()
 }
+
+var (
+    // 默认
+    defaultCA = NewCA()
+)

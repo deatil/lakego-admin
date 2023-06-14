@@ -25,7 +25,7 @@ func main() {
         StreetAddress: []string{"Golden Gate Bridge"},
         PostalCode:    []string{"94016"},
     }
-    ca := cryptobin.NewCA().GenerateRsaKey(4096)
+    ca := cryptobin.NewCA().GenerateRSAKey(4096)
     ca1KeyString := ca.CreatePrivateKey().ToKeyString()
 
     // ca
@@ -87,7 +87,7 @@ func main() {
         StreetAddress: []string{"Golden Gate Bridge"},
         PostalCode:    []string{"94016"},
     }
-    ca := cryptobin.NewCA().GenerateEcdsaKey("P256")
+    ca := cryptobin.NewCA().GenerateECDSAKey("P256")
     cert := ca.MakeCert(caSubj, 1, []string{"test.default.svc", "test"}, []net.IP{}, "ECDSAWithSHA256")
 
     pkcs12Data := cert.CreatePKCS12Cert(nil, "123456").ToKeyString()

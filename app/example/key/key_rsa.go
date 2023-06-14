@@ -33,6 +33,7 @@ func (this Rsa) Make() {
         this.pkcs8(rsa, bit)
         this.pkcs1En(rsa, bit)
         this.pkcs8En(rsa, bit)
+        this.xml(rsa, bit)
     }
 }
 
@@ -121,4 +122,19 @@ func (this Rsa) pkcs8En(rsa cryptobin_rsa.Rsa, bit int) {
         this.fs.Put(file + ".pub", pubKey)
     }
 
+}
+
+func (this Rsa) xml(rsa cryptobin_rsa.Rsa, bit int) {
+    // 生成证书
+    priKey := rsa.
+        CreateXMLPrivateKey().
+        ToKeyString()
+    pubKey := rsa.
+        CreateXMLPublicKey().
+        ToKeyString()
+
+    file := fmt.Sprintf("./runtime/key/key-pem/rsa/%d/rsa-xml", bit)
+
+    this.fs.Put(file, priKey)
+    this.fs.Put(file + ".pub", pubKey)
 }

@@ -186,3 +186,15 @@ func (this DSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*dsa.PublicKey, error) {
 
     return pkey, nil
 }
+
+// ============
+
+// 解析 xml 私钥
+func (this DSA) ParsePrivateKeyFromXML(key []byte) (*dsa.PrivateKey, error) {
+    return cryptobin_dsa.ParseXMLPrivateKey(key)
+}
+
+// 解析 xml 公钥
+func (this DSA) ParsePublicKeyFromXML(key []byte) (*dsa.PublicKey, error) {
+    return cryptobin_dsa.ParseXMLPublicKey(key)
+}

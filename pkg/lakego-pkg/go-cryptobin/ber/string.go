@@ -1,4 +1,4 @@
-package encode
+package ber
 
 import (
     "reflect"
@@ -17,15 +17,15 @@ func encodeString(value reflect.Value) ([]byte, error) {
 func isValidPrintableString(s string) bool {
     for _, c := range s {
         switch {
-        case c >= 'a' && c <= 'z':
-        case c >= 'A' && c <= 'Z':
-        case c >= '0' && c <= '9':
-        default:
-            switch c {
-            case ' ', '\'', '(', ')', '+', ',', '-', '.', '/', ':', '=', '?':
+            case c >= 'a' && c <= 'z':
+            case c >= 'A' && c <= 'Z':
+            case c >= '0' && c <= '9':
             default:
-                return false
-            }
+                switch c {
+                case ' ', '\'', '(', ')', '+', ',', '-', '.', '/', ':', '=', '?':
+                default:
+                    return false
+                }
         }
     }
     return true

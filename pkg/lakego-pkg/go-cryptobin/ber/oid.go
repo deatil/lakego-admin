@@ -1,4 +1,4 @@
-package encode
+package ber
 
 import (
     "bytes"
@@ -18,10 +18,10 @@ type ObjectIdentifier struct {
 
 func isValidRootNode(root uint8) bool {
     switch root {
-    case 0, 1, 2:
-        return true
-    default:
-        return false
+        case 0, 1, 2:
+            return true
+        default:
+            return false
     }
 }
 
@@ -29,6 +29,7 @@ func NewObjectIdentifier(root uint8, node []uint64) (*ObjectIdentifier, error) {
     if !isValidRootNode(root) {
         return nil, fmt.Errorf("error creating oid: invalid root node")
     }
+
     if len(node) == 0 {
         return nil, fmt.Errorf("error creating oid: empty node")
     }

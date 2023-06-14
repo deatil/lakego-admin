@@ -56,3 +56,8 @@ func NewDSA() DSA {
 func New() DSA {
     return NewDSA()
 }
+
+var (
+    // 默认
+    defaultDSA = NewDSA()
+)

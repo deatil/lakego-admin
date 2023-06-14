@@ -49,3 +49,5 @@ func NewSM2() SM2 {
 func New() SM2 {
     return NewSM2()
 }
+
+var defaultSM2 = NewSM2()

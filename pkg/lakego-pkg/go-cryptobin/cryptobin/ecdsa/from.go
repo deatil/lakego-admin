@@ -28,6 +28,11 @@ func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
     return this
 }
 
+// 私钥
+func FromPrivateKey(key []byte) Ecdsa {
+    return defaultECDSA.FromPrivateKey(key)
+}
+
 // 私钥带密码
 func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa {
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
@@ -47,6 +52,11 @@ func (this Ecdsa) FromPrivateKeyWithPassword(key []byte, password string) Ecdsa 
     return this
 }
 
+// 私钥
+func FromPrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    return defaultECDSA.FromPrivateKeyWithPassword(key, password)
+}
+
 // ==========
 
 // 私钥
@@ -61,6 +71,11 @@ func (this Ecdsa) FromPKCS1PrivateKey(key []byte) Ecdsa {
     return this
 }
 
+// 私钥
+func FromPKCS1PrivateKey(key []byte) Ecdsa {
+    return defaultECDSA.FromPKCS1PrivateKey(key)
+}
+
 // 私钥带密码
 func (this Ecdsa) FromPKCS1PrivateKeyWithPassword(key []byte, password string) Ecdsa {
     privateKey, err := this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
@@ -71,6 +86,11 @@ func (this Ecdsa) FromPKCS1PrivateKeyWithPassword(key []byte, password string) E
     this.privateKey = privateKey
 
     return this
+}
+
+// 私钥带密码
+func FromPKCS1PrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    return defaultECDSA.FromPKCS1PrivateKeyWithPassword(key, password)
 }
 
 // ==========
@@ -87,6 +107,11 @@ func (this Ecdsa) FromPKCS8PrivateKey(key []byte) Ecdsa {
     return this
 }
 
+// PKCS8 私钥
+func FromPKCS8PrivateKey(key []byte) Ecdsa {
+    return defaultECDSA.FromPKCS8PrivateKey(key)
+}
+
 // Pkcs8WithPassword
 func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
@@ -97,6 +122,11 @@ func (this Ecdsa) FromPKCS8PrivateKeyWithPassword(key []byte, password string) E
     this.privateKey = privateKey
 
     return this
+}
+
+// PKCS8 私钥带密码
+func FromPKCS8PrivateKeyWithPassword(key []byte, password string) Ecdsa {
+    return defaultECDSA.FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
 // ==========
@@ -113,6 +143,56 @@ func (this Ecdsa) FromPublicKey(key []byte) Ecdsa {
     return this
 }
 
+// 公钥
+func FromPublicKey(key []byte) Ecdsa {
+    return defaultECDSA.FromPublicKey(key)
+}
+
+// ==========
+
+// DER 私钥
+func (this Ecdsa) FromPKCS1PrivateKeyDer(der []byte) Ecdsa {
+    key := cryptobin_tool.EncodeDerToPem(der, "EC PRIVATE KEY")
+
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// DER 私钥
+func (this Ecdsa) FromPKCS8PrivateKeyDer(der []byte) Ecdsa {
+    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// DER 公钥
+func (this Ecdsa) FromPublicKeyDer(der []byte) Ecdsa {
+    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+
+    publicKey, err := this.ParsePublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
+
+    return this
+}
+
+
 // ==========
 
 // 生成密钥
@@ -128,6 +208,12 @@ func (this Ecdsa) GenerateKey() Ecdsa {
     this.publicKey = &privateKey.PublicKey
 
     return this
+}
+
+// 生成密钥
+// 可选 [P521 | P384 | P256 | P224]
+func GenerateKey(hash string) Ecdsa {
+    return defaultECDSA.SetCurve(hash).GenerateKey()
 }
 
 // ==========
@@ -231,11 +317,21 @@ func (this Ecdsa) FromBytes(data []byte) Ecdsa {
     return this
 }
 
+// 字节
+func FromBytes(data []byte) Ecdsa {
+    return defaultECDSA.FromBytes(data)
+}
+
 // 字符
 func (this Ecdsa) FromString(data string) Ecdsa {
     this.data = []byte(data)
 
     return this
+}
+
+// 字符
+func FromString(data string) Ecdsa {
+    return defaultECDSA.FromString(data)
 }
 
 // Base64
@@ -247,6 +343,11 @@ func (this Ecdsa) FromBase64String(data string) Ecdsa {
     return this.AppendError(err)
 }
 
+// Base64
+func FromBase64String(data string) Ecdsa {
+    return defaultECDSA.FromBase64String(data)
+}
+
 // Hex
 func (this Ecdsa) FromHexString(data string) Ecdsa {
     newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
@@ -254,4 +355,9 @@ func (this Ecdsa) FromHexString(data string) Ecdsa {
     this.data = newData
 
     return this.AppendError(err)
+}
+
+// Hex
+func FromHexString(data string) Ecdsa {
+    return defaultECDSA.FromHexString(data)
 }

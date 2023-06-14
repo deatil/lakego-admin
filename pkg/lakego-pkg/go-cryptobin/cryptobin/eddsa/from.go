@@ -19,6 +19,11 @@ func (this EdDSA) FromPrivateKey(key []byte) EdDSA {
     return this
 }
 
+// 私钥
+func FromPrivateKey(key []byte) EdDSA {
+    return defaultEdDSA.FromPrivateKey(key)
+}
+
 // 私钥带密码
 func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
@@ -31,8 +36,48 @@ func (this EdDSA) FromPrivateKeyWithPassword(key []byte, password string) EdDSA 
     return this
 }
 
+// 私钥
+func FromPrivateKeyWithPassword(key []byte, password string) EdDSA {
+    return defaultEdDSA.FromPrivateKeyWithPassword(key, password)
+}
+
 // 公钥
 func (this EdDSA) FromPublicKey(key []byte) EdDSA {
+    parsedKey, err := this.ParsePublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = parsedKey.(ed25519.PublicKey)
+
+    return this
+}
+
+// 公钥
+func FromPublicKey(key []byte) EdDSA {
+    return defaultEdDSA.FromPublicKey(key)
+}
+
+// ==========
+
+// DER 私钥
+func (this EdDSA) FromPrivateKeyDer(der []byte) EdDSA {
+    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+
+    parsedKey, err := this.ParsePrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = parsedKey.(ed25519.PrivateKey)
+
+    return this
+}
+
+// DER 公钥
+func (this EdDSA) FromPublicKeyDer(der []byte) EdDSA {
+    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -52,6 +97,11 @@ func (this EdDSA) FromPrivateKeySeed(seed []byte) EdDSA {
     return this
 }
 
+// 私钥 Seed
+func FromPrivateKeySeed(seed []byte) EdDSA {
+    return defaultEdDSA.FromPrivateKeySeed(seed)
+}
+
 // ==========
 
 // 生成密钥
@@ -67,6 +117,11 @@ func (this EdDSA) GenerateKey() EdDSA {
     return this
 }
 
+// 生成密钥
+func GenerateKey() EdDSA {
+    return defaultEdDSA.GenerateKey()
+}
+
 // ==========
 
 // 字节
@@ -76,11 +131,21 @@ func (this EdDSA) FromBytes(data []byte) EdDSA {
     return this
 }
 
+// 字节
+func FromBytes(data []byte) EdDSA {
+    return defaultEdDSA.FromBytes(data)
+}
+
 // 字符
 func (this EdDSA) FromString(data string) EdDSA {
     this.data = []byte(data)
 
     return this
+}
+
+// 字符
+func FromString(data string) EdDSA {
+    return defaultEdDSA.FromString(data)
 }
 
 // Base64
@@ -92,6 +157,11 @@ func (this EdDSA) FromBase64String(data string) EdDSA {
     return this.AppendError(err)
 }
 
+// Base64
+func FromBase64String(data string) EdDSA {
+    return defaultEdDSA.FromBase64String(data)
+}
+
 // Hex
 func (this EdDSA) FromHexString(data string) EdDSA {
     newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
@@ -99,4 +169,9 @@ func (this EdDSA) FromHexString(data string) EdDSA {
     this.data = newData
 
     return this.AppendError(err)
+}
+
+// Hex
+func FromHexString(data string) EdDSA {
+    return defaultEdDSA.FromHexString(data)
 }

@@ -85,6 +85,10 @@ func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
         return nil, errPublicKeyXMLValue("Exponent")
     }
 
+    if n.Sign() <= 0 {
+        return nil, errors.New("rsa xml: public key contains zero or negative value")
+    }
+
     publicKey := &rsa.PublicKey{
         N: n,
         E: int(e.Int64()),

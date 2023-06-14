@@ -61,3 +61,8 @@ func NewEcdsa() Ecdsa {
 func New() Ecdsa {
     return NewEcdsa()
 }
+
+var (
+    // 默认
+    defaultECDSA = NewEcdsa()
+)

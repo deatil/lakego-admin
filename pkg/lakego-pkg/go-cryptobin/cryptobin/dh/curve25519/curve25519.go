@@ -38,3 +38,8 @@ func NewCurve25519() Curve25519 {
 func New() Curve25519 {
     return NewCurve25519()
 }
+
+var (
+    // 默认
+    defaultCurve25519 = NewCurve25519()
+)

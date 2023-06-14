@@ -1,4 +1,4 @@
-package encode
+package ber
 
 type Tag uint
 

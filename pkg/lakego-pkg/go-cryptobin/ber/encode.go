@@ -1,4 +1,4 @@
-package encode
+package ber
 
 import (
     "bytes"
@@ -34,7 +34,9 @@ type Encoder struct {
 
 func NewEncoder(w io.Writer) *Encoder {
     buf := new(bytes.Buffer)
+
     bodyBuf := new(bytes.Buffer)
+
     return &Encoder{
         w:       w,
         buf:     buf,
@@ -63,60 +65,61 @@ func (e *Encoder) parseType(v reflect.Value) (tag Tag, isConstructed bool, err e
 
     if e.encodingFunc == nil {
         switch v.Kind() {
-        case reflect.Bool:
-            e.encodingFunc = encodeBool
-            tag = TagBoolean
-        case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-            e.encodingFunc = encodeInt
-            tag = TagInteger
-        case reflect.Float32, reflect.Float64:
-            e.encodingFunc = encodeReal
-            tag = TagReal
-        case reflect.String:
-            tag = e.options.stringType
-            e.encodingFunc = encodeString
-            switch e.options.stringType {
-            case TagPrintableString:
-                if !isValidPrintableString(v.String()) {
-                    return tag, isConstructed, fmt.Errorf("string not valid printablestring")
+            case reflect.Bool:
+                e.encodingFunc = encodeBool
+                tag = TagBoolean
+            case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+                e.encodingFunc = encodeInt
+                tag = TagInteger
+            case reflect.Float32, reflect.Float64:
+                e.encodingFunc = encodeReal
+                tag = TagReal
+            case reflect.String:
+                tag = e.options.stringType
+                e.encodingFunc = encodeString
+                switch e.options.stringType {
+                case TagPrintableString:
+                    if !isValidPrintableString(v.String()) {
+                        return tag, isConstructed, fmt.Errorf("string not valid printablestring")
+                    }
+                case TagIA5String:
+                    if !isValidIA5String(v.String()) {
+                        return tag, isConstructed, fmt.Errorf("string not valid ia5string")
+                    }
+                case TagNumericString:
+                    if !isValidNumericString(v.String()) {
+                        return tag, isConstructed, fmt.Errorf("string not valid numeric string")
+                    }
+                case TagBitString:
+                    e.encodingFunc = EncodeBitString
                 }
-            case TagIA5String:
-                if !isValidIA5String(v.String()) {
-                    return tag, isConstructed, fmt.Errorf("string not valid ia5string")
-                }
-            case TagNumericString:
-                if !isValidNumericString(v.String()) {
-                    return tag, isConstructed, fmt.Errorf("string not valid numeric string")
-                }
-            case TagBitString:
-                e.encodingFunc = EncodeBitString
-            }
-        case reflect.Struct:
-            e.encodingFunc = encodeStruct
-            isConstructed = true
-            tag = TagSet
-        case reflect.Array, reflect.Slice:
-            if v.Type().Elem().Kind() == reflect.Uint8 {
-                e.encodingFunc = encodeOctetString
-                tag = TagOctetString
-            } else {
-                e.encodingFunc = encodeSequence
-                tag = TagSequence
+            case reflect.Struct:
+                e.encodingFunc = encodeStruct
                 isConstructed = true
-            }
-        default:
-            return tag, isConstructed, fmt.Errorf("unsupported go type '%s'", v.Type())
+                tag = TagSet
+            case reflect.Array, reflect.Slice:
+                if v.Type().Elem().Kind() == reflect.Uint8 {
+                    e.encodingFunc = encodeOctetString
+                    tag = TagOctetString
+                } else {
+                    e.encodingFunc = encodeSequence
+                    tag = TagSequence
+                    isConstructed = true
+                }
+            default:
+                return tag, isConstructed, fmt.Errorf("unsupported go type '%s'", v.Type())
         }
     }
+
     return tag, isConstructed, nil
 }
 
 func (e *Encoder) encode(v reflect.Value, opts string) error {
-
     options, err := parseOptions(opts)
     if err != nil {
         return err
     }
+
     e.options = options
 
     tag, isConstructed, err := e.parseType(v)
@@ -128,10 +131,12 @@ func (e *Encoder) encode(v reflect.Value, opts string) error {
         if options.tag == nil {
             return fmt.Errorf("flag 'explicit' requires flag 'tag' to be set")
         }
+
         body, err := e.encodingFunc(v)
         if err != nil {
             return err
         }
+
         e.bodyBuf.Write(body)
 
         e.encodeHeader(TagClassUniversal, tag, true)
@@ -162,6 +167,7 @@ func (e *Encoder) encode(v reflect.Value, opts string) error {
         } else {
             class = TagClassContextSpecific
         }
+
         tag = Tag(*options.tag)
     }
 
@@ -233,9 +239,9 @@ func (e *Encoder) encodeLength() {
 
 func encodeSequence(v reflect.Value) ([]byte, error) {
     switch v.Kind() {
-    case reflect.Array, reflect.Slice:
-    default:
-        return nil, invalidTypeError("array/slice", v)
+        case reflect.Array, reflect.Slice:
+        default:
+            return nil, invalidTypeError("array/slice", v)
     }
 
     buf := new(bytes.Buffer)
@@ -246,6 +252,7 @@ func encodeSequence(v reflect.Value) ([]byte, error) {
         }
         buf.Write(b)
     }
+
     return buf.Bytes(), nil
 }
 

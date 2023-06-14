@@ -58,3 +58,8 @@ func NewEdDSA() EdDSA {
 func New() EdDSA {
     return NewEdDSA()
 }
+
+var (
+    // 默认
+    defaultEdDSA = NewEdDSA()
+)

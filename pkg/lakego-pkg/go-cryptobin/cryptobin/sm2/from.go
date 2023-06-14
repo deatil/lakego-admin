@@ -22,6 +22,11 @@ func (this SM2) FromPrivateKey(key []byte) SM2 {
     return this
 }
 
+// 私钥
+func FromPrivateKey(key []byte) SM2 {
+    return defaultSM2.FromPrivateKey(key)
+}
+
 // 私钥带密码
 func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
     var err error
@@ -38,8 +43,48 @@ func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
     return this
 }
 
+// 私钥带密码
+func FromPrivateKeyWithPassword(key []byte, password string) SM2 {
+    return defaultSM2.FromPrivateKeyWithPassword(key, password)
+}
+
 // 公钥
 func (this SM2) FromPublicKey(key []byte) SM2 {
+    publicKey, err := this.ParsePublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
+
+    return this
+}
+
+// 公钥
+func FromPublicKey(key []byte) SM2 {
+    return defaultSM2.FromPublicKey(key)
+}
+
+// ==========
+
+// DER 私钥
+func (this SM2) FromPrivateKeyDer(der []byte) SM2 {
+    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+
+    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// DER 公钥
+func (this SM2) FromPublicKeyDer(der []byte) SM2 {
+    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+
     publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -65,6 +110,11 @@ func (this SM2) GenerateKey() SM2 {
     this.publicKey = &this.privateKey.PublicKey
 
     return this
+}
+
+// 生成密钥
+func GenerateKey() SM2 {
+    return defaultSM2.GenerateKey()
 }
 
 // ==========
@@ -170,11 +220,21 @@ func (this SM2) FromBytes(data []byte) SM2 {
     return this
 }
 
+// 字节
+func FromBytes(data []byte) SM2 {
+    return defaultSM2.FromBytes(data)
+}
+
 // 字符
 func (this SM2) FromString(data string) SM2 {
     this.data = []byte(data)
 
     return this
+}
+
+// 字符
+func FromString(data string) SM2 {
+    return defaultSM2.FromString(data)
 }
 
 // Base64
@@ -189,6 +249,11 @@ func (this SM2) FromBase64String(data string) SM2 {
     return this
 }
 
+// Base64
+func FromBase64String(data string) SM2 {
+    return defaultSM2.FromBase64String(data)
+}
+
 // Hex
 func (this SM2) FromHexString(data string) SM2 {
     newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
@@ -199,4 +264,9 @@ func (this SM2) FromHexString(data string) SM2 {
     this.data = newData
 
     return this
+}
+
+// Hex
+func FromHexString(data string) SM2 {
+    return defaultSM2.FromHexString(data)
 }

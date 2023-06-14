@@ -49,3 +49,8 @@ func NewDH() Dh {
 func New() Dh {
     return NewDH()
 }
+
+var (
+    // 默认
+    defaultDH = NewDH()
+)

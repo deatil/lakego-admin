@@ -37,6 +37,14 @@ func AssertBoolT(t *testing.T) func(bool, string) {
     }
 }
 
+func AssertFalseT(t *testing.T) func(bool, string) {
+    return func(data bool, msg string) {
+        if data {
+            t.Errorf("Failed %s: error: data not false", msg)
+        }
+    }
+}
+
 // 为空
 func isEmpty(x any) bool {
     rt := reflect.TypeOf(x)

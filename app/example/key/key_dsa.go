@@ -39,6 +39,7 @@ func (this DSA) Make() {
         this.pkcs8(obj, ln)
         this.pkcs1En(obj, ln)
         this.pkcs8En(obj, ln)
+        this.xml(obj, ln)
     }
 }
 
@@ -122,4 +123,19 @@ func (this DSA) pkcs8En(obj cDsa, dir string) {
         this.fs.Put(file + ".pub", pubKey)
     }
 
+}
+
+func (this DSA) xml(obj cDsa, dir string) {
+    // 生成证书
+    priKey := obj.
+        CreateXMLPrivateKey().
+        ToKeyString()
+    pubKey := obj.
+        CreateXMLPublicKey().
+        ToKeyString()
+
+    file := fmt.Sprintf("%s/%s/%s-xml", this.path, dir, this.name)
+
+    this.fs.Put(file, priKey)
+    this.fs.Put(file + ".pub", pubKey)
 }

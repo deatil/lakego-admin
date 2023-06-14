@@ -1,14 +1,14 @@
-package decode
+package ber
 
 import (
-    "errors"
     "fmt"
+    "time"
+    "errors"
     "math"
     "math/big"
     "reflect"
-    "time"
-    "unicode/utf16"
     "unicode/utf8"
+    "unicode/utf16"
     "encoding/asn1"
 )
 
@@ -240,6 +240,8 @@ func _parseBase128Int(bytes []byte, initOffset int) (ret, offset int, err error)
     return
 }
 
+// Time
+
 // UTCTime
 func parseUTCTime(bytes []byte) (ret time.Time, err error) {
     s := string(bytes)
@@ -284,6 +286,8 @@ func parseGeneralizedTime(bytes []byte) (ret time.Time, err error) {
     return
 }
 
+// NumericString
+
 // parseNumericString parses an ASN.1 NumericString from the given byte array
 // and returns it.
 func parseNumericString(bytes []byte) (ret string, err error) {
@@ -300,6 +304,8 @@ func isNumeric(b byte) bool {
     return '0' <= b && b <= '9' ||
         b == ' '
 }
+
+// PrintableString
 
 // parsePrintableString parses an ASN.1 PrintableString from the given byte
 // array and returns it.
@@ -348,6 +354,8 @@ func isPrintable(b byte, asterisk asteriskFlag, ampersand ampersandFlag) bool {
         // one of which will not expire until 2027.
         (bool(ampersand) && b == '&')
 }
+
+// IA5String
 
 // parseIA5String parses an ASN.1 IA5String (ASCII string) from the given
 // byte slice and returns it.
@@ -399,6 +407,7 @@ func parseBMPString(bmpString []byte) (string, error) {
 }
 
 // Tagging
+
 // parseTagAndLength parses an ASN.1 tag and length pair from the given offset
 // into a byte slice. It returns the parsed data and the new offset. SET and
 // SET OF (tag 17) are mapped to SEQUENCE and SEQUENCE OF (tag 16) since we
@@ -411,8 +420,10 @@ func parseTagAndLength(bytes []byte, initOffset int) (ret tagAndLength, offset i
         err = errors.New("asn1: internal error in parseTagAndLength")
         return
     }
+
     b := bytes[offset]
     offset++
+
     ret.class = int(b >> 6)
     ret.isCompound = b&0x20 == 0x20
     ret.tag = int(b & 0x1f)
@@ -430,12 +441,15 @@ func parseTagAndLength(bytes []byte, initOffset int) (ret tagAndLength, offset i
             return
         }
     }
+
     if offset >= len(bytes) {
         err = asn1.SyntaxError{Msg: "truncated tag or length"}
         return
     }
+
     b = bytes[offset]
     offset++
+
     if b&0x80 == 0 {
         // The length is encoded in the bottom 7 bits.
         ret.length = int(b & 0x7f)
@@ -455,27 +469,33 @@ func parseTagAndLength(bytes []byte, initOffset int) (ret tagAndLength, offset i
                     ret.length = innerOffset - offset
                     return
                 }
+
                 var t tagAndLength
                 t, innerOffset, err = parseTagAndLength(bytes, innerOffset)
                 if err != nil {
                     return
                 }
+
                 innerOffset += t.length
                 if t.isIndefinite {
                     innerOffset += 2
                 }
             }
+
             err = asn1.SyntaxError{Msg: "missing end-of-contents octets"}
             return
         }
+
         ret.length = 0
         for i := 0; i < numBytes; i++ {
             if offset >= len(bytes) {
                 err = asn1.SyntaxError{Msg: "truncated tag or length"}
                 return
             }
+
             b = bytes[offset]
             offset++
+
             if ret.length >= 1<<23 {
                 // We can't shift ret.length up without
                 // overflowing.
@@ -490,6 +510,8 @@ func parseTagAndLength(bytes []byte, initOffset int) (ret tagAndLength, offset i
 
     return
 }
+
+// SEQUENCE OF
 
 // parseSequenceOf is used for SEQUENCE OF and SET OF values. It tries to parse
 // a number of ASN.1 values from the given byte slice and returns them as a
@@ -526,18 +548,23 @@ func parseSequenceOf(bytes []byte, sliceType reflect.Type, elemType reflect.Type
             err = asn1.StructuralError{Msg: "sequence tag mismatch"}
             return
         }
+
         if invalidLength(offset, t.length, len(bytes)) {
             err = asn1.SyntaxError{Msg: "truncated sequence"}
             return
         }
+
         offset += t.length
         if t.isIndefinite {
             offset += 2
         }
+
         numElements++
     }
+
     ret = reflect.MakeSlice(sliceType, numElements, numElements)
     params := fieldParameters{}
+
     offset := 0
     for i := 0; i < numElements; i++ {
         offset, err = parseField(ret.Index(i), bytes, offset, params)
@@ -588,13 +615,16 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
         if err != nil {
             return
         }
+
         if invalidLength(offset, t.length, len(bytes)) {
             err = asn1.SyntaxError{Msg: "data truncated"}
             return
         }
+
         var result interface{}
         if !t.isCompound && t.class == classUniversal {
             innerBytes := bytes[offset : offset+t.length]
+
             switch t.tag {
                 case tagPrintableString:
                     result, err = parsePrintableString(innerBytes)
@@ -629,9 +659,11 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
         if t.isIndefinite {
             offset += 2
         }
+
         if err != nil {
             return
         }
+
         if result != nil {
             v.Set(reflect.ValueOf(result))
         }
@@ -650,10 +682,12 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
         if params.application {
             expectedClass = classApplication
         }
+
         if offset == len(bytes) {
             err = asn1.StructuralError{Msg: "explicit tag has no child"}
             return
         }
+
         if t.class == expectedClass && t.tag == *params.tag && (t.length == 0 || t.isCompound) {
             if fieldType == rawValueType {
                 // The inner element should not be parsed for RawValues.
@@ -747,21 +781,26 @@ func parseField(v reflect.Value, bytes []byte, initOffset int, params fieldParam
         }
         return
     }
+
     if invalidLength(offset, t.length, len(bytes)) {
         err = asn1.SyntaxError{Msg: "data truncated"}
         return
     }
+
     err = parseFieldContents(t, v, universalTag, bytes[initOffset:offset+t.length], offset-initOffset)
     if err != nil {
         return
     }
+
     offset += t.length
     if t.isIndefinite {
         offset += 2
     }
+
     if explicitIsIndefinite {
         offset += 2
     }
+
     return
 }
 
@@ -798,9 +837,11 @@ func parseFieldContents(t tagAndLength, v reflect.Value, universalTag int, bytes
             } else {
                 time, err1 = parseGeneralizedTime(innerBytes)
             }
+
             if err1 == nil {
                 v.Set(reflect.ValueOf(time))
             }
+
             err = err1
             return
         case enumeratedType:

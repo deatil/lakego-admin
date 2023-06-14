@@ -201,7 +201,7 @@ func (this CA) CreatePrivateKey() CA {
             }
 
             privateBlock = &pem.Block{
-                Type: "ED PRIVATE KEY",
+                Type: "PRIVATE KEY",
                 Bytes: x509PrivateKey,
             }
 
@@ -279,3 +279,4 @@ func (this CA) CreatePKCS12CertTrustStore(certs []*x509.Certificate, password st
 
     return this
 }
+

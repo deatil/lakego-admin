@@ -219,3 +219,39 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
     return this
 }
 
+// ====================
+
+// 生成私钥 xml 数据
+func (this DSA) CreateXMLPrivateKey() DSA {
+    if this.privateKey == nil {
+        err := errors.New("DSA: privateKey error.")
+        return this.AppendError(err)
+    }
+
+    xmlPrivateKey, err := cryptobin_dsa.MarshalXMLPrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.keyData = xmlPrivateKey
+
+    return this
+}
+
+// 生成公钥 xml 数据
+func (this DSA) CreateXMLPublicKey() DSA {
+    if this.publicKey == nil {
+        err := errors.New("DSA: publicKey error.")
+        return this.AppendError(err)
+    }
+
+    xmlPublicKey, err := cryptobin_dsa.MarshalXMLPublicKey(this.publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.keyData = xmlPublicKey
+
+    return this
+}
+

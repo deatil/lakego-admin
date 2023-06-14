@@ -1,4 +1,4 @@
-package encode
+package ber
 
 import "reflect"
 
@@ -11,6 +11,7 @@ func encodeInt(value reflect.Value) ([]byte, error) {
 
     n := value.Int()
     length := intLength(n)
+
     buf := make([]byte, length)
     for i := 0; i < length; i++ {
         shift := uint((length - 1 - i) * 8)

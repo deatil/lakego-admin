@@ -64,23 +64,23 @@ type (
 // sm2-x905
 type (
     // SM2 证书
-    CASM2Certificate = sm2X509.Certificate
+    SM2CACertificate = sm2X509.Certificate
 
     // SM2 证书请求
-    CASM2CertificateRequest = sm2X509.CertificateRequest
+    SM2CACertificateRequest = sm2X509.CertificateRequest
 
     // 配置别名
-    CASM2VerifyOptions = sm2X509.VerifyOptions
+    SM2CAVerifyOptions = sm2X509.VerifyOptions
 
     // KeyUsage
-    CASM2KeyUsage = sm2X509.KeyUsage
+    SM2CAKeyUsage = sm2X509.KeyUsage
 
     // ExtKeyUsage
-    CASM2ExtKeyUsage = sm2X509.ExtKeyUsage
+    SM2CAExtKeyUsage = sm2X509.ExtKeyUsage
 
     // SignatureAlgorithm
-    CASM2SignatureAlgorithm = sm2X509.SignatureAlgorithm
+    SM2CASignatureAlgorithm = sm2X509.SignatureAlgorithm
 
     // PublicKeyAlgorithm
-    CASM2PublicKeyAlgorithm = sm2X509.PublicKeyAlgorithm
+    SM2CAPublicKeyAlgorithm = sm2X509.PublicKeyAlgorithm
 )

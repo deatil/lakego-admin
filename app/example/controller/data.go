@@ -22,6 +22,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
 
     "github.com/deatil/go-cryptobin/ssh"
+    _ "github.com/deatil/go-cryptobin/ber"
     _ "github.com/deatil/go-cryptobin/argon2"
     _ "github.com/deatil/go-cryptobin/bencode"
     _ "github.com/deatil/go-cryptobin/dh/dh"

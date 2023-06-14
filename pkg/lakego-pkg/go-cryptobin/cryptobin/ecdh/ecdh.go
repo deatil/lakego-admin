@@ -43,3 +43,8 @@ func NewEcdh() Ecdh {
 func New() Ecdh {
     return NewEcdh()
 }
+
+var (
+    // 默认
+    defaultECDH = NewEcdh()
+)
