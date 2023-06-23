@@ -5,12 +5,11 @@ import (
     "unicode"
 )
 
-// RawContent is used to signal that the undecoded, DER data needs to be
-// preserved for a struct. To use it, the first field of the struct must have
-// this type. It's an error for any of the other fields to have this type.
-type RawContent []byte
-
 type stringEncoder string
+
+func (b stringEncoder) length() int {
+    return len(b)
+}
 
 func (e stringEncoder) encode() ([]byte, error) {
     return []byte(e), nil

@@ -8,6 +8,10 @@ import (
 
 type realEncoder float64
 
+func (b realEncoder) length() int {
+    return 2
+}
+
 func (e realEncoder) encode() ([]byte, error) {
     // ECMA-63
     // https://www.ecma-international.org/wp-content/uploads/ECMA-63_1st_edition_september_1980.pdf
@@ -15,16 +19,16 @@ func (e realEncoder) encode() ([]byte, error) {
     n := float64(e)
 
     switch {
-    case math.IsInf(n, 1):
-        return []byte{0x40}, nil
-    case math.IsInf(n, -1):
-        return []byte{0x41}, nil
-    case math.IsNaN(n):
-        return []byte{0x42}, nil
-    case n == 0.0:
-        if math.Signbit(n) {
-            return []byte{0x43}, nil
-        }
+        case math.IsInf(n, 1):
+            return []byte{0x40}, nil
+        case math.IsInf(n, -1):
+            return []byte{0x41}, nil
+        case math.IsNaN(n):
+            return []byte{0x42}, nil
+        case n == 0.0:
+            if math.Signbit(n) {
+                return []byte{0x43}, nil
+            }
     }
 
     nString := []byte(strconv.FormatFloat(n, 'G', -1, 64))

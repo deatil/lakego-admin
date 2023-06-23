@@ -245,16 +245,16 @@ func Hash(path string) (string, error) {
 
 // 添加数据
 func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
-    out, createErr := os.Create(path)
-    if createErr != nil {
-        return errors.New("执行函数 os.Create() 失败, 错误为:" + createErr.Error())
+    out, err := os.Create(path)
+    if err != nil {
+        return err
     }
 
     defer out.Close()
 
-    _, writeErr := out.WriteString(contents)
-    if writeErr != nil {
-        return errors.New("执行函数 os.WriteString() 失败, 错误为:" + writeErr.Error())
+    _, err = out.WriteString(contents)
+    if err != nil {
+        return err
     }
 
     return nil
@@ -356,7 +356,7 @@ func Append(path string, data string) error {
 func (this *Filesystem) Chmod(path string, mode uint32) error {
     err := os.Chmod(path, os.FileMode(mode))
     if err != nil {
-        return errors.New("设置文件权限失败")
+        return err
     }
 
     return nil
@@ -988,18 +988,18 @@ func (this *Filesystem) EnsureDirectoryExists(
     fd, err := os.Create(checkFile)
     if err != nil {
         if os.IsPermission(err) {
-            return fmt.Errorf("%s 没有读写权限", directory)
+            return fmt.Errorf("%s no permission", directory)
         }
 
         return err
     }
 
     if err := fd.Close(); err != nil {
-        return fmt.Errorf("关闭失败: %s", err)
+        return fmt.Errorf("close err: %s", err)
     }
 
     if err := os.Remove(checkFile); err != nil {
-        return fmt.Errorf("删除失败: %s", err)
+        return fmt.Errorf("delete err: %s", err)
     }
 
     return nil
@@ -1045,7 +1045,7 @@ func (this *Filesystem) MoveDirectory(
     if len(overwrite) > 0 && overwrite[0] && this.IsDirectory(to) {
         err := this.DeleteDirectory(to, false)
         if err != nil {
-            return errors.New("覆盖旧文件操作失败")
+            return errors.New("overwrite fail")
         }
     }
 
@@ -1065,10 +1065,10 @@ func MoveDirectory(
 func (this *Filesystem) CopyDirectory(directory string, destination string) error {
     // 检测目录正确性
     if srcInfo, err := os.Stat(directory); err != nil {
-        return errors.New("原始目录不是一个正确的目录！原因为：" + err.Error())
+        return err
     } else {
         if !srcInfo.IsDir() {
-            e := errors.New("原始目录不是一个正确的目录！")
+            e := errors.New("src is not dir path")
             return e
         }
     }
@@ -1078,15 +1078,15 @@ func (this *Filesystem) CopyDirectory(directory string, destination string) erro
         // 创建目录
         err := os.MkdirAll(destination, os.ModePerm)
         if err != nil {
-            return errors.New("创建目录失败！原因为：" + err.Error())
+            return err
         }
     }
 
     if destInfo, err := os.Stat(destination); err != nil {
-        return errors.New("目标目录不是一个正确的目录！原因为：" + err.Error())
+        return err
     } else {
         if !destInfo.IsDir() {
-            e := errors.New("目标目录不是一个正确的目录！")
+            e := errors.New("dest is not dir path")
             return e
         }
     }
@@ -1121,11 +1121,11 @@ func CopyDirectory(directory string, destination string) error {
 // 删除文件夹
 func (this *Filesystem) DeleteDirectory(directory string, preserve ...bool) error {
     if !this.IsDirectory(directory) {
-        return errors.New("文件夹删除失败, 当前文件不是文件夹类型")
+        return errors.New("not dir path")
     }
 
     if err := os.RemoveAll(directory); err != nil {
-        return errors.New("文件夹删除失败, 错误为:" + err.Error())
+        return err
     }
 
     newPreserve := false

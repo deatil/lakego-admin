@@ -3,6 +3,7 @@ package asn1
 import (
     "math/big"
 )
+
 // ENUMERATED
 
 // An Enumerated is represented as a plain int.
@@ -58,11 +59,11 @@ func makeBigInt(n *big.Int) (encoder, error) {
         for i := range bytes {
             bytes[i] ^= 0xff
         }
-        
+
         if len(bytes) == 0 || bytes[0]&0x80 == 0 {
             return multiEncoder([]encoder{byteFFEncoder, bytesEncoder(bytes)}), nil
         }
-        
+
         return bytesEncoder(bytes), nil
     } else if n.Sign() == 0 {
         // Zero is written as a single 0 zero rather than no bytes.
@@ -74,7 +75,7 @@ func makeBigInt(n *big.Int) (encoder, error) {
             // looking like a negative number.
             return multiEncoder([]encoder{byte00Encoder, bytesEncoder(bytes)}), nil
         }
-        
+
         return bytesEncoder(bytes), nil
     }
 }

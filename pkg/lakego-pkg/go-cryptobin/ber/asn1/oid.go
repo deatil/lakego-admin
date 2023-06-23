@@ -71,6 +71,10 @@ var objectIdentifierType = reflect.TypeOf(ObjectIdentifier{})
 
 type objectIdentifierEncoder ObjectIdentifier
 
+func (b objectIdentifierEncoder) length() int {
+    return len(b)
+}
+
 func (e objectIdentifierEncoder) encode() ([]byte, error) {
     b := new(bytes.Buffer)
 

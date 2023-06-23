@@ -90,6 +90,89 @@ func (this Ecdh) FromPublicKeyDer(der []byte) Ecdh {
 
 // ==========
 
+// 私钥, 库自使用的 asn1 格式
+func (this Ecdh) FromECDHPrivateKey(key []byte) Ecdh {
+    parsedKey, err := this.ParseECDHPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = parsedKey.(*ecdh.PrivateKey)
+
+    return this
+}
+
+// 私钥, 库自使用的 asn1 格式
+func FromECDHPrivateKey(key []byte) Ecdh {
+    return defaultECDH.FromECDHPrivateKey(key)
+}
+
+// 私钥带密码, 库自使用的 asn1 格式
+func (this Ecdh) FromECDHPrivateKeyWithPassword(key []byte, password string) Ecdh {
+    parsedKey, err := this.ParseECDHPrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = parsedKey.(*ecdh.PrivateKey)
+
+    return this
+}
+
+// 私钥, 库自使用的 asn1 格式
+func FromECDHPrivateKeyWithPassword(key []byte, password string) Ecdh {
+    return defaultECDH.FromECDHPrivateKeyWithPassword(key, password)
+}
+
+// 公钥, 库自使用的 asn1 格式
+func (this Ecdh) FromECDHPublicKey(key []byte) Ecdh {
+    parsedKey, err := this.ParseECDHPublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = parsedKey.(*ecdh.PublicKey)
+
+    return this
+}
+
+// 公钥, 库自使用的 asn1 格式
+func FromECDHPublicKey(key []byte) Ecdh {
+    return defaultECDH.FromECDHPublicKey(key)
+}
+
+// ==========
+
+// DER 私钥, 库自使用的 asn1 格式
+func (this Ecdh) FromECDHPrivateKeyDer(der []byte) Ecdh {
+    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+
+    parsedKey, err := this.ParseECDHPrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = parsedKey.(*ecdh.PrivateKey)
+
+    return this
+}
+
+// DER 公钥, 库自使用的 asn1 格式
+func (this Ecdh) FromECDHPublicKeyDer(der []byte) Ecdh {
+    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+
+    parsedKey, err := this.ParseECDHPublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = parsedKey.(*ecdh.PublicKey)
+
+    return this
+}
+
+// ==========
+
 // 生成密钥
 func (this Ecdh) GenerateKey() Ecdh {
     privateKey, err := this.curve.GenerateKey(rand.Reader)
@@ -104,6 +187,6 @@ func (this Ecdh) GenerateKey() Ecdh {
 }
 
 // 生成密钥
-func GenerateKey() Ecdh {
-    return defaultECDH.GenerateKey()
+func GenerateKey(name string) Ecdh {
+    return defaultECDH.SetCurve(name).GenerateKey()
 }

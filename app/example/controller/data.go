@@ -22,7 +22,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
 
     "github.com/deatil/go-cryptobin/ssh"
-    _ "github.com/deatil/go-cryptobin/ber"
+    _ "github.com/deatil/go-cryptobin/ber/asn1"
     _ "github.com/deatil/go-cryptobin/argon2"
     _ "github.com/deatil/go-cryptobin/bencode"
     _ "github.com/deatil/go-cryptobin/dh/dh"
@@ -37,6 +37,7 @@ import (
     _ "github.com/deatil/go-cryptobin/pkcs8s"
     _ "github.com/deatil/go-cryptobin/pkcs12"
     _ "github.com/deatil/go-cryptobin/jceks"
+    _ "github.com/deatil/go-cryptobin/elgamal"
     _ "github.com/deatil/go-cryptobin/cryptobin/ca"
     _ "github.com/deatil/go-cryptobin/cryptobin/dsa"
     // _ "github.com/deatil/go-cryptobin/cryptobin/ecdh"
@@ -406,7 +407,7 @@ func (this *Data) Error(ctx *gin.Context) {
         ToBase64String()
     obj2Pub, _ := fs.Get("./runtime/key/key-pem/rsa/2048/rsa-pkcs8-pbe-en-SHA1AndDES.pub")
     obj2cyptde := obj2.
-        FromBase64String("Pok10M8e9u1WicbS08/IvoKChoYXfKbljcJYr6srL5TkaAJTYD4thgPDV/EzRvCqfJsQyDb0cOqM2kmwKDt5zl+Amf6TitTPKb9LxCCuKcz6VKHtoUZ+t4ENZM4y2bjRNjkChWdjjEb0kjoljWoaZ+zoWl+6QWRRug6NQJag78J3crqVA34iulsygC/sVEy/LKSJ76PBDx9srdqXpf03HiJgYUSso7YnZ3RT+AS13GgZy7BFZskrjIX2Qw64X8Ydtt5TrfMckjxf0QWdNSwmFxSeNh1Cn2gozG9sJl7yiELNiG0JqRDIOYQTpszj314W5CYEIa/y4eRTDmiNiKr3cA==").
+        FromBase64String("QiDWcgThaEoeg664xpH6sIMNCfSfI2d/xvseMoCKNFeVK/xTX7xG+kNxZyQ21wXW1ljvhidRL7A+7eZnHEizoNQY1EJUsgDDMfuQxox0UwVe3PJ1VCtTg9XczbwTi2NHSSzmg2Y2QhSnmNzWmZMDM4xGUc/gLL21ynUwpKs0zLWk4mBOeZHX80o8MCUSwue+YZXsxE+vrP60PlC9wg/qgrlyCySVZ5X4RNdPJ1dKW/9e3vrNx4goSTNn4olytaVQ9bFlL1fNI7mkHbF4qy3OcDdQvTbfj4DqFRAn2VImzWwwdi0kuYoHZJfdZeZ1xPDHJ/Q5WA2BKBBo7ra2TPbf8A==").
         FromPKCS8PublicKey([]byte(obj2Pub)).
         Verify([]byte("test-pass")).
         ToVerify()

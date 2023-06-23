@@ -37,6 +37,9 @@ func (this GoEcdh) Make() {
 
         this.pkcs8(obj, curve)
         this.pkcs8En(obj, curve)
+
+        this.pkcs8ECDH(obj, curve)
+        this.pkcs8EnECDH(obj, curve)
     }
 }
 
@@ -49,7 +52,7 @@ func (this GoEcdh) pkcs8(obj cGoEcdh, name string) {
         CreatePublicKey().
         ToKeyString()
 
-    file := fmt.Sprintf("%s/%s/%s-pkcs8", this.path, name, this.name)
+    file := fmt.Sprintf("%s/go_ecdh/%s/%s-pkcs8", this.path, name, this.name)
 
     this.fs.Put(file, priKey)
     this.fs.Put(file + ".pub", pubKey)
@@ -66,7 +69,7 @@ func (this GoEcdh) pkcs8En(obj cGoEcdh, name string) {
                 CreatePublicKey().
                 ToKeyString()
 
-            file := fmt.Sprintf("%s/%s/%s-pkcs8-en-%s-%s", this.path, name, this.name, c, h)
+            file := fmt.Sprintf("%s/go_ecdh/%s/%s-pkcs8-en-%s-%s", this.path, name, this.name, c, h)
 
             this.fs.Put(file, priKey)
             this.fs.Put(file + ".pub", pubKey)
@@ -82,7 +85,59 @@ func (this GoEcdh) pkcs8En(obj cGoEcdh, name string) {
             CreatePublicKey().
             ToKeyString()
 
-        file := fmt.Sprintf("%s/%s/%s-pkcs8-pbe-en-%s", this.path, name, this.name, c2)
+        file := fmt.Sprintf("%s/go_ecdh/%s/%s-pkcs8-pbe-en-%s", this.path, name, this.name, c2)
+
+        this.fs.Put(file, priKey)
+        this.fs.Put(file + ".pub", pubKey)
+    }
+
+}
+
+// =================
+
+func (this GoEcdh) pkcs8ECDH(obj cGoEcdh, name string) {
+    // 生成证书
+    priKey := obj.
+        CreateECDHPrivateKey().
+        ToKeyString()
+    pubKey := obj.
+        CreateECDHPublicKey().
+        ToKeyString()
+
+    file := fmt.Sprintf("%s/ecdh/%s/%s-pkcs8", this.path, name, this.name)
+
+    this.fs.Put(file, priKey)
+    this.fs.Put(file + ".pub", pubKey)
+}
+
+func (this GoEcdh) pkcs8EnECDH(obj cGoEcdh, name string) {
+    for _, c := range Pkcs8Ciphers {
+        for _, h := range Pkcs8Hashes {
+            // 生成证书
+            priKey := obj.
+                CreateECDHPrivateKeyWithPassword(this.pass, c, h).
+                ToKeyString()
+            pubKey := obj.
+                CreateECDHPublicKey().
+                ToKeyString()
+
+            file := fmt.Sprintf("%s/ecdh/%s/%s-pkcs8-en-%s-%s", this.path, name, this.name, c, h)
+
+            this.fs.Put(file, priKey)
+            this.fs.Put(file + ".pub", pubKey)
+        }
+    }
+
+    for _, c2 := range Pkcs8PbeCiphers {
+        // 生成证书
+        priKey := obj.
+            CreateECDHPrivateKeyWithPassword(this.pass, c2).
+            ToKeyString()
+        pubKey := obj.
+            CreateECDHPublicKey().
+            ToKeyString()
+
+        file := fmt.Sprintf("%s/ecdh/%s/%s-pkcs8-pbe-en-%s", this.path, name, this.name, c2)
 
         this.fs.Put(file, priKey)
         this.fs.Put(file + ".pub", pubKey)

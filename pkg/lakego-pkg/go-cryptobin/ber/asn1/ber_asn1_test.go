@@ -2,7 +2,6 @@ package asn1
 
 import (
     "bytes"
-    "encoding/asn1"
     "encoding/hex"
     "fmt"
     "math"
@@ -11,12 +10,6 @@ import (
     "strings"
     "testing"
     "time"
-)
-
-// Compatibility vars for ber_asn1_test.go
-var (
-    NullRawValue = asn1.NullRawValue
-    NullBytes    = asn1.NullBytes
 )
 
 type boolTest struct {
@@ -161,8 +154,8 @@ type bitStringTest struct {
 var bitStringTestData = []bitStringTest{
     {[]byte{}, false, []byte{}, 0},
     {[]byte{0x00}, true, []byte{}, 0},
-    {[]byte{0x07, 0x00}, true, []byte{0x00}, 7},
-    {[]byte{0x07, 0x40}, true, []byte{0x40}, 7},
+    {[]byte{0x07, 0x00}, true, []byte{0x00}, 1},
+    {[]byte{0x07, 0x40}, false, []byte{0x40}, 7},
     {[]byte{0x08, 0x00}, false, []byte{}, 0},
 }
 
@@ -173,7 +166,7 @@ func TestBitString(t *testing.T) {
             t.Errorf("#%d: Incorrect error result (did fail? %v, expected: %v)", i, err == nil, test.ok)
         }
         if err == nil {
-            if test.bitLength != ret.PaddingBits || !bytes.Equal(ret.Bytes, test.out) {
+            if test.bitLength != ret.BitLength || !bytes.Equal(ret.Bytes, test.out) {
                 t.Errorf("#%d: Bad result: %v (expected %v %v)", i, ret, test.out, test.bitLength)
             }
         }
@@ -437,17 +430,17 @@ var unmarshalTestData = []struct {
     out interface{}
 }{
     {[]byte{0x02, 0x01, 0x42}, newInt(0x42)},
-    {[]byte{0x05, 0x00}, &asn1.RawValue{0, 5, false, []byte{}, []byte{0x05, 0x00}}},
+    {[]byte{0x05, 0x00}, &RawValue{0, 5, false, false, []byte{}, []byte{0x05, 0x00}}},
     {[]byte{0x30, 0x08, 0x06, 0x06, 0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d}, &TestObjectIdentifierStruct{[]int{1, 2, 840, 113549}}},
-    {[]byte{0x03, 0x04, 0x06, 0x6e, 0x5d, 0xc0}, &BitString{[]byte{110, 93, 192}, 6}},
+    {[]byte{0x03, 0x04, 0x06, 0x6e, 0x5d, 0xc0}, &BitString{[]byte{110, 93, 192}, 18}},
     {[]byte{0x30, 0x09, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02, 0x02, 0x01, 0x03}, &[]int{1, 2, 3}},
     {[]byte{0x02, 0x01, 0x10}, newInt(16)},
     {[]byte{0x13, 0x04, 't', 'e', 's', 't'}, newString("test")},
     {[]byte{0x16, 0x04, 't', 'e', 's', 't'}, newString("test")},
     // Ampersand is allowed in PrintableString due to mistakes by major CAs.
     {[]byte{0x13, 0x05, 't', 'e', 's', 't', '&'}, newString("test&")},
-    {[]byte{0x16, 0x04, 't', 'e', 's', 't'}, &asn1.RawValue{0, 22, false, []byte("test"), []byte("\x16\x04test")}},
-    {[]byte{0x04, 0x04, 1, 2, 3, 4}, &asn1.RawValue{0, 4, false, []byte{1, 2, 3, 4}, []byte{4, 4, 1, 2, 3, 4}}},
+    {[]byte{0x16, 0x04, 't', 'e', 's', 't'}, &RawValue{0, 22, false, false, []byte("test"), []byte("\x16\x04test")}},
+    {[]byte{0x04, 0x04, 1, 2, 3, 4}, &RawValue{0, 4, false, false, []byte{1, 2, 3, 4}, []byte{4, 4, 1, 2, 3, 4}}},
     {[]byte{0x30, 0x03, 0x81, 0x01, 0x01}, &TestContextSpecificTags{1}},
     {[]byte{0x30, 0x08, 0xa1, 0x03, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02}, &TestContextSpecificTags2{1, 2}},
     {[]byte{0x30, 0x03, 0x81, 0x01, '@'}, &TestContextSpecificTags3{"@"}},
@@ -467,6 +460,7 @@ func TestUnmarshal(t *testing.T) {
         if err != nil {
             t.Errorf("Unmarshal failed at index %d %v", i, err)
         }
+
         if !reflect.DeepEqual(val, test.out) {
             t.Errorf("#%d:\nhave %#v\nwant %#v", i, val, test.out)
         }
@@ -481,7 +475,7 @@ type Certificate struct {
 
 type TBSCertificate struct {
     Version            int `asn1:"optional,explicit,default:0,tag:0"`
-    SerialNumber       asn1.RawValue
+    SerialNumber       RawValue
     SignatureAlgorithm AlgorithmIdentifier
     Issuer             RDNSequence
     Validity           Validity
@@ -593,7 +587,7 @@ func TestObjectIdentifierEqual(t *testing.T) {
 var derEncodedSelfSignedCert = Certificate{
     TBSCertificate: TBSCertificate{
         Version:            0,
-        SerialNumber:       asn1.RawValue{Class: 0, Tag: 2, IsCompound: false, Bytes: []uint8{0x0, 0x8c, 0xc3, 0x37, 0x92, 0x10, 0xec, 0x2c, 0x98}, FullBytes: []byte{2, 9, 0x0, 0x8c, 0xc3, 0x37, 0x92, 0x10, 0xec, 0x2c, 0x98}},
+        SerialNumber:       RawValue{Class: 0, Tag: 2, IsCompound: false, Bytes: []uint8{0x0, 0x8c, 0xc3, 0x37, 0x92, 0x10, 0xec, 0x2c, 0x98}, FullBytes: []byte{2, 9, 0x0, 0x8c, 0xc3, 0x37, 0x92, 0x10, 0xec, 0x2c, 0x98}},
         SignatureAlgorithm: AlgorithmIdentifier{Algorithm: ObjectIdentifier{1, 2, 840, 113549, 1, 1, 5}},
         Issuer: RDNSequence{
             RelativeDistinguishedNameSET{AttributeTypeAndValue{Type: ObjectIdentifier{2, 5, 4, 6}, Value: "XX"}},
@@ -627,7 +621,7 @@ var derEncodedSelfSignedCert = Certificate{
                     0x2a, 0xf7, 0x58, 0x9c, 0xf2, 0xc7, 0x70, 0x45, 0xdc, 0x8f, 0xde, 0xec,
                     0x35, 0x7d, 0x2, 0x3, 0x1, 0x0, 0x1,
                 },
-                PaddingBits: 0,
+                BitLength: 592,
             },
         },
     },
@@ -641,7 +635,7 @@ var derEncodedSelfSignedCert = Certificate{
             0xd9, 0x1e, 0xde, 0x14, 0xa5, 0xed, 0x76, 0xbf, 0x11, 0x6f, 0xe3, 0x60, 0xaa,
             0xfa, 0x88, 0x21, 0x49, 0x4, 0x35,
         },
-        PaddingBits: 0,
+        BitLength: 512,
     },
 }
 
@@ -966,7 +960,7 @@ func TestUnexportedStructField(t *testing.T) {
 }
 
 func TestNull(t *testing.T) {
-    unmarshaled := asn1.RawValue{}
+    unmarshaled := RawValue{}
     if _, err := Unmarshal(NullBytes, &unmarshaled); err != nil {
         t.Fatal(err)
     }
@@ -984,7 +978,7 @@ func TestNull(t *testing.T) {
 
 func TestExplicitTagRawValueStruct(t *testing.T) {
     type foo struct {
-        A asn1.RawValue `asn1:"optional,explicit,tag:5"`
+        A RawValue `asn1:"optional,explicit,tag:5"`
         B []byte        `asn1:"optional,explicit,tag:6"`
     }
     before := foo{B: []byte{1, 2, 3}}
@@ -1007,10 +1001,10 @@ func TestExplicitTagRawValueStruct(t *testing.T) {
 
 func TestTaggedRawValue(t *testing.T) {
     type taggedRawValue struct {
-        A asn1.RawValue `asn1:"tag:5"`
+        A RawValue `asn1:"tag:5"`
     }
     type untaggedRawValue struct {
-        A asn1.RawValue
+        A RawValue
     }
     const isCompound = 0x20
     const tag = 5
@@ -1019,11 +1013,11 @@ func TestTaggedRawValue(t *testing.T) {
         shouldMatch bool
         derBytes    []byte
     }{
-        {false, []byte{0x30, 3, asn1.TagInteger, 1, 1}},
-        {true, []byte{0x30, 3, (asn1.ClassContextSpecific << 6) | tag, 1, 1}},
-        {true, []byte{0x30, 3, (asn1.ClassContextSpecific << 6) | tag | isCompound, 1, 1}},
-        {false, []byte{0x30, 3, (asn1.ClassApplication << 6) | tag | isCompound, 1, 1}},
-        {false, []byte{0x30, 3, (asn1.ClassPrivate << 6) | tag | isCompound, 1, 1}},
+        {false, []byte{0x30, 3, byte(TagInteger), 1, 1}},
+        {true, []byte{0x30, 3, (byte(TagClassContextSpecific) << 6) | tag, 1, 1}},
+        {true, []byte{0x30, 3, (byte(TagClassContextSpecific) << 6) | tag | isCompound, 1, 1}},
+        {false, []byte{0x30, 3, (byte(TagClassApplication) << 6) | tag | isCompound, 1, 1}},
+        {false, []byte{0x30, 3, (byte(TagClassPrivate) << 6) | tag | isCompound, 1, 1}},
     }
 
     for i, test := range tests {

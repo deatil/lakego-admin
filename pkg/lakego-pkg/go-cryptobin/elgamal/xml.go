@@ -1,54 +1,47 @@
-package dsa
+package elgamal
 
 import (
     "errors"
     "math/big"
-    "crypto/dsa"
     "encoding/xml"
     "encoding/base64"
 )
 
 // 私钥
 type xmlPrivateKey struct {
-    XMLName     xml.Name `xml:"DSAKeyValue"`
-    P           string   `xml:"P"`
-    Q           string   `xml:"Q"`
+    XMLName     xml.Name `xml:"EIGamalKeyValue"`
     G           string   `xml:"G"`
+    P           string   `xml:"P"`
+    Q           string   `xml:"Q,omitempty"`
     Y           string   `xml:"Y"`
-    J           string   `xml:"J,omitempty"`
-    Seed        string   `xml:"Seed,omitempty"`
-    PgenCounter string   `xml:"PgenCounter,omitempty"`
     X           string   `xml:"X"`
 }
 
 // 公钥
 type xmlPublicKey struct {
-    XMLName     xml.Name `xml:"DSAKeyValue"`
-    P           string   `xml:"P"`
-    Q           string   `xml:"Q"`
+    XMLName     xml.Name `xml:"EIGamalKeyValue"`
     G           string   `xml:"G"`
+    P           string   `xml:"P"`
+    Q           string   `xml:"Q,omitempty"`
     Y           string   `xml:"Y"`
-    J           string   `xml:"J,omitempty"`
-    Seed        string   `xml:"Seed,omitempty"`
-    PgenCounter string   `xml:"PgenCounter,omitempty"`
 }
 
 var (
     errPublicKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: public key [" + name + "] value is error")
+        return errors.New("elgamal xml: public key [" + name + "] value is error")
     }
 
     errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: private key [" + name + "] value is error")
+        return errors.New("elgamal xml: private key [" + name + "] value is error")
     }
 )
 
 var defaultXMLKey = NewXMLKey()
 
 /**
- * dsa xml密钥
+ * elgamal xml密钥
  *
- * @create 2023-6-5
+ * @create 2023-6-16
  * @author deatil
  */
 type XMLKey struct {}
@@ -59,37 +52,26 @@ func NewXMLKey() XMLKey {
 }
 
 // 包装公钥
-func (this XMLKey) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
+func (this XMLKey) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     publicKey := xmlPublicKey{
-        P: this.bigintToB64(key.P),
-        Q: this.bigintToB64(key.Q),
         G: this.bigintToB64(key.G),
+        P: this.bigintToB64(key.P),
         Y: this.bigintToB64(key.Y),
     }
 
     return xml.MarshalIndent(publicKey, "", "    ")
 }
 
-func MarshalXMLPublicKey(key *dsa.PublicKey) ([]byte, error) {
+func MarshalXMLPublicKey(key *PublicKey) ([]byte, error) {
     return defaultXMLKey.MarshalPublicKey(key)
 }
 
 // 解析公钥
-func (this XMLKey) ParsePublicKey(data []byte) (*dsa.PublicKey, error) {
+func (this XMLKey) ParsePublicKey(data []byte) (*PublicKey, error) {
     var pub xmlPublicKey
     err := xml.Unmarshal(data, &pub)
     if err != nil {
         return nil, err
-    }
-
-    p, err := this.b64ToBigint(pub.P)
-    if err != nil {
-        return nil, errPublicKeyXMLValue("P")
-    }
-
-    q, err := this.b64ToBigint(pub.Q)
-    if err != nil {
-        return nil, errPublicKeyXMLValue("Q")
     }
 
     g, err := this.b64ToBigint(pub.G)
@@ -97,40 +79,41 @@ func (this XMLKey) ParsePublicKey(data []byte) (*dsa.PublicKey, error) {
         return nil, errPublicKeyXMLValue("G")
     }
 
+    p, err := this.b64ToBigint(pub.P)
+    if err != nil {
+        return nil, errPublicKeyXMLValue("P")
+    }
+
     y, err := this.b64ToBigint(pub.Y)
     if err != nil {
         return nil, errPublicKeyXMLValue("Y")
     }
 
-    if p.Sign() <= 0 || q.Sign() <= 0 || g.Sign() <= 0 || y.Sign() <= 0 {
-        return nil, errors.New("dsa xml: public key contains zero or negative value")
+    if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 {
+        return nil, errors.New("elgamal xml: public key contains zero or negative value")
     }
 
-    publicKey := &dsa.PublicKey{
-        Parameters: dsa.Parameters{
-            P: p,
-            Q: q,
-            G: g,
-        },
+    publicKey := &PublicKey{
+        G: g,
+        P: p,
         Y: y,
     }
 
     return publicKey, nil
 }
 
-func ParseXMLPublicKey(der []byte) (*dsa.PublicKey, error) {
+func ParseXMLPublicKey(der []byte) (*PublicKey, error) {
     return defaultXMLKey.ParsePublicKey(der)
 }
 
 // ====================
 
 // 包装私钥
-func (this XMLKey) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
+func (this XMLKey) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     // 构造私钥信息
     priv := xmlPrivateKey{
-        P: this.bigintToB64(key.P),
-        Q: this.bigintToB64(key.Q),
         G: this.bigintToB64(key.G),
+        P: this.bigintToB64(key.P),
         Y: this.bigintToB64(key.Y),
         X: this.bigintToB64(key.X),
     }
@@ -138,31 +121,26 @@ func (this XMLKey) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     return xml.MarshalIndent(priv, "", "    ")
 }
 
-func MarshalXMLPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
+func MarshalXMLPrivateKey(key *PrivateKey) ([]byte, error) {
     return defaultXMLKey.MarshalPrivateKey(key)
 }
 
 // 解析私钥
-func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
+func (this XMLKey) ParsePrivateKey(data []byte) (*PrivateKey, error) {
     var priv xmlPrivateKey
     err := xml.Unmarshal(data, &priv)
     if err != nil {
         return nil, err
     }
 
-    p, err := this.b64ToBigint(priv.P)
-    if err != nil {
-        return nil, errPrivateKeyXMLValue("P")
-    }
-
-    q, err := this.b64ToBigint(priv.Q)
-    if err != nil {
-        return nil, errPrivateKeyXMLValue("Q")
-    }
-
     g, err := this.b64ToBigint(priv.G)
     if err != nil {
         return nil, errPrivateKeyXMLValue("G")
+    }
+
+    p, err := this.b64ToBigint(priv.P)
+    if err != nil {
+        return nil, errPrivateKeyXMLValue("P")
     }
 
     y, err := this.b64ToBigint(priv.Y)
@@ -175,17 +153,14 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
         return nil, errPrivateKeyXMLValue("X")
     }
 
-    if p.Sign() <= 0 || q.Sign() <= 0 || g.Sign() <= 0 || y.Sign() <= 0 || x.Sign() <= 0 {
-        return nil, errors.New("dsa xml: private key contains zero or negative value")
+    if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 || x.Sign() <= 0 {
+        return nil, errors.New("elgamal xml: private key contains zero or negative value")
     }
 
-    privateKey := &dsa.PrivateKey{
-        PublicKey: dsa.PublicKey{
-            Parameters: dsa.Parameters{
-                P: p,
-                Q: q,
-                G: g,
-            },
+    privateKey := &PrivateKey{
+        PublicKey: PublicKey{
+            G: g,
+            P: p,
             Y: y,
         },
         X: x,
@@ -194,7 +169,7 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
     return privateKey, nil
 }
 
-func ParseXMLPrivateKey(der []byte) (*dsa.PrivateKey, error) {
+func ParseXMLPrivateKey(der []byte) (*PrivateKey, error) {
     return defaultXMLKey.ParsePrivateKey(der)
 }
 

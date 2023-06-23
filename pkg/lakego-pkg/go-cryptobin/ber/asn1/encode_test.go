@@ -236,15 +236,12 @@ var marshalTests = []marshalTest{
     {time.Date(1991, time.May, 6, 23, 45, 40, 0, time.UTC), "17113931303530363233343534302b30303030"},
 
     // BIT STRING
-    {BitString{[]byte{0x80}, 7}, "03020780"},
-    {BitString{[]byte{0x81, 0xf0}, 4}, "03030481f0"},
-    {BitString{[]byte{0b01101110, 0b01011101, 0b11000000}, 6}, "0304066e5dc0"},
+    {BitString{[]byte{0x80}, 8}, "03020080"},
+    {BitString{[]byte{0x81, 0xf0}, 16}, "03030081f0"},
+    {BitString{[]byte{0b01101110, 0b01011101, 0b11000000}, 24}, "0304006e5dc0"},
     {BitString{[]byte{}, 0}, "030100"},
-    {BitString{[]byte{0x40}, 4}, "03020440"},
-    {BitString{[]byte{0x80}, 7}, "03020780"},
-    {BitString{[]byte{0x00, 0x00}, 7}, "0303070000"},
-    {BitString{[]byte{0xe0}, 5}, "030205e0"},
-    {BitString{[]byte{0x01}, 0}, "03020001"},
+    {BitString{[]byte{0x40}, 8}, "03020040"},
+    {BitString{[]byte{0x80}, 8}, "03020080"},
 
     // omitempty
     {omitEmptyTest{[]string{}}, "3000"},
@@ -269,6 +266,29 @@ func TestMarshal(t *testing.T) {
         if !bytes.Equal(out, data) {
             t.Errorf("#%d got: %x want %x\n\t%q\n\t%q", i, data, out, data, out)
         }
+    }
+}
+
+
+func TestMarshal2(t *testing.T) {
+    data := []byte{0x81, 0xf0}
+    in := BitString{data, len(data)*8}
+
+    res, err := Marshal(in)
+    if err != nil {
+        t.Errorf("failed: %s", err)
+    }
+
+    var data2 BitString
+    _, err = Unmarshal(res, &data2)
+    if err != nil {
+        t.Errorf("failed: %s", err)
+    }
+
+    res2 := data2.RightAlign()
+
+    if !bytes.Equal(res2, data) {
+        t.Errorf("got: %x want %x", res2, data)
     }
 }
 
@@ -324,7 +344,7 @@ var marshalWithOptionsTests = []marshalWithOptionsTest{
     // explicit
     {true, "a2030101ff", "tag:2,explicit"},
     {1, "a203020101", "tag:2,explicit"},
-    {BitString{[]byte{0x56}, 1}, "a20403020156", "tag:2,explicit"},
+    {BitString{[]byte{0x56}, 8}, "a20403020056", "tag:2,explicit"},
     {[]byte{0x56}, "a203040156", "tag:2,explicit"},
     {"Jones", "1a054a6f6e6573", "visible"},
     {"Jones", "43054a6f6e6573", "visible,application,tag:3"},

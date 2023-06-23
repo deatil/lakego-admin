@@ -3,6 +3,7 @@ package ecdh
 import (
     "errors"
     "crypto/rand"
+    "crypto/x509"
     "encoding/pem"
 
     cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
@@ -36,7 +37,7 @@ func (this Ecdh) CreatePrivateKey() Ecdh {
         return this.AppendError(err)
     }
 
-    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
+    privateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -54,6 +55,87 @@ func (this Ecdh) CreatePrivateKey() Ecdh {
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh {
+    if this.privateKey == nil {
+        err := errors.New("Ecdh: privateKey error.")
+        return this.AppendError(err)
+    }
+
+    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    // 生成私钥
+    privateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    // 生成加密数据
+    privateBlock, err := cryptobin_pkcs8s.EncryptPEMBlock(
+        rand.Reader,
+        "ENCRYPTED PRIVATE KEY",
+        privateKey,
+        []byte(password),
+        opt,
+    )
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.keyData = pem.EncodeToMemory(privateBlock)
+
+    return this
+}
+
+// 生成公钥 pem 数据
+func (this Ecdh) CreatePublicKey() Ecdh {
+    if this.publicKey == nil {
+        err := errors.New("Ecdh: publicKey error.")
+        return this.AppendError(err)
+    }
+
+    publicKeyBytes, err := x509.MarshalPKIXPublicKey(this.publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    publicBlock := &pem.Block{
+        Type:  "PUBLIC KEY",
+        Bytes: publicKeyBytes,
+    }
+
+    this.keyData = pem.EncodeToMemory(publicBlock)
+
+    return this
+}
+
+// =======================
+
+// 生成私钥 pem 数据, 库自使用的 asn1 格式
+func (this Ecdh) CreateECDHPrivateKey() Ecdh {
+    if this.privateKey == nil {
+        err := errors.New("Ecdh: privateKey error.")
+        return this.AppendError(err)
+    }
+
+    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    privateBlock := &pem.Block{
+        Type:  "PRIVATE KEY",
+        Bytes: privateKey,
+    }
+
+    this.keyData = pem.EncodeToMemory(privateBlock)
+
+    return this
+}
+
+// 生成 PKCS8 私钥带密码 pem 数据, 库自使用的 asn1 格式
+func (this Ecdh) CreateECDHPrivateKeyWithPassword(password string, opts ...any) Ecdh {
     if this.privateKey == nil {
         err := errors.New("Ecdh: privateKey error.")
         return this.AppendError(err)
@@ -87,8 +169,8 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
     return this
 }
 
-// 生成公钥 pem 数据
-func (this Ecdh) CreatePublicKey() Ecdh {
+// 生成公钥 pem 数据, 库自使用的 asn1 格式
+func (this Ecdh) CreateECDHPublicKey() Ecdh {
     if this.publicKey == nil {
         err := errors.New("Ecdh: publicKey error.")
         return this.AppendError(err)
@@ -108,6 +190,8 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 
     return this
 }
+
+// =======================
 
 // 根据公钥和私钥生成对称密钥
 func (this Ecdh) CreateSecretKey() Ecdh {

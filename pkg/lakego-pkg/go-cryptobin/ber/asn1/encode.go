@@ -33,6 +33,7 @@ func MarshalWithOptions(v any, optionsString string) ([]byte, error) {
 }
 
 type encoder interface {
+    length() int
     encode() ([]byte, error)
 }
 
@@ -71,6 +72,10 @@ func getChoiceIndex(val reflect.Value) (int, error) {
     }
 
     return choiceIndex, nil
+}
+
+func (b Encoder) length() int {
+    return b.buf.Len()
 }
 
 func (e Encoder) encode() (encodedContents []byte, err error) {
@@ -139,6 +144,29 @@ func (e Encoder) encode() (encodedContents []byte, err error) {
             val = reflect.ValueOf(val.Field(choiceIndex).Interface())
         }
 
+    }
+
+    if val.Type() == rawValueType {
+        rv := val.Interface().(RawValue)
+        if len(rv.FullBytes) != 0 {
+            return bytesEncoder(rv.FullBytes), nil
+        }
+
+        t := new(taggedEncoder)
+
+        t.tag = bytesEncoder(appendTagAndLength(t.scratch[:0], tagAndLength{rv.Class, rv.Tag, len(rv.Bytes), rv.IsCompound, rv.IsIndefinite}))
+
+        bodyBytes := rv.Bytes
+
+        // it is Indefinite
+        // 非定长模式
+        if rv.IsIndefinite {
+            bodyBytes = append(bodyBytes, []byte{0x00, 0x00}...)
+        }
+
+        t.body = bytesEncoder(bodyBytes)
+
+        return t.encode()
     }
 
     switch val.Type() {
@@ -218,7 +246,7 @@ func (e Encoder) encode() (encodedContents []byte, err error) {
                 } else {
                     id.tag = TagSequence
                 }
-                
+
                 var encoders multiEncoder
                 for i := 0; i < val.NumField(); i++ {
                     fieldVal := val.Field(i)
@@ -276,6 +304,7 @@ func (e Encoder) encode() (encodedContents []byte, err error) {
         } else {
             id.class = TagClassContextSpecific
         }
+
         if e.opts.explicit {
             if e.opts.tag == nil {
                 return nil, fmt.Errorf("'explicit' flag requires 'tag' to be set")
@@ -359,7 +388,37 @@ func encodeLength(length int) []byte {
     return b.Bytes()
 }
 
+// A RawValue represents an undecoded ASN.1 object.
+type RawValue struct {
+    Class, Tag   int
+    IsCompound   bool
+    IsIndefinite bool
+    Bytes        []byte
+    FullBytes    []byte // includes the tag and length
+}
+
+// RawContent is used to signal that the undecoded, DER data needs to be
+// preserved for a struct. To use it, the first field of the struct must have
+// this type. It's an error for any of the other fields to have this type.
+type RawContent []byte
+
+// NullRawValue is a RawValue with its Tag set to the ASN.1 NULL type tag (5).
+var NullRawValue = RawValue{Tag: int(TagNull)}
+
+// NullBytes contains bytes representing the BER-encoded ASN.1 NULL type.
+var NullBytes = []byte{byte(TagNull), 0}
+
 type multiEncoder []encoder
+
+func (m multiEncoder) length() int {
+    var size int
+
+    for _, e := range m {
+        size += e.length()
+    }
+
+    return size
+}
 
 func (e multiEncoder) encode() ([]byte, error) {
     buf := new(bytes.Buffer)
@@ -386,8 +445,125 @@ func (c byteEncoder) encode() ([]byte, error) {
 
 type bytesEncoder []byte
 
+func (b bytesEncoder) length() int {
+    return len(b)
+}
+
 func (e bytesEncoder) encode() ([]byte, error) {
     return e, nil
+}
+
+type taggedEncoder struct {
+    // scratch contains temporary space for encoding the tag and length of
+    // an element in order to avoid extra allocations.
+    scratch [8]byte
+    tag     encoder
+    body    encoder
+}
+
+func (t *taggedEncoder) length() int {
+    return t.tag.length() + t.body.length()
+}
+
+func (t *taggedEncoder) encode() ([]byte, error) {
+    tagBytes, err := t.tag.encode()
+    if err != nil {
+        return nil, err
+    }
+
+    bodyBytes, err := t.body.encode()
+    if err != nil {
+        return nil, err
+    }
+
+    dst := make([]byte, 0)
+
+    dst = append(dst, tagBytes...)
+    dst = append(dst, bodyBytes...)
+
+    return dst, nil
+}
+
+func appendTagAndLength(dst []byte, t tagAndLength) []byte {
+    b := uint8(t.class) << 6
+    if t.isCompound {
+        b |= 0x20
+    }
+
+    if t.tag >= 31 {
+        b |= 0x1f
+        dst = append(dst, b)
+        dst = appendBase128Int(dst, int64(t.tag))
+    } else {
+        b |= uint8(t.tag)
+        dst = append(dst, b)
+    }
+
+    // it is Indefinite
+    // 非定长模式
+    if t.isIndefinite {
+        dst = append(dst, byte(0x80))
+    } else {
+        if t.length >= 128 {
+            l := lengthLength(t.length)
+            dst = append(dst, 0x80|byte(l))
+            dst = appendLength(dst, t.length)
+        } else {
+            dst = append(dst, byte(t.length))
+        }
+    }
+
+    return dst
+}
+
+func appendLength(dst []byte, i int) []byte {
+    n := lengthLength(i)
+
+    for ; n > 0; n-- {
+        dst = append(dst, byte(i>>uint((n-1)*8)))
+    }
+
+    return dst
+}
+
+func lengthLength(i int) (numBytes int) {
+    numBytes = 1
+
+    for i > 255 {
+        numBytes++
+        i >>= 8
+    }
+
+    return
+}
+
+func base128IntLength(n int64) int {
+    if n == 0 {
+        return 1
+    }
+
+    l := 0
+    for i := n; i > 0; i >>= 7 {
+        l++
+    }
+
+    return l
+}
+
+func appendBase128Int(dst []byte, n int64) []byte {
+    l := base128IntLength(n)
+
+    for i := l - 1; i >= 0; i-- {
+        o := byte(n >> uint(i*7))
+        o &= 0x7f
+        if i != 0 {
+            o |= 0x80
+        }
+
+        dst = append(dst, o)
+    }
+
+    return dst
 }
 
 func isEmpty(value reflect.Value) bool {

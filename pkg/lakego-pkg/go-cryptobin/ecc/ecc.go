@@ -78,6 +78,10 @@ func ParamsFromCurve(curve elliptic.Curve) *ECIESParams {
     return paramsFromCurve[curve]
 }
 
+func AddParamsFromCurve(curve elliptic.Curve, ecie *ECIESParams) {
+    paramsFromCurve[curve] = ecie
+}
+
 // PublicKey is a representation of an elliptic curve public key.
 type PublicKey struct {
     X *big.Int
