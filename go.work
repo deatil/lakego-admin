@@ -3,6 +3,7 @@ go 1.18
 use (
 	./
 	./app
+	./extension
 	./pkg/lakego-pkg/go-hash
 	./pkg/lakego-pkg/go-goch
 	./pkg/lakego-pkg/go-sign
@@ -31,5 +32,6 @@ use (
 	./pkg/lakego-app/doak-swagger
 	./pkg/lakego-app/doak-statics
 	./pkg/lakego-app/doak-monitor
+	./pkg/lakego-app/doak-extension
 	./pkg/lakego-app/doak-devtool
 )

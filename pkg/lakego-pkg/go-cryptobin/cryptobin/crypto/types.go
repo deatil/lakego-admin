@@ -101,6 +101,14 @@ func (this Multiple) String() string {
             return "Aria"
         case Camellia:
             return "Camellia"
+        case Gost:
+            return "Gost"
+        case Kuznyechik:
+            return "Kuznyechik"
+        case Skipjack:
+            return "Skipjack"
+        case Serpent:
+            return "Serpent"
         default:
             if TypeMultiple.Names().Has(this) {
                 return (TypeMultiple.Names().Get(this))()
@@ -134,6 +142,10 @@ const (
     Seed
     Aria
     Camellia
+    Gost
+    Kuznyechik
+    Skipjack
+    Serpent
     maxMultiple
 )
 

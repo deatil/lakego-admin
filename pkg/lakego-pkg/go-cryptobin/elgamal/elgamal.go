@@ -318,7 +318,7 @@ func (priv *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, err
 // Verify verifies signature over the given hash and signature values (r & s).
 // It returns true as a boolean value if signature is verify correctly. Otherwise
 // it returns false along with error message.
-func (pub *PublicKey) Verify(r, s, hash []byte) (bool, error) {
+func (pub *PublicKey) Verify(hash, r, s []byte) (bool, error) {
     // verify that 0 < r < p
     signr := new(big.Int).SetBytes(r)
     if signr.Cmp(zero) == -1 {
@@ -371,7 +371,7 @@ func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
         return false, errors.New("Public Key is error")
     }
 
-    ok, err := pub.Verify(r, s, hash)
+    ok, err := pub.Verify(hash, r, s)
     if err != nil {
         return false, err
     }
@@ -400,7 +400,7 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
         return false, err
     }
 
-    ok, err := pub.Verify(rBytes, sBytes, hash)
+    ok, err := pub.Verify(hash, rBytes, sBytes)
     if err != nil {
         return false, err
     }

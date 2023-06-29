@@ -13,6 +13,9 @@ import (
     // 系统监控
     _ "github.com/deatil/lakego-doak-monitor/monitor/bootstrap"
 
+    // 扩展管理
+    _ "github.com/deatil/lakego-doak-extension/extension/bootstrap"
+
     // 开发工具
     _ "github.com/deatil/lakego-doak-devtool/devtool/bootstrap"
 
@@ -31,4 +34,7 @@ import (
 
     // 例子，不用时可以注释该引入
     _ "app/example/bootstrap"
+
+    // 扩展例子，不用时可以注释该引入
+    _ "extension/lakego/demo/demo/bootstrap"
 )

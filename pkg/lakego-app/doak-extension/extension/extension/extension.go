@@ -1,6 +1,8 @@
 package extension
 
 import (
+    "encoding/json"
+
     iapp "github.com/deatil/lakego-doak/lakego/app/interfaces"
 )
 
@@ -47,7 +49,7 @@ type Extension struct {
     Require map[string]string `json:"require"`
 
     // 安装后
-    Inatll func() error `json:"-"`
+    Install func() error `json:"-"`
 
     // 卸载后
     Uninstall func() error `json:"-"`
@@ -63,4 +65,13 @@ type Extension struct {
 
     // 安装启用后运行
     Start func(iapp.App) error `json:"-"`
+}
+
+func (this Extension) ToJSON() []byte {
+    data, err := json.Marshal(this)
+    if err != nil {
+        return nil
+    }
+
+    return data
 }

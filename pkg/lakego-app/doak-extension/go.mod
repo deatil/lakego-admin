@@ -7,4 +7,5 @@ require (
 	github.com/deatil/go-goch v0.0.3
 	github.com/deatil/lakego-doak v0.0.3
 	github.com/deatil/lakego-doak-admin v0.0.3
+	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 )

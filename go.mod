@@ -4,6 +4,7 @@ go 1.18
 
 replace (
 	app => ./app
+	extension => ./extension
 	github.com/deatil/go-array => ./pkg/lakego-pkg/go-array
 	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
@@ -28,6 +29,7 @@ replace (
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
 	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
 	github.com/deatil/lakego-doak-devtool => ./pkg/lakego-app/doak-devtool
+	github.com/deatil/lakego-doak-extension => ./pkg/lakego-app/doak-extension
 	github.com/deatil/lakego-doak-monitor => ./pkg/lakego-app/doak-monitor
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
@@ -37,13 +39,15 @@ replace (
 
 require (
 	app v0.0.3
+	extension v0.0.3
 	github.com/deatil/lakego-doak v1.0.1002
 	github.com/deatil/lakego-doak-action-log v0.0.3
 	github.com/deatil/lakego-doak-admin v1.0.0
 	github.com/deatil/lakego-doak-database v0.0.3
 	github.com/deatil/lakego-doak-devtool v0.0.3
-	github.com/deatil/lakego-doak-monitor v0.0.0-00010101000000-000000000000
-	github.com/deatil/lakego-doak-statics v0.0.0-00010101000000-000000000000
+	github.com/deatil/lakego-doak-extension v0.0.3
+	github.com/deatil/lakego-doak-monitor v0.0.3
+	github.com/deatil/lakego-doak-statics v0.0.3
 	github.com/deatil/lakego-doak-swagger v0.0.3
 	github.com/swaggo/swag v1.8.12
 )
@@ -71,6 +75,7 @@ require (
 	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
+	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/bytedance/sonic v1.8.7 // indirect
 	github.com/casbin/casbin/v2 v2.66.3 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect

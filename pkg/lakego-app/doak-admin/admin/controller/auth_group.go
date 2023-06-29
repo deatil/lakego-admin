@@ -98,7 +98,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
     list := make([]map[string]any, 0)
 
     // 列表
-    groupModel = groupModel.Find(&list)
+    groupModel.Find(&list)
 
     var total int64
 

@@ -38,16 +38,9 @@ type publicKeyInfo struct {
 func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
-    var err error
-
-    // 创建数据
-    paramBytes, err := asn1.Marshal([]byte(""))
-    if err != nil {
-        return nil, errors.New("curve25519: failed to marshal algo param: " + err.Error())
-    }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyDH
-    publicKeyAlgorithm.Parameters.FullBytes = paramBytes
+    publicKeyAlgorithm.Parameters = asn1.NullRawValue
 
     publicKeyBytes = key.Y
 
@@ -98,17 +91,9 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
-    // 创建数据
-    paramBytes, err := asn1.Marshal([]byte(""))
-    if err != nil {
-        return nil, errors.New("curve25519: failed to marshal algo param: " + err.Error())
-    }
-
     privKey.Algo = pkix.AlgorithmIdentifier{
         Algorithm:  oidPublicKeyDH,
-        Parameters: asn1.RawValue{
-            FullBytes: paramBytes,
-        },
+        Parameters: asn1.NullRawValue,
     }
 
     privKey.PrivateKey = key.X

@@ -11,7 +11,7 @@ info:
     url: https://github.com/deatil/lakego-admin/blob/main/LICENSE
   termsOfService: https://github.com/deatil
   title: lakego-admin API文档
-  version: 1.0.7
+  version: 1.1.0
 paths:
   /:
     get:
@@ -1608,6 +1608,228 @@ paths:
       - 例子
       x-lakego:
         slug: lakego-admin.example.index
+  /extension:
+    get:
+      consumes:
+      - application/json
+      description: 扩展列表
+      parameters:
+      - description: 搜索关键字
+        in: query
+        name: searchword
+        type: string
+      - description: 排序，示例：id__DESC
+        in: query
+        name: order
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: string
+      - description: 开始数据量
+        in: query
+        name: start
+        type: string
+      - description: 每页数量
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 扩展列表
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.index
+  /extension/:name/disable:
+    patch:
+      consumes:
+      - application/json
+      description: 禁用扩展
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 禁用扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.disable
+  /extension/:name/enable:
+    patch:
+      consumes:
+      - application/json
+      description: 启用扩展
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 启用扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.enable
+  /extension/:name/install:
+    post:
+      consumes:
+      - application/json
+      description: 安装扩展
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 安装扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.install
+  /extension/:name/sort:
+    patch:
+      consumes:
+      - application/json
+      description: 扩展排序
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      - description: 排序值
+        in: formData
+        name: listorder
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 扩展排序
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.sort
+  /extension/:name/uninstall:
+    delete:
+      consumes:
+      - application/json
+      description: 卸载扩展
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 卸载扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.uninstall
+  /extension/:name/upgrade:
+    put:
+      consumes:
+      - application/json
+      description: 更新扩展
+      parameters:
+      - description: 扩展名称
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 更新扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.upgrade
+  /extension/local:
+    get:
+      consumes:
+      - application/json
+      description: 本地扩展
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"success": true, "code": 0, "message": "string", "data":
+            ""}'
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      summary: 本地扩展
+      tags:
+      - 扩展
+      x-lakego:
+        slug: lakego-admin.extension.local
   /monitor:
     get:
       consumes:

@@ -79,6 +79,27 @@ func Test_Sign(t *testing.T) {
     data := "123tesfd!dfsign"
     hash := sha256.Sum256([]byte(data))
 
+    r, s, err := Sign(rand.Reader, pri, hash[:])
+    assertError(err, "Sign-sig-Error")
+
+    veri, _ := Verify(pub, hash[:], r, s)
+    assertBool(veri, "Sign-veri")
+}
+
+func Test_SignASN1(t *testing.T) {
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    pri, err := GenerateKey(rand.Reader, testBitsize, testProbability)
+    pub := &pri.PublicKey
+
+    assertError(err, "Sign-Error")
+    assertEmpty(pri, "Sign")
+
+    data := "123tesfd!dfsign"
+    hash := sha256.Sum256([]byte(data))
+
     sig, err := SignASN1(rand.Reader, pri, hash[:])
     assertError(err, "Sign-sig-Error")
 
