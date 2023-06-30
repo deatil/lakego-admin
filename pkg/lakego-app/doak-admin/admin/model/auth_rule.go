@@ -15,7 +15,7 @@ type AuthRule struct {
     Method      string `gorm:"column:method;not null;size:10;" json:"method"`
     Slug        string `gorm:"column:slug;not null;size:50;" json:"slug"`
     Description string `gorm:"column:description;" json:"description"`
-    Listorder   string `gorm:"column:listorder;size:10;" json:"listorder"`
+    Listorder   int    `gorm:"column:listorder;size:10;" json:"listorder"`
     Status     	int    `gorm:"column:status;not null;" json:"status"`
     UpdateTime  int    `gorm:"column:update_time;size:10;" json:"update_time"`
     UpdateIp    string `gorm:"column:update_ip;size:50;" json:"update_ip"`

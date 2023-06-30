@@ -33,6 +33,8 @@ func (this *Demo) Boot() {
 
 // 导入扩展
 func (this *Demo) loadExtInfo() {
+    slug := "lakego-admin.ext.demo"
+
     extension.Extend(extension.Extension{
         Name: "deatil.demo",
         Title: "扩展示例",
@@ -53,10 +55,15 @@ func (this *Demo) loadExtInfo() {
         Install: func() error {
             logger.New().Error("demo Install")
 
+            rules := getRules(slug)
+            extension.NewRule().Create(rules, "0")
+
             return nil
         },
         Uninstall: func() error {
             logger.New().Error("demo Uninstall")
+
+            extension.NewRule().Delete(slug)
 
             return nil
         },
@@ -68,10 +75,14 @@ func (this *Demo) loadExtInfo() {
         Enable: func() error {
             logger.New().Error("demo Enable")
 
+            extension.NewRule().Enable(slug)
+
             return nil
         },
         Disable: func() error {
             logger.New().Error("demo Disable")
+
+            extension.NewRule().Disable(slug)
 
             return nil
         },
@@ -83,4 +94,39 @@ func (this *Demo) loadExtInfo() {
             return nil
         },
     })
+}
+
+func getRules(slug string) map[string]any {
+    rules := map[string]any{
+        "title": "Demo数据",
+        "url": "#",
+        "method": "OPTIONS",
+        "slug": slug,
+        "description": "示例扩展",
+        "children": []map[string]any{
+            {
+                "title": "数据列表",
+                "url": "demo",
+                "method": "GET",
+                "slug": "lakego-admin.ext.demo-index",
+                "description": "数据列表",
+            },
+            {
+                "title": "数据详情",
+                "url": "demo/:id",
+                "method": "GET",
+                "slug": "lakego-admin.ext.demo-detail",
+                "description": "数据详情",
+            },
+            {
+                "title": "删除数据",
+                "url": "demo/:id",
+                "method": "DELETE",
+                "slug": "lakego-admin.ext.demo-delete",
+                "description": "删除数据",
+            },
+        },
+    }
+
+    return rules
 }

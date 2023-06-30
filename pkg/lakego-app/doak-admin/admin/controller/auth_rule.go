@@ -282,7 +282,7 @@ func (this *AuthRule) Create(ctx *router.Context) {
         Method: strings.ToUpper(post["method"].(string)),
         Slug: post["slug"].(string),
         Description: description,
-        Listorder: goch.ToString(listorder),
+        Listorder: listorder,
         Status: status,
         AddTime: int(datebin.NowTime()),
         AddIp: router.GetRequestIp(ctx),

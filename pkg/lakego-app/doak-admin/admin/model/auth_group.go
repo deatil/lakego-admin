@@ -12,7 +12,7 @@ type AuthGroup struct {
     Parentid    string `gorm:"column:parentid;type:char(36);not null;" json:"parentid"`
     Title       string `gorm:"column:title;type:varchar(50);" json:"title"`
     Description string `gorm:"column:description;type:varchar(80);" json:"description"`
-    Listorder   string `gorm:"column:listorder;type:int(10);" json:"listorder"`
+    Listorder   int    `gorm:"column:listorder;type:int(10);" json:"listorder"`
     Status      int    `gorm:"column:status;not null;type:tinyint(1);" json:"status"`
     UpdateTime  int    `gorm:"column:update_time;type:int(10);" json:"update_time"`
     UpdateIp    string `gorm:"column:update_ip;type:varchar(50);" json:"update_ip"`

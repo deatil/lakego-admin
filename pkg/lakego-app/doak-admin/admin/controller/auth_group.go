@@ -278,7 +278,7 @@ func (this *AuthGroup) Create(ctx *router.Context) {
         return
     }
 
-    listorder := goch.ToString(post["listorder"])
+    listorder := goch.ToInt(post["listorder"])
     status := goch.ToInt(post["status"])
 
     if status == 1 {

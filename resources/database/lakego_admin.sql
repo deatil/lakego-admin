@@ -124,6 +124,24 @@ CREATE TABLE `pre__rules` (
   KEY `v5` (`v5`(191))
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='casbin权限表';
 
+DROP TABLE IF EXISTS `pre__extension`;
+CREATE TABLE `pre__extension` (
+  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '',
+  `name` varchar(160) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '' COMMENT '扩展包名',
+  `title` varchar(200) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '扩展名称',
+  `version` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '扩展版本',
+  `adaptation` varchar(50) CHARACTER SET utf8mb4 NOT NULL DEFAULT '' COMMENT '适配系统版本',
+  `info` text CHARACTER SET utf8mb4 NOT NULL COMMENT '扩展信息',
+  `listorder` int(10) DEFAULT '100' COMMENT '排序ID',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `update_time` int(10) DEFAULT '0' COMMENT '更新时间',
+  `update_ip` varchar(50) CHARACTER SET utf8mb4 DEFAULT '' COMMENT '更新IP',
+  `add_time` int(10) DEFAULT '0' COMMENT '添加时间',
+  `add_ip` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT '' COMMENT '添加ip',
+  PRIMARY KEY (`id`),
+  KEY `name` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=COMPACT COMMENT='已安装模块列表';
+
 INSERT INTO `pre__admin` VALUES ('01cabd82-060d-405f-ba47-4d79fc47efcf','lakego','8966aff5289184448a004af81373c8f9','gazqzd','lakego','lakego@admin.com','5acfcd19-3a4c-4a28-8386-ae877952fd11','lakego-admin 是基于 gin、jwt 和 rbac 的 go 后台管理系统',0,1,0,'',1652759635,'127.0.0.1',1652587697,'127.0.0.1',1652545221,'127.0.0.1'),('642eb7b3-91ea-4808-bba6-f5f10938929a','admin','2a9b6b430ebe2f4257639e62ff9321bb','chNI7n','管理员','lakego-admin@admin.com','1f3cd4fb-f7e4-4b41-8663-167ca23ea5ab','lakego-admin 是基于 gin、jwt 和 rbac 的 go 后台管理系统',1,1,0,'',1675937003,'127.0.0.1',1652587697,'127.0.0.1',1652545221,'127.0.0.1');
 INSERT INTO `pre__auth_group` VALUES ('277cbc81-be2c-4fab-9240-5feccb2c024c','0','管理员组','账号管理员组',105,1,1656389180,'127.0.0.1',1621431751,'127.0.0.1'),('bcf40e54-4802-45b4-b3e6-7021ec755083','0','超级管理员组','拥有全部管理权限',95,1,1652586071,'127.0.0.1',1621431751,'127.0.0.1');
 INSERT INTO `pre__auth_group_access` VALUES ('01cabd82-060d-405f-ba47-4d79fc47efcf','277cbc81-be2c-4fab-9240-5feccb2c024c'),('642eb7b3-91ea-4808-bba6-f5f10938929a','277cbc81-be2c-4fab-9240-5feccb2c024c');
