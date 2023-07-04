@@ -28,15 +28,25 @@ func (this *Demo) Register() {
 
 // 引导
 func (this *Demo) Boot() {
-    // todo
+    // Boot
 }
 
 // 导入扩展
 func (this *Demo) loadExtInfo() {
+    // 加载后
+    extension.Booting(func() {
+        logger.New().Error("demo Booting")
+    })
+
+    // 加载前
+    extension.Booted(func() {
+        logger.New().Error("demo Booted")
+    })
+
     slug := "lakego-admin.ext.demo"
 
     extension.Extend(extension.Extension{
-        Name: "deatil.demo",
+        Name: "lakego.demo",
         Title: "扩展示例",
         Description: "扩展示例",
         Keywords: []string{

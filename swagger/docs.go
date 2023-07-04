@@ -2507,7 +2507,38 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/disable": {
+        "/extension/local": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "本地扩展",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "扩展"
+                ],
+                "summary": "本地扩展",
+                "responses": {
+                    "200": {
+                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "x-lakego": {
+                    "slug": "lakego-admin.extension.local"
+                }
+            }
+        },
+        "/extension/{name}/disable": {
             "patch": {
                 "security": [
                     {
@@ -2547,7 +2578,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/enable": {
+        "/extension/{name}/enable": {
             "patch": {
                 "security": [
                     {
@@ -2587,7 +2618,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/install": {
+        "/extension/{name}/install": {
             "post": {
                 "security": [
                     {
@@ -2627,7 +2658,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/sort": {
+        "/extension/{name}/sort": {
             "patch": {
                 "security": [
                     {
@@ -2674,7 +2705,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/uninstall": {
+        "/extension/{name}/uninstall": {
             "delete": {
                 "security": [
                     {
@@ -2714,7 +2745,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/extension/:name/upgrade": {
+        "/extension/{name}/upgrade": {
             "put": {
                 "security": [
                     {
@@ -2751,37 +2782,6 @@ const docTemplate = `{
                 },
                 "x-lakego": {
                     "slug": "lakego-admin.extension.upgrade"
-                }
-            }
-        },
-        "/extension/local": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "本地扩展",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "扩展"
-                ],
-                "summary": "本地扩展",
-                "responses": {
-                    "200": {
-                        "description": "{\"success\": true, \"code\": 0, \"message\": \"string\", \"data\": \"\"}",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "x-lakego": {
-                    "slug": "lakego-admin.extension.local"
                 }
             }
         },

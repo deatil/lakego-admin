@@ -7,7 +7,7 @@ import (
 )
 
 /**
- * cfb1 模式实现, 比对 openssl 测试数据通过
+ * cfb1 模式
  *
  * @create 2023-4-19
  * @author deatil

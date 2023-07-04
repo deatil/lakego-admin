@@ -8,7 +8,7 @@ import (
 )
 
 /**
- * cfb32 模式实现
+ * cfb32 模式
  *
  * @create 2023-4-19
  * @author deatil

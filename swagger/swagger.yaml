@@ -1649,7 +1649,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.index
-  /extension/:name/disable:
+  /extension/{name}/disable:
     patch:
       consumes:
       - application/json
@@ -1675,7 +1675,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.disable
-  /extension/:name/enable:
+  /extension/{name}/enable:
     patch:
       consumes:
       - application/json
@@ -1701,7 +1701,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.enable
-  /extension/:name/install:
+  /extension/{name}/install:
     post:
       consumes:
       - application/json
@@ -1727,7 +1727,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.install
-  /extension/:name/sort:
+  /extension/{name}/sort:
     patch:
       consumes:
       - application/json
@@ -1758,7 +1758,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.sort
-  /extension/:name/uninstall:
+  /extension/{name}/uninstall:
     delete:
       consumes:
       - application/json
@@ -1784,7 +1784,7 @@ paths:
       - 扩展
       x-lakego:
         slug: lakego-admin.extension.uninstall
-  /extension/:name/upgrade:
+  /extension/{name}/upgrade:
     put:
       consumes:
       - application/json

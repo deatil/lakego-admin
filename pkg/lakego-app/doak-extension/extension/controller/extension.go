@@ -183,7 +183,7 @@ func (this *Extension) Local(ctx *router.Context) {
 // @Produce application/json
 // @Param name query string true "扩展名称"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/install [post]
+// @Router /extension/{name}/install [post]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.install"}
 func (this *Extension) Inatll(ctx *router.Context) {
@@ -262,7 +262,7 @@ func (this *Extension) Inatll(ctx *router.Context) {
 // @Produce application/json
 // @Param name query string true "扩展名称"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/uninstall [delete]
+// @Router /extension/{name}/uninstall [delete]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.uninstall"}
 func (this *Extension) Uninstall(ctx *router.Context) {
@@ -306,7 +306,7 @@ func (this *Extension) Uninstall(ctx *router.Context) {
 // @Produce application/json
 // @Param name query string true "扩展名称"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/upgrade [put]
+// @Router /extension/{name}/upgrade [put]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.upgrade"}
 func (this *Extension) Upgrade(ctx *router.Context) {
@@ -351,7 +351,7 @@ func (this *Extension) Upgrade(ctx *router.Context) {
     // 检测升级版本
     err = version.VersionCheck(info.Version, fmt.Sprintf("> %s", installInfo.Version))
     if err != nil {
-        this.Error(ctx, fmt.Sprintf("扩展[%s]升级版本[%s]错误", installInfo.Version, info.Version))
+        this.Error(ctx, fmt.Sprintf("扩展[%s]升级到版本[%s]错误", installInfo.Version, info.Version))
         return
     }
 
@@ -393,7 +393,7 @@ func (this *Extension) Upgrade(ctx *router.Context) {
 // @Param name      query string true "扩展名称"
 // @Param listorder formData string true "排序值"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/sort [patch]
+// @Router /extension/{name}/sort [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.sort"}
 func (this *Extension) Listorder(ctx *router.Context) {
@@ -448,7 +448,7 @@ func (this *Extension) Listorder(ctx *router.Context) {
 // @Produce application/json
 // @Param name query string true "扩展名称"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/enable [patch]
+// @Router /extension/{name}/enable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.enable"}
 func (this *Extension) Enable(ctx *router.Context) {
@@ -496,7 +496,7 @@ func (this *Extension) Enable(ctx *router.Context) {
 // @Produce application/json
 // @Param name query string true "扩展名称"
 // @Success 200 {string} json "{"success": true, "code": 0, "message": "string", "data": ""}"
-// @Router /extension/:name/disable [patch]
+// @Router /extension/{name}/disable [patch]
 // @Security Bearer
 // @x-lakego {"slug": "lakego-admin.extension.disable"}
 func (this *Extension) Disable(ctx *router.Context) {
