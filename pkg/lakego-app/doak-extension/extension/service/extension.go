@@ -7,6 +7,7 @@ import (
     "github.com/deatil/go-goch/goch"
     "github.com/deatil/go-datebin/datebin"
 
+    "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/facade/config"
 
     admin_model "github.com/deatil/lakego-doak-admin/admin/model"
@@ -22,11 +23,25 @@ import (
  * @create 2023-7-3
  * @author deatil
  */
-type Extension struct {}
+type Extension struct {
+    Ctx *router.Context
+}
 
 // 构造函数
 func NewExtension() *Extension {
     return &Extension{}
+}
+
+// 构造函数
+func NewExtensionWithCtx(ctx *router.Context) *Extension {
+    return &Extension{ctx}
+}
+
+// 设置上下文
+func (this *Extension) WithCtx(ctx *router.Context) *Extension {
+    this.Ctx = ctx
+
+    return this
 }
 
 // 本地扩展
@@ -99,6 +114,11 @@ func (this *Extension) Inatll(name string) error {
         return errors.New("扩展已经安装")
     }
 
+    ip := "0.0.0.0"
+    if this.Ctx != nil {
+        ip = router.GetRequestIp(this.Ctx)
+    }
+
     insertData := model.Extension{
         Name: name,
         Title: info.Title,
@@ -108,9 +128,9 @@ func (this *Extension) Inatll(name string) error {
         Listorder: 100,
         Status: 0,
         UpdateTime: int(datebin.NowTime()),
-        UpdateIp: "0.0.0.0",
+        UpdateIp: ip,
         AddTime: int(datebin.NowTime()),
-        AddIp: "0.0.0.0",
+        AddIp: ip,
     }
 
     err = model.NewDB().
@@ -201,6 +221,11 @@ func (this *Extension) Upgrade(name string) error {
         return err
     }
 
+    ip := "0.0.0.0"
+    if this.Ctx != nil {
+        ip = router.GetRequestIp(this.Ctx)
+    }
+
     err = model.NewExtension().
         Where("name = ?", name).
         Updates(map[string]any{
@@ -209,7 +234,7 @@ func (this *Extension) Upgrade(name string) error {
             "adaptation": info.Adaptation,
             "info": string(info.ToJSON()),
             "update_time": int(datebin.NowTime()),
-            "update_ip": "0.0.0.0",
+            "update_ip": ip,
         }).
         Error
     if err != nil {

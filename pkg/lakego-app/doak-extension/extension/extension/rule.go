@@ -76,12 +76,9 @@ func (this *Rule) Delete(slug string) bool {
         return false
     }
 
-    for _, id := range ids {
-        model.NewAuthRule().
-            Delete(&model.AuthRule{
-                ID: id,
-            })
-    }
+    model.NewAuthRule().
+        Where("id IN ?", ids).
+        Delete(&model.AuthRule{})
 
     return true
 }
@@ -93,13 +90,11 @@ func (this *Rule) Enable(slug string) bool {
         return false
     }
 
-    for _, id := range ids {
-        model.NewAuthRule().
-            Where("id = ?", id).
-            Updates(map[string]any{
-                "status": 1,
-            })
-    }
+    model.NewAuthRule().
+        Where("id IN ?", ids).
+        Updates(map[string]any{
+            "status": 1,
+        })
 
     return true
 }
@@ -111,13 +106,11 @@ func (this *Rule) Disable(slug string) bool {
         return false
     }
 
-    for _, id := range ids {
-        model.NewAuthRule().
-            Where("id = ?", id).
-            Updates(map[string]any{
-                "status": 0,
-            })
-    }
+    model.NewAuthRule().
+        Where("id IN ?", ids).
+        Updates(map[string]any{
+            "status": 0,
+        })
 
     return true
 }
