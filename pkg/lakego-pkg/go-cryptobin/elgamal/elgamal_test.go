@@ -65,6 +65,50 @@ func Test_EncryptAsn1(t *testing.T) {
     assertEqual(string(de), data, "Encrypt-Dedata")
 }
 
+func Test_Encrypt_2(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    pri, err := GenerateKey(rand.Reader, testBitsize, testProbability)
+    pub := &pri.PublicKey
+
+    assertError(err, "Encrypt-Error")
+    assertEmpty(pri, "Encrypt")
+
+    data := "123tesfd!df"
+
+    c1, c2, err := Encrypt(rand.Reader, pub, []byte(data))
+    assertError(err, "Encrypt-Encrypt-Error")
+
+    de, err := Decrypt(pri, c1, c2)
+    assertError(err, "Encrypt-Decrypt-Error")
+
+    assertEqual(string(de), data, "Encrypt-Dedata")
+}
+
+func Test_EncryptAsn1_2(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    pri, err := GenerateKey(rand.Reader, testBitsize, testProbability)
+    pub := &pri.PublicKey
+
+    assertError(err, "Encrypt-Error")
+    assertEmpty(pri, "Encrypt")
+
+    data := "123tesfd!df"
+
+    c, err := EncryptAsn1(rand.Reader, pub, []byte(data))
+    assertError(err, "Encrypt-Encrypt-Error")
+
+    de, err := DecryptAsn1(pri, c)
+    assertError(err, "Encrypt-Decrypt-Error")
+
+    assertEqual(string(de), data, "Encrypt-Dedata")
+}
+
 func Test_Sign(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
     assertEmpty := cryptobin_test.AssertEmptyT(t)
