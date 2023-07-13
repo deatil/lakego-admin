@@ -7,7 +7,7 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
 
-// 生成密码，密码为 SHA256 加密后
+// 生成密码，密码为 MD5 加密后
 func MakePassword(password string) (string, string) {
     return EncryptPassword(password)
 }
