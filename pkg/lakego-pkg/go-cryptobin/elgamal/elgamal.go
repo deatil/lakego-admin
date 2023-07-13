@@ -57,9 +57,9 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
 
     randSource := math_rand.New(math_rand.NewSource(time.Now().UnixNano()))
     // choose random integer x from {1...(q-1)}
-    pri := new(big.Int).Rand(randSource, new(big.Int).Sub(q, one))
+    priv := new(big.Int).Rand(randSource, new(big.Int).Sub(q, one))
     // y = g^p mod p
-    y := new(big.Int).Exp(g, pri, p)
+    y := new(big.Int).Exp(g, priv, p)
 
     return &PrivateKey{
         PublicKey: PublicKey{
@@ -67,7 +67,7 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
             P: p, // prime number
             Y: y, // y = g^p mod p
         },
-        X: pri, // secret key x
+        X: priv, // secret key x
     }, nil
 }
 
@@ -133,38 +133,38 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 
 // Decrypt decrypts the passed cipher text. It returns an
 // error if cipher text value is larger than modulus P of Public key.
-func (pri *PrivateKey) Decrypt(cipher1, cipher2 []byte) ([]byte, error) {
+func (priv *PrivateKey) Decrypt(cipher1, cipher2 []byte) ([]byte, error) {
     c1 := new(big.Int).SetBytes(cipher1)
     c2 := new(big.Int).SetBytes(cipher2)
-    if c1.Cmp(pri.P) == 1 && c2.Cmp(pri.P) == 1 { //  (c1, c2) < P
+    if c1.Cmp(priv.P) == 1 && c2.Cmp(priv.P) == 1 { //  (c1, c2) < P
         return nil, ErrCipherLarge
     }
 
     // s = c^x mod p
-    s := new(big.Int).Exp(c1, pri.X, pri.P)
+    s := new(big.Int).Exp(c1, priv.X, priv.P)
     // s = s(inv) = s^(-1) mod p
-    if s.ModInverse(s, pri.P) == nil {
+    if s.ModInverse(s, priv.P) == nil {
         return nil, errors.New("elgamal: invalid private key")
     }
 
     // m = s(inv) * c2 mod p
     m := new(big.Int).Mod(
         new(big.Int).Mul(s, c2),
-        pri.P,
+        priv.P,
     )
 
     return m.Bytes(), nil
 }
 
 // Decrypt decrypts the passed cipher text.
-func (pri *PrivateKey) DecryptAsn1(cipherData []byte) ([]byte, error) {
+func (priv *PrivateKey) DecryptAsn1(cipherData []byte) ([]byte, error) {
     var encryptData elgamalEncryptData
     _, err := go_asn1.Unmarshal(cipherData, &encryptData)
     if err != nil {
         return nil, err
     }
 
-    deData, err := pri.Decrypt(encryptData.C1, encryptData.C2)
+    deData, err := priv.Decrypt(encryptData.C1, encryptData.C2)
     if err != nil {
         return nil, err
     }
@@ -172,20 +172,20 @@ func (pri *PrivateKey) DecryptAsn1(cipherData []byte) ([]byte, error) {
     return deData, nil
 }
 
-// Public returns the public key corresponding to pri.
-func (pri *PrivateKey) Public() crypto.PublicKey {
-    return &pri.PublicKey
+// Public returns the public key corresponding to priv.
+func (priv *PrivateKey) Public() crypto.PublicKey {
+    return &priv.PublicKey
 }
 
-// Equal reports whether pri and x have the same value.
-func (pri *PrivateKey) Equal(x crypto.PrivateKey) bool {
+// Equal reports whether priv and x have the same value.
+func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
     xx, ok := x.(*PrivateKey)
     if !ok {
         return false
     }
 
-    return pri.PublicKey.Equal(&xx.PublicKey) &&
-        bigIntEqual(pri.X, xx.X)
+    return priv.PublicKey.Equal(&xx.PublicKey) &&
+        bigIntEqual(priv.X, xx.X)
 }
 
 // bigIntEqual reports whether a and b are equal leaking only their bit length
@@ -233,8 +233,7 @@ func (pub *PublicKey) HomomorphicEncTwo(c1, c2, c1dash, c2dash []byte) ([]byte, 
 // contains the product of multiple numbers.
 func (pub *PublicKey) HommorphicEncMultiple(ciphertext [][2][]byte) ([]byte, []byte, error) {
     // C1, C2, _ := pub.Encrypt(one.Bytes())
-    // since, c = 1^e mod n is equal to 1
-    C1 := one
+    C1 := one // since, c = 1^e mod n is equal to 1
     C2 := one
 
     for i := 0; i < len(ciphertext); i++ {
@@ -270,7 +269,7 @@ func (pub *PublicKey) HommorphicEncMultiple(ciphertext [][2][]byte) ([]byte, []b
 
 // Signature generates signature over the given hash. It returns signature
 // value consisting of two parts "r" and "s" as byte arrays.
-func (pri *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, error) {
+func (priv *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, error) {
     k := new(big.Int)
     gcd := new(big.Int)
 
@@ -279,7 +278,7 @@ func (pri *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, erro
     // choosing random integer k from {1...(p-2)}, such that
     // gcd(k,(p-1)) should be equal to 1.
     for {
-        k, err = rand.Int(random, new(big.Int).Sub(pri.P, two))
+        k, err = rand.Int(random, new(big.Int).Sub(priv.P, two))
         if err != nil {
             return nil, nil, err
         }
@@ -287,7 +286,7 @@ func (pri *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, erro
         if k.Cmp(one) == 0 {
             continue
         } else {
-            gcd = gcd.GCD(nil, nil, k, new(big.Int).Sub(pri.P, one))
+            gcd = gcd.GCD(nil, nil, k, new(big.Int).Sub(priv.P, one))
             if gcd.Cmp(one) == 0 {
                 break
             }
@@ -298,22 +297,22 @@ func (pri *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, erro
     m := new(big.Int).SetBytes(hash)
 
     // r = g^k mod p
-    r := new(big.Int).Exp(pri.G, k, pri.P)
+    r := new(big.Int).Exp(priv.G, k, priv.P)
     // xr = x * r
     xr := new(big.Int).Mod(
-        new(big.Int).Mul(r, pri.X),
-        new(big.Int).Sub(pri.P, one),
+        new(big.Int).Mul(r, priv.X),
+        new(big.Int).Sub(priv.P, one),
     )
 
     // hmxr = [H(m) -xr]
     hmxr := new(big.Int).Sub(m, xr)
     // k = k^(-1)
-    k = k.ModInverse(k, new(big.Int).Sub(pri.P, one))
+    k = k.ModInverse(k, new(big.Int).Sub(priv.P, one))
 
     // s = [H(m) -xr]k^(-1) mod (p-1)
     s := new(big.Int).Mod(
         new(big.Int).Mul(hmxr, k),
-        new(big.Int).Sub(pri.P, one),
+        new(big.Int).Sub(priv.P, one),
     )
 
     return r.Bytes(), s.Bytes(), nil
@@ -340,6 +339,7 @@ func (pub *PublicKey) Verify(hash, r, s []byte) (bool, error) {
 
     // m as H(m)
     m := new(big.Int).SetBytes(hash)
+
     // ghashm = g^[H(m)] mod p
     ghashm := new(big.Int).Exp(pub.G, m, pub.P)
 
@@ -370,12 +370,12 @@ func Encrypt(random io.Reader, pub *PublicKey, message []byte) ([]byte, []byte, 
 }
 
 // 解密
-func Decrypt(pri *PrivateKey, cipher1, cipher2 []byte) ([]byte, error) {
-    if pri == nil {
+func Decrypt(priv *PrivateKey, cipher1, cipher2 []byte) ([]byte, error) {
+    if priv == nil {
         return nil, errors.New("Private Key is error")
     }
 
-    return pri.Decrypt(cipher1, cipher2)
+    return priv.Decrypt(cipher1, cipher2)
 }
 
 // 加密 Asn1
@@ -388,21 +388,21 @@ func EncryptAsn1(random io.Reader, pub *PublicKey, message []byte) ([]byte, erro
 }
 
 // 解密 Asn1
-func DecryptAsn1(pri *PrivateKey, cipherData []byte) ([]byte, error) {
-    if pri == nil {
+func DecryptAsn1(priv *PrivateKey, cipherData []byte) ([]byte, error) {
+    if priv == nil {
         return nil, errors.New("Private Key is error")
     }
 
-    return pri.DecryptAsn1(cipherData)
+    return priv.DecryptAsn1(cipherData)
 }
 
 // Sign hash
-func Sign(rand io.Reader, pri *PrivateKey, hash []byte) ([]byte, []byte, error) {
-    if pri == nil {
+func Sign(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, error) {
+    if priv == nil {
         return nil, nil, errors.New("Private Key is error")
     }
 
-    return pri.Sign(rand, hash)
+    return priv.Sign(rand, hash)
 }
 
 // Verify hash
@@ -420,11 +420,11 @@ func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
 }
 
 // SignASN1 signs a hash (which should be the result of hashing a larger message)
-// using the private key, pri. If the hash is longer than the bit-length of the
+// using the private key, priv. If the hash is longer than the bit-length of the
 // private key's curve order, the hash will be truncated to that length. It
 // returns the ASN.1 encoded signature.
-func SignASN1(rand io.Reader, pri *PrivateKey, hash []byte) ([]byte, error) {
-    r, s, err := pri.Sign(rand, hash)
+func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
+    r, s, err := priv.Sign(rand, hash)
     if err != nil {
         return nil, err
     }

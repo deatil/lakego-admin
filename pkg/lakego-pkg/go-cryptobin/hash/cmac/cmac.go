@@ -1,3 +1,12 @@
+package cmac
+
+import (
+    "hash"
+    "errors"
+    "crypto/cipher"
+    "crypto/subtle"
+)
+
 // Package cmac implements the fast CMAC MAC based on
 // a block cipher. This mode of operation fixes security
 // deficiencies of CBC-MAC (CBC-MAC is secure only for
@@ -15,14 +24,6 @@
 // supported, but not recommened.
 // CMAC (with AES) is specified in RFC 4493 and RFC 4494.
 // code from github.com/aead/cmac
-package cmac
-
-import (
-    "hash"
-    "errors"
-    "crypto/cipher"
-    "crypto/subtle"
-)
 
 const (
     // minimal irreducible polynomial for blocksize

@@ -7,3 +7,7 @@ import (
 func MD5(data string) string {
     return hash.FromString(data).MD5().ToHexString()
 }
+
+func SHA256(data string) string {
+    return hash.FromString(data).SHA256().ToHexString()
+}

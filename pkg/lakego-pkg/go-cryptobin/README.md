@@ -14,6 +14,11 @@ go-cryptobin 是 go 的常用加密解密库
 *  默认 `Aes`, `ECB`, `NoPadding`
 
 
+### 环境要求
+
+ - Go >= 1.20
+
+
 ### 下载安装
 
 ~~~go

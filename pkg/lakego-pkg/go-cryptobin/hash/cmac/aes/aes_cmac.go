@@ -6,7 +6,7 @@ import (
     "hash"
     aes_cipher "crypto/aes"
 
-    cryptobin_cmac "github.com/deatil/go-cryptobin/cipher/cmac"
+    cryptobin_cmac "github.com/deatil/go-cryptobin/hash/cmac"
 )
 
 // Sum computes the AES-CMAC checksum with the given tagsize of msg using the cipher.Block.
@@ -26,7 +26,7 @@ func Verify(mac, msg, key []byte, tagsize int) bool {
     if err != nil {
         return false
     }
-    
+
     return cryptobin_cmac.Verify(mac, msg, c, tagsize)
 }
 
@@ -42,6 +42,6 @@ func NewWithTagSize(key []byte, tagsize int) (hash.Hash, error) {
     if err != nil {
         return nil, err
     }
-    
+
     return cryptobin_cmac.NewWithTagSize(c, tagsize)
 }
