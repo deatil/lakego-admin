@@ -66,6 +66,6 @@ __debug_bin
 
 # 临时文件 #
 ######################
-tmp/
 .tmp/
+tmp/
 install.lock

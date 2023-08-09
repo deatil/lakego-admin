@@ -21,7 +21,7 @@ func Test_MD4(t *testing.T) {
     for index, test := range md4Tests {
         e := FromString(test.input).MD4()
 
-        t.Run(fmt.Sprintf("md5_test_%d", index), func(t *testing.T) {
+        t.Run(fmt.Sprintf("MD4_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "MD4")
             assert(test.output, e.ToHexString(), "MD4")
         })

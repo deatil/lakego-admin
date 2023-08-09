@@ -4,6 +4,12 @@ import (
     "github.com/tjfoc/gmsm/sm2"
 )
 
+var (
+    // 类型
+    C1C3C2 = sm2.C1C3C2
+    C1C2C3 = sm2.C1C2C3
+)
+
 /**
  * 国密 SM2 加密
  *
@@ -39,7 +45,7 @@ type SM2 struct {
 // 构造函数
 func NewSM2() SM2 {
     return SM2{
-        mode:   sm2.C1C3C2,
+        mode:   C1C3C2,
         verify: false,
         Errors: make([]error, 0),
     }

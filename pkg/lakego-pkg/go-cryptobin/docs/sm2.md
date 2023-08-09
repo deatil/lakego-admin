@@ -185,7 +185,8 @@ import (
 )
 
 func main() {
-    // sm2 签名【招商银行】
+    // sm2 签名【招商银行】，
+    // 招商银行签名会因为业务不同用的签名方法也会不同，签名方法默认有 SignHex 和 SignAsn1 两种，可根据招商银行给的 demo 选择对应的方法使用
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, _ := base64.StdEncoding.DecodeString(sm2key)
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
@@ -195,6 +196,7 @@ func main() {
         FromString(sm2data).
         FromPrivateKeyBytes(sm2keyBytes).
         SignHex([]byte(sm2userid)).
+        // SignAsn1([]byte(sm2userid)).
         ToBase64String()
 
     // sm2 验证【招商银行】
@@ -204,6 +206,7 @@ func main() {
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
         VerifyHex([]byte(sm2data), []byte(sm2userid)).
+        // VerifyAsn1([]byte(sm2data), []byte(sm2userid)).
         ToVerify()
 
     fmt.Println("签名结果：", sm2Sign)
