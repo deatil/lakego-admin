@@ -28,7 +28,7 @@ var (
 )
 
 func Test_XMLSign(t *testing.T) {
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertBool := cryptobin_test.AssertBoolT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
@@ -42,7 +42,7 @@ func Test_XMLSign(t *testing.T) {
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "XMLSign-Sign")
-    assertEmpty(signed, "XMLSign-Sign")
+    assertNotEmpty(signed, "XMLSign-Sign")
 
     // 验证
     objVerify := NewDSA().

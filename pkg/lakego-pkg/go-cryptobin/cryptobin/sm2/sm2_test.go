@@ -10,7 +10,7 @@ import (
 // signedData = S4vhrJoHXn98ByNw73CSOCqguYeuc4LrhsIHqkv/xA8Waw7YOLsfQzOKzxAjF0vyPKKSEQpq4zEgj9Mb/VL1pQ==
 func Test_SM2_SignHex(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     uid := "N002462434000000"
 
@@ -27,7 +27,7 @@ func Test_SM2_SignHex(t *testing.T) {
         SignHex([]byte(uid)).
         ToBase64String()
 
-    assertEmpty(signedData, "sm2-SignHex")
+    assertNotEmpty(signedData, "sm2-SignHex")
 }
 
 func Test_SM2_VerifyHex(t *testing.T) {

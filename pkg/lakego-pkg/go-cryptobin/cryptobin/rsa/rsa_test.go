@@ -21,7 +21,7 @@ func assertErrorT(t *testing.T) func(error, string) {
     }
 }
 
-func assertEmptyT(t *testing.T) func(string, string) {
+func AssertNotEmptyT(t *testing.T) func(string, string) {
     return func(data string, msg string) {
         if data == "" {
             t.Errorf("Failed %s: error: data empty", msg)
@@ -31,7 +31,7 @@ func assertEmptyT(t *testing.T) func(string, string) {
 
 // Test_PrimeKeyGeneration
 func Test_PrimeKeyGeneration(t *testing.T) {
-    assertEmpty := assertEmptyT(t)
+    assertNotEmpty := AssertNotEmptyT(t)
     assertError := assertErrorT(t)
 
     size := 768
@@ -44,10 +44,10 @@ func Test_PrimeKeyGeneration(t *testing.T) {
     objPriKey := obj.CreatePKCS1PrivateKey()
 
     assertError(objPriKey.Error(), "objPriKey")
-    assertEmpty(objPriKey.ToKeyString(), "objPriKey")
+    assertNotEmpty(objPriKey.ToKeyString(), "objPriKey")
 
     objPubKey := obj.CreatePKCS1PublicKey()
 
     assertError(objPubKey.Error(), "objPubKey")
-    assertEmpty(objPubKey.ToKeyString(), "objPubKey")
+    assertNotEmpty(objPubKey.ToKeyString(), "objPubKey")
 }

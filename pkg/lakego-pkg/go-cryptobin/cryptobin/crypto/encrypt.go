@@ -31,17 +31,17 @@ func (this Cryptobin) Encrypt() Cryptobin {
     // 加密解密
     newEncrypt, err := getEncrypt(this.multiple)
     if err != nil {
-        return this.AppendError(err)
+        return this.AppendError(err).triggerError()
     }
 
     dst, err := newEncrypt.Encrypt(this.data, NewConfig(this))
     if err != nil {
-        return this.AppendError(err)
+        return this.AppendError(err).triggerError()
     }
 
     this.parsedData = dst
 
-    return this
+    return this.triggerError()
 }
 
 // 解密
@@ -49,27 +49,27 @@ func (this Cryptobin) Decrypt() Cryptobin {
     // 加密解密
     newEncrypt, err := getEncrypt(this.multiple)
     if err != nil {
-        return this.AppendError(err)
+        return this.AppendError(err).triggerError()
     }
 
     dst, err := newEncrypt.Decrypt(this.data, NewConfig(this))
     if err != nil {
-        return this.AppendError(err)
+        return this.AppendError(err).triggerError()
     }
 
     this.parsedData = dst
 
-    return this
+    return this.triggerError()
 }
 
 // ====================
 
 // 方法加密
 func (this Cryptobin) FuncEncrypt(f func(Cryptobin) Cryptobin) Cryptobin {
-    return f(this)
+    return f(this).triggerError()
 }
 
 // 方法解密
 func (this Cryptobin) FuncDecrypt(f func(Cryptobin) Cryptobin) Cryptobin {
-    return f(this)
+    return f(this).triggerError()
 }

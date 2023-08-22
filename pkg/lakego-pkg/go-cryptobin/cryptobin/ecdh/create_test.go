@@ -9,67 +9,67 @@ import (
 var (
     prikey1 = `
 -----BEGIN PRIVATE KEY-----
-MDUCAQAwDgYFK4EEAQwEBVAtMjU2BCBIRVjkths2BfwuSGn6Iq68uNsFC2PjsjZZ
-RqngHoHQVA==
+MDgCAQAwEQYFK4EEAQwGCCqGSM49AwEHBCB5afMWLzyIKC/tKa75tK0E15HdCl+m
+tXxTL0EDW99TsQ==
 -----END PRIVATE KEY-----
     `
     pubkey1 = `
 -----BEGIN PUBLIC KEY-----
-MFQwDgYFK4EEAQwEBVAtMjU2A0IABFamGjiPRBwyBFH/fkzg2HZSYuaz1lVQys/P
-mFyITpZQitmsDy5LxAfGz3dL0OlyVWh4oDYM8Hh9qjVYGiI6wGU=
+MFcwEQYFK4EEAQwGCCqGSM49AwEHA0IABDHbqvBSeIxBZkgYU1WKnOjQJiewceMZ
+C0y4uVyex3IT9smy8kLDlO9Ups8mRXjsY8MCm5n6quhFx9whn/QG1xs=
 -----END PUBLIC KEY-----
     `
 
     prikey2 = `
 -----BEGIN PRIVATE KEY-----
-MDUCAQAwDgYFK4EEAQwEBVAtMjU2BCCex3Jxff1fiYK0aHjhC/EqsjTyqkZ7TrU7
-thllPJaFLw==
+MDgCAQAwEQYFK4EEAQwGCCqGSM49AwEHBCCwBkS+l5MyEqCJhPifr2p5wZhqB40a
+FCgqAghW4g/0Fw==
 -----END PRIVATE KEY-----
     `
     pubkey2 = `
 -----BEGIN PUBLIC KEY-----
-MFQwDgYFK4EEAQwEBVAtMjU2A0IABB2mTn2/D2xzqLdhWg8vAQ8d8iCBDQmz4mTR
-JI+OlWjOpOq33qAdLLv0R9zUzcMcQvQQ4pe3RKOEs7rZq1/rq+w=
+MFcwEQYFK4EEAQwGCCqGSM49AwEHA0IABF0F9g+QETASmmSa6JOUzEVeJwhHUTXw
+YbGHpDUucpRlNYh0l0cn/cION4/lW64kO/QRYGW+HjmpuMap8Db6DWc=
 -----END PUBLIC KEY-----
     `
 )
 
-func Test_CreateKey(t *testing.T) {
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+func Test_CreateECDHKey(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     obj := New().
         SetCurve("P256").
         GenerateKey()
 
-    objPriKey := obj.CreatePrivateKey()
-    objPubKey := obj.CreatePublicKey()
+    objPriKey := obj.CreateECDHPrivateKey()
+    objPubKey := obj.CreateECDHPublicKey()
 
     assertError(objPriKey.Error(), "ecdhPriKey")
-    assertEmpty(objPriKey.ToKeyString(), "ecdhPriKey")
+    assertNotEmpty(objPriKey.ToKeyString(), "ecdhPriKey")
 
     assertError(objPubKey.Error(), "ecdhPubKey")
-    assertEmpty(objPubKey.ToKeyString(), "ecdhPubKey")
+    assertNotEmpty(objPubKey.ToKeyString(), "ecdhPubKey")
 }
 
-func Test_CreateSecretKey(t *testing.T) {
+func Test_CreateECDHSecretKey(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
     objSecret1 := New().
-        FromPrivateKey([]byte(prikey1)).
-        FromPublicKey([]byte(pubkey2)).
+        FromECDHPrivateKey([]byte(prikey1)).
+        FromECDHPublicKey([]byte(pubkey2)).
         CreateSecretKey()
     assertError(objSecret1.Error(), "ecdhCreateSecretKey1")
-    assertEmpty(objSecret1.ToHexString(), "ecdhCreateSecretKey1")
+    assertNotEmpty(objSecret1.ToHexString(), "ecdhCreateSecretKey1")
 
     objSecret2 := New().
-        FromPrivateKey([]byte(prikey2)).
-        FromPublicKey([]byte(pubkey1)).
+        FromECDHPrivateKey([]byte(prikey2)).
+        FromECDHPublicKey([]byte(pubkey1)).
         CreateSecretKey()
     assertError(objSecret2.Error(), "ecdhCreateSecretKey2")
-    assertEmpty(objSecret2.ToHexString(), "ecdhCreateSecretKey2")
+    assertNotEmpty(objSecret2.ToHexString(), "ecdhCreateSecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "ecdhCreateSecretKey")
 }

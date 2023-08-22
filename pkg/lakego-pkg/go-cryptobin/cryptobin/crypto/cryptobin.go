@@ -35,6 +35,9 @@ type Cryptobin struct {
     // 解析后的数据
     parsedData []byte
 
+    // 事件
+    errEvent tool.ErrorEvent
+
     // 错误
     Errors []error
 }
@@ -46,6 +49,7 @@ func NewCryptobin() Cryptobin {
         mode:     ECB,
         padding:  NoPadding,
         config:   tool.NewConfig(),
+        errEvent: tool.NewErrorEvent(),
         Errors:   make([]error, 0),
     }
 }

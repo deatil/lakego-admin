@@ -5,9 +5,16 @@ type (
     ErrorFunc = func([]error)
 )
 
-// 引出错误信息
+// 添加错误事件
 func (this Cryptobin) OnError(fn ErrorFunc) Cryptobin {
-    fn(this.Errors)
+    this.errEvent = this.errEvent.On(fn)
+
+    return this
+}
+
+// 触发
+func (this Cryptobin) triggerError() Cryptobin {
+    this.errEvent.Trigger(this.Errors)
 
     return this
 }

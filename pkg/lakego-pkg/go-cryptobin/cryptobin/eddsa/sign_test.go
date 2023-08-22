@@ -23,7 +23,7 @@ MCowBQYDK2VwAyEA1NkD+0884Ol0mqyreYT+I6AA2y/rKDS+eIueB/vxMVc=
 func useEdDSASign(t *testing.T, opts *Options) {
     assertBool := cryptobin_test.AssertBoolT(t)
     assertError := cryptobin_test.AssertErrorT(t)
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := []byte("test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passt-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass")
 
@@ -34,7 +34,7 @@ func useEdDSASign(t *testing.T, opts *Options) {
     hashedData := hashed.ToBase64String()
 
     assertError(hashed.Error(), "EdDSASign-Sign")
-    assertEmpty(hashedData, "EdDSASign-Sign")
+    assertNotEmpty(hashedData, "EdDSASign-Sign")
 
     // ===
 

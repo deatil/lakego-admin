@@ -24,7 +24,7 @@ Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 )
 
 func Test_SignASN1(t *testing.T) {
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -34,7 +34,7 @@ func Test_SignASN1(t *testing.T) {
         SignASN1()
 
     assertError(objSign.Error(), "SignASN1")
-    assertEmpty(objSign.ToBase64String(), "SignASN1")
+    assertNotEmpty(objSign.ToBase64String(), "SignASN1")
 }
 
 func Test_VerifyASN1(t *testing.T) {
@@ -42,7 +42,7 @@ func Test_VerifyASN1(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
 
     data := "test-pass"
-    sig := "MEUCIQDMFy5iaMybaRdfRBTWeHHipBdiOEIW1xK8qA6V3yYq2AIgBQZ+Dffhr822X37nRLKNbbnWH4ioVUCcPpBScoxQpVE="
+    sig := "MEUCIBhAZzrS6jM4MfwibzA+j0vBkTEQGvkiDWhx7E6/ePUmAiEAt1uTZXUPGNU9nY8ZS3UxcJCRqwh/G8eeyrAVwM3qen4="
     objVerify := NewEcdsa().
         FromBase64String(sig).
         FromPublicKey([]byte(pubkey)).

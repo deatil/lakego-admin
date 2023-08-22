@@ -124,7 +124,7 @@ func signAndDetach(content []byte, cert *x509.Certificate, privkey *rsa.PrivateK
 }
 
 func Test_SignAndDetach(t *testing.T) {
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     pkcs7Data := testFixtureresult
@@ -132,5 +132,5 @@ func Test_SignAndDetach(t *testing.T) {
 
     assertError(pkcs7err, "SignAndDetach-Decode")
 
-    assertEmpty(pkcs7Sign, "SignAndDetach")
+    assertNotEmpty(pkcs7Sign, "SignAndDetach")
 }

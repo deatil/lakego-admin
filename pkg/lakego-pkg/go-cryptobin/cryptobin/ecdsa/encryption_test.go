@@ -24,7 +24,7 @@ Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 )
 
 func Test_Encrypt(t *testing.T) {
-    assertEmpty := cryptobin_test.AssertEmptyT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
@@ -34,7 +34,7 @@ func Test_Encrypt(t *testing.T) {
         Encrypt()
 
     assertError(obj.Error(), "Encrypt")
-    assertEmpty(obj.ToBase64String(), "Encrypt")
+    assertNotEmpty(obj.ToBase64String(), "Encrypt")
 }
 
 func Test_Decrypt(t *testing.T) {
