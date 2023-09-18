@@ -2,6 +2,7 @@ package hash
 
 import (
     "fmt"
+    "bytes"
     "testing"
 )
 
@@ -38,6 +39,22 @@ func Test_NewMD5(t *testing.T) {
         t.Run(fmt.Sprintf("NewMD5_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "NewMD5")
             assert(test.output, e.ToHexString(), "NewMD5")
+        })
+    }
+}
+
+func Test_NewMD5_WriteReader(t *testing.T) {
+    assert := assertT(t)
+    assertError := assertErrorT(t)
+
+    for index, test := range md5Tests {
+        buf := bytes.NewBuffer([]byte(test.input))
+
+        e := Hashing().NewMD5().WriteReader(buf).Sum(nil)
+
+        t.Run(fmt.Sprintf("NewMD5_WriteReader_test_%d", index), func(t *testing.T) {
+            assertError(e.Error, "NewMD5_WriteReader")
+            assert(test.output, e.ToHexString(), "NewMD5_WriteReader")
         })
     }
 }

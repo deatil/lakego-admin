@@ -365,6 +365,34 @@ func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
     return this
 }
 
+// OCB
+// OCB nounce size, should be in [0, cipher.block.BlockSize]
+func (this Cryptobin) OCB(nonce string, additional ...string) Cryptobin {
+    this.mode = OCB
+
+    this.config.Set("nonce", []byte(nonce))
+
+    if len(additional) > 0 {
+        this.config.Set("additional", []byte(additional[0]))
+    }
+
+    return this
+}
+
+// EAX
+// EAX nounce size, should be in > 0
+func (this Cryptobin) EAX(nonce string, additional ...string) Cryptobin {
+    this.mode = EAX
+
+    this.config.Set("nonce", []byte(nonce))
+
+    if len(additional) > 0 {
+        this.config.Set("additional", []byte(additional[0]))
+    }
+
+    return this
+}
+
 // 使用模式
 func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
     this.mode = mode

@@ -1,6 +1,7 @@
 package hash
 
 import (
+    "io"
     "hash"
 )
 
@@ -15,6 +16,22 @@ func (this Hash) Write(p []byte) Hash {
 func (this Hash) WriteString(s string) Hash {
     p := []byte(s)
     this.hash.Write(p)
+
+    return this
+}
+
+// WriteReader
+func (this Hash) WriteReader(reader io.Reader) Hash {
+    h := this.hash
+
+    _, err := io.Copy(h, reader)
+    if err != nil {
+        this.Error = err
+
+        return this
+    }
+
+    this.hash = h
 
     return this
 }

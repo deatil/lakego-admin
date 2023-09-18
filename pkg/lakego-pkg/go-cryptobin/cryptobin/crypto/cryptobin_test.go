@@ -718,12 +718,12 @@ func Test_OnError(t *testing.T) {
     cyptStr := FromString(data).
         SetKey("dfertf12dfertf123").
         SetIv("jifu87ujjifu87uj").
-        OnError(func(errs []error) {
-            assertBool(len(errs) > 0, "OnError-Errs Encrypt")
-        }).
         Serpent().
         CFB().
         PKCS7Padding().
+        OnError(func(errs []error) {
+            assertBool(len(errs) > 0, "OnError-Errs Encrypt")
+        }).
         Encrypt().
         ToBase64String()
     assertEmpty(cyptStr, "OnError-Encrypt Empty")
@@ -731,14 +731,74 @@ func Test_OnError(t *testing.T) {
     cyptdeStr := FromBase64String(cyptStr).
         SetKey("dfertf12dfertf123").
         SetIv("jifu87ujjifu87uj").
-        OnError(func(errs []error) {
-            assertBool(len(errs) > 0, "OnError-Errs Decrypt")
-        }).
         Serpent().
         CFB().
         PKCS7Padding().
+        OnError(func(errs []error) {
+            assertBool(len(errs) > 0, "OnError-Errs Decrypt")
+        }).
         Decrypt().
         ToString()
 
     assertEmpty(cyptdeStr, "OnError-Decrypt Empty")
+}
+
+func Test_AesOCBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        OCB("dfertf12dfertf").
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesOCBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        OCB("dfertf12dfertf").
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesOCBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "AesOCBPKCS7Padding")
+}
+
+func Test_AesEAXPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        EAX("dfertf12dfertf").
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesOCBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        EAX("dfertf12dfertf").
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesOCBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "AesOCBPKCS7Padding")
 }

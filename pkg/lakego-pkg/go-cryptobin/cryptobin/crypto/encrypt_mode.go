@@ -4,6 +4,8 @@ import (
     "fmt"
     "crypto/cipher"
 
+    "github.com/deatil/go-cryptobin/cipher/ocb"
+    "github.com/deatil/go-cryptobin/cipher/eax"
     cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
@@ -451,5 +453,111 @@ func init() {
     })
     UseMode.Add(CCM, func() IMode {
         return ModeCCM{}
+    })
+}
+
+// ===================
+
+type ModeOCB struct {}
+
+// 加密
+func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
+    if err != nil {
+        err = fmt.Errorf("Cryptobin: cipher.NewOCBWithNonceSize(),error:%w", err)
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeOCB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // ocb nounce size, should be in [0, cipher.block.BlockSize]
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
+    if err != nil {
+        err = fmt.Errorf("Cryptobin: cipher.NewOCBWithNonceSize(),error:%w", err)
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+
+    return dst, err
+}
+
+func init() {
+    UseMode.Add(OCB, func() IMode {
+        return ModeOCB{}
+    })
+}
+
+// ===================
+
+type ModeEAX struct {}
+
+// 加密
+func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
+    if err != nil {
+        err = fmt.Errorf("Cryptobin: cipher.NewEAXWithNonceSize(),error:%w", err)
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeEAX) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // eax nounce size, should be in > 0
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
+    if err != nil {
+        err = fmt.Errorf("Cryptobin: cipher.NewEAXWithNonceSize(),error:%w", err)
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+
+    return dst, err
+}
+
+func init() {
+    UseMode.Add(EAX, func() IMode {
+        return ModeOCB{}
     })
 }
