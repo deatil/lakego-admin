@@ -5,7 +5,7 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    "github.com/deatil/go-cryptobin/cipher/ccm"
 )
 
 // ccm 模式加密参数
@@ -41,7 +41,7 @@ func (this CipherCCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
         return nil, nil, err
     }
 
-    aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, this.nonceSize)
+    aead, err := ccm.NewCCMWithNonceSize(block, this.nonceSize)
     if err != nil {
         return nil, nil, err
     }
@@ -75,7 +75,7 @@ func (this CipherCCMb) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
         return nil, errors.New("pkcs/cipher: invalid param type")
     }
 
-    aead, err := cryptobin_cipher.NewCCMWithNonceSize(block, len(nonce))
+    aead, err := ccm.NewCCMWithNonceSize(block, len(nonce))
     if err != nil {
         return nil, err
     }

@@ -4,34 +4,35 @@ use (
 	./
 	./app
 	./extension
-	./pkg/lakego-pkg/go-hash
-	./pkg/lakego-pkg/go-goch
-	./pkg/lakego-pkg/go-sign
+	./pkg/lakego-app/doak-action-log
+	./pkg/lakego-app/doak-admin
+	./pkg/lakego-app/doak-database
+	./pkg/lakego-app/doak-devtool
+	./pkg/lakego-app/doak-extension
+	./pkg/lakego-app/doak-monitor
+	./pkg/lakego-app/doak-statics
+	./pkg/lakego-app/doak-swagger
+	./pkg/lakego-pkg/go-array
+	./pkg/lakego-pkg/go-cmd
+	./pkg/lakego-pkg/go-collection
 	./pkg/lakego-pkg/go-crc
-	./pkg/lakego-pkg/go-crc8
 	./pkg/lakego-pkg/go-crc16
 	./pkg/lakego-pkg/go-crc32
-	./pkg/lakego-pkg/go-event
-	./pkg/lakego-pkg/go-array
-	./pkg/lakego-pkg/go-pipeline
-	./pkg/lakego-pkg/go-exception
-	./pkg/lakego-pkg/go-collection
+	./pkg/lakego-pkg/go-crc8
 	./pkg/lakego-pkg/go-cryptobin
 	./pkg/lakego-pkg/go-datebin
 	./pkg/lakego-pkg/go-encoding
+	./pkg/lakego-pkg/go-event
+	./pkg/lakego-pkg/go-exception
 	./pkg/lakego-pkg/go-filesystem
-	./pkg/lakego-pkg/go-cmd
+	./pkg/lakego-pkg/go-goch
+	./pkg/lakego-pkg/go-hash
+	./pkg/lakego-pkg/go-pipeline
+	./pkg/lakego-pkg/go-sign
 	./pkg/lakego-pkg/go-tree
 	./pkg/lakego-pkg/go-validator
-	./pkg/lakego-pkg/lakego-jwt
-	./pkg/lakego-pkg/lakego-filesystem
 	./pkg/lakego-pkg/lakego-doak
-	./pkg/lakego-app/doak-admin
-	./pkg/lakego-app/doak-action-log
-	./pkg/lakego-app/doak-database
-	./pkg/lakego-app/doak-swagger
-	./pkg/lakego-app/doak-statics
-	./pkg/lakego-app/doak-monitor
-	./pkg/lakego-app/doak-extension
-	./pkg/lakego-app/doak-devtool
+	./pkg/lakego-pkg/lakego-filesystem
+	./pkg/lakego-pkg/lakego-jwt
 )
+
