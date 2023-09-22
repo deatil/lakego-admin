@@ -2,8 +2,6 @@ package datebin
 
 import (
     "time"
-
-    "github.com/deatil/go-datebin/errors"
 )
 
 var (
@@ -101,6 +99,9 @@ var (
     }
 )
 
+// 默认
+var defaultDatebin = NewDatebin()
+
 /**
  * 日期
  *
@@ -119,6 +120,19 @@ type Datebin struct {
 
     // 错误
     Errors []error
+}
+
+// 构造函数
+func NewDatebin() Datebin {
+    return Datebin{
+        loc:         time.Local,
+        weekStartAt: time.Monday,
+    }
+}
+
+// 构造函数
+func New() Datebin {
+    return NewDatebin()
 }
 
 // 设置时间
@@ -165,7 +179,7 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.loc = loc
 
     return this
@@ -181,11 +195,9 @@ func (this Datebin) SetTimezone(timezone string) Datebin {
     return date
 }
 
-// 使用设置的时区
-func (this Datebin) UseLocTime() Datebin {
-    this.time = this.time.In(this.loc)
-
-    return this
+// 全局设置时区
+func SetTimezone(timezone string) {
+    defaultDatebin = defaultDatebin.SetTimezone(timezone)
 }
 
 // 获取时区 Zone 名称
@@ -205,33 +217,9 @@ func (this Datebin) GetErrors() []error {
     return this.Errors
 }
 
-// 添加错误
-func (this Datebin) AppendError(err ...error) Datebin {
-    this.Errors = append(this.Errors, err...)
+// 使用设置的时区
+func (this Datebin) NewTime() Datebin {
+    this.time = this.time.In(this.loc)
 
     return this
-}
-
-// 获取错误
-func (this Datebin) Error() error {
-    return errors.New(this.Errors...)
-}
-
-// 通过时区获取 Location 实例
-func (this Datebin) GetLocationByTimezone(timezone string) (*time.Location, error) {
-    return time.LoadLocation(timezone)
-}
-
-// 通过持续时长解析
-func (this Datebin) ParseDuration(duration string) (time.Duration, error) {
-    return time.ParseDuration(duration)
-}
-
-// 取绝对值
-func (this Datebin) AbsFormat(value int64) int64 {
-    if value < 0 {
-        return -value
-    }
-
-    return value
 }

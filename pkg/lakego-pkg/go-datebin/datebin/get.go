@@ -14,6 +14,11 @@ func (this Datebin) Now(timezone ...string) Datebin {
     return this
 }
 
+// 当前
+func Now(timezone ...string) Datebin {
+    return defaultDatebin.Now(timezone...)
+}
+
 // 今天
 func (this Datebin) Today(timezone ...string) Datebin {
     if len(timezone) > 0 {
@@ -30,6 +35,11 @@ func (this Datebin) Today(timezone ...string) Datebin {
     this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
 
     return this
+}
+
+// 今天
+func Today(timezone ...string) Datebin {
+    return defaultDatebin.Today(timezone...)
 }
 
 // 明天
@@ -50,6 +60,11 @@ func (this Datebin) Tomorrow(timezone ...string) Datebin {
     return this
 }
 
+// 明天
+func Tomorrow(timezone ...string) Datebin {
+    return defaultDatebin.Tomorrow(timezone...)
+}
+
 // 昨天
 func (this Datebin) Yesterday(timezone ...string) Datebin {
     if len(timezone) > 0 {
@@ -66,6 +81,11 @@ func (this Datebin) Yesterday(timezone ...string) Datebin {
     this.time = time.Date(datetime.Year(), time.Month(datetime.Month()), datetime.Day(), 0, 0, 0, 0, datetime.loc)
 
     return this
+}
+
+// 昨天
+func Yesterday(timezone ...string) Datebin {
+    return defaultDatebin.Yesterday(timezone...)
 }
 
 // 最小值

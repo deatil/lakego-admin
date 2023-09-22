@@ -52,6 +52,11 @@ func (this Datebin) Parse(date string) Datebin {
     return this
 }
 
+// 解析时间字符
+func Parse(date string) Datebin {
+    return defaultDatebin.Parse(date)
+}
+
 // 用布局字符解析时间字符
 func (this Datebin) ParseWithLayout(date string, layout string, timezone ...string) Datebin {
     if len(timezone) > 0 {
@@ -62,15 +67,38 @@ func (this Datebin) ParseWithLayout(date string, layout string, timezone ...stri
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.time = time
 
     return this
 }
 
+// 用布局字符解析时间字符
+func ParseWithLayout(date string, layout string, timezone ...string) Datebin {
+    return defaultDatebin.ParseWithLayout(date, layout, timezone...)
+}
+
 // 用格式化字符解析时间字符
 func (this Datebin) ParseWithFormat(date string, format string, timezone ...string) Datebin {
     return this.ParseWithLayout(date, this.formatParseLayout(format), timezone...)
+}
+
+// 用格式化字符解析时间字符
+func ParseWithFormat(date string, format string, timezone ...string) Datebin {
+    return defaultDatebin.ParseWithFormat(date, format, timezone...)
+}
+
+// 时间字符
+func ParseDatetimeString(date string, format ...string) Datebin {
+    if len(format) > 1 && format[1] == "u" {
+        return ParseWithFormat(date, format[0])
+    }
+
+    if len(format) > 0 {
+        return ParseWithLayout(date, format[0])
+    }
+
+    return Parse(date)
 }
 
 // 格式化解析 layout
