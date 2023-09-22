@@ -145,7 +145,7 @@ func Test_AesECB(t *testing.T) {
 
     data := "test-pass"
     cypt := FromString(data).
-        SetKey("dfertf12dfertf12").
+        SetKey("dfertf12dfertf12rtgthytr").
         AesECB().
         Encrypt()
     cyptStr := cypt.ToBase64String()
@@ -153,7 +153,7 @@ func Test_AesECB(t *testing.T) {
     assertError(cypt.Error(), "AesECB-Encode")
 
     cyptde := FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12").
+        SetKey("dfertf12dfertf12rtgthytr").
         AesECB().
         Decrypt()
     cyptdeStr := cyptde.ToString()
@@ -801,4 +801,86 @@ func Test_AesEAXPKCS7Padding(t *testing.T) {
     assertError(cyptde.Error(), "AesOCBPKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "AesOCBPKCS7Padding")
+}
+
+func Test_AesCCMPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        CCM("dfertf12dfe").
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesCCMPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Aes().
+        CCM("dfertf12dfe").
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesCCMPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "AesCCMPKCS7Padding")
+}
+
+func Test_AesOCFB(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        Aes().
+        OCFB(true).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesOCFB-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        Aes().
+        OCFB(true).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesOCFB-Decode")
+
+    assert(data, cyptdeStr, "AesOCFB")
+}
+
+func Test_AesOCFBFalse(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass12trtrt7yh"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12").
+        Aes().
+        OCFB(false).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesOCFBFalse-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12").
+        Aes().
+        OCFB(false).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesOCFBFalse-Decode")
+
+    assert(data, cyptdeStr, "AesOCFBFalse")
 }

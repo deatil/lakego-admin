@@ -10,7 +10,7 @@ body:
     attributes:
       label: 当前版本
       description: 请输入您当前使用的项目版本?
-      placeholder: v1.0.1047
+      placeholder: v1.0.2023
     validations:
       required: true
   - type: input
@@ -18,7 +18,7 @@ body:
     attributes:
       label: Golang 版本
       description: 请输入您当前使用的 Golang 版本?
-      placeholder: go 1.18
+      placeholder: go 1.20
     validations:
       required: true
   - type: dropdown

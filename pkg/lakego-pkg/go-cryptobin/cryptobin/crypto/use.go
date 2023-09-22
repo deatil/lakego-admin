@@ -317,6 +317,15 @@ func (this Cryptobin) CFB128() Cryptobin {
     return this
 }
 
+// OpenPGP 反馈模式
+func (this Cryptobin) OCFB(resync bool) Cryptobin {
+    this.mode = OCFB
+
+    this.config.Set("resync", resync)
+
+    return this
+}
+
 // 输出反馈模式
 func (this Cryptobin) OFB() Cryptobin {
     this.mode = OFB

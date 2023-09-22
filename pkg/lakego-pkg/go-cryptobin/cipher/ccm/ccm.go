@@ -1,4 +1,4 @@
-package cipher
+package ccm
 
 import (
     "math"

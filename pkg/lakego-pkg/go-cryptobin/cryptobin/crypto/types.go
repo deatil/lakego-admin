@@ -176,6 +176,8 @@ func (this Mode) String() string {
             return "CFB64"
         case CFB128:
             return "CFB128"
+        case OCFB:
+            return "OCFB"
         case OFB:
             return "OFB"
         case OFB8:
@@ -210,6 +212,7 @@ const (
     CFB32
     CFB64
     CFB128
+    OCFB
     OFB
     OFB8
     CTR
