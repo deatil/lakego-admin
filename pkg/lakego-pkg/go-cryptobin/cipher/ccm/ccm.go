@@ -4,11 +4,11 @@ import (
     "math"
     "errors"
     "encoding/binary"
-    goCipher "crypto/cipher"
-    goSubtle "crypto/subtle"
+    go_cipher "crypto/cipher"
+    go_subtle "crypto/subtle"
 
-    "github.com/deatil/go-cryptobin/cipher/xor"
-    "github.com/deatil/go-cryptobin/cipher/subtle"
+    "github.com/deatil/go-cryptobin/tool/xor"
+    "github.com/deatil/go-cryptobin/tool/subtle"
 )
 
 const (
@@ -21,11 +21,11 @@ const (
 // ccmAble is an interface implemented by ciphers that have a specific optimized
 // implementation of CCM.
 type ccmAble interface {
-    NewCCM(nonceSize, tagSize int) (goCipher.AEAD, error)
+    NewCCM(nonceSize, tagSize int) (go_cipher.AEAD, error)
 }
 
 type ccm struct {
-    cipher    goCipher.Block
+    cipher    go_cipher.Block
     nonceSize int
     tagSize   int
 }
@@ -55,14 +55,14 @@ func maxlen(L, tagsize int) int {
 
 // NewCCM returns the given 128-bit, block cipher wrapped in CCM
 // with the standard nonce length.
-func NewCCM(cipher goCipher.Block) (goCipher.AEAD, error) {
+func NewCCM(cipher go_cipher.Block) (go_cipher.AEAD, error) {
     return NewCCMWithNonceAndTagSize(cipher, ccmStandardNonceSize, ccmTagSize)
 }
 
 // NewCCMWithNonceSize returns the given 128-bit, block cipher wrapped in CCM,
 // which accepts nonces of the given length. The length must not
 // be zero.
-func NewCCMWithNonceSize(cipher goCipher.Block, size int) (goCipher.AEAD, error) {
+func NewCCMWithNonceSize(cipher go_cipher.Block, size int) (go_cipher.AEAD, error) {
     return NewCCMWithNonceAndTagSize(cipher, size, ccmTagSize)
 }
 
@@ -71,12 +71,12 @@ func NewCCMWithNonceSize(cipher goCipher.Block, size int) (goCipher.AEAD, error)
 //
 // Tag sizes between 8 and 16 bytes are allowed.
 //
-func NewCCMWithTagSize(cipher goCipher.Block, tagSize int) (goCipher.AEAD, error) {
+func NewCCMWithTagSize(cipher go_cipher.Block, tagSize int) (go_cipher.AEAD, error) {
     return NewCCMWithNonceAndTagSize(cipher, ccmStandardNonceSize, tagSize)
 }
 
 // https://tools.ietf.org/html/rfc3610
-func NewCCMWithNonceAndTagSize(cipher goCipher.Block, nonceSize, tagSize int) (goCipher.AEAD, error) {
+func NewCCMWithNonceAndTagSize(cipher go_cipher.Block, nonceSize, tagSize int) (go_cipher.AEAD, error) {
     if tagSize < ccmMinimumTagSize || tagSize > ccmBlockSize || tagSize&1 != 0 {
         return nil, errors.New("cipher: incorrect tag size given to CCM")
     }
@@ -188,7 +188,7 @@ func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     c.cipher.Encrypt(tagMask[:], counter[:])
 
     counter[len(counter)-1] |= 1
-    ctr := goCipher.NewCTR(c.cipher, counter[:])
+    ctr := go_cipher.NewCTR(c.cipher, counter[:])
     ctr.XORKeyStream(out, plaintext)
 
     tag := c.auth(nonce, plaintext, data, &tagMask)
@@ -230,10 +230,10 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     }
 
     counter[len(counter)-1] |= 1
-    ctr := goCipher.NewCTR(c.cipher, counter[:])
+    ctr := go_cipher.NewCTR(c.cipher, counter[:])
     ctr.XORKeyStream(out, ciphertext)
     expectedTag := c.auth(nonce, out, data, &tagMask)
-    if goSubtle.ConstantTimeCompare(expectedTag, tag) != 1 {
+    if go_subtle.ConstantTimeCompare(expectedTag, tag) != 1 {
         // The AESNI code decrypts and authenticates concurrently, and
         // so overwrites dst in the event of a tag mismatch. That
         // behavior is mimicked here in order to be consistent across

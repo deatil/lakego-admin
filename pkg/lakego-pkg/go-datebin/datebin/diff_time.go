@@ -58,7 +58,7 @@ func (this DiffTime) Seconds() int64 {
 
 // 相差秒，绝对值
 func (this DiffTime) SecondsAbs() int64 {
-    return this.AbsFormat(this.Seconds())
+    return absFormat(this.Seconds())
 }
 
 // 相差分钟
@@ -68,7 +68,7 @@ func (this DiffTime) Minutes() int64 {
 
 // 相差分钟，绝对值
 func (this DiffTime) MinutesAbs() int64 {
-    return this.AbsFormat(this.Minutes())
+    return absFormat(this.Minutes())
 }
 
 // 相差小时
@@ -78,7 +78,7 @@ func (this DiffTime) Hours() int64 {
 
 // 相差小时，绝对值
 func (this DiffTime) HoursAbs() int64 {
-    return this.AbsFormat(this.Hours())
+    return absFormat(this.Hours())
 }
 
 // 相差天
@@ -88,7 +88,7 @@ func (this DiffTime) Days() int64 {
 
 // 相差天，绝对值
 func (this DiffTime) DaysAbs() int64 {
-    return this.AbsFormat(this.Days())
+    return absFormat(this.Days())
 }
 
 // 相差周
@@ -98,7 +98,7 @@ func (this DiffTime) Weeks() int64 {
 
 // 相差周，绝对值
 func (this DiffTime) WeeksAbs() int64 {
-    return this.AbsFormat(this.Weeks())
+    return absFormat(this.Weeks())
 }
 
 // 相差月份
@@ -128,7 +128,7 @@ func (this DiffTime) Months() int64 {
 
 // 相差月份，绝对值
 func (this DiffTime) MonthsAbs() int64 {
-    return this.AbsFormat(this.Months())
+    return absFormat(this.Months())
 }
 
 // 相差年
@@ -138,7 +138,7 @@ func (this DiffTime) Years() int64 {
 
 // 相差年，绝对值
 func (this DiffTime) YearsAbs() int64 {
-    return this.AbsFormat(this.Years())
+    return absFormat(this.Years())
 }
 
 // 格式化输出
@@ -171,9 +171,4 @@ func (this DiffTime) Format(str string) string {
     }
 
     return str
-}
-
-// 取绝对值
-func (this DiffTime) AbsFormat(value int64) int64 {
-    return this.Start.AbsFormat(value)
 }

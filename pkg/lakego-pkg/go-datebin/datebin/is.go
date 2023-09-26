@@ -134,7 +134,7 @@ func (this Datebin) IsLatelyMonth() bool {
     now := this.Now()
 
     monthDifference := now.Month() - this.Month()
-    if this.AbsFormat(int64(monthDifference)) != 1 {
+    if absFormat(int64(monthDifference)) != 1 {
         return false
     }
 

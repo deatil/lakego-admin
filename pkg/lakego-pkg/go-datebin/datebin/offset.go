@@ -98,7 +98,7 @@ func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 
 // 按照持续时长字符串增加时间
 func (this Datebin) AddDuration(duration string) Datebin {
-    td, err := this.ParseDuration(duration)
+    td, err := time.ParseDuration(duration)
     if err != nil {
         return this.AppendError(err)
     }

@@ -175,7 +175,7 @@ func (this Datebin) GetLocationString() string {
 
 // 设置时区
 func (this Datebin) WithTimezone(timezone string) Datebin {
-    loc, err := this.GetLocationByTimezone(timezone)
+    loc, err := time.LoadLocation(timezone)
     if err != nil {
         return this.AppendError(err)
     }
