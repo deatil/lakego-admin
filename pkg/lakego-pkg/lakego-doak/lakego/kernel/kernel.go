@@ -30,14 +30,6 @@ var rootCmd = &command.Command{
     },
 }
 
-// 实例化
-func New() *Kernel {
-    // 实例化核心
-    kernel := &Kernel{}
-
-    return kernel
-}
-
 /**
  * 核心
  *
@@ -50,6 +42,14 @@ type Kernel struct {
 
     // 自定义运行监听
     NetListener net.Listener
+}
+
+// 实例化
+func New() *Kernel {
+    // 实例化核心
+    kernel := &Kernel{}
+
+    return kernel
 }
 
 // 执行

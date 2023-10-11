@@ -130,7 +130,7 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
 // =======================
 
 // 生成密钥 RSA
-// bits = 512 | 1024 | 2048 | 4096
+// 可选 [512 | 1024 | 2048 | 4096]
 func (this CA) GenerateRSAKey(bits int) CA {
     // 生成私钥
     privateKey, err := rsa.GenerateKey(rand.Reader, bits)

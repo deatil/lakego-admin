@@ -17,13 +17,6 @@ type (
 // 默认
 var defaultRegister = NewRegister()
 
-// 构造函数
-func NewRegister() *Register {
-    return &Register{
-        providers: make([]Provider, 0),
-    }
-}
-
 /**
  * 注册器
  *
@@ -36,6 +29,13 @@ type Register struct {
 
     // 服务提供者
     providers []Provider
+}
+
+// 构造函数
+func NewRegister() *Register {
+    return &Register{
+        providers: make([]Provider, 0),
+    }
 }
 
 // 添加服务提供者

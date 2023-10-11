@@ -165,12 +165,11 @@ func (this *App) Registers(providers []func() iprovider.ServiceProvider) {
 // 注册
 func (this *App) markAsRegistered(provider iprovider.ServiceProvider) {
     this.mut.Lock()
-    this.serviceProviders = append(this.serviceProviders, provider)
-    this.mut.Unlock()
+    defer this.mut.Unlock()
 
-    this.mut.Lock()
+    this.serviceProviders = append(this.serviceProviders, provider)
+
     this.loadedProviders[this.GetProviderName(provider)] = true
-    this.mut.Unlock()
 }
 
 // GetLoadedProviders

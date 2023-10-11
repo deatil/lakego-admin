@@ -1,6 +1,7 @@
 package rsa
 
 import (
+    "io"
     "math/big"
     "crypto/rsa"
     "crypto/rand"
@@ -121,6 +122,50 @@ func (this Rsa) GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
 // 生成密钥
 func GenerateMultiPrimeKey(nprimes int, bits int) Rsa {
     return defaultRSA.GenerateMultiPrimeKey(nprimes, bits)
+}
+
+// ==========
+
+// 生成密钥
+// bits = 512 | 1024 | 2048 | 4096
+func (this Rsa) GenerateKeyWithSeed(reader io.Reader, bits int) Rsa {
+    privateKey, err := rsa.GenerateKey(reader, bits)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
+    return this
+}
+
+// 生成密钥
+// bits = 512 | 1024 | 2048 | 4096
+func GenerateKeyWithSeed(reader io.Reader, bits int) Rsa {
+    return defaultRSA.GenerateKeyWithSeed(reader, bits)
+}
+
+// 生成密钥
+func (this Rsa) GenerateMultiPrimeKeyWithSeed(reader io.Reader, nprimes int, bits int) Rsa {
+    privateKey, err := rsa.GenerateMultiPrimeKey(reader, nprimes, bits)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
+    return this
+}
+
+// 生成密钥
+func GenerateMultiPrimeKeyWithSeed(reader io.Reader, nprimes int, bits int) Rsa {
+    return defaultRSA.GenerateMultiPrimeKeyWithSeed(reader, nprimes, bits)
 }
 
 // ==========

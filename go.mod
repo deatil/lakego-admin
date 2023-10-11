@@ -24,28 +24,28 @@ replace (
 	github.com/deatil/go-sign => ./pkg/lakego-pkg/go-sign
 	github.com/deatil/go-tree => ./pkg/lakego-pkg/go-tree
 	github.com/deatil/go-validator => ./pkg/lakego-pkg/go-validator
+	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
+	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 	github.com/deatil/lakego-doak => ./pkg/lakego-pkg/lakego-doak
 	github.com/deatil/lakego-doak-action-log => ./pkg/lakego-app/doak-action-log
 	github.com/deatil/lakego-doak-admin => ./pkg/lakego-app/doak-admin
+	github.com/deatil/lakego-doak-extension => ./pkg/lakego-app/doak-extension
 	github.com/deatil/lakego-doak-database => ./pkg/lakego-app/doak-database
 	github.com/deatil/lakego-doak-devtool => ./pkg/lakego-app/doak-devtool
-	github.com/deatil/lakego-doak-extension => ./pkg/lakego-app/doak-extension
 	github.com/deatil/lakego-doak-monitor => ./pkg/lakego-app/doak-monitor
 	github.com/deatil/lakego-doak-statics => ./pkg/lakego-app/doak-statics
 	github.com/deatil/lakego-doak-swagger => ./pkg/lakego-app/doak-swagger
-	github.com/deatil/lakego-filesystem => ./pkg/lakego-pkg/lakego-filesystem
-	github.com/deatil/lakego-jwt => ./pkg/lakego-pkg/lakego-jwt
 )
 
 require (
 	app v0.0.3
 	extension v0.0.3
 	github.com/deatil/lakego-doak v1.0.1002
-	github.com/deatil/lakego-doak-action-log v0.0.3
 	github.com/deatil/lakego-doak-admin v1.0.0
+	github.com/deatil/lakego-doak-extension v0.0.3
+	github.com/deatil/lakego-doak-action-log v0.0.3
 	github.com/deatil/lakego-doak-database v0.0.3
 	github.com/deatil/lakego-doak-devtool v0.0.3
-	github.com/deatil/lakego-doak-extension v0.0.3
 	github.com/deatil/lakego-doak-monitor v0.0.3
 	github.com/deatil/lakego-doak-statics v0.0.3
 	github.com/deatil/lakego-doak-swagger v0.0.3

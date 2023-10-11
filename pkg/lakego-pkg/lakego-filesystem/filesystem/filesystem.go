@@ -174,27 +174,23 @@ func SharedGet(path string) (string, error) {
 
 // 行读取
 func (this *Filesystem) Lines(path string) ([]string, error) {
-    openFile, err := os.Open(path)
+    f, err := os.Open(path)
     if err != nil {
         return []string{}, err
     }
 
-    defer openFile.Close()
+    defer f.Close()
 
-    reader := bufio.NewReader(openFile)
+    buf := bufio.NewReader(f)
 
     data := make([]string, 0)
     for {
-        line, err := reader.ReadString('\n')
-        data = append(data, line)
-
-        if err != nil {
-            if err == io.EOF {
-                break
-            }
-
-            return data, err
+        line, _, err := buf.ReadLine()
+        if err == io.EOF {
+            break
         }
+
+        data = append(data, string(line))
     }
 
     return data, err

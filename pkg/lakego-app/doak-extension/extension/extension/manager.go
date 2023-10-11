@@ -115,7 +115,7 @@ func (this *Manager) Booted(callback func()) {
     event.Listen(this.eventBootedName, callback)
 }
 
-// 添加扩展
+// Booted
 func Booted(callback func()) {
     defaultManager.Booted(callback)
 }
@@ -173,6 +173,7 @@ func (this *Manager) GetExtensions() []Extension {
     return exts
 }
 
+// 验证信息
 func (this *Manager) ValidateInfo(info Extension) bool {
     var data map[string]any
     err := json.Unmarshal(info.ToJSON(), &data)

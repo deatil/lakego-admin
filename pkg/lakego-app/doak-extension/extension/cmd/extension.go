@@ -53,7 +53,7 @@ func init() {
     command.MarkFlagRequired(pf, "action")
 }
 
-// 重设权限
+// 扩展管理
 func ExtensionCtl() {
     if action == "" {
         fmt.Println("操作类型不能为空")

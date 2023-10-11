@@ -1,6 +1,7 @@
 package ecdsa
 
 import (
+    "io"
     "strings"
     "math/big"
     "crypto/rand"
@@ -212,8 +213,29 @@ func (this Ecdsa) GenerateKey() Ecdsa {
 
 // 生成密钥
 // 可选 [P521 | P384 | P256 | P224]
-func GenerateKey(hash string) Ecdsa {
-    return defaultECDSA.SetCurve(hash).GenerateKey()
+func GenerateKey(curve string) Ecdsa {
+    return defaultECDSA.SetCurve(curve).GenerateKey()
+}
+
+// 生成密钥
+func (this Ecdsa) GenerateKeyWithSeed(reader io.Reader) Ecdsa {
+    privateKey, err := ecdsa.GenerateKey(this.curve, reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &privateKey.PublicKey
+
+    return this
+}
+
+// 生成密钥
+// 可选 [P521 | P384 | P256 | P224]
+func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdsa {
+    return defaultECDSA.SetCurve(curve).GenerateKeyWithSeed(reader)
 }
 
 // ==========

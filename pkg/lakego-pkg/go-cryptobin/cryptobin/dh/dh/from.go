@@ -1,6 +1,7 @@
 package dh
 
 import (
+    "io"
     "math/big"
     "crypto/rand"
 
@@ -185,6 +186,21 @@ func (this Dh) GenerateKey() Dh {
 }
 
 // 生成密钥
-func GenerateKey() Dh {
-    return defaultDH.GenerateKey()
+func GenerateKey(name string) Dh {
+    return defaultDH.SetGroup(name).GenerateKey()
+}
+
+// 生成密钥
+func (this Dh) GenerateKeyWithSeed(reader io.Reader) Dh {
+    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader, name string) Dh {
+    return defaultDH.SetGroup(name).GenerateKeyWithSeed(reader)
 }

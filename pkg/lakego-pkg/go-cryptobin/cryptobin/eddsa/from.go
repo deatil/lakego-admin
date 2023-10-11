@@ -1,6 +1,7 @@
 package eddsa
 
 import (
+    "io"
     "crypto/rand"
     "crypto/ed25519"
 
@@ -120,6 +121,24 @@ func (this EdDSA) GenerateKey() EdDSA {
 // 生成密钥
 func GenerateKey() EdDSA {
     return defaultEdDSA.GenerateKey()
+}
+
+// 生成密钥
+func (this EdDSA) GenerateKeyWithSeed(reader io.Reader) EdDSA {
+    publicKey, privateKey, err := ed25519.GenerateKey(reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey  = publicKey
+    this.privateKey = privateKey
+
+    return this
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader) EdDSA {
+    return defaultEdDSA.GenerateKeyWithSeed(reader)
 }
 
 // ==========

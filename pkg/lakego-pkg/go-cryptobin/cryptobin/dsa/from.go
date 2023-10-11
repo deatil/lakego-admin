@@ -1,6 +1,7 @@
 package dsa
 
 import (
+    "io"
     "crypto/dsa"
     "crypto/rand"
 
@@ -114,6 +115,41 @@ func (this DSA) GenerateKey(ln string) DSA {
 // 可用参数 [L1024N160 | L2048N224 | L2048N256 | L3072N256]
 func GenerateKey(ln string) DSA {
     return defaultDSA.GenerateKey(ln)
+}
+
+// 生成密钥
+// 可用参数 [L1024N160 | L2048N224 | L2048N256 | L3072N256]
+func (this DSA) GenerateKeyWithSeed(paramReader io.Reader, generateReader io.Reader, ln string) DSA {
+    var paramSize dsa.ParameterSizes
+
+    // 算法类型
+    switch ln {
+        case "L1024N160":
+            paramSize = dsa.L1024N160
+        case "L2048N224":
+            paramSize = dsa.L2048N224
+        case "L2048N256":
+            paramSize = dsa.L2048N256
+        case "L3072N256":
+            paramSize = dsa.L3072N256
+        default:
+            paramSize = dsa.L1024N160
+    }
+
+    priv := &dsa.PrivateKey{}
+    dsa.GenerateParameters(&priv.Parameters, paramReader, paramSize)
+    dsa.GenerateKey(priv, generateReader)
+
+    this.privateKey = priv
+    this.publicKey = &priv.PublicKey
+
+    return this
+}
+
+// 生成密钥
+// 可用参数 [L1024N160 | L2048N224 | L2048N256 | L3072N256]
+func GenerateKeyWithSeed(paramReader io.Reader, generateReader io.Reader, ln string) DSA {
+    return defaultDSA.GenerateKeyWithSeed(paramReader, generateReader, ln)
 }
 
 // ==========

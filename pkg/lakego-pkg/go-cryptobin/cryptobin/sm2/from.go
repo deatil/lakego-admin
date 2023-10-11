@@ -1,6 +1,7 @@
 package sm2
 
 import (
+    "io"
     "strings"
     "math/big"
     "crypto/rand"
@@ -97,7 +98,7 @@ func (this SM2) FromPublicKeyDer(der []byte) SM2 {
 
 // ==========
 
-// 生成密钥
+// 生成密钥对
 func (this SM2) GenerateKey() SM2 {
     privateKey, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
@@ -112,9 +113,29 @@ func (this SM2) GenerateKey() SM2 {
     return this
 }
 
-// 生成密钥
+// 生成密钥对
 func GenerateKey() SM2 {
     return defaultSM2.GenerateKey()
+}
+
+// 使用数据生成密钥对
+func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
+    privateKey, err := sm2.GenerateKey(reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &this.privateKey.PublicKey
+
+    return this
+}
+
+// 使用数据生成密钥对
+func GenerateKeyWithSeed(reader io.Reader) SM2 {
+    return defaultSM2.GenerateKeyWithSeed(reader)
 }
 
 // ==========

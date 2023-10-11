@@ -1,6 +1,7 @@
 package ecdh
 
 import (
+    "io"
     "crypto/rand"
     "crypto/ecdh"
 
@@ -187,6 +188,24 @@ func (this Ecdh) GenerateKey() Ecdh {
 }
 
 // 生成密钥
-func GenerateKey(name string) Ecdh {
-    return defaultECDH.SetCurve(name).GenerateKey()
+func GenerateKey(curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKey()
+}
+
+// 生成密钥
+func (this Ecdh) GenerateKeyWithSeed(reader io.Reader) Ecdh {
+    privateKey, err := this.curve.GenerateKey(reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+    this.publicKey  = privateKey.PublicKey()
+
+    return this
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKeyWithSeed(reader)
 }
