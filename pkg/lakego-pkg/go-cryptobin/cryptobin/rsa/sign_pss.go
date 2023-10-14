@@ -8,7 +8,7 @@ import (
 
 // 私钥签名
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
-func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
+func (this Rsa) SignPSS(opts ...rsa.PSSOptions) Rsa {
     if this.privateKey == nil {
         err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
@@ -35,7 +35,7 @@ func (this Rsa) PSSSign(opts ...rsa.PSSOptions) Rsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Rsa) PSSVerify(data []byte, opts ...rsa.PSSOptions) Rsa {
+func (this Rsa) VerifyPSS(data []byte, opts ...rsa.PSSOptions) Rsa {
     if this.publicKey == nil {
         err := errors.New("Rsa: publicKey error.")
         return this.AppendError(err)

@@ -8,6 +8,44 @@ import (
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
+// 生成密钥
+func (this Ecdh) GenerateKey() Ecdh {
+    privateKey, err := this.curve.GenerateKey(rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+    this.publicKey  = privateKey.PublicKey()
+
+    return this
+}
+
+// 生成密钥
+func GenerateKey(curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKey()
+}
+
+// 生成密钥
+func (this Ecdh) GenerateKeyWithSeed(reader io.Reader) Ecdh {
+    privateKey, err := this.curve.GenerateKey(reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+    this.publicKey  = privateKey.PublicKey()
+
+    return this
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKeyWithSeed(reader)
+}
+
+// ==========
+
 // 私钥
 func (this Ecdh) FromPrivateKey(key []byte) Ecdh {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
@@ -170,42 +208,4 @@ func (this Ecdh) FromECDHPublicKeyDer(der []byte) Ecdh {
     this.publicKey = parsedKey.(*ecdh.PublicKey)
 
     return this
-}
-
-// ==========
-
-// 生成密钥
-func (this Ecdh) GenerateKey() Ecdh {
-    privateKey, err := this.curve.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-    this.publicKey  = privateKey.PublicKey()
-
-    return this
-}
-
-// 生成密钥
-func GenerateKey(curve string) Ecdh {
-    return defaultECDH.SetCurve(curve).GenerateKey()
-}
-
-// 生成密钥
-func (this Ecdh) GenerateKeyWithSeed(reader io.Reader) Ecdh {
-    privateKey, err := this.curve.GenerateKey(reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-    this.publicKey  = privateKey.PublicKey()
-
-    return this
-}
-
-// 生成密钥
-func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdh {
-    return defaultECDH.SetCurve(curve).GenerateKeyWithSeed(reader)
 }

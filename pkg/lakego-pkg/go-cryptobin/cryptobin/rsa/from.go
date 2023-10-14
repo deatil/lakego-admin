@@ -9,79 +9,6 @@ import (
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
-// 私钥
-func (this Rsa) FromPrivateKey(key []byte) Rsa {
-    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
-    if err == nil {
-        this.privateKey = privateKey
-
-        return this
-    }
-
-    privateKey, err = this.ParsePKCS1PrivateKeyFromPEM(key)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-
-    return this
-}
-
-// 私钥
-func FromPrivateKey(key []byte) Rsa {
-    return defaultRSA.FromPrivateKey(key)
-}
-
-// 私钥带密码
-func (this Rsa) FromPrivateKeyWithPassword(key []byte, password string) Rsa {
-    privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
-    if err == nil {
-        this.privateKey = privateKey
-
-        return this
-    }
-
-    privateKey, err = this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-
-    return this
-}
-
-// 私钥带密码
-func FromPrivateKeyWithPassword(key []byte, password string) Rsa {
-    return defaultRSA.FromPrivateKeyWithPassword(key, password)
-}
-
-// 公钥
-func (this Rsa) FromPublicKey(key []byte) Rsa {
-    var publicKey *rsa.PublicKey
-    var err error
-
-    publicKey, err = this.ParsePKCS8PublicKeyFromPEM(key)
-    if err != nil {
-        publicKey, err = this.ParsePKCS1PublicKeyFromPEM(key)
-        if err != nil {
-            return this.AppendError(err)
-        }
-    }
-
-    this.publicKey = publicKey
-
-    return this
-}
-
-// 公钥
-func FromPublicKey(key []byte) Rsa {
-    return defaultRSA.FromPublicKey(key)
-}
-
-// ==========
-
 // 生成密钥
 // bits = 512 | 1024 | 2048 | 4096
 func (this Rsa) GenerateKey(bits int) Rsa {
@@ -166,6 +93,79 @@ func (this Rsa) GenerateMultiPrimeKeyWithSeed(reader io.Reader, nprimes int, bit
 // 生成密钥
 func GenerateMultiPrimeKeyWithSeed(reader io.Reader, nprimes int, bits int) Rsa {
     return defaultRSA.GenerateMultiPrimeKeyWithSeed(reader, nprimes, bits)
+}
+
+// ==========
+
+// 私钥
+func (this Rsa) FromPrivateKey(key []byte) Rsa {
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// 私钥
+func FromPrivateKey(key []byte) Rsa {
+    return defaultRSA.FromPrivateKey(key)
+}
+
+// 私钥带密码
+func (this Rsa) FromPrivateKeyWithPassword(key []byte, password string) Rsa {
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// 私钥带密码
+func FromPrivateKeyWithPassword(key []byte, password string) Rsa {
+    return defaultRSA.FromPrivateKeyWithPassword(key, password)
+}
+
+// 公钥
+func (this Rsa) FromPublicKey(key []byte) Rsa {
+    var publicKey *rsa.PublicKey
+    var err error
+
+    publicKey, err = this.ParsePKCS8PublicKeyFromPEM(key)
+    if err != nil {
+        publicKey, err = this.ParsePKCS1PublicKeyFromPEM(key)
+        if err != nil {
+            return this.AppendError(err)
+        }
+    }
+
+    this.publicKey = publicKey
+
+    return this
+}
+
+// 公钥
+func FromPublicKey(key []byte) Rsa {
+    return defaultRSA.FromPublicKey(key)
 }
 
 // ==========

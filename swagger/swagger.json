@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统",
-        "title": "lakego-admin API文档",
+        "title": "lakego-admin 后端 API 文档",
         "termsOfService": "https://github.com/deatil",
         "contact": {
             "name": "deatil",
@@ -13,7 +13,7 @@
             "name": "Apache2",
             "url": "https://github.com/deatil/lakego-admin/blob/main/LICENSE"
         },
-        "version": "1.1.0"
+        "version": "1.3.0"
     },
     "host": "127.0.0.1:8080",
     "basePath": "/admin-api",

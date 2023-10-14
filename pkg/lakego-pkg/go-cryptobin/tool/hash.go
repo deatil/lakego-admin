@@ -115,14 +115,6 @@ func CryptoHashSum(typ string, slices ...[]byte) ([]byte, error) {
     return h.Sum(nil), nil
 }
 
-// 构造函数
-func NewHash() *Hash {
-    sha := &Hash{}
-    sha.hashes = funcHashes
-
-    return sha
-}
-
 // 默认
 var defaultHash = NewHash()
 
@@ -135,6 +127,14 @@ var defaultHash = NewHash()
 type Hash struct {
     // hash 列表
     hashes map[string]HashFunc
+}
+
+// 构造函数
+func NewHash() *Hash {
+    sha := &Hash{}
+    sha.hashes = funcHashes
+
+    return sha
 }
 
 // 添加

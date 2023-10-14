@@ -10,6 +10,50 @@ import (
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
+// 生成密钥
+func (this Ecdsa) GenerateKey() Ecdsa {
+    privateKey, err := ecdsa.GenerateKey(this.curve, rand.Reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &privateKey.PublicKey
+
+    return this
+}
+
+// 生成密钥
+// 可选 [P521 | P384 | P256 | P224]
+func GenerateKey(curve string) Ecdsa {
+    return defaultECDSA.SetCurve(curve).GenerateKey()
+}
+
+// 生成密钥
+func (this Ecdsa) GenerateKeyWithSeed(reader io.Reader) Ecdsa {
+    privateKey, err := ecdsa.GenerateKey(this.curve, reader)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    // 生成公钥
+    this.publicKey = &privateKey.PublicKey
+
+    return this
+}
+
+// 生成密钥
+// 可选 [P521 | P384 | P256 | P224]
+func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdsa {
+    return defaultECDSA.SetCurve(curve).GenerateKeyWithSeed(reader)
+}
+
+// ==========
+
 // 私钥
 func (this Ecdsa) FromPrivateKey(key []byte) Ecdsa {
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
@@ -193,50 +237,6 @@ func (this Ecdsa) FromPublicKeyDer(der []byte) Ecdsa {
     return this
 }
 
-
-// ==========
-
-// 生成密钥
-func (this Ecdsa) GenerateKey() Ecdsa {
-    privateKey, err := ecdsa.GenerateKey(this.curve, rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &privateKey.PublicKey
-
-    return this
-}
-
-// 生成密钥
-// 可选 [P521 | P384 | P256 | P224]
-func GenerateKey(curve string) Ecdsa {
-    return defaultECDSA.SetCurve(curve).GenerateKey()
-}
-
-// 生成密钥
-func (this Ecdsa) GenerateKeyWithSeed(reader io.Reader) Ecdsa {
-    privateKey, err := ecdsa.GenerateKey(this.curve, reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &privateKey.PublicKey
-
-    return this
-}
-
-// 生成密钥
-// 可选 [P521 | P384 | P256 | P224]
-func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdsa {
-    return defaultECDSA.SetCurve(curve).GenerateKeyWithSeed(reader)
-}
 
 // ==========
 

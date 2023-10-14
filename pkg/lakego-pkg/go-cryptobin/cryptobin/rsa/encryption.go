@@ -19,9 +19,9 @@ func (this Rsa) Encrypt() Rsa {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
@@ -36,16 +36,16 @@ func (this Rsa) Decrypt() Rsa {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
 // ====================
 
 // 私钥加密
-func (this Rsa) PriKeyEncrypt() Rsa {
+func (this Rsa) PrivateKeyEncrypt() Rsa {
     if this.privateKey == nil {
         err := errors.New("Rsa: privateKey error.")
         return this.AppendError(err)
@@ -55,14 +55,14 @@ func (this Rsa) PriKeyEncrypt() Rsa {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
 // 公钥解密
-func (this Rsa) PubKeyDecrypt() Rsa {
+func (this Rsa) PublicKeyDecrypt() Rsa {
     if this.publicKey == nil {
         err := errors.New("Rsa: publicKey error.")
         return this.AppendError(err)
@@ -72,9 +72,9 @@ func (this Rsa) PubKeyDecrypt() Rsa {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
-    
+
     return this
 }
 
@@ -128,7 +128,7 @@ func (this Rsa) DecryptOAEP(typ ...string) Rsa {
     if err != nil {
         return this.AppendError(err)
     }
-    
+
     this.paredData = paredData
 
     return this

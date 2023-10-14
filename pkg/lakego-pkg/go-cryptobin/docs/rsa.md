@@ -52,8 +52,9 @@ func main() {
         // FromPKCS8PrivateKey([]byte(obj2Pri)).
         // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
         // FromXMLPrivateKey([]byte(obj2Pri)).
+        SetSignHash("SHA256").
         Sign().
-        // PSSSign().
+        // SignPSS().
         ToBase64String()
     obj2Pub, _ := fs.Get("./runtime/key/rsa.pub")
     obj2cyptde := obj2.
@@ -62,8 +63,9 @@ func main() {
         // FromPKCS1PublicKey([]byte(obj2Pub)).
         FromPKCS8PublicKey([]byte(obj2Pub)).
         // FromXMLPublicKey([]byte(obj2Pub)).
+        SetSignHash("SHA256").
         Verify([]byte("test-pass")).
-        // PSSVerify([]byte("测试")).
+        // VerifyPSS([]byte("测试")).
         ToVerify()
 
     // =====
@@ -140,7 +142,7 @@ func main() {
     cypt := rsa.
         FromString("test-pass").
         FromPrivateKey([]byte(enkey)).
-        PriKeyEncrypt().
+        PrivateKeyEncrypt().
         ToBase64String()
     dekey, _ := fs.Get("./runtime/key/rsa_key.pub")
     cyptde := rsa.
@@ -148,7 +150,7 @@ func main() {
         // FromPublicKey([]byte(dekey)).
         // FromPKCS1PublicKey([]byte(dekey)).
         FromPKCS8PublicKey([]byte(dekey)).
-        PubKeyDecrypt().
+        PublicKeyDecrypt().
         ToString()
 
     // =====
@@ -209,6 +211,7 @@ func main() {
 * 大数据加密解密
 
 因为大数据分段加密解密不属于标准加密解密，所以单独用函数处理
+具体的使用可以根据业务需求更改适配后使用
 
 ~~~go
 package main

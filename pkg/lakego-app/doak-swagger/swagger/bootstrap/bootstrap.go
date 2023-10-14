@@ -7,7 +7,7 @@ import (
 )
 
 // 添加服务提供者
-func init() {
+func Boot() {
     kernel.AddProvider(func() any {
         return &provider.Swagger{}
     })

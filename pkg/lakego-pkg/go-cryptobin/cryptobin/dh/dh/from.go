@@ -9,6 +9,38 @@ import (
     "github.com/deatil/go-cryptobin/dh/dh"
 )
 
+// 生成密钥
+func (this Dh) GenerateKey() Dh {
+    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, rand.Reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+func GenerateKey(name string) Dh {
+    return defaultDH.SetGroup(name).GenerateKey()
+}
+
+// 生成密钥
+func (this Dh) GenerateKeyWithSeed(reader io.Reader) Dh {
+    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader, name string) Dh {
+    return defaultDH.SetGroup(name).GenerateKeyWithSeed(reader)
+}
+
+// ==========
+
 // 私钥
 func (this Dh) FromPrivateKey(key []byte) Dh {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
@@ -171,36 +203,4 @@ func (this Dh) FromPublicKeyDer(der []byte) Dh {
     this.publicKey = parsedKey.(*dh.PublicKey)
 
     return this
-}
-
-// ==========
-
-// 生成密钥
-func (this Dh) GenerateKey() Dh {
-    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, rand.Reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKey(name string) Dh {
-    return defaultDH.SetGroup(name).GenerateKey()
-}
-
-// 生成密钥
-func (this Dh) GenerateKeyWithSeed(reader io.Reader) Dh {
-    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKeyWithSeed(reader io.Reader, name string) Dh {
-    return defaultDH.SetGroup(name).GenerateKeyWithSeed(reader)
 }

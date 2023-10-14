@@ -8,6 +8,38 @@ import (
     "github.com/deatil/go-cryptobin/dh/curve25519"
 )
 
+// 生成密钥
+func (this Curve25519) GenerateKey() Curve25519 {
+    privateKey, publicKey, err := curve25519.GenerateKey(rand.Reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+func GenerateKey() Curve25519 {
+    return defaultCurve25519.GenerateKey()
+}
+
+// 生成密钥
+func (this Curve25519) GenerateKeyWithSeed(reader io.Reader) Curve25519 {
+    privateKey, publicKey, err := curve25519.GenerateKey(reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+func GenerateKeyWithSeed(reader io.Reader) Curve25519 {
+    return defaultCurve25519.GenerateKeyWithSeed(reader)
+}
+
+// ==========
+
 // 私钥
 func (this Curve25519) FromPrivateKey(key []byte) Curve25519 {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
@@ -152,36 +184,4 @@ func (this Curve25519) FromPublicKeyDer(der []byte) Curve25519 {
     this.publicKey = parsedKey.(*curve25519.PublicKey)
 
     return this
-}
-
-// ==========
-
-// 生成密钥
-func (this Curve25519) GenerateKey() Curve25519 {
-    privateKey, publicKey, err := curve25519.GenerateKey(rand.Reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKey() Curve25519 {
-    return defaultCurve25519.GenerateKey()
-}
-
-// 生成密钥
-func (this Curve25519) GenerateKeyWithSeed(reader io.Reader) Curve25519 {
-    privateKey, publicKey, err := curve25519.GenerateKey(reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKeyWithSeed(reader io.Reader) Curve25519 {
-    return defaultCurve25519.GenerateKeyWithSeed(reader)
 }

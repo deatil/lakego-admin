@@ -29,8 +29,8 @@ func (this Rsa) WithSignHash(h crypto.Hash) Rsa {
 }
 
 // 设置 hash 类型
-func (this Rsa) SetSignHash(data string) Rsa {
-    hash, err := tool.GetCryptoHash(data)
+func (this Rsa) SetSignHash(name string) Rsa {
+    hash, err := tool.GetCryptoHash(name)
     if err != nil {
         return this.AppendError(err)
     }

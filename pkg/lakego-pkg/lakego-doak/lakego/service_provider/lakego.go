@@ -13,11 +13,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/view"
 )
 
-// 构造函数
-func NewLakego() *Lakego {
-    return &Lakego{}
-}
-
 /**
  * 服务提供者
  *
@@ -26,6 +21,11 @@ func NewLakego() *Lakego {
  */
 type Lakego struct {
     provider.ServiceProvider
+}
+
+// 构造函数
+func NewLakego() *Lakego {
+    return &Lakego{}
 }
 
 // 引导

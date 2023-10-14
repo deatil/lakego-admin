@@ -3313,11 +3313,11 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.1.0",
+	Version:          "1.3.0",
 	Host:             "127.0.0.1:8080",
 	BasePath:         "/admin-api",
 	Schemes:          []string{},
-	Title:            "lakego-admin API文档",
+	Title:            "lakego-admin 后端 API 文档",
 	Description:      "lakego-admin 是基于 gin、JWT 和 RBAC 的 go 后台管理系统",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,

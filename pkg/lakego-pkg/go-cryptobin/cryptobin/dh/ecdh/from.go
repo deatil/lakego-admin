@@ -8,6 +8,40 @@ import (
     "github.com/deatil/go-cryptobin/dh/ecdh"
 )
 
+// 生成密钥
+func (this Ecdh) GenerateKey() Ecdh {
+    privateKey, publicKey, err := ecdh.GenerateKey(this.curve, rand.Reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+// 可用参数 [P521 | P384 | P256 | P224]
+func GenerateKey(curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKey()
+}
+
+// 生成密钥
+func (this Ecdh) GenerateKeyWithSeed(reader io.Reader) Ecdh {
+    privateKey, publicKey, err := ecdh.GenerateKey(this.curve, reader)
+
+    this.privateKey = privateKey
+    this.publicKey  = publicKey
+
+    return this.AppendError(err)
+}
+
+// 生成密钥
+// 可用参数 [P521 | P384 | P256 | P224]
+func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdh {
+    return defaultECDH.SetCurve(curve).GenerateKeyWithSeed(reader)
+}
+
+// ==========
+
 // 私钥
 func (this Ecdh) FromPrivateKey(key []byte) Ecdh {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
@@ -155,38 +189,4 @@ func (this Ecdh) FromPublicKeyDer(der []byte) Ecdh {
     this.publicKey = parsedKey.(*ecdh.PublicKey)
 
     return this
-}
-
-// ==========
-
-// 生成密钥
-func (this Ecdh) GenerateKey() Ecdh {
-    privateKey, publicKey, err := ecdh.GenerateKey(this.curve, rand.Reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-// 可用参数 [P521 | P384 | P256 | P224]
-func GenerateKey(curve string) Ecdh {
-    return defaultECDH.SetCurve(curve).GenerateKey()
-}
-
-// 生成密钥
-func (this Ecdh) GenerateKeyWithSeed(reader io.Reader) Ecdh {
-    privateKey, publicKey, err := ecdh.GenerateKey(this.curve, reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-// 可用参数 [P521 | P384 | P256 | P224]
-func GenerateKeyWithSeed(reader io.Reader, curve string) Ecdh {
-    return defaultECDH.SetCurve(curve).GenerateKeyWithSeed(reader)
 }
