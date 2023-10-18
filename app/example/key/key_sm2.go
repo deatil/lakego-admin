@@ -27,9 +27,48 @@ type SM2 struct {
 func (this SM2) Make() {
     obj := cryptobin_sm2.New().GenerateKey()
 
+    this.pkcs1(obj)
+    this.pkcs1En(obj)
+
     this.pkcs8(obj)
     this.pkcs8En(obj)
 }
+
+// ===============
+
+func (this SM2) pkcs1(obj cSM2) {
+    // 生成证书
+    priKey := obj.
+        CreatePKCS1PrivateKey().
+        ToKeyString()
+    pubKey := obj.
+        CreatePublicKey().
+        ToKeyString()
+
+    file := fmt.Sprintf("%s/%s-pkcs1", this.path, this.name)
+
+    this.fs.Put(file, priKey)
+    this.fs.Put(file + ".pub", pubKey)
+}
+
+func (this SM2) pkcs1En(obj cSM2) {
+    for _, c := range Pkcs1Ciphers {
+        // 生成证书
+        priKey := obj.
+            CreatePKCS1PrivateKeyWithPassword(this.pass, c).
+            ToKeyString()
+        pubKey := obj.
+            CreatePublicKey().
+            ToKeyString()
+
+        file := fmt.Sprintf("%s/%s-pkcs1-en-%s", this.path, this.name, c)
+
+        this.fs.Put(file, priKey)
+        this.fs.Put(file + ".pub", pubKey)
+    }
+}
+
+// ===============
 
 func (this SM2) pkcs8(obj cSM2) {
     // 生成证书

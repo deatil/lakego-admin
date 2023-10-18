@@ -2,6 +2,7 @@ package sm2
 
 import (
     "io"
+    "errors"
     "strings"
     "math/big"
     "crypto/rand"
@@ -55,7 +56,14 @@ func GenerateKeyWithSeed(reader io.Reader) SM2 {
 
 // 私钥
 func (this SM2) FromPrivateKey(key []byte) SM2 {
-    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -72,6 +80,92 @@ func FromPrivateKey(key []byte) SM2 {
 
 // 私钥带密码
 func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
+    privateKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err == nil {
+        this.privateKey = privateKey
+
+        return this
+    }
+
+    privateKey, err = this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// 私钥带密码
+func FromPrivateKeyWithPassword(key []byte, password string) SM2 {
+    return defaultSM2.FromPrivateKeyWithPassword(key, password)
+}
+
+// ==========
+
+// PKCS1 私钥
+func (this SM2) FromPKCS1PrivateKey(key []byte) SM2 {
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// PKCS1 私钥
+func FromPKCS1PrivateKey(key []byte) SM2 {
+    return defaultSM2.FromPKCS1PrivateKey(key)
+}
+
+// PKCS1 私钥带密码
+func (this SM2) FromPKCS1PrivateKeyWithPassword(key []byte, password string) SM2 {
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// PKCS1 私钥带密码
+func FromPKCS1PrivateKeyWithPassword(key []byte, password string) SM2 {
+    return defaultSM2.FromPKCS1PrivateKeyWithPassword(key, password)
+}
+
+// ==========
+
+// PKCS8 私钥
+func (this SM2) FromPKCS8PrivateKey(key []byte) SM2 {
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// PKCS8 私钥
+func FromPKCS8PrivateKey(key []byte) SM2 {
+    return defaultSM2.FromPKCS8PrivateKey(key)
+}
+
+// PKCS8 私钥带密码
+func (this SM2) FromPKCS8PrivateKeyWithPassword(key []byte, password string) SM2 {
     var err error
 
     var privateKey *sm2.PrivateKey
@@ -86,12 +180,14 @@ func (this SM2) FromPrivateKeyWithPassword(key []byte, password string) SM2 {
     return this
 }
 
-// 私钥带密码
-func FromPrivateKeyWithPassword(key []byte, password string) SM2 {
-    return defaultSM2.FromPrivateKeyWithPassword(key, password)
+// PKCS8 私钥带密码
+func FromPKCS8PrivateKeyWithPassword(key []byte, password string) SM2 {
+    return defaultSM2.FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
-// 公钥
+// ==========
+
+// 公钥，默认只有一种类型
 func (this SM2) FromPublicKey(key []byte) SM2 {
     publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -103,18 +199,32 @@ func (this SM2) FromPublicKey(key []byte) SM2 {
     return this
 }
 
-// 公钥
+// 公钥，默认只有一种类型
 func FromPublicKey(key []byte) SM2 {
     return defaultSM2.FromPublicKey(key)
 }
 
 // ==========
 
-// DER 私钥
-func (this SM2) FromPrivateKeyDer(der []byte) SM2 {
+// PKCS1 编码 DER 私钥
+func (this SM2) FromPKCS1PrivateKeyDer(der []byte) SM2 {
+    key := cryptobin_tool.EncodeDerToPem(der, "SM2 PRIVATE KEY")
+
+    privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
+}
+
+// PKCS8 编码 DER 私钥
+func (this SM2) FromPKCS8PrivateKeyDer(der []byte) SM2 {
     key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
 
-    privateKey, err := this.ParsePrivateKeyFromPEM(key)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -140,9 +250,40 @@ func (this SM2) FromPublicKeyDer(der []byte) SM2 {
 
 // ==========
 
-// 公钥字符 (hexStringX + hexStringY)
+// 公钥 x,y 16进制字符对
+// [xString: xHexString, yString: yHexString]
+func (this SM2) FromPublicKeyXYString(xString, yString string) SM2 {
+    x, _ := new(big.Int).SetString(xString[:], 16)
+    y, _ := new(big.Int).SetString(yString[:], 16)
+
+    this.publicKey = &sm2.PublicKey{
+        Curve: sm2.P256Sm2(),
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 公钥字符对
+func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
+    x := new(big.Int).SetBytes(XBytes)
+    y := new(big.Int).SetBytes(YBytes)
+
+    this.publicKey = &sm2.PublicKey{
+        Curve: sm2.P256Sm2(),
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// ==========
+
+// 公钥未压缩字符 (hexStringX + hexStringY)
 // public-key: 047c********.
-func (this SM2) FromPublicKeyString(keyString string) SM2 {
+func (this SM2) FromPublicKeyUncompressString(keyString string) SM2 {
     if len(keyString) == 130 && strings.HasPrefix(keyString, "04") {
         keyString = strings.TrimPrefix(keyString, "04")
     }
@@ -159,68 +300,64 @@ func (this SM2) FromPublicKeyString(keyString string) SM2 {
     return this
 }
 
-// 公钥 x,y 16进制字符对
-// [xString: xHexString, yString: yHexString]
-func (this SM2) FromPublicKeyXYString(xString string, yString string) SM2 {
-    x, _ := new(big.Int).SetString(xString[:], 16)
-    y, _ := new(big.Int).SetString(yString[:], 16)
-
-    this.publicKey = &sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
-        X:     x,
-        Y:     y,
+// 公钥压缩
+// public-key: 027c******** || 036c********
+// 0333B01B61D94A775DA72A0BFF9AB324DE672EA0977584D23AF34F8150223305B0
+// 023613B13F252F6FB2374A85D93C7FFE9CCAD1231BE866F5FE69255312CE85B9FF
+func (this SM2) FromPublicKeyCompressString(key string) SM2 {
+    if len(key) != 66 || (!strings.HasPrefix(key, "02") && !strings.HasPrefix(key, "03")) {
+        err := errors.New("SM2: Compress PublicKey prefix is 02 or 03.")
+        return this.AppendError(err)
     }
 
+    pre := changePrefix(key[:2])
+    key = pre + key[2:]
+
+    d, _ := new(big.Int).SetString(key[:], 16)
+
+    this.publicKey = sm2.Decompress(d.Bytes())
+
     return this
+}
+
+// 公钥
+func (this SM2) FromPublicKeyString(key string) SM2 {
+    if len(key) == 66 {
+        return this.FromPublicKeyCompressString(key)
+    }
+
+    return this.FromPublicKeyUncompressString(key)
 }
 
 // 私钥字符，必须先添加公钥 (hexStringD)
 // private-key: 07e4********;
 func (this SM2) FromPrivateKeyString(keyString string) SM2 {
-    d, _ := new(big.Int).SetString(keyString[:], 16)
-
-    this.privateKey = &sm2.PrivateKey{
-        PublicKey: *this.publicKey,
-        D:         d,
-    }
-
-    return this
-}
-
-// ==========
-
-// 公钥字符对
-func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
-    x := new(big.Int).SetBytes(XBytes)
-    y := new(big.Int).SetBytes(YBytes)
-
-    this.publicKey = &sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
-        X:     x,
-        Y:     y,
-    }
-
-    return this
-}
-
-// 私钥字符，必须先添加公钥
-func (this SM2) FromPrivateKeyDBytes(DBytes []byte) SM2 {
-    d := new(big.Int).SetBytes(DBytes)
-
-    this.privateKey = &sm2.PrivateKey{
-        PublicKey: *this.publicKey,
-        D:         d,
-    }
-
-    return this
-}
-
-// ==========
-
-// 明文私钥生成私钥结构体
-func (this SM2) FromPrivateKeyBytes(priByte []byte) SM2 {
     c := sm2.P256Sm2()
-    k := new(big.Int).SetBytes(priByte)
+    k, _ := new(big.Int).SetString(keyString[:], 16)
+
+    priv := new(sm2.PrivateKey)
+    priv.PublicKey.Curve = c
+    priv.D = k
+    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+
+    this.privateKey = priv
+
+    return this
+}
+
+// ==========
+
+// 公钥压缩字节, hex 解码后
+func (this SM2) FromPublicKeyCompressBytes(pubBytes []byte) SM2 {
+    this.publicKey = sm2.Decompress(pubBytes[:])
+
+    return this
+}
+
+// 明文私钥生成私钥结构体, hex 解码后
+func (this SM2) FromPrivateKeyBytes(priBytes []byte) SM2 {
+    c := sm2.P256Sm2()
+    k := new(big.Int).SetBytes(priBytes)
 
     priv := new(sm2.PrivateKey)
     priv.PublicKey.Curve = c

@@ -27,8 +27,8 @@ func (this Ecdh) WithCurve(data ecdh.Curve) Ecdh {
 
 // 设置散列方式
 // 可用参数 [P521 | P384 | P256 | X25519]
-func (this Ecdh) SetCurve(name string) Ecdh {
-    switch name {
+func (this Ecdh) SetCurve(curve string) Ecdh {
+    switch curve {
         case "P521":
             this.curve = ecdh.P521()
         case "P384":

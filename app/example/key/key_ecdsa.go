@@ -57,21 +57,6 @@ func (this Ecdsa) pkcs1(obj cryptobin_ecdsa.Ecdsa, dir string) {
     this.fs.Put(file + ".pub", pubKey)
 }
 
-func (this Ecdsa) pkcs8(obj cryptobin_ecdsa.Ecdsa, dir string) {
-    // 生成证书
-    priKey := obj.
-        CreatePKCS8PrivateKey().
-        ToKeyString()
-    pubKey := obj.
-        CreatePublicKey().
-        ToKeyString()
-
-    file := fmt.Sprintf("%s/%s/%s-pkcs8", this.path, dir, this.name)
-
-    this.fs.Put(file, priKey)
-    this.fs.Put(file + ".pub", pubKey)
-}
-
 func (this Ecdsa) pkcs1En(obj cryptobin_ecdsa.Ecdsa, dir string) {
     for _, c := range Pkcs1Ciphers {
         // 生成证书
@@ -88,6 +73,24 @@ func (this Ecdsa) pkcs1En(obj cryptobin_ecdsa.Ecdsa, dir string) {
         this.fs.Put(file + ".pub", pubKey)
     }
 }
+
+// ============
+
+func (this Ecdsa) pkcs8(obj cryptobin_ecdsa.Ecdsa, dir string) {
+    // 生成证书
+    priKey := obj.
+        CreatePKCS8PrivateKey().
+        ToKeyString()
+    pubKey := obj.
+        CreatePublicKey().
+        ToKeyString()
+
+    file := fmt.Sprintf("%s/%s/%s-pkcs8", this.path, dir, this.name)
+
+    this.fs.Put(file, priKey)
+    this.fs.Put(file + ".pub", pubKey)
+}
+
 
 func (this Ecdsa) pkcs8En(obj cryptobin_ecdsa.Ecdsa, dir string) {
     for _, c := range Pkcs8Ciphers {
