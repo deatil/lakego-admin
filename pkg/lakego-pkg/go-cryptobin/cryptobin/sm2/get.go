@@ -21,9 +21,7 @@ func (this SM2) GetPrivateKeyCurve() elliptic.Curve {
 func (this SM2) GetPrivateKeyDHexString() string {
     data := this.privateKey.D
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := cryptobin_tool.HexEncode(data.Bytes())
 
     return dataHex
 }
@@ -47,9 +45,7 @@ func (this SM2) GetPublicKeyCurve() elliptic.Curve {
 func (this SM2) GetPublicKeyXHexString() string {
     data := this.publicKey.X
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := cryptobin_tool.HexEncode(data.Bytes())
 
     return dataHex
 }
@@ -58,9 +54,7 @@ func (this SM2) GetPublicKeyXHexString() string {
 func (this SM2) GetPublicKeyYHexString() string {
     data := this.publicKey.Y
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := cryptobin_tool.HexEncode(data.Bytes())
 
     return dataHex
 }
@@ -83,9 +77,7 @@ func (this SM2) GetPublicKeyUncompressString() string {
 func (this SM2) GetPublicKeyCompressString() string {
     data := sm2.Compress(this.publicKey)
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data)
+    dataHex := cryptobin_tool.HexEncode(data)
 
     pre := getPrefix(dataHex[:2])
 

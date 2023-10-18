@@ -347,14 +347,14 @@ func (this SM2) FromPrivateKeyString(keyString string) SM2 {
 
 // ==========
 
-// 公钥压缩字节, hex 解码后
-func (this SM2) FromPublicKeyCompressBytes(pubBytes []byte) SM2 {
-    this.publicKey = sm2.Decompress(pubBytes[:])
+// 公钥压缩字节, hex 或者 base64 解码后
+func (this SM2) FromPublicKeyBytes(pubBytes []byte) SM2 {
+    key := cryptobin_tool.HexEncode(pubBytes)
 
-    return this
+    return this.FromPublicKeyString(key)
 }
 
-// 明文私钥生成私钥结构体, hex 解码后
+// 明文私钥生成私钥结构体, hex 或者 base64 解码后
 func (this SM2) FromPrivateKeyBytes(priBytes []byte) SM2 {
     c := sm2.P256Sm2()
     k := new(big.Int).SetBytes(priBytes)
@@ -397,7 +397,7 @@ func FromString(data string) SM2 {
 
 // Base64
 func (this SM2) FromBase64String(data string) SM2 {
-    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := cryptobin_tool.Base64Decode(data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -414,7 +414,7 @@ func FromBase64String(data string) SM2 {
 
 // Hex
 func (this SM2) FromHexString(data string) SM2 {
-    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := cryptobin_tool.HexDecode(data)
     if err != nil {
         return this.AppendError(err)
     }
