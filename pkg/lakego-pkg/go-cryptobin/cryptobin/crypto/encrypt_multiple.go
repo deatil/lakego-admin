@@ -122,7 +122,10 @@ func BlockDecrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
     }
 
     // 去除补码数据
-    dst = newPadding.UnPadding(dst, opt)
+    dst, err = newPadding.UnPadding(dst, opt)
+    if err != nil {
+        return nil, err
+    }
 
     return dst, nil
 }
@@ -824,7 +827,10 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     }
 
     // 解码数据
-    dst = newPadding.UnPadding(dst, opt)
+    dst, err = newPadding.UnPadding(dst, opt)
+    if err != nil {
+        return nil, err
+    }
 
     return dst, nil
 }

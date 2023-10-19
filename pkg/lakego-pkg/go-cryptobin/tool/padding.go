@@ -2,13 +2,9 @@ package tool
 
 import (
     "bytes"
+    "errors"
     "math/rand"
 )
-
-// 构造函数
-func NewPadding() Padding {
-    return Padding{}
-}
 
 /**
  * 补码
@@ -17,6 +13,11 @@ func NewPadding() Padding {
  * @author deatil
  */
 type Padding struct {}
+
+// 构造函数
+func NewPadding() Padding {
+    return Padding{}
+}
 
 // 明文补码算法
 // 填充至符合块大小的整数倍，填充值为填充数量数
@@ -34,20 +35,27 @@ func (this Padding) PKCS7Padding(text []byte, blockSize int) []byte {
 }
 
 // 明文减码算法
-func (this Padding) PKCS7UnPadding(src []byte) []byte {
+func (this Padding) PKCS7UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
-    count := int(src[n-1])
+    unpadding := int(src[n-1])
 
-    num := n-count
+    num := n - unpadding
     if num < 0 {
-        return src
+        return nil, errors.New("invalid padding")
     }
 
-    return src[:num]
+    padding := src[num:]
+    for i := 0; i < unpadding; i++ {
+        if padding[i] != byte(unpadding) {
+            return nil, errors.New("invalid padding")
+        }
+    }
+
+    return src[:num], nil
 }
 
 // ==================
@@ -57,7 +65,7 @@ func (this Padding) PKCS5Padding(text []byte) []byte {
     return this.PKCS7Padding(text, 8)
 }
 
-func (this Padding) PKCS5UnPadding(src []byte) []byte {
+func (this Padding) PKCS5UnPadding(src []byte) ([]byte, error) {
     return this.PKCS7UnPadding(src)
 }
 
@@ -77,21 +85,37 @@ func (this Padding) ZeroPadding(text []byte, blockSize int) []byte {
     return append(text, paddingText...)
 }
 
-func (this Padding) ZeroUnPadding(src []byte) []byte {
-    return bytes.TrimRight(src, string([]byte{0}))
+func (this Padding) ZeroUnPadding(src []byte) ([]byte, error) {
+    return bytes.TrimRight(src, string([]byte{0})), nil
 }
 
 // ==================
 
 // ISO/IEC 9797-1 Padding Method 2
+// 填充至符合块大小的整数倍，填充值第一个字节为0x80，其他字节填0x00。
 func (this Padding) ISO97971Padding(text []byte, blockSize int) []byte {
     return this.ZeroPadding(append(text, 0x80), blockSize)
 }
 
-func (this Padding) ISO97971UnPadding(src []byte) []byte {
-    data := this.ZeroUnPadding(src)
+func (this Padding) ISO97971UnPadding(src []byte) ([]byte, error) {
+    n := len(src)
+    if n == 0 {
+        return nil, errors.New("invalid data len")
+    }
 
-    return data[:len(data)-1]
+    num := bytes.LastIndexByte(src, 0x80)
+    if num == -1 {
+        return nil, errors.New("invalid padding")
+    }
+
+    padding := src[num:]
+    for i := 1; i < n - num; i++ {
+        if padding[i] != byte(0) {
+            return nil, errors.New("invalid padding")
+        }
+    }
+
+    return src[:num], nil
 }
 
 // ==================
@@ -102,7 +126,7 @@ func (this Padding) PBOC2Padding(text []byte, blockSize int) []byte {
     return this.ISO97971Padding(text, blockSize)
 }
 
-func (this Padding) PBOC2UnPadding(src []byte) []byte {
+func (this Padding) PBOC2UnPadding(src []byte) ([]byte, error) {
     return this.ISO97971UnPadding(src)
 }
 
@@ -126,20 +150,27 @@ func (this Padding) X923Padding(text []byte, blockSize int) []byte {
     return text
 }
 
-func (this Padding) X923UnPadding(src []byte) []byte {
+func (this Padding) X923UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
-    count := int(src[n-1])
+    unpadding := int(src[n-1])
 
-    num := n-count
+    num := n - unpadding
     if num < 0 {
-        return src
+        return nil, errors.New("invalid padding")
     }
 
-    return src[:num]
+    padding := src[num:]
+    for i := 0; i < unpadding - 1; i++ {
+        if padding[i] != byte(0) {
+            return nil, errors.New("invalid padding")
+        }
+    }
+
+    return src[:num], nil
 }
 
 // ==================
@@ -162,20 +193,18 @@ func (this Padding) ISO10126Padding(text []byte, blockSize int) []byte {
     return text
 }
 
-func (this Padding) ISO10126UnPadding(src []byte) []byte {
+func (this Padding) ISO10126UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
-    count := int(src[n-1])
-
-    num := n-count
+    num := n - int(src[n-1])
     if num < 0 {
-        return src
+        return nil, errors.New("invalid padding")
     }
 
-    return src[:num]
+    return src[:num], nil
 }
 
 // ==================
@@ -199,18 +228,25 @@ func (this Padding) ISO7816_4Padding(text []byte, blockSize int) []byte {
     return text
 }
 
-func (this Padding) ISO7816_4UnPadding(src []byte) []byte {
+func (this Padding) ISO7816_4UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
-    count := bytes.LastIndexByte(src, 0x80)
-    if count == -1 {
-        return src
+    num := bytes.LastIndexByte(src, 0x80)
+    if num == -1 {
+        return nil, errors.New("invalid padding")
     }
 
-    return src[:count]
+    padding := src[num:]
+    for i := 1; i < n - num; i++ {
+        if padding[i] != byte(0) {
+            return nil, errors.New("invalid padding")
+        }
+    }
+
+    return src[:num], nil
 }
 
 // ==================
@@ -241,10 +277,10 @@ func (this Padding) TBCPadding(text []byte, blockSize int) []byte {
     return text
 }
 
-func (this Padding) TBCUnPadding(src []byte) []byte {
+func (this Padding) TBCUnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
     lastByte := src[n-1]
@@ -253,18 +289,18 @@ func (this Padding) TBCUnPadding(src []byte) []byte {
         case lastByte == 0x00:
             for i := n - 2; i >= 0; i-- {
                 if src[i] != 0x00 {
-                    return src[:i+1]
+                    return src[:i+1], nil
                 }
             }
         case lastByte == 0xFF:
             for i := n - 2; i >= 0; i-- {
                 if src[i] != 0xFF {
-                    return src[:i+1]
+                    return src[:i+1], nil
                 }
             }
     }
 
-    return src
+    return nil, errors.New("invalid padding")
 }
 
 // ==================
@@ -273,10 +309,10 @@ func (this Padding) TBCUnPadding(src []byte) []byte {
 // Padding = 00 + BT + PS + 00 + D
 // 00为固定字节
 // BT为处理模式
-// PS为填充字节，填充数量为k - 3 - D，k表示密钥长度, D表示原文长度。
+// PS为填充字节，填充数量为 k - 3 - D ，k表示密钥长度, D表示原文长度。
 // PS的最小长度为8个字节。填充的值根据BT值来定：
-// BT = 00时，填充全00
-// BT = 01时，填充全FF
+// BT = 00时，填充全0x00
+// BT = 01时，填充全0xFF
 // BT = 02时，随机填充，但不能为00。
 func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
     n := len(text)
@@ -285,8 +321,7 @@ func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
     }
 
     paddingSize := blockSize - 3 - n
-
-    if paddingSize < 1 {
+    if paddingSize < 8 {
         return text
     }
 
@@ -299,21 +334,18 @@ func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
             text = append(text, 0x00)
 
             // PS
-            for i := 1; i <= paddingSize; i++ {
-                text = append(text, 0x00)
-            }
+            paddingText := bytes.Repeat([]byte{0x00}, paddingSize)
+            text = append(text, paddingText...)
         case bt == "01":
             text = append(text, 0x01)
 
-            for i := 1; i <= paddingSize; i++ {
-                text = append(text, 0xFF)
-            }
+            paddingText := bytes.Repeat([]byte{0xFF}, paddingSize)
+            text = append(text, paddingText...)
         case bt == "02":
             text = append(text, 0x02)
 
-            for i := 1; i <= paddingSize; i++ {
-                text = append(text, this.RandomBytes(1)...)
-            }
+            paddingText := this.RandomBytes(uint(paddingSize))
+            text = append(text, paddingText...)
     }
 
     // 00
@@ -325,14 +357,18 @@ func (this Padding) PKCS1Padding(text []byte, blockSize int, bt string) []byte {
     return text
 }
 
-func (this Padding) PKCS1UnPadding(src []byte) []byte {
+func (this Padding) PKCS1UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return src
+        return nil, errors.New("invalid data len")
     }
 
     count := int(src[n-1])
-    return src[:count]
+    if count > n {
+        return nil, errors.New("invalid padding")
+    }
+
+    return src[:count], nil
 }
 
 // ==================

@@ -52,7 +52,9 @@ func pkcs7Padding(text []byte, blockSize int) []byte {
 
 // 明文减码算法
 func pkcs7UnPadding(src []byte) []byte {
-    return newPadding.PKCS7UnPadding(src)
+    res, _ := newPadding.PKCS7UnPadding(src)
+    
+    return res
 }
 
 // 随机生成字符

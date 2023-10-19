@@ -1,7 +1,7 @@
 package sm2
 
-// 获取前缀
-func getPrefix(p string) string {
+// 格式化公钥压缩前缀
+func formatPublicKeyCompressPrefix(p string) string {
     if p == "00" {
         return "02"
     }
@@ -9,8 +9,12 @@ func getPrefix(p string) string {
     return "03"
 }
 
-// 反向判断
-func changePrefix(p string) string {
+// 格式化来源公钥压缩前缀
+func formatFromPublicKeyCompressPrefix(p string) string {
+    if p == "00" || p == "01" {
+        return p
+    }
+
     if p == "02" {
         return "00"
     }

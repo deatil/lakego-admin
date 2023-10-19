@@ -79,7 +79,7 @@ func (this SM2) GetPublicKeyCompressString() string {
 
     dataHex := cryptobin_tool.HexEncode(data)
 
-    pre := getPrefix(dataHex[:2])
+    pre := formatPublicKeyCompressPrefix(dataHex[:2])
 
     return pre + dataHex[2:]
 }
