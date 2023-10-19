@@ -8,7 +8,7 @@ go-cryptobin 是 go 的常用加密解密库
 *  go-cryptobin 包括常用的对称加密和非对称加密及签名验证
 *  对称加密解密（Aes/Des/TripleDes/SM4/Tea/Twofish/Xts）
 *  对称加密解密模式（ECB/CBC/PCBC/CFB/OFB/CTR/GCM/CCM）
-*  对称加密解密补码（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/TBCPadding/PKCS1Padding）
+*  对称加密解密补码（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/ISO97971Padding/PBOC2Padding/TBCPadding/PKCS1Padding）
 *  非对称加密解密（RSA/SM2/EIGamal）
 *  非对称签名验证（RSA/PSS/DSA/ECDSA/EdDSA/SM2/EIGamal）
 *  默认 `Aes`, `ECB`, `NoPadding`
@@ -113,7 +113,7 @@ ret := crypto.
 *  加密模式:
 `ECB()`, `CBC()`, `PCBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`, `CCM(nonce string, additional ...string)`
 *  补码方式:
-`NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
+`NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`,`ISO97971Padding()`,`PBOC2Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
 *  操作类型:
 `Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
 *  返回数据类型:

@@ -473,6 +473,13 @@ func (this Cryptobin) ISO97971Padding() Cryptobin {
     return this
 }
 
+// PBOC2 补码
+func (this Cryptobin) PBOC2Padding() Cryptobin {
+    this.padding = PBOC2Padding
+
+    return this
+}
+
 // TBC 补码
 func (this Cryptobin) TBCPadding() Cryptobin {
     this.padding = TBCPadding

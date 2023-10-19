@@ -47,8 +47,7 @@ func (this Padding) PKCS7UnPadding(src []byte) []byte {
         return src
     }
 
-    text := src[:num]
-    return text
+    return src[:num]
 }
 
 // ==================
@@ -97,6 +96,18 @@ func (this Padding) ISO97971UnPadding(src []byte) []byte {
 
 // ==================
 
+// PBOC2.0的MAC运算数据填充规范
+// 若原加密数据的最末字节可能是0x80，则不推荐使用该模式
+func (this Padding) PBOC2Padding(text []byte, blockSize int) []byte {
+    return this.ISO97971Padding(text, blockSize)
+}
+
+func (this Padding) PBOC2UnPadding(src []byte) []byte {
+    return this.ISO97971UnPadding(src)
+}
+
+// ==================
+
 // X923Padding
 // 填充至符合块大小的整数倍，填充值最后一个字节为填充的数量数，其他字节填0
 func (this Padding) X923Padding(text []byte, blockSize int) []byte {
@@ -128,8 +139,7 @@ func (this Padding) X923UnPadding(src []byte) []byte {
         return src
     }
 
-    text := src[:num]
-    return text
+    return src[:num]
 }
 
 // ==================
@@ -144,11 +154,9 @@ func (this Padding) ISO10126Padding(text []byte, blockSize int) []byte {
 
     // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
+    paddingText := this.RandomBytes(uint(paddingSize - 1))
 
-    for i := 0; i < paddingSize - 1; i++ {
-        text = append(text, this.RandomBytes(1)...)
-    }
-
+    text = append(text, paddingText...)
     text = append(text, byte(paddingSize))
 
     return text
@@ -167,8 +175,7 @@ func (this Padding) ISO10126UnPadding(src []byte) []byte {
         return src
     }
 
-    text := src[:num]
-    return text
+    return src[:num]
 }
 
 // ==================

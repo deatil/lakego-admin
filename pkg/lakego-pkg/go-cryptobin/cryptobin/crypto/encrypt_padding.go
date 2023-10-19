@@ -102,6 +102,20 @@ func (this ISO97971Paddinger) UnPadding(cipherText []byte, opt IOption) []byte {
 
 // ===================
 
+type PBOC2Paddinger struct {}
+
+// Padding 补码模式
+func (this PBOC2Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
+    return tool.NewPadding().PBOC2Padding(plainText, blockSize)
+}
+
+// UnPadding 补码模式
+func (this PBOC2Paddinger) UnPadding(cipherText []byte, opt IOption) []byte {
+    return tool.NewPadding().PBOC2UnPadding(cipherText)
+}
+
+// ===================
+
 type TBCPaddinger struct {}
 
 // Padding 补码模式
@@ -170,6 +184,9 @@ func init() {
     })
     UsePadding.Add(ISO97971Padding, func() IPadding {
         return ISO97971Paddinger{}
+    })
+    UsePadding.Add(PBOC2Padding, func() IPadding {
+        return PBOC2Paddinger{}
     })
     UsePadding.Add(TBCPadding, func() IPadding {
         return TBCPaddinger{}

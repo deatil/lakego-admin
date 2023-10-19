@@ -246,6 +246,8 @@ func (this Padding) String() string {
             return "ISO7816_4Padding"
         case ISO97971Padding:
             return "ISO97971Padding"
+        case PBOC2Padding:
+            return "PBOC2Padding"
         case TBCPadding:
             return "TBCPadding"
         case PKCS1Padding:
@@ -268,6 +270,7 @@ const (
     ISO10126Padding
     ISO7816_4Padding
     ISO97971Padding
+    PBOC2Padding
     TBCPadding
     PKCS1Padding
     maxPadding
