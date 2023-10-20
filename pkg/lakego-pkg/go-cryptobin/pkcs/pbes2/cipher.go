@@ -51,10 +51,8 @@ func pkcs7Padding(text []byte, blockSize int) []byte {
 }
 
 // 明文减码算法
-func pkcs7UnPadding(src []byte) []byte {
-    res, _ := newPadding.PKCS7UnPadding(src)
-    
-    return res
+func pkcs7UnPadding(src []byte) ([]byte, error) {
+    return newPadding.PKCS7UnPadding(src)
 }
 
 // 随机生成字符

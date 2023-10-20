@@ -21,6 +21,22 @@ func AssertErrorT(t *testing.T) func(error, string) {
     }
 }
 
+func AssertNotErrorT(t *testing.T) func(error, string) {
+    return func(err error, msg string) {
+        if err != nil {
+            t.Errorf("Failed %s: error: %+v", msg, err)
+        }
+    }
+}
+
+func AssertNotErrorNilT(t *testing.T) func(error, string) {
+    return func(err error, msg string) {
+        if err == nil {
+            t.Errorf("Failed %s: error: error is nil", msg)
+        }
+    }
+}
+
 func AssertEmptyT(t *testing.T) func(any, string) {
     return func(data any, msg string) {
         if !isEmpty(data) {
@@ -41,6 +57,14 @@ func AssertBoolT(t *testing.T) func(bool, string) {
     return func(data bool, msg string) {
         if !data {
             t.Errorf("Failed %s: error: data not true", msg)
+        }
+    }
+}
+
+func AssertNotBoolT(t *testing.T) func(bool, string) {
+    return func(data bool, msg string) {
+        if data {
+            t.Errorf("Failed %s: error: data is true", msg)
         }
     }
 }

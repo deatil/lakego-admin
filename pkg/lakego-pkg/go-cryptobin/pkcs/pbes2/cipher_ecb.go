@@ -75,7 +75,10 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(plaintext, ciphertext)
 
     // 解析加密数据
-    plaintext = pkcs7UnPadding(plaintext)
+    plaintext, err = pkcs7UnPadding(plaintext)
+    if err != nil {
+        return nil, err
+    }
 
     return plaintext, nil
 }

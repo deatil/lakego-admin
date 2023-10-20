@@ -85,7 +85,10 @@ func (this CipherCFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     mode.XORKeyStream(plaintext, ciphertext)
 
     // 解析加密数据
-    plaintext = pkcs7UnPadding(plaintext)
+    plaintext, err = pkcs7UnPadding(plaintext)
+    if err != nil {
+        return nil, err
+    }
 
     return plaintext, nil
 }

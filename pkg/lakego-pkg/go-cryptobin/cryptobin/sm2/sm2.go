@@ -4,6 +4,8 @@ import (
     "github.com/tjfoc/gmsm/sm2"
 )
 
+const sm2p256ElementLength = 32
+
 var (
     // 类型
     C1C3C2 = sm2.C1C3C2

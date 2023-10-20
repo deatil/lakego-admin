@@ -76,12 +76,11 @@ func (this SM2) GetPublicKeyUncompressString() string {
 // 获取压缩公钥
 func (this SM2) GetPublicKeyCompressString() string {
     data := sm2.Compress(this.publicKey)
+    data[0] = 2 | (this.publicKey.Y.Bytes()[sm2p256ElementLength-1] & 1)
 
     dataHex := cryptobin_tool.HexEncode(data)
 
-    pre := formatPublicKeyCompressPrefix(dataHex[:2])
-
-    return pre + dataHex[2:]
+    return dataHex
 }
 
 // 获取 keyData

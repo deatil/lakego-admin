@@ -1,7 +1,6 @@
 package sm2
 
 import (
-    "io"
     "errors"
     "crypto/rand"
 
@@ -15,7 +14,7 @@ func (this SM2) Encrypt() SM2 {
         return this.AppendError(err)
     }
 
-    paredData, err := this.EncryptAsn1(this.publicKey, this.data, this.mode, rand.Reader)
+    paredData, err := sm2.Encrypt(this.publicKey, this.data, rand.Reader, this.mode)
     if err != nil {
         return this.AppendError(err)
     }
@@ -32,7 +31,7 @@ func (this SM2) Decrypt() SM2 {
         return this.AppendError(err)
     }
 
-    paredData, err := this.DecryptAsn1(this.privateKey, this.data, this.mode)
+    paredData, err := sm2.Decrypt(this.privateKey, this.data, this.mode)
     if err != nil {
         return this.AppendError(err)
     }
@@ -42,22 +41,53 @@ func (this SM2) Decrypt() SM2 {
     return this
 }
 
-// sm2 加密，返回 asn.1 编码格式的密文内容
-func (this SM2) EncryptAsn1(pub *sm2.PublicKey, data []byte, mode int, rand io.Reader) ([]byte, error) {
-    cipher, err := sm2.Encrypt(pub, data, rand, mode)
+// ================
+
+// 公钥加密，返回 asn.1 编码格式的密文内容
+func (this SM2) EncryptAsn1() SM2 {
+    data, err := sm2.Encrypt(this.publicKey, this.data, rand.Reader, this.mode)
     if err != nil {
-        return nil, err
+        return this.AppendError(err)
     }
 
-    return sm2.CipherMarshal(cipher)
+    var paredData []byte
+
+    if this.mode == C1C2C3 {
+        paredData, err = cipherC1C2C3Marshal(data)
+    } else {
+        paredData, err = sm2.CipherMarshal(data)
+    }
+
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.paredData = paredData
+
+    return this
 }
 
-// sm2 解密，解析 asn.1 编码格式的密文内容
-func (this SM2) DecryptAsn1(pub *sm2.PrivateKey, data []byte, mode int) ([]byte, error) {
-    cipher, err := sm2.CipherUnmarshal(data)
-    if err != nil {
-        return nil, err
+// 私钥解密，解析 asn.1 编码格式的密文内容
+func (this SM2) DecryptAsn1() SM2 {
+    var data []byte
+    var err error
+
+    if this.mode == C1C2C3 {
+        data, err = cipherC1C2C3Unmarshal(this.data)
+    } else {
+        data, err = sm2.CipherUnmarshal(this.data)
     }
 
-    return sm2.Decrypt(pub, cipher, mode)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    paredData, err := sm2.Decrypt(this.privateKey, data, this.mode)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.paredData = paredData
+
+    return this
 }

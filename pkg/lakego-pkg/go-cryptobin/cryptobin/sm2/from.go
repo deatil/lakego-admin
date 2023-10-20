@@ -32,7 +32,7 @@ func GenerateKey() SM2 {
     return defaultSM2.GenerateKey()
 }
 
-// 使用数据生成密钥对
+// 使用自定义数据生成密钥对
 func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
     privateKey, err := sm2.GenerateKey(reader)
     if err != nil {
@@ -47,7 +47,7 @@ func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
     return this
 }
 
-// 使用数据生成密钥对
+// 使用自定义数据生成密钥对
 func GenerateKeyWithSeed(reader io.Reader) SM2 {
     return defaultSM2.GenerateKeyWithSeed(reader)
 }
@@ -265,7 +265,7 @@ func (this SM2) FromPublicKeyXYString(xString, yString string) SM2 {
     return this
 }
 
-// 公钥字符对
+// 公钥 x,y 字节对
 func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
     x := new(big.Int).SetBytes(XBytes)
     y := new(big.Int).SetBytes(YBytes)
@@ -281,7 +281,7 @@ func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
 
 // ==========
 
-// 公钥未压缩字符 (hexStringX + hexStringY)
+// 公钥明文未压缩 (hexStringX + hexStringY)
 // public-key: 047c********.
 func (this SM2) FromPublicKeyUncompressString(keyString string) SM2 {
     if len(keyString) == 130 && strings.HasPrefix(keyString, "04") {
@@ -300,7 +300,7 @@ func (this SM2) FromPublicKeyUncompressString(keyString string) SM2 {
     return this
 }
 
-// 公钥压缩
+// 公钥明文压缩
 // public-key: 027c******** || 036c********
 // 0333B01B61D94A775DA72A0BFF9AB324DE672EA0977584D23AF34F8150223305B0
 // 023613B13F252F6FB2374A85D93C7FFE9CCAD1231BE866F5FE69255312CE85B9FF
@@ -310,17 +310,17 @@ func (this SM2) FromPublicKeyCompressString(key string) SM2 {
         return this.AppendError(err)
     }
 
-    pre := formatFromPublicKeyCompressPrefix(key[:2])
-    key = pre + key[2:]
-
     d, _ := new(big.Int).SetString(key[:], 16)
 
-    this.publicKey = sm2.Decompress(d.Bytes())
+    y := d.Bytes()
+    y[0] &= 1
+
+    this.publicKey = sm2.Decompress(y)
 
     return this
 }
 
-// 公钥
+// 公钥明文
 func (this SM2) FromPublicKeyString(key string) SM2 {
     if len(key) == 66 {
         return this.FromPublicKeyCompressString(key)
@@ -329,7 +329,7 @@ func (this SM2) FromPublicKeyString(key string) SM2 {
     return this.FromPublicKeyUncompressString(key)
 }
 
-// 私钥字符，必须先添加公钥 (hexStringD)
+// 私钥明文
 // private-key: 07e4********;
 func (this SM2) FromPrivateKeyString(keyString string) SM2 {
     c := sm2.P256Sm2()
@@ -347,14 +347,14 @@ func (this SM2) FromPrivateKeyString(keyString string) SM2 {
 
 // ==========
 
-// 公钥压缩字节, hex 或者 base64 解码后
+// 公钥明文, hex 或者 base64 解码后
 func (this SM2) FromPublicKeyBytes(pubBytes []byte) SM2 {
     key := cryptobin_tool.HexEncode(pubBytes)
 
     return this.FromPublicKeyString(key)
 }
 
-// 明文私钥生成私钥结构体, hex 或者 base64 解码后
+// 私钥明文, hex 或者 base64 解码后
 func (this SM2) FromPrivateKeyBytes(priBytes []byte) SM2 {
     c := sm2.P256Sm2()
     k := new(big.Int).SetBytes(priBytes)
@@ -395,7 +395,7 @@ func FromString(data string) SM2 {
     return defaultSM2.FromString(data)
 }
 
-// Base64
+// Base64数据
 func (this SM2) FromBase64String(data string) SM2 {
     newData, err := cryptobin_tool.Base64Decode(data)
     if err != nil {
@@ -407,12 +407,12 @@ func (this SM2) FromBase64String(data string) SM2 {
     return this
 }
 
-// Base64
+// Base64数据
 func FromBase64String(data string) SM2 {
     return defaultSM2.FromBase64String(data)
 }
 
-// Hex
+// 16进制数据
 func (this SM2) FromHexString(data string) SM2 {
     newData, err := cryptobin_tool.HexDecode(data)
     if err != nil {
@@ -424,7 +424,7 @@ func (this SM2) FromHexString(data string) SM2 {
     return this
 }
 
-// Hex
+// 16进制数据
 func FromHexString(data string) SM2 {
     return defaultSM2.FromHexString(data)
 }
