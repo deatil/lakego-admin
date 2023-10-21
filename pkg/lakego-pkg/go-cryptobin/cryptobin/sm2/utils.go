@@ -44,16 +44,6 @@ func cipherC1C2C3Unmarshal(data []byte) ([]byte, error) {
     x := cipher.XCoordinate.Bytes()
     y := cipher.YCoordinate.Bytes()
 
-    hash := cipher.HASH
-    if err != nil {
-        return nil, err
-    }
-
-    cipherText := cipher.CipherText
-    if err != nil {
-        return nil, err
-    }
-
     if n := len(x); n < 32 {
         x = append(zeroByteSlice()[:32-n], x...)
     }
@@ -62,11 +52,14 @@ func cipherC1C2C3Unmarshal(data []byte) ([]byte, error) {
         y = append(zeroByteSlice()[:32-n], y...)
     }
 
+    cipherText := cipher.CipherText
+    hash := cipher.HASH
+
     c := []byte{}
     c = append(c, x...)          // x分量
-    c = append(c, y...)          // y分
-    c = append(c, cipherText...) // y分
-    c = append(c, hash...)       // x分量
+    c = append(c, y...)          // y分量
+    c = append(c, cipherText...) // 加密数据
+    c = append(c, hash...)       // hash
 
     return append([]byte{0x04}, c...), nil
 }

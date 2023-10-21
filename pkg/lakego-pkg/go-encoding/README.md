@@ -59,7 +59,7 @@ func main() {
 ### 常用解码编码
 
 *  编码方式:
-`Base32Encode()`, `Base32HexEncode()`, `Base32EncodeWithEncoder(encoder string)`,
+`Base32Encode()`, `Base32RawEncode()`,  `Base32HexEncode()`,`Base32RawHexEncode()`,  `Base32EncodeWithEncoder(encoder string)`, `Base32RawEncodeWithEncoder(encoder string)`,
 `Base45Encode()`,
 `Base58Encode()`,
 `Base62Encode()`,
@@ -76,7 +76,7 @@ func main() {
 `GobEncode(data any)`
 
 *  解码方式:
-`Base32Decode()`, `Base32HexDecode()`, `Base32DecodeWithEncoder(encoder string)`,
+`Base32Decode()`, `Base32RawDecode()`,  `Base32HexDecode()`,`Base32RawHexDecode()`,  `Base32DecodeWithEncoder(encoder string)`, `Base32RawDecodeWithEncoder(encoder string)`,
 `Base45Decode()`,
 `Base58Decode()`,
 `Base62Decode()`,
