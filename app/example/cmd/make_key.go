@@ -27,21 +27,25 @@ var MakeKeyCmd = &cobra.Command{
 
     },
     Run: func(cmd *cobra.Command, args []string) {
+        // key.KeyCheck()
+
+        // key.ShowBerP12()
+
+        // key.ShowTorrent()
+
+        // key.NewEcdh().Make()
+
+        // key.NewGoEcdh().Make()
+
         // key.NewRsa().Make()
 
         // key.NewDSA().Make()
 
-        // key.KeyCheck()
-
-        // key.NewEcdh().Make()
-
-        // key.ShowBerP12()
-
-        // key.NewGoEcdh().Make()
-
         // key.NewSM2().Make()
 
-        key.ShowTorrent()
+        // key.NewEcdsa().Make()
+
+        key.NewEdDSA().Make()
 
         fmt.Println("生成各种证书成功")
     },

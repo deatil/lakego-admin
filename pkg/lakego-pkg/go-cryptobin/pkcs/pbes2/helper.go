@@ -4,8 +4,16 @@ package pbes2
 var CipherMap = map[string]Cipher{
     "DESCBC":     DESCBC,
     "DESEDE3CBC": DESEDE3CBC,
+
     "RC2CBC":     RC2CBC,
+    "RC2_40CBC":  RC2_40CBC,
+    "RC2_64CBC":  RC2_64CBC,
+    "RC2_128CBC": RC2_128CBC,
+
     "RC5CBC":     RC5CBC,
+    "RC5_128CBC": RC5_128CBC,
+    "RC5_192CBC": RC5_192CBC,
+    "RC5_256CBC": RC5_256CBC,
 
     "AES128ECB":  AES128ECB,
     "AES128CBC":  AES128CBC,

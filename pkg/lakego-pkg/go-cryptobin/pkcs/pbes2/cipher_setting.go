@@ -80,6 +80,11 @@ var RC2CBC = CipherRC2CBC{
     blockSize:  cryptobin_rc2.BlockSize,
     identifier: oidRC2CBC,
 }
+
+var RC2_40CBC  = RC2CBC.WithRC2Version(160).WithKeySize(5)
+var RC2_64CBC  = RC2CBC.WithRC2Version(120).WithKeySize(8)
+var RC2_128CBC = RC2CBC.WithRC2Version(58).WithKeySize(16)
+
 // RC5CBC is the [16, 24, 32] bytes key RC5 cipher in CBC mode.
 // wordSize = [32, 64] | rounds = [8, 127]
 var RC5CBC = CipherRC5CBC{
@@ -89,6 +94,11 @@ var RC5CBC = CipherRC5CBC{
     keySize:    16,
     identifier: oidRC5CBC,
 }
+
+var RC5_128CBC = RC5CBC.WithKeySize(16)
+var RC5_192CBC = RC5CBC.WithKeySize(24)
+var RC5_256CBC = RC5CBC.WithKeySize(32)
+
 
 // ==========
 

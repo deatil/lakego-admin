@@ -137,6 +137,8 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     return
 }
 
+// ===============
+
 // pbkdf2 数据，作为接收
 type pbkdf2ParamsWithKeyLength struct {
     Salt           []byte
@@ -146,10 +148,17 @@ type pbkdf2ParamsWithKeyLength struct {
 }
 
 func (this pbkdf2ParamsWithKeyLength) DeriveKey(password []byte, size int) (key []byte, err error) {
+    // 如果有自定义长度，使用自定义长度
+    if this.KeyLength > 0 {
+        size = this.KeyLength
+    }
+
     param := pbkdf2Params{this.Salt, this.IterationCount, this.PrfParam}
 
     return param.DeriveKey(password, size)
 }
+
+// ===============
 
 // PBKDF2 配置
 type PBKDF2Opts struct {
@@ -203,7 +212,9 @@ func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
     return oidPKCS5PBKDF2
 }
 
-// PBKDF2 配置，带KeyLength
+// ===============
+
+// PBKDF2 配置，带 key 长度
 type PBKDF2OptsWithKeyLength struct {
     SaltSize       int
     IterationCount int

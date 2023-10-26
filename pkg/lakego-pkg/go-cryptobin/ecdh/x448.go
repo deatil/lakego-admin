@@ -1,0 +1,78 @@
+package ecdh
+
+import (
+    "io"
+    "errors"
+
+    "github.com/deatil/go-cryptobin/x448"
+)
+
+func X448() Curve { return defaultX448 }
+
+var defaultX448 = &x448Curve{}
+
+type x448Curve struct{}
+
+func (c *x448Curve) String() string {
+    return "X448"
+}
+
+func (c *x448Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
+    _, key, err := x448.GenerateKey(rand)
+    if err != nil {
+        return nil, err
+    }
+
+    return c.NewPrivateKey(key[:])
+}
+
+func (c *x448Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
+    if len(key) != x448.PrivateKeySize {
+        return nil, errors.New("crypto/ecdh: invalid private key size")
+    }
+
+    return &PrivateKey{
+        NamedCurve: c,
+        KeyBytes:   append([]byte{}, key...),
+    }, nil
+}
+
+func (c *x448Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
+    if key.NamedCurve != c {
+        panic("crypto/ecdh: internal error: converting the wrong key type")
+    }
+
+    x := x448.PrivateKey(key.Bytes()).Public()
+
+    xx, ok := x.(x448.PublicKey)
+    if !ok {
+        panic("crypto/ecdh: internal error: converting the wrong PublicKey type")
+    }
+
+    k := &PublicKey{
+        NamedCurve: key.NamedCurve,
+        KeyBytes:   xx[:],
+    }
+
+    return k
+}
+
+func (c *x448Curve) NewPublicKey(key []byte) (*PublicKey, error) {
+    if len(key) != x448.PublicKeySize {
+        return nil, errors.New("crypto/ecdh: invalid public key")
+    }
+
+    return &PublicKey{
+        NamedCurve: c,
+        KeyBytes:   append([]byte{}, key...),
+    }, nil
+}
+
+func (c *x448Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) {
+    out, err := x448.X448(local.KeyBytes, remote.KeyBytes)
+    if err != nil {
+        return nil, errors.New("crypto/ecdh: bad X448 remote ECDH input: low order point")
+    }
+
+    return out, nil
+}

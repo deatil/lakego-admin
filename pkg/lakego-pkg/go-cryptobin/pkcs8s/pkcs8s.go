@@ -33,8 +33,16 @@ var (
     // pkcs8 模式
     DESCBC     = pbes2.DESCBC
     DESEDE3CBC = pbes2.DESEDE3CBC
+
     RC2CBC     = pbes2.RC2CBC
+    RC2_40CBC  = pbes2.RC2_40CBC
+    RC2_64CBC  = pbes2.RC2_64CBC
+    RC2_128CBC = pbes2.RC2_128CBC
+
     RC5CBC     = pbes2.RC5CBC
+    RC5_128CBC = pbes2.RC5_128CBC
+    RC5_192CBC = pbes2.RC5_192CBC
+    RC5_256CBC = pbes2.RC5_256CBC
 
     AES128ECB = pbes2.AES128ECB
     AES128CBC = pbes2.AES128CBC
@@ -76,24 +84,16 @@ type (
 )
 
 // 默认配置 PBKDF2
-var DefaultPBKDF2Opts = PBKDF2Opts{
-    SaltSize:       16,
-    IterationCount: 10000,
-}
+var DefaultPBKDF2Opts = cryptobin_pkcs8.DefaultPBKDF2Opts
+
+// 默认配置 PBKDF2，带 key 长度
+var DefaultPBKDF2OptsWithKeyLength = cryptobin_pkcs8.DefaultPBKDF2OptsWithKeyLength
 
 // 默认配置 Scrypt
-var DefaultScryptOpts = ScryptOpts{
-    SaltSize:                 16,
-    CostParameter:            1 << 2,
-    BlockSize:                8,
-    ParallelizationParameter: 1,
-}
+var DefaultScryptOpts = cryptobin_pkcs8.DefaultScryptOpts
 
 // 默认配置
-var DefaultOpts = Opts{
-    Cipher:  AES256CBC,
-    KDFOpts: DefaultPBKDF2Opts,
-}
+var DefaultOpts = cryptobin_pkcs8.DefaultOpts
 
 // 解析设置
 func ParseOpts(opts ...any) (any, error) {

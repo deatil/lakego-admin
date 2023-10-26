@@ -28,6 +28,12 @@ var DefaultPBKDF2Opts = PBKDF2Opts{
     IterationCount: 10000,
 }
 
+// 默认配置 PBKDF2，带 key 长度
+var DefaultPBKDF2OptsWithKeyLength = PBKDF2OptsWithKeyLength{
+    SaltSize:       16,
+    IterationCount: 10000,
+}
+
 // 默认配置 Scrypt
 var DefaultScryptOpts = ScryptOpts{
     SaltSize:                 16,

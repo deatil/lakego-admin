@@ -141,3 +141,31 @@ func Test_RSAPkcs8Sign(t *testing.T) {
     assertError(verify.Error(), "RSAPkcs1Sign-verify")
     assertTrue(verifyData, "RSAPkcs1Sign-verify")
 }
+
+var (
+    testPubN = "CCE3A1FA0E3EADEE4FE464F7D45F5009DBF2D77FF9DD9D822F41E8AD6F47762FE46569E2EE39906CE557328CF9CFE33906D4D0494CADEE2357B90178D3200DFF96EBB21053DC65AEFA458BC62C5540E3343F2968F934EAD87DAFCA6681C78CD3936E14808A74D5C7CD1EE10C7C3400C52358DF30B9383C70FF4E853ADD5D21D5"
+    testPubE = "10001"
+    testPubEnd = `-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDM46H6Dj6t7k/kZPfUX1AJ2/LX
+f/ndnYIvQeitb0d2L+RlaeLuOZBs5VcyjPnP4zkG1NBJTK3uI1e5AXjTIA3/luuy
+EFPcZa76RYvGLFVA4zQ/KWj5NOrYfa/KZoHHjNOTbhSAinTVx80e4Qx8NADFI1jf
+MLk4PHD/ToU63V0h1QIDAQAB
+-----END PUBLIC KEY-----
+`
+)
+
+func Test_PubNE(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    en := NewRsa().
+        FromPublicKeyNE(testPubN, testPubE).
+        CreatePKCS8PublicKey()
+    enData := en.ToKeyString()
+
+    assertError(en.Error(), "PubNE-make")
+    assertNotEmpty(enData, "PubNE-make")
+
+    assertEqual(enData, testPubEnd, "PubNE-make")
+}

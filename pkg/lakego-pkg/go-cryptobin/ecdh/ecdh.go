@@ -1,218 +1,167 @@
 package ecdh
 
 import (
+    "io"
+    "sync"
     "errors"
-    "crypto/ecdh"
-    "crypto/x509/pkix"
-    "encoding/asn1"
-
-    "golang.org/x/crypto/cryptobyte"
+    "crypto"
+    "crypto/subtle"
 )
 
-var (
-    // ECDH
-    oidPublicKeyECDH  = asn1.ObjectIdentifier{1, 3, 132, 1, 12}
+type Curve interface {
+    // GenerateKey generates a random PrivateKey.
+    //
+    // Most applications should use [crypto/rand.Reader] as rand. Note that the
+    // returned key does not depend deterministically on the bytes read from rand,
+    // and may change between calls and/or between versions.
+    GenerateKey(rand io.Reader) (*PrivateKey, error)
 
-    // ECMQV
-    oidPublicKeyECMQV = asn1.ObjectIdentifier{1, 3, 132, 1, 13}
+    // NewPrivateKey checks that key is valid and returns a PrivateKey.
+    //
+    // For NIST curves, this follows SEC 1, Version 2.0, Section 2.3.6, which
+    // amounts to decoding the bytes as a fixed length big endian integer and
+    // checking that the result is lower than the order of the curve. The zero
+    // private key is also rejected, as the encoding of the corresponding public
+    // key would be irregular.
+    //
+    // For X25519, this only checks the scalar length.
+    NewPrivateKey(key []byte) (*PrivateKey, error)
 
-    oidNamedCurveP256   = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}
-    oidNamedCurveP384   = asn1.ObjectIdentifier{1, 3, 132, 0, 34}
-    oidNamedCurveP521   = asn1.ObjectIdentifier{1, 3, 132, 0, 35}
-    oidNamedCurveX25519 = asn1.ObjectIdentifier{1, 3, 101, 110}
-)
+    // NewPublicKey checks that key is valid and returns a PublicKey.
+    //
+    // For NIST curves, this decodes an uncompressed point according to SEC 1,
+    // Version 2.0, Section 2.3.4. Compressed encodings and the point at
+    // infinity are rejected.
+    //
+    // For X25519, this only checks the u-coordinate length. Adversarially
+    // selected public keys can cause ECDH to return an error.
+    NewPublicKey(key []byte) (*PublicKey, error)
 
-// 私钥 - 包装
-type pkcs8 struct {
-    Version    int
-    Algo       pkix.AlgorithmIdentifier
-    PrivateKey []byte
+    // ecdh performs a ECDH exchange and returns the shared secret. It's exposed
+    // as the PrivateKey.ECDH method.
+    //
+    // The private method also allow us to expand the ECDH interface with more
+    // methods in the future without breaking backwards compatibility.
+    ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error)
+
+    // PrivateKeyToPublicKey converts a PrivateKey to a PublicKey. It's exposed
+    // as the PrivateKey.PublicKey method.
+    //
+    // This method always succeeds: for X25519, the zero key can't be
+    // constructed due to clamping; for NIST curves, it is rejected by
+    // NewPrivateKey.
+    PrivateKeyToPublicKey(*PrivateKey) *PublicKey
 }
 
-// 公钥 - 包装
-type pkixPublicKey struct {
-    Algo      pkix.AlgorithmIdentifier
-    BitString asn1.BitString
+// PublicKey is an ECDH public key, usually a peer's ECDH share sent over the wire.
+//
+// These keys can be parsed with [crypto/x509.ParsePKIXPublicKey] and encoded
+// with [crypto/x509.MarshalPKIXPublicKey]. For NIST curves, they then need to
+// be converted with [crypto/ecdsa.PublicKey.ECDH] after parsing.
+type PublicKey struct {
+    NamedCurve Curve
+    KeyBytes   []byte
 }
 
-// 公钥信息 - 解析
-type publicKeyInfo struct {
-    Raw       asn1.RawContent
-    Algorithm pkix.AlgorithmIdentifier
-    PublicKey asn1.BitString
+// Bytes returns a copy of the encoding of the public key.
+func (k *PublicKey) Bytes() []byte {
+    // Copy the public key to a fixed size buffer that can get allocated on the
+    // caller's stack after inlining.
+    var buf [133]byte
+    return append(buf[:0], k.KeyBytes...)
 }
 
-// 包装公钥
-func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
-    var publicKeyBytes []byte
-    var publicKeyAlgorithm pkix.AlgorithmIdentifier
-    var err error
-
-    oid, ok := oidFromNamedCurve(key.Curve())
+// Equal returns whether x represents the same public key as k.
+//
+// Note that there can be equivalent public keys with different encodings which
+// would return false from this check but behave the same way as inputs to ECDH.
+//
+// This check is performed in constant time as long as the key types and their
+// curve match.
+func (k *PublicKey) Equal(x crypto.PublicKey) bool {
+    xx, ok := x.(*PublicKey)
     if !ok {
-        return nil, errors.New("x509: unsupported ecdh curve")
+        return false
     }
 
-    var paramBytes []byte
-    paramBytes, err = asn1.Marshal(oid)
-    if err != nil {
-        return nil, err
-    }
-
-    publicKeyAlgorithm.Algorithm = oidPublicKeyECDH
-    publicKeyAlgorithm.Parameters.FullBytes = paramBytes
-
-    publicKeyBytes = key.Bytes()
-
-    pkix := pkixPublicKey{
-        Algo: publicKeyAlgorithm,
-        BitString: asn1.BitString{
-            Bytes:     publicKeyBytes,
-            BitLength: 8 * len(publicKeyBytes),
-        },
-    }
-
-    return asn1.Marshal(pkix)
+    return k.NamedCurve == xx.NamedCurve &&
+        subtle.ConstantTimeCompare(k.KeyBytes, xx.KeyBytes) == 1
 }
 
-// 解析公钥
-func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
-    var pki publicKeyInfo
-    rest, err := asn1.Unmarshal(derBytes, &pki)
-    if err != nil {
-        return
-    }
-
-    if len(rest) > 0 {
-        err = asn1.SyntaxError{Msg: "trailing data"}
-        return
-    }
-
-    algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyECDH)
-    if !algoEq {
-        err = errors.New("ecdh: unknown public key algorithm")
-        return
-    }
-
-    // 解析
-    keyData := &pki
-
-    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
-    namedCurveOID := new(asn1.ObjectIdentifier)
-    if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("ecdh: invalid ECDH parameters")
-    }
-
-    namedCurve := namedCurveFromOid(*namedCurveOID)
-    if namedCurve == nil {
-        err = errors.New("ecdh: unsupported ecdh curve")
-        return
-    }
-
-    publicKeyBytes := []byte(keyData.PublicKey.RightAlign())
-
-    pub, err = namedCurve.NewPublicKey(publicKeyBytes)
-    if err != nil {
-        return
-    }
-
-    return
+func (k *PublicKey) Curve() Curve {
+    return k.NamedCurve
 }
 
-// ====================
+// PrivateKey is an ECDH private key, usually kept secret.
+//
+// These keys can be parsed with [crypto/x509.ParsePKCS8PrivateKey] and encoded
+// with [crypto/x509.MarshalPKCS8PrivateKey]. For NIST curves, they then need to
+// be converted with [crypto/ecdsa.PrivateKey.ECDH] after parsing.
+type PrivateKey struct {
+    NamedCurve    Curve
+    KeyBytes      []byte
+    // publicKey is set under publicKeyOnce, to allow loading private keys with
+    // NewPrivateKey without having to perform a scalar multiplication.
+    publicKey     *PublicKey
+    publicKeyOnce sync.Once
+}
 
-// 包装私钥
-func MarshalPrivateKey(key *ecdh.PrivateKey) ([]byte, error) {
-    var privKey pkcs8
+// ECDH performs a ECDH exchange and returns the shared secret. The PrivateKey
+// and PublicKey must use the same curve.
+//
+// For NIST curves, this performs ECDH as specified in SEC 1, Version 2.0,
+// Section 3.3.1, and returns the x-coordinate encoded according to SEC 1,
+// Version 2.0, Section 2.3.5. The result is never the point at infinity.
+//
+// For X25519, this performs ECDH as specified in RFC 7748, Section 6.1. If
+// the result is the all-zero value, ECDH returns an error.
+func (k *PrivateKey) ECDH(remote *PublicKey) ([]byte, error) {
+    if k.NamedCurve != remote.NamedCurve {
+        return nil, errors.New("crypto/ecdh: private key and public key curves do not match")
+    }
 
-    oid, ok := oidFromNamedCurve(key.Curve())
+    return k.NamedCurve.ECDH(k, remote)
+}
+
+// Bytes returns a copy of the encoding of the private key.
+func (k *PrivateKey) Bytes() []byte {
+    // Copy the private key to a fixed size buffer that can get allocated on the
+    // caller's stack after inlining.
+    var buf [66]byte
+    return append(buf[:0], k.KeyBytes...)
+}
+
+// Equal returns whether x represents the same private key as k.
+//
+// Note that there can be equivalent private keys with different encodings which
+// would return false from this check but behave the same way as inputs to ECDH.
+//
+// This check is performed in constant time as long as the key types and their
+// curve match.
+func (k *PrivateKey) Equal(x crypto.PrivateKey) bool {
+    xx, ok := x.(*PrivateKey)
     if !ok {
-        return nil, errors.New("x509: unsupported ecdh curve")
+        return false
     }
 
-    // 创建数据
-    paramBytes, err := asn1.Marshal(oid)
-    if err != nil {
-        return nil, errors.New("ecdh: failed to marshal algo param: " + err.Error())
-    }
-
-    privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  oidPublicKeyECDH,
-        Parameters: asn1.RawValue{
-            FullBytes: paramBytes,
-        },
-    }
-
-    privKey.PrivateKey = key.Bytes()
-
-    return asn1.Marshal(privKey)
+    return k.NamedCurve == xx.NamedCurve &&
+        subtle.ConstantTimeCompare(k.KeyBytes, xx.KeyBytes) == 1
 }
 
-// 解析私钥
-func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
-    var privKey pkcs8
-    var err error
-
-    _, err = asn1.Unmarshal(derBytes, &privKey)
-    if err != nil {
-        return nil, err
-    }
-
-    algoEq := privKey.Algo.Algorithm.Equal(oidPublicKeyECDH)
-    if !algoEq {
-        err = errors.New("ecdh: unknown private key algorithm")
-        return nil, err
-    }
-
-    paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
-    namedCurveOID := new(asn1.ObjectIdentifier)
-    if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("ecdh: invalid ECDH parameters")
-    }
-
-    namedCurve := namedCurveFromOid(*namedCurveOID)
-    if namedCurve == nil {
-        err = errors.New("ecdh: unsupported ecdh curve")
-        return nil, err
-    }
-
-    priv, err := namedCurve.NewPrivateKey(privKey.PrivateKey)
-    if err != nil {
-        return nil, err
-    }
-
-    return priv, nil
+func (k *PrivateKey) Curve() Curve {
+    return k.NamedCurve
 }
 
-// ====================
+func (k *PrivateKey) PublicKey() *PublicKey {
+    k.publicKeyOnce.Do(func() {
+        k.publicKey = k.NamedCurve.PrivateKeyToPublicKey(k)
+    })
 
-func namedCurveFromOid(oid asn1.ObjectIdentifier) ecdh.Curve {
-    switch {
-        case oid.Equal(oidNamedCurveP256):
-            return ecdh.P256()
-        case oid.Equal(oidNamedCurveP384):
-            return ecdh.P384()
-        case oid.Equal(oidNamedCurveP521):
-            return ecdh.P521()
-        case oid.Equal(oidNamedCurveX25519):
-            return ecdh.X25519()
-    }
-
-    return nil
+    return k.publicKey
 }
 
-func oidFromNamedCurve(curve ecdh.Curve) (asn1.ObjectIdentifier, bool) {
-    switch curve {
-        case ecdh.P256():
-            return oidNamedCurveP256, true
-        case ecdh.P384():
-            return oidNamedCurveP384, true
-        case ecdh.P521():
-            return oidNamedCurveP521, true
-        case ecdh.X25519():
-            return oidNamedCurveX25519, true
-    }
-
-    return asn1.ObjectIdentifier{}, false
+// Public implements the implicit interface of all standard library private
+// keys. See the docs of crypto.PrivateKey.
+func (k *PrivateKey) Public() crypto.PublicKey {
+    return k.PublicKey()
 }
-

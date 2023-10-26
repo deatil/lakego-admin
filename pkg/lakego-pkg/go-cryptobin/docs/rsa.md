@@ -1,5 +1,8 @@
 ### Rsa 使用说明
 
+`EncryptECB`, `PrivateKeyEncryptECB`, `EncryptOAEPECB` 为 `JAVA` 对应的 `ECB` 模式，可加密大数据
+
+
 * 使用
 ~~~go
 package main
@@ -206,86 +209,4 @@ func main() {
     fmt.Printf("check res: %#v", res)
 
 }
-~~~
-
-* 大数据加密解密
-
-因为大数据分段加密解密不属于标准加密解密，所以单独用函数处理
-具体的使用可以根据业务需求更改适配后使用
-
-~~~go
-package main
-
-import (
-    "fmt"
-    "bytes"
-
-    cryptobin_rsa "github.com/deatil/go-cryptobin/cryptobin/rsa"
-)
-
-// 大数据加密
-func RsaBigDataEncrypt(plainText, publicKey []byte) (cipherText []byte, err error) {
-    rsa := cryptobin_rsa.FromPublicKey(publicKey)
-
-    pub := rsa.GetPublicKey()
-    pubSize, plainTextSize := pub.Size(), len(plainText)
-
-    offSet, once := 0, pubSize-11
-
-    buffer := bytes.Buffer{}
-    for offSet < plainTextSize {
-        endIndex := offSet + once
-        if endIndex > plainTextSize {
-            endIndex = plainTextSize
-        }
-
-        rsa2 := rsa.FromBytes(plainText[offSet:endIndex]).Encrypt()
-
-        err := rsa2.Error()
-        if err != nil {
-            return nil, err
-        }
-
-        bytesOnce := rsa2.ToBytes()
-
-        buffer.Write(bytesOnce)
-        offSet = endIndex
-    }
-
-    cipherText = buffer.Bytes()
-    return cipherText, nil
-}
-
-// 大数据解密
-func RsaBigDataDecrypt(cipherText, privateKey []byte) (plainText []byte, err error) {
-    rsa := cryptobin_rsa.FromPrivateKey(privateKey)
-    pri := rsa.GetPrivateKey()
-
-    priSize, cipherTextSize := pri.Size(), len(cipherText)
-    var offSet = 0
-    var buffer = bytes.Buffer{}
-
-    for offSet < cipherTextSize {
-        endIndex := offSet + priSize
-        if endIndex > cipherTextSize {
-            endIndex = cipherTextSize
-        }
-
-        rsa2 := rsa.FromBytes(cipherText[offSet:endIndex]).Decrypt()
-
-        err := rsa2.Error()
-        if err != nil {
-            return nil, err
-        }
-
-        bytesOnce := rsa2.ToBytes()
-
-        buffer.Write(bytesOnce)
-        offSet = endIndex
-    }
-
-    plainText = buffer.Bytes()
-    return plainText, nil
-}
-
 ~~~

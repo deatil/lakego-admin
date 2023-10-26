@@ -3,6 +3,7 @@ package rsa
 import (
     "crypto"
     "crypto/rsa"
+    "math/big"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
@@ -21,16 +22,14 @@ func (this Rsa) GetPublicKey() *rsa.PublicKey {
 func (this Rsa) GetPublicKeyNHexString() string {
     data := this.publicKey.N
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
+    return cryptobin_tool.HexEncode(data.Bytes())
 }
 
 // 获取 PublicKeyE
-func (this Rsa) GetPublicKeyE() int {
-    return this.publicKey.E
+func (this Rsa) GetPublicKeyEHexString() string {
+    e := big.NewInt(int64(this.publicKey.E))
+
+    return cryptobin_tool.HexEncode(e.Bytes())
 }
 
 // 获取 hash 类型
