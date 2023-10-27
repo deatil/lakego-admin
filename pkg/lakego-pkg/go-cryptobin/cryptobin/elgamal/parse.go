@@ -6,7 +6,7 @@ import (
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/elgamal"
-    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
+    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -136,7 +136,7 @@ func (this EIGamal) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8s.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

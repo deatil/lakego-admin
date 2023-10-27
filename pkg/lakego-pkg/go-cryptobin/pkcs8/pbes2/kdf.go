@@ -1,4 +1,4 @@
-package pkcs8
+package pbes2
 
 import (
     "encoding/asn1"

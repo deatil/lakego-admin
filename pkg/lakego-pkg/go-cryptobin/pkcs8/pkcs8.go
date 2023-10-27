@@ -2,202 +2,160 @@ package pkcs8
 
 import (
     "io"
-    "fmt"
     "errors"
     "crypto/x509"
-    "crypto/x509/pkix"
-    "encoding/asn1"
     "encoding/pem"
+
+    "github.com/deatil/go-cryptobin/pkcs/pbes1"
+    "github.com/deatil/go-cryptobin/pkcs/pbes2"
+    cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    cryptobin_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
+)
+
+// 加密方式
+var (
+    // pkcs12 模式
+    SHA1And3DES    = pbes1.SHA1And3DES
+    SHA1And2DES    = pbes1.SHA1And2DES
+    SHA1AndRC2_128 = pbes1.SHA1AndRC2_128
+    SHA1AndRC2_40  = pbes1.SHA1AndRC2_40
+    SHA1AndRC4_128 = pbes1.SHA1AndRC4_128
+    SHA1AndRC4_40  = pbes1.SHA1AndRC4_40
+
+    // pkcs5-v1.5 模式
+    MD2AndDES     = pbes1.MD2AndDES
+    MD2AndRC2_64  = pbes1.MD2AndRC2_64
+    MD5AndDES     = pbes1.MD5AndDES
+    MD5AndRC2_64  = pbes1.MD5AndRC2_64
+    SHA1AndDES    = pbes1.SHA1AndDES
+    SHA1AndRC2_64 = pbes1.SHA1AndRC2_64
+
+    // pkcs8 模式
+    DESCBC     = pbes2.DESCBC
+    DESEDE3CBC = pbes2.DESEDE3CBC
+
+    RC2CBC     = pbes2.RC2CBC
+    RC2_40CBC  = pbes2.RC2_40CBC
+    RC2_64CBC  = pbes2.RC2_64CBC
+    RC2_128CBC = pbes2.RC2_128CBC
+
+    RC5CBC     = pbes2.RC5CBC
+    RC5_128CBC = pbes2.RC5_128CBC
+    RC5_192CBC = pbes2.RC5_192CBC
+    RC5_256CBC = pbes2.RC5_256CBC
+
+    AES128ECB = pbes2.AES128ECB
+    AES128CBC = pbes2.AES128CBC
+    AES128OFB = pbes2.AES128OFB
+    AES128CFB = pbes2.AES128CFB
+    AES128GCM = pbes2.AES128GCM
+    AES128CCM = pbes2.AES128CCM
+
+    AES192ECB = pbes2.AES192ECB
+    AES192CBC = pbes2.AES192CBC
+    AES192OFB = pbes2.AES192OFB
+    AES192CFB = pbes2.AES192CFB
+    AES192GCM = pbes2.AES192GCM
+    AES192CCM = pbes2.AES192CCM
+
+    AES256ECB = pbes2.AES256ECB
+    AES256CBC = pbes2.AES256CBC
+    AES256OFB = pbes2.AES256OFB
+    AES256CFB = pbes2.AES256CFB
+    AES256GCM = pbes2.AES256GCM
+    AES256CCM = pbes2.AES256CCM
+
+    SM4ECB  = pbes2.SM4ECB
+    SM4CBC  = pbes2.SM4CBC
+    SM4OFB  = pbes2.SM4OFB
+    SM4CFB  = pbes2.SM4CFB
+    SM4CFB1 = pbes2.SM4CFB1
+    SM4CFB8 = pbes2.SM4CFB8
+    SM4GCM  = pbes2.SM4GCM
+    SM4CCM  = pbes2.SM4CCM
+)
+
+type (
+    // 配置
+    Opts                    = cryptobin_pbes2.Opts
+    PBKDF2Opts              = cryptobin_pbes2.PBKDF2Opts
+    PBKDF2OptsWithKeyLength = cryptobin_pbes2.PBKDF2OptsWithKeyLength
+    ScryptOpts              = cryptobin_pbes2.ScryptOpts
 )
 
 var (
-    // key derivation functions
-    oidRSADSI = asn1.ObjectIdentifier{1, 2, 840, 113549}
-    oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
+    // 获取 Cipher 类型
+    GetCipherFromName = cryptobin_pbes2.GetCipherFromName
+    // 获取 hash 类型
+    GetHashFromName   = cryptobin_pbes2.GetHashFromName
 )
 
-// 配置
-type Opts struct {
-    Cipher  Cipher
-    KDFOpts KDFOpts
-}
-
 // 默认配置 PBKDF2
-var DefaultPBKDF2Opts = PBKDF2Opts{
-    SaltSize:       16,
-    IterationCount: 10000,
-}
+var DefaultPBKDF2Opts = cryptobin_pbes2.DefaultPBKDF2Opts
 
 // 默认配置 PBKDF2，带 key 长度
-var DefaultPBKDF2OptsWithKeyLength = PBKDF2OptsWithKeyLength{
-    SaltSize:       16,
-    IterationCount: 10000,
-}
+var DefaultPBKDF2OptsWithKeyLength = cryptobin_pbes2.DefaultPBKDF2OptsWithKeyLength
 
 // 默认配置 Scrypt
-var DefaultScryptOpts = ScryptOpts{
-    SaltSize:                 16,
-    CostParameter:            1 << 2,
-    BlockSize:                8,
-    ParallelizationParameter: 1,
-}
+var DefaultScryptOpts = cryptobin_pbes2.DefaultScryptOpts
 
 // 默认配置
-var DefaultOpts = Opts{
-    Cipher:  AES256CBC,
-    KDFOpts: DefaultPBKDF2Opts,
-}
+var DefaultOpts = cryptobin_pbes2.DefaultOpts
 
-// 结构体数据可以查看以下文档
-// RFC5208 at https://tools.ietf.org/html/rfc5208
-// RFC5958 at https://tools.ietf.org/html/rfc5958
-type encryptedPrivateKeyInfo struct {
-    EncryptionAlgorithm pkix.AlgorithmIdentifier
-    EncryptedData       []byte
-}
+// 解析设置
+func ParseOpts(opts ...any) (any, error) {
+    var opt any
+    var err error
 
-// pbes2 数据
-type pbes2Params struct {
-    KeyDerivationFunc pkix.AlgorithmIdentifier
-    EncryptionScheme  pkix.AlgorithmIdentifier
-}
-
-// 加密 PKCS8
-func EncryptPKCS8PrivateKey(
-    rand io.Reader,
-    blockType string,
-    data []byte,
-    password []byte,
-    opts ...Opts,
-) (*pem.Block, error) {
-    opt := &DefaultOpts
     if len(opts) > 0 {
-        opt = &opts[0]
+        if alg, ok := opts[0].(string); ok {
+            if cryptobin_pbes1.CheckCipherFromName(alg) {
+                opt = cryptobin_pbes1.GetCipherFromName(alg)
+            }
+        }
     }
 
-    cipher := opt.Cipher
-    if cipher == nil {
-        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts cipher")
+    if opt == nil {
+        opt, err = cryptobin_pbes2.ParseOpts(opts...)
+        if err != nil {
+            return nil, err
+        }
     }
 
-    kdfOpts := opt.KDFOpts
-    if kdfOpts == nil {
-        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts kdfOpts")
-    }
-
-    salt := make([]byte, kdfOpts.GetSaltSize())
-    if _, err := io.ReadFull(rand, salt); err != nil {
-        return nil, errors.New("pkcs8: failed to generate salt." + err.Error())
-    }
-
-    key, kdfParams, err := kdfOpts.DeriveKey(password, salt, cipher.KeySize())
-    if err != nil {
-        return nil, err
-    }
-
-    encrypted, encryptedParams, err := cipher.Encrypt(key, data)
-    if err != nil {
-        return nil, err
-    }
-
-    // 生成 asn1 数据开始
-    marshalledParams, err := asn1.Marshal(kdfParams)
-    if err != nil {
-        return nil, errors.New("pkcs8: " + err.Error())
-    }
-
-    keyDerivationFunc := pkix.AlgorithmIdentifier{
-        Algorithm:  kdfOpts.OID(),
-        Parameters: asn1.RawValue{
-            FullBytes: marshalledParams,
-        },
-    }
-
-    encryptionScheme := pkix.AlgorithmIdentifier{
-        Algorithm:  cipher.OID(),
-        Parameters: asn1.RawValue{
-            FullBytes: encryptedParams,
-        },
-    }
-
-    encryptionAlgorithmParams := pbes2Params{
-        EncryptionScheme:  encryptionScheme,
-        KeyDerivationFunc: keyDerivationFunc,
-    }
-    marshalledEncryptionAlgorithmParams, err := asn1.Marshal(encryptionAlgorithmParams)
-    if err != nil {
-        return nil, err
-    }
-
-    encryptionAlgorithm := pkix.AlgorithmIdentifier{
-        Algorithm:  oidPBES2,
-        Parameters: asn1.RawValue{
-            FullBytes: marshalledEncryptionAlgorithmParams,
-        },
-    }
-
-    // 生成 ans1 数据
-    pki := encryptedPrivateKeyInfo{
-        EncryptionAlgorithm: encryptionAlgorithm,
-        EncryptedData:       encrypted,
-    }
-
-    b, err := asn1.Marshal(pki)
-    if err != nil {
-        return nil, errors.New("pkcs8: error marshaling encrypted key." + err.Error())
-    }
-
-    return &pem.Block{
-        Type:  blockType,
-        Bytes: b,
-    }, nil
+    return opt, nil
 }
 
-// 解出 PKCS8 密钥
-func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
-    var pki encryptedPrivateKeyInfo
-    if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New("pkcs8: failed to unmarshal private key." + err.Error())
+// 加密
+func EncryptPEMBlock(
+    rand      io.Reader,
+    blockType string,
+    data      []byte,
+    password  []byte,
+    cipher    any,
+) (*pem.Block, error) {
+    switch c := cipher.(type) {
+        case cryptobin_pbes2.Cipher:
+            if _, err := cryptobin_pbes2.GetCipher(c.OID().String()); err == nil {
+                opts := DefaultOpts
+                opts.Cipher = c
+
+                return cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, opts)
+            }
+
+            return cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
+
+        case cryptobin_pbes2.Opts:
+            if _, err := cryptobin_pbes1.GetCipher(c.Cipher.OID().String()); err == nil {
+                return cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c.Cipher)
+            }
+
+            return cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
     }
 
-    if !pki.EncryptionAlgorithm.Algorithm.Equal(oidPBES2) {
-        return nil, errors.New("pkcs8: unsupported encrypted PEM: only PBES2 is supported")
-    }
-
-    var params pbes2Params
-    if _, err := asn1.Unmarshal(pki.EncryptionAlgorithm.Parameters.FullBytes, &params); err != nil {
-        return nil, errors.New("pkcs8: invalid PBES2 parameters")
-    }
-
-    cipher, cipherParams, err := parseEncryptionScheme(params.EncryptionScheme)
-    if err != nil {
-        return nil, err
-    }
-
-    kdfParam, err := parseKeyDerivationFunc(params.KeyDerivationFunc)
-    if err != nil {
-        return nil, err
-    }
-
-    keySize := cipher.KeySize()
-
-    // 生成密钥
-    symkey, err := kdfParam.DeriveKey(password, keySize)
-    if err != nil {
-        return nil, err
-    }
-
-    encryptedKey := pki.EncryptedData
-
-    decryptedKey, err := cipher.Decrypt(symkey, cipherParams, encryptedKey)
-    if err != nil {
-        return nil, err
-    }
-
-    return decryptedKey, nil
+    return nil, errors.New("pkcs8: unsupported cipher")
 }
 
-// 解出 PEM 块
+// 解密
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
         return x509.DecryptPEMBlock(block, password)
@@ -205,39 +163,17 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
 
     // PKCS#8 header defined in RFC7468 section 11
     if block.Type == "ENCRYPTED PRIVATE KEY" {
-        return DecryptPKCS8PrivateKey(block.Bytes, password)
+        var blockDecrypted []byte
+        var err error
+
+        if blockDecrypted, err = cryptobin_pbes2.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
+            return blockDecrypted, nil
+        }
+
+        if blockDecrypted, err = cryptobin_pbes1.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
+            return blockDecrypted, nil
+        }
     }
 
     return nil, errors.New("pkcs8: unsupported encrypted PEM")
-}
-
-func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFParameters, error) {
-    oid := keyDerivationFunc.Algorithm.String()
-
-    params, ok := kdfs[oid]
-    if !ok {
-        return nil, fmt.Errorf("pkcs8: unsupported KDF (OID: %s)", oid)
-    }
-
-    newParams := params()
-
-    _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, newParams)
-    if err != nil {
-        return nil, errors.New("pkcs8: invalid KDF parameters")
-    }
-
-    return newParams, nil
-}
-
-func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
-    oid := encryptionScheme.Algorithm.String()
-
-    newCipher, err := GetCipher(oid)
-    if err != nil {
-        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
-    }
-
-    params := encryptionScheme.Parameters.FullBytes
-
-    return newCipher, params, nil
 }

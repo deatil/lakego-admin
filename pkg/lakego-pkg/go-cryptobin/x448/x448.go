@@ -45,6 +45,7 @@ func (pub PublicKey) Equal(x crypto.PublicKey) bool {
     if !ok {
         return false
     }
+
     return bytes.Equal(pub, xx)
 }
 
@@ -113,6 +114,7 @@ func NewKeyFromSeed(seed []byte) PrivateKey {
     if err != nil {
         panic(err)
     }
+
     copy(privateKey, seed)
     copy(privateKey[56:], publicKey)
     return privateKey

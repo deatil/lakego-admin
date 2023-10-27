@@ -1,4 +1,4 @@
-package pkcs8pbe
+package pbes1
 
 import (
     "io"

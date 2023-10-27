@@ -7,7 +7,17 @@ import (
     "github.com/deatil/go-cryptobin/x448"
 )
 
-func X448() Curve { return defaultX448 }
+var (
+    x448PublicKeySize    = 56
+    x448PrivateKeySize   = 56
+    x448SharedSecretSize = 56
+)
+
+// Multiple invocations of this function will return the same value, so it can
+// be used for equality checks and switch statements.
+func X448() Curve {
+    return defaultX448
+}
 
 var defaultX448 = &x448Curve{}
 
@@ -23,11 +33,11 @@ func (c *x448Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
         return nil, err
     }
 
-    return c.NewPrivateKey(key[:])
+    return c.NewPrivateKey(key.Seed())
 }
 
 func (c *x448Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
-    if len(key) != x448.PrivateKeySize {
+    if len(key) != x448PrivateKeySize {
         return nil, errors.New("crypto/ecdh: invalid private key size")
     }
 
@@ -42,12 +52,9 @@ func (c *x448Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
         panic("crypto/ecdh: internal error: converting the wrong key type")
     }
 
-    x := x448.PrivateKey(key.Bytes()).Public()
+    x := x448.NewKeyFromSeed(key.Bytes()).Public()
 
-    xx, ok := x.(x448.PublicKey)
-    if !ok {
-        panic("crypto/ecdh: internal error: converting the wrong PublicKey type")
-    }
+    xx := x.(x448.PublicKey)
 
     k := &PublicKey{
         NamedCurve: key.NamedCurve,
@@ -58,7 +65,7 @@ func (c *x448Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
 }
 
 func (c *x448Curve) NewPublicKey(key []byte) (*PublicKey, error) {
-    if len(key) != x448.PublicKeySize {
+    if len(key) != x448PublicKeySize {
         return nil, errors.New("crypto/ecdh: invalid public key")
     }
 
@@ -71,6 +78,10 @@ func (c *x448Curve) NewPublicKey(key []byte) (*PublicKey, error) {
 func (c *x448Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) {
     out, err := x448.X448(local.KeyBytes, remote.KeyBytes)
     if err != nil {
+        return nil, errors.New("crypto/ecdh: bad X448 remote ECDH input: " + err.Error())
+    }
+
+    if len(out) != x448SharedSecretSize {
         return nil, errors.New("crypto/ecdh: bad X448 remote ECDH input: low order point")
     }
 

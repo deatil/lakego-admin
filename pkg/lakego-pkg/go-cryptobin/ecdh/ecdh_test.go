@@ -1,12 +1,15 @@
 package ecdh_test
 
 import (
+    "fmt"
     "bytes"
     "testing"
     "crypto/rand"
     "encoding/hex"
 
     "github.com/deatil/go-cryptobin/ecdh"
+
+    cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
 func hexDecode(t *testing.T, s string) []byte {
@@ -20,8 +23,8 @@ func hexDecode(t *testing.T, s string) []byte {
 
 func TestX448Failure(t *testing.T) {
     identity := hexDecode(t, "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
-    lowOrderPoint := hexDecode(t, "e0eb7a7c3b41b8ae1656e3faf19fc46ada098deb9c32b1fd866205165f49b800e0eb7a7c3b41b8ae1656e3faf19fc46ada098deb9c32b1fd")
-    randomScalar := make([]byte, 112)
+    lowOrderPoint := hexDecode(t, "0100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000")
+    randomScalar := make([]byte, 56)
     rand.Read(randomScalar)
 
     t.Run("identity point", func(t *testing.T) { testX448Failure(t, randomScalar, identity) })
@@ -49,12 +52,17 @@ func testX448Failure(t *testing.T, private, public []byte) {
     }
 }
 
-func TestX448ECDH(t *testing.T) {
-    t.Run("identity point", func(t *testing.T) {
-        randomScalar1 := make([]byte, 112)
-        rand.Read(randomScalar1)
+func TestAllECDH(t *testing.T) {
+    testX448ECDH(t, ecdh.P256())
+    testX448ECDH(t, ecdh.P384())
+    testX448ECDH(t, ecdh.P521())
+    testX448ECDH(t, ecdh.X25519())
+    testX448ECDH(t, ecdh.X448())
+}
 
-        priv1, err := ecdh.X448().NewPrivateKey(randomScalar1)
+func testX448ECDH(t *testing.T, curue ecdh.Curve) {
+    t.Run(fmt.Sprintf("%s", curue), func(t *testing.T) {
+        priv1, err := curue.GenerateKey(rand.Reader)
         if err != nil {
             t.Fatal(err)
         }
@@ -63,10 +71,7 @@ func TestX448ECDH(t *testing.T) {
 
         // =======
 
-        randomScalar2 := make([]byte, 112)
-        rand.Read(randomScalar2)
-
-        priv2, err := ecdh.X448().NewPrivateKey(randomScalar2)
+        priv2, err := curue.GenerateKey(rand.Reader)
         if err != nil {
             t.Fatal(err)
         }
@@ -76,29 +81,86 @@ func TestX448ECDH(t *testing.T) {
         // =======
 
         secret1, err := priv1.ECDH(pub2)
-        if err == nil {
-            t.Error("expected ECDH1 error")
+        if err != nil {
+            t.Error("expected ECDH1 error: " + err.Error())
         }
 
-        if secret1 != nil {
-            t.Errorf("unexpected ECDH1 output: %x", secret1)
+        if secret1 == nil {
+            t.Errorf("expected ECDH1 nil")
         }
 
         // =======
 
         secret2, err := priv2.ECDH(pub1)
-        if err == nil {
-            t.Error("expected ECDH2 error")
+        if err != nil {
+            t.Error("expected ECDH2 error: " + err.Error())
         }
 
-        if secret2 != nil {
-            t.Errorf("unexpected ECDH2 output: %x", secret2)
+        if secret2 == nil {
+            t.Errorf("expected ECDH2 nil")
         }
 
         // =======
 
         if !bytes.Equal(secret1, secret2) {
             t.Error("two ECDH computations came out different")
+        }
+
+    })
+}
+
+func Test_NistStringEqual(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    assertEqual(fmt.Sprintf("%s", ecdh.P256()), "P-256", "NistEqual")
+    assertEqual(fmt.Sprintf("%s", ecdh.P384()), "P-384", "NistEqual")
+    assertEqual(fmt.Sprintf("%s", ecdh.P521()), "P-521", "NistEqual")
+    assertEqual(fmt.Sprintf("%s", ecdh.X25519()), "X25519", "NistEqual")
+    assertEqual(fmt.Sprintf("%s", ecdh.X448()), "X448", "NistEqual")
+}
+
+func TestAllKeyBytes(t *testing.T) {
+    testKeyBytes(t, ecdh.P256())
+    testKeyBytes(t, ecdh.P384())
+    testKeyBytes(t, ecdh.P521())
+    testKeyBytes(t, ecdh.X25519())
+    testKeyBytes(t, ecdh.X448())
+}
+
+func testKeyBytes(t *testing.T, curue ecdh.Curve) {
+    t.Run(fmt.Sprintf("%s", curue), func(t *testing.T) {
+        priv, err := curue.GenerateKey(rand.Reader)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        pub := priv.PublicKey()
+
+        privBytes := priv.Bytes()
+        pubBytes := pub.Bytes()
+
+        if len(privBytes) == 0 {
+            t.Error("expected export key Bytes error: priv")
+        }
+        if len(pubBytes) == 0 {
+            t.Error("expected export key Bytes error: pub")
+        }
+
+        newPriv, err := curue.NewPrivateKey(privBytes)
+        if err != nil {
+            t.Error("NewPrivateKey error: " + err.Error())
+        }
+
+        newPub, err := curue.NewPublicKey(pubBytes)
+        if err != nil {
+            t.Error("NewPublicKey error: " + err.Error())
+        }
+
+        if !newPriv.Equal(priv) {
+            t.Error("bytes make privekey error")
+        }
+        if !newPub.Equal(pub) {
+            t.Error("bytes make privekey error")
         }
 
     })

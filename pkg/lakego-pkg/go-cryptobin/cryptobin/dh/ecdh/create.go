@@ -7,7 +7,6 @@ import (
 
     "github.com/deatil/go-cryptobin/dh/ecdh"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
 )
 
 type (
@@ -59,7 +58,7 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8s.ParseOpts(opts...)
+    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
@@ -71,7 +70,7 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8s.EncryptPEMBlock(
+    privateBlock, err := cryptobin_pkcs8.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
         privateKey,

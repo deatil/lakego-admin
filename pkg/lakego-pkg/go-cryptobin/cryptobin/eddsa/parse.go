@@ -7,7 +7,7 @@ import (
     "crypto/ed25519"
     "encoding/pem"
 
-    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
+    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -52,7 +52,7 @@ func (this EdDSA) ParsePrivateKeyFromPEMWithPassword(key []byte, password string
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8s.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

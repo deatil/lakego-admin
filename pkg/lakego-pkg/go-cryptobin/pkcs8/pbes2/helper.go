@@ -1,4 +1,4 @@
-package pkcs8
+package pbes2
 
 // hash 列表
 var HashMap = map[string]Hash{

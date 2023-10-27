@@ -8,7 +8,7 @@ import (
     "golang.org/x/crypto/pkcs12"
 
     cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
-    cryptobin_pkcs8s "github.com/deatil/go-cryptobin/pkcs8s"
+    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -137,7 +137,7 @@ func (this Rsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
     var parsedKey any
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8s.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

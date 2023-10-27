@@ -191,7 +191,6 @@ func (bitCurve *BitCurve) doubleJacobian(x, y, z *big.Int) (*big.Int, *big.Int, 
     return x3, y3, z3
 }
 
-// TODO: double check if it is okay
 // ScalarMult returns k*(Bx,By) where k is a number in big-endian form.
 func (bitCurve *BitCurve) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.Int) {
     // We have a slight problem in that the identity of the group (the
