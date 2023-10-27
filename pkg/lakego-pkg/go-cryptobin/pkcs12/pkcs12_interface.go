@@ -5,8 +5,8 @@ import (
     "crypto"
     "encoding/asn1"
 
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_pkcs8pbe "github.com/deatil/go-cryptobin/pkcs8pbe"
+    cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    cryptobin_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
 // 加密接口
@@ -67,7 +67,7 @@ func GetKey(name string) (func() Key, error) {
 // ===============
 
 // KDF 设置接口
-type PKCS8KDFOpts = cryptobin_pkcs8.KDFOpts
+type PKCS8KDFOpts = cryptobin_pbes2.KDFOpts
 
 // 配置
 type Opts struct {
@@ -103,7 +103,7 @@ func (this Opts) WithKDFOpts(opts KDFOpts) Opts {
 
 // 默认配置
 var DefaultOpts = Opts{
-    PKCS8Cipher: cryptobin_pkcs8pbe.SHA1And3DES,
+    PKCS8Cipher: cryptobin_pbes1.SHA1And3DES,
     Cipher: CipherSHA1AndRC2_40,
     KDFOpts: MacOpts{
         SaltSize: 8,
@@ -116,20 +116,20 @@ var DefaultOpts = Opts{
 
 type (
     // PBKDF2 配置
-    PKCS8PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
+    PKCS8PBKDF2Opts = cryptobin_pbes2.PBKDF2Opts
     // Scrypt 配置
-    PKCS8ScryptOpts = cryptobin_pkcs8.ScryptOpts
+    PKCS8ScryptOpts = cryptobin_pbes2.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetPKCS8CipherFromName = cryptobin_pkcs8.GetCipherFromName
+    GetPKCS8CipherFromName = cryptobin_pbes2.GetCipherFromName
     // 获取 hash 类型
-    GetPKCS8HashFromName   = cryptobin_pkcs8.GetHashFromName
+    GetPKCS8HashFromName   = cryptobin_pbes2.GetHashFromName
 
     // 获取 Cipher 类型
-    GetPKCS8PbeCipherFromName = cryptobin_pkcs8pbe.GetCipherFromName
+    GetPKCS8PbeCipherFromName = cryptobin_pbes1.GetCipherFromName
     // 检测 Cipher 类型
-    CheckPKCS8PbeCipherFromName = cryptobin_pkcs8pbe.CheckCipherFromName
+    CheckPKCS8PbeCipherFromName = cryptobin_pbes1.CheckCipherFromName
 )
 
