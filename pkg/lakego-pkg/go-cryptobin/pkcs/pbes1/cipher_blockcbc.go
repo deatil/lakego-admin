@@ -92,17 +92,22 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
         return nil, err
     }
 
-    // 判断数据是否为填充数据
     blockSize := block.BlockSize()
-    dlen := len(ciphertext)
-    if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+
+    if len(ciphertext)%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
 
     mode := cipher.NewCBCDecrypter(block, iv)
     mode.CryptBlocks(plaintext, ciphertext)
+
+    // 判断数据是否为填充数据
+    dlen := len(plaintext)
+    if dlen == 0 || dlen%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: invalid padding")
+    }
 
     // 解析加密数据
     plaintext, err = pkcs7UnPadding(plaintext)

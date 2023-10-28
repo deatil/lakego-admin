@@ -37,7 +37,7 @@ func (this CipherRC5CBC) OID() asn1.ObjectIdentifier {
 func (this CipherRC5CBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key, this.wordSize, this.rounds)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
     }
 
     blockSize := block.BlockSize()
@@ -45,7 +45,7 @@ func (this CipherRC5CBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) 
     // 随机生成 iv
     iv := make(cbcParams, blockSize)
     if _, err := rand.Read(iv); err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to generate IV")
+        return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
     }
 
     // 加密数据补码
@@ -86,17 +86,26 @@ func (this CipherRC5CBC) Decrypt(key, params, ciphertext []byte) ([]byte, error)
         return nil, err
     }
 
-    // 判断数据是否为填充数据
     blockSize := block.BlockSize()
-    dlen := len(ciphertext)
-    if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+
+    if len(param.IV) != blockSize {
+        return nil, errors.New("pkcs/cipher: incorrect IV size")
+    }
+
+    if len(ciphertext)%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
 
     mode := cipher.NewCBCDecrypter(block, param.IV)
     mode.CryptBlocks(plaintext, ciphertext)
+
+    // 判断数据是否为填充数据
+    dlen := len(plaintext)
+    if dlen == 0 || dlen%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: invalid padding")
+    }
 
     // 解析加密数据
     plaintext, err = pkcs7UnPadding(plaintext)

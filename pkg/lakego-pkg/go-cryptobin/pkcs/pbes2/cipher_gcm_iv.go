@@ -7,10 +7,10 @@ import (
 )
 
 // gcm 模式加密参数, 使用 iv 位置
-type gcmbParams []byte
+type gcmIvParams []byte
 
 // gcm 模式加密
-type CipherGCMb struct {
+type CipherGCMIv struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
     nonceSize  int
@@ -18,17 +18,17 @@ type CipherGCMb struct {
 }
 
 // 值大小
-func (this CipherGCMb) KeySize() int {
+func (this CipherGCMIv) KeySize() int {
     return this.keySize
 }
 
 // oid
-func (this CipherGCMb) OID() asn1.ObjectIdentifier {
+func (this CipherGCMIv) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 加密
-func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherGCMIv) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, err
@@ -48,7 +48,7 @@ func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
     ciphertext := aead.Seal(nil, nonce, plaintext, nil)
 
     // 需要编码的参数
-    paramSeq := nonce
+    paramSeq := gcmIvParams(nonce)
 
     // 编码参数
     paramBytes, err := asn1.Marshal(paramSeq)
@@ -60,14 +60,14 @@ func (this CipherGCMb) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
 }
 
 // 解密
-func (this CipherGCMb) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
+func (this CipherGCMIv) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, err
     }
 
     // 解析参数
-    var nonce gcmbParams
+    var nonce gcmIvParams
     _, err = asn1.Unmarshal(param, &nonce)
     if err != nil {
         return nil, errors.New("pkcs/cipher: invalid param type")

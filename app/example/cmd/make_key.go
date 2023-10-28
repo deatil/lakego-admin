@@ -29,7 +29,7 @@ var MakeKeyCmd = &cobra.Command{
     Run: func(cmd *cobra.Command, args []string) {
         // key.KeyCheck()
 
-        key.ShowMakedPKCS12()
+        // key.ShowMakedPKCS12()
 
         // key.ShowTorrent()
 
@@ -37,7 +37,7 @@ var MakeKeyCmd = &cobra.Command{
 
         // key.NewGoEcdh().Make()
 
-        // key.NewRsa().Make()
+        key.NewRsa().Make()
 
         // key.NewDSA().Make()
 

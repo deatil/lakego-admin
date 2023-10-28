@@ -24,7 +24,7 @@ func IsEncryptedPEMBlock(b *pem.Block) bool {
 }
 
 // IncorrectPasswordError is returned when an incorrect password is detected.
-var IncorrectPasswordError = errors.New("x509: decryption password incorrect")
+var IncorrectPasswordError = errors.New("pkcs1: decryption password incorrect")
 
 // DecryptPEMBlock takes a PEM block encrypted according to RFC 1423 and the
 // password used to encrypt it and returns a slice of decrypted DER encoded

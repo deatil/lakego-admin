@@ -34,15 +34,15 @@ func (this CipherRC2CBC) OID() asn1.ObjectIdentifier {
 
 // 加密
 func (this CipherRC2CBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+    block, err := this.cipherFunc(key)
+    if err != nil {
+        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+    }
+
     // 随机生成 iv
     iv := make(cbcParams, this.blockSize)
     if _, err := rand.Read(iv); err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to generate IV")
-    }
-
-    block, err := this.cipherFunc(key)
-    if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
     }
 
     // 加密数据补码
@@ -77,26 +77,35 @@ func (this CipherRC2CBC) Decrypt(key, params, ciphertext []byte) ([]byte, error)
         return nil, errors.New("pkcs/cipher: invalid parameters")
     }
 
-    plaintext := make([]byte, len(ciphertext))
+    if param.RC2Version > 1024 || param.RC2Version < 1 {
+        return nil, errors.New("pkcs/cipher: invalid RC2Version parameters")
+    }
 
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, err
     }
 
-    if param.RC2Version > 1024 || param.RC2Version < 1 {
-        return nil, errors.New("pkcs/cipher: invalid RC2Version parameters")
+    blockSize := block.BlockSize()
+
+    if len(param.IV) != blockSize {
+        return nil, errors.New("pkcs/cipher: incorrect IV size")
     }
 
-    // 判断数据是否为填充数据
-    blockSize := block.BlockSize()
-    dlen := len(ciphertext)
-    if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+    if len(ciphertext)%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
     }
+
+    plaintext := make([]byte, len(ciphertext))
 
     mode := cipher.NewCBCDecrypter(block, param.IV)
     mode.CryptBlocks(plaintext, ciphertext)
+
+    // 判断数据是否为填充数据
+    dlen := len(plaintext)
+    if dlen == 0 || dlen%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: invalid padding")
+    }
 
     // 解析加密数据
     plaintext, err = pkcs7UnPadding(plaintext)

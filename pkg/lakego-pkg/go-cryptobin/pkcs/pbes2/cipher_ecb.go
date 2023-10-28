@@ -1,7 +1,6 @@
 package pbes2
 
 import (
-    "fmt"
     "errors"
     "crypto/cipher"
     "encoding/asn1"
@@ -29,23 +28,19 @@ func (this CipherECB) OID() asn1.ObjectIdentifier {
 
 // 加密
 func (this CipherECB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+    block, err := this.cipherFunc(key)
+    if err != nil {
+        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+    }
+
     // 加密数据补码
     plaintext = pkcs7Padding(plaintext, this.blockSize)
 
-    block, err := this.cipherFunc(key)
-    if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
-    }
-
-    bs := block.BlockSize()
-    if len(plaintext)%bs != 0 {
-        err := errors.New(fmt.Sprintf("pkcs/cipher: the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plaintext), bs))
-        return nil, nil, err
-    }
-
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
-    cryptobin_cipher.NewECBEncrypter(block).CryptBlocks(encrypted, plaintext)
+
+    mode := cryptobin_cipher.NewECBEncrypter(block)
+    mode.CryptBlocks(encrypted, plaintext)
 
     // 返回数据
     paramBytes, err := asn1.Marshal([]byte(""))
@@ -63,16 +58,22 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
         return nil, err
     }
 
-    bs := block.BlockSize()
+    blockSize := block.BlockSize()
 
-    // 判断数据是否为填充数据
-    dlen := len(ciphertext)
-    if dlen == 0 || dlen%bs != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+    if len(ciphertext)%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
-    cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(plaintext, ciphertext)
+
+    mode := cryptobin_cipher.NewECBDecrypter(block)
+    mode.CryptBlocks(plaintext, ciphertext)
+
+    // 判断数据是否为填充数据
+    dlen := len(plaintext)
+    if dlen == 0 || dlen%blockSize != 0 {
+        return nil, errors.New("pkcs/cipher: invalid padding")
+    }
 
     // 解析加密数据
     plaintext, err = pkcs7UnPadding(plaintext)

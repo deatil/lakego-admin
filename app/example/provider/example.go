@@ -53,6 +53,7 @@ func (this *ExampleServiceProvider) Boot() {
 }
 
 // 计划任务
+// > go run main.go lakego:schedule
 func (this *ExampleServiceProvider) Schedule(s *schedule.Schedule) {
     s.AddFunc(func() {
         logger.New().Info("计划任务111运行中...")

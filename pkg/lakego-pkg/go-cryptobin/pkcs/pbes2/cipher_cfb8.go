@@ -32,18 +32,15 @@ func (this CipherCFB8) OID() asn1.ObjectIdentifier {
 
 // 加密
 func (this CipherCFB8) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
-    // 加密数据补码
-    plaintext = pkcs7Padding(plaintext, this.blockSize)
+    block, err := this.cipherFunc(key)
+    if err != nil {
+        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+    }
 
     // 随机生成 iv
     iv := make(cfb8Params, this.blockSize)
     if _, err := rand.Read(iv); err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to generate IV")
-    }
-
-    block, err := this.cipherFunc(key)
-    if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
     }
 
     // 需要保存的加密数据
@@ -69,28 +66,19 @@ func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
         return nil, errors.New("pkcs/cipher: invalid iv parameters")
     }
 
-    plaintext := make([]byte, len(ciphertext))
-
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, err
     }
 
-    // 判断数据是否为填充数据
-    blockSize := block.BlockSize()
-    dlen := len(ciphertext)
-    if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+    if len(iv) != block.BlockSize() {
+        return nil, errors.New("pkcs/cipher: incorrect IV size")
     }
+
+    plaintext := make([]byte, len(ciphertext))
 
     mode := cryptobin_cipher.NewCFB8Decrypter(block, iv)
     mode.XORKeyStream(plaintext, ciphertext)
-
-    // 解析加密数据
-    plaintext, err = pkcs7UnPadding(plaintext)
-    if err != nil {
-        return nil, err
-    }
 
     return plaintext, nil
 }

@@ -80,7 +80,9 @@ func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
         return nil, err
     }
 
-    if len(ciphertext)%block.BlockSize() != 0 {
+    blockSize := block.BlockSize()
+
+    if len(ciphertext)%blockSize != 0 {
         return nil, errors.New("pkcs1: encrypted PEM data is not a multiple of the block size")
     }
 
@@ -90,7 +92,6 @@ func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     mode.CryptBlocks(plaintext, ciphertext)
 
     // 判断数据是否为填充数据
-    blockSize := block.BlockSize()
     dlen := len(plaintext)
     if dlen == 0 || dlen%blockSize != 0 {
         return nil, errors.New("pkcs1: invalid padding")

@@ -137,8 +137,8 @@ var AES128GCM = CipherGCM{
     nonceSize:  12,
     identifier: oidAES128GCM,
 }
-// AES128GCMb is the 128-bit key AES cipher in GCM mode.
-var AES128GCMb = CipherGCMb{
+// AES128GCMIv is the 128-bit key AES cipher in GCM mode.
+var AES128GCMIv = CipherGCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    16,
     nonceSize:  12,
@@ -151,8 +151,8 @@ var AES128CCM = CipherCCM{
     nonceSize:  12,
     identifier: oidAES128CCM,
 }
-// AES128CCMb is the 128-bit key AES cipher in CCM mode.
-var AES128CCMb = CipherCCMb{
+// AES128CCMIv is the 128-bit key AES cipher in CCM mode.
+var AES128CCMIv = CipherCCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    16,
     nonceSize:  12,
@@ -196,8 +196,8 @@ var AES192GCM = CipherGCM{
     nonceSize:  12,
     identifier: oidAES192GCM,
 }
-// AES192GCMb is the 192-bit key AES cipher in GCM mode.
-var AES192GCMb = CipherGCMb{
+// AES192GCMIv is the 192-bit key AES cipher in GCM mode.
+var AES192GCMIv = CipherGCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    24,
     nonceSize:  12,
@@ -210,8 +210,8 @@ var AES192CCM = CipherCCM{
     nonceSize:  12,
     identifier: oidAES192CCM,
 }
-// AES192CCMb is the 192-bit key AES cipher in CCM mode.
-var AES192CCMb = CipherCCMb{
+// AES192CCMIv is the 192-bit key AES cipher in CCM mode.
+var AES192CCMIv = CipherCCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    24,
     nonceSize:  12,
@@ -255,8 +255,8 @@ var AES256GCM = CipherGCM{
     nonceSize:  12,
     identifier: oidAES256GCM,
 }
-// AES256GCMb is the 256-bit key AES cipher in GCM mode.
-var AES256GCMb = CipherGCMb{
+// AES256GCMIv is the 256-bit key AES cipher in GCM mode.
+var AES256GCMIv = CipherGCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    32,
     nonceSize:  12,
@@ -269,8 +269,8 @@ var AES256CCM = CipherCCM{
     nonceSize:  12,
     identifier: oidAES256CCM,
 }
-// AES256CCMb is the 256-bit key AES cipher in CCM mode.
-var AES256CCMb = CipherCCMb{
+// AES256CCMIv is the 256-bit key AES cipher in CCM mode.
+var AES256CCMIv = CipherCCMIv{
     cipherFunc: aes.NewCipher,
     keySize:    32,
     nonceSize:  12,
@@ -328,8 +328,8 @@ var SM4GCM = CipherGCM{
     nonceSize:  12,
     identifier: oidSM4GCM,
 }
-// SM4GCMb is the 128-bit key SM4 cipher in GCM mode.
-var SM4GCMb = CipherGCMb{
+// SM4GCMIv is the 128-bit key SM4 cipher in GCM mode.
+var SM4GCMIv = CipherGCMIv{
     cipherFunc: sm4.NewCipher,
     keySize:    16,
     nonceSize:  12,
@@ -342,8 +342,8 @@ var SM4CCM = CipherCCM{
     nonceSize:  12,
     identifier: oidSM4CCM,
 }
-// SM4CCMb is the 128-bit key SM4 cipher in CCM mode.
-var SM4CCMb = CipherCCMb{
+// SM4CCMIv is the 128-bit key SM4 cipher in CCM mode.
+var SM4CCMIv = CipherCCMIv{
     cipherFunc: sm4.NewCipher,
     keySize:    16,
     nonceSize:  12,

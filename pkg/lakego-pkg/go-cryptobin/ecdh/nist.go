@@ -91,17 +91,21 @@ func (c *nistCurve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) {
 
 // wrap go ecdh Curves.
 func P256() Curve {
-    return NewNistCurve(ecdh.P256())
+    return defaultP256
 }
+var defaultP256 = NewNistCurve(ecdh.P256())
 
 func P384() Curve {
-    return NewNistCurve(ecdh.P384())
+    return defaultP384
 }
+var defaultP384 = NewNistCurve(ecdh.P384())
 
 func P521() Curve {
-    return NewNistCurve(ecdh.P521())
+    return defaultP521
 }
+var defaultP521 = NewNistCurve(ecdh.P521())
 
 func X25519() Curve {
-    return NewNistCurve(ecdh.X25519())
+    return defaultX25519
 }
+var defaultX25519 = NewNistCurve(ecdh.X25519())
