@@ -1,17 +1,6 @@
 package router
 
 /**
- * New
- */
-func NewAlias() *Alias {
-    item := make(map[string]any)
-
-    return &Alias{
-        item: item,
-    }
-}
-
-/**
  * 别名
  *
  * @create 2021-10-16
@@ -20,6 +9,17 @@ func NewAlias() *Alias {
 type Alias struct {
     // 中间件
     item map[string]any
+}
+
+/**
+ * New
+ */
+func NewAlias() *Alias {
+    item := make(map[string]any)
+
+    return &Alias{
+        item: item,
+    }
 }
 
 /**

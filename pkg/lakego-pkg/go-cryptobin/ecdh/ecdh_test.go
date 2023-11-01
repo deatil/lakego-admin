@@ -58,6 +58,8 @@ func TestAllECDH(t *testing.T) {
     testX448ECDH(t, ecdh.P521())
     testX448ECDH(t, ecdh.X25519())
     testX448ECDH(t, ecdh.X448())
+
+    testX448ECDH(t, ecdh.GmSM2())
 }
 
 func testX448ECDH(t *testing.T, curue ecdh.Curve) {
@@ -117,6 +119,8 @@ func Test_NistStringEqual(t *testing.T) {
     assertEqual(fmt.Sprintf("%s", ecdh.P521()), "P-521", "NistEqual")
     assertEqual(fmt.Sprintf("%s", ecdh.X25519()), "X25519", "NistEqual")
     assertEqual(fmt.Sprintf("%s", ecdh.X448()), "X448", "NistEqual")
+
+    assertEqual(fmt.Sprintf("%s", ecdh.GmSM2()), "GmSM2", "NistEqual")
 }
 
 func TestAllKeyBytes(t *testing.T) {
@@ -125,6 +129,8 @@ func TestAllKeyBytes(t *testing.T) {
     testKeyBytes(t, ecdh.P521())
     testKeyBytes(t, ecdh.X25519())
     testKeyBytes(t, ecdh.X448())
+
+    testKeyBytes(t, ecdh.GmSM2())
 }
 
 func testKeyBytes(t *testing.T, curue ecdh.Curve) {

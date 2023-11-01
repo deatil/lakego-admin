@@ -4,9 +4,11 @@ import (
     "fmt"
     "testing"
     "crypto/rand"
+    "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/ecdh"
     "github.com/deatil/go-cryptobin/ecdh/key"
+    "github.com/deatil/go-cryptobin/ecdh/test_curue"
 )
 
 func TestEqual(t *testing.T) {
@@ -15,6 +17,9 @@ func TestEqual(t *testing.T) {
     testOneCurve(t, ecdh.P521())
     testOneCurve(t, ecdh.X25519())
     testOneCurve(t, ecdh.X448())
+    testOneCurve(t, ecdh.GmSM2())
+
+    testOneCurve(t, test_curue.X448D())
 }
 
 func testOneCurve(t *testing.T, curue ecdh.Curve) {
@@ -58,4 +63,12 @@ func testOneCurve(t *testing.T, curue ecdh.Curve) {
             t.Error("Marshal public error")
         }
     })
+}
+
+var (
+    oidPublicKeyX448D = asn1.ObjectIdentifier{1, 3, 101, 111, 666}
+)
+
+func init() {
+    key.AddNamedCurve(test_curue.X448D(), oidPublicKeyX448D)
 }

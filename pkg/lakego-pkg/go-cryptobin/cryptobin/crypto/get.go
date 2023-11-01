@@ -1,7 +1,7 @@
 package crypto
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 数据
@@ -40,7 +40,7 @@ func (this Cryptobin) GetParsedData() []byte {
 }
 
 // 获取全部配置
-func (this Cryptobin) GetConfig() *cryptobin_tool.Config {
+func (this Cryptobin) GetConfig() *tool.Config {
     return this.config
 }
 

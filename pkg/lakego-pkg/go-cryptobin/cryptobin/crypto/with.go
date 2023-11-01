@@ -1,7 +1,7 @@
 package crypto
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 设置数据
@@ -107,7 +107,7 @@ func (this Cryptobin) SetPadding(padding Padding, cfg map[string]any) Cryptobin 
 }
 
 // 设置配置
-func (this Cryptobin) WithConfig(config *cryptobin_tool.Config) Cryptobin {
+func (this Cryptobin) WithConfig(config *tool.Config) Cryptobin {
     this.config = config
 
     return this

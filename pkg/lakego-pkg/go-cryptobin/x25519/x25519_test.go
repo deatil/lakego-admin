@@ -2,8 +2,8 @@ package x25519
 
 import (
     "bytes"
-    "encoding/hex"
     "testing"
+    "encoding/hex"
 )
 
 func decodeHex(s string) []byte {

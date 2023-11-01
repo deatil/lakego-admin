@@ -528,7 +528,7 @@ type EncryptChacha20 struct {}
 // 加密
 func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
@@ -536,7 +536,7 @@ func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
 
     chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), nonce)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -554,7 +554,7 @@ func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
 // 解密
 func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty")
         return nil, err
     }
 
@@ -562,7 +562,7 @@ func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
     chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), nonce)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -586,12 +586,12 @@ type EncryptChacha20poly1305 struct {}
 func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, error) {
     aead, err := chacha20poly1305.New(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
@@ -607,12 +607,12 @@ func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, e
 func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, error) {
     chacha, err := chacha20poly1305.New(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
@@ -631,12 +631,12 @@ type EncryptChacha20poly1305X struct {}
 func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, error) {
     aead, err := chacha20poly1305.NewX(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
@@ -652,12 +652,12 @@ func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, 
 func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, error) {
     chacha, err := chacha20poly1305.NewX(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
     if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("Cryptobin: chacha20poly1305 error: nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
@@ -676,7 +676,7 @@ type EncryptRC4 struct {}
 func (this EncryptRC4) Encrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := rc4.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: rc4 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -691,7 +691,7 @@ func (this EncryptRC4) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptRC4) Decrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := rc4.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: rc4 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -720,7 +720,7 @@ func (this EncryptRC4MD5) getCipher(opt IOption) (cipher.Stream, error) {
 func (this EncryptRC4MD5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := this.getCipher(opt)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: rc4 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -735,7 +735,7 @@ func (this EncryptRC4MD5) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptRC4MD5) Decrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := this.getCipher(opt)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: rc4 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -754,12 +754,12 @@ type EncryptXts struct {}
 // 加密
 func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
-        err := fmt.Errorf("Cryptobin: Xts error: cipher is empty.")
+        err := fmt.Errorf("Cryptobin: cipher is empty.")
         return nil, err
     }
 
     if !opt.Config().Has("sector_num") {
-        err := fmt.Errorf("Cryptobin: Xts error: sector_num is empty.")
+        err := fmt.Errorf("Cryptobin: sector_num is empty.")
         return nil, err
     }
 
@@ -770,7 +770,7 @@ func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
 
     xc, err := xts.NewCipher(cipherFunc, opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: xts %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -796,12 +796,12 @@ func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
 // 解密
 func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
-        err := fmt.Errorf("Cryptobin: Xts error: cipher is empty.")
+        err := fmt.Errorf("Cryptobin: cipher is empty.")
         return nil, err
     }
 
     if !opt.Config().Has("sector_num") {
-        err := fmt.Errorf("Cryptobin: Xts error: sector_num is empty.")
+        err := fmt.Errorf("Cryptobin: sector_num is empty.")
         return nil, err
     }
 
@@ -812,7 +812,7 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
     xc, err := xts.NewCipher(cipherFunc, opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: xts %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -847,7 +847,7 @@ func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
 
     c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: salsa20 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -864,7 +864,7 @@ func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
     c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: salsa20 %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -884,7 +884,7 @@ type EncryptSeed struct {}
 func (this EncryptSeed) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_seed.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: seed %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -895,7 +895,7 @@ func (this EncryptSeed) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptSeed) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_seed.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: seed %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -911,7 +911,7 @@ type EncryptAria struct {}
 func (this EncryptAria) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_aria.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: aria %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -922,7 +922,7 @@ func (this EncryptAria) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptAria) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_aria.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: aria %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -938,7 +938,7 @@ type EncryptCamellia struct {}
 func (this EncryptCamellia) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_camellia.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: camellia %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -949,7 +949,7 @@ func (this EncryptCamellia) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptCamellia) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_camellia.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: camellia %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -984,13 +984,13 @@ func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
     }
 
     if sbox == nil {
-        err := fmt.Errorf("Cryptobin: Gost sbox is error")
+        err := fmt.Errorf("Cryptobin: sbox is error")
         return nil, err
     }
 
     block, err := cryptobin_gost.NewCipher(opt.Key(), sbox)
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Gost %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1026,7 +1026,7 @@ type EncryptKuznyechik struct {}
 func (this EncryptKuznyechik) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kuznyechik.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Kuznyechik %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1037,7 +1037,7 @@ func (this EncryptKuznyechik) Encrypt(data []byte, opt IOption) ([]byte, error) 
 func (this EncryptKuznyechik) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kuznyechik.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Kuznyechik %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1053,7 +1053,7 @@ type EncryptSkipjack struct {}
 func (this EncryptSkipjack) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_skipjack.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Skipjack %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1064,7 +1064,7 @@ func (this EncryptSkipjack) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptSkipjack) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_skipjack.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Skipjack %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1080,7 +1080,7 @@ type EncryptSerpent struct {}
 func (this EncryptSerpent) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_serpent.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Serpent %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -1091,7 +1091,7 @@ func (this EncryptSerpent) Encrypt(data []byte, opt IOption) ([]byte, error) {
 func (this EncryptSerpent) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_serpent.NewCipher(opt.Key())
     if err != nil {
-        err := fmt.Errorf("Cryptobin: Serpent %w", err)
+        err := fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 

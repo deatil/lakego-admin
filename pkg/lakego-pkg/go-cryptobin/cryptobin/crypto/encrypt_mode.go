@@ -324,13 +324,13 @@ type ModeGCM struct {}
 func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: GCM error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewGCMWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -345,13 +345,13 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
 func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: CCM error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewGCMWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -370,13 +370,13 @@ type ModeCCM struct {}
 func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: CCM error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewCCMWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -392,13 +392,13 @@ func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // ccm nounce size, should be in [7,13]
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: GCM error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewCCMWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -475,7 +475,7 @@ func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
 
     mode, prefix := cryptobin_cipher.NewOCFBEncrypter(block, randData, cryptobin_cipher.OCFBResyncOption(resync))
     if mode == nil {
-        return nil, errors.New("cipher: OCFB randData length is not eq blockSize.")
+        return nil, errors.New("cipher: randData length is not eq blockSize.")
     }
 
     // prefix 长度
@@ -506,7 +506,7 @@ func (this ModeOCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
     mode := cryptobin_cipher.NewOCFBDecrypter(block, prefix, cryptobin_cipher.OCFBResyncOption(resync))
     if mode == nil {
-        return nil, errors.New("cipher: OCFB prefix length is not eq blockSize + 2.")
+        return nil, errors.New("cipher: prefix length is not eq blockSize + 2.")
     }
 
     dst := make([]byte, len(data) - prefixLen)
@@ -529,13 +529,13 @@ type ModeOCB struct {}
 func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewOCBWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -551,13 +551,13 @@ func (this ModeOCB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // ocb nounce size, should be in [0, cipher.block.BlockSize]
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewOCBWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -582,13 +582,13 @@ type ModeEAX struct {}
 func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewEAXWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -604,13 +604,13 @@ func (this ModeEAX) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // eax nounce size, should be in > 0
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: OCB error:nonce is empty.")
+        err := fmt.Errorf("Cryptobin: nonce is empty.")
         return nil, err
     }
 
     aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: cipher.NewEAXWithNonceSize(),error:%w", err)
+        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 

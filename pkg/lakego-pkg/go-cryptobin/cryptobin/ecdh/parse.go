@@ -9,6 +9,7 @@ import (
     "encoding/pem"
 
     cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
+    cryptobin_ecdh_key "github.com/deatil/go-cryptobin/ecdh/key"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -133,18 +134,18 @@ func (this Ecdh) ParseECDHPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, erro
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_ecdh.ParsePrivateKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_ecdh_key.ParsePrivateKey(block.Bytes); err != nil {
         return nil, err
     }
 
-    var pkey *ecdh.PrivateKey
+    var pkey *cryptobin_ecdh.PrivateKey
     var ok bool
 
-    if pkey, ok = parsedKey.(*ecdh.PrivateKey); !ok {
+    if pkey, ok = parsedKey.(*cryptobin_ecdh.PrivateKey); !ok {
         return nil, ErrNotPrivateKey
     }
 
-    return pkey, nil
+    return cryptobin_ecdh.ToPrivateKey(pkey)
 }
 
 // 解析私钥带密码
@@ -163,18 +164,18 @@ func (this Ecdh) ParseECDHPrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var parsedKey any
-    if parsedKey, err = cryptobin_ecdh.ParsePrivateKey(blockDecrypted); err != nil {
+    if parsedKey, err = cryptobin_ecdh_key.ParsePrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
-    var pkey *ecdh.PrivateKey
+    var pkey *cryptobin_ecdh.PrivateKey
     var ok bool
 
-    if pkey, ok = parsedKey.(*ecdh.PrivateKey); !ok {
+    if pkey, ok = parsedKey.(*cryptobin_ecdh.PrivateKey); !ok {
         return nil, ErrNotPrivateKey
     }
 
-    return pkey, nil
+    return cryptobin_ecdh.ToPrivateKey(pkey)
 }
 
 // 解析公钥
@@ -189,16 +190,16 @@ func (this Ecdh) ParseECDHPublicKeyFromPEM(key []byte) (crypto.PublicKey, error)
 
     // Parse the key
     var parsedKey any
-    if parsedKey, err = cryptobin_ecdh.ParsePublicKey(block.Bytes); err != nil {
+    if parsedKey, err = cryptobin_ecdh_key.ParsePublicKey(block.Bytes); err != nil {
         return nil, err
     }
 
-    var pkey *ecdh.PublicKey
+    var pkey *cryptobin_ecdh.PublicKey
     var ok bool
 
-    if pkey, ok = parsedKey.(*ecdh.PublicKey); !ok {
+    if pkey, ok = parsedKey.(*cryptobin_ecdh.PublicKey); !ok {
         return nil, ErrNotPublicKey
     }
 
-    return pkey, nil
+    return cryptobin_ecdh.ToPublicKey(pkey)
 }

@@ -72,6 +72,9 @@ func (this *DataSet[N, M]) Remove(name N) *DataSet[N, M] {
 }
 
 func (this *DataSet[N, M]) Names() []N {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
     names := make([]N, 0)
     for name, _ := range this.data {
         names = append(names, name)

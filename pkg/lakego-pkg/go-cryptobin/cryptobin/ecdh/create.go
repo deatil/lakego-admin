@@ -7,6 +7,7 @@ import (
     "encoding/pem"
 
     cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
+    cryptobin_ecdh_key "github.com/deatil/go-cryptobin/ecdh/key"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -118,7 +119,12 @@ func (this Ecdh) CreateECDHPrivateKey() Ecdh {
         return this.AppendError(err)
     }
 
-    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
+    priv, err := cryptobin_ecdh.FromPrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    privateKey, err := cryptobin_ecdh_key.MarshalPrivateKey(priv)
     if err != nil {
         return this.AppendError(err)
     }
@@ -145,8 +151,13 @@ func (this Ecdh) CreateECDHPrivateKeyWithPassword(password string, opts ...any) 
         return this.AppendError(err)
     }
 
+    priv, err := cryptobin_ecdh.FromPrivateKey(this.privateKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
     // 生成私钥
-    privateKey, err := cryptobin_ecdh.MarshalPrivateKey(this.privateKey)
+    privateKey, err := cryptobin_ecdh_key.MarshalPrivateKey(priv)
     if err != nil {
         return this.AppendError(err)
     }
@@ -175,7 +186,12 @@ func (this Ecdh) CreateECDHPublicKey() Ecdh {
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := cryptobin_ecdh.MarshalPublicKey(this.publicKey)
+    pub, err := cryptobin_ecdh.FromPublicKey(this.publicKey)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    publicKeyBytes, err := cryptobin_ecdh_key.MarshalPublicKey(pub)
     if err != nil {
         return this.AppendError(err)
     }

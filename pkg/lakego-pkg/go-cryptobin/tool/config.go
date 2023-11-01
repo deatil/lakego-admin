@@ -83,6 +83,9 @@ func (this *Config) All() map[string]any {
 }
 
 func (this *Config) Names() []string {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     names := make([]string, 0)
     for name, _ := range this.data {
         names = append(names, name)
@@ -92,6 +95,9 @@ func (this *Config) Names() []string {
 }
 
 func (this *Config) Len() int {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
     return len(this.data)
 }
 
