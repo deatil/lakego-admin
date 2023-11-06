@@ -2,10 +2,11 @@ package ecdsa
 
 import (
     "io"
-    "strings"
+    "errors"
     "math/big"
     "crypto/rand"
     "crypto/ecdsa"
+    "crypto/elliptic"
 
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
@@ -237,28 +238,10 @@ func (this Ecdsa) FromPublicKeyDer(der []byte) Ecdsa {
     return this
 }
 
-
 // ==========
 
-// 公钥字符 (hexStringX + hexStringY)
-func (this Ecdsa) FromPublicKeyString(keyString string) Ecdsa {
-    if len(keyString) == 130 && strings.HasPrefix(keyString, "04") {
-        keyString = strings.TrimPrefix(keyString, "04")
-    }
-
-    x, _ := new(big.Int).SetString(keyString[:64], 16)
-    y, _ := new(big.Int).SetString(keyString[64:], 16)
-
-    this.publicKey = &ecdsa.PublicKey{
-        Curve: this.curve,
-        X:     x,
-        Y:     y,
-    }
-
-    return this
-}
-
 // 公钥 x,y 16进制字符对
+// 需要设置对应的 curve
 // [xString: xHexString, yString: yHexString]
 func (this Ecdsa) FromPublicKeyXYString(xString string, yString string) Ecdsa {
     x, _ := new(big.Int).SetString(xString[:], 16)
@@ -273,24 +256,10 @@ func (this Ecdsa) FromPublicKeyXYString(xString string, yString string) Ecdsa {
     return this
 }
 
-// 私钥字符，必须先添加公钥 (hexStringD)
-func (this Ecdsa) FromPrivateKeyString(keyString string) Ecdsa {
-    d, _ := new(big.Int).SetString(keyString[:], 16)
-
-    this.privateKey = &ecdsa.PrivateKey{
-        PublicKey: *this.publicKey,
-        D:         d,
-    }
-
-    return this
-}
-
-// ==========
-
-// 公钥字符对
-func (this Ecdsa) FromPublicKeyXYBytes(XBytes, YBytes []byte) Ecdsa {
-    x := new(big.Int).SetBytes(XBytes)
-    y := new(big.Int).SetBytes(YBytes)
+// 公钥字符对，需要设置对应的 curve
+func (this Ecdsa) FromPublicKeyXYBytes(xBytes, yBytes []byte) Ecdsa {
+    x := new(big.Int).SetBytes(xBytes)
+    y := new(big.Int).SetBytes(yBytes)
 
     this.publicKey = &ecdsa.PublicKey{
         Curve: this.curve,
@@ -301,21 +270,93 @@ func (this Ecdsa) FromPublicKeyXYBytes(XBytes, YBytes []byte) Ecdsa {
     return this
 }
 
-// 私钥字符，必须先添加公钥
-func (this Ecdsa) FromPrivateKeyDBytes(DBytes []byte) Ecdsa {
-    d := new(big.Int).SetBytes(DBytes)
+// ==========
 
-    this.privateKey = &ecdsa.PrivateKey{
-        PublicKey: *this.publicKey,
-        D:         d,
+// 公钥明文未压缩
+// 需要设置对应的 curve
+// public-key hex: 047c********.
+func (this Ecdsa) FromPublicKeyUncompressString(key string) Ecdsa {
+    k, _ := cryptobin_tool.HexDecode(key)
+
+    x, y := elliptic.Unmarshal(this.curve, k)
+    if x == nil || y == nil {
+        err := errors.New("Ecdsa: publicKey uncompress string error")
+
+        return this.AppendError(err)
     }
+
+    this.publicKey = &ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 公钥明文压缩
+// 需要设置对应的 curve
+// public-key hex: 027c******** || 036c********
+func (this Ecdsa) FromPublicKeyCompressString(key string) Ecdsa {
+    k, _ := cryptobin_tool.HexDecode(key)
+
+    x, y := elliptic.UnmarshalCompressed(this.curve, k)
+    if x == nil || y == nil {
+        err := errors.New("Ecdsa: publicKey compress string error")
+
+        return this.AppendError(err)
+    }
+
+    this.publicKey = &ecdsa.PublicKey{
+        Curve: this.curve,
+        X:     x,
+        Y:     y,
+    }
+
+    return this
+}
+
+// 公钥明文，需要设置对应的 curve
+func (this Ecdsa) FromPublicKeyString(key string) Ecdsa {
+    byteLen := (this.curve.Params().BitSize + 7) / 8
+
+    k, _ := cryptobin_tool.HexDecode(key)
+
+    if len(k) == 1+byteLen {
+        return this.FromPublicKeyCompressString(key)
+    }
+
+    return this.FromPublicKeyUncompressString(key)
+}
+
+// 私钥明文，需要设置对应的 curve
+// private-key: 07e4********;
+func (this Ecdsa) FromPrivateKeyString(keyString string) Ecdsa {
+    c := this.curve
+    k, _ := new(big.Int).SetString(keyString[:], 16)
+
+    priv := new(ecdsa.PrivateKey)
+    priv.PublicKey.Curve = c
+    priv.D = k
+    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+
+    this.privateKey = priv
 
     return this
 }
 
 // ==========
 
+// 公钥明文, hex 或者 base64 解码后
+// 需要设置对应的 curve
+func (this Ecdsa) FromPublicKeyBytes(pub []byte) Ecdsa {
+    key := cryptobin_tool.HexEncode(pub)
+
+    return this.FromPublicKeyString(key)
+}
+
 // 明文私钥生成私钥结构体
+// 需要设置对应的 curve
 func (this Ecdsa) FromPrivateKeyBytes(priByte []byte) Ecdsa {
     c := this.curve
     k := new(big.Int).SetBytes(priByte)

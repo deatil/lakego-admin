@@ -183,3 +183,141 @@ func Test_VerifyASN1En(t *testing.T) {
     assertError(objVerify.Error(), "VerifyASN1En-VerifyASN1")
     assertBool(objVerify.ToVerify(), "VerifyASN1En-VerifyASN1")
 }
+
+func Test_PublickeyXY(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PublickeyXY")
+
+    x := obj.GetPublicKeyUncompressString()
+    xx := obj.GetPublicKeyCompressString()
+
+    assertNotEmpty(x, "PublickeyXY-x")
+    assertNotEmpty(xx, "PublickeyXY-xx")
+
+    xk := New().SetCurve("P256").FromPublicKeyUncompressString(x)
+    xxk := New().SetCurve("P256").FromPublicKeyCompressString(xx)
+
+    assertError(xk.Error(), "PublickeyXY-xk")
+    assertError(xxk.Error(), "PublickeyXY-xxk")
+
+    assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xk")
+    assertEqual(xxk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xxk")
+
+}
+
+func Test_PublickeyXY_2(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PublickeyXY")
+
+    x := obj.GetPublicKeyUncompressString()
+    xx := obj.GetPublicKeyCompressString()
+
+    assertNotEmpty(x, "PublickeyXY-x")
+    assertNotEmpty(xx, "PublickeyXY-xx")
+
+    xk := New().SetCurve("P256").FromPublicKeyString(x)
+    xxk := New().SetCurve("P256").FromPublicKeyString(xx)
+
+    assertError(xk.Error(), "PublickeyXY-xk")
+    assertError(xxk.Error(), "PublickeyXY-xxk")
+
+    assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xk")
+    assertEqual(xxk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xxk")
+
+}
+
+func Test_PublickeyXY_String(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PublickeyXY_3")
+
+    x := obj.GetPublicKeyXHexString()
+    y := obj.GetPublicKeyYHexString()
+
+    assertNotEmpty(x, "PublickeyXY_3-x")
+    assertNotEmpty(y, "PublickeyXY_3-y")
+
+    xk := New().SetCurve("P256").FromPublicKeyXYString(x, y)
+
+    assertError(xk.Error(), "PublickeyXY_3-xk")
+    assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY_3-xk")
+}
+
+func Test_PublickeyXY_Bytes(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PublickeyXY_Bytes")
+
+    pub := obj.GetPublicKey()
+
+    x := pub.X.Bytes()
+    y := pub.Y.Bytes()
+
+    assertNotEmpty(x, "PublickeyXY_Bytes-x")
+    assertNotEmpty(y, "PublickeyXY_Bytes-y")
+
+    xk := New().SetCurve("P256").FromPublicKeyXYBytes(x, y)
+
+    assertError(xk.Error(), "PublickeyXY_Bytes-xk")
+    assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY_Bytes-xk")
+}
+
+func Test_PrivateKeyD(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PrivateKeyD")
+
+    d := obj.GetPrivateKeyString()
+
+    assertNotEmpty(d, "PrivateKeyD")
+
+    xk := New().SetCurve("P256").FromPrivateKeyString(d)
+
+    assertError(xk.Error(), "PrivateKeyD-xk")
+
+    assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "PrivateKeyD-xk")
+}
+
+func Test_PrivateKey_Bytes(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+
+    assertError(obj.Error(), "PrivateKeyD")
+
+    priv := obj.GetPrivateKey()
+
+    d := priv.D.Bytes()
+
+    assertNotEmpty(d, "PrivateKey_Bytes")
+
+    xk := New().SetCurve("P256").FromPrivateKeyBytes(d)
+
+    assertError(xk.Error(), "PrivateKey_Bytes-xk")
+
+    assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "PrivateKey_Bytes-xk")
+}

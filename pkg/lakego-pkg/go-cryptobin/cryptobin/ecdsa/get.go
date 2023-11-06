@@ -4,7 +4,7 @@ import (
     "crypto/ecdsa"
     "crypto/elliptic"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -17,37 +17,18 @@ func (this Ecdsa) GetPrivateKeyCurve() elliptic.Curve {
     return this.privateKey.Curve
 }
 
-// 获取 PrivateKeyX
-func (this Ecdsa) GetPrivateKeyXHexString() string {
-    data := this.privateKey.X
-
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
-}
-
-// 获取 PrivateKeyY
-func (this Ecdsa) GetPrivateKeyYHexString() string {
-    data := this.privateKey.Y
-
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
-
-    return dataHex
-}
-
 // 获取 PrivateKeyD
 func (this Ecdsa) GetPrivateKeyDHexString() string {
     data := this.privateKey.D
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := tool.HexEncode(data.Bytes())
 
     return dataHex
+}
+
+// 获取私钥明文
+func (this Ecdsa) GetPrivateKeyString() string {
+    return this.GetPrivateKeyDHexString()
 }
 
 // 获取 PublicKey
@@ -64,9 +45,7 @@ func (this Ecdsa) GetPublicKeyCurve() elliptic.Curve {
 func (this Ecdsa) GetPublicKeyXHexString() string {
     data := this.publicKey.X
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := tool.HexEncode(data.Bytes())
 
     return dataHex
 }
@@ -75,11 +54,30 @@ func (this Ecdsa) GetPublicKeyXHexString() string {
 func (this Ecdsa) GetPublicKeyYHexString() string {
     data := this.publicKey.Y
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data.Bytes())
+    dataHex := tool.HexEncode(data.Bytes())
 
     return dataHex
+}
+
+// 获取 PublicKeyXYHex
+func (this Ecdsa) GetPublicKeyXYHexString() string {
+    dataHex := this.GetPublicKeyXHexString() + this.GetPublicKeyYHexString()
+
+    return dataHex
+}
+
+// 获取未压缩公钥
+func (this Ecdsa) GetPublicKeyUncompressString() string {
+    key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
+
+    return tool.HexEncode(key)
+}
+
+// 获取压缩公钥
+func (this Ecdsa) GetPublicKeyCompressString() string {
+    key := elliptic.MarshalCompressed(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
+
+    return tool.HexEncode(key)
 }
 
 // 获取 hash 类型
