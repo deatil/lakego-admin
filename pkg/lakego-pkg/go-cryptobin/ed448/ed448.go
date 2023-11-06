@@ -89,6 +89,7 @@ func (priv PrivateKey) Equal(x crypto.PrivateKey) bool {
     if !ok {
         return false
     }
+
     return subtle.ConstantTimeCompare(priv, xx) == 1
 }
 

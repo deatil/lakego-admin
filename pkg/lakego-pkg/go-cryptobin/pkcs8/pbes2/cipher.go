@@ -16,6 +16,8 @@ var (
     // 帮助函数
     GetCipherFromName   = pbes2.GetCipherFromName
     CheckCipherFromName = pbes2.CheckCipherFromName
+    GetCipherName       = pbes2.GetCipherName
+    CheckCipher         = pbes2.CheckCipher
 )
 
 // 加密方式

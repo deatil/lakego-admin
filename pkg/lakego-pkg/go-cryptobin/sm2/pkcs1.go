@@ -27,7 +27,7 @@ type sm2PrivateKey struct {
     PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-// ParseECPrivateKey parses an SM2 private key in SEC 1, ASN.1 DER form.
+// ParseSM2PrivateKey parses an SM2 private key in SEC 1, ASN.1 DER form.
 //
 // This kind of key is commonly encoded in PEM blocks of type "SM2 PRIVATE KEY".
 func ParseSM2PrivateKey(der []byte) (*sm2.PrivateKey, error) {

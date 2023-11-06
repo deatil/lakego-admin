@@ -67,9 +67,9 @@ func MakePKCS12() error {
     // pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123")
     // pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123")
     pfxData, err := cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, "123", cryptobin_pkcs12.Opts{
-        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8PbeCipherFromName("SHA1AndRC2_40"),
-        Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
-        KDFOpts: cryptobin_pkcs12.MacOpts{
+        KeyCipher: cryptobin_pkcs12.GetPbes1CipherFromName("SHA1AndRC2_40"),
+        CertCipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
+        CertKDFOpts: cryptobin_pkcs12.MacOpts{
             SaltSize: 8,
             IterationCount: 1,
             HMACHash: cryptobin_pkcs12.SHA1,
@@ -170,13 +170,13 @@ func MakePKCS12_2() error {
         GetPrivateKey()
 
     pfxData, err := cryptobin_pkcs12.Encode(rand.Reader, privateKey, certificates[0], "123", cryptobin_pkcs12.Opts{
-        PKCS8Cipher: cryptobin_pkcs12.GetPKCS8CipherFromName("AES256CFB"),
-        PKCS8KDFOpts: cryptobin_pkcs12.PKCS8PBKDF2Opts{
+        KeyCipher: cryptobin_pkcs12.GetPbes2CipherFromName("AES256CFB"),
+        KeyKDFOpts: cryptobin_pkcs12.PBKDF2Opts{
             SaltSize:       16,
             IterationCount: 10000,
         },
-        Cipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
-        KDFOpts: cryptobin_pkcs12.MacOpts{
+        CertCipher: cryptobin_pkcs12.CipherSHA1AndRC2_40,
+        CertKDFOpts: cryptobin_pkcs12.MacOpts{
             SaltSize: 8,
             IterationCount: 1024,
             HMACHash: cryptobin_pkcs12.SHA512,

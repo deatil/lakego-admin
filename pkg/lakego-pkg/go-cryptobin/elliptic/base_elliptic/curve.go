@@ -37,6 +37,7 @@ func (c *curve) Params() *elliptic.CurveParams {
         Name:    c.params.Name,
     }
 }
+
 func (c *curve) BinaryParams() *CurveParams {
     return c.params
 }

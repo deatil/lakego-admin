@@ -75,35 +75,95 @@ func EncryptPKCS8PrivateKey(
         opt = &opts[0]
     }
 
+    encrypted, encryptionAlgorithm, err := PBES2Encrypt(rand, data, password, opt)
+    if err != nil {
+        return nil, err
+    }
+
+    // 生成 ans1 数据
+    pki := encryptedPrivateKeyInfo{
+        EncryptionAlgorithm: encryptionAlgorithm,
+        EncryptedData:       encrypted,
+    }
+
+    b, err := asn1.Marshal(pki)
+    if err != nil {
+        return nil, errors.New("pkcs8: error marshaling encrypted key." + err.Error())
+    }
+
+    return &pem.Block{
+        Type:  blockType,
+        Bytes: b,
+    }, nil
+}
+
+// 解密 PKCS8
+func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
+    var pki encryptedPrivateKeyInfo
+    if _, err := asn1.Unmarshal(data, &pki); err != nil {
+        return nil, errors.New("pkcs8: failed to unmarshal private key: " + err.Error())
+    }
+
+    algo := pki.EncryptionAlgorithm
+    encryptedKey := pki.EncryptedData
+
+    decryptedKey, err := PBES2Decrypt(encryptedKey, algo, password)
+    if err != nil {
+        return nil, err
+    }
+
+    return decryptedKey, nil
+}
+
+// 解出 PEM 块
+func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
+    if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
+        return x509.DecryptPEMBlock(block, password)
+    }
+
+    // PKCS#8 header defined in RFC7468 section 11
+    if block.Type == "ENCRYPTED PRIVATE KEY" {
+        return DecryptPKCS8PrivateKey(block.Bytes, password)
+    }
+
+    return nil, errors.New("pkcs8: unsupported encrypted PEM")
+}
+
+// PBES2 加密
+func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encrypted []byte, algo pkix.AlgorithmIdentifier, err error) {
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts cipher")
+        err = errors.New("pkcs8: failed to encrypt PEM: unknown opts cipher")
+        return
     }
 
     kdfOpts := opt.KDFOpts
     if kdfOpts == nil {
-        return nil, errors.New("pkcs8: failed to encrypt PEM: unknown opts kdfOpts")
+        err = errors.New("pkcs8: failed to encrypt PEM: unknown opts kdfOpts")
+        return
     }
 
     salt := make([]byte, kdfOpts.GetSaltSize())
-    if _, err := io.ReadFull(rand, salt); err != nil {
-        return nil, errors.New("pkcs8: failed to generate salt." + err.Error())
+    if _, saltErr := io.ReadFull(rand, salt); saltErr != nil {
+        err = errors.New("pkcs8: failed to generate salt." + err.Error())
+        return
     }
 
     key, kdfParams, err := kdfOpts.DeriveKey(password, salt, cipher.KeySize())
     if err != nil {
-        return nil, err
+        return
     }
 
     encrypted, encryptedParams, err := cipher.Encrypt(key, data)
     if err != nil {
-        return nil, err
+        return
     }
 
     // 生成 asn1 数据开始
     marshalledParams, err := asn1.Marshal(kdfParams)
     if err != nil {
-        return nil, errors.New("pkcs8: " + err.Error())
+        err = errors.New("pkcs8: " + err.Error())
+        return
     }
 
     keyDerivationFunc := pkix.AlgorithmIdentifier{
@@ -124,9 +184,10 @@ func EncryptPKCS8PrivateKey(
         EncryptionScheme:  encryptionScheme,
         KeyDerivationFunc: keyDerivationFunc,
     }
+
     marshalledEncryptionAlgorithmParams, err := asn1.Marshal(encryptionAlgorithmParams)
     if err != nil {
-        return nil, err
+        return
     }
 
     encryptionAlgorithm := pkix.AlgorithmIdentifier{
@@ -136,36 +197,17 @@ func EncryptPKCS8PrivateKey(
         },
     }
 
-    // 生成 ans1 数据
-    pki := encryptedPrivateKeyInfo{
-        EncryptionAlgorithm: encryptionAlgorithm,
-        EncryptedData:       encrypted,
-    }
-
-    b, err := asn1.Marshal(pki)
-    if err != nil {
-        return nil, errors.New("pkcs8: error marshaling encrypted key." + err.Error())
-    }
-
-    return &pem.Block{
-        Type:  blockType,
-        Bytes: b,
-    }, nil
+    return encrypted, encryptionAlgorithm, nil
 }
 
-// 解出 PKCS8 密钥
-func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
-    var pki encryptedPrivateKeyInfo
-    if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New("pkcs8: failed to unmarshal private key." + err.Error())
-    }
-
-    if !pki.EncryptionAlgorithm.Algorithm.Equal(oidPBES2) {
+// PBES2 解密
+func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) ([]byte, error) {
+    if !algo.Algorithm.Equal(oidPBES2) {
         return nil, errors.New("pkcs8: unsupported encrypted PEM: only PBES2 is supported")
     }
 
     var params pbes2Params
-    if _, err := asn1.Unmarshal(pki.EncryptionAlgorithm.Parameters.FullBytes, &params); err != nil {
+    if _, err := asn1.Unmarshal(algo.Parameters.FullBytes, &params); err != nil {
         return nil, errors.New("pkcs8: invalid PBES2 parameters")
     }
 
@@ -187,28 +229,21 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
         return nil, err
     }
 
-    encryptedKey := pki.EncryptedData
-
-    decryptedKey, err := cipher.Decrypt(symkey, cipherParams, encryptedKey)
+    decrypted, err := cipher.Decrypt(symkey, cipherParams, data)
     if err != nil {
         return nil, err
     }
 
-    return decryptedKey, nil
+    return decrypted, nil
 }
 
-// 解出 PEM 块
-func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
-    if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
-        return x509.DecryptPEMBlock(block, password)
+// 是否是 PBES2 加密
+func IsPBES2(algo asn1.ObjectIdentifier) bool {
+    if algo.Equal(oidPBES2) {
+        return true
     }
 
-    // PKCS#8 header defined in RFC7468 section 11
-    if block.Type == "ENCRYPTED PRIVATE KEY" {
-        return DecryptPKCS8PrivateKey(block.Bytes, password)
-    }
-
-    return nil, errors.New("pkcs8: unsupported encrypted PEM")
+    return false
 }
 
 func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFParameters, error) {

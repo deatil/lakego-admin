@@ -170,7 +170,7 @@ type MacOpts struct {
     HMACHash       Hash
 }
 
-func (this MacOpts) Compute(message []byte, password []byte) (data KDFParameters, err error) {
+func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParameters, err error) {
     var alg asn1.ObjectIdentifier
     var prfParam pkix.AlgorithmIdentifier
 

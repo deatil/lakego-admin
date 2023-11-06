@@ -6,12 +6,12 @@ import (
     "crypto/ecdh"
 )
 
-func NewNistCurve(curve ecdh.Curve) Curve {
-    return &nistCurve{curve}
-}
-
 type nistCurve struct{
     curve ecdh.Curve
+}
+
+func NewNistCurve(curve ecdh.Curve) Curve {
+    return &nistCurve{curve}
 }
 
 func (c *nistCurve) String() string {
@@ -104,8 +104,3 @@ func P521() Curve {
     return defaultP521
 }
 var defaultP521 = NewNistCurve(ecdh.P521())
-
-func X25519() Curve {
-    return defaultX25519
-}
-var defaultX25519 = NewNistCurve(ecdh.X25519())

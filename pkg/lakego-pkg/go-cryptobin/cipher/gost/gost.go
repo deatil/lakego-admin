@@ -1,87 +1,162 @@
 package gost
 
-import "strconv"
+import "crypto/cipher"
 
-type KeySizeError int
+// GOST 28147-89 defines a block size of 64 bits
+const BlockSize = 8
 
-func (k KeySizeError) Error() string {
-    return "gost: invalid key size: " + strconv.Itoa(int(k))
+// Internal state of the GOST block cipher
+type gostCipher struct {
+    key []uint32 // Encryption key
+    s   [][]byte // S-box provided as parameter
+    k   [][]byte // Expanded s-box
 }
 
-type SboxSizeError int
-
-func (k SboxSizeError) Error() string {
-    return "gost: invalid sbox size: " + strconv.Itoa(int(k))
-}
-
-// Expand s-box
-func sboxExpansion(s [][]byte) [][]byte {
-    // allocate buffer
-    k := make([][]byte, 4)
-    for i := 0; i < len(k); i++ {
-        k[i] = make([]byte, 256)
+// NewCipher creates and returns a new cipher.Block. The key argument
+// should be the 32 byte GOST 28147-89 key. The sbox argument should be a
+// 64 byte substitution table, represented as a two-dimensional array of 8 rows
+// of 16 4-bit integers.
+func NewCipher(key []byte, sbox [][]byte) (cipher.Block, error) {
+    if len(key) != 32 {
+        return nil, KeySizeError(len(key))
     }
 
-    // compute expansion
-    for i := 0; i < 256; i++ {
-        k[0][i] = (s[7][i>>4] << 4) | s[6][i&15]
-        k[1][i] = (s[5][i>>4] << 4) | s[4][i&15]
-        k[2][i] = (s[3][i>>4] << 4) | s[2][i&15]
-        k[3][i] = (s[1][i>>4] << 4) | s[0][i&15]
+    if len(sbox) != 8 {
+        return nil, SboxSizeError(len(sbox))
     }
 
-    return k
+    for i := 0; i < len(sbox); i++ {
+        if len(sbox[i]) != 16 {
+            return nil, SboxSizeError(len(sbox[i]))
+        }
+    }
+
+    kbox := sboxExpansion(sbox)
+
+    c := &gostCipher{
+        key: bytesToUint32s(key),
+        s:   sbox,
+        k:   kbox,
+    }
+
+    return c, nil
 }
 
-// Compute GOST cycle
-func cycle(x uint32, kbox [][]byte) uint32 {
-    x = uint32(kbox[0][(x>>24)&255])<<24 | uint32(kbox[1][(x>>16)&255])<<16 |
-        uint32(kbox[2][(x>>8)&255])<<8 | uint32(kbox[3][x&255])
+func (g *gostCipher) BlockSize() int {
+    return BlockSize
+}
 
+func (g *gostCipher) Encrypt(dst, src []byte) {
+    encSrc := bytesToUint32s(src)
+    encDst := make([]uint32, len(encSrc))
+
+    g.encrypt32(encDst, encSrc)
+
+    resBytes := uint32sToBytes(encDst)
+    copy(dst, resBytes)
+}
+
+func (g *gostCipher) Decrypt(dst, src []byte) {
+    encSrc := bytesToUint32s(src)
+    encDst := make([]uint32, len(encSrc))
+
+    g.decrypt32(encDst, encSrc)
+
+    resBytes := uint32sToBytes(encDst)
+    copy(dst, resBytes)
+}
+
+// GOST block cipher round function
+func (g *gostCipher) f(x uint32) uint32 {
+    x = uint32(g.k[0][(x>>24)&255])<<24 | uint32(g.k[1][(x>>16)&255])<<16 |
+        uint32(g.k[2][(x>>8)&255])<<8 | uint32(g.k[3][x&255])
+
+    // rotate result left by 11 bits
     return (x << 11) | (x >> (32 - 11))
 }
 
-// Endianness option
-const littleEndian bool = false
+// Encrypt one block from src into dst.
+func (g *gostCipher) encrypt32(dst, src []uint32) {
+    n1, n2 := src[0], src[1]
 
-// Convert a byte slice to a uint32 slice
-func bytesToUint32s(b []byte) []uint32 {
-    size := len(b) / 4
-    dst := make([]uint32, size)
+    n2 = n2 ^ g.f(n1+g.key[0])
+    n1 = n1 ^ g.f(n2+g.key[1])
+    n2 = n2 ^ g.f(n1+g.key[2])
+    n1 = n1 ^ g.f(n2+g.key[3])
+    n2 = n2 ^ g.f(n1+g.key[4])
+    n1 = n1 ^ g.f(n2+g.key[5])
+    n2 = n2 ^ g.f(n1+g.key[6])
+    n1 = n1 ^ g.f(n2+g.key[7])
 
-    for i := 0; i < size; i++ {
-        j := i * 4
+    n2 = n2 ^ g.f(n1+g.key[0])
+    n1 = n1 ^ g.f(n2+g.key[1])
+    n2 = n2 ^ g.f(n1+g.key[2])
+    n1 = n1 ^ g.f(n2+g.key[3])
+    n2 = n2 ^ g.f(n1+g.key[4])
+    n1 = n1 ^ g.f(n2+g.key[5])
+    n2 = n2 ^ g.f(n1+g.key[6])
+    n1 = n1 ^ g.f(n2+g.key[7])
 
-        if littleEndian {
-            dst[i] = uint32(b[j+0])<<24 | uint32(b[j+1])<<16 | uint32(b[j+2])<<8 | uint32(b[j+3])
-        } else {
-            dst[i] = uint32(b[j+0]) | uint32(b[j+1])<<8 | uint32(b[j+2])<<16 | uint32(b[j+3])<<24
-        }
-    }
+    n2 = n2 ^ g.f(n1+g.key[0])
+    n1 = n1 ^ g.f(n2+g.key[1])
+    n2 = n2 ^ g.f(n1+g.key[2])
+    n1 = n1 ^ g.f(n2+g.key[3])
+    n2 = n2 ^ g.f(n1+g.key[4])
+    n1 = n1 ^ g.f(n2+g.key[5])
+    n2 = n2 ^ g.f(n1+g.key[6])
+    n1 = n1 ^ g.f(n2+g.key[7])
 
-    return dst
+    n2 = n2 ^ g.f(n1+g.key[7])
+    n1 = n1 ^ g.f(n2+g.key[6])
+    n2 = n2 ^ g.f(n1+g.key[5])
+    n1 = n1 ^ g.f(n2+g.key[4])
+    n2 = n2 ^ g.f(n1+g.key[3])
+    n1 = n1 ^ g.f(n2+g.key[2])
+    n2 = n2 ^ g.f(n1+g.key[1])
+    n1 = n1 ^ g.f(n2+g.key[0])
+
+    dst[0], dst[1] = n2, n1
 }
 
-// Convert a uint32 slice to a byte slice
-func uint32sToBytes(w []uint32) []byte {
-    size := len(w) * 4
-    dst := make([]byte, size)
+// Decrypt one block from src into dst.
+func (g *gostCipher) decrypt32(dst, src []uint32) {
+    n1, n2 := src[0], src[1]
 
-    for i := 0; i < len(w); i++ {
-        j := i * 4
+    n2 = n2 ^ g.f(n1+g.key[0])
+    n1 = n1 ^ g.f(n2+g.key[1])
+    n2 = n2 ^ g.f(n1+g.key[2])
+    n1 = n1 ^ g.f(n2+g.key[3])
+    n2 = n2 ^ g.f(n1+g.key[4])
+    n1 = n1 ^ g.f(n2+g.key[5])
+    n2 = n2 ^ g.f(n1+g.key[6])
+    n1 = n1 ^ g.f(n2+g.key[7])
 
-        if littleEndian {
-            dst[j+0] = byte(w[i] >> 24)
-            dst[j+1] = byte(w[i] >> 16)
-            dst[j+2] = byte(w[i] >> 8)
-            dst[j+3] = byte(w[i])
-        } else {
-            dst[j+0] = byte(w[i])
-            dst[j+1] = byte(w[i] >> 8)
-            dst[j+2] = byte(w[i] >> 16)
-            dst[j+3] = byte(w[i] >> 24)
-        }
-    }
+    n2 = n2 ^ g.f(n1+g.key[7])
+    n1 = n1 ^ g.f(n2+g.key[6])
+    n2 = n2 ^ g.f(n1+g.key[5])
+    n1 = n1 ^ g.f(n2+g.key[4])
+    n2 = n2 ^ g.f(n1+g.key[3])
+    n1 = n1 ^ g.f(n2+g.key[2])
+    n2 = n2 ^ g.f(n1+g.key[1])
+    n1 = n1 ^ g.f(n2+g.key[0])
 
-    return dst
+    n2 = n2 ^ g.f(n1+g.key[7])
+    n1 = n1 ^ g.f(n2+g.key[6])
+    n2 = n2 ^ g.f(n1+g.key[5])
+    n1 = n1 ^ g.f(n2+g.key[4])
+    n2 = n2 ^ g.f(n1+g.key[3])
+    n1 = n1 ^ g.f(n2+g.key[2])
+    n2 = n2 ^ g.f(n1+g.key[1])
+    n1 = n1 ^ g.f(n2+g.key[0])
+
+    n2 = n2 ^ g.f(n1+g.key[7])
+    n1 = n1 ^ g.f(n2+g.key[6])
+    n2 = n2 ^ g.f(n1+g.key[5])
+    n1 = n1 ^ g.f(n2+g.key[4])
+    n2 = n2 ^ g.f(n1+g.key[3])
+    n1 = n1 ^ g.f(n2+g.key[2])
+    n2 = n2 ^ g.f(n1+g.key[1])
+    n1 = n1 ^ g.f(n2+g.key[0])
+
+    dst[0], dst[1] = n2, n1
 }

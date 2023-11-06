@@ -7,13 +7,14 @@ import (
     "encoding/asn1"
     "crypto/x509/pkix"
 
-    cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
-    cryptobin_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
+    pkcs8_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
 var (
     // see https://tools.ietf.org/html/rfc7292#appendix-D
     oidCertTypeX509Certificate = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 22, 1})
+    oidKeyBag                  = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 1})
     oidPKCS8ShroundedKeyBag    = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 2})
     oidCertBag                 = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 3})
     oidSecretBag               = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 5})
@@ -27,9 +28,9 @@ type certBag struct {
 func decodePkcs8ShroudedKeyBag(asn1Data, password []byte) (privateKey any, err error) {
     var pkData []byte
 
-    pkData, err = cryptobin_pbes1.DecryptPKCS8PrivateKey(asn1Data, password)
+    pkData, err = pkcs8_pbes1.DecryptPKCS8PrivateKey(asn1Data, password)
     if err != nil {
-        pkData, err = cryptobin_pbes2.DecryptPKCS8PrivateKey(asn1Data, password)
+        pkData, err = pkcs8_pbes2.DecryptPKCS8PrivateKey(asn1Data, password)
         if err != nil {
             return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
         }
@@ -60,13 +61,20 @@ func encodePkcs8ShroudedKeyBag(
 
     var keyBlock *pem.Block
 
-    if opt.PKCS8KDFOpts != nil {
-        keyBlock, err = cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, cryptobin_pbes2.Opts{
-            opt.PKCS8Cipher,
-            opt.PKCS8KDFOpts,
+    if opt.KeyKDFOpts != nil {
+        passwordString, err := decodeBMPString(password)
+        if err != nil {
+            return nil, err
+        }
+
+        password = []byte(passwordString)
+
+        keyBlock, err = pkcs8_pbes2.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, pkcs8_pbes2.Opts{
+            opt.KeyCipher,
+            opt.KeyKDFOpts,
         })
     } else {
-        keyBlock, err = cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.PKCS8Cipher)
+        keyBlock, err = pkcs8_pbes1.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.KeyCipher)
     }
 
     if err != nil {
@@ -113,20 +121,23 @@ func decodeSecretBag(asn1Data []byte, password []byte) (secretKey []byte, err er
     if err := unmarshal(asn1Data, bag); err != nil {
         return nil, errors.New("pkcs12: error decoding secret bag: " + err.Error())
     }
-    if !bag.SecretTypeID.Equal(oidPKCS8ShroundedKeyBag) {
-        return nil, NotImplementedError("only PKCS#8 shrouded key bag secretTypeID are supported")
-    }
 
     data := bag.SecretValue
 
     var decrypted []byte
 
-    decrypted, err = cryptobin_pbes1.DecryptPKCS8PrivateKey(data, password)
-    if err != nil {
-        decrypted, err = cryptobin_pbes2.DecryptPKCS8PrivateKey(data, password)
+    if bag.SecretTypeID.Equal(oidPKCS8ShroundedKeyBag) {
+        decrypted, err = pkcs8_pbes1.DecryptPKCS8PrivateKey(data, password)
         if err != nil {
-            return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+            decrypted, err = pkcs8_pbes2.DecryptPKCS8PrivateKey(data, password)
+            if err != nil {
+                return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+            }
         }
+    } else if bag.SecretTypeID.Equal(oidKeyBag) {
+        decrypted = data
+    } else {
+        return nil, NotImplementedError("only PKCS#8 shrouded key bag secretTypeID are supported")
     }
 
     s := new(pkcs8)
@@ -157,24 +168,37 @@ func encodeSecretBag(rand io.Reader, secretKey []byte, password []byte, opt Opts
         return nil, errors.New("pkcs12: " + err.Error())
     }
 
-    var keyBlock *pem.Block
-
-    if opt.PKCS8KDFOpts != nil {
-        keyBlock, err = cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, cryptobin_pbes2.Opts{
-            opt.PKCS8Cipher,
-            opt.PKCS8KDFOpts,
-        })
-    } else {
-        keyBlock, err = cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.PKCS8Cipher)
-    }
-
-    if err != nil {
-        return nil, errors.New("pkcs12: " + err.Error())
-    }
-
     var bag secretBag
-    bag.SecretTypeID = oidPKCS8ShroundedKeyBag
-    bag.SecretValue = keyBlock.Bytes
+
+    if opt.KeyCipher != nil {
+        var keyBlock *pem.Block
+
+        if opt.KeyKDFOpts != nil {
+            passwordString, err := decodeBMPString(password)
+            if err != nil {
+                return nil, err
+            }
+
+            password = []byte(passwordString)
+
+            keyBlock, err = pkcs8_pbes2.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, pkcs8_pbes2.Opts{
+                opt.KeyCipher,
+                opt.KeyKDFOpts,
+            })
+        } else {
+            keyBlock, err = pkcs8_pbes1.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.KeyCipher)
+        }
+
+        if err != nil {
+            return nil, errors.New("pkcs12: " + err.Error())
+        }
+
+        bag.SecretTypeID = oidPKCS8ShroundedKeyBag
+        bag.SecretValue = keyBlock.Bytes
+    } else {
+        bag.SecretTypeID = oidKeyBag
+        bag.SecretValue = pkData
+    }
 
     if asn1Data, err = asn1.Marshal(bag); err != nil {
         return nil, errors.New("pkcs12: error encoding secret bag: " + err.Error())

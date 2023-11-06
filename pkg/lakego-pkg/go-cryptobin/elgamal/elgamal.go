@@ -411,12 +411,7 @@ func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
         return false, errors.New("Public Key is error")
     }
 
-    ok, err := pub.Verify(hash, r, s)
-    if err != nil {
-        return false, err
-    }
-
-    return ok, nil
+    return pub.Verify(hash, r, s)
 }
 
 // SignASN1 signs a hash (which should be the result of hashing a larger message)
@@ -440,12 +435,7 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
         return false, err
     }
 
-    ok, err := pub.Verify(hash, rBytes, sBytes)
-    if err != nil {
-        return false, err
-    }
-
-    return ok, nil
+    return pub.Verify(hash, rBytes, sBytes)
 }
 
 func encodeSignature(r, s []byte) ([]byte, error) {

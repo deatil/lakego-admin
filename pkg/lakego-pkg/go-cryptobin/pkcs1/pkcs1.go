@@ -79,6 +79,10 @@ func DecryptPEMBlock(b *pem.Block, password []byte) ([]byte, error) {
 // design. Since it does not authenticate the ciphertext, it is vulnerable to
 // padding oracle attacks that can let an attacker recover the plaintext.
 func EncryptPEMBlock(rand io.Reader, blockType string, data, password []byte, cipher Cipher) (*pem.Block, error) {
+    if cipher == nil {
+        return nil, errors.New("pkcs1: incorrect cipher")
+    }
+
     // encrypt data
     encrypted, iv, err := cipher.Encrypt(rand, password, data)
     if err != nil {

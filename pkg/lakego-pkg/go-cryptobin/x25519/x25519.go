@@ -5,8 +5,8 @@ package x25519
 import (
     "bytes"
     "crypto"
-    "crypto/subtle"
     "strconv"
+    "crypto/subtle"
 
     "golang.org/x/crypto/curve25519"
 )

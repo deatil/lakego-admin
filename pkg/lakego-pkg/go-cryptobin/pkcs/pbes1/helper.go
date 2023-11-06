@@ -36,3 +36,25 @@ func CheckCipherFromName(name string) bool {
 
     return false
 }
+
+// 获取 Cipher 类型名称
+func GetCipherName(c Cipher) string {
+    for name, cipher := range PEMCipherMap {
+        if cipher.OID().Equal(c.OID()) {
+            return name
+        }
+    }
+
+    return ""
+}
+
+// 检测 Cipher
+func CheckCipher(c Cipher) bool {
+    for _, cipher := range PEMCipherMap {
+        if cipher.OID().Equal(c.OID()) {
+            return true
+        }
+    }
+
+    return false
+}

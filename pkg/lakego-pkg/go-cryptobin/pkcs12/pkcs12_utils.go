@@ -5,6 +5,8 @@ import (
     "errors"
     "encoding/asn1"
     "crypto/x509/pkix"
+
+    "github.com/deatil/go-cryptobin/pkcs8/pbes1"
 )
 
 // unmarshal calls asn1.Unmarshal, but also returns an error if there is any
@@ -26,7 +28,7 @@ func unmarshal(in []byte, out any) error {
 func parseContentEncryptionAlgorithm(contentEncryptionAlgorithm pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
     oid := contentEncryptionAlgorithm.Algorithm.String()
 
-    newCipher, err := GetCipher(oid)
+    newCipher, err := pbes1.GetCipher(oid)
     if err != nil {
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }

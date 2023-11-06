@@ -6,6 +6,8 @@ import (
 
     "github.com/tjfoc/gmsm/sm2"
     "github.com/tjfoc/gmsm/x509"
+
+    cryptobin_sm2 "github.com/deatil/go-cryptobin/sm2"
 )
 
 // SM2
@@ -18,7 +20,7 @@ func (this KeySM2) MarshalPrivateKey(privateKey crypto.PrivateKey) ([]byte, erro
         return nil, errors.New("pkcs12: private key is err")
     }
 
-    pkData, err := x509.MarshalSm2UnecryptedPrivateKey(priKey)
+    pkData, err := cryptobin_sm2.MarshalSM2PrivateKey(priKey)
     if err != nil {
         return nil, errors.New("pkcs12: error encoding PKCS#8 private key: " + err.Error())
     }

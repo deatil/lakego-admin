@@ -4,9 +4,6 @@ import (
     "errors"
     "crypto"
     "encoding/asn1"
-
-    cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
-    cryptobin_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
 // 加密接口
@@ -37,15 +34,15 @@ type Key interface {
 }
 
 // 数据接口
-type KDFParameters interface {
+type MacKDFParameters interface {
     // 验证
     Verify(message []byte, password []byte) (err error)
 }
 
 // KDF 设置接口
-type KDFOpts interface {
+type MacKDFOpts interface {
     // 构造
-    Compute(message []byte, password []byte) (data KDFParameters, err error)
+    Compute(message []byte, password []byte) (data MacKDFParameters, err error)
 }
 
 var keys = make(map[string]func() Key)
@@ -63,73 +60,3 @@ func GetKey(name string) (func() Key, error) {
 
     return key, nil
 }
-
-// ===============
-
-// KDF 设置接口
-type PKCS8KDFOpts = cryptobin_pbes2.KDFOpts
-
-// 配置
-type Opts struct {
-    PKCS8Cipher  Cipher
-    PKCS8KDFOpts PKCS8KDFOpts
-    Cipher       Cipher
-    KDFOpts      KDFOpts
-}
-
-func (this Opts) WithPKCS8Cipher(cipher Cipher) Opts {
-    this.PKCS8Cipher = cipher
-
-    return this
-}
-
-func (this Opts) WithPKCS8KDFOpts(opts PKCS8KDFOpts) Opts {
-    this.PKCS8KDFOpts = opts
-
-    return this
-}
-
-func (this Opts) WithCipher(cipher Cipher) Opts {
-    this.Cipher = cipher
-
-    return this
-}
-
-func (this Opts) WithKDFOpts(opts KDFOpts) Opts {
-    this.KDFOpts = opts
-
-    return this
-}
-
-// 默认配置
-var DefaultOpts = Opts{
-    PKCS8Cipher: cryptobin_pbes1.SHA1And3DES,
-    Cipher: CipherSHA1AndRC2_40,
-    KDFOpts: MacOpts{
-        SaltSize: 8,
-        IterationCount: 1,
-        HMACHash: SHA1,
-    },
-}
-
-// ===============
-
-type (
-    // PBKDF2 配置
-    PKCS8PBKDF2Opts = cryptobin_pbes2.PBKDF2Opts
-    // Scrypt 配置
-    PKCS8ScryptOpts = cryptobin_pbes2.ScryptOpts
-)
-
-var (
-    // 获取 Cipher 类型
-    GetPKCS8CipherFromName = cryptobin_pbes2.GetCipherFromName
-    // 获取 hash 类型
-    GetPKCS8HashFromName   = cryptobin_pbes2.GetHashFromName
-
-    // 获取 Cipher 类型
-    GetPKCS8PbeCipherFromName = cryptobin_pbes1.GetCipherFromName
-    // 检测 Cipher 类型
-    CheckPKCS8PbeCipherFromName = cryptobin_pbes1.CheckCipherFromName
-)
-

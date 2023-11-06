@@ -8,10 +8,6 @@ import(
 var (
     AddCipher = pbes1.AddCipher
     GetCipher = pbes1.GetCipher
-
-    // 帮助函数
-    GetCipherFromName   = pbes1.GetCipherFromName
-    CheckCipherFromName = pbes1.CheckCipherFromName
 )
 
 // 加密方式
