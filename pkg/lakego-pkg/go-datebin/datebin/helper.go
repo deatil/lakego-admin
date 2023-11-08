@@ -31,7 +31,7 @@ func TimestampToTime(timestamp int64, timezone ...string) time.Time {
 
 // 时间转换为时间戳
 func TimeToTimestamp(t time.Time, timezone ...string) int64 {
-    return FromTimeTime(t, timezone...).Timestamp()
+    return FromStdTime(t, timezone...).Timestamp()
 }
 
 // 时间字符转为时间

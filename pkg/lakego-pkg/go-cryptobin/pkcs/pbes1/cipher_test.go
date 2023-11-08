@@ -2,6 +2,7 @@ package pbes1
 
 import (
     "testing"
+    "crypto/rand"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -13,7 +14,7 @@ func test_cipher(t *testing.T, cipher Cipher, name string, key []byte) {
 
     plaintext := []byte("test data")
 
-    endata, parm, err := cipher.Encrypt(key, plaintext)
+    endata, parm, err := cipher.Encrypt(rand.Reader, key, plaintext)
     assertError(err, name + "-Encrypt")
     assertNotEmpty(endata, name + "-endata")
     assertNotEmpty(parm, name + "-parm")

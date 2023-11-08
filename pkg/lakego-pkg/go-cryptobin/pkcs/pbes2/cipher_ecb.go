@@ -1,6 +1,7 @@
 package pbes2
 
 import (
+    "io"
     "errors"
     "crypto/cipher"
     "encoding/asn1"
@@ -27,7 +28,7 @@ func (this CipherECB) OID() asn1.ObjectIdentifier {
 }
 
 // 加密
-func (this CipherECB) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherECB) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())

@@ -77,7 +77,7 @@ func EncryptPKCS8PrivateKey(
 
     encrypted, encryptionAlgorithm, err := PBES2Encrypt(rand, data, password, opt)
     if err != nil {
-        return nil, err
+        return nil, errors.New("pkcs8: " + err.Error())
     }
 
     // 生成 ans1 数据
@@ -88,7 +88,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New("pkcs8: error marshaling encrypted key." + err.Error())
+        return nil, errors.New("pkcs8: error marshaling encrypted key: " + err.Error())
     }
 
     return &pem.Block{
@@ -109,7 +109,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
 
     decryptedKey, err := PBES2Decrypt(encryptedKey, algo, password)
     if err != nil {
-        return nil, err
+        return nil, errors.New("pkcs8: " + err.Error())
     }
 
     return decryptedKey, nil
@@ -133,19 +133,19 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
 func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encrypted []byte, algo pkix.AlgorithmIdentifier, err error) {
     cipher := opt.Cipher
     if cipher == nil {
-        err = errors.New("pkcs8: failed to encrypt PEM: unknown opts cipher")
+        err = errors.New("unknown opts cipher")
         return
     }
 
     kdfOpts := opt.KDFOpts
     if kdfOpts == nil {
-        err = errors.New("pkcs8: failed to encrypt PEM: unknown opts kdfOpts")
+        err = errors.New("unknown opts kdfOpts")
         return
     }
 
     salt := make([]byte, kdfOpts.GetSaltSize())
     if _, saltErr := io.ReadFull(rand, salt); saltErr != nil {
-        err = errors.New("pkcs8: failed to generate salt." + err.Error())
+        err = errors.New("failed to generate salt: " + err.Error())
         return
     }
 
@@ -154,7 +154,7 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
         return
     }
 
-    encrypted, encryptedParams, err := cipher.Encrypt(key, data)
+    encrypted, encryptedParams, err := cipher.Encrypt(rand, key, data)
     if err != nil {
         return
     }
@@ -162,7 +162,6 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
     // 生成 asn1 数据开始
     marshalledParams, err := asn1.Marshal(kdfParams)
     if err != nil {
-        err = errors.New("pkcs8: " + err.Error())
         return
     }
 
@@ -203,12 +202,12 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
 // PBES2 解密
 func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) ([]byte, error) {
     if !algo.Algorithm.Equal(oidPBES2) {
-        return nil, errors.New("pkcs8: unsupported encrypted PEM: only PBES2 is supported")
+        return nil, errors.New("only PBES2 is supported")
     }
 
     var params pbes2Params
     if _, err := asn1.Unmarshal(algo.Parameters.FullBytes, &params); err != nil {
-        return nil, errors.New("pkcs8: invalid PBES2 parameters")
+        return nil, errors.New("invalid PBES2 parameters")
     }
 
     cipher, cipherParams, err := parseEncryptionScheme(params.EncryptionScheme)
@@ -251,14 +250,14 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
 
     params, ok := kdfs[oid]
     if !ok {
-        return nil, fmt.Errorf("pkcs8: unsupported KDF (OID: %s)", oid)
+        return nil, fmt.Errorf("unsupported KDF (OID: %s)", oid)
     }
 
     newParams := params()
 
     _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, newParams)
     if err != nil {
-        return nil, errors.New("pkcs8: invalid KDF parameters")
+        return nil, errors.New("invalid KDF parameters")
     }
 
     return newParams, nil
@@ -269,7 +268,7 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
 
     newCipher, err := GetCipher(oid)
     if err != nil {
-        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("unsupported cipher (OID: %s)", oid)
     }
 
     params := encryptionScheme.Parameters.FullBytes

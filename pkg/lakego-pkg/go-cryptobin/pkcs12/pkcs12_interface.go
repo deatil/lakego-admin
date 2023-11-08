@@ -1,6 +1,7 @@
 package pkcs12
 
 import (
+    "io"
     "errors"
     "crypto"
     "encoding/asn1"
@@ -15,7 +16,7 @@ type Cipher interface {
     KeySize() int
 
     // 加密, 返回: [加密后数据, 参数, error]
-    Encrypt(key, plaintext []byte) ([]byte, []byte, error)
+    Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error)
 
     // 解密
     Decrypt(key, params, ciphertext []byte) ([]byte, error)

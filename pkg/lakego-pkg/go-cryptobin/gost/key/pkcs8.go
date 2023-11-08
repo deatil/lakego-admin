@@ -233,7 +233,7 @@ func ParsePrivateKey(derBytes []byte) (*gost.PrivateKey, error) {
 }
 
 func marshalGostPrivateKeyWithOID(key *gost.PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
-    if !key.Curve.Contains(key.X, key.Y) {
+    if !key.Curve.IsOnCurve(key.X, key.Y) {
         return nil, errors.New("invalid gost key public key")
     }
 

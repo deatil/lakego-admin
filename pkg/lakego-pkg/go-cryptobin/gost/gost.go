@@ -198,12 +198,12 @@ func (priv *PrivateKey) SignASN1(rand io.Reader, digest []byte, opts crypto.Sign
     s := BytesToBigint(signature[:pointSize])
     r := BytesToBigint(signature[pointSize:])
 
-    encryptData, err := asn1.Marshal(gostSignature{s, r})
+    signedData, err := asn1.Marshal(gostSignature{s, r})
     if err != nil {
         return nil, err
     }
 
-    return encryptData, nil
+    return signedData, nil
 }
 
 // Public returns the public key corresponding to priv.

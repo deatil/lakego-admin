@@ -1,8 +1,8 @@
 package ssh
 
 import (
+    "io"
     "crypto"
-    "crypto/rand"
     "encoding/pem"
     "encoding/binary"
 
@@ -120,14 +120,14 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
 }
 
 // 编码
-func MarshalOpenSSHPrivateKey(key crypto.PrivateKey, comment string) (*pem.Block, error) {
-    return MarshalOpenSSHPrivateKeyWithPassword(key, comment, nil)
+func MarshalOpenSSHPrivateKey(rand io.Reader, key crypto.PrivateKey, comment string) (*pem.Block, error) {
+    return MarshalOpenSSHPrivateKeyWithPassword(rand, key, comment, nil)
 }
 
 // 编码
-func MarshalOpenSSHPrivateKeyWithPassword(key crypto.PrivateKey, comment string, password []byte, opts ...Opts) (*pem.Block, error) {
+func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey, comment string, password []byte, opts ...Opts) (*pem.Block, error) {
     var check uint32
-    if err := binary.Read(rand.Reader, binary.BigEndian, &check); err != nil {
+    if err := binary.Read(rand, binary.BigEndian, &check); err != nil {
         return nil, errors.Wrap(err, "error generating random check ")
     }
 

@@ -5,7 +5,7 @@ import (
 )
 
 // 时间
-func FromTimeTime(t time.Time, timezone ...string) Datebin {
+func FromStdTime(t time.Time, timezone ...string) Datebin {
     date := defaultDatebin.WithTime(t)
 
     if len(timezone) > 0 {
@@ -17,7 +17,7 @@ func FromTimeTime(t time.Time, timezone ...string) Datebin {
 
 // 时间戳
 func FromTimeUnix(second int64, nsec int64, timezone ...string) Datebin {
-    return FromTimeTime(time.Unix(second, nsec), timezone...)
+    return FromStdTime(time.Unix(second, nsec), timezone...)
 }
 
 // 时间戳
@@ -32,7 +32,7 @@ func FromDatetimeWithNanosecond(year, month, day, hour, minute, second, nanoseco
         monthData = Months[1]
     }
 
-    return FromTimeTime(time.Date(year, monthData, day, hour, minute, second, nanosecond, time.Local), timezone...)
+    return FromStdTime(time.Date(year, monthData, day, hour, minute, second, nanosecond, time.Local), timezone...)
 }
 
 // 日期时间带微秒

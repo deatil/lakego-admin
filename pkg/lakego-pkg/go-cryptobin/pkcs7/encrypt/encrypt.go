@@ -1,9 +1,9 @@
 package encrypt
 
 import (
+    "io"
     "errors"
     "math/big"
-    "crypto/rand"
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
@@ -67,7 +67,7 @@ var DefaultOpts = Opts{
 }
 
 // 加密
-func Encrypt(content []byte, recipients []*x509.Certificate, opts ...Opts) ([]byte, error) {
+func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opts ...Opts) ([]byte, error) {
     var eci *encryptedContentInfo
     var key []byte
     var err error
@@ -79,23 +79,21 @@ func Encrypt(content []byte, recipients []*x509.Certificate, opts ...Opts) ([]by
 
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("Pkcs7: failed to encrypt PEM: unknown opts cipher")
+        return nil, errors.New("pkcs7: failed to encrypt PEM: unknown opts cipher")
     }
 
     keyEncrypt := opt.KeyEncrypt
     if keyEncrypt == nil {
-        return nil, errors.New("failed to encrypt PEM: unknown opts keyEncrypt")
+        return nil, errors.New("pkcs7: unknown opts keyEncrypt")
     }
 
     // 生成密钥
     key = make([]byte, cipher.KeySize())
-
-    _, err = rand.Read(key)
-    if err != nil {
-        return nil, err
+    if _, err := io.ReadFull(rand, key); err != nil {
+        return nil, errors.New("pkcs7: cannot generate key: " + err.Error())
     }
 
-    encrypted, paramBytes, err := cipher.Encrypt(key, content)
+    encrypted, paramBytes, err := cipher.Encrypt(rand, key, content)
     if err != nil {
         return nil, err
     }
@@ -157,7 +155,7 @@ func Encrypt(content []byte, recipients []*x509.Certificate, opts ...Opts) ([]by
 
 // EncryptUsingPSK creates and returns an encrypted data PKCS7 structure,
 // encrypted using caller provided pre-shared secret.
-func EncryptUsingPSK(content []byte, key []byte, cipher Cipher) ([]byte, error) {
+func EncryptUsingPSK(rand io.Reader, content []byte, key []byte, cipher Cipher) ([]byte, error) {
     var eci *encryptedContentInfo
     var err error
 
@@ -165,7 +163,7 @@ func EncryptUsingPSK(content []byte, key []byte, cipher Cipher) ([]byte, error) 
         return nil, ErrPSKNotProvided
     }
 
-    encrypted, paramBytes, err := cipher.Encrypt(key, content)
+    encrypted, paramBytes, err := cipher.Encrypt(rand, key, content)
     if err != nil {
         return nil, err
     }

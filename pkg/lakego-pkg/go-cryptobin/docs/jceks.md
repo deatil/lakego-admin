@@ -73,7 +73,7 @@ func main() {
     // 获取密钥
     var alias string
     var secret []byte
-    secret, err := ks.GetSecretKey(alias)
+    secret, err := ks.GetSecretKey(alias, keypass)
 
     // 列出私钥对应的别名
     var priAliases []string

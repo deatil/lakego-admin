@@ -1,6 +1,7 @@
 package pbes2
 
 import (
+    "io"
     "errors"
     "crypto/cipher"
     "encoding/asn1"
@@ -32,15 +33,15 @@ func (this CipherGCM) OID() asn1.ObjectIdentifier {
 }
 
 // 加密
-func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherGCM) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
         return nil, nil, err
     }
 
-    nonce, err := genRandom(this.nonceSize)
-    if err != nil {
-        return nil, nil, err
+    nonce := make([]byte, this.nonceSize)
+    if _, err := io.ReadFull(rand, nonce); err != nil {
+        return nil, nil, errors.New("pkcs/cipher: failed to generate nonce: " + err.Error())
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, this.nonceSize)

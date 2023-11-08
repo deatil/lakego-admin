@@ -19,6 +19,11 @@ func (this Datebin) IsInvalid() bool {
     return false
 }
 
+// 是否是夏令时
+func (this Datebin) IsDST() bool {
+    return this.time.IsDST()
+}
+
 // 是否是 Utc 时区
 func (this Datebin) IsUTC() bool {
     return this.GetTimezone() == UTC
@@ -63,7 +68,7 @@ func (this Datebin) IsLeapYear() bool {
     }
 
     year := this.time.In(this.loc).Year()
-    if year%400 == 0 || (year%4 == 0 && year%100 != 0) {
+    if year%4 == 0 && (year%100 != 0 || year%400 == 0) {
         return true
     }
 

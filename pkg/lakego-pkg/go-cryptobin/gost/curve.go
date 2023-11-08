@@ -23,7 +23,7 @@ func NewCurve(p, q, a, b, x, y, e, d, co *big.Int) (*Curve, error) {
         X:    x,
         Y:    y,
     }
-    if !c.Contains(c.X, c.Y) {
+    if !c.IsOnCurve(c.X, c.Y) {
         return nil, errors.New("gost: invalid curve parameters")
     }
 
@@ -69,7 +69,8 @@ type Curve struct {
     edT *big.Int
 }
 
-func (c *Curve) Contains(x, y *big.Int) bool {
+// Contains
+func (c *Curve) IsOnCurve(x, y *big.Int) bool {
     r1 := big.NewInt(0)
     r2 := big.NewInt(0)
     r1.Mul(y, y)
@@ -81,10 +82,6 @@ func (c *Curve) Contains(x, y *big.Int) bool {
     r2.Mod(r2, c.P)
     c.pos(r2)
     return r1.Cmp(r2) == 0
-}
-
-func (c *Curve) IsOnCurve(x, y *big.Int) bool {
-    return c.Contains(x, y)
 }
 
 // Get the size of the point's coordinate in bytes.

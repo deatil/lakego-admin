@@ -7,6 +7,7 @@ import (
     "testing"
     "crypto/rsa"
     "crypto/x509"
+    "crypto/rand"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs7/sign"
@@ -106,13 +107,11 @@ func signAndDetach(content []byte, cert *x509.Certificate, privkey *rsa.PrivateK
 
     // 加密
     key := []byte("123456789012werfde1234567890rt32")
-    // enData, err := encrypt.Encrypt(signed, []*x509.Certificate{cert})
-    enData, err := encrypt.EncryptUsingPSK(signed, key, encrypt.AES256CBC)
+    enData, err := encrypt.EncryptUsingPSK(rand.Reader, signed, key, encrypt.AES256CBC)
     enDataw := EncodePkcs7ToPem(enData, "ENCRYPTED PKCS7")
 
     // 解密
     deData, _ := ParsePkcs7Pem(enDataw)
-    // deDataw, err := encrypt.Decrypt(deData, cert, privkey)
     deDataw, err := encrypt.DecryptUsingPSK(deData, key)
 
     if string(signed) != string(deDataw) {
@@ -133,4 +132,73 @@ func Test_SignAndDetach(t *testing.T) {
     assertError(pkcs7err, "SignAndDetach-Decode")
 
     assertNotEmpty(pkcs7Sign, "SignAndDetach")
+}
+
+func signAndDetach2(content []byte, cert *x509.Certificate, privkey *rsa.PrivateKey) (signed []byte, err error) {
+    toBeSigned, err := sign.NewSignedData(content)
+    if err != nil {
+        err = fmt.Errorf("Cannot initialize signed data: %s", err)
+        return
+    }
+    if err = toBeSigned.AddSigner(cert, privkey, sign.SignerInfoConfig{}); err != nil {
+        err = fmt.Errorf("Cannot add signer: %s", err)
+        return
+    }
+
+    // Detach signature, omit if you want an embedded signature
+    toBeSigned.Detach()
+
+    signed, err = toBeSigned.Finish()
+    if err != nil {
+        err = fmt.Errorf("Cannot finish signing data: %s", err)
+        return
+    }
+
+    // Verify the signature
+    pem.Encode(os.Stdout, &pem.Block{Type: "PKCS7", Bytes: signed})
+
+    p7, err := sign.Parse(signed)
+    if err != nil {
+        err = fmt.Errorf("Cannot parse our signed data: %s", err)
+        return
+    }
+
+    // since the signature was detached, reattach the content here
+    p7.Content = content
+
+    if bytes.Compare(content, p7.Content) != 0 {
+        err = fmt.Errorf("Our content was not in the parsed data:\n\tExpected: %s\n\tActual: %s", content, p7.Content)
+        return
+    }
+    if err = p7.Verify(); err != nil {
+        err = fmt.Errorf("Cannot verify our signed data: %s", err)
+        return
+    }
+
+    // 加密
+    enData, err := encrypt.Encrypt(rand.Reader, signed, []*x509.Certificate{cert})
+    enDataw := EncodePkcs7ToPem(enData, "ENCRYPTED PKCS7")
+
+    // 解密
+    deData, _ := ParsePkcs7Pem(enDataw)
+    deDataw, err := encrypt.Decrypt(deData, cert, privkey)
+
+    if string(signed) != string(deDataw) {
+        err = fmt.Errorf("Cannot Decrypt our signed data: %s", err)
+        return
+    }
+
+    return deDataw, err
+}
+
+func Test_SignAndDetach2(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    pkcs7Data := testFixtureresult
+    pkcs7Sign, pkcs7err := signAndDetach2([]byte("hello world"), pkcs7Data.Certificate, pkcs7Data.PrivateKey)
+
+    assertError(pkcs7err, "SignAndDetach2-Decode")
+
+    assertNotEmpty(pkcs7Sign, "SignAndDetach2")
 }

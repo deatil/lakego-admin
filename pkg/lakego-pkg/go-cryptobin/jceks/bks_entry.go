@@ -123,7 +123,7 @@ func (this *bksKeyEntry) Recover() (
             return
     }
 
-    err = fmt.Errorf("Key format '%s' not recognized", keyType)
+    err = fmt.Errorf("Key format '%d' not recognized", keyType)
     return
 }
 

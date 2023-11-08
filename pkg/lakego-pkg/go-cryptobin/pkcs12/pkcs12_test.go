@@ -652,7 +652,7 @@ hpBvQTrd3nk4MQ0gW6+TEH41WmS9MCswHzAHBgUrDgMCGgQUhCEuVk8TABfWMBcA
 BQamSGGwvAcECJQ5KEpsGh9o
 -----END Data-----
 `
-var testNewPfxPbse2_Encode = `
+var testNewPfxPbes2_Encode = `
 -----BEGIN Data-----
 MIIKMQIBAzCCCeEGCSqGSIb3DQEHAaCCCdIEggnOMIIJyjCCBDgGCSqGSIb3DQEH
 BqCCBCkwggQlAgEAMIIEHgYJKoZIhvcNAQcBMF0GCSqGSIb3DQEFDTBQMC8GCSqG
@@ -915,31 +915,31 @@ func Test_EncodeDes_Check(t *testing.T) {
     })
 }
 
-func Test_EncodePbse2_Check(t *testing.T) {
-    t.Run("EncodePbse2_Check", func(t *testing.T) {
+func Test_EncodePbes2_Check(t *testing.T) {
+    t.Run("EncodePbes2_Check", func(t *testing.T) {
         assertEqual := cryptobin_test.AssertEqualT(t)
         assertError := cryptobin_test.AssertErrorT(t)
 
         certificates, err := x509.ParseCertificates(decodePEM(certificate))
-        assertError(err, "EncodePbse2_Check-certificates")
+        assertError(err, "EncodePbes2_Check-certificates")
 
         parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-        assertError(err, "EncodePbse2_Check-privateKey")
+        assertError(err, "EncodePbes2_Check-privateKey")
 
         privateKey, ok := parsedKey.(*rsa.PrivateKey)
         if !ok {
-            t.Error("EncodePbse2_Check rsa Error")
+            t.Error("EncodePbes2_Check rsa Error")
         }
 
-        pfxData := decodePEM(testNewPfxPbse2_Encode)
+        pfxData := decodePEM(testNewPfxPbes2_Encode)
 
         password := "pass"
 
         privateKey2, certificate2, err := Decode(pfxData, password)
-        assertError(err, "EncodePbse2_Check-pfxData")
+        assertError(err, "EncodePbes2_Check-pfxData")
 
-        assertEqual(privateKey2, privateKey, "EncodePbse2_Check-privateKey2")
-        assertEqual(certificate2, certificates[0], "EncodePbse2_Check-certificate2")
+        assertEqual(privateKey2, privateKey, "EncodePbes2_Check-privateKey2")
+        assertEqual(certificate2, certificates[0], "EncodePbes2_Check-certificate2")
     })
 }
 

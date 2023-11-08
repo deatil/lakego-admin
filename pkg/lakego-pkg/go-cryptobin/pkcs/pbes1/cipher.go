@@ -1,6 +1,7 @@
 package pbes1
 
 import(
+    "io"
     "fmt"
     "encoding/asn1"
 
@@ -16,7 +17,7 @@ type Cipher interface {
     KeySize() int
 
     // 加密, 返回: [加密后数据, 参数, error]
-    Encrypt(key, plaintext []byte) ([]byte, []byte, error)
+    Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error)
 
     // 解密
     Decrypt(key, params, ciphertext []byte) ([]byte, error)
@@ -53,9 +54,4 @@ func pkcs7Padding(text []byte, blockSize int) []byte {
 // 明文减码算法
 func pkcs7UnPadding(src []byte) ([]byte, error) {
     return newPadding.PKCS7UnPadding(src)
-}
-
-// 随机生成字符
-func genRandom(num int) ([]byte, error) {
-    return tool.GenRandom(num)
 }

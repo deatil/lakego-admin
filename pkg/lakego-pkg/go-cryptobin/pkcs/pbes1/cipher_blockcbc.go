@@ -1,6 +1,7 @@
 package pbes1
 
 import (
+    "io"
     "hash"
     "errors"
     "crypto/cipher"
@@ -44,10 +45,10 @@ func (this CipherBlockCBC) OID() asn1.ObjectIdentifier {
 }
 
 // 加密
-func (this CipherBlockCBC) Encrypt(password, plaintext []byte) ([]byte, []byte, error) {
-    salt, err := genRandom(this.saltSize)
-    if err != nil {
-        return nil, nil, errors.New(err.Error() + " failed to generate salt")
+func (this CipherBlockCBC) Encrypt(rand io.Reader, password, plaintext []byte) ([]byte, []byte, error) {
+    salt := make([]byte, this.saltSize)
+    if _, err := io.ReadFull(rand, salt); err != nil {
+        return nil, nil, errors.New("pkcs1: failed to generate salt: " + err.Error())
     }
 
     key, iv := this.derivedKeyFunc(string(password), string(salt), this.iterationCount, this.keySize, this.blockSize, this.hashFunc)

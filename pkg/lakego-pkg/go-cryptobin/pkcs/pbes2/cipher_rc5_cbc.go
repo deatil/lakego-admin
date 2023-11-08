@@ -1,8 +1,8 @@
 package pbes2
 
 import (
+    "io"
     "errors"
-    "crypto/rand"
     "crypto/cipher"
     "encoding/asn1"
 )
@@ -34,7 +34,7 @@ func (this CipherRC5CBC) OID() asn1.ObjectIdentifier {
 }
 
 // 加密
-func (this CipherRC5CBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) {
+func (this CipherRC5CBC) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key, this.wordSize, this.rounds)
     if err != nil {
         return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
@@ -43,8 +43,8 @@ func (this CipherRC5CBC) Encrypt(key, plaintext []byte) ([]byte, []byte, error) 
     blockSize := block.BlockSize()
 
     // 随机生成 iv
-    iv := make(cbcParams, blockSize)
-    if _, err := rand.Read(iv); err != nil {
+    iv := make([]byte, blockSize)
+    if _, err := io.ReadFull(rand, iv); err != nil {
         return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
     }
 

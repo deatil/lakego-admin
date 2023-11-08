@@ -30,7 +30,7 @@ func EncryptPKCS8PrivateKey(
         return nil, errors.New("failed to encrypt PEM: unknown cipher")
     }
 
-    encrypted, marshalledParams, err := cipher.Encrypt(password, data)
+    encrypted, marshalledParams, err := cipher.Encrypt(rand, password, data)
     if err != nil {
         return nil, err
     }

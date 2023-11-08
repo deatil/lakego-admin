@@ -1,4 +1,4 @@
-package pbes2
+package pbes1
 
 import (
     "testing"
@@ -15,7 +15,7 @@ func Test_EncryptPKCS8PrivateKey(t *testing.T) {
     data := "test-data"
     pass := "test-pass"
 
-    block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass))
+    block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass), SHA1And3DES)
     assertError(err, "EncryptPKCS8PrivateKey-EN")
     assertNotEmpty(block.Bytes, "EncryptPKCS8PrivateKey-EN")
 
