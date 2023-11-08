@@ -4,7 +4,7 @@ import (
     "time"
 )
 
-// 时间
+// 标准时间
 func FromStdTime(t time.Time, timezone ...string) Datebin {
     date := defaultDatebin.WithTime(t)
 
@@ -15,14 +15,14 @@ func FromStdTime(t time.Time, timezone ...string) Datebin {
     return date
 }
 
-// 时间戳
-func FromTimeUnix(second int64, nsec int64, timezone ...string) Datebin {
+// 标准时间戳带毫秒
+func FromStdUnix(second int64, nsec int64, timezone ...string) Datebin {
     return FromStdTime(time.Unix(second, nsec), timezone...)
 }
 
-// 时间戳
+// 标准时间戳
 func FromTimestamp(timestamp int64, timezone ...string) Datebin {
-    return FromTimeUnix(timestamp, 0, timezone...)
+    return FromStdUnix(timestamp, 0, timezone...)
 }
 
 // 日期时间带纳秒

@@ -131,8 +131,8 @@ timezone := datebin.UTC
 
 // 添加时间
 date := datebin.
-    FromTimeTime(time.Now(), timezone).
-    // FromTimeUnix(int64(1652587697), int64(0), timezone).
+    FromStdTime(time.Now(), timezone).
+    // FromStdUnix(int64(1652587697), int64(0), timezone).
     // FromTimestamp(int64(1652587697), timezone).
     // FromDatetimeWithNanosecond(2022, 10, 23, 22, 18, 56, 123, timezone).
     // FromDatetimeWithMicrosecond(2022, 10, 23, 22, 18, 56, 123, timezone).

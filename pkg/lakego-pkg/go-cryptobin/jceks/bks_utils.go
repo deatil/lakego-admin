@@ -4,7 +4,7 @@ import (
     "crypto/x509"
 )
 
-// 解析证书链
+// parseCertChain
 func parseCertChain(certChain [][]byte) (certs []*x509.Certificate, err error) {
     for _, cert := range certChain {
         var parsedCert *x509.Certificate

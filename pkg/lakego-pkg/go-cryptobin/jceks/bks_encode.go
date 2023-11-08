@@ -11,7 +11,7 @@ import (
     "crypto/hmac"
 )
 
-// 添加
+// AddCert
 func (this *BKS) AddCert(alias string, certData []byte, certChain [][]byte) error {
     entry := &bksTrustedCertEntry{}
     entry.cert = certData
@@ -24,7 +24,7 @@ func (this *BKS) AddCert(alias string, certData []byte, certChain [][]byte) erro
     return nil
 }
 
-// 添加私钥
+// AddKeyPrivate
 func (this *BKS) AddKeyPrivate(
     alias string,
     privateKey crypto.PrivateKey,
@@ -53,7 +53,7 @@ func (this *BKS) AddKeyPrivate(
     return nil
 }
 
-// 添加私钥
+// AddKeyPrivateWithPassword
 func (this *BKS) AddKeyPrivateWithPassword(
     alias string,
     privateKey crypto.PrivateKey,
@@ -87,7 +87,7 @@ func (this *BKS) AddKeyPrivateWithPassword(
     return nil
 }
 
-// 添加公钥
+// AddKeyPublic
 func (this *BKS) AddKeyPublic(
     alias string,
     publicKey crypto.PublicKey,
@@ -116,7 +116,7 @@ func (this *BKS) AddKeyPublic(
     return nil
 }
 
-// 添加公钥
+// AddKeyPublicWithPassword
 func (this *BKS) AddKeyPublicWithPassword(
     alias string,
     publicKey crypto.PublicKey,
@@ -150,7 +150,7 @@ func (this *BKS) AddKeyPublicWithPassword(
     return nil
 }
 
-// 添加密钥
+// AddKeySecret
 // algorithm = "AES"
 func (this *BKS) AddKeySecret(
     alias string,
@@ -171,7 +171,7 @@ func (this *BKS) AddKeySecret(
     return nil
 }
 
-// 添加密钥
+// AddKeySecretWithPassword
 // algorithm = "AES"
 func (this *BKS) AddKeySecretWithPassword(
     alias string,
@@ -197,7 +197,7 @@ func (this *BKS) AddKeySecretWithPassword(
     return nil
 }
 
-// 添加证书
+// AddSecret
 func (this *BKS) AddSecret(
     alias string,
     secretData []byte,
@@ -282,7 +282,7 @@ func (this *BKS) marshalSealed(w io.Writer, data *bksSealedKeyEntry) error {
     return nil
 }
 
-// 包装
+// marshalEntryData
 func (this *BKS) marshalEntryData(
     w io.Writer,
     tag int,
@@ -327,7 +327,7 @@ func (this *BKS) marshalEntryData(
     return nil
 }
 
-// 包装
+// marshalEntries
 func (this *BKS) marshalEntries(w io.Writer) error {
     var err error
 
@@ -368,20 +368,20 @@ func (this *BKS) marshalEntries(w io.Writer) error {
         return err
     }
 
-    // 添加间隔
+    // add time
     err = writeUint8(w, uint8(0))
 
     return err
 }
 
-// 配置
+// Opts
 type BKSOpts struct {
     Version        int
     SaltSize       int
     IterationCount int
 }
 
-// 默认配置
+// DefaultOpts
 var BKSDefaultOpts = BKSOpts{
     Version:        1,
     SaltSize:       20,
@@ -427,13 +427,13 @@ func (this *BKS) Marshal(password string, opts ...BKSOpts) ([]byte, error) {
 
     entryBuf := bytes.NewBuffer(nil)
 
-    // 编码数据
+    // marshalEntries
     err = this.marshalEntries(entryBuf)
     if err != nil {
         return nil, err
     }
 
-    // 生成签名
+    // make sign
     hmacFn := sha1.New
     hmacDigestSize := hmacFn().Size()
     hmacKeySize := hmacDigestSize*8

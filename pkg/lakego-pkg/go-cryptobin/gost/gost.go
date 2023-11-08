@@ -224,17 +224,12 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
 
 // GenerateKey generates a random GOST private key of the given bit size.
 func GenerateKey(rand io.Reader, curve *Curve) (*PrivateKey, error) {
-    raw := make([]byte, curve.PointSize())
-    if _, err := io.ReadFull(rand, raw); err != nil {
+    private := make([]byte, curve.PointSize())
+    if _, err := io.ReadFull(rand, private); err != nil {
         return nil, fmt.Errorf("gost: %w", err)
     }
 
-    pointSize := curve.PointSize()
-    if len(raw) != pointSize {
-        return nil, fmt.Errorf("gost: len(key)=%d != %d", len(raw), pointSize)
-    }
-
-    k := BytesToBigint(raw)
+    k := BytesToBigint(private)
     if k.Cmp(zero) == 0 {
         return nil, errors.New("gost: zero private key")
     }

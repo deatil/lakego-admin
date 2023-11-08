@@ -26,17 +26,17 @@ const (
  * @author deatil
  */
 type BKS struct {
-    // 版本号
+    // version
     version   uint32
 
-    // 存储类型
+    // storeType
     storeType string
 
-    // 数据
+    // data
     entries   map[string]any
 }
 
-// 构造函数
+// NewBKS
 func NewBKS() *BKS {
     return &BKS{
         entries: make(map[string]any),
@@ -64,5 +64,5 @@ func LoadBksFromBytes(data []byte, password string) (*BKS, error) {
     return LoadBksFromReader(buf, password)
 }
 
-// 别名
+// alias
 var NewBksEncode = NewBKS

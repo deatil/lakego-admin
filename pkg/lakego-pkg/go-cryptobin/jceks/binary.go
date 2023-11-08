@@ -63,7 +63,7 @@ func readDate(r io.Reader) (time.Time, error) {
     return time.Unix(sec, nsec), nil
 }
 
-// 13位时间戳
+// 13 time len
 func writeDate(w io.Writer, v time.Time) error {
     vv := v.UnixNano() / int64(time.Millisecond)
 
@@ -127,7 +127,7 @@ func writeBytes(w io.Writer, v []byte) error {
     return binary.Write(w, binary.BigEndian, v)
 }
 
-// 仅读取
+// readOnly
 func readOnly(r io.Reader, length int32) ([]byte, error) {
     buf := make([]byte, length)
 
@@ -139,7 +139,7 @@ func readOnly(r io.Reader, length int32) ([]byte, error) {
     return buf, nil
 }
 
-// 仅写入
+// writeOnly
 func writeOnly(w io.Writer, v []byte) error {
     return binary.Write(w, binary.BigEndian, v)
 }

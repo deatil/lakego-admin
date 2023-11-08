@@ -1,13 +1,15 @@
 package asn1
 
 import (
+    "io"
     "math"
-    // "bytes"
+    "bytes"
     "errors"
     "unicode/utf16"
     "testing"
     "crypto/hmac"
     "crypto/sha1"
+    "encoding/binary"
     "encoding/base64"
 
     cryptobin_pbkdf "github.com/deatil/go-cryptobin/kdf/pbkdf"
@@ -205,6 +207,18 @@ func Test_SM2Pkcs12(t *testing.T) {
         // t.Errorf("password is error")
     }
 
+    for _, as := range authenticatedSafes {
+        // t.Errorf("%x", as.Bytes)
+
+        asBuf := bytes.NewReader(as.Bytes)
+
+        _, err := readUint8(asBuf)
+        if err != nil {
+            t.Errorf("readUint8 err: %v", err)
+        }
+
+    }
+
     // t.Errorf("authenticatedSafes data: %#v", authenticatedSafes)
 
 }
@@ -241,4 +255,56 @@ func testBmpString(s string) ([]byte, error) {
     }
 
     return ret, nil
+}
+
+func readUint8(r io.Reader) (uint8, error) {
+    var v uint8
+    err := binary.Read(r, binary.BigEndian, &v)
+
+    return v, err
+}
+
+func readUint16(r io.Reader) (uint16, error) {
+    var v uint16
+    err := binary.Read(r, binary.BigEndian, &v)
+
+    return v, err
+}
+
+func readInt32(r io.Reader) (int32, error) {
+    var v int32
+    err := binary.Read(r, binary.BigEndian, &v)
+
+    return v, err
+}
+
+func readUTF(r io.Reader) (string, error) {
+    length, err := readUint16(r)
+    if err != nil {
+        return "", err
+    }
+
+    buf := make([]byte, length)
+
+    _, err = io.ReadFull(r, buf)
+    if err != nil {
+        return "", err
+    }
+
+    return string(buf), nil
+}
+
+func readBytes(r io.Reader) ([]byte, error) {
+    length, err := readInt32(r)
+    if err != nil {
+        return nil, err
+    }
+
+    buf := make([]byte, length)
+    _, err = io.ReadFull(r, buf)
+    if err != nil {
+        return nil, err
+    }
+
+    return buf, nil
 }

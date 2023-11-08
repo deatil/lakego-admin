@@ -68,7 +68,7 @@ func (this *bksKeyEntry) IsDecrypted() bool {
     return true
 }
 
-// 解密
+// Decrypt
 func (this *bksKeyEntry) Decrypt(password string) error {
     return nil
 }
@@ -144,7 +144,7 @@ func (this *bksTrustedCertEntry) IsDecrypted() bool {
     return true
 }
 
-// 解密
+// Decrypt
 func (this *bksTrustedCertEntry) Decrypt(password string) error {
     return nil
 }
@@ -165,7 +165,7 @@ func (this *bksSecretKeyEntry) IsDecrypted() bool {
     return true
 }
 
-// 解密
+// Decrypt
 func (this *bksSecretKeyEntry) Decrypt(password string) error {
     return nil
 }
@@ -192,7 +192,7 @@ func (this *bksSealedKeyEntry) IsDecrypted() bool {
     return false
 }
 
-// 解密
+// Decrypt
 func (this *bksSealedKeyEntry) Decrypt(password string) error {
     if this.IsDecrypted() {
         return nil
@@ -247,7 +247,7 @@ func (this *bksSealedKeyEntry) Decrypt(password string) error {
     return nil
 }
 
-// 加密
+// Encrypt
 func (this *bksSealedKeyEntry) Encrypt() ([]byte, error) {
     var err error
 

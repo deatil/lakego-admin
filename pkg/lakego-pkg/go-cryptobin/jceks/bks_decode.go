@@ -73,7 +73,7 @@ func (this *BKS) readSecret(r io.Reader) (*bksSecretKeyEntry, error) {
     return entry, nil
 }
 
-// 解密
+// readSealed
 func (this *BKS) readSealed(r io.Reader) (*bksSealedKeyEntry, error) {
     sealedData, err := readBytes(r)
     if err != nil {
@@ -86,7 +86,7 @@ func (this *BKS) readSealed(r io.Reader) (*bksSealedKeyEntry, error) {
     return entry, nil
 }
 
-// 解析
+// loadEntries
 func (this *BKS) loadEntries(r io.Reader, password string) error {
     for {
         tag, err := readUint8(r)
@@ -153,7 +153,7 @@ func (this *BKS) loadEntries(r io.Reader, password string) error {
     return nil
 }
 
-// 解析
+// Parse
 func (this *BKS) Parse(r io.Reader, password string) error {
     version, err := readUint32(r)
     if err != nil {

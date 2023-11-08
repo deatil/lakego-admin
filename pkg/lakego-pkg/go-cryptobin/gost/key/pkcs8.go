@@ -11,12 +11,10 @@ import (
     "github.com/deatil/go-cryptobin/gost"
 )
 
-const gostPrivKeyVersion = 1
-
 var (
     oidPublicKeyGOST = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
 
-    oidGostR3410_2001_TestParamSet     = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 0}
+    oidGostR3410_2001_TestParamSet         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 0}
 
     oidTc26_gost_3410_12_256_paramSetA     = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 1}
     oidGostR3410_2001_CryptoPro_A_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 1}
@@ -48,20 +46,22 @@ func init() {
     AddNamedCurve(gost.CurveIdGostR34102001CryptoProXchBParamSet(), oidGostR3410_2001_CryptoPro_XchB_ParamSet)
 }
 
-// 私钥 - 包装
+const gostPrivKeyVersion = 1
+
+// pkcs8 data
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
 }
 
-// 公钥 - 包装
+// PublicKey data
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// publicKeyInfo parse
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -77,7 +77,7 @@ type gostPrivateKey struct {
     PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-// 包装公钥
+// Marshal PublicKey
 func MarshalPublicKey(pub *gost.PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -114,7 +114,7 @@ func MarshalPublicKey(pub *gost.PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey
 func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -130,7 +130,7 @@ func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
         return
     }
 
-    // 解析
+    // parse
     keyData := &pki
 
     oid := keyData.Algorithm.Algorithm
@@ -166,7 +166,7 @@ func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
 
 // ====================
 
-// 包装私钥
+// Marshal PrivateKey
 func MarshalPrivateKey(key *gost.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -175,7 +175,7 @@ func MarshalPrivateKey(key *gost.PrivateKey) ([]byte, error) {
         return nil, errors.New("gost: unsupported gost curve")
     }
 
-    // 创建数据
+    // Marshal oid
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
         return nil, errors.New("gost: failed to marshal algo param: " + err.Error())
@@ -201,7 +201,7 @@ func MarshalPrivateKey(key *gost.PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey
 func ParsePrivateKey(derBytes []byte) (*gost.PrivateKey, error) {
     var privKey pkcs8
     var err error
