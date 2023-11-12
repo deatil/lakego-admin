@@ -39,16 +39,10 @@ type macData struct {
 }
 
 func (this macData) Verify(message []byte, password []byte) error {
-    alg := asn1.ObjectIdentifier{}
-
-    for _, oidInt := range this.Mac.Algorithm.Algorithm {
-        alg = append(alg, oidInt)
-    }
-
     mac := cryptobin_pkcs12.MacData{
         Mac: cryptobin_pkcs12.DigestInfo{
             Algorithm: pkix.AlgorithmIdentifier{
-                Algorithm:  alg,
+                Algorithm:  asn1.ObjectIdentifier(this.Mac.Algorithm.Algorithm),
                 Parameters: asn1.RawValue{
                     Tag: asn1.TagNull,
                 },
@@ -238,13 +232,8 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
 
     pfxPdu.MacData = kdfMacData.(cryptobin_pkcs12.MacData)
 
-    alg := asn1.ObjectIdentifier{}
-    for _, oidInt := range oidDataContentType {
-        alg = append(alg, oidInt)
-    }
-
     // AuthSafe
-    pfxPdu.AuthSafe.ContentType = alg
+    pfxPdu.AuthSafe.ContentType = asn1.ObjectIdentifier(oidDataContentType)
     pfxPdu.AuthSafe.Content.Class = 2
     pfxPdu.AuthSafe.Content.Tag = 0
     pfxPdu.AuthSafe.Content.IsCompound = true
