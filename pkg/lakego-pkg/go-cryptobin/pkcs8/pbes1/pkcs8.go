@@ -18,8 +18,87 @@ type encryptedPrivateKeyInfo struct {
     EncryptedData       []byte
 }
 
-// 加密 PKCS8
+// 加密 PKCS8 私钥
 func EncryptPKCS8PrivateKey(
+    rand io.Reader,
+    blockType string,
+    data []byte,
+    password []byte,
+    cipher Cipher,
+) (*pem.Block, error) {
+    if cipher == nil {
+        return nil, errors.New("failed to encrypt PEM: unknown cipher")
+    }
+
+    if IsPKCS12Cipher(cipher) {
+        var err error
+        password, err = BmpStringZeroTerminated(string(password))
+        if err != nil {
+            return nil, err
+        }
+    }
+
+    encrypted, marshalledParams, err := cipher.Encrypt(rand, password, data)
+    if err != nil {
+        return nil, err
+    }
+
+    encryptionAlgorithm := pkix.AlgorithmIdentifier{
+        Algorithm:  cipher.OID(),
+        Parameters: asn1.RawValue{
+            FullBytes: marshalledParams,
+        },
+    }
+
+    // 生成 ans1 数据
+    pki := encryptedPrivateKeyInfo{
+        EncryptionAlgorithm: encryptionAlgorithm,
+        EncryptedData:       encrypted,
+    }
+
+    b, err := asn1.Marshal(pki)
+    if err != nil {
+        return nil, errors.New(err.Error() + " error marshaling encrypted key")
+    }
+
+    return &pem.Block{
+        Type:  blockType,
+        Bytes: b,
+    }, nil
+}
+
+// 解出 PKCS8 私钥
+func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
+    var pki encryptedPrivateKeyInfo
+    if _, err := asn1.Unmarshal(data, &pki); err != nil {
+        return nil, errors.New(err.Error() + " failed to unmarshal private key")
+    }
+
+    cipher, cipherParams, err := parseEncryptionScheme(pki.EncryptionAlgorithm)
+    if err != nil {
+        return nil, err
+    }
+
+    if IsPKCS12Cipher(cipher) {
+        var err error
+        password, err = BmpStringZeroTerminated(string(password))
+        if err != nil {
+            return nil, err
+        }
+    }
+
+    encryptedKey := pki.EncryptedData
+
+    decryptedKey, err := cipher.Decrypt(password, cipherParams, encryptedKey)
+    if err != nil {
+        return nil, err
+    }
+
+    return decryptedKey, nil
+}
+
+// 加密 PKCS8 私钥，不处理密码
+func EncryptPKCS8Privatekey(
     rand io.Reader,
     blockType string,
     data []byte,
@@ -59,8 +138,8 @@ func EncryptPKCS8PrivateKey(
     }, nil
 }
 
-// 解出 PKCS8 密钥
-func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
+// 解出 PKCS8 私钥，不处理密码
+func DecryptPKCS8Privatekey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
         return nil, errors.New(err.Error() + " failed to unmarshal private key")

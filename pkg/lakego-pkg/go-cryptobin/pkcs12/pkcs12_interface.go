@@ -2,6 +2,7 @@ package pkcs12
 
 import (
     "io"
+    "sync"
     "errors"
     "crypto"
     "encoding/asn1"
@@ -46,18 +47,83 @@ type MacKDFOpts interface {
     Compute(message []byte, password []byte) (data MacKDFParameters, err error)
 }
 
-var keys = make(map[string]func() Key)
+// =================
 
-// 添加Key
-func AddKey(name string, key func() Key) {
-    keys[name] = key
+// 默认
+var defaultKeys = NewKeys()
+
+// 方法
+type KeyFunc = func() Key
+
+// Key 数据
+type Keys struct {
+    // 读写锁
+    mu sync.RWMutex
+
+    keys map[string]KeyFunc
 }
 
-func GetKey(name string) (func() Key, error) {
-    key, ok := keys[name]
+func NewKeys() *Keys {
+    return &Keys {
+        keys: make(map[string]KeyFunc),
+    }
+}
+
+// 添加 Key
+func (this *Keys) AddKey(name string, key KeyFunc) {
+    this.mu.Lock()
+    defer this.mu.Unlock()
+
+    this.keys[name] = key
+}
+
+// 添加 Key
+func AddKey(name string, key KeyFunc) {
+    defaultKeys.AddKey(name, key)
+}
+
+// 获取 Key
+func (this *Keys) GetKey(name string) (KeyFunc, error) {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    key, ok := this.keys[name]
     if !ok {
         return nil, errors.New("pkcs12: unsupported key type " + name)
     }
 
     return key, nil
+}
+
+// 获取 Key
+func GetKey(name string) (KeyFunc, error) {
+    return defaultKeys.GetKey(name)
+}
+
+// 全部
+func (this *Keys) All() map[string]KeyFunc {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    return this.keys
+}
+
+// 全部
+func AllKey() map[string]KeyFunc {
+    return defaultKeys.All()
+}
+
+// 克隆
+func (this *Keys) Clone() *Keys {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    return &Keys {
+        keys: this.keys,
+    }
+}
+
+// 克隆
+func CloneKeys() *Keys {
+    return defaultKeys.Clone()
 }

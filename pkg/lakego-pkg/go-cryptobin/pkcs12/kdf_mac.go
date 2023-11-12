@@ -116,18 +116,18 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
 }
 
 // from PKCS#7:
-type digestInfo struct {
+type DigestInfo struct {
     Algorithm pkix.AlgorithmIdentifier
     Digest    []byte
 }
 
-type macData struct {
-    Mac        digestInfo
+type MacData struct {
+    Mac        DigestInfo
     MacSalt    []byte
     Iterations int `asn1:"optional,default:1"`
 }
 
-func (this macData) Verify(message []byte, password []byte) (err error) {
+func (this MacData) Verify(message []byte, password []byte) (err error) {
     var alg asn1.ObjectIdentifier
     var h func() hash.Hash
 
@@ -209,8 +209,8 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
     mac.Write(message)
     digest := mac.Sum(nil)
 
-    data = macData{
-        digestInfo{
+    data = MacData{
+        DigestInfo{
             prfParam,
             digest,
         },

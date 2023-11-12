@@ -3,8 +3,8 @@ package gost34112012
 import (
     "fmt"
     "bytes"
-     "errors"
-   "encoding/binary"
+    "errors"
+    "encoding/binary"
 )
 
 // GOST R 34.11-2012 hash function.

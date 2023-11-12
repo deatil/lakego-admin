@@ -24,15 +24,24 @@ func GetHashFromName(name string) Hash {
 
 // 需要设置 KeyLength 的 Cipher
 func IsUseKeyLengthCipher(cipher Cipher) bool {
-    switch cipher.OID().String() {
-        case RC2CBC.OID().String(), RC2_40CBC.OID().String(),
-            RC2_64CBC.OID().String(), RC2_128CBC.OID().String(),
-            RC5CBC.OID().String(), RC5_128CBC.OID().String(),
-            RC5_192CBC.OID().String(), RC5_256CBC.OID().String():
-            return true
-        default:
-            return false
+    ciphers := []Cipher{
+        RC2CBC,
+        RC2_40CBC,
+        RC2_64CBC,
+        RC2_128CBC,
+        RC5CBC,
+        RC5_128CBC,
+        RC5_192CBC,
+        RC5_256CBC,
     }
+
+    for _, cip := range ciphers {
+        if cipher.OID().Equal(cip.OID()) {
+            return true
+        }
+    }
+
+    return false
 }
 
 // 解析配置

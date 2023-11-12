@@ -441,49 +441,53 @@ func Test_EncodeTrustStoreEntries_Passwordless(t *testing.T) {
 
 func TestPfx(t *testing.T) {
     for commonName, base64P12 := range testdata {
-        p12, _ := base64.StdEncoding.DecodeString(base64P12)
+        t.Run(commonName, func(t *testing.T) {
+            p12, _ := base64.StdEncoding.DecodeString(base64P12)
 
-        priv, cert, err := Decode(p12, "")
-        if err != nil {
-            t.Fatal(err)
-        }
+            priv, cert, err := Decode(p12, "")
+            if err != nil {
+                t.Fatal(err)
+            }
 
-        if err := priv.(*rsa.PrivateKey).Validate(); err != nil {
-            t.Errorf("error while validating private key: %v", err)
-        }
+            if err := priv.(*rsa.PrivateKey).Validate(); err != nil {
+                t.Errorf("error while validating private key: %v", err)
+            }
 
-        if cert.Subject.CommonName != commonName {
-            t.Errorf("expected common name to be %q, but found %q", commonName, cert.Subject.CommonName)
-        }
+            if cert.Subject.CommonName != commonName {
+                t.Errorf("expected common name to be %q, but found %q", commonName, cert.Subject.CommonName)
+            }
+        })
     }
 }
 
 func TestPEM(t *testing.T) {
     for commonName, base64P12 := range testdata {
-        p12, _ := base64.StdEncoding.DecodeString(base64P12)
+        t.Run(commonName, func(t *testing.T) {
+            p12, _ := base64.StdEncoding.DecodeString(base64P12)
 
-        blocks, err := ToPEM(p12, "")
-        if err != nil {
-            t.Fatalf("error while converting to PEM: %s", err)
-        }
+            blocks, err := ToPEM(p12, "")
+            if err != nil {
+                t.Fatalf("error while converting to PEM: %s", err)
+            }
 
-        var pemData []byte
-        for _, b := range blocks {
-            pemData = append(pemData, pem.EncodeToMemory(b)...)
-        }
+            var pemData []byte
+            for _, b := range blocks {
+                pemData = append(pemData, pem.EncodeToMemory(b)...)
+            }
 
-        cert, err := tls.X509KeyPair(pemData, pemData)
-        if err != nil {
-            t.Errorf("err while converting to key pair: %v", err)
-        }
-        config := tls.Config{
-            Certificates: []tls.Certificate{cert},
-        }
-        config.BuildNameToCertificate()
+            cert, err := tls.X509KeyPair(pemData, pemData)
+            if err != nil {
+                t.Errorf("err while converting to key pair: %v", err)
+            }
+            config := tls.Config{
+                Certificates: []tls.Certificate{cert},
+            }
+            config.BuildNameToCertificate()
 
-        if _, exists := config.NameToCertificate[commonName]; !exists {
-            t.Errorf("did not find our cert in PEM?: %v", config.NameToCertificate)
-        }
+            if _, exists := config.NameToCertificate[commonName]; !exists {
+                t.Errorf("did not find our cert in PEM?: %v", config.NameToCertificate)
+            }
+        })
     }
 }
 
@@ -569,6 +573,7 @@ HQ8CAggA`,
 
 // ======================
 
+// 3des
 var testNewPfx_Encode = `
 -----BEGIN Data-----
 MIIJiwIBAzCCCVcGCSqGSIb3DQEHAaCCCUgEgglEMIIJQDCCA/cGCSqGSIb3DQEH
@@ -624,6 +629,7 @@ CkMw3GtBaTzm3pFee26IZj42T4LvCSqaNjw2TIjiKM73IDISZHX8k9FIrvrDf/6V
 lREwKzAfMAcGBSsOAwIaBBRsc7s+LFy4w3zbTzl8tmou7nHoDQQI9+/+XHbiN60=
 -----END Data-----
 `
+// RC2_40
 var testNewPfx_EncodeTrustStore = `
 -----BEGIN Data-----
 MIIEXgIBAzCCBCoGCSqGSIb3DQEHAaCCBBsEggQXMIIEEzCCBA8GCSqGSIb3DQEH

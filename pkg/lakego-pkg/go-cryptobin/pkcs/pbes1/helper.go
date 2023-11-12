@@ -2,15 +2,15 @@ package pbes1
 
 // PEMCipher 列表
 var PEMCipherMap = map[string]Cipher{
-    // pkcs12 模式
+    // pkcs12
+    "SHA1AndRC4_128": SHA1AndRC4_128,
+    "SHA1AndRC4_40":  SHA1AndRC4_40,
     "SHA1And3DES":    SHA1And3DES,
     "SHA1And2DES":    SHA1And2DES,
     "SHA1AndRC2_128": SHA1AndRC2_128,
     "SHA1AndRC2_40":  SHA1AndRC2_40,
-    "SHA1AndRC4_128": SHA1AndRC4_128,
-    "SHA1AndRC4_40":  SHA1AndRC4_40,
 
-    // pkcs5-v1.5 模式
+    // PBES1
     "MD2AndDES":      MD2AndDES,
     "MD2AndRC2_64":   MD2AndRC2_64,
     "MD5AndDES":      MD5AndDES,
@@ -52,6 +52,26 @@ func GetCipherName(c Cipher) string {
 func CheckCipher(c Cipher) bool {
     for _, cipher := range PEMCipherMap {
         if cipher.OID().Equal(c.OID()) {
+            return true
+        }
+    }
+
+    return false
+}
+
+// 检测是否是 pkcs12 的加密方式
+func IsPKCS12Cipher(cipher Cipher) bool {
+    ciphers := []Cipher{
+        SHA1AndRC4_128,
+        SHA1AndRC4_40,
+        SHA1And3DES,
+        SHA1And2DES,
+        SHA1AndRC2_128,
+        SHA1AndRC2_40,
+    }
+
+    for _, cip := range ciphers {
+        if cipher.OID().Equal(cip.OID()) {
             return true
         }
     }

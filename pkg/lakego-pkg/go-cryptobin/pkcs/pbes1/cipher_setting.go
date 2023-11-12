@@ -13,15 +13,15 @@ import (
 )
 
 var (
-    // pkcs12 模式
+    // pkcs12
+    oidPbeWithSHA1AndRC4_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 1}
+    oidPbeWithSHA1AndRC4_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 2}
     oidPbeWithSHA1And3DES    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 3}
     oidPbeWithSHA1And2DES    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 4}
     oidPbeWithSHA1AndRC2_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 5}
     oidPbeWithSHA1AndRC2_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 6}
-    oidPbeWithSHA1AndRC4_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 1}
-    oidPbeWithSHA1AndRC4_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 2}
 
-    // pkcs5-v1.5 模式
+    // PBES1
     oidPbeWithMD2AndDES      = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 1}
     oidPbeWithMD2AndRC2_64   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 4}
     oidPbeWithMD5AndDES      = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 3}
@@ -36,11 +36,29 @@ var (
     }
 )
 
-// pkcs12 模式
+// pkcs12
+var SHA1AndRC4_128 = CipherRC4{
+    hashFunc:       sha1.New,
+    derivedKeyFunc: DerivedKeyPkcs12,
+    saltSize:       20,
+    keySize:        16,
+    blockSize:      16,
+    iterationCount: 2048,
+    oid:            oidPbeWithSHA1AndRC4_128,
+}
+var SHA1AndRC4_40 = CipherRC4{
+    hashFunc:       sha1.New,
+    derivedKeyFunc: DerivedKeyPkcs12,
+    saltSize:       20,
+    keySize:        5,
+    blockSize:      5,
+    iterationCount: 2048,
+    oid:            oidPbeWithSHA1AndRC4_40,
+}
 var SHA1And3DES = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: DerivedKeyPkcs12,
     saltSize:       des.BlockSize,
     keySize:        24,
     blockSize:      des.BlockSize,
@@ -50,7 +68,7 @@ var SHA1And3DES = CipherBlockCBC{
 var SHA1And2DES = CipherBlockCBC{
     cipherFunc:     cryptobin_des.NewTwoDESCipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: DerivedKeyPkcs12,
     saltSize:       cryptobin_des.BlockSize,
     keySize:        16,
     blockSize:      cryptobin_des.BlockSize,
@@ -60,7 +78,7 @@ var SHA1And2DES = CipherBlockCBC{
 var SHA1AndRC2_128 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: DerivedKeyPkcs12,
     saltSize:       20,
     keySize:        16,
     blockSize:      cryptobin_rc2.BlockSize,
@@ -70,37 +88,19 @@ var SHA1AndRC2_128 = CipherBlockCBC{
 var SHA1AndRC2_40 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: DerivedKeyPkcs12,
     saltSize:       20,
     keySize:        5,
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_40,
 }
-var SHA1AndRC4_128 = CipherRC4{
-    hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
-    saltSize:       20,
-    keySize:        16,
-    blockSize:      16,
-    iterationCount: 2048,
-    oid:            oidPbeWithSHA1AndRC4_128,
-}
-var SHA1AndRC4_40 = CipherRC4{
-    hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
-    saltSize:       20,
-    keySize:        5,
-    blockSize:      5,
-    iterationCount: 2048,
-    oid:            oidPbeWithSHA1AndRC4_40,
-}
 
-// pkcs5-v1.5 模式
+// PBES1
 var MD2AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       cryptobin_md2.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       des.BlockSize,
     keySize:        8,
     blockSize:      des.BlockSize,
@@ -110,7 +110,7 @@ var MD2AndDES = CipherBlockCBC{
 var MD2AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       cryptobin_md2.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       20,
     keySize:        8,
     blockSize:      cryptobin_rc2.BlockSize,
@@ -120,7 +120,7 @@ var MD2AndRC2_64 = CipherBlockCBC{
 var MD5AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       md5.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       des.BlockSize,
     keySize:        8,
     blockSize:      des.BlockSize,
@@ -130,7 +130,7 @@ var MD5AndDES = CipherBlockCBC{
 var MD5AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       md5.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       20,
     keySize:        8,
     blockSize:      cryptobin_rc2.BlockSize,
@@ -140,7 +140,7 @@ var MD5AndRC2_64 = CipherBlockCBC{
 var SHA1AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       des.BlockSize,
     keySize:        8,
     blockSize:      des.BlockSize,
@@ -150,7 +150,7 @@ var SHA1AndDES = CipherBlockCBC{
 var SHA1AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKey,
+    derivedKeyFunc: DerivedKeyPbkdf1,
     saltSize:       20,
     keySize:        8,
     blockSize:      cryptobin_rc2.BlockSize,
@@ -159,7 +159,7 @@ var SHA1AndRC2_64 = CipherBlockCBC{
 }
 
 func init() {
-    // pkcs12 模式
+    // pkcs12
     AddCipher(oidPbeWithSHA1And3DES, func() Cipher {
         return SHA1And3DES
     })
@@ -179,7 +179,7 @@ func init() {
         return SHA1AndRC4_40
     })
 
-    // pkcs5-v1.5 模式
+    // PBES1
     AddCipher(oidPbeWithMD2AndDES, func() Cipher {
         return MD2AndDES
     })

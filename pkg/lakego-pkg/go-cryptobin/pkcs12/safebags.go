@@ -28,9 +28,9 @@ type certBag struct {
 func decodePkcs8ShroudedKeyBag(asn1Data, password []byte) (privateKey any, err error) {
     var pkData []byte
 
-    pkData, err = pkcs8_pbes1.DecryptPKCS8PrivateKey(asn1Data, password)
+    pkData, err = pkcs8_pbes2.DecryptPKCS8PrivateKey(asn1Data, password)
     if err != nil {
-        pkData, err = pkcs8_pbes2.DecryptPKCS8PrivateKey(asn1Data, password)
+        pkData, err = pkcs8_pbes1.DecryptPKCS8Privatekey(asn1Data, password)
         if err != nil {
             return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
         }
@@ -62,6 +62,7 @@ func encodePkcs8ShroudedKeyBag(
     var keyBlock *pem.Block
 
     if opt.KeyKDFOpts != nil {
+        // change type to utf-8
         passwordString, err := decodeBMPString(password)
         if err != nil {
             return nil, err
@@ -74,7 +75,7 @@ func encodePkcs8ShroudedKeyBag(
             opt.KeyKDFOpts,
         })
     } else {
-        keyBlock, err = pkcs8_pbes1.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, opt.KeyCipher)
+        keyBlock, err = pkcs8_pbes1.EncryptPKCS8Privatekey(rand, "KEY", pkData, password, opt.KeyCipher)
     }
 
     if err != nil {

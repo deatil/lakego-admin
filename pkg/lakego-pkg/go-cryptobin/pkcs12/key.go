@@ -26,7 +26,9 @@ func GetStructName(s any) (name string) {
 
 // 从注册的 key 列表解析证书
 func ParsePKCS8PrivateKey(pkData []byte) (privateKey crypto.PrivateKey, err error) {
-    for _, key := range keys {
+    allkey := AllKey()
+
+    for _, key := range allkey {
         if privateKey, err = key().ParsePKCS8PrivateKey(pkData); err == nil {
             return privateKey, nil
         }
@@ -39,8 +41,8 @@ func ParsePKCS8PrivateKey(pkData []byte) (privateKey crypto.PrivateKey, err erro
 func MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     keytype := GetStructName(privateKey)
 
-    key, ok := keys[keytype]
-    if !ok {
+    key, err := GetKey(keytype)
+    if err != nil {
         return nil, errors.New("pkcs12: unsupported key type " + keytype)
     }
 
@@ -51,8 +53,8 @@ func MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
 func MarshalPrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     keytype := GetStructName(privateKey)
 
-    key, ok := keys[keytype]
-    if !ok {
+    key, err := GetKey(keytype)
+    if err != nil {
         return nil, errors.New("pkcs12: unsupported key type " + keytype)
     }
 

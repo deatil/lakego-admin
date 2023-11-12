@@ -21,7 +21,7 @@ type CipherBlockCBC struct {
     // hash 摘要
     hashFunc       func() hash.Hash
     // 密钥生成
-    derivedKeyFunc func(password string, salt string, iter int, keyLen int, ivLen int, h func() hash.Hash) ([]byte, []byte)
+    derivedKeyFunc DerivedKeyFunc
     // salt 长度
     saltSize       int
     // 与 key 长度相关
@@ -122,6 +122,13 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
 // 设置 saltSize
 func (this CipherBlockCBC) WithSaltSize(saltSize int) CipherBlockCBC {
     this.saltSize = saltSize
+
+    return this
+}
+
+// 设置 derivedKeyFunc
+func (this CipherBlockCBC) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) CipherBlockCBC {
+    this.derivedKeyFunc = derivedKeyFunc
 
     return this
 }

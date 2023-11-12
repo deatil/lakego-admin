@@ -884,6 +884,7 @@ func Test_AesOCFBFalse(t *testing.T) {
 
     assert(data, cyptdeStr, "AesOCFBFalse")
 }
+
 func Test_AesCBCISO10126Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
@@ -912,4 +913,54 @@ func Test_AesCBCISO10126Padding(t *testing.T) {
     assertError(cyptde.Error(), "AesCBCISO10126Padding-Decode")
 
     assert(data, cyptdeStr, "AesCBCISO10126Padding-res")
+}
+
+func Test_TripleDESCBC_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    oldData := "test-pass"
+
+    iv := "iokjiuji"
+    key := "asdferkijuhjkiloiokjiuji"
+
+    cryptoData := "RnkirpLEmCdRaw3dF7KyQw=="
+
+    cyptde := FromBase64String(cryptoData).
+        SetKey(key).
+        SetIv(iv).
+        TripleDes().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "TripleDESCBC_Check-Decode")
+
+    assert(oldData, cyptdeStr, "TripleDESCBC_Check-res")
+}
+
+func Test_TwoDesCBC_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    oldData := "test-pass"
+
+    iv := "iokjiuji"
+    key := "asdferkijuhjkilo"
+
+    cryptoData := "xTHCFwYOhSUxmfDqn4zntQ=="
+
+    cyptde := FromBase64String(cryptoData).
+        SetKey(key).
+        SetIv(iv).
+        TwoDes().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "TwoDesCBC_Check-Decode")
+
+    assert(oldData, cyptdeStr, "TwoDesCBC-res")
 }

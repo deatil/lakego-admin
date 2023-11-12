@@ -10,6 +10,8 @@ import (
     "encoding/pem"
     "encoding/asn1"
 
+    gmsm_x509 "github.com/tjfoc/gmsm/x509"
+
     pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
@@ -33,15 +35,15 @@ var (
     errUnknownAttributeOID = errors.New("pkcs12: unknown attribute OID")
 )
 
-type contentInfo struct {
+type ContentInfo struct {
     ContentType asn1.ObjectIdentifier
     Content     asn1.RawValue `asn1:"tag:0,explicit,optional"`
 }
 
-type pfxPdu struct {
+type PfxPdu struct {
     Version  int
-    AuthSafe contentInfo
-    MacData  macData `asn1:"optional"`
+    AuthSafe ContentInfo
+    MacData  MacData `asn1:"optional"`
 }
 
 type encryptedData struct {
@@ -102,7 +104,6 @@ func ToPEM(pfxData []byte, password string) ([]*pem.Block, error) {
     }
 
     bags, encodedPassword, err := getSafeContents(pfxData, encodedPassword, 2)
-
     if err != nil {
         return nil, err
     }
@@ -274,12 +275,22 @@ func DecodeChain(pfxData []byte, password string) (
 
                 certs, err := x509.ParseCertificates(certsData)
                 if err != nil {
-                    return nil, nil, nil, err
+                    gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
+                    if err != nil {
+                        err = errors.New("pkcs12: x509 error: " + err.Error())
+                        return nil, nil, nil, err
+                    }
+
+                    for _, cert := range gmsmCerts {
+                        certs = append(certs, cert.ToX509Certificate())
+                    }
                 }
+
                 if len(certs) != 1 {
                     err = errors.New("pkcs12: expected exactly one certificate in the certBag")
                     return nil, nil, nil, err
                 }
+
                 if certificate == nil {
                     certificate = certs[0]
                 } else {
@@ -311,6 +322,7 @@ func DecodeChain(pfxData []byte, password string) (
     if certificate == nil {
         return nil, nil, nil, errors.New("pkcs12: certificate missing")
     }
+
     if privateKey == nil {
         return nil, nil, nil, errors.New("pkcs12: private key missing")
     }
@@ -346,7 +358,15 @@ func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificat
 
                 parsedCerts, err := x509.ParseCertificates(certsData)
                 if err != nil {
-                    return nil, err
+                    gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
+                    if err != nil {
+                        err = errors.New("pkcs12: x509 error: " + err.Error())
+                        return nil, err
+                    }
+
+                    for _, cert := range gmsmCerts {
+                        parsedCerts = append(parsedCerts, cert.ToX509Certificate())
+                    }
                 }
 
                 if len(parsedCerts) != 1 {
@@ -404,7 +424,15 @@ func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []
 
                 parsedCerts, err := x509.ParseCertificates(certsData)
                 if err != nil {
-                    return nil, err
+                    gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
+                    if err != nil {
+                        err = errors.New("pkcs12: x509 error: " + err.Error())
+                        return nil, err
+                    }
+
+                    for _, cert := range gmsmCerts {
+                        parsedCerts = append(parsedCerts, cert.ToX509Certificate())
+                    }
                 }
 
                 if len(parsedCerts) != 1 {
@@ -469,7 +497,7 @@ func DecodeSecret(pfxData []byte, password string) (secretKeys []SecretKey, err 
 }
 
 func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBag, updatedPassword []byte, err error) {
-    pfx := new(pfxPdu)
+    pfx := new(PfxPdu)
     if err := unmarshal(p12Data, pfx); err != nil {
         return nil, nil, errors.New("pkcs12: error reading P12 data: " + err.Error())
     }
@@ -507,7 +535,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
         }
     }
 
-    var authenticatedSafe []contentInfo
+    var authenticatedSafe []ContentInfo
     if err := unmarshal(pfx.AuthSafe.Content.Bytes, &authenticatedSafe); err != nil {
         return nil, nil, err
     }
@@ -524,6 +552,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
                 if err := unmarshal(ci.Content.Bytes, &data); err != nil {
                     return nil, nil, err
                 }
+
             case ci.ContentType.Equal(oidEncryptedDataContentType):
                 var encryptedData encryptedData
                 if err := unmarshal(ci.Content.Bytes, &encryptedData); err != nil {
@@ -563,6 +592,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
                         return nil, nil, err
                     }
                 }
+
             default:
                 return nil, nil, NotImplementedError("only data and encryptedData content types are supported in authenticated safe")
         }
@@ -625,7 +655,7 @@ func EncodeChain(
         return nil, err
     }
 
-    var pfx pfxPdu
+    var pfx PfxPdu
     pfx.Version = 3
 
     var certFingerprint = sha1.Sum(certificate.Raw)
@@ -674,7 +704,7 @@ func EncodeChain(
     // Construct an authenticated safe with two SafeContents.
     // The first SafeContents is encrypted and contains the cert bags.
     // The second SafeContents is unencrypted and contains the shrouded key bag.
-    var authenticatedSafe [2]contentInfo
+    var authenticatedSafe [2]ContentInfo
     if authenticatedSafe[0], err = makeSafeContents(rand, certBags, encodedPassword, opt); err != nil {
         return nil, err
     }
@@ -695,7 +725,7 @@ func EncodeChain(
             return nil, err
         }
 
-        pfx.MacData = kdfMacData.(macData)
+        pfx.MacData = kdfMacData.(MacData)
     }
 
     pfx.AuthSafe.ContentType = oidDataContentType
@@ -792,7 +822,7 @@ func EncodeTrustStoreEntries(
         return nil, err
     }
 
-    var pfx pfxPdu
+    var pfx PfxPdu
     pfx.Version = 3
 
     var certAttributes []pkcs12Attribute
@@ -852,7 +882,7 @@ func EncodeTrustStoreEntries(
 
     // Construct an authenticated safe with one SafeContent.
     // The SafeContents is encrypted and contains the cert bags.
-    var authenticatedSafe [1]contentInfo
+    var authenticatedSafe [1]ContentInfo
     if authenticatedSafe[0], err = makeSafeContents(rand, certBags, encodedPassword, opt); err != nil {
         return nil, err
     }
@@ -870,7 +900,7 @@ func EncodeTrustStoreEntries(
             return nil, err
         }
 
-        pfx.MacData = kdfMacData.(macData)
+        pfx.MacData = kdfMacData.(MacData)
     }
 
     pfx.AuthSafe.ContentType = oidDataContentType
@@ -900,7 +930,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
         return nil, err
     }
 
-    var pfx pfxPdu
+    var pfx PfxPdu
     pfx.Version = 3
 
     var secretFingerprint = sha1.Sum(secretKey)
@@ -923,7 +953,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
     }
     keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
 
-    var authenticatedSafe [1]contentInfo
+    var authenticatedSafe [1]ContentInfo
     if authenticatedSafe[0], err = makeSafeContents(rand, []safeBag{keyBag}, nil, Opts{}); err != nil {
         return nil, err
     }
@@ -941,7 +971,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
             return nil, err
         }
 
-        pfx.MacData = kdfMacData.(macData)
+        pfx.MacData = kdfMacData.(MacData)
     }
 
     pfx.AuthSafe.ContentType = oidDataContentType
@@ -974,7 +1004,7 @@ func makeCertBag(certBytes []byte, attributes []pkcs12Attribute) (certBag *safeB
     return
 }
 
-func makeSafeContents(rand io.Reader, bags []safeBag, password []byte, opts Opts) (ci contentInfo, err error) {
+func makeSafeContents(rand io.Reader, bags []safeBag, password []byte, opts Opts) (ci ContentInfo, err error) {
     var data []byte
     if data, err = asn1.Marshal(bags); err != nil {
         return

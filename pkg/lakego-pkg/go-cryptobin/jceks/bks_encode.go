@@ -368,7 +368,7 @@ func (this *BKS) marshalEntries(w io.Writer) error {
         return err
     }
 
-    // add time
+    // 结束符
     err = writeUint8(w, uint8(0))
 
     return err

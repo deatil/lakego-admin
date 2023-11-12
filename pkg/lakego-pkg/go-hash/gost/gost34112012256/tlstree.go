@@ -54,7 +54,6 @@ type TLSTree struct {
 
 func NewTLSTree(params TLSTreeParams, keyRoot []byte) *TLSTree {
     key := make([]byte, len(keyRoot))
-
     copy(key, keyRoot)
 
     return &TLSTree{
@@ -74,26 +73,25 @@ func (t *TLSTree) DeriveCached(seqNum uint64) ([]byte, bool) {
     }
 
     binary.BigEndian.PutUint64(t.seq, seqNum&t.params[0])
+    pass1 := KDF(New, t.keyRoot, []byte("level1"), t.seq)
 
-    kdf1 := NewKDF(t.keyRoot)
-
-    kdf2 := NewKDF(kdf1.Derive(t.key[:0], []byte("level1"), t.seq))
     binary.BigEndian.PutUint64(t.seq, seqNum&t.params[1])
+    pass2 := KDF(New, pass1, []byte("level2"), t.seq)
 
-    kdf3 := NewKDF(kdf2.Derive(t.key[:0], []byte("level2"), t.seq))
     binary.BigEndian.PutUint64(t.seq, seqNum&t.params[2])
+    pass3 := KDF(New, pass2, []byte("level3"), t.seq)
 
-    kdf3.Derive(t.key[:0], []byte("level3"), t.seq)
     t.seqNumPrev = seqNum
+
+    t.key = pass3
 
     return t.key, false
 }
 
 func (t *TLSTree) Derive(seqNum uint64) []byte {
-    keyDerived := make([]byte, Size)
-
     key, _ := t.DeriveCached(seqNum)
 
+    keyDerived := make([]byte, Size)
     copy(keyDerived, key)
 
     return keyDerived

@@ -12,7 +12,6 @@ type ESPTree struct {
 
 func NewESPTree(keyRoot []byte) *ESPTree {
     key := make([]byte, len(keyRoot))
-
     copy(key, keyRoot)
 
     t := &ESPTree{
@@ -22,6 +21,7 @@ func NewESPTree(keyRoot []byte) *ESPTree {
 
     t.isPrev[0]++
     t.DeriveCached([]byte{0x00, 0x00, 0x00, 0x00, 0x00})
+
     return t
 }
 
@@ -34,18 +34,21 @@ func (t *ESPTree) DeriveCached(is []byte) ([]byte, bool) {
         return t.key, true
     }
 
-    kdf1 := NewKDF(t.keyRoot)
-    kdf2 := NewKDF(kdf1.Derive(t.key[:0], []byte("level1"), append([]byte{0}, is[0])))
-    kdf3 := NewKDF(kdf2.Derive(t.key[:0], []byte("level2"), is[1:3]))
-    kdf3.Derive(t.key[:0], []byte("level3"), is[3:5])
+    pass1 := KDF(New, t.keyRoot, []byte("level1"), append([]byte{0}, is[0]))
+    pass2 := KDF(New, pass1, []byte("level2"), is[1:3])
+    pass3 := KDF(New, pass2, []byte("level3"), is[3:5])
+
     copy(t.isPrev[:], is)
+
+    t.key = pass3
 
     return t.key, false
 }
 
 func (t *ESPTree) Derive(is []byte) []byte {
-    keyDerived := make([]byte, Size)
     key, _ := t.DeriveCached(is)
+
+    keyDerived := make([]byte, Size)
     copy(keyDerived, key)
 
     return keyDerived

@@ -28,11 +28,17 @@ func main() {
     oldData := "useData"
 
     // Base64 编码
-    base64Data := encoding.FromString(oldData).Base64Encode().ToString()
+    base64Data := encoding.
+        FromString(oldData).
+        Base64Encode().
+        ToString()
     fmt.Println("Base64 编码为：", base64Data)
 
     // Base64 解码
-    base64DecodeData := encoding.FromString(base64Data).Base64Decode().ToString()
+    base64DecodeData := encoding.
+        FromString(base64Data).
+        Base64Decode().
+        ToString()
     fmt.Println("Base64 解码为：", base64DecodeData)
 }
 ~~~
@@ -41,10 +47,10 @@ func main() {
 ### 格式说明
 
 ~~~go
-    base64Data := encoding.
-        FromString(oldData). // 输入数据
-        Base64Encode().      // 编码方式/解码方式
-        ToString()           // 输出数据
+base64Data := encoding.
+    FromString(oldData). // 输入数据
+    Base64Encode().      // 编码方式/解码方式
+    ToString()           // 输出数据
 ~~~
 
 

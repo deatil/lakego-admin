@@ -5,34 +5,31 @@ import (
     "crypto/hmac"
 )
 
-type KDF struct {
-    h hash.Hash
-}
+func KDF(h func() hash.Hash, key, label, seed []byte) (r []byte) {
+    fn := hmac.New(h, key)
 
-func NewKDF(key []byte) *KDF {
-    return &KDF{hmac.New(New, key)}
-}
+    if _, err := fn.Write([]byte{0x01}); err != nil {
+        panic(err)
+    }
+    if _, err := fn.Write(label); err != nil {
+        panic(err)
+    }
 
-func (kdf *KDF) Derive(dst, label, seed []byte) (r []byte) {
-    if _, err := kdf.h.Write([]byte{0x01}); err != nil {
+    if _, err := fn.Write([]byte{0x00}); err != nil {
         panic(err)
     }
-    if _, err := kdf.h.Write(label); err != nil {
+    if _, err := fn.Write(seed); err != nil {
         panic(err)
     }
-    if _, err := kdf.h.Write([]byte{0x00}); err != nil {
+
+    if _, err := fn.Write([]byte{0x01}); err != nil {
         panic(err)
     }
-    if _, err := kdf.h.Write(seed); err != nil {
+    if _, err := fn.Write([]byte{0x00}); err != nil {
         panic(err)
     }
-    if _, err := kdf.h.Write([]byte{0x01}); err != nil {
-        panic(err)
-    }
-    if _, err := kdf.h.Write([]byte{0x00}); err != nil {
-        panic(err)
-    }
-    r = kdf.h.Sum(dst)
-    kdf.h.Reset()
+
+    r = fn.Sum(nil)
+
     return r
 }

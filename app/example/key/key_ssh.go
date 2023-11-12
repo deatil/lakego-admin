@@ -5,6 +5,7 @@ import (
     "errors"
     "crypto"
     "encoding/pem"
+    "crypto/rand"
     go_rsa "crypto/rsa"
     go_ecdsa "crypto/ecdsa"
     go_eddsa "crypto/ed25519"
@@ -67,7 +68,7 @@ func MakeRsaUnenSSHKey() {
 
     obj := cryptobin_rsa.NewRsa().GenerateKey(2048)
 
-    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "ssh")
+    block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(rand.Reader, obj.GetPrivateKey(), "ssh")
     blockkeyData := pem.EncodeToMemory(block)
     fs.Put("./runtime/key/ssh/rsa-unen-sshkey", string(blockkeyData))
 
@@ -96,6 +97,7 @@ func MakeEcdsaUnenSSHKey(curve string) {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
     )
@@ -122,6 +124,7 @@ func MakeEdDsaUnenSSHKey() {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
     )
@@ -148,6 +151,7 @@ func MakeSM2UnenSSHKey() {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
     )
@@ -179,6 +183,7 @@ func MakeRsaSSHKey(rsaName string) {
     // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "ssh")
     // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(obj.GetPrivateKey(), "ssh", []byte("123"))
     rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
+        rand.Reader,
         rsa.GetPrivateKey(),
         "ssh",
         []byte("123"),
@@ -217,6 +222,7 @@ func MakeEcdsaSSHKey(name string, curve string) {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
         []byte("123"),
@@ -252,6 +258,7 @@ func MakeEdDsaSSHKey(name string) {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
         []byte("123"),
@@ -287,6 +294,7 @@ func MakeSM2SSHKey(name string) {
         GenerateKey()
 
     block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
+        rand.Reader,
         obj.GetPrivateKey(),
         "ssh",
         []byte("123"),

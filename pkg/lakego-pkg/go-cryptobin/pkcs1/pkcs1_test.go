@@ -248,7 +248,6 @@ func testingKey(s string) string {
     return strings.ReplaceAll(s, "TESTING KEY", "PRIVATE KEY")
 }
 
-
 func testKeyEncryptPEMBlock(t *testing.T, key string) {
     block, _ := pem.Decode([]byte(key))
 

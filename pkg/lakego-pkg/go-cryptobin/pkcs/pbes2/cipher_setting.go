@@ -57,7 +57,7 @@ var (
     }
 )
 
-// DESCBC is the 56-bit key 3DES cipher in CBC mode.
+// DESCBC is the 56-bit key DES cipher in CBC mode.
 var DESCBC = CipherCBC{
     cipherFunc: des.NewCipher,
     keySize:    8,
