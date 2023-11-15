@@ -1,6 +1,8 @@
 package pkcs12
 
 import (
+    "crypto/sha1"
+    "encoding/hex"
     "encoding/json"
 )
 
@@ -13,6 +15,12 @@ type PKCS12Attributes struct {
 func NewPKCS12Attributes(attrs []PKCS12Attribute) PKCS12Attributes {
     return PKCS12Attributes{
         attributes: attrs,
+    }
+}
+
+func EmptyPKCS12Attributes() PKCS12Attributes {
+    return PKCS12Attributes{
+        attributes: make([]PKCS12Attribute, 0),
     }
 }
 
@@ -34,6 +42,26 @@ func (this PKCS12Attributes) ToArray() map[string]string {
     }
 
     return attrs
+}
+
+// 数据
+func (this PKCS12Attributes) Attributes() []PKCS12Attribute {
+    return this.attributes
+}
+
+// 验证签名数据
+func (this PKCS12Attributes) Verify(data []byte) bool {
+    attrs := this.ToArray()
+
+    keyId, ok := attrs["localKeyId"]
+    if !ok {
+        return false
+    }
+
+    dataSha := sha1.Sum(data)
+    dataHex := hex.EncodeToString(dataSha[:])
+
+    return keyId == dataHex
 }
 
 // 返回字符

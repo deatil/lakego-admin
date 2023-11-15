@@ -7,6 +7,7 @@ import (
     "crypto/rand"
     "crypto/x509"
     "encoding/hex"
+    "encoding/pem"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -405,4 +406,56 @@ func test_P12_Encode(t *testing.T, opts Opts, password string, name string) {
         assertNotBool(pp12.HasTrustStore(), "P12_SM2Pkcs12_Decode-HasTrustStore")
         assertNotBool(pp12.HasSecretKey(), "P12_SM2Pkcs12_Decode-HasSecretKey")
     })
+}
+
+func Test_P12_ToPem(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testP12Key)
+
+    password := "notasecret"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_ToPem-pfxData")
+
+    blocks, err := p12.ToPEM()
+    assertError(err, "P12_ToPem-ToPEM")
+    assertNotEmpty(blocks, "P12_ToPem-ToPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "P12_ToPem-ToPEM-Pem")
+    }
+}
+
+// 某些库生成的 SHA1 值可能不对，不能完全的作为判断
+func Test_P12_Attrs_Verify(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+
+    pfxData := decodePEM(testNewPfx_Encode)
+
+    password := "pass"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_Attrs_Verify-pfxData")
+
+    privateKey2, priAttrs := p12.GetPrivateKey()
+
+    assertNotEmpty(privateKey2, "P12_Attrs_Verify-privateKey2")
+    assertNotEmpty(priAttrs, "P12_Attrs_Verify-priAttrs")
+
+    certificate2, certAttrs := p12.GetCert()
+
+    assertNotEmpty(certificate2, "P12_Attrs_Verify-certificate2")
+    assertNotEmpty(certAttrs, "P12_Attrs_Verify-certAttrs")
+
+    priCheck := priAttrs.Verify(certificate2.Raw)
+    assertBool(priCheck, "P12_Attrs_Verify-priCheck")
 }

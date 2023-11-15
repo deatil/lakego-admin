@@ -154,7 +154,12 @@ func convertBag(bag *SafeBag, password []byte) (*pem.Block, error) {
         case bag.Id.Equal(oidKeyBag):
             block.Type = PrivateKeyType
 
-            block.Bytes, err = MarshalPrivateKey(bag.Value.Bytes)
+            key, err := ParsePKCS8PrivateKey(bag.Value.Bytes)
+            if err != nil {
+                return nil, err
+            }
+
+            block.Bytes, err = MarshalPrivateKey(key)
             if err != nil {
                 return nil, errors.New("found unknown private key type in PKCS#8 wrapping: " + err.Error())
             }

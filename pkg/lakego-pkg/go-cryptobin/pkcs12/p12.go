@@ -24,7 +24,7 @@ type PKCS12 struct {
     caCerts []*x509.Certificate
 
     // 证书链带名称, 适配 JAVA
-    trustStoreEntries []TrustStoreEntry
+    trustStores []TrustStoreEntry
 
     // 密钥
     secretKey []byte
@@ -33,11 +33,15 @@ type PKCS12 struct {
     parsedData map[string][]ISafeBagData
 }
 
+func (this *PKCS12) String() string {
+    return "PKCS12"
+}
+
 func NewPKCS12() *PKCS12 {
     return &PKCS12{
-        caCerts:           make([]*x509.Certificate, 0),
-        trustStoreEntries: make([]TrustStoreEntry, 0),
-        parsedData:        make(map[string][]ISafeBagData),
+        caCerts:     make([]*x509.Certificate, 0),
+        trustStores: make([]TrustStoreEntry, 0),
+        parsedData:  make(map[string][]ISafeBagData),
     }
 }
 
@@ -65,5 +69,5 @@ func LoadPKCS12FromBytes(data []byte, password string) (*PKCS12, error) {
     return pkcs12, err
 }
 
-// alias
+// 别名
 var NewPKCS12Encode = NewPKCS12

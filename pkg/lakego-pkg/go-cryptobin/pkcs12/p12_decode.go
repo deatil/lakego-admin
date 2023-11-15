@@ -4,6 +4,7 @@ import (
     "errors"
     "crypto"
     "crypto/x509"
+    "encoding/pem"
 
     gmsm_x509 "github.com/tjfoc/gmsm/x509"
 
@@ -397,4 +398,61 @@ func (this *PKCS12) HasTrustStore() bool {
 
 func (this *PKCS12) HasSecretKey() bool {
     return this.hasData("secretKey")
+}
+
+//===============
+
+func (this *PKCS12) convertBag(typ string, data []byte, attrs PKCS12Attributes) *pem.Block {
+    block := &pem.Block{
+        Headers: make(map[string]string),
+    }
+
+    block.Headers = attrs.ToArray()
+    block.Type = typ
+    block.Bytes = data
+
+    return block
+}
+
+func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
+    blocks := make([]*pem.Block, 0)
+
+    // 私钥
+    prikey, attrs := this.GetPrivateKey()
+    if prikey != nil {
+        priBytes, err := MarshalPrivateKey(prikey)
+        if err != nil {
+            return nil, errors.New("found unknown private key type in PKCS#8 wrapping: " + err.Error())
+        }
+
+        priBlock := this.convertBag(PrivateKeyType, priBytes, attrs)
+
+        blocks = append(blocks, priBlock)
+    }
+
+    // 证书
+    cert, attrs := this.GetCert()
+    if cert != nil {
+        certBlock := this.convertBag(CertificateType, cert.Raw, attrs)
+
+        blocks = append(blocks, certBlock)
+    }
+
+    // 证书链
+    caCerts := this.GetCaCerts()
+    for _, caCert := range caCerts {
+        caCertBlock := this.convertBag(CertificateType, caCert.Raw, EmptyPKCS12Attributes())
+
+        blocks = append(blocks, caCertBlock)
+    }
+
+    // JAVA 证书链
+    trustStores := this.GetTrustStoreEntries()
+    for _, entry := range trustStores {
+        entryBlock := this.convertBag(CertificateType, entry.Cert.Raw, entry.Attrs)
+
+        blocks = append(blocks, entryBlock)
+    }
+
+    return blocks, nil
 }

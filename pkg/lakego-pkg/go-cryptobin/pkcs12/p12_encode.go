@@ -34,7 +34,7 @@ func (this *PKCS12) AddCaCerts(caCerts []*x509.Certificate) *PKCS12 {
 }
 
 func (this *PKCS12) AddTrustStore(cert *x509.Certificate) *PKCS12 {
-    this.trustStoreEntries = append(this.trustStoreEntries, TrustStoreEntry{
+    this.trustStores = append(this.trustStores, TrustStoreEntry{
         Cert: cert,
         FriendlyName: cert.Subject.String(),
     })
@@ -44,7 +44,7 @@ func (this *PKCS12) AddTrustStore(cert *x509.Certificate) *PKCS12 {
 
 func (this *PKCS12) AddTrustStores(certs []*x509.Certificate) *PKCS12 {
     for _, cert := range certs {
-        this.trustStoreEntries = append(this.trustStoreEntries, TrustStoreEntry{
+        this.trustStores = append(this.trustStores, TrustStoreEntry{
             Cert: cert,
             FriendlyName: cert.Subject.String(),
         })
@@ -54,7 +54,7 @@ func (this *PKCS12) AddTrustStores(certs []*x509.Certificate) *PKCS12 {
 }
 
 func (this *PKCS12) AddTrustStoreEntry(cert *x509.Certificate, friendlyName string) *PKCS12 {
-    this.trustStoreEntries = append(this.trustStoreEntries, TrustStoreEntry{
+    this.trustStores = append(this.trustStores, TrustStoreEntry{
         Cert: cert,
         FriendlyName: friendlyName,
     })
@@ -63,7 +63,7 @@ func (this *PKCS12) AddTrustStoreEntry(cert *x509.Certificate, friendlyName stri
 }
 
 func (this *PKCS12) AddTrustStoreEntries(entries []TrustStoreEntry) *PKCS12 {
-    this.trustStoreEntries = append(this.trustStoreEntries, entries...)
+    this.trustStores = append(this.trustStores, entries...)
 
     return this
 }
@@ -187,7 +187,7 @@ func (this *PKCS12) marshalTrustStoreEntries(rand io.Reader, password []byte, op
         },
     })
 
-    entries := this.trustStoreEntries
+    entries := this.trustStores
 
     var certBags []SafeBag
     for _, entry := range entries {
@@ -295,7 +295,7 @@ func (this *PKCS12) Marshal(rand io.Reader, password string, opts ...Opts) (pfxD
     }
 
     // JAVA 证书链
-    if len(this.trustStoreEntries) > 0 {
+    if len(this.trustStores) > 0 {
         ci, err := this.marshalTrustStoreEntries(rand, encodedPassword, opt)
         if err != nil {
             return nil, err

@@ -978,3 +978,60 @@ func Test_EncodeChain_Check(t *testing.T) {
     assertEqual(certificate2, certificates[0], "EncodeChain_Check-certificate2")
     assertEqual(caCerts2, caCerts, "EncodeChain_Check-caCerts2")
 }
+
+func Test_ToPem(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testNewPfx_Encode)
+
+    password := "pass"
+
+    blocks, err := ToPEM(pfxData, password)
+    assertError(err, "Test_ToPem-ToPEM")
+    assertNotEmpty(blocks, "Test_ToPem-ToPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "Test_ToPem-ToPEM-Pem")
+    }
+}
+
+func Test_Encode_Passwordless_ToPem(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    certificates, err := x509.ParseCertificates(decodePEM(certificate))
+    assertError(err, "Test_Encode_Passwordless_ToPem-certificates")
+
+    parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
+    assertError(err, "Test_Encode_Passwordless_ToPem-privateKey")
+
+    privateKey, ok := parsedKey.(*rsa.PrivateKey)
+    if !ok {
+        t.Error("Test_Encode_Passwordless_ToPem rsa Error")
+    }
+
+    password := ""
+
+    pfxData, err := Encode(rand.Reader, privateKey, certificates[0], password, PasswordlessOpts)
+    assertError(err, "Test_Encode_Passwordless_ToPem-pfxData")
+
+    // 检测
+    blocks, err := ToPEM(pfxData, password)
+    assertError(err, "Test_Encode_Passwordless_ToPem-ToPEM")
+    assertNotEmpty(blocks, "Test_Encode_Passwordless_ToPem-ToPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "Test_Encode_Passwordless_ToPem-ToPEM-Pem")
+    }
+}
