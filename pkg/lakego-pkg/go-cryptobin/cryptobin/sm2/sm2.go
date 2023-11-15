@@ -35,7 +35,7 @@ type SM2 struct {
     data []byte
 
     // 解析后的数据
-    paredData []byte
+    parsedData []byte
 
     // 验证结果
     verify bool

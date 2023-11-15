@@ -18,22 +18,22 @@ func (this ED448) ToKeyString() string {
 
 // 输出字节
 func (this ED448) ToBytes() []byte {
-    return this.paredData
+    return this.parsedData
 }
 
 // 输出字符
 func (this ED448) ToString() string {
-    return string(this.paredData)
+    return string(this.parsedData)
 }
 
 // 输出Base64
 func (this ED448) ToBase64String() string {
-    return tool.Base64Encode(this.paredData)
+    return tool.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this ED448) ToHexString() string {
-    return tool.HexEncode(this.paredData)
+    return tool.HexEncode(this.parsedData)
 }
 
 // ==========

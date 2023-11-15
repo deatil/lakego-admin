@@ -17,12 +17,12 @@ func (this Ecdsa) Encrypt() Ecdsa {
 
     publicKey := ecc.ImportECDSAPublicKey(this.publicKey)
 
-    paredData, err := ecc.Encrypt(rand.Reader, publicKey, this.data, nil, nil)
+    parsedData, err := ecc.Encrypt(rand.Reader, publicKey, this.data, nil, nil)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -37,12 +37,12 @@ func (this Ecdsa) Decrypt() Ecdsa {
 
     privateKey := ecc.ImportECDSAPrivateKey(this.privateKey)
 
-    paredData, err := ecc.Decrypt(privateKey, this.data, nil, nil)
+    parsedData, err := ecc.Decrypt(privateKey, this.data, nil, nil)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }

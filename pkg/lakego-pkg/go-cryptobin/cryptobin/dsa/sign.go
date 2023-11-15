@@ -45,7 +45,7 @@ func (this DSA) Sign(separator ...string) DSA {
 
     signStr := string(rt) + sep + string(st)
 
-    this.paredData = []byte(signStr)
+    this.parsedData = []byte(signStr)
 
     return this
 }
@@ -117,9 +117,9 @@ func (this DSA) SignAsn1() DSA {
         return this.AppendError(err)
     }
 
-    paredData, err := asn1.Marshal(DSASignature{r, s})
+    parsedData, err := asn1.Marshal(DSASignature{r, s})
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }
@@ -177,9 +177,9 @@ func (this DSA) SignHex() DSA {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    paredData, err := encoding.HexDecode(sign)
+    parsedData, err := encoding.HexDecode(sign)
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }
@@ -242,7 +242,7 @@ func (this DSA) SignBytes() DSA {
     copy(out[dsaSubgroupBytes-len(rBytes):], rBytes)
     copy(out[len(out)-len(sBytes):], sBytes)
 
-    this.paredData = out
+    this.parsedData = out
 
     return this
 }

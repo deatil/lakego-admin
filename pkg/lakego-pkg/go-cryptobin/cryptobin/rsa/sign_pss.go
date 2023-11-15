@@ -26,9 +26,9 @@ func (this Rsa) SignPSS(opts ...rsa.PSSOptions) Rsa {
         options = opts[0]
     }
 
-    paredData, err := rsa.SignPSS(rand.Reader, this.privateKey, this.signHash, hashed, &options)
+    parsedData, err := rsa.SignPSS(rand.Reader, this.privateKey, this.signHash, hashed, &options)
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }

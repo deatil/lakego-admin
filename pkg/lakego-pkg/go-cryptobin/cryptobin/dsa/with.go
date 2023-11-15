@@ -47,9 +47,9 @@ func (this DSA) WithData(data []byte) DSA {
     return this
 }
 
-// 设置 paredData
+// 设置 parsedData
 func (this DSA) WithParedData(data []byte) DSA {
-    this.paredData = data
+    this.parsedData = data
 
     return this
 }

@@ -38,7 +38,7 @@ func (this EdDSA) Sign() EdDSA {
         return this.AppendError(err)
     }
 
-    this.paredData = []byte(sig)
+    this.parsedData = []byte(sig)
 
     return this
 }

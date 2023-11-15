@@ -35,60 +35,61 @@ var (
     errUnknownAttributeOID = errors.New("pkcs12: unknown attribute OID")
 )
 
-type ContentInfo struct {
-    ContentType asn1.ObjectIdentifier
-    Content     asn1.RawValue `asn1:"tag:0,explicit,optional"`
-}
-
 type PfxPdu struct {
     Version  int
     AuthSafe ContentInfo
     MacData  MacData `asn1:"optional"`
 }
 
-type encryptedData struct {
-    Version              int
-    EncryptedContentInfo encryptedContentInfo
+type ContentInfo struct {
+    ContentType asn1.ObjectIdentifier
+    Content     asn1.RawValue `asn1:"tag:0,explicit,optional"`
 }
 
-type encryptedContentInfo struct {
+type EncryptedData struct {
+    Version              int
+    EncryptedContentInfo EncryptedContentInfo
+}
+
+type EncryptedContentInfo struct {
     ContentType                asn1.ObjectIdentifier
     ContentEncryptionAlgorithm pkix.AlgorithmIdentifier
     EncryptedContent           []byte `asn1:"tag:0,optional"`
 }
 
-func (this encryptedContentInfo) Algorithm() pkix.AlgorithmIdentifier {
+func (this EncryptedContentInfo) Algorithm() pkix.AlgorithmIdentifier {
     return this.ContentEncryptionAlgorithm
 }
 
-func (this encryptedContentInfo) Data() []byte {
+func (this EncryptedContentInfo) Data() []byte {
     return this.EncryptedContent
 }
 
-type safeBag struct {
+type SafeBag struct {
     Id         asn1.ObjectIdentifier
     Value      asn1.RawValue     `asn1:"tag:0,explicit"`
-    Attributes []pkcs12Attribute `asn1:"set,optional"`
+    Attributes []PKCS12Attribute `asn1:"set,optional"`
 }
 
-func (bag *safeBag) hasAttribute(id asn1.ObjectIdentifier) bool {
+func (bag *SafeBag) hasAttribute(id asn1.ObjectIdentifier) bool {
     for _, attr := range bag.Attributes {
         if attr.Id.Equal(id) {
             return true
         }
     }
+
     return false
 }
 
-type pkcs12Attribute struct {
+type PKCS12Attribute struct {
     Id    asn1.ObjectIdentifier
     Value asn1.RawValue `asn1:"set"`
 }
 
 // PEM block types
 const (
-    certificateType = "CERTIFICATE"
-    privateKeyType  = "PRIVATE KEY"
+    CertificateType = "CERTIFICATE"
+    PrivateKeyType  = "PRIVATE KEY"
 )
 
 // ToPEM converts all "safe bags" contained in pfxData to PEM blocks.
@@ -121,7 +122,7 @@ func ToPEM(pfxData []byte, password string) ([]*pem.Block, error) {
     return blocks, nil
 }
 
-func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
+func convertBag(bag *SafeBag, password []byte) (*pem.Block, error) {
     block := &pem.Block{
         Headers: make(map[string]string),
     }
@@ -143,7 +144,7 @@ func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
 
     switch {
         case bag.Id.Equal(oidCertBag):
-            block.Type = certificateType
+            block.Type = CertificateType
 
             block.Bytes, err = decodeCertBag(bag.Value.Bytes)
             if err != nil {
@@ -151,7 +152,7 @@ func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
             }
 
         case bag.Id.Equal(oidKeyBag):
-            block.Type = privateKeyType
+            block.Type = PrivateKeyType
 
             block.Bytes, err = MarshalPrivateKey(bag.Value.Bytes)
             if err != nil {
@@ -159,7 +160,7 @@ func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
             }
 
         case bag.Id.Equal(oidPKCS8ShroundedKeyBag):
-            block.Type = privateKeyType
+            block.Type = PrivateKeyType
 
             key, err := decodePkcs8ShroudedKeyBag(bag.Value.Bytes, password)
             if err != nil {
@@ -178,7 +179,7 @@ func convertBag(bag *safeBag, password []byte) (*pem.Block, error) {
     return block, nil
 }
 
-func convertAttribute(attribute *pkcs12Attribute) (key, value string, err error) {
+func convertAttribute(attribute *PKCS12Attribute) (key, value string, err error) {
     isString := false
 
     switch {
@@ -496,7 +497,7 @@ func DecodeSecret(pfxData []byte, password string) (secretKeys []SecretKey, err 
     return
 }
 
-func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBag, updatedPassword []byte, err error) {
+func getSafeContents(p12Data, password []byte, expectedItems int) (bags []SafeBag, updatedPassword []byte, err error) {
     pfx := new(PfxPdu)
     if err := unmarshal(p12Data, pfx); err != nil {
         return nil, nil, errors.New("pkcs12: error reading P12 data: " + err.Error())
@@ -554,7 +555,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
                 }
 
             case ci.ContentType.Equal(oidEncryptedDataContentType):
-                var encryptedData encryptedData
+                var encryptedData EncryptedData
                 if err := unmarshal(ci.Content.Bytes, &encryptedData); err != nil {
                     return nil, nil, err
                 }
@@ -597,7 +598,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []safeBa
                 return nil, nil, NotImplementedError("only data and encryptedData content types are supported in authenticated safe")
         }
 
-        var safeContents []safeBag
+        var safeContents []SafeBag
         if err := unmarshal(data, &safeContents); err != nil {
             return nil, nil, err
         }
@@ -659,7 +660,7 @@ func EncodeChain(
     pfx.Version = 3
 
     var certFingerprint = sha1.Sum(certificate.Raw)
-    var localKeyIdAttr pkcs12Attribute
+    var localKeyIdAttr PKCS12Attribute
     localKeyIdAttr.Id = oidLocalKeyID
     localKeyIdAttr.Value.Class = 0
     localKeyIdAttr.Value.Tag = 17
@@ -668,21 +669,21 @@ func EncodeChain(
         return nil, err
     }
 
-    var certBags []safeBag
-    var certBag *safeBag
-    if certBag, err = makeCertBag(certificate.Raw, []pkcs12Attribute{localKeyIdAttr}); err != nil {
+    var certBags []SafeBag
+    var certBag *SafeBag
+    if certBag, err = makeCertBag(certificate.Raw, []PKCS12Attribute{localKeyIdAttr}); err != nil {
         return nil, err
     }
     certBags = append(certBags, *certBag)
 
     for _, cert := range caCerts {
-        if certBag, err = makeCertBag(cert.Raw, []pkcs12Attribute{}); err != nil {
+        if certBag, err = makeCertBag(cert.Raw, []PKCS12Attribute{}); err != nil {
             return nil, err
         }
         certBags = append(certBags, *certBag)
     }
 
-    var keyBag safeBag
+    var keyBag SafeBag
     keyBag.Value.Class = 2
     keyBag.Value.Tag = 0
     keyBag.Value.IsCompound = true
@@ -708,7 +709,7 @@ func EncodeChain(
     if authenticatedSafe[0], err = makeSafeContents(rand, certBags, encodedPassword, opt); err != nil {
         return nil, err
     }
-    if authenticatedSafe[1], err = makeSafeContents(rand, []safeBag{keyBag}, nil, Opts{}); err != nil {
+    if authenticatedSafe[1], err = makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{}); err != nil {
         return nil, err
     }
 
@@ -825,7 +826,7 @@ func EncodeTrustStoreEntries(
     var pfx PfxPdu
     pfx.Version = 3
 
-    var certAttributes []pkcs12Attribute
+    var certAttributes []PKCS12Attribute
 
     extKeyUsageOidBytes, err := asn1.Marshal(oidAnyExtendedKeyUsage)
     if err != nil {
@@ -834,7 +835,7 @@ func EncodeTrustStoreEntries(
 
     // the oidJavaTrustStore attribute contains the EKUs for which
     // this trust anchor will be valid
-    certAttributes = append(certAttributes, pkcs12Attribute{
+    certAttributes = append(certAttributes, PKCS12Attribute{
         Id: oidJavaTrustStore,
         Value: asn1.RawValue{
             Class:      0,
@@ -844,7 +845,7 @@ func EncodeTrustStoreEntries(
         },
     })
 
-    var certBags []safeBag
+    var certBags []SafeBag
     for _, entry := range entries {
 
         bmpFriendlyName, err := bmpString(entry.FriendlyName)
@@ -862,7 +863,7 @@ func EncodeTrustStoreEntries(
             return nil, err
         }
 
-        friendlyName := pkcs12Attribute{
+        friendlyName := PKCS12Attribute{
             Id: oidFriendlyName,
             Value: asn1.RawValue{
                 Class:      0,
@@ -934,7 +935,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
     pfx.Version = 3
 
     var secretFingerprint = sha1.Sum(secretKey)
-    var localKeyIdAttr pkcs12Attribute
+    var localKeyIdAttr PKCS12Attribute
     localKeyIdAttr.Id = oidLocalKeyID
     localKeyIdAttr.Value.Class = 0
     localKeyIdAttr.Value.Tag = 17
@@ -943,7 +944,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
         return nil, err
     }
 
-    var keyBag safeBag
+    var keyBag SafeBag
     keyBag.Id = oidSecretBag
     keyBag.Value.Class = 2
     keyBag.Value.Tag = 0
@@ -954,7 +955,7 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
     keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
 
     var authenticatedSafe [1]ContentInfo
-    if authenticatedSafe[0], err = makeSafeContents(rand, []safeBag{keyBag}, nil, Opts{}); err != nil {
+    if authenticatedSafe[0], err = makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{}); err != nil {
         return nil, err
     }
 
@@ -989,8 +990,8 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
     return
 }
 
-func makeCertBag(certBytes []byte, attributes []pkcs12Attribute) (certBag *safeBag, err error) {
-    certBag = new(safeBag)
+func makeCertBag(certBytes []byte, attributes []PKCS12Attribute) (certBag *SafeBag, err error) {
+    certBag = new(SafeBag)
     certBag.Id = oidCertBag
     certBag.Value.Class = 2
     certBag.Value.Tag = 0
@@ -1004,7 +1005,7 @@ func makeCertBag(certBytes []byte, attributes []pkcs12Attribute) (certBag *safeB
     return
 }
 
-func makeSafeContents(rand io.Reader, bags []safeBag, password []byte, opts Opts) (ci ContentInfo, err error) {
+func makeSafeContents(rand io.Reader, bags []SafeBag, password []byte, opts Opts) (ci ContentInfo, err error) {
     var data []byte
     if data, err = asn1.Marshal(bags); err != nil {
         return
@@ -1055,7 +1056,7 @@ func makeSafeContents(rand io.Reader, bags []safeBag, password []byte, opts Opts
             algo.Parameters.FullBytes = params
         }
 
-        var encryptedData encryptedData
+        var encryptedData EncryptedData
         encryptedData.Version = 0
         encryptedData.EncryptedContentInfo.ContentType = oidDataContentType
         encryptedData.EncryptedContentInfo.ContentEncryptionAlgorithm = algo

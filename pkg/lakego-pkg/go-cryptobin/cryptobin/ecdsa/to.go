@@ -18,22 +18,22 @@ func (this Ecdsa) ToKeyString() string {
 
 // 输出字节
 func (this Ecdsa) ToBytes() []byte {
-    return this.paredData
+    return this.parsedData
 }
 
 // 输出字符
 func (this Ecdsa) ToString() string {
-    return string(this.paredData)
+    return string(this.parsedData)
 }
 
 // 输出Base64
 func (this Ecdsa) ToBase64String() string {
-    return cryptobin_tool.NewEncoding().Base64Encode(this.paredData)
+    return cryptobin_tool.NewEncoding().Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this Ecdsa) ToHexString() string {
-    return cryptobin_tool.NewEncoding().HexEncode(this.paredData)
+    return cryptobin_tool.NewEncoding().HexEncode(this.parsedData)
 }
 
 // ==========

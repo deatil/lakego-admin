@@ -27,36 +27,19 @@ func Test_EncryptPEMBlock(t *testing.T) {
     assertEqual(string(deData), data, "EncryptPEMBlock")
 }
 
-func test_KeyEncryptPEMBlock(t *testing.T, key string) {
-    block, _ := pem.Decode([]byte(key))
-
-    bys, err := DecryptPEMBlock(block, []byte("123"))
-    if err != nil {
-        t.Fatal("PEM data decrypted error: " + err.Error())
-    }
-
-    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("123"), DESCBC)
-    if err != nil {
-        t.Error("encrypt: ", err)
-    }
-
-    if len(enblock.Bytes) == 0 {
-        t.Error("EncryptPEMBlock error")
-    }
-
-    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
-        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
-    }
-}
-
-// pbes2
+// PBES2
 var testKey_desCBC = `
 -----BEGIN ENCRYPTED PRIVATE KEY-----
-MIHoMFMGCSqGSIb3DQEFDTBGMDEGCSqGSIb3DQEFDDAkBBClOTCUgbqFR+BTDzSy
-Y6yAAgInEDAMBggqhkiG9w0CCQUAMBEGBSsOAwIHBAgt4PhQaO/JcASBkHQUI0jy
-MO3t47bZXy35UGcjjHilw2p5XTdr97wzYDqO8EiS6Vw1XZ4NBLVWAnxYNfLNY6LB
-UJ2XXNKPiiGzas9dk1I+z4NVn9qmWzIhB098cHPiYxybKay6HvMQA3oW6bSVCuE3
-yg8M0QxtBk9ThTRXLuRyKpI3Tm21ue6V0QI2MLJOwhaFsoACc5bJuHuLTQ==
+MIIBuTBTBgkqhkiG9w0BBQ0wRjAxBgkqhkiG9w0BBQwwJAQQvj8LzV+i025JwbNk
+ADorQgICJxAwDAYIKoZIhvcNAgkFADARBgUrDgMCBwQIuY48N/UMFu4EggFgWHq1
+gWR1yKfbgAIMxPwpNDuw85T435hBvZty+szAoSpiXjznykyaVsCuiQeKt5cMSRJC
+aE1dxrRTJep8c6TPeWjdAing3XQhQ5YQwbFefdRSxhbdvTV/DX20KEddJ1m0dTEF
+i/qzouAYHPdVTfyjoRKtRvVgQmRQvn5OvHu7r0a0QOThbIArtjlSO4qEtjFwRrZm
+wXiU65ioJHnV2xV8qZAdhqKcKwLnrL5HewaeKRmFaTpbHy6ld1MQGKkEFVglAgRj
+Z60qdy0JfKd8CfjcOBAANyBp7MlWl1idNhPeTNBTNjg6eKZ1r7UTLWXJD27b62VP
+snBFn+NBcNOU2XdgOiV45uPMuytHTlDPvJuqOodBUFHZoUVUNFQoq4Nyrndb6Gah
+Tni4pu265XK1fPrNk8QM7BP7BVrqPrNe9YdDTsEFAxw4zMu4m4NfIZi8anIzGGFY
+VmDlYkFAY0dH7l3iBA==
 -----END ENCRYPTED PRIVATE KEY-----
 `
 var testKey_des_EDE3_CBC = `
@@ -161,25 +144,6 @@ jsh9Vm+Ih6ETN2iu8dLlOco=
 `
 
 // PBES1
-var testKey_MD5AndDES_CBC = `
------BEGIN ENCRYPTED PRIVATE KEY-----
-MIICoTAbBgkqhkiG9w0BBQMwDgQICxgkvE+P1MQCAggABIICgKYRuOl0PqKK603C
-gnVIqEJj3A7uZ7mdd14rgn5azBvSjaNIqc9PCqqb6wV/6D+x+6wOU1Nz0OeJJmv7
-+Px+6xuyGCQFPiQG3QyM+YtC2aPr6LfQ5F1amIsVT8ET1F4xwyyxGrAP58rxchJ1
-3TlifJkHpEroWatTHQcdX82V5kLmOs5TLdB10ctSiQl0GN/bVIOLWT2hUMNdpw3S
-cUoztUn8aWKWeVb62cDJRmJayE1Oe8rDoGFuBm0250HykwIIZAdVICl+fBeOq5Fj
-0MDNxZauxxejMOnKKbtNuJwsE1w4j/yEpbplmMmf+dDSRsRM3ac43yq4xAgUXzM3
-O01q+VpRNaYZk8q5MnRC0Yn8REQTaV2GUXsWS2nfL2MOZp6TgSwC50guY1cZlcfQ
-8mKXLBcUGsCYgdpkRx2tUAOeS7XLPN3Sen4OyspJY9NP6HPsreDEeI1xMv9nfdVz
-DiryK6lHWfpYHoGDavu+60mqEn8X7Y8s5qWRUp0W8nujbJAbYlQlHpbBFzQrpo7Q
-JWfXOJAouR3ezqgow1MaVKMx2Pq4KXX+0zlc2G0rZDtngNmE5XW6CK/DhLv0ldlD
-zdEGsHpYNo2JGrqGIlKDXPUwg/OrVNcFgRTcf4YWO+/MKzeVXt57AW9P6yGQyJXO
-WjymWmwAgyfhxK3reEnmN/MPYztzCLBP7jnanutgIMKXTnr8cLAcV2bye8gypplR
-EBVam00VjZ8EkT9TmQoe+B8gkYYT4h1+c/SMFNlws4LMmWcTgOxYbt0w2/bdsLJs
-jLeHG8o8AROsgrgg0eGmqznNdTothvN3WO82opLo1RMc52V6OagMU4Phgcczh9Fs
-GPjmXqo=
------END ENCRYPTED PRIVATE KEY-----
-`
 var testKey_MD2AndDES_CBC = `
 -----BEGIN ENCRYPTED PRIVATE KEY-----
 MIICoTAbBgkqhkiG9w0BBQEwDgQIPNmn4FRflVACAggABIICgJJ0AkWVX60ZYhxu
@@ -199,6 +163,63 @@ rCZnygNMcnzACaN2W3rHME2vCDJSh3MgejTtM1VsRwjYXCPYL7j1ZLOeyDRdnnfr
 Th1nHW0=
 -----END ENCRYPTED PRIVATE KEY-----
 `
+var testKey_MD2AndRC2_CBC = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIICoTAbBgkqhkiG9w0BBQQwDgQIp5Audl9ye8ICAggABIICgDn0Y7DFBQRHfRCo
+EV0cUbaPSjpogXDMsPdgRCPsAwXKFL5f6OBlmjVbTUPgcY0zmIWzdFfN3Bi/htR3
+IPzyOvmyRoXzIXmzeq9z1msr4Qdu8ms0uWSNbS0ByaUQGy2an+knoJ+dKYk5+HDk
+TwUVBz86fxtiIUQ6GJI/v4GqwFhujxg42UL+LDxo1Efhdn3Rt6HAdP6rSw4mxGlb
+KDEs84TusJHFf5KQSipQSUypRdQe6AiH9G5ZQBUTEt1P49qTFEZqxfv4MspOh/FX
+MAxk5cpmSrDc4KsrhK83xd0JMxbpOmfN8xo+5cZpJZYbvhxhOYjba2tNbMaF33cH
+xNg4NBnsrDKUN/nzrQUqNOi8xmsipPjedQwx01PQV9ACRA0dME7aCPhu2TQ6KxoE
+f3rO5ylttdOyX8Wr1o6YmaWBDzd7NYThoIrgFzO4Dxzfr5MWrp3qBZAd2bgC+vit
+tL7LEAMTfXuw2xHTXwfwrDiM289yFDGJHnnDfIxBeJT5nGq/RNqx8RfpjfSqH4eB
+wX6sebi8OmKTg21aJNPKXYB5ctlD2wiHqGXznvCoQpC0Bhy/tCS8hcKCoCt5aHSn
+fG2weKt3zatBCyjSjfFa//32E7SBugXHqOPVEagq05F17rE3RgkZIIpv0ayBf9zX
+CHrOJZp1xqYZN32H+XPbcYm147tr/iOylCasR1Zu4Ht0J6lBaHnz4C3X1T/S1Pbh
+JC/RkJHqBu2hRZqWtzOkNjQu5v8GkKdEfcWsAGy2EDyav1FoDMHN70cnxgHxwyJp
+d5XGxkasd+sD+Zy/gPRLlv5BR09T/Nhqk3DpoIM+08EYKv/RqcmZQDkwBBVmDs4b
+dh5CKJs=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_MD5AndDES_CBC = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIICoTAbBgkqhkiG9w0BBQMwDgQICxgkvE+P1MQCAggABIICgKYRuOl0PqKK603C
+gnVIqEJj3A7uZ7mdd14rgn5azBvSjaNIqc9PCqqb6wV/6D+x+6wOU1Nz0OeJJmv7
++Px+6xuyGCQFPiQG3QyM+YtC2aPr6LfQ5F1amIsVT8ET1F4xwyyxGrAP58rxchJ1
+3TlifJkHpEroWatTHQcdX82V5kLmOs5TLdB10ctSiQl0GN/bVIOLWT2hUMNdpw3S
+cUoztUn8aWKWeVb62cDJRmJayE1Oe8rDoGFuBm0250HykwIIZAdVICl+fBeOq5Fj
+0MDNxZauxxejMOnKKbtNuJwsE1w4j/yEpbplmMmf+dDSRsRM3ac43yq4xAgUXzM3
+O01q+VpRNaYZk8q5MnRC0Yn8REQTaV2GUXsWS2nfL2MOZp6TgSwC50guY1cZlcfQ
+8mKXLBcUGsCYgdpkRx2tUAOeS7XLPN3Sen4OyspJY9NP6HPsreDEeI1xMv9nfdVz
+DiryK6lHWfpYHoGDavu+60mqEn8X7Y8s5qWRUp0W8nujbJAbYlQlHpbBFzQrpo7Q
+JWfXOJAouR3ezqgow1MaVKMx2Pq4KXX+0zlc2G0rZDtngNmE5XW6CK/DhLv0ldlD
+zdEGsHpYNo2JGrqGIlKDXPUwg/OrVNcFgRTcf4YWO+/MKzeVXt57AW9P6yGQyJXO
+WjymWmwAgyfhxK3reEnmN/MPYztzCLBP7jnanutgIMKXTnr8cLAcV2bye8gypplR
+EBVam00VjZ8EkT9TmQoe+B8gkYYT4h1+c/SMFNlws4LMmWcTgOxYbt0w2/bdsLJs
+jLeHG8o8AROsgrgg0eGmqznNdTothvN3WO82opLo1RMc52V6OagMU4Phgcczh9Fs
+GPjmXqo=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_MD5AndRC2_CBC = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIICoTAbBgkqhkiG9w0BBQYwDgQIAmadXJE04aACAggABIICgM9BNUi8uQoYkbB5
+L7iljLpaA0JGAeTCWbFHkGJwpeFhewc1bueyRJSIB1ZeJQ0UlkI0I24U+ui3AOVo
+Wqvu2jADWDDxFbb4mxakQ9nY0h8YO3lnrs4UJXu+QxgQVNkww8PrHAD1Gx7a34hw
++ZiVzuN4G0gxF68MWux7bQuOhCkLLfN3tFp2rasG5J0zgTZ3ENMCZnTJdRQcswQA
+WmNi4aeKjGRXjudjA9OKBRcdGiCkFOUNECl3XLHheXgBqxqltB2yl6+gpbXHQB4i
+OPQrqhypTV3BNgKc6ZjcLLBfvv2GZv0STV25hEphRoZ4bOtRNUkMMtEmOyqVP8ks
+jL2OJZf3Bv5zlg4cPEYNeIkHTojyFgD1mVLrIJKLYkdjYZpXfgjKAC4+rkGQMJre
+/y+3mCEVGE6V81xZ3tvxTHJQFNEWFDqRNDxDWmX45m6XhRcxY7BRDhs/4WrnF4ro
+r/cFKNhpLVEaNeCYjAtoBv7EjJUy4RzJTVPtQth+WzFzokPt835lOYP47G0Xu3VU
+guw1ar7D3B60U32ef3GZEED9frttwP0nX9fqxzqJNMN1p6T8ckvqOoErIjESR2WN
+oprHWeuTo/KHCxx/EDmvTwd+CmHv5eqy6jK5QF5akg6YvwkzO1RVXSODrWMdNKPf
+a4hWeWtT2pSjVdwA7inW37K1hZhvo4RNI8rPJaDE4YOcr6p6o/VTcuFvpeT5ibkA
+hkym78/6QlNTCPmEJU3MJooUk9XGWYzhevzqXjp0ulBmTmYWFYyJTYaILLoVb5WF
+xRid47/8DCniXEprXGgL+Z5pSjMB4owa9xwDPru82D/loHwtnKHKKKw5DS2pANZF
+IVMases=
+-----END ENCRYPTED PRIVATE KEY-----
+`
 var testKey_SHA1AndDES_CBC = `
 -----BEGIN ENCRYPTED PRIVATE KEY-----
 MIICoTAbBgkqhkiG9w0BBQowDgQIM/k0TJbcsTkCAggABIICgDUtUmY1rsPGVhAU
@@ -216,6 +237,25 @@ ReiX8ACOEhcBCJM/X5dJZ75dy7dap3yxdWzzWwknrsZ9tWC9UgvgYenS+iB6OurP
 RNChCo3aGWTzSO2poa+SNrA1Ru4PXLzp+h9U7nNFlCB/3XN+qsuBPrCHcpuPOiVy
 yKUcluvusm76rqE64n3DYUU/fPC/CK5fmVcGO66V7OD+zSrz7p88RhlgXRkE1cLJ
 fV7PzME=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_SHA1AndRC2_CBC = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIICoTAbBgkqhkiG9w0BBQswDgQIwjLfEL51ehcCAggABIICgH4yHzcJ8KECz6Ki
+6UOQ3F0hSry96Bha4hzvRs02ECksf9OY3o9A0BA1dLZZ2WGoVtn63XsuDrCujqzY
+172iy7qAa4bhUwf6bwpdnBaVF7XZgb31c29ycVIDYwFruQSkFK+hRyiEt9Z3IwqH
+wbzGNGWj3wtln8NujsDPbXwZfsgceEMqzJw1qBWg927H13uGZyiJIspXX/frw0sB
+hFdBIslm9KEwRYGK7q/tl1jfC7mhvJM63jbdsv5qDIlsnef5c6jfH9y+0Ab6G6d7
+PDNeAp3fGJHBy0tc2ZT/YGixx+kaG028/5Uwa8qxlzjGq0HZHoieLDJB5tbhIzw8
+IDdUdeuxIeVWwNNmq1JuIu6QF8vqZ+MjTujeVBfKu4On15BdAXvi4JnEI1mn8Tal
+R3FPYjMDK/VQ85zf0SiV8+ZwMFxy0Y0WJl83uyT2Zw8X7fhZyHDFb9PQceQCXHVH
+eWVCeyCfSmH50GwTSxA8v7HbDiRNAWs9/NJqtSvlJYrnEb3cDq9SxFhPC5DYJ8gU
+Z3d8TdygDuz6yRDbc0RFKzHY79zAXfpPu+qT1mSW3DdrwrzQAtkPRR1/z2HnFYvq
+YbIG5dyxufQdmoipatBVYVY0c4dCYg61L0g9pQOpD0mH5th+ucvkNSJmc9+PRRCr
+tlQy+hNF6J8qtvm95YFpKZQlA1XwL9SpakKHGPpAKb54OFB0ax7x5LRi5iWNOwKz
+woZw5zt9Wi6wHfgB0IDwu4CsM/yjqLdzcHQl7NmJ1VopBvDao8JicCGRO8gk3E5y
+LobujAZ41mFPCxEtlSbnLXxv4kRmsXS2WshqSadMbTNC1vdH0TiWfjOU8ZkPCwLS
+L9gvtlU=
 -----END ENCRYPTED PRIVATE KEY-----
 `
 
@@ -357,15 +397,23 @@ func Test_Check_PEMBlock(t *testing.T) {
         test_KeyEncryptPEMBlock(t, testKey_aes256_CBC_PAD)
     })
 
-    t.Run("MD5AndDES_CBC", func(t *testing.T) {
-        test_KeyEncryptPEMBlock(t, testKey_MD5AndDES_CBC)
-    })
     t.Run("MD2AndDES_CBC", func(t *testing.T) {
         test_KeyEncryptPEMBlock(t, testKey_MD2AndDES_CBC)
     })
-
+    t.Run("MD2AndRC2_CBC", func(t *testing.T) {
+        test_KeyEncryptPEMBlock(t, testKey_MD2AndRC2_CBC)
+    })
+    t.Run("MD5AndDES_CBC", func(t *testing.T) {
+        test_KeyEncryptPEMBlock(t, testKey_MD5AndDES_CBC)
+    })
+    t.Run("MD5AndRC2_CBC", func(t *testing.T) {
+        test_KeyEncryptPEMBlock(t, testKey_MD5AndRC2_CBC)
+    })
     t.Run("SHA1AndDES_CBC", func(t *testing.T) {
         test_KeyEncryptPEMBlock(t, testKey_SHA1AndDES_CBC)
+    })
+    t.Run("SHA1AndRC2_CBC", func(t *testing.T) {
+        test_KeyEncryptPEMBlock(t, testKey_SHA1AndRC2_CBC)
     })
 
     t.Run("SHAAnd128BitRC4", func(t *testing.T) {
@@ -388,4 +436,26 @@ func Test_Check_PEMBlock(t *testing.T) {
     t.Run("SHAAnd40BitRC2_CBC", func(t *testing.T) {
         test_KeyEncryptPEMBlock(t, testKey_SHAAnd40BitRC2_CBC)
     })
+}
+
+func test_KeyEncryptPEMBlock(t *testing.T, key string) {
+    block, _ := pem.Decode([]byte(key))
+
+    bys, err := DecryptPEMBlock(block, []byte("123"))
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("123"), DESCBC)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
 }

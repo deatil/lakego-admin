@@ -16,12 +16,12 @@ func (this Rsa) Encrypt() Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := pubKeyByte(this.publicKey, this.data, true)
+    parsedData, err := pubKeyByte(this.publicKey, this.data, true)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -33,12 +33,12 @@ func (this Rsa) Decrypt() Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := priKeyByte(this.privateKey, this.data, false)
+    parsedData, err := priKeyByte(this.privateKey, this.data, false)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -52,12 +52,12 @@ func (this Rsa) PrivateKeyEncrypt() Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := priKeyByte(this.privateKey, this.data, true)
+    parsedData, err := priKeyByte(this.privateKey, this.data, true)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -69,12 +69,12 @@ func (this Rsa) PublicKeyDecrypt() Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := pubKeyByte(this.publicKey, this.data, false)
+    parsedData, err := pubKeyByte(this.publicKey, this.data, false)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -98,12 +98,12 @@ func (this Rsa) EncryptOAEP(typ ...string) Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := rsa.EncryptOAEP(newHash(), rand.Reader, this.publicKey, this.data, nil)
+    parsedData, err := rsa.EncryptOAEP(newHash(), rand.Reader, this.publicKey, this.data, nil)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -125,12 +125,12 @@ func (this Rsa) DecryptOAEP(typ ...string) Rsa {
         return this.AppendError(err)
     }
 
-    paredData, err := rsa.DecryptOAEP(newHash(), rand.Reader, this.privateKey, this.data, nil)
+    parsedData, err := rsa.DecryptOAEP(newHash(), rand.Reader, this.privateKey, this.data, nil)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -171,7 +171,7 @@ func (this Rsa) EncryptECB() Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this
 }
@@ -210,7 +210,7 @@ func (this Rsa) DecryptECB() Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this
 }
@@ -251,7 +251,7 @@ func (this Rsa) PrivateKeyEncryptECB() Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this}
 
@@ -289,7 +289,7 @@ func (this Rsa) PublicKeyDecryptECB() Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this
 }
@@ -340,7 +340,7 @@ func (this Rsa) EncryptOAEPECB(typ ...string) Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this
 }
@@ -379,7 +379,7 @@ func (this Rsa) DecryptOAEPECB(typ ...string) Rsa {
         offSet = endIndex
     }
 
-    this.paredData = buffer.Bytes()
+    this.parsedData = buffer.Bytes()
 
     return this
 }

@@ -71,9 +71,9 @@ func (this Ecdsa) WithData(data []byte) Ecdsa {
     return this
 }
 
-// 设置 paredData
+// 设置 parsedData
 func (this Ecdsa) WithParedData(data []byte) Ecdsa {
-    this.paredData = data
+    this.parsedData = data
 
     return this
 }

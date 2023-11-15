@@ -45,7 +45,7 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 
     signStr := string(rt) + sep + string(st)
 
-    this.paredData = []byte(signStr)
+    this.parsedData = []byte(signStr)
 
     return this
 }
@@ -107,12 +107,12 @@ func (this Ecdsa) SignASN1() Ecdsa {
         return this.AppendError(err)
     }
 
-    paredData, err := ecdsa.SignASN1(rand.Reader, this.privateKey, hashed)
+    parsedData, err := ecdsa.SignASN1(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }
@@ -158,9 +158,9 @@ func (this Ecdsa) SignAsn1() Ecdsa {
         return this.AppendError(err)
     }
 
-    paredData, err := asn1.Marshal(ecdsaSignature{r, s})
+    parsedData, err := asn1.Marshal(ecdsaSignature{r, s})
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }
@@ -218,9 +218,9 @@ func (this Ecdsa) SignHex() Ecdsa {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    paredData, err := encoding.HexDecode(sign)
+    parsedData, err := encoding.HexDecode(sign)
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }

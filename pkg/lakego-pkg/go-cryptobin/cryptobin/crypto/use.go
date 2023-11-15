@@ -151,6 +151,13 @@ func (this Cryptobin) RC5(wordSize, rounds uint) Cryptobin {
     return this
 }
 
+// RC6
+func (this Cryptobin) RC6() Cryptobin {
+    this.multiple = RC6
+
+    return this
+}
+
 // Xts
 // cipher 可用 [ Aes | Des | TripleDes | Tea | Xtea | Twofish | Blowfish | Cast5 | SM4]
 func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {

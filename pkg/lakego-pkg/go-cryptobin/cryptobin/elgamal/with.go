@@ -46,9 +46,9 @@ func (this EIGamal) WithData(data []byte) EIGamal {
     return this
 }
 
-// 设置 paredData
+// 设置 parsedData
 func (this EIGamal) WithParedData(data []byte) EIGamal {
-    this.paredData = data
+    this.parsedData = data
 
     return this
 }

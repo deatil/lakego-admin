@@ -45,7 +45,7 @@ type IMode interface {
     Decrypt([]byte, cipher.Block, IOption) ([]byte, error)
 }
 
-// 补码接口
+// 填充接口
 type IPadding interface {
     // 补码
     Padding([]byte, int, IOption) []byte

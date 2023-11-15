@@ -18,12 +18,12 @@ func (this SM2) Sign() SM2 {
         return this.AppendError(err)
     }
 
-    paredData, err := this.privateKey.Sign(rand.Reader, this.data, nil)
+    parsedData, err := this.privateKey.Sign(rand.Reader, this.data, nil)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -59,12 +59,12 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
         return this.AppendError(err)
     }
 
-    paredData, err := asn1.Marshal(sm2Signature{r, s})
+    parsedData, err := asn1.Marshal(sm2Signature{r, s})
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -110,12 +110,12 @@ func (this SM2) SignHex(uid []byte) SM2 {
 
     sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
 
-    paredData, err := encoding.HexDecode(sign)
+    parsedData, err := encoding.HexDecode(sign)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }

@@ -1,9 +1,10 @@
 package rc5
 
 import (
-    "crypto/cipher"
     "fmt"
     "unsafe"
+    "strconv"
+    "crypto/cipher"
 )
 
 // Reference: https://en.wikipedia.org/wiki/RC5
@@ -15,24 +16,32 @@ import (
 func NewCipher(key []byte, wordSize, r uint) (cipher.Block, error) {
     k := len(key)
     switch k {
-        case 16, 24, 32:
+        case 8, 16, 24, 32:
             break
         default:
             return nil, fmt.Errorf("rc5: invalid key size %d, we support 16/24/32 now", k)
     }
-    
+
     if r < 8 || r > 127 {
         return nil, fmt.Errorf("rc5: invalid rounds %d, should be between 8 and 127", r)
     }
-    
+
     switch wordSize {
+        case 16:
+            return newCipher16(key, r)
         case 32:
             return newCipher32(key, r)
         case 64:
             return newCipher64(key, r)
         default:
-            return nil, fmt.Errorf("rc5: unsupported word size %d, support 32/64 now", wordSize)
+            return nil, fmt.Errorf("rc5: unsupported word size %d, support 16/32/64 now", wordSize)
     }
+}
+
+// NewCipher16 creates and returns a new cipher.Block with 16 bits word size.
+// The key argument should be the RC5 key, the r argument should be number of rounds.
+func NewCipher16(key []byte, r uint) (cipher.Block, error) {
+    return NewCipher(key, 16, r)
 }
 
 // NewCipher32 creates and returns a new cipher.Block with 32 bits word size.
@@ -65,5 +74,13 @@ func inexactOverlap(x, y []byte) bool {
     if len(x) == 0 || len(y) == 0 || &x[0] == &y[0] {
         return false
     }
+
     return anyOverlap(x, y)
+}
+
+// KeySizeError
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cipher/rc5: invalid key size " + strconv.Itoa(int(k))
 }

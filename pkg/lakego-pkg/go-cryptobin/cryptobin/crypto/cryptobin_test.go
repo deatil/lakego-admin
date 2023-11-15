@@ -964,3 +964,109 @@ func Test_TwoDesCBC_Check(t *testing.T) {
 
     assert(oldData, cyptdeStr, "TwoDesCBC-res")
 }
+
+func Test_RC5PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12").
+        RC5(32, 12).
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "RC5PKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12").
+        RC5(32, 12).
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "RC5PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "RC5PKCS7Padding-res")
+}
+
+func Test_RC5PKCS7Padding_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    oldData := "测试数据"
+
+    key := "dfguijki"
+
+    cryptoData := "d7qx+SQCzI2cKkDTO/oCkQ=="
+
+    cyptde := FromBase64String(cryptoData).
+        SetKey(key).
+        RC5(32, 12).
+        ECB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "RC5PKCS7Padding_Check-Decode")
+
+    assert(oldData, cyptdeStr, "RC5PKCS7Padding_Check-res")
+}
+
+func Test_RC6PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        RC6().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "RC6PKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        RC6().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "RC6PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "RC6PKCS7Padding-res")
+}
+
+func Test_RC6PKCS7Padding_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    oldData := "ckijhslfg"
+
+    key := "jiko9jnmjiko9jnm"
+
+    cryptoData := "aQCJ4wRSJiSbZve8aqT+pw=="
+
+    cyptde := FromBase64String(cryptoData).
+        SetKey(key).
+        RC6().
+        ECB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "RC6PKCS7Padding_Check-Decode")
+
+    assert(oldData, cyptdeStr, "RC6PKCS7Padding_Check-res")
+}

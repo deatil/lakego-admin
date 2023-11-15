@@ -18,22 +18,22 @@ func (this EIGamal) ToKeyString() string {
 
 // 输出字节
 func (this EIGamal) ToBytes() []byte {
-    return this.paredData
+    return this.parsedData
 }
 
 // 输出字符
 func (this EIGamal) ToString() string {
-    return string(this.paredData)
+    return string(this.parsedData)
 }
 
 // 输出Base64
 func (this EIGamal) ToBase64String() string {
-    return cryptobin_tool.NewEncoding().Base64Encode(this.paredData)
+    return cryptobin_tool.NewEncoding().Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this EIGamal) ToHexString() string {
-    return cryptobin_tool.NewEncoding().HexEncode(this.paredData)
+    return cryptobin_tool.NewEncoding().HexEncode(this.parsedData)
 }
 
 // ==========

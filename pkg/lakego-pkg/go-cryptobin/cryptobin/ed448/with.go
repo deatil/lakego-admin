@@ -59,9 +59,9 @@ func (this ED448) WithData(data []byte) ED448 {
     return this
 }
 
-// 设置 paredData
+// 设置 parsedData
 func (this ED448) WithParedData(data []byte) ED448 {
-    this.paredData = data
+    this.parsedData = data
 
     return this
 }

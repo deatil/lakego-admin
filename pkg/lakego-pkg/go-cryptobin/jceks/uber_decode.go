@@ -3,6 +3,7 @@ package jceks
 import (
     "fmt"
     "bytes"
+    "errors"
     "crypto/sha1"
     "crypto/subtle"
     "encoding/asn1"
@@ -34,7 +35,13 @@ func (this *UBER) Parse(data []byte, password string) error {
         return err
     }
 
-    encryptedBlob := data[len(salt) + 12:]
+    encryptedLen := len(salt) + 12
+
+    if len(data) < encryptedLen {
+        return errors.New("Uber: data not right length")
+    }
+
+    encryptedBlob := data[encryptedLen:]
 
     params, err := asn1.Marshal(pbeParam{
         Salt:           salt,
@@ -53,6 +60,10 @@ func (this *UBER) Parse(data []byte, password string) error {
     hashDigestSize := hashFn().Size()
 
     dataLen := len(decrypted) - hashDigestSize
+
+    if len(decrypted) < dataLen {
+        return errors.New("Uber: decrypted not right length")
+    }
 
     uberStore := decrypted[:dataLen]
     actual := decrypted[dataLen:]

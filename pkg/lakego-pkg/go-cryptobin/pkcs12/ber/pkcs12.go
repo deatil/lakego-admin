@@ -1,6 +1,8 @@
 package ber
 
 import (
+    "io"
+    "bytes"
     "errors"
     "encoding/asn1"
     "crypto/x509"
@@ -27,18 +29,18 @@ type ContentInfo struct {
 }
 
 // from PKCS#7:
-type digestInfo struct {
+type DigestInfo struct {
     Algorithm AlgorithmIdentifier
     Digest    []byte
 }
 
-type macData struct {
-    Mac        digestInfo
+type MacData struct {
+    Mac        DigestInfo
     MacSalt    []byte
     Iterations int `asn1:"optional,default:1"`
 }
 
-func (this macData) Verify(message []byte, password []byte) error {
+func (this MacData) Verify(message []byte, password []byte) error {
     mac := cryptobin_pkcs12.MacData{
         Mac: cryptobin_pkcs12.DigestInfo{
             Algorithm: pkix.AlgorithmIdentifier{
@@ -59,25 +61,18 @@ func (this macData) Verify(message []byte, password []byte) error {
 type PfxPdu struct {
     Version  int
     AuthSafe ContentInfo
-    MacData  macData `asn1:"optional"`
+    MacData  MacData `asn1:"optional"`
 }
 
-type encryptedData struct {
-    Version              int
-    EncryptedContentInfo struct {
-        ContentType                cryptobin_asn1.ObjectIdentifier
-        ContentEncryptionAlgorithm AlgorithmIdentifier
-        EncryptedContent           cryptobin_asn1.RawValue `asn1:"tag:0,optional"`
-    }
+type EncryptedContentInfo struct {
+    ContentType                cryptobin_asn1.ObjectIdentifier
+    ContentEncryptionAlgorithm AlgorithmIdentifier
+    EncryptedContent           cryptobin_asn1.RawValue `asn1:"tag:0,optional"`
 }
 
-type encryptedDataDer struct {
+type EncryptedData struct {
     Version              int
-    EncryptedContentInfo struct {
-        ContentType                asn1.ObjectIdentifier
-        ContentEncryptionAlgorithm pkix.AlgorithmIdentifier
-        EncryptedContent           []byte `asn1:"tag:0,optional"`
-    }
+    EncryptedContentInfo EncryptedContentInfo
 }
 
 // 转换 BER 编码的 PKCS12 证书为 DER 编码
@@ -120,9 +115,9 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
         }
     }
 
-    checkData := make([]byte, 0)
+    newAuthenticatedSafes := make([]byte, 0)
     for _, as := range authenticatedSafes {
-        checkData = append(checkData, as.Bytes...)
+        newAuthenticatedSafes = append(newAuthenticatedSafes, as.Bytes...)
     }
 
     password, err = tool.BmpStringZeroTerminated(string(password))
@@ -135,10 +130,10 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
             return nil, errors.New("pkcs12: no MAC in data")
         }
     } else {
-        if err := pfx.MacData.Verify(checkData, password); err != nil {
+        if err := pfx.MacData.Verify(newAuthenticatedSafes, password); err != nil {
             if err == cryptobin_pkcs12.ErrIncorrectPassword && len(password) == 2 && password[0] == 0 && password[1] == 0 {
                 password = nil
-                err = pfx.MacData.Verify(checkData, password)
+                err = pfx.MacData.Verify(newAuthenticatedSafes, password)
             }
 
             if err != nil {
@@ -148,7 +143,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
     }
 
     var contentInfos []ContentInfo
-    _, err = cryptobin_asn1.Unmarshal(checkData, &contentInfos)
+    _, err = cryptobin_asn1.Unmarshal(newAuthenticatedSafes, &contentInfos)
     if err != nil {
         return nil, err
     }
@@ -158,35 +153,44 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
         var newBytes []byte
 
         if ci.ContentType.Equal(oidDataContentType) {
-            var data1 cryptobin_asn1.RawValue
-            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &data1); err != nil {
+            var data cryptobin_asn1.RawValue
+            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &data); err != nil {
                 return nil, err
             }
 
-            newBytes = data1.Bytes
+            newBytes = data.Bytes
         } else {
-            var data1 encryptedData
-            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &data1); err != nil {
+            var encryptedData EncryptedData
+            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &encryptedData); err != nil {
                 return nil, err
             }
 
-            var data2 cryptobin_asn1.RawValue
-            if _, err = cryptobin_asn1.Unmarshal(data1.EncryptedContentInfo.EncryptedContent.Bytes, &data2); err != nil {
+            encryptedContentInfo := encryptedData.EncryptedContentInfo
+            contentType := encryptedContentInfo.ContentType
+            contentEncryptionAlgo := encryptedContentInfo.ContentEncryptionAlgorithm
+
+            encryptedContent := encryptedContentInfo.EncryptedContent
+            if _, err = cryptobin_asn1.Unmarshal(encryptedContent.Bytes, &encryptedContent); err != nil {
                 return nil, err
             }
 
-            var newData encryptedDataDer
-            newData.Version = data1.Version
-            newData.EncryptedContentInfo.ContentType = asn1.ObjectIdentifier(data1.EncryptedContentInfo.ContentType)
-            newData.EncryptedContentInfo.ContentEncryptionAlgorithm = pkix.AlgorithmIdentifier{
-                Algorithm: asn1.ObjectIdentifier(data1.EncryptedContentInfo.ContentEncryptionAlgorithm.Algorithm),
-                Parameters: asn1.RawValue{
-                    FullBytes: data1.EncryptedContentInfo.ContentEncryptionAlgorithm.Parameters.FullBytes,
+            newEncryptedContentInfo := cryptobin_pkcs12.EncryptedContentInfo{
+                ContentType: asn1.ObjectIdentifier(contentType),
+                ContentEncryptionAlgorithm: pkix.AlgorithmIdentifier{
+                    Algorithm: asn1.ObjectIdentifier(contentEncryptionAlgo.Algorithm),
+                    Parameters: asn1.RawValue{
+                        FullBytes: contentEncryptionAlgo.Parameters.FullBytes,
+                    },
                 },
+                EncryptedContent: encryptedContent.Bytes,
             }
-            newData.EncryptedContentInfo.EncryptedContent = data2.Bytes
 
-            if newBytes, err = asn1.Marshal(newData); err != nil {
+            newEncryptedData := cryptobin_pkcs12.EncryptedData{
+                Version: encryptedData.Version,
+                EncryptedContentInfo: newEncryptedContentInfo,
+            }
+
+            if newBytes, err = asn1.Marshal(newEncryptedData); err != nil {
                 return nil, err
             }
         }
@@ -205,7 +209,6 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
                 Bytes: newBytes,
             },
         })
-
     }
 
     var authenticatedSafeBytes []byte
@@ -306,4 +309,26 @@ func DecodeSecret(pfxData []byte, password string) (secretKeys []cryptobin_pkcs1
     }
 
     return cryptobin_pkcs12.DecodeSecret(data, password)
+}
+
+// LoadPKCS12FromReader loads the key store from the specified file.
+func LoadPKCS12FromReader(reader io.Reader, password string) (*cryptobin_pkcs12.PKCS12, error) {
+    buf := bytes.NewBuffer(nil)
+
+    // 保存
+    if _, err := io.Copy(buf, reader); err != nil {
+        return nil, err
+    }
+
+    return LoadPKCS12FromBytes(buf.Bytes(), password)
+}
+
+// LoadPKCS12FromBytes loads the key store from the bytes data.
+func LoadPKCS12FromBytes(pfxData []byte, password string) (*cryptobin_pkcs12.PKCS12, error) {
+    data, err := Parse(pfxData, []byte(password))
+    if err != nil {
+        return nil, err
+    }
+
+    return cryptobin_pkcs12.LoadPKCS12FromBytes(data, password)
 }

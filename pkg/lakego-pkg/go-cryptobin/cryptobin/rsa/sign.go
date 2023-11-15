@@ -17,9 +17,9 @@ func (this Rsa) Sign() Rsa {
     h.Write(this.data)
     hashed := h.Sum(nil)
 
-    paredData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, this.signHash, hashed)
+    parsedData, err := rsa.SignPKCS1v15(rand.Reader, this.privateKey, this.signHash, hashed)
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }

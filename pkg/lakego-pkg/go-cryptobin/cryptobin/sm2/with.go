@@ -45,9 +45,9 @@ func (this SM2) WithData(data []byte) SM2 {
     return this
 }
 
-// 设置 paredData
+// 设置 parsedData
 func (this SM2) WithParedData(data []byte) SM2 {
-    this.paredData = data
+    this.parsedData = data
 
     return this
 }

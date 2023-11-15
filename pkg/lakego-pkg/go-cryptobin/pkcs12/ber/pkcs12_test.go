@@ -107,3 +107,35 @@ func Test_SM2Pkcs12_Decode(t *testing.T) {
     assertNotEmpty(privateKey, "SM2Pkcs12_Decode")
     assertNotEmpty(cert, "SM2Pkcs12_Decode")
 }
+
+func Test_P12_SM2Pkcs12_Decode(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNotBool := cryptobin_test.AssertNotBoolT(t)
+
+    ber, err := base64.StdEncoding.DecodeString(sm2Pkcs12)
+    if err != nil {
+        t.Errorf("err: %v", err)
+    }
+
+    password := "12345678"
+
+    p12, err := LoadPKCS12FromBytes(ber, password)
+    if err != nil {
+        t.Errorf("P12_SM2Pkcs12_Decode err: %v", err)
+    }
+
+    privateKey, _ := p12.GetPrivateKey()
+    cert, _ := p12.GetCert()
+
+    assertNotEmpty(privateKey, "P12_SM2Pkcs12_Decode")
+    assertNotEmpty(cert, "P12_SM2Pkcs12_Decode")
+
+    assertBool(p12.HasPrivateKey(), "P12_SM2Pkcs12_Decode-HasPrivateKey")
+    assertBool(p12.HasCert(), "P12_SM2Pkcs12_Decode-HasCert")
+
+    assertNotBool(p12.HasCaCert(), "P12_SM2Pkcs12_Decode-HasCaCert")
+    assertNotBool(p12.HasTrustStore(), "P12_SM2Pkcs12_Decode-HasTrustStore")
+    assertNotBool(p12.HasSecretKey(), "P12_SM2Pkcs12_Decode-HasSecretKey")
+
+}

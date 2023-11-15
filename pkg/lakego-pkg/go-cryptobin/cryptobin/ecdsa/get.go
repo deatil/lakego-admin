@@ -95,9 +95,9 @@ func (this Ecdsa) GetData() []byte {
     return this.data
 }
 
-// 获取 paredData
+// 获取 parsedData
 func (this Ecdsa) GetParedData() []byte {
-    return this.paredData
+    return this.parsedData
 }
 
 // 获取验证后情况

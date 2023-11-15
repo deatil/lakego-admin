@@ -19,12 +19,12 @@ func (this EIGamal) Sign() EIGamal {
         return this.AppendError(err)
     }
 
-    paredData, err := elgamal.SignASN1(rand.Reader, this.privateKey, hashed)
+    parsedData, err := elgamal.SignASN1(rand.Reader, this.privateKey, hashed)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this.AppendError(err)
 }

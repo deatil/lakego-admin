@@ -36,7 +36,7 @@ func (this ED448) Sign() ED448 {
         return this.AppendError(err)
     }
 
-    this.paredData = []byte(sig)
+    this.parsedData = []byte(sig)
 
     return this
 }

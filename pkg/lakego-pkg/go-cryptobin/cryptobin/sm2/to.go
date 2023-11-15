@@ -18,22 +18,22 @@ func (this SM2) ToKeyString() string {
 
 // 输出字节
 func (this SM2) ToBytes() []byte {
-    return this.paredData
+    return this.parsedData
 }
 
 // 输出字符
 func (this SM2) ToString() string {
-    return string(this.paredData)
+    return string(this.parsedData)
 }
 
 // 输出Base64
 func (this SM2) ToBase64String() string {
-    return cryptobin_tool.NewEncoding().Base64Encode(this.paredData)
+    return cryptobin_tool.NewEncoding().Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this SM2) ToHexString() string {
-    return cryptobin_tool.NewEncoding().HexEncode(this.paredData)
+    return cryptobin_tool.NewEncoding().HexEncode(this.parsedData)
 }
 
 // ==========

@@ -14,12 +14,12 @@ func (this EIGamal) Encrypt() EIGamal {
         return this.AppendError(err)
     }
 
-    paredData, err := elgamal.EncryptAsn1(rand.Reader, this.publicKey, this.data)
+    parsedData, err := elgamal.EncryptAsn1(rand.Reader, this.publicKey, this.data)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }
@@ -31,12 +31,12 @@ func (this EIGamal) Decrypt() EIGamal {
         return this.AppendError(err)
     }
 
-    paredData, err := elgamal.DecryptAsn1(this.privateKey, this.data)
+    parsedData, err := elgamal.DecryptAsn1(this.privateKey, this.data)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.paredData = paredData
+    this.parsedData = parsedData
 
     return this
 }

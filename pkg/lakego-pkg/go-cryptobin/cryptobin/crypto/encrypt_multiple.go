@@ -24,6 +24,7 @@ import (
     cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
+    cryptobin_rc6 "github.com/deatil/go-cryptobin/cipher/rc6"
     cryptobin_idea "github.com/deatil/go-cryptobin/cipher/idea"
     cryptobin_seed "github.com/deatil/go-cryptobin/cipher/seed"
     cryptobin_aria "github.com/deatil/go-cryptobin/cipher/aria"
@@ -421,7 +422,7 @@ type EncryptRC5 struct {}
 
 // 加密
 func (this EncryptRC5) getBlock(opt IOption) (cipher.Block, error) {
-    // wordSize is 32 or 64
+    // wordSize is 16, 32 or 64
     wordSize := uint(32)
     if opt.Config().Has("word_size") {
         wordSize = opt.Config().GetUint("word_size")
@@ -453,6 +454,31 @@ func (this EncryptRC5) Encrypt(data []byte, opt IOption) ([]byte, error) {
 // 解密
 func (this EncryptRC5) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+// ===================
+
+type EncryptRC6 struct {}
+
+// 加密
+func (this EncryptRC6) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    // RC6 key is 16 bytes.
+    block, err := cryptobin_rc6.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptRC6) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rc6.NewCipher(opt.Key())
     if err != nil {
         return nil, err
     }
@@ -1139,6 +1165,9 @@ func init() {
     })
     UseEncrypt.Add(RC5, func() IEncrypt {
         return EncryptRC5{}
+    })
+    UseEncrypt.Add(RC6, func() IEncrypt {
+        return EncryptRC6{}
     })
     UseEncrypt.Add(SM4, func() IEncrypt {
         return EncryptSM4{}

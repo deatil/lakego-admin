@@ -28,6 +28,7 @@ func newCipher32(key []byte, rounds uint) (cipher.Block, error) {
 
 func expandKey32(key []byte, rk []uint32) {
     roundKeys := len(rk)
+
     // L is initially a c-length list of 0-valued w-length words
     L := make([]uint32, len(key)/4)
     lenL := len(L)
@@ -35,12 +36,14 @@ func expandKey32(key []byte, rk []uint32) {
         L[i] = binary.LittleEndian.Uint32(key[:4])
         key = key[4:]
     }
+
     // Initialize key-independent pseudorandom S array
     // S is initially a t=2(r+1) length list of undefined w-length words
     rk[0] = P32
     for i := 1; i < roundKeys; i++ {
         rk[i] = rk[i-1] + Q32
     }
+
     // The main key scheduling loop
     var A uint32
     var B uint32
@@ -55,18 +58,23 @@ func expandKey32(key []byte, rk []uint32) {
     }
 }
 
-func (c *rc5Cipher32) BlockSize() int { return BlockSize32 }
+func (c *rc5Cipher32) BlockSize() int {
+    return BlockSize32
+}
 
 func (c *rc5Cipher32) Encrypt(dst, src []byte) {
     if len(src) < BlockSize32 {
         panic("rc5-32: input not full block")
     }
+
     if len(dst) < BlockSize32 {
         panic("rc5-32: output not full block")
     }
+
     if inexactOverlap(dst[:BlockSize32], src[:BlockSize32]) {
         panic("rc5-32: invalid buffer overlap")
     }
+
     A := binary.LittleEndian.Uint32(src[:4]) + c.rk[0]
     B := binary.LittleEndian.Uint32(src[4:BlockSize32]) + c.rk[1]
 
@@ -74,6 +82,7 @@ func (c *rc5Cipher32) Encrypt(dst, src []byte) {
         A = bits.RotateLeft32(A^B, int(B)) + c.rk[r<<1]
         B = bits.RotateLeft32(B^A, int(A)) + c.rk[r<<1+1]
     }
+
     binary.LittleEndian.PutUint32(dst[:4], A)
     binary.LittleEndian.PutUint32(dst[4:8], B)
 }
@@ -82,18 +91,22 @@ func (c *rc5Cipher32) Decrypt(dst, src []byte) {
     if len(src) < BlockSize32 {
         panic("rc5-32: input not full block")
     }
+
     if len(dst) < BlockSize32 {
         panic("rc5-32: output not full block")
     }
+
     if inexactOverlap(dst[:BlockSize32], src[:BlockSize32]) {
         panic("rc5-32: invalid buffer overlap")
     }
+
     A := binary.LittleEndian.Uint32(src[:4])
     B := binary.LittleEndian.Uint32(src[4:8])
     for r := c.rounds; r >= 1; r-- {
         B = A ^ bits.RotateLeft32(B-c.rk[r<<1+1], -int(A))
         A = B ^ bits.RotateLeft32(A-c.rk[r<<1], -int(B))
     }
+
     binary.LittleEndian.PutUint32(dst[:4], A-c.rk[0])
     binary.LittleEndian.PutUint32(dst[4:8], B-c.rk[1])
 }
