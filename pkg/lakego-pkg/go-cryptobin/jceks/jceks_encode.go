@@ -6,12 +6,34 @@ import (
     "bytes"
     "errors"
     "crypto"
+    "crypto/x509"
 )
 
 // 添加私钥
 func (this *JCEKS) AddPrivateKey(
     alias string,
     privateKey crypto.PrivateKey,
+    password string,
+    certs []*x509.Certificate,
+    cipher ...Cipher,
+) error {
+    marshaledPrivateKey, err := MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        return err
+    }
+
+    certChain := make([][]byte, 0)
+    for _, cert := range certs {
+        certChain = append(certChain, cert.Raw)
+    }
+
+    return this.AddPrivateKeyBytes(alias, marshaledPrivateKey, password, certChain, cipher...)
+}
+
+// 添加私钥
+func (this *JCEKS) AddPrivateKeyBytes(
+    alias string,
+    privateKey []byte,
     password string,
     certs [][]byte,
     cipher ...Cipher,
@@ -33,6 +55,14 @@ func (this *JCEKS) AddPrivateKey(
 
 // 添加证书
 func (this *JCEKS) AddTrustedCert(
+    alias string,
+    cert *x509.Certificate,
+) error {
+    return this.AddTrustedCertBytes(alias, cert.Raw)
+}
+
+// 添加证书
+func (this *JCEKS) AddTrustedCertBytes(
     alias string,
     cert []byte,
 ) error {

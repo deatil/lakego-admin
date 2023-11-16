@@ -9,10 +9,21 @@ import (
     "crypto"
     "crypto/sha1"
     "crypto/hmac"
+    "crypto/x509"
 )
 
 // AddCert
-func (this *BKS) AddCert(alias string, certData []byte, certChain [][]byte) error {
+func (this *BKS) AddCert(alias string, certData *x509.Certificate, certChain []*x509.Certificate) error {
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddCertBytes(alias, certData.Raw, certs)
+}
+
+// AddCertBytes
+func (this *BKS) AddCertBytes(alias string, certData []byte, certChain [][]byte) error {
     entry := &bksTrustedCertEntry{}
     entry.cert = certData
     entry.certType = "X509"
@@ -28,7 +39,7 @@ func (this *BKS) AddCert(alias string, certData []byte, certChain [][]byte) erro
 func (this *BKS) AddKeyPrivate(
     alias string,
     privateKey crypto.PrivateKey,
-    certChain [][]byte,
+    certChain []*x509.Certificate,
 ) error {
     priKey, err := MarshalPKCS8PrivateKey(privateKey)
     if err != nil {
@@ -40,11 +51,26 @@ func (this *BKS) AddKeyPrivate(
         return err
     }
 
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeyPrivateBytes(alias, priKey, algorithm, certs)
+}
+
+// AddKeyPrivateBytes
+func (this *BKS) AddKeyPrivateBytes(
+    alias string,
+    privateKey []byte,
+    algorithm string,
+    certChain [][]byte,
+) error {
     entry := &bksKeyEntry{}
     entry.keyType = bksKeyTypePrivate
     entry.format = "PKCS8" // PKCS8 | PKCS#8
     entry.algorithm = algorithm
-    entry.encoded = priKey
+    entry.encoded = privateKey
 
     entry.WithData(alias, time.Now(), certChain)
 
@@ -58,7 +84,7 @@ func (this *BKS) AddKeyPrivateWithPassword(
     alias string,
     privateKey crypto.PrivateKey,
     password string,
-    certChain [][]byte,
+    certChain []*x509.Certificate,
 ) error {
     priKey, err := MarshalPKCS8PrivateKey(privateKey)
     if err != nil {
@@ -70,11 +96,27 @@ func (this *BKS) AddKeyPrivateWithPassword(
         return err
     }
 
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeyPrivateWithPasswordBytes(alias, priKey, algorithm, password, certs)
+}
+
+// AddKeyPrivateWithPasswordBytes
+func (this *BKS) AddKeyPrivateWithPasswordBytes(
+    alias string,
+    privateKey []byte,
+    algorithm string,
+    password string,
+    certChain [][]byte,
+) error {
     entry := &bksKeyEntry{}
     entry.keyType = bksKeyTypePrivate
     entry.format = "PKCS8" // PKCS8 | PKCS#8
     entry.algorithm = algorithm
-    entry.encoded = priKey
+    entry.encoded = privateKey
 
     sealedEntry := &bksSealedKeyEntry{
         nested:   entry,
@@ -91,7 +133,7 @@ func (this *BKS) AddKeyPrivateWithPassword(
 func (this *BKS) AddKeyPublic(
     alias string,
     publicKey crypto.PublicKey,
-    certChain [][]byte,
+    certChain []*x509.Certificate,
 ) error {
     pubKey, err := MarshalPKCS8PublicKey(publicKey)
     if err != nil {
@@ -103,11 +145,26 @@ func (this *BKS) AddKeyPublic(
         return err
     }
 
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeyPublicBytes(alias, pubKey, algorithm, certs)
+}
+
+// AddKeyPublicBytes
+func (this *BKS) AddKeyPublicBytes(
+    alias string,
+    publicKey []byte,
+    algorithm string,
+    certChain [][]byte,
+) error {
     entry := &bksKeyEntry{}
     entry.keyType = bksKeyTypePublic
     entry.format = "X509" // X.509 | X509
     entry.algorithm = algorithm
-    entry.encoded = pubKey
+    entry.encoded = publicKey
 
     entry.WithData(alias, time.Now(), certChain)
 
@@ -121,7 +178,7 @@ func (this *BKS) AddKeyPublicWithPassword(
     alias string,
     publicKey crypto.PublicKey,
     password string,
-    certChain [][]byte,
+    certChain []*x509.Certificate,
 ) error {
     pubKey, err := MarshalPKCS8PublicKey(publicKey)
     if err != nil {
@@ -133,11 +190,27 @@ func (this *BKS) AddKeyPublicWithPassword(
         return err
     }
 
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeyPublicWithPasswordBytes(alias, pubKey, algorithm, password, certs)
+}
+
+// AddKeyPublicWithPasswordBytes
+func (this *BKS) AddKeyPublicWithPasswordBytes(
+    alias string,
+    publicKey []byte,
+    algorithm string,
+    password string,
+    certChain [][]byte,
+) error {
     entry := &bksKeyEntry{}
     entry.keyType = bksKeyTypePublic
     entry.format = "X509" // X.509 | X509
     entry.algorithm = algorithm
-    entry.encoded = pubKey
+    entry.encoded = publicKey
 
     sealedEntry := &bksSealedKeyEntry{
         nested:   entry,
@@ -153,6 +226,22 @@ func (this *BKS) AddKeyPublicWithPassword(
 // AddKeySecret
 // algorithm = "AES"
 func (this *BKS) AddKeySecret(
+    alias string,
+    secret []byte,
+    algorithm string,
+    certChain []*x509.Certificate,
+) error {
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeySecretBytes(alias, secret, algorithm, certs)
+}
+
+// AddKeySecretBytes
+// algorithm = "AES"
+func (this *BKS) AddKeySecretBytes(
     alias string,
     secret []byte,
     algorithm string,
@@ -178,6 +267,23 @@ func (this *BKS) AddKeySecretWithPassword(
     secret []byte,
     password string,
     algorithm string,
+    certChain []*x509.Certificate,
+) error {
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddKeySecretWithPasswordBytes(alias, secret, password, algorithm, certs)
+}
+
+// AddKeySecretWithPasswordBytes
+// algorithm = "AES"
+func (this *BKS) AddKeySecretWithPasswordBytes(
+    alias string,
+    secret []byte,
+    password string,
+    algorithm string,
     certChain [][]byte,
 ) error {
     entry := &bksKeyEntry{}
@@ -199,6 +305,20 @@ func (this *BKS) AddKeySecretWithPassword(
 
 // AddSecret
 func (this *BKS) AddSecret(
+    alias string,
+    secretData []byte,
+    certChain []*x509.Certificate,
+) error {
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddSecretBytes(alias, secretData, certs)
+}
+
+// AddSecretBytes
+func (this *BKS) AddSecretBytes(
     alias string,
     secretData []byte,
     certChain [][]byte,

@@ -3,6 +3,7 @@ package key
 import (
     "fmt"
     "errors"
+    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/lakego-filesystem/filesystem"
@@ -213,8 +214,10 @@ func MakeBksChristmasStore() error {
     storedValue := []byte("stored_value-data")
     plainKey := []byte("plain_key-data")
 
-    ks.AddCert("cert", certBytes, nil);
-    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, certs);
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
+    ks.AddCert("cert", parsedCerts[0], nil);
+    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, parsedCerts);
     ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, password, nil);
     ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, password, "AES", nil);
     ks.AddSecret("stored_value", storedValue, nil);
@@ -281,9 +284,11 @@ func MakeBksCustomEntryPasswordsStore() error {
 
     secretKey := []byte("sealed_secret_key-data")
 
-    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, "private_password", certs);
-    ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, "public_password", certs);
-    ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, "secret_password", "AES", certs);
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
+    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, "private_password", parsedCerts);
+    ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, "public_password", parsedCerts);
+    ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, "secret_password", "AES", parsedCerts);
 
     opts := cryptobin_jceks.BKSOpts{
         Version:        1,
@@ -383,8 +388,10 @@ func MakeUberChristmasStore() error {
     storedValue := []byte("stored_value-data")
     plainKey := []byte("plain_key-data")
 
-    ks.AddCert("cert", certBytes, nil);
-    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, certs);
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
+    ks.AddCert("cert", parsedCerts[0], nil);
+    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, parsedCerts);
     ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, password, nil);
     ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, password, "AES", nil);
     ks.AddSecret("stored_value", storedValue, nil);
@@ -441,9 +448,11 @@ func MakeUberCustomEntryPasswordsStore() error {
 
     secretKey := []byte("sealed_secret_key-data")
 
-    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, "private_password", certs);
-    ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, "public_password", certs);
-    ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, "secret_password", "AES", certs);
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
+    ks.AddKeyPrivateWithPassword("sealed_private_key", privateKey, "private_password", parsedCerts);
+    ks.AddKeyPublicWithPassword("sealed_public_key", publicKey, "public_password", parsedCerts);
+    ks.AddKeySecretWithPassword("sealed_secret_key", secretKey, "secret_password", "AES", parsedCerts);
 
     opts := cryptobin_jceks.UBEROpts{
         SaltSize:       20,

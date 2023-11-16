@@ -125,8 +125,8 @@ func Test_P12_SM2Pkcs12_Decode(t *testing.T) {
         t.Errorf("P12_SM2Pkcs12_Decode err: %v", err)
     }
 
-    privateKey, _ := p12.GetPrivateKey()
-    cert, _ := p12.GetCert()
+    privateKey, _, _ := p12.GetPrivateKey()
+    cert, _, _ := p12.GetCert()
 
     assertNotEmpty(privateKey, "P12_SM2Pkcs12_Decode")
     assertNotEmpty(cert, "P12_SM2Pkcs12_Decode")

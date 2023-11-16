@@ -175,6 +175,21 @@ func (this *JKS) GetPrivateKey(alias string, password string) (crypto.PrivateKey
     return privateKey, nil
 }
 
+// GetPrivateKeyBytes
+func (this *JKS) GetPrivateKeyBytes(alias string, password string) (crypto.PrivateKey, error) {
+    encodedKey, ok := this.privateKeys[alias]
+    if !ok {
+        return nil, errors.New("no data")
+    }
+
+    privateKey, err := jksDecryptKey(encodedKey, []byte(password))
+    if err != nil {
+        return nil, err
+    }
+
+    return privateKey, nil
+}
+
 // GetEncodedKey
 func (this *JKS) GetEncodedKey(alias string) ([]byte, error) {
     encodedKey, ok := this.privateKeys[alias]

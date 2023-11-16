@@ -205,8 +205,10 @@ func MakeJksPriKey() error {
     certs := make([][]byte, 0)
     certs = append(certs, certBytes)
 
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
     en := cryptobin_jceks.NewJksEncode()
-    en.AddPrivateKey(alias, privateKey, keypass, certs)
+    en.AddPrivateKey(alias, privateKey, keypass, parsedCerts)
 
     pfxData, err := en.Marshal(passwd)
     if err != nil {
@@ -241,8 +243,10 @@ func MakeJksTrustedCert() error {
 
     certBytes := certificateBlock.Bytes
 
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
     en := cryptobin_jceks.NewJksEncode()
-    en.AddTrustedCert(alias, certBytes)
+    en.AddTrustedCert(alias, parsedCerts[0])
 
     pfxData, err := en.Marshal(passwd)
     if err != nil {
@@ -394,8 +398,10 @@ func MakeJceksPriKey() error {
     certs := make([][]byte, 0)
     certs = append(certs, certBytes)
 
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
     en := cryptobin_jceks.NewJceksEncode()
-    en.AddPrivateKey(alias, privateKey, keypass, certs)
+    en.AddPrivateKey(alias, privateKey, keypass, parsedCerts)
 
     pfxData, err := en.Marshal(passwd)
     if err != nil {
@@ -430,8 +436,10 @@ func MakeJceksTrustedCert() error {
 
     certBytes := certificateBlock.Bytes
 
+    parsedCerts, _ := x509.ParseCertificates(certBytes)
+
     en := cryptobin_jceks.NewJceksEncode()
-    en.AddTrustedCert(alias, certBytes)
+    en.AddTrustedCert(alias, parsedCerts[0])
 
     pfxData, err := en.Marshal(passwd)
     if err != nil {

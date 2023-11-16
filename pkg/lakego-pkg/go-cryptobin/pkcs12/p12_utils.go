@@ -2,9 +2,23 @@ package pkcs12
 
 import (
     "crypto/sha1"
+    "crypto/x509"
     "encoding/hex"
     "encoding/json"
 )
+
+// TrustStoreData represents an entry in a Java TrustStore.
+type TrustStoreData struct {
+    Cert         []byte
+    FriendlyName string
+}
+
+func NewTrustStoreData(cert *x509.Certificate, friendlyName string) TrustStoreData {
+    return TrustStoreData{
+        Cert: cert.Raw,
+        FriendlyName: friendlyName,
+    }
+}
 
 // 额外数据
 type PKCS12Attributes struct {
@@ -77,7 +91,7 @@ type ISafeBagData interface {
     Attributes() map[string]string
 
     // Data
-    Data() any
+    Data() []byte
 
     // Attrs
     Attrs() PKCS12Attributes
@@ -88,18 +102,18 @@ type ISafeBagData interface {
 }
 
 type SafeBagData struct {
-    data  any
+    data  []byte
     attrs PKCS12Attributes
 }
 
-func NewSafeBagData(data any, attrs PKCS12Attributes) SafeBagData {
+func NewSafeBagData(data []byte, attrs PKCS12Attributes) SafeBagData {
     return SafeBagData{
         attrs: attrs,
         data:  data,
     }
 }
 
-func NewSafeBagDataWithAttrs(data any, attrs []PKCS12Attribute) SafeBagData {
+func NewSafeBagDataWithAttrs(data []byte, attrs []PKCS12Attribute) SafeBagData {
     return SafeBagData{
         attrs: NewPKCS12Attributes(attrs),
         data:  data,
@@ -114,7 +128,7 @@ func (this SafeBagData) Attributes() map[string]string {
     return this.attrs.ToArray()
 }
 
-func (this SafeBagData) Data() any {
+func (this SafeBagData) Data() []byte {
     return this.data
 }
 

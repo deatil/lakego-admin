@@ -124,14 +124,9 @@ func Test_JksEncode(t *testing.T) {
         t.Error("JksEncode rsa Error")
     }
 
-    var caCertsBytes = make([][]byte, 0)
-    for _, caCert := range caCerts {
-        caCertsBytes = append(caCertsBytes, caCert.Raw)
-    }
-
     en := NewJksEncode()
-    en.AddPrivateKey("priv-test", privateKey, "test", caCertsBytes) // 私钥和证书链
-    en.AddTrustedCert("cert-test", cert.Raw) // 证书
+    en.AddPrivateKey("priv-test", privateKey, "test", caCerts) // 私钥和证书链
+    en.AddTrustedCert("cert-test", cert) // 证书
     pfxData, err := en.Marshal("test-pwd")
 
     assertError(err, "JksEncode Marshal Error")
@@ -184,16 +179,11 @@ func Test_JceksEncode(t *testing.T) {
         t.Error("JceksEncode rsa Error")
     }
 
-    var caCertsBytes = make([][]byte, 0)
-    for _, caCert := range caCerts {
-        caCertsBytes = append(caCertsBytes, caCert.Raw)
-    }
-
     secretKey := []byte("test-pass")
 
     en := NewJceksEncode()
-    en.AddPrivateKey("priv-test", privateKey, "test", caCertsBytes) // 私钥和证书链
-    en.AddTrustedCert("cert-test", cert.Raw) // 证书
+    en.AddPrivateKey("priv-test", privateKey, "test", caCerts) // 私钥和证书链
+    en.AddTrustedCert("cert-test", cert) // 证书
     en.AddSecretKey("secret-test", secretKey, "test-pass") // 密钥
     pfxData, err := en.Marshal("test-pwd")
 

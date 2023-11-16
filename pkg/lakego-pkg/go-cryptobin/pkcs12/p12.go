@@ -3,8 +3,6 @@ package pkcs12
 import (
     "io"
     "bytes"
-    "crypto"
-    "crypto/x509"
 )
 
 const (
@@ -15,16 +13,16 @@ const (
 // PKCS12 结构
 type PKCS12 struct {
     // 私钥
-    privateKey crypto.PrivateKey
+    privateKey []byte
 
     // 证书
-    cert *x509.Certificate
+    cert []byte
 
     // 证书链
-    caCerts []*x509.Certificate
+    caCerts [][]byte
 
     // 证书链带名称, 适配 JAVA
-    trustStores []TrustStoreEntry
+    trustStores []TrustStoreData
 
     // 密钥
     secretKey []byte
@@ -39,8 +37,8 @@ func (this *PKCS12) String() string {
 
 func NewPKCS12() *PKCS12 {
     return &PKCS12{
-        caCerts:     make([]*x509.Certificate, 0),
-        trustStores: make([]TrustStoreEntry, 0),
+        caCerts:     make([][]byte, 0),
+        trustStores: make([]TrustStoreData, 0),
         parsedData:  make(map[string][]ISafeBagData),
     }
 }
@@ -70,4 +68,5 @@ func LoadPKCS12FromBytes(data []byte, password string) (*PKCS12, error) {
 }
 
 // 别名
+var LoadPKCS12      = LoadPKCS12FromBytes
 var NewPKCS12Encode = NewPKCS12

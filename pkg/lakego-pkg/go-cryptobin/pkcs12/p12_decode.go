@@ -119,25 +119,37 @@ func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, u
     return bags, password, nil
 }
 
-func (this *PKCS12) parseKeyBag(bag *SafeBag) error {
-    privateKey, err := ParsePKCS8PrivateKey(bag.Value.Bytes)
+func (this *PKCS12) formatCert(certsData []byte) (certs []*x509.Certificate, err error) {
+    parsedCerts, err := x509.ParseCertificates(certsData)
     if err != nil {
-        return err
+        gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
+        if err != nil {
+            err = errors.New("pkcs12: x509 error: " + err.Error())
+            return nil, err
+        }
+
+        for _, cert := range gmsmCerts {
+            parsedCerts = append(parsedCerts, cert.ToX509Certificate())
+        }
     }
 
-    bagData := NewSafeBagDataWithAttrs(privateKey, bag.Attributes)
+    return parsedCerts, nil
+}
+
+func (this *PKCS12) parseKeyBag(bag *SafeBag) error {
+    bagData := NewSafeBagDataWithAttrs(bag.Value.Bytes, bag.Attributes)
     this.parsedData["privateKey"] = append(this.parsedData["privateKey"], bagData)
 
     return nil
 }
 
 func (this *PKCS12) parseShroundedKeyBag(bag *SafeBag, password []byte) error {
-    privateKey, err := decodePkcs8ShroudedKeyBag(bag.Value.Bytes, password)
+    pkData, err := this.decodePKCS8ShroudedKeyBag(bag.Value.Bytes, password)
     if err != nil {
         return err
     }
 
-    bagData := NewSafeBagDataWithAttrs(privateKey, bag.Attributes)
+    bagData := NewSafeBagDataWithAttrs(pkData, bag.Attributes)
     this.parsedData["privateKey"] = append(this.parsedData["privateKey"], bagData)
 
     return nil
@@ -149,37 +161,19 @@ func (this *PKCS12) parseCertBag(bag *SafeBag) error {
         return err
     }
 
-    parsedCerts, err := x509.ParseCertificates(certsData)
-    if err != nil {
-        gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
-        if err != nil {
-            err = errors.New("pkcs12: x509 error: " + err.Error())
-            return err
-        }
-
-        for _, cert := range gmsmCerts {
-            parsedCerts = append(parsedCerts, cert.ToX509Certificate())
-        }
-    }
-
-    if len(parsedCerts) != 1 {
-        err = errors.New("pkcs12: expected exactly one certificate in the certBag")
-        return err
-    }
-
     switch {
         case bag.hasAttribute(oidJavaTrustStore):
-            bagData := NewSafeBagDataWithAttrs(parsedCerts[0], bag.Attributes)
+            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
 
             this.parsedData["trustStore"] = append(this.parsedData["trustStore"], bagData)
 
         case bag.hasAttribute(oidLocalKeyID):
-            bagData := NewSafeBagDataWithAttrs(parsedCerts[0], bag.Attributes)
+            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
 
             this.parsedData["cert"] = append(this.parsedData["cert"], bagData)
 
         default:
-            bagData := NewSafeBagDataWithAttrs(parsedCerts[0], bag.Attributes)
+            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
 
             this.parsedData["caCert"] = append(this.parsedData["caCert"], bagData)
 
@@ -237,84 +231,159 @@ func (this *PKCS12) Parse(pfxData []byte, password string) (*PKCS12, error) {
 
 //===============
 
-func (this *PKCS12) GetPrivateKey() (crypto.PrivateKey, PKCS12Attributes) {
+func (this *PKCS12) GetPrivateKey() (prikey crypto.PrivateKey, attrs PKCS12Attributes, err error) {
     privateKeys, ok := this.parsedData["privateKey"]
     if !ok {
-        return nil, PKCS12Attributes{}
+        err = errors.New("no data")
+        return
     }
 
     if len(privateKeys) == 0 {
-        return nil, PKCS12Attributes{}
+        err = errors.New("no data")
+        return
     }
 
-    privateKey, ok := privateKeys[0].Data().(crypto.PrivateKey)
-    if !ok {
-        return nil, PKCS12Attributes{}
+    privateKey := privateKeys[0].Data()
+
+    parsedKey, err := ParsePKCS8PrivateKey(privateKey)
+    if err != nil {
+        return
     }
 
-    return privateKey, privateKeys[0].Attrs()
+    return parsedKey, privateKeys[0].Attrs(), nil
 }
 
-func (this *PKCS12) GetCert() (*x509.Certificate, PKCS12Attributes) {
+func (this *PKCS12) GetPrivateKeyBytes() (prikey []byte, attrs PKCS12Attributes, err error) {
+    privateKeys, ok := this.parsedData["privateKey"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(privateKeys) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    privateKey := privateKeys[0].Data()
+
+    return privateKey, privateKeys[0].Attrs(), nil
+}
+
+func (this *PKCS12) GetCert() (cert *x509.Certificate, attrs PKCS12Attributes, err error) {
     certs, ok := this.parsedData["cert"]
     if !ok {
-        return nil, PKCS12Attributes{}
+        err = errors.New("no data")
+        return
     }
 
     if len(certs) == 0 {
-        return nil, PKCS12Attributes{}
+        err = errors.New("no data")
+        return
     }
 
-    cert, ok := certs[0].Data().(*x509.Certificate)
-    if !ok {
-        return nil, PKCS12Attributes{}
+    certData := certs[0].Data()
+
+    parsedCerts, err := this.formatCert(certData)
+    if err != nil {
+        return
     }
 
-    return cert, certs[0].Attrs()
+    return parsedCerts[0], certs[0].Attrs(), nil
 }
 
-func (this *PKCS12) GetCaCerts() []*x509.Certificate {
+func (this *PKCS12) GetCertBytes() (cert []byte, attrs PKCS12Attributes, err error) {
+    certs, ok := this.parsedData["cert"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(certs) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    certData := certs[0].Data()
+
+    return certData, certs[0].Attrs(), nil
+}
+
+func (this *PKCS12) GetCaCerts() (cert []*x509.Certificate, err error) {
     certs, ok := this.parsedData["caCert"]
     if !ok {
-        return nil
+        err = errors.New("no data")
+        return
     }
 
     if len(certs) == 0 {
-        return nil
+        err = errors.New("no data")
+        return
     }
 
     caCerts := make([]*x509.Certificate, 0)
 
     for _, cert := range certs {
-        c, ok := cert.Data().(*x509.Certificate)
-        if ok {
-            caCerts = append(caCerts, c)
+        c := cert.Data()
+
+        parsedCerts, err := this.formatCert(c)
+        if err != nil {
+            return nil, err
         }
+
+        caCerts = append(caCerts, parsedCerts[0])
     }
 
-    return caCerts
+    return caCerts, nil
 }
 
-func (this *PKCS12) GetTrustStores() []*x509.Certificate {
-    certs, ok := this.parsedData["trustStore"]
+func (this *PKCS12) GetCaCertsBytes() (cert [][]byte, err error) {
+    certs, ok := this.parsedData["caCert"]
     if !ok {
-        return nil
+        err = errors.New("no data")
+        return
     }
 
     if len(certs) == 0 {
-        return nil
+        err = errors.New("no data")
+        return
+    }
+
+    caCerts := make([][]byte, 0)
+
+    for _, cert := range certs {
+        caCerts = append(caCerts, cert.Data())
+    }
+
+    return caCerts, nil
+}
+
+func (this *PKCS12) GetTrustStores() (cert []*x509.Certificate, err error) {
+    certs, ok := this.parsedData["trustStore"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(certs) == 0 {
+        err = errors.New("no data")
+        return
     }
 
     caCerts := make([]*x509.Certificate, 0)
 
     for _, cert := range certs {
-        c, ok := cert.Data().(*x509.Certificate)
-        if ok {
-            caCerts = append(caCerts, c)
+        c := cert.Data()
+
+        parsedCerts, err := this.formatCert(c)
+        if err != nil {
+            return nil, err
         }
+
+        caCerts = append(caCerts, parsedCerts[0])
     }
 
-    return caCerts
+    return caCerts, nil
 }
 
 type trustStoreKeyData struct {
@@ -322,45 +391,77 @@ type trustStoreKeyData struct {
     Cert  *x509.Certificate
 }
 
-func (this *PKCS12) GetTrustStoreEntries() []trustStoreKeyData {
+func (this *PKCS12) GetTrustStoreEntries() (keys []trustStoreKeyData, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
-        return nil
+        err = errors.New("no data")
+        return
     }
 
     if len(certs) == 0 {
-        return nil
+        err = errors.New("no data")
+        return
     }
 
     caCerts := make([]trustStoreKeyData, 0)
 
     for _, cert := range certs {
-        c, ok := cert.Data().(*x509.Certificate)
-        if ok {
-            caCerts = append(caCerts, trustStoreKeyData{
-                Attrs: cert.Attrs(),
-                Cert:  c,
-            })
+        c := cert.Data()
+
+        parsedCerts, err := this.formatCert(c)
+        if err != nil {
+            return nil, err
         }
+
+        caCerts = append(caCerts, trustStoreKeyData{
+            Attrs: cert.Attrs(),
+            Cert:  parsedCerts[0],
+        })
     }
 
-    return caCerts
+    return caCerts, nil
 }
 
-func (this *PKCS12) GetSecretKey() ([]byte, PKCS12Attributes) {
+type trustStoreKeyDataBytes struct {
+    Attrs PKCS12Attributes
+    Cert  []byte
+}
+
+func (this *PKCS12) GetTrustStoreEntriesBytes() (keys []trustStoreKeyDataBytes, err error) {
+    certs, ok := this.parsedData["trustStore"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(certs) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    caCerts := make([]trustStoreKeyDataBytes, 0)
+
+    for _, cert := range certs {
+        caCerts = append(caCerts, trustStoreKeyDataBytes{
+            Attrs: cert.Attrs(),
+            Cert:  cert.Data(),
+        })
+    }
+
+    return caCerts, nil
+}
+
+func (this *PKCS12) GetSecretKey() (secretKey []byte, attrs PKCS12Attributes) {
     keys, ok := this.parsedData["secretKey"]
     if !ok {
-        return nil, PKCS12Attributes{}
+        return
     }
 
     if len(keys) == 0 {
-        return nil, PKCS12Attributes{}
+        return
     }
 
-    key, ok := keys[0].Data().([]byte)
-    if !ok {
-        return nil, PKCS12Attributes{}
-    }
+    key := keys[0].Data()
 
     return key, keys[0].Attrs()
 }
@@ -418,8 +519,8 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     blocks := make([]*pem.Block, 0)
 
     // 私钥
-    prikey, attrs := this.GetPrivateKey()
-    if prikey != nil {
+    prikey, attrs, err := this.GetPrivateKey()
+    if err == nil {
         priBytes, err := MarshalPrivateKey(prikey)
         if err != nil {
             return nil, errors.New("found unknown private key type in PKCS#8 wrapping: " + err.Error())
@@ -431,15 +532,15 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     }
 
     // 证书
-    cert, attrs := this.GetCert()
-    if cert != nil {
+    cert, attrs, err := this.GetCert()
+    if err == nil {
         certBlock := this.convertBag(CertificateType, cert.Raw, attrs)
 
         blocks = append(blocks, certBlock)
     }
 
     // 证书链
-    caCerts := this.GetCaCerts()
+    caCerts, _ := this.GetCaCerts()
     for _, caCert := range caCerts {
         caCertBlock := this.convertBag(CertificateType, caCert.Raw, EmptyPKCS12Attributes())
 
@@ -447,7 +548,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     }
 
     // JAVA 证书链
-    trustStores := this.GetTrustStoreEntries()
+    trustStores, _ := this.GetTrustStoreEntries()
     for _, entry := range trustStores {
         entryBlock := this.convertBag(CertificateType, entry.Cert.Raw, entry.Attrs)
 

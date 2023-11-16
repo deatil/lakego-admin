@@ -199,28 +199,35 @@ func (this *JCEKS) GetPrivateKeyAndCerts(alias string, password string) (
                 return nil, nil, fmt.Errorf("key has no certificates")
             }
 
-            key, err = t.Recover([]byte(password))
-            if err == nil {
-                for _, cert := range t.certs {
-                    var parsedCert *x509.Certificate
-                    parsedCert, err = x509.ParseCertificate(cert)
-                    if err != nil {
-                        return
-                    }
+            decryptedKey, err := t.Recover([]byte(password))
+            if err != nil {
+                return nil, nil, err
+            }
 
-                    certs = append(certs, parsedCert)
+            key, err = ParsePKCS8PrivateKey(decryptedKey)
+            if err != nil {
+                return nil, nil, err
+            }
+
+            for _, cert := range t.certs {
+                var parsedCert *x509.Certificate
+                parsedCert, err = x509.ParseCertificate(cert)
+                if err != nil {
+                    return nil, nil, err
                 }
 
-                return
+                certs = append(certs, parsedCert)
             }
+
+            return key, certs, nil
     }
 
-    return
+    return nil, nil, fmt.Errorf("type error")
 }
 
 // GetPrivateKeyAndCertsBytes
 func (this *JCEKS) GetPrivateKeyAndCertsBytes(alias string, password string) (
-    key crypto.PrivateKey,
+    key []byte,
     certs [][]byte,
     err error,
 ) {

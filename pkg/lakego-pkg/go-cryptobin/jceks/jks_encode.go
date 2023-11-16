@@ -5,12 +5,33 @@ import (
     "bytes"
     "errors"
     "crypto"
+    "crypto/x509"
 )
 
 // 添加私钥
 func (this *JKS) AddPrivateKey(
     alias string,
     privateKey crypto.PrivateKey,
+    password string,
+    certChain []*x509.Certificate,
+) error {
+    marshaledPrivateKey, err := MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        return err
+    }
+
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddPrivateKeyBytes(alias, marshaledPrivateKey, password, certs)
+}
+
+// 添加私钥
+func (this *JKS) AddPrivateKeyBytes(
+    alias string,
+    privateKey []byte,
     password string,
     certChain [][]byte,
 ) error {
@@ -19,14 +40,8 @@ func (this *JKS) AddPrivateKey(
     }
 
     var err error
-    var marshaledPrivateKey []byte
 
-    marshaledPrivateKey, err = MarshalPKCS8PrivateKey(privateKey)
-    if err != nil {
-        return err
-    }
-
-    this.privateKeys[alias], err = jksEncryptKey(marshaledPrivateKey, []byte(password))
+    this.privateKeys[alias], err = jksEncryptKey(privateKey, []byte(password))
     if err != nil {
         return err
     }
@@ -45,8 +60,22 @@ func (this *JKS) AddPrivateKey(
     return nil
 }
 
-// 添加私钥
+// 添加已加密私钥
 func (this *JKS) AddEncodedPrivateKey(
+    alias string,
+    encodedKey []byte,
+    certChain []*x509.Certificate,
+) error {
+    certs := make([][]byte, 0)
+    for _, cert := range certChain {
+        certs = append(certs, cert.Raw)
+    }
+
+    return this.AddEncodedPrivateKeyBytes(alias, encodedKey, certs)
+}
+
+// 添加已加密私钥
+func (this *JKS) AddEncodedPrivateKeyBytes(
     alias string,
     encodedKey []byte,
     certChain [][]byte,
@@ -71,8 +100,16 @@ func (this *JKS) AddEncodedPrivateKey(
     return nil
 }
 
-// 添加密钥
+// 添加证书
 func (this *JKS) AddTrustedCert(
+    alias string,
+    cert *x509.Certificate,
+) error {
+    return this.AddTrustedCertBytes(alias, cert.Raw)
+}
+
+// 添加证书
+func (this *JKS) AddTrustedCertBytes(
     alias string,
     cert []byte,
 ) error {

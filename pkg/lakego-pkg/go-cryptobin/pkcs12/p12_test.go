@@ -58,11 +58,11 @@ func Test_P12_Decode(t *testing.T) {
     assertError(err, "P12Decode-pfxData")
 
     if err == nil {
-        prikey, attrs := p12.GetPrivateKey()
+        prikey, attrs, _ := p12.GetPrivateKey()
         assertNotEmpty(prikey, "P12Decode-prikey")
         assertNotEmpty(attrs, "P12Decode-attrs")
 
-        cert, certAttrs := p12.GetCert()
+        cert, certAttrs, _ := p12.GetCert()
         assertNotEmpty(cert, "P12Decode-cert")
         assertNotEmpty(certAttrs, "P12Decode-certAttrs")
 
@@ -114,17 +114,17 @@ func Test_P12_EncodeChain(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12Decode-pfxData")
 
-    privateKey2, attrs := pp12.GetPrivateKey()
+    privateKey2, attrs, _ := pp12.GetPrivateKey()
     assertNotEmpty(privateKey2, "P12Decode-prikey")
     assertNotEmpty(attrs, "P12Decode-attrs")
     assertEqual(privateKey2, privateKey, "P12_EncodeChain-privateKey2")
 
-    certificate2, certAttrs := pp12.GetCert()
+    certificate2, certAttrs, _ := pp12.GetCert()
     assertNotEmpty(certificate2, "P12Decode-cert")
     assertNotEmpty(certAttrs, "P12Decode-certAttrs")
     assertEqual(certificate2, certificates[0], "P12_EncodeChain-certificate2")
 
-    caCerts2 := pp12.GetCaCerts()
+    caCerts2, _ := pp12.GetCaCerts()
     assertNotEmpty(caCerts2, "P12Decode-caCerts2")
     assertEqual(caCerts2, caCerts, "P12_EncodeChain-caCerts2")
 
@@ -219,7 +219,7 @@ func Test_P12_EncodeTrustStore(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_EncodeTrustStore-pfxData")
 
-    certificates2 := pp12.GetTrustStores()
+    certificates2, _ := pp12.GetTrustStores()
     assertNotEmpty(certificates2, "P12_EncodeTrustStore-certificates2")
     assertEqual(certificates2, certificates, "P12_EncodeTrustStore-certificates2")
 
@@ -240,11 +240,8 @@ func Test_P12_EncodeTrustStoreEntries(t *testing.T) {
 
     password := "password-testkjjj"
 
-    entries := make([]TrustStoreEntry, 0)
-    entries = append(entries, TrustStoreEntry{
-        certificates[0],
-        "FriendlyName-Test",
-    })
+    entries := make([]TrustStoreData, 0)
+    entries = append(entries, NewTrustStoreData(certificates[0], "FriendlyName-Test"))
 
     p12 := NewPKCS12Encode()
     p12.AddTrustStoreEntries(entries)
@@ -267,7 +264,7 @@ func Test_P12_EncodeTrustStoreEntries(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_EncodeTrustStoreEntries-pfxData")
 
-    certificates2 := pp12.GetTrustStoreEntries()
+    certificates2, _ := pp12.GetTrustStoreEntries()
     assertNotEmpty(certificates2, "P12_EncodeTrustStoreEntries")
 
     attrs2 := certificates2[0].Attrs.ToArray()
@@ -312,8 +309,8 @@ func Test_P12_EncodePbes2_Check(t *testing.T) {
         pp12, err := LoadPKCS12FromBytes(pfxData, password)
         assertError(err, "P12_EncodePbes2_Check-pfxData")
 
-        privateKey2, _ := pp12.GetPrivateKey()
-        certificate2, _ := pp12.GetCert()
+        privateKey2, _, _ := pp12.GetPrivateKey()
+        certificate2, _, _ := pp12.GetCert()
 
         assertEqual(privateKey2, privateKey, "P12_EncodePbes2_Check-privateKey2")
         assertEqual(certificate2, certificates[0], "P12_EncodePbes2_Check-certificate2")
@@ -345,9 +342,9 @@ func Test_P12_EncodeChain_Check(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_EncodeChain_Check-pfxData")
 
-    privateKey2, _ := pp12.GetPrivateKey()
-    certificate2, _ := pp12.GetCert()
-    caCerts2 := pp12.GetCaCerts()
+    privateKey2, _, _ := pp12.GetPrivateKey()
+    certificate2, _, _ := pp12.GetCert()
+    caCerts2, _ := pp12.GetCaCerts()
 
     assertEqual(privateKey2, privateKey, "P12_EncodeChain_Check-privateKey2")
     assertEqual(certificate2, certificates[0], "P12_EncodeChain_Check-certificate2")
@@ -393,8 +390,8 @@ func test_P12_Encode(t *testing.T, opts Opts, password string, name string) {
         pp12, err := LoadPKCS12FromBytes(pfxData, password)
         assertError(err, "P12Decode-pfxData")
 
-        privateKey2, _ := pp12.GetPrivateKey()
-        certificate2, _ := pp12.GetCert()
+        privateKey2, _, _ := pp12.GetPrivateKey()
+        certificate2, _, _ := pp12.GetCert()
 
         assertEqual(privateKey2, privateKey, "P12_Decode-privateKey2")
         assertEqual(certificate2, certificates[0], "P12_Decode-certificate2")
@@ -446,12 +443,12 @@ func Test_P12_Attrs_Verify(t *testing.T) {
     p12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_Attrs_Verify-pfxData")
 
-    privateKey2, priAttrs := p12.GetPrivateKey()
+    privateKey2, priAttrs, _ := p12.GetPrivateKey()
 
     assertNotEmpty(privateKey2, "P12_Attrs_Verify-privateKey2")
     assertNotEmpty(priAttrs, "P12_Attrs_Verify-priAttrs")
 
-    certificate2, certAttrs := p12.GetCert()
+    certificate2, certAttrs, _ := p12.GetCert()
 
     assertNotEmpty(certificate2, "P12_Attrs_Verify-certificate2")
     assertNotEmpty(certAttrs, "P12_Attrs_Verify-certAttrs")

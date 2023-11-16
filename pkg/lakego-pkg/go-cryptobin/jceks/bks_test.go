@@ -34,28 +34,21 @@ func test_BksEncode(t *testing.T, ver int) {
 
     publicKey := &privateKey.PublicKey
 
-    var caCertsBytes = make([][]byte, 0)
-    for _, caCert := range caCerts {
-        caCertsBytes = append(caCertsBytes, caCert.Raw)
-    }
-
     password := "12345678"
 
     secretKey := []byte("sealed_secret_key-data")
     storedValue := []byte("stored_value-data")
     plainKey := []byte("plain_key-data")
 
-    certBytes := cert.Raw
-
     en := NewBksEncode()
 
-    en.AddCert("cert-test", certBytes, nil);
-    en.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, caCertsBytes);
+    en.AddCert("cert-test", cert, nil);
+    en.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, caCerts);
     en.AddKeyPublicWithPassword("sealed_public_key", publicKey, password, nil);
     en.AddKeySecretWithPassword("sealed_secret_key", secretKey, password, "AES", nil);
     en.AddSecret("stored_value", storedValue, nil);
     en.AddKeySecret("plain_key", plainKey, "AES", nil);
-    en.AddKeyPrivate("private_key", privateKey, caCertsBytes);
+    en.AddKeyPrivate("private_key", privateKey, caCerts);
     en.AddKeyPublic("public_key", publicKey, nil);
 
     opts := BKSOpts{
@@ -170,28 +163,21 @@ func Test_UberEncode(t *testing.T) {
 
     publicKey := &privateKey.PublicKey
 
-    var caCertsBytes = make([][]byte, 0)
-    for _, caCert := range caCerts {
-        caCertsBytes = append(caCertsBytes, caCert.Raw)
-    }
-
     password := "12345678"
 
     secretKey := []byte("sealed_secret_key-data")
     storedValue := []byte("stored_value-data")
     plainKey := []byte("plain_key-data")
 
-    certBytes := cert.Raw
-
     en := NewUberEncode()
 
-    en.AddCert("cert-test", certBytes, nil);
-    en.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, caCertsBytes);
+    en.AddCert("cert-test", cert, nil);
+    en.AddKeyPrivateWithPassword("sealed_private_key", privateKey, password, caCerts);
     en.AddKeyPublicWithPassword("sealed_public_key", publicKey, password, nil);
     en.AddKeySecretWithPassword("sealed_secret_key", secretKey, password, "AES", nil);
     en.AddSecret("stored_value", storedValue, nil);
     en.AddKeySecret("plain_key", plainKey, "AES", nil);
-    en.AddKeyPrivate("private_key", privateKey, caCertsBytes);
+    en.AddKeyPrivate("private_key", privateKey, caCerts);
     en.AddKeyPublic("public_key", publicKey, nil);
 
     opts := UBEROpts{

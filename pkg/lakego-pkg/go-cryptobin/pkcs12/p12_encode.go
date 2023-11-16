@@ -6,72 +6,145 @@ import (
     "crypto"
     "crypto/x509"
     "crypto/sha1"
+    "encoding/pem"
     "encoding/asn1"
+
+    pkcs8_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
-func (this *PKCS12) AddPrivateKey(privateKey crypto.PrivateKey) *PKCS12 {
+func (this *PKCS12) decodePKCS8ShroudedKeyBag(asn1Data, password []byte) (pkData []byte, err error) {
+    pkData, err = pkcs8_pbes2.DecryptPKCS8PrivateKey(asn1Data, password)
+    if err != nil {
+        pkData, err = pkcs8_pbes1.DecryptPKCS8Privatekey(asn1Data, password)
+        if err != nil {
+            return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+        }
+    }
+
+    ret := new(asn1.RawValue)
+    if err = unmarshal(pkData, ret); err != nil {
+        return nil, errors.New("pkcs12: error unmarshaling decrypted private key: " + err.Error())
+    }
+
+    return pkData, nil
+}
+
+func (this *PKCS12) encodePKCS8ShroudedKeyBag(
+    rand io.Reader,
+    pkData []byte,
+    password []byte,
+    opt Opts,
+) (asn1Data []byte, err error) {
+    var keyBlock *pem.Block
+
+    if opt.KeyKDFOpts != nil {
+        // change type to utf-8
+        passwordString, err := decodeBMPString(password)
+        if err != nil {
+            return nil, err
+        }
+
+        password = []byte(passwordString)
+
+        keyBlock, err = pkcs8_pbes2.EncryptPKCS8PrivateKey(rand, "KEY", pkData, password, pkcs8_pbes2.Opts{
+            opt.KeyCipher,
+            opt.KeyKDFOpts,
+        })
+    } else {
+        keyBlock, err = pkcs8_pbes1.EncryptPKCS8Privatekey(rand, "KEY", pkData, password, opt.KeyCipher)
+    }
+
+    if err != nil {
+        return nil, err
+    }
+
+    asn1Data = keyBlock.Bytes
+
+    return asn1Data, nil
+}
+
+// ===============
+
+func (this *PKCS12) AddPrivateKey(privateKey crypto.PrivateKey) error {
+    pkData, err := MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        return err
+    }
+
+    this.privateKey = pkData
+
+    return nil
+}
+
+func (this *PKCS12) AddPrivateKeyBytes(privateKey []byte) {
     this.privateKey = privateKey
-
-    return this
 }
 
-func (this *PKCS12) AddCert(cert *x509.Certificate) *PKCS12 {
+func (this *PKCS12) AddCert(cert *x509.Certificate) {
+    this.cert = cert.Raw
+}
+
+func (this *PKCS12) AddCertBytes(cert []byte) {
     this.cert = cert
-
-    return this
 }
 
-func (this *PKCS12) AddCaCert(ca *x509.Certificate) *PKCS12 {
+func (this *PKCS12) AddCaCert(ca *x509.Certificate) {
+    this.caCerts = append(this.caCerts, ca.Raw)
+}
+
+func (this *PKCS12) AddCaCertBytes(ca []byte) {
     this.caCerts = append(this.caCerts, ca)
-
-    return this
 }
 
-func (this *PKCS12) AddCaCerts(caCerts []*x509.Certificate) *PKCS12 {
-    this.caCerts = append(this.caCerts, caCerts...)
-
-    return this
+func (this *PKCS12) AddCaCerts(caCerts []*x509.Certificate) {
+    for _, cert := range caCerts {
+        this.caCerts = append(this.caCerts, cert.Raw)
+    }
 }
 
-func (this *PKCS12) AddTrustStore(cert *x509.Certificate) *PKCS12 {
-    this.trustStores = append(this.trustStores, TrustStoreEntry{
-        Cert: cert,
+func (this *PKCS12) AddCaCertsBytes(caCerts [][]byte) {
+    for _, cert := range caCerts {
+        this.caCerts = append(this.caCerts, cert)
+    }
+}
+
+func (this *PKCS12) AddTrustStore(cert *x509.Certificate) {
+    this.trustStores = append(this.trustStores, TrustStoreData{
+        Cert: cert.Raw,
         FriendlyName: cert.Subject.String(),
     })
-
-    return this
 }
 
-func (this *PKCS12) AddTrustStores(certs []*x509.Certificate) *PKCS12 {
+func (this *PKCS12) AddTrustStores(certs []*x509.Certificate) {
     for _, cert := range certs {
-        this.trustStores = append(this.trustStores, TrustStoreEntry{
-            Cert: cert,
+        this.trustStores = append(this.trustStores, TrustStoreData{
+            Cert: cert.Raw,
             FriendlyName: cert.Subject.String(),
         })
     }
-
-    return this
 }
 
-func (this *PKCS12) AddTrustStoreEntry(cert *x509.Certificate, friendlyName string) *PKCS12 {
-    this.trustStores = append(this.trustStores, TrustStoreEntry{
+func (this *PKCS12) AddTrustStoreEntry(cert *x509.Certificate, friendlyName string) {
+    this.trustStores = append(this.trustStores, TrustStoreData{
+        Cert: cert.Raw,
+        FriendlyName: friendlyName,
+    })
+}
+
+func (this *PKCS12) AddTrustStoreEntryBytes(cert []byte, friendlyName string) {
+    this.trustStores = append(this.trustStores, TrustStoreData{
         Cert: cert,
         FriendlyName: friendlyName,
     })
-
-    return this
 }
 
-func (this *PKCS12) AddTrustStoreEntries(entries []TrustStoreEntry) *PKCS12 {
+func (this *PKCS12) AddTrustStoreEntries(entries []TrustStoreData) {
     this.trustStores = append(this.trustStores, entries...)
-
-    return this
 }
 
-func (this *PKCS12) AddSecretKey(secretKey []byte) *PKCS12 {
+func (this *PKCS12) AddSecretKey(secretKey []byte) {
     this.secretKey = secretKey
-
-    return this
 }
 
 //===============
@@ -111,18 +184,17 @@ func (this *PKCS12) marshalPrivateKey(rand io.Reader, password []byte, opt Opts)
 
     if opt.KeyCipher != nil {
         keyBag.Id = oidPKCS8ShroundedKeyBag
-        if keyBag.Value.Bytes, err = encodePkcs8ShroudedKeyBag(rand, privateKey, password, opt); err != nil {
+
+        if keyBag.Value.Bytes, err = this.encodePKCS8ShroudedKeyBag(rand, privateKey, password, opt); err != nil {
             return
         }
     } else {
         keyBag.Id = oidKeyBag
-        if keyBag.Value.Bytes, err = MarshalPKCS8PrivateKey(privateKey); err != nil {
-            return
-        }
+        keyBag.Value.Bytes = privateKey
     }
 
     // 额外数据
-    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(this.cert.Raw)
+    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(this.cert)
     if err != nil {
         err = errors.New("PKCS12: " + err.Error())
         return
@@ -138,7 +210,7 @@ func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci C
     certificate := this.cert
 
     // 额外数据
-    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(certificate.Raw)
+    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(certificate)
     if err != nil {
         err = errors.New("PKCS12: " + err.Error())
         return
@@ -148,7 +220,7 @@ func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci C
 
     // 证书
     var certBag *SafeBag
-    if certBag, err = makeCertBag(certificate.Raw, []PKCS12Attribute{localKeyIdAttr}); err != nil {
+    if certBag, err = makeCertBag(certificate, []PKCS12Attribute{localKeyIdAttr}); err != nil {
         return
     }
 
@@ -157,7 +229,7 @@ func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci C
     // 证书链
     for _, cert := range this.caCerts {
         var certBag *SafeBag
-        if certBag, err = makeCertBag(cert.Raw, []PKCS12Attribute{}); err != nil {
+        if certBag, err = makeCertBag(cert, []PKCS12Attribute{}); err != nil {
             return
         }
 
@@ -219,7 +291,7 @@ func (this *PKCS12) marshalTrustStoreEntries(rand io.Reader, password []byte, op
             },
         }
 
-        certBag, err1 := makeCertBag(entry.Cert.Raw, append(certAttributes, friendlyName))
+        certBag, err1 := makeCertBag(entry.Cert, append(certAttributes, friendlyName))
         if err1 != nil {
             err = err1
             return
