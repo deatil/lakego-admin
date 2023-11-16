@@ -209,7 +209,11 @@ func convertAttribute(attribute *PKCS12Attribute) (key, value string, err error)
 
             return
         default:
-            return "", "", errUnknownAttributeOID
+            key = attribute.Id.String()
+            value = hex.EncodeToString(attribute.Value.Bytes)
+            err = errUnknownAttributeOID
+
+            return
     }
 
     if isString {

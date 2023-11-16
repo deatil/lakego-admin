@@ -44,12 +44,8 @@ func (this PKCS12Attributes) ToArray() map[string]string {
 
     for _, attribute := range this.attributes {
         k, v, err := convertAttribute(&attribute)
-        if err == errUnknownAttributeOID {
+        if err != nil && err != errUnknownAttributeOID {
             continue
-        }
-
-        if err != nil {
-            return map[string]string{}
         }
 
         attrs[k] = v

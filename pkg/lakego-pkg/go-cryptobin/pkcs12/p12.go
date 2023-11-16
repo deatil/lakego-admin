@@ -27,6 +27,9 @@ type PKCS12 struct {
     // 密钥
     secretKey []byte
 
+    // localKeyId
+    localKeyId []byte
+
     // 解析后数据
     parsedData map[string][]ISafeBagData
 }

@@ -430,6 +430,32 @@ func Test_P12_ToPem(t *testing.T) {
     }
 }
 
+func Test_P12_ToOriginalPEM(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testP12Key)
+
+    password := "notasecret"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "Test_P12_ToOriginalPEM-pfxData")
+
+    blocks, err := p12.ToOriginalPEM()
+    assertError(err, "Test_P12_ToOriginalPEM-ToPEM")
+    assertNotEmpty(blocks, "Test_P12_ToOriginalPEM-ToPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "Test_P12_ToOriginalPEM-ToPEM-Pem")
+        // t.Error(string(pemInfo))
+    }
+}
+
 // 某些库生成的 SHA1 值可能不对，不能完全的作为判断
 func Test_P12_Attrs_Verify(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
@@ -455,4 +481,60 @@ func Test_P12_Attrs_Verify(t *testing.T) {
 
     priCheck := priAttrs.Verify(certificate2.Raw)
     assertBool(priCheck, "P12_Attrs_Verify-priCheck")
+}
+
+// 自定义 LocalKeyId
+func Test_P12_EncodeSecret_SetLocalKeyId(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNotBool := cryptobin_test.AssertNotBoolT(t)
+
+    secretKey := []byte("test-password")
+    password := "passpass word"
+
+    localKeyId := []byte("aaaaaaahhhhh")
+    localKeyIdHex := hex.EncodeToString(localKeyId)
+
+    p12 := NewPKCS12Encode()
+    p12.AddSecretKey(secretKey)
+    p12.SetLocalKeyId(localKeyId)
+
+    pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
+    assertError(err, "P12_EncodeSecret")
+
+    // 解析
+    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_EncodeSecret_SetLocalKeyId-pfxData")
+
+    secretKey2, attrs := pp12.GetSecretKey()
+    assertNotEmpty(secretKey2, "P12_EncodeSecret_SetLocalKeyId-secretKey2")
+    assertNotEmpty(attrs, "P12_EncodeSecret_SetLocalKeyId-secretKey2-attrs")
+    assertEqual(secretKey2, secretKey, "P12_EncodeSecret_SetLocalKeyId-secretKey2")
+
+    newpass2 := attrs.ToArray()
+
+    assertEqual(newpass2["localKeyId"], localKeyIdHex, "P12_EncodeSecret_SetLocalKeyId-localKeyId")
+
+    // 旧版本
+    secretKeys, err := DecodeSecret(pfxData, password)
+    assertError(err, "P12_EncodeSecret_SetLocalKeyId")
+
+    if len(secretKeys) != 1 {
+        t.Error("P12_EncodeSecret_SetLocalKeyId Error")
+    }
+
+    newpass := secretKeys[0].Attributes()
+
+    assertEqual(newpass["localKeyId"], localKeyIdHex, "P12_EncodeSecret_SetLocalKeyId-localKeyId2")
+
+    assertEqual(secretKeys[0].Key(), secretKey, "P12_EncodeSecret_SetLocalKeyId")
+
+    assertNotBool(pp12.HasPrivateKey(), "P12_EncodeSecret_SetLocalKeyId-HasPrivateKey")
+    assertNotBool(pp12.HasCert(), "P12_EncodeSecret_SetLocalKeyId-HasCert")
+    assertNotBool(pp12.HasCaCert(), "P12_EncodeSecret_SetLocalKeyId-HasCaCert")
+    assertNotBool(pp12.HasTrustStore(), "P12_EncodeSecret_SetLocalKeyId-HasTrustStore")
+
+    assertBool(pp12.HasSecretKey(), "P12_EncodeSecret_SetLocalKeyId-HasSecretKey")
 }

@@ -147,13 +147,24 @@ func (this *PKCS12) AddSecretKey(secretKey []byte) {
     this.secretKey = secretKey
 }
 
+func (this *PKCS12) SetLocalKeyId(id []byte) {
+    this.localKeyId = id
+}
+
 //===============
 
 // 获取证书签名
-func (this *PKCS12) makeCertLocalKeyIdAttr(cert []byte) (PKCS12Attribute, error) {
-    var certFingerprint = sha1.Sum(cert)
+func (this *PKCS12) makeLocalKeyIdAttr(data []byte) (PKCS12Attribute, error) {
+    var fingerprint []byte
 
-    sha1Data, err := asn1.Marshal(certFingerprint[:])
+    if this.localKeyId != nil {
+        fingerprint = this.localKeyId
+    } else {
+        sum := sha1.Sum(data)
+        fingerprint = sum[:]
+    }
+
+    localKeyId, err := asn1.Marshal(fingerprint)
     if err != nil {
         return PKCS12Attribute{}, err
     }
@@ -163,7 +174,7 @@ func (this *PKCS12) makeCertLocalKeyIdAttr(cert []byte) (PKCS12Attribute, error)
     localKeyIdAttr.Value.Class = 0
     localKeyIdAttr.Value.Tag = 17
     localKeyIdAttr.Value.IsCompound = true
-    localKeyIdAttr.Value.Bytes = sha1Data
+    localKeyIdAttr.Value.Bytes = localKeyId
 
     return localKeyIdAttr, nil
 }
@@ -194,7 +205,7 @@ func (this *PKCS12) marshalPrivateKey(rand io.Reader, password []byte, opt Opts)
     }
 
     // 额外数据
-    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(this.cert)
+    localKeyIdAttr, err := this.makeLocalKeyIdAttr(this.cert)
     if err != nil {
         err = errors.New("PKCS12: " + err.Error())
         return
@@ -210,7 +221,7 @@ func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci C
     certificate := this.cert
 
     // 额外数据
-    localKeyIdAttr, err := this.makeCertLocalKeyIdAttr(certificate)
+    localKeyIdAttr, err := this.makeLocalKeyIdAttr(certificate)
     if err != nil {
         err = errors.New("PKCS12: " + err.Error())
         return
@@ -306,14 +317,10 @@ func (this *PKCS12) marshalTrustStoreEntries(rand io.Reader, password []byte, op
 func (this *PKCS12) marshalSecretKey(rand io.Reader, password []byte, opt Opts) (ci ContentInfo, err error) {
     secretKey := this.secretKey
 
-    secretFingerprint := sha1.Sum(secretKey)
-
-    var localKeyIdAttr PKCS12Attribute
-    localKeyIdAttr.Id = oidLocalKeyID
-    localKeyIdAttr.Value.Class = 0
-    localKeyIdAttr.Value.Tag = 17
-    localKeyIdAttr.Value.IsCompound = true
-    if localKeyIdAttr.Value.Bytes, err = asn1.Marshal(secretFingerprint[:]); err != nil {
+    // 额外数据
+    localKeyIdAttr, err := this.makeLocalKeyIdAttr(secretKey)
+    if err != nil {
+        err = errors.New("PKCS12: " + err.Error())
         return
     }
 

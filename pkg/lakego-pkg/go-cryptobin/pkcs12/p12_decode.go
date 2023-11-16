@@ -161,20 +161,16 @@ func (this *PKCS12) parseCertBag(bag *SafeBag) error {
         return err
     }
 
+    bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
+
     switch {
         case bag.hasAttribute(oidJavaTrustStore):
-            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
-
             this.parsedData["trustStore"] = append(this.parsedData["trustStore"], bagData)
 
         case bag.hasAttribute(oidLocalKeyID):
-            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
-
             this.parsedData["cert"] = append(this.parsedData["cert"], bagData)
 
         default:
-            bagData := NewSafeBagDataWithAttrs(certsData, bag.Attributes)
-
             this.parsedData["caCert"] = append(this.parsedData["caCert"], bagData)
 
     }
@@ -309,7 +305,7 @@ func (this *PKCS12) GetCertBytes() (cert []byte, attrs PKCS12Attributes, err err
     return certData, certs[0].Attrs(), nil
 }
 
-func (this *PKCS12) GetCaCerts() (cert []*x509.Certificate, err error) {
+func (this *PKCS12) GetCaCerts() (caCerts []*x509.Certificate, err error) {
     certs, ok := this.parsedData["caCert"]
     if !ok {
         err = errors.New("no data")
@@ -320,8 +316,6 @@ func (this *PKCS12) GetCaCerts() (cert []*x509.Certificate, err error) {
         err = errors.New("no data")
         return
     }
-
-    caCerts := make([]*x509.Certificate, 0)
 
     for _, cert := range certs {
         c := cert.Data()
@@ -337,7 +331,7 @@ func (this *PKCS12) GetCaCerts() (cert []*x509.Certificate, err error) {
     return caCerts, nil
 }
 
-func (this *PKCS12) GetCaCertsBytes() (cert [][]byte, err error) {
+func (this *PKCS12) GetCaCertsBytes() (caCerts [][]byte, err error) {
     certs, ok := this.parsedData["caCert"]
     if !ok {
         err = errors.New("no data")
@@ -349,8 +343,6 @@ func (this *PKCS12) GetCaCertsBytes() (cert [][]byte, err error) {
         return
     }
 
-    caCerts := make([][]byte, 0)
-
     for _, cert := range certs {
         caCerts = append(caCerts, cert.Data())
     }
@@ -358,7 +350,7 @@ func (this *PKCS12) GetCaCertsBytes() (cert [][]byte, err error) {
     return caCerts, nil
 }
 
-func (this *PKCS12) GetTrustStores() (cert []*x509.Certificate, err error) {
+func (this *PKCS12) GetTrustStores() (caCerts []*x509.Certificate, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -370,8 +362,6 @@ func (this *PKCS12) GetTrustStores() (cert []*x509.Certificate, err error) {
         return
     }
 
-    caCerts := make([]*x509.Certificate, 0)
-
     for _, cert := range certs {
         c := cert.Data()
 
@@ -381,6 +371,25 @@ func (this *PKCS12) GetTrustStores() (cert []*x509.Certificate, err error) {
         }
 
         caCerts = append(caCerts, parsedCerts[0])
+    }
+
+    return caCerts, nil
+}
+
+func (this *PKCS12) GetTrustStoresBytes() (caCerts [][]byte, err error) {
+    certs, ok := this.parsedData["trustStore"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(certs) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    for _, cert := range certs {
+        caCerts = append(caCerts, cert.Data())
     }
 
     return caCerts, nil
@@ -391,7 +400,7 @@ type trustStoreKeyData struct {
     Cert  *x509.Certificate
 }
 
-func (this *PKCS12) GetTrustStoreEntries() (keys []trustStoreKeyData, err error) {
+func (this *PKCS12) GetTrustStoreEntries() (caCerts []trustStoreKeyData, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -402,8 +411,6 @@ func (this *PKCS12) GetTrustStoreEntries() (keys []trustStoreKeyData, err error)
         err = errors.New("no data")
         return
     }
-
-    caCerts := make([]trustStoreKeyData, 0)
 
     for _, cert := range certs {
         c := cert.Data()
@@ -427,7 +434,7 @@ type trustStoreKeyDataBytes struct {
     Cert  []byte
 }
 
-func (this *PKCS12) GetTrustStoreEntriesBytes() (keys []trustStoreKeyDataBytes, err error) {
+func (this *PKCS12) GetTrustStoreEntriesBytes() (caCerts []trustStoreKeyDataBytes, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -438,8 +445,6 @@ func (this *PKCS12) GetTrustStoreEntriesBytes() (keys []trustStoreKeyDataBytes, 
         err = errors.New("no data")
         return
     }
-
-    caCerts := make([]trustStoreKeyDataBytes, 0)
 
     for _, cert := range certs {
         caCerts = append(caCerts, trustStoreKeyDataBytes{
@@ -503,7 +508,7 @@ func (this *PKCS12) HasSecretKey() bool {
 
 //===============
 
-func (this *PKCS12) convertBag(typ string, data []byte, attrs PKCS12Attributes) *pem.Block {
+func (this *PKCS12) makeBlock(typ string, data []byte, attrs PKCS12Attributes) *pem.Block {
     block := &pem.Block{
         Headers: make(map[string]string),
     }
@@ -515,6 +520,7 @@ func (this *PKCS12) convertBag(typ string, data []byte, attrs PKCS12Attributes) 
     return block
 }
 
+// 生成PEM证书
 func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     blocks := make([]*pem.Block, 0)
 
@@ -526,7 +532,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
             return nil, errors.New("found unknown private key type in PKCS#8 wrapping: " + err.Error())
         }
 
-        priBlock := this.convertBag(PrivateKeyType, priBytes, attrs)
+        priBlock := this.makeBlock(PrivateKeyType, priBytes, attrs)
 
         blocks = append(blocks, priBlock)
     }
@@ -534,7 +540,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     // 证书
     cert, attrs, err := this.GetCert()
     if err == nil {
-        certBlock := this.convertBag(CertificateType, cert.Raw, attrs)
+        certBlock := this.makeBlock(CertificateType, cert.Raw, attrs)
 
         blocks = append(blocks, certBlock)
     }
@@ -542,7 +548,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     // 证书链
     caCerts, _ := this.GetCaCerts()
     for _, caCert := range caCerts {
-        caCertBlock := this.convertBag(CertificateType, caCert.Raw, EmptyPKCS12Attributes())
+        caCertBlock := this.makeBlock(CertificateType, caCert.Raw, EmptyPKCS12Attributes())
 
         blocks = append(blocks, caCertBlock)
     }
@@ -550,7 +556,46 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     // JAVA 证书链
     trustStores, _ := this.GetTrustStoreEntries()
     for _, entry := range trustStores {
-        entryBlock := this.convertBag(CertificateType, entry.Cert.Raw, entry.Attrs)
+        entryBlock := this.makeBlock(CertificateType, entry.Cert.Raw, entry.Attrs)
+
+        blocks = append(blocks, entryBlock)
+    }
+
+    return blocks, nil
+}
+
+// 生成原始数据的PEM证书
+func (this *PKCS12) ToOriginalPEM() ([]*pem.Block, error) {
+    blocks := make([]*pem.Block, 0)
+
+    // 私钥
+    prikey, attrs, err := this.GetPrivateKeyBytes()
+    if err == nil {
+        priBlock := this.makeBlock(PrivateKeyType, prikey, attrs)
+
+        blocks = append(blocks, priBlock)
+    }
+
+    // 证书
+    cert, attrs, err := this.GetCertBytes()
+    if err == nil {
+        certBlock := this.makeBlock(CertificateType, cert, attrs)
+
+        blocks = append(blocks, certBlock)
+    }
+
+    // 证书链
+    caCerts, _ := this.GetCaCertsBytes()
+    for _, caCert := range caCerts {
+        caCertBlock := this.makeBlock(CertificateType, caCert, EmptyPKCS12Attributes())
+
+        blocks = append(blocks, caCertBlock)
+    }
+
+    // JAVA 证书链
+    trustStores, _ := this.GetTrustStoreEntriesBytes()
+    for _, entry := range trustStores {
+        entryBlock := this.makeBlock(CertificateType, entry.Cert, entry.Attrs)
 
         blocks = append(blocks, entryBlock)
     }
