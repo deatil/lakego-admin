@@ -4,10 +4,11 @@ import (
     "io"
     "fmt"
     "errors"
-    "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
     "encoding/pem"
+
+    "github.com/deatil/go-cryptobin/pkcs1"
 )
 
 // 结构体数据可以查看以下文档
@@ -163,7 +164,7 @@ func DecryptPKCS8Privatekey(data, password []byte) ([]byte, error) {
 // 解出 PEM 块
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
-        return x509.DecryptPEMBlock(block, password)
+        return pkcs1.DecryptPEMBlock(block, password)
     }
 
     // PKCS#8 header defined in RFC7468 section 11

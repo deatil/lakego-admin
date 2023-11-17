@@ -3,9 +3,9 @@ package pkcs8
 import (
     "io"
     "errors"
-    "crypto/x509"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs/pbes1"
     "github.com/deatil/go-cryptobin/pkcs/pbes2"
     cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
@@ -163,7 +163,7 @@ func EncryptPEMBlock(
 // de, err := DecryptPEMBlock(block, password)
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
-        return x509.DecryptPEMBlock(block, password)
+        return pkcs1.DecryptPEMBlock(block, password)
     }
 
     // PKCS#8 header defined in RFC7468 section 11

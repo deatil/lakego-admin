@@ -2,10 +2,10 @@ package elgamal
 
 import (
     "errors"
-    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/elgamal"
+    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -51,7 +51,7 @@ func (this EIGamal) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = x509.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs1.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

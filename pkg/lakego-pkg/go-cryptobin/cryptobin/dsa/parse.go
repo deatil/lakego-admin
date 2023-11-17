@@ -7,6 +7,7 @@ import (
     "encoding/pem"
 
     cryptobin_dsa "github.com/deatil/go-cryptobin/dsa"
+    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -52,7 +53,7 @@ func (this DSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = x509.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs1.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

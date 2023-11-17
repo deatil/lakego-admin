@@ -7,18 +7,17 @@ package main
 import (
     "fmt"
     "crypto"
+    "crypto/x509"
 
     cryptobin_jceks "github.com/deatil/go-cryptobin/jceks"
 )
 
 func main() {
-    fs := filesystem.New()
-
     var alias string
     var privateKey crypto.PrivateKey
     var publicKey crypto.PublicKey
-    var certs [][]byte
-    var cert []byte // 生成证书时的字节数据
+    var certs []*x509.Certificate
+    var cert *x509.Certificate // 证书
     var secretKey []byte
     var storedValue []byte
     var plainKey []byte
@@ -42,9 +41,8 @@ func main() {
         SaltSize:       20,
         IterationCount: 10000,
     }
-    pfxData, err := ks.Marshal(passwd, opts)
 
-    fs.Put("./runtime/key/bks/bks.bksv1", string(pfxData))
+    pfxData, err := ks.Marshal(passwd, opts)
 
     fmt.Println("生成 bks 成功")
 }
@@ -78,42 +76,42 @@ func main() {
     version := ks.Version()
     storeType := ks.StoreType()
 
-    date, err = ks.GetCreateDate(alias)
+    date, err := ks.GetCreateDate(alias)
     certType, err := ks.GetCertType(alias)
-    certChain, err = ks.GetCertChain(alias)
-    certChainBytes, err = ks.GetCertChainBytes(alias)
+    certChain, err := ks.GetCertChain(alias)
+    certChainBytes, err := ks.GetCertChainBytes(alias)
 
     cert, err := ks.GetCert(alias)
     certBytes, err := ks.GetCertBytes(alias)
-    secret, err = ks.GetSecret(alias)
+    secret, err := ks.GetSecret(alias)
 
     keyType, err := ks.GetKeyType(alias)
     privateKey, err := ks.GetKeyPrivate(alias)
     publicKey, err := ks.GetKeyPublic(alias)
-    secret, err = ks.GetKeySecret(alias)
+    secret, err := ks.GetKeySecret(alias)
     privateKey, publicKey, secret, err := ks.GetKey(alias)
 
     sealedKeyType, err := ks.GetSealedKeyType(alias, sealedPass)
     privateKey, err := ks.GetKeyPrivateWithPassword(alias, sealedPass)
     publicKey, err := ks.GetKeyPublicWithPassword(alias, sealedPass)
-    secret, err = ks.GetKeySecretWithPassword(alias, sealedPass)
+    secret, err := ks.GetKeySecretWithPassword(alias, sealedPass)
     privateKey, publicKey, secret, err := ks.GetSealedKey(alias, sealedPass)
 
     // ===============
 
     var certsAliases []string
-    certsAliases := ks.ListCerts()
+    certsAliases = ks.ListCerts()
 
     var secretsAliases []string
-    secretsAliases := ks.ListSecrets()
+    secretsAliases = ks.ListSecrets()
 
     // 未加密的别名列表
     var keysAliases []string
-    keysAliases := ks.ListKeys()
+    keysAliases = ks.ListKeys()
 
     // 加密的别名列表
     var sealedKeysAliases []string
-    sealedKeysAliases := ks.ListSealedKeys()
+    sealedKeysAliases = ks.ListSealedKeys()
 
     fmt.Println("解析 bks 成功")
 }
@@ -126,18 +124,17 @@ package main
 import (
     "fmt"
     "crypto"
+    "crypto/x509"
 
     cryptobin_jceks "github.com/deatil/go-cryptobin/jceks"
 )
 
 func main() {
-    fs := filesystem.New()
-
     var alias string
     var privateKey crypto.PrivateKey
     var publicKey crypto.PublicKey
-    var certs [][]byte
-    var cert []byte // 生成证书时的字节数据
+    var certs []*x509.Certificate
+    var cert *x509.Certificate // 证书
     var secretKey []byte
     var storedValue []byte
     var plainKey []byte
@@ -160,9 +157,8 @@ func main() {
         SaltSize:       20,
         IterationCount: 10000,
     }
-    pfxData, err := ks.Marshal(passwd, opts)
 
-    fs.Put("./runtime/key/uber/pfx.uber", string(pfxData))
+    pfxData, err := ks.Marshal(passwd, opts)
 
     fmt.Println("生成 uber 成功")
 }
@@ -195,42 +191,42 @@ func main() {
     version := ks.Version()
     storeType := ks.StoreType()
 
-    date, err = ks.GetCreateDate(alias)
+    date, err := ks.GetCreateDate(alias)
     certType, err := ks.GetCertType(alias)
-    certChain, err = ks.GetCertChain(alias)
-    certChainBytes, err = ks.GetCertChainBytes(alias)
+    certChain, err := ks.GetCertChain(alias)
+    certChainBytes, err := ks.GetCertChainBytes(alias)
 
     cert, err := ks.GetCert(alias)
     certBytes, err := ks.GetCertBytes(alias)
-    secret, err = ks.GetSecret(alias)
+    secret, err := ks.GetSecret(alias)
 
     keyType, err := ks.GetKeyType(alias)
     privateKey, err := ks.GetKeyPrivate(alias)
     publicKey, err := ks.GetKeyPublic(alias)
-    secret, err = ks.GetKeySecret(alias)
+    secret, err := ks.GetKeySecret(alias)
     privateKey, publicKey, secret, err := ks.GetKey(alias)
 
     sealedKeyType, err := ks.GetSealedKeyType(alias, sealedPass)
     privateKey, err := ks.GetKeyPrivateWithPassword(alias, sealedPass)
     publicKey, err := ks.GetKeyPublicWithPassword(alias, sealedPass)
-    secret, err = ks.GetKeySecretWithPassword(alias, sealedPass)
+    secret, err := ks.GetKeySecretWithPassword(alias, sealedPass)
     privateKey, publicKey, secret, err := ks.GetSealedKey(alias, sealedPass)
 
     // ===============
 
     var certsAliases []string
-    certsAliases := ks.ListCerts()
+    certsAliases = ks.ListCerts()
 
     var secretsAliases []string
-    secretsAliases := ks.ListSecrets()
+    secretsAliases = ks.ListSecrets()
 
     // 未加密的别名列表
     var keysAliases []string
-    keysAliases := ks.ListKeys()
+    keysAliases = ks.ListKeys()
 
     // 加密的别名列表
     var sealedKeysAliases []string
-    sealedKeysAliases := ks.ListSealedKeys()
+    sealedKeysAliases = ks.ListSealedKeys()
 
     fmt.Println("解析 uber 成功")
 }

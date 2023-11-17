@@ -4,12 +4,11 @@ import (
     "errors"
     "crypto/rand"
     "encoding/pem"
-    crypto_x509 "crypto/x509"
 
     "github.com/tjfoc/gmsm/x509"
 
     cryptobin_sm2 "github.com/deatil/go-cryptobin/sm2"
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -83,8 +82,8 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     }
 
     // 加密方式
-    cipher, err := cryptobin_tool.GetPEMCipher(opt)
-    if err != nil {
+    cipher := cryptobin_pkcs1.GetPEMCipher(opt)
+    if cipher == nil {
         err := errors.New("SM2: PEMCipher not exists.")
         return this.AppendError(err)
     }
@@ -96,7 +95,7 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     }
 
     // 生成加密数据
-    privateBlock, err := crypto_x509.EncryptPEMBlock(
+    privateBlock, err := cryptobin_pkcs1.EncryptPEMBlock(
         rand.Reader,
         "SM2 PRIVATE KEY",
         privateKeyBytes,

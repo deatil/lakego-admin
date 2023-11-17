@@ -332,3 +332,5 @@ func LoadPKCS12FromBytes(pfxData []byte, password string) (*cryptobin_pkcs12.PKC
 
     return cryptobin_pkcs12.LoadPKCS12FromBytes(data, password)
 }
+
+var LoadPKCS12 = LoadPKCS12FromBytes

@@ -3,12 +3,12 @@ package sm2
 import (
     "errors"
     "encoding/pem"
-    crypto_x509 "crypto/x509"
 
     "github.com/tjfoc/gmsm/sm2"
     "github.com/tjfoc/gmsm/x509"
 
     cryptobin_sm2 "github.com/deatil/go-cryptobin/sm2"
+    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
@@ -66,7 +66,7 @@ func (this SM2) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = crypto_x509.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = cryptobin_pkcs1.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

@@ -4,13 +4,6 @@ import (
     "github.com/deatil/go-cryptobin/tool"
 )
 
-// 构造函数
-func NewConfig(c Cryptobin) Config {
-    return Config{
-        crypto: c,
-    }
-}
-
 /**
  * 包装配置
  *
@@ -19,6 +12,13 @@ func NewConfig(c Cryptobin) Config {
  */
 type Config struct {
     crypto Cryptobin
+}
+
+// 构造函数
+func NewConfig(c Cryptobin) Config {
+    return Config{
+        crypto: c,
+    }
 }
 
 // 密钥

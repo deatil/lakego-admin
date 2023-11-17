@@ -2,6 +2,7 @@ package rsa
 
 import (
     "testing"
+    "crypto/rand"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -168,4 +169,69 @@ func Test_PubNE(t *testing.T) {
     assertNotEmpty(enData, "PubNE-make")
 
     assertEqual(enData, testPubEnd, "PubNE-make")
+}
+
+var testPEMCiphers = []string{
+    "DESCBC",
+    "DESEDE3CBC",
+    "AES128CBC",
+    "AES192CBC",
+    "AES256CBC",
+
+    "DESCFB",
+    "DESEDE3CFB",
+    "AES128CFB",
+    "AES192CFB",
+    "AES256CFB",
+
+    "DESOFB",
+    "DESEDE3OFB",
+    "AES128OFB",
+    "AES192OFB",
+    "AES256OFB",
+
+    "DESCTR",
+    "DESEDE3CTR",
+    "AES128CTR",
+    "AES192CTR",
+    "AES256CTR",
+}
+
+func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
+    for _, cipher := range testPEMCiphers{
+        test_CreatePKCS1PrivateKeyWithPassword(t, cipher)
+    }
+}
+
+func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    t.Run(cipher, func(t *testing.T) {
+        pass := make([]byte, 12)
+        _, err := rand.Read(pass)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        gen := New().GenerateKey(2048)
+
+        prikey := gen.GetPrivateKey()
+
+        pri := gen.
+            CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
+            ToKeyString()
+
+        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
+
+        newPrikey := New().
+            FromPKCS1PrivateKeyWithPassword([]byte(pri), string(pass)).
+            GetPrivateKey()
+
+        assertNotEmpty(newPrikey, "Test_CreatePKCS1PrivateKeyWithPassword-newPrikey")
+
+        assertEqual(newPrikey, prikey, "Test_CreatePKCS1PrivateKeyWithPassword")
+    })
 }

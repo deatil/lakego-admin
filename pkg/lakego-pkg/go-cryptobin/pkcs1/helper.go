@@ -1,7 +1,7 @@
 package pkcs1
 
 // Cipher 列表
-var CipherMap = map[string]Cipher{
+var PEMCiphers = map[string]Cipher{
     "DESCBC":     CipherDESCBC,
     "DESEDE3CBC": Cipher3DESCBC,
     "AES128CBC":  CipherAES128CBC,
@@ -28,17 +28,17 @@ var CipherMap = map[string]Cipher{
 }
 
 // 获取 Cipher 类型
-func GetCipherFromName(name string) Cipher {
-    if data, ok := CipherMap[name]; ok {
-        return data
+func GetPEMCipher(name string) Cipher {
+    if cipher, ok := PEMCiphers[name]; ok {
+        return cipher
     }
 
     return nil
 }
 
 // 检测 Cipher 类型
-func CheckCipherFromName(name string) bool {
-    if _, ok := CipherMap[name]; ok {
+func CheckPEMCipher(name string) bool {
+    if _, ok := PEMCiphers[name]; ok {
         return true
     }
 
