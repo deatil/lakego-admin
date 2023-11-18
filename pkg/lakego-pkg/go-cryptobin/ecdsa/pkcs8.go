@@ -176,21 +176,7 @@ func MarshalPrivateKey(key *ecdsa.PrivateKey) ([]byte, error) {
         },
     }
 
-    if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("invalid elliptic key public key")
-    }
-
-    privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
-
-    privKey.PrivateKey, err = asn1.Marshal(ecPrivateKey{
-        Version:       1,
-        PrivateKey:    key.D.FillBytes(privateKey),
-        NamedCurveOID: oid,
-        PublicKey:     asn1.BitString{
-            Bytes: elliptic.Marshal(key.Curve, key.X, key.Y),
-        },
-    })
-
+    privKey.PrivateKey, err = marshalECPrivateKeyWithOID(key, oid)
     if err != nil {
         return nil, errors.New("ecdsa: failed to marshal EC private key while building PKCS#8: " + err.Error())
     }
@@ -227,6 +213,25 @@ func ParsePrivateKey(derBytes []byte) (*ecdsa.PrivateKey, error) {
     }
 
     return key, nil
+}
+
+// marshalECPrivateKeyWithOID marshals an SM2 private key into ASN.1, DER format and
+// sets the curve ID to the given OID, or omits it if OID is nil.
+func marshalECPrivateKeyWithOID(key *ecdsa.PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
+    if !key.Curve.IsOnCurve(key.X, key.Y) {
+        return nil, errors.New("invalid elliptic key public key")
+    }
+
+    privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
+
+    return asn1.Marshal(ecPrivateKey{
+        Version:       1,
+        PrivateKey:    key.D.FillBytes(privateKey),
+        NamedCurveOID: oid,
+        PublicKey:     asn1.BitString{
+            Bytes: elliptic.Marshal(key.Curve, key.X, key.Y),
+        },
+    })
 }
 
 // parseECPrivateKey parses an ASN.1 Elliptic Curve Private Key Structure.

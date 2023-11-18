@@ -4,120 +4,11 @@ import (
     "errors"
     "crypto"
     "crypto/x509"
+    "crypto/x509/pkix"
     "encoding/pem"
 
     gmsm_x509 "github.com/tjfoc/gmsm/x509"
-
-    pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
-
-func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, updatedPassword []byte, err error) {
-    pfx := new(PfxPdu)
-    if err := unmarshal(p12Data, pfx); err != nil {
-        return nil, nil, errors.New("pkcs12: error reading P12 data: " + err.Error())
-    }
-
-    if pfx.Version != PKCS12Version {
-        return nil, nil, NotImplementedError("can only decode v3 PFX PDU's")
-    }
-
-    if !pfx.AuthSafe.ContentType.Equal(oidDataContentType) {
-        return nil, nil, NotImplementedError("only password-protected PFX is implemented")
-    }
-
-    // unmarshal the explicit bytes in the content for type 'data'
-    if err := unmarshal(pfx.AuthSafe.Content.Bytes, &pfx.AuthSafe.Content); err != nil {
-        return nil, nil, err
-    }
-
-    if len(pfx.MacData.Mac.Algorithm.Algorithm) == 0 {
-        if !(len(password) == 2 && password[0] == 0 && password[1] == 0) {
-            return nil, nil, errors.New("pkcs12: no MAC in data")
-        }
-    } else {
-        if err := pfx.MacData.Verify(pfx.AuthSafe.Content.Bytes, password); err != nil {
-            if err == ErrIncorrectPassword && len(password) == 2 && password[0] == 0 && password[1] == 0 {
-                // some implementations use an empty byte array
-                // for the empty string password try one more
-                // time with empty-empty password
-                password = nil
-                err = pfx.MacData.Verify(pfx.AuthSafe.Content.Bytes, password)
-            }
-
-            if err != nil {
-                return nil, nil, err
-            }
-        }
-    }
-
-    var authenticatedSafe []ContentInfo
-    if err := unmarshal(pfx.AuthSafe.Content.Bytes, &authenticatedSafe); err != nil {
-        return nil, nil, err
-    }
-
-    for _, ci := range authenticatedSafe {
-        var data []byte
-
-        switch {
-            case ci.ContentType.Equal(oidDataContentType):
-                if err := unmarshal(ci.Content.Bytes, &data); err != nil {
-                    return nil, nil, err
-                }
-
-            case ci.ContentType.Equal(oidEncryptedDataContentType):
-                var encryptedData EncryptedData
-                if err := unmarshal(ci.Content.Bytes, &encryptedData); err != nil {
-                    return nil, nil, err
-                }
-
-                if encryptedData.Version != 0 {
-                    return nil, nil, NotImplementedError("only version 0 of EncryptedData is supported")
-                }
-
-                encryptedContentInfo := encryptedData.EncryptedContentInfo
-                encryptedContent := encryptedContentInfo.EncryptedContent
-                contentEncryptionAlgorithm := encryptedContentInfo.ContentEncryptionAlgorithm
-
-                // pbes2
-                if pkcs8_pbes2.IsPBES2(contentEncryptionAlgorithm.Algorithm) {
-                    // change type to utf-8
-                    passwordString, err := decodeBMPString(password)
-                    if err != nil {
-                        return nil, nil, err
-                    }
-
-                    password = []byte(passwordString)
-
-                    data, err = pkcs8_pbes2.PBES2Decrypt(encryptedContent, contentEncryptionAlgorithm, password)
-                    if err != nil {
-                        return nil, nil, errors.New("pkcs12: " + err.Error())
-                    }
-                } else {
-                    newCipher, enParams, err := parseContentEncryptionAlgorithm(contentEncryptionAlgorithm)
-                    if err != nil {
-                        return nil, nil, err
-                    }
-
-                    data, err = newCipher.Decrypt(password, enParams, encryptedContent)
-                    if err != nil {
-                        return nil, nil, err
-                    }
-                }
-
-            default:
-                return nil, nil, NotImplementedError("only data and encryptedData content types are supported in authenticated safe")
-        }
-
-        var safeContents []SafeBag
-        if err := unmarshal(data, &safeContents); err != nil {
-            return nil, nil, err
-        }
-
-        bags = append(bags, safeContents...)
-    }
-
-    return bags, password, nil
-}
 
 func (this *PKCS12) formatCert(certsData []byte) (certs []*x509.Certificate, err error) {
     parsedCerts, err := x509.ParseCertificates(certsData)
@@ -156,7 +47,9 @@ func (this *PKCS12) parseShroundedKeyBag(bag *SafeBag, password []byte) error {
 }
 
 func (this *PKCS12) parseCertBag(bag *SafeBag) error {
-    certsData, err := decodeCertBag(bag.Value.Bytes)
+    newCertBagEntry := NewCertBagEntry()
+
+    certsData, err := newCertBagEntry.DecodeCertBag(bag.Value.Bytes)
     if err != nil {
         return err
     }
@@ -168,12 +61,31 @@ func (this *PKCS12) parseCertBag(bag *SafeBag) error {
             this.parsedData["trustStore"] = append(this.parsedData["trustStore"], bagData)
 
         case bag.hasAttribute(oidLocalKeyID):
-            this.parsedData["cert"] = append(this.parsedData["cert"], bagData)
+            certType := newCertBagEntry.GetType()
+
+            switch certType {
+                case CertTypeX509:
+                    this.parsedData["cert"] = append(this.parsedData["cert"], bagData)
+                case CertTypeSdsi:
+                    this.parsedData["sdsiCert"] = append(this.parsedData["sdsiCert"], bagData)
+            }
 
         default:
             this.parsedData["caCert"] = append(this.parsedData["caCert"], bagData)
 
     }
+
+    return nil
+}
+
+func (this *PKCS12) parseCRLBag(bag *SafeBag) error {
+    crlData, err := NewCRLBagEntry().DecodeCertBag(bag.Value.Bytes)
+    if err != nil {
+        return err
+    }
+
+    bagData := NewSafeBagDataWithAttrs(crlData, bag.Attributes)
+    this.parsedData["crl"] = append(this.parsedData["crl"], bagData)
 
     return nil
 }
@@ -216,6 +128,9 @@ func (this *PKCS12) Parse(pfxData []byte, password string) (*PKCS12, error) {
 
             case bag.Id.Equal(oidCertBag):
                 this.parseCertBag(&bag)
+
+            case bag.Id.Equal(oidCRLBag):
+                this.parseCRLBag(&bag)
 
             case bag.Id.Equal(oidSecretBag):
                 this.parseSecretBag(&bag, encodedPassword)
@@ -261,9 +176,7 @@ func (this *PKCS12) GetPrivateKeyBytes() (prikey []byte, attrs PKCS12Attributes,
         return
     }
 
-    privateKey := privateKeys[0].Data()
-
-    return privateKey, privateKeys[0].Attrs(), nil
+    return privateKeys[0].Data(), privateKeys[0].Attrs(), nil
 }
 
 func (this *PKCS12) GetCert() (cert *x509.Certificate, attrs PKCS12Attributes, err error) {
@@ -300,9 +213,7 @@ func (this *PKCS12) GetCertBytes() (cert []byte, attrs PKCS12Attributes, err err
         return
     }
 
-    certData := certs[0].Data()
-
-    return certData, certs[0].Attrs(), nil
+    return certs[0].Data(), certs[0].Attrs(), nil
 }
 
 func (this *PKCS12) GetCaCerts() (caCerts []*x509.Certificate, err error) {
@@ -363,9 +274,7 @@ func (this *PKCS12) GetTrustStores() (caCerts []*x509.Certificate, err error) {
     }
 
     for _, cert := range certs {
-        c := cert.Data()
-
-        parsedCerts, err := this.formatCert(c)
+        parsedCerts, err := this.formatCert(cert.Data())
         if err != nil {
             return nil, err
         }
@@ -413,9 +322,7 @@ func (this *PKCS12) GetTrustStoreEntries() (caCerts []trustStoreKeyData, err err
     }
 
     for _, cert := range certs {
-        c := cert.Data()
-
-        parsedCerts, err := this.formatCert(c)
+        parsedCerts, err := this.formatCert(cert.Data())
         if err != nil {
             return nil, err
         }
@@ -456,19 +363,71 @@ func (this *PKCS12) GetTrustStoreEntriesBytes() (caCerts []trustStoreKeyDataByte
     return caCerts, nil
 }
 
-func (this *PKCS12) GetSecretKey() (secretKey []byte, attrs PKCS12Attributes) {
+func (this *PKCS12) GetSdsiCertBytes() (cert []byte, attrs PKCS12Attributes, err error) {
+    sdsiCerts, ok := this.parsedData["sdsiCert"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(sdsiCerts) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    return sdsiCerts[0].Data(), sdsiCerts[0].Attrs(), nil
+}
+
+func (this *PKCS12) GetCRL() (crl *pkix.CertificateList, attrs PKCS12Attributes, err error) {
+    crls, ok := this.parsedData["crl"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(crls) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    crlBytes := crls[0].Data()
+
+    parsedCRL, err := x509.ParseDERCRL(crlBytes)
+    if err != nil {
+        return
+    }
+
+    return parsedCRL, crls[0].Attrs(), nil
+}
+
+func (this *PKCS12) GetCRLBytes() (crl []byte, attrs PKCS12Attributes, err error) {
+    crls, ok := this.parsedData["crl"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(crls) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    return crls[0].Data(), crls[0].Attrs(), nil
+}
+
+func (this *PKCS12) GetSecretKey() (secretKey []byte, attrs PKCS12Attributes, err error) {
     keys, ok := this.parsedData["secretKey"]
     if !ok {
+        err = errors.New("no data")
         return
     }
 
     if len(keys) == 0 {
+        err = errors.New("no data")
         return
     }
 
-    key := keys[0].Data()
-
-    return key, keys[0].Attrs()
+    return keys[0].Data(), keys[0].Attrs(), nil
 }
 
 //===============
@@ -500,6 +459,14 @@ func (this *PKCS12) HasCaCert() bool {
 
 func (this *PKCS12) HasTrustStore() bool {
     return this.hasData("trustStore")
+}
+
+func (this *PKCS12) HasSdsiCert() bool {
+    return this.hasData("sdsiCert")
+}
+
+func (this *PKCS12) HasCRL() bool {
+    return this.hasData("crl")
 }
 
 func (this *PKCS12) HasSecretKey() bool {
@@ -548,7 +515,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     // 证书链
     caCerts, _ := this.GetCaCerts()
     for _, caCert := range caCerts {
-        caCertBlock := this.makeBlock(CertificateType, caCert.Raw, EmptyPKCS12Attributes())
+        caCertBlock := this.makeBlock(CertificateType, caCert.Raw, NewPKCS12AttributesEmpty())
 
         blocks = append(blocks, caCertBlock)
     }
@@ -556,9 +523,17 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     // JAVA 证书链
     trustStores, _ := this.GetTrustStoreEntries()
     for _, entry := range trustStores {
-        entryBlock := this.makeBlock(CertificateType, entry.Cert.Raw, entry.Attrs)
+        trustBlock := this.makeBlock(CertificateType, entry.Cert.Raw, entry.Attrs)
 
-        blocks = append(blocks, entryBlock)
+        blocks = append(blocks, trustBlock)
+    }
+
+    // CRL
+    crl, attrs, err := this.GetCRLBytes()
+    if err == nil {
+        crlBlock := this.makeBlock(CRLType, crl, attrs)
+
+        blocks = append(blocks, crlBlock)
     }
 
     return blocks, nil
@@ -587,7 +562,7 @@ func (this *PKCS12) ToOriginalPEM() ([]*pem.Block, error) {
     // 证书链
     caCerts, _ := this.GetCaCertsBytes()
     for _, caCert := range caCerts {
-        caCertBlock := this.makeBlock(CertificateType, caCert, EmptyPKCS12Attributes())
+        caCertBlock := this.makeBlock(CertificateType, caCert, NewPKCS12AttributesEmpty())
 
         blocks = append(blocks, caCertBlock)
     }
@@ -595,9 +570,17 @@ func (this *PKCS12) ToOriginalPEM() ([]*pem.Block, error) {
     // JAVA 证书链
     trustStores, _ := this.GetTrustStoreEntriesBytes()
     for _, entry := range trustStores {
-        entryBlock := this.makeBlock(CertificateType, entry.Cert, entry.Attrs)
+        trustBlock := this.makeBlock(CertificateType, entry.Cert, entry.Attrs)
 
-        blocks = append(blocks, entryBlock)
+        blocks = append(blocks, trustBlock)
+    }
+
+    // CRL
+    crl, attrs, err := this.GetCRLBytes()
+    if err == nil {
+        crlBlock := this.makeBlock(CRLType, crl, attrs)
+
+        blocks = append(blocks, crlBlock)
     }
 
     return blocks, nil

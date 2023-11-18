@@ -1,14 +1,19 @@
 package pkcs12
 
 import (
+    "time"
     "testing"
+    "math/big"
     "crypto/rsa"
     "crypto/sha1"
     "crypto/rand"
     "crypto/x509"
+    "crypto/x509/pkix"
     "encoding/hex"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    "github.com/deatil/go-cryptobin/pkcs12/enveloped"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
@@ -156,7 +161,7 @@ func Test_P12_EncodeSecret(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_EncodeSecret-pfxData")
 
-    secretKey2, attrs := pp12.GetSecretKey()
+    secretKey2, attrs, _ := pp12.GetSecretKey()
     assertNotEmpty(secretKey2, "P12_EncodeSecret-secretKey2")
     assertNotEmpty(attrs, "P12_EncodeSecret-secretKey2-attrs")
     assertEqual(secretKey2, secretKey, "P12_EncodeSecret-secretKey2")
@@ -499,7 +504,7 @@ func Test_P12_EncodeSecret_SetLocalKeyId(t *testing.T) {
 
     p12 := NewPKCS12Encode()
     p12.AddSecretKey(secretKey)
-    p12.SetLocalKeyId(localKeyId)
+    p12.WithLocalKeyId(localKeyId)
 
     pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
     assertError(err, "P12_EncodeSecret")
@@ -508,7 +513,7 @@ func Test_P12_EncodeSecret_SetLocalKeyId(t *testing.T) {
     pp12, err := LoadPKCS12FromBytes(pfxData, password)
     assertError(err, "P12_EncodeSecret_SetLocalKeyId-pfxData")
 
-    secretKey2, attrs := pp12.GetSecretKey()
+    secretKey2, attrs, _ := pp12.GetSecretKey()
     assertNotEmpty(secretKey2, "P12_EncodeSecret_SetLocalKeyId-secretKey2")
     assertNotEmpty(attrs, "P12_EncodeSecret_SetLocalKeyId-secretKey2-attrs")
     assertEqual(secretKey2, secretKey, "P12_EncodeSecret_SetLocalKeyId-secretKey2")
@@ -537,4 +542,271 @@ func Test_P12_EncodeSecret_SetLocalKeyId(t *testing.T) {
     assertNotBool(pp12.HasTrustStore(), "P12_EncodeSecret_SetLocalKeyId-HasTrustStore")
 
     assertBool(pp12.HasSecretKey(), "P12_EncodeSecret_SetLocalKeyId-HasSecretKey")
+}
+
+func Test_P12_EncodeSdsiCert(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    sdsiCert := []byte("sdsiCert-data")
+    password := "passpass word"
+
+    p12 := NewPKCS12Encode()
+    p12.AddSdsiCertBytes(sdsiCert)
+
+    pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
+    assertError(err, "P12_EncodeSdsiCert")
+
+    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_EncodeSdsiCert-pfxData")
+
+    sdsiCert2, attrs, _ := pp12.GetSdsiCertBytes()
+    assertNotEmpty(sdsiCert2, "P12_EncodeSdsiCert-sdsiCert2")
+    assertNotEmpty(attrs, "P12_EncodeSdsiCert-sdsiCert2-attrs")
+    assertEqual(sdsiCert2, sdsiCert, "P12_EncodeSdsiCert-sdsiCert2")
+
+    oldpass2 := sha1.Sum(sdsiCert)
+    newpass2 := attrs.ToArray()
+
+    assertEqual(newpass2["localKeyId"], hex.EncodeToString(oldpass2[:]), "secretKey")
+}
+
+func Test_P12_EncodeCRL(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    crlBytes := []byte("crlBytes-data")
+    password := "passpass word"
+
+    p12 := NewPKCS12Encode()
+    p12.AddCRLBytes(crlBytes)
+
+    pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
+    assertError(err, "P12_EncodeSdsiCert")
+
+    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_EncodeSdsiCert-pfxData")
+
+    crlBytes2, attrs, _ := pp12.GetCRLBytes()
+    assertNotEmpty(crlBytes2, "P12_EncodeSdsiCert-crlBytes2")
+    assertNotEmpty(attrs, "P12_EncodeSdsiCert-crlBytes2-attrs")
+    assertEqual(crlBytes2, crlBytes, "P12_EncodeSdsiCert-crlBytes2")
+
+    oldpass2 := sha1.Sum(crlBytes)
+    newpass2 := attrs.ToArray()
+
+    assertEqual(newpass2["localKeyId"], hex.EncodeToString(oldpass2[:]), "secretKey")
+}
+
+var pemPrivateKey = `
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCxoeCUW5KJxNPxMp+KmCxKLc1Zv9Ny+4CFqcUXVUYH69L3mQ7v
+IWrJ9GBfcaA7BPQqUlWxWM+OCEQZH1EZNIuqRMNQVuIGCbz5UQ8w6tS0gcgdeGX7
+J7jgCQ4RK3F/PuCM38QBLaHx988qG8NMc6VKErBjctCXFHQt14lerd5KpQIDAQAB
+AoGAYrf6Hbk+mT5AI33k2Jt1kcweodBP7UkExkPxeuQzRVe0KVJw0EkcFhywKpr1
+V5eLMrILWcJnpyHE5slWwtFHBG6a5fLaNtsBBtcAIfqTQ0Vfj5c6SzVaJv0Z5rOd
+7gQF6isy3t3w9IF3We9wXQKzT6q5ypPGdm6fciKQ8RnzREkCQQDZwppKATqQ41/R
+vhSj90fFifrGE6aVKC1hgSpxGQa4oIdsYYHwMzyhBmWW9Xv/R+fPyr8ZwPxp2c12
+33QwOLPLAkEA0NNUb+z4ebVVHyvSwF5jhfJxigim+s49KuzJ1+A2RaSApGyBZiwS
+rWvWkB471POAKUYt5ykIWVZ83zcceQiNTwJBAMJUFQZX5GDqWFc/zwGoKkeR49Yi
+MTXIvf7Wmv6E++eFcnT461FlGAUHRV+bQQXGsItR/opIG7mGogIkVXa3E1MCQARX
+AAA7eoZ9AEHflUeuLn9QJI/r0hyQQLEtrpwv6rDT1GCWaLII5HJ6NUFVf4TTcqxo
+6vdM4QGKTJoO+SaCyP0CQFdpcxSAuzpFcKv0IlJ8XzS/cy+mweCMwyJ1PFEc4FX6
+wg/HcAJWY60xZTJDFN+Qfx8ZQvBEin6c2/h+zZi5IVY=
+-----END RSA PRIVATE KEY-----
+`
+const pemCertificate = `-----BEGIN CERTIFICATE-----
+MIIDATCCAemgAwIBAgIRAKQkkrFx1T/dgB/Go/xBM5swDQYJKoZIhvcNAQELBQAw
+EjEQMA4GA1UEChMHQWNtZSBDbzAeFw0xNjA4MTcyMDM2MDdaFw0xNzA4MTcyMDM2
+MDdaMBIxEDAOBgNVBAoTB0FjbWUgQ28wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQDAoJtjG7M6InsWwIo+l3qq9u+g2rKFXNu9/mZ24XQ8XhV6PUR+5HQ4
+jUFWC58ExYhottqK5zQtKGkw5NuhjowFUgWB/VlNGAUBHtJcWR/062wYrHBYRxJH
+qVXOpYKbIWwFKoXu3hcpg/CkdOlDWGKoZKBCwQwUBhWE7MDhpVdQ+ZljUJWL+FlK
+yQK5iRsJd5TGJ6VUzLzdT4fmN2DzeK6GLeyMpVpU3sWV90JJbxWQ4YrzkKzYhMmB
+EcpXTG2wm+ujiHU/k2p8zlf8Sm7VBM/scmnMFt0ynNXop4FWvJzEm1G0xD2t+e2I
+5Utr04dOZPCgkm++QJgYhtZvgW7ZZiGTAgMBAAGjUjBQMA4GA1UdDwEB/wQEAwIF
+oDATBgNVHSUEDDAKBggrBgEFBQcDATAMBgNVHRMBAf8EAjAAMBsGA1UdEQQUMBKC
+EHRlc3QuZXhhbXBsZS5jb20wDQYJKoZIhvcNAQELBQADggEBADpqKQxrthH5InC7
+X96UP0OJCu/lLEMkrjoEWYIQaFl7uLPxKH5AmQPH4lYwF7u7gksR7owVG9QU9fs6
+1fK7II9CVgCd/4tZ0zm98FmU4D0lHGtPARrrzoZaqVZcAvRnFTlPX5pFkPhVjjai
+/mkxX9LpD8oK1445DFHxK5UjLMmPIIWd8EOi+v5a+hgGwnJpoW7hntSl8kHMtTmy
+fnnktsblSUV4lRCit0ymC7Ojhe+gzCCwkgs5kDzVVag+tnl/0e2DloIjASwOhpbH
+KVcg7fBd484ht/sS+l0dsB4KDOSpd8JzVDMF8OZqlaydizoJO0yWr9GbCN1+OKq5
+EhLrEqU=
+-----END CERTIFICATE-----`
+
+func Test_P12_EncodeCRL_OBJ(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    crlBytes := []byte("crlBytes-data")
+    password := "passpass word"
+
+    block, _ := pem.Decode([]byte(pemPrivateKey))
+    privRSA, _ := x509.ParsePKCS1PrivateKey(block.Bytes)
+    block, _ = pem.Decode([]byte(pemCertificate))
+    certRSA, _ := x509.ParseCertificate(block.Bytes)
+
+    loc := time.FixedZone("Oz/Atlantis", int((2 * time.Hour).Seconds()))
+
+    now := time.Unix(1000, 0).In(loc)
+    nowUTC := now.UTC()
+    expiry := time.Unix(10000, 0)
+
+    revokedCerts := []pkix.RevokedCertificate{
+        {
+            SerialNumber:   big.NewInt(1),
+            RevocationTime: nowUTC,
+        },
+        {
+            SerialNumber: big.NewInt(42),
+            // RevocationTime should be converted to UTC before marshaling.
+            RevocationTime: now,
+        },
+    }
+    expectedCerts := []pkix.RevokedCertificate{
+        {
+            SerialNumber:   big.NewInt(1),
+            RevocationTime: nowUTC,
+        },
+        {
+            SerialNumber:   big.NewInt(42),
+            RevocationTime: nowUTC,
+        },
+    }
+
+    crlBytes, err := certRSA.CreateCRL(rand.Reader, privRSA, revokedCerts, now, expiry)
+    assertError(err, "P12_EncodeCRL_OBJ-CreateCRL")
+
+    parsedCRL, err := x509.ParseDERCRL(crlBytes)
+    assertError(err, "P12_EncodeCRL_OBJ-parsedCRL")
+
+    p12 := NewPKCS12Encode()
+    p12.AddCRL(parsedCRL)
+
+    pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
+    assertError(err, "P12_EncodeCRL_OBJ")
+
+    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_EncodeCRL_OBJ-pfxData")
+
+    crlBytes2, attrs, _ := pp12.GetCRLBytes()
+    assertNotEmpty(crlBytes2, "P12_EncodeCRL_OBJ-crlBytes2")
+    assertNotEmpty(attrs, "P12_EncodeCRL_OBJ-crlBytes2-attrs")
+    assertEqual(crlBytes2, crlBytes, "P12_EncodeCRL_OBJ-crlBytes2")
+
+    parsedCRL2, err := x509.ParseDERCRL(crlBytes2)
+    assertError(err, "P12_EncodeCRL_OBJ-parsedCRL2")
+    assertNotEmpty(parsedCRL2, "P12_EncodeCRL_OBJ-parsedCRL2")
+    assertEqual(parsedCRL2.TBSCertList.RevokedCertificates, expectedCerts, "P12_EncodeCRL_OBJ-parsedCRL2")
+
+    oldpass2 := sha1.Sum(crlBytes)
+    newpass2 := attrs.ToArray()
+
+    assertEqual(newpass2["localKeyId"], hex.EncodeToString(oldpass2[:]), "secretKey")
+}
+
+
+var testEncryptedTestCertificate = `-----BEGIN CERTIFICATE-----
+MIICZTCCAc6gAwIBAgIQAOj+a/ymkrFvZ7V3lPauczANBgkqhkiG9w0BAQsFADAV
+MRMwEQYDVQQDDApnaXRodWIuY29tMB4XDTIyMDgxNTAxMzMwMFoXDTMyMDgxMjAx
+MzMwMFowFTETMBEGA1UEAwwKZ2l0aHViLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOB
+jQAwgYkCgYEAh14P1kkrUkAK9FI6fanvihmrZUeLMOnmVu/MIIPjYpb+RgwB6drT
+fpd4e3l9TzLCmyUxEkGAscBFnCJCpkyKtqLgwifODu0GgsFFGxx16DXdO5ocmATg
+EJu7PpFMau2hmBP1fM996+8Y31S2C1TDOQc3BRVgYY2tH+CZhD500IkCAwEAAaOB
+tTCBsjAVBgNVHREEDjAMggpnaXRodWIuY29tMB0GA1UdDgQWBBR86aCAQbFkmaoZ
+Meok34ooA6Dw4TAOBgNVHQ8BAf8EBAMCBLAwDAYDVR0TAQH/BAIwADA7BgNVHSUE
+NDAyBggrBgEFBQcDAgYIKwYBBQUHAwEGCCsGAQUFBwMDBggrBgEFBQcDBAYIKwYB
+BQUHAwgwHwYDVR0jBBgwFoAUfOmggEGxZJmqGTHqJN+KKAOg8OEwDQYJKoZIhvcN
+AQELBQADgYEAFwJauQxug33ahfshzjQ7tBK8wCjOH/ajqVqyzHxnf3aqUXwqlEOq
+wA/9amAulE6TGOuZJKCwjpCHOkgeHQaks+QlH0/8lEnOoyfT8rWl3DQn4s52OSr2
+okTTUcSJyRUA6PyhnVVIKgEmKJ3CSJSOrczbBrs4meYdRebbaOFVlY8=
+-----END CERTIFICATE-----`
+var testEncryptedTestPrivateKey = `-----BEGIN PRIVATE KEY-----
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIdeD9ZJK1JACvRS
+On2p74oZq2VHizDp5lbvzCCD42KW/kYMAena036XeHt5fU8ywpslMRJBgLHARZwi
+QqZMirai4MInzg7tBoLBRRscdeg13TuaHJgE4BCbuz6RTGrtoZgT9XzPfevvGN9U
+tgtUwzkHNwUVYGGNrR/gmYQ+dNCJAgMBAAECgYAYygtpaP3TcqHu6w4GDDQvHJNM
+GUVuoC7L1d8SR0TBPbhz2GgTTLz1TkTEi9N8SOXlZnKtjqxEINs+g/GjpZmzIzm3
+R8sNmFA0PBcy9xGFBT0TBe3VD9bnPWXOCA6ONibZ8iwv8xwMTRIABgP+hRyy+jvr
+KYpZBgpTsl6ssZxjmQJBAMB3N0fCurcKqylQHX3gb0w69jWvTCaYc/S+ypjMeC6m
+TIrnPXlD1/m5WK16fn6hMUA6ahFuRZYgoktoYXdc9w0CQQC0DZ4rJzBueL4r+4m8
+I0mQT0dNIw4ffQL1WqPcaobJfw1w+HHiWRr2jPKYxSHW7Zu9J9AhMJtS+afmDG9h
+diBtAkEAkxNHAiZzimazr2lScBuu0WEJPrMLjT7Y9YFKzoMJoBRiz46vslg+1c1m
+T4MY4OmK+lrpLRLISFX9z4QfXxiCjQJAdodsc04GJQNZdczOPEsil1yJPK9yEaqT
+Mv+rVWPPPYBlUdRL7EzqYhohbg6AG2QqHRjDe8XqynHNZLUU8Zz49QJAQpBx4AMg
+eCRSVO98IPeKakI0HnOboO7AcAx8waOgz9x3jdnwZojAbAGDUg/NWGXrDV7ffIjY
+HYjNDaIbnlqN9g==
+-----END PRIVATE KEY-----`
+
+func Test_P12_Enveloped_Encode(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    certificates, err := x509.ParseCertificates(decodePEM(certificate))
+    assertError(err, "P12_Enveloped_Encode-certificates")
+
+    parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
+    assertError(err, "P12_Enveloped_Encode-privateKey")
+
+    privateKey, ok := parsedKey.(*rsa.PrivateKey)
+    if !ok {
+        t.Error("P12_Enveloped_Encode rsa Error")
+    }
+
+    password := "password-testkjjj"
+    opts := Opts{
+        KeyCipher:  pbes1.SHA1And3DES,
+        MacKDFOpts: MacOpts{
+            SaltSize: 8,
+            IterationCount: 1,
+            HMACHash: SHA1,
+        },
+    }
+
+    derBlock1, _ := pem.Decode([]byte(testEncryptedTestCertificate))
+    derBlock2, _ := pem.Decode([]byte(testEncryptedTestPrivateKey))
+
+    cert1, _ := x509.ParseCertificate(derBlock1.Bytes)
+    parsedKey1, _ := x509.ParsePKCS8PrivateKey(derBlock2.Bytes)
+    privKey, _ := parsedKey1.(*rsa.PrivateKey)
+
+    envelopedOpts := EnvelopedOpts{
+        Cipher: enveloped.AES256CBC,
+        KeyEncrypt: enveloped.KeyEncryptRSA,
+        Recipients: []*x509.Certificate{cert1},
+    }
+
+    p12 := NewPKCS12Encode()
+    p12.AddPrivateKey(privateKey)
+    p12.AddCert(certificates[0])
+    p12.WithEnvelopedOpts(envelopedOpts)
+
+    pfxData, err := p12.Marshal(rand.Reader, password, opts)
+    assertError(err, "P12_Enveloped_Encode-pfxData")
+
+    assertNotEmpty(pfxData, "P12_Enveloped_Encode-pfxData")
+
+    // 解析
+    envelopedOpts2 := EnvelopedOpts{
+        Cipher: enveloped.AES256CBC,
+        KeyEncrypt: enveloped.KeyEncryptRSA,
+        Cert: cert1,
+        PrivateKey: privKey,
+    }
+
+    pp12 := NewPKCS12()
+    pp12.WithEnvelopedOpts(envelopedOpts2)
+    pp12, err = pp12.Parse(pfxData, password)
+    assertError(err, "P12_Enveloped_Encode-pfxData")
+
+    privateKey2, _, _ := pp12.GetPrivateKey()
+    certificate2, _, _ := pp12.GetCert()
+
+    assertEqual(privateKey2, privateKey, "P12_Enveloped_Encode-privateKey2")
+    assertEqual(certificate2, certificates[0], "P12_Enveloped_Encode-certificate2")
 }

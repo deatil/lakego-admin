@@ -32,7 +32,7 @@ func NewPKCS12Attributes(attrs []PKCS12Attribute) PKCS12Attributes {
     }
 }
 
-func EmptyPKCS12Attributes() PKCS12Attributes {
+func NewPKCS12AttributesEmpty() PKCS12Attributes {
     return PKCS12Attributes{
         attributes: make([]PKCS12Attribute, 0),
     }

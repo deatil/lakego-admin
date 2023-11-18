@@ -1,32 +1,48 @@
 package pkcs12
 
 import (
-    pkcs8_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
-    pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
+    "crypto"
+    "crypto/x509"
+
+    "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    "github.com/deatil/go-cryptobin/pkcs8/pbes2"
+    "github.com/deatil/go-cryptobin/pkcs12/enveloped"
 )
 
 type (
     // PBKDF2 配置
-    PBKDF2Opts = pkcs8_pbes2.PBKDF2Opts
+    PBKDF2Opts = pbes2.PBKDF2Opts
     // Scrypt 配置
-    ScryptOpts = pkcs8_pbes2.ScryptOpts
+    ScryptOpts = pbes2.ScryptOpts
 
     // KDF 设置接口
-    KeyKDFOpts  = pkcs8_pbes2.KDFOpts
-    CertKDFOpts = pkcs8_pbes2.KDFOpts
+    KeyKDFOpts  = pbes2.KDFOpts
+    CertKDFOpts = pbes2.KDFOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetPbes1CipherFromName   = pkcs8_pbes1.GetCipherFromName
+    GetPbes1CipherFromName   = pbes1.GetCipherFromName
     // 检测 Cipher 类型
-    CheckPbes1CipherFromName = pkcs8_pbes1.CheckCipherFromName
+    CheckPbes1CipherFromName = pbes1.CheckCipherFromName
 
     // 获取 Cipher 类型
-    GetPbes2CipherFromName = pkcs8_pbes2.GetCipherFromName
+    GetPbes2CipherFromName = pbes2.GetCipherFromName
     // 获取 hash 类型
-    GetPbes2HashFromName   = pkcs8_pbes2.GetHashFromName
+    GetPbes2HashFromName   = pbes2.GetHashFromName
 )
+
+// Enveloped 加密配置
+type EnvelopedOpts struct {
+    // 加密方式
+    Cipher     enveloped.Cipher
+    KeyEncrypt enveloped.KeyEncrypt
+    // 加密参数
+    Recipients []*x509.Certificate
+    // 解密参数
+    Cert       *x509.Certificate
+    PrivateKey crypto.PrivateKey
+}
 
 // 配置
 type Opts struct {
@@ -69,7 +85,7 @@ func (this Opts) WithMacKDFOpts(opts MacKDFOpts) Opts {
 
 // LegacyRC2
 var LegacyRC2Opts = Opts{
-    KeyCipher:  pkcs8_pbes1.SHA1And3DES,
+    KeyCipher:  pbes1.SHA1And3DES,
     CertCipher: CipherSHA1AndRC2_40,
     MacKDFOpts: MacOpts{
         SaltSize: 8,
@@ -80,7 +96,7 @@ var LegacyRC2Opts = Opts{
 
 // LegacyDES
 var LegacyDESOpts = Opts{
-    KeyCipher:  pkcs8_pbes1.SHA1And3DES,
+    KeyCipher:  pbes1.SHA1And3DES,
     CertCipher: CipherSHA1And3DES,
     MacKDFOpts: MacOpts{
         SaltSize: 8,
@@ -98,12 +114,12 @@ var PasswordlessOpts = Opts{
 
 // Modern2023
 var Modern2023Opts = Opts{
-    KeyCipher:  pkcs8_pbes2.AES256CBC,
+    KeyCipher:  pbes2.AES256CBC,
     KeyKDFOpts: PBKDF2Opts{
         SaltSize:       16,
         IterationCount: 2048,
     },
-    CertCipher:  pkcs8_pbes2.AES256CBC,
+    CertCipher:  pbes2.AES256CBC,
     CertKDFOpts: PBKDF2Opts{
         SaltSize:       16,
         IterationCount: 2048,

@@ -14,16 +14,17 @@ import (
 var (
     // see https://tools.ietf.org/html/rfc7292#appendix-D
     oidCertTypeX509Certificate = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 22, 1})
+    oidCertTypeSdsiCertificate = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 22, 2})
+
+    oidCertTypeX509CRL         = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 9, 23, 1})
+
     oidKeyBag                  = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 1})
     oidPKCS8ShroundedKeyBag    = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 2})
     oidCertBag                 = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 3})
+    oidCRLBag                  = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 4})
     oidSecretBag               = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 5})
+    oidSafeContentsBag         = asn1.ObjectIdentifier([]int{1, 2, 840, 113549, 1, 12, 10, 1, 6})
 )
-
-type certBag struct {
-    Id   asn1.ObjectIdentifier
-    Data []byte `asn1:"tag:0,explicit"`
-}
 
 func decodePkcs8ShroudedKeyBag(asn1Data, password []byte) (privateKey any, err error) {
     var pkData []byte
@@ -88,6 +89,11 @@ func encodePkcs8ShroudedKeyBag(
 }
 
 // ============
+
+type certBag struct {
+    Id   asn1.ObjectIdentifier
+    Data []byte `asn1:"tag:0,explicit"`
+}
 
 func decodeCertBag(asn1Data []byte) (x509Certificates []byte, err error) {
     bag := new(certBag)

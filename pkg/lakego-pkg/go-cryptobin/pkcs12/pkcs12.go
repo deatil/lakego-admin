@@ -23,6 +23,7 @@ const DefaultPassword = "cryptobin"
 
 var (
     oidDataContentType          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
+    oidEnvelopedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
     oidEncryptedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
 
     oidFriendlyName     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 20}
@@ -89,6 +90,7 @@ type PKCS12Attribute struct {
 // PEM block types
 const (
     CertificateType = "CERTIFICATE"
+    CRLType         = "X509 CRL"
     PrivateKeyType  = "PRIVATE KEY"
 )
 

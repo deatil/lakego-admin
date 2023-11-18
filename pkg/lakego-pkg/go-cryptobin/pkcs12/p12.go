@@ -24,6 +24,12 @@ type PKCS12 struct {
     // 证书链带名称, 适配 JAVA
     trustStores []TrustStoreData
 
+    // sdsi
+    sdsiCert []byte
+
+    // 证书移除列表
+    crl []byte
+
     // 密钥
     secretKey []byte
 
@@ -32,10 +38,9 @@ type PKCS12 struct {
 
     // 解析后数据
     parsedData map[string][]ISafeBagData
-}
 
-func (this *PKCS12) String() string {
-    return "PKCS12"
+    // Enveloped 加密配置
+    envelopedOpts *EnvelopedOpts
 }
 
 func NewPKCS12() *PKCS12 {
@@ -44,6 +49,22 @@ func NewPKCS12() *PKCS12 {
         trustStores: make([]TrustStoreData, 0),
         parsedData:  make(map[string][]ISafeBagData),
     }
+}
+
+func (this *PKCS12) WithLocalKeyId(id []byte) *PKCS12 {
+    this.localKeyId = id
+
+    return this
+}
+
+func (this *PKCS12) WithEnvelopedOpts(opts EnvelopedOpts) *PKCS12 {
+    this.envelopedOpts = &opts
+
+    return this
+}
+
+func (this *PKCS12) String() string {
+    return "PKCS12"
 }
 
 // LoadPKCS12FromReader loads the key store from the specified file.
