@@ -34,7 +34,7 @@ func (this *PKCS12) parseKeyBag(bag *SafeBag) error {
     return nil
 }
 
-func (this *PKCS12) parseShroundedKeyBag(bag *SafeBag, password []byte) error {
+func (this *PKCS12) parsePKCS8ShroundedKeyBag(bag *SafeBag, password []byte) error {
     pkData, err := this.decodePKCS8ShroudedKeyBag(bag.Value.Bytes, password)
     if err != nil {
         return err
@@ -93,7 +93,7 @@ func (this *PKCS12) parseCRLBag(bag *SafeBag) error {
 func (this *PKCS12) parseSecretBag(bag *SafeBag, password []byte) error {
     bagData := &SafeBagData{}
 
-    data, err := decodeSecretBag(bag.Value.Bytes, password)
+    data, err := this.decodeSecretBag(bag.Value.Bytes, password)
     if err != nil {
         return err
     }
@@ -124,7 +124,7 @@ func (this *PKCS12) Parse(pfxData []byte, password string) (*PKCS12, error) {
                 this.parseKeyBag(&bag)
 
             case bag.Id.Equal(oidPKCS8ShroundedKeyBag):
-                this.parseShroundedKeyBag(&bag, encodedPassword)
+                this.parsePKCS8ShroundedKeyBag(&bag, encodedPassword)
 
             case bag.Id.Equal(oidCertBag):
                 this.parseCertBag(&bag)

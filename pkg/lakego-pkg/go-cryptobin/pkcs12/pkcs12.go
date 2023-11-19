@@ -2,6 +2,7 @@ package pkcs12
 
 import (
     "io"
+    "fmt"
     "errors"
     "crypto/sha1"
     "crypto/x509"
@@ -12,86 +13,8 @@ import (
 
     gmsm_x509 "github.com/tjfoc/gmsm/x509"
 
-    pkcs8_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
-)
-
-// DefaultPassword is the string "cryptobin", a commonly-used password for
-// PKCS#12 files. Due to the weak encryption used by PKCS#12, it is
-// RECOMMENDED that you use DefaultPassword when encoding PKCS#12 files,
-// and protect the PKCS#12 files using other means.
-const DefaultPassword = "cryptobin"
-
-var (
-    oidDataContentType          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
-    oidEnvelopedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
-    oidEncryptedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
-
-    oidFriendlyName     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 20}
-    oidLocalKeyID       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 21}
-    oidMicrosoftCSPName = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 311, 17, 1}
-
-    oidJavaTrustStore      = asn1.ObjectIdentifier{2, 16, 840, 1, 113894, 746875, 1, 1}
-    oidAnyExtendedKeyUsage = asn1.ObjectIdentifier{2, 5, 29, 37, 0}
-
-    errUnknownAttributeOID = errors.New("pkcs12: unknown attribute OID")
-)
-
-type PfxPdu struct {
-    Version  int
-    AuthSafe ContentInfo
-    MacData  MacData `asn1:"optional"`
-}
-
-type ContentInfo struct {
-    ContentType asn1.ObjectIdentifier
-    Content     asn1.RawValue `asn1:"tag:0,explicit,optional"`
-}
-
-type EncryptedData struct {
-    Version              int
-    EncryptedContentInfo EncryptedContentInfo
-}
-
-type EncryptedContentInfo struct {
-    ContentType                asn1.ObjectIdentifier
-    ContentEncryptionAlgorithm pkix.AlgorithmIdentifier
-    EncryptedContent           []byte `asn1:"tag:0,optional"`
-}
-
-func (this EncryptedContentInfo) Algorithm() pkix.AlgorithmIdentifier {
-    return this.ContentEncryptionAlgorithm
-}
-
-func (this EncryptedContentInfo) Data() []byte {
-    return this.EncryptedContent
-}
-
-type SafeBag struct {
-    Id         asn1.ObjectIdentifier
-    Value      asn1.RawValue     `asn1:"tag:0,explicit"`
-    Attributes []PKCS12Attribute `asn1:"set,optional"`
-}
-
-func (bag *SafeBag) hasAttribute(id asn1.ObjectIdentifier) bool {
-    for _, attr := range bag.Attributes {
-        if attr.Id.Equal(id) {
-            return true
-        }
-    }
-
-    return false
-}
-
-type PKCS12Attribute struct {
-    Id    asn1.ObjectIdentifier
-    Value asn1.RawValue `asn1:"set"`
-}
-
-// PEM block types
-const (
-    CertificateType = "CERTIFICATE"
-    CRLType         = "X509 CRL"
-    PrivateKeyType  = "PRIVATE KEY"
+    "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
 // ToPEM converts all "safe bags" contained in pfxData to PEM blocks.
@@ -466,44 +389,21 @@ func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []
 
 // DecodeSecret extracts the Secret key from pfxData, which must be a DER-encoded
 func DecodeSecret(pfxData []byte, password string) (secretKeys []SecretKey, err error) {
-    encodedPassword, err := bmpStringZeroTerminated(password)
+    pkcs12, err := LoadPKCS12FromBytes(pfxData, password)
     if err != nil {
         return nil, err
     }
 
-    bags, encodedPassword, err := getSafeContents(pfxData, encodedPassword, 1)
+    secretKey, attrs, err := pkcs12.GetSecretKey()
     if err != nil {
         return nil, err
     }
 
-    for _, bag := range bags {
-        switch {
-            case bag.Id.Equal(oidSecretBag):
-                seckey := &secretkey{
-                    attrs: make(map[string]string),
-                }
+    seckey := new(secretkey)
+    seckey.key = secretKey
+    seckey.attrs = attrs.ToArray()
 
-                for _, attr := range bag.Attributes {
-                    attr := attr
-                    k, v, err := convertAttribute(&attr)
-                    if err != nil {
-                        return nil, err
-                    }
-
-                    seckey.attrs[k] = v
-                }
-
-                seckey.key, err = decodeSecretBag(bag.Value.Bytes, encodedPassword)
-                if err != nil {
-                    return nil, err
-                }
-
-                secretKeys = append(secretKeys, seckey)
-
-            default:
-                return nil, errors.New("pkcs12: expected only secret bags")
-        }
-    }
+    secretKeys = append(secretKeys, seckey)
 
     return
 }
@@ -580,7 +480,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []SafeBa
                 contentEncryptionAlgorithm := encryptedContentInfo.ContentEncryptionAlgorithm
 
                 // pbes2
-                if pkcs8_pbes2.IsPBES2(contentEncryptionAlgorithm.Algorithm) {
+                if pbes2.IsPBES2(contentEncryptionAlgorithm.Algorithm) {
                     // change type to utf-8
                     passwordString, err := decodeBMPString(password)
                     if err != nil {
@@ -589,7 +489,7 @@ func getSafeContents(p12Data, password []byte, expectedItems int) (bags []SafeBa
 
                     password = []byte(passwordString)
 
-                    data, err = pkcs8_pbes2.PBES2Decrypt(encryptedContent, contentEncryptionAlgorithm, password)
+                    data, err = pbes2.PBES2Decrypt(encryptedContent, contentEncryptionAlgorithm, password)
                     if err != nil {
                         return nil, nil, errors.New("pkcs12: " + err.Error())
                     }
@@ -937,68 +837,15 @@ func EncodeSecret(rand io.Reader, secretKey []byte, password string, opts ...Opt
         opt = opts[0]
     }
 
-    encodedPassword, err := bmpStringZeroTerminated(password)
+    pkcs12 := NewPKCS12Encode()
+    pkcs12.AddSecretKey(secretKey)
+
+    pfxData, err = pkcs12.Marshal(rand, password, opt)
     if err != nil {
         return nil, err
     }
 
-    var pfx PfxPdu
-    pfx.Version = 3
-
-    var secretFingerprint = sha1.Sum(secretKey)
-    var localKeyIdAttr PKCS12Attribute
-    localKeyIdAttr.Id = oidLocalKeyID
-    localKeyIdAttr.Value.Class = 0
-    localKeyIdAttr.Value.Tag = 17
-    localKeyIdAttr.Value.IsCompound = true
-    if localKeyIdAttr.Value.Bytes, err = asn1.Marshal(secretFingerprint[:]); err != nil {
-        return nil, err
-    }
-
-    var keyBag SafeBag
-    keyBag.Id = oidSecretBag
-    keyBag.Value.Class = 2
-    keyBag.Value.Tag = 0
-    keyBag.Value.IsCompound = true
-    if keyBag.Value.Bytes, err = encodeSecretBag(rand, secretKey, encodedPassword, opt); err != nil {
-        return nil, err
-    }
-    keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
-
-    var authenticatedSafe [1]ContentInfo
-    if authenticatedSafe[0], err = makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{}); err != nil {
-        return nil, err
-    }
-
-    var authenticatedSafeBytes []byte
-    if authenticatedSafeBytes, err = asn1.Marshal(authenticatedSafe[:]); err != nil {
-        return nil, err
-    }
-
-    if opt.MacKDFOpts != nil {
-        // compute the MAC
-        var kdfMacData MacKDFParameters
-        kdfMacData, err = opt.MacKDFOpts.Compute(authenticatedSafeBytes, encodedPassword)
-        if err != nil {
-            return nil, err
-        }
-
-        pfx.MacData = kdfMacData.(MacData)
-    }
-
-    pfx.AuthSafe.ContentType = oidDataContentType
-    pfx.AuthSafe.Content.Class = 2
-    pfx.AuthSafe.Content.Tag = 0
-    pfx.AuthSafe.Content.IsCompound = true
-    if pfx.AuthSafe.Content.Bytes, err = asn1.Marshal(authenticatedSafeBytes); err != nil {
-        return nil, err
-    }
-
-    if pfxData, err = asn1.Marshal(pfx); err != nil {
-        return nil, errors.New("pkcs12: error writing P12 data: " + err.Error())
-    }
-
-    return
+    return pfxData, nil
 }
 
 func makeCertBag(certBytes []byte, attributes []PKCS12Attribute) (certBag *SafeBag, err error) {
@@ -1037,7 +884,7 @@ func makeSafeContents(rand io.Reader, bags []SafeBag, password []byte, opts Opts
         var encrypted []byte
 
         // when pbes2
-        if pkcs8_pbes2.CheckCipher(cipher) {
+        if pbes2.CheckCipher(cipher) {
             var passwordString string
 
             // change type to utf-8
@@ -1048,7 +895,7 @@ func makeSafeContents(rand io.Reader, bags []SafeBag, password []byte, opts Opts
 
             password = []byte(passwordString)
 
-            encrypted, algo, err = pkcs8_pbes2.PBES2Encrypt(rand, data, password, &pkcs8_pbes2.Opts{
+            encrypted, algo, err = pbes2.PBES2Encrypt(rand, data, password, &pbes2.Opts{
                 opts.CertCipher,
                 opts.CertKDFOpts,
             })
@@ -1083,4 +930,18 @@ func makeSafeContents(rand io.Reader, bags []SafeBag, password []byte, opts Opts
     }
 
     return
+}
+
+// 解析加密数据
+func parseContentEncryptionAlgorithm(contentEncryptionAlgorithm pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
+    oid := contentEncryptionAlgorithm.Algorithm.String()
+
+    newCipher, err := pbes1.GetCipher(oid)
+    if err != nil {
+        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+    }
+
+    params := contentEncryptionAlgorithm.Parameters.FullBytes
+
+    return newCipher, params, nil
 }

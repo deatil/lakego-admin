@@ -1,10 +1,12 @@
 package pkcs12
 
 import (
+    "errors"
     "crypto/sha1"
     "crypto/x509"
     "encoding/hex"
     "encoding/json"
+    "encoding/asn1"
 )
 
 // TrustStoreData represents an entry in a Java TrustStore.
@@ -132,4 +134,19 @@ func (this SafeBagData) FriendlyName() string {
     data := this.Attributes()
 
     return data["friendlyName"]
+}
+
+// unmarshal calls asn1.Unmarshal, but also returns an error if there is any
+// trailing data after unmarshaling.
+func unmarshal(in []byte, out any) error {
+    trailing, err := asn1.Unmarshal(in, out)
+    if err != nil {
+        return err
+    }
+
+    if len(trailing) != 0 {
+        return errors.New("pkcs12: trailing data found")
+    }
+
+    return nil
 }
