@@ -19,27 +19,6 @@ func (this *PKCS12) makeSafeContents(rand io.Reader, bags []SafeBag, password []
         return
     }
 
-    // enveloped 加密
-    if this.envelopedOpts != nil {
-        envelopedOpts := this.envelopedOpts
-
-        var encodedData []byte
-
-        encodedData, err = enveloped.
-            NewEnveloped().
-            Encrypt(rand, data, envelopedOpts.Recipients, enveloped.Opts{
-                Cipher:     envelopedOpts.Cipher,
-                KeyEncrypt: envelopedOpts.KeyEncrypt,
-            })
-        if err != nil {
-            return
-        }
-
-        err = unmarshal(encodedData, &ci)
-
-        return
-    }
-
     if opts.CertCipher == nil {
         ci.ContentType = oidDataContentType
         ci.Content.Class = 2
@@ -49,6 +28,27 @@ func (this *PKCS12) makeSafeContents(rand io.Reader, bags []SafeBag, password []
             return
         }
     } else {
+        // enveloped 加密
+        if opts.CertCipher == EnvelopedCipher && this.envelopedOpts != nil {
+            envelopedOpts := this.envelopedOpts
+
+            var encodedData []byte
+
+            encodedData, err = enveloped.
+                NewEnveloped().
+                Encrypt(rand, data, envelopedOpts.Recipients, enveloped.Opts{
+                    Cipher:     envelopedOpts.Cipher,
+                    KeyEncrypt: envelopedOpts.KeyEncrypt,
+                })
+            if err != nil {
+                return
+            }
+
+            err = unmarshal(encodedData, &ci)
+
+            return
+        }
+
         cipher := opts.CertCipher
 
         var algo pkix.AlgorithmIdentifier

@@ -153,12 +153,11 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
         var newBytes []byte
 
         if ci.ContentType.Equal(oidDataContentType) {
-            var data cryptobin_asn1.RawValue
-            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &data); err != nil {
+            if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &ci.Content); err != nil {
                 return nil, err
             }
 
-            newBytes = data.Bytes
+            newBytes = ci.Content.Bytes
         } else {
             var encryptedData EncryptedData
             if _, err = cryptobin_asn1.Unmarshal(ci.Content.Bytes, &encryptedData); err != nil {
@@ -302,7 +301,7 @@ func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []
 }
 
 // 解析 ber 编码的 PKCS12 证书
-func DecodeSecret(pfxData []byte, password string) (secretKeys []cryptobin_pkcs12.SecretKey, err error) {
+func DecodeSecret(pfxData []byte, password string) (secretKey []byte, err error) {
     data, err := Parse(pfxData, []byte(password))
     if err != nil {
         return

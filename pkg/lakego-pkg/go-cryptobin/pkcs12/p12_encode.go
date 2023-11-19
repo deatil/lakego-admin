@@ -172,7 +172,7 @@ func (this *PKCS12) marshalPrivateKey(rand io.Reader, password []byte, opt Opts)
 
     keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
 
-    return makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{})
+    return this.makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{})
 }
 
 func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci ContentInfo, err error) {
@@ -270,7 +270,7 @@ func (this *PKCS12) marshalTrustStoreEntries(rand io.Reader, password []byte, op
         certBags = append(certBags, *certBag)
     }
 
-    return makeSafeContents(rand, certBags, password, opt)
+    return this.makeSafeContents(rand, certBags, password, opt)
 }
 
 func (this *PKCS12) marshalSdsiCert(rand io.Reader, password []byte, opt Opts) (ci ContentInfo, err error) {
@@ -339,7 +339,7 @@ func (this *PKCS12) marshalSecretKey(rand io.Reader, password []byte, opt Opts) 
     }
     keyBag.Attributes = append(keyBag.Attributes, localKeyIdAttr)
 
-    return makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{})
+    return this.makeSafeContents(rand, []SafeBag{keyBag}, nil, Opts{})
 }
 
 func (this *PKCS12) Marshal(rand io.Reader, password string, opts ...Opts) (pfxData []byte, err error) {

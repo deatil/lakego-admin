@@ -4,11 +4,9 @@ import (
     "testing"
     "crypto/rsa"
     "crypto/tls"
-    "crypto/sha1"
     "crypto/rand"
     "crypto/x509"
     "encoding/pem"
-    "encoding/hex"
     "encoding/base64"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
@@ -44,19 +42,10 @@ func Test_EncodeSecret(t *testing.T) {
     pfxData, err := EncodeSecret(rand.Reader, secretKey, password, DefaultOpts)
     assertError(err, "EncodeSecret")
 
-    secretKeys, err := DecodeSecret(pfxData, password)
+    secretKey2, err := DecodeSecret(pfxData, password)
     assertError(err, "DecodeSecret")
 
-    if len(secretKeys) != 1 {
-        t.Error("DecodeSecret Error")
-    }
-
-    oldpass := sha1.Sum(secretKey)
-    newpass := secretKeys[0].Attributes()
-
-    assertEqual(newpass["localKeyId"], hex.EncodeToString(oldpass[:]), "secretKey")
-
-    assertEqual(secretKeys[0].Key(), secretKey, "EncodeSecret")
+    assertEqual(secretKey2, secretKey, "EncodeSecret")
 }
 
 func Test_EncodeSecret_Passwordless(t *testing.T) {
@@ -69,19 +58,10 @@ func Test_EncodeSecret_Passwordless(t *testing.T) {
     pfxData, err := EncodeSecret(rand.Reader, secretKey, password, PasswordlessOpts)
     assertError(err, "EncodeSecret-Passwordless")
 
-    secretKeys, err := DecodeSecret(pfxData, password)
+    secretKey2, err := DecodeSecret(pfxData, password)
     assertError(err, "DecodeSecret-Passwordless")
 
-    if len(secretKeys) != 1 {
-        t.Error("DecodeSecret Error")
-    }
-
-    oldpass := sha1.Sum(secretKey)
-    newpass := secretKeys[0].Attributes()
-
-    assertEqual(newpass["localKeyId"], hex.EncodeToString(oldpass[:]), "secretKey")
-
-    assertEqual(secretKeys[0].Key(), secretKey, "EncodeSecret-Passwordless")
+    assertEqual(secretKey2, secretKey, "EncodeSecret-Passwordless")
 }
 
 var caCert = `

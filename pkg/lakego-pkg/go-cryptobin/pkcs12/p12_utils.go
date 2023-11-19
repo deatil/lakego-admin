@@ -1,13 +1,60 @@
 package pkcs12
 
 import (
+    "io"
     "errors"
     "crypto/sha1"
     "crypto/x509"
+    "crypto/x509/pkix"
     "encoding/hex"
     "encoding/json"
     "encoding/asn1"
 )
+
+var EnvelopedCipher = envelopedCipher{}
+
+// envelopedCipher
+type envelopedCipher struct {}
+
+func (this envelopedCipher) OID() asn1.ObjectIdentifier {
+    return asn1.ObjectIdentifier{}
+}
+
+func (this envelopedCipher) KeySize() int {
+    return 0
+}
+
+func (this envelopedCipher) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
+    return nil, nil, errors.New("error")
+}
+
+func (this envelopedCipher) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
+    return nil, errors.New("error")
+}
+
+// https://tools.ietf.org/html/rfc7292#section-4.2.5
+// SecretBag ::= SEQUENCE {
+//   secretTypeId   BAG-TYPE.&id ({SecretTypes}),
+//   secretValue    [0] EXPLICIT BAG-TYPE.&Type ({SecretTypes}
+//                     {@secretTypeId})
+// }
+type secretBag struct {
+    SecretTypeID asn1.ObjectIdentifier
+    SecretValue  []byte `asn1:"tag:0,explicit"`
+}
+
+type secretValue struct {
+    AlgorithmIdentifier pkix.AlgorithmIdentifier
+    EncryptedContent    []byte
+}
+
+func (this secretValue) Algorithm() pkix.AlgorithmIdentifier {
+    return this.AlgorithmIdentifier
+}
+
+func (this secretValue) Data() []byte {
+    return this.EncryptedContent
+}
 
 // TrustStoreData represents an entry in a Java TrustStore.
 type TrustStoreData struct {
@@ -59,6 +106,30 @@ func (this PKCS12Attributes) ToArray() map[string]string {
 // 数据
 func (this PKCS12Attributes) Attributes() []PKCS12Attribute {
     return this.attributes
+}
+
+// 判断
+func (this PKCS12Attributes) HasAttr(name string) bool {
+    attrs := this.ToArray()
+
+    _, ok := attrs[name]
+    if !ok {
+        return false
+    }
+
+    return true
+}
+
+// 获取
+func (this PKCS12Attributes) GetAttr(name string) string {
+    attrs := this.ToArray()
+
+    value, ok := attrs[name]
+    if !ok {
+        return ""
+    }
+
+    return value
 }
 
 // 验证签名数据
@@ -149,4 +220,55 @@ func unmarshal(in []byte, out any) error {
     }
 
     return nil
+}
+
+func convertAttribute(attribute *PKCS12Attribute) (key, value string, err error) {
+    isString := false
+
+    switch {
+        case attribute.Id.Equal(oidFriendlyName):
+            key = "friendlyName"
+            isString = true
+        case attribute.Id.Equal(oidLocalKeyID):
+            key = "localKeyId"
+        case attribute.Id.Equal(oidMicrosoftCSPName):
+            // This key is chosen to match OpenSSL.
+            key = "Microsoft CSP Name"
+            isString = true
+        case attribute.Id.Equal(oidJavaTrustStore):
+            key = "javaTrustStore"
+
+            storeOID := new(asn1.ObjectIdentifier)
+            if _, err := asn1.Unmarshal(attribute.Value.Bytes, storeOID); err != nil {
+                return "", "", err
+            }
+
+            value = (*storeOID).String()
+
+            return
+        default:
+            key = attribute.Id.String()
+            value = hex.EncodeToString(attribute.Value.Bytes)
+            err = errUnknownAttributeOID
+
+            return
+    }
+
+    if isString {
+        if err := unmarshal(attribute.Value.Bytes, &attribute.Value); err != nil {
+            return "", "", err
+        }
+        if value, err = decodeBMPString(attribute.Value.Bytes); err != nil {
+            return "", "", err
+        }
+    } else {
+        var id []byte
+        if err := unmarshal(attribute.Value.Bytes, &id); err != nil {
+            return "", "", err
+        }
+
+        value = hex.EncodeToString(id)
+    }
+
+    return key, value, nil
 }

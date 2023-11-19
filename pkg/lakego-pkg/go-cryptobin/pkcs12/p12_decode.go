@@ -6,6 +6,7 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/pem"
+    "encoding/asn1"
 
     gmsm_x509 "github.com/tjfoc/gmsm/x509"
 )
@@ -106,6 +107,23 @@ func (this *PKCS12) parseSecretBag(bag *SafeBag, password []byte) error {
     return nil
 }
 
+func (this *PKCS12) parseUnknowBag(bag *SafeBag) error {
+    bag.Attributes = append(bag.Attributes, PKCS12Attribute{
+        Id: bag.Id,
+        Value: asn1.RawValue{
+            Bytes: []byte("unknowOid"),
+        },
+    })
+
+    bagData := &SafeBagData{}
+    bagData.data = bag.Value.Bytes
+    bagData.attrs = NewPKCS12Attributes(bag.Attributes)
+
+    this.parsedData["unknow"] = append(this.parsedData["unknow"], bagData)
+
+    return nil
+}
+
 // 解析
 func (this *PKCS12) Parse(pfxData []byte, password string) (*PKCS12, error) {
     encodedPassword, err := bmpStringZeroTerminated(password)
@@ -134,6 +152,9 @@ func (this *PKCS12) Parse(pfxData []byte, password string) (*PKCS12, error) {
 
             case bag.Id.Equal(oidSecretBag):
                 this.parseSecretBag(&bag, encodedPassword)
+
+            default:
+                this.parseUnknowBag(&bag)
         }
     }
 
@@ -261,7 +282,7 @@ func (this *PKCS12) GetCaCertsBytes() (caCerts [][]byte, err error) {
     return caCerts, nil
 }
 
-func (this *PKCS12) GetTrustStores() (caCerts []*x509.Certificate, err error) {
+func (this *PKCS12) GetTrustStores() (trustStores []*x509.Certificate, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -279,13 +300,13 @@ func (this *PKCS12) GetTrustStores() (caCerts []*x509.Certificate, err error) {
             return nil, err
         }
 
-        caCerts = append(caCerts, parsedCerts[0])
+        trustStores = append(trustStores, parsedCerts[0])
     }
 
-    return caCerts, nil
+    return trustStores, nil
 }
 
-func (this *PKCS12) GetTrustStoresBytes() (caCerts [][]byte, err error) {
+func (this *PKCS12) GetTrustStoresBytes() (trustStores [][]byte, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -298,10 +319,10 @@ func (this *PKCS12) GetTrustStoresBytes() (caCerts [][]byte, err error) {
     }
 
     for _, cert := range certs {
-        caCerts = append(caCerts, cert.Data())
+        trustStores = append(trustStores, cert.Data())
     }
 
-    return caCerts, nil
+    return trustStores, nil
 }
 
 type trustStoreKeyData struct {
@@ -309,7 +330,7 @@ type trustStoreKeyData struct {
     Cert  *x509.Certificate
 }
 
-func (this *PKCS12) GetTrustStoreEntries() (caCerts []trustStoreKeyData, err error) {
+func (this *PKCS12) GetTrustStoreEntries() (trustStores []trustStoreKeyData, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -327,13 +348,13 @@ func (this *PKCS12) GetTrustStoreEntries() (caCerts []trustStoreKeyData, err err
             return nil, err
         }
 
-        caCerts = append(caCerts, trustStoreKeyData{
+        trustStores = append(trustStores, trustStoreKeyData{
             Attrs: cert.Attrs(),
             Cert:  parsedCerts[0],
         })
     }
 
-    return caCerts, nil
+    return trustStores, nil
 }
 
 type trustStoreKeyDataBytes struct {
@@ -341,7 +362,7 @@ type trustStoreKeyDataBytes struct {
     Cert  []byte
 }
 
-func (this *PKCS12) GetTrustStoreEntriesBytes() (caCerts []trustStoreKeyDataBytes, err error) {
+func (this *PKCS12) GetTrustStoreEntriesBytes() (trustStores []trustStoreKeyDataBytes, err error) {
     certs, ok := this.parsedData["trustStore"]
     if !ok {
         err = errors.New("no data")
@@ -354,13 +375,13 @@ func (this *PKCS12) GetTrustStoreEntriesBytes() (caCerts []trustStoreKeyDataByte
     }
 
     for _, cert := range certs {
-        caCerts = append(caCerts, trustStoreKeyDataBytes{
+        trustStores = append(trustStores, trustStoreKeyDataBytes{
             Attrs: cert.Attrs(),
             Cert:  cert.Data(),
         })
     }
 
-    return caCerts, nil
+    return trustStores, nil
 }
 
 func (this *PKCS12) GetSdsiCertBytes() (cert []byte, attrs PKCS12Attributes, err error) {
@@ -430,6 +451,33 @@ func (this *PKCS12) GetSecretKey() (secretKey []byte, attrs PKCS12Attributes, er
     return keys[0].Data(), keys[0].Attrs(), nil
 }
 
+type unknowDataBytes struct {
+    Attrs PKCS12Attributes
+    Data  []byte
+}
+
+func (this *PKCS12) GetUnknowsBytes() (unknowDatas []unknowDataBytes, err error) {
+    unknows, ok := this.parsedData["unknow"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(unknows) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    for _, unknow := range unknows {
+        unknowDatas = append(unknowDatas, unknowDataBytes{
+            Attrs: unknow.Attrs(),
+            Data:  unknow.Data(),
+        })
+    }
+
+    return unknowDatas, nil
+}
+
 //===============
 
 func (this *PKCS12) hasData(name string) bool {
@@ -471,6 +519,10 @@ func (this *PKCS12) HasCRL() bool {
 
 func (this *PKCS12) HasSecretKey() bool {
     return this.hasData("secretKey")
+}
+
+func (this *PKCS12) HasUnknow() bool {
+    return this.hasData("unknow")
 }
 
 //===============
