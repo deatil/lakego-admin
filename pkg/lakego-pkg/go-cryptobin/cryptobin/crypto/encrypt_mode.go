@@ -626,3 +626,67 @@ func init() {
         return ModeOCB{}
     })
 }
+
+// ===================
+
+type ModeNCFB struct {}
+
+// 加密
+func (this ModeNCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewNCFBEncrypter(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeNCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewNCFBDecrypter(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(NCFB, func() IMode {
+        return ModeNCFB{}
+    })
+}
+
+// ===================
+
+type ModeNOFB struct {}
+
+// 加密
+func (this ModeNOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewNOFB(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeNOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewNOFB(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(NOFB, func() IMode {
+        return ModeNOFB{}
+    })
+}

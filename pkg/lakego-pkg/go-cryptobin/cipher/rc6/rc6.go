@@ -72,15 +72,15 @@ func (c *rc6Cipher) BlockSize() int {
 
 func (c *rc6Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("rc6: input not full block")
+        panic("crypto/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("rc6: output not full block")
+        panic("crypto/rc6: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("rc6: invalid buffer overlap")
+        panic("crypto/rc6: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint32(src[:4])
@@ -109,15 +109,15 @@ func (c *rc6Cipher) Encrypt(dst, src []byte) {
 
 func (c *rc6Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("rc6: input not full block")
+        panic("crypto/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("rc6: output not full block")
+        panic("crypto/rc6: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("rc6: invalid buffer overlap")
+        panic("crypto/rc6: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint32(src[:4])

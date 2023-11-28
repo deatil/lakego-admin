@@ -282,16 +282,16 @@ func MakePKCS12Secret() error {
 
     // 解析测试
     p12, _ := fs.Get(pkcs12File)
-    secretKeys, err := cryptobin_pkcs12.DecodeSecret([]byte(p12), "123")
+    secretKey2, err := cryptobin_pkcs12.DecodeSecret([]byte(p12), "123")
     if err != nil {
         fmt.Println("err =====")
         fmt.Println(err.Error())
         fmt.Println("")
     }
 
-    if len(secretKeys) > 0 {
+    if secretKey2 != nil {
         fmt.Println("secretKey =====")
-        fmt.Printf(string(secretKeys[0].Key()))
+        fmt.Printf(string(secretKey2))
         fmt.Println("")
     }
 

@@ -60,7 +60,7 @@ func (h *Hash) BlockSize() int {
 }
 
 func (h *Hash) Size() int {
-    return BlockSize
+    return Size
 }
 
 func (h *Hash) Write(data []byte) (int, error) {

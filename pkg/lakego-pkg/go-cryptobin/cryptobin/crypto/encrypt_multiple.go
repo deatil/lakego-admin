@@ -34,6 +34,7 @@ import (
     cryptobin_kuznyechik "github.com/deatil/go-cryptobin/cipher/kuznyechik"
     cryptobin_skipjack "github.com/deatil/go-cryptobin/cipher/skipjack"
     cryptobin_serpent "github.com/deatil/go-cryptobin/cipher/serpent"
+    cryptobin_loki97 "github.com/deatil/go-cryptobin/cipher/loki97"
 )
 
 // 获取模式方式
@@ -1210,5 +1211,38 @@ func init() {
     })
     UseEncrypt.Add(Serpent, func() IEncrypt {
         return EncryptSerpent{}
+    })
+}
+
+// ===================
+
+// Loki97 key is 16, 24, 32 bytes.
+type EncryptLoki97 struct {}
+
+// 加密
+func (this EncryptLoki97) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_loki97.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptLoki97) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_loki97.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Loki97, func() IEncrypt {
+        return EncryptLoki97{}
     })
 }
