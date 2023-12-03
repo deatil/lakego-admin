@@ -22,11 +22,11 @@ type cfb16 struct {
 
 func (x *cfb16) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cipher/cfb16: output smaller than input")
+        panic("cryptobin/cfb16: output smaller than input")
     }
 
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cipher/cfb16: invalid buffer overlap")
+        panic("cryptobin/cfb16: invalid buffer overlap")
     }
 
     bs := 2
@@ -59,7 +59,7 @@ func (x *cfb16) XORKeyStream(dst, src []byte) {
 func NewCFB16(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
     blockSize := block.BlockSize()
     if len(iv) != blockSize {
-        panic("cipher/cfb16: iv length must equal block size")
+        panic("cryptobin/cfb16: iv length must equal block size")
     }
 
     x := &cfb16{

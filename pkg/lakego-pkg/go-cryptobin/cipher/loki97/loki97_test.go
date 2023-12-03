@@ -6,9 +6,11 @@ import (
     "testing"
     "math/rand"
     "encoding/hex"
+
+    "github.com/deatil/go-cryptobin/tool"
 )
 
-func TestCipher16(t *testing.T) {
+func Test_Key16(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -35,7 +37,7 @@ func TestCipher16(t *testing.T) {
     }
 }
 
-func TestCipher24(t *testing.T) {
+func Test_Key24(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -62,7 +64,7 @@ func TestCipher24(t *testing.T) {
     }
 }
 
-func TestCipher32(t *testing.T) {
+func Test_Key32(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -108,5 +110,42 @@ func Test_Check(t *testing.T) {
 
     if hexcipher != fmt.Sprintf("%x", encrypted) {
         t.Error("Encrypt error")
+    }
+}
+
+// 该测试数据为小端
+// 包默认使用大端
+// 如果加密数据为使用小端结果，请注意转换为大端
+func Test_Check2(t *testing.T) {
+    var key [32]byte
+
+    for i := 0; i < 32; i++ {
+        key[i] = byte((i * 2 + 10) % 256)
+    }
+
+    ciphertext := "8cb28c958024bae27a94c698f96f12a9"
+    plaintext := "000102030405060708090a0b0c0d0e0f"
+
+    // cipherBytes, _ := hex.DecodeString(ciphertext)
+    plainBytes, _ := hex.DecodeString(plaintext)
+
+    // 小端转大端
+    key2 := tool.LE2BE_32_Bytes(key[:])
+
+    plainBytes = tool.LE2BE_32_Bytes(plainBytes)
+
+    cipher, err := NewCipher(key2)
+    if err != nil {
+        t.Fatal(err.Error())
+    }
+
+    var encrypted [16]byte
+    cipher.Encrypt(encrypted[:], plainBytes)
+
+    // 大端转小端
+    encrypted2 := tool.BE2LE_32_Bytes(encrypted[:])
+
+    if ciphertext != fmt.Sprintf("%x", encrypted2) {
+        t.Errorf("Encrypt error: act=%x, old=%s\n", encrypted2, ciphertext)
     }
 }

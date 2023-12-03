@@ -14,7 +14,7 @@ type ofb8 struct {
 func NewOFB8(b cipher.Block, iv []byte) cipher.Stream {
     blockSize := b.BlockSize()
     if len(iv) != blockSize {
-        panic("crypto/ofb8: IV length must equal block size")
+        panic("cryptobin/ofb8: IV length must equal block size")
     }
 
     bufSize := streamBufferSize
@@ -63,7 +63,7 @@ func (x *ofb8) refill() {
 
 func (x *ofb8) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("crypto/ofb8: output smaller than input")
+        panic("cryptobin/ofb8: output smaller than input")
     }
 
     for len(src) > 0 {

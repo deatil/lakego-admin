@@ -35,11 +35,19 @@ func sub64(a ULONG64, b ULONG64) ULONG64 {
     return diff
 }
 
+// Endianness option
+const littleEndian bool = false
+
 func byteToULONG64(inp []byte) ULONG64 {
     var I ULONG64
 
-    I.l = binary.BigEndian.Uint32(inp[0:])
-    I.r = binary.BigEndian.Uint32(inp[4:])
+    if littleEndian {
+        I.l = binary.LittleEndian.Uint32(inp[0:])
+        I.r = binary.LittleEndian.Uint32(inp[4:])
+    } else {
+        I.l = binary.BigEndian.Uint32(inp[0:])
+        I.r = binary.BigEndian.Uint32(inp[4:])
+    }
 
     return I
 }
@@ -47,8 +55,13 @@ func byteToULONG64(inp []byte) ULONG64 {
 func ULONG64ToBYTE(I ULONG64) [8]byte {
     var sav [8]byte
 
-    binary.BigEndian.PutUint32(sav[0:], I.l)
-    binary.BigEndian.PutUint32(sav[4:], I.r)
+    if littleEndian {
+        binary.LittleEndian.PutUint32(sav[0:], I.l)
+        binary.LittleEndian.PutUint32(sav[4:], I.r)
+    } else {
+        binary.BigEndian.PutUint32(sav[0:], I.l)
+        binary.BigEndian.PutUint32(sav[4:], I.r)
+    }
 
     return sav
 }

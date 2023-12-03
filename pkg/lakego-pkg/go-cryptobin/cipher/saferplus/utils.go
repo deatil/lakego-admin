@@ -1,5 +1,9 @@
 package saferplus
 
+import (
+    "math/bits"
+)
+
 // unsigned char = uint8
 // unsigned short = uint16
 // unsigned int = uint32
@@ -15,15 +19,15 @@ func ipht(x *uint8, y *uint8) {
 }
 
 func rotl8(x uint8, n uint8) uint8 {
-    return (x << n) | (x >> (8 - n));
+    return bits.RotateLeft8(x, int(n))
 }
 
 func rotl16(x uint16, n uint16) uint16 {
-    return (x << n) | (x >> (16 - n));
+    return bits.RotateLeft16(x, int(n))
 }
 
 func rotl32(x uint32, n uint32) uint32 {
-    return (x << n) | (x >> (32 - n));
+    return bits.RotateLeft32(x, int(n))
 }
 
 func rotr8(x uint8, n uint8) uint8 {

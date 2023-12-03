@@ -16,7 +16,7 @@ func TestInvalidKeySize(t *testing.T) {
         if _, ok := err.(KeySizeError); !ok {
             t.Errorf("expected KeySizeError, got %v", err)
         }
-        if msg := err.Error(); msg != fmt.Sprintf("aria: invalid key size %d", k) {
+        if msg := err.Error(); msg != fmt.Sprintf("cryptobin/aria: invalid key size %d", k) {
             t.Errorf("wrong error message %s", msg)
         }
     }

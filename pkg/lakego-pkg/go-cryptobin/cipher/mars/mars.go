@@ -1,13 +1,20 @@
 package mars
 
 import (
-    "unsafe"
     "strconv"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 16
+
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cryptobin/mars: invalid key size " + strconv.Itoa(int(k))
+}
 
 type marsCipher struct {
     key [40]uint32
@@ -57,15 +64,15 @@ func (this *marsCipher) BlockSize() int {
 
 func (this *marsCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/loki97: input not full block")
+        panic("cryptobin/mars: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/loki97: output not full block")
+        panic("cryptobin/mars: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/loki97: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/mars: invalid buffer overlap")
     }
 
     in_blk := bytesToUint32s(src)
@@ -79,15 +86,15 @@ func (this *marsCipher) Encrypt(dst, src []byte) {
 
 func (this *marsCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/loki97: input not full block")
+        panic("cryptobin/mars: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/loki97: output not full block")
+        panic("cryptobin/mars: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/loki97: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/mars: invalid buffer overlap")
     }
 
     in_blk := bytesToUint32s(src)
@@ -97,32 +104,4 @@ func (this *marsCipher) Decrypt(dst, src []byte) {
     decBytes := Uint32sToBytes(decBlock)
 
     copy(dst, decBytes[:])
-}
-
-// anyOverlap reports whether x and y share memory at any (not necessarily
-// corresponding) index. The memory beyond the slice length is ignored.
-func anyOverlap(x, y []byte) bool {
-    return len(x) > 0 && len(y) > 0 &&
-        uintptr(unsafe.Pointer(&x[0])) <= uintptr(unsafe.Pointer(&y[len(y)-1])) &&
-        uintptr(unsafe.Pointer(&y[0])) <= uintptr(unsafe.Pointer(&x[len(x)-1]))
-}
-
-// inexactOverlap reports whether x and y share memory at any non-corresponding
-// index. The memory beyond the slice length is ignored. Note that x and y can
-// have different lengths and still not have any inexact overlap.
-//
-// inexactOverlap can be used to implement the requirements of the crypto/cipher
-// AEAD, Block, BlockMode and Stream interfaces.
-func inexactOverlap(x, y []byte) bool {
-    if len(x) == 0 || len(y) == 0 || &x[0] == &y[0] {
-        return false
-    }
-
-    return anyOverlap(x, y)
-}
-
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return "crypto/loki97: invalid key size " + strconv.Itoa(int(k))
 }

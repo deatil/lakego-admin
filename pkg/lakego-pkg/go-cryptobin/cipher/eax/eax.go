@@ -8,14 +8,6 @@ import (
     "github.com/deatil/go-cryptobin/tool/byteutil"
 )
 
-// Copyright (C) 2019 ProtonTech AG
-
-// Package eax provides an implementation of the EAX
-// (encrypt-authenticate-translate) mode of operation, as described in
-// Bellare, Rogaway, and Wagner "THE EAX MODE OF OPERATION: A TWO-PASS
-// AUTHENTICATED-ENCRYPTION SCHEME OPTIMIZED FOR SIMPLICITY AND EFFICIENCY."
-// In FSE'04, volume 3017 of LNCS, 2004
-
 const (
     defaultTagSize   = 16
     defaultNonceSize = 16
@@ -80,8 +72,9 @@ func NewEAXWithNonceAndTagSize(
 
 func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
     if len(nonce) > e.nonceSize {
-        panic("crypto/eax: Nonce too long for this instance")
+        panic("cryptobin/eax: Nonce too long for this instance")
     }
+    
     ret, out := byteutil.SliceForAppend(dst, len(plaintext)+e.tagSize)
     omacNonce := e.omacT(0, nonce)
     omacAdata := e.omacT(1, adata)
@@ -102,7 +95,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
 
 func (e *eax) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     if len(nonce) > e.nonceSize {
-        panic("crypto/eax: Nonce too long for this instance")
+        panic("cryptobin/eax: Nonce too long for this instance")
     }
 
     if len(ciphertext) < e.tagSize {

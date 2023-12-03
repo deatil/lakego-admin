@@ -10,9 +10,9 @@ const BlockSize = 16
 
 func NewCipher(key []byte) (cipher.Block, error) {
     if len(key) != 32 {
-        return nil, fmt.Errorf("kuznyechik key len: want 32, got %d", len(key))
+        return nil, fmt.Errorf("cryptobin/kuznyechik: invalid key size %d", len(key))
     }
-    
+
     k00 := binary.LittleEndian.Uint64(key[0:8])
     k01 := binary.LittleEndian.Uint64(key[8:16])
     k10 := binary.LittleEndian.Uint64(key[16:24])
@@ -55,8 +55,12 @@ func (k *kuznyechikCipher) BlockSize() int {
 }
 
 func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
-    if len(src) != 16 || len(dst) != 16 {
-        panic(fmt.Sprintf("len(dst)=%d, len(src)=%d", len(dst), len(src)))
+    if len(src) < BlockSize {
+        panic("cryptobin/kuznyechik: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/kuznyechik: output not full block")
     }
     
     x1 := binary.LittleEndian.Uint64(src[0:8])
@@ -96,9 +100,14 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
 }
 
 func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
-    if len(src) != 16 || len(dst) != 16 {
-        panic(fmt.Sprintf("len(dst)=%d, len(src)=%d", len(dst), len(src)))
+    if len(src) < BlockSize {
+        panic("cryptobin/kuznyechik: input not full block")
     }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/kuznyechik: output not full block")
+    }
+    
     x1 := binary.LittleEndian.Uint64(src[0:8])
     x2 := binary.LittleEndian.Uint64(src[8:16])
     var t1, t2 uint64

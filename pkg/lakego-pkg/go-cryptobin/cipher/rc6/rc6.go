@@ -1,11 +1,12 @@
 package rc6
 
 import (
-    "unsafe"
     "strconv"
     "math/bits"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // For more information, please see:
@@ -26,6 +27,13 @@ var skeytable = []uint32{
     0x8d14babb, 0x2b4c3474, 0xc983ae2d, 0x67bb27e6, 0x05f2a19f, 0xa42a1b58, 0x42619511, 0xe0990eca,
     0x7ed08883, 0x1d08023c, 0xbb3f7bf5, 0x5976f5ae, 0xf7ae6f67, 0x95e5e920, 0x341d62d9, 0xd254dc92,
     0x708c564b, 0x0ec3d004, 0xacfb49bd, 0x4b32c376,
+}
+
+// KeySizeError
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cryptobin/rc6: invalid key size " + strconv.Itoa(int(k))
 }
 
 type rc6Cipher struct {
@@ -72,15 +80,15 @@ func (c *rc6Cipher) BlockSize() int {
 
 func (c *rc6Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/rc6: input not full block")
+        panic("cryptobin/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/rc6: output not full block")
+        panic("cryptobin/rc6: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/rc6: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/rc6: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint32(src[:4])
@@ -109,15 +117,15 @@ func (c *rc6Cipher) Encrypt(dst, src []byte) {
 
 func (c *rc6Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/rc6: input not full block")
+        panic("cryptobin/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/rc6: output not full block")
+        panic("cryptobin/rc6: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/rc6: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/rc6: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint32(src[:4])
@@ -143,33 +151,4 @@ func (c *rc6Cipher) Decrypt(dst, src []byte) {
     binary.LittleEndian.PutUint32(dst[4:8], B)
     binary.LittleEndian.PutUint32(dst[8:12], C)
     binary.LittleEndian.PutUint32(dst[12:16], D)
-}
-
-// anyOverlap reports whether x and y share memory at any (not necessarily
-// corresponding) index. The memory beyond the slice length is ignored.
-func anyOverlap(x, y []byte) bool {
-    return len(x) > 0 && len(y) > 0 &&
-        uintptr(unsafe.Pointer(&x[0])) <= uintptr(unsafe.Pointer(&y[len(y)-1])) &&
-        uintptr(unsafe.Pointer(&y[0])) <= uintptr(unsafe.Pointer(&x[len(x)-1]))
-}
-
-// inexactOverlap reports whether x and y share memory at any non-corresponding
-// index. The memory beyond the slice length is ignored. Note that x and y can
-// have different lengths and still not have any inexact overlap.
-//
-// inexactOverlap can be used to implement the requirements of the crypto/cipher
-// AEAD, Block, BlockMode and Stream interfaces.
-func inexactOverlap(x, y []byte) bool {
-    if len(x) == 0 || len(y) == 0 || &x[0] == &y[0] {
-        return false
-    }
-
-    return anyOverlap(x, y)
-}
-
-// KeySizeError
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return "rc6: invalid key size " + strconv.Itoa(int(k))
 }

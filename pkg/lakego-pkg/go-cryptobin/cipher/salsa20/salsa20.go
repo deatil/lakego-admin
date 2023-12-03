@@ -18,7 +18,7 @@ type Cipher struct {
 func NewCipher(key, nonce []byte) (cipher.Stream, error) {
     var fixedSizedKey [32]byte
     if len(key) != 32 {
-        return nil, errors.New("key size must be 32")
+        return nil, errors.New("cryptobin/salsa20: key size must be 32")
     }
 
     copy(fixedSizedKey[:], key)
@@ -47,7 +47,7 @@ func NewCipherWithCounter(key, nonce []byte, counter uint64) (cipher.Stream, err
 
 func (c *Cipher) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cipher/salsa20: dst buffer is to small")
+        panic("cryptobin/salsa20: dst buffer is to small")
     }
 
     paddingLength := int(c.counter % 64)

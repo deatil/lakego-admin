@@ -12,7 +12,7 @@ const BlockSize = des.BlockSize
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "crypto/des: invalid key size " + strconv.Itoa(int(k))
+    return "cryptobin/twoDes: invalid key size " + strconv.Itoa(int(k))
 }
 
 type twoDESCipher struct {

@@ -173,14 +173,14 @@ func (c *ccm) auth(nonce, plaintext, additionalData []byte, tagMask *[ccmBlockSi
 
 func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     if len(nonce) != c.nonceSize {
-        panic("cipher: incorrect nonce length given to CCM")
+        panic("cryptobin/ccm: incorrect nonce length given to CCM")
     }
     if uint64(len(plaintext)) > uint64(c.MaxLength()) {
-        panic("cipher: message too large for CCM")
+        panic("cryptobin/ccm: message too large for CCM")
     }
     ret, out := subtle.SliceForAppend(dst, len(plaintext)+c.tagSize)
     if subtle.InexactOverlap(out, plaintext) {
-        panic("cipher: invalid buffer overlap")
+        panic("cryptobin/ccm: invalid buffer overlap")
     }
 
     var counter, tagMask [ccmBlockSize]byte
@@ -201,12 +201,12 @@ var errOpen = errors.New("cipher: message authentication failed")
 
 func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     if len(nonce) != c.nonceSize {
-        panic("cipher: incorrect nonce length given to CCM")
+        panic("cryptobin/ccm: incorrect nonce length given to CCM")
     }
     // Sanity check to prevent the authentication from always succeeding if an implementation
     // leaves tagSize uninitialized, for example.
     if c.tagSize < ccmMinimumTagSize {
-        panic("cipher: incorrect CCM tag size")
+        panic("cryptobin/ccm: incorrect CCM tag size")
     }
 
     if len(ciphertext) < c.tagSize {
@@ -226,7 +226,7 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
 
     ret, out := subtle.SliceForAppend(dst, len(ciphertext))
     if subtle.InexactOverlap(out, ciphertext) {
-        panic("cipher: invalid buffer overlap")
+        panic("cryptobin/ccm: invalid buffer overlap")
     }
 
     counter[len(counter)-1] |= 1

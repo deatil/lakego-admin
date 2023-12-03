@@ -1,9 +1,10 @@
 package saferplus
 
 import (
-    "unsafe"
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 8
@@ -14,9 +15,13 @@ const (
     SAFER_MAX_NOF_ROUNDS = 13;
 )
 
-type saferplusCipher struct {
-    key []uint8
+type KeySizeError int
 
+func (k KeySizeError) Error() string {
+    return "cryptobin/saferplus: invalid key size " + strconv.Itoa(int(k))
+}
+
+type saferplusCipher struct {
     exp_tab [256]uint8
     log_tab [256]uint8
 
@@ -35,12 +40,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 
     c := new(saferplusCipher)
     c.init()
-
-    c.key = make([]uint8, k)
-
-    copy(c.key, key)
-
-    c.reset()
+    c.setKey(key)
 
     return c, nil
 }
@@ -51,15 +51,15 @@ func (this *saferplusCipher) BlockSize() int {
 
 func (this *saferplusCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/saferplus: input not full block")
+        panic("cryptobin/saferplus: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/saferplus: output not full block")
+        panic("cryptobin/saferplus: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/saferplus: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/saferplus: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -67,124 +67,18 @@ func (this *saferplusCipher) Encrypt(dst, src []byte) {
 
 func (this *saferplusCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/saferplus: input not full block")
+        panic("cryptobin/saferplus: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/saferplus: output not full block")
+        panic("cryptobin/saferplus: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/saferplus: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/saferplus: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)
-}
-
-func (this *saferplusCipher) init() {
-    var exp_val uint = 1;
-
-    for i := 0; i < TAB_LEN; i++ {
-        this.exp_tab[i] = uint8(exp_val & 0xFF);
-        this.log_tab[uint(this.exp_tab[i])] = uint8(i);
-
-        exp_val = exp_val * 45 % 257;
-    }
-}
-
-func (this *saferplusCipher) reset() {
-    var j uint32
-    var ka [9]uint8
-    var kb [9]uint8
-    var key = this.local_key
-    var key_buffer [16]uint8
-
-    var xi uint32 = 0
-
-    strengthened := 1
-    nofRounds := 8
-
-    for k, v := range this.key {
-        key_buffer[k] = v
-    }
-
-    if SAFER_MAX_NOF_ROUNDS < nofRounds {
-        nofRounds = SAFER_MAX_NOF_ROUNDS;
-    }
-
-    key[xi] = uint8(nofRounds)
-    xi++
-
-    ka[SAFER_BLOCK_LEN] = 0;
-    kb[SAFER_BLOCK_LEN] = 0;
-
-    for j = 0; j < SAFER_BLOCK_LEN; j++ {
-        ka[j] = rotl8(key_buffer[j], 5)
-        ka[SAFER_BLOCK_LEN] ^= ka[j];
-
-        if len(this.key) > 8 {
-            key[xi] = key_buffer[j + 8]
-            kb[j] = key[xi]
-            xi++
-        } else {
-            key[xi] = key_buffer[j]
-            kb[j] = key[xi]
-            xi++
-        }
-
-        kb[SAFER_BLOCK_LEN] ^= kb[j]
-    }
-
-    var i uint
-    for i = 1; i <= uint(nofRounds); i++ {
-
-        var j uint
-        for j = 0; j < SAFER_BLOCK_LEN + 1; j++ {
-            ka[j] = rotl8(ka[j], 6)
-            kb[j] = rotl8(kb[j], 6)
-        }
-
-        for j = 0; j < SAFER_BLOCK_LEN; j++ {
-
-            if strengthened == 1 {
-                key[xi] =
-                    (ka[(j + 2 * i - 1) % (SAFER_BLOCK_LEN + 1)] +
-                     this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
-                    0xFF
-                xi++
-            } else {
-                key[xi] =
-                    (ka[j] + this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
-                    0xFF
-                xi++
-            }
-
-        }
-
-        for j = 0; j < SAFER_BLOCK_LEN; j++ {
-
-            if strengthened == 1 {
-                key[xi] =
-                    (kb[(j + 2 * i) % (SAFER_BLOCK_LEN + 1)] +
-                     this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
-                    0xFF
-                xi++
-            } else {
-                key[xi] =
-                    (kb[j] + this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
-                    0xFF
-                xi++
-            }
-
-        }
-    }
-
-    for j = 0; j < SAFER_BLOCK_LEN + 1; j++ {
-        ka[j] = 0
-        kb[j] = 0
-    }
-
-    this.local_key = key
 }
 
 func (this *saferplusCipher) encrypt(dst, src []byte) {
@@ -198,7 +92,7 @@ func (this *saferplusCipher) encrypt(dst, src []byte) {
         ciphertext[i] = uint8(text)
     }
 
-    rnd = uint32(len(key))
+    rnd = uint32(key[0])
 
     if SAFER_MAX_NOF_ROUNDS < rnd {
         rnd = SAFER_MAX_NOF_ROUNDS;
@@ -299,7 +193,7 @@ func (this *saferplusCipher) decrypt(dst, src []byte) {
         plaintext[i] = uint8(text)
     }
 
-    rnd = uint32(len(key))
+    rnd = uint32(key[0])
 
     if SAFER_MAX_NOF_ROUNDS < rnd {
         rnd = SAFER_MAX_NOF_ROUNDS
@@ -389,30 +283,108 @@ func (this *saferplusCipher) decrypt(dst, src []byte) {
     }
 }
 
-// anyOverlap reports whether x and y share memory at any (not necessarily
-// corresponding) index. The memory beyond the slice length is ignored.
-func anyOverlap(x, y []byte) bool {
-    return len(x) > 0 && len(y) > 0 &&
-        uintptr(unsafe.Pointer(&x[0])) <= uintptr(unsafe.Pointer(&y[len(y)-1])) &&
-        uintptr(unsafe.Pointer(&y[0])) <= uintptr(unsafe.Pointer(&x[len(x)-1]))
+func (this *saferplusCipher) init() {
+    var exp_val uint = 1;
+
+    for i := 0; i < TAB_LEN; i++ {
+        this.exp_tab[i] = uint8(exp_val & 0xFF);
+        this.log_tab[uint(this.exp_tab[i])] = uint8(i);
+
+        exp_val = exp_val * 45 % 257;
+    }
 }
 
-// inexactOverlap reports whether x and y share memory at any non-corresponding
-// index. The memory beyond the slice length is ignored. Note that x and y can
-// have different lengths and still not have any inexact overlap.
-//
-// inexactOverlap can be used to implement the requirements of the crypto/cipher
-// AEAD, Block, BlockMode and Stream interfaces.
-func inexactOverlap(x, y []byte) bool {
-    if len(x) == 0 || len(y) == 0 || &x[0] == &y[0] {
-        return false
+func (this *saferplusCipher) setKey(keyData []uint8) {
+    var j uint32
+    var ka [9]uint8
+    var kb [9]uint8
+    var key = this.local_key
+    var key_buffer [16]uint8
+
+    var xi uint32 = 0
+
+    strengthened := 1
+    nofRounds := 8
+
+    for k, v := range keyData {
+        key_buffer[k] = v
     }
 
-    return anyOverlap(x, y)
-}
+    if SAFER_MAX_NOF_ROUNDS < nofRounds {
+        nofRounds = SAFER_MAX_NOF_ROUNDS;
+    }
 
-type KeySizeError int
+    key[xi] = uint8(nofRounds)
+    xi++
 
-func (k KeySizeError) Error() string {
-    return "crypto/saferplus: invalid key size " + strconv.Itoa(int(k))
+    ka[SAFER_BLOCK_LEN] = 0;
+    kb[SAFER_BLOCK_LEN] = 0;
+
+    for j = 0; j < SAFER_BLOCK_LEN; j++ {
+        ka[j] = rotl8(key_buffer[j], 5)
+        ka[SAFER_BLOCK_LEN] ^= ka[j];
+
+        if len(keyData) > 8 {
+            key[xi] = key_buffer[j + 8]
+            kb[j] = key[xi]
+            xi++
+        } else {
+            key[xi] = key_buffer[j]
+            kb[j] = key[xi]
+            xi++
+        }
+
+        kb[SAFER_BLOCK_LEN] ^= kb[j]
+    }
+
+    var i uint
+    for i = 1; i <= uint(nofRounds); i++ {
+
+        var j uint
+        for j = 0; j < SAFER_BLOCK_LEN + 1; j++ {
+            ka[j] = rotl8(ka[j], 6)
+            kb[j] = rotl8(kb[j], 6)
+        }
+
+        for j = 0; j < SAFER_BLOCK_LEN; j++ {
+
+            if strengthened == 1 {
+                key[xi] =
+                    (ka[(j + 2 * i - 1) % (SAFER_BLOCK_LEN + 1)] +
+                     this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
+                    0xFF
+                xi++
+            } else {
+                key[xi] =
+                    (ka[j] + this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
+                    0xFF
+                xi++
+            }
+
+        }
+
+        for j = 0; j < SAFER_BLOCK_LEN; j++ {
+
+            if strengthened == 1 {
+                key[xi] =
+                    (kb[(j + 2 * i) % (SAFER_BLOCK_LEN + 1)] +
+                     this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
+                    0xFF
+                xi++
+            } else {
+                key[xi] =
+                    (kb[j] + this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
+                    0xFF
+                xi++
+            }
+
+        }
+    }
+
+    for j = 0; j < SAFER_BLOCK_LEN + 1; j++ {
+        ka[j] = 0
+        kb[j] = 0
+    }
+
+    this.local_key = key
 }

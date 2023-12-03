@@ -1,7 +1,7 @@
 package serpent
 
 import (
-    "errors"
+    "fmt"
     "crypto/cipher"
 )
 
@@ -10,47 +10,60 @@ const BlockSize = 16
 
 const phi = 0x9e3779b9 // The Serpent phi constant (sqrt(5) - 1) * 2**31
 
-var errKeySize = errors.New("invalid key size")
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return fmt.Sprintf("cryptobin/serpent: invalid key size %d", int(k))
+}
 
 // NewCipher returns a new cipher.Block implementing the serpent block cipher.
 // The key argument must be 128, 192 or 256 bit (16, 24, 32 byte).
 func NewCipher(key []byte) (cipher.Block, error) {
-    if k := len(key); k != 16 && k != 24 && k != 32 {
-        return nil, errKeySize
+    k := len(key)
+    switch k {
+        case 16, 24, 32:
+            break
+        default:
+            return nil, KeySizeError(k)
     }
-    
-    s := &subkeys{}
+
+    s := &serpentCipher{}
     s.keySchedule(key)
+
     return s, nil
 }
 
 // The 132 32 bit subkeys of serpent
-type subkeys [132]uint32
+type serpentCipher [132]uint32
 
-func (s *subkeys) BlockSize() int { return BlockSize }
+func (s *serpentCipher) BlockSize() int { return BlockSize }
 
-func (s *subkeys) Encrypt(dst, src []byte) {
+func (s *serpentCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("src buffer to small")
+        panic("cryptobin/serpent: input not full block")
     }
+
     if len(dst) < BlockSize {
-        panic("dst buffer to small")
+        panic("cryptobin/serpent: output not full block")
     }
+
     encryptBlock(dst, src, s)
 }
 
-func (s *subkeys) Decrypt(dst, src []byte) {
+func (s *serpentCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("src buffer to small")
+        panic("cryptobin/serpent: input not full block")
     }
+
     if len(dst) < BlockSize {
-        panic("dst buffer to small")
+        panic("cryptobin/serpent: output not full block")
     }
+
     decryptBlock(dst, src, s)
 }
 
 // The key schedule of serpent.
-func (s *subkeys) keySchedule(key []byte) {
+func (s *serpentCipher) keySchedule(key []byte) {
     var k [16]uint32
     j := 0
     for i := 0; i+4 <= len(key); i += 4 {

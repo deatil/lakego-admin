@@ -38,18 +38,18 @@ func (c *ariaCipher) expandKey(key []byte) {
     var ck1, ck2, ck3 [16]byte
 
     switch c.k {
-    case 128 / 8:
-        ck1 = c1
-        ck2 = c2
-        ck3 = c3
-    case 192 / 8:
-        ck1 = c2
-        ck2 = c3
-        ck3 = c1
-    case 256 / 8:
-        ck1 = c3
-        ck2 = c1
-        ck3 = c2
+        case 128 / 8:
+            ck1 = c1
+            ck2 = c2
+            ck3 = c3
+        case 192 / 8:
+            ck1 = c2
+            ck2 = c3
+            ck3 = c1
+        case 256 / 8:
+            ck1 = c3
+            ck2 = c1
+            ck3 = c2
     }
 
     var w0, w1, w2, w3 [16]byte

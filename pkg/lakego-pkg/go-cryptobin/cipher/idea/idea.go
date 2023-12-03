@@ -1,14 +1,14 @@
 package idea
 
-// Package idea implements the IDEA block cipher
-// For more information, please see https://en.wikipedia.org/wiki/International_Data_Encryption_Algorithm
-// This implementation derived from Public Domain code by Colin Plumb available at https://www.schneier.com/book-applied-source.html
-
 import (
     "strconv"
     "crypto/cipher"
     "encoding/binary"
 )
+
+// Package idea implements the IDEA block cipher
+// For more information, please see https://en.wikipedia.org/wiki/International_Data_Encryption_Algorithm
+// This implementation derived from Public Domain code by Colin Plumb available at https://www.schneier.com/book-applied-source.html
 
 const rounds = 8
 const keyLen = (6*rounds + 4)
@@ -19,7 +19,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cipher/idea: invalid key size " + strconv.Itoa(int(k))
+    return "cryptobin/idea: invalid key size " + strconv.Itoa(int(k))
 }
 
 type ideaCipher struct {

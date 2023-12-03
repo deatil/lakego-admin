@@ -1,16 +1,3 @@
-// Copyright (C) 2019 ProtonTech AG
-
-// Package ocb provides an implementation of the OCB (offset codebook) mode of
-// operation, as described in RFC-7253 of the IRTF and in Rogaway, Bellare,
-// Black and Krovetz - OCB: A BLOCK-CIPHER MODE OF OPERATION FOR EFFICIENT
-// AUTHENTICATED ENCRYPTION (2003).
-// Security considerations (from RFC-7253): A private key MUST NOT be used to
-// encrypt more than 2^48 blocks. Tag length should be at least 12 bytes (a
-// brute-force forging adversary succeeds after 2^{tag length} attempts). A
-// single key SHOULD NOT be used to decrypt ciphertext with different tag
-// lengths. Nonces need not be secret, but MUST NOT be reused.
-// This package only supports underlying block ciphers with 128-bit blocks,
-// such as AES-{128, 192, 256}, but may be extended to other sizes.
 package ocb
 
 import (
@@ -24,17 +11,10 @@ import (
 )
 
 type ocb struct {
-    block     cipher.Block
-    tagSize   int
-    nonceSize int
-    mask      mask
-    // Optimized en/decrypt: For each nonce N used to en/decrypt, the 'Ktop'
-    // internal variable can be reused for en/decrypting with nonces sharing
-    // all but the last 6 bits with N. The prefix of the first nonce used to
-    // compute the new Ktop, and the Ktop value itself, are stored in
-    // reusableKtop. If using incremental nonces, this saves one block cipher
-    // call every 63 out of 64 OCB encryptions, and stores one nonce and one
-    // output of the block cipher in memory only.
+    block        cipher.Block
+    tagSize      int
+    nonceSize    int
+    mask         mask
     reusableKtop reusableKtop
 }
 
@@ -130,7 +110,7 @@ func (o *ocb) Seal(dst, nonce, plaintext, adata []byte) []byte {
 
 func (o *ocb) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     if len(nonce) > o.nonceSize {
-        panic("Nonce too long for this instance")
+        panic("crypto/ocb: Nonce too long for this instance")
     }
     if len(ciphertext) < o.tagSize {
         return nil, ocbError("Ciphertext shorter than tag length")

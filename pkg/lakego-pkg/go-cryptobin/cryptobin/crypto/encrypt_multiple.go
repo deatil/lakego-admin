@@ -35,6 +35,14 @@ import (
     cryptobin_skipjack "github.com/deatil/go-cryptobin/cipher/skipjack"
     cryptobin_serpent "github.com/deatil/go-cryptobin/cipher/serpent"
     cryptobin_loki97 "github.com/deatil/go-cryptobin/cipher/loki97"
+    cryptobin_saferplus "github.com/deatil/go-cryptobin/cipher/saferplus"
+    cryptobin_mars "github.com/deatil/go-cryptobin/cipher/mars"
+    cryptobin_enigma "github.com/deatil/go-cryptobin/cipher/enigma"
+    cryptobin_wake "github.com/deatil/go-cryptobin/cipher/wake"
+    cryptobin_cast256 "github.com/deatil/go-cryptobin/cipher/cast256"
+    cryptobin_hight "github.com/deatil/go-cryptobin/cipher/hight"
+    cryptobin_lea "github.com/deatil/go-cryptobin/cipher/lea"
+    cryptobin_panama "github.com/deatil/go-cryptobin/cipher/panama"
 )
 
 // 获取模式方式
@@ -1244,5 +1252,293 @@ func (this EncryptLoki97) Decrypt(data []byte, opt IOption) ([]byte, error) {
 func init() {
     UseEncrypt.Add(Loki97, func() IEncrypt {
         return EncryptLoki97{}
+    })
+}
+
+// ===================
+
+// Saferplus key is 8, 16 bytes.
+type EncryptSaferplus struct {}
+
+// 加密
+func (this EncryptSaferplus) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_saferplus.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptSaferplus) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_saferplus.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Saferplus, func() IEncrypt {
+        return EncryptSaferplus{}
+    })
+}
+
+// ===================
+
+// Mars key is 16, 24, 32 bytes.
+type EncryptMars struct {}
+
+// 加密
+func (this EncryptMars) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_mars.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptMars) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_mars.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Mars, func() IEncrypt {
+        return EncryptMars{}
+    })
+}
+
+// ===================
+
+// Wake key is 16 bytes.
+type EncryptWake struct {}
+
+// 加密
+func (this EncryptWake) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_wake.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.Encrypt(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptWake) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_wake.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.Decrypt(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseEncrypt.Add(Wake, func() IEncrypt {
+        return EncryptWake{}
+    })
+}
+
+// ===================
+
+// Enigma key is 13 bytes.
+type EncryptEnigma struct {}
+
+// 加密
+func (this EncryptEnigma) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_enigma.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptEnigma) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_enigma.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseEncrypt.Add(Enigma, func() IEncrypt {
+        return EncryptEnigma{}
+    })
+}
+
+// ===================
+
+// Cast256 key is 32 bytes.
+type EncryptCast256 struct {}
+
+// 加密
+func (this EncryptCast256) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_cast256.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptCast256) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_cast256.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Cast256, func() IEncrypt {
+        return EncryptCast256{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16 bytes.
+type EncryptHight struct {}
+
+// 加密
+func (this EncryptHight) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_hight.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptHight) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_hight.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Hight, func() IEncrypt {
+        return EncryptHight{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 24, 32 bytes.
+type EncryptLea struct {}
+
+// 加密
+func (this EncryptLea) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_lea.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptLea) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_lea.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Lea, func() IEncrypt {
+        return EncryptLea{}
+    })
+}
+
+// ===================
+
+// The key argument should be 32 bytes.
+type EncryptPanama struct {}
+
+// 加密
+func (this EncryptPanama) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_panama.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptPanama) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_panama.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseEncrypt.Add(Panama, func() IEncrypt {
+        return EncryptPanama{}
     })
 }

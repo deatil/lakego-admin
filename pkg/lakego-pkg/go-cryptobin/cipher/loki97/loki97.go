@@ -1,9 +1,11 @@
 package loki97
 
 import (
-    "unsafe"
+    "sync"
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const (
@@ -11,17 +13,25 @@ const (
 )
 
 var (
+    once sync.Once
+
     S1 [S1_SIZE]byte
     S2 [S2_SIZE]byte
 
     P [PERMUTATION_SIZE]ULONG64
 )
 
-func init() {
+func initAll() {
     S1 = generationS1Box()
     S2 = generationS2Box()
 
     P = permutationGeneration()
+}
+
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cryptobin/loki97: invalid key size " + strconv.Itoa(int(k))
 }
 
 type loki97Cipher struct {
@@ -29,6 +39,8 @@ type loki97Cipher struct {
 }
 
 // NewCipher creates and returns a new cipher.Block.
+// data bytes use BigEndian, if is LittleEndian
+// please change BigEndian bytes
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
@@ -37,6 +49,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
         default:
             return nil, KeySizeError(len(key))
     }
+
+    once.Do(initAll)
 
     newKey := makeKey(key)
 
@@ -52,15 +66,15 @@ func (this *loki97Cipher) BlockSize() int {
 
 func (this *loki97Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/loki97: input not full block")
+        panic("cryptobin/loki97: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/loki97: output not full block")
+        panic("cryptobin/loki97: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/loki97: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/loki97: invalid buffer overlap")
     }
 
     encBlock := blockEncrypt(src, this.key)
@@ -69,45 +83,17 @@ func (this *loki97Cipher) Encrypt(dst, src []byte) {
 
 func (this *loki97Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("crypto/loki97: input not full block")
+        panic("cryptobin/loki97: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("crypto/loki97: output not full block")
+        panic("cryptobin/loki97: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("crypto/loki97: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/loki97: invalid buffer overlap")
     }
 
     decBlock := blockDecrypt(src, this.key);
     copy(dst, decBlock)
-}
-
-// anyOverlap reports whether x and y share memory at any (not necessarily
-// corresponding) index. The memory beyond the slice length is ignored.
-func anyOverlap(x, y []byte) bool {
-    return len(x) > 0 && len(y) > 0 &&
-        uintptr(unsafe.Pointer(&x[0])) <= uintptr(unsafe.Pointer(&y[len(y)-1])) &&
-        uintptr(unsafe.Pointer(&y[0])) <= uintptr(unsafe.Pointer(&x[len(x)-1]))
-}
-
-// inexactOverlap reports whether x and y share memory at any non-corresponding
-// index. The memory beyond the slice length is ignored. Note that x and y can
-// have different lengths and still not have any inexact overlap.
-//
-// inexactOverlap can be used to implement the requirements of the crypto/cipher
-// AEAD, Block, BlockMode and Stream interfaces.
-func inexactOverlap(x, y []byte) bool {
-    if len(x) == 0 || len(y) == 0 || &x[0] == &y[0] {
-        return false
-    }
-
-    return anyOverlap(x, y)
-}
-
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return "crypto/loki97: invalid key size " + strconv.Itoa(int(k))
 }

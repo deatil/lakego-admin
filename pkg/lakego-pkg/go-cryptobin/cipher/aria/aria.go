@@ -3,11 +3,10 @@ package aria
 import (
     "fmt"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-// code from github.com/hallazzang/aria-go
-
-// BlockSize is the ARIA block size in bytes.
 const BlockSize = 16
 
 // KeySizeError is returned when key size in bytes
@@ -15,7 +14,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cipher/aria: invalid key size %d", int(k))
+    return fmt.Sprintf("cryptobin/aria: invalid key size %d", int(k))
 }
 
 type ariaCipher struct {
@@ -31,10 +30,10 @@ type ariaCipher struct {
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
+        case 16, 24, 32:
+            break
         default:
             return nil, KeySizeError(k)
-        case 128 / 8, 192 / 8, 256 / 8:
-            break
     }
 
     n := k + 36
@@ -55,15 +54,15 @@ func (c *ariaCipher) BlockSize() int {
 
 func (c *ariaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("aria: input not full block")
+        panic("cryptobin/aria: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("aria: output not full block")
+        panic("cryptobin/aria: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("aria: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/aria: invalid buffer overlap")
     }
 
     c.cryptBlock(c.enc, dst, src)
@@ -71,15 +70,15 @@ func (c *ariaCipher) Encrypt(dst, src []byte) {
 
 func (c *ariaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("aria: input not full block")
+        panic("cryptobin/aria: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("aria: output not full block")
+        panic("cryptobin/aria: output not full block")
     }
 
-    if inexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("aria: invalid buffer overlap")
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/aria: invalid buffer overlap")
     }
 
     c.cryptBlock(c.dec, dst, src)

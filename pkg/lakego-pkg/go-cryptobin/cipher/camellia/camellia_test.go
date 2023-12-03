@@ -66,7 +66,7 @@ func TestRot(t  *testing.T) {
 func TestCamellia(t *testing.T) {
 
     for _, tt := range camelliaTests {
-        c, _ := New(tt.key)
+        c, _ := NewCipher(tt.key)
         var b [16]byte
         c.Encrypt(b[:], tt.plain)
         if !bytes.Equal(b[:], tt.cipher) {

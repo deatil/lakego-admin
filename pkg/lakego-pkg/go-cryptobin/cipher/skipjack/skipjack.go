@@ -7,21 +7,30 @@ import (
 
 const BlockSize = 8
 
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cryptobin/skipjack: invalid key size " + strconv.Itoa(int(k))
+}
+
 // References: http://csrc.nist.gov/groups/ST/toolkit/documents/skipjack/skipjack.pdf
 // skipjackCipher is an instance of SKIPJACK encryption with a particular key
 type skipjackCipher struct {
     key []byte
 }
 
-// New creates and returns a new cipher.Block implementing the SKIPJACK cipher.
+// NewCipher creates and returns a new cipher.Block implementing the SKIPJACK cipher.
 // The key argument must be 10 bytes.
 func NewCipher(key []byte) (cipher.Block, error) {
-    c := new(skipjackCipher)
-
-    if klen := len(key); klen != 10 {
-        return nil, KeySizeError(klen)
+    k := len(key)
+    switch k {
+        case 10:
+            break
+        default:
+            return nil, KeySizeError(k)
     }
 
+    c := new(skipjackCipher)
     c.key = make([]byte, 10)
 
     copy(c.key[:], key)
@@ -30,8 +39,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
 }
 
 // BlockSize returns the SKIPJACK block size
-func (c *skipjackCipher) BlockSize() int { 
-    return BlockSize 
+func (c *skipjackCipher) BlockSize() int {
+    return BlockSize
 }
 
 func g(key []byte, k int, w uint16) uint16 {
@@ -125,12 +134,6 @@ func (c *skipjackCipher) Decrypt(dst, src []byte) {
     dst[5] = byte(w3 & 0xff)
     dst[6] = byte(w4 >> 8)
     dst[7] = byte(w4 & 0xff)
-}
-
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return "dskipjack: invalid key size " + strconv.Itoa(int(k))
 }
 
 // via: http://packetstormsecurity.org/files/20573/skipjack.c

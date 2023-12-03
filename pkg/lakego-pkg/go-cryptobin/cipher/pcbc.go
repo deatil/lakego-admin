@@ -36,7 +36,7 @@ type pcbcEncAble interface {
 
 func NewPCBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cipher.NewPCBCEncrypter: IV length must equal block size")
+        panic("cryptobin/pcbc: IV length must equal block size")
     }
 
     if pcbc, ok := b.(pcbcEncAble); ok {
@@ -48,7 +48,7 @@ func NewPCBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
 
 func newPCBCGenericEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cipher.NewPCBCEncrypter: IV length must equal block size")
+        panic("cryptobin/pcbc: IV length must equal block size")
     }
     return (*pcbcEncrypter)(newPCBC(b, iv))
 }
@@ -59,15 +59,15 @@ func (x *pcbcEncrypter) BlockSize() int {
 
 func (x *pcbcEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("crypto/cipher: input not full blocks")
+        panic("cryptobin/pcbc: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("crypto/cipher: output smaller than input")
+        panic("cryptobin/pcbc: output smaller than input")
     }
 
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("crypto/cipher: invalid buffer overlap")
+        panic("cryptobin/pcbc: invalid buffer overlap")
     }
 
     iv := x.iv
@@ -83,7 +83,7 @@ func (x *pcbcEncrypter) CryptBlocks(dst, src []byte) {
 
 func (x *pcbcEncrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cipher: incorrect length IV")
+        panic("cryptobin/pcbc: incorrect length IV")
     }
 
     copy(x.iv, iv)
@@ -97,7 +97,7 @@ type pcbcDecAble interface {
 
 func NewPCBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cipher.NewPCBCDecrypter: IV length must equal block size")
+        panic("cryptobin/pcbc: IV length must equal block size")
     }
 
     if pcbc, ok := b.(pcbcDecAble); ok {
@@ -109,7 +109,7 @@ func NewPCBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
 
 func newPCBCGenericDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cipher.NewPCBCDecrypter: IV length must equal block size")
+        panic("cryptobin/pcbc: IV length must equal block size")
     }
 
     return (*pcbcDecrypter)(newPCBC(b, iv))
@@ -121,15 +121,15 @@ func (x *pcbcDecrypter) BlockSize() int {
 
 func (x *pcbcDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("crypto/cipher: input not full blocks")
+        panic("cryptobin/pcbc: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("crypto/cipher: output smaller than input")
+        panic("cryptobin/pcbc: output smaller than input")
     }
 
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("crypto/cipher: invalid buffer overlap")
+        panic("cryptobin/pcbc: invalid buffer overlap")
     }
 
     if len(src) == 0 {
@@ -149,7 +149,7 @@ func (x *pcbcDecrypter) CryptBlocks(dst, src []byte) {
 
 func (x *pcbcDecrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cipher: incorrect length IV")
+        panic("cryptobin/pcbc: incorrect length IV")
     }
 
     copy(x.iv, iv)
