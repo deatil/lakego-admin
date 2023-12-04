@@ -29,6 +29,7 @@ type panamaCipher struct {
 }
 
 // NewCipher creates and returns a new cipher.Block.
+// key bytes and src bytes is use BigEndian
 func NewCipher(key []byte) (cipher.Stream, error) {
     k := len(key)
     switch k {
@@ -65,8 +66,6 @@ func (this *panamaCipher) set_key(
     var keyblocks int32 = (8 * keysize) / (PAN_STAGE_SIZE * WORDLENGTH);
     var vecblocks int32 = (8 * vecsize) / (PAN_STAGE_SIZE * WORDLENGTH);
 
-    var i int32
-
     /* initialize the Panama state machine for a fresh crypting operation */
     this.pan_reset(&this.buffer, &this.stated)
     this.pan_push(in_key, uint32(keyblocks), &this.buffer, &this.stated)
@@ -82,16 +81,11 @@ func (this *panamaCipher) set_key(
 
     this.keymat_pointer = 0
 
-    for i = 0; i < 8; i++ {
-        this.wkeymat[i] = byteswap32(this.wkeymat[i])
-    }
-
     this.keymat = keymatToBytes(this.wkeymat)
 }
 
 func (this *panamaCipher) XORKeyStream(dst, src []byte) {
     var i int32
-    var j int32
 
     /* initialize the Panama state machine for a fresh crypting operation */
     for i = 0; i < int32(len(src)); i++ {
@@ -100,10 +94,6 @@ func (this *panamaCipher) XORKeyStream(dst, src []byte) {
             copy(this.wkeymat[0:], wkeymat)
 
             this.keymat_pointer = 0
-
-            for j = 0; j < 8; j++ {
-                this.wkeymat[j] = byteswap32(this.wkeymat[j])
-            }
 
             this.keymat = keymatToBytes(this.wkeymat)
         }
@@ -249,10 +239,6 @@ func (this *panamaCipher) pan_push(
     data.READ_STATE(state)
 
     /* we assume pointer to input buffer is compatible with pointer to PAN_STAGE */
-    for i, in := range In {
-        In[i] = byteswap32(in)
-    }
-
     var pan_states [8]uint32
 
     for i = 0; i < uint32(len(In)); i += PAN_STAGE_SIZE {

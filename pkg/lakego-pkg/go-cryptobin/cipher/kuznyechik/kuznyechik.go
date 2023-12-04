@@ -17,6 +17,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     k01 := binary.LittleEndian.Uint64(key[8:16])
     k10 := binary.LittleEndian.Uint64(key[16:24])
     k11 := binary.LittleEndian.Uint64(key[24:32])
+
     k := new(kuznyechikCipher)
     k.erk[0][0] = k00
     k.erk[0][1] = k01
@@ -42,11 +43,13 @@ func NewCipher(key []byte) (cipher.Block, error) {
     k.erk[8][1] = k01
     k.erk[9][0] = k10
     k.erk[9][1] = k11
+
     // drf is based on erk
     k.drk[0] = k.erk[0] // first element is just copied
     for i := 1; i < 10; i++ {
         k.drk[i][0], k.drk[i][1] = ilss(k.erk[i][0], k.erk[i][1])
     }
+
     return k, nil
 }
 
@@ -62,9 +65,10 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
     if len(dst) < BlockSize {
         panic("cryptobin/kuznyechik: output not full block")
     }
-    
+
     x1 := binary.LittleEndian.Uint64(src[0:8])
     x2 := binary.LittleEndian.Uint64(src[8:16])
+
     var t1, t2 uint64
     x1 ^= k.erk[0][0]
     x2 ^= k.erk[0][1]
@@ -95,6 +99,7 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
     t1, t2 = ls(x1, x2)
     t1 ^= k.erk[9][0]
     t2 ^= k.erk[9][1]
+
     binary.LittleEndian.PutUint64(dst[0:8], t1)
     binary.LittleEndian.PutUint64(dst[8:16], t2)
 }
@@ -107,9 +112,10 @@ func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
     if len(dst) < BlockSize {
         panic("cryptobin/kuznyechik: output not full block")
     }
-    
+
     x1 := binary.LittleEndian.Uint64(src[0:8])
     x2 := binary.LittleEndian.Uint64(src[8:16])
+
     var t1, t2 uint64
     t1, t2 = ilss(x1, x2)
     t1 ^= k.drk[9][0]
@@ -142,6 +148,7 @@ func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
     t2 = isi(t2)
     t1 ^= k.drk[0][0]
     t2 ^= k.drk[0][1]
+
     binary.LittleEndian.PutUint64(dst[0:8], t1)
     binary.LittleEndian.PutUint64(dst[8:16], t2)
 }

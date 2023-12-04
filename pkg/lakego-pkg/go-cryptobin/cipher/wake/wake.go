@@ -7,6 +7,9 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+// WAKE reference C-code, based on the description in David J. Wheeler's
+// paper "A bulk Data Encryption Algorithm"
+
 const BlockSize = 1
 
 type KeySizeError int
@@ -24,6 +27,7 @@ type wakeCipher struct {
 // NewCipher creates and returns a new cipher.Block.
 // key is 16 bytes, so 32 bytes is used half bytes.
 // so the cipher use 16 bytes key.
+// key bytes and src bytes is BigEndian type.
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
@@ -97,21 +101,16 @@ func (this *wakeCipher) encrypt(dst, src []byte) {
         r2Bytes[this.counter] = input[i]
         r2 = bytesToUint32(r2Bytes[:])
 
-        this.counter++;
+        this.counter++
 
         if (this.counter == 4) { /* r6 was used - update it! */
             this.counter = 0
 
             /* these swaps are because we do operations per byte */
-            r2 = byteswap32(r2)
-            r6 = byteswap32(r6)
-
             r3 = this.M(r3, r2)
             r4 = this.M(r4, r3)
             r5 = this.M(r5, r4)
             r6 = this.M(r6, r5)
-
-            r6 = byteswap32(r6)
         }
     }
 
@@ -147,19 +146,15 @@ func (this *wakeCipher) decrypt(dst, src []byte) {
         r6Bytes := Uint32ToBytes(r6)
         input[i] ^= r6Bytes[this.counter]
 
-        this.counter++;
+        this.counter++
 
         if (this.counter == 4) {
             this.counter = 0
 
-            r1 = byteswap32(r1)
-            r6 = byteswap32(r6)
             r3 = this.M(r3, r1)
             r4 = this.M(r4, r3)
             r5 = this.M(r5, r4)
             r6 = this.M(r6, r5)
-
-            r6 = byteswap32(r6)
         }
     }
 
@@ -186,10 +181,10 @@ func (this *wakeCipher) setKey(key []uint32) {
     var x, z, p uint32
     var k [4]uint32
 
-    k[0] = byteswap32(key[0]);
-    k[1] = byteswap32(key[1]);
-    k[2] = byteswap32(key[2]);
-    k[3] = byteswap32(key[3]);
+    k[0] = key[0]
+    k[1] = key[1]
+    k[2] = key[2]
+    k[3] = key[3]
 
     for p = 0; p < 4; p++ {
         this.t[p] = k[p]
@@ -225,11 +220,10 @@ func (this *wakeCipher) setKey(key []uint32) {
 
     this.counter = 0;
 
-    this.r[0] = k[0];
-    this.r[1] = k[1];
-    this.r[2] = k[2];
-
-    this.r[3] = byteswap32(k[3]);
+    this.r[0] = k[0]
+    this.r[1] = k[1]
+    this.r[2] = k[2]
+    this.r[3] = k[3]
 }
 
 func (this *wakeCipher) M(X uint32, Y uint32) uint32 {

@@ -102,6 +102,7 @@ func (c *rc5Cipher32) Decrypt(dst, src []byte) {
 
     A := binary.LittleEndian.Uint32(src[:4])
     B := binary.LittleEndian.Uint32(src[4:8])
+
     for r := c.rounds; r >= 1; r-- {
         B = A ^ bits.RotateLeft32(B-c.rk[r<<1+1], -int(A))
         A = B ^ bits.RotateLeft32(A-c.rk[r<<1], -int(B))

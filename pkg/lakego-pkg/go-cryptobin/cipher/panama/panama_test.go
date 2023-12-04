@@ -6,7 +6,6 @@ import (
     "testing"
     "math/rand"
     "encoding/hex"
-
 )
 
 func Test_Panama(t *testing.T) {
@@ -53,7 +52,7 @@ func Test_Check(t *testing.T) {
         plaintext[ii] = byte(ii % 256)
     }
 
-    ciphertext := "d76e3c2243feadd2c99edfcb95c64c852ba6c59f"
+    ciphertext := "9644f82d74e6e7b11a1acbb20f4a1c93b800e248"
 
     cipherBytes, _ := hex.DecodeString(ciphertext)
 

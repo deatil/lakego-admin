@@ -1,5 +1,8 @@
 ### 使用方法
 
+对称加密的 `key` 和输入输出数据通常都为大端数据(BigEndian)
+
+
 * 对称加密使用
 ~~~go
 package main

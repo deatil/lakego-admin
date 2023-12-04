@@ -1,8 +1,24 @@
 package tool
 
 import (
+    "fmt"
+    "math/bits"
     "encoding/binary"
 )
+
+func Rotl32(x, n uint32) uint32 {
+    return bits.RotateLeft32(x, int(n))
+}
+
+func Rotr32(x, n uint32) uint32 {
+    return Rotl32(x, 32 - n);
+}
+
+func Byteswap32(x uint32) uint32 {
+    return ((Rotl32(x, 8) & 0x00ff00ff) | (Rotr32(x, 8) & 0xff00ff00))
+}
+
+//==========
 
 func LE2BE_16(inp []byte) []byte {
     i := binary.LittleEndian.Uint16(inp[0:])
@@ -62,7 +78,7 @@ func BE2LE_64(inp []byte) []byte {
 
 func LE2BE_16_Bytes(in []byte) []byte {
     if len(in) % 2 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))
@@ -78,7 +94,7 @@ func LE2BE_16_Bytes(in []byte) []byte {
 
 func BE2LE_16_Bytes(in []byte) []byte {
     if len(in) % 2 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))
@@ -94,7 +110,7 @@ func BE2LE_16_Bytes(in []byte) []byte {
 
 func LE2BE_32_Bytes(in []byte) []byte {
     if len(in) % 4 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))
@@ -110,7 +126,7 @@ func LE2BE_32_Bytes(in []byte) []byte {
 
 func BE2LE_32_Bytes(in []byte) []byte {
     if len(in) % 4 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))
@@ -126,7 +142,7 @@ func BE2LE_32_Bytes(in []byte) []byte {
 
 func LE2BE_64_Bytes(in []byte) []byte {
     if len(in) % 8 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))
@@ -142,7 +158,7 @@ func LE2BE_64_Bytes(in []byte) []byte {
 
 func BE2LE_64_Bytes(in []byte) []byte {
     if len(in) % 8 != 0 {
-        panic("in data error")
+        panic(fmt.Sprintf("in data len(%d) error", len(in)))
     }
 
     out := make([]byte, len(in))

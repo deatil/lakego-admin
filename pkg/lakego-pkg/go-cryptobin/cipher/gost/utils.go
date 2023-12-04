@@ -11,7 +11,7 @@ func (k KeySizeError) Error() string {
 type SboxSizeError int
 
 func (k SboxSizeError) Error() string {
-    return "gost: invalid sbox size: " + strconv.Itoa(int(k))
+    return "cryptobin/gost: invalid sbox size: " + strconv.Itoa(int(k))
 }
 
 // Expand s-box
@@ -35,8 +35,10 @@ func sboxExpansion(s [][]byte) [][]byte {
 
 // Compute GOST cycle
 func cycle(x uint32, kbox [][]byte) uint32 {
-    x = uint32(kbox[0][(x>>24)&255])<<24 | uint32(kbox[1][(x>>16)&255])<<16 |
-        uint32(kbox[2][(x>>8)&255])<<8 | uint32(kbox[3][x&255])
+    x = uint32(kbox[0][(x >> 24) & 255]) << 24 |
+        uint32(kbox[1][(x >> 16) & 255]) << 16 |
+        uint32(kbox[2][(x >>  8) & 255]) <<  8 |
+        uint32(kbox[3][x & 255])
 
     return (x << 11) | (x >> (32 - 11))
 }
