@@ -1,6 +1,10 @@
 package gost
 
-import "crypto/cipher"
+import (
+    "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
+)
 
 // GOST 28147-89 defines a block size of 64 bits
 const BlockSize = 8
@@ -48,6 +52,18 @@ func (this *gostCipher) BlockSize() int {
 }
 
 func (this *gostCipher) Encrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/gost: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/gost: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/gost: invalid buffer overlap")
+    }
+
     encSrc := bytesToUint32s(src)
     encDst := make([]uint32, len(encSrc))
 
@@ -58,6 +74,18 @@ func (this *gostCipher) Encrypt(dst, src []byte) {
 }
 
 func (this *gostCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/gost: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/gost: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/gost: invalid buffer overlap")
+    }
+
     encSrc := bytesToUint32s(src)
     encDst := make([]uint32, len(encSrc))
 

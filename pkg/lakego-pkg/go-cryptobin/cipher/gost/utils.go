@@ -55,9 +55,17 @@ func bytesToUint32s(b []byte) []uint32 {
         j := i * 4
 
         if littleEndian {
-            dst[i] = uint32(b[j+0])<<24 | uint32(b[j+1])<<16 | uint32(b[j+2])<<8 | uint32(b[j+3])
+            dst[i] =
+                uint32(b[j+0]) << 24 |
+                uint32(b[j+1]) << 16 |
+                uint32(b[j+2]) <<  8 |
+                uint32(b[j+3])
         } else {
-            dst[i] = uint32(b[j+0]) | uint32(b[j+1])<<8 | uint32(b[j+2])<<16 | uint32(b[j+3])<<24
+            dst[i] =
+                uint32(b[j+0])       |
+                uint32(b[j+1]) <<  8 |
+                uint32(b[j+2]) << 16 |
+                uint32(b[j+3]) << 24
         }
     }
 

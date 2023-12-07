@@ -612,7 +612,8 @@ func Test_GostCFBPKCS7Padding(t *testing.T) {
         "DESDerivedSbox",
         "TestSbox",
         "CryptoProSbox",
-        "SboxIdtc26gost28147paramZ",
+        "TC26Sbox",
+        "EACSbox",
     }
 
     for _, sbox := range sboxs {

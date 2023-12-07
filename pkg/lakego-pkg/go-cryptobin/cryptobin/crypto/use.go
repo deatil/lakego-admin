@@ -213,7 +213,7 @@ func (this Cryptobin) Camellia() Cryptobin {
 
 // Gost
 // The key argument should be 32 bytes.
-// sbox is [DESDerivedSbox | TestSbox | CryptoProSbox | SboxIdtc26gost28147paramZ]
+// sbox is [DESDerivedSbox | TestSbox | CryptoProSbox | TC26Sbox | EACSbox]
 // or set [][]byte data
 func (this Cryptobin) Gost(sbox any) Cryptobin {
     this.multiple = Gost

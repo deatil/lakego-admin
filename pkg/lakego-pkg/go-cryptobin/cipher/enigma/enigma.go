@@ -27,12 +27,12 @@ type enigmaCipher struct {
     n1, n2, nr1, nr2 int32
 }
 
-// NewCipher creates and returns a new cipher.Block.
+// NewCipher creates and returns a new cipher.Stream.
 func NewCipher(key []byte) (cipher.Stream, error) {
     return NewCipherWithSeed(key, DefaultSeed)
 }
 
-// NewCipherWithSeed creates and returns a new cipher.Block.
+// NewCipherWithSeed creates and returns a new cipher.Stream.
 func NewCipherWithSeed(key []byte, seed int32) (cipher.Stream, error) {
     k := len(key)
     switch k {

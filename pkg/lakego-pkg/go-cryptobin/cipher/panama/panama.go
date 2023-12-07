@@ -28,7 +28,7 @@ type panamaCipher struct {
     keymat_pointer int32
 }
 
-// NewCipher creates and returns a new cipher.Block.
+// NewCipher creates and returns a new cipher.Stream.
 // key bytes and src bytes is use BigEndian
 func NewCipher(key []byte) (cipher.Stream, error) {
     k := len(key)

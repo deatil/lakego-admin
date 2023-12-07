@@ -1013,8 +1013,10 @@ func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
                     sbox = cryptobin_gost.TestSbox
                 case "CryptoProSbox":
                     sbox = cryptobin_gost.CryptoProSbox
-                case "SboxIdtc26gost28147paramZ":
-                    sbox = cryptobin_gost.SboxIdtc26gost28147paramZ
+                case "TC26Sbox":
+                    sbox = cryptobin_gost.TC26Sbox
+                case "EACSbox":
+                    sbox = cryptobin_gost.EACSbox
             }
     }
 

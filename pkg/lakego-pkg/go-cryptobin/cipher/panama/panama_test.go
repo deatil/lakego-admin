@@ -53,6 +53,7 @@ func Test_Check(t *testing.T) {
     }
 
     ciphertext := "9644f82d74e6e7b11a1acbb20f4a1c93b800e248"
+    // ciphertext := "d76e3c2243feadd2c99edfcb95c64c852ba6c59f"
 
     cipherBytes, _ := hex.DecodeString(ciphertext)
 
