@@ -599,6 +599,23 @@ func (this Cryptobin) NOFB() Cryptobin {
     return this
 }
 
+// BC
+func (this Cryptobin) BC() Cryptobin {
+    this.mode = BC
+
+    return this
+}
+
+// HCTR
+func (this Cryptobin) HCTR(tweak, hkey []byte) Cryptobin {
+    this.mode = HCTR
+
+    this.config.Set("tweak", tweak)
+    this.config.Set("hkey", hkey)
+
+    return this
+}
+
 // 使用模式
 func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
     this.mode = mode

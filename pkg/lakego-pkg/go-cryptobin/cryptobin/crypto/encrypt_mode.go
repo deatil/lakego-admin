@@ -9,6 +9,7 @@ import (
     "github.com/deatil/go-cryptobin/cipher/ocb"
     "github.com/deatil/go-cryptobin/cipher/eax"
     "github.com/deatil/go-cryptobin/cipher/ccm"
+    "github.com/deatil/go-cryptobin/cipher/hctr"
     cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
@@ -688,5 +689,69 @@ func (this ModeNOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 func init() {
     UseMode.Add(NOFB, func() IMode {
         return ModeNOFB{}
+    })
+}
+
+// ===================
+
+type ModeBC struct {}
+
+// 加密
+func (this ModeBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewBCDecrypter(block, iv).CryptBlocks(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(BC, func() IMode {
+        return ModeBC{}
+    })
+}
+
+// ===================
+
+type ModeHCTR struct {}
+
+// 加密
+func (this ModeHCTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    tweak := opt.Config().GetBytes("tweak")
+    hkey := opt.Config().GetBytes("hkey")
+
+    cryptText := make([]byte, len(plain))
+    hctr.NewHCTR(block, tweak, hkey).Encrypt(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeHCTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    tweak := opt.Config().GetBytes("tweak")
+    hkey := opt.Config().GetBytes("hkey")
+
+    dst := make([]byte, len(data))
+    hctr.NewHCTR(block, tweak, hkey).Decrypt(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(HCTR, func() IMode {
+        return ModeHCTR{}
     })
 }

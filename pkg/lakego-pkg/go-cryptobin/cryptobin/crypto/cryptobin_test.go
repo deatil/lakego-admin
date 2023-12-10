@@ -1743,3 +1743,66 @@ func Test_Anubis(t *testing.T) {
 
     assert(cyptdeStr, data, "Anubis-res")
 }
+
+func Test_AesBC(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12ghnjhyuj").
+        Aes().
+        BC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesBC-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12ghnjhyuj").
+        Aes().
+        BC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesBC-Decode")
+
+    assert(data, cyptdeStr, "AesBC")
+}
+
+func Test_AesHCTR(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    tweak := []byte("kkinjkijeel2pass")
+    hkey := []byte("11injkijkol22plo")
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12ghnjhyuj").
+        Aes().
+        HCTR(tweak, hkey).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "AesHCTR-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12ghnjhyuj").
+        Aes().
+        HCTR(tweak, hkey).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "AesHCTR-Decode")
+
+    assert(data, cyptdeStr, "AesHCTR")
+}

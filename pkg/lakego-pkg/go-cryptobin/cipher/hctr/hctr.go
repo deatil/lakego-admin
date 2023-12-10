@@ -1,7 +1,6 @@
 package hctr
 
 import (
-    "errors"
     "crypto/cipher"
     "crypto/subtle"
     "encoding/binary"
@@ -58,12 +57,12 @@ type hctr struct {
     productTable [16]hctrFieldElement
 }
 
-func NewHCTR(cipher cipher.Block, tweak, hkey []byte) (*hctr, error) {
+func NewHCTR(cipher cipher.Block, tweak, hkey []byte) *hctr {
     if len(tweak) != blockSize || len(hkey) != blockSize {
-        return nil, errors.New("cryptobin/hctr: invalid tweak and/or hash key length")
+        panic("cryptobin/hctr: invalid tweak and/or hash key length")
     }
 
-    c := &hctr{}
+    c := new(hctr)
     c.cipher = cipher
 
     copy(c.tweak[:], tweak)
@@ -80,11 +79,65 @@ func NewHCTR(cipher cipher.Block, tweak, hkey []byte) (*hctr, error) {
         c.productTable[reverseBits(i+1)] = hctrAdd(c.productTable[reverseBits(i)], x)
     }
 
-    return c, nil
+    return c
 }
 
 func (h *hctr) BlockSize() int {
     return blockSize
+}
+
+func (h *hctr) Encrypt(ciphertext, plaintext []byte) {
+    if len(ciphertext) < len(plaintext) {
+        panic("cryptobin/hctr: ciphertext is smaller than plaintext")
+    }
+
+    if len(plaintext) < blockSize {
+        panic("cryptobin/hctr: plaintext length is smaller than the block size")
+    }
+
+    if alias.InexactOverlap(ciphertext[:len(plaintext)], plaintext) {
+        panic("cryptobin/hctr: invalid buffer overlap")
+    }
+
+    var z1, z2 [blockSize]byte
+
+    h.uhash(plaintext[blockSize:], z1[:])
+    subtle.XORBytes(z1[:], z1[:], plaintext[:blockSize])
+
+    h.cipher.Encrypt(z2[:], z1[:])
+
+    subtle.XORBytes(z1[:], z1[:], z2[:])
+    h.ctr(ciphertext[blockSize:], plaintext[blockSize:], z1[:])
+
+    h.uhash(ciphertext[blockSize:], z1[:])
+    subtle.XORBytes(ciphertext, z2[:], z1[:])
+}
+
+func (h *hctr) Decrypt(plaintext, ciphertext []byte) {
+    if len(plaintext) < len(ciphertext) {
+        panic("cryptobin/hctr: plaintext is smaller than cihpertext")
+    }
+
+    if len(ciphertext) < blockSize {
+        panic("cryptobin/hctr: ciphertext length is smaller than the block size")
+    }
+
+    if alias.InexactOverlap(plaintext[:len(ciphertext)], ciphertext) {
+        panic("cryptobin/hctr: invalid buffer overlap")
+    }
+
+    var z1, z2 [blockSize]byte
+
+    h.uhash(ciphertext[blockSize:], z2[:])
+    subtle.XORBytes(z2[:], z2[:], ciphertext[:blockSize])
+
+    h.cipher.Decrypt(z1[:], z2[:])
+
+    subtle.XORBytes(z2[:], z2[:], z1[:])
+    h.ctr(plaintext[blockSize:], ciphertext[blockSize:], z2[:])
+
+    h.uhash(plaintext[blockSize:], z2[:])
+    subtle.XORBytes(plaintext, z2[:], z1[:])
 }
 
 func (h *hctr) mul(y *hctrFieldElement) {
@@ -159,60 +212,6 @@ func (h *hctr) uhash(m []byte, out []byte) {
 
     binary.BigEndian.PutUint64(out[:], y.low)
     binary.BigEndian.PutUint64(out[8:], y.high)
-}
-
-func (h *hctr) Encrypt(ciphertext, plaintext []byte) {
-    if len(ciphertext) < len(plaintext) {
-        panic("cryptobin/hctr: ciphertext is smaller than plaintext")
-    }
-
-    if len(plaintext) < blockSize {
-        panic("cryptobin/hctr: plaintext length is smaller than the block size")
-    }
-
-    if alias.InexactOverlap(ciphertext[:len(plaintext)], plaintext) {
-        panic("cryptobin/hctr: invalid buffer overlap")
-    }
-
-    var z1, z2 [blockSize]byte
-
-    h.uhash(plaintext[blockSize:], z1[:])
-    subtle.XORBytes(z1[:], z1[:], plaintext[:blockSize])
-
-    h.cipher.Encrypt(z2[:], z1[:])
-
-    subtle.XORBytes(z1[:], z1[:], z2[:])
-    h.ctr(ciphertext[blockSize:], plaintext[blockSize:], z1[:])
-
-    h.uhash(ciphertext[blockSize:], z1[:])
-    subtle.XORBytes(ciphertext, z2[:], z1[:])
-}
-
-func (h *hctr) Decrypt(plaintext, ciphertext []byte) {
-    if len(plaintext) < len(ciphertext) {
-        panic("cryptobin/hctr: plaintext is smaller than cihpertext")
-    }
-
-    if len(ciphertext) < blockSize {
-        panic("cryptobin/hctr: ciphertext length is smaller than the block size")
-    }
-
-    if alias.InexactOverlap(plaintext[:len(ciphertext)], ciphertext) {
-        panic("cryptobin/hctr: invalid buffer overlap")
-    }
-
-    var z1, z2 [blockSize]byte
-
-    h.uhash(ciphertext[blockSize:], z2[:])
-    subtle.XORBytes(z2[:], z2[:], ciphertext[:blockSize])
-
-    h.cipher.Decrypt(z1[:], z2[:])
-
-    subtle.XORBytes(z2[:], z2[:], z1[:])
-    h.ctr(plaintext[blockSize:], ciphertext[blockSize:], z2[:])
-
-    h.uhash(plaintext[blockSize:], z2[:])
-    subtle.XORBytes(plaintext, z2[:], z1[:])
 }
 
 func (h *hctr) ctr(dst, src []byte, baseCtr []byte) {

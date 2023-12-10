@@ -6,19 +6,19 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-type CipherCreator = func([]byte) (cipher.Block, error)
+type KeyCreator = func([]byte) (cipher.Block, error)
 
 type ofbnlf struct {
-    newCipher CipherCreator
+    newKey    KeyCreator
     b         cipher.Block
     blockSize int
     iv        []byte
 }
 
-func newOFBNLF(b cipher.Block, newCipher CipherCreator, iv []byte) *ofbnlf {
+func newOFBNLF(b cipher.Block, newKey KeyCreator, iv []byte) *ofbnlf {
     c := &ofbnlf{
         b:         b,
-        newCipher: newCipher,
+        newKey:    newKey,
         blockSize: b.BlockSize(),
         iv:        make([]byte, b.BlockSize()),
     }
@@ -30,23 +30,19 @@ func newOFBNLF(b cipher.Block, newCipher CipherCreator, iv []byte) *ofbnlf {
 
 type ofbnlfEncrypter ofbnlf
 
-func NewOFBNLFEncrypter(b cipher.Block, newCipher CipherCreator, iv []byte) cipher.BlockMode {
-    if len(iv) != b.BlockSize() {
-        panic("cryptobin/ofbnlf: IV length must equal block size")
-    }
-
-    c := newOFBNLF(b, newCipher, iv)
-
-    return (*ofbnlfEncrypter)(c)
-}
-
-func NewOFBNLFEncrypterWithKey(newCipher CipherCreator, key, iv []byte) cipher.BlockMode {
-    b, err := newCipher(key)
+func NewOFBNLFEncrypter(newKey KeyCreator, key, iv []byte) cipher.BlockMode {
+    b, err := newKey(key)
     if err != nil {
         panic("cryptobin/ofbnlf: " + err.Error())
     }
 
-    return NewOFBNLFEncrypter(b, newCipher, iv)
+    if len(iv) != b.BlockSize() {
+        panic("cryptobin/ofbnlf: IV length must equal block size")
+    }
+
+    c := newOFBNLF(b, newKey, iv)
+
+    return (*ofbnlfEncrypter)(c)
 }
 
 func (x *ofbnlfEncrypter) BlockSize() int {
@@ -72,7 +68,7 @@ func (x *ofbnlfEncrypter) CryptBlocks(dst, src []byte) {
     for len(src) > 0 {
         x.b.Encrypt(k, iv)
 
-        c, err := x.newCipher(k)
+        c, err := x.newKey(k)
         if err != nil {
             panic("cryptobin/ofbnlf: " + err.Error())
         }
@@ -98,23 +94,19 @@ func (x *ofbnlfEncrypter) SetIV(iv []byte) {
 
 type ofbnlfDecrypter ofbnlf
 
-func NewOFBNLFDecrypter(b cipher.Block, newCipher CipherCreator, iv []byte) cipher.BlockMode {
-    if len(iv) != b.BlockSize() {
-        panic("cryptobin/ofbnlf: IV length must equal block size")
-    }
-
-    c := newOFBNLF(b, newCipher, iv)
-
-    return (*ofbnlfDecrypter)(c)
-}
-
-func NewOFBNLFDecrypterWithKey(newCipher CipherCreator, key, iv []byte) cipher.BlockMode {
-    b, err := newCipher(key)
+func NewOFBNLFDecrypter(newKey KeyCreator, key, iv []byte) cipher.BlockMode {
+    b, err := newKey(key)
     if err != nil {
         panic("cryptobin/ofbnlf: " + err.Error())
     }
 
-    return NewOFBNLFDecrypter(b, newCipher, iv)
+    if len(iv) != b.BlockSize() {
+        panic("cryptobin/ofbnlf: IV length must equal block size")
+    }
+
+    c := newOFBNLF(b, newKey, iv)
+
+    return (*ofbnlfDecrypter)(c)
 }
 
 func (x *ofbnlfDecrypter) BlockSize() int {
@@ -144,7 +136,7 @@ func (x *ofbnlfDecrypter) CryptBlocks(dst, src []byte) {
     for len(src) > 0 {
         x.b.Encrypt(k, iv)
 
-        c, err := x.newCipher(k)
+        c, err := x.newKey(k)
         if err != nil {
             panic("cryptobin/ofbnlf: " + err.Error())
         }

@@ -262,6 +262,10 @@ func (this Mode) String() string {
             return "OCB"
         case EAX:
             return "EAX"
+        case BC:
+            return "BC"
+        case HCTR:
+            return "HCTR"
         default:
             if TypeMode.Names().Has(this) {
                 return (TypeMode.Names().Get(this))()
@@ -292,6 +296,8 @@ const (
     CCM
     OCB
     EAX
+    BC
+    HCTR
     maxMode
 )
 

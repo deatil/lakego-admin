@@ -21,13 +21,13 @@ func Test_HCTR(t *testing.T) {
     c, err := aes.NewCipher(key)
     assertError(err, "NewHCTR")
 
-    mode := NewHCTREncrypter(c, tweak, hkey)
+    mode := NewHCTR(c, tweak, hkey)
     ciphertext := make([]byte, len(plaintext))
-    mode.CryptBlocks(ciphertext, plaintext)
+    mode.Encrypt(ciphertext, plaintext)
 
-    mode2 := NewHCTRDecrypter(c, tweak, hkey)
+    mode2 := NewHCTR(c, tweak, hkey)
     plaintext2 := make([]byte, len(ciphertext))
-    mode2.CryptBlocks(plaintext2, ciphertext)
+    mode2.Decrypt(plaintext2, ciphertext)
 
     assertNotEmpty(plaintext2, "NewHCTR")
 

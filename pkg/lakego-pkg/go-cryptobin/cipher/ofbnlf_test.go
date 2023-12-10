@@ -9,21 +9,17 @@ import (
 
 func Test_OFBNLF(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
     iv := []byte("11injkijkol22plo")
     plaintext := []byte("kjinjkijkolkdplo")
 
-    c, err := aes.NewCipher(key)
-    assertError(err, "NewOFBNLF")
-
-    mode := NewOFBNLFEncrypter(c, aes.NewCipher, iv)
+    mode := NewOFBNLFEncrypter(aes.NewCipher, key, iv)
     ciphertext := make([]byte, len(plaintext))
     mode.CryptBlocks(ciphertext, plaintext)
 
-    mode2 := NewOFBNLFDecrypter(c, aes.NewCipher, iv)
+    mode2 := NewOFBNLFDecrypter(aes.NewCipher, key, iv)
     plaintext2 := make([]byte, len(ciphertext))
     mode2.CryptBlocks(plaintext2, ciphertext)
 
