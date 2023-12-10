@@ -7,13 +7,13 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const BlockSize = 8
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/multi2: invalid key size %d", int(k))
 }
-
-const BlockSize = 8
 
 type multi2Cipher struct {
     N int32

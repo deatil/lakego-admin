@@ -24,14 +24,14 @@ func Test_Square(t *testing.T) {
             t.Fatal(err.Error())
         }
 
-        cipher1.XORKeyStream(encrypted[:], value)
+        cipher1.Encrypt(encrypted[:], value)
 
         cipher2, err := NewCipher(key)
         if err != nil {
             t.Fatal(err.Error())
         }
 
-        cipher2.XORKeyStream(decrypted[:], encrypted[:])
+        cipher2.Decrypt(decrypted[:], encrypted[:])
 
         if !bytes.Equal(decrypted[:], value[:]) {
             t.Errorf("encryption/decryption failed: % 02x != % 02x\n", decrypted, value)

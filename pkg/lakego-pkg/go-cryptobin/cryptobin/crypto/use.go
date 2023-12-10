@@ -311,6 +311,110 @@ func (this Cryptobin) Panama() Cryptobin {
     return this
 }
 
+// Square
+// The key argument should be 32 bytes.
+func (this Cryptobin) Square() Cryptobin {
+    this.multiple = Square
+
+    return this
+}
+
+// Magenta
+// The key argument should be 16, 24, 32 bytes.
+func (this Cryptobin) Magenta() Cryptobin {
+    this.multiple = Magenta
+
+    return this
+}
+
+// Kasumi
+// The key argument should be 16 bytes.
+func (this Cryptobin) Kasumi() Cryptobin {
+    this.multiple = Kasumi
+
+    return this
+}
+
+// E2
+// The key argument should be 16, 24, 32 bytes.
+func (this Cryptobin) E2() Cryptobin {
+    this.multiple = E2
+
+    return this
+}
+
+// Crypton1
+// The key argument should be 16, 24, 32 bytes.
+func (this Cryptobin) Crypton1() Cryptobin {
+    this.multiple = Crypton1
+
+    return this
+}
+
+// Clefia
+// The key argument should be 16, 24, 32 bytes.
+func (this Cryptobin) Clefia() Cryptobin {
+    this.multiple = Clefia
+
+    return this
+}
+
+// Safer
+// The key argument should be 16, 24, 32 bytes.
+func (this Cryptobin) Safer(typ string, rounds int32) Cryptobin {
+    this.multiple = Safer
+
+    if typ == "K" || typ == "SK" {
+        this.config.Set("type", typ)
+    }
+
+    this.config.Set("rounds", rounds)
+
+    return this
+}
+
+// Noekeon
+// The key argument should be 16 bytes.
+func (this Cryptobin) Noekeon() Cryptobin {
+    this.multiple = Noekeon
+
+    return this
+}
+
+// Multi2
+// The key argument should be 40 bytes.
+func (this Cryptobin) Multi2(rounds int32) Cryptobin {
+    this.multiple = Multi2
+
+    this.config.Set("rounds", rounds)
+
+    return this
+}
+
+// Kseed
+// The key argument should be 16 bytes.
+func (this Cryptobin) Kseed() Cryptobin {
+    this.multiple = Kseed
+
+    return this
+}
+
+// Khazad
+// The key argument should be 16 bytes.
+func (this Cryptobin) Khazad() Cryptobin {
+    this.multiple = Khazad
+
+    return this
+}
+
+// Anubis
+// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
+func (this Cryptobin) Anubis() Cryptobin {
+    this.multiple = Anubis
+
+    return this
+}
+
 // 使用类型
 func (this Cryptobin) MultipleBy(multiple Multiple, cfg ...map[string]any) Cryptobin {
     this.multiple = multiple

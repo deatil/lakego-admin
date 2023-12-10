@@ -1383,3 +1383,363 @@ func Test_Panama(t *testing.T) {
 
     assert(data, cyptdeStr, "Panama-res")
 }
+
+func Test_Square(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf1d2fgtyf12dfertf12dfertf12").
+        Square().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Square-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf1d2fgtyf12dfertf12dfertf12").
+        Square().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Square-Decode")
+
+    assert(cyptdeStr, data, "Square-res")
+}
+
+func Test_Magenta(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf1d2fgtyf12").
+        Magenta().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Magenta-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf1d2fgtyf12").
+        Magenta().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Magenta-Decode")
+
+    assert(cyptdeStr, data, "Magenta-res")
+}
+
+func Test_Kasumi(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfrgt6yh").
+        Kasumi().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Kasumi-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfrgt6yh").
+        Kasumi().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Kasumi-Decode")
+
+    assert(cyptdeStr, data, "Kasumi-res")
+}
+
+func Test_E2(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        E2().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "E2-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        E2().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "E2-Decode")
+
+    assert(cyptdeStr, data, "E2-res")
+}
+
+func Test_Crypton1(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Crypton1().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Crypton1-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Crypton1().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Crypton1-Decode")
+
+    assert(cyptdeStr, data, "Crypton1-res")
+}
+
+func Test_Clefia(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Clefia().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Clefia-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Clefia().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Clefia-Decode")
+
+    assert(cyptdeStr, data, "Clefia-res")
+}
+
+func Test_Safer(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d").
+        Safer("SK", 6).
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Safer-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d").
+        Safer("SK", 6).
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Safer-Decode")
+
+    assert(cyptdeStr, data, "Safer-res")
+}
+
+func Test_Noekeon(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Noekeon().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Noekeon-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Noekeon().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Noekeon-Decode")
+
+    assert(cyptdeStr, data, "Noekeon-res")
+}
+
+func Test_Multi2(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35dfertf1d2fgtyf35fvcdhjnk").
+        SetIv("dfertf1d").
+        Multi2(128).
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Multi2-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35dfertf1d2fgtyf35fvcdhjnk").
+        SetIv("dfertf1d").
+        Multi2(128).
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Multi2-Decode")
+
+    assert(cyptdeStr, data, "Multi2-res")
+}
+
+func Test_Kseed(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Kseed().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Kseed-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d2fgtyfdf").
+        Kseed().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Kseed-Decode")
+
+    assert(cyptdeStr, data, "Kseed-res")
+}
+
+func Test_Khazad(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d").
+        Khazad().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Khazad-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1d").
+        Khazad().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Khazad-Decode")
+
+    assert(cyptdeStr, data, "Khazad-res")
+}
+
+func Test_Anubis(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1dfvb5gtyh").
+        Anubis().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Anubis-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1dfvb5gtyh").
+        Anubis().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Anubis-Decode")
+
+    assert(cyptdeStr, data, "Anubis-res")
+}

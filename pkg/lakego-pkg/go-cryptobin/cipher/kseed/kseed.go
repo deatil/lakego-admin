@@ -7,13 +7,13 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const BlockSize = 16
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/kseed: invalid key size %d", int(k))
 }
-
-const BlockSize = 16
 
 type kseedCipher struct {
     K, dK [32]uint32

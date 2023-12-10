@@ -8,6 +8,23 @@ import (
 // Endianness option
 const littleEndian bool = false
 
+func keyToUint32s(b []byte) []uint32 {
+    size := len(b) / 4
+    dst := make([]uint32, size)
+
+    for i := 0; i < size; i++ {
+        j := i * 4
+
+        if littleEndian {
+            dst[i] = binary.LittleEndian.Uint32(b[j:])
+        } else {
+            dst[i] = binary.BigEndian.Uint32(b[j:])
+        }
+    }
+
+    return dst
+}
+
 func bytesToUint32s(inp []byte) [4]uint32 {
     var blk [4]uint32
 
@@ -26,7 +43,7 @@ func bytesToUint32s(inp []byte) [4]uint32 {
     return blk
 }
 
-func Uint32sToBytes(blk [4]uint32) [16]byte {
+func uint32sToBytes(blk [4]uint32) [16]byte {
     var sav [16]byte
 
     if littleEndian {

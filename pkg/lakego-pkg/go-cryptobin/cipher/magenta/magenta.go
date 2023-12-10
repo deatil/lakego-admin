@@ -8,6 +8,8 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const BlockSize = 16
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
@@ -19,8 +21,6 @@ var once sync.Once
 func initAll() {
     init_tab()
 }
-
-const BlockSize = 16
 
 type magentaCipher struct {
     l_key [16]uint32

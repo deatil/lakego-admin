@@ -8,7 +8,7 @@ import (
 
 func Test_Noekeon(t *testing.T) {
     random := rand.New(rand.NewSource(99))
-    max := 2
+    max := 500
 
     var encrypted [16]byte
     var decrypted [16]byte

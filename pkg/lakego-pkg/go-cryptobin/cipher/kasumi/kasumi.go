@@ -7,16 +7,16 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const (
+    BlockSize = 8
+    KeySize   = 16
+)
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/kasumi: invalid key size %d", int(k))
 }
-
-const (
-    BlockSize = 8
-    KeySize   = 16
-)
 
 type kasumiCipher struct {
     KLi1, KLi2 [8]uint16

@@ -1,6 +1,7 @@
 package saferplus
 
 import (
+    "sync"
     "strconv"
     "crypto/cipher"
 
@@ -15,6 +16,12 @@ const (
     SAFER_MAX_NOF_ROUNDS = 13;
 )
 
+var once sync.Once
+
+func initAll() {
+    init_tab()
+}
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
@@ -22,9 +29,6 @@ func (k KeySizeError) Error() string {
 }
 
 type saferplusCipher struct {
-    exp_tab [256]uint8
-    log_tab [256]uint8
-
     local_key [217]uint8
 }
 
@@ -38,8 +42,9 @@ func NewCipher(key []byte) (cipher.Block, error) {
             return nil, KeySizeError(len(key))
     }
 
+    once.Do(initAll)
+
     c := new(saferplusCipher)
-    c.init()
     c.setKey(key)
 
     return c, nil
@@ -119,21 +124,21 @@ func (this *saferplusCipher) encrypt(dst, src []byte) {
         ciphertext[7] ^= key[xi]
 
         xi++
-        ciphertext[0] = this.exp_tab[ciphertext[0] & 0xFF] + key[xi]
+        ciphertext[0] = exp_tab[ciphertext[0] & 0xFF] + key[xi]
         xi++
-        ciphertext[1] = this.log_tab[ciphertext[1] & 0xFF] ^ key[xi]
+        ciphertext[1] = log_tab[ciphertext[1] & 0xFF] ^ key[xi]
         xi++
-        ciphertext[2] = this.log_tab[ciphertext[2] & 0xFF] ^ key[xi]
+        ciphertext[2] = log_tab[ciphertext[2] & 0xFF] ^ key[xi]
         xi++
-        ciphertext[3] = this.exp_tab[ciphertext[3] & 0xFF] + key[xi]
+        ciphertext[3] = exp_tab[ciphertext[3] & 0xFF] + key[xi]
         xi++
-        ciphertext[4] = this.exp_tab[ciphertext[4] & 0xFF] + key[xi]
+        ciphertext[4] = exp_tab[ciphertext[4] & 0xFF] + key[xi]
         xi++
-        ciphertext[5] = this.log_tab[ciphertext[5] & 0xFF] ^ key[xi]
+        ciphertext[5] = log_tab[ciphertext[5] & 0xFF] ^ key[xi]
         xi++
-        ciphertext[6] = this.log_tab[ciphertext[6] & 0xFF] ^ key[xi]
+        ciphertext[6] = log_tab[ciphertext[6] & 0xFF] ^ key[xi]
         xi++
-        ciphertext[7] = this.exp_tab[ciphertext[7] & 0xFF] + key[xi]
+        ciphertext[7] = exp_tab[ciphertext[7] & 0xFF] + key[xi]
 
         pht(&ciphertext[0], &ciphertext[1])
         pht(&ciphertext[2], &ciphertext[3])
@@ -261,36 +266,25 @@ func (this *saferplusCipher) decrypt(dst, src []byte) {
         plaintext[0] -= key[xi]
 
         xi--
-        plaintext[7] = this.log_tab[plaintext[7] & 0xFF] ^ key[xi]
+        plaintext[7] = log_tab[plaintext[7] & 0xFF] ^ key[xi]
         xi--
-        plaintext[6] = this.exp_tab[plaintext[6] & 0xFF] - key[xi]
+        plaintext[6] = exp_tab[plaintext[6] & 0xFF] - key[xi]
         xi--
-        plaintext[5] = this.exp_tab[plaintext[5] & 0xFF] - key[xi]
+        plaintext[5] = exp_tab[plaintext[5] & 0xFF] - key[xi]
         xi--
-        plaintext[4] = this.log_tab[plaintext[4] & 0xFF] ^ key[xi]
+        plaintext[4] = log_tab[plaintext[4] & 0xFF] ^ key[xi]
         xi--
-        plaintext[3] = this.log_tab[plaintext[3] & 0xFF] ^ key[xi]
+        plaintext[3] = log_tab[plaintext[3] & 0xFF] ^ key[xi]
         xi--
-        plaintext[2] = this.exp_tab[plaintext[2] & 0xFF] - key[xi]
+        plaintext[2] = exp_tab[plaintext[2] & 0xFF] - key[xi]
         xi--
-        plaintext[1] = this.exp_tab[plaintext[1] & 0xFF] - key[xi]
+        plaintext[1] = exp_tab[plaintext[1] & 0xFF] - key[xi]
         xi--
-        plaintext[0] = this.log_tab[plaintext[0] & 0xFF] ^ key[xi]
+        plaintext[0] = log_tab[plaintext[0] & 0xFF] ^ key[xi]
     }
 
     for iii, kkk := range plaintext {
         dst[iii] = byte(kkk)
-    }
-}
-
-func (this *saferplusCipher) init() {
-    var exp_val uint = 1;
-
-    for i := 0; i < TAB_LEN; i++ {
-        this.exp_tab[i] = uint8(exp_val & 0xFF);
-        this.log_tab[uint(this.exp_tab[i])] = uint8(i);
-
-        exp_val = exp_val * 45 % 257;
     }
 }
 
@@ -351,12 +345,12 @@ func (this *saferplusCipher) setKey(keyData []uint8) {
             if strengthened == 1 {
                 key[xi] =
                     (ka[(j + 2 * i - 1) % (SAFER_BLOCK_LEN + 1)] +
-                     this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
+                     exp_tab[exp_tab[18 * i + j + 1]]) &
                     0xFF
                 xi++
             } else {
                 key[xi] =
-                    (ka[j] + this.exp_tab[this.exp_tab[18 * i + j + 1]]) &
+                    (ka[j] + exp_tab[exp_tab[18 * i + j + 1]]) &
                     0xFF
                 xi++
             }
@@ -368,12 +362,12 @@ func (this *saferplusCipher) setKey(keyData []uint8) {
             if strengthened == 1 {
                 key[xi] =
                     (kb[(j + 2 * i) % (SAFER_BLOCK_LEN + 1)] +
-                     this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
+                     exp_tab[exp_tab[18 * i + j + 10]]) &
                     0xFF
                 xi++
             } else {
                 key[xi] =
-                    (kb[j] + this.exp_tab[this.exp_tab[18 * i + j + 10]]) &
+                    (kb[j] + exp_tab[exp_tab[18 * i + j + 10]]) &
                     0xFF
                 xi++
             }

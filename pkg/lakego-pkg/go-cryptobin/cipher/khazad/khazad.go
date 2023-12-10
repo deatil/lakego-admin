@@ -7,13 +7,13 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const BlockSize = 8
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/khazad: invalid key size %d", int(k))
 }
-
-const BlockSize = 8
 
 type khazadCipher struct {
     roundKeyEnc [9]uint64

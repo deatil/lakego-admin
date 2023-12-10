@@ -7,20 +7,20 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+const BlockSize = 32
+
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/square: invalid key size %d", int(k))
 }
 
-const BlockSize = 32
-
 type squareCipher struct {
     key []uint16
 }
 
-// NewCipher creates and returns a new cipher.Stream.
-func NewCipher(key []byte) (cipher.Stream, error) {
+// NewCipher creates and returns a new cipher.Block.
+func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
         case 32:
@@ -39,7 +39,15 @@ func (this *squareCipher) BlockSize() int {
     return BlockSize
 }
 
-func (this *squareCipher) XORKeyStream(dst, src []byte) {
+func (this *squareCipher) Encrypt(dst, src []byte) {
+    this.crypt(dst, src)
+}
+
+func (this *squareCipher) Decrypt(dst, src []byte) {
+    this.crypt(dst, src)
+}
+
+func (this *squareCipher) crypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/square: input not full block")
     }
@@ -61,16 +69,12 @@ func (this *squareCipher) XORKeyStream(dst, src []byte) {
     copy(a[0:], aUint16s)
 
     rcon = 1
-    for i = 0; i < 16; i++ {
-        rk[i] = this.key[i]
-    }
+    copy(rk[:], this.key)
 
     theta(rk)
     sigma(a, rk)
 
-    for i = 0; i < 16; i++ {
-        rk[i] = this.key[i]
-    }
+    copy(rk[:], this.key)
 
     gamma(a)
     pi(a)

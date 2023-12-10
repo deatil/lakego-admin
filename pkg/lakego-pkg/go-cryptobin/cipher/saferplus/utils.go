@@ -41,3 +41,19 @@ func rotr16(x uint16, n uint16) uint16 {
 func rotr32(x uint32, n uint32) uint32 {
     return rotl32(x, 32 - n);
 }
+
+var (
+    exp_tab [256]uint8
+    log_tab [256]uint8
+)
+
+func init_tab() {
+    var exp_val uint = 1;
+
+    for i := 0; i < TAB_LEN; i++ {
+        exp_tab[i] = uint8(exp_val & 0xFF);
+        log_tab[uint(exp_tab[i])] = uint8(i);
+
+        exp_val = exp_val * 45 % 257;
+    }
+}

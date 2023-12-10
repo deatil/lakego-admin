@@ -8,11 +8,7 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/e2: invalid key size %d", int(k))
-}
+const BlockSize = 16
 
 var once sync.Once
 
@@ -20,7 +16,11 @@ func initAll() {
     init_box()
 }
 
-const BlockSize = 16
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return fmt.Sprintf("cryptobin/e2: invalid key size %d", int(k))
+}
 
 type e2Cipher struct {
     l_key [72]uint32

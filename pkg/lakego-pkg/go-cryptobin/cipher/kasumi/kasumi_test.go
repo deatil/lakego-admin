@@ -8,7 +8,7 @@ import (
 
 func Test_Kasumi(t *testing.T) {
     random := rand.New(rand.NewSource(99))
-    max := 2
+    max := 500
 
     var encrypted [8]byte
     var decrypted [8]byte

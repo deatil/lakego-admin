@@ -8,6 +8,11 @@ import (
 
 const BlockSize = 16
 
+type kuznyechikCipher struct {
+    // erk is used in Encrypt, drk is used in Decrypt.
+    erk, drk [10][2]uint64
+}
+
 func NewCipher(key []byte) (cipher.Block, error) {
     if len(key) != 32 {
         return nil, fmt.Errorf("cryptobin/kuznyechik: invalid key size %d", len(key))

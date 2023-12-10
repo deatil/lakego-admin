@@ -129,6 +129,30 @@ func (this Multiple) String() string {
             return "Lea"
         case Panama:
             return "Panama"
+        case Square:
+            return "Square"
+        case Magenta:
+            return "Magenta"
+        case Kasumi:
+            return "Kasumi"
+        case E2:
+            return "E2"
+        case Crypton1:
+            return "Crypton1"
+        case Clefia:
+            return "Clefia"
+        case Safer:
+            return "Safer"
+        case Noekeon:
+            return "Noekeon"
+        case Multi2:
+            return "Multi2"
+        case Kseed:
+            return "Kseed"
+        case Khazad:
+            return "Khazad"
+        case Anubis:
+            return "Anubis"
         default:
             if TypeMultiple.Names().Has(this) {
                 return (TypeMultiple.Names().Get(this))()
@@ -176,6 +200,18 @@ const (
     Hight
     Lea
     Panama
+    Square
+    Magenta
+    Kasumi
+    E2
+    Crypton1
+    Clefia
+    Safer
+    Noekeon
+    Multi2
+    Kseed
+    Khazad
+    Anubis
     maxMultiple
 )
 

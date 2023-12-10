@@ -14,8 +14,6 @@ import (
 //   http://en.wikipedia.org/wiki/Camellia_%28cipher%29
 //   https://info.isl.ntt.co.jp/crypt/eng/camellia/
 
-var once sync.Once
-
 const BlockSize = 16
 
 const (
@@ -26,6 +24,8 @@ const (
     sigma5 = 0x10E527FADE682D1D
     sigma6 = 0xB05688C2B3E6C1FD
 )
+
+var once sync.Once
 
 func initAll() {
     // initialize other sboxes
