@@ -256,7 +256,7 @@ func gen_mask(x uint32) uint32 {
     return m & 0xfffffffc;
 };
 
-func set_key(in_key []uint32, key_len uint32) [40]uint32 {
+func setKey(in_key []uint32, key_len uint32) [40]uint32 {
     var i, j, m, w uint32
     var l_key [40]uint32
 

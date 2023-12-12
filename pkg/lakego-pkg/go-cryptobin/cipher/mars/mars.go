@@ -53,7 +53,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(marsCipher)
-    c.key = set_key(in_key, uint32(k*8))
+    c.key = setKey(in_key, uint32(k*8))
 
     return c, nil
 }

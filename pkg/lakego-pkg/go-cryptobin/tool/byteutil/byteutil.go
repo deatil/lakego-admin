@@ -1,9 +1,3 @@
-// Copyright (C) 2019 ProtonTech AG
-// This file contains necessary tools for the aex and ocb packages.
-//
-// These functions SHOULD NOT be used elsewhere, since they are optimized for
-// specific input nature in the EAX and OCB modes of operation.
-
 package byteutil
 
 // GfnDouble computes 2 * input in the field of 2^n elements.

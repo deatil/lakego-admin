@@ -42,7 +42,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     c := new(magentaCipher)
 
     keyUint32s := bytesToUint32s(key)
-    c.set_key(keyUint32s, uint32(k) * 8)
+    c.setKey(keyUint32s, uint32(k) * 8)
 
     return c, nil
 }
@@ -95,7 +95,7 @@ func (this *magentaCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *magentaCipher) set_key(in_key []uint32, key_len uint32) {
+func (this *magentaCipher) setKey(in_key []uint32, key_len uint32) {
     this.k_len = (key_len + 63) / 64;
 
     var l_key [16]uint32

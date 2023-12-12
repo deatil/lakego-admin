@@ -67,3 +67,18 @@ func Test_Hash(t *testing.T) {
     }
 }
 
+func Test_Sum(t *testing.T) {
+    var dst [20]byte
+
+    for _, tc := range testCases {
+        dst = Sum(tc.MsgBytes)
+
+        dString := hex.EncodeToString(dst[:])
+
+        tc.MD = strings.Replace(tc.MD, " ", "", -1)
+        if dString != tc.MD {
+            t.Errorf("hash failed.\nresult: %s\nanswer: %s", dString, tc.MD)
+            return
+        }
+    }
+}

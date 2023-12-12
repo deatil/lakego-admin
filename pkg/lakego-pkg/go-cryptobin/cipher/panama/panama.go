@@ -52,12 +52,12 @@ func NewCipher(key []byte) (cipher.Stream, error) {
     keyints = bytesToUint32s(key[16:])
     in_key = append(in_key, keyints[:]...)
 
-    c.set_key(in_key, WORDLENGTH, nil, 0)
+    c.setKey(in_key, WORDLENGTH, nil, 0)
 
     return c, nil
 }
 
-func (this *panamaCipher) set_key(
+func (this *panamaCipher) setKey(
     in_key []uint32,
     keysize int32,
     init_vec []uint32,

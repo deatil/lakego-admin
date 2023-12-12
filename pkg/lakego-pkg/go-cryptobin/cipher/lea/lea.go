@@ -33,7 +33,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     MemsetUint32(c.rk[:], 0)
-    c.round = uint8(set_key(c.rk[:], key))
+    c.round = uint8(setKey(c.rk[:], key))
 
     return c, nil
 }
@@ -302,7 +302,7 @@ func (this *leaCipher) decrypt(dst, src []byte) {
     copy(dst, dstBytes[:])
 }
 
-func set_key(rk []uint32, key []byte) int {
+func setKey(rk []uint32, key []byte) int {
     keyLen := len(key)
 
     switch keyLen {

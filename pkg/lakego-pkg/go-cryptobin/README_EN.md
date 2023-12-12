@@ -1,34 +1,34 @@
 ## go-cryptobin
 
-go-cryptobin 是 go 的常用加密解密库
+go-cryptobin is a go encrypt or decrypt library
 
 [中文](README.md) | [English](README_EN.md)
 
 
-### 项目介绍
+### Desc
 
-*  go-cryptobin 包括常用的对称加密和非对称加密及签名验证
-*  对称加密解密（Aes/Des/TripleDes/SM4/Tea/Twofish/Xts）
-*  对称加密解密模式（ECB/CBC/PCBC/CFB/NCFB/OFB/NOFB/CTR/GCM/CCM）
-*  对称加密解密补码（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/PBOC2Padding/TBCPadding/PKCS1Padding）
-*  非对称加密解密（RSA/SM2/EIGamal）
-*  非对称签名验证（RSA/PSS/DSA/ECDSA/EdDSA/SM2/EIGamal/ED448）
-*  默认 `Aes`, `ECB`, `NoPadding`
+*  go-cryptobin library has encrypt / decrypt or sign / verify
+*  sym encrypts（Aes/Des/TripleDes/SM4/Tea/Twofish/Xts）
+*  encrypt mode（ECB/CBC/PCBC/CFB/NCFB/OFB/NOFB/CTR/GCM/CCM）
+*  encrypt padding（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/PBOC2Padding/TBCPadding/PKCS1Padding）
+*  asym encrypts（Aes（RSA/SM2/EIGamal）
+*  asym sign（RSA/PSS/DSA/ECDSA/EdDSA/SM2/EIGamal/ED448）
+*  default setting `Aes`, `ECB`, `NoPadding`
 
 
-### 环境要求
+### Env
 
  - Go >= 1.20
 
 
-### 下载安装
+### Download
 
 ~~~go
 go get -u github.com/deatil/go-cryptobin
 ~~~
 
 
-### 开始使用
+### Using
 
 ~~~go
 package main
@@ -40,7 +40,7 @@ import (
 )
 
 func main() {
-    // 加密
+    // encrypt
     cypt := crypto.
         FromString("useData").
         SetKey("dfertf12dfertf12").
@@ -50,7 +50,7 @@ func main() {
         Encrypt().
         ToBase64String()
 
-    // 解密
+    // decrypt
     cyptde := crypto.
         FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
         SetKey("dfertf12dfertf12").
@@ -61,24 +61,24 @@ func main() {
         ToString()
 
     // i3FhtTp5v6aPJx0wTbarwg==
-    fmt.Println("加密结果：", cypt)
-    fmt.Println("解密结果：", cyptde)
+    fmt.Println("encrypt res：", cypt)
+    fmt.Println("decrypt res：", cyptde)
 }
 
 ~~~
 
 
-### 结构说明
+### Struct Desc
 
-*  默认方式 `Aes`, `ECB`, `NoPadding`
+*  default setting `Aes`, `ECB`, `NoPadding`
 ~~~go
-// 加密数据
+// encrypt data
 cypt := crypto.
     FromString("useData").
     SetKey("dfertf12dfertf12").
     Encrypt().
     ToBase64String()
-// 解密数据
+// decrypt data
 cyptde := crypto.
     FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
     SetKey("dfertf12dfertf12").
@@ -86,49 +86,49 @@ cyptde := crypto.
     ToString()
 ~~~
 
-*  结构说明
+*  Use Desc
 ~~~go
-// 使用代码
-// 注意: 设置密码,加密类型,加密模式,补码方式 在 操作类型 之前, 可以调换顺序
+// Code
+// Tips: SetKey,SetIv,Encrypt Type,Mode,Padding at `Action Type` before can move sorts
 ret := crypto.
-    FromString("string"). // 数据来源, 待加密数据/待解密数据
-    SetKey("key").        // 设置密码
-    SetIv("iv_string").   // 设置向量
-    Aes().                // 加密类型
-    CBC().                // 加密模式
-    PKCS7Padding().       // 补码方式
-    Encrypt().            // 操作类型, 加密或者解密
-    ToBase64String()      // 返回结果数据类型
+    FromString("string"). // Data Src
+    SetKey("key").        // Set Key
+    SetIv("iv_string").   // Set Iv
+    Aes().                // Encrypt Type
+    CBC().                // Mode
+    PKCS7Padding().       // Padding
+    Encrypt().            // Action Type
+    ToBase64String()      // To Data Type
 ~~~
 
 
-### 可用方法
+### Can Funcs
 
-*  数据来源:
+*  Data From:
 `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
-*  设置密码:
+*  Set Key:
 `SetKey(data string)`, `WithKey(key []byte)`
-*  设置向量:
+*  Set IV:
 `SetIv(data string)`, `WithIv(iv []byte)`
-*  加密类型:
+*  Encrypt Type:
 `Aes()`, `Des()`, `TripleDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `RC4()`, `Idea()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `Xts(cipher string, sectorNum uint64)`
-*  加密模式:
+*  Encrypt Mode:
 `ECB()`, `CBC()`, `PCBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`, `CCM(nonce string, additional ...string)`
-*  补码方式:
+*  Paddings:
 `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`,`ISO97971Padding()`,`PBOC2Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
-*  操作类型:
+*  Action Type:
 `Encrypt()`, `Decrypt()`, `FuncEncrypt(f func(Cryptobin) Cryptobin)`, `FuncDecrypt(f func(Cryptobin) Cryptobin)`
-*  返回数据类型:
+*  To Data Type:
 `ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`
 
-*  更多信息可以查看 [文档](docs/README.md)
+*  more data [docs](docs/README.md)
 
 
-### 开源协议
+### LICENSE
 
-*  本软件包遵循 `Apache2` 开源协议发布，在保留本软件包版权的情况下提供个人及商业免费使用。
+*  The library LICENSE is `Apache2`, using the library need keep the LICENSE.
 
 
-### 版权
+### Copyright
 
-*  本软件包所属版权归 deatil(https://github.com/deatil) 所有。
+*  Copyright deatil(https://github.com/deatil).
