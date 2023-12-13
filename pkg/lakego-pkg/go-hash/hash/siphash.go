@@ -4,9 +4,9 @@ import (
     "github.com/deatil/go-hash/siphash"
 )
 
-// Siphash
-func (this Hash) Siphash(k []byte) Hash {
-    h := siphash.New(k)
+// Siphash64
+func (this Hash) Siphash64(k []byte) Hash {
+    h := siphash.New64(k)
     h.Write(this.data)
 
     this.data = h.Sum(nil)
@@ -14,9 +14,28 @@ func (this Hash) Siphash(k []byte) Hash {
     return this
 }
 
-// NewSiphash
-func (this Hash) NewSiphash(k []byte) Hash {
-    this.hash = siphash.New(k)
+// NewSiphash64
+func (this Hash) NewSiphash64(k []byte) Hash {
+    this.hash = siphash.New64(k)
+
+    return this
+}
+
+// ==============
+
+// Siphash128
+func (this Hash) Siphash128(k []byte) Hash {
+    h := siphash.New128(k)
+    h.Write(this.data)
+
+    this.data = h.Sum(nil)
+
+    return this
+}
+
+// NewSiphash128
+func (this Hash) NewSiphash128(k []byte) Hash {
+    this.hash = siphash.New128(k)
 
     return this
 }

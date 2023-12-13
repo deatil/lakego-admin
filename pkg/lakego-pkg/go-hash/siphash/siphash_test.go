@@ -1,6 +1,7 @@
 package siphash
 
 import (
+    "fmt"
     "bytes"
     "testing"
 )
@@ -18,7 +19,7 @@ func Test_Hash(t *testing.T) {
     }
 }
 
-func Test_Check8(t *testing.T) {
+func Test_Check64(t *testing.T) {
     var key [KEY_SIZE]byte
     var in []byte
     var i int
@@ -35,7 +36,7 @@ func Test_Check8(t *testing.T) {
         in[i] = byte(i)
     }
 
-    h := NewWithCDroundsAndHashSize(key[:], 0, 0, 8)
+    h := New64(key[:])
     h.Write(in[:])
     res := h.Sum(nil)
 
@@ -44,7 +45,7 @@ func Test_Check8(t *testing.T) {
     }
 }
 
-func Test_Check16(t *testing.T) {
+func Test_Check128(t *testing.T) {
     var key [KEY_SIZE]byte
     var in []byte
     var i int
@@ -61,11 +62,41 @@ func Test_Check16(t *testing.T) {
         in[i] = byte(i)
     }
 
-    h := NewWithCDroundsAndHashSize(key[:], 0, 0, 16)
+    h := New128(key[:])
     h.Write(in[:])
     res := h.Sum(nil)
 
     if !bytes.Equal(expected, res) {
         t.Errorf("Check Hash error, got %x, want %x", res, expected)
+    }
+}
+
+func Test_Check64_2(t *testing.T) {
+    key := []byte("1234567890123456")
+    data := []byte("test-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
+
+    expected := "222413ad433d0919"
+
+    h := New64(key)
+    h.Write(data)
+    res := h.Sum(nil)
+
+    if fmt.Sprintf("%x", res) != expected {
+        t.Errorf("Check Hash error, got %x, want %s", res, expected)
+    }
+}
+
+func Test_Check128_2(t *testing.T) {
+    key := []byte("1234567890123456")
+    data := []byte("test-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
+
+    expected := "5cf3da9421aa6e0b24901eca3311900e"
+
+    h := New128(key)
+    h.Write(data)
+    res := h.Sum(nil)
+
+    if fmt.Sprintf("%x", res) != expected {
+        t.Errorf("Check Hash error, got %x, want %s", res, expected)
     }
 }

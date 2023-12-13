@@ -8,21 +8,39 @@ import (
 // The blocksize of Siphash in bytes.
 const BlockSize = 8
 
+const HashSize64  = 8
+const HashSize128 = 16
+
 // New returns a new hash.Hash computing the Siphash checksum.
 func New(k []byte) hash.Hash {
     return NewWithCDroundsAndHashSize(k, 0, 0, 0)
 }
 
+// return 8 bytes
+func New64(k []byte) hash.Hash {
+    return NewWithCDroundsAndHashSize(k, 0, 0, HashSize64)
+}
+
+// New alias, return 16 bytes
+func New128(k []byte) hash.Hash {
+    return NewWithCDroundsAndHashSize(k, 0, 0, HashSize128)
+}
+
+// NewWithHashSize returns a new hash.Hash computing the Siphash checksum.
+func NewWithHashSize(k []byte, hashSize int) hash.Hash {
+    return NewWithCDroundsAndHashSize(k, 0, 0, hashSize)
+}
+
 // NewWithCDroundsAndHashSize returns a new hash.Hash computing the Siphash checksum.
 func NewWithCDroundsAndHashSize(k []byte, crounds, drounds int32, hashSize int) hash.Hash {
     if len(k) != KEY_SIZE {
-        panic("key size error")
+        panic("siphash: invalid key")
     }
 
     h := new(digest)
-    h.Reset()
     h.setHashSize(hashSize)
     h.init(k, crounds, drounds)
+
     return h
 }
 

@@ -6,6 +6,8 @@ import (
     "crypto/rand"
 
     "github.com/tjfoc/gmsm/sm2"
+
+    cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
 func TestSM2ECDH(t *testing.T) {
@@ -56,4 +58,29 @@ func makeKey(pri *sm2.PrivateKey, pub *sm2.PublicKey) []byte {
     copy(preMasterSecret[len(preMasterSecret)-len(xBytes):], xBytes)
 
     return preMasterSecret
+}
+
+func Test_PKCS1(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    priv1, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pem1, err := MarshalSM2PrivateKey(priv1)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if len(pem1) == 0 {
+        t.Error("priv pem make error")
+    }
+
+    priv2, err := ParseSM2PrivateKey(pem1)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    assertEqual(priv2, priv1, "PKCS1")
 }
