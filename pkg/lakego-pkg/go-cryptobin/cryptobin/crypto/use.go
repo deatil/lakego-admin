@@ -271,6 +271,14 @@ func (this Cryptobin) Mars() Cryptobin {
     return this
 }
 
+// Mars2
+// The key argument should be from 128 to 448 bits
+func (this Cryptobin) Mars2() Cryptobin {
+    this.multiple = Mars2
+
+    return this
+}
+
 // Wake
 // The key argument should be 16 bytes.
 func (this Cryptobin) Wake() Cryptobin {
@@ -408,9 +416,25 @@ func (this Cryptobin) Khazad() Cryptobin {
 }
 
 // Anubis
-// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
+// The key argument should be 16, 20, 24, 28, 32, 36, and 40.
 func (this Cryptobin) Anubis() Cryptobin {
     this.multiple = Anubis
+
+    return this
+}
+
+// Present
+// The key argument should be 10 or 16 bytes.
+func (this Cryptobin) Present() Cryptobin {
+    this.multiple = Present
+
+    return this
+}
+
+// Trivium
+// The key argument should be 10 bytes.
+func (this Cryptobin) Trivium() Cryptobin {
+    this.multiple = Trivium
 
     return this
 }

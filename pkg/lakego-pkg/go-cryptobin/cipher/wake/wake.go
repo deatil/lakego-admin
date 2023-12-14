@@ -93,11 +93,11 @@ func (this *wakeCipher) encrypt(dst, src []byte) {
     for i = 0; i < int32(len(input)); i++ {
         /* R1 = V[n] = V[n] XOR R6 - here we do it per byte --sloooow */
         /* R1 is ignored */
-        r6Bytes := Uint32ToBytes(r6)
+        r6Bytes := uint32ToBytes(r6)
         input[i] ^= r6Bytes[this.counter]
 
         /* R2 = V[n] = R1 - per byte also */
-        r2Bytes := Uint32ToBytes(r2)
+        r2Bytes := uint32ToBytes(r2)
         r2Bytes[this.counter] = input[i]
         r2 = bytesToUint32(r2Bytes[:])
 
@@ -137,13 +137,13 @@ func (this *wakeCipher) decrypt(dst, src []byte) {
 
     for i = 0; i < int32(len(input)); i++ {
         /* R1 = V[n] */
-        r1Bytes := Uint32ToBytes(r1)
+        r1Bytes := uint32ToBytes(r1)
         r1Bytes[this.counter] = input[i]
         r1 = bytesToUint32(r1Bytes[:])
 
         /* R2 = V[n] = V[n] ^ R6 */
         /* R2 is ignored */
-        r6Bytes := Uint32ToBytes(r6)
+        r6Bytes := uint32ToBytes(r6)
         input[i] ^= r6Bytes[this.counter]
 
         this.counter++

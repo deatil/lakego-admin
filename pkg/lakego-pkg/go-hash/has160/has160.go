@@ -9,7 +9,7 @@ import (
 // The size of a HAS-160 checksum in bytes.
 const Size = 20
 
-// The blocksize of LSH-256 and HAS-160 in bytes.
+// The blocksize of HAS-160 in bytes.
 const BlockSize = 64
 
 // New returns a new hash.Hash computing the HAS-160 checksum.

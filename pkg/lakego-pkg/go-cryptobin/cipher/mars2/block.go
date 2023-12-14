@@ -1,4 +1,4 @@
-package mars
+package mars2
 
 var s_box = []uint32{
     0x09d0c479, 0x28c8ffe0, 0x84aa6c39, 0x9dad7287, /* 0x000    */
@@ -139,7 +139,7 @@ func f_mix(a, b, c, d *uint32) {
     (*b) += s_box[(r & 255) + 256]
 
     r = rotr(*a, 16)
-    *a = rotr(*a, 24)
+    (*a) = rotr(*a, 24)
 
     (*c) += s_box[r & 255]
     (*d) ^= s_box[((*a) & 255) + 256]
@@ -152,8 +152,8 @@ func b_mix(a, b, c, d *uint32) {
     (*c) -= s_box[r & 255]
 
     r = rotl(*a, 16)
-    *a = rotl(*a, 24)
 
+    (*a)  = rotl(*a, 24)
     (*d) -= s_box[(r & 255) + 256]
     (*d) ^= s_box[(*a) & 255]
 }
@@ -161,18 +161,21 @@ func b_mix(a, b, c, d *uint32) {
 func f_ktr(a, b, c, d *uint32, i int, l_key [40]uint32) {
     m := (*a) + l_key[i]
 
-    *a = rotl(*a, 13)
+    (*a) = rotl(*a, 13)
 
     r := (*a) * l_key[i + 1]
     l := s_box[m & 511]
 
     r = rotl(r, 5)
+
     (*c) += rotl(m, r)
 
     l ^= r
+
     r = rotl(r, 5)
 
     l ^= r
+
     (*d) ^= r
     (*b) += rotl(l, r)
 }
@@ -228,7 +231,8 @@ func gen_mask(x uint32) uint32 {
     /* bits in m are set if they are at the bottom of sequences */
     /* of 10 adjacent '0's or 10 adjacent '1's in x.            */
 
-    m &= (m >> 1) & (m >> 2); m &= (m >> 3) & (m >> 6)
+    m &= (m >> 1) & (m >> 2)
+    m &= (m >> 3) & (m >> 6)
 
     /* return if mask is empty - no key fixing needed   */
     /* is this early return worthwhile?                 */
@@ -251,9 +255,9 @@ func gen_mask(x uint32) uint32 {
     /* that is, it will be set if it is in a sequence of 10 or  */
     /* more '0's and clear otherwise.                           */
 
-    m |= (m << 1) & ^x & 0x80000000;
+    m |= (m << 1) & ^x & 0x80000000
 
-    return m & 0xfffffffc;
+    return m & 0xfffffffc
 };
 
 func setKey(in_key []uint32, key_len uint32) [40]uint32 {
@@ -311,7 +315,7 @@ func setKey(in_key []uint32, key_len uint32) [40]uint32 {
     }
 
     return l_key
-};
+}
 
 func encrypt(in_blk [4]uint32, l_key [40]uint32) (out_blk [4]uint32) {
     var a, b, c, d uint32
@@ -337,9 +341,9 @@ func encrypt(in_blk [4]uint32, l_key [40]uint32) (out_blk [4]uint32) {
     f_mix(&c, &d, &a, &b)
     f_mix(&d, &a, &b, &c)
 
-    f_ktr(&a, &b, &c, &d, 4, l_key)
-    f_ktr(&b, &c, &d, &a, 6, l_key)
-    f_ktr(&c, &d, &a, &b, 8, l_key)
+    f_ktr(&a, &b, &c, &d,  4, l_key)
+    f_ktr(&b, &c, &d, &a,  6, l_key)
+    f_ktr(&c, &d, &a, &b,  8, l_key)
     f_ktr(&d, &a, &b, &c, 10, l_key)
 
     f_ktr(&a, &b, &c, &d, 12, l_key)

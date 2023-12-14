@@ -119,6 +119,8 @@ func (this Multiple) String() string {
             return "Saferplus"
         case Mars:
             return "Mars"
+        case Mars2:
+            return "Mars2"
         case Wake:
             return "Wake"
         case Enigma:
@@ -153,6 +155,10 @@ func (this Multiple) String() string {
             return "Khazad"
         case Anubis:
             return "Anubis"
+        case Present:
+            return "Present"
+        case Trivium:
+            return "Trivium"
         default:
             if TypeMultiple.Names().Has(this) {
                 return (TypeMultiple.Names().Get(this))()
@@ -195,6 +201,7 @@ const (
     Loki97
     Saferplus
     Mars
+    Mars2
     Wake
     Enigma
     Hight
@@ -212,6 +219,8 @@ const (
     Kseed
     Khazad
     Anubis
+    Present
+    Trivium
     maxMultiple
 )
 

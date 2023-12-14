@@ -1,8 +1,8 @@
 package tiger
 
 import (
-    "fmt"
     "io"
+    "fmt"
     "strings"
     "testing"
 )
@@ -25,7 +25,7 @@ var golden = []Test{
     {"89292aee0f82842abc080c57b3aadd9ca84d66bf0cae77aa", strings.Repeat("A", 1025)},
 }
 
-func TestGolden(t *testing.T) {
+func Test_Golden(t *testing.T) {
     for i := 0; i < len(golden); i++ {
         g := golden[i]
         c := New()
@@ -35,7 +35,6 @@ func TestGolden(t *testing.T) {
                 io.WriteString(c, g.in)
             } else if j == 2 {
                 io.WriteString(c, g.in[0:len(g.in)/2])
-                c.Sum(nil)
                 io.WriteString(c, g.in[len(g.in)/2:])
             } else if j > 2 {
                 // test unaligned write
@@ -43,10 +42,12 @@ func TestGolden(t *testing.T) {
                 copy(buf, g.in)
                 c.Write(buf[:len(g.in)])
             }
+
             s := fmt.Sprintf("%x", c.Sum(nil))
             if s != g.out {
                 t.Fatalf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out)
             }
+
             c.Reset()
         }
     }

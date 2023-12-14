@@ -95,7 +95,7 @@ func main() {
 `SHA1()`, `SHA224()`, `SHA256()`, `SHA384()`, `SHA512()`, `SHA512_224()`, `SHA512_256()`,
 `SHA3_224()`, `SHA3_256()`, `SHA3_384()`, `SHA3_512()`,
 `Shake128()`, `Shake256()`,
-`SM3()`, `Xxhash()`, `Gost34112012256()`, `Gost34112012512()`
+`SM3()`, `Xxhash()`, `Gost34112012256()`, `Gost34112012512()`, `HAS160()`, `LSH256()`, `LSH256_224()`, `LSH512()`, `LSH512_384()`, `LSH512_256()`, `LSH512_224()`, `Siphash64()`, `Siphash128()`, `Tiger()`, `Whirlpool()`
 
 *  New 使用:
 `NewAdler32()`,
@@ -113,7 +113,7 @@ func main() {
 `NewRipemd160()`,
 `NewSHA1()`, `NewSHA224()`, `NewSHA256()`, `NewSHA384()`, `NewSHA512()`, `NewSHA512_224()`, `NewSHA512_256()`,
 `NewSHA3_224()`, `NewSHA3_256()`, `NewSHA3_384()`, `NewSHA3_512()`,
-`NewSM3()`, `NewXxhash()`, `NewGost34112012256()`, `NewGost34112012512()`
+`NewSM3()`, `NewXxhash()`, `NewGost34112012256()`, `NewGost34112012512()`, `NewHAS160()`, `NewLSH256()`, `NewLSH256_224()`, `NewLSH512()`, `NewLSH512_384()`, `NewLSH512_256()`, `NewLSH512_224()`, `NewSiphash64()`, `NewSiphash128()`, `NewTiger()`, `NewWhirlpool()`
 
 *  Hmac 可用 hash:
 `HmacADLER32`, `HmacMD2`, `HmacMD4`, `HmacMD5`, `HmacSHA1`, `HmacSHA224`, `HmacSHA256`, `HmacSHA384`, `HmacSHA512`, `HmacSHA512_224`, `HmacSHA512_256`, `HmacRIPEMD160`, `HmacSHA3_224`, `HmacSHA3_256`, `HmacSHA3_384`, `HmacSHA3_512`

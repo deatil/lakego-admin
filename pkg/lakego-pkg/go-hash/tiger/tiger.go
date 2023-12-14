@@ -1,6 +1,9 @@
 package tiger
 
-import "hash"
+import (
+    "hash"
+    "encoding/binary"
+)
 
 // The size of a Tiger hash value in bytes
 const Size = 24
@@ -25,14 +28,6 @@ type digest struct {
     ver    int
 }
 
-func (d *digest) Reset() {
-    d.a = initA
-    d.b = initB
-    d.c = initC
-    d.nx = 0
-    d.length = 0
-}
-
 // New returns a new hash.Hash computing the Tiger hash value
 func New() hash.Hash {
     d := new(digest)
@@ -49,75 +44,129 @@ func New2() hash.Hash {
     return d
 }
 
-func (d *digest) BlockSize() int {
-    return BlockSize
-}
-
-func (d *digest) Size() int {
+func (this *digest) Size() int {
     return Size
 }
 
-func (d *digest) Write(p []byte) (length int, err error) {
+func (this *digest) BlockSize() int {
+    return BlockSize
+}
+
+func (this *digest) Reset() {
+    this.a = initA
+    this.b = initB
+    this.c = initC
+    this.nx = 0
+    this.length = 0
+}
+
+func (this *digest) Write(p []byte) (length int, err error) {
     length = len(p)
 
-    d.length += uint64(length)
+    this.length += uint64(length)
 
-    if d.nx > 0 {
+    if this.nx > 0 {
         n := len(p)
-        if n > chunk-d.nx {
-            n = chunk - d.nx
+        if n > chunk-this.nx {
+            n = chunk - this.nx
         }
 
-        copy(d.x[d.nx:d.nx+n], p[:n])
-        d.nx += n
+        copy(this.x[this.nx:this.nx+n], p[:n])
+        this.nx += n
 
-        if d.nx == chunk {
-            d.compress(d.x[:chunk])
-            d.nx = 0
+        if this.nx == chunk {
+            this.compress(this.x[:chunk])
+            this.nx = 0
         }
 
         p = p[n:]
     }
 
     for len(p) >= chunk {
-        d.compress(p[:chunk])
+        this.compress(p[:chunk])
         p = p[chunk:]
     }
 
     if len(p) > 0 {
-        d.nx = copy(d.x[:], p)
+        this.nx = copy(this.x[:], p)
     }
 
     return
 }
 
-func (d digest) Sum(in []byte) []byte {
-    length := d.length
+func (this *digest) Sum(in []byte) []byte {
     var tmp [64]byte
-    if d.ver == 1 {
+
+    if this.ver == 1 {
         tmp[0] = 0x01
     } else {
         tmp[0] = 0x80
     }
 
+    length := this.length
+
     size := length & 0x3f
     if size < 56 {
-        d.Write(tmp[:56-size])
+        this.Write(tmp[:56-size])
     } else {
-        d.Write(tmp[:64+56-size])
+        this.Write(tmp[:64+56-size])
     }
 
     length <<= 3
     for i := uint(0); i < 8; i++ {
         tmp[i] = byte(length >> (8 * i))
     }
-    d.Write(tmp[:8])
+
+    this.Write(tmp[:8])
 
     for i := uint(0); i < 8; i++ {
-        tmp[i] = byte(d.a >> (8 * i))
-        tmp[i+8] = byte(d.b >> (8 * i))
-        tmp[i+16] = byte(d.c >> (8 * i))
+        tmp[i] = byte(this.a >> (8 * i))
+        tmp[i+8] = byte(this.b >> (8 * i))
+        tmp[i+16] = byte(this.c >> (8 * i))
     }
 
     return append(in, tmp[:24]...)
+}
+
+func (this *digest) compress(data []byte) {
+    a := this.a
+    b := this.b
+    c := this.c
+
+    var x []uint64
+    if littleEndian {
+        x = []uint64{
+            binary.LittleEndian.Uint64(data[0:]),
+            binary.LittleEndian.Uint64(data[8:]),
+            binary.LittleEndian.Uint64(data[16:]),
+            binary.LittleEndian.Uint64(data[24:]),
+            binary.LittleEndian.Uint64(data[32:]),
+            binary.LittleEndian.Uint64(data[40:]),
+            binary.LittleEndian.Uint64(data[48:]),
+            binary.LittleEndian.Uint64(data[56:]),
+        }
+    } else {
+        x = []uint64{
+            binary.BigEndian.Uint64(data[0:]),
+            binary.BigEndian.Uint64(data[8:]),
+            binary.BigEndian.Uint64(data[16:]),
+            binary.BigEndian.Uint64(data[24:]),
+            binary.BigEndian.Uint64(data[32:]),
+            binary.BigEndian.Uint64(data[40:]),
+            binary.BigEndian.Uint64(data[48:]),
+            binary.BigEndian.Uint64(data[56:]),
+        }
+    }
+
+    this.a, this.b, this.c = pass(this.a, this.b, this.c, x, 5)
+
+    keySchedule(x)
+    this.c, this.a, this.b = pass(this.c, this.a, this.b, x, 7)
+
+    keySchedule(x)
+    this.b, this.c, this.a = pass(this.b, this.c, this.a, x, 9)
+
+    this.a ^= a
+    this.b -= b
+    this.c += c
 }

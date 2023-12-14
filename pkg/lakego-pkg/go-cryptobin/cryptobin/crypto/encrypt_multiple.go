@@ -37,6 +37,7 @@ import (
     cryptobin_loki97 "github.com/deatil/go-cryptobin/cipher/loki97"
     cryptobin_saferplus "github.com/deatil/go-cryptobin/cipher/saferplus"
     cryptobin_mars "github.com/deatil/go-cryptobin/cipher/mars"
+    cryptobin_mars2 "github.com/deatil/go-cryptobin/cipher/mars2"
     cryptobin_enigma "github.com/deatil/go-cryptobin/cipher/enigma"
     cryptobin_wake "github.com/deatil/go-cryptobin/cipher/wake"
     cryptobin_cast256 "github.com/deatil/go-cryptobin/cipher/cast256"
@@ -55,6 +56,8 @@ import (
     cryptobin_kseed "github.com/deatil/go-cryptobin/cipher/kseed"
     cryptobin_khazad "github.com/deatil/go-cryptobin/cipher/khazad"
     cryptobin_anubis "github.com/deatil/go-cryptobin/cipher/anubis"
+    cryptobin_present "github.com/deatil/go-cryptobin/cipher/present"
+    cryptobin_trivium "github.com/deatil/go-cryptobin/cipher/trivium"
 )
 
 // 获取模式方式
@@ -1337,6 +1340,39 @@ func init() {
 
 // ===================
 
+// Mars key is 16, 24, 32 bytes.
+type EncryptMars2 struct {}
+
+// 加密
+func (this EncryptMars2) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_mars2.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptMars2) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_mars2.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Mars2, func() IEncrypt {
+        return EncryptMars2{}
+    })
+}
+
+// ===================
+
 // Wake key is 16 bytes.
 type EncryptWake struct {}
 
@@ -1966,5 +2002,79 @@ func (this EncryptAnubis) Decrypt(data []byte, opt IOption) ([]byte, error) {
 func init() {
     UseEncrypt.Add(Anubis, func() IEncrypt {
         return EncryptAnubis{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
+type EncryptPresent struct {}
+
+// 加密
+func (this EncryptPresent) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_present.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptPresent) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_present.NewCipher(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Present, func() IEncrypt {
+        return EncryptPresent{}
+    })
+}
+
+// ===================
+
+// The key argument should be 10 bytes.
+type EncryptTrivium struct {}
+
+// 加密
+func (this EncryptTrivium) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_trivium.NewCipher(opt.Key(), opt.Iv())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+// 解密
+func (this EncryptTrivium) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    c, err := cryptobin_trivium.NewCipher(opt.Key(), opt.Iv())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    dst := make([]byte, len(data))
+
+    c.XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseEncrypt.Add(Trivium, func() IEncrypt {
+        return EncryptTrivium{}
     })
 }

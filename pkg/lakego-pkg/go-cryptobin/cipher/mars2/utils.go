@@ -1,11 +1,20 @@
-package wake
+package mars2
 
 import (
+    "math/bits"
     "encoding/binary"
 )
 
+func rotl(x, n uint32) uint32 {
+    return bits.RotateLeft32(x, int(n))
+}
+
+func rotr(x, n uint32) uint32 {
+    return rotl(x, 32 - n);
+}
+
 // Endianness option
-const littleEndian bool = false
+const littleEndian bool = true
 
 func bytesToUint32s(inp []byte) [4]uint32 {
     var blk [4]uint32
@@ -25,7 +34,7 @@ func bytesToUint32s(inp []byte) [4]uint32 {
     return blk
 }
 
-func Uint32sToBytes(blk [4]uint32) [16]byte {
+func uint32sToBytes(blk [4]uint32) [16]byte {
     var sav [16]byte
 
     if littleEndian {
@@ -43,24 +52,19 @@ func Uint32sToBytes(blk [4]uint32) [16]byte {
     return sav
 }
 
-func bytesToUint32(inp []byte) (blk uint32) {
-    if littleEndian {
-        blk = binary.LittleEndian.Uint32(inp[0:])
-    } else {
-        blk = binary.BigEndian.Uint32(inp[0:])
+func keyToUint32s(b []byte) []uint32 {
+    size := len(b) / 4
+    dst := make([]uint32, size)
+
+    for i := 0; i < size; i++ {
+        j := i * 4
+
+        if littleEndian {
+            dst[i] = binary.LittleEndian.Uint32(b[j:])
+        } else {
+            dst[i] = binary.BigEndian.Uint32(b[j:])
+        }
     }
 
-    return
-}
-
-func uint32ToBytes(blk uint32) [4]byte {
-    var sav [4]byte
-
-    if littleEndian {
-        binary.LittleEndian.PutUint32(sav[0:], blk)
-    } else {
-        binary.BigEndian.PutUint32(sav[0:], blk)
-    }
-
-    return sav
+    return dst
 }

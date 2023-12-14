@@ -1218,6 +1218,36 @@ func Test_MarsPKCS7Padding(t *testing.T) {
     assert(data, cyptdeStr, "MarsPKCS7Padding-res")
 }
 
+func Test_Mars2PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Mars2().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Mars2PKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        Mars2().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Mars2PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Mars2PKCS7Padding-res")
+}
+
 func Test_WakeNoPadding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
@@ -1805,4 +1835,60 @@ func Test_AesHCTR(t *testing.T) {
     assertError(cyptde.Error(), "AesHCTR-Decode")
 
     assert(data, cyptdeStr, "AesHCTR")
+}
+
+func Test_PresentPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12").
+        Present().
+        CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "PresentPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12").
+        Present().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "PresentPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "PresentPKCS7Padding-res")
+}
+
+func Test_Trivium(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfyytf1256").
+        SetIv("dfertf1256").
+        Trivium().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Trivium-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfyytf1256").
+        SetIv("dfertf1256").
+        Trivium().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Trivium-Decode")
+
+    assert(data, cyptdeStr, "Trivium-res")
 }
