@@ -18,9 +18,8 @@ import (
     "golang.org/x/crypto/chacha20"
     "golang.org/x/crypto/chacha20poly1305"
 
-    "github.com/tjfoc/gmsm/sm4"
-
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    cryptobin_sm4 "github.com/deatil/go-cryptobin/cipher/sm4"
     cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
@@ -547,7 +546,7 @@ type EncryptSM4 struct {}
 // 加密
 func (this EncryptSM4) getBlock(opt IOption) (cipher.Block, error) {
     // 国密 sm4 加密
-    return sm4.NewCipher(opt.Key())
+    return cryptobin_sm4.NewCipher(opt.Key())
 }
 
 // 加密

@@ -57,6 +57,17 @@ var (
     CRC32_CRC32Q = Params{0x814141AB, 0x00000000, false, false, 0x00000000}
     // "CRC-32/CRC32D" x32+x26+x23+x22+x16+x12+x11+x10+x8+x7+x5+x4+x2+x+1
     CRC32_CRC32D = Params{0xA833982B, 0xFFFFFFFF, true, true, 0xFFFFFFFF}
+
+    // "CRC-32/CDMA"
+    CRC30_CDMA     = Params{0X2030B9C7, 0X3FFFFFFF, false, false, 0X3FFFFFFF}
+    CRC31_Philips  = Params{0X04C11DB7, 0X7FFFFFFF, false, false, 0X7FFFFFFF}
+    CRC32_AIXM     = Params{0X814141AB, 0X00000000, false, false, 0X00000000}
+    CRC32_Autosar  = Params{0XF4ACFB13, 0XFFFFFFFF, true, true, 0XFFFFFFFF}
+    CRC32_Base91D  = Params{0XA833982B, 0XFFFFFFFF, true, true, 0XFFFFFFFF}
+    CRC32_CdRomEdc = Params{0X8001801B, 0X00000000, true, true, 0X00000000}
+    CRC32_ISCSI    = Params{0X1EDC6F41, 0XFFFFFFFF, true, true, 0XFFFFFFFF}
+    CRC32_IsoHdlc  = Params{0X04C11DB7, 0XFFFFFFFF, true, true, 0XFFFFFFFF}
+    CRC32_MEF      = Params{0X741B8CD7, 0XFFFFFFFF, true, true, 0X00000000}
 )
 
 // 表格

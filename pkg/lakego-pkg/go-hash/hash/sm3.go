@@ -1,7 +1,7 @@
 package hash
 
 import (
-    "github.com/tjfoc/gmsm/sm3"
+    "github.com/deatil/go-hash/sm3"
 )
 
 // 国密 sm3 签名

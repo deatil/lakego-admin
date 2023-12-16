@@ -416,7 +416,7 @@ func (this Cryptobin) Khazad() Cryptobin {
 }
 
 // Anubis
-// The key argument should be 16, 20, 24, 28, 32, 36, and 40.
+// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
 func (this Cryptobin) Anubis() Cryptobin {
     this.multiple = Anubis
 
