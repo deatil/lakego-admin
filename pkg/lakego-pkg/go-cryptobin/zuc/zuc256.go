@@ -33,6 +33,14 @@ type Zuc256State struct {
 }
 
 func NewZuc256State(key []byte, iv []byte) *Zuc256State {
+    if l := len(key); l != 32 {
+        panic(KeySizeError(l))
+    }
+
+    if l := len(iv); l != 23 {
+        panic(IVSizeError(l))
+    }
+
     s := new(Zuc256State)
     s.init(key, iv)
 
@@ -40,6 +48,14 @@ func NewZuc256State(key []byte, iv []byte) *Zuc256State {
 }
 
 func NewZuc256StateWithMacbits(key []byte, iv []byte, macbits int32) *Zuc256State {
+    if l := len(key); l != 32 {
+        panic(KeySizeError(l))
+    }
+
+    if l := len(iv); l != 23 {
+        panic(IVSizeError(l))
+    }
+
     s := new(Zuc256State)
     s.setMacKey(key, iv, macbits)
 

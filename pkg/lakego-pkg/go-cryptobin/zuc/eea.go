@@ -1,6 +1,6 @@
 package zuc
 
-func (this *ZucState) setEeaKey(userKey []byte, count uint32, bearer uint32, direction uint32) {
+func (this *ZucState) SetEeaKey(userKey []byte, count uint32, bearer uint32, direction uint32) {
     iv := [16]byte{}
 
     iv[0] = byte(count >> 24)
@@ -20,18 +20,17 @@ func (this *ZucState) setEeaKey(userKey []byte, count uint32, bearer uint32, dir
 func EeaEncrypt(
     in []uint32,
     out []uint32,
+    nbits int,
     key []byte,
     count uint32,
     bearer uint32,
     direction uint32,
 ) {
-    var nbits int = len(in) * 4 * 8
-
-    zucKey := &ZucState{}
     var nwords int = (nbits + 31)/32
     var i int
 
-    zucKey.setEeaKey(key, count, bearer, direction)
+    zucKey := &ZucState{}
+    zucKey.SetEeaKey(key, count, bearer, direction)
     zucKey.GenerateKeystream(nwords, out)
 
     for i = 0; i < nwords; i++ {
@@ -66,6 +65,7 @@ func SetEiaIV(
 
 func EiaGenerateMac(
     data []uint32,
+    nbits int,
     key [16]byte,
     count uint32,
     bearer uint32,
@@ -80,7 +80,7 @@ func EiaGenerateMac(
     ctx = NewZucMac(key[:], iv[:])
 
     dataBytes := uint32sToBytes(data)
-    mac = ctx.Sum(dataBytes)
+    mac = ctx.Sum(dataBytes, nbits)
 
     return GETU32(mac)
 }

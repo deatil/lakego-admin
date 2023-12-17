@@ -15,6 +15,14 @@ type ZucMac struct {
 }
 
 func NewZucMac(key []byte, iv []byte) *ZucMac {
+    if l := len(key); l != 16 {
+        panic(KeySizeError(l))
+    }
+
+    if l := len(iv); l != 16 {
+        panic(IVSizeError(l))
+    }
+
     m := new(ZucMac)
     m.init(key, iv)
 
@@ -130,7 +138,7 @@ func (this *ZucMac) Write(data []byte) (nn int, err error) {
     return
 }
 
-func (this *ZucMac) Sum(data []byte) []byte {
+func (this *ZucMac) Sum(data []byte, nbits int) []byte {
     var T uint32 = this.T;
     var K0 uint32 = this.K0;
     var K1, M uint32
@@ -141,8 +149,6 @@ func (this *ZucMac) Sum(data []byte) []byte {
     var i int
 
     var mac [4]byte
-
-    nbits := len(data) * 8
 
     if len(data) == 0 {
         nbits = 0;
@@ -162,7 +168,7 @@ func (this *ZucMac) Sum(data []byte) []byte {
     R2 = this.R2
 
     if nbits > 0 {
-        copy(this.buf[this.buflen:], data)
+        this.buf[this.buflen] = data[0]
     }
 
     if this.buflen > 0 || nbits > 0 {

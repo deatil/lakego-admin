@@ -12,10 +12,10 @@ func rotl(a uint32, n uint32) uint32 {
 func T_non_lin_sub(X uint32) uint32 {
     var t uint32 = 0
 
-    t |= uint32(Sbox[byte(X >> 24)]) << 24
-    t |= uint32(Sbox[byte(X >> 16)]) << 16
-    t |= uint32(Sbox[byte(X >>  8)]) <<  8
-    t |= uint32(Sbox[byte(X      )])
+    t |= uint32(sbox[byte(X >> 24)]) << 24
+    t |= uint32(sbox[byte(X >> 16)]) << 16
+    t |= uint32(sbox[byte(X >>  8)]) <<  8
+    t |= uint32(sbox[byte(X      )])
 
     return t
 }
@@ -30,10 +30,10 @@ func T_slow(X uint32) uint32 {
 }
 
 func T(X uint32) uint32 {
-    return SBOX_T0[byte(X >> 24)] ^
-           SBOX_T1[byte(X >> 16)] ^
-           SBOX_T2[byte(X >>  8)] ^
-           SBOX_T3[byte(X      )]
+    return sbox_t0[byte(X >> 24)] ^
+           sbox_t1[byte(X >> 16)] ^
+           sbox_t2[byte(X >>  8)] ^
+           sbox_t3[byte(X      )]
 }
 
 func key_sub(X uint32) uint32 {

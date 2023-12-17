@@ -19,6 +19,21 @@ type Zuc256Mac struct {
     macbits int32
 }
 
+func NewZuc256Mac(key []byte, iv []byte, macbits int32) *Zuc256Mac {
+    if l := len(key); l != 32 {
+        panic(KeySizeError(l))
+    }
+
+    if l := len(iv); l != 23 {
+        panic(IVSizeError(l))
+    }
+
+    m := new(Zuc256Mac)
+    m.init(key, iv, macbits)
+
+    return m
+}
+
 func (this *Zuc256Mac) Size() int {
     return int(this.macbits / 8)
 }
@@ -56,7 +71,7 @@ func (this *Zuc256Mac) init(key []byte, iv []byte, macbits int32) {
 }
 
 func (this *Zuc256Mac) generateKeyword() uint32 {
-    ss := Zuc256State{
+    ss := &Zuc256State{
         LFSR: this.LFSR,
         R1: this.R1,
         R2: this.R2,
@@ -151,14 +166,12 @@ func (this *Zuc256Mac) Write(data []byte) (nn int, err error) {
     return
 }
 
-func (this *Zuc256Mac) Sum(data []byte) []byte {
+func (this *Zuc256Mac) Sum(data []byte, nbits int) []byte {
     var K1, M uint32
     var n int = int(this.macbits/32)
     var i, j int
 
     var mac []byte = make([]byte, n * 4)
-
-    nbits := len(data) * 8
 
     if len(data) == 0 {
         nbits = 0
@@ -166,12 +179,13 @@ func (this *Zuc256Mac) Sum(data []byte) []byte {
 
     if nbits >= 8 {
         this.Write(data[:nbits/8])
+
         data = data[nbits/8:]
         nbits %= 8
     }
 
     if nbits > 0 {
-        copy(this.buf[this.buflen:], data)
+        this.buf[this.buflen] = data[0]
     }
 
     if this.buflen > 0 || nbits > 0 {
@@ -198,8 +212,7 @@ func (this *Zuc256Mac) Sum(data []byte) []byte {
 
     for j = 0; j < n; j++ {
         this.T[j] ^= this.K0[j]
-        PUTU32(mac, this.T[j])
-        mac = mac[4:]
+        PUTU32(mac[j * 4:], this.T[j])
     }
 
     return mac

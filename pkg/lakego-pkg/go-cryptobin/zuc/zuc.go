@@ -1,21 +1,8 @@
 package zuc
 
 import (
-    "strconv"
     "github.com/deatil/go-cryptobin/tool/byteutil"
 )
-
-type KeySizeError int
-
-func (k KeySizeError) Error() string {
-    return "cryptobin/zuc: invalid key size " + strconv.Itoa(int(k))
-}
-
-type IVSizeError int
-
-func (k IVSizeError) Error() string {
-    return "cryptobin/zuc: invalid iv size " + strconv.Itoa(int(k))
-}
 
 type ZucState struct {
     LFSR [16]uint32
@@ -27,6 +14,7 @@ func NewZucState(key []byte, iv []byte) *ZucState {
     if l := len(key); l != 16 {
         panic(KeySizeError(l))
     }
+
     if l := len(iv); l != 16 {
         panic(IVSizeError(l))
     }

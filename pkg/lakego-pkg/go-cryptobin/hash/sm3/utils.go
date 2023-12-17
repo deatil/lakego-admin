@@ -57,7 +57,7 @@ func memsetUint8(a []uint8, v uint8) {
     }
 }
 
-var K = [64]uint32{
+var keys = [64]uint32{
     0x79cc4519, 0xf3988a32, 0xe7311465, 0xce6228cb,
     0x9cc45197, 0x3988a32f, 0x7311465e, 0xe6228cbc,
     0xcc451979, 0x988a32f3, 0x311465e7, 0x6228cbce,
@@ -111,7 +111,7 @@ func compressBlocks(digest []uint32, data []uint8, blocks int) {
         }
 
         for j = 0; j < 16; j++ {
-            SS1 = ROTL((ROTL(A, 12) + E + K[j]), 7)
+            SS1 = ROTL((ROTL(A, 12) + E + keys[j]), 7)
             SS2 = SS1 ^ ROTL(A, 12)
 
             TT1 = FF00(A, B, C) + D + SS2 + (W[j] ^ W[j + 4])
@@ -128,7 +128,7 @@ func compressBlocks(digest []uint32, data []uint8, blocks int) {
         }
 
         for ; j < 64; j++ {
-            SS1 = ROTL((ROTL(A, 12) + E + K[j]), 7)
+            SS1 = ROTL((ROTL(A, 12) + E + keys[j]), 7)
             SS2 = SS1 ^ ROTL(A, 12)
 
             TT1 = FF16(A, B, C) + D + SS2 + (W[j] ^ W[j + 4])
