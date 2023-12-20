@@ -148,7 +148,9 @@ func (this *digest) Write(p []byte) (n int, err error) {
 }
 
 func (this *digest) Sum(p []byte) []byte {
-    hash := this.checkSum()
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *this
+    hash := d0.checkSum()
     return append(p, hash[:]...)
 }
 

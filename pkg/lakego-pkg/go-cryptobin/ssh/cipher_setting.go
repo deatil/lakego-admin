@@ -9,7 +9,7 @@ import (
     "golang.org/x/crypto/blowfish"
     "golang.org/x/crypto/chacha20poly1305"
 
-    "github.com/tjfoc/gmsm/sm4"
+    "github.com/deatil/go-cryptobin/cipher/sm4"
 )
 
 var (

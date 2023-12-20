@@ -8,7 +8,7 @@ import (
     "encoding/pem"
     "encoding/asn1"
 
-    gmsm_x509 "github.com/tjfoc/gmsm/x509"
+    gmsm_x509 "github.com/deatil/go-cryptobin/gm/x509"
 )
 
 func (this *PKCS12) formatCert(certsData []byte) (certs []*x509.Certificate, err error) {

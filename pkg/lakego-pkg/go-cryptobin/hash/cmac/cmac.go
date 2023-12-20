@@ -166,7 +166,14 @@ func (h *macFunc) Write(msg []byte) (int, error) {
     return n, nil
 }
 
-func (h *macFunc) Sum(b []byte) []byte {
+func (h *macFunc) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d := *h
+    hash := d.checkSum()
+    return append(in, hash...)
+}
+
+func (h *macFunc) checkSum() []byte {
     blocksize := h.cipher.BlockSize()
 
     // Don't change the buffer so the
@@ -185,7 +192,8 @@ func (h *macFunc) Sum(b []byte) []byte {
     }
 
     h.cipher.Encrypt(hash, hash)
-    return append(b, hash[:h.tagsize]...)
+
+    return hash[:h.tagsize]
 }
 
 func shift(dst, src []byte) int {
@@ -195,5 +203,6 @@ func shift(dst, src []byte) int {
         dst[i] = src[i]<<1 | b
         b = bit
     }
+
     return int(b)
 }

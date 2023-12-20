@@ -10,8 +10,8 @@ import (
 // RFC 6986. Big-endian hash output.
 
 const (
-    BlockSize = gost34112012.BlockSize
     Size      = 32
+    BlockSize = gost34112012.BlockSize
 )
 
 func New() hash.Hash {

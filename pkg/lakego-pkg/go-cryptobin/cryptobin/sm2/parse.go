@@ -4,10 +4,7 @@ import (
     "errors"
     "encoding/pem"
 
-    "github.com/tjfoc/gmsm/sm2"
-    "github.com/tjfoc/gmsm/x509"
-
-    cryptobin_sm2 "github.com/deatil/go-cryptobin/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
@@ -19,12 +16,12 @@ var (
 
 // 解析私钥，默认为 PKCS8
 func (this SM2) ParsePrivateKeyFromPEM(key []byte) (*sm2.PrivateKey, error) {
-    return x509.ReadPrivateKeyFromPem(key, nil)
+    return this.ParsePKCS8PrivateKeyFromPEM(key)
 }
 
 // 解析私钥带密码，默认为 PKCS8
 func (this SM2) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (*sm2.PrivateKey, error) {
-    return x509.ReadPrivateKeyFromPem(key, []byte(password))
+    return this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
 }
 
 // ==========
@@ -40,16 +37,9 @@ func (this SM2) ParsePKCS1PrivateKeyFromPEM(key []byte) (*sm2.PrivateKey, error)
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = cryptobin_sm2.ParseSM2PrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *sm2.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*sm2.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = sm2.ParseSM2PrivateKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -71,16 +61,9 @@ func (this SM2) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = cryptobin_sm2.ParseSM2PrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey *sm2.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*sm2.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = sm2.ParseSM2PrivateKey(blockDecrypted); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -90,7 +73,20 @@ func (this SM2) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
 
 // 解析 PKCS8 私钥
 func (this SM2) ParsePKCS8PrivateKeyFromPEM(key []byte) (*sm2.PrivateKey, error) {
-    return x509.ReadPrivateKeyFromPem(key, nil)
+    var err error
+
+    // Parse PEM block
+    var block *pem.Block
+    if block, _ = pem.Decode(key); block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    var pkey *sm2.PrivateKey
+    if pkey, err = sm2.ParsePrivateKey(block.Bytes); err != nil {
+        return nil, err
+    }
+
+    return pkey, nil
 }
 
 // 解析 PKCS8 带密码的私钥
@@ -109,7 +105,7 @@ func (this SM2) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var pkey *sm2.PrivateKey
-    if pkey, err = x509.ParsePKCS8UnecryptedPrivateKey(blockDecrypted); err != nil {
+    if pkey, err = sm2.ParsePrivateKey(blockDecrypted); err != nil {
         return nil, err
     }
 
@@ -120,5 +116,18 @@ func (this SM2) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
 
 // 解析公钥
 func (this SM2) ParsePublicKeyFromPEM(key []byte) (*sm2.PublicKey, error) {
-    return x509.ReadPublicKeyFromPem(key)
+    var err error
+
+    // Parse PEM block
+    var block *pem.Block
+    if block, _ = pem.Decode(key); block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    var pkey *sm2.PublicKey
+    if pkey, err = sm2.ParsePublicKey(block.Bytes); err != nil {
+        return nil, err
+    }
+
+    return pkey, nil
 }

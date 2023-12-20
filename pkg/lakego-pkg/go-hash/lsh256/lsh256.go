@@ -7,6 +7,7 @@ import (
 const (
     // The size of a LSH-256 checksum in bytes.
     Size = 32
+
     // The size of a LSH-224 checksum in bytes.
     Size224 = 28
 

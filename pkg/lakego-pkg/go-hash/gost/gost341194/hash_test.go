@@ -1,6 +1,7 @@
 package gost341194
 
 import (
+    "fmt"
     "hash"
     "testing"
     "crypto/cipher"
@@ -37,4 +38,18 @@ func (c *testCipher) Encrypt(dst, src []byte) {
 
 func (c *testCipher) Decrypt(dst, src []byte) {
     copy(dst, src)
+}
+
+func Test_Check(t *testing.T) {
+    in := []byte("nonce-asdfg")
+    check := "08246810594b02216e6f6e633d2d39733c666352565b5b6a344e580c0b4e580c"
+
+    h := New(NewTestCipher)
+    h.Write(in)
+
+    out := h.Sum(nil)
+
+    if fmt.Sprintf("%x", out) != check {
+        t.Errorf("Check error. got %x, want %s", out, check)
+    }
 }

@@ -95,6 +95,7 @@ func (this *digest) Write(p []byte) (int, error) {
             this.bufferBits = 0
             this.bufferPos = 0
         }
+
         this.buffer[this.bufferPos] = byte(b << (8 - bufferRem))
         this.bufferBits += int(bufferRem)
 
@@ -112,11 +113,13 @@ func (this *digest) Write(p []byte) (int, error) {
         b = 0
     }
 
-    if uint64(bufferRem)+sourceBits < 8 {
+    if uint64(bufferRem) + sourceBits < 8 {
         this.bufferBits += int(sourceBits)
     } else {
         this.bufferPos++
-        this.bufferBits += 8 - int(bufferRem) // bufferBits = 8*bufferPos
+
+        // bufferBits = 8*bufferPos
+        this.bufferBits += 8 - int(bufferRem)
         sourceBits -= uint64(8 - bufferRem)
 
         if this.bufferBits == (8 * Size) {
@@ -126,6 +129,7 @@ func (this *digest) Write(p []byte) (int, error) {
             this.bufferBits = 0
             this.bufferPos = 0
         }
+
         this.buffer[this.bufferPos] = byte(b << (8 - bufferRem))
         this.bufferBits += int(sourceBits)
     }
@@ -133,52 +137,57 @@ func (this *digest) Write(p []byte) (int, error) {
 }
 
 func (this *digest) Sum(in []byte) []byte {
-    n := *this
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *this
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
 
-    n.buffer[n.bufferPos] |= 0x80 >> (uint(n.bufferBits) & 7)
-    n.bufferPos++
+func (this *digest) checkSum() []byte {
+    this.buffer[this.bufferPos] |= 0x80 >> (uint(this.bufferBits) & 7)
+    this.bufferPos++
 
-    if n.bufferPos > BlockSize-lengthBytes {
-        if n.bufferPos < BlockSize {
-            for i := 0; i < BlockSize-n.bufferPos; i++ {
-                n.buffer[n.bufferPos+i] = 0
+    if this.bufferPos > BlockSize-lengthBytes {
+        if this.bufferPos < BlockSize {
+            for i := 0; i < BlockSize-this.bufferPos; i++ {
+                this.buffer[this.bufferPos+i] = 0
             }
         }
 
-        n.transform()
+        this.transform()
 
-        n.bufferPos = 0
+        this.bufferPos = 0
     }
 
-    if n.bufferPos < BlockSize-lengthBytes {
-        for i := 0; i < (BlockSize-lengthBytes)-n.bufferPos; i++ {
-            n.buffer[n.bufferPos+i] = 0
+    if this.bufferPos < BlockSize-lengthBytes {
+        for i := 0; i < (BlockSize - lengthBytes) - this.bufferPos; i++ {
+            this.buffer[this.bufferPos + i] = 0
         }
     }
-    n.bufferPos = BlockSize - lengthBytes
+    this.bufferPos = BlockSize - lengthBytes
 
     // Append the bit length of the hashed data.
     for i := 0; i < lengthBytes; i++ {
-        n.buffer[n.bufferPos+i] = n.bitLength[i]
+        this.buffer[this.bufferPos + i] = this.bitLength[i]
     }
 
     // Process this data block.
-    n.transform()
+    this.transform()
 
     // Return the final digest as []byte.
     var digest [Size]byte
     for i := 0; i < Size/8; i++ {
-        digest[i*8] = byte(n.hash[i] >> 56)
-        digest[i*8+1] = byte(n.hash[i] >> 48)
-        digest[i*8+2] = byte(n.hash[i] >> 40)
-        digest[i*8+3] = byte(n.hash[i] >> 32)
-        digest[i*8+4] = byte(n.hash[i] >> 24)
-        digest[i*8+5] = byte(n.hash[i] >> 16)
-        digest[i*8+6] = byte(n.hash[i] >> 8)
-        digest[i*8+7] = byte(n.hash[i])
+        digest[i*8 + 0] = byte(this.hash[i] >> 56)
+        digest[i*8 + 1] = byte(this.hash[i] >> 48)
+        digest[i*8 + 2] = byte(this.hash[i] >> 40)
+        digest[i*8 + 3] = byte(this.hash[i] >> 32)
+        digest[i*8 + 4] = byte(this.hash[i] >> 24)
+        digest[i*8 + 5] = byte(this.hash[i] >> 16)
+        digest[i*8 + 6] = byte(this.hash[i] >> 8)
+        digest[i*8 + 7] = byte(this.hash[i])
     }
 
-    return append(in, digest[:Size]...)
+    return digest[:Size]
 }
 
 func (this *digest) transform() {

@@ -1,7 +1,6 @@
 package murmur3
 
 import (
-    //"encoding/binary"
     "hash"
     "unsafe"
 )
@@ -33,7 +32,9 @@ type digest128 struct {
 }
 
 // New128 returns a 128-bit hasher
-func New128() Hash128 { return New128WithSeed(0) }
+func New128() Hash128 {
+    return New128WithSeed(0)
+}
 
 // New128WithSeed returns a 128-bit hasher set with explicit seed value
 func New128WithSeed(seed uint32) Hash128 {
@@ -44,13 +45,24 @@ func New128WithSeed(seed uint32) Hash128 {
     return d
 }
 
-func (d *digest128) Size() int { return 16 }
+func (d *digest128) Size() int {
+    return 16
+}
 
-func (d *digest128) reset() { d.h1, d.h2 = uint64(d.seed), uint64(d.seed) }
+func (d *digest128) reset() {
+    d.h1, d.h2 = uint64(d.seed), uint64(d.seed)
+}
 
-func (d *digest128) Sum(b []byte) []byte {
+func (d *digest128) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *d
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (d *digest128) checkSum() []byte {
     h1, h2 := d.Sum128()
-    return append(b,
+    return append([]byte{},
         byte(h1>>56), byte(h1>>48), byte(h1>>40), byte(h1>>32),
         byte(h1>>24), byte(h1>>16), byte(h1>>8), byte(h1),
 

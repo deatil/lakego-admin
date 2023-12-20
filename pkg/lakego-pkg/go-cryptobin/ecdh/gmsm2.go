@@ -5,7 +5,7 @@ import (
     "errors"
     "crypto/elliptic"
 
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 // Multiple invocations of this function will return the same value, so it can

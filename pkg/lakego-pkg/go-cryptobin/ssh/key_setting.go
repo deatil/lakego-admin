@@ -7,7 +7,7 @@ import (
 
     "golang.org/x/crypto/ssh"
 
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 func init() {

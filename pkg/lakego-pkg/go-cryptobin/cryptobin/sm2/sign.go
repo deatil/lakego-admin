@@ -6,8 +6,7 @@ import (
     "crypto/rand"
     "encoding/asn1"
 
-    "github.com/tjfoc/gmsm/sm2"
-
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -36,7 +35,7 @@ func (this SM2) Verify(data []byte) SM2 {
         return this.AppendError(err)
     }
 
-    this.verify = this.publicKey.Verify(data, this.data)
+    this.verify = this.publicKey.Verify(data, this.data, nil)
 
     return this
 }
@@ -54,7 +53,7 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
         return this.AppendError(err)
     }
 
-    r, s, err := sm2.Sm2Sign(this.privateKey, this.data, uid, rand.Reader)
+    r, s, err := sm2.Sm2Sign(rand.Reader, this.privateKey, this.data, uid)
     if err != nil {
         return this.AppendError(err)
     }
@@ -98,7 +97,7 @@ func (this SM2) SignHex(uid []byte) SM2 {
         return this.AppendError(err)
     }
 
-    r, s, err := sm2.Sm2Sign(this.privateKey, this.data, uid, rand.Reader)
+    r, s, err := sm2.Sm2Sign(rand.Reader, this.privateKey, this.data, uid)
     if err != nil {
         return this.AppendError(err)
     }

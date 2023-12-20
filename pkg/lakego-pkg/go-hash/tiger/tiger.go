@@ -95,6 +95,13 @@ func (this *digest) Write(p []byte) (length int, err error) {
 }
 
 func (this *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *this
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (this *digest) checkSum() []byte {
     var tmp [64]byte
 
     if this.ver == 1 {
@@ -125,7 +132,7 @@ func (this *digest) Sum(in []byte) []byte {
         tmp[i+16] = byte(this.c >> (8 * i))
     }
 
-    return append(in, tmp[:24]...)
+    return tmp[:24]
 }
 
 func (this *digest) compress(data []byte) {

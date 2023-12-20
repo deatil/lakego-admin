@@ -4,7 +4,7 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
 
-    sm2X509 "github.com/tjfoc/gmsm/x509"
+    sm2X509 "github.com/deatil/go-cryptobin/gm/x509"
 )
 
 // pkix

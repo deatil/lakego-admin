@@ -14,8 +14,8 @@ import (
 
     "golang.org/x/crypto/ssh"
 
-    "github.com/tjfoc/gmsm/sm2"
-    "github.com/tjfoc/gmsm/x509"
+    "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 // 解析方式
@@ -96,7 +96,7 @@ func (r *sm2PublicKey) Marshal() []byte {
 func (r *sm2PublicKey) Verify(data []byte, sig *ssh.Signature) error {
     pubkey := (*sm2.PublicKey)(r)
 
-    if !pubkey.Verify(data, sig.Blob) {
+    if !pubkey.Verify(data, sig.Blob, nil) {
         return fmt.Errorf("ssh: signature verify fail")
     }
 
@@ -159,7 +159,7 @@ func ParseSM2RawPrivateKey(pemBytes []byte) (any, error) {
 
     switch block.Type {
         case "PRIVATE KEY":
-            return x509.ReadPrivateKeyFromPem(block.Bytes, nil)
+            return ParseSM2PrivateKeyFromPem(block.Bytes, nil)
         case "OPENSSH PRIVATE KEY":
             key, _, err := ParseOpenSSHPrivateKey(block.Bytes)
 
@@ -185,12 +185,36 @@ func ParseSM2RawPrivateKeyWithPassphrase(pemBytes, passphrase []byte) (any, erro
         return nil, errors.New("ssh: not an encrypted key")
     }
 
-    key, err := x509.ReadPrivateKeyFromPem(block.Bytes, passphrase)
+    key, err := ParseSM2PrivateKeyFromPem(block.Bytes, passphrase)
     if err != nil {
         return nil, fmt.Errorf("ssh: cannot decode encrypted private keys: %v", err)
     }
 
     return key, nil
+}
+
+func ParseSM2PrivateKeyFromPem(privateKeyPem []byte, pwd []byte) (*sm2.PrivateKey, error) {
+    var block *pem.Block
+
+    block, _ = pem.Decode(privateKeyPem)
+    if block == nil {
+        return nil, errors.New("failed to decode private key")
+    }
+
+    if pwd == nil {
+        priv, err := sm2.ParsePrivateKey(block.Bytes)
+
+        return priv, err
+    }
+
+    blockDecrypted, err := pkcs8.DecryptPEMBlock(block, pwd)
+    if err != nil {
+        return nil, errors.New("failed to decode private key")
+    }
+
+    priv, err := sm2.ParsePrivateKey(blockDecrypted)
+
+    return priv, err
 }
 
 // =============

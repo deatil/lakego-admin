@@ -279,7 +279,7 @@ func init() {
     }
 }
 
-type Hash struct {
+type digest struct {
     size    int
     buf     []byte
     n       uint64
@@ -295,12 +295,12 @@ type Hash struct {
 }
 
 // New hash
-func New(size int) *Hash {
+func New(size int) *digest {
     if size != 32 && size != 64 {
         panic("size must be either 32 or 64")
     }
 
-    h := Hash{
+    h := &digest{
         size:    size,
         hsh:     make([]byte, BlockSize),
         chk:     make([]byte, BlockSize),
@@ -313,18 +313,34 @@ func New(size int) *Hash {
         addBuf:  make([]byte, BlockSize),
     }
     h.Reset()
-    return &h
+
+    return h
 }
 
-func (h *Hash) BlockSize() int {
-    return BlockSize
-}
-
-func (h *Hash) Size() int {
+func (h *digest) Size() int {
     return h.size
 }
 
-func (h *Hash) Write(data []byte) (int, error) {
+func (h *digest) BlockSize() int {
+    return BlockSize
+}
+
+func (h *digest) Reset() {
+    h.n = 0
+    h.buf = nil
+
+    for i := 0; i < BlockSize; i++ {
+        h.chk[i] = 0
+
+        if h.size == 32 {
+            h.hsh[i] = 1
+        } else {
+            h.hsh[i] = 0
+        }
+    }
+}
+
+func (h *digest) Write(data []byte) (int, error) {
     h.buf = append(h.buf, data...)
 
     for len(h.buf) >= BlockSize {
@@ -339,7 +355,14 @@ func (h *Hash) Write(data []byte) (int, error) {
     return len(data), nil
 }
 
-func (h *Hash) Sum(in []byte) []byte {
+func (h *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *h
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (h *digest) checkSum() []byte {
     buf := make([]byte, BlockSize)
     hsh := make([]byte, BlockSize)
 
@@ -356,28 +379,13 @@ func (h *Hash) Sum(in []byte) []byte {
     copy(hsh, h.g(0, hsh, h.add512bit(h.chk, buf)))
 
     if h.size == 32 {
-        return append(in, hsh[BlockSize/2:]...)
+        return hsh[BlockSize/2:]
     }
 
-    return append(in, hsh...)
+    return hsh
 }
 
-func (h *Hash) Reset() {
-    h.n = 0
-    h.buf = nil
-
-    for i := 0; i < BlockSize; i++ {
-        h.chk[i] = 0
-
-        if h.size == 32 {
-            h.hsh[i] = 1
-        } else {
-            h.hsh[i] = 0
-        }
-    }
-}
-
-func (h *Hash) add512bit(chk, data []byte) []byte {
+func (h *digest) add512bit(chk, data []byte) []byte {
     var ss uint16
 
     for i := 0; i < BlockSize; i++ {
@@ -388,7 +396,7 @@ func (h *Hash) add512bit(chk, data []byte) []byte {
     return h.addBuf
 }
 
-func (h *Hash) g(n uint64, hsh, data []byte) []byte {
+func (h *digest) g(n uint64, hsh, data []byte) []byte {
     out := h.gBuf
 
     copy(out, hsh)
@@ -405,7 +413,7 @@ func (h *Hash) g(n uint64, hsh, data []byte) []byte {
     return blockXor(out, blockXor(out, h.e(l(out, h.ps(out)), data), hsh), data)
 }
 
-func (h *Hash) e(k, msg []byte) []byte {
+func (h *digest) e(k, msg []byte) []byte {
     for i := 0; i < 12; i++ {
         msg = l(h.eMsgBuf, h.ps(blockXor(h.eXorBuf, k, msg)))
         k = l(h.eKBuf, h.ps(blockXor(h.eXorBuf, k, c[i][:])))
@@ -422,7 +430,7 @@ func blockXor(dst, x, y []byte) []byte {
     return dst
 }
 
-func (h *Hash) ps(data []byte) []byte {
+func (h *digest) ps(data []byte) []byte {
     for i := 0; i < BlockSize; i++ {
         h.psBuf[tau[i]] = pi[int(data[i])]
     }
@@ -447,7 +455,7 @@ func l(out, data []byte) []byte {
     return out
 }
 
-func (h *Hash) MarshalBinary() (data []byte, err error) {
+func (h *digest) MarshalBinary() (data []byte, err error) {
     data = make([]byte, len(MarshalledName)+1+8+2*BlockSize+len(h.buf))
     copy(data, []byte(MarshalledName))
 
@@ -467,7 +475,7 @@ func (h *Hash) MarshalBinary() (data []byte, err error) {
     return
 }
 
-func (h *Hash) UnmarshalBinary(data []byte) error {
+func (h *digest) UnmarshalBinary(data []byte) error {
     expectedLen := len(MarshalledName) + 1 + 8 + 2*BlockSize
     if len(data) < expectedLen {
         return fmt.Errorf("gogost/internal/gost34112012: len(data)=%d != %d", len(data), expectedLen)

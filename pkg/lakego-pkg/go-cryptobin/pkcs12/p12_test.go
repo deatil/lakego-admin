@@ -877,3 +877,38 @@ func Test_P12_UnknowOid_Check(t *testing.T) {
         assertNotEmpty(unknow.Attrs.ToArray(), "P12_UnknowOid_Check-Attrs")
     }
 }
+
+func Test_P12_Attrs_Names(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testNewPfx_Encode)
+
+    password := "pass"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    assertError(err, "P12_Attrs_Names-pfxData")
+
+    privateKey2, priAttrs, _ := p12.GetPrivateKey()
+
+    assertNotEmpty(privateKey2, "P12_Attrs_Names-privateKey2")
+    assertNotEmpty(priAttrs, "P12_Attrs_Names-priAttrs")
+
+    prinames := priAttrs.Names()
+    assertNotEmpty(prinames, "P12_Attrs_Names-priNames")
+
+    certPriNames := []string{"localKeyId"}
+    assertEqual(prinames, certPriNames, "P12_Attrs_Names-certPriNames-Equal")
+
+    certificate2, certAttrs, _ := p12.GetCert()
+
+    assertNotEmpty(certificate2, "P12_Attrs_Names-certificate2")
+    assertNotEmpty(certAttrs, "P12_Attrs_Names-certAttrs")
+
+    certnames := certAttrs.Names()
+    assertNotEmpty(certnames, "P12_Attrs_Names-certNames")
+
+    certOldNames := []string{"localKeyId"}
+    assertEqual(certnames, certOldNames, "P12_Attrs_Names-certNames-Equal")
+}

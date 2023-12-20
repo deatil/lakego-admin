@@ -193,8 +193,8 @@ func (b *digest) Write(p []byte) (n int, err error) {
 }
 
 func (b *digest) Sum(p []byte) []byte {
-    b0 := *b
-    hash := b0.checkSum()
+    d0 := *b
+    hash := d0.checkSum()
     return append(p, hash[:b.Size()]...)
 }
 

@@ -2,8 +2,8 @@ package sm2
 
 import (
     "crypto/elliptic"
-    "github.com/tjfoc/gmsm/sm2"
 
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -76,7 +76,6 @@ func (this SM2) GetPublicKeyUncompressString() string {
 // 获取压缩公钥
 func (this SM2) GetPublicKeyCompressString() string {
     data := sm2.Compress(this.publicKey)
-    data[0] = 2 | (this.publicKey.Y.Bytes()[sm2p256ElementLength-1] & 1)
 
     dataHex := cryptobin_tool.HexEncode(data)
 
@@ -89,7 +88,7 @@ func (this SM2) GetKeyData() []byte {
 }
 
 // 获取 mode
-func (this SM2) GetMode() int {
+func (this SM2) GetMode() sm2.Mode {
     return this.mode
 }
 

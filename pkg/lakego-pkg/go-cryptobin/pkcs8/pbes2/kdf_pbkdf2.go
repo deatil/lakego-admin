@@ -11,7 +11,8 @@ import (
     "encoding/asn1"
 
     "golang.org/x/crypto/pbkdf2"
-    "github.com/tjfoc/gmsm/sm3"
+    
+    "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
 // pkcs8 可使用的 hash 方式

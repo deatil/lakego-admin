@@ -8,7 +8,7 @@ import (
     "crypto/ecdsa"
     "encoding/asn1"
 
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 // sm2 签名
@@ -70,5 +70,5 @@ func (this KeySignWithSM2) Verify(pkey crypto.PublicKey, signed []byte, signatur
 
     hashData := hashFuncSignData(this.hashFunc, signed)
 
-    return pub.Verify(hashData, signature), nil
+    return pub.Verify(hashData, signature, nil), nil
 }

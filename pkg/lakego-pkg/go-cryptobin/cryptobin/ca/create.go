@@ -10,9 +10,8 @@ import (
     "crypto/x509"
     "encoding/pem"
 
-    "github.com/tjfoc/gmsm/sm2"
-    sm2_x509 "github.com/tjfoc/gmsm/x509"
-    sm2_pkcs12 "github.com/tjfoc/gmsm/pkcs12"
+    "github.com/deatil/go-cryptobin/gm/sm2"
+    sm2_x509 "github.com/deatil/go-cryptobin/gm/x509"
 
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
 )
@@ -206,14 +205,15 @@ func (this CA) CreatePrivateKey() CA {
             }
 
         case *sm2.PrivateKey:
-            keyData, err := sm2_x509.WritePrivateKeyToPem(privateKey, nil)
+            x509PrivateKey, err := sm2.MarshalPrivateKey(privateKey)
             if err != nil {
                 return this.AppendError(err)
             }
 
-            this.keyData = keyData
-
-            return this
+            privateBlock = &pem.Block{
+                Type: "PRIVATE KEY",
+                Bytes: x509PrivateKey,
+            }
 
         default:
             err := fmt.Errorf("CA: unsupported private key type: %T", privateKey)
@@ -247,7 +247,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
                 return this.AppendError(err)
             }
 
-            pfxData, err = sm2_pkcs12.Encode(privateKey, cert, caCerts, pwd)
+            pfxData, err = cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, cert.ToX509Certificate(), caCerts, pwd)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)

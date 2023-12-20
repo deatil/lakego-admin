@@ -106,6 +106,13 @@ func (this *digest) Write(data []byte) (nn int, err error) {
 }
 
 func (this *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *this
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (this *digest) checkSum() [Size]byte {
     var i int32
 
     this.num &= 0x3f
@@ -129,5 +136,5 @@ func (this *digest) Sum(in []byte) []byte {
         PUTU32(digest[i*4:], this.digest[i])
     }
 
-    return append(in, digest[:]...)
+    return digest
 }

@@ -2,7 +2,7 @@ package gost34112012512
 
 import (
     "hash"
-    
+
     "github.com/deatil/go-hash/gost/gost34112012"
 )
 
@@ -10,8 +10,8 @@ import (
 // RFC 6986. Big-endian hash output.
 
 const (
-    BlockSize = gost34112012.BlockSize
     Size      = 64
+    BlockSize = gost34112012.BlockSize
 )
 
 func New() hash.Hash {

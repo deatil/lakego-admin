@@ -1,6 +1,7 @@
 package gost34112012256
 
 import (
+    "fmt"
     "hash"
     "testing"
     "encoding/binary"
@@ -41,5 +42,19 @@ func Test_TLSTree(t *testing.T) {
 
     if len(data) == 0 {
         t.Error("TLSTree data error")
+    }
+}
+
+func Test_Check(t *testing.T) {
+    in := []byte("nonce-asdfg123123123")
+    check := "f24a63bbb863ba538ad956ababb0c4a651136a4d81c878a818bad28c9094d8e1"
+
+    h := New()
+    h.Write(in)
+
+    out := h.Sum(nil)
+
+    if fmt.Sprintf("%x", out) != check {
+        t.Errorf("Check error. got %x, want %s", out, check)
     }
 }

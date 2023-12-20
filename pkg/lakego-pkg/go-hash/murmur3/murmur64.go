@@ -15,7 +15,9 @@ var (
 type digest64 digest128
 
 // New64 returns a 64-bit hasher
-func New64() hash.Hash64 { return New64WithSeed(0) }
+func New64() hash.Hash64 {
+    return New64WithSeed(0)
+}
 
 // New64WithSeed returns a 64-bit hasher set with explicit seed value
 func New64WithSeed(seed uint32) hash.Hash64 {
@@ -23,9 +25,16 @@ func New64WithSeed(seed uint32) hash.Hash64 {
     return d
 }
 
-func (d *digest64) Sum(b []byte) []byte {
+func (d *digest64) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *d
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (d *digest64) checkSum() []byte {
     h1 := d.Sum64()
-    return append(b,
+    return append([]byte{},
         byte(h1>>56), byte(h1>>48), byte(h1>>40), byte(h1>>32),
         byte(h1>>24), byte(h1>>16), byte(h1>>8), byte(h1))
 }

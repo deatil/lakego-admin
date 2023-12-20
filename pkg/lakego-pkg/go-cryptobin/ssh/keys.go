@@ -6,7 +6,7 @@ import (
 
     "golang.org/x/crypto/ssh"
 
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 func ParseKnownHosts(in []byte) (marker string, hosts []string, pubKey ssh.PublicKey, comment string, rest []byte, err error) {

@@ -4,8 +4,7 @@ import (
     "errors"
     "crypto"
 
-    "github.com/tjfoc/gmsm/sm2"
-    "github.com/tjfoc/gmsm/x509"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 // SM2
@@ -18,7 +17,7 @@ func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
         return nil, errors.New("jceks: private key is err")
     }
 
-    pkData, err := x509.MarshalSm2UnecryptedPrivateKey(priKey)
+    pkData, err := sm2.MarshalPrivateKey(priKey)
     if err != nil {
         return nil, errors.New("jceks: error encoding PKCS#8 private key: " + err.Error())
     }
@@ -28,7 +27,7 @@ func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
 
 // 解析
 func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
-    privateKey, err := x509.ParsePKCS8UnecryptedPrivateKey(pkData)
+    privateKey, err := sm2.ParsePrivateKey(pkData)
     if err != nil {
         return nil, errors.New("jceks: error parsing PKCS#8 private key: " + err.Error())
     }
@@ -45,7 +44,7 @@ func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
         return nil, errors.New("jceks: public key is err")
     }
 
-    pkData, err := x509.MarshalSm2PublicKey(pubKey)
+    pkData, err := sm2.MarshalPublicKey(pubKey)
     if err != nil {
         return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
     }
@@ -55,7 +54,7 @@ func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
 
 // 解析公钥
 func (this KeySM2) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
-    publicKey, err := x509.ParseSm2PublicKey(pkData)
+    publicKey, err := sm2.ParsePublicKey(pkData)
     if err != nil {
         return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
     }

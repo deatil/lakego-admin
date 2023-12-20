@@ -1,7 +1,5 @@
 package murmur3
 
-// code from github.com/spaolacci/murmur3
-
 type bmixer interface {
     bmix(p []byte) (tail []byte)
     Size() (n int)
@@ -16,7 +14,15 @@ type digest struct {
     bmixer
 }
 
-func (d *digest) BlockSize() int { return 1 }
+func (d *digest) BlockSize() int {
+    return 1
+}
+
+func (d *digest) Reset() {
+    d.clen = 0
+    d.tail = nil
+    d.bmixer.reset()
+}
 
 func (d *digest) Write(p []byte) (n int, err error) {
     n = len(p)
@@ -43,10 +49,4 @@ func (d *digest) Write(p []byte) (n int, err error) {
     d.tail = d.buf[:nn]
 
     return n, nil
-}
-
-func (d *digest) Reset() {
-    d.clen = 0
-    d.tail = nil
-    d.bmixer.reset()
 }

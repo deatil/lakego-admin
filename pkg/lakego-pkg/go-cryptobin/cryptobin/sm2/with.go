@@ -1,7 +1,7 @@
 package sm2
 
 import (
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 // 设置 PrivateKey
@@ -19,7 +19,7 @@ func (this SM2) WithPublicKey(data *sm2.PublicKey) SM2 {
 }
 
 // 设置 mode
-func (this SM2) WithMode(data int) SM2 {
+func (this SM2) WithMode(data sm2.Mode) SM2 {
     this.mode = data
 
     return this

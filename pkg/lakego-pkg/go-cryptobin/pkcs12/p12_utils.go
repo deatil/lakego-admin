@@ -147,6 +147,18 @@ func (this PKCS12Attributes) Verify(data []byte) bool {
     return keyId == dataHex
 }
 
+// 键值列表
+func (this PKCS12Attributes) Names() []string {
+    attrs := this.ToArray()
+
+    names := make([]string, 0)
+    for name, _ := range attrs {
+        names = append(names, name)
+    }
+
+    return names
+}
+
 // 返回字符
 func (this PKCS12Attributes) String() string {
     data, _ := json.Marshal(this.ToArray())
@@ -247,9 +259,9 @@ func convertAttribute(attribute *PKCS12Attribute) (key, value string, err error)
 
             return
         default:
-            key = attribute.Id.String()
+            key   = attribute.Id.String()
             value = hex.EncodeToString(attribute.Value.Bytes)
-            err = errUnknownAttributeOID
+            err   = errUnknownAttributeOID
 
             return
     }

@@ -7,8 +7,7 @@ import (
     "math/big"
     "crypto/rand"
 
-    "github.com/tjfoc/gmsm/sm2"
-
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
@@ -312,10 +311,7 @@ func (this SM2) FromPublicKeyCompressString(key string) SM2 {
 
     d, _ := new(big.Int).SetString(key[:], 16)
 
-    y := d.Bytes()
-    y[0] &= 1
-
-    this.publicKey = sm2.Decompress(y)
+    this.publicKey = sm2.Decompress(d.Bytes())
 
     return this
 }

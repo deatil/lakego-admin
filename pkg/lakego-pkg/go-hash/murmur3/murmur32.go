@@ -37,13 +37,24 @@ func New32WithSeed(seed uint32) hash.Hash32 {
     return d
 }
 
-func (d *digest32) Size() int { return 4 }
+func (d *digest32) Size() int {
+    return 4
+}
 
-func (d *digest32) reset() { d.h1 = d.seed }
+func (d *digest32) reset() {
+    d.h1 = d.seed
+}
 
-func (d *digest32) Sum(b []byte) []byte {
+func (d *digest32) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *d
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (d *digest32) checkSum() []byte {
     h := d.Sum32()
-    return append(b, byte(h>>24), byte(h>>16), byte(h>>8), byte(h))
+    return append([]byte{}, byte(h>>24), byte(h>>16), byte(h>>8), byte(h))
 }
 
 // Digest as many blocks as possible.
@@ -67,23 +78,22 @@ func (d *digest32) bmix(p []byte) (tail []byte) {
 }
 
 func (d *digest32) Sum32() (h1 uint32) {
-
     h1 = d.h1
 
     var k1 uint32
     switch len(d.tail) & 3 {
-    case 3:
-        k1 ^= uint32(d.tail[2]) << 16
-        fallthrough
-    case 2:
-        k1 ^= uint32(d.tail[1]) << 8
-        fallthrough
-    case 1:
-        k1 ^= uint32(d.tail[0])
-        k1 *= c1_32
-        k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
-        k1 *= c2_32
-        h1 ^= k1
+        case 3:
+            k1 ^= uint32(d.tail[2]) << 16
+            fallthrough
+        case 2:
+            k1 ^= uint32(d.tail[1]) << 8
+            fallthrough
+        case 1:
+            k1 ^= uint32(d.tail[0])
+            k1 *= c1_32
+            k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+            k1 *= c2_32
+            h1 ^= k1
     }
 
     h1 ^= uint32(d.clen)
@@ -141,18 +151,18 @@ func Sum32WithSeed(data []byte, seed uint32) uint32 {
 
     var k1 uint32
     switch len(tail) & 3 {
-    case 3:
-        k1 ^= uint32(tail[2]) << 16
-        fallthrough
-    case 2:
-        k1 ^= uint32(tail[1]) << 8
-        fallthrough
-    case 1:
-        k1 ^= uint32(tail[0])
-        k1 *= c1_32
-        k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
-        k1 *= c2_32
-        h1 ^= k1
+        case 3:
+            k1 ^= uint32(tail[2]) << 16
+            fallthrough
+        case 2:
+            k1 ^= uint32(tail[1]) << 8
+            fallthrough
+        case 1:
+            k1 ^= uint32(tail[0])
+            k1 *= c1_32
+            k1 = (k1 << 15) | (k1 >> 17) // rotl32(k1, 15)
+            k1 *= c2_32
+            h1 ^= k1
     }
 
     h1 ^= uint32(len(data))

@@ -5,7 +5,7 @@ import (
     "crypto/x509"
     "encoding/pem"
 
-    sm2X509 "github.com/tjfoc/gmsm/x509"
+    sm2X509 "github.com/deatil/go-cryptobin/gm/x509"
 )
 
 // 验证

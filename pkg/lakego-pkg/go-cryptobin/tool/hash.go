@@ -15,8 +15,7 @@ import (
     "golang.org/x/crypto/blake2b"
     "golang.org/x/crypto/ripemd160"
 
-    "github.com/tjfoc/gmsm/sm3"
-
+    "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/hash/md2"
 )
 

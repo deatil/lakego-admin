@@ -10,8 +10,8 @@ import (
 // RFC 5831.
 
 const (
-    BlockSize = 32
     Size      = 32
+    BlockSize = 32
 )
 
 var (
@@ -37,7 +37,7 @@ var (
     big256 = big.NewInt(0).SetBit(big.NewInt(0), 256, 1)
 )
 
-type Hash struct {
+type digest struct {
     cipher func([]byte) cipher.Block
     size   uint64
     hsh    [BlockSize]byte
@@ -46,24 +46,36 @@ type Hash struct {
     tmp    [BlockSize]byte
 }
 
-func New(cipher func([]byte) cipher.Block) *Hash {
-    h := Hash{
+func New(cipher func([]byte) cipher.Block) *digest {
+    h := &digest{
         cipher: cipher,
     }
-
     h.Reset()
-    return &h
+
+    return h
 }
 
-func (h *Hash) BlockSize() int {
-    return BlockSize
-}
-
-func (h *Hash) Size() int {
+func (h *digest) Size() int {
     return Size
 }
 
-func (h *Hash) Write(data []byte) (int, error) {
+func (h *digest) BlockSize() int {
+    return BlockSize
+}
+
+func (h *digest) Reset() {
+    h.size = 0
+    h.hsh = [BlockSize]byte{
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    }
+    h.chk = big.NewInt(0)
+    h.buf = h.buf[:0]
+}
+
+func (h *digest) Write(data []byte) (int, error) {
     h.buf = append(h.buf, data...)
 
     for len(h.buf) >= BlockSize {
@@ -77,7 +89,14 @@ func (h *Hash) Write(data []byte) (int, error) {
     return len(data), nil
 }
 
-func (h *Hash) Sum(in []byte) []byte {
+func (h *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *h
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (h *digest) checkSum() [Size]byte {
     size := h.size
     chk := h.chk
     hsh := h.hsh
@@ -102,19 +121,7 @@ func (h *Hash) Sum(in []byte) []byte {
     hsh = h.step(hsh, *block)
     blockReverse(hsh[:], hsh[:])
 
-    return append(in, hsh[:]...)
-}
-
-func (h *Hash) Reset() {
-    h.size = 0
-    h.hsh = [BlockSize]byte{
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    }
-    h.chk = big.NewInt(0)
-    h.buf = h.buf[:0]
+    return hsh
 }
 
 func fA(in *[BlockSize]byte) *[BlockSize]byte {
@@ -161,13 +168,15 @@ func blockXor(dst, a, b *[BlockSize]byte) {
     }
 }
 
-func (h *Hash) step(hin, m [BlockSize]byte) [BlockSize]byte {
+func (h *digest) step(hin, m [BlockSize]byte) [BlockSize]byte {
     out := new([BlockSize]byte)
     u := new([BlockSize]byte)
     v := new([BlockSize]byte)
     k := new([BlockSize]byte)
+
     (*u) = hin
     (*v) = m
+
     blockXor(k, u, v)
     k = fP(k)
     blockReverse(k[:], k[:])
@@ -264,11 +273,12 @@ func (h *Hash) step(hin, m [BlockSize]byte) [BlockSize]byte {
     return *out
 }
 
-func (h *Hash) chkAdd(data []byte) *big.Int {
+func (h *digest) chkAdd(data []byte) *big.Int {
     i := big.NewInt(0).SetBytes(data)
     i.Add(i, h.chk)
     if i.Cmp(big256) != -1 {
         i.Sub(i, big256)
     }
+
     return i
 }

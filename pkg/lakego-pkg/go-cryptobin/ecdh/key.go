@@ -13,8 +13,7 @@ import (
 
     "golang.org/x/crypto/cryptobyte"
 
-    "github.com/tjfoc/gmsm/sm2"
-    gmsm_x509 "github.com/tjfoc/gmsm/x509"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 var (
@@ -77,7 +76,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
             pubblic.Curve = c
             pubblic.X, pubblic.Y = elliptic.Unmarshal(c, pub.Bytes())
 
-            pubkey, err := gmsm_x509.MarshalSm2PublicKey(pubblic)
+            pubkey, err := sm2.MarshalPublicKey(pubblic)
             if err != nil {
                 return nil, errors.New("ecdsa: failed to marshal algo param: " + err.Error())
             }
@@ -131,7 +130,7 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
                 }
 
                 if oidPublicKeyGmSM2.Equal(*namedCurveOID) {
-                    if pubkey, err := gmsm_x509.ParseSm2PublicKey(derBytes); err == nil {
+                    if pubkey, err := sm2.ParsePublicKey(derBytes); err == nil {
                         return SM2PublicKeyToECDH(pubkey)
                     }
                 }
@@ -188,7 +187,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
             pri.D = k
             pri.PublicKey.X, pri.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
 
-            private, err := gmsm_x509.MarshalSm2UnecryptedPrivateKey(pri)
+            private, err := sm2.MarshalPrivateKey(pri)
             if err != nil {
                 return nil, errors.New("ecdsa: failed to marshal algo param: " + err.Error())
             }
@@ -241,7 +240,7 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
                 }
 
                 if oidPublicKeyGmSM2.Equal(*namedCurveOID) {
-                    if pkey, err := gmsm_x509.ParsePKCS8UnecryptedPrivateKey(der); err == nil {
+                    if pkey, err := sm2.ParsePrivateKey(der); err == nil {
                         return SM2PrivateKeyToECDH(pkey)
                     }
                 }

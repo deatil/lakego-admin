@@ -4,10 +4,8 @@ import (
     "fmt"
     "errors"
     "math/big"
-    "crypto/elliptic"
     "encoding/asn1"
-
-    "github.com/tjfoc/gmsm/sm2"
+    "crypto/elliptic"
 )
 
 const sm2PrivKeyVersion = 1
@@ -30,7 +28,7 @@ type sm2PrivateKey struct {
 // ParseSM2PrivateKey parses an SM2 private key in SEC 1, ASN.1 DER form.
 //
 // This kind of key is commonly encoded in PEM blocks of type "SM2 PRIVATE KEY".
-func ParseSM2PrivateKey(der []byte) (*sm2.PrivateKey, error) {
+func ParseSM2PrivateKey(der []byte) (*PrivateKey, error) {
     return parseSM2PrivateKey(nil, der)
 }
 
@@ -39,7 +37,7 @@ func ParseSM2PrivateKey(der []byte) (*sm2.PrivateKey, error) {
 // This kind of key is commonly encoded in PEM blocks of type "SM2 PRIVATE KEY".
 // For a more flexible key format which is not SM2 specific, use
 // MarshalPKCS8PrivateKey.
-func MarshalSM2PrivateKey(key *sm2.PrivateKey) ([]byte, error) {
+func MarshalSM2PrivateKey(key *PrivateKey) ([]byte, error) {
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
         return nil, errors.New("x509: unknown elliptic curve")
@@ -50,7 +48,7 @@ func MarshalSM2PrivateKey(key *sm2.PrivateKey) ([]byte, error) {
 
 // marshalSM2PrivateKeyWithOID marshals an SM2 private key into ASN.1, DER format and
 // sets the curve ID to the given OID, or omits it if OID is nil.
-func marshalSM2PrivateKeyWithOID(key *sm2.PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
+func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
         return nil, errors.New("invalid elliptic key public key")
     }
@@ -71,7 +69,7 @@ func marshalSM2PrivateKeyWithOID(key *sm2.PrivateKey, oid asn1.ObjectIdentifier)
 // The OID for the named curve may be provided from another source (such as
 // the PKCS8 container) - if it is provided then use this instead of the OID
 // that may exist in the SM2 private key structure.
-func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *sm2.PrivateKey, err error) {
+func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
     var privKey sm2PrivateKey
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
         return nil, errors.New("x509: failed to parse SM2 private key: " + err.Error())
@@ -98,7 +96,7 @@ func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *
         return nil, errors.New("x509: invalid elliptic curve private key value")
     }
 
-    priv := new(sm2.PrivateKey)
+    priv := new(PrivateKey)
     priv.Curve = curve
     priv.D = k
 
@@ -129,7 +127,7 @@ var (
 func namedCurveFromOID(oid asn1.ObjectIdentifier) elliptic.Curve {
     switch {
         case oid.Equal(oidNamedCurveP256SM2):
-            return sm2.P256Sm2()
+            return P256Sm2()
     }
 
     return nil
@@ -137,7 +135,7 @@ func namedCurveFromOID(oid asn1.ObjectIdentifier) elliptic.Curve {
 
 func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
     switch curve {
-        case sm2.P256Sm2():
+        case P256Sm2():
             return oidNamedCurveP256SM2, true
     }
 

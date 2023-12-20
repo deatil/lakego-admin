@@ -94,7 +94,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
         // if we have exactly 1 block in the buffer then hash that block
         if d.nx == _Chunk {
-            block(d, d.x[0:_Chunk])
+            d.block(d.x[0:_Chunk])
             d.nx = 0
         }
 
@@ -104,7 +104,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
     imax := len(p) / _Chunk
     // For the rest, try hashing by the blocksize
     for i := 0; i < imax; i++ {
-        block(d, p[:_Chunk])
+        d.block(p[:_Chunk])
         p = p[_Chunk:]
     }
 
@@ -116,10 +116,14 @@ func (d *digest) Write(p []byte) (nn int, err error) {
     return
 }
 
-func (d0 *digest) Sum(in []byte) []byte {
-    // Make a copy of d0 so that caller can keep writing and summing.
-    d := *d0
+func (d *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *d
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
 
+func (d *digest) checkSum() []byte {
     // Padding.
     var tmp [_Chunk]byte
     //tmp := make([]byte, _Chunk, _Chunk)
@@ -143,10 +147,10 @@ func (d0 *digest) Sum(in []byte) []byte {
         panic("d.nx != 0")
     }
 
-    return append(in, d.state[0:16]...)
+    return d.state[0:16]
 }
 
-func block(dig *digest, p []byte) {
+func (dig *digest) block(p []byte) {
     var t, i, j uint8
     t = 0
 

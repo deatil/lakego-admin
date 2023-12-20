@@ -83,8 +83,8 @@ func (this *digest) Write(p []byte) (n int, err error) {
 }
 
 func (this *digest) Sum(p []byte) []byte {
-    ctx0 := *this
-    hash := ctx0.checkSum()
+    d0 := *this
+    hash := d0.checkSum()
     return append(p, hash[:]...)
 }
 

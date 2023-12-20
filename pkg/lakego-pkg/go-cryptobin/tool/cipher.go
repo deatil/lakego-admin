@@ -11,7 +11,7 @@ import (
     "golang.org/x/crypto/twofish"
     "golang.org/x/crypto/blowfish"
 
-    "github.com/tjfoc/gmsm/sm4"
+    "github.com/deatil/go-cryptobin/cipher/sm4"
 )
 
 type (

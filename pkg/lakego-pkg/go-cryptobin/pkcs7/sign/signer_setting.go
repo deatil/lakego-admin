@@ -8,7 +8,7 @@ import (
     _ "crypto/sha512"
     "encoding/asn1"
 
-    "github.com/tjfoc/gmsm/sm3"
+    "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
 var (

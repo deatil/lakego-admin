@@ -5,13 +5,11 @@ import (
     "testing"
     "crypto/rand"
 
-    "github.com/tjfoc/gmsm/sm2"
-
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
 func TestSM2ECDH(t *testing.T) {
-    priv1, err := sm2.GenerateKey(rand.Reader)
+    priv1, err := GenerateKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
     }
@@ -20,7 +18,7 @@ func TestSM2ECDH(t *testing.T) {
 
     // =======
 
-    priv2, err := sm2.GenerateKey(rand.Reader)
+    priv2, err := GenerateKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
     }
@@ -49,8 +47,8 @@ func TestSM2ECDH(t *testing.T) {
 }
 
 // ECDH 生成密钥
-func makeKey(pri *sm2.PrivateKey, pub *sm2.PublicKey) []byte {
-    curve := sm2.P256Sm2()
+func makeKey(pri *PrivateKey, pub *PublicKey) []byte {
+    curve := P256Sm2()
 
     x, _ := curve.ScalarMult(pub.X, pub.Y, pri.D.Bytes())
     preMasterSecret := make([]byte, (curve.Params().BitSize+7)>>3)
@@ -63,7 +61,7 @@ func makeKey(pri *sm2.PrivateKey, pub *sm2.PublicKey) []byte {
 func Test_PKCS1(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    priv1, err := sm2.GenerateKey(rand.Reader)
+    priv1, err := GenerateKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
     }

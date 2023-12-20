@@ -11,7 +11,7 @@ import (
     go_eddsa "crypto/ed25519"
     "golang.org/x/crypto/ssh"
 
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 
     "github.com/deatil/lakego-filesystem/filesystem"
     cryptobin_ssh "github.com/deatil/go-cryptobin/ssh"

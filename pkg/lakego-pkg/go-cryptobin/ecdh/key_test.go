@@ -7,10 +7,8 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    "github.com/tjfoc/gmsm/sm2"
-    "github.com/tjfoc/gmsm/x509"
-
     "github.com/deatil/go-cryptobin/ecdh"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 func TestEqual(t *testing.T) {
@@ -127,8 +125,8 @@ func test_MakeKeys(t *testing.T) {
 
     pub := &pri.PublicKey
 
-    privateDer, _ := x509.MarshalSm2UnecryptedPrivateKey(pri)
-    pubkeyDer, _ := x509.MarshalSm2PublicKey(pub)
+    privateDer, _ := sm2.MarshalPrivateKey(pri)
+    pubkeyDer, _ := sm2.MarshalPublicKey(pub)
 
     t.Error(encodePEM(privateDer, "PRIVATE KEY"))
     t.Error(encodePEM(pubkeyDer, "PUBLIC KEY"))
@@ -153,12 +151,14 @@ func Test_MakeECDHKey(t *testing.T) {
 
 // 生成 ecdh 密钥
 func test_MakeECDHKey(t *testing.T, pril string, publ string) []byte {
-    pri, err := x509.ReadPrivateKeyFromPem([]byte(pril), nil)
+    priv := decodePEM(pril)
+    pri, err := sm2.ParsePrivateKey(priv)
     if err != nil {
         t.Fatal(err)
     }
 
-    pub, err := x509.ReadPublicKeyFromPem([]byte(publ))
+    pubv := decodePEM(publ)
+    pub, err := sm2.ParsePublicKey(pubv)
     if err != nil {
         t.Fatal(err)
     }

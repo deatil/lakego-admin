@@ -6,8 +6,7 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
-    "github.com/tjfoc/gmsm/sm4"
-
+    "github.com/deatil/go-cryptobin/cipher/sm4"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
 )

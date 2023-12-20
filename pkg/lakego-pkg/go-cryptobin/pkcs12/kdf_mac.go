@@ -13,8 +13,8 @@ import (
     "encoding/asn1"
 
     "golang.org/x/crypto/md4"
-    "github.com/tjfoc/gmsm/sm3"
-
+    
+    "github.com/deatil/go-cryptobin/hash/sm3"
     cryptobin_md2 "github.com/deatil/go-cryptobin/hash/md2"
     cryptobin_pbkdf "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )

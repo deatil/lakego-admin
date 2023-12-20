@@ -1,10 +1,8 @@
 package sm2
 
 import (
-    "github.com/tjfoc/gmsm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
-
-const sm2p256ElementLength = 32
 
 var (
     // 类型
@@ -26,7 +24,7 @@ type SM2 struct {
     publicKey *sm2.PublicKey
 
     // 加密模式
-    mode int
+    mode sm2.Mode
 
     // [私钥/公钥]数据
     keyData []byte

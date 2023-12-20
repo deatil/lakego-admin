@@ -5,9 +5,7 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    "github.com/tjfoc/gmsm/x509"
-
-    cryptobin_sm2 "github.com/deatil/go-cryptobin/sm2"
+    cryptobin_sm2 "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
     cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
@@ -38,10 +36,6 @@ func (this SM2) CreatePrivateKey() SM2 {
 
 // 生成私钥带密码 pem 数据
 func (this SM2) CreatePrivateKeyWithPassword(password string, opts ...any) SM2 {
-    if len(opts) == 0 {
-        return this.CreateSM2PrivateKeyWithPassword(password)
-    }
-
     return this.CreatePKCS8PrivateKeyWithPassword(password, opts...)
 }
 
@@ -120,18 +114,23 @@ func (this SM2) CreatePKCS8PrivateKey() SM2 {
         return this.AppendError(err)
     }
 
-    keyData, err := x509.WritePrivateKeyToPem(this.privateKey, nil)
+    // 生成私钥
+    privateKeyBytes, err := cryptobin_sm2.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.keyData = keyData
+    privateBlock := &pem.Block{
+        Type:  "PRIVATE KEY",
+        Bytes: privateKeyBytes,
+    }
+
+    this.keyData = pem.EncodeToMemory(privateBlock)
 
     return this
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据
-// eg:
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) SM2 {
     if this.privateKey == nil {
@@ -145,7 +144,7 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
     }
 
     // 生成私钥
-    x509PrivateKey, err := x509.MarshalSm2UnecryptedPrivateKey(this.privateKey)
+    x509PrivateKey, err := cryptobin_sm2.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -167,23 +166,6 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
     return this
 }
 
-// 生成私钥带密码 pem 数据，sm2 库自带
-func (this SM2) CreateSM2PrivateKeyWithPassword(password string) SM2 {
-    if this.privateKey == nil {
-        err := errors.New("SM2: privateKey error.")
-        return this.AppendError(err)
-    }
-
-    keyData, err := x509.WritePrivateKeyToPem(this.privateKey, []byte(password))
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.keyData = keyData
-
-    return this
-}
-
 // ====================
 
 // 生成公钥 pem 数据
@@ -193,12 +175,17 @@ func (this SM2) CreatePublicKey() SM2 {
         return this.AppendError(err)
     }
 
-    keyData, err := x509.WritePublicKeyToPem(this.publicKey)
+    publicKeyBytes, err := cryptobin_sm2.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.keyData = keyData
+    publicBlock := &pem.Block{
+        Type:  "PUBLIC KEY",
+        Bytes: publicKeyBytes,
+    }
+
+    this.keyData = pem.EncodeToMemory(publicBlock)
 
     return this
 }
