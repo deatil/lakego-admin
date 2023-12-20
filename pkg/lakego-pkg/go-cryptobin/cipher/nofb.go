@@ -8,8 +8,7 @@ import (
 )
 
 /**
- * ncfb 模式
- * NOFB (Output Feedback) Mode.
+ * NOFB 模式
  *
  * @create 2023-11-23
  * @author deatil

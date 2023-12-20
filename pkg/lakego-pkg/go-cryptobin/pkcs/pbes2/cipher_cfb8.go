@@ -14,10 +14,11 @@ type cfb8Params []byte
 
 // CFB8 模式加密
 type CipherCFB8 struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -28,6 +29,11 @@ func (this CipherCFB8) KeySize() int {
 // oid
 func (this CipherCFB8) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherCFB8) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -81,4 +87,10 @@ func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     mode.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil
+}
+
+func (this CipherCFB8) WithHasKeyLength(hasKeyLength bool) CipherCFB8 {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

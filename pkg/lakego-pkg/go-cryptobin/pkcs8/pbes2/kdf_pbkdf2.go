@@ -11,7 +11,7 @@ import (
     "encoding/asn1"
 
     "golang.org/x/crypto/pbkdf2"
-    
+
     "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
@@ -109,12 +109,18 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
 type pbkdf2Params struct {
     Salt           []byte
     IterationCount int
+    KeyLength      int `asn1:"optional"`
     PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
 }
 
 func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err error) {
     var alg asn1.ObjectIdentifier
     var h func() hash.Hash
+
+    // 如果有自定义长度，使用自定义长度
+    if this.KeyLength > 0 {
+        size = this.KeyLength
+    }
 
     if this.PrfParam.Algorithm.String() != "" {
         h, err = prfByOID(this.PrfParam.Algorithm)
@@ -138,34 +144,26 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     return
 }
 
-// ===============
-
-// pbkdf2 数据，作为接收
-type pbkdf2ParamsWithKeyLength struct {
-    Salt           []byte
-    IterationCount int
-    KeyLength      int `asn1:"optional"`
-    PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
-}
-
-func (this pbkdf2ParamsWithKeyLength) DeriveKey(password []byte, size int) (key []byte, err error) {
-    // 如果有自定义长度，使用自定义长度
-    if this.KeyLength > 0 {
-        size = this.KeyLength
-    }
-
-    param := pbkdf2Params{this.Salt, this.IterationCount, this.PrfParam}
-
-    return param.DeriveKey(password, size)
-}
-
-// ===============
-
 // PBKDF2 配置
 type PBKDF2Opts struct {
+    hasKeyLength   bool
     SaltSize       int
     IterationCount int
     HMACHash       Hash
+}
+
+func (this PBKDF2Opts) GetSaltSize() int {
+    return this.SaltSize
+}
+
+func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
+    return oidPKCS5PBKDF2
+}
+
+func (this PBKDF2Opts) WithHasKeyLength(hasKeyLength bool) KDFOpts {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }
 
 func (this PBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error) {
@@ -198,55 +196,24 @@ func (this PBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte, p
         return nil, nil, err
     }
 
-    params = pbkdf2Params{salt, this.IterationCount, prfParam}
+    parameters := pbkdf2Params{
+        Salt:           salt,
+        IterationCount: this.IterationCount,
+        PrfParam:       prfParam,
+    }
+
+    // 设置 KeyLength
+    if this.hasKeyLength {
+        parameters.KeyLength = size
+    }
 
     key = pbkdf2.Key(password, salt, this.IterationCount, size, h)
 
-    return key, params, nil
-}
-
-func (this PBKDF2Opts) GetSaltSize() int {
-    return this.SaltSize
-}
-
-func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
-    return oidPKCS5PBKDF2
-}
-
-// ===============
-
-// PBKDF2 配置，带 key 长度
-type PBKDF2OptsWithKeyLength struct {
-    SaltSize       int
-    IterationCount int
-    HMACHash       Hash
-}
-
-func (this PBKDF2OptsWithKeyLength) DeriveKey(password, salt []byte, size int) ([]byte, KDFParameters, error) {
-    opts := PBKDF2Opts{this.SaltSize, this.IterationCount, this.HMACHash}
-
-    key, params, err := opts.DeriveKey(password, salt, size)
-    if err != nil {
-        return nil, nil, err
-    }
-
-    keyParams := params.(pbkdf2Params)
-
-    newParams := pbkdf2ParamsWithKeyLength{salt, this.IterationCount, size, keyParams.PrfParam}
-
-    return key, newParams, nil
-}
-
-func (this PBKDF2OptsWithKeyLength) GetSaltSize() int {
-    return this.SaltSize
-}
-
-func (this PBKDF2OptsWithKeyLength) OID() asn1.ObjectIdentifier {
-    return oidPKCS5PBKDF2
+    return key, parameters, nil
 }
 
 func init() {
     AddKDF(oidPKCS5PBKDF2, func() KDFParameters {
-        return new(pbkdf2ParamsWithKeyLength)
+        return new(pbkdf2Params)
     })
 }

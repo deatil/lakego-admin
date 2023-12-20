@@ -32,6 +32,8 @@ type CipherBlockCBC struct {
     iterationCount int
     // oid
     oid            asn1.ObjectIdentifier
+    // 是否有 KeyLength
+    hasKeyLength   bool
 }
 
 // 值大小
@@ -42,6 +44,11 @@ func (this CipherBlockCBC) KeySize() int {
 // oid
 func (this CipherBlockCBC) OID() asn1.ObjectIdentifier {
     return this.oid
+}
+
+// 是否有 KeyLength
+func (this CipherBlockCBC) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -129,6 +136,12 @@ func (this CipherBlockCBC) WithSaltSize(saltSize int) CipherBlockCBC {
 // 设置 derivedKeyFunc
 func (this CipherBlockCBC) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) CipherBlockCBC {
     this.derivedKeyFunc = derivedKeyFunc
+
+    return this
+}
+
+func (this CipherBlockCBC) WithHasKeyLength(hasKeyLength bool) CipherBlockCBC {
+    this.hasKeyLength = hasKeyLength
 
     return this
 }

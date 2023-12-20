@@ -17,6 +17,9 @@ type Cipher interface {
     // 值大小
     KeySize() int
 
+    // 是否有 KeyLength
+    HasKeyLength() bool
+
     // 加密, 返回: [加密后数据, 参数, error]
     Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error)
 

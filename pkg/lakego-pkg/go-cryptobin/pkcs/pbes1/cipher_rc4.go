@@ -30,6 +30,8 @@ type CipherRC4 struct {
     iterationCount int
     // oid
     oid            asn1.ObjectIdentifier
+    // 是否有 KeyLength
+    hasKeyLength   bool
 }
 
 // 值大小
@@ -40,6 +42,11 @@ func (this CipherRC4) KeySize() int {
 // oid
 func (this CipherRC4) OID() asn1.ObjectIdentifier {
     return this.oid
+}
+
+// 是否有 KeyLength
+func (this CipherRC4) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -104,6 +111,12 @@ func (this CipherRC4) WithSaltSize(saltSize int) CipherRC4 {
 // 设置 derivedKeyFunc
 func (this CipherRC4) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) CipherRC4 {
     this.derivedKeyFunc = derivedKeyFunc
+
+    return this
+}
+
+func (this CipherRC4) WithHasKeyLength(hasKeyLength bool) CipherRC4 {
+    this.hasKeyLength = hasKeyLength
 
     return this
 }

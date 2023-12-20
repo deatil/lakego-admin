@@ -12,10 +12,11 @@ type cfbParams []byte
 
 // CFB 模式加密
 type CipherCFB struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -26,6 +27,11 @@ func (this CipherCFB) KeySize() int {
 // oid
 func (this CipherCFB) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherCFB) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -79,4 +85,10 @@ func (this CipherCFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     mode.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil
+}
+
+func (this CipherCFB) WithHasKeyLength(hasKeyLength bool) CipherCFB {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

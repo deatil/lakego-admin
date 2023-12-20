@@ -14,10 +14,11 @@ type ccmIvParams []byte
 
 // ccm 模式加密
 type CipherCCMIv struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    nonceSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    nonceSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -28,6 +29,11 @@ func (this CipherCCMIv) KeySize() int {
 // oid
 func (this CipherCCMIv) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherCCMIv) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -82,4 +88,10 @@ func (this CipherCCMIv) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     }
 
     return aead.Open(nil, nonce, ciphertext, nil)
+}
+
+func (this CipherCCMIv) WithHasKeyLength(hasKeyLength bool) CipherCCMIv {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

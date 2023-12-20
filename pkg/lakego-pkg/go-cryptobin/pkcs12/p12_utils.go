@@ -24,6 +24,10 @@ func (this envelopedCipher) KeySize() int {
     return 0
 }
 
+func (this envelopedCipher) HasKeyLength() bool {
+    return false
+}
+
 func (this envelopedCipher) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     return nil, nil, errors.New("error")
 }

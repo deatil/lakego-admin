@@ -11,10 +11,11 @@ import (
 
 // ecb 模式加密
 type CipherECB struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -25,6 +26,11 @@ func (this CipherECB) KeySize() int {
 // oid
 func (this CipherECB) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherECB) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -83,4 +89,10 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     return plaintext, nil
+}
+
+func (this CipherECB) WithHasKeyLength(hasKeyLength bool) CipherECB {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

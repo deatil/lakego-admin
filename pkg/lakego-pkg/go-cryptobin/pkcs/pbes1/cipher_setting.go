@@ -45,6 +45,7 @@ var SHA1AndRC4_128 = CipherRC4{
     blockSize:      16,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC4_128,
+    hasKeyLength:   false,
 }
 var SHA1AndRC4_40 = CipherRC4{
     hashFunc:       sha1.New,
@@ -54,6 +55,7 @@ var SHA1AndRC4_40 = CipherRC4{
     blockSize:      5,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC4_40,
+    hasKeyLength:   false,
 }
 var SHA1And3DES = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
@@ -64,6 +66,7 @@ var SHA1And3DES = CipherBlockCBC{
     blockSize:      des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And3DES,
+    hasKeyLength:   false,
 }
 var SHA1And2DES = CipherBlockCBC{
     cipherFunc:     cryptobin_des.NewTwoDESCipher,
@@ -74,6 +77,7 @@ var SHA1And2DES = CipherBlockCBC{
     blockSize:      cryptobin_des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And2DES,
+    hasKeyLength:   false,
 }
 var SHA1AndRC2_128 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -84,6 +88,7 @@ var SHA1AndRC2_128 = CipherBlockCBC{
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_128,
+    hasKeyLength:   false,
 }
 var SHA1AndRC2_40 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -94,6 +99,7 @@ var SHA1AndRC2_40 = CipherBlockCBC{
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_40,
+    hasKeyLength:   false,
 }
 
 // PBES1
@@ -106,6 +112,7 @@ var MD2AndDES = CipherBlockCBC{
     blockSize:      des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndDES,
+    hasKeyLength:   false,
 }
 var MD2AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -116,6 +123,7 @@ var MD2AndRC2_64 = CipherBlockCBC{
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndRC2_64,
+    hasKeyLength:   false,
 }
 var MD5AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
@@ -126,6 +134,7 @@ var MD5AndDES = CipherBlockCBC{
     blockSize:      des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndDES,
+    hasKeyLength:   false,
 }
 var MD5AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -136,6 +145,7 @@ var MD5AndRC2_64 = CipherBlockCBC{
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndRC2_64,
+    hasKeyLength:   false,
 }
 var SHA1AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
@@ -146,6 +156,7 @@ var SHA1AndDES = CipherBlockCBC{
     blockSize:      des.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndDES,
+    hasKeyLength:   false,
 }
 var SHA1AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -156,6 +167,7 @@ var SHA1AndRC2_64 = CipherBlockCBC{
     blockSize:      cryptobin_rc2.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_64,
+    hasKeyLength:   false,
 }
 
 func init() {

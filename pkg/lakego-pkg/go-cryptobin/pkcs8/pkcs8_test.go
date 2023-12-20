@@ -571,3 +571,62 @@ func test_KeyEncryptPEMBlock2(t *testing.T, key string) {
         t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
     }
 }
+
+func encodePEM(src []byte, typ string) string {
+    keyBlock := &pem.Block{
+        Type:  typ,
+        Bytes: src,
+    }
+
+    keyData := pem.EncodeToMemory(keyBlock)
+
+    return string(keyData)
+}
+
+var testCheckKey = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIC1jBQBgkqhkiG9w0BBQ0wQzAmBgkqhkiG9w0BBQwwGQQQESYq9aSCYUwnV5dC
+cOUVRwICJxACARAwGQYIKoZIhvcNAwIwDQIBOgQIOhoZn2SYfZ4EggKAVV0UEZez
+qmjRPuBRT9FN0VLdYCaTx+VlVumn3suzd7b9DX/vFxnuc4aZWEc2SzeZDgGRAz5h
+HEMtrAwi2xYNyjtsQ9sS6vY5QOnKDnTLNr/xNaQwRU6mayELBsiIZAQHobzVLCcb
+kjb0D8stk8Ki6xLEu6dCfkT/TAscGOnjQ3Gn5rDu3ooSylqrKoxNePaOl87C87Il
+2Yo7txsRmS7DVJXfhcV4Rtw3buSsTH1BVIFRBnQTbzSeEF8M2mVE4CSYaITnWARB
+YOH0D4Ym5pGXa8jLmTj06lv0frjqXL/nGIdxMtrgTCazJYJIq6aVUkk8Nvf21g+/
+W0pwPtHGl3A2T6gq1sN/Y+TQSWGCtNII04sEvC+3U6Es3bwRV3B43aQNvRkMCO1m
+0aBtbFfVLRKDmcLm914W99skrIZV1gWobS0TxZ+WdPLVwOoYLyaILjQkEFFYlAHp
+W5LaHhOa0UExpR8SCWJiyo7tM9zNAUIwm7xk3IFRqtguuF4+dlomXCs58eN70e6x
+kycX7trFIZmaLkLML7EBx15h8n4WKCZrxA74qJZ8BVRaexrLyE4mSiifBbZVwvF3
+b7kvJ82rXgQEYJhPzwfXbEIBxdzcF2jYGwSiMTCCXHBqmP1JitaMfKoNzFMFSyhO
+9l+C+KbDb9CsOXEv+A8Mm0Xki7Gh8WWVoVsKNAVyBfaKZSvf3ne47bgIeCXB90aw
+9NKw9JukHE7jNQ4VZ0AHnbi//ia6bu/EXIJbgvlAzCXvlFMrrhHJiZ5O+CJ9deb0
+IS+cN06Zpe67EKjWPE88msXFQfR31qf432j57MjHvKQNeb9zbAHefmZuAsocGJ+I
+6Mn4OdOPDPuGUw==
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
+func Test_EncryptPEMBlock2(t *testing.T) {
+    block, _ := pem.Decode([]byte(testKey_desCBC))
+
+    bys, err := DecryptPEMBlock(block, []byte("123"))
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("123"), RC2_128CBC)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+
+    res := encodePEM(enblock.Bytes, "ENCRYPTED PRIVATE KEY")
+    if len(res) == 0 {
+        t.Errorf("encodePEM error")
+    }
+}

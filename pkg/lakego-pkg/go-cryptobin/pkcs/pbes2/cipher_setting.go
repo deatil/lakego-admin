@@ -58,26 +58,29 @@ var (
 
 // DESCBC is the 56-bit key DES cipher in CBC mode.
 var DESCBC = CipherCBC{
-    cipherFunc: des.NewCipher,
-    keySize:    8,
-    blockSize:  des.BlockSize,
-    identifier: oidDESCBC,
+    cipherFunc:   des.NewCipher,
+    keySize:      8,
+    blockSize:    des.BlockSize,
+    identifier:   oidDESCBC,
+    hasKeyLength: false,
 }
 // TripleDESCBC is the 168-bit key 3DES cipher in CBC mode.
 var DESEDE3CBC = CipherCBC{
-    cipherFunc: des.NewTripleDESCipher,
-    keySize:    24,
-    blockSize:  des.BlockSize,
-    identifier: oidDESEDE3CBC,
+    cipherFunc:   des.NewTripleDESCipher,
+    keySize:      24,
+    blockSize:    des.BlockSize,
+    identifier:   oidDESEDE3CBC,
+    hasKeyLength: false,
 }
 // RC2CBC is the [40-bit, 64-bit, 168-bit] key RC2 cipher in CBC mode.
 // [rc2Version, keySize] = [58, 16] | [120, 8] | [160, 5]
 var RC2CBC = CipherRC2CBC{
-    cipherFunc: newRC2Cipher,
-    rc2Version: 58,
-    keySize:    16,
-    blockSize:  cryptobin_rc2.BlockSize,
-    identifier: oidRC2CBC,
+    cipherFunc:   newRC2Cipher,
+    rc2Version:   58,
+    keySize:      16,
+    blockSize:    cryptobin_rc2.BlockSize,
+    identifier:   oidRC2CBC,
+    hasKeyLength: true,
 }
 
 var RC2_40CBC  = RC2CBC.WithRC2Version(160).WithKeySize(5)
@@ -87,266 +90,300 @@ var RC2_128CBC = RC2CBC.WithRC2Version(58).WithKeySize(16)
 // RC5CBC is the [16, 24, 32] bytes key RC5 cipher in CBC mode.
 // wordSize = [32, 64] | rounds = [8, 127]
 var RC5CBC = CipherRC5CBC{
-    cipherFunc: cryptobin_rc5.NewCipher,
-    wordSize:   32,
-    rounds:     16,
-    keySize:    16,
-    identifier: oidRC5CBC,
+    cipherFunc:   cryptobin_rc5.NewCipher,
+    wordSize:     32,
+    rounds:       16,
+    keySize:      16,
+    identifier:   oidRC5CBC,
+    hasKeyLength: true,
 }
 
 var RC5_128CBC = RC5CBC.WithKeySize(16)
 var RC5_192CBC = RC5CBC.WithKeySize(24)
 var RC5_256CBC = RC5CBC.WithKeySize(32)
 
-
 // ==========
 
 // AES128ECB is the 128-bit key AES cipher in ECB mode.
 var AES128ECB = CipherECB{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES128ECB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES128ECB,
+    hasKeyLength: false,
 }
 // AES128CBC is the 128-bit key AES cipher in CBC mode.
 var AES128CBC = CipherCBC{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES128CBC,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES128CBC,
+    hasKeyLength: false,
 }
 // AES128OFB is the 128-bit key AES cipher in OFB mode.
 var AES128OFB = CipherOFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES128OFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES128OFB,
+    hasKeyLength: false,
 }
 // AES128CFB is the 128-bit key AES cipher in CFB mode.
 var AES128CFB = CipherCFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES128CFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES128CFB,
+    hasKeyLength: false,
 }
 // AES128GCM is the 128-bit key AES cipher in GCM mode.
 var AES128GCM = CipherGCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidAES128GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidAES128GCM,
+    hasKeyLength: false,
 }
 // AES128GCMIv is the 128-bit key AES cipher in GCM mode.
 var AES128GCMIv = CipherGCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidAES128GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidAES128GCM,
+    hasKeyLength: false,
 }
 // AES128CCM is the 128-bit key AES cipher in CCM mode.
 var AES128CCM = CipherCCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidAES128CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidAES128CCM,
+    hasKeyLength: false,
 }
 // AES128CCMIv is the 128-bit key AES cipher in CCM mode.
 var AES128CCMIv = CipherCCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidAES128CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidAES128CCM,
+    hasKeyLength: false,
 }
 
 // ==========
 
 // AES192ECB is the 192-bit key AES cipher in ECB mode.
 var AES192ECB = CipherECB{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES192ECB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES192ECB,
+    hasKeyLength: false,
 }
 // AES192CBC is the 192-bit key AES cipher in CBC mode.
 var AES192CBC = CipherCBC{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES192CBC,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES192CBC,
+    hasKeyLength: false,
 }
 // AES192OFB is the 192-bit key AES cipher in OFB mode.
 var AES192OFB = CipherOFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES192OFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES192OFB,
+    hasKeyLength: false,
 }
 // AES192CFB is the 192-bit key AES cipher in CFB mode.
 var AES192CFB = CipherCFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES192CFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES192CFB,
+    hasKeyLength: false,
 }
 // AES192GCM is the 192-bit key AES cipher in GCM mode.
 var AES192GCM = CipherGCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    nonceSize:  12,
-    identifier: oidAES192GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidAES192GCM,
+    hasKeyLength: false,
 }
 // AES192GCMIv is the 192-bit key AES cipher in GCM mode.
 var AES192GCMIv = CipherGCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    nonceSize:  12,
-    identifier: oidAES192GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidAES192GCM,
+    hasKeyLength: false,
 }
 // AES192CCM is the 192-bit key AES cipher in CCM mode.
 var AES192CCM = CipherCCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    nonceSize:  12,
-    identifier: oidAES192CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidAES192CCM,
+    hasKeyLength: false,
 }
 // AES192CCMIv is the 192-bit key AES cipher in CCM mode.
 var AES192CCMIv = CipherCCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    24,
-    nonceSize:  12,
-    identifier: oidAES192CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidAES192CCM,
+    hasKeyLength: false,
 }
 
 // ==========
 
 // AES256ECB is the 256-bit key AES cipher in ECB mode.
 var AES256ECB = CipherECB{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES256ECB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES256ECB,
+    hasKeyLength: false,
 }
 // AES256CBC is the 256-bit key AES cipher in CBC mode.
 var AES256CBC = CipherCBC{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES256CBC,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES256CBC,
+    hasKeyLength: false,
 }
 // AES256OFB is the 256-bit key AES cipher in OFB mode.
 var AES256OFB = CipherOFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES256OFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES256OFB,
+    hasKeyLength: false,
 }
 // AES256CFB is the 256-bit key AES cipher in CFB mode.
 var AES256CFB = CipherCFB{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    blockSize:  aes.BlockSize,
-    identifier: oidAES256CFB,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    blockSize:    aes.BlockSize,
+    identifier:   oidAES256CFB,
+    hasKeyLength: false,
 }
 // AES256GCM is the 256-bit key AES cipher in GCM mode.
 var AES256GCM = CipherGCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    nonceSize:  12,
-    identifier: oidAES256GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidAES256GCM,
+    hasKeyLength: false,
 }
 // AES256GCMIv is the 256-bit key AES cipher in GCM mode.
 var AES256GCMIv = CipherGCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    nonceSize:  12,
-    identifier: oidAES256GCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidAES256GCM,
+    hasKeyLength: false,
 }
 // AES256CCM is the 256-bit key AES cipher in CCM mode.
 var AES256CCM = CipherCCM{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    nonceSize:  12,
-    identifier: oidAES256CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidAES256CCM,
+    hasKeyLength: false,
 }
 // AES256CCMIv is the 256-bit key AES cipher in CCM mode.
 var AES256CCMIv = CipherCCMIv{
-    cipherFunc: aes.NewCipher,
-    keySize:    32,
-    nonceSize:  12,
-    identifier: oidAES256CCM,
+    cipherFunc:   aes.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidAES256CCM,
+    hasKeyLength: false,
 }
 
 // ==========
 
 // SM4ECB is the 128-bit key SM4 cipher in ECB mode.
 var SM4ECB = CipherECB{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4ECB,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4ECB,
+    hasKeyLength: false,
 }
 // SM4CBC is the 128-bit key SM4 cipher in CBC mode.
 var SM4CBC = CipherCBC{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4CBC,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4CBC,
+    hasKeyLength: false,
 }
 // SM4OFB is the 128-bit key SM4 cipher in OFB mode.
 var SM4OFB = CipherOFB{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4OFB,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4OFB,
+    hasKeyLength: false,
 }
 // SM4CFB is the 128-bit key SM4 cipher in CFB mode.
 var SM4CFB = CipherCFB{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4CFB,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4CFB,
+    hasKeyLength: false,
 }
 // SM4CFB1 is the 128-bit key SM4 cipher in CFB mode.
 var SM4CFB1 = CipherCFB1{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4CFB1,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4CFB1,
+    hasKeyLength: false,
 }
 // SM4CFB8 is the 128-bit key SM4 cipher in CFB mode.
 var SM4CFB8 = CipherCFB8{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    blockSize:  sm4.BlockSize,
-    identifier: oidSM4CFB8,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4CFB8,
+    hasKeyLength: false,
 }
 // SM4GCM is the 128-bit key SM4 cipher in GCM mode.
 var SM4GCM = CipherGCM{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidSM4GCM,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidSM4GCM,
+    hasKeyLength: false,
 }
 // SM4GCMIv is the 128-bit key SM4 cipher in GCM mode.
 var SM4GCMIv = CipherGCMIv{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidSM4GCM,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidSM4GCM,
+    hasKeyLength: false,
 }
 // SM4CCM is the 128-bit key SM4 cipher in CCM mode.
 var SM4CCM = CipherCCM{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidSM4CCM,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidSM4CCM,
+    hasKeyLength: false,
 }
 // SM4CCMIv is the 128-bit key SM4 cipher in CCM mode.
 var SM4CCMIv = CipherCCMIv{
-    cipherFunc: sm4.NewCipher,
-    keySize:    16,
-    nonceSize:  12,
-    identifier: oidSM4CCM,
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidSM4CCM,
+    hasKeyLength: false,
 }
 
 func init() {

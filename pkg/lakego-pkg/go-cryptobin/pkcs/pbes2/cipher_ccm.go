@@ -22,10 +22,11 @@ type ccmParams struct {
 
 // ccm 模式加密
 type CipherCCM struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    nonceSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    nonceSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -36,6 +37,11 @@ func (this CipherCCM) KeySize() int {
 // oid
 func (this CipherCCM) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherCCM) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -110,4 +116,10 @@ func (this CipherCCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     }
 
     return aead.Open(nil, nonce, ciphertext, nil)
+}
+
+func (this CipherCCM) WithHasKeyLength(hasKeyLength bool) CipherCCM {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

@@ -16,11 +16,12 @@ type rc5CBCParams struct {
 
 // cbc 模式加密
 type CipherRC5CBC struct {
-    cipherFunc func(key []byte, wordSize, r uint) (cipher.Block, error)
-    wordSize   uint
-    rounds     uint
-    keySize    int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte, wordSize, r uint) (cipher.Block, error)
+    wordSize     uint
+    rounds       uint
+    keySize      int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -31,6 +32,11 @@ func (this CipherRC5CBC) KeySize() int {
 // oid
 func (this CipherRC5CBC) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherRC5CBC) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -133,6 +139,12 @@ func (this CipherRC5CBC) WithRounds(rounds uint) CipherRC5CBC {
 // 设置 keySize
 func (this CipherRC5CBC) WithKeySize(keySize int) CipherRC5CBC {
     this.keySize = keySize
+
+    return this
+}
+
+func (this CipherRC5CBC) WithHasKeyLength(hasKeyLength bool) CipherRC5CBC {
+    this.hasKeyLength = hasKeyLength
 
     return this
 }

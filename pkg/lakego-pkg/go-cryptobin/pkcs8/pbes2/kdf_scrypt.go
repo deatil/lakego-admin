@@ -16,9 +16,15 @@ type scryptParams struct {
     CostParameter            int
     BlockSize                int
     ParallelizationParameter int
+    KeyLength                int `asn1:"optional"`
 }
 
 func (this scryptParams) DeriveKey(password []byte, size int) (key []byte, err error) {
+    // 如果有自定义长度，使用自定义长度
+    if this.KeyLength > 0 {
+        size = this.KeyLength
+    }
+
     return scrypt.Key(
         password, this.Salt,
         this.CostParameter, this.BlockSize,
@@ -28,10 +34,25 @@ func (this scryptParams) DeriveKey(password []byte, size int) (key []byte, err e
 
 // ScryptOpts 设置
 type ScryptOpts struct {
+    hasKeyLength             bool
     SaltSize                 int
     CostParameter            int
     BlockSize                int
     ParallelizationParameter int
+}
+
+func (this ScryptOpts) GetSaltSize() int {
+    return this.SaltSize
+}
+
+func (this ScryptOpts) OID() asn1.ObjectIdentifier {
+    return oidScrypt
+}
+
+func (this ScryptOpts) WithHasKeyLength(hasKeyLength bool) KDFOpts {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }
 
 func (this ScryptOpts) DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error) {
@@ -44,22 +65,19 @@ func (this ScryptOpts) DeriveKey(password, salt []byte, size int) (key []byte, p
         return nil, nil, err
     }
 
-    params = scryptParams{
+    parameters := scryptParams{
         BlockSize:                this.BlockSize,
         CostParameter:            this.CostParameter,
         ParallelizationParameter: this.ParallelizationParameter,
         Salt:                     salt,
     }
 
-    return key, params, nil
-}
+    // 设置 KeyLength
+    if this.hasKeyLength {
+        parameters.KeyLength = size
+    }
 
-func (this ScryptOpts) GetSaltSize() int {
-    return this.SaltSize
-}
-
-func (this ScryptOpts) OID() asn1.ObjectIdentifier {
-    return oidScrypt
+    return key, parameters, nil
 }
 
 func init() {

@@ -22,28 +22,6 @@ func GetHashFromName(name string) Hash {
     return HashMap["SHA1"]
 }
 
-// 需要设置 KeyLength 的 Cipher
-func IsUseKeyLengthCipher(cipher Cipher) bool {
-    ciphers := []Cipher{
-        RC2CBC,
-        RC2_40CBC,
-        RC2_64CBC,
-        RC2_128CBC,
-        RC5CBC,
-        RC5_128CBC,
-        RC5_192CBC,
-        RC5_256CBC,
-    }
-
-    for _, cip := range ciphers {
-        if cipher.OID().Equal(cip.OID()) {
-            return true
-        }
-    }
-
-    return false
-}
-
 // 解析配置
 func ParseOpts(opts ...any) (Opts, error) {
     if len(opts) == 0 {
@@ -56,18 +34,9 @@ func ParseOpts(opts ...any) (Opts, error) {
         case Cipher:
             cipher := newOpt
 
-            var kdfOpts KDFOpts
-
-            if IsUseKeyLengthCipher(cipher) {
-                kdfOpts = PBKDF2OptsWithKeyLength{
-                    SaltSize:       16,
-                    IterationCount: 10000,
-                }
-            } else {
-                kdfOpts = PBKDF2Opts{
-                    SaltSize:       16,
-                    IterationCount: 10000,
-                }
+            kdfOpts := PBKDF2Opts{
+                SaltSize:       16,
+                IterationCount: 10000,
             }
 
             // 设置
@@ -85,44 +54,22 @@ func ParseOpts(opts ...any) (Opts, error) {
 
             cipher := GetCipherFromName(opt)
 
-            var newOpts Opts
+            kdfOpts := PBKDF2Opts{
+                SaltSize:       16,
+                IterationCount: 10000,
+            }
 
-            if IsUseKeyLengthCipher(cipher) {
-                kdfOpts := PBKDF2OptsWithKeyLength{
-                    SaltSize:       16,
-                    IterationCount: 10000,
-                }
+            // hash
+            if len(opts) > 1 {
+                hash := opts[1].(string)
 
-                // hash
-                if len(opts) > 1 {
-                    hash := opts[1].(string)
+                kdfOpts.HMACHash = GetHashFromName(hash)
+            }
 
-                    kdfOpts.HMACHash = GetHashFromName(hash)
-                }
-
-                // 设置
-                newOpts = Opts{
-                    Cipher:  cipher,
-                    KDFOpts: kdfOpts,
-                }
-            } else {
-                kdfOpts := PBKDF2Opts{
-                    SaltSize:       16,
-                    IterationCount: 10000,
-                }
-
-                // hash
-                if len(opts) > 1 {
-                    hash := opts[1].(string)
-
-                    kdfOpts.HMACHash = GetHashFromName(hash)
-                }
-
-                // 设置
-                newOpts = Opts{
-                    Cipher:  cipher,
-                    KDFOpts: kdfOpts,
-                }
+            // 设置
+            newOpts := Opts{
+                Cipher:  cipher,
+                KDFOpts: kdfOpts,
             }
 
             return newOpts, nil

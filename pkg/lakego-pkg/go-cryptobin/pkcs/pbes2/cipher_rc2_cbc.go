@@ -15,11 +15,12 @@ type rc2CBCParams struct {
 
 // cbc 模式加密
 type CipherRC2CBC struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    rc2Version int
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    rc2Version   int
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -30,6 +31,11 @@ func (this CipherRC2CBC) KeySize() int {
 // oid
 func (this CipherRC2CBC) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherRC2CBC) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -126,6 +132,12 @@ func (this CipherRC2CBC) WithRC2Version(rc2Version int) CipherRC2CBC {
 // 设置 keySize
 func (this CipherRC2CBC) WithKeySize(keySize int) CipherRC2CBC {
     this.keySize = keySize
+
+    return this
+}
+
+func (this CipherRC2CBC) WithHasKeyLength(hasKeyLength bool) CipherRC2CBC {
+    this.hasKeyLength = hasKeyLength
 
     return this
 }

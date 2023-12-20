@@ -12,10 +12,11 @@ type cbcParams []byte
 
 // cbc 模式加密
 type CipherCBC struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -26,6 +27,11 @@ func (this CipherCBC) KeySize() int {
 // oid
 func (this CipherCBC) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherCBC) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -100,4 +106,10 @@ func (this CipherCBC) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     return plaintext, nil
+}
+
+func (this CipherCBC) WithHasKeyLength(hasKeyLength bool) CipherCBC {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

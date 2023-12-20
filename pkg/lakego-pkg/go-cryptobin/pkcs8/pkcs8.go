@@ -77,10 +77,9 @@ var (
 
 type (
     // 配置
-    Opts                    = cryptobin_pbes2.Opts
-    PBKDF2Opts              = cryptobin_pbes2.PBKDF2Opts
-    PBKDF2OptsWithKeyLength = cryptobin_pbes2.PBKDF2OptsWithKeyLength
-    ScryptOpts              = cryptobin_pbes2.ScryptOpts
+    Opts       = cryptobin_pbes2.Opts
+    PBKDF2Opts = cryptobin_pbes2.PBKDF2Opts
+    ScryptOpts = cryptobin_pbes2.ScryptOpts
 )
 
 var (
@@ -92,9 +91,6 @@ var (
 
 // 默认配置 PBKDF2
 var DefaultPBKDF2Opts = cryptobin_pbes2.DefaultPBKDF2Opts
-
-// 默认配置 PBKDF2，带 key 长度
-var DefaultPBKDF2OptsWithKeyLength = cryptobin_pbes2.DefaultPBKDF2OptsWithKeyLength
 
 // 默认配置 Scrypt
 var DefaultScryptOpts = cryptobin_pbes2.DefaultScryptOpts
@@ -178,6 +174,8 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         if blockDecrypted, err = cryptobin_pbes1.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
             return blockDecrypted, nil
         }
+
+        return nil, err
     }
 
     return nil, errors.New("pkcs8: unsupported encrypted PEM")

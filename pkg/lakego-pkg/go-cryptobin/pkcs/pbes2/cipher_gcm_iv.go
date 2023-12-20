@@ -12,10 +12,11 @@ type gcmIvParams []byte
 
 // gcm 模式加密
 type CipherGCMIv struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    nonceSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    nonceSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -26,6 +27,11 @@ func (this CipherGCMIv) KeySize() int {
 // oid
 func (this CipherGCMIv) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherGCMIv) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -80,4 +86,10 @@ func (this CipherGCMIv) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     }
 
     return aead.Open(nil, nonce, ciphertext, nil)
+}
+
+func (this CipherGCMIv) WithHasKeyLength(hasKeyLength bool) CipherGCMIv {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }

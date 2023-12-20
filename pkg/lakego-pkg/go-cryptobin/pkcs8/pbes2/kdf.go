@@ -6,14 +6,17 @@ import (
 
 // KDF 设置接口
 type KDFOpts interface {
+    // 随机数大小
+    GetSaltSize() int
+
     // oid
     OID() asn1.ObjectIdentifier
 
+    // 设置 KeyLength
+    WithHasKeyLength(hasKeyLength bool) KDFOpts
+
     // 生成密钥
     DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error)
-
-    // 随机数大小
-    GetSaltSize() int
 }
 
 // 数据接口

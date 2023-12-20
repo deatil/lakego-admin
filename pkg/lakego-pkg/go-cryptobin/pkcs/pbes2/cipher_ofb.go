@@ -12,10 +12,11 @@ type ofbParams []byte
 
 // OFB 模式加密
 type CipherOFB struct {
-    cipherFunc func(key []byte) (cipher.Block, error)
-    keySize    int
-    blockSize  int
-    identifier asn1.ObjectIdentifier
+    cipherFunc   func(key []byte) (cipher.Block, error)
+    keySize      int
+    blockSize    int
+    identifier   asn1.ObjectIdentifier
+    hasKeyLength bool
 }
 
 // 值大小
@@ -26,6 +27,11 @@ func (this CipherOFB) KeySize() int {
 // oid
 func (this CipherOFB) OID() asn1.ObjectIdentifier {
     return this.identifier
+}
+
+// 是否有 KeyLength
+func (this CipherOFB) HasKeyLength() bool {
+    return this.hasKeyLength
 }
 
 // 加密
@@ -79,4 +85,10 @@ func (this CipherOFB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     mode.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil
+}
+
+func (this CipherOFB) WithHasKeyLength(hasKeyLength bool) CipherOFB {
+    this.hasKeyLength = hasKeyLength
+
+    return this
 }
