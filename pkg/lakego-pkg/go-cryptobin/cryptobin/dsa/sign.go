@@ -7,8 +7,6 @@ import (
     "crypto/dsa"
     "crypto/rand"
     "encoding/asn1"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
@@ -101,7 +99,7 @@ type DSASignature struct {
 }
 
 // 私钥签名
-func (this DSA) SignAsn1() DSA {
+func (this DSA) SignASN1() DSA {
     if this.privateKey == nil {
         err := errors.New("dsa: privateKey error.")
         return this.AppendError(err)
@@ -126,7 +124,7 @@ func (this DSA) SignAsn1() DSA {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this DSA) VerifyAsn1(data []byte) DSA {
+func (this DSA) VerifyASN1(data []byte) DSA {
     if this.publicKey == nil {
         err := errors.New("dsa: publicKey error.")
         return this.AppendError(err)
@@ -145,62 +143,6 @@ func (this DSA) VerifyAsn1(data []byte) DSA {
 
     r := dsaSign.R
     s := dsaSign.S
-
-    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
-
-    return this
-}
-
-// ===============
-
-// 私钥签名
-func (this DSA) SignHex() DSA {
-    if this.privateKey == nil {
-        err := errors.New("dsa: privateKey error.")
-        return this.AppendError(err)
-    }
-
-    hashed, err := this.DataHash(this.signHash, this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    encoding := cryptobin_tool.NewEncoding()
-
-    rHex := encoding.HexEncode(r.Bytes())
-    sHex := encoding.HexEncode(s.Bytes())
-
-    sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
-
-    parsedData, err := encoding.HexDecode(sign)
-
-    this.parsedData = parsedData
-
-    return this.AppendError(err)
-}
-
-// 公钥验证
-// 使用原始数据[data]对比签名后数据
-func (this DSA) VerifyHex(data []byte) DSA {
-    if this.publicKey == nil {
-        err := errors.New("dsa: publicKey error.")
-        return this.AppendError(err)
-    }
-
-    signData := cryptobin_tool.NewEncoding().HexEncode(this.data)
-
-    r, _ := new(big.Int).SetString(signData[:64], 16)
-    s, _ := new(big.Int).SetString(signData[64:], 16)
-
-    hashed, err := this.DataHash(this.signHash, data)
-    if err != nil {
-        return this.AppendError(err)
-    }
 
     this.verify = dsa.Verify(this.publicKey, hashed, r, s)
 

@@ -9,9 +9,12 @@ import (
 
 // gcm 模式加密参数
 // http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/GCMParameters.html
+// GCMParameters ::= SEQUENCE {
+// 	aes-nonce        OCTET STRING, -- recommended size is 12 octets
+// 	aes-ICVlen       AES-GCM-ICVlen DEFAULT 12 }
 type gcmParams struct {
-    Nonce  []byte `asn1:"tag:4"`
-    ICVLen int
+    Nonce  []byte
+    ICVLen int `asn1:"default:12,optional"`
 }
 
 // gcm 模式加密

@@ -171,7 +171,7 @@ func Test_Compress(t *testing.T) {
     }
 }
 
-func Test_SignHex(t *testing.T) {
+func Test_SignASN1(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
@@ -181,12 +181,12 @@ func Test_SignHex(t *testing.T) {
 
     msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
 
-    signed, err := priv.SignHex(rand.Reader, msg, nil)
+    signed, err := priv.SignASN1(rand.Reader, msg, nil)
     if err != nil {
         t.Error(err)
     }
 
-    veri := pub.VerifyHex(msg, signed, nil)
+    veri := pub.VerifyASN1(msg, signed, nil)
     if !veri {
         t.Error("veri error")
     }
@@ -302,7 +302,7 @@ func Test_Sign_Check(t *testing.T) {
 
     design, _ := hex.DecodeString(sign)
 
-    if !pub.Verify(msg, design, sm2.SignerOpts{uid}) {
+    if !pub.VerifyASN1(msg, design, sm2.SignerOpts{uid}) {
         t.Error("Verify error")
     }
 }

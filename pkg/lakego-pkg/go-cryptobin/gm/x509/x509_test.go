@@ -50,7 +50,7 @@ func TestX509(t *testing.T) {
             CommonName:   "test.example.com",
             Organization: []string{"Test"},
         },
-        //		SignatureAlgorithm: ECDSAWithSHA256,
+        // SignatureAlgorithm: ECDSAWithSHA256,
         SignatureAlgorithm: SM2WithSM3,
     }
 
@@ -70,6 +70,7 @@ func TestX509(t *testing.T) {
     } else {
         fmt.Printf("CheckSignature ok\n")
     }
+
     testExtKeyUsage := []ExtKeyUsage{ExtKeyUsageClientAuth, ExtKeyUsageServerAuth}
     testUnknownExtKeyUsage := []asn1.ObjectIdentifier{[]int{1, 2, 3}, []int{2, 59, 1}}
     extraExtensionData := []byte("extra extension")

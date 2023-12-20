@@ -9,7 +9,7 @@ import (
 )
 
 // signedData = S4vhrJoHXn98ByNw73CSOCqguYeuc4LrhsIHqkv/xA8Waw7YOLsfQzOKzxAjF0vyPKKSEQpq4zEgj9Mb/VL1pQ==
-func Test_SM2_SignHex(t *testing.T) {
+func Test_SM2_SignBytes(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -25,13 +25,13 @@ func Test_SM2_SignHex(t *testing.T) {
     signedData := NewSM2().
         FromString(data).
         FromPrivateKeyBytes(sm2keyBytes).
-        SignHex([]byte(uid)).
+        SignBytes([]byte(uid)).
         ToBase64String()
 
-    assertNotEmpty(signedData, "sm2-SignHex")
+    assertNotEmpty(signedData, "sm2-SignBytes")
 }
 
-func Test_SM2_VerifyHex(t *testing.T) {
+func Test_SM2_VerifyBytes(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
     assertBool := cryptobin_test.AssertBoolT(t)
 
@@ -49,10 +49,10 @@ func Test_SM2_VerifyHex(t *testing.T) {
         FromBase64String(signedData).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        VerifyHex([]byte(data), []byte(uid))
+        VerifyBytes([]byte(data), []byte(uid))
 
     assertError(verify.Error(), "sm2VerifyError")
-    assertBool(verify.ToVerify(), "sm2-VerifyHex")
+    assertBool(verify.ToVerify(), "sm2-VerifyBytes")
 }
 
 func Test_SM2_Encrypt_C1C2C3(t *testing.T) {

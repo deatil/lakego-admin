@@ -11,9 +11,13 @@ import (
 
 // ccm 模式加密参数
 // http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/CCMParameters.html
+// This class represents CCM parameters. The parameters specified for the CCM algorithm in RFC 5084 consist of the nonce and the length of the MAC (ICVlen):
+// CCMParameters ::= SEQUENCE {
+//         aes-nonce         OCTET STRING (SIZE(7..13)),
+//         aes-ICVlen        AES-CCM-ICVlen DEFAULT 12 }
 type ccmParams struct {
-    Nonce  []byte `asn1:"tag:4"`
-    ICVLen int
+    Nonce  []byte
+    ICVLen int `asn1:"default:12,optional"`
 }
 
 // ccm 模式加密

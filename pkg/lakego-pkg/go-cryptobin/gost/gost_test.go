@@ -50,7 +50,7 @@ func Test_Sign(t *testing.T) {
     }
 }
 
-func Test_SignASN1(t *testing.T) {
+func Test_SignBytes(t *testing.T) {
     message := make([]byte, 32)
     _, err := io.ReadFull(rand.Reader, message)
     if err != nil {
@@ -64,12 +64,12 @@ func Test_SignASN1(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    signed, err := priv.SignASN1(rand.Reader, message, nil)
+    signed, err := priv.SignBytes(rand.Reader, message, nil)
     if err != nil {
         t.Fatal(err)
     }
 
-    valid, err := pub.VerifyASN1(message, signed)
+    valid, err := pub.VerifyBytes(message, signed)
     if err != nil {
         t.Fatal(err)
     }
@@ -108,7 +108,7 @@ func Test_Sign_Func(t *testing.T) {
     }
 }
 
-func Test_SignASN1_Func(t *testing.T) {
+func Test_SignBytes_Func(t *testing.T) {
     message := make([]byte, 32)
     _, err := io.ReadFull(rand.Reader, message)
     if err != nil {
@@ -122,17 +122,17 @@ func Test_SignASN1_Func(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    signed, err := SignASN1(rand.Reader, priv, message)
+    signed, err := SignBytes(rand.Reader, priv, message)
     if err != nil {
         t.Fatal(err)
     }
 
-    valid, err := VerifyASN1(pub, message, signed)
+    valid, err := VerifyBytes(pub, message, signed)
     if err != nil {
         t.Fatal(err)
     }
 
     if !valid {
-        t.Error("VerifyASN1: valid error")
+        t.Error("VerifyBytes: valid error")
     }
 }

@@ -331,7 +331,7 @@ func (this *Data) Error(ctx *gin.Context) {
     sm2Sign := cryptobin_sm2.NewSM2().
         FromPrivateKeyBytes(sm2keyBytes).
         FromString(sm2data).
-        SignHex([]byte(sm2userid)).
+        SignBytes([]byte(sm2userid)).
         ToBase64String()
 
     // sm2 验证【招商银行】
@@ -340,7 +340,7 @@ func (this *Data) Error(ctx *gin.Context) {
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
         FromBase64String(sm2signdata).
-        VerifyHex([]byte(sm2data), []byte(sm2userid)).
+        VerifyBytes([]byte(sm2data), []byte(sm2userid)).
         ToVerify()
 
     // crc8

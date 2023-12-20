@@ -640,32 +640,32 @@ var (
 
 func namedCurveFromOID(oid asn1.ObjectIdentifier) elliptic.Curve {
     switch {
-    case oid.Equal(oidNamedCurveP224):
-        return elliptic.P224()
-    case oid.Equal(oidNamedCurveP256):
-        return elliptic.P256()
-    case oid.Equal(oidNamedCurveP384):
-        return elliptic.P384()
-    case oid.Equal(oidNamedCurveP521):
-        return elliptic.P521()
-    case oid.Equal(oidNamedCurveP256SM2):
-        return sm2.P256Sm2()
+        case oid.Equal(oidNamedCurveP224):
+            return elliptic.P224()
+        case oid.Equal(oidNamedCurveP256):
+            return elliptic.P256()
+        case oid.Equal(oidNamedCurveP384):
+            return elliptic.P384()
+        case oid.Equal(oidNamedCurveP521):
+            return elliptic.P521()
+        case oid.Equal(oidNamedCurveP256SM2):
+            return sm2.P256Sm2()
     }
     return nil
 }
 
 func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
     switch curve {
-    case elliptic.P224():
-        return oidNamedCurveP224, true
-    case elliptic.P256():
-        return oidNamedCurveP256, true
-    case elliptic.P384():
-        return oidNamedCurveP384, true
-    case elliptic.P521():
-        return oidNamedCurveP521, true
-    case sm2.P256Sm2():
-        return oidNamedCurveP256SM2, true
+        case elliptic.P224():
+            return oidNamedCurveP224, true
+        case elliptic.P256():
+            return oidNamedCurveP256, true
+        case elliptic.P384():
+            return oidNamedCurveP384, true
+        case elliptic.P521():
+            return oidNamedCurveP521, true
+        case sm2.P256Sm2():
+            return oidNamedCurveP256SM2, true
     }
     return nil, false
 }
@@ -958,78 +958,85 @@ func (c *Certificate) CheckSignature(algo SignatureAlgorithm, signed, signature 
 func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey crypto.PublicKey) (err error) {
     var hashType Hash
     switch algo {
-    case SHA1WithRSA, DSAWithSHA1, ECDSAWithSHA1, SM2WithSHA1:
-        hashType = SHA1
-    case SHA256WithRSA, SHA256WithRSAPSS, DSAWithSHA256, ECDSAWithSHA256, SM2WithSHA256:
-        hashType = SHA256
-    case SHA384WithRSA, SHA384WithRSAPSS, ECDSAWithSHA384:
-        hashType = SHA384
-    case SHA512WithRSA, SHA512WithRSAPSS, ECDSAWithSHA512:
-        hashType = SHA512
-    case MD2WithRSA, MD5WithRSA:
-        return InsecureAlgorithmError(algo)
-    case SM2WithSM3: // SM3WithRSA reserve
-        hashType = SM3
-    default:
-        return ErrUnsupportedAlgorithm
+        case SHA1WithRSA, DSAWithSHA1, ECDSAWithSHA1, SM2WithSHA1:
+            hashType = SHA1
+        case SHA256WithRSA, SHA256WithRSAPSS, DSAWithSHA256, ECDSAWithSHA256, SM2WithSHA256:
+            hashType = SHA256
+        case SHA384WithRSA, SHA384WithRSAPSS, ECDSAWithSHA384:
+            hashType = SHA384
+        case SHA512WithRSA, SHA512WithRSAPSS, ECDSAWithSHA512:
+            hashType = SHA512
+        case MD2WithRSA, MD5WithRSA:
+            return InsecureAlgorithmError(algo)
+        case SM2WithSM3: // SM3WithRSA reserve
+            hashType = SM3
+        default:
+            return ErrUnsupportedAlgorithm
     }
 
     if !hashType.Available() {
         return ErrUnsupportedAlgorithm
     }
+
     fnHash := func() []byte {
         h := hashType.New()
         h.Write(signed)
         return h.Sum(nil)
     }
+
     switch pub := publicKey.(type) {
-    case *rsa.PublicKey:
-        if algo.isRSAPSS() {
-            return rsa.VerifyPSS(pub, crypto.Hash(hashType), fnHash(), signature, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash})
-        } else {
-            return rsa.VerifyPKCS1v15(pub, crypto.Hash(hashType), fnHash(), signature)
-        }
-    case *dsa.PublicKey:
-        dsaSig := new(dsaSignature)
-        if rest, err := asn1.Unmarshal(signature, dsaSig); err != nil {
-            return err
-        } else if len(rest) != 0 {
-            return errors.New("x509: trailing data after DSA signature")
-        }
-        if dsaSig.R.Sign() <= 0 || dsaSig.S.Sign() <= 0 {
-            return errors.New("x509: DSA signature contained zero or negative values")
-        }
-        if !dsa.Verify(pub, fnHash(), dsaSig.R, dsaSig.S) {
-            return errors.New("x509: DSA verification failure")
-        }
-        return
-    case *ecdsa.PublicKey:
-        ecdsaSig := new(ecdsaSignature)
-        if rest, err := asn1.Unmarshal(signature, ecdsaSig); err != nil {
-            return err
-        } else if len(rest) != 0 {
-            return errors.New("x509: trailing data after ECDSA signature")
-        }
-        if ecdsaSig.R.Sign() <= 0 || ecdsaSig.S.Sign() <= 0 {
-            return errors.New("x509: ECDSA signature contained zero or negative values")
-        }
-        switch pub.Curve {
-        case sm2.P256Sm2():
-            sm2pub := &sm2.PublicKey{
-                Curve: pub.Curve,
-                X:     pub.X,
-                Y:     pub.Y,
+        case *rsa.PublicKey:
+            if algo.isRSAPSS() {
+                return rsa.VerifyPSS(pub, crypto.Hash(hashType), fnHash(), signature, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash})
+            } else {
+                return rsa.VerifyPKCS1v15(pub, crypto.Hash(hashType), fnHash(), signature)
             }
-            if !sm2.Sm2Verify(sm2pub, signed, nil, ecdsaSig.R, ecdsaSig.S) {
-                return errors.New("x509: SM2 verification failure")
+        case *dsa.PublicKey:
+            dsaSig := new(dsaSignature)
+            if rest, err := asn1.Unmarshal(signature, dsaSig); err != nil {
+                return err
+            } else if len(rest) != 0 {
+                return errors.New("x509: trailing data after DSA signature")
             }
-        default:
-            if !ecdsa.Verify(pub, fnHash(), ecdsaSig.R, ecdsaSig.S) {
-                return errors.New("x509: ECDSA verification failure")
+            if dsaSig.R.Sign() <= 0 || dsaSig.S.Sign() <= 0 {
+                return errors.New("x509: DSA signature contained zero or negative values")
             }
-        }
-        return
+            if !dsa.Verify(pub, fnHash(), dsaSig.R, dsaSig.S) {
+                return errors.New("x509: DSA verification failure")
+            }
+            return
+        case *ecdsa.PublicKey:
+            ecdsaSig := new(ecdsaSignature)
+
+            if rest, err := asn1.Unmarshal(signature, ecdsaSig); err != nil {
+                return err
+            } else if len(rest) != 0 {
+                return errors.New("x509: trailing data after ECDSA signature")
+            }
+
+            if ecdsaSig.R.Sign() <= 0 || ecdsaSig.S.Sign() <= 0 {
+                return errors.New("x509: ECDSA signature contained zero or negative values")
+            }
+
+            switch pub.Curve {
+                case sm2.P256Sm2():
+                    sm2pub := &sm2.PublicKey{
+                        Curve: pub.Curve,
+                        X:     pub.X,
+                        Y:     pub.Y,
+                    }
+
+                    if !sm2.VerifyWithSM2(sm2pub, signed, nil, ecdsaSig.R, ecdsaSig.S) {
+                        return errors.New("x509: SM2 verification failure")
+                    }
+                default:
+                    if !ecdsa.Verify(pub, fnHash(), ecdsaSig.R, ecdsaSig.S) {
+                        return errors.New("x509: ECDSA verification failure")
+                    }
+            }
+            return
     }
+
     return ErrUnsupportedAlgorithm
 }
 
@@ -1828,11 +1835,11 @@ func signingParamsForPublicKey(pub interface{}, requestedSigAlgo SignatureAlgori
     case *sm2.PublicKey:
         pubType = ECDSA
         switch pub.Curve {
-        case sm2.P256Sm2():
-            hashFunc = SM3
-            sigAlgo.Algorithm = oidSignatureSM2WithSM3
-        default:
-            err = errors.New("x509: unknown SM2 curve")
+            case sm2.P256Sm2():
+                hashFunc = SM3
+                sigAlgo.Algorithm = oidSignatureSM2WithSM3
+            default:
+                err = errors.New("x509: unknown SM2 curve")
         }
     default:
         err = errors.New("x509: only RSA and ECDSA keys supported")

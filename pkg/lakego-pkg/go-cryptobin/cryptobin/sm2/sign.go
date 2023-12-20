@@ -47,13 +47,13 @@ type sm2Signature struct {
 }
 
 // 私钥签名
-func (this SM2) SignAsn1(uid []byte) SM2 {
+func (this SM2) SignASN1(uid []byte) SM2 {
     if this.privateKey == nil {
         err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
-    r, s, err := sm2.Sm2Sign(rand.Reader, this.privateKey, this.data, uid)
+    r, s, err := sm2.SignWithSM2(rand.Reader, this.privateKey, this.data, uid)
     if err != nil {
         return this.AppendError(err)
     }
@@ -70,7 +70,7 @@ func (this SM2) SignAsn1(uid []byte) SM2 {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
+func (this SM2) VerifyASN1(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
         err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
@@ -82,7 +82,7 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
         return this.AppendError(err)
     }
 
-    this.verify = sm2.Sm2Verify(this.publicKey, data, uid, sm2Sign.R, sm2Sign.S)
+    this.verify = sm2.VerifyWithSM2(this.publicKey, data, uid, sm2Sign.R, sm2Sign.S)
 
     return this
 }
@@ -91,28 +91,21 @@ func (this SM2) VerifyAsn1(data []byte, uid []byte) SM2 {
 
 // 私钥签名
 // 兼容[招行]
-func (this SM2) SignHex(uid []byte) SM2 {
+func (this SM2) SignBytes(uid []byte) SM2 {
     if this.privateKey == nil {
         err := errors.New("SM2: privateKey error.")
         return this.AppendError(err)
     }
 
-    r, s, err := sm2.Sm2Sign(rand.Reader, this.privateKey, this.data, uid)
+    r, s, err := sm2.SignWithSM2(rand.Reader, this.privateKey, this.data, uid)
     if err != nil {
         return this.AppendError(err)
     }
 
-    encoding := cryptobin_tool.NewEncoding()
+    parsedData := make([]byte, 64)
 
-    rHex := encoding.HexEncode(r.Bytes())
-    sHex := encoding.HexEncode(s.Bytes())
-
-    sign := encoding.HexPadding(rHex, 64) + encoding.HexPadding(sHex, 64)
-
-    parsedData, err := encoding.HexDecode(sign)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    copy(parsedData[:32], cryptobin_tool.BytesPadding(r.Bytes(), 32))
+    copy(parsedData[32:], cryptobin_tool.BytesPadding(s.Bytes(), 32))
 
     this.parsedData = parsedData
 
@@ -122,18 +115,16 @@ func (this SM2) SignHex(uid []byte) SM2 {
 // 公钥验证
 // 兼容[招行]
 // 使用原始数据[data]对比签名后数据
-func (this SM2) VerifyHex(data []byte, uid []byte) SM2 {
+func (this SM2) VerifyBytes(data []byte, uid []byte) SM2 {
     if this.publicKey == nil {
         err := errors.New("SM2: publicKey error.")
         return this.AppendError(err)
     }
 
-    signData := cryptobin_tool.NewEncoding().HexEncode(this.data)
+    r := new(big.Int).SetBytes(this.data[:32])
+    s := new(big.Int).SetBytes(this.data[32:])
 
-    r, _ := new(big.Int).SetString(signData[:64], 16)
-    s, _ := new(big.Int).SetString(signData[64:], 16)
-
-    this.verify = sm2.Sm2Verify(this.publicKey, data, uid, r, s)
+    this.verify = sm2.VerifyWithSM2(this.publicKey, data, uid, r, s)
 
     return this
 }

@@ -74,10 +74,10 @@ func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bo
         return false
     }
 
-    return Sm2Verify(pub, msg, uid, sm2Sign.R, sm2Sign.S)
+    return VerifyWithSM2(pub, msg, uid, sm2Sign.R, sm2Sign.S)
 }
 
-func (pub *PublicKey) VerifyHex(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
+func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
     uid := defaultUid
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
@@ -86,7 +86,7 @@ func (pub *PublicKey) VerifyHex(msg []byte, sign []byte, opts crypto.SignerOpts)
     r := new(big.Int).SetBytes(sign[:32])
     s := new(big.Int).SetBytes(sign[32:])
 
-    return Sm2Verify(pub, msg, uid, r, s)
+    return VerifyWithSM2(pub, msg, uid, r, s)
 }
 
 func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
@@ -135,7 +135,7 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
         uid = opt.Uid
     }
 
-    r, s, err := Sm2Sign(random, priv, msg, uid)
+    r, s, err := SignWithSM2(random, priv, msg, uid)
     if err != nil {
         return nil, err
     }
@@ -143,20 +143,21 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
     return asn1.Marshal(sm2Signature{r, s})
 }
 
-func (priv *PrivateKey) SignHex(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
     uid := defaultUid
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
     }
 
-    r, s, err := Sm2Sign(random, priv, msg, uid)
+    r, s, err := SignWithSM2(random, priv, msg, uid)
     if err != nil {
         return nil, err
     }
 
-    sign := []byte{}
-    sign = append(sign, zeroPadding(r.Bytes(), 32)...)
-    sign = append(sign, zeroPadding(s.Bytes(), 32)...)
+    sign := make([]byte, 64)
+
+    copy(sign[:32], zeroPadding(r.Bytes(), 32))
+    copy(sign[32:], zeroPadding(s.Bytes(), 32))
 
     return sign, nil
 }
@@ -530,7 +531,7 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
     return x.Cmp(r) == 0
 }
 
-func Sm2Sign(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big.Int, err error) {
+func SignWithSM2(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big.Int, err error) {
     hash, err := sm3Digest(&priv.PublicKey, msg, uid)
     if err != nil {
         return nil, nil, err
@@ -539,7 +540,7 @@ func Sm2Sign(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big.Int
     return Sign(random, priv, hash)
 }
 
-func Sm2Verify(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
+func VerifyWithSM2(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
     hash, err := sm3Digest(pub, msg, uid)
     if err != nil {
         return false

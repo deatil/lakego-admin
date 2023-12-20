@@ -465,3 +465,109 @@ func test_KeyEncryptPEMBlock(t *testing.T, key string) {
         t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
     }
 }
+
+// with sm3
+var testKey_SM4GCM = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIH6MFsGCSqGSIb3DQEFDTBOMC0GCSqGSIb3DQEFDDAgBAhDy2qUWc1GjwICJxAC
+ARAwDQYJKoEcz1UBgxECBQAwHQYIKoEcz1UBaAgwEQQMSYm5EaGJbzIyDGFBAgEQ
+BIGaIQxiZMAaX8QNrjySmZPqhh8fz1DMqF/AtMXneUaPw8UPca30blEcXuZI7ZZ2
+zKX5dDmGsfY3SqjSP6+NJOg/dq9EeonjEyGzZ5lc0YI4Boft2y6Oi0d622BfyMwV
+j0MPtEqv7YWqaUVAGd8tBtyr7/SUoDe3ZjUEFwFrMHgAp8OqqeN1RBRjTrzY8ISH
+ovjnfuDMBswqFwmrxg==
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_SM4CBC = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIHvMFoGCSqGSIb3DQEFDTBNMC0GCSqGSIb3DQEFDDAgBAiixswwAeiJdQICJxAC
+ARAwDQYJKoEcz1UBgxECBQAwHAYIKoEcz1UBaAIEEKKLBZjZ5WU0kCua2ag9hLME
+gZDGvBUrGO0H9rxh9N8lEpPsPpeb/h4gVueJ7vYDtl4Zpkb2C1Y1XBx6NjBvsR9T
+outzObC9GfGUkL1hdS01htFntM2MZXF6ZIgaAVJmdInrZpiA24R/GrKbF59V+Fzr
+WoajpzTvlofy5PVtws1sd3JFhOjw64IY3/QgH4WIVg6D/oQfCepu5WRpyhYlPDk2
+5os=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_SM4ECB = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIHdMEgGCSqGSIb3DQEFDTA7MC0GCSqGSIb3DQEFDDAgBAiAyKQuqPdYpwICJxAC
+ARAwDQYJKoEcz1UBgxECBQAwCgYIKoEcz1UBaAEEgZCSnggK7LL5S8V86fNXVXQ6
+Te4IGJo1tdaXVc56bgq5JgbBXBvLRrqoh+K0nvkqhI7xiJacolXpiUOjJwROo9PL
+ViFpmi89JZ9cnSryepPH5R0V1HmYpO5IyKxkr8U8S1I9vKxg1IIUdsNeJPJ7H4bQ
++b3ygZ0bOwCHN3/E0qfy+FfO11i8t3BwfNjQOkR0frI=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
+var testKey_AES128GCM = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIH7MFwGCSqGSIb3DQEFDTBPMC0GCSqGSIb3DQEFDDAgBAjreXilIJfmnQICJxAC
+ARAwDQYJKoEcz1UBgxECBQAwHgYJYIZIAWUDBAEGMBEEDGESn09YP/3TkcYAGAIB
+EASBmoPYofVZtbpWxUCh4Q5Ei1SDIHkSV1HW3UjDFRlt6ksJO4zLZZG6AIhhWzkW
+249CIqojCGXfzMnQk8H2iE1Id8xKrWYJjhfJAIvWO7ARnNEknaf3/Trxxy+tsczx
+N8fa5fpY6EHvJA2j3IacHyqDHd1Bbe7lfnpIEcf9qKgtG3+U9rNGz1BoDkAramSt
+e2KTP7GB7bUOSJbxjAM=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_AES192GCM = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIH7MFwGCSqGSIb3DQEFDTBPMC0GCSqGSIb3DQEFDDAgBAihhPCWHrMIAwICJxAC
+ARgwDQYJKoEcz1UBgxECBQAwHgYJYIZIAWUDBAEaMBEEDC31ftLw/wCY0+QxFQIB
+EASBmi3rU8QxuCG2/idLjft4qXXBJvbMWUJelKPvMLzOa+LY4pFBQuMjw8o41+9L
+TEolMbkTVCH1jDaTda5fhPcq+aVJwUc7tMEoNBxZuPmCYeQXafVbOoZyedGSr0Y6
+OvgRupv7sU2eLp76nlw1RrJIEWwBJEHl/sZlN9epmA4AAKEtVOPAWZffxmufdYg+
+pUzJcMjTUcSgO5u2oO4=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+var testKey_AES256GCM = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIH7MFwGCSqGSIb3DQEFDTBPMC0GCSqGSIb3DQEFDDAgBAjK6am3aHuutQICJxAC
+ASAwDQYJKoEcz1UBgxECBQAwHgYJYIZIAWUDBAEuMBEEDGxf2Bj3fTt80UilsQIB
+EASBmnRl8g3+LZoVfLvnSWbv5DyFkkRPTSnnHkGrZgQlDDMk9pBgNuhaL2WawQO/
+7snVMdGbPW7k5xI77UxCYLlHPUI2Z/5pt9guf3rzkCYcq616XPJScMiVLEYpsY+k
+gqC5tbjTnx8qDKnQ3tJCOX6yfWQoZRECMRpik/3oIJwq+hYa8SmJWE/eJFbwe+Fr
+dDzN6HnxZ+uoYVqEGOE=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
+func Test_Check_PEMBlock2(t *testing.T) {
+    t.Run("SM4GCM", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_SM4GCM)
+    })
+    t.Run("SM4CBC", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_SM4CBC)
+    })
+    t.Run("SM4ECB", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_SM4ECB)
+    })
+
+    t.Run("AES128GCM", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_AES128GCM)
+    })
+    t.Run("AES192GCM", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_AES192GCM)
+    })
+    t.Run("AES256GCM", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_AES256GCM)
+    })
+}
+
+func test_KeyEncryptPEMBlock2(t *testing.T, key string) {
+    block, _ := pem.Decode([]byte(key))
+
+    bys, err := DecryptPEMBlock(block, []byte("test-passsss"))
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("123"), DESCBC)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+}

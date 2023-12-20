@@ -39,7 +39,7 @@ func Test_XMLSign(t *testing.T) {
     objSign := NewDSA().
         FromString(data).
         FromXMLPrivateKey([]byte(prikeyXML)).
-        SignAsn1()
+        SignASN1()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "XMLSign-Sign")
@@ -49,7 +49,7 @@ func Test_XMLSign(t *testing.T) {
     objVerify := NewDSA().
         FromBase64String(signed).
         FromXMLPublicKey([]byte(pubkeyXML)).
-        VerifyAsn1([]byte(data))
+        VerifyASN1([]byte(data))
 
     assertError(objVerify.Error(), "XMLSign-Verify")
     assertBool(objVerify.ToVerify(), "XMLSign-Verify")

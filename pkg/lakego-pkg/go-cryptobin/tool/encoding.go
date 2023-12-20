@@ -1,6 +1,7 @@
 package tool
 
 import (
+    "bytes"
     "strings"
     "encoding/hex"
     "encoding/base64"
@@ -80,4 +81,24 @@ func (this Encoding) HexPadding(text string, size int) string {
 
 func HexPadding(text string, size int) string {
     return defaultEncoding.HexPadding(text, size)
+}
+
+// BytesPadding
+func BytesPadding(text []byte, size int) []byte {
+    if size < 1 {
+        return text
+    }
+
+    n := len(text)
+
+    if n == size {
+        return text
+    }
+
+    if n < size {
+        r := bytes.Repeat([]byte("0"), size - n)
+        return append(r, text...)
+    }
+
+    return text[n-size:]
 }

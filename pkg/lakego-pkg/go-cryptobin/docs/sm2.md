@@ -204,8 +204,8 @@ func main() {
     sm2Sign := cryptobin_sm2.NewSM2().
         FromString(sm2data).
         FromPrivateKeyBytes(sm2keyBytes).
-        SignHex([]byte(sm2userid)).
-        // SignAsn1([]byte(sm2userid)).
+        SignBytes([]byte(sm2userid)).
+        // SignASN1([]byte(sm2userid)).
         ToBase64String()
 
     // sm2 验证【招商银行】
@@ -214,8 +214,8 @@ func main() {
         FromBase64String(sm2signdata).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        VerifyHex([]byte(sm2data), []byte(sm2userid)).
-        // VerifyAsn1([]byte(sm2data), []byte(sm2userid)).
+        VerifyBytes([]byte(sm2data), []byte(sm2userid)).
+        // VerifyASN1([]byte(sm2data), []byte(sm2userid)).
         ToVerify()
 
     fmt.Println("签名结果：", sm2Sign)

@@ -56,8 +56,7 @@ func main() {
     // 签名验证对
     Sign(separator ...string) / Verify(data []byte, separator ...string)
     SignASN1() / VerifyASN1(data []byte)
-    SignAsn1() / VerifyAsn1(data []byte)
-    SignHex() / VerifyHex(data []byte)
+    SignBytes() / VerifyBytes(data []byte)
 
     // 检测私钥公钥是否匹配
     pri, _ := fs.Get(prifile)
