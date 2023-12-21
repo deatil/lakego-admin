@@ -136,3 +136,41 @@ func Test_SignBytes_Func(t *testing.T) {
         t.Error("VerifyBytes: valid error")
     }
 }
+
+func Test_MarshalPublicKey(t *testing.T) {
+    priv, err := GenerateKey(rand.Reader, CurveIdGostR34102001TestParamSet())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    pubkey := ToPublicKey(pub)
+
+    newPub, err := NewPublicKey(pub.Curve, pubkey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !newPub.Equal(pub) {
+        t.Error("PublicKey Equal error")
+    }
+}
+
+func Test_MarshalPrivateKey(t *testing.T) {
+    priv, err := GenerateKey(rand.Reader, CurveIdGostR34102001TestParamSet())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    privkey := ToPrivateKey(priv)
+
+    newPriv, err := NewPrivateKey(priv.Curve, privkey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !newPriv.Equal(priv) {
+        t.Error("PrivateKey Equal error")
+    }
+}

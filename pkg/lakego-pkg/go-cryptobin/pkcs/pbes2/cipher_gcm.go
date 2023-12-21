@@ -24,6 +24,7 @@ type CipherGCM struct {
     nonceSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
+    needPassBmp  bool
 }
 
 // 值大小
@@ -39,6 +40,11 @@ func (this CipherGCM) OID() asn1.ObjectIdentifier {
 // 是否有 KeyLength
 func (this CipherGCM) HasKeyLength() bool {
     return this.hasKeyLength
+}
+
+// 密码是否需要 Bmp 处理
+func (this CipherGCM) NeedPasswordBmpString() bool {
+    return this.needPassBmp
 }
 
 // 加密
@@ -117,6 +123,12 @@ func (this CipherGCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
 
 func (this CipherGCM) WithHasKeyLength(hasKeyLength bool) CipherGCM {
     this.hasKeyLength = hasKeyLength
+
+    return this
+}
+
+func (this CipherGCM) WithNeedPasswordBmpString(needPassBmp bool) CipherGCM {
+    this.needPassBmp = needPassBmp
 
     return this
 }

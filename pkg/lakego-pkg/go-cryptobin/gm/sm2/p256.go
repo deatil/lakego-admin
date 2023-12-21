@@ -26,7 +26,11 @@ const (
 )
 
 func initP256Sm2() {
-    sm2P256.CurveParams = &elliptic.CurveParams{Name: "SM2-P-256"} // sm2
+    // sm2
+    sm2P256.CurveParams = &elliptic.CurveParams{
+        Name: "SM2-P-256",
+    }
+
     A, _ := new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
 
     sm2P256.P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
@@ -36,6 +40,7 @@ func initP256Sm2() {
     sm2P256.Gy, _ = new(big.Int).SetString("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16)
     sm2P256.RInverse, _ = new(big.Int).SetString("7ffffffd80000002fffffffe000000017ffffffe800000037ffffffc80000002", 16)
     sm2P256.BitSize = 256
+
     sm2P256FromBig(&sm2P256.a, A)
     sm2P256FromBig(&sm2P256.gx, sm2P256.Gx)
     sm2P256FromBig(&sm2P256.gy, sm2P256.Gy)

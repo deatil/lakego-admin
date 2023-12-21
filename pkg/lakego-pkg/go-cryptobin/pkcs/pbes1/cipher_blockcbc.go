@@ -34,6 +34,8 @@ type CipherBlockCBC struct {
     oid            asn1.ObjectIdentifier
     // 是否有 KeyLength
     hasKeyLength   bool
+    // 密码是否需要 Bmp 处理
+    needPassBmp    bool
 }
 
 // 值大小
@@ -49,6 +51,11 @@ func (this CipherBlockCBC) OID() asn1.ObjectIdentifier {
 // 是否有 KeyLength
 func (this CipherBlockCBC) HasKeyLength() bool {
     return this.hasKeyLength
+}
+
+// 密码是否需要 Bmp 处理
+func (this CipherBlockCBC) NeedPasswordBmpString() bool {
+    return this.needPassBmp
 }
 
 // 加密
@@ -142,6 +149,12 @@ func (this CipherBlockCBC) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) Cip
 
 func (this CipherBlockCBC) WithHasKeyLength(hasKeyLength bool) CipherBlockCBC {
     this.hasKeyLength = hasKeyLength
+
+    return this
+}
+
+func (this CipherBlockCBC) WithNeedPasswordBmpString(needPassBmp bool) CipherBlockCBC {
+    this.needPassBmp = needPassBmp
 
     return this
 }

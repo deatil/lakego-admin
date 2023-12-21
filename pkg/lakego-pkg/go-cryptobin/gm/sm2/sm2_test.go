@@ -181,12 +181,12 @@ func Test_SignASN1(t *testing.T) {
 
     msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
 
-    signed, err := priv.SignASN1(rand.Reader, msg, nil)
+    signed, err := priv.Sign(rand.Reader, msg, nil)
     if err != nil {
         t.Error(err)
     }
 
-    veri := pub.VerifyASN1(msg, signed, nil)
+    veri := pub.Verify(msg, signed, nil)
     if !veri {
         t.Error("veri error")
     }
@@ -302,7 +302,7 @@ func Test_Sign_Check(t *testing.T) {
 
     design, _ := hex.DecodeString(sign)
 
-    if !pub.VerifyASN1(msg, design, sm2.SignerOpts{uid}) {
+    if !pub.Verify(msg, design, sm2.SignerOpts{uid}) {
         t.Error("Verify error")
     }
 }
@@ -312,8 +312,6 @@ func Test_NewPrivateKey(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-
-    pub := &priv.PublicKey
 
     privHex := sm2.ToPrivateKey(priv)
     priv2, err := sm2.NewPrivateKey(privHex)
@@ -326,6 +324,8 @@ func Test_NewPrivateKey(t *testing.T) {
     }
 
     // ======
+
+    pub := &priv.PublicKey
 
     pubHex := sm2.ToPublicKey(pub)
     pub2, err := sm2.NewPublicKey(pubHex)

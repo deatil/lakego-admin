@@ -1,26 +1,24 @@
-package key
+package gost
 
 import (
     "encoding/asn1"
-
-    "github.com/deatil/go-cryptobin/gost"
 )
 
 type namedCurveInfo struct {
-    namedCurve *gost.Curve
+    namedCurve *Curve
     oid        asn1.ObjectIdentifier
 }
 
 var namedCurves = make([]namedCurveInfo, 0)
 
-func AddNamedCurve(curve *gost.Curve, oid asn1.ObjectIdentifier)  {
+func AddNamedCurve(curve *Curve, oid asn1.ObjectIdentifier)  {
     namedCurves = append(namedCurves, namedCurveInfo{
         namedCurve: curve,
         oid:        oid,
     })
 }
 
-func NamedCurveFromOid(oid asn1.ObjectIdentifier) *gost.Curve {
+func NamedCurveFromOid(oid asn1.ObjectIdentifier) *Curve {
     for i := range namedCurves {
         cur := &namedCurves[i]
         if cur.oid.Equal(oid) {
@@ -31,7 +29,7 @@ func NamedCurveFromOid(oid asn1.ObjectIdentifier) *gost.Curve {
     return nil
 }
 
-func OidFromNamedCurve(curve *gost.Curve) (asn1.ObjectIdentifier, bool) {
+func OidFromNamedCurve(curve *Curve) (asn1.ObjectIdentifier, bool) {
     for i := range namedCurves {
         cur := &namedCurves[i]
         if cur.namedCurve.String() == curve.String() {

@@ -31,7 +31,7 @@ func EncryptPKCS8PrivateKey(
         return nil, errors.New("failed to encrypt PEM: unknown cipher")
     }
 
-    if IsPKCS12Cipher(cipher) {
+    if cipher.NeedPasswordBmpString() {
         var err error
         password, err = BmpStringZeroTerminated(string(password))
         if err != nil {
@@ -80,7 +80,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
         return nil, err
     }
 
-    if IsPKCS12Cipher(cipher) {
+    if cipher.NeedPasswordBmpString() {
         var err error
         password, err = BmpStringZeroTerminated(string(password))
         if err != nil {

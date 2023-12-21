@@ -58,23 +58,3 @@ func CheckCipher(c Cipher) bool {
 
     return false
 }
-
-// 检测是否是 pkcs12 的加密方式
-func IsPKCS12Cipher(cipher Cipher) bool {
-    ciphers := []Cipher{
-        SHA1AndRC4_128,
-        SHA1AndRC4_40,
-        SHA1And3DES,
-        SHA1And2DES,
-        SHA1AndRC2_128,
-        SHA1AndRC2_40,
-    }
-
-    for _, cip := range ciphers {
-        if cipher.OID().Equal(cip.OID()) {
-            return true
-        }
-    }
-
-    return false
-}

@@ -1,4 +1,4 @@
-package key_test
+package gost_test
 
 import (
     "fmt"
@@ -6,7 +6,6 @@ import (
     "crypto/rand"
 
     "github.com/deatil/go-cryptobin/gost"
-    "github.com/deatil/go-cryptobin/gost/key"
 )
 
 func TestPkcs1Equal(t *testing.T) {
@@ -32,7 +31,7 @@ func testPkcs1OneCurve(t *testing.T, curue *gost.Curve) {
             t.Fatal(err)
         }
 
-        privDer, err := key.MarshalGostPrivateKey(priv)
+        privDer, err := gost.MarshalGostPrivateKey(priv)
         if err != nil {
             t.Fatal(err)
         }
@@ -41,7 +40,7 @@ func testPkcs1OneCurve(t *testing.T, curue *gost.Curve) {
             t.Error("expected export key Der error: priv")
         }
 
-        newPriv, err := key.ParseGostPrivateKey(privDer)
+        newPriv, err := gost.ParseGostPrivateKey(privDer)
         if err != nil {
             t.Fatal(err)
         }

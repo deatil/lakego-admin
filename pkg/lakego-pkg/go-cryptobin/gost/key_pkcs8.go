@@ -1,4 +1,4 @@
-package key
+package gost
 
 import (
     "fmt"
@@ -7,8 +7,6 @@ import (
     "crypto/x509/pkix"
 
     "golang.org/x/crypto/cryptobyte"
-
-    "github.com/deatil/go-cryptobin/gost"
 )
 
 var (
@@ -31,19 +29,19 @@ var (
 )
 
 func init() {
-    AddNamedCurve(gost.CurveIdGostR34102001TestParamSet(), oidGostR3410_2001_TestParamSet)
+    AddNamedCurve(CurveIdGostR34102001TestParamSet(), oidGostR3410_2001_TestParamSet)
 
-    AddNamedCurve(gost.CurveIdtc26gost341012256paramSetA(), oidTc26_gost_3410_12_256_paramSetA)
-    AddNamedCurve(gost.CurveIdGostR34102001CryptoProAParamSet(), oidGostR3410_2001_CryptoPro_A_ParamSet)
-    AddNamedCurve(gost.CurveIdGostR34102001CryptoProBParamSet(), oidGostR3410_2001_CryptoPro_B_ParamSet)
-    AddNamedCurve(gost.CurveIdGostR34102001CryptoProCParamSet(), oidGostR3410_2001_CryptoPro_C_ParamSet)
+    AddNamedCurve(CurveIdtc26gost341012256paramSetA(), oidTc26_gost_3410_12_256_paramSetA)
+    AddNamedCurve(CurveIdGostR34102001CryptoProAParamSet(), oidGostR3410_2001_CryptoPro_A_ParamSet)
+    AddNamedCurve(CurveIdGostR34102001CryptoProBParamSet(), oidGostR3410_2001_CryptoPro_B_ParamSet)
+    AddNamedCurve(CurveIdGostR34102001CryptoProCParamSet(), oidGostR3410_2001_CryptoPro_C_ParamSet)
 
-    AddNamedCurve(gost.CurveIdtc26gost341012512paramSetA(), oidTc26_gost_3410_12_512_paramSetA)
-    AddNamedCurve(gost.CurveIdtc26gost341012512paramSetB(), oidTc26_gost_3410_12_512_paramSetB)
-    AddNamedCurve(gost.CurveIdtc26gost341012512paramSetC(), oidTc26_gost_3410_12_512_paramSetC)
+    AddNamedCurve(CurveIdtc26gost341012512paramSetA(), oidTc26_gost_3410_12_512_paramSetA)
+    AddNamedCurve(CurveIdtc26gost341012512paramSetB(), oidTc26_gost_3410_12_512_paramSetB)
+    AddNamedCurve(CurveIdtc26gost341012512paramSetC(), oidTc26_gost_3410_12_512_paramSetC)
 
-    AddNamedCurve(gost.CurveIdGostR34102001CryptoProXchAParamSet(), oidGostR3410_2001_CryptoPro_XchA_ParamSet)
-    AddNamedCurve(gost.CurveIdGostR34102001CryptoProXchBParamSet(), oidGostR3410_2001_CryptoPro_XchB_ParamSet)
+    AddNamedCurve(CurveIdGostR34102001CryptoProXchAParamSet(), oidGostR3410_2001_CryptoPro_XchA_ParamSet)
+    AddNamedCurve(CurveIdGostR34102001CryptoProXchBParamSet(), oidGostR3410_2001_CryptoPro_XchB_ParamSet)
 }
 
 const gostPrivKeyVersion = 1
@@ -78,7 +76,7 @@ type gostPrivateKey struct {
 }
 
 // Marshal PublicKey
-func MarshalPublicKey(pub *gost.PublicKey) ([]byte, error) {
+func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
@@ -101,7 +99,7 @@ func MarshalPublicKey(pub *gost.PublicKey) ([]byte, error) {
         return nil, errors.New("gost: invalid gost curve public key")
     }
 
-    publicKeyBytes = gost.MarshalPublicKey(pub)
+    publicKeyBytes = ToPublicKey(pub)
 
     pkix := pkixPublicKey{
         Algo: publicKeyAlgorithm,
@@ -115,7 +113,7 @@ func MarshalPublicKey(pub *gost.PublicKey) ([]byte, error) {
 }
 
 // Parse PublicKey
-func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
+func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
     if err != nil {
@@ -155,7 +153,7 @@ func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
         return
     }
 
-    pub, err = gost.UnmarshalPublicKey(namedCurve, der)
+    pub, err = NewPublicKey(namedCurve, der)
     if err != nil {
         err = errors.New("gost: failed to unmarshal gost curve point")
         return
@@ -167,7 +165,7 @@ func ParsePublicKey(derBytes []byte) (pub *gost.PublicKey, err error) {
 // ====================
 
 // Marshal PrivateKey
-func MarshalPrivateKey(key *gost.PrivateKey) ([]byte, error) {
+func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
     oid, ok := OidFromNamedCurve(key.Curve)
@@ -202,7 +200,7 @@ func MarshalPrivateKey(key *gost.PrivateKey) ([]byte, error) {
 }
 
 // Parse PrivateKey
-func ParsePrivateKey(derBytes []byte) (*gost.PrivateKey, error) {
+func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error
 
@@ -232,22 +230,25 @@ func ParsePrivateKey(derBytes []byte) (*gost.PrivateKey, error) {
     return key, nil
 }
 
-func marshalGostPrivateKeyWithOID(key *gost.PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
+func marshalGostPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
         return nil, errors.New("invalid gost key public key")
     }
 
+    privateKey := ToPrivateKey(key)
+    publicKey  := ToPublicKey(&key.PublicKey)
+
     return asn1.Marshal(gostPrivateKey{
         Version:       gostPrivKeyVersion,
-        PrivateKey:    gost.MarshalPrivateKey(key),
+        PrivateKey:    privateKey,
         NamedCurveOID: oid,
         PublicKey:     asn1.BitString{
-            Bytes: gost.MarshalPublicKey(&key.PublicKey),
+            Bytes: publicKey,
         },
     })
 }
 
-func parseGostPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *gost.PrivateKey, err error) {
+func parseGostPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
     var privKey gostPrivateKey
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
         return nil, errors.New("gost: failed to parse EC private key: " + err.Error())
@@ -257,7 +258,7 @@ func parseGostPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key 
         return nil, fmt.Errorf("gost: unknown EC private key version %d", privKey.Version)
     }
 
-    var curve *gost.Curve
+    var curve *Curve
     if namedCurveOID != nil {
         curve = NamedCurveFromOid(*namedCurveOID)
     } else {
@@ -268,7 +269,7 @@ func parseGostPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key 
         return nil, errors.New("gost: unknown gost curve")
     }
 
-    priv, err := gost.UnmarshalPrivateKey(curve, privKey.PrivateKey)
+    priv, err := NewPrivateKey(curve, privKey.PrivateKey)
     if err != nil {
         return nil, err
     }

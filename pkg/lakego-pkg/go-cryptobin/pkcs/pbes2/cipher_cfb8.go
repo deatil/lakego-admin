@@ -19,6 +19,7 @@ type CipherCFB8 struct {
     blockSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
+    needPassBmp  bool
 }
 
 // 值大小
@@ -34,6 +35,11 @@ func (this CipherCFB8) OID() asn1.ObjectIdentifier {
 // 是否有 KeyLength
 func (this CipherCFB8) HasKeyLength() bool {
     return this.hasKeyLength
+}
+
+// 密码是否需要 Bmp 处理
+func (this CipherCFB8) NeedPasswordBmpString() bool {
+    return this.needPassBmp
 }
 
 // 加密
@@ -91,6 +97,12 @@ func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
 
 func (this CipherCFB8) WithHasKeyLength(hasKeyLength bool) CipherCFB8 {
     this.hasKeyLength = hasKeyLength
+
+    return this
+}
+
+func (this CipherCFB8) WithNeedPasswordBmpString(needPassBmp bool) CipherCFB8 {
+    this.needPassBmp = needPassBmp
 
     return this
 }

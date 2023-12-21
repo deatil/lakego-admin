@@ -22,9 +22,6 @@ var (
     CheckCipherFromName = pbes1.CheckCipherFromName
     GetCipherName       = pbes1.GetCipherName
     CheckCipher         = pbes1.CheckCipher
-
-    // 检测是否是 pkcs12 的加密方式
-    IsPKCS12Cipher = pbes1.IsPKCS12Cipher
 )
 
 // 加密方式

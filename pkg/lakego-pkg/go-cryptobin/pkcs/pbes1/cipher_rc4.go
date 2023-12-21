@@ -32,6 +32,8 @@ type CipherRC4 struct {
     oid            asn1.ObjectIdentifier
     // 是否有 KeyLength
     hasKeyLength   bool
+    // 密码是否需要 Bmp 处理
+    needPassBmp    bool
 }
 
 // 值大小
@@ -47,6 +49,11 @@ func (this CipherRC4) OID() asn1.ObjectIdentifier {
 // 是否有 KeyLength
 func (this CipherRC4) HasKeyLength() bool {
     return this.hasKeyLength
+}
+
+// 密码是否需要 Bmp 处理
+func (this CipherRC4) NeedPasswordBmpString() bool {
+    return this.needPassBmp
 }
 
 // 加密
@@ -117,6 +124,12 @@ func (this CipherRC4) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) CipherRC
 
 func (this CipherRC4) WithHasKeyLength(hasKeyLength bool) CipherRC4 {
     this.hasKeyLength = hasKeyLength
+
+    return this
+}
+
+func (this CipherRC4) WithNeedPasswordBmpString(needPassBmp bool) CipherRC4 {
+    this.needPassBmp = needPassBmp
 
     return this
 }
