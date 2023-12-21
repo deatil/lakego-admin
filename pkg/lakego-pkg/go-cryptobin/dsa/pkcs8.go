@@ -103,9 +103,9 @@ func MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error) {
 }
 
 // PKCS8 解析公钥
-func (this PKCS8Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) {
+func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
     var pki publicKeyInfo
-    rest, err := asn1.Unmarshal(derBytes, &pki)
+    rest, err := asn1.Unmarshal(der, &pki)
     if err != nil {
         return nil, err
     }
@@ -122,11 +122,11 @@ func (this PKCS8Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) {
     // 解析
     keyData := &pki
 
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
+    yDer := cryptobyte.String(keyData.PublicKey.RightAlign())
 
     y := new(big.Int)
-    if !der.ReadASN1Integer(y) {
-        return nil, errors.New("x509: invalid DSA public key")
+    if !yDer.ReadASN1Integer(y) {
+        return nil, errors.New("dsa: invalid DSA public key")
     }
 
     pub := &dsa.PublicKey{
@@ -143,12 +143,12 @@ func (this PKCS8Key) ParsePublicKey(derBytes []byte) (*dsa.PublicKey, error) {
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.Q) ||
         !paramsDer.ReadASN1Integer(pub.G) {
-        return nil, errors.New("x509: invalid DSA parameters")
+        return nil, errors.New("dsa: invalid DSA parameters")
     }
 
     if pub.Y.Sign() <= 0 || pub.P.Sign() <= 0 ||
         pub.Q.Sign() <= 0 || pub.G.Sign() <= 0 {
-        return nil, errors.New("x509: zero or negative DSA parameter")
+        return nil, errors.New("dsa: zero or negative DSA parameter")
     }
 
     return pub, nil
@@ -165,7 +165,7 @@ func ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, error) {
 func (this PKCS8Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
-    // 创建数据
+    // params
     paramBytes, err := asn1.Marshal(dsaAlgorithmParameters{
         P: key.P,
         Q: key.Q,
@@ -201,56 +201,54 @@ func MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
 }
 
 // PKCS8 解析私钥
-func (this PKCS8Key) ParsePrivateKey(derBytes []byte) (key *dsa.PrivateKey, err error) {
+func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error) {
     var privKey pkcs8
-    _, err = asn1.Unmarshal(derBytes, &privKey)
+    _, err = asn1.Unmarshal(der, &privKey)
     if err != nil {
         return nil, err
     }
 
-    switch {
-        case privKey.Algo.Algorithm.Equal(oidPublicKeyDSA):
-            der := cryptobyte.String(string(privKey.PrivateKey))
-
-            x := new(big.Int)
-            if !der.ReadASN1Integer(x) {
-                return nil, errors.New("x509: invalid DSA public key")
-            }
-
-            priv := &dsa.PrivateKey{
-                PublicKey: dsa.PublicKey{
-                    Parameters: dsa.Parameters{
-                        P: new(big.Int),
-                        Q: new(big.Int),
-                        G: new(big.Int),
-                    },
-                    Y: new(big.Int),
-                },
-                X: x,
-            }
-
-            // 找出 p,q,g 数据
-            paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
-            if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
-                !paramsDer.ReadASN1Integer(priv.P) ||
-                !paramsDer.ReadASN1Integer(priv.Q) ||
-                !paramsDer.ReadASN1Integer(priv.G) {
-                return nil, errors.New("x509: invalid DSA parameters")
-            }
-
-            // 算出 Y 值
-            priv.Y.Exp(priv.G, x, priv.P)
-
-            if priv.Y.Sign() <= 0 || priv.P.Sign() <= 0 ||
-                priv.Q.Sign() <= 0 || priv.G.Sign() <= 0 {
-                return nil, errors.New("x509: zero or negative DSA parameter")
-            }
-
-            return priv, nil
-
-        default:
-            return nil, fmt.Errorf("dsa: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
+    if !privKey.Algo.Algorithm.Equal(oidPublicKeyDSA) {
+        return nil, fmt.Errorf("dsa: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
+
+    xDer := cryptobyte.String(string(privKey.PrivateKey))
+
+    x := new(big.Int)
+    if !xDer.ReadASN1Integer(x) {
+        return nil, errors.New("dsa: invalid DSA public key")
+    }
+
+    priv := &dsa.PrivateKey{
+        PublicKey: dsa.PublicKey{
+            Parameters: dsa.Parameters{
+                P: new(big.Int),
+                Q: new(big.Int),
+                G: new(big.Int),
+            },
+            Y: new(big.Int),
+        },
+        X: x,
+    }
+
+    // 找出 p,q,g 数据
+    paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
+    if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
+        !paramsDer.ReadASN1Integer(priv.P) ||
+        !paramsDer.ReadASN1Integer(priv.Q) ||
+        !paramsDer.ReadASN1Integer(priv.G) {
+        return nil, errors.New("dsa: invalid DSA parameters")
+    }
+
+    // 算出 Y 值
+    priv.Y.Exp(priv.G, x, priv.P)
+
+    if priv.Y.Sign() <= 0 || priv.P.Sign() <= 0 ||
+        priv.Q.Sign() <= 0 || priv.G.Sign() <= 0 {
+        return nil, errors.New("dsa: zero or negative DSA parameter")
+    }
+
+    return priv, nil
 }
 
 // PKCS8 解析私钥

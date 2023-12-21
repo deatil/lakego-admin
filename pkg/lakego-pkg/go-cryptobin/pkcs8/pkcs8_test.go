@@ -2,7 +2,9 @@ package pkcs8
 
 import (
     "testing"
+    "crypto/rsa"
     "crypto/rand"
+    "crypto/x509"
     "encoding/pem"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
@@ -629,4 +631,258 @@ func Test_EncryptPEMBlock2(t *testing.T) {
     if len(res) == 0 {
         t.Errorf("encodePEM error")
     }
+}
+
+var testCheckScryptKey = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIBvDBWBgkqhkiG9w0BBQ0wSTAoBgkrBgEEAdpHBAswGwQQ4RXy39LiElWdxleQ
+fNRrawIBBAIBCAIBATAdBglghkgBZQMEASoEENYgwu2wE/eEZHtJ3VnWvzQEggFg
+cidA9RttrpvYhK9Uac08gOL1BM7XXGojdy4spMNzldS9mDNaqnKhnvlU8queiTUc
+Yk/zcppent9aZcWM3UQXKZf8wGzEKBrkR+EBwbcIB2+k7Ngl8JGlLsuN65Vqm4pQ
+MVp3SEhWZRxGQE2hy6CRkH9a53plnjBU74sfYbRr1YbaSP4BW5OqiN0ag+skCr94
+ga4hMJu7/WrhhmxYrkYKusfWHFJAztXMWLUmBsu4vEc2ztS0qVl5U2Ax6+osKGLq
+Y/Mf/4HI0ErW/mCaa8hwXw6Tw56Gqb177VoXMQCQ3lTU9WhzZ5sLRFJFKEUdNgy4
+sIU03KcoxgXeEpbbyJ9jr6k/LUg5fRExSnMbiHN7HUMK1H0+5s3q8otKRJOtmLwM
+MI0BMNutXMvRWN/ma4wNfZ8cb5luRvt3GI0XujxnrtJwYz2TYpHPWdxVLEXPsW2A
+Z3E/tti8bFM6JjLtiaX7FQ==
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
+func Test_EncryptPEMBlock_Scrypt(t *testing.T) {
+    privateKey, err := rsa.GenerateKey(rand.Reader, 512)
+    if err != nil {
+        t.Fatal("GenerateKey error: " + err.Error())
+    }
+
+    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        t.Fatal("MarshalPKCS8PrivateKey error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(
+        rand.Reader,
+        "ENCRYPTED PRIVATE KEY",
+        x509PrivateKey,
+        []byte("123"),
+        Opts{
+            Cipher:  AES256CBC,
+            KDFOpts: DefaultScryptOpts,
+        },
+    )
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+
+    res := encodePEM(enblock.Bytes, "ENCRYPTED PRIVATE KEY")
+    if len(res) == 0 {
+        t.Errorf("encodePEM error")
+    }
+
+    // t.Error(res)
+}
+
+func Test_EncryptPEMBlock_Pkcs8(t *testing.T) {
+    privateKey, err := rsa.GenerateKey(rand.Reader, 512)
+    if err != nil {
+        t.Fatal("GenerateKey error: " + err.Error())
+    }
+
+    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
+    if err != nil {
+        t.Fatal("MarshalPKCS8PrivateKey error: " + err.Error())
+    }
+
+    t.Run("SHA1And3DES", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1And3DES)
+    })
+    t.Run("SHA1And2DES", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1And2DES)
+    })
+    t.Run("SHA1AndRC2_128", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC2_128)
+    })
+    t.Run("SHA1AndRC2_40", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC2_40)
+    })
+    t.Run("SHA1AndRC4_128", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC4_128)
+    })
+    t.Run("SHA1AndRC4_40", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC4_40)
+    })
+
+    t.Run("MD2AndDES", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD2AndDES)
+    })
+    t.Run("MD2AndRC2_64", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD2AndRC2_64)
+    })
+    t.Run("MD5AndDES", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD5AndDES)
+    })
+    t.Run("MD5AndRC2_64", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD5AndRC2_64)
+    })
+    t.Run("SHA1AndDES", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndDES)
+    })
+    t.Run("SHA1AndRC2_64", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC2_64)
+    })
+
+    t.Run("DESCBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, DESCBC)
+    })
+    t.Run("DESEDE3CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, DESEDE3CBC)
+    })
+
+    t.Run("RC2CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC2CBC)
+    })
+    t.Run("RC2_40CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC2_40CBC)
+    })
+    t.Run("RC2_64CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC2_64CBC)
+    })
+    t.Run("RC2_128CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC2_128CBC)
+    })
+
+    t.Run("RC5CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC5CBC)
+    })
+    t.Run("RC5_128CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC5_128CBC)
+    })
+    t.Run("RC5_192CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC5_192CBC)
+    })
+    t.Run("RC5_256CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, RC5_256CBC)
+    })
+
+    t.Run("AES128ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128ECB)
+    })
+    t.Run("AES128CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128CBC)
+    })
+    t.Run("AES128OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128OFB)
+    })
+    t.Run("AES128CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128CFB)
+    })
+    t.Run("AES128GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128GCM)
+    })
+    t.Run("AES128CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES128CCM)
+    })
+
+    t.Run("AES192ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192ECB)
+    })
+    t.Run("AES192CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192CBC)
+    })
+    t.Run("AES192OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192OFB)
+    })
+    t.Run("AES192CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192CFB)
+    })
+    t.Run("AES192GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192GCM)
+    })
+    t.Run("AES192CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES192CCM)
+    })
+
+    t.Run("AES256ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256ECB)
+    })
+    t.Run("AES256CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256CBC)
+    })
+    t.Run("AES256OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256OFB)
+    })
+    t.Run("AES256CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256CFB)
+    })
+    t.Run("AES256GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256GCM)
+    })
+    t.Run("AES256CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256CCM)
+    })
+
+    t.Run("SM4ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4ECB)
+    })
+    t.Run("SM4CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CBC)
+    })
+    t.Run("SM4OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4OFB)
+    })
+    t.Run("SM4CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CFB)
+    })
+    t.Run("SM4CFB1", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CFB1)
+    })
+    t.Run("SM4CFB8", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CFB8)
+    })
+    t.Run("SM4GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4GCM)
+    })
+    t.Run("SM4CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CCM)
+    })
+
+}
+
+func test_EncryptPEMBlock_Pkcs8(t *testing.T, key []byte, c any) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    pass := []byte("123")
+
+    enblock, err := EncryptPEMBlock(
+        rand.Reader,
+        "ENCRYPTED PRIVATE KEY",
+        key,
+        pass,
+        c,
+    )
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+
+    bys, err := DecryptPEMBlock(enblock, pass)
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    assertEqual(bys, key, "DecryptPEMBlock error")
 }

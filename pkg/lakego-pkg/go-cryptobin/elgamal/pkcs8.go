@@ -16,6 +16,11 @@ var (
     oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 1, 1}
 )
 
+// elgamal Parameters
+type elgamalAlgorithmParameters struct {
+    G, P *big.Int
+}
+
 // 私钥 - 包装
 type pkcs8 struct {
     Version    int
@@ -59,17 +64,22 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
-    publicKeyAlgorithm.Algorithm = oidPublicKeyEIGamal
-    publicKeyAlgorithm.Parameters = asn1.NullRawValue
-
-    var p cryptobyte.Builder
-    p.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
-        addASN1IntBytes(b, key.G.Bytes())
-        addASN1IntBytes(b, key.P.Bytes())
-        addASN1IntBytes(b, key.Y.Bytes())
+    // params
+    paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
+        G: key.G,
+        P: key.P,
     })
+    if err != nil {
+        return nil, errors.New("elgamal: failed to marshal algo param: " + err.Error())
+    }
 
-    publicKeyBytes, err = p.Bytes()
+    publicKeyAlgorithm.Algorithm = oidPublicKeyEIGamal
+    publicKeyAlgorithm.Parameters.FullBytes = paramBytes
+
+    var yInt cryptobyte.Builder
+    yInt.AddASN1BigInt(key.Y)
+
+    publicKeyBytes, err = yInt.Bytes()
     if err != nil {
         return nil, errors.New("elgamal: failed to builder PrivateKey: " + err.Error())
     }
@@ -110,24 +120,30 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     // 解析
     keyData := &pki
 
+    yDer := cryptobyte.String(keyData.PublicKey.RightAlign())
+
+    y := new(big.Int)
+    if !yDer.ReadASN1Integer(y) {
+        return nil, errors.New("elgamal: invalid EIGamal public key")
+    }
+
     pub := &PublicKey{
         G: new(big.Int),
         P: new(big.Int),
-        Y: new(big.Int),
+        Y: y,
     }
 
-    pubDer := cryptobyte.String(keyData.PublicKey.RightAlign())
-    if !pubDer.ReadASN1(&pubDer, cryptobyte_asn1.SEQUENCE) ||
-        !pubDer.ReadASN1Integer(pub.G) ||
-        !pubDer.ReadASN1Integer(pub.P) ||
-        !pubDer.ReadASN1Integer(pub.Y) {
-        return nil, errors.New("x509: invalid EIGamal public key")
+    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
+    if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
+        !paramsDer.ReadASN1Integer(pub.G) ||
+        !paramsDer.ReadASN1Integer(pub.P) {
+        return nil, errors.New("elgamal: invalid EIGamal public key")
     }
 
     if pub.Y.Sign() <= 0 ||
         pub.G.Sign() <= 0 ||
         pub.P.Sign() <= 0 {
-        return nil, errors.New("x509: zero or negative EIGamal parameter")
+        return nil, errors.New("elgamal: zero or negative EIGamal parameter")
     }
 
     return pub, nil
@@ -144,19 +160,26 @@ func ParsePKCS8PublicKey(derBytes []byte) (*PublicKey, error) {
 func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
-    privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  oidPublicKeyEIGamal,
-        Parameters: asn1.NullRawValue,
+    // params
+    paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
+        G: key.G,
+        P: key.P,
+    })
+    if err != nil {
+        return nil, errors.New("elgamal: failed to marshal algo param: " + err.Error())
     }
 
-    var p cryptobyte.Builder
-    p.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
-        addASN1IntBytes(b, key.G.Bytes())
-        addASN1IntBytes(b, key.P.Bytes())
-        addASN1IntBytes(b, key.X.Bytes())
-    })
+    privKey.Algo = pkix.AlgorithmIdentifier{
+        Algorithm:  oidPublicKeyEIGamal,
+        Parameters: asn1.RawValue{
+            FullBytes: paramBytes,
+        },
+    }
 
-    privateKeyBytes, err := p.Bytes()
+    var xInt cryptobyte.Builder
+    xInt.AddASN1BigInt(key.X)
+
+    privateKeyBytes, err := xInt.Bytes()
     if err != nil {
         return nil, errors.New("elgamal: failed to builder PrivateKey: " + err.Error())
     }
@@ -183,28 +206,28 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
         return nil, fmt.Errorf("elgamal: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
 
+    xDer := cryptobyte.String(string(privKey.PrivateKey))
+
+    x := new(big.Int)
+    if !xDer.ReadASN1Integer(x) {
+        return nil, errors.New("elgamal: invalid EIGamal public key")
+    }
+
     priv := &PrivateKey{
         PublicKey: PublicKey{
             G: new(big.Int),
             P: new(big.Int),
             Y: new(big.Int),
         },
-        X: new(big.Int),
+        X: x,
     }
 
-    // 找出 g,p,x 数据
-    priDer := cryptobyte.String(string(privKey.PrivateKey))
-    if !priDer.ReadASN1(&priDer, cryptobyte_asn1.SEQUENCE) ||
-        !priDer.ReadASN1Integer(priv.G) ||
-        !priDer.ReadASN1Integer(priv.P) ||
-        !priDer.ReadASN1Integer(priv.X) {
-        return nil, errors.New("x509: invalid EIGamal private key")
-    }
-
-    if priv.X.Sign() <= 0 ||
-        priv.G.Sign() <= 0 ||
-        priv.P.Sign() <= 0 {
-        return nil, errors.New("x509: zero or negative EIGamal parameter")
+    // 找出 g, p 数据
+    paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
+    if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
+        !paramsDer.ReadASN1Integer(priv.G) ||
+        !paramsDer.ReadASN1Integer(priv.P) {
+        return nil, errors.New("elgamal: invalid EIGamal private key")
     }
 
     // 算出 Y 值
@@ -212,7 +235,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 
     if priv.Y.Sign() <= 0 || priv.G.Sign() <= 0 ||
         priv.P.Sign() <= 0 || priv.X.Sign() <= 0 {
-        return nil, errors.New("x509: zero or negative EIGamal parameter")
+        return nil, errors.New("elgamal: zero or negative EIGamal parameter")
     }
 
     return priv, nil

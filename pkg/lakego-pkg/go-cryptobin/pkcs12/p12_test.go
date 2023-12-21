@@ -658,7 +658,6 @@ func Test_P12_EncodeCRL_OBJ(t *testing.T) {
     assertEqual(newpass2["localKeyId"], hex.EncodeToString(oldpass2[:]), "secretKey")
 }
 
-
 var testEncryptedTestCertificate = `-----BEGIN CERTIFICATE-----
 MIICZTCCAc6gAwIBAgIQAOj+a/ymkrFvZ7V3lPauczANBgkqhkiG9w0BAQsFADAV
 MRMwEQYDVQQDDApnaXRodWIuY29tMB4XDTIyMDgxNTAxMzMwMFoXDTMyMDgxMjAx

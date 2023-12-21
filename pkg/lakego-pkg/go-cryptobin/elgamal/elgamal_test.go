@@ -2,6 +2,7 @@ package elgamal
 
 import (
     "testing"
+    "crypto"
     "crypto/rand"
     "crypto/sha256"
 
@@ -16,6 +17,9 @@ func Test_GenerateKey(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     pri, err := GenerateKey(rand.Reader, testBitsize, testProbability)
+
+    var _ crypto.Signer = pri
+    var _ crypto.Decrypter = pri
 
     assertError(err, "GenerateKey-Error")
     assertNotEmpty(pri, "GenerateKey")
@@ -34,10 +38,10 @@ func Test_Encrypt(t *testing.T) {
 
     data := "123tesfd!df"
 
-    c1, c2, err := pub.Encrypt(rand.Reader, []byte(data))
+    c1, c2, err := Encrypt(rand.Reader, pub, []byte(data))
     assertError(err, "Encrypt-Encrypt-Error")
 
-    de, err := pri.Decrypt(c1, c2)
+    de, err := Decrypt(pri, c1, c2)
     assertError(err, "Encrypt-Decrypt-Error")
 
     assertEqual(string(de), data, "Encrypt-Dedata")
@@ -56,10 +60,10 @@ func Test_EncryptAsn1(t *testing.T) {
 
     data := "123tesfd!df"
 
-    c, err := pub.EncryptAsn1(rand.Reader, []byte(data))
+    c, err := pub.Encrypt(rand.Reader, []byte(data))
     assertError(err, "Encrypt-Encrypt-Error")
 
-    de, err := pri.DecryptAsn1(c)
+    de, err := pri.Decrypt(rand.Reader, c, nil)
     assertError(err, "Encrypt-Decrypt-Error")
 
     assertEqual(string(de), data, "Encrypt-Dedata")
@@ -100,10 +104,10 @@ func Test_EncryptAsn1_2(t *testing.T) {
 
     data := "123tesfd!df"
 
-    c, err := EncryptAsn1(rand.Reader, pub, []byte(data))
+    c, err := EncryptASN1(rand.Reader, pub, []byte(data))
     assertError(err, "Encrypt-Encrypt-Error")
 
-    de, err := DecryptAsn1(pri, c)
+    de, err := DecryptASN1(pri, c)
     assertError(err, "Encrypt-Decrypt-Error")
 
     assertEqual(string(de), data, "Encrypt-Dedata")
@@ -197,22 +201,22 @@ func Test_MarshalPKCS8(t *testing.T) {
     //===============
 
     pubDer, err := MarshalPKCS8PublicKey(pub)
-    assertError(err, "MarshalPKCS8-pub-Error")
-    assertNotEmpty(pubDer, "MarshalPKCS8")
+    assertError(err, "MarshalPKCS8PublicKey-pub-Error")
+    assertNotEmpty(pubDer, "MarshalPKCS8PublicKey")
 
     parsedPub, err := ParsePKCS8PublicKey(pubDer)
-    assertError(err, "MarshalPKCS8-pub-Error")
-    assertEqual(pub, parsedPub, "MarshalPKCS8")
+    assertError(err, "ParsePKCS8PublicKey-pub-Error")
+    assertEqual(parsedPub, pub, "MarshalPKCS8")
 
     //===============
 
     priDer, err := MarshalPKCS8PrivateKey(pri)
-    assertError(err, "MarshalPKCS8-pri-Error")
-    assertNotEmpty(priDer, "MarshalPKCS8")
+    assertError(err, "MarshalPKCS8PrivateKey-pri-Error")
+    assertNotEmpty(priDer, "MarshalPKCS8PrivateKey")
 
     parsedPri, err := ParsePKCS8PrivateKey(priDer)
-    assertError(err, "MarshalPKCS8-pri-Error")
-    assertEqual(pri, parsedPri, "MarshalPKCS8")
+    assertError(err, "ParsePKCS8PrivateKey-pri-Error")
+    assertEqual(parsedPri, pri, "ParsePKCS8PrivateKey")
 }
 
 var testXMLPrivateKey = `

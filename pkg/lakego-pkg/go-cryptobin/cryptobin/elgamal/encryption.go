@@ -3,8 +3,6 @@ package elgamal
 import (
     "errors"
     "crypto/rand"
-
-    "github.com/deatil/go-cryptobin/elgamal"
 )
 
 // 公钥加密
@@ -14,7 +12,7 @@ func (this EIGamal) Encrypt() EIGamal {
         return this.AppendError(err)
     }
 
-    parsedData, err := elgamal.EncryptAsn1(rand.Reader, this.publicKey, this.data)
+    parsedData, err := this.publicKey.Encrypt(rand.Reader, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -31,7 +29,7 @@ func (this EIGamal) Decrypt() EIGamal {
         return this.AppendError(err)
     }
 
-    parsedData, err := elgamal.DecryptAsn1(this.privateKey, this.data)
+    parsedData, err := this.privateKey.Decrypt(rand.Reader, this.data, nil)
     if err != nil {
         return this.AppendError(err)
     }

@@ -36,10 +36,62 @@ type PublicKey struct {
     G, P, Y *big.Int
 }
 
+// Equal reports whether pub and x have the same value.
+func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
+    xx, ok := x.(*PublicKey)
+    if !ok {
+        return false
+    }
+
+    return bigIntEqual(pub.G, xx.G) &&
+        bigIntEqual(pub.P, xx.P) &&
+        bigIntEqual(pub.Y, xx.Y)
+}
+
+// Verify verifies signature over the given hash and signature values (r & s).
+// It returns true as a boolean value if signature is verify correctly. Otherwise
+// it returns false along with error message.
+func (pub *PublicKey) Verify(hash, sig []byte) (bool, error) {
+    return VerifyASN1(pub, hash, sig)
+}
+
+// Encrypt encrypts a plain text represented as a byte array.
+func (pub *PublicKey) Encrypt(random io.Reader, message []byte) ([]byte, error) {
+    return EncryptASN1(random, pub, message)
+}
+
 // PrivateKey represents Elgamal private key.
 type PrivateKey struct {
     PublicKey
     X *big.Int
+}
+
+// Equal reports whether priv and x have the same value.
+func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
+    xx, ok := x.(*PrivateKey)
+    if !ok {
+        return false
+    }
+
+    return priv.PublicKey.Equal(&xx.PublicKey) &&
+        bigIntEqual(priv.X, xx.X)
+}
+
+// Public returns the public key corresponding to priv.
+func (priv *PrivateKey) Public() crypto.PublicKey {
+    return &priv.PublicKey
+}
+
+// Signature generates signature over the given hash. It returns signature
+// value consisting of two parts "r" and "s" as byte arrays.
+func (priv *PrivateKey) Sign(random io.Reader, hash []byte, opts crypto.SignerOpts) (signature []byte, err error) {
+    return SignASN1(random, priv, hash)
+}
+
+// Decrypt decrypts the passed cipher text. It returns an
+// error if cipher text value is larger than modulus P of Public key.
+func (priv *PrivateKey) Decrypt(random io.Reader, msg []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
+    return DecryptASN1(priv, msg)
 }
 
 // GenerateKey generates elgamal private key according
@@ -71,9 +123,8 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
     }, nil
 }
 
-// Encrypt encrypts a plain text represented as a byte array. It returns
-// an error if plain text value is larger than modulus P of Public key.
-func (pub *PublicKey) Encrypt(random io.Reader, message []byte) ([]byte, []byte, error) {
+// Encrypt
+func Encrypt(random io.Reader, pub *PublicKey, message []byte) ([]byte, []byte, error) {
     // choose random integer k from {1...p}
     k, err := rand.Int(random, pub.P)
     if err != nil {
@@ -99,41 +150,8 @@ func (pub *PublicKey) Encrypt(random io.Reader, message []byte) ([]byte, []byte,
     return c1.Bytes(), c2.Bytes(), nil
 }
 
-// c1 and c2 data
-type elgamalEncryptData struct {
-    C1, C2 []byte
-}
-
-// Encrypt encrypts a plain text represented as a byte array.
-func (pub *PublicKey) EncryptAsn1(random io.Reader, message []byte) ([]byte, error) {
-    c1, c2, err := pub.Encrypt(random, message)
-    if err != nil {
-        return nil, err
-    }
-
-    encryptData, err := go_asn1.Marshal(elgamalEncryptData{c1, c2})
-    if err != nil {
-        return nil, err
-    }
-
-    return encryptData, nil
-}
-
-// Equal reports whether pub and x have the same value.
-func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
-    xx, ok := x.(*PublicKey)
-    if !ok {
-        return false
-    }
-
-    return bigIntEqual(pub.G, xx.G) &&
-        bigIntEqual(pub.P, xx.P) &&
-        bigIntEqual(pub.Y, xx.Y)
-}
-
-// Decrypt decrypts the passed cipher text. It returns an
-// error if cipher text value is larger than modulus P of Public key.
-func (priv *PrivateKey) Decrypt(cipher1, cipher2 []byte) ([]byte, error) {
+// Decrypt
+func Decrypt(priv *PrivateKey, cipher1, cipher2 []byte) ([]byte, error) {
     c1 := new(big.Int).SetBytes(cipher1)
     c2 := new(big.Int).SetBytes(cipher2)
     if c1.Cmp(priv.P) == 1 && c2.Cmp(priv.P) == 1 { //  (c1, c2) < P
@@ -156,15 +174,35 @@ func (priv *PrivateKey) Decrypt(cipher1, cipher2 []byte) ([]byte, error) {
     return m.Bytes(), nil
 }
 
-// Decrypt decrypts the passed cipher text.
-func (priv *PrivateKey) DecryptAsn1(cipherData []byte) ([]byte, error) {
+// c1 and c2 data
+type elgamalEncryptData struct {
+    C1, C2 []byte
+}
+
+// Encrypt Asn1
+func EncryptASN1(random io.Reader, pub *PublicKey, message []byte) ([]byte, error) {
+    c1, c2, err := Encrypt(random, pub, message)
+    if err != nil {
+        return nil, err
+    }
+
+    encryptData, err := go_asn1.Marshal(elgamalEncryptData{c1, c2})
+    if err != nil {
+        return nil, err
+    }
+
+    return encryptData, nil
+}
+
+// Decrypt Asn1
+func DecryptASN1(priv *PrivateKey, cipherData []byte) ([]byte, error) {
     var encryptData elgamalEncryptData
     _, err := go_asn1.Unmarshal(cipherData, &encryptData)
     if err != nil {
         return nil, err
     }
 
-    deData, err := priv.Decrypt(encryptData.C1, encryptData.C2)
+    deData, err := Decrypt(priv, encryptData.C1, encryptData.C2)
     if err != nil {
         return nil, err
     }
@@ -172,32 +210,10 @@ func (priv *PrivateKey) DecryptAsn1(cipherData []byte) ([]byte, error) {
     return deData, nil
 }
 
-// Public returns the public key corresponding to priv.
-func (priv *PrivateKey) Public() crypto.PublicKey {
-    return &priv.PublicKey
-}
-
-// Equal reports whether priv and x have the same value.
-func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
-    xx, ok := x.(*PrivateKey)
-    if !ok {
-        return false
-    }
-
-    return priv.PublicKey.Equal(&xx.PublicKey) &&
-        bigIntEqual(priv.X, xx.X)
-}
-
-// bigIntEqual reports whether a and b are equal leaking only their bit length
-// through timing side-channels.
-func bigIntEqual(a, b *big.Int) bool {
-    return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
-}
-
 // HomomorphicEncTwo performs homomorphic operation over two passed chiphers.
 // Elgamal has multiplicative homomorphic property, so resultant cipher
 // contains the product of two numbers.
-func (pub *PublicKey) HomomorphicEncTwo(c1, c2, c1dash, c2dash []byte) ([]byte, []byte, error) {
+func HomomorphicEncTwo(pub *PublicKey, c1, c2, c1dash, c2dash []byte) ([]byte, []byte, error) {
     cipher1 := new(big.Int).SetBytes(c1)
     cipher2 := new(big.Int).SetBytes(c2)
     if cipher1.Cmp(pub.P) == 1 && cipher2.Cmp(pub.P) == 1 { //  (c1, c2) < P
@@ -231,7 +247,7 @@ func (pub *PublicKey) HomomorphicEncTwo(c1, c2, c1dash, c2dash []byte) ([]byte, 
 // HommorphicEncMultiple performs homomorphic operation over multiple passed chiphers.
 // Elgamal has multiplicative homomorphic property, so resultant cipher
 // contains the product of multiple numbers.
-func (pub *PublicKey) HommorphicEncMultiple(ciphertext [][2][]byte) ([]byte, []byte, error) {
+func HommorphicEncMultiple(pub *PublicKey, ciphertext [][2][]byte) ([]byte, []byte, error) {
     // C1, C2, _ := pub.Encrypt(one.Bytes())
     C1 := one // since, c = 1^e mod n is equal to 1
     C2 := one
@@ -267,9 +283,8 @@ func (pub *PublicKey) HommorphicEncMultiple(ciphertext [][2][]byte) ([]byte, []b
     return C1.Bytes(), C2.Bytes(), nil
 }
 
-// Signature generates signature over the given hash. It returns signature
-// value consisting of two parts "r" and "s" as byte arrays.
-func (priv *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, error) {
+// Sign hash
+func Sign(random io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, error) {
     k := new(big.Int)
     gcd := new(big.Int)
 
@@ -318,10 +333,8 @@ func (priv *PrivateKey) Sign(random io.Reader, hash []byte) ([]byte, []byte, err
     return r.Bytes(), s.Bytes(), nil
 }
 
-// Verify verifies signature over the given hash and signature values (r & s).
-// It returns true as a boolean value if signature is verify correctly. Otherwise
-// it returns false along with error message.
-func (pub *PublicKey) Verify(hash, r, s []byte) (bool, error) {
+// Verify hash
+func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
     // verify that 0 < r < p
     signr := new(big.Int).SetBytes(r)
     if signr.Cmp(zero) == -1 {
@@ -360,66 +373,12 @@ func (pub *PublicKey) Verify(hash, r, s []byte) (bool, error) {
     return false, errors.New("signature is not verified")
 }
 
-// 加密
-func Encrypt(random io.Reader, pub *PublicKey, message []byte) ([]byte, []byte, error) {
-    if pub == nil {
-        return nil, nil, errors.New("Public Key is error")
-    }
-
-    return pub.Encrypt(random, message)
-}
-
-// 解密
-func Decrypt(priv *PrivateKey, cipher1, cipher2 []byte) ([]byte, error) {
-    if priv == nil {
-        return nil, errors.New("Private Key is error")
-    }
-
-    return priv.Decrypt(cipher1, cipher2)
-}
-
-// 加密 Asn1
-func EncryptAsn1(random io.Reader, pub *PublicKey, message []byte) ([]byte, error) {
-    if pub == nil {
-        return nil, errors.New("Public Key is error")
-    }
-
-    return pub.EncryptAsn1(random, message)
-}
-
-// 解密 Asn1
-func DecryptAsn1(priv *PrivateKey, cipherData []byte) ([]byte, error) {
-    if priv == nil {
-        return nil, errors.New("Private Key is error")
-    }
-
-    return priv.DecryptAsn1(cipherData)
-}
-
-// Sign hash
-func Sign(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, error) {
-    if priv == nil {
-        return nil, nil, errors.New("Private Key is error")
-    }
-
-    return priv.Sign(rand, hash)
-}
-
-// Verify hash
-func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
-    if pub == nil {
-        return false, errors.New("Public Key is error")
-    }
-
-    return pub.Verify(hash, r, s)
-}
-
 // SignASN1 signs a hash (which should be the result of hashing a larger message)
 // using the private key, priv. If the hash is longer than the bit-length of the
 // private key's curve order, the hash will be truncated to that length. It
 // returns the ASN.1 encoded signature.
 func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
-    r, s, err := priv.Sign(rand, hash)
+    r, s, err := Sign(rand, priv, hash)
     if err != nil {
         return nil, err
     }
@@ -435,7 +394,7 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
         return false, err
     }
 
-    return pub.Verify(hash, rBytes, sBytes)
+    return Verify(pub, hash, rBytes, sBytes)
 }
 
 func encodeSignature(r, s []byte) ([]byte, error) {
@@ -520,4 +479,10 @@ func GeneratePQZp(random io.Reader, n, probability int) (*big.Int, *big.Int, *bi
     }
 
     return nil, nil, nil, errors.New("can't emit <p,q,g>")
+}
+
+// bigIntEqual reports whether a and b are equal leaking only their bit length
+// through timing side-channels.
+func bigIntEqual(a, b *big.Int) bool {
+    return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
