@@ -9,7 +9,6 @@ import (
     "crypto/rand"
     "crypto/subtle"
     "crypto/elliptic"
-    "encoding/hex"
     "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
@@ -215,16 +214,10 @@ func GenerateKey(random io.Reader) (*PrivateKey, error) {
 }
 
 // 根据私钥明文16进制明文初始化私钥
-func NewPrivateKey(Dhex string) (*PrivateKey, error) {
-    c := P256Sm2()
-
-    d, err := hex.DecodeString(Dhex)
-    if err != nil {
-        return nil, err
-    }
-
+func NewPrivateKey(d []byte) (*PrivateKey, error) {
     k:= new(big.Int).SetBytes(d)
 
+    c := P256Sm2()
     params := c.Params()
 
     n := new(big.Int).Sub(params.N, one)
@@ -241,17 +234,12 @@ func NewPrivateKey(Dhex string) (*PrivateKey, error) {
 }
 
 // 输出私钥明文
-func ToPrivateKey(key *PrivateKey) string {
-    return key.D.Text(16)
+func ToPrivateKey(key *PrivateKey) []byte {
+    return key.D.Bytes()
 }
 
 // 根据公钥16进制明文初始化公钥
-func NewPublicKey(Qhex string) (*PublicKey, error) {
-    q, err := hex.DecodeString(Qhex)
-    if err != nil {
-        return nil, err
-    }
-
+func NewPublicKey(q []byte) (*PublicKey, error) {
     if len(q) == 65 && q[0] == byte(0x04) {
         q = q[1:]
     }
@@ -269,7 +257,7 @@ func NewPublicKey(Qhex string) (*PublicKey, error) {
 }
 
 // 输出公钥明文
-func ToPublicKey(key *PublicKey) string {
+func ToPublicKey(key *PublicKey) []byte {
     x := key.X.Bytes()
     y := key.Y.Bytes()
 
@@ -281,7 +269,7 @@ func ToPublicKey(key *PublicKey) string {
     c = append(c, y...)
     c = append([]byte{0x04}, c...)
 
-    return hex.EncodeToString(c)
+    return c
 }
 
 // sm2 密文结构: x + y + hash + CipherText

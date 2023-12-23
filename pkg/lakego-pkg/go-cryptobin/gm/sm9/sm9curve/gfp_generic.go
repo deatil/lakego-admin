@@ -1,5 +1,9 @@
 package sm9curve
 
+import (
+    "math/bits"
+)
+
 func gfpCarry(a *gfP, head uint64) {
     b := &gfP{}
 
@@ -168,4 +172,71 @@ func gfpMul(c, a, b *gfP) {
 
     *c = gfP{T[4], T[5], T[6], T[7]}
     gfpCarry(c, carry)
+}
+
+func gfpDouble(c, a *gfP) {
+    gfpAdd(c, a, a)
+}
+
+func gfpTriple(c, a *gfP) {
+    t := &gfP{}
+    gfpAdd(t, a, a)
+    gfpAdd(c, t, a)
+}
+
+// addMulVVW multiplies the multi-word value x by the single-word value y,
+// adding the result to the multi-word value z and returning the final carry.
+// It can be thought of as one row of a pen-and-paper column multiplication.
+func addMulVVW(z, x []uint64, y uint64) (carry uint64) {
+    _ = x[len(z)-1] // bounds check elimination hint
+    for i := range z {
+        hi, lo := bits.Mul64(x[i], y)
+        lo, c := bits.Add64(lo, z[i], 0)
+        // We use bits.Add with zero to get an add-with-carry instruction that
+        // absorbs the carry from the previous bits.Add.
+        hi, _ = bits.Add64(hi, 0, c)
+        lo, c = bits.Add64(lo, carry, 0)
+        hi, _ = bits.Add64(hi, 0, c)
+        carry = hi
+        z[i] = lo
+    }
+    return carry
+}
+
+func gfpSqr(res, in *gfP, n int) {
+    gfpMul(res, in, in)
+    for i := 1; i < n; i++ {
+        gfpMul(res, res, res)
+    }
+}
+
+func gfpFromMont(res, in *gfP) {
+    var T [8]uint64
+    var carry uint64
+    copy(T[:], in[:])
+    for i := 0; i < 4; i++ {
+        Y := T[i] * np[0]
+        c2 := addMulVVW(T[i:4+i], p2[:], Y)
+        T[4+i], carry = bits.Add64(uint64(0), c2, carry)
+    }
+
+    *res = gfP{T[4], T[5], T[6], T[7]}
+    gfpCarry(res, carry)
+}
+
+func gfpMarshal(out *[32]byte, in *gfP) {
+    for w := uint(0); w < 4; w++ {
+        for b := uint(0); b < 8; b++ {
+            out[8*w+b] = byte(in[3-w] >> (56 - 8*b))
+        }
+    }
+}
+
+func gfpUnmarshal(out *gfP, in *[32]byte) {
+    for w := uint(0); w < 4; w++ {
+        out[3-w] = 0
+        for b := uint(0); b < 8; b++ {
+            out[3-w] += uint64(in[8*w+b]) << (56 - 8*b)
+        }
+    }
 }

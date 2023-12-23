@@ -35,6 +35,14 @@ func (c *curvePoint) Set(a *curvePoint) {
     c.t.Set(&a.t)
 }
 
+// Equal compare c and other
+func (c *curvePoint) Equal(other *curvePoint) bool {
+    return c.x.Equal(&other.x) == 1 &&
+        c.y.Equal(&other.y) == 1 &&
+        c.z.Equal(&other.z) == 1 &&
+        c.t.Equal(&other.t) == 1
+}
+
 // IsOnCurve returns true iff c is on the curve.
 func (c *curvePoint) IsOnCurve() bool {
     c.MakeAffine()
@@ -227,4 +235,12 @@ func (c *curvePoint) Neg(a *curvePoint) {
     gfpNeg(&c.y, &a.y)
     c.z.Set(&a.z)
     c.t = gfP{0}
+}
+
+func (c *curvePoint) polynomial(x *gfP) *gfP {
+    x3 := &gfP{}
+    gfpSqr(x3, x, 1)
+    gfpMul(x3, x3, x)
+    gfpAdd(x3, x3, curveB)
+    return x3
 }

@@ -100,6 +100,16 @@ func (e *gfP) Sqrt(f *gfP) {
     }
 }
 
+// Equal returns 1 if e == t, and zero otherwise.
+func (e *gfP) Equal(t *gfP) int {
+    var acc uint64
+    for i := range e {
+        acc |= e[i] ^ t[i]
+    }
+
+    return uint64IsZero(acc)
+}
+
 func (e *gfP) Marshal(out []byte) {
     for w := uint(0); w < 4; w++ {
         for b := uint(0); b < 8; b++ {
@@ -165,4 +175,16 @@ func gfpFromString(s string) gfP {
         a[i] = uint64(words[i])
     }
     return a
+}
+
+// uint64IsZero returns 1 if x is zero and zero otherwise.
+func uint64IsZero(x uint64) int {
+    x = ^x
+    x &= x >> 32
+    x &= x >> 16
+    x &= x >> 8
+    x &= x >> 4
+    x &= x >> 2
+    x &= x >> 1
+    return int(x & 1)
 }

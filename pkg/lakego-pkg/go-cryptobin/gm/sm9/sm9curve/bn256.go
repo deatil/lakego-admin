@@ -23,6 +23,10 @@ import (
     "crypto/rand"
 )
 
+var zero = newGFp(0)
+var one = newGFp(1)
+var two = newGFp(2)
+
 func randomK(r io.Reader) (k *big.Int, err error) {
     for {
         k, err = rand.Int(r, Order)
@@ -103,6 +107,14 @@ func (e *G1) Set(a *G1) *G1 {
     return e
 }
 
+func (e *G1) Equal(x *G1) bool {
+    if e.p == nil && x.p == nil {
+        return true
+    }
+
+    return e.p.Equal(x.p)
+}
+
 // Marshal converts e to a byte slice.
 func (e *G1) Marshal() []byte {
     // Each value is a 256-bit number.
@@ -112,17 +124,19 @@ func (e *G1) Marshal() []byte {
         e.p = &curvePoint{}
     }
 
+    ret := make([]byte, numBytes*2+1)
+    ret[0] = 4
+
     e.p.MakeAffine()
-    ret := make([]byte, numBytes*2)
     if e.p.IsInfinity() {
         return ret
     }
     temp := &gfP{}
 
     montDecode(temp, &e.p.x)
-    temp.Marshal(ret)
+    temp.Marshal(ret[1:])
     montDecode(temp, &e.p.y)
-    temp.Marshal(ret[numBytes:])
+    temp.Marshal(ret[1+numBytes:])
 
     return ret
 }
@@ -133,7 +147,7 @@ func (e *G1) Unmarshal(m []byte) ([]byte, error) {
     // Each value is a 256-bit number.
     const numBytes = 256 / 8
 
-    if len(m) < 2*numBytes {
+    if len(m) < 2*numBytes+1 {
         return nil, errors.New("bn256: not enough data")
     }
 
@@ -143,8 +157,8 @@ func (e *G1) Unmarshal(m []byte) ([]byte, error) {
         e.p.x, e.p.y = gfP{0}, gfP{0}
     }
 
-    e.p.x.Unmarshal(m)
-    e.p.y.Unmarshal(m[numBytes:])
+    e.p.x.Unmarshal(m[1:])
+    e.p.y.Unmarshal(m[1+numBytes:])
     montEncode(&e.p.x, &e.p.x)
     montEncode(&e.p.y, &e.p.y)
 
@@ -163,7 +177,76 @@ func (e *G1) Unmarshal(m []byte) ([]byte, error) {
         }
     }
 
-    return m[2*numBytes:], nil
+    return m[1+2*numBytes:], nil
+}
+
+// MarshalCompressed converts e to a byte slice with compress prefix.
+// If the point is not on the curve (or is the conventional point at infinity), the behavior is undefined.
+func (e *G1) MarshalCompressed() []byte {
+    // Each value is a 256-bit number.
+    const numBytes = 256 / 8
+    ret := make([]byte, numBytes)
+    if e.p == nil {
+        e.p = &curvePoint{}
+    }
+
+    e.p.MakeAffine()
+    temp := &gfP{}
+    montDecode(temp, &e.p.y)
+
+    temp.Marshal(ret[1:])
+    ret[0] = (ret[numBytes] & 1) | 2
+    montDecode(temp, &e.p.x)
+    temp.Marshal(ret[1:])
+
+    return ret
+}
+
+// UnmarshalCompressed sets e to the result of converting the output of Marshal back into
+// a group element and then returns e.
+func (e *G1) UnmarshalCompressed(data []byte) ([]byte, error) {
+    // Each value is a 256-bit number.
+    const numBytes = 256 / 8
+
+    if len(data) < 1+numBytes {
+        return nil, errors.New("sm9.G1: not enough data")
+    }
+
+    if data[0] != 2 && data[0] != 3 { // compressed form
+        return nil, errors.New("sm9.G1: invalid point compress byte")
+    }
+
+    if e.p == nil {
+        e.p = &curvePoint{}
+    } else {
+        e.p.x.Set(zero)
+        e.p.y.Set(zero)
+    }
+
+    e.p.x.Unmarshal(data[1:])
+    montEncode(&e.p.x, &e.p.x)
+
+    x3 := e.p.polynomial(&e.p.x)
+    e.p.y.Sqrt(x3)
+    montDecode(x3, &e.p.y)
+
+    if byte(x3[0]&1) != data[0]&1 {
+        gfpNeg(&e.p.y, &e.p.y)
+    }
+
+    if e.p.x.Equal(zero) == 1 && e.p.y.Equal(zero) == 1 {
+        // This is the point at infinity.
+        e.p.SetInfinity()
+    } else {
+        e.p.z.Set(one)
+        e.p.t.Set(one)
+
+        if !e.p.IsOnCurve() {
+            return nil, errors.New("sm9.G1: malformed point")
+        }
+    }
+
+    return data[numBytes+1:], nil
 }
 
 // G2 is an abstract cyclic group. The zero value is suitable for use as the
@@ -235,6 +318,14 @@ func (e *G2) Set(a *G2) *G2 {
     return e
 }
 
+func (e *G2) Equal(x *G2) bool {
+    if e.p == nil && x.p == nil {
+        return true
+    }
+
+    return e.p.Equal(x.p)
+}
+
 // Marshal converts e into a byte slice.
 func (e *G2) Marshal() []byte {
     // Each value is a 256-bit number.
@@ -250,7 +341,7 @@ func (e *G2) Marshal() []byte {
     }
 
     ret := make([]byte, 1+numBytes*4)
-    ret[0] = 0x01
+    ret[0] = 0x04
     temp := &gfP{}
 
     montDecode(temp, &e.p.x.x)
@@ -278,7 +369,7 @@ func (e *G2) Unmarshal(m []byte) ([]byte, error) {
     if len(m) > 0 && m[0] == 0x00 {
         e.p.SetInfinity()
         return m[1:], nil
-    } else if len(m) > 0 && m[0] != 0x01 {
+    } else if len(m) > 0 && m[0] != 0x04 {
         return nil, errors.New("bn256: malformed point")
     } else if len(m) < 1+4*numBytes {
         return nil, errors.New("bn256: not enough data")
@@ -288,6 +379,7 @@ func (e *G2) Unmarshal(m []byte) ([]byte, error) {
     e.p.x.y.Unmarshal(m[1+numBytes:])
     e.p.y.x.Unmarshal(m[1+2*numBytes:])
     e.p.y.y.Unmarshal(m[1+3*numBytes:])
+
     montEncode(&e.p.x.x, &e.p.x.x)
     montEncode(&e.p.x.y, &e.p.x.y)
     montEncode(&e.p.y.x, &e.p.y.x)
@@ -479,4 +571,111 @@ func (e *GT) Unmarshal(m []byte) ([]byte, error) {
     montEncode(&e.p.y.z.y, &e.p.y.z.y)
 
     return m[12*numBytes:], nil
+}
+
+// MarshalCompressed converts e into a byte slice with uncompressed point prefix
+func (e *G2) MarshalCompressed() []byte {
+    // Each value is a 256-bit number.
+    const numBytes = 256 / 8
+    ret := make([]byte, numBytes*2+1)
+    if e.p == nil {
+        e.p = &twistPoint{}
+    }
+    e.p.MakeAffine()
+    temp := &gfP{}
+    montDecode(temp, &e.p.y.y)
+    temp.Marshal(ret[1:])
+    ret[0] = (ret[numBytes] & 1) | 2
+
+    montDecode(temp, &e.p.x.x)
+    temp.Marshal(ret[1:])
+    montDecode(temp, &e.p.x.y)
+    temp.Marshal(ret[numBytes+1:])
+
+    return ret
+}
+
+// UnmarshalCompressed sets e to the result of converting the output of Marshal back into
+// a group element and then returns e.
+func (e *G2) UnmarshalCompressed(data []byte) ([]byte, error) {
+    // Each value is a 256-bit number.
+    const numBytes = 256 / 8
+    if len(data) < 1+2*numBytes {
+        return nil, errors.New("sm9.G2: not enough data")
+    }
+    if data[0] != 2 && data[0] != 3 { // compressed form
+        return nil, errors.New("sm9.G2: invalid point compress byte")
+    }
+
+    // Unmarshal the points and check their caps
+    if e.p == nil {
+        e.p = &twistPoint{}
+    }
+
+    e.p.x.x.Unmarshal(data[1:])
+    e.p.x.y.Unmarshal(data[1+numBytes:])
+
+    montEncode(&e.p.x.x, &e.p.x.x)
+    montEncode(&e.p.x.y, &e.p.x.y)
+    x3 := e.p.polynomial(&e.p.x)
+    e.p.y.Sqrt(x3)
+    x3y := &gfP{}
+    montDecode(x3y, &e.p.y.y)
+    if byte(x3y[0]&1) != data[0]&1 {
+        e.p.y.Neg(&e.p.y)
+    }
+
+    if e.p.x.IsZero() && e.p.y.IsZero() {
+        // This is the point at infinity.
+        e.p.y.SetOne()
+        e.p.z.SetZero()
+        e.p.t.SetZero()
+    } else {
+        e.p.z.SetOne()
+        e.p.t.SetOne()
+
+        if !e.p.IsOnCurve() {
+            return nil, errors.New("sm9.G2: malformed point")
+        }
+    }
+    return data[1+2*numBytes:], nil
+}
+
+func (e *G2) fillBytes(buffer []byte) {
+    // Each value is a 256-bit number.
+    const numBytes = 256 / 8
+
+    if e.p == nil {
+        e.p = &twistPoint{}
+    }
+
+    e.p.MakeAffine()
+    if e.p.IsInfinity() {
+        return
+    }
+    temp := &gfP{}
+
+    montDecode(temp, &e.p.x.x)
+    temp.Marshal(buffer)
+    montDecode(temp, &e.p.x.y)
+    temp.Marshal(buffer[numBytes:])
+    montDecode(temp, &e.p.y.x)
+    temp.Marshal(buffer[2*numBytes:])
+    montDecode(temp, &e.p.y.y)
+    temp.Marshal(buffer[3*numBytes:])
+}
+
+func NormalizeScalar(scalar []byte) []byte {
+    if len(scalar) == 32 {
+        return scalar
+    }
+
+    s := new(big.Int).SetBytes(scalar)
+    if len(scalar) > 32 {
+        s.Mod(s, Order)
+    }
+
+    out := make([]byte, 32)
+
+    return s.FillBytes(out)
 }

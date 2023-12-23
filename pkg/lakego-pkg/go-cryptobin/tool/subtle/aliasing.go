@@ -37,3 +37,11 @@ func SliceForAppend(in []byte, n int) (head, tail []byte) {
     tail = head[len(in):]
     return
 }
+
+func ConstantTimeAllZero(bytes []byte) bool {
+    var b uint8
+    for _, v := range bytes {
+        b |= v
+    }
+    return b == 0
+}

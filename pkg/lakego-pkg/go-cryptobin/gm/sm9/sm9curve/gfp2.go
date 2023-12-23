@@ -41,6 +41,19 @@ func (e *gfP2) SetOne() *gfP2 {
     return e
 }
 
+func (e *gfP2) Equal(t *gfP2) int {
+    var acc uint64
+    for i := range e.x {
+        acc |= e.x[i] ^ t.x[i]
+    }
+
+    for i := range e.y {
+        acc |= e.y[i] ^ t.y[i]
+    }
+
+    return uint64IsZero(acc)
+}
+
 func (e *gfP2) IsZero() bool {
     zero := gfP{0}
     return e.x == zero && e.y == zero
@@ -170,4 +183,45 @@ func (c *gfP2) GFp2Exp(a *gfP2, b *big.Int) *gfP2 {
 
     c.Set(sum)
     return c
+}
+
+// Sqrt method is only required when we implement compressed format
+// TODO: use addchain to improve performance for 3 exp operations.
+func (ret *gfP2) Sqrt(a *gfP2) *gfP2 {
+    // Algorithm 10 https://eprint.iacr.org/2012/685.pdf
+    ret.SetZero()
+    c := &twistGen.x
+    b, b2, bq := &gfP2{}, &gfP2{}, &gfP2{}
+    b = b.expPMinus1Over4(a)
+    b2.Mul(b, b)
+    bq = bq.expP(b)
+
+    t := &gfP2{}
+    x0 := &gfP{}
+    /* ignore sqrt existing check
+    a0 := &gfP2{}
+    a0.Exp(b2, p)
+    a0.Mul(a0, b2)
+    a0 = gfP2Decode(a0)
+    */
+    t.Mul(bq, b)
+    if t.x.Equal(zero) == 1 && t.y.Equal(one) == 1 {
+        t.Mul(b2, a)
+        x0.Sqrt(&t.y)
+        t.MulScalar(bq, x0)
+        ret.Set(t)
+    } else {
+        d, e, f := &gfP2{}, &gfP2{}, &gfP2{}
+        d = d.expPMinus1Over2(c)
+        e.Mul(d, c)
+        f.Square(e)
+        e.Invert(e)
+        t.Mul(b2, a)
+        t.Mul(t, f)
+        x0.Sqrt(&t.y)
+        t.MulScalar(bq, x0)
+        t.Mul(t, e)
+        ret.Set(t)
+    }
+    return ret
 }

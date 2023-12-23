@@ -35,7 +35,7 @@ func bytesToUint32s(inp []byte) [4]uint32 {
     return blk
 }
 
-func Uint32sToBytes(blk [4]uint32) [16]byte {
+func uint32sToBytes(blk [4]uint32) [16]byte {
     var sav [16]byte
 
     if littleEndian {
@@ -53,16 +53,21 @@ func Uint32sToBytes(blk [4]uint32) [16]byte {
     return sav
 }
 
-func keymatToBytes(wkeymat [8]uint32) (bytes [32]byte) {
-    var key [4]uint32
+func keymatToBytes(w [8]uint32) (bytes [32]byte) {
+    size := len(w) * 4
+    dst := make([]byte, size)
 
-    copy(key[0:], wkeymat[0:4])
-    b1 := Uint32sToBytes(key)
-    copy(bytes[0:], b1[:])
+    for i := 0; i < len(w); i++ {
+        j := i * 4
 
-    copy(key[0:], wkeymat[4:8])
-    b2 := Uint32sToBytes(key)
-    copy(bytes[16:], b2[:])
+        if littleEndian {
+            binary.LittleEndian.PutUint32(dst[j:], w[i])
+        } else {
+            binary.BigEndian.PutUint32(dst[j:], w[i])
+        }
+    }
+
+    copy(bytes[:], dst)
 
     return
 }

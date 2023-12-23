@@ -35,6 +35,12 @@ func (e *gfP6) SetOne() *gfP6 {
     return e
 }
 
+func (e *gfP6) Equal(t *gfP6) bool {
+    return e.x.Equal(&t.x) == 1 &&
+        e.y.Equal(&t.y) == 1 &&
+        e.z.Equal(&t.z) == 1
+}
+
 func (e *gfP6) IsZero() bool {
     return e.x.IsZero() && e.y.IsZero() && e.z.IsZero()
 }

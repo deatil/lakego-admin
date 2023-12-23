@@ -43,6 +43,14 @@ func (c *twistPoint) Set(a *twistPoint) {
     c.t.Set(&a.t)
 }
 
+// Equal compare c and other
+func (c *twistPoint) Equal(other *twistPoint) bool {
+    return c.x.Equal(&other.x) == 1 &&
+        c.y.Equal(&other.y) == 1 &&
+        c.z.Equal(&other.z) == 1 &&
+        c.t.Equal(&other.t) == 1
+}
+
 // IsOnCurve returns true iff c is on the curve.
 func (c *twistPoint) IsOnCurve() bool {
     c.MakeAffine()
@@ -196,4 +204,10 @@ func (c *twistPoint) Neg(a *twistPoint) {
     c.y.Neg(&a.y)
     c.z.Set(&a.z)
     c.t.SetZero()
+}
+
+func (c *twistPoint) polynomial(x *gfP2) *gfP2 {
+    x3 := &gfP2{}
+    x3.Square(x).Mul(x3, x).Add(x3, twistB)
+    return x3
 }

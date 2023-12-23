@@ -1,7 +1,15 @@
 package x509
 
 import (
+    "io"
+    "net"
+    "fmt"
+    "hash"
+    "time"
     "bytes"
+    "errors"
+    "strconv"
+    "math/big"
     "crypto"
     "crypto/dsa"
     "crypto/ecdsa"
@@ -15,14 +23,6 @@ import (
     "crypto/x509/pkix"
     "encoding/asn1"
     "encoding/pem"
-    "errors"
-    "fmt"
-    "hash"
-    "io"
-    "math/big"
-    "net"
-    "strconv"
-    "time"
 
     "golang.org/x/crypto/sha3"
     "golang.org/x/crypto/ripemd160"
@@ -31,36 +31,10 @@ import (
     "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
-// pkixPublicKey reflects a PKIX public key structure. See SubjectPublicKeyInfo
-// in RFC 3280.
-type pkixPublicKey struct {
-    Algo      pkix.AlgorithmIdentifier
-    BitString asn1.BitString
-}
-
-// ParsePKIXPublicKey parses a DER encoded public key. These values are
-// typically found in PEM blocks with "BEGIN PUBLIC KEY".
-//
-// Supported key types include RSA, DSA, and ECDSA. Unknown key
-// types result in an error.
-//
-// On success, pub will be of type *rsa.PublicKey, *dsa.PublicKey,
-// or *ecdsa.PublicKey.
-func ParsePKIXPublicKey(derBytes []byte) (pub interface{}, err error) {
-    var pki publicKeyInfo
-
-    if rest, err := asn1.Unmarshal(derBytes, &pki); err != nil {
-        return nil, err
-    } else if len(rest) != 0 {
-        return nil, errors.New("x509: trailing data after ASN.1 of public-key")
-    }
-
-    algo := getPublicKeyAlgorithmFromOID(pki.Algorithm.Algorithm)
-    if algo == UnknownPublicKeyAlgorithm {
-        return nil, errors.New("x509: unknown public key algorithm")
-    }
-
-    return parsePublicKey(algo, &pki)
+// rsaPublicKey reflects the ASN.1 structure of a PKCS#1 public key.
+type rsaPublicKey struct {
+    N *big.Int
+    E int
 }
 
 func marshalPublicKey(pub interface{}) (publicKeyBytes []byte, publicKeyAlgorithm pkix.AlgorithmIdentifier, err error) {
@@ -112,30 +86,97 @@ func marshalPublicKey(pub interface{}) (publicKeyBytes []byte, publicKeyAlgorith
     return publicKeyBytes, publicKeyAlgorithm, nil
 }
 
-// MarshalPKIXPublicKey serialises a public key to DER-encoded PKIX format.
-func MarshalPKIXPublicKey(pub interface{}) ([]byte, error) {
-    var publicKeyBytes []byte
-    var publicKeyAlgorithm pkix.AlgorithmIdentifier
-    var err error
+func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (interface{}, error) {
+    asn1Data := keyData.PublicKey.RightAlign()
+    switch algo {
+        case RSA:
+            // RSA public keys must have a NULL in the parameters
+            // (https://tools.ietf.org/html/rfc3279#section-2.3.1).
+            if !bytes.Equal(keyData.Algorithm.Parameters.FullBytes, asn1Null) {
+                return nil, errors.New("x509: RSA key missing NULL parameters")
+            }
 
-    if publicKeyBytes, publicKeyAlgorithm, err = marshalPublicKey(pub); err != nil {
-        return nil, err
+            p := new(rsaPublicKey)
+            rest, err := asn1.Unmarshal(asn1Data, p)
+            if err != nil {
+                return nil, err
+            }
+            if len(rest) != 0 {
+                return nil, errors.New("x509: trailing data after RSA public key")
+            }
+
+            if p.N.Sign() <= 0 {
+                return nil, errors.New("x509: RSA modulus is not a positive number")
+            }
+            if p.E <= 0 {
+                return nil, errors.New("x509: RSA public exponent is not a positive number")
+            }
+
+            pub := &rsa.PublicKey{
+                E: p.E,
+                N: p.N,
+            }
+            return pub, nil
+        case DSA:
+            var p *big.Int
+            rest, err := asn1.Unmarshal(asn1Data, &p)
+            if err != nil {
+                return nil, err
+            }
+            if len(rest) != 0 {
+                return nil, errors.New("x509: trailing data after DSA public key")
+            }
+            paramsData := keyData.Algorithm.Parameters.FullBytes
+            params := new(dsaAlgorithmParameters)
+            rest, err = asn1.Unmarshal(paramsData, params)
+            if err != nil {
+                return nil, err
+            }
+            if len(rest) != 0 {
+                return nil, errors.New("x509: trailing data after DSA parameters")
+            }
+            if p.Sign() <= 0 || params.P.Sign() <= 0 || params.Q.Sign() <= 0 || params.G.Sign() <= 0 {
+                return nil, errors.New("x509: zero or negative DSA parameter")
+            }
+            pub := &dsa.PublicKey{
+                Parameters: dsa.Parameters{
+                    P: params.P,
+                    Q: params.Q,
+                    G: params.G,
+                },
+                Y: p,
+            }
+            return pub, nil
+        case ECDSA:
+            paramsData := keyData.Algorithm.Parameters.FullBytes
+            namedCurveOID := new(asn1.ObjectIdentifier)
+            rest, err := asn1.Unmarshal(paramsData, namedCurveOID)
+            if err != nil {
+                return nil, err
+            }
+            if len(rest) != 0 {
+                return nil, errors.New("x509: trailing data after ECDSA parameters")
+            }
+            namedCurve := namedCurveFromOID(*namedCurveOID)
+            if namedCurve == nil {
+                return nil, errors.New("x509: unsupported elliptic curve")
+            }
+            x, y := elliptic.Unmarshal(namedCurve, asn1Data)
+            if x == nil {
+                return nil, errors.New("x509: failed to unmarshal elliptic curve point")
+            }
+            pub := &ecdsa.PublicKey{
+                Curve: namedCurve,
+                X:     x,
+                Y:     y,
+            }
+            return pub, nil
+        default:
+            return nil, nil
     }
-
-    pkix := pkixPublicKey{
-        Algo: publicKeyAlgorithm,
-        BitString: asn1.BitString{
-            Bytes:     publicKeyBytes,
-            BitLength: 8 * len(publicKeyBytes),
-        },
-    }
-
-    ret, _ := asn1.Marshal(pkix)
-    return ret, nil
 }
 
 // These structures reflect the ASN.1 structure of X.509 certificates.:
-
 type certificate struct {
     Raw                asn1.RawContent
     TBSCertificate     tbsCertificate
@@ -259,8 +300,6 @@ func (h Hash) Size() int {
     panic("crypto: Size of unknown hash function")
 }
 
-var hashes = make([]func() hash.Hash, maxHash)
-
 // New returns a new hash.Hash calculating the given hash function. New panics
 // if the hash function is not linked into the binary.
 func (h Hash) New() hash.Hash {
@@ -277,6 +316,8 @@ func (h Hash) New() hash.Hash {
 func (h Hash) Available() bool {
     return h < maxHash && hashes[h] != nil
 }
+
+var hashes = make([]func() hash.Hash, maxHash)
 
 // RegisterHash registers a function that returns a new instance of the given
 // hash function. This is intended to be called from the init function in
@@ -1093,96 +1134,6 @@ type distributionPointName struct {
 
 // asn1Null is the ASN.1 encoding of a NULL value.
 var asn1Null = []byte{5, 0}
-
-func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (interface{}, error) {
-    asn1Data := keyData.PublicKey.RightAlign()
-    switch algo {
-    case RSA:
-        // RSA public keys must have a NULL in the parameters
-        // (https://tools.ietf.org/html/rfc3279#section-2.3.1).
-        if !bytes.Equal(keyData.Algorithm.Parameters.FullBytes, asn1Null) {
-            return nil, errors.New("x509: RSA key missing NULL parameters")
-        }
-
-        p := new(rsaPublicKey)
-        rest, err := asn1.Unmarshal(asn1Data, p)
-        if err != nil {
-            return nil, err
-        }
-        if len(rest) != 0 {
-            return nil, errors.New("x509: trailing data after RSA public key")
-        }
-
-        if p.N.Sign() <= 0 {
-            return nil, errors.New("x509: RSA modulus is not a positive number")
-        }
-        if p.E <= 0 {
-            return nil, errors.New("x509: RSA public exponent is not a positive number")
-        }
-
-        pub := &rsa.PublicKey{
-            E: p.E,
-            N: p.N,
-        }
-        return pub, nil
-    case DSA:
-        var p *big.Int
-        rest, err := asn1.Unmarshal(asn1Data, &p)
-        if err != nil {
-            return nil, err
-        }
-        if len(rest) != 0 {
-            return nil, errors.New("x509: trailing data after DSA public key")
-        }
-        paramsData := keyData.Algorithm.Parameters.FullBytes
-        params := new(dsaAlgorithmParameters)
-        rest, err = asn1.Unmarshal(paramsData, params)
-        if err != nil {
-            return nil, err
-        }
-        if len(rest) != 0 {
-            return nil, errors.New("x509: trailing data after DSA parameters")
-        }
-        if p.Sign() <= 0 || params.P.Sign() <= 0 || params.Q.Sign() <= 0 || params.G.Sign() <= 0 {
-            return nil, errors.New("x509: zero or negative DSA parameter")
-        }
-        pub := &dsa.PublicKey{
-            Parameters: dsa.Parameters{
-                P: params.P,
-                Q: params.Q,
-                G: params.G,
-            },
-            Y: p,
-        }
-        return pub, nil
-    case ECDSA:
-        paramsData := keyData.Algorithm.Parameters.FullBytes
-        namedCurveOID := new(asn1.ObjectIdentifier)
-        rest, err := asn1.Unmarshal(paramsData, namedCurveOID)
-        if err != nil {
-            return nil, err
-        }
-        if len(rest) != 0 {
-            return nil, errors.New("x509: trailing data after ECDSA parameters")
-        }
-        namedCurve := namedCurveFromOID(*namedCurveOID)
-        if namedCurve == nil {
-            return nil, errors.New("x509: unsupported elliptic curve")
-        }
-        x, y := elliptic.Unmarshal(namedCurve, asn1Data)
-        if x == nil {
-            return nil, errors.New("x509: failed to unmarshal elliptic curve point")
-        }
-        pub := &ecdsa.PublicKey{
-            Curve: namedCurve,
-            X:     x,
-            Y:     y,
-        }
-        return pub, nil
-    default:
-        return nil, nil
-    }
-}
 
 func parseSANExtension(value []byte) (dnsNames, emailAddresses []string, ipAddresses []net.IP, err error) {
     // RFC 5280, 4.2.1.6
