@@ -15,7 +15,7 @@ import (
 )
 
 // 默认 HID
-const DefaultEncryptHid byte = 0x01
+const DefaultEncryptHid byte = 0x03
 
 var ErrDecryption = errors.New("sm9: decryption error")
 
@@ -66,7 +66,7 @@ func (pub *EncryptMasterPublicKey) Encrypt(rand io.Reader, uid []byte, hid byte,
 
     opts := &Opts{
         Encrypt: enc,
-        Hash:    HmacSM3Hash,
+        Hash:    SM3Hash,
     }
 
     return EncryptASN1(rand, pub, uid, hid, plaintext, opts)
@@ -312,7 +312,7 @@ type Opts struct {
 
 var DefaultOpts = &Opts{
     Encrypt: SM4CBCEncrypt,
-    Hash:    HmacSM3Hash,
+    Hash:    SM3Hash,
 }
 
 func Encrypt(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, plaintext []byte, opts *Opts) ([]byte, error) {

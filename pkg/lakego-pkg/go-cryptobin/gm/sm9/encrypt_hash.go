@@ -27,8 +27,34 @@ func (this *HashHmac) Hash(c, k []byte) []byte {
     return hash.Sum(nil)
 }
 
+type HashMac struct {
+    h func() go_hash.Hash
+}
+
+func NewHashMac(h func() go_hash.Hash) IHash {
+    return &HashMac{h}
+}
+
+func (this *HashMac) Size() int {
+    return this.h().Size()
+}
+
+func (this *HashMac) Hash(c, k []byte) []byte {
+    hash := this.h()
+    hash.Write(c)
+    hash.Write(k)
+
+    return hash.Sum(nil)
+}
+
 // HmacSM3
 var HmacSM3Hash = NewHashHmac(sm3.New)
 
 // HmacSHA256
 var HmacSHA256Hash = NewHashHmac(sha256.New)
+
+// SM3Hash
+var SM3Hash = NewHashMac(sm3.New)
+
+// SHA256Hash
+var SHA256Hash = NewHashMac(sha256.New)

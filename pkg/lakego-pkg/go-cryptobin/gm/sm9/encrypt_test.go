@@ -3,6 +3,7 @@ package sm9
 import (
     "testing"
     "crypto/rand"
+    "encoding/hex"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -133,4 +134,34 @@ func Test_EncryptASN1(t *testing.T) {
     }
 
     assert(newMsg, msg, "sm9 DecryptASN1 failed")
+}
+
+func Test_WrapKey(t *testing.T) {
+    masterKey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+
+    hid := byte(0x01)
+    uid := []byte("test-user")
+
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    userKey, err := GenerateEncryptPrivateKey(masterKey, uid, hid)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    key, cipher, err := WrapKey(rand.Reader, masterKey.PublicKey(), uid, hid, 16)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    key2, err := UnwrapKey(userKey, uid, cipher, 16)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if hex.EncodeToString(key) != hex.EncodeToString(key2) {
+        t.Errorf("expected %x, got %x\n", key, key2)
+    }
 }

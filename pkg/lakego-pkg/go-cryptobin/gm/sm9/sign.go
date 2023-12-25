@@ -11,6 +11,9 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm9/sm9curve"
 )
 
+// 默认 HID
+const DefaultSignHid byte = 0x01
+
 type hashMode int
 
 const (

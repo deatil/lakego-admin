@@ -1,6 +1,7 @@
 package sm9
 
 import (
+    "fmt"
     "testing"
     "crypto/rand"
     "encoding/pem"
@@ -827,32 +828,52 @@ func Test_PemKeyEncrypt_ASN12(t *testing.T) {
     }
 }
 
+type testEncData struct {
+    en string
+    hash IHash
+}
+
+var testEncDatas = []testEncData{
+    {
+        en: "30818b020102034200047fd55a36613bf4acd2144a33ff169f923fb1b258efe53a3466d73ce93d0b65d0a7f416ac7b5ac1ea4b1e288f1abcc0ced6fb08c5e27641cf6e9b3d3012c5c60f042044245fdf01c40a4dee956af78a813428dcfc22b762558905e3c03d3f052d4e1a042021347c448d38ef20bbda3e1ba3d781b1cef92930a07d1b3a939a761c36244aef",
+        hash: HmacSM3Hash,
+    },
+    {
+        en: "30818b020102034200044b9b4eef83b20d1d042017b89b89b83cb4169eef026672709db8a83e4795e37a797cf019bb180fde705c8d88f55a54bb93f2be28efe4f68d841ad99f23699fbf0420e312a7f02f97b4e5c9a4a533ab66764b55e58ee09c78cba2acd3c7f468a3953f0420f777cd6cf7f83f6d9930bbc07bb98c382cb8f5bf36847c7e63f1342521305dda",
+        hash: SM3Hash,
+    },
+}
+
 func Test_EncryptKey_Check3(t *testing.T) {
     uid := []byte("testu")
-
     msg := []byte("message")
 
-    en := "30818b020102034200047fd55a36613bf4acd2144a33ff169f923fb1b258efe53a3466d73ce93d0b65d0a7f416ac7b5ac1ea4b1e288f1abcc0ced6fb08c5e27641cf6e9b3d3012c5c60f042044245fdf01c40a4dee956af78a813428dcfc22b762558905e3c03d3f052d4e1a042021347c448d38ef20bbda3e1ba3d781b1cef92930a07d1b3a939a761c36244aef"
+    for i, d := range testEncDatas {
+        t.Run(fmt.Sprintf("id %d", i), func(t *testing.T) {
+            enBytes, err := hex.DecodeString(d.en)
+            if err != nil {
+                t.Fatal(err)
+            }
 
-    enBytes, err := hex.DecodeString(en)
-    if err != nil {
-        t.Fatal(err)
-    }
+            prikeyDer := decodePEM(testEncryptPriv2)
+            prikey, _ := ParsePrivateKey(prikeyDer.Bytes)
 
-    prikeyDer := decodePEM(testEncryptPriv2)
-    prikey, _ := ParsePrivateKey(prikeyDer.Bytes)
+            uk := prikey.(*EncryptPrivateKey)
 
-    uk := prikey.(*EncryptPrivateKey)
+            de, err := DecryptASN1(uk, uid, enBytes, &Opts{
+                Hash: d.hash,
+            })
+            if err != nil {
+                t.Error("sm9 DecryptASN1 2 failed。" + err.Error())
+                return
+            }
 
-    de, err := DecryptASN1(uk, uid, enBytes, nil)
-    if err != nil {
-        t.Error("sm9 DecryptASN1 2 failed。" + err.Error())
-        return
-    }
+            if string(msg) != string(de) {
+                t.Error("sm9 DecryptASN1 2 Check failed")
+                return
+            }
 
-    if string(msg) != string(de) {
-        t.Error("sm9 DecryptASN1 2 Check failed")
-        return
+        })
     }
 }
 
