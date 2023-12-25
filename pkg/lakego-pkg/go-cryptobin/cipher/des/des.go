@@ -4,6 +4,8 @@ import (
     "strconv"
     "crypto/des"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // The DES block size in bytes.
@@ -43,9 +45,33 @@ func (this *twoDESCipher) BlockSize() int {
 }
 
 func (this *twoDESCipher) Encrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/twoDes: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/twoDes: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/twoDes: invalid buffer overlap")
+    }
+
     this.cipher.Encrypt(dst, src)
 }
 
 func (this *twoDESCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/twoDes: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/twoDes: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/twoDes: invalid buffer overlap")
+    }
+
     this.cipher.Decrypt(dst, src)
 }

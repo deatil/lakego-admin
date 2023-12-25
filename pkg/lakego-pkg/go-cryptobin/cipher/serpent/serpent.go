@@ -3,6 +3,8 @@ package serpent
 import (
     "fmt"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // BlockSize is the serpent block size in bytes.
@@ -15,6 +17,9 @@ type KeySizeError int
 func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/serpent: invalid key size %d", int(k))
 }
+
+// The 132 32 bit subkeys of serpent
+type serpentCipher [132]uint32
 
 // NewCipher returns a new cipher.Block implementing the serpent block cipher.
 // The key argument must be 128, 192 or 256 bit (16, 24, 32 byte).
@@ -33,10 +38,9 @@ func NewCipher(key []byte) (cipher.Block, error) {
     return s, nil
 }
 
-// The 132 32 bit subkeys of serpent
-type serpentCipher [132]uint32
-
-func (s *serpentCipher) BlockSize() int { return BlockSize }
+func (s *serpentCipher) BlockSize() int {
+    return BlockSize
+}
 
 func (s *serpentCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
@@ -45,6 +49,10 @@ func (s *serpentCipher) Encrypt(dst, src []byte) {
 
     if len(dst) < BlockSize {
         panic("cryptobin/serpent: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/serpent: invalid buffer overlap")
     }
 
     encryptBlock(dst, src, s)
@@ -59,17 +67,23 @@ func (s *serpentCipher) Decrypt(dst, src []byte) {
         panic("cryptobin/serpent: output not full block")
     }
 
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/serpent: invalid buffer overlap")
+    }
+
     decryptBlock(dst, src, s)
 }
 
 // The key schedule of serpent.
 func (s *serpentCipher) keySchedule(key []byte) {
     var k [16]uint32
+
     j := 0
     for i := 0; i+4 <= len(key); i += 4 {
         k[j] = uint32(key[i]) | uint32(key[i+1])<<8 | uint32(key[i+2])<<16 | uint32(key[i+3])<<24
         j++
     }
+
     if j < 8 {
         k[j] = 1
     }
@@ -79,6 +93,7 @@ func (s *serpentCipher) keySchedule(key []byte) {
         k[i] = (x << 11) | (x >> 21)
         s[i-8] = k[i]
     }
+
     for i := 8; i < 132; i++ {
         x := s[i-8] ^ s[i-5] ^ s[i-3] ^ s[i-1] ^ phi ^ uint32(i)
         s[i] = (x << 11) | (x >> 21)

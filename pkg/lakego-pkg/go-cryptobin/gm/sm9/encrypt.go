@@ -59,6 +59,19 @@ func (pub *EncryptMasterPublicKey) Equal(x crypto.PublicKey) bool {
     return pub.Mpk.Equal(xx.Mpk)
 }
 
+func (pub *EncryptMasterPublicKey) Encrypt(rand io.Reader, uid []byte, hid byte, plaintext []byte, enc IEncrypt) ([]byte, error) {
+    if enc == nil {
+        enc = DefaultEncrypt
+    }
+
+    opts := &Opts{
+        Encrypt: enc,
+        Hash:    HmacSM3Hash,
+    }
+
+    return EncryptASN1(rand, pub, uid, hid, plaintext, opts)
+}
+
 type EncryptMasterPrivateKey struct {
     EncryptMasterPublicKey
     D *big.Int
@@ -108,6 +121,10 @@ func (this *EncryptPrivateKey) Public() crypto.PublicKey {
     return this.PublicKey()
 }
 
+func (priv *EncryptPrivateKey) Decrypt(uid, msg []byte) (plaintext []byte, err error) {
+    return DecryptASN1(priv, uid, msg, nil)
+}
+
 // generate matser's secret encrypt key.
 func GenerateEncryptMasterPrivateKey(rand io.Reader) (mk *EncryptMasterPrivateKey, err error) {
     k, err := randFieldElement(rand, sm9curve.Order)
@@ -117,7 +134,10 @@ func GenerateEncryptMasterPrivateKey(rand io.Reader) (mk *EncryptMasterPrivateKe
 
     mk = new(EncryptMasterPrivateKey)
     mk.D = new(big.Int).Set(k)
-    mk.Mpk = new(sm9curve.G1).ScalarBaseMult(k)
+    mk.Mpk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(k.Bytes()))
+    if err != nil {
+        return nil, err
+    }
 
     return
 }
@@ -142,7 +162,8 @@ func GenerateEncryptPrivateKey(mk *EncryptMasterPrivateKey, id []byte, hid byte)
     t2 := new(big.Int).Mul(mk.D, t1)
 
     uk = new(EncryptPrivateKey)
-    uk.Sk = new(sm9curve.G2).ScalarBaseMult(t2)
+
+    uk.Sk, err = new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(t2.Bytes()))
     uk.Mpk = mk.Mpk
 
     return
@@ -154,7 +175,7 @@ func NewEncryptMasterPrivateKey(bytes []byte) (mke *EncryptMasterPrivateKey, err
     mke.D = new(big.Int).SetBytes(bytes)
 
     d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
-    mke.Mpk = new(sm9curve.G1).ScalarBaseMult(d)
+    mke.Mpk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
 
     return
 }
@@ -166,7 +187,7 @@ func ToEncryptMasterPrivateKey(mke *EncryptMasterPrivateKey) []byte {
 
 func NewEncryptMasterPublicKey(bytes []byte) (mbk *EncryptMasterPublicKey, err error) {
     g := new(sm9curve.G1)
-    _, err = g.Unmarshal(bytes)
+    _, err = g.UnmarshalUncompressed(bytes)
     if err != nil {
         return nil, err
     }
@@ -179,14 +200,14 @@ func NewEncryptMasterPublicKey(bytes []byte) (mbk *EncryptMasterPublicKey, err e
 
 // 输出明文
 func ToEncryptMasterPublicKey(pub *EncryptMasterPublicKey) []byte {
-    return pub.Mpk.Marshal()
+    return pub.Mpk.MarshalUncompressed()
 }
 
 func NewEncryptPrivateKey(bytes []byte) (uke *EncryptPrivateKey, err error) {
     var pub []byte
 
     g2 := new(sm9curve.G2)
-    pub, err = g2.Unmarshal(bytes)
+    pub, err = g2.UnmarshalUncompressed(bytes)
     if err != nil {
         return nil, err
     }
@@ -196,7 +217,7 @@ func NewEncryptPrivateKey(bytes []byte) (uke *EncryptPrivateKey, err error) {
 
     if len(pub) > 0 {
         g1 := new(sm9curve.G1)
-        _, err = g1.Unmarshal(pub)
+        _, err = g1.UnmarshalUncompressed(pub)
         if err != nil {
             return nil, err
         }
@@ -212,10 +233,10 @@ func ToEncryptPrivateKey(pri *EncryptPrivateKey) []byte {
     var pub []byte
 
     if pri.Mpk != nil {
-        pub = pri.Mpk.Marshal()
+        pub = pri.Mpk.MarshalUncompressed()
     }
 
-    return append(pri.Sk.Marshal(), pub...)
+    return append(pri.Sk.MarshalUncompressed(), pub...)
 }
 
 func WrapKey(random io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, kLen int) (key []byte, C1 *sm9curve.G1, err error) {
@@ -226,7 +247,11 @@ func WrapKey(random io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte
 
     h := hash(uid2h, n, H1)
 
-    qb := new(sm9curve.G1).ScalarMult(sm9curve.Gen1, h)
+    qb, err := new(sm9curve.G1).ScalarMult(sm9curve.Gen1, h.Bytes())
+    if err != nil {
+        return
+    }
+
     qb.Add(qb, pub.Mpk)
 
     var r *big.Int
@@ -238,7 +263,10 @@ func WrapKey(random io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte
         }
 
         // step 3: c1 = [r]qb
-        C1 = new(sm9curve.G1).ScalarMult(qb, r)
+        C1, err = new(sm9curve.G1).ScalarMult(qb, r.Bytes())
+        if err != nil {
+            return
+        }
 
         // step 4: g = e(mpk, P2)
         g := sm9curve.Pair(pub.Mpk, sm9curve.Gen2)
@@ -293,7 +321,7 @@ func Encrypt(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, 
         return nil, err
     }
 
-    ciphertext := append(c1.Marshal(), c3...)
+    ciphertext := append(c1.MarshalUncompressed(), c3...)
     ciphertext = append(ciphertext, c2...)
 
     return ciphertext, nil
@@ -342,7 +370,7 @@ func Decrypt(priv *EncryptPrivateKey, uid, ciphertext []byte, opts *Opts) ([]byt
     hash := opts.Hash
 
     c := &sm9curve.G1{}
-    c3c2, err := c.Unmarshal(ciphertext)
+    c3c2, err := c.UnmarshalUncompressed(ciphertext)
     if err != nil {
         return nil, ErrDecryption
     }
@@ -365,9 +393,9 @@ func Decrypt(priv *EncryptPrivateKey, uid, ciphertext []byte, opts *Opts) ([]byt
     key1 := key[:key1Len]
     key2 := key[key1Len:]
 
-    c32 := hash.Hash(c2, key2)
+    mac := hash.Hash(c2, key2)
 
-    if subtle.ConstantTimeCompare(c3, c32) != 1 {
+    if subtle.ConstantTimeCompare(c3, mac) != 1 {
         return nil, ErrDecryption
     }
 
@@ -381,15 +409,12 @@ type encryptData struct {
     C2 []byte
 }
 
-func EncryptASN1(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, plaintext []byte, enc IEncrypt) ([]byte, error) {
-    if enc == nil {
-        enc = DefaultEncrypt
+func EncryptASN1(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, plaintext []byte, opts *Opts) ([]byte, error) {
+    if opts == nil {
+        opts = DefaultOpts
     }
 
-    opts := &Opts{
-        Encrypt: enc,
-        Hash:    HmacSM3Hash,
-    }
+    enc := opts.Encrypt
 
     c1, c2, c3, err := encrypt(rand, pub, uid, hid, plaintext, opts)
     if err != nil {
@@ -399,7 +424,7 @@ func EncryptASN1(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid by
     r := encryptData{
         EncType: enc.Type(),
         C1: asn1.BitString{
-            Bytes: c1.Marshal(),
+            Bytes: c1.MarshalUncompressed(),
         },
         C3: c3,
         C2: c2,
@@ -408,18 +433,17 @@ func EncryptASN1(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid by
     return asn1.Marshal(r)
 }
 
-func DecryptASN1(priv *EncryptPrivateKey, uid, ciphertext []byte) ([]byte, error) {
+func DecryptASN1(priv *EncryptPrivateKey, uid, ciphertext []byte, opts *Opts) ([]byte, error) {
     var data encryptData
     if _, err := asn1.Unmarshal(ciphertext, &data); err != nil {
         return nil, err
     }
 
-    encType := GetEncryptType(data.EncType)
-
-    opts := &Opts{
-        Encrypt: encType,
-        Hash:    HmacSM3Hash,
+    if opts == nil {
+        opts = DefaultOpts
     }
+
+    opts.Encrypt = GetEncryptType(data.EncType)
 
     ct := append(data.C1.Bytes, data.C3...)
     ct = append(ct, data.C2...)

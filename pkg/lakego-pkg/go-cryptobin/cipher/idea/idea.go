@@ -4,6 +4,8 @@ import (
     "strconv"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // Package idea implements the IDEA block cipher
@@ -48,10 +50,34 @@ func (c *ideaCipher) BlockSize() int {
 }
 
 func (c *ideaCipher) Encrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/idea: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/idea: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/idea: invalid buffer overlap")
+    }
+
     crypt(src, dst, c.ek[:])
 }
 
 func (c *ideaCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/idea: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/idea: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/idea: invalid buffer overlap")
+    }
+
     crypt(src, dst, c.dk[:])
 }
 

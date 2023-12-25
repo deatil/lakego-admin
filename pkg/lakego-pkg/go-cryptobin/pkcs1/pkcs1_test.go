@@ -336,6 +336,26 @@ A4A/aHB+V5eDqTG/UnO3UIvpx8vr7Oox2If3wc3b2mTiEAWY0AYOOiSagTOW9HLu
 HV9LrrqQxBwWHEZkFurDUvA8Yw5n+D6xsag8y1JNOVOVfw==
 -----END RSA PRIVATE KEY-----
 `
+var testKey_DES_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: DES-CBC,56255234AC88C13D
+
+/xfaIkSZ1Fyrh7clFM8WR0syQRm1abNsfbhZe7m310als9VhOzxfLZVflXz1Rops
+AUUSZJ9th6RnT0r8visW8py95gJED91AbQWa+hDBkZZNgMpSwsLZDkeiDGwnGT+x
+65mD5VtoLPDVvJ+q2aulSuwzzEsK0w5J/CnqPMy8sxaQJaWbskfGLk6xsOapXQxn
+UTMhn1oMSdzFGtP/3Mf/DTCdkqqSees+UyFeBQ0n5gQZP4YttzAKODTZCq+iwCTo
+S2cT6bSvhdAKJjGl2raQIx8+xWU5Y9abpJBF/ehbLqj3beUaEIsHcCLFNIbCoe+8
+AFow/NyZy2hiRAyqskTu4mLIuWJkAespEwS4cZ7BTOGc7lIy0ubneeCZwaeJBWmj
+EGiRlQqxCM1dwr2L/5qDvPfoCDO9fADKMyVyD+UWJpOzhXK+i64H4A8Fe7LQVecZ
+OvE3L/mgYMz7KBnDRCnTLsRhg8BoJ5VbZRkQYeJrSVIVIEs9fY2PzfCb6tkSaD08
+5si3m261YVAWUzQTieTYJXJCfUG2Fojwxwv+uWFqqEmjkK80zMrb1er3Em3JH/UN
+u9ldvhKCxjQurl6oZEX/rVHMIPaW+ApXWWztLXlxucjDr146uXO+uGgLqKpbU+xT
+1bqqLlh1a92/S3D+D/OGLw4MUaLEvl/e1q1rsGYBCl+Rvdwho9dnOES8IkHh3knz
+lXgBUV+g+ijg9RjuXtYxmWqr17I34UkU1H/UjFEeuRO4WPuOFxUWpcj/wOCbHwrO
+q3/+myMrI9ODCgqWMbxi2/IRUEgOK1mCbWpR/UH+WZC0e8E2PZ6L0w==
+-----END RSA PRIVATE KEY-----
+`
 
 var testKey_3DES_CFB = `
 -----BEGIN RSA PRIVATE KEY-----
@@ -395,6 +415,26 @@ iX2Uhqbhx24YhNdUt8qFs3XyVqpk0fbtDlKc8yYkSwme8SquGZzoei2pf76I6GJB
 DcWQkAVeV0rN8U1U9H1sGC/EBaxCDQYrvcqacQv0iU7Xe6Uf/9qkmWBc6maq9AFP
 mSHYIoYDhxtZTPdfVo7JywEtujkgeFPG/6vpomarWRy8dAcUnLUct3BZb8lD55et
 OmYAMAJyodew+6ZbTG3LRiyIH66NYGCU2Yhspd4ZeCc=
+-----END RSA PRIVATE KEY-----
+`
+var testKey_3DES_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: DES-EDE3-CBC,9AD0BC30D5D31806
+
+0abVBdh3wnueNE8ZiXnRzqdwAD22HoUJDwMo/j5Z/p/qc2jtZo7xjukHLkW9XoqG
+WsyVeISoFVkQxaVqqN/GWWRvv3ia5Vqlfkk/z/d6ABy4e0KNudiCLijBEJRIzz2c
+2qEooF0sGLAfqYPGzFsQhswltyFn3BIIVaVDEvtU0m8DA5tGjMTXZXWokH4iKYaR
+31aJguKc1GxXlaxW7q4w5P2dsCvNEzXAoahte3NU9GTvR3/CUGS1QPtghT85bYdp
+BUUMjidTIbBoxluAck0kG7zPdV44ql1OgLNxzhIr8eDnsjkNgkPFZDrypTGNCnQY
+qZU1fxIDPicYbaMtac65LIQ9GSE2nHlZC3WR67TErf52klSjiA3qCdb5Y/LgZgTY
+c/jCgTg2tBKXfN11HsriEifcFoWn6kpxGkSLDxAGXiJH4QfAYPtzsu8lJOX996S/
+x/nAqFmg2BApx5tk24+zU8kCoHEjipyGcXfGoE0R+lCI/WR8HxtHzkwwVinI6ESE
+EkXmK/8Q3rjEjVP9Wc/v5ELe7ViyaoqcR8+PseZ8hDm1WKcrr2ZQulJlfU32QJtc
+h1GDZI0/InYvrgYRyRcrFNN2D42GCCS2/JMe/9hoSGK32TgNP5qABw52YRqC4rfJ
+g6gRNObO5IqT0ouK2CfG2lInzzwtqk+MNfk6KZgH0Zu/BU/ZzEWenqXit4fn6CjV
+MzdeRbCJHodEmoszEZL9JHD7jzn/k6bCBHjlnc2VXZ4TOLeT8oOZPy62uE+QDUWT
+APUPXXGEi9XLRMywrz9edTGZC1nozLijCP8YT8K3t/w=
 -----END RSA PRIVATE KEY-----
 `
 
@@ -458,6 +498,26 @@ EJI6g3hykcWb6Xv6g4qCNxt93nTyPIxeJsOhCiValjJGT5DxzCGjcwWKh0xCTAOF
 UR9uChIsW6/OIOevnvffncQoPNOLZx8XorAdD8ABtg==
 -----END RSA PRIVATE KEY-----
 `
+var testKey_AES_256_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-256-CBC,C931B17A1CEB5CAA94BF6E4213259E5A
+
+5Pms4h8bE0a6xFznAI0Ka+38/EV7hdBK/2W+bTN0IPNAc3WIIuYrPG4yj/k8abGG
+CIOcHuLGSqLW2ObAy5ZgS3Uh3mRkcuNDbt2xtk5dqRn0vArIpyIJ6Bwphu6Dudm7
+E8fCKfnJHAyu0aMM950IXL+JcdnCQtHUmDd+YRdYJ8TfQVcfSi2B04pBQo872Wo9
+mLS+fUuFhzh+fO+NQuc146kL9K2xBCg5CO8GL7C+RGTA+2lzYI15rTHHkgYACwso
+P4RSGAaFqMxYNDSM9gHnVJrVNoRyPGtA3ke5u98iO7R9eShrsdt4BGTyt9mMzUW8
+Rvx/khcHXs3wCMAH6me7EbtibB+U7u97CPGDtFopvIy5Iyu1MwH+68k8DRXwAZvA
+c/t642qgfEPS9g7Jdwaj2+M+FzTkIOdeNkG1dohyskc0/NnTREax2JSizVH4a/rU
+X9aly3LETUEAxXKwfc86aQ1SsdpGGIVTC+HzIt3DeJpuX2xRDDOjO0lC4WL1Jkxb
+smOi5bVpHxNVG5nu5P1Su8ANjB8VAe/f0fDUkfYDeS5tG/uGkuvjkRr7MZGw6tiN
+Adg7okhYQApO/oVHw+X53lP0VBfhgGaj2JOoncDJZsy5Pybqu3NsxcRGYYooCBL5
+ppS85jdFQS+VfKavLIN6ruiQ7OAskrLJvHxeifZqA4Auqaf3fPIW1bStQ1TNp/X7
+tD4t862ps8gvOF0agBu6ut9JoUbv9b/Jm2PaxwXOYhHIoYiL9VAb3zLz2ZQleowe
+HY7vDw7uD50dvQ7V0dJM10UUYqjcgl0kE8wlwwqCSg/JuLpLDpBLx8fXie1LPRJD
+-----END RSA PRIVATE KEY-----
+`
 
 var testKey_AES_192_CTR = `
 -----BEGIN RSA PRIVATE KEY-----
@@ -517,6 +577,26 @@ dJC7ERMn6Yt5S88TPHSF/OdjCEsPF1aLazygSjSwhoACX7g7045afZvBQ89kNjuQ
 8VZfsBE/rXv8zfBhsvqXovWnxLT8Zc1IDdBAqHWIRPHnd34n+me/GIC2lbQTFU9I
 p683q/nFSaqxkWFpNC3ituZ8N6Df95mlP6zOHL0CpqUthqxkBqv1BGT75CNrQ2th
 KzyqVofSD5f7x4RlH4XBFLDyItcpNjytcnLbdRiBuLg=
+-----END RSA PRIVATE KEY-----
+`
+var testKey_AES_192_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-192-CBC,2161C430D4CE65BA154A119E38538299
+
+6p2quaycDC6BYv6g1lQa86aSOP5o2m5ZqK45EOukP67Vi35i6+Cn8K1NzhRuabw8
+XuJe2IdJ64LkZqPBGQQEyedULML0XB7wMmfcBEisxG1upqmf/pwRuf43tD+P2Lfe
+jGqQErJRa9uJF59mDMuM5EG9p7laOK6BTzMsHw7I6ZFlAFPy9h75fhyRUfA2AuF6
+Yw5DIxdoM20887btoRc7wmKzdYLKvmLOlsi/r90GccRZeotx3E0nD2f8yRlzlv1f
+pUuD+C0FeznTXKDELzg1Zx1mmcUb23rmltnOCj+VFcgbR3WemxWxopnTAMpjAiOG
+giKVQToF7hAMA1Uz8ik+Dv2vc7UUp4xIeST9H7QxcsBOYZ/lPD3s2/wjuTckuoJD
+OCcIFvs1kzEEQ0MBLWsQr+IgRvKgGcUKabdySivQEkJuQ3YoviZBBbu16O3C+fIW
+SIN/alwP6UFBs3FQ1/Rrh4+WZCrz/S1kHHgkvQKtbLfrIS+Hzb7CWoiwQ4w8VGf7
+rNTREXj+8+ypbbcGEQpi6lC7eeF0fN00lBaYB3lY6GayJnkxVyal+IMKvm0kA2yi
+Kubu/moHRkiYsGZdWDUbqhjb8cVZvJZIDWIaLvenRlXUpJoy8nIGMVOUUX8Rvi7V
+rji1VkKLcwM2Y/WM4oYjsTqsRI5JGcbmGjbNUQibHIJtPH0Ribtw2l5cn09JV8Gy
+cL27pZk7SMHaBByIrfDFEO5TsAA9jQ8qAZFDKVZFXTA50Cpi5b1iXue/Vpe2GJVt
+7Rh0k0coQBIDqzY9TITJPATqkWr1YOfw22BF0nOhjwqtFDl8oSAQBl3ZPUzw1zTL
 -----END RSA PRIVATE KEY-----
 `
 
@@ -580,9 +660,122 @@ fbavDLrIGxjTi+Hebc14oXK2qsKli+pV3r9We94GWNPj035aT0sDdx+5IxLH6ule
 rXQarl3KI5nheAON9KJI+f0U4S7vYfC3oFgwdpyVee4=
 -----END RSA PRIVATE KEY-----
 `
+var testKey_AES_128_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: AES-128-CBC,6C2D041C3FC6BA1BA1A742CD0C68D90E
 
+fJn49F195ATNhI4OiqdbsxB/6CD4xl8XjTjb5IzlP6pvM+T2O7ZOYeEaJHUGdxoC
+KOAxrqJrw1TzWfPY04JU9joH1DekGm0ugzih+AEGIhNpxUE+eTt1Yf88/9rd71kC
+l7SB2UyeFXIPGfMYlPSzTHikO8MOL50N46DYpFJLHNh6vL6ZYMNpkWyVBiuuVrar
+ap5wiVL5ch2i3U0xorvjau6J1tdAu0w5p3LhzofZDIvwkbXPzSQk7dW3l1g9GrZH
+fKFO64Qe0u+Y3wexD3AH4SEjTTXan5leoxwW93Ik0/yFW3aORrA4anVbiW5nFqwV
+iHonZIAye9KaXOqOlI1R7kCI50UyVkUP0I9Uvmr5elRM74gMVnZhS9CeRgP7UOMC
+Q50kmXTBmosgjI4QWUq1a7pxyQFBd5ruD7WP43od+vKr5Swa0a/fJTc7XqvRhf8B
+D+Ysr6+g+jNMasbzFY4Jc06TW/0zPnPszbSR9WWkXis7DuRotmU83bqRl5w+rFZs
+1Z26xqgg3vMvFBI8Bf7Kofi2YuRkBj5zYqqgB2R3WZUzW65X9pv1CPIf5O6jACn5
+mCI++Wqw8gIeiwvO4bXCZJ1mtCWO/G+X6jga1Pc9Q8OW8Az2ddsJl5htogxcoPXV
+KjdKnYAKD+2mM418KkZhStHEUky827pdOj3BNBE4BjzI3fjIuLQ96qltFbBuW47M
+ikpRepojODGDwNKqta9kLTNCOxrNPjhKhWb3YRv7xpppSgP0v66/ZkoeutET07lK
+WoAagYh7iYIQRzgwFTIMcu8D7dHHYtseW/QHKbfOuFI=
+-----END RSA PRIVATE KEY-----
+`
+
+var testKey_SM4_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: SM4-CBC,30c634095fbc029f505ab9b86652a1d8
+
+4GlsZT8c/RJN53+3clkNX8G4dNRuGiBtKEqI1HyC/Qm6ckrlsz+jKiNZWy7Wf4b7
+FgO5pzvggFeKXRHIJLIjQ10iujHlCES9LwhpAU0u50qNkmXAHroFTWwwmOQw4B1j
+Bnlr4ezcB3OaWgx4VJyhccxMv14qRCeujZAvr2iizfz5pp7PNcTtfrePABRKF+KJ
+UdG0ROzNMRPZnKKFxadoaR6hFjbOfwXbbXrRsLpK0Mmd1/tdnk+vuLqt1XQRF/pt
+MFNEehlaqxoVojtbOqgIama72f6yIkukiyJyjHIM6xz9U+MNt+loZuZRF1VFetEp
+6KISsBu2emAtp9/xD0X7cIwkjFLYvy5L9ubVJxkT727mySEAU/u5uSvwvVWzcEX+
+lhmGk6b0DrRdl53socSjCl2dprnhaQSWpmp5wvON8XKJtkFoSisrzKaVh4DRi2ch
+qENLI1pnCwu9agyWkBVUpZamkhw7fuTfL2sqVUaCjRpVRzdtxcPAOCp2vyyIOKG2
+A8C0YEfAus3slj395mcxsIJlSE/hl77oegSHa+3FylDqXt4mrdqUliia4VgrHNqK
+JL674mz+fmupHoSBo9fjkqGrNTRXpm1gKuxQY08+e9evZ5v1IrhjdIbHep79JQHC
+lxgTXddL/5ev7bhK+eTPGyXtswdJpuyOiyy3Z5m/d20lwxv7+pBSVVHxfBzrsNf7
+S4P8VHPnam8F2tyltN+8dtPRJPFgWqUDJLKsYsBywAfZwx0i940ix1RH7ZvPpkPO
+dKsLNZLf4bO9L+N5E1Gy5zhzdWOO6Fb09RlBvuS+IoIzdtWdEoMAs7LBtuTx4aUG
+-----END RSA PRIVATE KEY-----
+`
+var testKey_SM4_CTR = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: SM4-CTR,9c005970fccf7643273eb33289c6897e
+
+po3oblCZGTPfO5GjiBOS1/yTP8iNC09el4FFp4rHiYmaN/9kKwM0vgBh7g2PsG87
+fkqrWbLJM8RFIj5fsjzSFjzVTeomBuxoyLTUTAkEZ67Q4rfB2wql5M1qyfk9Q8iU
+ZMTLVoR0UJzLMOB3ln83LD2c35jfGdCURVPtq2kT1r/LiA+OQMfZpLYXNLCGdF2Q
+LFQmxWqmeM3ITGpygYKla65uosGqFhpCPOCVGHmvjcVlzt4sjpq61g/stEHISP7s
+4ai8tD8je/m8ufkBtF89xnPE98sT1NFusKtnu1VgfI9ny8iaRgEQwBbL00ewJoED
+XdzliF2TSreu7szuoXySPWl4/zr7Vb6OUlN9XwOZAOUv5WKTHME1rKHcIu8LibdK
+5RcZb35aT+4SrcEocxNZoQ6/wyhvq8wNnzpJWx+JS9bLeleNZL/3csNomS+HymCq
+t0hwX1RnR2foz7pcTUkLMYvXO+N0VYCIc5QEonueIkZmhj6UWtb8FI6yQaOVrlVP
+jMDVuxlwYdI71LUW2ID6ywoggdcMJulbCdIivNwANJtvWEFvFFu4DrZsyPEYa1Fi
+OWZjut8AjIc6fiR3bkA8TnqSQ9R6dh0JooDFLOHIhoGml4q4PUwvOkG3sP8EkKaj
+TKFYv0dnRkraqKdSC2MG+7Wm/NQJxQ30y+ZkVgeLvrgqMhsr09KAJEGy6cAHorX2
+tJpvHiQXiWu9wRfLl6Gt8JAGwPGSxF8SKHE1Vh5Op1jn5it4m9rVxG6ftGz3AGW6
+4R5ObWSBwcNS8l183p3WVPE7S3nVzEsdBJ/fdVSEuvXJrA==
+-----END RSA PRIVATE KEY-----
+`
+var testKey_SM4_OFB = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: SM4-OFB,033d2d8d10af43959c832ec1c77a5004
+
+iH7Lnc2v24zw54Iuqr+5jU541yGWbTR8LL92bfYInGYc+igqvd0D2CIlfjZqLmIn
+pUjlgFSUXt5LT9aneKMXLsVT1IAIXkAr0GbZNZiHvqjiqicvgt221aqEC4B53RoZ
+aFzh1TcRGFdDooygj36GH5bz3hodW7BOB7j2sAhdC/I0iaRPdJhUfbcQeFjxpJeI
+5vlA69pxshfZAdTKHA5M3QBOLgxW9uiHxJ6+SYaznx+XmvbhIX9FyBuNxTKNUFvJ
+85sWliVHWcyWVyv1+wmBDH1FsehAIBQiRImdTt5hStN6V+MZYbdx4M2imq9ErMXG
+jx7ztpmyfzj97JtILjIRp3jPgLOzrJ6sD/rT3yOtjfLo6xoRzVa72kinxTmlFVNE
+xEVm1kYweztIX2H8p+BY/WKxxfKMQQy1El3mf05A6tgievv4I/VnnEeViSay8ovy
+Kp1x/3a+4zONm8sNDO8kgu2BEaKuEuQ8Q2DoedCF75cbM6ovs7davRAq10KCh7xV
+5RlpzP4EbaeoZ0c8IvNN5ixBhFkmUn+5blaH1YOsOvavSbprbOmMTeHuoLYjE9eM
+cogFrVaUwLl8ylP1zxKTCWuN7he4/mI9iw783nxwt3AJF/KB7W7FVYiLA4WuRcQm
+u70cZ2QYY0zuxAOA/OaHajRIAsukO+lJHwcq6OSJv3Q13zROqzoJm8ETbpTpjr8t
+FAq53kLhPJzV4W8+HyrZwKbE8Pve2fbNj3ukF8FsAdqAweDzPL+Ulh/VqA+wHKpo
+aohKRP2KASgYSx+wUyibxkER6XEQZc11jVajreaqNNR15g==
+-----END RSA PRIVATE KEY-----
+`
+var testKey_SM4_CFB = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: SM4-CFB,9cbec1ca07cb385c95f9e668a8e20100
+
+fxMzQ5MeKagVz3kDaqjR/kQ6Ilq5F68gsL5L1FoYbJEGphaeY6wWCy9tdUpdCj1h
+n1AhvuOg0BaCX/MxjDjen70a1J2+izKDDa9LE9gIyPkAnQcJ52wyBMvlAd/n/BkK
+mCW1Zri9SoN1lvy/mhVPFzL+8JELmfH+OfLQ1UkMt31U7OB4HNY+Fxxzq5pFNBHe
+T3sbFbZdxI6kwhMo3XkrQgXttRTQhGSskp6lpr18gjWqmmzzI8DDbZZRWkzTWEkF
+8QcPG0GEKJsVItVFBuRW8+acrc7B3v+Ervz390qRaiEniuEqWpEKWJ9B58VV9cxy
+DViyfNKIkW3psF6sDQXjeAm+F3njZikLnbJLrBiMjz58tujzlfhKZkrnnfAsJDgX
+Ost8I0MRFedioos6QGgycbR0ybODW78aPOx0y7/GVb7WcTBxDsdQxvIfnR9IFjLH
+0BSaP+6EFGL1HNJoD9GVqChi99fY4ml2qc8kBiACYmSypseN0tqqf9MiVsysvioB
+VTv29qf4DLeiUm+pp4cdBP4dMoeixDwZEn0fzR5B508qhrESgKoowiW/mJScmNu5
+gdPpA3c7iTaDJEJACt/gkod9IRmgBXMxqQve4Qc6rIs/BIgsMEDtLliu3E7jX8yg
+L24KFKwZoOEUja7b9eBZXlViE01MQ4LoUpCnrWM8Ihj/DUjTur9umJhmuHLcohmF
+oNygEmBTEtQ4DdhrKlCxWu5DfUGuU0FCWzEXPrOZ4gZ/VNg9rJgO/9TMmSzlztJd
+odNbWbLvU/aGnPj9eupOVmyf+mpy7iea6VXgXDiMIbP5hw==
+-----END RSA PRIVATE KEY-----
+`
 
 func Test_Check_PEMBlock(t *testing.T) {
+    t.Run("SM4_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_SM4_CBC)
+    })
+    t.Run("SM4_CTR", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_SM4_CTR)
+    })
+    t.Run("SM4_OFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_SM4_OFB)
+    })
+    t.Run("SM4_CFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_SM4_CFB)
+    })
+
     t.Run("DES_CTR", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_DES_CTR)
     })
@@ -591,6 +784,9 @@ func Test_Check_PEMBlock(t *testing.T) {
     })
     t.Run("DES_CFB", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_DES_CFB)
+    })
+    t.Run("DES_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_DES_CBC)
     })
 
     t.Run("3DES_CFB", func(t *testing.T) {
@@ -602,6 +798,9 @@ func Test_Check_PEMBlock(t *testing.T) {
     t.Run("3DES_CTR", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_3DES_CTR)
     })
+    t.Run("3DES_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_3DES_CBC)
+    })
 
     t.Run("AES_256_CTR", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_AES_256_CTR)
@@ -611,6 +810,9 @@ func Test_Check_PEMBlock(t *testing.T) {
     })
     t.Run("AES_256_CFB", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_AES_256_CFB)
+    })
+    t.Run("AES_256_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_AES_256_CBC)
     })
 
     t.Run("AES_192_CTR", func(t *testing.T) {
@@ -622,6 +824,9 @@ func Test_Check_PEMBlock(t *testing.T) {
     t.Run("AES_192_CFB", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_AES_192_CFB)
     })
+    t.Run("AES_192_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_AES_192_CBC)
+    })
 
     t.Run("AES_128_CTR", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_AES_128_CTR)
@@ -631,6 +836,9 @@ func Test_Check_PEMBlock(t *testing.T) {
     })
     t.Run("AES_128_CFB", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_AES_128_CFB)
+    })
+    t.Run("AES_128_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_AES_128_CBC)
     })
 }
 
@@ -675,5 +883,40 @@ func TestEncryptPEMBlock(t *testing.T) {
     if false {
         newkeyData := pem.EncodeToMemory(enblock)
         t.Error("encrypt data: \r\n", string(newkeyData))
+    }
+}
+
+func Test_EncryptMake(t *testing.T) {
+    t.Run("CipherSM4CBC", func(t *testing.T) {
+        test_EncryptMake(t, CipherSM4CBC)
+    })
+    t.Run("CipherSM4CFB", func(t *testing.T) {
+        test_EncryptMake(t, CipherSM4CFB)
+    })
+    t.Run("CipherSM4OFB", func(t *testing.T) {
+        test_EncryptMake(t, CipherSM4OFB)
+    })
+    t.Run("CipherSM4CTR", func(t *testing.T) {
+        test_EncryptMake(t, CipherSM4CTR)
+    })
+}
+
+func test_EncryptMake(t *testing.T, cip Cipher) {
+    password := []byte("123")
+
+    block1, _ := pem.Decode([]byte(testKey_3DES_CFB))
+
+    bys, err := DecryptPEMBlock(block1, password)
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    block, err := EncryptPEMBlock(rand.Reader, "RSA PRIVATE KEY", bys, password, cip)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(block.Bytes) == 0 {
+        t.Error("EncryptMake error")
     }
 }

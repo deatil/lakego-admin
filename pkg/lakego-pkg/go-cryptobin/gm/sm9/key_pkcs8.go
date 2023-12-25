@@ -89,10 +89,10 @@ func MarshalPublicKey(key any) ([]byte, error) {
 
     switch k := key.(type) {
         case *SignMasterPublicKey:
-            pubBytes = k.Mpk.Marshal()
+            pubBytes = k.Mpk.MarshalUncompressed()
             oidBytes, err = asn1.Marshal(oidSM9Sign)
         case *EncryptMasterPublicKey:
-            pubBytes = k.Mpk.Marshal()
+            pubBytes = k.Mpk.MarshalUncompressed()
             oidBytes, err = asn1.Marshal(oidSM9Enc)
         default:
             return nil, errors.New("sm9: no support key algo")
@@ -110,14 +110,14 @@ func MarshalPublicKey(key any) ([]byte, error) {
 
     var b cryptobyte.Builder
     b.AddASN1BitString(pubBytes)
-    privans1, err := b.Bytes()
+    pub, err := b.Bytes()
     if err != nil {
         return nil, err
     }
 
     r.Algo = algo
     r.BitString = asn1.BitString{
-        Bytes: privans1,
+        Bytes: pub,
     }
 
     return asn1.Marshal(r)
@@ -252,14 +252,14 @@ func marshalSignPrivateKey(k *SignPrivateKey) ([]byte, error) {
     }
 
     var b cryptobyte.Builder
-    b.AddASN1BitString(k.Sk.Marshal())
+    b.AddASN1BitString(k.Sk.MarshalUncompressed())
     privans1, err := b.Bytes()
     if err != nil {
         return nil, err
     }
 
     var pub cryptobyte.Builder
-    pub.AddASN1BitString(k.Mpk.Marshal())
+    pub.AddASN1BitString(k.Mpk.MarshalUncompressed())
     pubasn1, err := pub.Bytes()
     if err != nil {
         return nil, err
@@ -284,14 +284,14 @@ func marshalEncPrivateKey(k *EncryptPrivateKey) ([]byte, error) {
     }
 
     var b cryptobyte.Builder
-    b.AddASN1BitString(k.Sk.Marshal())
+    b.AddASN1BitString(k.Sk.MarshalUncompressed())
     privans1, err := b.Bytes()
     if err != nil {
         return nil, err
     }
 
     var pub cryptobyte.Builder
-    pub.AddASN1BitString(k.Mpk.Marshal())
+    pub.AddASN1BitString(k.Mpk.MarshalUncompressed())
     pubasn1, err := pub.Bytes()
     if err != nil {
         return nil, err
@@ -330,7 +330,7 @@ func marshalSignMasterPrivateKey(k *SignMasterPrivateKey) ([]byte, error) {
     }
 
     var pub cryptobyte.Builder
-    pub.AddASN1BitString(k.Mpk.Marshal())
+    pub.AddASN1BitString(k.Mpk.MarshalUncompressed())
     pubasn1, err := pub.Bytes()
     if err != nil {
         return nil, err
@@ -369,7 +369,7 @@ func marshalEncMasterPrivateKey(k *EncryptMasterPrivateKey) ([]byte, error) {
     }
 
     var pub cryptobyte.Builder
-    pub.AddASN1BitString(k.Mpk.Marshal())
+    pub.AddASN1BitString(k.Mpk.MarshalUncompressed())
     pubasn1, err := pub.Bytes()
     if err != nil {
         return nil, err

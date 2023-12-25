@@ -66,7 +66,7 @@ func Test_NewEncrypt(t *testing.T) {
     mkStr := ToEncryptMasterPrivateKey(mk)
     mk2, err := NewEncryptMasterPrivateKey(mkStr)
     if err != nil {
-        t.Error("sm9 NewEncryptMasterPrivateKey is invalid")
+        t.Error("sm9 NewEncryptMasterPrivateKey is invalid:" + err.Error())
         return
     }
     if !mk2.Equal(mk) {
@@ -77,7 +77,7 @@ func Test_NewEncrypt(t *testing.T) {
     mpkStr := ToEncryptMasterPublicKey(mpk)
     mpk2, err := NewEncryptMasterPublicKey(mpkStr)
     if err != nil {
-        t.Error("sm9 NewEncryptMasterPublicKey is invalid")
+        t.Error("sm9 NewEncryptMasterPublicKey is invalid " + err.Error())
         return
     }
     if !mpk2.Equal(mpk) {
@@ -101,23 +101,22 @@ func Test_NewEncrypt(t *testing.T) {
 func Test_EncryptASN1(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
 
+    var hid byte = 1
+    var uid = []byte("Alice")
+
+    msg := []byte("message")
+
     mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
     }
 
-    var hid byte = 1
-
-    var uid = []byte("Alice")
-
     uk, err := GenerateEncryptPrivateKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
     }
-
-    msg := []byte("message")
 
     mpk := mk.PublicKey()
 
@@ -127,7 +126,7 @@ func Test_EncryptASN1(t *testing.T) {
         return
     }
 
-    newMsg, err := DecryptASN1(uk, uid, endata)
+    newMsg, err := DecryptASN1(uk, uid, endata, nil)
     if err != nil {
         t.Errorf("sm9 DecryptASN1 failed:%s", err)
         return

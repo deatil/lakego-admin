@@ -6,6 +6,8 @@ import (
     "math/bits"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // Package camellia is an implementation of the CAMELLIA encryption algorithm
@@ -160,116 +162,147 @@ func NewCipher(key []byte) (cipher.Block, error) {
     return c, nil
 }
 
-func (c *camelliaCipher) BlockSize() int {
+func (this *camelliaCipher) BlockSize() int {
     return BlockSize
 }
 
-func (c *camelliaCipher) Encrypt(dst, src []byte) {
+func (this *camelliaCipher) Encrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/camellia: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/camellia: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/camellia: invalid buffer overlap")
+    }
+
+    this.encrypt(dst, src)
+}
+
+func (this *camelliaCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/camellia: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/camellia: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/camellia: invalid buffer overlap")
+    }
+
+    this.decrypt(dst, src)
+}
+
+func (this *camelliaCipher) encrypt(dst, src []byte) {
     d1 := binary.BigEndian.Uint64(src[0:])
     d2 := binary.BigEndian.Uint64(src[8:])
 
-    d1 ^= c.kw[1]
-    d2 ^= c.kw[2]
+    d1 ^= this.kw[1]
+    d2 ^= this.kw[2]
 
-    d2 = d2 ^ f(d1, c.k[1])
-    d1 = d1 ^ f(d2, c.k[2])
-    d2 = d2 ^ f(d1, c.k[3])
-    d1 = d1 ^ f(d2, c.k[4])
-    d2 = d2 ^ f(d1, c.k[5])
-    d1 = d1 ^ f(d2, c.k[6])
+    d2 = d2 ^ f(d1, this.k[1])
+    d1 = d1 ^ f(d2, this.k[2])
+    d2 = d2 ^ f(d1, this.k[3])
+    d1 = d1 ^ f(d2, this.k[4])
+    d2 = d2 ^ f(d1, this.k[5])
+    d1 = d1 ^ f(d2, this.k[6])
 
-    d1 = fl(d1, c.ke[1])
-    d2 = flinv(d2, c.ke[2])
+    d1 = fl(d1, this.ke[1])
+    d2 = flinv(d2, this.ke[2])
 
-    d2 = d2 ^ f(d1, c.k[7])
-    d1 = d1 ^ f(d2, c.k[8])
-    d2 = d2 ^ f(d1, c.k[9])
-    d1 = d1 ^ f(d2, c.k[10])
-    d2 = d2 ^ f(d1, c.k[11])
-    d1 = d1 ^ f(d2, c.k[12])
+    d2 = d2 ^ f(d1, this.k[7])
+    d1 = d1 ^ f(d2, this.k[8])
+    d2 = d2 ^ f(d1, this.k[9])
+    d1 = d1 ^ f(d2, this.k[10])
+    d2 = d2 ^ f(d1, this.k[11])
+    d1 = d1 ^ f(d2, this.k[12])
 
-    d1 = fl(d1, c.ke[3])
-    d2 = flinv(d2, c.ke[4])
+    d1 = fl(d1, this.ke[3])
+    d2 = flinv(d2, this.ke[4])
 
-    d2 = d2 ^ f(d1, c.k[13])
-    d1 = d1 ^ f(d2, c.k[14])
-    d2 = d2 ^ f(d1, c.k[15])
-    d1 = d1 ^ f(d2, c.k[16])
-    d2 = d2 ^ f(d1, c.k[17])
-    d1 = d1 ^ f(d2, c.k[18])
+    d2 = d2 ^ f(d1, this.k[13])
+    d1 = d1 ^ f(d2, this.k[14])
+    d2 = d2 ^ f(d1, this.k[15])
+    d1 = d1 ^ f(d2, this.k[16])
+    d2 = d2 ^ f(d1, this.k[17])
+    d1 = d1 ^ f(d2, this.k[18])
 
-    if c.klen > 16 {
+    if this.klen > 16 {
         // 24 or 32
 
-        d1 = fl(d1, c.ke[5])
-        d2 = flinv(d2, c.ke[6])
+        d1 = fl(d1, this.ke[5])
+        d2 = flinv(d2, this.ke[6])
 
-        d2 = d2 ^ f(d1, c.k[19])
-        d1 = d1 ^ f(d2, c.k[20])
-        d2 = d2 ^ f(d1, c.k[21])
-        d1 = d1 ^ f(d2, c.k[22])
-        d2 = d2 ^ f(d1, c.k[23])
-        d1 = d1 ^ f(d2, c.k[24])
+        d2 = d2 ^ f(d1, this.k[19])
+        d1 = d1 ^ f(d2, this.k[20])
+        d2 = d2 ^ f(d1, this.k[21])
+        d1 = d1 ^ f(d2, this.k[22])
+        d2 = d2 ^ f(d1, this.k[23])
+        d1 = d1 ^ f(d2, this.k[24])
     }
 
-    d2 = d2 ^ c.kw[3]
-    d1 = d1 ^ c.kw[4]
+    d2 = d2 ^ this.kw[3]
+    d1 = d1 ^ this.kw[4]
 
     binary.BigEndian.PutUint64(dst[0:], d2)
     binary.BigEndian.PutUint64(dst[8:], d1)
 }
 
-func (c *camelliaCipher) Decrypt(dst, src []byte) {
-
+func (this *camelliaCipher) decrypt(dst, src []byte) {
     d2 := binary.BigEndian.Uint64(src[0:])
     d1 := binary.BigEndian.Uint64(src[8:])
 
-    d1 = d1 ^ c.kw[4]
-    d2 = d2 ^ c.kw[3]
+    d1 = d1 ^ this.kw[4]
+    d2 = d2 ^ this.kw[3]
 
-    if c.klen > 16 {
+    if this.klen > 16 {
         // 24 or 32
 
-        d1 = d1 ^ f(d2, c.k[24])
-        d2 = d2 ^ f(d1, c.k[23])
-        d1 = d1 ^ f(d2, c.k[22])
-        d2 = d2 ^ f(d1, c.k[21])
-        d1 = d1 ^ f(d2, c.k[20])
-        d2 = d2 ^ f(d1, c.k[19])
+        d1 = d1 ^ f(d2, this.k[24])
+        d2 = d2 ^ f(d1, this.k[23])
+        d1 = d1 ^ f(d2, this.k[22])
+        d2 = d2 ^ f(d1, this.k[21])
+        d1 = d1 ^ f(d2, this.k[20])
+        d2 = d2 ^ f(d1, this.k[19])
 
-        d2 = fl(d2, c.ke[6])
-        d1 = flinv(d1, c.ke[5])
+        d2 = fl(d2, this.ke[6])
+        d1 = flinv(d1, this.ke[5])
     }
 
-    d1 = d1 ^ f(d2, c.k[18])
-    d2 = d2 ^ f(d1, c.k[17])
-    d1 = d1 ^ f(d2, c.k[16])
-    d2 = d2 ^ f(d1, c.k[15])
-    d1 = d1 ^ f(d2, c.k[14])
-    d2 = d2 ^ f(d1, c.k[13])
+    d1 = d1 ^ f(d2, this.k[18])
+    d2 = d2 ^ f(d1, this.k[17])
+    d1 = d1 ^ f(d2, this.k[16])
+    d2 = d2 ^ f(d1, this.k[15])
+    d1 = d1 ^ f(d2, this.k[14])
+    d2 = d2 ^ f(d1, this.k[13])
 
-    d2 = fl(d2, c.ke[4])
-    d1 = flinv(d1, c.ke[3])
+    d2 = fl(d2, this.ke[4])
+    d1 = flinv(d1, this.ke[3])
 
-    d1 = d1 ^ f(d2, c.k[12])
-    d2 = d2 ^ f(d1, c.k[11])
-    d1 = d1 ^ f(d2, c.k[10])
-    d2 = d2 ^ f(d1, c.k[9])
-    d1 = d1 ^ f(d2, c.k[8])
-    d2 = d2 ^ f(d1, c.k[7])
+    d1 = d1 ^ f(d2, this.k[12])
+    d2 = d2 ^ f(d1, this.k[11])
+    d1 = d1 ^ f(d2, this.k[10])
+    d2 = d2 ^ f(d1, this.k[9])
+    d1 = d1 ^ f(d2, this.k[8])
+    d2 = d2 ^ f(d1, this.k[7])
 
-    d2 = fl(d2, c.ke[2])
-    d1 = flinv(d1, c.ke[1])
+    d2 = fl(d2, this.ke[2])
+    d1 = flinv(d1, this.ke[1])
 
-    d1 = d1 ^ f(d2, c.k[6])
-    d2 = d2 ^ f(d1, c.k[5])
-    d1 = d1 ^ f(d2, c.k[4])
-    d2 = d2 ^ f(d1, c.k[3])
-    d1 = d1 ^ f(d2, c.k[2])
-    d2 = d2 ^ f(d1, c.k[1])
+    d1 = d1 ^ f(d2, this.k[6])
+    d2 = d2 ^ f(d1, this.k[5])
+    d1 = d1 ^ f(d2, this.k[4])
+    d2 = d2 ^ f(d1, this.k[3])
+    d1 = d1 ^ f(d2, this.k[2])
+    d2 = d2 ^ f(d1, this.k[1])
 
-    d2 ^= c.kw[2]
-    d1 ^= c.kw[1]
+    d2 ^= this.kw[2]
+    d1 ^= this.kw[1]
 
     binary.BigEndian.PutUint64(dst[0:], d1)
     binary.BigEndian.PutUint64(dst[8:], d2)

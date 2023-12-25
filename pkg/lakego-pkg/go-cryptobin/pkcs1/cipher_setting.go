@@ -3,6 +3,8 @@ package pkcs1
 import (
     "crypto/aes"
     "crypto/des"
+
+    "github.com/deatil/go-cryptobin/cipher/sm4"
 )
 
 // DES_CBC 模式
@@ -49,6 +51,16 @@ var CipherAES256CBC = CipherCBC{
     name:           "AES-256-CBC",
 }
 
+// SM4_CBC 模式
+var CipherSM4CBC = CipherCBC{
+    cipherFunc:     sm4.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        16,
+    blockSize:      sm4.BlockSize,
+    name:           "SM4-CBC",
+}
+
 func init() {
     AddCipher(CipherDESCBC.Name(), func() Cipher {
         return CipherDESCBC
@@ -65,6 +77,10 @@ func init() {
     })
     AddCipher(CipherAES256CBC.Name(), func() Cipher {
         return CipherAES256CBC
+    })
+
+    AddCipher(CipherSM4CBC.Name(), func() Cipher {
+        return CipherSM4CBC
     })
 }
 
@@ -114,6 +130,16 @@ var CipherAES256CFB = CipherCFB{
     name:           "AES-256-CFB",
 }
 
+// SM4_CFB 模式
+var CipherSM4CFB = CipherCFB{
+    cipherFunc:     sm4.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        16,
+    blockSize:      sm4.BlockSize,
+    name:           "SM4-CFB",
+}
+
 func init() {
     AddCipher(CipherDESCFB.Name(), func() Cipher {
         return CipherDESCFB
@@ -130,6 +156,10 @@ func init() {
     })
     AddCipher(CipherAES256CFB.Name(), func() Cipher {
         return CipherAES256CFB
+    })
+
+    AddCipher(CipherSM4CFB.Name(), func() Cipher {
+        return CipherSM4CFB
     })
 }
 
@@ -179,6 +209,16 @@ var CipherAES256OFB = CipherOFB{
     name:           "AES-256-OFB",
 }
 
+// SM4_OFB 模式
+var CipherSM4OFB = CipherOFB{
+    cipherFunc:     sm4.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        16,
+    blockSize:      sm4.BlockSize,
+    name:           "SM4-OFB",
+}
+
 func init() {
     AddCipher(CipherDESOFB.Name(), func() Cipher {
         return CipherDESOFB
@@ -195,6 +235,10 @@ func init() {
     })
     AddCipher(CipherAES256OFB.Name(), func() Cipher {
         return CipherAES256OFB
+    })
+
+    AddCipher(CipherSM4OFB.Name(), func() Cipher {
+        return CipherSM4OFB
     })
 }
 
@@ -244,6 +288,16 @@ var CipherAES256CTR = CipherCTR{
     name:           "AES-256-CTR",
 }
 
+// SM4_CTR 模式
+var CipherSM4CTR = CipherCTR{
+    cipherFunc:     sm4.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        16,
+    blockSize:      sm4.BlockSize,
+    name:           "SM4-CTR",
+}
+
 func init() {
     AddCipher(CipherDESCTR.Name(), func() Cipher {
         return CipherDESCTR
@@ -260,5 +314,9 @@ func init() {
     })
     AddCipher(CipherAES256CTR.Name(), func() Cipher {
         return CipherAES256CTR
+    })
+
+    AddCipher(CipherSM4CTR.Name(), func() Cipher {
+        return CipherSM4CTR
     })
 }

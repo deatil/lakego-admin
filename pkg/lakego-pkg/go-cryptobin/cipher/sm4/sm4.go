@@ -45,13 +45,15 @@ func (this *sm4Cipher) BlockSize() int {
 }
 
 func (this *sm4Cipher) Encrypt(dst, src []byte) {
-    if len(dst) < len(src) {
+    if len(src) < BlockSize {
+        panic("cryptobin/sm4: input not full block")
+    }
+
+    if len(dst) < BlockSize {
         panic("cryptobin/sm4: output not full block")
     }
 
-    bs := len(src)
-
-    if alias.InexactOverlap(dst[:bs], src[:bs]) {
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
         panic("cryptobin/sm4: invalid buffer overlap")
     }
 
@@ -59,13 +61,15 @@ func (this *sm4Cipher) Encrypt(dst, src []byte) {
 }
 
 func (this *sm4Cipher) Decrypt(dst, src []byte) {
-    if len(dst) < len(src) {
+    if len(src) < BlockSize {
+        panic("cryptobin/sm4: input not full block")
+    }
+
+    if len(dst) < BlockSize {
         panic("cryptobin/sm4: output not full block")
     }
 
-    bs := len(src)
-
-    if alias.InexactOverlap(dst[:bs], src[:bs]) {
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
         panic("cryptobin/sm4: invalid buffer overlap")
     }
 
@@ -136,27 +140,6 @@ func (this *sm4Cipher) RNDS(B0, B1, B2, B3 *uint32, k0, k1, k2, k3 int, F func(u
 }
 
 func (this *sm4Cipher) setKey(key []byte) {
-    /*
-     * Family Key
-     */
-    var FK = [4]uint32{
-        0xa3b1bac6, 0x56aa3350, 0x677d9197, 0xb27022dc,
-    };
-
-    /*
-     * Constant Key
-     */
-    var CK = [32]uint32{
-        0x00070E15, 0x1C232A31, 0x383F464D, 0x545B6269,
-        0x70777E85, 0x8C939AA1, 0xA8AFB6BD, 0xC4CBD2D9,
-        0xE0E7EEF5, 0xFC030A11, 0x181F262D, 0x343B4249,
-        0x50575E65, 0x6C737A81, 0x888F969D, 0xA4ABB2B9,
-        0xC0C7CED5, 0xDCE3EAF1, 0xF8FF060D, 0x141B2229,
-        0x30373E45, 0x4C535A61, 0x686F767D, 0x848B9299,
-        0xA0A7AEB5, 0xBCC3CAD1, 0xD8DFE6ED, 0xF4FB0209,
-        0x10171E25, 0x2C333A41, 0x484F565D, 0x646B7279,
-    };
-
     var K [4]uint32
     var i int32
 

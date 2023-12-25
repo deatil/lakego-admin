@@ -2,9 +2,10 @@ package sm9curve
 
 import (
     "math/big"
+    "crypto/subtle"
 )
 
-// twistPoint implements the elliptic curve y²=x³+5/ξ over GF(p²). Points are
+// twistPoint implements the elliptic curve y²=x³+5/ξ (y²=x³+5i) over GF(p²). Points are
 // kept in Jacobian form and t=z² when valid. The group G₂ is the set of
 // n-torsion points of this curve over GF(p²) (where n = Order)
 type twistPoint struct {
@@ -13,18 +14,18 @@ type twistPoint struct {
 
 var twistB = &gfP2{
     *newGFp(5),
-    *newGFp(0),
+    *zero,
 }
 
-// twistGen is the generator of group G₂ (in form of montEncode).
+// twistGen is the generator of group G₂.
 var twistGen = &twistPoint{
     gfP2{
-        gfP{0xdb6db4822750a8a6, 0x84c6135a5121f134, 0x1874032f88791d41, 0x905112f2b85f3a37},
-        gfP{0x260226a68ce2da8f, 0x7ee5645edbf6c06b, 0xf8f57c82b1495444, 0x61fcf018bc47c4d1},
+        *fromBigInt(bigFromHex("85AEF3D078640C98597B6027B441A01FF1DD2C190F5E93C454806C11D8806141")),
+        *fromBigInt(bigFromHex("3722755292130B08D2AAB97FD34EC120EE265948D19C17ABF9B7213BAF82D65B")),
     },
     gfP2{
-        gfP{0xf7b82dac4c89bfbb, 0x3706f3f6a49dc12f, 0x1e29de93d3eef769, 0x81e448c3c76a5d53},
-        gfP{0xc03f138f9171c24a, 0x92fbab45a15a3ca7, 0x2445561e2ff77cdb, 0x108495e0c0f62ece},
+        *fromBigInt(bigFromHex("17509B092E845C1266BA0D262CBEE6ED0736A96FA347C8BD856DC76B84EBEB96")),
+        *fromBigInt(bigFromHex("A7CF28D519BE3DA65F3170153D278FF247EFBA98A71A08116215BBA5C999A7C7")),
     },
     gfP2{*newGFp(0), *newGFp(1)},
     gfP2{*newGFp(0), *newGFp(1)},
@@ -43,12 +44,22 @@ func (c *twistPoint) Set(a *twistPoint) {
     c.t.Set(&a.t)
 }
 
-// Equal compare c and other
-func (c *twistPoint) Equal(other *twistPoint) bool {
-    return c.x.Equal(&other.x) == 1 &&
-        c.y.Equal(&other.y) == 1 &&
-        c.z.Equal(&other.z) == 1 &&
-        c.t.Equal(&other.t) == 1
+func NewTwistPoint() *twistPoint {
+    c := &twistPoint{}
+    c.SetInfinity()
+    return c
+}
+
+func NewTwistGenerator() *twistPoint {
+    c := &twistPoint{}
+    c.Set(twistGen)
+    return c
+}
+
+func (c *twistPoint) polynomial(x *gfP2) *gfP2 {
+    x3 := &gfP2{}
+    x3.Square(x).Mul(x3, x).Add(x3, twistB)
+    return x3
 }
 
 // IsOnCurve returns true iff c is on the curve.
@@ -58,9 +69,9 @@ func (c *twistPoint) IsOnCurve() bool {
         return true
     }
 
-    y2, x3 := &gfP2{}, &gfP2{}
+    y2 := &gfP2{}
     y2.Square(&c.y)
-    x3.Square(&c.x).Mul(x3, &c.x).Add(x3, twistB)
+    x3 := c.polynomial(&c.x)
 
     return *y2 == *x3
 }
@@ -74,6 +85,13 @@ func (c *twistPoint) SetInfinity() {
 
 func (c *twistPoint) IsInfinity() bool {
     return c.z.IsZero()
+}
+
+func (e *twistPoint) Equal(t *twistPoint) bool {
+    return (&e.x).Equal(&t.x) &&
+        (&e.y).Equal(&t.y) &&
+        (&e.z).Equal(&t.z) &&
+        (&e.t).Equal(&t.t)
 }
 
 func (c *twistPoint) Add(a, b *twistPoint) {
@@ -206,8 +224,53 @@ func (c *twistPoint) Neg(a *twistPoint) {
     c.t.SetZero()
 }
 
-func (c *twistPoint) polynomial(x *gfP2) *gfP2 {
-    x3 := &gfP2{}
-    x3.Square(x).Mul(x3, x).Add(x3, twistB)
-    return x3
+// code logic is form https://github.com/guanzhi/GmSSL/blob/develop/src/sm9_alg.c
+// the value is not same as [p]a
+func (c *twistPoint) Frobenius(a *twistPoint) {
+    c.x.Conjugate(&a.x)
+    c.y.Conjugate(&a.y)
+    c.z.Conjugate(&a.z)
+    c.z.MulScalar(&a.z, frobConstant)
+    c.t.Square(&a.z)
+}
+
+func (c *twistPoint) FrobeniusP2(a *twistPoint) {
+    c.x.Set(&a.x)
+    c.y.Set(&a.y)
+    c.z.MulScalar(&a.z, wToP2Minus1)
+    c.t.Square(&a.z)
+}
+
+func (c *twistPoint) NegFrobeniusP2(a *twistPoint) {
+    c.x.Set(&a.x)
+    c.y.Neg(&a.y)
+    c.z.MulScalar(&a.z, wToP2Minus1)
+    c.t.Square(&a.z)
+}
+
+// Select sets q to p1 if cond == 1, and to p2 if cond == 0.
+func (q *twistPoint) Select(p1, p2 *twistPoint, cond int) *twistPoint {
+    q.x.Select(&p1.x, &p2.x, cond)
+    q.y.Select(&p1.y, &p2.y, cond)
+    q.z.Select(&p1.z, &p2.z, cond)
+    q.t.Select(&p1.t, &p2.t, cond)
+    return q
+}
+
+// A twistPointTable holds the first 15 multiples of a point at offset -1, so [1]P
+// is at table[0], [15]P is at table[14], and [0]P is implicitly the identity
+// point.
+type twistPointTable [15]*twistPoint
+
+// Select selects the n-th multiple of the table base point into p. It works in
+// constant time by iterating over every entry of the table. n must be in [0, 15].
+func (table *twistPointTable) Select(p *twistPoint, n uint8) {
+    if n >= 16 {
+        panic("sm9: internal error: twistPointTable called with out-of-bounds value")
+    }
+    p.SetInfinity()
+    for i, f := range table {
+        cond := subtle.ConstantTimeByteEq(uint8(i+1), n)
+        p.Select(f, p, cond)
+    }
 }

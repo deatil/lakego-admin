@@ -32,7 +32,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(anubisCipher)
-
     c.setKey(key, int32(keylen))
 
     return c, nil

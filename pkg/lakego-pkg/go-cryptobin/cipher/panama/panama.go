@@ -85,6 +85,10 @@ func (this *panamaCipher) setKey(
 }
 
 func (this *panamaCipher) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cryptobin/panama: dst buffer is to small")
+    }
+
     var i int32
 
     /* initialize the Panama state machine for a fresh crypting operation */

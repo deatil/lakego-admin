@@ -54,6 +54,26 @@ func (this *cast256Cipher) Encrypt(dst, src []byte) {
         panic("cryptobin/cast256: invalid buffer overlap")
     }
 
+    this.encrypt(dst, src)
+}
+
+func (this *cast256Cipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/cast256: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/cast256: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/cast256: invalid buffer overlap")
+    }
+
+    this.decrypt(dst, src)
+}
+
+func (this *cast256Cipher) encrypt(dst, src []byte) {
     blk := bytesToUint32s(src)
 
     blk = f_rnd(blk,  0, this.l_key)
@@ -75,19 +95,7 @@ func (this *cast256Cipher) Encrypt(dst, src []byte) {
     copy(dst, dstBytes[:])
 }
 
-func (this *cast256Cipher) Decrypt(dst, src []byte) {
-    if len(src) < BlockSize {
-        panic("cryptobin/cast256: input not full block")
-    }
-
-    if len(dst) < BlockSize {
-        panic("cryptobin/cast256: output not full block")
-    }
-
-    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/cast256: invalid buffer overlap")
-    }
-
+func (this *cast256Cipher) decrypt(dst, src []byte) {
     blk := bytesToUint32s(src)
 
     blk = f_rnd(blk, 88, this.l_key)

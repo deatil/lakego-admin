@@ -35,6 +35,10 @@ func (pub *SignMasterPublicKey) Equal(x crypto.PublicKey) bool {
     return pub.Mpk.Equal(xx.Mpk)
 }
 
+func (pub *SignMasterPublicKey) Verify(uid []byte, hid byte, hash, sig []byte) bool {
+    return VerifyASN1(pub, uid, hid, hash, sig)
+}
+
 // SignMasterPrivateKey contains a master secret key and a master public key.
 type SignMasterPrivateKey struct {
     SignMasterPublicKey
@@ -52,13 +56,13 @@ func (priv *SignMasterPrivateKey) Equal(x crypto.PrivateKey) bool {
         bigIntEqual(priv.D, xx.D)
 }
 
-func (this *SignMasterPrivateKey) PublicKey() *SignMasterPublicKey {
-    return &this.SignMasterPublicKey
+func (priv *SignMasterPrivateKey) PublicKey() *SignMasterPublicKey {
+    return &priv.SignMasterPublicKey
 }
 
 // Public returns the public key corresponding to priv.
-func (this *SignMasterPrivateKey) Public() crypto.PublicKey {
-    return this.PublicKey()
+func (priv *SignMasterPrivateKey) Public() crypto.PublicKey {
+    return priv.PublicKey()
 }
 
 // SignPrivateKey contains a secret key.
@@ -78,13 +82,18 @@ func (priv *SignPrivateKey) Equal(x crypto.PrivateKey) bool {
     return priv.Sk.Equal(xx.Sk)
 }
 
-func (this *SignPrivateKey) PublicKey() *SignMasterPublicKey {
-    return &this.SignMasterPublicKey
+func (priv *SignPrivateKey) PublicKey() *SignMasterPublicKey {
+    return &priv.SignMasterPublicKey
 }
 
 // Public returns the public key corresponding to priv.
-func (this *SignPrivateKey) Public() crypto.PublicKey {
-    return this.PublicKey()
+func (priv *SignPrivateKey) Public() crypto.PublicKey {
+    return priv.PublicKey()
+}
+
+// Sign
+func (priv *SignPrivateKey) Sign(rand io.Reader, hash []byte) ([]byte, error) {
+    return SignASN1(rand, priv, hash)
 }
 
 // generate master key for KGC(Key Generate Center).
@@ -96,7 +105,7 @@ func GenerateSignMasterPrivateKey(rand io.Reader) (mk *SignMasterPrivateKey, err
 
     mk = new(SignMasterPrivateKey)
     mk.D = new(big.Int).Set(s)
-    mk.Mpk = new(sm9curve.G2).ScalarBaseMult(s)
+    mk.Mpk, err = new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(s.Bytes()))
 
     return
 }
@@ -120,7 +129,7 @@ func GenerateSignPrivateKey(mk *SignMasterPrivateKey, id []byte, hid byte) (uk *
     t2 := new(big.Int).Mul(mk.D, t1)
 
     uk = new(SignPrivateKey)
-    uk.Sk = new(sm9curve.G1).ScalarBaseMult(t2)
+    uk.Sk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(t2.Bytes()))
     uk.Mpk = mk.Mpk
 
     return
@@ -132,7 +141,7 @@ func NewSignMasterPrivateKey(bytes []byte) (mke *SignMasterPrivateKey, err error
     mke.D = new(big.Int).SetBytes(bytes)
 
     d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
-    mke.Mpk = new(sm9curve.G2).ScalarBaseMult(d)
+    mke.Mpk, err = new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
 
     return
 }
@@ -144,7 +153,7 @@ func ToSignMasterPrivateKey(mke *SignMasterPrivateKey) []byte {
 
 func NewSignMasterPublicKey(bytes []byte) (mbk *SignMasterPublicKey, err error) {
     g := new(sm9curve.G2)
-    _, err = g.Unmarshal(bytes)
+    _, err = g.UnmarshalUncompressed(bytes)
     if err != nil {
         return nil, err
     }
@@ -157,14 +166,14 @@ func NewSignMasterPublicKey(bytes []byte) (mbk *SignMasterPublicKey, err error) 
 
 // 输出明文
 func ToSignMasterPublicKey(pub *SignMasterPublicKey) []byte {
-    return pub.Mpk.Marshal()
+    return pub.Mpk.MarshalUncompressed()
 }
 
 func NewSignPrivateKey(bytes []byte) (uke *SignPrivateKey, err error) {
     var pub []byte
 
     g1 := new(sm9curve.G1)
-    pub, err = g1.Unmarshal(bytes)
+    pub, err = g1.UnmarshalUncompressed(bytes)
     if err != nil {
         return nil, err
     }
@@ -177,7 +186,7 @@ func NewSignPrivateKey(bytes []byte) (uke *SignPrivateKey, err error) {
     uke.Sk = g1
 
     g2 := new(sm9curve.G2)
-    _, err = g2.Unmarshal(pub)
+    _, err = g2.UnmarshalUncompressed(pub)
     if err != nil {
         return nil, err
     }
@@ -193,9 +202,9 @@ func ToSignPrivateKey(pri *SignPrivateKey) []byte {
         return nil
     }
 
-    pub := pri.Mpk.Marshal()
+    pub := pri.Mpk.MarshalUncompressed()
 
-    return append(pri.Sk.Marshal(), pub...)
+    return append(pri.Sk.MarshalUncompressed(), pub...)
 }
 
 // sm9 sign algorithm:
@@ -230,7 +239,7 @@ Regen:
         goto Regen
     }
 
-    s = new(sm9curve.G1).ScalarMult(pri.Sk, l)
+    s, err = new(sm9curve.G1).ScalarMult(pri.Sk, l.Bytes())
 
     return
 }
@@ -252,7 +261,11 @@ func Verify(pub *SignMasterPublicKey, id []byte, hid byte, msg []byte, h *big.In
     id = append(id, hid)
     h1 := hash(id, n, H1)
 
-    P := new(sm9curve.G2).ScalarBaseMult(h1)
+    P, err := new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(h1.Bytes()))
+    if err != nil {
+        return false
+    }
+
     P.Add(P, pub.Mpk)
 
     u := sm9curve.Pair(s, P)
@@ -283,7 +296,7 @@ func SignASN1(rand io.Reader, priv *SignPrivateKey, hash []byte) ([]byte, error)
     r := sigData{
         H: h.Bytes(),
         S: asn1.BitString{
-            Bytes: s.Marshal(),
+            Bytes: s.MarshalUncompressed(),
         },
     }
 
@@ -297,7 +310,7 @@ func VerifyASN1(pub *SignMasterPublicKey, uid []byte, hid byte, hash, sig []byte
     }
 
     s := new(sm9curve.G1)
-    _, err := s.Unmarshal(data.S.Bytes)
+    _, err := s.UnmarshalUncompressed(data.S.Bytes)
     if err != nil {
         return false
     }

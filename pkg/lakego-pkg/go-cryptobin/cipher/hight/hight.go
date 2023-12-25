@@ -3,6 +3,8 @@ package hight
 import (
     "fmt"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const (
@@ -50,13 +52,6 @@ func (s *hightCipher) BlockSize() int {
     return BlockSize
 }
 
-func (s *hightCipher) encryptStep(XX []byte, k, i0, i1, i2, i3, i4, i5, i6, i7 int) {
-    XX[i0] = (XX[i0] ^ (hight_F0[XX[i1]] + s.roundKey[4*k+3]))
-    XX[i2] = (XX[i2] + (hight_F1[XX[i3]] ^ s.roundKey[4*k+2]))
-    XX[i4] = (XX[i4] ^ (hight_F0[XX[i5]] + s.roundKey[4*k+1]))
-    XX[i6] = (XX[i6] + (hight_F1[XX[i7]] ^ s.roundKey[4*k+0]))
-}
-
 func (s *hightCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/hight: input not full block")
@@ -65,7 +60,38 @@ func (s *hightCipher) Encrypt(dst, src []byte) {
     if len(dst) < BlockSize {
         panic("cryptobin/hight: output not full block")
     }
-    
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/hight: invalid buffer overlap")
+    }
+
+    s.encrypt(dst, src)
+}
+
+func (s *hightCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/hight: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/hight: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/hight: invalid buffer overlap")
+    }
+
+    s.decrypt(dst, src)
+}
+
+func (s *hightCipher) encryptStep(XX []byte, k, i0, i1, i2, i3, i4, i5, i6, i7 int) {
+    XX[i0] = (XX[i0] ^ (hight_F0[XX[i1]] + s.roundKey[4*k+3]))
+    XX[i2] = (XX[i2] + (hight_F1[XX[i3]] ^ s.roundKey[4*k+2]))
+    XX[i4] = (XX[i4] ^ (hight_F0[XX[i5]] + s.roundKey[4*k+1]))
+    XX[i6] = (XX[i6] + (hight_F1[XX[i7]] ^ s.roundKey[4*k+0]))
+}
+
+func (s *hightCipher) encrypt(dst, src []byte) {
     XX := []byte{
         src[0] + s.roundKey[0],
         src[1],
@@ -127,15 +153,7 @@ func (s *hightCipher) decryptStep(XX []byte, k, i0, i1, i2, i3, i4, i5, i6, i7 i
     XX[i7] = (XX[i7] ^ (hight_F0[XX[i0]] + s.roundKey[4*k+3]))
 }
 
-func (s *hightCipher) Decrypt(dst, src []byte) {
-    if len(src) < BlockSize {
-        panic("cryptobin/hight: input not full block")
-    }
-
-    if len(dst) < BlockSize {
-        panic("cryptobin/hight: output not full block")
-    }
-    
+func (s *hightCipher) decrypt(dst, src []byte) {
     XX := []byte{
         src[7],
         src[0] - s.roundKey[4],

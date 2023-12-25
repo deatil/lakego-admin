@@ -4,6 +4,8 @@ import (
     "fmt"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 type seed256Cipher struct {
@@ -69,10 +71,35 @@ func (s *seed256Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (src)", len(src)))
     }
+
     if len(dst) < BlockSize {
         panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (dst)", len(dst)))
     }
 
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/seed: invalid buffer overlap")
+    }
+
+    s.encrypt(dst, src)
+}
+
+func (s *seed256Cipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (src)", len(src)))
+    }
+
+    if len(dst) < BlockSize {
+        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (dst)", len(dst)))
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/seed: invalid buffer overlap")
+    }
+
+    s.decrypt(dst, src)
+}
+
+func (s *seed256Cipher) encrypt(dst, src []byte) {
     data := [...]uint32{
         binary.BigEndian.Uint32(src[0:]),
         binary.BigEndian.Uint32(src[4:]),
@@ -107,14 +134,7 @@ func (s *seed256Cipher) Encrypt(dst, src []byte) {
     binary.BigEndian.PutUint32(dst[12:], data[1])
 }
 
-func (s *seed256Cipher) Decrypt(dst, src []byte) {
-    if len(src) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (src)", len(src)))
-    }
-    if len(dst) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (dst)", len(dst)))
-    }
-
+func (s *seed256Cipher) decrypt(dst, src []byte) {
     data := [...]uint32{
         binary.BigEndian.Uint32(src[0:]),
         binary.BigEndian.Uint32(src[4:]),

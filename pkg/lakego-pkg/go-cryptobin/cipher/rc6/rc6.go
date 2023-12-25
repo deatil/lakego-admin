@@ -91,6 +91,26 @@ func (c *rc6Cipher) Encrypt(dst, src []byte) {
         panic("cryptobin/rc6: invalid buffer overlap")
     }
 
+    c.encrypt(dst, src)
+}
+
+func (c *rc6Cipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/rc6: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/rc6: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/rc6: invalid buffer overlap")
+    }
+
+    c.decrypt(dst, src)
+}
+
+func (c *rc6Cipher) encrypt(dst, src []byte) {
     A := binary.LittleEndian.Uint32(src[:4])
     B := binary.LittleEndian.Uint32(src[4:8])
     C := binary.LittleEndian.Uint32(src[8:12])
@@ -115,19 +135,7 @@ func (c *rc6Cipher) Encrypt(dst, src []byte) {
     binary.LittleEndian.PutUint32(dst[12:16], D)
 }
 
-func (c *rc6Cipher) Decrypt(dst, src []byte) {
-    if len(src) < BlockSize {
-        panic("cryptobin/rc6: input not full block")
-    }
-
-    if len(dst) < BlockSize {
-        panic("cryptobin/rc6: output not full block")
-    }
-
-    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/rc6: invalid buffer overlap")
-    }
-
+func (c *rc6Cipher) decrypt(dst, src []byte) {
     A := binary.LittleEndian.Uint32(src[:4])
     B := binary.LittleEndian.Uint32(src[4:8])
     C := binary.LittleEndian.Uint32(src[8:12])

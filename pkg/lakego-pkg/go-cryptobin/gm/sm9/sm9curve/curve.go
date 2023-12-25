@@ -2,6 +2,7 @@ package sm9curve
 
 import (
     "math/big"
+    "crypto/subtle"
 )
 
 // curvePoint implements the elliptic curve y²=x³+5. Points are kept in Jacobian
@@ -12,12 +13,12 @@ type curvePoint struct {
 
 var curveB = newGFp(5)
 
-// curveGen is the generator of G₁ (in form of montEncode).
+// curveGen is the generator of G₁.
 var curveGen = &curvePoint{
-    x: gfP{0x22e935e29860501b, 0xa946fd5e0073282c, 0xefd0cec817a649be, 0x5129787c869140b5},
-    y: gfP{0xee779649eb87f7c7, 0x15563cbdec30a576, 0x326353912824efbf, 0x7215717763c39828},
-    z: *newGFp(1),
-    t: *newGFp(1),
+    x: *fromBigInt(bigFromHex("93DE051D62BF718FF5ED0704487D01D6E1E4086909DC3280E8C4E4817C66DDDD")),
+    y: *fromBigInt(bigFromHex("21FE8DDA4F21E607631065125C395BBC1C1C00CBFA6024350C464CD70A3EA616")),
+    z: *one,
+    t: *one,
 }
 
 func (c *curvePoint) String() string {
@@ -35,39 +36,57 @@ func (c *curvePoint) Set(a *curvePoint) {
     c.t.Set(&a.t)
 }
 
-// Equal compare c and other
-func (c *curvePoint) Equal(other *curvePoint) bool {
-    return c.x.Equal(&other.x) == 1 &&
-        c.y.Equal(&other.y) == 1 &&
-        c.z.Equal(&other.z) == 1 &&
-        c.t.Equal(&other.t) == 1
+func (c *curvePoint) polynomial(x *gfP) *gfP {
+    x3 := &gfP{}
+    gfpMul(x3, x, x)
+    gfpMul(x3, x3, x)
+    gfpAdd(x3, x3, curveB)
+    return x3
 }
 
-// IsOnCurve returns true iff c is on the curve.
+// IsOnCurve returns true if c is on the curve.
 func (c *curvePoint) IsOnCurve() bool {
     c.MakeAffine()
-    if c.IsInfinity() {
+    if c.IsInfinity() { // TBC: This is not same as golang elliptic
         return true
     }
 
-    y2, x3 := &gfP{}, &gfP{}
+    y2 := &gfP{}
     gfpMul(y2, &c.y, &c.y)
-    gfpMul(x3, &c.x, &c.x)
-    gfpMul(x3, x3, &c.x)
-    gfpAdd(x3, x3, curveB)
+
+    x3 := c.polynomial(&c.x)
 
     return *y2 == *x3
 }
 
+func NewCurvePoint() *curvePoint {
+    c := &curvePoint{}
+    c.SetInfinity()
+    return c
+}
+
+func NewCurveGenerator() *curvePoint {
+    c := &curvePoint{}
+    c.Set(curveGen)
+    return c
+}
+
 func (c *curvePoint) SetInfinity() {
-    c.x = gfP{0}
-    c.y = *newGFp(1)
-    c.z = gfP{0}
-    c.t = gfP{0}
+    c.x = *zero
+    c.y = *one
+    c.z = *zero
+    c.t = *zero
 }
 
 func (c *curvePoint) IsInfinity() bool {
-    return c.z == gfP{0}
+    return c.z == *zero
+}
+
+func (c *curvePoint) Equal(t *curvePoint) bool {
+    return (&c.x).Equal(&t.x) == 1 &&
+        (&c.y).Equal(&t.y) == 1 &&
+        (&c.z).Equal(&t.z) == 1 &&
+        (&c.t).Equal(&t.t) == 1
 }
 
 func (c *curvePoint) Add(a, b *curvePoint) {
@@ -75,6 +94,7 @@ func (c *curvePoint) Add(a, b *curvePoint) {
         c.Set(b)
         return
     }
+
     if b.IsInfinity() {
         c.Set(a)
         return
@@ -110,7 +130,7 @@ func (c *curvePoint) Add(a, b *curvePoint) {
     // with the notations below.
     h := &gfP{}
     gfpSub(h, u2, u1)
-    xEqual := *h == gfP{0}
+    xEqual := *h == *zero
 
     gfpAdd(t, h, h)
     // i = 4h²
@@ -121,7 +141,7 @@ func (c *curvePoint) Add(a, b *curvePoint) {
     gfpMul(j, h, i)
 
     gfpSub(t, s2, s1)
-    yEqual := *t == gfP{0}
+    yEqual := *t == *one
     if xEqual && yEqual {
         c.Double(a)
         return
@@ -207,12 +227,12 @@ func (c *curvePoint) Mul(a *curvePoint, scalar *big.Int) {
 }
 
 func (c *curvePoint) MakeAffine() {
-    if c.z == *newGFp(1) {
+    if c.z == *one {
         return
-    } else if c.z == *newGFp(0) {
-        c.x = gfP{0}
-        c.y = *newGFp(1)
-        c.t = gfP{0}
+    } else if c.z == *zero {
+        c.x = *zero
+        c.y = *one
+        c.t = *zero
         return
     }
 
@@ -226,21 +246,40 @@ func (c *curvePoint) MakeAffine() {
     gfpMul(&c.x, &c.x, zInv2)
     gfpMul(&c.y, t, zInv2)
 
-    c.z = *newGFp(1)
-    c.t = *newGFp(1)
+    c.z = *one
+    c.t = *one
 }
 
 func (c *curvePoint) Neg(a *curvePoint) {
     c.x.Set(&a.x)
     gfpNeg(&c.y, &a.y)
     c.z.Set(&a.z)
-    c.t = gfP{0}
+    c.t = *zero
 }
 
-func (c *curvePoint) polynomial(x *gfP) *gfP {
-    x3 := &gfP{}
-    gfpSqr(x3, x, 1)
-    gfpMul(x3, x3, x)
-    gfpAdd(x3, x3, curveB)
-    return x3
+// Select sets q to p1 if cond == 1, and to p2 if cond == 0.
+func (q *curvePoint) Select(p1, p2 *curvePoint, cond int) *curvePoint {
+    q.x.Select(&p1.x, &p2.x, cond)
+    q.y.Select(&p1.y, &p2.y, cond)
+    q.z.Select(&p1.z, &p2.z, cond)
+    q.t.Select(&p1.t, &p2.t, cond)
+    return q
+}
+
+// A curvePointTable holds the first 15 multiples of a point at offset -1, so [1]P
+// is at table[0], [15]P is at table[14], and [0]P is implicitly the identity
+// point.
+type curvePointTable [15]*curvePoint
+
+// Select selects the n-th multiple of the table base point into p. It works in
+// constant time by iterating over every entry of the table. n must be in [0, 15].
+func (table *curvePointTable) Select(p *curvePoint, n uint8) {
+    if n >= 16 {
+        panic("sm9: internal error: curvePointTable called with out-of-bounds value")
+    }
+    p.SetInfinity()
+    for i, f := range table {
+        cond := subtle.ConstantTimeByteEq(uint8(i+1), n)
+        p.Select(f, p, cond)
+    }
 }

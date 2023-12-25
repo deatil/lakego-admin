@@ -1,3 +1,5 @@
+//go:build (!amd64 && !arm64) || purego
+
 package sm9curve
 
 import (
@@ -9,10 +11,7 @@ func gfpCarry(a *gfP, head uint64) {
 
     var carry uint64
     for i, pi := range p2 {
-        ai := a[i]
-        bi := ai - pi - carry
-        b[i] = bi
-        carry = (pi&^ai | (pi|^ai)&bi) >> 63
+        b[i], carry = bits.Sub64(a[i], pi, carry)
     }
     carry = carry &^ head
 
@@ -28,21 +27,16 @@ func gfpCarry(a *gfP, head uint64) {
 func gfpNeg(c, a *gfP) {
     var carry uint64
     for i, pi := range p2 {
-        ai := a[i]
-        ci := pi - ai - carry
-        c[i] = ci
-        carry = (ai&^pi | (ai|^pi)&ci) >> 63
+        c[i], carry = bits.Sub64(pi, a[i], carry)
     }
+    // required for "zero", bn256 treat infinity point as valid
     gfpCarry(c, 0)
 }
 
 func gfpAdd(c, a, b *gfP) {
     var carry uint64
     for i, ai := range a {
-        bi := b[i]
-        ci := ai + bi + carry
-        c[i] = ci
-        carry = (ai&bi | (ai|bi)&^ci) >> 63
+        c[i], carry = bits.Add64(ai, b[i], carry)
     }
     gfpCarry(c, carry)
 }
@@ -50,138 +44,20 @@ func gfpAdd(c, a, b *gfP) {
 func gfpSub(c, a, b *gfP) {
     t := &gfP{}
 
-    var carry uint64
+    var carry, underflow uint64
+
+    for i, ai := range a {
+        c[i], underflow = bits.Sub64(ai, b[i], underflow)
+    }
+
     for i, pi := range p2 {
-        bi := b[i]
-        ti := pi - bi - carry
-        t[i] = ti
-        carry = (bi&^pi | (bi|^pi)&ti) >> 63
+        t[i], carry = bits.Add64(pi, c[i], carry)
     }
 
-    carry = 0
-    for i, ai := range a {
-        ti := t[i]
-        ci := ai + ti + carry
-        c[i] = ci
-        carry = (ai&ti | (ai|ti)&^ci) >> 63
+    mask := -underflow
+    for i, ci := range c {
+        c[i] ^= mask & (ci ^ t[i])
     }
-    gfpCarry(c, carry)
-}
-
-func mul(a, b [4]uint64) [8]uint64 {
-    const (
-        mask16 uint64 = 0x0000ffff
-        mask32 uint64 = 0xffffffff
-    )
-
-    var buff [32]uint64
-    for i, ai := range a {
-        a0, a1, a2, a3 := ai&mask16, (ai>>16)&mask16, (ai>>32)&mask16, ai>>48
-
-        for j, bj := range b {
-            b0, b2 := bj&mask32, bj>>32
-
-            off := 4 * (i + j)
-            buff[off+0] += a0 * b0
-            buff[off+1] += a1 * b0
-            buff[off+2] += a2*b0 + a0*b2
-            buff[off+3] += a3*b0 + a1*b2
-            buff[off+4] += a2 * b2
-            buff[off+5] += a3 * b2
-        }
-    }
-
-    for i := uint(1); i < 4; i++ {
-        shift := 16 * i
-
-        var head, carry uint64
-        for j := uint(0); j < 8; j++ {
-            block := 4 * j
-
-            xi := buff[block]
-            yi := (buff[block+i] << shift) + head
-            zi := xi + yi + carry
-            buff[block] = zi
-            carry = (xi&yi | (xi|yi)&^zi) >> 63
-
-            head = buff[block+i] >> (64 - shift)
-        }
-    }
-
-    return [8]uint64{buff[0], buff[4], buff[8], buff[12], buff[16], buff[20], buff[24], buff[28]}
-}
-
-func halfMul(a, b [4]uint64) [4]uint64 {
-    const (
-        mask16 uint64 = 0x0000ffff
-        mask32 uint64 = 0xffffffff
-    )
-
-    var buff [18]uint64
-    for i, ai := range a {
-        a0, a1, a2, a3 := ai&mask16, (ai>>16)&mask16, (ai>>32)&mask16, ai>>48
-
-        for j, bj := range b {
-            if i+j > 3 {
-                break
-            }
-            b0, b2 := bj&mask32, bj>>32
-
-            off := 4 * (i + j)
-            buff[off+0] += a0 * b0
-            buff[off+1] += a1 * b0
-            buff[off+2] += a2*b0 + a0*b2
-            buff[off+3] += a3*b0 + a1*b2
-            buff[off+4] += a2 * b2
-            buff[off+5] += a3 * b2
-        }
-    }
-
-    for i := uint(1); i < 4; i++ {
-        shift := 16 * i
-
-        var head, carry uint64
-        for j := uint(0); j < 4; j++ {
-            block := 4 * j
-
-            xi := buff[block]
-            yi := (buff[block+i] << shift) + head
-            zi := xi + yi + carry
-            buff[block] = zi
-            carry = (xi&yi | (xi|yi)&^zi) >> 63
-
-            head = buff[block+i] >> (64 - shift)
-        }
-    }
-
-    return [4]uint64{buff[0], buff[4], buff[8], buff[12]}
-}
-
-func gfpMul(c, a, b *gfP) {
-    T := mul(*a, *b)
-    m := halfMul([4]uint64{T[0], T[1], T[2], T[3]}, np)
-    t := mul([4]uint64{m[0], m[1], m[2], m[3]}, p2)
-
-    var carry uint64
-    for i, Ti := range T {
-        ti := t[i]
-        zi := Ti + ti + carry
-        T[i] = zi
-        carry = (Ti&ti | (Ti|ti)&^zi) >> 63
-    }
-
-    *c = gfP{T[4], T[5], T[6], T[7]}
-    gfpCarry(c, carry)
-}
-
-func gfpDouble(c, a *gfP) {
-    gfpAdd(c, a, a)
-}
-
-func gfpTriple(c, a *gfP) {
-    t := &gfP{}
-    gfpAdd(t, a, a)
-    gfpAdd(c, t, a)
 }
 
 // addMulVVW multiplies the multi-word value x by the single-word value y,
@@ -203,40 +79,48 @@ func addMulVVW(z, x []uint64, y uint64) (carry uint64) {
     return carry
 }
 
-func gfpSqr(res, in *gfP, n int) {
-    gfpMul(res, in, in)
-    for i := 1; i < n; i++ {
-        gfpMul(res, res, res)
-    }
-}
-
-func gfpFromMont(res, in *gfP) {
+func gfpMul(c, a, b *gfP) {
     var T [8]uint64
+    // This loop implements Word-by-Word Montgomery Multiplication, as
+    // described in Algorithm 4 (Fig. 3) of "Efficient Software
+    // Implementations of Modular Exponentiation" by Shay Gueron
+    // [https://eprint.iacr.org/2011/239.pdf].
     var carry uint64
-    copy(T[:], in[:])
     for i := 0; i < 4; i++ {
+        // Step 1 (T = a × b) is computed as a large pen-and-paper column
+        // multiplication of two numbers with n base-2^_W digits. If we just
+        // wanted to produce 2n-wide T, we would do
+        //
+        //   for i := 0; i < n; i++ {
+        //       d := bLimbs[i]
+        //       T[n+i] = addMulVVW(T[i:n+i], aLimbs, d)
+        //   }
+        //
+        // where d is a digit of the multiplier, T[i:n+i] is the shifted
+        // position of the product of that digit, and T[n+i] is the final carry.
+        // Note that T[i] isn't modified after processing the i-th digit.
+        //
+        // Instead of running two loops, one for Step 1 and one for Steps 2–6,
+        // the result of Step 1 is computed during the next loop. This is
+        // possible because each iteration only uses T[i] in Step 2 and then
+        // discards it in Step 6.
+        d := b[i]
+
+        c1 := addMulVVW(T[i:4+i], a[:], d)
+
+        // Step 6 is replaced by shifting the virtual window we operate
+        // over: T of the algorithm is T[i:] for us. That means that T1 in
+        // Step 2 (T mod 2^_W) is simply T[i]. k0 in Step 3 is our m0inv.
         Y := T[i] * np[0]
+
+        // Step 4 and 5 add Y × m to T, which as mentioned above is stored
+        // at T[i:]. The two carries (from a × d and Y × m) are added up in
+        // the next word T[n+i], and the carry bit from that addition is
+        // brought forward to the next iteration.
         c2 := addMulVVW(T[i:4+i], p2[:], Y)
-        T[4+i], carry = bits.Add64(uint64(0), c2, carry)
+        T[4+i], carry = bits.Add64(c1, c2, carry)
     }
 
-    *res = gfP{T[4], T[5], T[6], T[7]}
-    gfpCarry(res, carry)
-}
-
-func gfpMarshal(out *[32]byte, in *gfP) {
-    for w := uint(0); w < 4; w++ {
-        for b := uint(0); b < 8; b++ {
-            out[8*w+b] = byte(in[3-w] >> (56 - 8*b))
-        }
-    }
-}
-
-func gfpUnmarshal(out *gfP, in *[32]byte) {
-    for w := uint(0); w < 4; w++ {
-        out[3-w] = 0
-        for b := uint(0); b < 8; b++ {
-            out[3-w] += uint64(in[8*w+b]) << (56 - 8*b)
-        }
-    }
+    *c = gfP{T[4], T[5], T[6], T[7]}
+    gfpCarry(c, carry)
 }

@@ -1,15 +1,17 @@
 package sm9curve
 
-import "math/big"
+import (
+    "math/big"
+)
 
 // For details of the algorithms used, see "Multiplication and Squaring on
 // Pairing-Friendly Fields, Devegili et al.
 // http://eprint.iacr.org/2006/471.pdf.
 
 // gfP2 implements a field of size p² as a quadratic extension of the base field
-// where i²=-2.
+// where u²=-2, beta=-2.
 type gfP2 struct {
-    x, y gfP // value is xi+y.
+    x, y gfP // value is xu+y.
 }
 
 func gfP2Decode(in *gfP2) *gfP2 {
@@ -30,38 +32,39 @@ func (e *gfP2) Set(a *gfP2) *gfP2 {
 }
 
 func (e *gfP2) SetZero() *gfP2 {
-    e.x = gfP{0}
-    e.y = gfP{0}
+    e.x = *zero
+    e.y = *zero
     return e
 }
 
 func (e *gfP2) SetOne() *gfP2 {
-    e.x = gfP{0}
-    e.y = *newGFp(1)
+    e.x = *zero
+    e.y = *one
     return e
 }
 
-func (e *gfP2) Equal(t *gfP2) int {
-    var acc uint64
-    for i := range e.x {
-        acc |= e.x[i] ^ t.x[i]
-    }
+func (e *gfP2) SetU() *gfP2 {
+    e.x = *one
+    e.y = *zero
+    return e
+}
 
-    for i := range e.y {
-        acc |= e.y[i] ^ t.y[i]
-    }
-
-    return uint64IsZero(acc)
+func (e *gfP2) SetFrobConstant() *gfP2 {
+    e.x = *zero
+    e.y = *frobConstant
+    return e
 }
 
 func (e *gfP2) IsZero() bool {
-    zero := gfP{0}
-    return e.x == zero && e.y == zero
+    return e.x == *zero && e.y == *zero
 }
 
 func (e *gfP2) IsOne() bool {
-    zero, one := gfP{0}, *newGFp(1)
-    return e.x == zero && e.y == one
+    return e.x == *zero && e.y == *one
+}
+
+func (e *gfP2) Equal(t *gfP2) bool {
+    return (&e.x).Equal(&t.x) == 1 && (&e.y).Equal(&t.y) == 1
 }
 
 func (e *gfP2) Conjugate(a *gfP2) *gfP2 {
@@ -88,23 +91,121 @@ func (e *gfP2) Sub(a, b *gfP2) *gfP2 {
     return e
 }
 
+func (e *gfP2) Double(a *gfP2) *gfP2 {
+    gfpAdd(&e.x, &a.x, &a.x)
+    gfpAdd(&e.y, &a.y, &a.y)
+    return e
+}
+
+func (e *gfP2) Triple(a *gfP2) *gfP2 {
+    gfpAdd(&e.x, &a.x, &a.x)
+    gfpAdd(&e.y, &a.y, &a.y)
+
+    gfpAdd(&e.x, &e.x, &a.x)
+    gfpAdd(&e.y, &e.y, &a.y)
+    return e
+}
+
 // See "Multiplication and Squaring in Pairing-Friendly Fields",
 // http://eprint.iacr.org/2006/471.pdf
-//(ai+b)(ci+d)=(bd-2ac)+i((a+b)(c+d)-ac-bd)
+// The Karatsuba method
+//(a0+a1*u)(b0+b1*u)=c0+c1*u, where
+//c0 = a0*b0 - 2a1*b1
+//c1 = (a0 + a1)(b0 + b1) - a0*b0 - a1*b1 = a0*b1 + a1*b0
 func (e *gfP2) Mul(a, b *gfP2) *gfP2 {
-    tx, t1, t2 := &gfP{}, &gfP{}, &gfP{}
-    gfpAdd(t1, &a.x, &a.y) //a+b
-    gfpAdd(t2, &b.x, &b.y) //c+d
-    gfpMul(tx, t1, t2)
+    tx, ty, v0, v1 := &gfP{}, &gfP{}, &gfP{}, &gfP{}
 
-    gfpMul(t1, &a.x, &b.x) //ac
-    gfpMul(t2, &a.y, &b.y) //bd
-    gfpSub(tx, tx, t1)
-    gfpSub(tx, tx, t2) //x=(a+b)(c+d)-ac-bd
+    gfpMul(v0, &a.y, &b.y)
+    gfpMul(v1, &a.x, &b.x)
 
-    ty := &gfP{}
-    gfpSub(ty, t2, t1) //bd-ac
-    gfpSub(ty, ty, t1) //bd-2ac
+    gfpAdd(tx, &a.x, &a.y)
+    gfpAdd(ty, &b.x, &b.y)
+    gfpMul(tx, tx, ty)
+    gfpSub(tx, tx, v0)
+    gfpSub(tx, tx, v1)
+
+    gfpSub(ty, v0, v1)
+    gfpSub(ty, ty, v1)
+
+    e.x.Set(tx)
+    e.y.Set(ty)
+    return e
+}
+
+// MulU: a * b * u
+//(a0+a1*u)(b0+b1*u)*u=c0+c1*u, where
+//c1 = (a0*b0 - 2a1*b1)u
+//c0 = -2 * ((a0 + a1)(b0 + b1) - a0*b0 - a1*b1) = -2 * (a0*b1 + a1*b0)
+func (e *gfP2) MulU(a, b *gfP2) *gfP2 {
+    tx, ty, v0, v1 := &gfP{}, &gfP{}, &gfP{}, &gfP{}
+
+    gfpMul(v0, &a.y, &b.y)
+    gfpMul(v1, &a.x, &b.x)
+
+    gfpAdd(tx, &a.x, &a.y)
+    gfpAdd(ty, &b.x, &b.y)
+
+    gfpMul(ty, tx, ty)
+    gfpSub(ty, ty, v0)
+    gfpSub(ty, ty, v1)
+    gfpAdd(ty, ty, ty)
+    gfpNeg(ty, ty)
+
+    gfpSub(tx, v0, v1)
+    gfpSub(tx, tx, v1)
+
+    e.x.Set(tx)
+    e.y.Set(ty)
+    return e
+}
+
+// MulU1: a  * u
+//(a0+a1*u)u=c0+c1*u, where
+//c1 = a0
+//c0 = -2a1
+func (e *gfP2) MulU1(a *gfP2) *gfP2 {
+    t := &gfP{}
+    gfpAdd(t, &a.x, &a.x)
+    gfpNeg(t, t)
+
+    e.x.Set(&a.y)
+    e.y.Set(t)
+    return e
+}
+
+func (e *gfP2) Square(a *gfP2) *gfP2 {
+    // Complex squaring algorithm:
+    // (xu+y)² = y^2-2*x^2 + 2*u*x*y
+    tx, ty := &gfP{}, &gfP{}
+    gfpMul(tx, &a.x, &a.x)
+    gfpMul(ty, &a.y, &a.y)
+    gfpSub(ty, ty, tx)
+    gfpSub(ty, ty, tx)
+
+    gfpMul(tx, &a.x, &a.y)
+    gfpAdd(tx, tx, tx)
+
+    e.x.Set(tx)
+    e.y.Set(ty)
+    return e
+}
+
+func (e *gfP2) SquareU(a *gfP2) *gfP2 {
+    // Complex squaring algorithm:
+    // (xu+y)²*u = (y^2-2*x^2)u - 4*x*y
+
+    tx, ty := &gfP{}, &gfP{}
+    // tx = a0^2 - 2 * a1^2
+    gfpMul(ty, &a.x, &a.x)
+    gfpMul(tx, &a.y, &a.y)
+    gfpAdd(ty, ty, ty)
+    gfpSub(tx, tx, ty)
+
+    // ty = -4 * a0 * a1
+    gfpMul(ty, &a.x, &a.y)
+    gfpAdd(ty, ty, ty)
+    gfpAdd(ty, ty, ty)
+    gfpNeg(ty, ty)
 
     e.x.Set(tx)
     e.y.Set(ty)
@@ -117,72 +218,49 @@ func (e *gfP2) MulScalar(a *gfP2, b *gfP) *gfP2 {
     return e
 }
 
-// MulXi sets e=ξa where ξ=bi=(-1/2)i and then returns e.
-func (e *gfP2) MulXi(a *gfP2) *gfP2 {
-    // (xi+y)bi = ybi-2bx=-1/2yi+x
-    tx := &gfP{}
-    ty := &gfP{}
-    gfpMul(tx, &a.y, &bi)
-    ty.Set(&a.x)
-
-    e.x.Set(tx)
-    e.y.Set(ty)
-    return e
-}
-
-func (e *gfP2) Square(a *gfP2) *gfP2 {
-    // Complex squaring algorithm:
-    // (xi+y)² = (y²-2x²) + 2*i*x*y
-    tx1, tx2, ty1, ty2 := &gfP{}, &gfP{}, &gfP{}, &gfP{}
-    gfpMul(tx1, &a.x, &a.y)
-    gfpAdd(tx2, tx1, tx1)
-
-    gfpMul(ty1, &a.y, &a.y)
-    gfpMul(ty2, &a.x, &a.x)
-    ty := &gfP{}
-    gfpAdd(ty, ty2, ty2)
-    gfpSub(ty1, ty1, ty)
-
-    e.x.Set(tx2)
-    e.y.Set(ty1)
-    return e
-}
-
 func (e *gfP2) Invert(a *gfP2) *gfP2 {
     // See "Implementing cryptographic pairings", M. Scott, section 3.2.
     // ftp://136.206.11.249/pub/crypto/pairings.pdf
-    t1, t2 := &gfP{}, &gfP{}
+    t1, t2, t3 := &gfP{}, &gfP{}, &gfP{}
     gfpMul(t1, &a.x, &a.x)
-    t3 := &gfP{}
     gfpAdd(t3, t1, t1)
     gfpMul(t2, &a.y, &a.y)
     gfpAdd(t3, t3, t2)
 
     inv := &gfP{}
-    inv.Invert(t3)
+    inv.Invert(t3) // inv = (2 * a.x ^ 2 + a.y ^ 2) ^ (-1)
 
     gfpNeg(t1, &a.x)
 
-    gfpMul(&e.x, t1, inv)
-    gfpMul(&e.y, &a.y, inv)
+    gfpMul(&e.x, t1, inv)   // x = - a.x * inv
+    gfpMul(&e.y, &a.y, inv) // y = a.y * inv
     return e
 }
 
-func (c *gfP2) GFp2Exp(a *gfP2, b *big.Int) *gfP2 {
+func (e *gfP2) Exp(f *gfP2, power *big.Int) *gfP2 {
     sum := (&gfP2{}).SetOne()
     t := &gfP2{}
 
-    for i := b.BitLen() - 1; i >= 0; i-- {
+    for i := power.BitLen() - 1; i >= 0; i-- {
         t.Square(sum)
-        if b.Bit(i) != 0 {
-            sum.Mul(t, a)
+        if power.Bit(i) != 0 {
+            sum.Mul(t, f)
         } else {
             sum.Set(t)
         }
     }
 
-    c.Set(sum)
-    return c
+    e.Set(sum)
+    return e
+}
+
+// （xu+y)^p = x * u^p + y
+//  = x * u * u^(p-1) + y
+//  = (-x)*u + y
+// here u^(p-1) = -1
+func (e *gfP2) Frobenius(a *gfP2) *gfP2 {
+    e.Conjugate(a)
+    return e
 }
 
 // Sqrt method is only required when we implement compressed format
@@ -205,7 +283,7 @@ func (ret *gfP2) Sqrt(a *gfP2) *gfP2 {
     a0 = gfP2Decode(a0)
     */
     t.Mul(bq, b)
-    if t.x.Equal(zero) == 1 && t.y.Equal(one) == 1 {
+    if t.x == *zero && t.y == *one {
         t.Mul(b2, a)
         x0.Sqrt(&t.y)
         t.MulScalar(bq, x0)
@@ -224,4 +302,11 @@ func (ret *gfP2) Sqrt(a *gfP2) *gfP2 {
         ret.Set(t)
     }
     return ret
+}
+
+// Select sets e to p1 if cond == 1, and to p2 if cond == 0.
+func (e *gfP2) Select(p1, p2 *gfP2, cond int) *gfP2 {
+    e.x.Select(&p1.x, &p2.x, cond)
+    e.y.Select(&p1.y, &p2.y, cond)
+    return e
 }

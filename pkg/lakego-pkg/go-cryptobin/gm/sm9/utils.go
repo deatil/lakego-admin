@@ -2,7 +2,6 @@ package sm9
 
 import (
     "io"
-    "math"
     "math/big"
     "crypto/subtle"
     "encoding/binary"
@@ -13,30 +12,28 @@ import (
 
 // hash implements H1(Z,n) or H2(Z,n) in sm9 algorithm.
 func hash(z []byte, n *big.Int, h hashMode) *big.Int {
-    // counter
-    ct := 1
+    var ha [64]byte
+    var countBytes [4]byte
+    var ct uint32 = 1
 
-    hlen := 8 * int(math.Ceil(float64(5*n.BitLen()/32)))
-    count := int(math.Ceil(float64(hlen/256)))
+    md := sm3.New()
 
-    var ha []byte
-    for i := 0; i < count; i++ {
-        msg := append([]byte{byte(h)}, z...)
-        buf := make([]byte, 4)
+    binary.BigEndian.PutUint32(countBytes[:], ct)
+    md.Write([]byte{byte(h)})
+    md.Write(z)
+    md.Write(countBytes[:])
+    copy(ha[:], md.Sum(nil))
 
-        binary.BigEndian.PutUint32(buf, uint32(ct))
-        msg = append(msg, buf...)
-        hai := sm3.Sum(msg)
-        ct++
+    md.Reset()
+    ct++
 
-        if float64(hlen)/256 == float64(int64(hlen/256)) && i == int(math.Ceil(float64(hlen/256)))-1 {
-            ha = append(ha, hai[:(hlen-256*int(math.Floor(float64(hlen/256))))/32]...)
-        } else {
-            ha = append(ha, hai[:]...)
-        }
-    }
+    binary.BigEndian.PutUint32(countBytes[:], ct)
+    md.Write([]byte{byte(h)})
+    md.Write(z)
+    md.Write(countBytes[:])
+    copy(ha[sm3.Size:], md.Sum(nil))
 
-    bn := new(big.Int).SetBytes(ha)
+    bn := new(big.Int).SetBytes(ha[:40])
     one := big.NewInt(1)
 
     nMinus1 := new(big.Int).Sub(n, one)

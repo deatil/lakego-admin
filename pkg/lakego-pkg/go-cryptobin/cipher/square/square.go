@@ -40,14 +40,6 @@ func (this *squareCipher) BlockSize() int {
 }
 
 func (this *squareCipher) Encrypt(dst, src []byte) {
-    this.crypt(dst, src)
-}
-
-func (this *squareCipher) Decrypt(dst, src []byte) {
-    this.crypt(dst, src)
-}
-
-func (this *squareCipher) crypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/square: input not full block")
     }
@@ -60,6 +52,26 @@ func (this *squareCipher) crypt(dst, src []byte) {
         panic("cryptobin/square: invalid buffer overlap")
     }
 
+    this.crypt(dst, src)
+}
+
+func (this *squareCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/square: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/square: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/square: invalid buffer overlap")
+    }
+
+    this.crypt(dst, src)
+}
+
+func (this *squareCipher) crypt(dst, src []byte) {
     var rcon uint16
     var rk [16]uint16
     var i int32

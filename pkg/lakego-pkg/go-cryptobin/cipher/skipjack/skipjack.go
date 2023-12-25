@@ -3,6 +3,8 @@ package skipjack
 import (
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 8
@@ -43,32 +45,40 @@ func (c *skipjackCipher) BlockSize() int {
     return BlockSize
 }
 
-func g(key []byte, k int, w uint16) uint16 {
-    g1 := byte((w >> 8) & 0xff)
-    g2 := byte(w & 0xff)
+func (c *skipjackCipher) Encrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/skipjack: input not full block")
+    }
 
-    g3 := ftable[g2^key[(4*k+0)%10]] ^ g1
-    g4 := ftable[g3^key[(4*k+1)%10]] ^ g2
-    g5 := ftable[g4^key[(4*k+2)%10]] ^ g3
-    g6 := ftable[g5^key[(4*k+3)%10]] ^ g4
+    if len(dst) < BlockSize {
+        panic("cryptobin/skipjack: output not full block")
+    }
 
-    return (uint16(g5) << 8) + uint16(g6)
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/skipjack: invalid buffer overlap")
+    }
+
+    c.encrypt(dst, src)
 }
 
-func ginv(key []byte, k int, w uint16) uint16 {
-    g5 := byte((w >> 8) & 0xff)
-    g6 := byte(w & 0xff)
+func (c *skipjackCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/skipjack: input not full block")
+    }
 
-    g4 := ftable[g5^key[(4*k+3)%10]] ^ g6
-    g3 := ftable[g4^key[(4*k+2)%10]] ^ g5
-    g2 := ftable[g3^key[(4*k+1)%10]] ^ g4
-    g1 := ftable[g2^key[(4*k+0)%10]] ^ g3
+    if len(dst) < BlockSize {
+        panic("cryptobin/skipjack: output not full block")
+    }
 
-    return (uint16(g1) << 8) + uint16(g2)
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/skipjack: invalid buffer overlap")
+    }
+
+    c.decrypt(dst, src)
 }
 
 // Encrypt encrypts src into dst
-func (c *skipjackCipher) Encrypt(dst, src []byte) {
+func (c *skipjackCipher) encrypt(dst, src []byte) {
     w1 := (uint16(src[0]) << 8) + uint16(src[1])
     w2 := (uint16(src[2]) << 8) + uint16(src[3])
     w3 := (uint16(src[4]) << 8) + uint16(src[5])
@@ -103,7 +113,7 @@ func (c *skipjackCipher) Encrypt(dst, src []byte) {
 }
 
 // Decrypt decrypts src into dst
-func (c *skipjackCipher) Decrypt(dst, src []byte) {
+func (c *skipjackCipher) decrypt(dst, src []byte) {
     w1 := (uint16(src[0]) << 8) + uint16(src[1])
     w2 := (uint16(src[2]) << 8) + uint16(src[3])
     w3 := (uint16(src[4]) << 8) + uint16(src[5])
@@ -137,7 +147,7 @@ func (c *skipjackCipher) Decrypt(dst, src []byte) {
 }
 
 // via: http://packetstormsecurity.org/files/20573/skipjack.c
-var ftable = [...]byte{
+var ftable = []byte{
     0xa3, 0xd7, 0x09, 0x83, 0xf8, 0x48, 0xf6, 0xf4, 0xb3, 0x21, 0x15, 0x78, 0x99, 0xb1, 0xaf, 0xf9,
     0xe7, 0x2d, 0x4d, 0x8a, 0xce, 0x4c, 0xca, 0x2e, 0x52, 0x95, 0xd9, 0x1e, 0x4e, 0x38, 0x44, 0x28,
     0x0a, 0xdf, 0x02, 0xa0, 0x17, 0xf1, 0x60, 0x68, 0x12, 0xb7, 0x7a, 0xc3, 0xe9, 0xfa, 0x3d, 0x53,
@@ -154,4 +164,28 @@ var ftable = [...]byte{
     0x0c, 0xef, 0xbc, 0x72, 0x75, 0x6f, 0x37, 0xa1, 0xec, 0xd3, 0x8e, 0x62, 0x8b, 0x86, 0x10, 0xe8,
     0x08, 0x77, 0x11, 0xbe, 0x92, 0x4f, 0x24, 0xc5, 0x32, 0x36, 0x9d, 0xcf, 0xf3, 0xa6, 0xbb, 0xac,
     0x5e, 0x6c, 0xa9, 0x13, 0x57, 0x25, 0xb5, 0xe3, 0xbd, 0xa8, 0x3a, 0x01, 0x05, 0x59, 0x2a, 0x46,
+}
+
+func g(key []byte, k int, w uint16) uint16 {
+    g1 := byte((w >> 8) & 0xff)
+    g2 := byte(w & 0xff)
+
+    g3 := ftable[g2^key[(4*k+0)%10]] ^ g1
+    g4 := ftable[g3^key[(4*k+1)%10]] ^ g2
+    g5 := ftable[g4^key[(4*k+2)%10]] ^ g3
+    g6 := ftable[g5^key[(4*k+3)%10]] ^ g4
+
+    return (uint16(g5) << 8) + uint16(g6)
+}
+
+func ginv(key []byte, k int, w uint16) uint16 {
+    g5 := byte((w >> 8) & 0xff)
+    g6 := byte(w & 0xff)
+
+    g4 := ftable[g5^key[(4*k+3)%10]] ^ g6
+    g3 := ftable[g4^key[(4*k+2)%10]] ^ g5
+    g2 := ftable[g3^key[(4*k+1)%10]] ^ g4
+    g1 := ftable[g2^key[(4*k+0)%10]] ^ g3
+
+    return (uint16(g1) << 8) + uint16(g2)
 }

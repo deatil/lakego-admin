@@ -3,6 +3,8 @@ package lea
 import (
     "fmt"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 16
@@ -51,6 +53,10 @@ func (this *leaCipher) Encrypt(dst, src []byte) {
         panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (dst)", len(dst)))
     }
 
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/lea: invalid buffer overlap")
+    }
+
     this.encrypt(dst, src)
 }
 
@@ -61,6 +67,10 @@ func (this *leaCipher) Decrypt(dst, src []byte) {
 
     if len(dst) < BlockSize {
         panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (dst)", len(dst)))
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/lea: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

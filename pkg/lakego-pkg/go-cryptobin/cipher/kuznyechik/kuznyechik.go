@@ -4,6 +4,8 @@ import (
     "fmt"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 16
@@ -71,6 +73,30 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
         panic("cryptobin/kuznyechik: output not full block")
     }
 
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/idea: invalid buffer overlap")
+    }
+
+    k.encrypt(dst, src)
+}
+
+func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
+    if len(src) < BlockSize {
+        panic("cryptobin/kuznyechik: input not full block")
+    }
+
+    if len(dst) < BlockSize {
+        panic("cryptobin/kuznyechik: output not full block")
+    }
+
+    if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
+        panic("cryptobin/idea: invalid buffer overlap")
+    }
+
+    k.decrypt(dst, src)
+}
+
+func (k *kuznyechikCipher) encrypt(dst, src []byte) {
     x1 := binary.LittleEndian.Uint64(src[0:8])
     x2 := binary.LittleEndian.Uint64(src[8:16])
 
@@ -109,15 +135,7 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
     binary.LittleEndian.PutUint64(dst[8:16], t2)
 }
 
-func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
-    if len(src) < BlockSize {
-        panic("cryptobin/kuznyechik: input not full block")
-    }
-
-    if len(dst) < BlockSize {
-        panic("cryptobin/kuznyechik: output not full block")
-    }
-
+func (k *kuznyechikCipher) decrypt(dst, src []byte) {
     x1 := binary.LittleEndian.Uint64(src[0:8])
     x2 := binary.LittleEndian.Uint64(src[8:16])
 
