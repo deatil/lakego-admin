@@ -17,9 +17,11 @@ import (
 // 默认 HID
 const DefaultEncryptHid byte = 0x03
 
-var ErrDecryption = errors.New("sm9: decryption error")
+var (
+    ErrDecryption = errors.New("sm9: decryption error")
 
-var ErrEmptyPlaintext = errors.New("sm9: empty plaintext")
+    ErrEmptyPlaintext = errors.New("sm9: empty plaintext")
+)
 
 // IEncrypt
 type IEncrypt interface {
@@ -66,10 +68,58 @@ func (pub *EncryptMasterPublicKey) Encrypt(rand io.Reader, uid []byte, hid byte,
 
     opts := &Opts{
         Encrypt: enc,
-        Hash:    SM3Hash,
+        Hash:    DefaultHash,
     }
 
     return EncryptASN1(rand, pub, uid, hid, plaintext, opts)
+}
+
+func (pub *EncryptMasterPublicKey) GenerateUserPublicKey(uid []byte, hid byte) (*sm9curve.G1, error) {
+    n := sm9curve.Order
+
+    uidh := append(uid, hid)
+    h := hash(uidh, n, H1)
+
+    qb, err := new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(h.Bytes()))
+    if err != nil {
+        return nil, err
+    }
+
+    qb.Add(qb, pub.Mpk)
+
+    return qb, nil
+}
+
+func (pub *EncryptMasterPublicKey) Marshal() []byte {
+    return pub.Mpk.MarshalUncompressed()
+}
+
+func (pub *EncryptMasterPublicKey) Unmarshal(bytes []byte) (err error) {
+    g := new(sm9curve.G1)
+    _, err = g.UnmarshalUncompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    pub.Mpk = g
+
+    return
+}
+
+func (pub *EncryptMasterPublicKey) MarshalCompress() []byte {
+    return pub.Mpk.MarshalCompressed()
+}
+
+func (pub *EncryptMasterPublicKey) UnmarshalCompress(bytes []byte) (err error) {
+    g := new(sm9curve.G1)
+    _, err = g.UnmarshalCompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    pub.Mpk = g
+
+    return
 }
 
 type EncryptMasterPrivateKey struct {
@@ -88,13 +138,30 @@ func (priv *EncryptMasterPrivateKey) Equal(x crypto.PrivateKey) bool {
         bigIntEqual(priv.D, xx.D)
 }
 
-func (this *EncryptMasterPrivateKey) PublicKey() *EncryptMasterPublicKey {
-    return &this.EncryptMasterPublicKey
+func (priv *EncryptMasterPrivateKey) PublicKey() *EncryptMasterPublicKey {
+    return &priv.EncryptMasterPublicKey
 }
 
 // Public returns the public key corresponding to priv.
-func (this *EncryptMasterPrivateKey) Public() crypto.PublicKey {
-    return this.PublicKey()
+func (priv *EncryptMasterPrivateKey) Public() crypto.PublicKey {
+    return priv.PublicKey()
+}
+
+func (priv *EncryptMasterPrivateKey) GenerateUserKey(uid []byte, hid byte) (*EncryptPrivateKey, error) {
+    return GenerateEncryptPrivateKey(priv, uid, hid)
+}
+
+func (priv *EncryptMasterPrivateKey) Marshal() []byte {
+    return priv.D.Bytes()
+}
+
+func (priv *EncryptMasterPrivateKey) Unmarshal(bytes []byte) (err error) {
+    priv.D = new(big.Int).SetBytes(bytes)
+
+    d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
+    priv.Mpk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
+
+    return
 }
 
 type EncryptPrivateKey struct {
@@ -112,17 +179,51 @@ func (priv *EncryptPrivateKey) Equal(x crypto.PrivateKey) bool {
     return priv.Sk.Equal(xx.Sk)
 }
 
-func (this *EncryptPrivateKey) PublicKey() *EncryptMasterPublicKey {
-    return &this.EncryptMasterPublicKey
+func (priv *EncryptPrivateKey) PublicKey() *EncryptMasterPublicKey {
+    return &priv.EncryptMasterPublicKey
 }
 
 // Public returns the public key corresponding to priv.
-func (this *EncryptPrivateKey) Public() crypto.PublicKey {
-    return this.PublicKey()
+func (priv *EncryptPrivateKey) Public() crypto.PublicKey {
+    return priv.PublicKey()
 }
 
 func (priv *EncryptPrivateKey) Decrypt(uid, msg []byte) (plaintext []byte, err error) {
     return DecryptASN1(priv, uid, msg, nil)
+}
+
+func (priv *EncryptPrivateKey) Marshal() []byte {
+    var pub []byte
+
+    if priv.Mpk != nil {
+        pub = priv.Mpk.MarshalUncompressed()
+    }
+
+    return append(priv.Sk.MarshalUncompressed(), pub...)
+}
+
+func (priv *EncryptPrivateKey) Unmarshal(bytes []byte) (err error) {
+    var pub []byte
+
+    g2 := new(sm9curve.G2)
+    pub, err = g2.UnmarshalUncompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    priv.Sk = g2
+
+    if len(pub) > 0 {
+        g1 := new(sm9curve.G1)
+        _, err = g1.UnmarshalUncompressed(pub)
+        if err != nil {
+            return err
+        }
+
+        priv.Mpk = g1
+    }
+
+    return
 }
 
 // generate matser's secret encrypt key.
@@ -169,74 +270,46 @@ func GenerateEncryptPrivateKey(mk *EncryptMasterPrivateKey, id []byte, hid byte)
     return
 }
 
-func NewEncryptMasterPrivateKey(bytes []byte) (mke *EncryptMasterPrivateKey, err error) {
-    mke = new(EncryptMasterPrivateKey)
+// 解析加密主公钥明文
+func NewEncryptMasterPublicKey(bytes []byte) (pub *EncryptMasterPublicKey, err error) {
+    pub = new(EncryptMasterPublicKey)
 
-    mke.D = new(big.Int).SetBytes(bytes)
-
-    d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
-    mke.Mpk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
+    err = pub.Unmarshal(bytes)
 
     return
 }
 
-// 输出明文
-func ToEncryptMasterPrivateKey(mke *EncryptMasterPrivateKey) []byte {
-    return mke.D.Bytes()
-}
-
-func NewEncryptMasterPublicKey(bytes []byte) (mbk *EncryptMasterPublicKey, err error) {
-    g := new(sm9curve.G1)
-    _, err = g.UnmarshalUncompressed(bytes)
-    if err != nil {
-        return nil, err
-    }
-
-    mbk = new(EncryptMasterPublicKey)
-    mbk.Mpk = g
-
-    return
-}
-
-// 输出明文
+// 输出加密主公钥明文
 func ToEncryptMasterPublicKey(pub *EncryptMasterPublicKey) []byte {
-    return pub.Mpk.MarshalUncompressed()
+    return pub.Marshal()
 }
 
-func NewEncryptPrivateKey(bytes []byte) (uke *EncryptPrivateKey, err error) {
-    var pub []byte
+// 解析加密主私钥明文
+func NewEncryptMasterPrivateKey(bytes []byte) (priv *EncryptMasterPrivateKey, err error) {
+    priv = new(EncryptMasterPrivateKey)
 
-    g2 := new(sm9curve.G2)
-    pub, err = g2.UnmarshalUncompressed(bytes)
-    if err != nil {
-        return nil, err
-    }
+    err = priv.Unmarshal(bytes)
 
-    uke = new(EncryptPrivateKey)
-    uke.Sk = g2
+    return
+}
 
-    if len(pub) > 0 {
-        g1 := new(sm9curve.G1)
-        _, err = g1.UnmarshalUncompressed(pub)
-        if err != nil {
-            return nil, err
-        }
+// 输出加密私钥明文
+func ToEncryptMasterPrivateKey(priv *EncryptMasterPrivateKey) []byte {
+    return priv.Marshal()
+}
 
-        uke.Mpk = g1
-    }
+// 解析加密私钥明文
+func NewEncryptPrivateKey(bytes []byte) (priv *EncryptPrivateKey, err error) {
+    priv = new(EncryptPrivateKey)
+
+    err = priv.Unmarshal(bytes)
 
     return
 }
 
 // 输出明文
-func ToEncryptPrivateKey(pri *EncryptPrivateKey) []byte {
-    var pub []byte
-
-    if pri.Mpk != nil {
-        pub = pri.Mpk.MarshalUncompressed()
-    }
-
-    return append(pri.Sk.MarshalUncompressed(), pub...)
+func ToEncryptPrivateKey(priv *EncryptPrivateKey) []byte {
+    return priv.Marshal()
 }
 
 func WrapKey(random io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, kLen int) (key []byte, C1 *sm9curve.G1, err error) {
@@ -311,10 +384,11 @@ type Opts struct {
 }
 
 var DefaultOpts = &Opts{
-    Encrypt: SM4CBCEncrypt,
-    Hash:    SM3Hash,
+    Encrypt: DefaultEncrypt,
+    Hash:    DefaultHash,
 }
 
+// Encrypt
 func Encrypt(rand io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte, plaintext []byte, opts *Opts) ([]byte, error) {
     c1, c2, c3, err := encrypt(rand, pub, uid, hid, plaintext, opts)
     if err != nil {
@@ -444,6 +518,9 @@ func DecryptASN1(priv *EncryptPrivateKey, uid, ciphertext []byte, opts *Opts) ([
     }
 
     opts.Encrypt = GetEncryptType(data.EncType)
+    if opts.Encrypt == nil {
+        return nil, errors.New("sm9: not support enc type")
+    }
 
     ct := append(data.C1.Bytes, data.C3...)
     ct = append(ct, data.C2...)

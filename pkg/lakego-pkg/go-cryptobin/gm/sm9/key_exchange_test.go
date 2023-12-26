@@ -32,8 +32,8 @@ func Test_KeyExchange(t *testing.T) {
 
     responder := NewKeyExchange(userKey, userB, userA, 16, true)
     defer func() {
-        initiator.Destroy()
-        responder.Destroy()
+        initiator.Reset()
+        responder.Reset()
     }()
 
     // A1-A4
@@ -89,8 +89,8 @@ func Test_KeyExchangeWithoutSignature(t *testing.T) {
 
     responder := NewKeyExchange(userKey, userB, userA, 16, false)
     defer func() {
-        initiator.Destroy()
-        responder.Destroy()
+        initiator.Reset()
+        responder.Reset()
     }()
 
     // A1-A4
@@ -178,8 +178,8 @@ func Test_KeyExchangeSample(t *testing.T) {
 
     responder := NewKeyExchange(userKey, userB, userA, 16, true)
     defer func() {
-        initiator.Destroy()
-        responder.Destroy()
+        initiator.Reset()
+        responder.Reset()
     }()
 
     // A1-A4

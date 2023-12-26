@@ -163,3 +163,27 @@ func Test_HashH2(t *testing.T) {
         t.Errorf("got %x, expected %s", res, expected)
     }
 }
+
+func Test_SignMasterPublicKey_Compress(t *testing.T) {
+    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    if err != nil {
+        t.Errorf("mk gen failed:%s", err)
+        return
+    }
+
+    mpk := mk.PublicKey()
+
+    pubBytes := mpk.MarshalCompress()
+
+    newPub := new(SignMasterPublicKey)
+    err = newPub.UnmarshalCompress(pubBytes)
+    if err != nil {
+        t.Errorf("Sign UnmarshalCompress failed:%s", err)
+        return
+    }
+
+    if !newPub.Equal(mpk) {
+        t.Error("sm9 Sign MarshalCompress Equal is invalid")
+        return
+    }
+}

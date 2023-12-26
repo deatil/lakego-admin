@@ -42,6 +42,56 @@ func (pub *SignMasterPublicKey) Verify(uid []byte, hid byte, hash, sig []byte) b
     return VerifyASN1(pub, uid, hid, hash, sig)
 }
 
+func (pub *SignMasterPublicKey) GenerateUserPublicKey(uid []byte, hid byte) (*sm9curve.G2, error) {
+    n := sm9curve.Order
+
+    uidh := append(uid, hid)
+    h := hash(uidh, n, H1)
+
+    qb, err := new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(h.Bytes()))
+    if err != nil {
+        return nil, err
+    }
+
+    qb.Add(qb, pub.Mpk)
+
+    return qb, nil
+}
+
+func (pub *SignMasterPublicKey) Marshal() []byte {
+    return pub.Mpk.MarshalUncompressed()
+}
+
+func (pub *SignMasterPublicKey) Unmarshal(bytes []byte) (err error) {
+    g := new(sm9curve.G2)
+    _, err = g.UnmarshalUncompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    pub.Mpk = g
+
+    return
+}
+
+// 压缩明文
+func (pub *SignMasterPublicKey) MarshalCompress() []byte {
+    return pub.Mpk.MarshalCompressed()
+}
+
+// 解压缩明文
+func (pub *SignMasterPublicKey) UnmarshalCompress(bytes []byte) (err error) {
+    g := new(sm9curve.G2)
+    _, err = g.UnmarshalCompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    pub.Mpk = g
+
+    return
+}
+
 // SignMasterPrivateKey contains a master secret key and a master public key.
 type SignMasterPrivateKey struct {
     SignMasterPublicKey
@@ -66,6 +116,23 @@ func (priv *SignMasterPrivateKey) PublicKey() *SignMasterPublicKey {
 // Public returns the public key corresponding to priv.
 func (priv *SignMasterPrivateKey) Public() crypto.PublicKey {
     return priv.PublicKey()
+}
+
+func (priv *SignMasterPrivateKey) GenerateUserKey(uid []byte, hid byte) (*SignPrivateKey, error) {
+    return GenerateSignPrivateKey(priv, uid, hid)
+}
+
+func (priv *SignMasterPrivateKey) Marshal() []byte {
+    return priv.D.Bytes()
+}
+
+func (priv *SignMasterPrivateKey) Unmarshal(bytes []byte) (err error) {
+    priv.D = new(big.Int).SetBytes(bytes)
+
+    d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
+    priv.Mpk, err = new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
+
+    return
 }
 
 // SignPrivateKey contains a secret key.
@@ -97,6 +164,42 @@ func (priv *SignPrivateKey) Public() crypto.PublicKey {
 // Sign
 func (priv *SignPrivateKey) Sign(rand io.Reader, hash []byte) ([]byte, error) {
     return SignASN1(rand, priv, hash)
+}
+
+func (priv *SignPrivateKey) Marshal() []byte {
+    if priv.Mpk == nil {
+        return nil
+    }
+
+    pub := priv.Mpk.MarshalUncompressed()
+
+    return append(priv.Sk.MarshalUncompressed(), pub...)
+}
+
+func (priv *SignPrivateKey) Unmarshal(bytes []byte) (err error) {
+    var pub []byte
+
+    g1 := new(sm9curve.G1)
+    pub, err = g1.UnmarshalUncompressed(bytes)
+    if err != nil {
+        return err
+    }
+
+    if len(pub) == 0 {
+        return errors.New("private key need publickey bytes")
+    }
+
+    priv.Sk = g1
+
+    g2 := new(sm9curve.G2)
+    _, err = g2.UnmarshalUncompressed(pub)
+    if err != nil {
+        return err
+    }
+
+    priv.Mpk = g2
+
+    return
 }
 
 // generate master key for KGC(Key Generate Center).
@@ -138,76 +241,46 @@ func GenerateSignPrivateKey(mk *SignMasterPrivateKey, id []byte, hid byte) (uk *
     return
 }
 
-func NewSignMasterPrivateKey(bytes []byte) (mke *SignMasterPrivateKey, err error) {
-    mke = new(SignMasterPrivateKey)
+// 解析签名主公钥明文
+func NewSignMasterPublicKey(bytes []byte) (pub *SignMasterPublicKey, err error) {
+    pub = new(SignMasterPublicKey)
 
-    mke.D = new(big.Int).SetBytes(bytes)
-
-    d := new(big.Int).SetBytes(sm9curve.NormalizeScalar(bytes))
-    mke.Mpk, err = new(sm9curve.G2).ScalarBaseMult(sm9curve.NormalizeScalar(d.Bytes()))
+    err = pub.Unmarshal(bytes)
 
     return
 }
 
-// 输出明文
-func ToSignMasterPrivateKey(mke *SignMasterPrivateKey) []byte {
-    return mke.D.Bytes()
-}
-
-func NewSignMasterPublicKey(bytes []byte) (mbk *SignMasterPublicKey, err error) {
-    g := new(sm9curve.G2)
-    _, err = g.UnmarshalUncompressed(bytes)
-    if err != nil {
-        return nil, err
-    }
-
-    mbk = new(SignMasterPublicKey)
-    mbk.Mpk = g
-
-    return
-}
-
-// 输出明文
+// 输出签名主公钥明文
 func ToSignMasterPublicKey(pub *SignMasterPublicKey) []byte {
-    return pub.Mpk.MarshalUncompressed()
+    return pub.Marshal()
 }
 
-func NewSignPrivateKey(bytes []byte) (uke *SignPrivateKey, err error) {
-    var pub []byte
+// 解析签名主私钥明文
+func NewSignMasterPrivateKey(bytes []byte) (priv *SignMasterPrivateKey, err error) {
+    priv = new(SignMasterPrivateKey)
 
-    g1 := new(sm9curve.G1)
-    pub, err = g1.UnmarshalUncompressed(bytes)
-    if err != nil {
-        return nil, err
-    }
-
-    if len(pub) == 0 {
-        return nil, errors.New("key need publickey bytes")
-    }
-
-    uke = new(SignPrivateKey)
-    uke.Sk = g1
-
-    g2 := new(sm9curve.G2)
-    _, err = g2.UnmarshalUncompressed(pub)
-    if err != nil {
-        return nil, err
-    }
-
-    uke.Mpk = g2
+    err = priv.Unmarshal(bytes)
 
     return
 }
 
-// 输出明文
-func ToSignPrivateKey(pri *SignPrivateKey) []byte {
-    if pri.Mpk == nil {
-        return nil
-    }
+// 输出签名主私钥明文
+func ToSignMasterPrivateKey(priv *SignMasterPrivateKey) []byte {
+    return priv.Marshal()
+}
 
-    pub := pri.Mpk.MarshalUncompressed()
+// 解析签名私钥明文
+func NewSignPrivateKey(bytes []byte) (priv *SignPrivateKey, err error) {
+    priv = new(SignPrivateKey)
 
-    return append(pri.Sk.MarshalUncompressed(), pub...)
+    err = priv.Unmarshal(bytes)
+
+    return
+}
+
+// 输出签名私钥明文
+func ToSignPrivateKey(priv *SignPrivateKey) []byte {
+    return priv.Marshal()
 }
 
 // sm9 sign algorithm:

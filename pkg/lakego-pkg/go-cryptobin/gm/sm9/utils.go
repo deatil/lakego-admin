@@ -67,6 +67,10 @@ func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
 
+func Equal(b1, b2 []byte) bool {
+    return subtle.ConstantTimeCompare(b1, b2) == 1
+}
+
 // ===============
 
 var newPadding = tool.NewPadding()

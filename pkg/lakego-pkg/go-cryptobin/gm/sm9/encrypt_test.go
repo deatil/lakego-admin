@@ -165,3 +165,27 @@ func Test_WrapKey(t *testing.T) {
         t.Errorf("expected %x, got %x\n", key, key2)
     }
 }
+
+func Test_EncryptMasterPublicKey_Compress(t *testing.T) {
+    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    if err != nil {
+        t.Errorf("mk gen failed:%s", err)
+        return
+    }
+
+    mpk := mk.PublicKey()
+
+    pubBytes := mpk.MarshalCompress()
+
+    newPub := new(EncryptMasterPublicKey)
+    err = newPub.UnmarshalCompress(pubBytes)
+    if err != nil {
+        t.Errorf("Encrypt UnmarshalCompress failed:%s", err)
+        return
+    }
+
+    if !newPub.Equal(mpk) {
+        t.Error("sm9 Encrypt MarshalCompress Equal is invalid")
+        return
+    }
+}

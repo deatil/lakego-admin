@@ -58,3 +58,6 @@ var SM3Hash = NewHashMac(sm3.New)
 
 // SHA256Hash
 var SHA256Hash = NewHashMac(sha256.New)
+
+// 默认 Hash
+var DefaultHash = HmacSHA256Hash

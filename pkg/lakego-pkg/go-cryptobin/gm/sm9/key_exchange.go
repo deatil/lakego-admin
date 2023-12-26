@@ -40,10 +40,10 @@ func NewKeyExchange(priv *EncryptPrivateKey, uid, peerUID []byte, keyLen int, ge
     return ke
 }
 
-// Destroy clears all internal state and Ephemeral private/public keys
-func (ke *KeyExchange) Destroy() {
+// Reset clears all internal state and Ephemeral private/public keys
+func (ke *KeyExchange) Reset() {
     if ke.r != nil {
-        ke.r = new(big.Int)
+        ke.r.SetBytes([]byte{0})
     }
 
     if ke.g1 != nil {
@@ -60,12 +60,10 @@ func (ke *KeyExchange) Destroy() {
 }
 
 func (ke *KeyExchange) initKeyExchange(hid byte, r *big.Int) error {
-    n := sm9curve.Order
-    uid2h := append(ke.peerUID, hid)
-    h := hash(uid2h, n, H1)
-
-    pubB, err := new(sm9curve.G1).ScalarBaseMult(h.Bytes())
-    pubB.Add(pubB, ke.privateKey.Mpk)
+    pubB, err := ke.privateKey.GenerateUserPublicKey(ke.peerUID, hid)
+    if err != nil {
+        return err
+    }
 
     ke.r = r
 
@@ -152,12 +150,10 @@ func (ke *KeyExchange) respondKeyExchange(hid byte, r *big.Int, rA *sm9curve.G1)
 
     ke.peerSecret = rA
 
-    n := sm9curve.Order
-    uid2h := append(ke.peerUID, hid)
-    h := hash(uid2h, n, H1)
-
-    pubA, err := new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(h.Bytes()))
-    pubA.Add(pubA, ke.privateKey.Mpk)
+    pubA, err := ke.privateKey.GenerateUserPublicKey(ke.peerUID, hid)
+    if err != nil {
+        return nil, nil, err
+    }
 
     ke.r = r
     rBytes := sm9curve.NormalizeScalar(r.Bytes())
@@ -170,17 +166,15 @@ func (ke *KeyExchange) respondKeyExchange(hid byte, r *big.Int, rA *sm9curve.G1)
     ke.secret = rB
 
     ke.g1 = sm9curve.Pair(ke.peerSecret, ke.privateKey.Sk)
-    ke.g3 = &sm9curve.GT{}
 
     g3, err := sm9curve.ScalarMultGT(ke.g1, rBytes)
     if err != nil {
         return nil, nil, err
     }
-
     ke.g3 = g3
 
-    tables := sm9curve.GenerateGTFieldTable(sm9curve.Pair(ke.privateKey.Mpk, sm9curve.Gen2))
-    g2, err := sm9curve.ScalarBaseMultGT(tables, rBytes)
+    g2Pair := sm9curve.Pair(ke.privateKey.Mpk, sm9curve.Gen2)
+    g2, err := sm9curve.ScalarMultGT(g2Pair, rBytes)
     if err != nil {
         return nil, nil, err
     }
@@ -212,15 +206,16 @@ func (ke *KeyExchange) ConfirmResponder(rB *sm9curve.G1, sB []byte) ([]byte, []b
     // step 5
     ke.peerSecret = rB
 
-    tables := sm9curve.GenerateGTFieldTable(sm9curve.Pair(ke.privateKey.Mpk, sm9curve.Gen2))
-    g1, err := sm9curve.ScalarBaseMultGT(tables, sm9curve.NormalizeScalar(ke.r.Bytes()))
+    g1Pair := sm9curve.Pair(ke.privateKey.Mpk, sm9curve.Gen2)
+    g1, err := sm9curve.ScalarMultGT(g1Pair, sm9curve.NormalizeScalar(ke.r.Bytes()))
     if err != nil {
         return nil, nil, err
     }
 
     ke.g1 = g1
+
     ke.g2 = sm9curve.Pair(ke.peerSecret, ke.privateKey.Sk)
-    ke.g3 = &sm9curve.GT{}
+
     g3, err := sm9curve.ScalarMultGT(ke.g2, sm9curve.NormalizeScalar(ke.r.Bytes()))
     if err != nil {
         return nil, nil, err

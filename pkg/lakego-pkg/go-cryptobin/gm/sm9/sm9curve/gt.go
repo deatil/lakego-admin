@@ -46,6 +46,7 @@ func (e *GT) ScalarBaseMult(k *big.Int) *GT {
     if e.p == nil {
         e.p = &gfP12{}
     }
+
     e.p.Exp(gfP12Gen, k)
     return e
 }
@@ -228,11 +229,14 @@ func (table *GTFieldTable) Select(p *GT, n uint8) {
 
 func GenerateGTFieldTable(basePoint *GT) *[32 * 2]GTFieldTable {
     table := new([32 * 2]GTFieldTable)
+
     base := &GT{}
     base.Set(basePoint)
+
     for i := 0; i < 32*2; i++ {
         table[i][0] = &GT{}
         table[i][0].Set(base)
+
         for j := 1; j < 15; j += 2 {
             table[i][j] = &GT{}
             table[i][j].p = &gfP12{}
@@ -241,11 +245,13 @@ func GenerateGTFieldTable(basePoint *GT) *[32 * 2]GTFieldTable {
             table[i][j+1].p = &gfP12{}
             table[i][j+1].Add(table[i][j], base)
         }
+
         base.p.Square(base.p)
         base.p.Square(base.p)
         base.p.Square(base.p)
         base.p.Square(base.p)
     }
+
     return table
 }
 
@@ -254,6 +260,7 @@ func ScalarBaseMultGT(tables *[32 * 2]GTFieldTable, scalar []byte) (*GT, error) 
     if len(scalar) != 32 {
         return nil, errors.New("invalid scalar length")
     }
+
     // This is also a scalar multiplication with a four-bit window like in
     // ScalarMult, but in this case the doublings are precomputed. The value
     // [windowValue]G added at iteration k would normally get doubled
@@ -261,19 +268,26 @@ func ScalarBaseMultGT(tables *[32 * 2]GTFieldTable, scalar []byte) (*GT, error) 
     // instead add [2^((totIterations-k)×4)][windowValue]G and avoid the
     // doublings between iterations.
     e, t := &GT{}, &GT{}
+
     tableIndex := len(tables) - 1
+
     e.SetOne()
     t.SetOne()
+
     for _, byte := range scalar {
         windowValue := byte >> 4
         tables[tableIndex].Select(t, windowValue)
+
         e.Add(e, t)
         tableIndex--
+
         windowValue = byte & 0b1111
         tables[tableIndex].Select(t, windowValue)
+
         e.Add(e, t)
         tableIndex--
     }
+
     return e, nil
 }
 
@@ -283,6 +297,7 @@ func ScalarMultGT(a *GT, scalar []byte) (*GT, error) {
 
     table[0] = &GT{}
     table[0].Set(a)
+
     for i := 1; i < 15; i += 2 {
         table[i] = &GT{}
         table[i].p = &gfP12{}
@@ -306,16 +321,22 @@ func ScalarMultGT(a *GT, scalar []byte) (*GT, error) {
             e.p.Square(e.p)
             e.p.Square(e.p)
         }
+
         windowValue := byte >> 4
         table.Select(t, windowValue)
+
         e.Add(e, t)
+
         e.p.Square(e.p)
         e.p.Square(e.p)
         e.p.Square(e.p)
         e.p.Square(e.p)
+
         windowValue = byte & 0b1111
         table.Select(t, windowValue)
+
         e.Add(e, t)
     }
+
     return e, nil
 }
