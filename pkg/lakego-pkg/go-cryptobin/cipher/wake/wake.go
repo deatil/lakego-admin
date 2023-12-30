@@ -40,7 +40,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     in_key := bytesToUint32s(key)
 
     c := new(wakeCipher)
-    c.setKey(in_key[:])
+    c.expandKey(in_key[:])
 
     return c, nil
 }
@@ -177,7 +177,7 @@ var tt = [10]uint32{
     0x9ee27cf3,
 }
 
-func (this *wakeCipher) setKey(key []uint32) {
+func (this *wakeCipher) expandKey(key []uint32) {
     var x, z, p uint32
     var k [4]uint32
 

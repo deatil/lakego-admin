@@ -46,7 +46,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
         in_key = append(in_key, tmp)
     }
 
-    c.setKey(in_key, uint32(k) * 8)
+    c.expandKey(in_key, uint32(k) * 8)
 
     return c, nil
 }
@@ -99,7 +99,7 @@ func (this *crypton1Cipher) Decrypt(dst, src []byte) {
     copy(dst, dstBytes[:])
 }
 
-func (this *crypton1Cipher) setKey(in_key []uint32, key_len uint32) {
+func (this *crypton1Cipher) expandKey(in_key []uint32, key_len uint32) {
     var i, j, t0, t1 uint32
     var tu, tv [4]uint32
     var ek, dk [8]uint32

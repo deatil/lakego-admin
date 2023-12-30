@@ -157,7 +157,7 @@ func (this *Zuc) Write(in []byte, out []byte) (nn int, err error) {
         this.zuc_state.Encrypt(out, in[:dataLen])
 
         in = in[dataLen:]
-        inlen -= dataLen;
+        inlen -= dataLen
 
         out = out[dataLen:]
         outlen += dataLen

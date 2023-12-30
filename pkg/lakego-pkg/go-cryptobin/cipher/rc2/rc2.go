@@ -10,22 +10,22 @@ import (
 // The rc2 block size in bytes
 const BlockSize = 8
 
-type Cipher struct {
+type rc2Cipher struct {
     k [64]uint16
 }
 
-// New returns a new rc2 cipher with the given key and effective key length t1
+// NewCipher returns a new rc2 cipher with the given key and effective key length t1
 func NewCipher(key []byte, t1 int) (cipher.Block, error) {
-    return &Cipher{
+    return &rc2Cipher{
         k: expandKey(key, t1),
     }, nil
 }
 
-func (*Cipher) BlockSize() int {
+func (c *rc2Cipher) BlockSize() int {
     return BlockSize
 }
 
-func (c *Cipher) Encrypt(dst, src []byte) {
+func (c *rc2Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/rc2: input not full block")
     }
@@ -41,7 +41,7 @@ func (c *Cipher) Encrypt(dst, src []byte) {
     c.encrypt(dst, src)
 }
 
-func (c *Cipher) Decrypt(dst, src []byte) {
+func (c *rc2Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/rc2: input not full block")
     }
@@ -57,7 +57,7 @@ func (c *Cipher) Decrypt(dst, src []byte) {
     c.decrypt(dst, src)
 }
 
-func (c *Cipher) encrypt(dst, src []byte) {
+func (c *rc2Cipher) encrypt(dst, src []byte) {
     r0 := binary.LittleEndian.Uint16(src[0:])
     r1 := binary.LittleEndian.Uint16(src[2:])
     r2 := binary.LittleEndian.Uint16(src[4:])
@@ -151,7 +151,7 @@ func (c *Cipher) encrypt(dst, src []byte) {
     binary.LittleEndian.PutUint16(dst[6:], r3)
 }
 
-func (c *Cipher) decrypt(dst, src []byte) {
+func (c *rc2Cipher) decrypt(dst, src []byte) {
     r0 := binary.LittleEndian.Uint16(src[0:])
     r1 := binary.LittleEndian.Uint16(src[2:])
     r2 := binary.LittleEndian.Uint16(src[4:])

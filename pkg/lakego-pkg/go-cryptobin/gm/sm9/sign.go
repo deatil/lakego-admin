@@ -118,8 +118,29 @@ func (priv *SignMasterPrivateKey) Public() crypto.PublicKey {
     return priv.PublicKey()
 }
 
-func (priv *SignMasterPrivateKey) GenerateUserKey(uid []byte, hid byte) (*SignPrivateKey, error) {
-    return GenerateSignPrivateKey(priv, uid, hid)
+// generate user's secret key.
+func (priv *SignMasterPrivateKey) GenerateUserKey(id []byte, hid byte) (uk *SignPrivateKey, err error) {
+    id = append(id, hid)
+    n := sm9curve.Order
+
+    t1 := hash(id, n, H1)
+    t1.Add(t1, priv.D)
+
+    // if t1 = 0, we need to regenerate the master key.
+    if t1.BitLen() == 0 || t1.Cmp(n) == 0 {
+        return nil, errors.New("need to regen MasterPrivateKey!")
+    }
+
+    t1.ModInverse(t1, n)
+
+    // t2 = s*t1^-1
+    t2 := new(big.Int).Mul(priv.D, t1)
+
+    uk = new(SignPrivateKey)
+    uk.Sk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(t2.Bytes()))
+    uk.Mpk = priv.Mpk
+
+    return
 }
 
 func (priv *SignMasterPrivateKey) Marshal() []byte {
@@ -203,7 +224,7 @@ func (priv *SignPrivateKey) Unmarshal(bytes []byte) (err error) {
 }
 
 // generate master key for KGC(Key Generate Center).
-func GenerateSignMasterPrivateKey(rand io.Reader) (mk *SignMasterPrivateKey, err error) {
+func GenerateSignMasterKey(rand io.Reader) (mk *SignMasterPrivateKey, err error) {
     s, err := randFieldElement(rand, sm9curve.Order)
     if err != nil {
         return nil, errors.Errorf("gen rand num err:%s", err)
@@ -217,28 +238,8 @@ func GenerateSignMasterPrivateKey(rand io.Reader) (mk *SignMasterPrivateKey, err
 }
 
 // generate user's secret key.
-func GenerateSignPrivateKey(mk *SignMasterPrivateKey, id []byte, hid byte) (uk *SignPrivateKey, err error) {
-    id = append(id, hid)
-    n := sm9curve.Order
-
-    t1 := hash(id, n, H1)
-    t1.Add(t1, mk.D)
-
-    // if t1 = 0, we need to regenerate the master key.
-    if t1.BitLen() == 0 || t1.Cmp(n) == 0 {
-        return nil, errors.New("need to regen mk!")
-    }
-
-    t1.ModInverse(t1, n)
-
-    // t2 = s*t1^-1
-    t2 := new(big.Int).Mul(mk.D, t1)
-
-    uk = new(SignPrivateKey)
-    uk.Sk, err = new(sm9curve.G1).ScalarBaseMult(sm9curve.NormalizeScalar(t2.Bytes()))
-    uk.Mpk = mk.Mpk
-
-    return
+func GenerateSignUserKey(mk *SignMasterPrivateKey, id []byte, hid byte) (*SignPrivateKey, error) {
+    return mk.GenerateUserKey(id, hid)
 }
 
 // 解析签名主公钥明文

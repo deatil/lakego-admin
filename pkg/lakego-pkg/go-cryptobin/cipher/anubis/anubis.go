@@ -32,7 +32,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(anubisCipher)
-    c.setKey(key, int32(keylen))
+    c.expandKey(key, int32(keylen))
 
     return c, nil
 }
@@ -73,7 +73,101 @@ func (this *anubisCipher) Decrypt(dst, src []byte) {
     this.crypt(dst, src, this.roundKeyDec, this.R)
 }
 
-func (this *anubisCipher) setKey(key []byte, keylen int32) {
+func (this *anubisCipher) crypt(ciphertext []byte, plaintext []byte, roundKey [19][4]uint32, R int32) {
+   var i, pos, r int32
+   var state [4]uint32
+   var inter [4]uint32
+
+    /*
+    * map plaintext block to cipher state (mu)
+    * and add initial round key (sigma[K^0]):
+    */
+    for i, pos = 0, 0; i < 4; i, pos = i + 1, pos + 4 {
+      state[i] =
+         (uint32(plaintext[pos    ]) << 24) ^
+         (uint32(plaintext[pos + 1]) << 16) ^
+         (uint32(plaintext[pos + 2]) <<  8) ^
+         (uint32(plaintext[pos + 3])      ) ^
+         roundKey[0][i]
+    }
+
+    /*
+     * R - 1 full rounds:
+     */
+    for r = 1; r < R; r++ {
+      inter[0] =
+         T0[byte(state[0] >> 24) & 0xff] ^
+         T1[byte(state[1] >> 24) & 0xff] ^
+         T2[byte(state[2] >> 24) & 0xff] ^
+         T3[byte(state[3] >> 24) & 0xff] ^
+         roundKey[r][0]
+      inter[1] =
+         T0[byte(state[0] >> 16) & 0xff] ^
+         T1[byte(state[1] >> 16) & 0xff] ^
+         T2[byte(state[2] >> 16) & 0xff] ^
+         T3[byte(state[3] >> 16) & 0xff] ^
+         roundKey[r][1]
+      inter[2] =
+         T0[byte(state[0] >>  8) & 0xff] ^
+         T1[byte(state[1] >>  8) & 0xff] ^
+         T2[byte(state[2] >>  8) & 0xff] ^
+         T3[byte(state[3] >>  8) & 0xff] ^
+         roundKey[r][2]
+      inter[3] =
+         T0[byte(state[0]      ) & 0xff] ^
+         T1[byte(state[1]      ) & 0xff] ^
+         T2[byte(state[2]      ) & 0xff] ^
+         T3[byte(state[3]      ) & 0xff] ^
+         roundKey[r][3]
+
+      state[0] = inter[0]
+      state[1] = inter[1]
+      state[2] = inter[2]
+      state[3] = inter[3]
+    }
+
+    /*
+    * last round:
+    */
+   inter[0] =
+      (T0[byte(state[0] >> 24) & 0xff] & 0xff000000) ^
+      (T1[byte(state[1] >> 24) & 0xff] & 0x00ff0000) ^
+      (T2[byte(state[2] >> 24) & 0xff] & 0x0000ff00) ^
+      (T3[byte(state[3] >> 24) & 0xff] & 0x000000ff) ^
+      roundKey[R][0]
+   inter[1] =
+      (T0[byte(state[0] >> 16) & 0xff] & 0xff000000) ^
+      (T1[byte(state[1] >> 16) & 0xff] & 0x00ff0000) ^
+      (T2[byte(state[2] >> 16) & 0xff] & 0x0000ff00) ^
+      (T3[byte(state[3] >> 16) & 0xff] & 0x000000ff) ^
+      roundKey[R][1]
+   inter[2] =
+      (T0[byte(state[0] >>  8) & 0xff] & 0xff000000) ^
+      (T1[byte(state[1] >>  8) & 0xff] & 0x00ff0000) ^
+      (T2[byte(state[2] >>  8) & 0xff] & 0x0000ff00) ^
+      (T3[byte(state[3] >>  8) & 0xff] & 0x000000ff) ^
+      roundKey[R][2]
+   inter[3] =
+      (T0[byte(state[0]      ) & 0xff] & 0xff000000) ^
+      (T1[byte(state[1]      ) & 0xff] & 0x00ff0000) ^
+      (T2[byte(state[2]      ) & 0xff] & 0x0000ff00) ^
+      (T3[byte(state[3]      ) & 0xff] & 0x000000ff) ^
+      roundKey[R][3]
+
+   /*
+    * map cipher state to ciphertext block (mu^{-1}):
+    */
+    for i, pos = 0, 0; i < 4; i, pos = i + 1, pos + 4 {
+        var w uint32 = inter[i]
+
+        ciphertext[pos    ] = byte(w >> 24)
+        ciphertext[pos + 1] = byte(w >> 16)
+        ciphertext[pos + 2] = byte(w >>  8)
+        ciphertext[pos + 3] = byte(w      )
+    }
+}
+
+func (this *anubisCipher) expandKey(key []byte, keylen int32) {
    var N, R, i, pos, r int32
    var kappa [MAX_N]uint32
    var inter [MAX_N]uint32 /* initialize as all zeroes */
@@ -200,98 +294,4 @@ func (this *anubisCipher) setKey(key []byte, keylen int32) {
             T3[byte(T4[byte(v      ) & 0xff]) & 0xff]
       }
    }
-}
-
-func (this *anubisCipher) crypt(ciphertext []byte, plaintext []byte, roundKey [19][4]uint32, R int32) {
-   var i, pos, r int32
-   var state [4]uint32
-   var inter [4]uint32
-
-    /*
-    * map plaintext block to cipher state (mu)
-    * and add initial round key (sigma[K^0]):
-    */
-    for i, pos = 0, 0; i < 4; i, pos = i + 1, pos + 4 {
-      state[i] =
-         (uint32(plaintext[pos    ]) << 24) ^
-         (uint32(plaintext[pos + 1]) << 16) ^
-         (uint32(plaintext[pos + 2]) <<  8) ^
-         (uint32(plaintext[pos + 3])      ) ^
-         roundKey[0][i]
-    }
-
-    /*
-     * R - 1 full rounds:
-     */
-    for r = 1; r < R; r++ {
-      inter[0] =
-         T0[byte(state[0] >> 24) & 0xff] ^
-         T1[byte(state[1] >> 24) & 0xff] ^
-         T2[byte(state[2] >> 24) & 0xff] ^
-         T3[byte(state[3] >> 24) & 0xff] ^
-         roundKey[r][0]
-      inter[1] =
-         T0[byte(state[0] >> 16) & 0xff] ^
-         T1[byte(state[1] >> 16) & 0xff] ^
-         T2[byte(state[2] >> 16) & 0xff] ^
-         T3[byte(state[3] >> 16) & 0xff] ^
-         roundKey[r][1]
-      inter[2] =
-         T0[byte(state[0] >>  8) & 0xff] ^
-         T1[byte(state[1] >>  8) & 0xff] ^
-         T2[byte(state[2] >>  8) & 0xff] ^
-         T3[byte(state[3] >>  8) & 0xff] ^
-         roundKey[r][2]
-      inter[3] =
-         T0[byte(state[0]      ) & 0xff] ^
-         T1[byte(state[1]      ) & 0xff] ^
-         T2[byte(state[2]      ) & 0xff] ^
-         T3[byte(state[3]      ) & 0xff] ^
-         roundKey[r][3]
-
-      state[0] = inter[0]
-      state[1] = inter[1]
-      state[2] = inter[2]
-      state[3] = inter[3]
-    }
-
-    /*
-    * last round:
-    */
-   inter[0] =
-      (T0[byte(state[0] >> 24) & 0xff] & 0xff000000) ^
-      (T1[byte(state[1] >> 24) & 0xff] & 0x00ff0000) ^
-      (T2[byte(state[2] >> 24) & 0xff] & 0x0000ff00) ^
-      (T3[byte(state[3] >> 24) & 0xff] & 0x000000ff) ^
-      roundKey[R][0]
-   inter[1] =
-      (T0[byte(state[0] >> 16) & 0xff] & 0xff000000) ^
-      (T1[byte(state[1] >> 16) & 0xff] & 0x00ff0000) ^
-      (T2[byte(state[2] >> 16) & 0xff] & 0x0000ff00) ^
-      (T3[byte(state[3] >> 16) & 0xff] & 0x000000ff) ^
-      roundKey[R][1]
-   inter[2] =
-      (T0[byte(state[0] >>  8) & 0xff] & 0xff000000) ^
-      (T1[byte(state[1] >>  8) & 0xff] & 0x00ff0000) ^
-      (T2[byte(state[2] >>  8) & 0xff] & 0x0000ff00) ^
-      (T3[byte(state[3] >>  8) & 0xff] & 0x000000ff) ^
-      roundKey[R][2]
-   inter[3] =
-      (T0[byte(state[0]      ) & 0xff] & 0xff000000) ^
-      (T1[byte(state[1]      ) & 0xff] & 0x00ff0000) ^
-      (T2[byte(state[2]      ) & 0xff] & 0x0000ff00) ^
-      (T3[byte(state[3]      ) & 0xff] & 0x000000ff) ^
-      roundKey[R][3]
-
-   /*
-    * map cipher state to ciphertext block (mu^{-1}):
-    */
-    for i, pos = 0, 0; i < 4; i, pos = i + 1, pos + 4 {
-        var w uint32 = inter[i]
-
-        ciphertext[pos    ] = byte(w >> 24)
-        ciphertext[pos + 1] = byte(w >> 16)
-        ciphertext[pos + 2] = byte(w >>  8)
-        ciphertext[pos + 3] = byte(w      )
-    }
 }

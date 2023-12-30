@@ -32,7 +32,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 
     c := new(khazadCipher)
 
-    c.setKey(key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -73,7 +73,7 @@ func (this *khazadCipher) Decrypt(dst, src []byte) {
     this.crypt(dst, src, this.roundKeyDec[:]);
 }
 
-func (this *khazadCipher) setKey(key []byte) {
+func (this *khazadCipher) expandKey(key []byte) {
    var S [256]CONST64
    var K2, K1 uint64
    var r int32

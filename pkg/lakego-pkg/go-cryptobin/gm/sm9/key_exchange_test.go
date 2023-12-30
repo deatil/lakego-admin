@@ -13,19 +13,19 @@ func Test_KeyExchange(t *testing.T) {
     userA := []byte("Alice")
     userB := []byte("Bob")
 
-    masterKey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    masterKey, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
     }
 
-    userKey, err := GenerateEncryptPrivateKey(masterKey, userA, hid)
+    userKey, err := GenerateEncryptUserKey(masterKey, userA, hid)
     if err != nil {
         t.Fatal(err)
     }
 
     initiator := NewKeyExchange(userKey, userA, userB, 16, true)
 
-    userKey, err = GenerateEncryptPrivateKey(masterKey, userB, hid)
+    userKey, err = GenerateEncryptUserKey(masterKey, userB, hid)
     if err != nil {
         t.Fatal(err)
     }
@@ -70,19 +70,19 @@ func Test_KeyExchangeWithoutSignature(t *testing.T) {
     userA := []byte("Alice")
     userB := []byte("Bob")
 
-    masterKey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    masterKey, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
     }
 
-    userKey, err := GenerateEncryptPrivateKey(masterKey, userA, hid)
+    userKey, err := GenerateEncryptUserKey(masterKey, userA, hid)
     if err != nil {
         t.Fatal(err)
     }
 
     initiator := NewKeyExchange(userKey, userA, userB, 16, false)
 
-    userKey, err = GenerateEncryptPrivateKey(masterKey, userB, hid)
+    userKey, err = GenerateEncryptUserKey(masterKey, userB, hid)
     if err != nil {
         t.Fatal(err)
     }
@@ -165,13 +165,13 @@ func Test_KeyExchangeSample(t *testing.T) {
     userA := []byte("Alice")
     userB := []byte("Bob")
 
-    userKey, err := GenerateEncryptPrivateKey(masterKey, userA, hid)
+    userKey, err := GenerateEncryptUserKey(masterKey, userA, hid)
     if err != nil {
         t.Fatal(err)
     }
     initiator := NewKeyExchange(userKey, userA, userB, 16, true)
 
-    userKey, err = GenerateEncryptPrivateKey(masterKey, userB, hid)
+    userKey, err = GenerateEncryptUserKey(masterKey, userB, hid)
     if err != nil {
         t.Fatal(err)
     }

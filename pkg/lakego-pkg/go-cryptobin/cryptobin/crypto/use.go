@@ -439,6 +439,40 @@ func (this Cryptobin) Trivium() Cryptobin {
     return this
 }
 
+// Rijndael
+// The key argument should be 16, 24 or 32 bytes.
+func (this Cryptobin) Rijndael(blockSize int) Cryptobin {
+    this.multiple = Rijndael
+
+    this.config.Set("block_size", blockSize)
+
+    return this
+}
+
+// Rijndael128
+// The key argument should be 16, 24 or 32 bytes.
+func (this Cryptobin) Rijndael128() Cryptobin {
+    this.multiple = Rijndael128
+
+    return this
+}
+
+// Rijndael192
+// The key argument should be 16, 24 or 32 bytes.
+func (this Cryptobin) Rijndael192() Cryptobin {
+    this.multiple = Rijndael192
+
+    return this
+}
+
+// Rijndael256
+// The key argument should be 16, 24 or 32 bytes.
+func (this Cryptobin) Rijndael256() Cryptobin {
+    this.multiple = Rijndael256
+
+    return this
+}
+
 // 使用类型
 func (this Cryptobin) MultipleBy(multiple Multiple, cfg ...map[string]any) Cryptobin {
     this.multiple = multiple

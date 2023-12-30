@@ -18,7 +18,7 @@ import (
 func Test_SignPrivateKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    mprikey, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mprikey, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mprikey gen failed:%s", err)
         return
@@ -27,7 +27,7 @@ func Test_SignPrivateKey(t *testing.T) {
     var hid byte = 1
     var uid = []byte("Alice")
 
-    prikey, err := GenerateSignPrivateKey(mprikey, uid, hid)
+    prikey, err := GenerateSignUserKey(mprikey, uid, hid)
     if err != nil {
         t.Errorf("prikey gen failed:%s", err)
         return
@@ -80,7 +80,7 @@ func Test_SignPrivateKey(t *testing.T) {
 func Test_SignPublicKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    mprikey, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mprikey, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mprikey gen failed:%s", err)
         return
@@ -111,13 +111,13 @@ func Test_KeySign(t *testing.T) {
 
     // ===============
 
-    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mk, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
     }
 
-    uk, err := GenerateSignPrivateKey(mk, uid, hid)
+    uk, err := GenerateSignUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -198,7 +198,7 @@ func Test_KeySign(t *testing.T) {
 func Test_EncryptPrivateKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    mprikey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mprikey, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mprikey gen failed:%s", err)
         return
@@ -207,7 +207,7 @@ func Test_EncryptPrivateKey(t *testing.T) {
     var hid byte = 1
     var uid = []byte("Alice")
 
-    prikey, err := GenerateEncryptPrivateKey(mprikey, uid, hid)
+    prikey, err := GenerateEncryptUserKey(mprikey, uid, hid)
     if err != nil {
         t.Errorf("prikey gen failed:%s", err)
         return
@@ -253,7 +253,7 @@ func Test_EncryptPrivateKey(t *testing.T) {
 func Test_EncryptPublicKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    mprikey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mprikey, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mprikey gen failed:%s", err)
         return
@@ -286,13 +286,13 @@ func Test_KeyEncrypt(t *testing.T) {
 
     // ===============
 
-    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mk, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
     }
 
-    uk, err := GenerateEncryptPrivateKey(mk, uid, hid)
+    uk, err := GenerateEncryptUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return

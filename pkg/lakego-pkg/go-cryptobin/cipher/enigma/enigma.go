@@ -44,7 +44,7 @@ func NewCipherWithSeed(key []byte, seed int32) (cipher.Stream, error) {
 
     c := new(enigmaCipher)
     c.seed = seed
-    c.setKey(key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -102,7 +102,7 @@ func (this *enigmaCipher) XORKeyStream(dst, src []byte) {
     copy(dst, ciphertext)
 }
 
-func (this *enigmaCipher) setKey(key []byte) {
+func (this *enigmaCipher) expandKey(key []byte) {
     var ic, i, k, temp int32
     var random uint32
     var seed int32

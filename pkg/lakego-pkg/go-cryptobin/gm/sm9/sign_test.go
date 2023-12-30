@@ -10,7 +10,7 @@ import (
 )
 
 func Test_Sign(t *testing.T) {
-    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mk, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
@@ -20,7 +20,7 @@ func Test_Sign(t *testing.T) {
 
     var uid = []byte("Alice")
 
-    uk, err := GenerateSignPrivateKey(mk, uid, hid)
+    uk, err := GenerateSignUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -43,7 +43,7 @@ func Test_Sign(t *testing.T) {
 }
 
 func Test_NewSign(t *testing.T) {
-    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mk, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
@@ -54,7 +54,7 @@ func Test_NewSign(t *testing.T) {
     var hid byte = 1
     var uid = []byte("Alice")
 
-    uk, err := GenerateSignPrivateKey(mk, uid, hid)
+    uk, err := GenerateSignUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -95,7 +95,7 @@ func Test_NewSign(t *testing.T) {
 }
 
 func Test_SignASN1(t *testing.T) {
-    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mk, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
@@ -105,7 +105,7 @@ func Test_SignASN1(t *testing.T) {
 
     var uid = []byte("Alice")
 
-    uk, err := GenerateSignPrivateKey(mk, uid, hid)
+    uk, err := GenerateSignUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -165,7 +165,7 @@ func Test_HashH2(t *testing.T) {
 }
 
 func Test_SignMasterPublicKey_Compress(t *testing.T) {
-    mk, err := GenerateSignMasterPrivateKey(rand.Reader)
+    mk, err := GenerateSignMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return

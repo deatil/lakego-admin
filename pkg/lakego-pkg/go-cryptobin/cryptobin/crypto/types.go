@@ -159,6 +159,14 @@ func (this Multiple) String() string {
             return "Present"
         case Trivium:
             return "Trivium"
+        case Rijndael:
+            return "Rijndael"
+        case Rijndael128:
+            return "Rijndael128"
+        case Rijndael192:
+            return "Rijndael192"
+        case Rijndael256:
+            return "Rijndael256"
         default:
             if TypeMultiple.Names().Has(this) {
                 return (TypeMultiple.Names().Get(this))()
@@ -221,6 +229,10 @@ const (
     Anubis
     Present
     Trivium
+    Rijndael
+    Rijndael128
+    Rijndael192
+    Rijndael256
     maxMultiple
 )
 

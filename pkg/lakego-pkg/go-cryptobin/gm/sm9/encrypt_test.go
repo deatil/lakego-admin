@@ -11,7 +11,7 @@ import (
 func Test_Encrypt(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
 
-    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mk, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
@@ -21,7 +21,7 @@ func Test_Encrypt(t *testing.T) {
 
     var uid = []byte("Alice")
 
-    uk, err := GenerateEncryptPrivateKey(mk, uid, hid)
+    uk, err := GenerateEncryptUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -47,7 +47,7 @@ func Test_Encrypt(t *testing.T) {
 }
 
 func Test_NewEncrypt(t *testing.T) {
-    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mk, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
@@ -58,7 +58,7 @@ func Test_NewEncrypt(t *testing.T) {
     var hid byte = 1
     var uid = []byte("Alice")
 
-    uk, err := GenerateEncryptPrivateKey(mk, uid, hid)
+    uk, err := GenerateEncryptUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -107,13 +107,13 @@ func Test_EncryptASN1(t *testing.T) {
 
     msg := []byte("message")
 
-    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mk, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return
     }
 
-    uk, err := GenerateEncryptPrivateKey(mk, uid, hid)
+    uk, err := GenerateEncryptUserKey(mk, uid, hid)
     if err != nil {
         t.Errorf("uk gen failed:%s", err)
         return
@@ -137,7 +137,7 @@ func Test_EncryptASN1(t *testing.T) {
 }
 
 func Test_WrapKey(t *testing.T) {
-    masterKey, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    masterKey, err := GenerateEncryptMasterKey(rand.Reader)
 
     hid := byte(0x01)
     uid := []byte("test-user")
@@ -146,7 +146,7 @@ func Test_WrapKey(t *testing.T) {
         t.Fatal(err)
     }
 
-    userKey, err := GenerateEncryptPrivateKey(masterKey, uid, hid)
+    userKey, err := GenerateEncryptUserKey(masterKey, uid, hid)
     if err != nil {
         t.Fatal(err)
     }
@@ -167,7 +167,7 @@ func Test_WrapKey(t *testing.T) {
 }
 
 func Test_EncryptMasterPublicKey_Compress(t *testing.T) {
-    mk, err := GenerateEncryptMasterPrivateKey(rand.Reader)
+    mk, err := GenerateEncryptMasterKey(rand.Reader)
     if err != nil {
         t.Errorf("mk gen failed:%s", err)
         return

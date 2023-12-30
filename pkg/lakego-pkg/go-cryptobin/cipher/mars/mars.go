@@ -29,7 +29,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(marsCipher)
-    c.setKey(key, keyLen)
+    c.expandKey(key, keyLen)
 
     return c, nil
 }
@@ -70,7 +70,7 @@ func (this *marsCipher) Decrypt(dst, src []byte) {
     this.decryptBlock(dst, src)
 }
 
-func (this *marsCipher) setKey(key []byte, keyLen int) {
+func (this *marsCipher) expandKey(key []byte, keyLen int) {
     var i uint
     var j uint
     var n uint

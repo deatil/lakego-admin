@@ -5,43 +5,6 @@ import (
     "encoding/binary"
 )
 
-func rotl(a uint32, n uint32) uint32 {
-    return bits.RotateLeft32(a, int(n))
-}
-
-func T_non_lin_sub(X uint32) uint32 {
-    var t uint32 = 0
-
-    t |= uint32(sbox[byte(X >> 24)]) << 24
-    t |= uint32(sbox[byte(X >> 16)]) << 16
-    t |= uint32(sbox[byte(X >>  8)]) <<  8
-    t |= uint32(sbox[byte(X      )])
-
-    return t
-}
-
-func T_slow(X uint32) uint32 {
-    var t uint32 = T_non_lin_sub(X)
-
-    /*
-     * L linear transform
-     */
-    return t ^ rotl(t, 2) ^ rotl(t, 10) ^ rotl(t, 18) ^ rotl(t, 24)
-}
-
-func T(X uint32) uint32 {
-    return sbox_t0[byte(X >> 24)] ^
-           sbox_t1[byte(X >> 16)] ^
-           sbox_t2[byte(X >>  8)] ^
-           sbox_t3[byte(X      )]
-}
-
-func key_sub(X uint32) uint32 {
-    var t uint32 = T_non_lin_sub(X)
-
-    return t ^ rotl(t, 13) ^ rotl(t, 23)
-}
-
 // Endianness option
 const littleEndian bool = false
 
@@ -65,4 +28,45 @@ func uint32ToBytes(blk uint32) [4]byte {
     }
 
     return sav
+}
+
+func rotl(a uint32, n uint32) uint32 {
+    return bits.RotateLeft32(a, int(n))
+}
+
+func tNonLinSub(X uint32) uint32 {
+    var t uint32 = 0
+
+    t |= uint32(sbox[byte(X >> 24)]) << 24
+    t |= uint32(sbox[byte(X >> 16)]) << 16
+    t |= uint32(sbox[byte(X >>  8)]) <<  8
+    t |= uint32(sbox[byte(X      )])
+
+    return t
+}
+
+func tSlow(X uint32) uint32 {
+    var t uint32 = tNonLinSub(X)
+
+    /*
+     * L linear transform
+     */
+    return t ^
+           rotl(t, 2) ^
+           rotl(t, 10) ^
+           rotl(t, 18) ^
+           rotl(t, 24)
+}
+
+func tSbox(X uint32) uint32 {
+    return sbox_t0[byte(X >> 24)] ^
+           sbox_t1[byte(X >> 16)] ^
+           sbox_t2[byte(X >>  8)] ^
+           sbox_t3[byte(X      )]
+}
+
+func keySub(X uint32) uint32 {
+    var t uint32 = tNonLinSub(X)
+
+    return t ^ rotl(t, 13) ^ rotl(t, 23)
 }

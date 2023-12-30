@@ -34,7 +34,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     c.K = make([]uint32, 4)
     c.dK = make([]uint32, 4)
 
-    c.setKey(key, uint32(k) * 8)
+    c.expandKey(key, uint32(k) * 8)
 
     return c, nil
 }
@@ -87,7 +87,7 @@ func (this *noekeonCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *noekeonCipher) setKey(in_key []byte, key_len uint32) {
+func (this *noekeonCipher) expandKey(in_key []byte, key_len uint32) {
     K := bytesToUint32s(in_key)
     copy(this.K[0:], K)
 

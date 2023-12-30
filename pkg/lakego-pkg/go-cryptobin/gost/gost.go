@@ -77,11 +77,6 @@ type PrivateKey struct {
     D *big.Int
 }
 
-// Public returns the public key corresponding to priv.
-func (priv *PrivateKey) Public() crypto.PublicKey {
-    return &priv.PublicKey
-}
-
 // Equal reports whether priv and x have the same value.
 func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
     xx, ok := x.(*PrivateKey)
@@ -91,6 +86,11 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
 
     return priv.D.Cmp(xx.D) == 0 &&
         priv.Curve.Equal(xx.Curve)
+}
+
+// Public returns the public key corresponding to priv.
+func (priv *PrivateKey) Public() crypto.PublicKey {
+    return &priv.PublicKey
 }
 
 // Sign data to asn.1

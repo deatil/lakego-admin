@@ -45,7 +45,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     once.Do(initAll)
 
     c := new(saferplusCipher)
-    c.setKey(key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -288,7 +288,7 @@ func (this *saferplusCipher) decrypt(dst, src []byte) {
     }
 }
 
-func (this *saferplusCipher) setKey(keyData []uint8) {
+func (this *saferplusCipher) expandKey(keyData []uint8) {
     var j uint32
     var ka [9]uint8
     var kb [9]uint8

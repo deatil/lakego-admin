@@ -34,7 +34,7 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
     }
 
     c := new(triviumCipher)
-    c.setKey(key, iv)
+    c.expandKey(key, iv)
 
     return c, nil
 }
@@ -57,7 +57,7 @@ func (this *triviumCipher) XORKeyStream(dst []byte, src []byte) {
     }
 }
 
-func (this *triviumCipher) setKey(key []byte, iv []byte) {
+func (this *triviumCipher) expandKey(key []byte, iv []byte) {
     var i uint
 
     //Clear the 288-bit internal state

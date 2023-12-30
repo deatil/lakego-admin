@@ -32,7 +32,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     in_key := keyToUint32s(key)
 
     c := new(cast256Cipher)
-    c.setKey(in_key)
+    c.expandKey(in_key)
 
     return c, nil
 }
@@ -117,7 +117,7 @@ func (this *cast256Cipher) decrypt(dst, src []byte) {
     copy(dst, dstBytes[:])
 }
 
-func (this *cast256Cipher) setKey(key []uint32) {
+func (this *cast256Cipher) expandKey(key []uint32) {
     var i, j, cm, cr uint32
     var lk, tm, tr [8]uint32
 

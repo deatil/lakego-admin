@@ -42,7 +42,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 
     in_key := bytesToUint32s(key)
 
-    c.setKey(in_key, uint32(k) * 8)
+    c.expandKey(in_key, uint32(k) * 8)
 
     return c, nil
 }
@@ -95,7 +95,7 @@ func (this *e2Cipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *e2Cipher) setKey(in_key []uint32, key_len uint32) {
+func (this *e2Cipher) expandKey(in_key []uint32, key_len uint32) {
     var lk [8]uint32
     var v [2]uint32
     var lout [8]uint32

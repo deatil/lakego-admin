@@ -27,7 +27,7 @@ func Test_Zuc(t *testing.T) {
     out2 := make([]byte, len(in))
     s2.Encrypt(out2, out)
 
-    if len(out) == 0 {
+    if len(out2) == 0 {
         t.Error("Zuc make 2 error")
     }
 

@@ -20,7 +20,7 @@ func (this *HashHmac) Size() int {
     return this.h().Size()
 }
 
-func (this *HashHmac) Hash(c, k []byte) []byte {
+func (this *HashHmac) Mac(k, c []byte) []byte {
     hash := hmac.New(this.h, k)
     hash.Write(c)
 
@@ -39,7 +39,7 @@ func (this *HashMac) Size() int {
     return this.h().Size()
 }
 
-func (this *HashMac) Hash(c, k []byte) []byte {
+func (this *HashMac) Mac(k, c []byte) []byte {
     hash := this.h()
     hash.Write(c)
     hash.Write(k)

@@ -29,7 +29,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(presentCipher)
-    c.setKey(key, keyLen)
+    c.expandKey(key, keyLen)
 
     return c, nil
 }
@@ -70,7 +70,7 @@ func (this *presentCipher) Decrypt(dst, src []byte) {
     this.decryptBlock(dst, src)
 }
 
-func (this *presentCipher) setKey(key []byte, keyLen int) {
+func (this *presentCipher) expandKey(key []byte, keyLen int) {
    var i uint
 
    var t uint64

@@ -33,7 +33,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
 
     in_key := bytesToUint32s(key)
 
-    c.setKey(in_key)
+    c.expandKey(in_key)
 
     return c, nil
 }
@@ -86,7 +86,7 @@ func (this *kseedCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *kseedCipher) setKey(in_key []uint32) {
+func (this *kseedCipher) expandKey(in_key []uint32) {
     var i int32
     var tmp, k1, k2, k3, k4 uint32
 

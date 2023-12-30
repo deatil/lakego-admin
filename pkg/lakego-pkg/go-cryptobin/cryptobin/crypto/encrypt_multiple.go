@@ -57,6 +57,7 @@ import (
     cryptobin_anubis "github.com/deatil/go-cryptobin/cipher/anubis"
     cryptobin_present "github.com/deatil/go-cryptobin/cipher/present"
     cryptobin_trivium "github.com/deatil/go-cryptobin/cipher/trivium"
+    cryptobin_rijndael "github.com/deatil/go-cryptobin/cipher/rijndael"
 )
 
 // 获取模式方式
@@ -2075,5 +2076,141 @@ func (this EncryptTrivium) Decrypt(data []byte, opt IOption) ([]byte, error) {
 func init() {
     UseEncrypt.Add(Trivium, func() IEncrypt {
         return EncryptTrivium{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 24 or 32 bytes.
+type EncryptRijndael struct {}
+
+// 加密
+func (this EncryptRijndael) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    blockSize := opt.Config().GetInt("block_size")
+
+    block, err := cryptobin_rijndael.NewCipher(opt.Key(), blockSize)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptRijndael) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    blockSize := opt.Config().GetInt("block_size")
+
+    block, err := cryptobin_rijndael.NewCipher(opt.Key(), blockSize)
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Rijndael, func() IEncrypt {
+        return EncryptRijndael{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 24 or 32 bytes.
+type EncryptRijndael128 struct {}
+
+// 加密
+func (this EncryptRijndael128) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher128(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptRijndael128) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher128(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Rijndael128, func() IEncrypt {
+        return EncryptRijndael128{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 24 or 32 bytes.
+type EncryptRijndael192 struct {}
+
+// 加密
+func (this EncryptRijndael192) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher192(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptRijndael192) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher192(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Rijndael192, func() IEncrypt {
+        return EncryptRijndael192{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16, 24 or 32 bytes.
+type EncryptRijndael256 struct {}
+
+// 加密
+func (this EncryptRijndael256) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher256(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密
+func (this EncryptRijndael256) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_rijndael.NewCipher256(opt.Key())
+    if err != nil {
+        err := fmt.Errorf("Cryptobin: %w", err)
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Rijndael256, func() IEncrypt {
+        return EncryptRijndael256{}
     })
 }

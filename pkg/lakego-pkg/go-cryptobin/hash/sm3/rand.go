@@ -52,7 +52,7 @@ func (this *Rand) init(nonce []byte, label []byte) {
     this.lastReseedTime = time.Now()
 }
 
-func (this *Rand) Generate(addin []byte, out []byte) {
+func (this *Rand) Generate(out []byte, addin []byte) {
     var sm3 hash.Hash
     var H []byte
     var counter [4]byte

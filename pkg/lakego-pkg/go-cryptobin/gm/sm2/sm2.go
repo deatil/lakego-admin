@@ -213,7 +213,7 @@ func GenerateKey(random io.Reader) (*PrivateKey, error) {
     return priv, nil
 }
 
-// 根据私钥明文16进制明文初始化私钥
+// 根据私钥明文初始化私钥
 func NewPrivateKey(d []byte) (*PrivateKey, error) {
     k:= new(big.Int).SetBytes(d)
 
@@ -238,7 +238,7 @@ func ToPrivateKey(key *PrivateKey) []byte {
     return key.D.Bytes()
 }
 
-// 根据公钥16进制明文初始化公钥
+// 根据公钥明文初始化公钥
 func NewPublicKey(q []byte) (*PublicKey, error) {
     if len(q) == 65 && q[0] == byte(0x04) {
         q = q[1:]
