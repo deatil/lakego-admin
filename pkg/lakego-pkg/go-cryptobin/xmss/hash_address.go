@@ -1,23 +1,23 @@
 package xmss
 
-/*
-OTC address						L-tree addrress					Hash Tree address
-+-------------------------+		+-------------------------+		+-------------------------+
-| layer address  (32 bits)|		| layer address  (32 bits)|		| layer address  (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| tree address   (64 bits)|		| tree address   (64 bits)|		| tree address   (64 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| type = 0       (32 bits)|		| type = 1       (32 bits)|		| type = 2       (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| OTS address    (32 bits)|		| L-tree address (32 bits)|		| Padding = 0    (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| chain address  (32 bits)|		| tree height    (32 bits)|		| tree height    (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| hash address   (32 bits)|		| tree index     (32 bits)|		| tree index     (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-| keyAndMask     (32 bits)|		| keyAndMask     (32 bits)|		| keyAndMask     (32 bits)|
-+-------------------------+		+-------------------------+		+-------------------------+
-*/
+/**
+ OTC address                     L-tree addrress                 Hash Tree address
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | layer address  (32 bits)|     | layer address  (32 bits)|     | layer address  (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | tree address   (64 bits)|     | tree address   (64 bits)|     | tree address   (64 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | type = 0       (32 bits)|     | type = 1       (32 bits)|     | type = 2       (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | OTS address    (32 bits)|     | L-tree address (32 bits)|     | Padding = 0    (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | chain address  (32 bits)|     | tree height    (32 bits)|     | tree height    (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | hash address   (32 bits)|     | tree index     (32 bits)|     | tree index     (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ | keyAndMask     (32 bits)|     | keyAndMask     (32 bits)|     | keyAndMask     (32 bits)|
+ +-------------------------+     +-------------------------+     +-------------------------+
+ */
 
 const (
     xmssAddrTypeOTS      = 0
@@ -77,10 +77,8 @@ func (a *address) setTreeIndex(idx uint32) {
 func (a *address) toBytes() (out []byte) {
     out = make([]byte, len(a)*4)
 
-    j := 0
-    for i := 0; i < len(out); i += 4 {
-        copy(out[i:], uint32ToBytes(a[j]))
-        j++
+    for i := 0; i < 8; i++ {
+        copy(out[i*4:], uint32ToBytes(a[i]))
     }
 
     return

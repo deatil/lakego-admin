@@ -14,7 +14,7 @@ import (
 func lTree(params *Params, leaf, seed []byte, wotsPub publicWOTS, a *address) {
     l := params.wlen
     var parentNodes uint32
-    height := uint32(0)
+    var height uint32 = 0
     var idxIn, idxOut uint32
     n := uint32(params.n)
 
@@ -39,11 +39,12 @@ func lTree(params *Params, leaf, seed []byte, wotsPub publicWOTS, a *address) {
         } else {
             l = l >> 1
         }
+
         height++
         a.setTreeHeight(height)
     }
-    copy(leaf, wotsPub[:n])
 
+    copy(leaf, wotsPub[:n])
 }
 
 // Section 4.1.10. Algorithm 13: XMSS_rootFromSig - Compute a root node from a tree signature
@@ -61,6 +62,7 @@ func computeRoot(params *Params, root, leaf, authPath, pubSeed []byte, leafIdx u
         copy(buf[:n], leaf)
         copy(buf[n:], authPath[:n])
     }
+
     authPath = authPath[n:]
 
     for i := uint32(0); i < params.treeHeight-1; i++ {
@@ -176,8 +178,6 @@ func treehash(params *Params, root, authPath, prvSeed, pubSeed []byte, leafIdx u
 
 // PublicKey key
 type PublicKey struct {
-    Params *Params
-    Oid uint32
     X []byte
 }
 
@@ -188,24 +188,11 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
         return false
     }
 
-    return pub.Oid == xx.Oid &&
-        bytes.Equal(pub.X, xx.X)
-}
-
-func (pub *PublicKey) Precompute() error {
-    params, err := NewParamsWithOid(pub.Oid)
-    if err != nil {
-        return errors.New("publicKey precompute error")
-    }
-
-    pub.Params = params
-
-    return nil
+    return bytes.Equal(pub.X, xx.X)
 }
 
 // PrivateKey key
 type PrivateKey struct {
-    PublicKey
     D []byte
 }
 
@@ -216,22 +203,27 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
         return false
     }
 
-    return priv.PublicKey.Equal(xx.PublicKey) &&
-        bytes.Equal(priv.D, xx.D)
+    return bytes.Equal(priv.D, xx.D)
 }
 
-// Public returns the public key corresponding to priv.
-func (priv *PrivateKey) Public() crypto.PublicKey {
-    return &priv.PublicKey
+func (priv *PrivateKey) PublicKey(params *Params) *PublicKey {
+    n := uint32(params.n)
+    x := priv.D[params.indexBytes+2*n:params.indexBytes+4*n]
+
+    return &PublicKey{
+        X: x,
+    }
 }
 
 // Sign Section 4.1.9. Algorithm 12: XMSS_sign - Generate an XMSS signature and update the XMSS private key
 // Signs a message. Returns an array containing the signature followed by the
 // message and an updated secret key.
-func (priv *PrivateKey) Sign(m []byte) ([]byte, error) {
-    prv := priv.D
+func (priv *PrivateKey) Sign(params *Params, m []byte) ([]byte, error) {
+    if params == nil {
+        return nil, errors.New("xmss: Params error")
+    }
 
-    params := priv.Params
+    prv := priv.D
 
     var signature []byte
     signature = make([]byte, int(params.signBytes)+len(m))
@@ -255,6 +247,19 @@ func (priv *PrivateKey) Sign(m []byte) ([]byte, error) {
     copy(signature[params.signBytes:], m)
 
     idx := fromBytes(prv[:params.indexBytes], int(params.indexBytes))
+
+    if idx >= ((1 << params.fullHeight) - 1) {
+        memsetByte(prv[:params.indexBytes], 0xFF)
+        memsetByte(prv[params.indexBytes:(params.prvBytes - params.indexBytes)], 0)
+        if idx > ((1 << params.fullHeight) - 1) {
+            return nil, errors.New("xmss: fullHeight is error")
+        }
+
+        if (params.fullHeight == 64) && (idx == ((1 << params.fullHeight) - 1)) {
+            return nil, errors.New("xmss: fullHeight is long")
+        }
+    }
+
     copy(signature[:params.indexBytes], prv[:params.indexBytes])
 
     // Increment the index in the private key
@@ -268,6 +273,7 @@ func (priv *PrivateKey) Sign(m []byte) ([]byte, error) {
     hashMsg(params, msgHash, signature[params.indexBytes:params.indexBytes+n], pubRoot, signature[params.signBytes-uint32(params.paddingLen)-3*n:], idx)
     copy(root, msgHash)
 
+    var buf bytes.Buffer
     for i := uint32(0); i < uint32(params.d); i++ {
         idxLeaf = uint32(idx) & ((1 << params.treeHeight) - 1)
         idx = idx >> params.treeHeight
@@ -281,11 +287,17 @@ func (priv *PrivateKey) Sign(m []byte) ([]byte, error) {
 
         wotsPrv := *generatePrivate(params, otsSeed)
         wotsSign := *wotsPrv.sign(params, root, pubSeed, &otsA)
-        copy(signature[params.indexBytes+n:params.indexBytes+n+params.wotsSignLen], wotsSign)
+
+        buf.Write(wotsSign)
 
         // Compute the authentication path for the used WOTS leaf
-        treehash(params, root, signature[params.indexBytes+n+params.wotsSignLen:params.indexBytes+n+params.wotsSignLen+params.treeHeight*n], prvSeed, pubSeed, idxLeaf, otsA)
+        treehashData := make([]byte, params.treeHeight*n)
+        treehash(params, root, treehashData, prvSeed, pubSeed, idxLeaf, otsA)
+
+        buf.Write(treehashData)
     }
+
+    copy(signature[params.indexBytes+n:], buf.Bytes())
 
     return signature, nil
 }
@@ -294,14 +306,13 @@ func (priv *PrivateKey) Sign(m []byte) ([]byte, error) {
 // Generates a XMSS key pair for a given parameter set.
 // Format private: [(32bit) index || prvSeed || seed || pubSeed || root]
 // Format public: [root || pubSeed]
-func GenerateKey(oid uint32) (*PrivateKey, error) {
+func GenerateKey(params *Params) (*PrivateKey, *PublicKey, error) {
+    if params == nil {
+        return nil, nil, errors.New("xmss: Params error")
+    }
+
     var prv PrivateKey
     var pub PublicKey
-
-    params, err := NewParamsWithOid(oid)
-    if err != nil {
-        return nil, err
-    }
 
     prv.D = make([]byte, params.prvBytes)
     pub.X = make([]byte, params.pubBytes)
@@ -323,19 +334,23 @@ func GenerateKey(oid uint32) (*PrivateKey, error) {
     treehash(params, pub.X, authPath, prv.D[params.indexBytes:params.indexBytes+n], pub.X[n:2*n], 0, topTreeA)
     copy(prv.D[params.indexBytes+3*n:], pub.X[:n])
 
-    pub.Oid = oid
-    pub.Params = params
-    prv.PublicKey = pub
-
-    return &prv, nil
+    return &prv, &pub, nil
 }
 
-// Verify Section 4.1.10. Algorithm 14: XMSS_verify - Verify an XMSS signature using the corresponding XMSS public key and a message
+// Verify Section 4.1.10. Algorithm 14: XMSS_verify
+// - Verify an XMSS signature using the corresponding XMSS public key and a message
 // Verifies a given message signature pair under a given public key.
 // Note that this assumes a pk without an OID, i.e. [root || pubSeed]
-func Verify(publicKey *PublicKey, m, signature []byte) (match bool) {
+func Verify(params *Params, publicKey *PublicKey, m, signature []byte) (match bool) {
+    if params == nil {
+        return false
+    }
+
+    if len(signature) < int(params.signBytes) {
+        return false
+    }
+
     pub := publicKey.X
-    params := publicKey.Params
 
     n := uint32(params.n)
 
@@ -358,7 +373,14 @@ func Verify(publicKey *PublicKey, m, signature []byte) (match bool) {
     idx := fromBytes(signature[:params.indexBytes], int(params.indexBytes))
 
     copy(m[params.signBytes:], signature[params.signBytes:])
-    hashMsg(params, msgHash, signature[params.indexBytes:params.indexBytes+n], pubRoot, m[params.signBytes-uint32(params.paddingLen)-3*n:], idx)
+
+    hashMsg(
+        params, msgHash,
+        signature[params.indexBytes:params.indexBytes+n],
+        pubRoot,
+        m[params.signBytes-uint32(params.paddingLen)-3*n:],
+        idx,
+    )
     copy(root, msgHash)
 
     signature = signature[params.indexBytes+n:]
@@ -378,7 +400,8 @@ func Verify(publicKey *PublicKey, m, signature []byte) (match bool) {
         // The WOTS public key is only correct if the signature was correct
         otsA.setOTSAddr(idxLeaf)
 
-        wotsSign = signature[:params.wotsSignLen]
+        wotsSign = signatureWOTS(signature[:params.wotsSignLen])
+
         // Initially, root = mhash, but on subsequent iterations it is the root
         // of the subtree below the currently processed subtree.
         wotsPub = *wotsSign.getPublic(params, root, pubSeed, &otsA)

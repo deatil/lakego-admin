@@ -58,7 +58,7 @@ func tSlow(X uint32) uint32 {
            rotl(t, 24)
 }
 
-func tSbox(X uint32) uint32 {
+func t(X uint32) uint32 {
     return sbox_t0[byte(X >> 24)] ^
            sbox_t1[byte(X >> 16)] ^
            sbox_t2[byte(X >>  8)] ^

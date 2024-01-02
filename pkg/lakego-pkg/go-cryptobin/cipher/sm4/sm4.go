@@ -87,12 +87,12 @@ func (this *sm4Cipher) encrypt(dst, src []byte) {
      * protection from cache based side channels.
      */
     this.rnds(&B0, &B1, &B2, &B3,  0,  1,  2,  3, tSlow)
-    this.rnds(&B0, &B1, &B2, &B3,  4,  5,  6,  7, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3,  8,  9, 10, 11, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 12, 13, 14, 15, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 16, 17, 18, 19, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 20, 21, 22, 23, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 24, 25, 26, 27, tSbox)
+    this.rnds(&B0, &B1, &B2, &B3,  4,  5,  6,  7, t)
+    this.rnds(&B0, &B1, &B2, &B3,  8,  9, 10, 11, t)
+    this.rnds(&B0, &B1, &B2, &B3, 12, 13, 14, 15, t)
+    this.rnds(&B0, &B1, &B2, &B3, 16, 17, 18, 19, t)
+    this.rnds(&B0, &B1, &B2, &B3, 20, 21, 22, 23, t)
+    this.rnds(&B0, &B1, &B2, &B3, 24, 25, 26, 27, t)
     this.rnds(&B0, &B1, &B2, &B3, 28, 29, 30, 31, tSlow)
 
     B3Bytes := uint32ToBytes(B3)
@@ -113,12 +113,12 @@ func (this *sm4Cipher) decrypt(dst, src []byte) {
     var B3 uint32 = bytesToUint32(src[12:])
 
     this.rnds(&B0, &B1, &B2, &B3, 31, 30, 29, 28, tSlow)
-    this.rnds(&B0, &B1, &B2, &B3, 27, 26, 25, 24, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 23, 22, 21, 20, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 19, 18, 17, 16, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 15, 14, 13, 12, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3, 11, 10,  9,  8, tSbox)
-    this.rnds(&B0, &B1, &B2, &B3,  7,  6,  5,  4, tSbox)
+    this.rnds(&B0, &B1, &B2, &B3, 27, 26, 25, 24, t)
+    this.rnds(&B0, &B1, &B2, &B3, 23, 22, 21, 20, t)
+    this.rnds(&B0, &B1, &B2, &B3, 19, 18, 17, 16, t)
+    this.rnds(&B0, &B1, &B2, &B3, 15, 14, 13, 12, t)
+    this.rnds(&B0, &B1, &B2, &B3, 11, 10,  9,  8, t)
+    this.rnds(&B0, &B1, &B2, &B3,  7,  6,  5,  4, t)
     this.rnds(&B0, &B1, &B2, &B3,  3,  2,  1,  0, tSlow)
 
     B3Bytes := uint32ToBytes(B3)

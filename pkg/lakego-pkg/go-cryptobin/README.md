@@ -2,7 +2,7 @@
 
 go-cryptobin 是 go 的常用加密解密库
 
-[中文](README.md) | [English](README_EN.md)
+中文 | [English](README_EN.md)
 
 
 ### 项目介绍

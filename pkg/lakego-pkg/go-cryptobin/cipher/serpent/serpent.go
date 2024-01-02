@@ -10,7 +10,8 @@ import (
 // BlockSize is the serpent block size in bytes.
 const BlockSize = 16
 
-const phi = 0x9e3779b9 // The Serpent phi constant (sqrt(5) - 1) * 2**31
+// The Serpent phi constant (sqrt(5) - 1) * 2**31
+const phi = 0x9e3779b9
 
 type KeySizeError int
 
@@ -19,7 +20,9 @@ func (k KeySizeError) Error() string {
 }
 
 // The 132 32 bit subkeys of serpent
-type serpentCipher [132]uint32
+type serpentCipher struct {
+    rk [132]uint32
+}
 
 // NewCipher returns a new cipher.Block implementing the serpent block cipher.
 // The key argument must be 128, 192 or 256 bit (16, 24, 32 byte).
@@ -33,16 +36,16 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     s := &serpentCipher{}
-    s.keySchedule(key)
+    s.expandKey(key)
 
     return s, nil
 }
 
-func (s *serpentCipher) BlockSize() int {
+func (this *serpentCipher) BlockSize() int {
     return BlockSize
 }
 
-func (s *serpentCipher) Encrypt(dst, src []byte) {
+func (this *serpentCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/serpent: input not full block")
     }
@@ -55,10 +58,10 @@ func (s *serpentCipher) Encrypt(dst, src []byte) {
         panic("cryptobin/serpent: invalid buffer overlap")
     }
 
-    encryptBlock(dst, src, s)
+    encryptBlock(dst, src, this.rk)
 }
 
-func (s *serpentCipher) Decrypt(dst, src []byte) {
+func (this *serpentCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
         panic("cryptobin/serpent: input not full block")
     }
@@ -71,12 +74,13 @@ func (s *serpentCipher) Decrypt(dst, src []byte) {
         panic("cryptobin/serpent: invalid buffer overlap")
     }
 
-    decryptBlock(dst, src, s)
+    decryptBlock(dst, src, this.rk)
 }
 
 // The key schedule of serpent.
-func (s *serpentCipher) keySchedule(key []byte) {
+func (this *serpentCipher) expandKey(key []byte) {
     var k [16]uint32
+    var s [132]uint32
 
     j := 0
     for i := 0; i+4 <= len(key); i += 4 {
@@ -136,4 +140,6 @@ func (s *serpentCipher) keySchedule(key []byte) {
     sb4(&s[124], &s[125], &s[126], &s[127])
 
     sb3(&s[128], &s[129], &s[130], &s[131])
+
+    copy(this.rk[:], s[:])
 }

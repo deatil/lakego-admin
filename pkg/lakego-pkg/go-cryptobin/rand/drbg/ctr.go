@@ -115,7 +115,7 @@ func (this *ctrDRBG) Generate(out, additional []byte) error {
         drbg_add1(this.v, blockSize)
 
         outputBlock := make([]byte, blockSize)
-        this.newBlockCipher(this.key).Encrypt(outputBlock, this.v)
+        this.encrypt(this.key, outputBlock, this.v)
 
         temp.Write(outputBlock)
     }
@@ -141,7 +141,7 @@ func (this *ctrDRBG) update(seedMaterial []byte) {
     for i := 0; i < (this.seedLength+outlen-1)/outlen; i++ {
         drbg_add1(v, outlen)
 
-        this.newBlockCipher(this.key).Encrypt(output, v)
+        this.encrypt(this.key, output, v)
 
         copy(temp[i*outlen:], output)
     }
@@ -165,7 +165,7 @@ func (this *ctrDRBG) bcc(key, data []byte) []byte {
     for i := 0; i < len(data)/bs; i++ {
         subtle.XORBytes(value, value, data[i*bs:])
 
-        this.newBlockCipher(key).Encrypt(value, value)
+        this.encrypt(key, value, value)
     }
 
     return value
@@ -185,9 +185,8 @@ func (this *ctrDRBG) blockCipherDF(input []byte, requestedBytes int) []byte {
     s.Write(input)
     s.Write([]byte{0x80})
 
-    for s.Len()%bs != 0 {
-        s.Write([]byte{0x00})
-    }
+    paddingSize := bs - s.Len()%bs
+    s.Write(bytes.Repeat([]byte{0x00}, paddingSize))
 
     key := make([]byte, keyLen)
     for i := 0; i < keyLen; i++ {
@@ -219,7 +218,7 @@ func (this *ctrDRBG) blockCipherDF(input []byte, requestedBytes int) []byte {
     temp.Reset()
 
     for temp.Len() < requestedBytes {
-        this.newBlockCipher(k).Encrypt(x, x)
+        this.encrypt(k, x, x)
 
         temp.Write(x)
     }
@@ -228,11 +227,11 @@ func (this *ctrDRBG) blockCipherDF(input []byte, requestedBytes int) []byte {
     return tempBytes[:requestedBytes]
 }
 
-func (this *ctrDRBG) newBlockCipher(key []byte) cipher.Block {
+func (this *ctrDRBG) encrypt(key, out, in []byte) {
     block, err := this.newCipher(key)
     if err != nil {
         panic(err)
     }
 
-    return block
+    block.Encrypt(out, in)
 }

@@ -58,4 +58,5 @@ func Test_Check(t *testing.T) {
     c.Decrypt(dst, expected)
     if !reflect.DeepEqual(dst, src) {
         t.Errorf("expected=%x, result=%x\n", src, dst)
-    }}
+    }
+}
