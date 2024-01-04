@@ -212,6 +212,12 @@ func (this Datebin) GetOffset() int {
     return offset
 }
 
+// 覆盖错误信息
+func (this Datebin) WithErrors(errs []error) Datebin {
+    this.Errors = errs
+    return this
+}
+
 // 获取错误信息
 func (this Datebin) GetErrors() []error {
     return this.Errors

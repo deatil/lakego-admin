@@ -44,7 +44,7 @@ func (this KeyEncryptWithSM2) Encrypt(plaintext []byte, pkey crypto.PublicKey) (
             return nil, errors.New("pkcs12: PublicKey is not sm2 PublicKey")
     }
 
-    return sm2.EncryptAsn1(rand.Reader, pub, plaintext, sm2.C1C3C2)
+    return sm2.EncryptASN1(rand.Reader, pub, plaintext, sm2.C1C3C2)
 }
 
 // 解密
@@ -56,5 +56,5 @@ func (this KeyEncryptWithSM2) Decrypt(ciphertext []byte, pkey crypto.PrivateKey)
         return nil, errors.New("pkcs12: PrivateKey is not sm2 PrivateKey")
     }
 
-    return sm2.DecryptAsn1(priv, ciphertext, sm2.C1C3C2)
+    return sm2.DecryptASN1(priv, ciphertext, sm2.C1C3C2)
 }

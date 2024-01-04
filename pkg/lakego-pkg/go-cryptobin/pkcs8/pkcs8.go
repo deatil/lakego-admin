@@ -6,10 +6,8 @@ import (
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs1"
-    "github.com/deatil/go-cryptobin/pkcs/pbes1"
-    "github.com/deatil/go-cryptobin/pkcs/pbes2"
-    cryptobin_pbes1 "github.com/deatil/go-cryptobin/pkcs8/pbes1"
-    cryptobin_pbes2 "github.com/deatil/go-cryptobin/pkcs8/pbes2"
+    "github.com/deatil/go-cryptobin/pkcs8/pbes1"
+    "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
 // 加密方式
@@ -30,7 +28,7 @@ var (
     SHA1AndDES    = pbes1.SHA1AndDES
     SHA1AndRC2_64 = pbes1.SHA1AndRC2_64
 
-    // pkcs8 模式
+    // pkcs8 - PBES2
     DESCBC     = pbes2.DESCBC
     DESEDE3CBC = pbes2.DESEDE3CBC
 
@@ -77,26 +75,26 @@ var (
 
 type (
     // 配置
-    Opts       = cryptobin_pbes2.Opts
-    PBKDF2Opts = cryptobin_pbes2.PBKDF2Opts
-    ScryptOpts = cryptobin_pbes2.ScryptOpts
+    Opts       = pbes2.Opts
+    PBKDF2Opts = pbes2.PBKDF2Opts
+    ScryptOpts = pbes2.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetCipherFromName = cryptobin_pbes2.GetCipherFromName
+    GetCipherFromName = pbes2.GetCipherFromName
     // 获取 hash 类型
-    GetHashFromName   = cryptobin_pbes2.GetHashFromName
+    GetHashFromName   = pbes2.GetHashFromName
 )
 
 // 默认配置 PBKDF2
-var DefaultPBKDF2Opts = cryptobin_pbes2.DefaultPBKDF2Opts
+var DefaultPBKDF2Opts = pbes2.DefaultPBKDF2Opts
 
 // 默认配置 Scrypt
-var DefaultScryptOpts = cryptobin_pbes2.DefaultScryptOpts
+var DefaultScryptOpts = pbes2.DefaultScryptOpts
 
 // 默认配置
-var DefaultOpts = cryptobin_pbes2.DefaultOpts
+var DefaultOpts = pbes2.DefaultOpts
 
 // 解析设置
 // opt, err := ParseOpts("AES256CBC", "SHA256")
@@ -107,14 +105,14 @@ func ParseOpts(opts ...any) (any, error) {
 
     if len(opts) > 0 {
         if alg, ok := opts[0].(string); ok {
-            if cryptobin_pbes1.CheckCipherFromName(alg) {
-                opt = cryptobin_pbes1.GetCipherFromName(alg)
+            if pbes1.CheckCipherFromName(alg) {
+                opt = pbes1.GetCipherFromName(alg)
             }
         }
     }
 
     if opt == nil {
-        opt, err = cryptobin_pbes2.ParseOpts(opts...)
+        opt, err = pbes2.ParseOpts(opts...)
         if err != nil {
             return nil, err
         }
@@ -134,22 +132,22 @@ func EncryptPEMBlock(
     cipher    any,
 ) (*pem.Block, error) {
     switch c := cipher.(type) {
-        case cryptobin_pbes2.Cipher:
-            if _, err := cryptobin_pbes2.GetCipher(c.OID().String()); err == nil {
+        case pbes2.Cipher:
+            if _, err := pbes2.GetCipher(c.OID().String()); err == nil {
                 opts := DefaultOpts
                 opts.Cipher = c
 
-                return cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, opts)
+                return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, opts)
             }
 
-            return cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
+            return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
 
-        case cryptobin_pbes2.Opts:
-            if _, err := cryptobin_pbes1.GetCipher(c.Cipher.OID().String()); err == nil {
-                return cryptobin_pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c.Cipher)
+        case pbes2.Opts:
+            if _, err := pbes1.GetCipher(c.Cipher.OID().String()); err == nil {
+                return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c.Cipher)
             }
 
-            return cryptobin_pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
+            return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
     }
 
     return nil, errors.New("pkcs8: unsupported cipher")
@@ -167,11 +165,11 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         var blockDecrypted []byte
         var err error
 
-        if blockDecrypted, err = cryptobin_pbes2.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
+        if blockDecrypted, err = pbes2.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
             return blockDecrypted, nil
         }
 
-        if blockDecrypted, err = cryptobin_pbes1.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
+        if blockDecrypted, err = pbes1.DecryptPKCS8PrivateKey(block.Bytes, password); err == nil {
             return blockDecrypted, nil
         }
 

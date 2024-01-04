@@ -1,8 +1,10 @@
 package datebin
 
 import (
-    "testing"
     "time"
+    "errors"
+    "testing"
+    "reflect"
 )
 
 func assertErrorT(t *testing.T) func(error, string) {
@@ -13,11 +15,10 @@ func assertErrorT(t *testing.T) func(error, string) {
     }
 }
 
-func assertEqualT(t *testing.T) func(string, string, string) {
-    return func(actual string, expected string, msg string) {
-        actualStr := actual
-        if actualStr != expected {
-            t.Errorf("Failed %s: actual: %v, expected: %v", msg, actualStr, expected)
+func assertEqualT(t *testing.T) func(any, any, string) {
+    return func(actual any, expected any, msg string) {
+        if !reflect.DeepEqual(actual, expected) {
+            t.Errorf("Failed %s: actual: %v, expected: %v", msg, actual, expected)
         }
     }
 }
@@ -34,4 +35,49 @@ func Test_Now(t *testing.T) {
     expected2 := time.Now().In(time.Local).Format(DatetimeFormat)
 
     eq(actual2, expected2, "failed now time Local is error")
+}
+
+func Test_With(t *testing.T) {
+    eq := assertEqualT(t)
+
+    tt := time.Now()
+    weekday := time.Friday
+    loc := time.Local
+    errs := []error{
+        errors.New("test error"),
+    }
+
+    d := NewDatebin()
+    d = d.WithTime(tt).
+        WithWeekStartAt(weekday).
+        WithLocation(loc).
+        WithErrors(errs)
+
+    eq(d.time, tt, "failed time")
+    eq(d.weekStartAt, weekday, "failed weekStartAt")
+    eq(d.loc, loc, "failed loc")
+    eq(d.Errors, errs, "failed Errors")
+}
+
+func Test_Get(t *testing.T) {
+    eq := assertEqualT(t)
+
+    tt := time.Now()
+    weekday := time.Friday
+    loc := time.Local
+    errs := []error{
+        errors.New("test error"),
+    }
+
+    d := &Datebin{
+        time: tt,
+        weekStartAt: weekday,
+        loc: loc,
+        Errors: errs,
+    }
+
+    eq(d.GetTime(), tt, "failed time")
+    eq(d.GetWeekStartAt(), weekday, "failed weekStartAt")
+    eq(d.GetLocation(), loc, "failed loc")
+    eq(d.GetErrors(), errs, "failed Errors")
 }

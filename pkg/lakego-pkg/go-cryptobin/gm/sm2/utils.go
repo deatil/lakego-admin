@@ -185,7 +185,7 @@ func ASN1Unmarshal(b []byte) ([]byte, error) {
 
     c := []byte{}
     c = append(c, x...)          // x分量
-    c = append(c, y...)          // y分
+    c = append(c, y...)          // y分量
     c = append(c, hash...)       // hash
     c = append(c, cipherText...) // cipherText
 
@@ -200,7 +200,7 @@ type sm2C1C2C3ASN1 struct {
 }
 
 // sm2 密文转 asn.1 编码格式
-// sm2 密文结构: x + y + hash + CipherText
+// sm2 密文结构: x + y + CipherText + hash
 func ASN1MarshalC1C2C3(data []byte) ([]byte, error) {
     data = data[1:]
 
@@ -213,7 +213,7 @@ func ASN1MarshalC1C2C3(data []byte) ([]byte, error) {
     return asn1.Marshal(sm2C1C2C3ASN1{x, y, cipherText, hash})
 }
 
-// sm2 密文 asn.1 编码格式转 C1|C2|C3 拼接格式
+// sm2 密文 asn.1 编码格式转 C1|C3|C2 拼接格式
 func ASN1UnmarshalC1C2C3(b []byte) ([]byte, error) {
     var data sm2C1C2C3ASN1
     _, err := asn1.Unmarshal(b, &data)
@@ -232,7 +232,7 @@ func ASN1UnmarshalC1C2C3(b []byte) ([]byte, error) {
 
     c := []byte{}
     c = append(c, x...)          // x分量
-    c = append(c, y...)          // y分
+    c = append(c, y...)          // y分量
     c = append(c, hash...)       // hash
     c = append(c, cipherText...) // cipherText
 

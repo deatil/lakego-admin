@@ -9,7 +9,7 @@ func Test_XMSS(t *testing.T) {
     t.Parallel()
     oid := uint32(0x00000001)
 
-    prv, pub, err := GenerateKey(oid)
+    prv, pub, err := GenerateKey(rand.Reader, oid)
     if err != nil {
         t.Fatal(err)
     }

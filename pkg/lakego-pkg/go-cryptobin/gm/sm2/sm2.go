@@ -97,13 +97,13 @@ func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.Decrypt
     return Encrypt(random, pub, data, mode)
 }
 
-func (pub *PublicKey) EncryptAsn1(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+func (pub *PublicKey) EncryptASN1(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
     mode := C1C3C2
     if opt, ok := opts.(EncrypterOpts); ok {
         mode = opt.Mode
     }
 
-    return EncryptAsn1(random, pub, data, mode)
+    return EncryptASN1(random, pub, data, mode)
 }
 
 type PrivateKey struct {
@@ -171,13 +171,13 @@ func (priv *PrivateKey) Decrypt(_ io.Reader, msg []byte, opts crypto.DecrypterOp
     return Decrypt(priv, msg, mode)
 }
 
-func (priv *PrivateKey) DecryptAsn1(data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+func (priv *PrivateKey) DecryptASN1(data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
     mode := C1C3C2
     if opt, ok := opts.(EncrypterOpts); ok {
         mode = opt.Mode
     }
 
-    return DecryptAsn1(priv, data, mode)
+    return DecryptASN1(priv, data, mode)
 }
 
 var one = new(big.Int).SetInt64(1)
@@ -408,7 +408,7 @@ func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
 }
 
 // sm2 加密，返回 asn.1 编码格式的密文内容
-func EncryptAsn1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
+func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
     data, err := Encrypt(rand, pub, data, C1C3C2)
     if err != nil {
         return nil, err
@@ -422,7 +422,7 @@ func EncryptAsn1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte
 }
 
 // sm2解密，解析asn.1编码格式的密文内容
-func DecryptAsn1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
+func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
     var err error
 
     if mode == C1C2C3 {

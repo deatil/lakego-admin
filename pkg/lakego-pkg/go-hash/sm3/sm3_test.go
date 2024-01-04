@@ -4,6 +4,7 @@ import (
     "io"
     "fmt"
     "testing"
+    "crypto/hmac"
 )
 
 func Test_Hash(t *testing.T) {
@@ -59,5 +60,51 @@ func TestGolden(t *testing.T) {
 
             c.Reset()
         }
+    }
+}
+
+func Test_MarshalBinary(t *testing.T) {
+    msg := []byte("test-dd1111111dddddddatatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
+
+    h := new(digest)
+    h.Reset()
+
+    h.Write(msg)
+    dst := h.Sum(nil)
+    if len(dst) == 0 {
+        t.Error("Hash make error")
+    }
+
+    bs, _ := h.MarshalBinary()
+
+    h.Reset()
+
+    err := h.UnmarshalBinary(bs)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    newdst := h.Sum(nil)
+    if len(newdst) == 0 {
+        t.Error("newHash make error")
+    }
+
+    if string(newdst) != string(dst) {
+        t.Error("Hash MarshalBinary error")
+    }
+}
+
+func Test_HmacSM3(t *testing.T) {
+    key := []byte("1234567812345678")
+    msg := []byte("abc")
+
+    check := "0a69401a75c5d471f5166465eec89e6a65198ae885c1fdc061556254d91c1080"
+
+    hash := hmac.New(New, key)
+    hash.Write(msg)
+
+    s := fmt.Sprintf("%x", hash.Sum(nil))
+    if s != check {
+        t.Errorf("error, got %s want %s", s, check)
     }
 }

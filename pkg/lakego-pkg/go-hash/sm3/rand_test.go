@@ -12,7 +12,7 @@ func Test_Rand(t *testing.T) {
     out := make([]byte, 16)
 
     r := NewRand(nonce, label)
-    r.Generate(addin, out)
+    r.Generate(out, addin)
 
     if len(out) == 0 {
         t.Error("Rand make error")

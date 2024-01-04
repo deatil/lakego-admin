@@ -74,9 +74,6 @@ func (this *ExampleServiceProvider) Schedule(s *schedule.Schedule) {
 func (this *ExampleServiceProvider) loadCommand() {
     // 用户信息
     this.AddCommand(example_command.ExampleCmd)
-
-    // 生成各种证书
-    this.AddCommand(example_command.MakeKeyCmd)
 }
 
 /**
@@ -125,7 +122,7 @@ func (this *ExampleServiceProvider) loadSetting() {
 func (this *ExampleServiceProvider) loadRoute() {
     // 后台路由，包括后台使用的所有中间件
     admin_route.AddRoute(func(engine *gin.RouterGroup) {
-        example_route.Route(engine)
+        example_route.AdminRoute(engine)
     })
 
     // 常规 gin 路由，除 gin 自带外没有任何中间件

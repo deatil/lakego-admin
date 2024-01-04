@@ -1,18 +1,20 @@
 package xmss
 
 import (
+    "io"
+
     "github.com/deatil/go-cryptobin/xmss"
 )
 
 const XMSS_OID_LEN = 4
 
-func GenerateKey(oid uint32) (*xmss.PrivateKey, *xmss.PublicKey, error) {
+func GenerateKey(rand io.Reader, oid uint32) (*xmss.PrivateKey, *xmss.PublicKey, error) {
     params, err := NewParamsWithOid(oid)
     if err != nil {
         return nil, nil, err
     }
 
-    priv, pub, err := xmss.GenerateKey(params)
+    priv, pub, err := xmss.GenerateKey(rand, params)
     if err != nil {
         return nil, nil, err
     }
@@ -68,7 +70,8 @@ func Verify(pub *xmss.PublicKey, msg, signature []byte) (match bool) {
         return false
     }
 
-    pub.X = pub.X[XMSS_OID_LEN:]
+    pub2 := new(xmss.PublicKey)
+    pub2.X = pub.X[XMSS_OID_LEN:]
 
-    return xmss.Verify(params, pub, msg, signature)
+    return xmss.Verify(params, pub2, msg, signature)
 }

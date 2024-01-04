@@ -44,8 +44,8 @@ func (this SM2) Decrypt() SM2 {
 // ================
 
 // 公钥加密，返回 asn.1 编码格式的密文内容
-func (this SM2) EncryptAsn1() SM2 {
-    parsedData, err := sm2.EncryptAsn1(rand.Reader, this.publicKey, this.data, this.mode)
+func (this SM2) EncryptASN1() SM2 {
+    parsedData, err := sm2.EncryptASN1(rand.Reader, this.publicKey, this.data, this.mode)
     if err != nil {
         return this.AppendError(err)
     }
@@ -56,8 +56,8 @@ func (this SM2) EncryptAsn1() SM2 {
 }
 
 // 私钥解密，解析 asn.1 编码格式的密文内容
-func (this SM2) DecryptAsn1() SM2 {
-    parsedData, err := sm2.DecryptAsn1(this.privateKey, this.data, this.mode)
+func (this SM2) DecryptASN1() SM2 {
+    parsedData, err := sm2.DecryptASN1(this.privateKey, this.data, this.mode)
     if err != nil {
         return this.AppendError(err)
     }

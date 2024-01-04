@@ -131,7 +131,7 @@ func Test_SM2_Encrypt_C1C3C2(t *testing.T) {
     assertEqual(data, deData, "Encrypt_C1C3C2-Dedata")
 }
 
-func Test_SM2_EncryptAsn1_C1C2C3(t *testing.T) {
+func Test_SM2_EncryptASN1_C1C2C3(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
@@ -139,7 +139,7 @@ func Test_SM2_EncryptAsn1_C1C2C3(t *testing.T) {
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "DecryptAsn1_C1C2C3-sm2keyDecode")
+    assertError(err2, "DecryptASN1_C1C2C3-sm2keyDecode")
 
     data := "test-pass"
 
@@ -150,26 +150,26 @@ func Test_SM2_EncryptAsn1_C1C2C3(t *testing.T) {
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
         SetMode("C1C2C3"). // C1C3C2 | C1C2C3
-        EncryptAsn1()
+        EncryptASN1()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "DecryptAsn1_C1C2C3-Encrypt")
-    assertNotEmpty(enData, "DecryptAsn1_C1C2C3-Encrypt")
+    assertError(en.Error(), "DecryptASN1_C1C2C3-Encrypt")
+    assertNotEmpty(enData, "DecryptASN1_C1C2C3-Encrypt")
 
     de := sm2.
         FromBase64String(enData).
         FromPrivateKeyBytes(sm2keyBytes).
         SetMode("C1C2C3"). // C1C3C2 | C1C2C3
-        DecryptAsn1()
+        DecryptASN1()
     deData := de.ToString()
 
-    assertError(de.Error(), "DecryptAsn1_C1C2C3-Decrypt")
-    assertNotEmpty(deData, "DecryptAsn1_C1C2C3-Decrypt")
+    assertError(de.Error(), "DecryptASN1_C1C2C3-Decrypt")
+    assertNotEmpty(deData, "DecryptASN1_C1C2C3-Decrypt")
 
-    assertEqual(data, deData, "DecryptAsn1_C1C2C3-Dedata")
+    assertEqual(data, deData, "DecryptASN1_C1C2C3-Dedata")
 }
 
-func Test_SM2_EncryptAsn1_C1C3C2(t *testing.T) {
+func Test_SM2_EncryptASN1_C1C3C2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
@@ -177,7 +177,7 @@ func Test_SM2_EncryptAsn1_C1C3C2(t *testing.T) {
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "DecryptAsn1_C1C3C2-sm2keyDecode")
+    assertError(err2, "DecryptASN1_C1C3C2-sm2keyDecode")
 
     data := "test-pass"
 
@@ -188,23 +188,23 @@ func Test_SM2_EncryptAsn1_C1C3C2(t *testing.T) {
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
         SetMode("C1C3C2"). // C1C3C2 | C1C2C3
-        EncryptAsn1()
+        EncryptASN1()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "DecryptAsn1_C1C3C2-Encrypt")
-    assertNotEmpty(enData, "DecryptAsn1_C1C3C2-Encrypt")
+    assertError(en.Error(), "DecryptASN1_C1C3C2-Encrypt")
+    assertNotEmpty(enData, "DecryptASN1_C1C3C2-Encrypt")
 
     de := sm2.
         FromBase64String(enData).
         FromPrivateKeyBytes(sm2keyBytes).
         SetMode("C1C3C2"). // C1C3C2 | C1C2C3
-        DecryptAsn1()
+        DecryptASN1()
     deData := de.ToString()
 
-    assertError(de.Error(), "DecryptAsn1_C1C3C2-Decrypt")
-    assertNotEmpty(deData, "DecryptAsn1_C1C3C2-Decrypt")
+    assertError(de.Error(), "DecryptASN1_C1C3C2-Decrypt")
+    assertNotEmpty(deData, "DecryptASN1_C1C3C2-Decrypt")
 
-    assertEqual(data, deData, "DecryptAsn1_C1C3C2-Dedata")
+    assertEqual(data, deData, "DecryptASN1_C1C3C2-Dedata")
 }
 
 var (

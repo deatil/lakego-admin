@@ -16,7 +16,12 @@ func Test_XMSS(t *testing.T) {
     t.Parallel()
     params := SHA2_10_256
 
-    prv, pub, _ := GenerateKey(params)
+    prv, pub, _ := GenerateKey(rand.Reader, params)
+
+    pub2 := prv.PublicKey(params)
+    if !pub2.Equal(pub) {
+        t.Errorf("PublicKey error. got %x, want %x", pub2.X, pub.X)
+    }
 
     var sig []byte
     msg := make([]byte, 32)
@@ -53,7 +58,7 @@ func Test_XMSS2(t *testing.T) {
     t.Parallel()
     params := SHA2_10_256
 
-    prv, pub, err := GenerateKey(params)
+    prv, pub, err := GenerateKey(rand.Reader, params)
     if err != nil {
         t.Fatal(err)
     }

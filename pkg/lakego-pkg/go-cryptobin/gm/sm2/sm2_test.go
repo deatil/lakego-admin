@@ -26,14 +26,14 @@ func TestSm2(t *testing.T) {
     pub := &priv.PublicKey
     msg := []byte("123456")
 
-    d0, err := pub.EncryptAsn1(rand.Reader, msg, nil)
+    d0, err := pub.EncryptASN1(rand.Reader, msg, nil)
     if err != nil {
         fmt.Printf("Error: failed to encrypt %s: %v\n", msg, err)
         return
     }
 
     // fmt.Printf("Cipher text = %v\n", d0)
-    d1, err := priv.DecryptAsn1(d0, nil)
+    d1, err := priv.DecryptASN1(d0, nil)
     if err != nil {
         fmt.Printf("Error: failed to decrypt: %v\n", err)
     }
@@ -278,7 +278,7 @@ func Test_Encrypt_Check(t *testing.T) {
 
     en, _ := hex.DecodeString(endata)
 
-    dedata, err := pri.DecryptAsn1(en, nil)
+    dedata, err := pri.DecryptASN1(en, nil)
     if err != nil {
         t.Fatal(err)
     }

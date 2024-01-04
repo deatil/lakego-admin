@@ -17,11 +17,11 @@ func main() {
     fs := filesystem.New()
 
     // 生成证书
-    obj := cryptobin_sm2.
+    key := cryptobin_sm2.
         NewSM2().
         GenerateKey()
 
-    objPriKey := obj.
+    priKey := key.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123").
         // CreatePrivateKeyWithPassword("123", "AES256CBC").
@@ -30,30 +30,30 @@ func main() {
         // CreatePKCS8PrivateKey().
         // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
         ToKeyString()
-    objPubKey := obj.
+    pubKey := key.
         CreatePublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/sm2", objPriKey)
-    fs.Put("./runtime/key/sm2.pub", objPubKey)
+    fs.Put("./runtime/key/sm2", priKey)
+    fs.Put("./runtime/key/sm2.pub", pubKey)
 
     // 验证
-    obj2 := cryptobin.NewSM2()
+    sm2 := cryptobin.NewSM2()
 
-    obj2Pri, _ := fs.Get("./runtime/key/sm2")
-    obj2cypt := obj2.
+    priv, _ := fs.Get("./runtime/key/sm2")
+    signed := sm2.
         FromString("test-pass").
-        FromPrivateKey([]byte(obj2Pri)).
-        // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
-        // FromPKCS1PrivateKey([]byte(obj2Pri)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(obj2Pri), "123").
-        // FromPKCS8PrivateKey([]byte(obj2Pri)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        FromPrivateKey([]byte(priv)).
+        // FromPrivateKeyWithPassword([]byte(priv), "123").
+        // FromPKCS1PrivateKey([]byte(priv)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(priv), "123").
+        // FromPKCS8PrivateKey([]byte(priv)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(priv), "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/sm2.pub")
-    obj2cyptde := obj2.
+    pub, _ := fs.Get("./runtime/key/sm2.pub")
+    verify := sm2.
         FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(obj2Pub)).
+        FromPublicKey([]byte(pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 
@@ -80,17 +80,17 @@ func main() {
     // SM2 加密2
     sm2 := cryptobin_sm2.NewSM2()
 
-    enkey2, _ := fs.Get("./runtime/key/sm2_key.pub")
+    pub, _ := fs.Get("./runtime/key/sm2_key.pub")
     sm2cypt := sm2.
         FromString("test-pass").
-        FromPublicKey([]byte(enkey2)).
+        FromPublicKey([]byte(pub)).
         SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Encrypt().
         ToBase64String()
-    dekey2, _ := fs.Get("./runtime/key/sm2_key")
+    priv, _ := fs.Get("./runtime/key/sm2_key")
     sm2cyptde := sm2.
         FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
-        FromPrivateKey([]byte(dekey2)).
+        FromPrivateKey([]byte(priv)).
         SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Decrypt().
         ToString()
@@ -100,16 +100,16 @@ func main() {
     // SM2 验证
     sm2 := cryptobin_sm2.NewSM2()
 
-    enkey2, _ := fs.Get("./runtime/key/sm2_key")
-    sm2cypt := sm2.
+    priv, _ := fs.Get("./runtime/key/sm2_key")
+    signed := sm2.
         FromString("test-pass").
-        FromPrivateKey([]byte(enkey2)).
+        FromPrivateKey([]byte(priv)).
         Sign().
         ToBase64String()
-    dekey2, _ := fs.Get("./runtime/key/sm2_key.pub")
-    sm2cyptde := sm2.
+    pub, _ := fs.Get("./runtime/key/sm2_key.pub")
+    verify := sm2.
         FromBase64String("MEUCIDztMEbHBdSeU2xxM93nsluloXB06k8Tt62hW+3t1vOHAiEA8r+9O0zIe5hpB7MmT7NCw/bhwVJbBh6hNtgjSFilzrU=").
-        FromPublicKey([]byte(dekey2)).
+        FromPublicKey([]byte(pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 
@@ -118,16 +118,16 @@ func main() {
     // SM2 验证2
     sm2 := cryptobin_sm2.NewSM2()
 
-    enkey2, _ := fs.Get("./runtime/key/sm2_en_key")
-    sm2cypt := sm2.
+    priv, _ := fs.Get("./runtime/key/sm2_en_key")
+    signed := sm2.
         FromString("test-pass").
-        FromPrivateKeyWithPassword([]byte(enkey2), "123").
+        FromPrivateKeyWithPassword([]byte(priv), "123").
         Sign().
         ToBase64String()
-    dekey2, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    sm2cyptde := sm2.
+    pub, _ := fs.Get("./runtime/key/sm2_en_key.pub")
+    verify := sm2.
         FromBase64String("MEQCIE4DzLVkR9W+zQfXiwfwcOe/mk6PUNHBrSJIRdHT7diaAiAHaNNSxgwVLkZzXoHV4Tgqsim7c4ZwaPF+mca4mFZxLw==").
-        FromPublicKey([]byte(dekey2)).
+        FromPublicKey([]byte(pub)).
         Verify([]byte("test-pass")).
         ToVerify()
 
@@ -195,7 +195,7 @@ import (
 
 func main() {
     // sm2 签名【招商银行】，
-    // 招商银行签名会因为业务不同用的签名方法也会不同，签名方法默认有 SignHex 和 SignAsn1 两种，可根据招商银行给的 demo 选择对应的方法使用
+    // 招商银行签名会因为业务不同用的签名方法也会不同，签名方法默认有 SignBytes 和 SignASN1 两种，可根据招商银行给的 demo 选择对应的方法使用
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, _ := base64.StdEncoding.DecodeString(sm2key)
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`

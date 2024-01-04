@@ -9,15 +9,6 @@ import (
 )
 
 /**
- * 路由
- */
-func Route(engine gin.IRouter) {
-    // 例子
-    indexController := new(controller.Index)
-    engine.GET("/example/index", indexController.Index)
-}
-
-/**
  * 常规 gin 路由
  */
 func GinRoute(engine gin.IRouter) {
@@ -32,10 +23,13 @@ func GinRoute(engine gin.IRouter) {
             "exampleData2": exampleData2,
         })
     })
+}
 
-    // 数据
-    dataController := new(controller.Data)
-    engine.GET("/example/data/index", dataController.Index)
-    engine.GET("/example/data/show", dataController.Show)
-    engine.GET("/example/data/error", dataController.Error)
+/**
+ * 后台路由
+ */
+func AdminRoute(engine gin.IRouter) {
+    // 例子
+    indexController := new(controller.Index)
+    engine.GET("/example/index", indexController.Index)
 }

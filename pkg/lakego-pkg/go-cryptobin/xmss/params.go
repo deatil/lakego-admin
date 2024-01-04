@@ -76,10 +76,6 @@ func (params *Params) Hash() hash.Hash {
     return params.hash()
 }
 
-func (params *Params) PrivateKeySize() int {
-    return int(params.n * 3) // skSeed + skPrf + pubSeed
-}
-
 var (
     SHA2_10_256 = NewParams(sha256.New, 32, 16, 10, 1, 32)
     SHA2_16_256 = NewParams(sha256.New, 32, 16, 16, 1, 32)
