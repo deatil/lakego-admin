@@ -7,6 +7,7 @@ import (
 // 标准时间
 func FromStdTime(t time.Time, timezone ...string) Datebin {
     date := defaultDatebin.WithTime(t)
+    date = date.WithLocation(t.Location())
 
     if len(timezone) > 0 {
         date = date.SetTimezone(timezone[0])

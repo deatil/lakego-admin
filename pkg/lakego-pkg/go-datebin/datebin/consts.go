@@ -27,6 +27,7 @@ const (
 )
 
 // 时区常量
+// const timezones
 const (
     Local = "Local"
     CET   = "CET"
@@ -86,6 +87,7 @@ const (
 )
 
 // 周常量
+// const week
 const (
     Monday    = "Monday"
     Tuesday   = "Tuesday"
@@ -97,6 +99,7 @@ const (
 )
 
 // 月份常量
+// const month
 const (
     January   = "January"   // 一月
     February  = "February"  // 二月
@@ -113,6 +116,7 @@ const (
 )
 
 // 数字常量
+// const types
 const (
     YearsPerMillennium         = 1000    // 每千年1000年
     YearsPerCentury            = 100     // 每世纪100年
@@ -140,6 +144,7 @@ const (
 )
 
 // 时间格式化常量
+// const formats
 const (
     AnsicFormat              = time.ANSIC
     UnixDateFormat           = time.UnixDate

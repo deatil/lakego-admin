@@ -21,11 +21,19 @@ func (this Datebin) IsInvalid() bool {
 
 // 是否是夏令时
 func (this Datebin) IsDST() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.time.IsDST()
 }
 
 // 是否是 Utc 时区
 func (this Datebin) IsUTC() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.GetTimezone() == UTC
 }
 
@@ -114,16 +122,28 @@ func (this Datebin) IsTomorrow() bool {
 
 // 是否是当年
 func (this Datebin) IsCurrentYear() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Year() == this.Now().Year()
 }
 
 // 是否是当月
 func (this Datebin) IsCurrentMonth() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Month() == this.Now().Month()
 }
 
 // 时间是否是当前最近的一周
 func (this Datebin) IsLatelyWeek() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     secondsPerWeek := float64(SecondsPerWeek)
     difference := this.Now().NewTime().GetTime().Sub(this.NewTime().GetTime())
 
@@ -136,43 +156,68 @@ func (this Datebin) IsLatelyWeek() bool {
 
 // 时间是否是当前最近的一个月
 func (this Datebin) IsLatelyMonth() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     now := this.Now()
+
+    if (now.Month() == 1 && this.Month() == 12) ||
+        (now.Month() == 12 && this.Month() == 1) {
+        return true
+    }
 
     monthDifference := now.Month() - this.Month()
     if absFormat(int64(monthDifference)) != 1 {
         return false
     }
 
-    if now.TimestampWithNanosecond() > this.TimestampWithNanosecond() && monthDifference == 1 {
-        return true
-    }
-
-    return false
+    return true
 }
 
 // 是否是当前月最后一天
 func (this Datebin) IsLastOfMonth() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.DayOfMonth() == this.DaysInMonth()
 }
 
 // 是否当天开始
 func (this Datebin) IsStartOfDay() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Format("H:i:s") == "00:00:00"
 }
 
 // 是否当天开始
 func (this Datebin) IsStartOfDayWithMicrosecond() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Format("H:i:s") == "00:00:00" &&
         this.Microsecond() == 0
 }
 
 // 是否当天结束
 func (this Datebin) IsEndOfDay() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Format("H:i:s") == "23:59:59"
 }
 
 // 是否当天结束
 func (this Datebin) IsEndOfDayWithMicrosecond() bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Format("H:i:s") == "23:59:59" &&
         this.Microsecond() == 999999
 }
@@ -184,6 +229,10 @@ func (this Datebin) IsMidnight() bool {
 
 // 是否是中午
 func (this Datebin) IsMidday(midDay ...string) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     midDayAt := "12"
     if len(midDay) > 0 {
         midDayAt = midDay[0]

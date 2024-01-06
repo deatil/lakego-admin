@@ -5,14 +5,6 @@ import (
     "strings"
 )
 
-// 构造函数
-func NewDiffTime(start Datebin, end Datebin) DiffTime {
-    return DiffTime{
-        Start: start,
-        End: end,
-    }
-}
-
 /**
  * 时间判断
  *
@@ -25,6 +17,14 @@ type DiffTime struct {
 
     // 结束时间
     End Datebin
+}
+
+// 构造函数
+func NewDiffTime(start Datebin, end Datebin) DiffTime {
+    return DiffTime{
+        Start: start,
+        End: end,
+    }
 }
 
 // 设置开始时间

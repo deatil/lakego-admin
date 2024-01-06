@@ -44,6 +44,8 @@ func Curve() elliptic.Curve {
     return &curve
 }
 
+var S256 = Curve
+
 var _ elliptic.Curve = (*secp256k1)(nil)
 
 type secp256k1 struct {

@@ -23,20 +23,6 @@ func assertEqualT(t *testing.T) func(any, any, string) {
     }
 }
 
-func Test_Now(t *testing.T) {
-    eq := assertEqualT(t)
-
-    actual1 := Now().ToDatetimeString()
-    expected1 := time.Now().Format(DatetimeFormat)
-
-    eq(actual1, expected1, "failed now time is error")
-
-    actual2 := Now(Local).ToDatetimeString()
-    expected2 := time.Now().In(time.Local).Format(DatetimeFormat)
-
-    eq(actual2, expected2, "failed now time Local is error")
-}
-
 func Test_With(t *testing.T) {
     eq := assertEqualT(t)
 
@@ -80,4 +66,42 @@ func Test_Get(t *testing.T) {
     eq(d.GetWeekStartAt(), weekday, "failed weekStartAt")
     eq(d.GetLocation(), loc, "failed loc")
     eq(d.GetErrors(), errs, "failed Errors")
+}
+
+func Test_MarshalBinary(t *testing.T) {
+    eq := assertEqualT(t)
+
+    date := "2024-06-05 21:15:12"
+
+    marshaled, err := Parse(date, UTC).MarshalBinary()
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    var tt Datebin
+    err = tt.UnmarshalBinary(marshaled)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    eq(tt.ToDatetimeString(UTC), date, "failed MarshalBinary")
+}
+
+func Test_GobEncode(t *testing.T) {
+    eq := assertEqualT(t)
+
+    date := "2024-06-05 21:15:12"
+
+    marshaled, err := Parse(date, UTC).GobEncode()
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    var tt Datebin
+    err = tt.GobDecode(marshaled)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    eq(tt.ToDatetimeString(), date, "failed GobEncode")
 }

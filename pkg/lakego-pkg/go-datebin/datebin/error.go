@@ -5,6 +5,7 @@ import (
 )
 
 // 添加错误
+// append error
 func (this Datebin) AppendError(err ...error) Datebin {
     this.Errors = append(this.Errors, err...)
 
@@ -12,6 +13,7 @@ func (this Datebin) AppendError(err ...error) Datebin {
 }
 
 // 获取错误
+// output errors
 func (this Datebin) Error() error {
     return errors.Join(this.Errors...)
 }

@@ -47,46 +47,82 @@ func (this Datebin) IsSameUnit(unit string, date Datebin) bool {
 
 // 是否同一年
 func (this Datebin) IsSameYear(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Year() == date.Year()
 }
 
 // 是否是同一个月
 func (this Datebin) IsSameMonth(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Month() == date.Month()
 }
 
 // 是否同一天
 func (this Datebin) IsSameDay(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Day() == date.Day()
 }
 
 // 是否同一小时
 func (this Datebin) IsSameHour(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Hour() == date.Hour()
 }
 
 // 是否同一分钟
 func (this Datebin) IsSameMinute(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Minute() == date.Minute()
 }
 
 // 是否同一秒
 func (this Datebin) IsSameSecond(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.Second() == date.Second()
 }
 
 // 是否是同一年的同一个月
 func (this Datebin) IsSameYearMonth(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.IsSameYear(date) && this.IsSameMonth(date)
 }
 
 // 是否是同一个月的同一天
 func (this Datebin) IsSameMonthDay(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.IsSameMonth(date) && this.IsSameDay(date)
 }
 
 // 是否是同一年的同一个月的同一天
 func (this Datebin) IsSameYearMonthDay(date Datebin) bool {
+    if this.IsInvalid() {
+        return false
+    }
+
     return this.IsSameYear(date) && this.IsSameMonth(date) && this.IsSameDay(date)
 }
 

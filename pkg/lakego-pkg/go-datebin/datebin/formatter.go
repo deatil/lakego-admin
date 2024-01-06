@@ -1,10 +1,5 @@
 package datebin
 
-// 构造函数
-func NewFormatter() Formatter {
-    return Formatter{}
-}
-
 /**
  * 格式化时间
  *
@@ -14,6 +9,11 @@ func NewFormatter() Formatter {
 type Formatter struct {
     // 传入的时间
     time int64
+}
+
+// 构造函数
+func NewFormatter() Formatter {
+    return Formatter{}
 }
 
 // 设置时间

@@ -24,20 +24,18 @@ func (this *Datebin) UnmarshalJSON(val []byte) error {
 // =============
 
 // 日期时间
-type DateTime struct {
-    Datebin
-}
+type DateTime Datebin
 
 // 生成
 func (this DateTime) MarshalJSON() ([]byte, error) {
-    return []byte(fmt.Sprintf(`"%s"`, this.ToDatetimeString())), nil
+    return []byte(fmt.Sprintf(`"%s"`, Datebin(this).ToDatetimeString())), nil
 }
 
 // 解出
 func (this *DateTime) UnmarshalJSON(val []byte) error {
     c := Parse(string(bytes.Trim(val, `"`)))
     if c.Error() == nil {
-        *this = DateTime{c}
+        *this = DateTime(c)
     }
 
     return nil
@@ -46,20 +44,18 @@ func (this *DateTime) UnmarshalJSON(val []byte) error {
 // =============
 
 // 日期
-type Date struct {
-    Datebin
-}
+type Date Datebin
 
 // 生成
 func (this Date) MarshalJSON() ([]byte, error) {
-    return []byte(fmt.Sprintf(`"%s"`, this.ToDateString())), nil
+    return []byte(fmt.Sprintf(`"%s"`, Datebin(this).ToDateString())), nil
 }
 
 // 解出
 func (this *Date) UnmarshalJSON(val []byte) error {
     c := Parse(string(bytes.Trim(val, `"`)))
     if c.Error() == nil {
-        *this = Date{c}
+        *this = Date(c)
     }
 
     return nil
@@ -68,13 +64,11 @@ func (this *Date) UnmarshalJSON(val []byte) error {
 // =============
 
 // 时间戳
-type Timestamp struct {
-    Datebin
-}
+type Timestamp Datebin
 
 // 生成
 func (this Timestamp) MarshalJSON() ([]byte, error) {
-    return []byte(fmt.Sprintf(`%d`, this.Timestamp())), nil
+    return []byte(fmt.Sprintf(`%d`, Datebin(this).Timestamp())), nil
 }
 
 // 解出
@@ -86,7 +80,7 @@ func (this *Timestamp) UnmarshalJSON(val []byte) error {
 
     c := FromTimestamp(ts)
     if c.Error() == nil {
-        *this = Timestamp{c}
+        *this = Timestamp(c)
     }
 
     return nil

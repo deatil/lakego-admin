@@ -52,6 +52,60 @@ func Test_Parse(t *testing.T) {
     }
 }
 
+func Test_Parse2(t *testing.T) {
+    eq := assertEqualT(t)
+
+    tests := []struct {
+        index string
+        format string
+        tz string
+        date string
+    } {
+        {
+            index: "index-1",
+            format: "2006-01-02 15:04:05",
+            tz: "CET",
+            date: "2024-01-03 21:15:12",
+        },
+        {
+            index: "index-2",
+            format: "20060102150405.999",
+            tz: "EET",
+            date: "20240103211512.666",
+        },
+        {
+            index: "index-3",
+            format: "2006-01-02",
+            tz: "UCT",
+            date: "2024-01-03",
+        },
+        {
+            index: "index-4",
+            format: "20060102",
+            tz: "Poland",
+            date: "20240103",
+        },
+        {
+            index: "index-5",
+            format: "20060102150405",
+            tz: "Asia/Shanghai",
+            date: "20240103211512",
+        },
+    }
+
+    for _, td := range tests {
+        loc, _ := time.LoadLocation(td.tz)
+        tt, err := time.Parse(td.format, td.date)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        parseTt := Parse(td.date, td.tz).time
+
+        eq(parseTt, tt.In(loc), "failed Parse2, index " + td.index)
+    }
+}
+
 func Test_ParseWithLayout(t *testing.T) {
     eq := assertEqualT(t)
 

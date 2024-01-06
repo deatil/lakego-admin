@@ -6,7 +6,6 @@ import (
 
 // 设置一周的开始日期
 func (this Datebin) SetWeekStartsAt(day string) Datebin {
-    // 判断周几
     switch day {
         case Monday:
             this.weekStartAt = time.Monday

@@ -8,7 +8,7 @@ import (
 )
 
 // 解析时间字符
-func (this Datebin) Parse(date string) Datebin {
+func (this Datebin) Parse(date string, timezone ...string) Datebin {
     // 解析需要的格式
     var layout = DatetimeFormat
 
@@ -47,14 +47,19 @@ func (this Datebin) Parse(date string) Datebin {
         return this.AppendError(err)
     }
 
+    if len(timezone) > 0 {
+        this = this.WithTimezone(timezone[0])
+        time = time.In(this.loc)
+    }
+
     this.time = time
 
     return this
 }
 
 // 解析时间字符
-func Parse(date string) Datebin {
-    return defaultDatebin.Parse(date)
+func Parse(date string, timezone ...string) Datebin {
+    return defaultDatebin.Parse(date, timezone...)
 }
 
 // 用布局字符解析时间字符

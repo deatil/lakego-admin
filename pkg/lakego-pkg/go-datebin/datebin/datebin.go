@@ -2,6 +2,7 @@ package datebin
 
 import (
     "time"
+    "errors"
 )
 
 var (
@@ -109,20 +110,20 @@ var defaultDatebin = NewDatebin()
  * @author deatil
  */
 type Datebin struct {
-    // 时间
+    // 时间 / Time
     time time.Time
 
-    // 周开始
+    // 周开始 / week Start
     weekStartAt time.Weekday
 
-    // 时区
+    // 时区 / Location
     loc *time.Location
 
-    // 错误
+    // 错误 / error list
     Errors []error
 }
 
-// 构造函数
+// 构造函数 / NewDatebin
 func NewDatebin() Datebin {
     return Datebin{
         loc:         time.Local,
@@ -130,50 +131,58 @@ func NewDatebin() Datebin {
     }
 }
 
-// 构造函数
+// 构造函数 / New
 func New() Datebin {
     return NewDatebin()
 }
 
 // 设置时间
+// WithTime
 func (this Datebin) WithTime(time time.Time) Datebin {
     this.time = time
     return this
 }
 
 // 获取时间
+// GetTime
 func (this Datebin) GetTime() time.Time {
     return this.time
 }
 
 // 设置周开始时间
+// WithWeekStartAt
 func (this Datebin) WithWeekStartAt(weekday time.Weekday) Datebin {
     this.weekStartAt = weekday
     return this
 }
 
 // 获取周开始时间
+// GetWeekStartAt
 func (this Datebin) GetWeekStartAt() time.Weekday {
     return this.weekStartAt
 }
 
 // 设置时区
+// WithLocation
 func (this Datebin) WithLocation(loc *time.Location) Datebin {
     this.loc = loc
     return this
 }
 
 // 获取时区
+// GetLocation
 func (this Datebin) GetLocation() *time.Location {
     return this.loc
 }
 
 // 获取时区字符
+// GetLocationString
 func (this Datebin) GetLocationString() string {
     return this.loc.String()
 }
 
 // 设置时区
+// WithTimezone
 func (this Datebin) WithTimezone(timezone string) Datebin {
     loc, err := time.LoadLocation(timezone)
     if err != nil {
@@ -186,6 +195,7 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
 }
 
 // 设置时区, 直接更改
+// SetTimezone
 func (this Datebin) SetTimezone(timezone string) Datebin {
     date := this.WithTimezone(timezone)
 
@@ -196,36 +206,91 @@ func (this Datebin) SetTimezone(timezone string) Datebin {
 }
 
 // 全局设置时区
+// Set gblobal Timezone
 func SetTimezone(timezone string) {
     defaultDatebin = defaultDatebin.SetTimezone(timezone)
 }
 
 // 获取时区 Zone 名称
+// GetTimezone
 func (this Datebin) GetTimezone() string {
     name, _ := this.time.Zone()
     return name
 }
 
 // 获取距离UTC时区的偏移量，单位秒
+// Get Zone Offset
 func (this Datebin) GetOffset() int {
     _, offset := this.time.Zone()
     return offset
 }
 
 // 覆盖错误信息
+// WithErrors
 func (this Datebin) WithErrors(errs []error) Datebin {
     this.Errors = errs
     return this
 }
 
 // 获取错误信息
+// GetErrors
 func (this Datebin) GetErrors() []error {
     return this.Errors
 }
 
 // 使用设置的时区
+// use the loc to time
 func (this Datebin) NewTime() Datebin {
     this.time = this.time.In(this.loc)
 
     return this
+}
+
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (this Datebin) MarshalBinary() ([]byte, error) {
+    enc := []byte{
+        byte(this.weekStartAt),
+    }
+
+    tt := this.time.In(this.loc)
+
+    timeBytes, err := tt.MarshalBinary()
+    if err != nil {
+        return nil, err
+    }
+
+    enc = append(enc, timeBytes...)
+
+    return enc, nil
+}
+
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface.
+func (this *Datebin) UnmarshalBinary(data []byte) error {
+    buf := data
+    if len(buf) == 0 {
+        return errors.New("Datebin.UnmarshalBinary: no data")
+    }
+
+    weekStartAt := buf[0]
+
+    err := (&this.time).UnmarshalBinary(buf[1:])
+    if err != nil {
+        return err
+    }
+
+    this.loc = this.time.Location()
+
+    this.weekStartAt = time.Weekday(weekStartAt)
+
+    return nil
+}
+
+// GobEncode implements the gob.GobEncoder interface.
+func (this Datebin) GobEncode() ([]byte, error) {
+    return this.MarshalBinary()
+}
+
+// GobDecode implements the gob.GobDecoder interface.
+func (this *Datebin) GobDecode(data []byte) error {
+    return this.UnmarshalBinary(data)
 }
