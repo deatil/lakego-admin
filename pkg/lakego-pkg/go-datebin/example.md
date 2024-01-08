@@ -747,6 +747,8 @@ res := time.IsSagittariusStar()
 
 #### 判断是否是周几
 
+if week
+
 ~~~go
 time := datebin.Parse("2022-10-23 22:18:56")
 

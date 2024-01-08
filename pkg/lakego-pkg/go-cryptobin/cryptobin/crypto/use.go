@@ -368,6 +368,7 @@ func (this Cryptobin) Clefia() Cryptobin {
 }
 
 // Safer
+// The typ should be K, SK string.
 // The key argument should be 16, 24, 32 bytes.
 func (this Cryptobin) Safer(typ string, rounds int32) Cryptobin {
     this.multiple = Safer
@@ -440,6 +441,7 @@ func (this Cryptobin) Trivium() Cryptobin {
 }
 
 // Rijndael
+// The blockSize argument should be 16, 20, 24, 28 or 32 bytes.
 // The key argument should be 16, 24 or 32 bytes.
 func (this Cryptobin) Rijndael(blockSize int) Cryptobin {
     this.multiple = Rijndael

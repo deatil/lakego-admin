@@ -1,77 +1,84 @@
 ### EcDsa 使用说明
 
-* 常规使用
+* 包引入
 ~~~go
-package main
-
 import (
-    "fmt"
-
     "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
-    "github.com/deatil/lakego-filesystem/filesystem"
 )
+~~~
 
+* 数据输入方式
+`FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
+
+* 数据输出方式
+`ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`, 
+
+* 生成证书
+~~~go
 func main() {
-    // 文件管理器
-    fs := filesystem.New()
-
     // 生成证书
     // 可选参数 [P521 | P384 | P256 | P224]
-    obj := ecdsa.
-        New().
-        SetCurve("P521").
-        GenerateKey()
+    ec := ecdsa.GenerateKey("P521")
 
-    objPriKey := obj.
+    // 生成私钥 PEM 证书
+    privateKeyString := ec.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePKCS1PrivateKey()
+        // CreatePKCS1PrivateKeyWithPassword(password string, opts ...string)
         // CreatePKCS8PrivateKey().
         // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
         ToKeyString()
-    objPubKey := obj.
+
+    // 生成公钥 PEM 证书
+    publicKeyString := ec.
         CreatePublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/ecdsa", objPriKey)
-    fs.Put("./runtime/key/ecdsa.pub", objPubKey)
+}
+~~~
 
-    // 验证
-    obj2 := ecdsa.New()
+* 签名验证
 
-    obj2Pri, _ := fs.Get("./runtime/key/ecdsa")
-    obj2cypt := obj2.
+签名验证支持以下方式
+sep符号分割: Sign(separator ...string) / Verify(data []byte, separator ...string)
+ASN1方式: SignASN1() / VerifyASN1(data []byte)
+字节组合: SignBytes() / VerifyBytes(data []byte)
+
+示例
+~~~go
+func main() {
+    // 私钥签名
+    var pri []byte = []byte("...")
+    var base64signedString string = ecdsa.
         FromString("test-pass").
-        FromPrivateKey([]byte(obj2Pri)).
-        // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
-        // FromPKCS8PrivateKey([]byte(obj2Pri)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(obj2Pri), "123").
+        FromPrivateKey(pri).
+        // FromPrivateKeyWithPassword(pri, "123").
+        // FromPKCS1PrivateKey(pri).
+        // FromPKCS1PrivateKeyWithPassword(pri, "123").
+        // FromPKCS8PrivateKey(pri).
+        // FromPKCS8PrivateKeyWithPassword(pri, "123").
         Sign().
         ToBase64String()
-    obj2Pub, _ := fs.Get("./runtime/key/ecdsa.pub")
-    obj2cyptde := obj2.
-        FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(obj2Pub)).
+    
+    // 公钥验证
+    var pub []byte = []byte("...")
+    var base64signedString string = "..."
+    var verify bool = ecdsa.
+        FromBase64String(base64signedString).
+        FromPublicKey(pub).
         Verify([]byte("test-pass")).
         ToVerify()
+}
+~~~
 
-    // 签名验证对
-    Sign(separator ...string) / Verify(data []byte, separator ...string)
-    SignASN1() / VerifyASN1(data []byte)
-    SignBytes() / VerifyBytes(data []byte)
+* 加密解密
 
-    // 检测私钥公钥是否匹配
-    pri, _ := fs.Get(prifile)
-    pub, _ := fs.Get(pubfile)
+ECDSA 加密使用自身的 ECDH 生成密钥，使用 AES 对称加密解密数据
 
-    res := ecdsa.New().
-        FromPrivateKey([]byte(pri)).
-        FromPublicKey([]byte(pub)).
-        CheckKeyPair()
-
-    fmt.Printf("check res: %#v", res)
-
-    // =====
-
-    enprikey = `
+~~~go
+func main() {
+    // 私钥
+    prikey = `
 -----BEGIN EC PRIVATE KEY-----
 MHcCAQEEIGfqpFWW2kecvy/V0mxus+ZMuODGcqfyZVJMgBbWRhYJoAoGCCqGSM49
 AwEHoUQDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+Vu0zCh5hkl/0r9vPzPeqGpHJ
@@ -79,30 +86,40 @@ v3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 -----END EC PRIVATE KEY-----
     `
 
-    enpubkey = `
+    // 公钥
+    pubkey = `
 -----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+
 Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 -----END PUBLIC KEY-----
     `
 
-    // 加密解密
-    obj := ecdsa.New()
-
     // 加密
-    objcypt := obj.
+    var encBase64Data string = ecdsa.
         FromString("test-pass").
-        FromPublicKey([]byte(enpubkey)).
+        FromPublicKey([]byte(pubkey)).
         Encrypt().
         ToBase64String()
 
     // 解密
-    endata := "BA6UmWJHLf/XOhge8ASuz11cMpX3YCu6Pfmp5tQ/OPK7rV27paYGB6V5vL/KhjVGznedvhGe0F3CNzoyxfp+r+41m+ehtIC0isWnDc8ZyZrmNVioOeaO5i6yEwiEwhTB8QzUSDE5JJB6ta0vObhBvFRVvgzv1VD0C4Y="
-    objcyptde := obj.
-        FromBase64String(endata).
-        FromPrivateKey([]byte(enprikey)).
+    var encBase64Data string = ""
+    var deData string = ecdsa.
+        FromBase64String(encBase64Data).
+        FromPrivateKey([]byte(prikey)).
         Decrypt().
         ToString()
+}
+~~~
 
+* 检测私钥公钥是否匹配
+~~~go
+func main() {
+    var prikeyPem []byte = []byte("...")
+    var pubkeyPem []byte = []byte("...")
+
+    var res bool = ecdsa.New().
+        FromPrivateKey(prikey).
+        FromPublicKey(pubkey).
+        CheckKeyPair()
 }
 ~~~

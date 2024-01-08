@@ -4,8 +4,8 @@ import (
     "errors"
     "crypto/rand"
 
-    "github.com/tjfoc/gmsm/sm2"
     "github.com/golang-jwt/jwt/v4"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 var (
@@ -54,7 +54,7 @@ func (this *SigningMethodSM2) Verify(signingString, signature string, key any) e
     }
 
     // Verify the signature
-    if !sm2Key.Verify([]byte(signingString), sig) {
+    if !sm2Key.Verify([]byte(signingString), sig, nil) {
         return ErrSM2Verification
     }
 
