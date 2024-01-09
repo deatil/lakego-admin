@@ -1,9 +1,8 @@
 package ssh
 
 import (
+    "errors"
     "crypto/cipher"
-
-    "github.com/pkg/errors"
 )
 
 // CTR 模式加密
@@ -43,7 +42,7 @@ func (this CipherCTR) Encrypt(key, plaintext []byte) ([]byte, error) {
 
     block, err := this.cipherFunc(key[:this.keySize])
     if err != nil {
-        return nil, errors.Wrap(err, "error creating cipher")
+        return nil, errors.New("error creating cipher." + err.Error())
     }
 
     stream := cipher.NewCTR(block, iv)
@@ -60,7 +59,7 @@ func (this CipherCTR) Decrypt(key, ciphertext []byte) ([]byte, error) {
 
     block, err := this.cipherFunc(key[:this.keySize])
     if err != nil {
-        return nil, errors.Wrap(err, "error creating cipher")
+        return nil, errors.New("error creating cipher." + err.Error())
     }
 
     stream := cipher.NewCTR(block, iv)

@@ -1,12 +1,13 @@
 package ssh
 
 import (
+    "fmt"
+    "errors"
     "math/big"
     "crypto"
     "crypto/ecdsa"
     "crypto/elliptic"
 
-    "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
 )
 
@@ -17,7 +18,7 @@ type KeyEcdsa struct {}
 func (this KeyEcdsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(*ecdsa.PrivateKey)
     if !ok {
-        return "", nil, nil, errors.Errorf("unsupported key type %T", key)
+        return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
     }
 
     var curve, keyType string
@@ -32,7 +33,7 @@ func (this KeyEcdsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
             curve = "nistp521"
             keyType = ssh.KeyAlgoECDSA521
         default:
-            return "", nil, nil, errors.Errorf("error serializing key: unsupported curve %s", k.Curve.Params().Name)
+            return "", nil, nil, errors.New(fmt.Sprintf("error serializing key: unsupported curve %s", k.Curve.Params().Name))
     }
 
     pub := elliptic.Marshal(k.Curve, k.PublicKey.X, k.PublicKey.Y)
@@ -73,7 +74,7 @@ func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     }{}
 
     if err := ssh.Unmarshal(rest, &key); err != nil {
-        return nil, "", errors.Wrap(err, "error unmarshaling key")
+        return nil, "", errors.New("error unmarshaling key." + err.Error())
     }
 
     if err := checkOpenSSHKeyPadding(key.Pad); err != nil {
@@ -89,7 +90,7 @@ func (this KeyEcdsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
         case "nistp521":
             curve = elliptic.P521()
         default:
-            return nil, "", errors.Errorf("error decoding key: unsupported elliptic curve %s", key.Curve)
+            return nil, "", errors.New(fmt.Sprintf("error decoding key: unsupported elliptic curve %s", key.Curve))
     }
 
     N := curve.Params().N

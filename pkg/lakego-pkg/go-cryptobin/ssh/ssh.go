@@ -2,11 +2,11 @@ package ssh
 
 import (
     "io"
+    "errors"
     "crypto"
     "encoding/pem"
     "encoding/binary"
 
-    "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
 )
 
@@ -78,7 +78,7 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
 
         k, err := newKdf.DeriveKey(password, w.KdfOpts, size)
         if err != nil {
-            return nil, "", errors.Wrap(err, "error deriving password")
+            return nil, "", errors.New("error deriving password." + err.Error())
         }
 
         dst, err := newCipher.Decrypt(k, w.PrivKeyBlock)
@@ -128,7 +128,7 @@ func MarshalOpenSSHPrivateKey(rand io.Reader, key crypto.PrivateKey, comment str
 func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey, comment string, password []byte, opts ...Opts) (*pem.Block, error) {
     var check uint32
     if err := binary.Read(rand, binary.BigEndian, &check); err != nil {
-        return nil, errors.Wrap(err, "error generating random check ")
+        return nil, errors.New("error generating random check." + err.Error())
     }
 
     w := openSSHPrivateKey{
@@ -184,7 +184,7 @@ func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey,
 
         k, kdfOpts, err := newKdf.DeriveKey(password, size)
         if err != nil {
-            return nil, errors.Wrap(err, "error deriving decryption key")
+            return nil, errors.New("error deriving decryption key." + err.Error())
         }
 
         w.KdfOpts = kdfOpts

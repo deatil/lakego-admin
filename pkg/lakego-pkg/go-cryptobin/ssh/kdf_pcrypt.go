@@ -2,9 +2,8 @@ package ssh
 
 import (
     "bytes"
+    "errors"
     "encoding/binary"
-
-    "github.com/pkg/errors"
 
     "github.com/deatil/go-cryptobin/kdf/bcrypt_pbkdf"
 )

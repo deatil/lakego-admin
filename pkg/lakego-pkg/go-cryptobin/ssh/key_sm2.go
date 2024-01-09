@@ -1,11 +1,12 @@
 package ssh
 
 import (
+    "fmt"
+    "errors"
     "math/big"
     "crypto"
     "crypto/elliptic"
 
-    "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
@@ -22,7 +23,7 @@ type KeySM2 struct {}
 func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(*sm2.PrivateKey)
     if !ok {
-        return "", nil, nil, errors.Errorf("unsupported key type %T", key)
+        return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
     }
 
     keyType := KeyAlgoSM2
@@ -62,7 +63,7 @@ func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     }{}
 
     if err := ssh.Unmarshal(rest, &key); err != nil {
-        return nil, "", errors.Wrap(err, "error unmarshaling key")
+        return nil, "", errors.New("error unmarshaling key." + err.Error())
     }
 
     if err := checkOpenSSHKeyPadding(key.Pad); err != nil {

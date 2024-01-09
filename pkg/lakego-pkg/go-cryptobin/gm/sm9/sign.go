@@ -2,11 +2,11 @@ package sm9
 
 import (
     "io"
+    "fmt"
+    "errors"
     "crypto"
     "math/big"
     "encoding/asn1"
-
-    "github.com/pkg/errors"
 
     "github.com/deatil/go-cryptobin/gm/sm9/sm9curve"
 )
@@ -227,7 +227,7 @@ func (priv *SignPrivateKey) Unmarshal(bytes []byte) (err error) {
 func GenerateSignMasterKey(rand io.Reader) (mk *SignMasterPrivateKey, err error) {
     s, err := randFieldElement(rand, sm9curve.Order)
     if err != nil {
-        return nil, errors.Errorf("gen rand num err:%s", err)
+        return nil, errors.New(fmt.Sprintf("gen rand num err: %s", err))
     }
 
     mk = new(SignMasterPrivateKey)
@@ -298,7 +298,7 @@ func Sign(rand io.Reader, pri *SignPrivateKey, msg []byte) (h *big.Int, s *sm9cu
 Regen:
     r, err := randFieldElement(rand, n)
     if err != nil {
-        return nil, nil, errors.Errorf("gen rand num failed:%s", err)
+        return nil, nil, errors.New(fmt.Sprintf("gen rand num failed: %s", err))
     }
 
     w := new(sm9curve.GT).ScalarMult(g, r)

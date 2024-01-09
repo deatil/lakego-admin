@@ -5,7 +5,6 @@ import (
     "time"
     logger "log"
 
-    "github.com/pkg/errors"
     "github.com/sirupsen/logrus"
     "github.com/lestrrat/go-file-rotatelogs"
 
@@ -262,7 +261,7 @@ func (this *Logrus) getLogger() *logrus.Logger {
         rotatelogs.WithRotationTime(rotationTime * time.Hour), // 日志切割时间间隔
     )
     if err != nil {
-        logger.Print(fmt.Sprintf("日志配置错误：%v", errors.WithStack(err)))
+        logger.Print(fmt.Sprintf("日志配置错误：%v", err))
     }
 
     // os.Stdout || os.Stderr

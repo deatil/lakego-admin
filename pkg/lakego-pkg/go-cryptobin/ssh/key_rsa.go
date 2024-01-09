@@ -1,11 +1,12 @@
 package ssh
 
 import (
+    "fmt"
+    "errors"
     "math/big"
     "crypto"
     "crypto/rsa"
 
-    "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
 )
 
@@ -16,7 +17,7 @@ type KeyRsa struct {}
 func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(*rsa.PrivateKey)
     if !ok {
-        return "", nil, nil, errors.Errorf("unsupported key type %T", key)
+        return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
     }
 
     keyType := ssh.KeyAlgoRSA

@@ -1,10 +1,11 @@
 package ssh
 
 import (
+    "fmt"
+    "errors"
     "crypto"
     "crypto/ed25519"
 
-    "github.com/pkg/errors"
     "golang.org/x/crypto/ssh"
 )
 
@@ -15,7 +16,7 @@ type KeyEdDsa struct {}
 func (this KeyEdDsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(ed25519.PrivateKey)
     if !ok {
-        return "", nil, nil, errors.Errorf("unsupported key type %T", key)
+        return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
     }
 
     keyType := ssh.KeyAlgoED25519
