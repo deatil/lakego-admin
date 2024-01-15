@@ -182,8 +182,8 @@ func (this Datebin) GetLocationString() string {
 }
 
 // 设置时区
-// WithTimezone
-func (this Datebin) WithTimezone(timezone string) Datebin {
+// SetTimezone
+func (this Datebin) SetTimezone(timezone string) Datebin {
 	loc, err := time.LoadLocation(timezone)
 	if err != nil {
 		return this.AppendError(err)
@@ -194,19 +194,8 @@ func (this Datebin) WithTimezone(timezone string) Datebin {
 	return this
 }
 
-// 设置时区, 直接更改
-// SetTimezone
-func (this Datebin) SetTimezone(timezone string) Datebin {
-	date := this.WithTimezone(timezone)
-
-	// 设置时区
-	date.time = date.time.In(date.loc)
-
-	return date
-}
-
 // 全局设置时区
-// Set gblobal Timezone
+// Set global Timezone
 func SetTimezone(timezone string) {
 	defaultDatebin = defaultDatebin.SetTimezone(timezone)
 }
@@ -225,6 +214,28 @@ func (this Datebin) GetOffset() int {
 	return offset
 }
 
+// 设置 UTC
+// set UTC timezone
+func (this Datebin) UTC() Datebin {
+	this.loc = time.UTC
+	return this
+}
+
+// 设置 Local
+// set Local timezone
+func (this Datebin) Local() Datebin {
+	this.loc = time.Local
+	return this
+}
+
+// FixedZone 设置时区
+// FixedZone returns a Location that always uses
+// the given zone name and offset (seconds east of UTC).
+func (this Datebin) FixedZone(name string, offset int) Datebin {
+	this.loc = time.FixedZone(name, offset)
+	return this
+}
+
 // 覆盖错误信息
 // WithErrors
 func (this Datebin) WithErrors(errs []error) Datebin {
@@ -236,14 +247,6 @@ func (this Datebin) WithErrors(errs []error) Datebin {
 // GetErrors
 func (this Datebin) GetErrors() []error {
 	return this.Errors
-}
-
-// 使用设置的时区
-// use the loc to time
-func (this Datebin) NewTime() Datebin {
-	this.time = this.time.In(this.loc)
-
-	return this
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.

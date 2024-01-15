@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// 当前时间，单位：秒
-func NowTime(timezone ...string) int64 {
+// 当前时间戳
+func NowTimestamp(timezone ...string) int64 {
 	return Now(timezone...).Timestamp()
 }
 
@@ -24,18 +24,18 @@ func NowTimeString(timezone ...string) string {
 	return Now(timezone...).ToTimeString()
 }
 
-// 时间戳转为 time.Time
-func TimestampToTime(timestamp int64, timezone ...string) time.Time {
+// 时间戳转为标准时间
+func TimestampToStdTime(timestamp int64, timezone ...string) time.Time {
 	return FromTimestamp(timestamp, timezone...).GetTime()
 }
 
-// 时间转换为时间戳
-func TimeToTimestamp(t time.Time, timezone ...string) int64 {
+// 标准时间转换为时间戳
+func StdTimeToTimestamp(t time.Time, timezone ...string) int64 {
 	return FromStdTime(t, timezone...).Timestamp()
 }
 
-// 时间字符转为时间
-func StringToTime(date string, format ...string) time.Time {
+// 时间字符转为标准时间
+func StringToStdTime(date string, format ...string) time.Time {
 	return ParseDatetimeString(date, format...).GetTime()
 }
 

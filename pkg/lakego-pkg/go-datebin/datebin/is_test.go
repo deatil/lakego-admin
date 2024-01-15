@@ -172,6 +172,78 @@ func Test_IsLocal(t *testing.T) {
 	}
 }
 
+func Test_IsAM(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date  string
+		tz    string
+		check bool
+	}{
+		{
+			index: "index-1",
+			date:  "",
+			tz:    "EST",
+			check: false,
+		},
+		{
+			index: "index-2",
+			date:  "2024-03-01 10:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-3",
+			date:  "2024-06-05 21:15:12",
+			tz:    "CET",
+			check: false,
+		},
+	}
+
+	for _, td := range tests {
+		check := ParseWithLayout(td.date, DatetimeFormat, td.tz).IsAM()
+
+		eq(check, td.check, "failed IsAM, index "+td.index)
+	}
+}
+
+func Test_IsPM(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date  string
+		tz    string
+		check bool
+	}{
+		{
+			index: "index-1",
+			date:  "",
+			tz:    "EST",
+			check: false,
+		},
+		{
+			index: "index-2",
+			date:  "2024-03-01 10:00:00",
+			tz:    "Local",
+			check: false,
+		},
+		{
+			index: "index-3",
+			date:  "2024-06-05 21:15:12",
+			tz:    "CET",
+			check: true,
+		},
+	}
+
+	for _, td := range tests {
+		check := ParseWithLayout(td.date, DatetimeFormat, td.tz).IsPM()
+
+		eq(check, td.check, "failed IsPM, index "+td.index)
+	}
+}
+
 func Test_IsNow(t *testing.T) {
 	eq := assertEqualT(t)
 

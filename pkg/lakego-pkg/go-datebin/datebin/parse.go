@@ -64,8 +64,7 @@ func (this Datebin) Parse(date string, timezone ...string) Datebin {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
-		time = time.In(this.loc)
+		this = this.SetTimezone(timezone[0])
 	}
 
 	this.time = time
@@ -81,7 +80,7 @@ func Parse(date string, timezone ...string) Datebin {
 // 用布局字符解析时间字符
 func (this Datebin) ParseWithLayout(date string, layout string, timezone ...string) Datebin {
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	time, err := time.ParseInLocation(layout, date, this.loc)

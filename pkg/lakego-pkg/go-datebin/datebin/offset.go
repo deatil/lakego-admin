@@ -8,7 +8,7 @@ import (
 // 间隔
 func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin {
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	// 设置时区

@@ -21,6 +21,7 @@ func Test_DatetimeAll(t *testing.T) {
 		timestampWithMicrosecond               int64
 		timestampWithNanosecond                int64
 		year, month, day, hour, minute, second int
+        ISOYear, ISOWeek int
 	}{
 		{
 			index:                    "index-1",
@@ -43,6 +44,8 @@ func Test_DatetimeAll(t *testing.T) {
 			hour:                     06,
 			minute:                   35,
 			second:                   23,
+			ISOYear:                  2025,
+			ISOWeek:                  23,
 		},
 		{
 			index:                    "index-2",
@@ -65,11 +68,13 @@ func Test_DatetimeAll(t *testing.T) {
 			hour:                     15,
 			minute:                   28,
 			second:                   11,
+			ISOYear:                  1992,
+			ISOWeek:                  20,
 		},
 	}
 
 	for _, td := range tests {
-		d := Parse(td.date).WithTimezone(UTC)
+		d := Parse(td.date).SetTimezone(UTC)
 
 		eq(d.Century(), td.century, "failed DatetimeAll Century, index "+td.index)
 		eq(d.Decade(), td.decade, "failed DatetimeAll Decade, index "+td.index)
@@ -81,6 +86,9 @@ func Test_DatetimeAll(t *testing.T) {
 		eq(d.Hour(), td.hour, "failed DatetimeAll Hour, index "+td.index)
 		eq(d.Minute(), td.minute, "failed DatetimeAll Minute, index "+td.index)
 		eq(d.Second(), td.second, "failed DatetimeAll Second, index "+td.index)
+
+		eq(d.ISOYear(), td.ISOYear, "failed DatetimeAll ISOYear, index "+td.index)
+		eq(d.ISOWeek(), td.ISOWeek, "failed DatetimeAll ISOWeek, index "+td.index)
 
 		eq(d.Millisecond(), td.millisecond, "failed DatetimeAll Millisecond, index "+td.index)
 		eq(d.Microsecond(), td.microsecond, "failed DatetimeAll Microsecond, index "+td.index)

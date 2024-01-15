@@ -29,7 +29,7 @@ func Test_Date(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		year, month, day := Parse(td.date).WithTimezone(UTC).Date()
+		year, month, day := Parse(td.date).SetTimezone(UTC).Date()
 
 		eq(year, td.year, "failed Date year, index "+td.index)
 		eq(month, td.month, "failed Date month, index "+td.index)
@@ -62,7 +62,7 @@ func Test_Time(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		hour, minute, second := Parse(td.date).WithTimezone(UTC).Time()
+		hour, minute, second := Parse(td.date).SetTimezone(UTC).Time()
 
 		eq(hour, td.hour, "failed Time hour, index "+td.index)
 		eq(minute, td.minute, "failed Time minute, index "+td.index)
@@ -101,7 +101,7 @@ func Test_Datetime(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		year, month, day, hour, minute, second := Parse(td.date).WithTimezone(UTC).Datetime()
+		year, month, day, hour, minute, second := Parse(td.date).SetTimezone(UTC).Datetime()
 
 		eq(year, td.year, "failed Datetime year, index "+td.index)
 		eq(month, td.month, "failed Datetime month, index "+td.index)
@@ -145,7 +145,7 @@ func Test_DatetimeWithNanosecond(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		year, month, day, hour, minute, second, nanosecond := Parse(td.date).WithTimezone(UTC).DatetimeWithNanosecond()
+		year, month, day, hour, minute, second, nanosecond := Parse(td.date).SetTimezone(UTC).DatetimeWithNanosecond()
 
 		eq(year, td.year, "failed DatetimeWithNanosecond year, index "+td.index)
 		eq(month, td.month, "failed DatetimeWithNanosecond month, index "+td.index)
@@ -190,7 +190,7 @@ func Test_DatetimeWithMicrosecond(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		year, month, day, hour, minute, second, microsecond := Parse(td.date).WithTimezone(UTC).DatetimeWithMicrosecond()
+		year, month, day, hour, minute, second, microsecond := Parse(td.date).SetTimezone(UTC).DatetimeWithMicrosecond()
 
 		eq(year, td.year, "failed DatetimeWithMicrosecond year, index "+td.index)
 		eq(month, td.month, "failed DatetimeWithMicrosecond month, index "+td.index)
@@ -235,7 +235,7 @@ func Test_DatetimeWithMillisecond(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		year, month, day, hour, minute, second, millisecond := Parse(td.date).WithTimezone(UTC).DatetimeWithMillisecond()
+		year, month, day, hour, minute, second, millisecond := Parse(td.date).SetTimezone(UTC).DatetimeWithMillisecond()
 
 		eq(year, td.year, "failed DatetimeWithMillisecond year, index "+td.index)
 		eq(month, td.month, "failed DatetimeWithMillisecond month, index "+td.index)

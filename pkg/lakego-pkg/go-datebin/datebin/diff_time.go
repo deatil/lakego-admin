@@ -6,20 +6,21 @@ import (
 )
 
 /**
- * 时间判断
+ * 时间间隔 / diff time
  *
  * @create 2022-3-9
  * @author deatil
  */
 type DiffTime struct {
-	// 开始时间
+	// 开始时间 / start time
 	Start Datebin
 
-	// 结束时间
+	// 结束时间 / end time
 	End Datebin
 }
 
 // 构造函数
+// new DiffTime
 func NewDiffTime(start Datebin, end Datebin) DiffTime {
 	return DiffTime{
 		Start: start,
@@ -28,6 +29,7 @@ func NewDiffTime(start Datebin, end Datebin) DiffTime {
 }
 
 // 设置开始时间
+// set start time
 func (this DiffTime) SetStart(start Datebin) DiffTime {
 	this.Start = start
 
@@ -35,73 +37,87 @@ func (this DiffTime) SetStart(start Datebin) DiffTime {
 }
 
 // 设置结束时间
+// set end time
 func (this DiffTime) SetEnd(end Datebin) DiffTime {
 	this.End = end
 
 	return this
 }
 
-// 开始时间
+// 获取开始时间
+// get start time
 func (this DiffTime) GetStart() Datebin {
 	return this.Start
 }
 
-// 结束时间
+// 获取结束时间
+// get end time
 func (this DiffTime) GetEnd() Datebin {
 	return this.End
 }
 
-// 相差秒
+// 获取相差秒
+// get diff Seconds
 func (this DiffTime) Seconds() int64 {
 	return this.End.Timestamp() - this.Start.Timestamp()
 }
 
-// 相差秒，绝对值
+// 获取相差秒，绝对值
+// get diff abs Seconds
 func (this DiffTime) SecondsAbs() int64 {
 	return absFormat(this.Seconds())
 }
 
-// 相差分钟
+// 获取相差分钟
+// get diff Minutes
 func (this DiffTime) Minutes() int64 {
 	return this.Seconds() / SecondsPerMinute
 }
 
-// 相差分钟，绝对值
+// 获取相差分钟，绝对值
+// get diff abs Minutes
 func (this DiffTime) MinutesAbs() int64 {
 	return absFormat(this.Minutes())
 }
 
-// 相差小时
+// 获取相差小时
+// get diff Hours
 func (this DiffTime) Hours() int64 {
 	return this.Seconds() / SecondsPerHour
 }
 
-// 相差小时，绝对值
+// 获取相差小时，绝对值
+// get diff abs Hours
 func (this DiffTime) HoursAbs() int64 {
 	return absFormat(this.Hours())
 }
 
-// 相差天
+// 获取相差天
+// get diff Days
 func (this DiffTime) Days() int64 {
 	return this.Seconds() / SecondsPerDay
 }
 
-// 相差天，绝对值
+// 获取相差天，绝对值
+// get diff abs Days
 func (this DiffTime) DaysAbs() int64 {
 	return absFormat(this.Days())
 }
 
-// 相差周
+// 获取相差周
+// get diff Weeks
 func (this DiffTime) Weeks() int64 {
 	return this.Days() / DaysPerWeek
 }
 
-// 相差周，绝对值
+// 获取相差周，绝对值
+// get diff abs Weeks
 func (this DiffTime) WeeksAbs() int64 {
 	return absFormat(this.Weeks())
 }
 
-// 相差月份
+// 获取相差月份
+// get diff Months
 func (this DiffTime) Months() int64 {
 	dy := this.End.Year() - this.Start.Year()
 	dm := this.End.Month() - this.Start.Month()
@@ -126,22 +142,32 @@ func (this DiffTime) Months() int64 {
 	return int64(dy*MonthsPerYear + dm)
 }
 
-// 相差月份，绝对值
+// 获取相差月份，绝对值
+// get diff abs Months
 func (this DiffTime) MonthsAbs() int64 {
 	return absFormat(this.Months())
 }
 
-// 相差年
+// 获取相差年
+// get diff Years
 func (this DiffTime) Years() int64 {
 	return this.Months() / MonthsPerYear
 }
 
-// 相差年，绝对值
+// 获取相差年，绝对值
+// get diff abs Years
 func (this DiffTime) YearsAbs() int64 {
 	return absFormat(this.Years())
 }
 
+// 获取格式化
+// get diff Formatter
+func (this DiffTime) Formatter() Formatter {
+	return NewFormatter().FromSecond(this.SecondsAbs())
+}
+
 // 格式化输出
+// output format data
 func (this DiffTime) Format(str string) string {
 	// 格式化
 	formatter := NewFormatter().FromSecond(this.SecondsAbs())

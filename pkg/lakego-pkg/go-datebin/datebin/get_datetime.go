@@ -27,6 +27,16 @@ func (this Datebin) Year() int {
 	return this.time.In(this.loc).Year()
 }
 
+// 获取 ISO 当前年
+func (this Datebin) ISOYear() int {
+	if this.IsInvalid() {
+		return 0
+	}
+
+    year, _ := this.time.In(this.loc).ISOWeek()
+	return year
+}
+
 // 获取当前季度
 func (this Datebin) Quarter() (quarter int) {
 	if this.IsInvalid() {
@@ -59,13 +69,23 @@ func (this Datebin) Month() int {
 	return int(this.time.In(this.loc).Month())
 }
 
-// 星期几数字
+// 获取星期几数字
 func (this Datebin) Weekday() int {
 	if this.IsInvalid() {
 		return 0
 	}
 
 	return int(this.time.In(this.loc).Weekday())
+}
+
+// 获取 ISO 星期几数字
+func (this Datebin) ISOWeek() int {
+	if this.IsInvalid() {
+		return 0
+	}
+
+    _, week := this.time.In(this.loc).ISOWeek()
+	return week
 }
 
 // 获取当前日

@@ -40,7 +40,7 @@ func Test_Statistics(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		d := Parse(td.date).WithTimezone(UTC)
+		d := Parse(td.date).SetTimezone(UTC)
 
 		eq(d.DaysInMonth(), td.DaysInMonth, "failed Statistics DaysInMonth, index "+td.index)
 		eq(d.MonthOfYear(), td.MonthOfYear, "failed Statistics MonthOfYear, index "+td.index)

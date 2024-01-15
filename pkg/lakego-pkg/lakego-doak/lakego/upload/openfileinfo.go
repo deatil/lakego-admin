@@ -13,13 +13,6 @@ import (
     "crypto/sha1"
 )
 
-// 文件信息
-func NewOpenFileinfo() *OpenFileinfo {
-    return &OpenFileinfo{
-        filetypes: map[string]string{},
-    }
-}
-
 /**
  * 文件信息
  *
@@ -35,6 +28,13 @@ type OpenFileinfo struct {
 
     // 文件类型
     filetypes map[string]string
+}
+
+// 文件信息
+func NewOpenFileinfo() *OpenFileinfo {
+    return &OpenFileinfo{
+        filetypes: map[string]string{},
+    }
 }
 
 // 设置文件流

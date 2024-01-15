@@ -133,7 +133,7 @@ func Test_Parse2(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		parseTt := Parse(td.date, td.tz).time
+		parseTt := Parse(td.date, td.tz).ToStdtime()
 
 		eq(parseTt, tt.In(loc), "failed Parse2, index "+td.index)
 	}

@@ -3,22 +3,37 @@ package datebin
 import (
 	"bytes"
 	"fmt"
+    "time"
 	"strconv"
 )
 
+// 输出标准时间
+// output std time
+func (this Datebin) ToStdtime() time.Time {
+	return this.time.In(this.loc)
+}
+
 // 默认返回
+// output string
 func (this Datebin) String() string {
 	return this.ToDatetimeString()
 }
 
+// GoString implements fmt.GoStringer and formats t to be printed in Go source
+// code.
+func (this Datebin) GoString() string {
+	return this.time.In(this.loc).GoString()
+}
+
 // 返回字符
+// to string
 func (this Datebin) ToString(timezone ...string) string {
 	if this.IsInvalid() {
 		return ""
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	return this.time.In(this.loc).String()
@@ -31,7 +46,7 @@ func (this Datebin) ToStarString(timezone ...string) string {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	// 月份和天数
@@ -89,7 +104,7 @@ func (this Datebin) ToSeasonString(timezone ...string) string {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	// 月份
@@ -121,7 +136,7 @@ func (this Datebin) ToWeekdayString(timezone ...string) string {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	weekday := this.Weekday()
@@ -136,7 +151,7 @@ func (this Datebin) Layout(layout string, timezone ...string) string {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	return this.time.In(this.loc).Format(layout)
@@ -154,7 +169,7 @@ func (this Datebin) Format(layout string, timezone ...string) string {
 	}
 
 	if len(timezone) > 0 {
-		this = this.WithTimezone(timezone[0])
+		this = this.SetTimezone(timezone[0])
 	}
 
 	var buffer bytes.Buffer

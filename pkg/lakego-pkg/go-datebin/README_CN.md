@@ -15,7 +15,7 @@ go get -u github.com/deatil/go-datebin
 ~~~
 
 
-### 使用
+### 开始使用
 
 ~~~go
 package main
@@ -52,6 +52,21 @@ func main() {
     // 输出: 2032/03/15 12:56:05
 }
 
+~~~
+
+
+### 常用示例
+
+~~~go
+// 格式化时间戳
+var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString()
+// 输出: 2024-01-15 22:42:07
+~~~
+
+~~~go
+// 获取当前时间戳
+var timestamp int64 = datebin.Now().Timestamp()
+// 输出: 1705329727
 ~~~
 
 更多示例可点击查看 [使用文档](example.md)

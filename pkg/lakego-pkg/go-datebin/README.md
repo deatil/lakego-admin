@@ -14,7 +14,7 @@ go get -u github.com/deatil/go-datebin
 ~~~
 
 
-### Use
+### Get Start
 
 ~~~go
 package main
@@ -51,6 +51,21 @@ func main() {
     // output: 2032/03/15 12:56:05
 }
 
+~~~
+
+
+### Examples
+
+~~~go
+// format timestamp
+var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString()
+// output: 2024-01-15 22:42:07
+~~~
+
+~~~go
+// get now timestamp
+var timestamp int64 = datebin.Now().Timestamp()
+// output: 1705329727
 ~~~
 
 more docs and see [docs](example.md)

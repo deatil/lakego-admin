@@ -52,6 +52,18 @@ var (
         BlockSize: aes.BlockSize,
         KeyLen:    24,
     }
+    ECIES_AES256_SHA256 = &ECIESParams{
+        Hash:      sha256.New,
+        Cipher:    aes.NewCipher,
+        BlockSize: aes.BlockSize,
+        KeyLen:    32,
+    }
+    ECIES_AES256_SHA384 = &ECIESParams{
+        Hash:      sha512.New384,
+        Cipher:    aes.NewCipher,
+        BlockSize: aes.BlockSize,
+        KeyLen:    32,
+    }
     ECIES_AES256_SHA512 = &ECIESParams{
         Hash:      sha512.New,
         Cipher:    aes.NewCipher,

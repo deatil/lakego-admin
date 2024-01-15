@@ -6,11 +6,13 @@ import (
 )
 
 // 是否是零值时间
+// if time is Zero
 func (this Datebin) IsZero() bool {
 	return this.time.IsZero()
 }
 
 // 是否是无效时间
+// if time is Invalid
 func (this Datebin) IsInvalid() bool {
 	if this.Error() != nil || this.IsZero() {
 		return true
@@ -20,6 +22,7 @@ func (this Datebin) IsInvalid() bool {
 }
 
 // 是否是夏令时
+// if time is DST timezone
 func (this Datebin) IsDST() bool {
 	if this.IsInvalid() {
 		return false
@@ -29,6 +32,7 @@ func (this Datebin) IsDST() bool {
 }
 
 // 是否是 Utc 时区
+// if time is Utc timezone
 func (this Datebin) IsUTC() bool {
 	if this.IsInvalid() {
 		return false
@@ -38,11 +42,37 @@ func (this Datebin) IsUTC() bool {
 }
 
 // 是否是本地时区
+// if time is Local timezone
 func (this Datebin) IsLocal() bool {
+	if this.IsInvalid() {
+		return false
+	}
+
 	return this.GetTimezone() == this.Now().GetTimezone()
 }
 
+// 是否是上午
+// if time is AM
+func (this Datebin) IsAM() bool {
+	if this.IsInvalid() {
+		return false
+	}
+
+	return this.Hour() < 12
+}
+
+// 是否是下午
+// if time is PM
+func (this Datebin) IsPM() bool {
+	if this.IsInvalid() {
+		return false
+	}
+
+	return this.Hour() >= 12
+}
+
 // 是否是当前时间
+// if time is Now
 func (this Datebin) IsNow() bool {
 	if this.IsInvalid() {
 		return false
@@ -52,6 +82,7 @@ func (this Datebin) IsNow() bool {
 }
 
 // 是否是未来时间
+// if time is Future
 func (this Datebin) IsFuture() bool {
 	if this.IsInvalid() {
 		return false
@@ -61,6 +92,7 @@ func (this Datebin) IsFuture() bool {
 }
 
 // 是否是过去时间
+// if time is Past
 func (this Datebin) IsPast() bool {
 	if this.IsInvalid() {
 		return false
@@ -70,6 +102,7 @@ func (this Datebin) IsPast() bool {
 }
 
 // 是否是闰年
+// if time is LeapYear
 func (this Datebin) IsLeapYear() bool {
 	if this.IsInvalid() {
 		return false
@@ -84,6 +117,7 @@ func (this Datebin) IsLeapYear() bool {
 }
 
 // 是否是长年
+// if time is LongYear
 func (this Datebin) IsLongYear() bool {
 	if this.IsInvalid() {
 		return false
@@ -94,6 +128,7 @@ func (this Datebin) IsLongYear() bool {
 }
 
 // 是否是今天
+// if time is Today
 func (this Datebin) IsToday() bool {
 	if this.IsInvalid() {
 		return false
@@ -103,6 +138,7 @@ func (this Datebin) IsToday() bool {
 }
 
 // 是否是昨天
+// if time is Yesterday
 func (this Datebin) IsYesterday() bool {
 	if this.IsInvalid() {
 		return false
@@ -112,6 +148,7 @@ func (this Datebin) IsYesterday() bool {
 }
 
 // 是否是明天
+// if time is Tomorrow
 func (this Datebin) IsTomorrow() bool {
 	if this.IsInvalid() {
 		return false
@@ -121,6 +158,7 @@ func (this Datebin) IsTomorrow() bool {
 }
 
 // 是否是当年
+// if time is Current Year
 func (this Datebin) IsCurrentYear() bool {
 	if this.IsInvalid() {
 		return false
@@ -130,6 +168,7 @@ func (this Datebin) IsCurrentYear() bool {
 }
 
 // 是否是当月
+// if time is Current Month
 func (this Datebin) IsCurrentMonth() bool {
 	if this.IsInvalid() {
 		return false
@@ -139,13 +178,14 @@ func (this Datebin) IsCurrentMonth() bool {
 }
 
 // 时间是否是当前最近的一周
+// if time is LatelyWeek
 func (this Datebin) IsLatelyWeek() bool {
 	if this.IsInvalid() {
 		return false
 	}
 
 	secondsPerWeek := float64(SecondsPerWeek)
-	difference := this.Now().NewTime().GetTime().Sub(this.NewTime().GetTime())
+	difference := this.Now().ToStdtime().Sub(this.ToStdtime())
 
 	if difference.Seconds() > 0 && difference.Seconds() < secondsPerWeek {
 		return true
@@ -155,6 +195,7 @@ func (this Datebin) IsLatelyWeek() bool {
 }
 
 // 时间是否是当前最近的一个月
+// if time is LatelyMonth
 func (this Datebin) IsLatelyMonth() bool {
 	if this.IsInvalid() {
 		return false
@@ -176,6 +217,7 @@ func (this Datebin) IsLatelyMonth() bool {
 }
 
 // 是否是当前月最后一天
+// if time is Month's Last day
 func (this Datebin) IsLastOfMonth() bool {
 	if this.IsInvalid() {
 		return false
@@ -185,6 +227,7 @@ func (this Datebin) IsLastOfMonth() bool {
 }
 
 // 是否当天开始
+// if time is day start time
 func (this Datebin) IsStartOfDay() bool {
 	if this.IsInvalid() {
 		return false
@@ -194,6 +237,7 @@ func (this Datebin) IsStartOfDay() bool {
 }
 
 // 是否当天开始
+// if time is day start microsecond time
 func (this Datebin) IsStartOfDayWithMicrosecond() bool {
 	if this.IsInvalid() {
 		return false
@@ -204,6 +248,7 @@ func (this Datebin) IsStartOfDayWithMicrosecond() bool {
 }
 
 // 是否当天结束
+// if time is day end time
 func (this Datebin) IsEndOfDay() bool {
 	if this.IsInvalid() {
 		return false
@@ -213,6 +258,7 @@ func (this Datebin) IsEndOfDay() bool {
 }
 
 // 是否当天结束
+// if time is day end microsecond time
 func (this Datebin) IsEndOfDayWithMicrosecond() bool {
 	if this.IsInvalid() {
 		return false
@@ -223,11 +269,13 @@ func (this Datebin) IsEndOfDayWithMicrosecond() bool {
 }
 
 // 是否是半夜
+// if time is midnight time
 func (this Datebin) IsMidnight() bool {
 	return this.IsStartOfDay()
 }
 
 // 是否是中午
+// if time is midday time
 func (this Datebin) IsMidday(midDay ...string) bool {
 	if this.IsInvalid() {
 		return false
