@@ -50,7 +50,7 @@ func (this *Rule) Create(data map[string]any, parentId string) bool {
         Description: res.Value("description", "").ToString(),
         Listorder:   goch.ToInt(lastOrder),
         Status:      0,
-        AddTime:     int(datebin.NowTime()),
+        AddTime:     int(datebin.NowTimestamp()),
         AddIp:       "0.0.0.0",
     }
 

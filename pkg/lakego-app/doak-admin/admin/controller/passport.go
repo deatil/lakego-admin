@@ -145,7 +145,7 @@ func (this *Passport) Login(ctx *router.Context) {
     model.NewAdmin().
         Where("id = ?", adminid).
         Updates(map[string]any{
-            "last_active": int(datebin.NowTime()),
+            "last_active": int(datebin.NowTimestamp()),
             "last_ip": router.GetRequestIp(ctx),
         })
 

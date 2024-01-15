@@ -120,7 +120,7 @@ func ImportApiRoute() {
                             Description: "",
                             Listorder: 100,
                             Status: 1,
-                            AddTime: int(datebin.NowTime()),
+                            AddTime: int(datebin.NowTimestamp()),
                             AddIp: "127.0.0.1",
                         }
 
@@ -143,7 +143,7 @@ func ImportApiRoute() {
                     Description: description,
                     Listorder: sort,
                     Status: 1,
-                    AddTime: int(datebin.NowTime()),
+                    AddTime: int(datebin.NowTimestamp()),
                     AddIp: "127.0.0.1",
                 }
 

@@ -102,7 +102,7 @@ func (this *Upload) File(ctx *router.Context) {
         attachUpdateErr := attachmentModel.
             Where("md5 = ?", md5).
             Updates(map[string]any{
-                "update_time": datebin.NowTime(),
+                "update_time": datebin.NowTimestamp(),
             }).
             Error
         if attachUpdateErr != nil {
@@ -153,8 +153,8 @@ func (this *Upload) File(ctx *router.Context) {
         Sha1: sha1,
         Disk: driver,
         Status: 1,
-        CreateTime: int(datebin.NowTime()),
-        AddTime: int(datebin.NowTime()),
+        CreateTime: int(datebin.NowTimestamp()),
+        AddTime: int(datebin.NowTimestamp()),
         AddIp: router.GetRequestIp(ctx),
     }
     addError := model.NewDB().

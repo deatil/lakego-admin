@@ -97,7 +97,7 @@ func recordLog(ctx *router.Context) {
         Method: method,
         Info: string(info),
         Useragent: useragent,
-        Time: int(datebin.NowTime()),
+        Time: int(datebin.NowTimestamp()),
         Ip: ip,
         Status: status,
     })

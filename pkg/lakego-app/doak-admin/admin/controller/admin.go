@@ -378,7 +378,7 @@ func (this *Admin) Create(ctx *router.Context) {
         Email: post["email"].(string),
         Introduce: post["introduce"].(string),
         Status: status,
-        AddTime: int(datebin.NowTime()),
+        AddTime: int(datebin.NowTimestamp()),
         AddIp: router.GetRequestIp(ctx),
     }
 
@@ -483,7 +483,7 @@ func (this *Admin) Update(ctx *router.Context) {
             "email": post["email"].(string),
             "introduce": post["introduce"].(string),
             "status": status,
-            "update_time": int(datebin.NowTime()),
+            "update_time": int(datebin.NowTimestamp()),
             "update_ip": router.GetRequestIp(ctx),
         }).
         Error
@@ -871,7 +871,7 @@ func (this *Admin) Logout(ctx *router.Context) {
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
         Updates(map[string]any{
-            "refresh_time": int(datebin.NowTime()),
+            "refresh_time": int(datebin.NowTimestamp()),
             "refresh_ip": router.GetRequestIp(ctx),
         })
 

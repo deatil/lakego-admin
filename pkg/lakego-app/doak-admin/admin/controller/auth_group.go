@@ -293,7 +293,7 @@ func (this *AuthGroup) Create(ctx *router.Context) {
         Description: post["description"].(string),
         Listorder: listorder,
         Status: status,
-        AddTime: int(datebin.NowTime()),
+        AddTime: int(datebin.NowTimestamp()),
         AddIp: router.GetRequestIp(ctx),
     }
 
@@ -371,7 +371,7 @@ func (this *AuthGroup) Update(ctx *router.Context) {
             "description": post["description"].(string),
             "listorder": listorder,
             "status": status,
-            "update_time": int(datebin.NowTime()),
+            "update_time": int(datebin.NowTimestamp()),
             "update_ip": router.GetRequestIp(ctx),
         }).
         Error

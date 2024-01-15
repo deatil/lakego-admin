@@ -80,7 +80,7 @@ func PassportLogout() {
     model.NewAdmin().
         Where("id = ?", refreshAdminid).
         Updates(map[string]any{
-            "refresh_time": int(datebin.NowTime()),
+            "refresh_time": int(datebin.NowTimestamp()),
             "refresh_ip": "127.0.0.1",
         })
 

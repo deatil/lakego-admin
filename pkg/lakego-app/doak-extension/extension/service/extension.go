@@ -127,9 +127,9 @@ func (this *Extension) Inatll(name string) error {
         Info: string(info.ToJSON()),
         Listorder: 100,
         Status: 0,
-        UpdateTime: int(datebin.NowTime()),
+        UpdateTime: int(datebin.NowTimestamp()),
         UpdateIp: ip,
-        AddTime: int(datebin.NowTime()),
+        AddTime: int(datebin.NowTimestamp()),
         AddIp: ip,
     }
 
@@ -233,7 +233,7 @@ func (this *Extension) Upgrade(name string) error {
             "version": info.Version,
             "adaptation": info.Adaptation,
             "info": string(info.ToJSON()),
-            "update_time": int(datebin.NowTime()),
+            "update_time": int(datebin.NowTimestamp()),
             "update_ip": ip,
         }).
         Error

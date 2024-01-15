@@ -347,7 +347,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
     }
 
     // 添加到缓存
-    code := utils.MD5(goch.ToString(datebin.NowTime()) + random.String(10))
+    code := utils.MD5(goch.ToString(datebin.NowTimestamp()) + random.String(10))
     cache.New().Put(code, result["id"].(string), 300)
 
     // 数据输出
