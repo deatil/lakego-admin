@@ -40,9 +40,11 @@ func main() {
 * 签名验证
 
 签名验证支持以下方式
+~~~
 sep符号分割: Sign(separator ...string) / Verify(data []byte, separator ...string)
 ASN1方式: SignASN1() / VerifyASN1(data []byte)
 字节组合: SignBytes() / VerifyBytes(data []byte)
+~~~
 
 示例
 ~~~go

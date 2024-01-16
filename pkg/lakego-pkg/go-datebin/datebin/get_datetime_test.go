@@ -21,7 +21,7 @@ func Test_DatetimeAll(t *testing.T) {
 		timestampWithMicrosecond               int64
 		timestampWithNanosecond                int64
 		year, month, day, hour, minute, second int
-        ISOYear, ISOWeek int
+		ISOYear, ISOWeek                       int
 	}{
 		{
 			index:                    "index-1",

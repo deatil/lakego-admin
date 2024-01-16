@@ -69,6 +69,24 @@ var timestamp int64 = datebin.Now().Timestamp()
 // 输出: 1705329727
 ~~~
 
+~~~go
+// 获取当前时间的标准时间
+var stdTime time.Time = datebin.Now().ToStdTime()
+// fmt.Sprintf("%s", stdTime) 输出: 2024-01-15 23:55:03.0770405 +0800 CST
+~~~
+
+~~~go
+// 格式化标准时间
+var datetimeString string = datebin.FromStdTime(stdTime).ToDatetimeString()
+// 输出: 2024-01-15 23:55:03
+~~~
+
+~~~go
+// 格式化日期时间
+var datetimeString string = datebin.FromDatetime(2024, 01, 15, 23, 35, 01).ToDatetimeString()
+// 输出: 2024-01-15 23:35:01
+~~~
+
 更多示例可点击查看 [使用文档](example.md)
 
 

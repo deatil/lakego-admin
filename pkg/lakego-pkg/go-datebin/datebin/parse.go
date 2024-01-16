@@ -21,20 +21,25 @@ func (this Datebin) Parse(date string, timezone ...string) Datebin {
 		}
 	} else {
 		switch {
-		case len(date) == 10 && strings.Count(date, "-") == 2:
+		case len(date) == 10 &&
+			strings.Count(date, "-") == 2:
 			layout = DateFormat
-		case len(date) == 19 && strings.Count(date, "-") == 2 &&
+		case len(date) == 19 &&
+			strings.Count(date, "-") == 2 &&
 			strings.Count(date, ":") == 2:
 			layout = DatetimeFormat
-		case len(date) == 23 && strings.Count(date, "-") == 2 &&
+		case len(date) == 23 &&
+			strings.Count(date, "-") == 2 &&
 			strings.Count(date, ":") == 2 &&
 			strings.Index(date, ".") == 19:
 			layout = DatetimeMilliFormat
-		case len(date) == 26 && strings.Count(date, "-") == 2 &&
+		case len(date) == 26 &&
+			strings.Count(date, "-") == 2 &&
 			strings.Count(date, ":") == 2 &&
 			strings.Index(date, ".") == 19:
 			layout = DatetimeMicroFormat
-		case len(date) == 29 && strings.Count(date, "-") == 2 &&
+		case len(date) == 29 &&
+			strings.Count(date, "-") == 2 &&
 			strings.Count(date, ":") == 2 &&
 			strings.Index(date, ".") == 19:
 			layout = DatetimeNanoFormat

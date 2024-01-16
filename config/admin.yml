@@ -7,6 +7,9 @@ route:
 # pid 存放目录
 pid-path: "{runtime}/pid/lakego.sock"
 
+# 时区
+timezone: "Asia/Hong_Kong"
+
 # 文件上传
 upload:
   # disk in `config/filesystem.yml`.

@@ -5,38 +5,6 @@ import (
 	"time"
 )
 
-func Test_ToStdtime(t *testing.T) {
-	eq := assertEqualT(t)
-
-	tests := []struct {
-		index  string
-		layout string
-		date   string
-	}{
-		{
-			index:  "index-1",
-			layout: "2006-01-02 15:04:05",
-			date:   "2024-01-03 21:15:12",
-		},
-		{
-			index:  "index-2",
-			layout: "20060102150405",
-			date:   "20240103211512",
-		},
-	}
-
-	for _, td := range tests {
-		tt, err := time.ParseInLocation(td.layout, td.date, time.Local)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		parseTt := NewDatebin().WithTime(tt).ToStdtime()
-
-		eq(parseTt, tt, "failed ToStdtime, index "+td.index)
-	}
-}
-
 func Test_String(t *testing.T) {
 	eq := assertEqualT(t)
 
@@ -98,6 +66,38 @@ func Test_GoString(t *testing.T) {
 		parseTt := NewDatebin().WithTime(tt).GoString()
 
 		eq(parseTt, tt.GoString(), "failed GoString, index "+td.index)
+	}
+}
+
+func Test_ToStdtime(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index  string
+		layout string
+		date   string
+	}{
+		{
+			index:  "index-1",
+			layout: "2006-01-02 15:04:05",
+			date:   "2024-01-03 21:15:12",
+		},
+		{
+			index:  "index-2",
+			layout: "20060102150405",
+			date:   "20240103211512",
+		},
+	}
+
+	for _, td := range tests {
+		tt, err := time.ParseInLocation(td.layout, td.date, time.Local)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		parseTt := NewDatebin().WithTime(tt).ToStdTime()
+
+		eq(parseTt, tt, "failed ToStdTime, index "+td.index)
 	}
 }
 

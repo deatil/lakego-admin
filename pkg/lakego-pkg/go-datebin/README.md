@@ -68,6 +68,24 @@ var timestamp int64 = datebin.Now().Timestamp()
 // output: 1705329727
 ~~~
 
+~~~go
+// get now std time
+var stdTime time.Time = datebin.Now().ToStdTime()
+// fmt.Sprintf("%s", stdTime) output: 2024-01-15 23:55:03.0770405 +0800 CST
+~~~
+
+~~~go
+// format std time
+var datetimeString string = datebin.FromStdTime(stdTime).ToDatetimeString()
+// output: 2024-01-15 23:55:03
+~~~
+
+~~~go
+// format datetime
+var datetimeString string = datebin.FromDatetime(2024, 01, 15, 23, 35, 01).ToDatetimeString()
+// output: 2024-01-15 23:35:01
+~~~
+
 more docs and see [docs](example.md)
 
 

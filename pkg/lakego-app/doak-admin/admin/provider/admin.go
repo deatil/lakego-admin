@@ -4,6 +4,7 @@ import (
     "os"
     "fmt"
 
+    "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
@@ -11,6 +12,7 @@ import (
     pathTool "github.com/deatil/lakego-doak/lakego/path"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
+    "github.com/deatil/lakego-doak-admin/admin/support/time"
     "github.com/deatil/lakego-doak-admin/admin/support/response"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
 
@@ -75,6 +77,9 @@ type Admin struct {
 
 // 引导
 func (this *Admin) Boot() {
+    // 设置时区
+    this.initTimezone()
+
     // 脚本
     this.loadCommand()
 
@@ -86,6 +91,18 @@ func (this *Admin) Boot() {
 
     // 记录 pid 信息
     this.putSock()
+}
+
+/**
+ * 设置时区
+ */
+func (this *Admin) initTimezone() {
+    tz := config.New("admin").GetString("timezone")
+
+    time.SetTimezone(tz)
+
+    // 全局设置时区
+    datebin.SetTimezone(tz)
 }
 
 /**

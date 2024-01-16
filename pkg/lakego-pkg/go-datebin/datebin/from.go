@@ -8,7 +8,7 @@ import (
 // create from std time
 func (this Datebin) FromStdTime(t time.Time, timezone ...string) Datebin {
 	this.time = t
-    this.loc = t.Location()
+	this.loc = t.Location()
 
 	if len(timezone) > 0 {
 		this = this.SetTimezone(timezone[0])
@@ -20,7 +20,7 @@ func (this Datebin) FromStdTime(t time.Time, timezone ...string) Datebin {
 // 输入标准时间
 // create from std time
 func FromStdTime(t time.Time, timezone ...string) Datebin {
-    return defaultDatebin.FromStdTime(t, timezone...)
+	return defaultDatebin.FromStdTime(t, timezone...)
 }
 
 // 输入标准时间戳带毫秒
@@ -35,13 +35,13 @@ func FromStdUnix(second int64, nsec int64, timezone ...string) Datebin {
 	return defaultDatebin.FromStdUnix(second, nsec, timezone...)
 }
 
-// 输入标准时间戳
+// 输入时间戳
 // create from std timestamp
 func (this Datebin) FromTimestamp(timestamp int64, timezone ...string) Datebin {
 	return this.FromStdUnix(timestamp, 0, timezone...)
 }
 
-// 输入标准时间戳
+// 输入时间戳
 // create from std timestamp
 func FromTimestamp(timestamp int64, timezone ...string) Datebin {
 	return defaultDatebin.FromTimestamp(timestamp, timezone...)
@@ -115,7 +115,7 @@ func FromDate(year, month, day int, timezone ...string) Datebin {
 // 输入时间
 // create from time
 func (this Datebin) FromTime(hour, minute, second int, timezone ...string) Datebin {
-	year, month, day := Now(timezone...).Date()
+	year, month, day := this.Now(timezone...).Date()
 
 	return this.FromDatetimeWithNanosecond(year, month, day, hour, minute, second, 0, timezone...)
 }

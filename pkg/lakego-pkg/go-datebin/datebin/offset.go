@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// 间隔
+// 间隔添加或者减少
+// add or sub time
 func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin {
 	if len(timezone) > 0 {
 		this = this.SetTimezone(timezone[0])
@@ -69,9 +70,11 @@ func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin
 }
 
 // 不溢出增加/减少 n 年
+// add or sub year NoOverflow
 func (this Datebin) OffsetYearsNoOverflow(years int) Datebin {
 	// N年后本月的最后一天
 	last := time.Date(this.Year()+years, time.Month(this.Month()), 1, this.Hour(), this.Minute(), this.Second(), this.Nanosecond(), this.loc).AddDate(0, 1, -1)
+
 	day := this.Day()
 	if this.Day() > last.Day() {
 		day = last.Day()
@@ -82,11 +85,13 @@ func (this Datebin) OffsetYearsNoOverflow(years int) Datebin {
 }
 
 // 不溢出增加/减少 n 月
+// add or sub Month NoOverflow
 func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 	month := this.Month() + months
 
 	// n+1月第一天减一天
 	last := time.Date(this.Year(), time.Month(month), 1, this.Hour(), this.Minute(), this.Second(), this.Nanosecond(), this.loc).AddDate(0, 1, -1)
+
 	day := this.Day()
 	if this.Day() > last.Day() {
 		day = last.Day()
@@ -97,6 +102,7 @@ func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 }
 
 // 按照持续时长字符串增加时间
+// add Duration time
 func (this Datebin) AddDuration(duration string) Datebin {
 	td, err := time.ParseDuration(duration)
 	if err != nil {
@@ -109,6 +115,7 @@ func (this Datebin) AddDuration(duration string) Datebin {
 }
 
 // 按照持续时长字符串减少时间
+// sub Duration time
 func (this Datebin) SubDuration(duration string) Datebin {
 	return this.AddDuration("-" + duration)
 }

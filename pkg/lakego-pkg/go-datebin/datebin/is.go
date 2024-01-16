@@ -185,7 +185,7 @@ func (this Datebin) IsLatelyWeek() bool {
 	}
 
 	secondsPerWeek := float64(SecondsPerWeek)
-	difference := this.Now().ToStdtime().Sub(this.ToStdtime())
+	difference := this.Now().ToStdTime().Sub(this.ToStdTime())
 
 	if difference.Seconds() > 0 && difference.Seconds() < secondsPerWeek {
 		return true

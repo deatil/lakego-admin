@@ -3,15 +3,9 @@ package datebin
 import (
 	"bytes"
 	"fmt"
-    "time"
 	"strconv"
+	"time"
 )
-
-// 输出标准时间
-// output std time
-func (this Datebin) ToStdtime() time.Time {
-	return this.time.In(this.loc)
-}
 
 // 默认返回
 // output string
@@ -23,6 +17,12 @@ func (this Datebin) String() string {
 // code.
 func (this Datebin) GoString() string {
 	return this.time.In(this.loc).GoString()
+}
+
+// 输出标准时间
+// output std time
+func (this Datebin) ToStdTime() time.Time {
+	return this.time.In(this.loc)
 }
 
 // 返回字符

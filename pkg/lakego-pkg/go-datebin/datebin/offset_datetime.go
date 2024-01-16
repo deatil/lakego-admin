@@ -1,41 +1,49 @@
 package datebin
 
 // 前 n 百年
+// sub n Centuries
 func (this Datebin) SubCenturies(century uint) Datebin {
 	return this.Offset("century", int(-century))
 }
 
 // 前 n 百年
+// sub n Centuries noOverflow
 func (this Datebin) SubCenturiesNoOverflow(century uint) Datebin {
 	return this.OffsetYearsNoOverflow(int(-century) * YearsPerCentury)
 }
 
 // 前一百年
+// sub one Century
 func (this Datebin) SubCentury() Datebin {
 	return this.SubCenturies(1)
 }
 
 // 前一百年
+// sub one noOverflow
 func (this Datebin) SubCenturyNoOverflow() Datebin {
 	return this.SubCenturiesNoOverflow(1)
 }
 
 // 后 n 百年
+// add n Centuries
 func (this Datebin) AddCenturies(century uint) Datebin {
 	return this.Offset("century", int(century))
 }
 
 // 后 n 百年
+// add n Centuries noOverflow
 func (this Datebin) AddCenturiesNoOverflow(century uint) Datebin {
 	return this.OffsetYearsNoOverflow(int(century) * YearsPerCentury)
 }
 
 // 后一百年
+// add one Century
 func (this Datebin) AddCentury() Datebin {
 	return this.AddCenturies(1)
 }
 
 // 后一百年
+// add one Century noOverflow
 func (this Datebin) AddCenturyNoOverflow() Datebin {
 	return this.AddCenturiesNoOverflow(1)
 }

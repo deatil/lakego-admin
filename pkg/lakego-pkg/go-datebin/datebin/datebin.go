@@ -137,52 +137,52 @@ func New() Datebin {
 }
 
 // 设置时间
-// WithTime
+// With Time
 func (this Datebin) WithTime(time time.Time) Datebin {
 	this.time = time
 	return this
 }
 
 // 获取时间
-// GetTime
+// Get Time
 func (this Datebin) GetTime() time.Time {
 	return this.time
 }
 
 // 设置周开始时间
-// WithWeekStartAt
+// With Start Week
 func (this Datebin) WithWeekStartAt(weekday time.Weekday) Datebin {
 	this.weekStartAt = weekday
 	return this
 }
 
 // 获取周开始时间
-// GetWeekStartAt
+// Get Start Week
 func (this Datebin) GetWeekStartAt() time.Weekday {
 	return this.weekStartAt
 }
 
 // 设置时区
-// WithLocation
+// With Location struct
 func (this Datebin) WithLocation(loc *time.Location) Datebin {
 	this.loc = loc
 	return this
 }
 
 // 获取时区
-// GetLocation
+// Get Location struct
 func (this Datebin) GetLocation() *time.Location {
 	return this.loc
 }
 
 // 获取时区字符
-// GetLocationString
+// Get Location String
 func (this Datebin) GetLocationString() string {
 	return this.loc.String()
 }
 
 // 设置时区
-// SetTimezone
+// Set Timezone
 func (this Datebin) SetTimezone(timezone string) Datebin {
 	loc, err := time.LoadLocation(timezone)
 	if err != nil {

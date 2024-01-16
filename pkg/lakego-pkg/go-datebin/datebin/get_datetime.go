@@ -33,7 +33,7 @@ func (this Datebin) ISOYear() int {
 		return 0
 	}
 
-    year, _ := this.time.In(this.loc).ISOWeek()
+	year, _ := this.time.In(this.loc).ISOWeek()
 	return year
 }
 
@@ -84,7 +84,7 @@ func (this Datebin) ISOWeek() int {
 		return 0
 	}
 
-    _, week := this.time.In(this.loc).ISOWeek()
+	_, week := this.time.In(this.loc).ISOWeek()
 	return week
 }
 
