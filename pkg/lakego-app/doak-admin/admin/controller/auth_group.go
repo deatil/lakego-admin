@@ -62,10 +62,7 @@ func (this *AuthGroup) Index(ctx *router.Context) {
     // 搜索条件
     searchword := ctx.DefaultQuery("searchword", "")
     if searchword != "" {
-        searchword = "%" + searchword + "%"
-
-        groupModel = groupModel.
-            Where("title LIKE ?", searchword)
+        groupModel = groupModel.Where("title LIKE ?", "%" + searchword + "%")
     }
 
     // 时间条件

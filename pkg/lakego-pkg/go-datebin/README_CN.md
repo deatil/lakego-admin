@@ -61,18 +61,30 @@ func main() {
 // 格式化时间戳
 var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString()
 // 输出: 2024-01-15 22:42:07
+
+// 格式化时间戳带时区
+var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString(datebin.Shanghai)
+// 输出: 2024-01-15 22:42:07
 ~~~
 
 ~~~go
 // 获取当前时间戳
 var timestamp int64 = datebin.Now().Timestamp()
 // 输出: 1705329727
+
+// 获取当前时间戳带时区
+var timestamp int64 = datebin.Now(datebin.UTC).Timestamp()
+// 输出: 1705329757
 ~~~
 
 ~~~go
 // 获取当前时间的标准时间
 var stdTime time.Time = datebin.Now().ToStdTime()
 // fmt.Sprintf("%s", stdTime) 输出: 2024-01-15 23:55:03.0770405 +0800 CST
+
+// 获取当前时间的标准时间带时区
+var stdTime time.Time = datebin.Now(datebin.UTC).ToStdTime()
+// fmt.Sprintf("%s", stdTime) 输出: 2024-01-19 01:59:11.8134897 +0000 UTC
 ~~~
 
 ~~~go

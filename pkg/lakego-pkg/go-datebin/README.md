@@ -14,7 +14,7 @@ go get -u github.com/deatil/go-datebin
 ~~~
 
 
-### Get Start
+### Get Starting
 
 ~~~go
 package main
@@ -66,16 +66,24 @@ var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).
 // get now timestamp
 var timestamp int64 = datebin.Now().Timestamp()
 // output: 1705329727
+
+// get now timestamp with timezone
+var timestamp int64 = datebin.Now(datebin.UTC).Timestamp()
+// output: 1705329757
 ~~~
 
 ~~~go
-// get now std time
+// get now stdtime
 var stdTime time.Time = datebin.Now().ToStdTime()
 // fmt.Sprintf("%s", stdTime) output: 2024-01-15 23:55:03.0770405 +0800 CST
+
+// get now stdtime with timezone
+var stdTime time.Time = datebin.Now(datebin.UTC).ToStdTime()
+// fmt.Sprintf("%s", stdTime) output: 2024-01-19 01:59:11.8134897 +0000 UTC
 ~~~
 
 ~~~go
-// format std time
+// format stdtime
 var datetimeString string = datebin.FromStdTime(stdTime).ToDatetimeString()
 // output: 2024-01-15 23:55:03
 ~~~

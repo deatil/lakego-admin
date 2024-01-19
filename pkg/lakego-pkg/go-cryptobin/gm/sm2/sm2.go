@@ -427,14 +427,12 @@ func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
 
     if mode == C1C2C3 {
         data, err = ASN1UnmarshalC1C2C3(data)
-        if err != nil {
-            return nil, err
-        }
     } else {
         data, err = ASN1Unmarshal(data)
-        if err != nil {
-            return nil, err
-        }
+    }
+
+    if err != nil {
+        return nil, err
     }
 
     return Decrypt(pub, data, C1C3C2)

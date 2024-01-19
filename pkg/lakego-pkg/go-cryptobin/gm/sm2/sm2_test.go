@@ -10,6 +10,7 @@ import (
     "crypto/rand"
     "encoding/pem"
     "encoding/hex"
+    "encoding/base64"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
@@ -335,5 +336,35 @@ func Test_NewPrivateKey(t *testing.T) {
 
     if !pub2.Equal(pub) {
         t.Error("NewPublicKey error")
+    }
+}
+
+var testPrikey2 = `
+-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBG0wawIBAQQga0uyz+bU40mfdM/QWwSLOAIw1teD
+frvhqGWFAFT7r9uhRANCAATsU4K/XvtvANt0yF+eSabtX20tNXCMfaVMSmV7iq4gGxJKXppqIObD
+ccNE4TCP1uA7VyFgARYRXKGzV/eMSx17
+-----END PRIVATE KEY-----
+`
+
+func Test_Encrypt_Check2(t *testing.T) {
+    blockPri := decodePEM(testPrikey2)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("123")
+    endata := "MGwCIQDafQBon8ZrC5fRya4oC6yAgONN6PIWN/I4fk/8wwhGIAIgJgJ/vmW0UmEGmzTp4sgPvigyafQXSU5gsfwLJvE1WYwEIM8nvAb2K7xoK/Q/yi7z/7jzq5XwO3/TtDyvluEiZD0yBAP1Ed4="
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.DecryptASN1(en, nil)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Encrypt_Check2 DecryptAsn1 error: got %s, want %s", string(dedata), string(msg))
     }
 }

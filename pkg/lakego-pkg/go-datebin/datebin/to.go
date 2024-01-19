@@ -16,12 +16,24 @@ func (this Datebin) String() string {
 // GoString implements fmt.GoStringer and formats t to be printed in Go source
 // code.
 func (this Datebin) GoString() string {
+	if this.IsInvalid() {
+		return ""
+	}
+
 	return this.time.In(this.loc).GoString()
 }
 
 // 输出标准时间
 // output std time
-func (this Datebin) ToStdTime() time.Time {
+func (this Datebin) ToStdTime(timezone ...string) time.Time {
+	if this.IsInvalid() {
+		return this.time
+	}
+
+	if len(timezone) > 0 {
+		this = this.SetTimezone(timezone[0])
+	}
+
 	return this.time.In(this.loc)
 }
 

@@ -6,6 +6,14 @@ import (
     "encoding/binary"
 )
 
+func Rotl16(x, n uint16) uint16 {
+    return bits.RotateLeft16(x, int(n))
+}
+
+func Rotr16(x, n uint16) uint16 {
+    return Rotl16(x, 16 - n);
+}
+
 func Rotl32(x, n uint32) uint32 {
     return bits.RotateLeft32(x, int(n))
 }
@@ -16,6 +24,14 @@ func Rotr32(x, n uint32) uint32 {
 
 func Byteswap32(x uint32) uint32 {
     return ((Rotl32(x, 8) & 0x00ff00ff) | (Rotr32(x, 8) & 0xff00ff00))
+}
+
+func Rotl64(x, n uint64) uint64 {
+    return bits.RotateLeft64(x, int(n))
+}
+
+func Rotr64(x, n uint64) uint64 {
+    return Rotl64(x, 64 - n);
 }
 
 //==========
