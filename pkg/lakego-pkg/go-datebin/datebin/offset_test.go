@@ -170,3 +170,33 @@ func Test_SubDuration(t *testing.T) {
 		eq(check.ToDatetimeString(UTC), td.check, "failed SubDuration, index "+td.index)
 	}
 }
+
+func Test_AddBusinessDays(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date  string
+		days  int
+		check string
+	}{
+		{
+			index: "index-1",
+			date:  "2023-08-01 21:15:12",
+			days:  5,
+			check: "2023-08-08 21:15:12",
+		},
+		{
+			index: "index-2",
+			date:  "2021-06-25 05:35:11",
+			days:  16,
+			check: "2021-07-19 05:35:11",
+		},
+	}
+
+	for _, td := range tests {
+		check := Parse(td.date, UTC).AddBusinessDays(td.days)
+
+		eq(check.ToDatetimeString(UTC), td.check, "failed AddBusinessDays, index "+td.index)
+	}
+}

@@ -63,7 +63,7 @@ var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).
 // 输出: 2024-01-15 22:42:07
 
 // 格式化时间戳带时区
-var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString(datebin.Shanghai)
+var datetimeString string = datebin.FromTimestamp(1705329727).ToDatetimeString(datebin.Shanghai)
 // 输出: 2024-01-15 22:42:07
 ~~~
 
@@ -71,10 +71,12 @@ var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).
 // 获取当前时间戳
 var timestamp int64 = datebin.Now().Timestamp()
 // 输出: 1705329727
+~~~
 
-// 获取当前时间戳带时区
-var timestamp int64 = datebin.Now(datebin.UTC).Timestamp()
-// 输出: 1705329757
+~~~go
+// 获取当前时间
+var timestamp int64 = datebin.Now(datebin.Iran).ToRFC1123String()
+// 输出: Sun, 21 Jan 2024 07:48:22 +0330
 ~~~
 
 ~~~go

@@ -292,3 +292,52 @@ func (this Datebin) SecondEnd() Datebin {
 	this.time = time.Date(this.Year(), time.Month(this.Month()), this.Day(), this.Hour(), this.Minute(), this.Second(), 999999999, this.loc)
 	return this
 }
+
+// 获取给定月份的星期几的日期
+// get DayOfWeek datas
+func (this Datebin) DayOfWeekDates(day time.Weekday) []Datebin {
+	var dates []Datebin
+
+	firstDayOfMonth := this.MonthStart()
+
+	diff := int(day) - firstDayOfMonth.Weekday()
+	if diff < 0 {
+		diff += 7
+	}
+
+	firstDay := firstDayOfMonth.AddDays(uint(diff))
+	for current := firstDay; current.Month() == this.Month(); current = current.AddWeekday() {
+		dates = append(dates, current)
+	}
+
+	return dates
+}
+
+// 周范围时间
+// week range data
+type weekRange struct {
+	Start, End Datebin
+}
+
+// 获取给定月份每周的开始日和结束日
+// get month all weeks
+func (this Datebin) StartAndEndOfWeeksOfMonth() []weekRange {
+	startOfMonth := this.MonthStart()
+	weeks := make([]weekRange, 0)
+
+	for current := startOfMonth; current.Month() == this.Month(); current = current.AddWeekday() {
+		startOfWeek := current.WeekStart()
+		endOfWeek := current.WeekEnd()
+
+		if endOfWeek.Month() != this.Month() {
+			endOfWeek = current.MonthEnd()
+		}
+
+		weeks = append(weeks, weekRange{
+			startOfWeek,
+			endOfWeek,
+		})
+	}
+
+	return weeks
+}

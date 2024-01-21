@@ -119,3 +119,18 @@ func (this Datebin) AddDuration(duration string) Datebin {
 func (this Datebin) SubDuration(duration string) Datebin {
 	return this.AddDuration("-" + duration)
 }
+
+// 将工作日添加到日期
+// add Business Days
+func (this Datebin) AddBusinessDays(days int) Datebin {
+	currentDate := this
+
+	for i := 0; i < days; {
+		currentDate = currentDate.AddDay()
+		if currentDate.IsWeekday() {
+			i++
+		}
+	}
+
+	return currentDate
+}

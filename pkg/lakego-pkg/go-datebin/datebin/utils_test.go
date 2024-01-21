@@ -35,3 +35,35 @@ func Test_absFormat(t *testing.T) {
 		eq(check, td.check, "failed absFormat, index "+td.index)
 	}
 }
+
+func Test_parseFormatString(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index  string
+		format string
+		check  string
+	}{
+		{
+			index:  "index-1",
+			format: "D",
+			check:  "Mon",
+		},
+		{
+			index:  "index-2",
+			format: "N",
+			check:  "Monday",
+		},
+		{
+			index:  "index-3",
+			format: "F",
+			check:  "January",
+		},
+	}
+
+	for _, td := range tests {
+		check := parseFormatString(td.format)
+
+		eq(check, td.check, "failed parseFormatString, index "+td.index)
+	}
+}

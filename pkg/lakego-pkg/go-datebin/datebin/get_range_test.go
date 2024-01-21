@@ -2,6 +2,7 @@ package datebin
 
 import (
 	"testing"
+	"time"
 )
 
 func Test_NYearStart(t *testing.T) {
@@ -712,4 +713,99 @@ func Test_SecondEnd(t *testing.T) {
 
 		eq(date, td.check, "failed SecondEnd, index "+td.index)
 	}
+}
+
+func Test_DayOfWeekDates(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date  string
+		day   time.Weekday
+		check []string
+	}{
+		{
+			index: "index-1",
+			date:  "2024-07-03 21:15:12",
+			day:   time.Wednesday,
+			check: []string{
+				"2024-07-03 00:00:00",
+				"2024-07-10 00:00:00",
+				"2024-07-17 00:00:00",
+				"2024-07-24 00:00:00",
+				"2024-07-31 00:00:00",
+			},
+		},
+		{
+			index: "index-2",
+			date:  "2015-07-03 13:22:13",
+			day:   time.Saturday,
+			check: []string{
+				"2015-07-04 00:00:00",
+				"2015-07-11 00:00:00",
+				"2015-07-18 00:00:00",
+				"2015-07-25 00:00:00",
+			},
+		},
+	}
+
+	for _, td := range tests {
+		dates := Parse(td.date, UTC).DayOfWeekDates(td.day)
+
+		res := make([]string, 0)
+		for _, tt := range dates {
+			res = append(res, tt.ToDatetimeString(UTC))
+		}
+
+		eq(res, td.check, "failed DayOfWeekDates, index "+td.index)
+	}
+
+}
+
+func Test_StartAndEndOfWeeksOfMonth(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date  string
+		check [][]string
+	}{
+		{
+			index: "index-1",
+			date:  "2023-09-03 21:15:12",
+			check: [][]string{
+				{"2023-08-28 00:00:00", "2023-09-03 23:59:59"},
+				{"2023-09-04 00:00:00", "2023-09-10 23:59:59"},
+				{"2023-09-11 00:00:00", "2023-09-17 23:59:59"},
+				{"2023-09-18 00:00:00", "2023-09-24 23:59:59"},
+				{"2023-09-25 00:00:00", "2023-09-30 23:59:59"},
+			},
+		},
+		{
+			index: "index-2",
+			date:  "2015-07-03 13:22:13",
+			check: [][]string{
+				{"2015-06-29 00:00:00", "2015-07-05 23:59:59"},
+				{"2015-07-06 00:00:00", "2015-07-12 23:59:59"},
+				{"2015-07-13 00:00:00", "2015-07-19 23:59:59"},
+				{"2015-07-20 00:00:00", "2015-07-26 23:59:59"},
+				{"2015-07-27 00:00:00", "2015-07-31 23:59:59"},
+			},
+		},
+	}
+
+	for _, td := range tests {
+		dates := Parse(td.date, UTC).StartAndEndOfWeeksOfMonth()
+
+		res := make([][]string, 0)
+		for _, tt := range dates {
+			res = append(res, []string{
+				tt.Start.ToDatetimeString(UTC),
+				tt.End.ToDatetimeString(UTC),
+			})
+		}
+
+		eq(res, td.check, "failed StartAndEndOfWeeksOfMonth, index "+td.index)
+	}
+
 }

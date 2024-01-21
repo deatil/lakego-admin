@@ -3,6 +3,7 @@ package sm2
 import (
     "testing"
     "crypto/rand"
+    "encoding/pem"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -56,4 +57,26 @@ func Test_PublicKey(t *testing.T) {
     }
 
     assertEqual(pub2, pub1, "PublicKey")
+}
+
+var testPrivateKey = `
+-----BEGIN PRIVATE KEY-----
+MIGIAgEAMBQGCCqBHM9VAYItBggqgRzPVQGCLQRtMGsCAQEEIIfYbABfRJN5ZBkW
+teXxzV0hzNrWBhN0Fmn0cJRqy50XoUQDQgAEbyM/EfFVSXAdxeZ3ovXSAtG3GD1v
+av+xanZVivqzzKU35ILFbXef9YkxHQOpQRRifIj99nJS7SH+cFH5S0jKLw==
+-----END PRIVATE KEY-----
+`
+
+func Test_PKCS8_Check(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    keyData := []byte(testPrivateKey)
+    block, _ := pem.Decode(keyData)
+
+    priv, err := ParsePrivateKey(block.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    assertNotEmpty(priv, "PKCS8_Check")
 }

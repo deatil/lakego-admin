@@ -3,6 +3,7 @@ package datebin
 import (
 	"strconv"
 	"strings"
+	"time"
 )
 
 /**
@@ -158,6 +159,46 @@ func (this DiffTime) Years() int64 {
 // get diff abs Years
 func (this DiffTime) YearsAbs() int64 {
 	return absFormat(this.Years())
+}
+
+// 计算两个日期之间的持续时间
+// get Duration data
+func (this DiffTime) DurationBetween() time.Duration {
+	return this.End.time.Sub(this.Start.time)
+}
+
+// 返回持续时间为人类可读的数据
+// return Duration datas
+func (this DiffTime) DurationBetweens() (days, hours, minutes, seconds int) {
+	duration := this.DurationBetween()
+
+	days = int(duration.Hours() / 24)
+	hours = int(duration.Hours()) % 24
+	minutes = int(duration.Minutes()) % 60
+	seconds = int(duration.Seconds()) % 60
+
+	return
+}
+
+// 返回持续时间为人类可读的数据，绝对值
+// return abs Duration datas
+func (this DiffTime) DurationBetweensAbs() (days, hours, minutes, seconds int) {
+	days, hours, minutes, seconds = this.DurationBetweens()
+
+	if days < 0 {
+		days = -days
+	}
+	if hours < 0 {
+		hours = -hours
+	}
+	if minutes < 0 {
+		minutes = -minutes
+	}
+	if seconds < 0 {
+		seconds = -seconds
+	}
+
+	return
 }
 
 // 获取格式化

@@ -2,10 +2,11 @@ package sm2
 
 import (
     "errors"
-    "reflect"
     "encoding/asn1"
     "crypto/elliptic"
     "crypto/x509/pkix"
+
+    "github.com/deatil/go-cryptobin/gm/sm2/p256"
 )
 
 var (
@@ -34,9 +35,9 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
         return nil, err
     }
 
-    algoEq := privKey.Algo.Algorithm.Equal(oidSM2)
-    if !algoEq {
-        err := errors.New("ecdsa: unknown private key algorithm")
+    if !privKey.Algo.Algorithm.Equal(oidSM2) &&
+        !privKey.Algo.Algorithm.Equal(oidPublicKeySM2) {
+        err := errors.New("sm2: unknown private key algorithm")
         return nil, err
     }
 
@@ -56,7 +57,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oidBytes, err := asn1.Marshal(oidPublicKeySM2)
     if err != nil {
-        return nil, errors.New("x509: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("sm2: failed to marshal algo param: " + err.Error())
     }
 
     algo.Algorithm = oidSM2
@@ -67,7 +68,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("x509: unknown elliptic curve")
+        return nil, errors.New("sm2: unknown elliptic curve")
     }
 
     r.Version = 0
@@ -87,11 +88,12 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
         return nil, err
     }
 
-    if !reflect.DeepEqual(pubkey.Algo.Algorithm, oidSM2) {
-        return nil, errors.New("x509: not sm2 elliptic curve")
+    if !pubkey.Algo.Algorithm.Equal(oidSM2) &&
+        !pubkey.Algo.Algorithm.Equal(oidPublicKeySM2) {
+        return nil, errors.New("sm2: not sm2 elliptic curve")
     }
 
-    curve := P256Sm2()
+    curve := p256.P256()
 
     x, y := elliptic.Unmarshal(curve, pubkey.BitString.Bytes)
 
@@ -108,13 +110,13 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var r pkixPublicKey
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve.Params() != P256Sm2().Params() {
-        return nil, errors.New("x509: unsupported elliptic curve")
+    if key.Curve.Params() != p256.P256().Params() {
+        return nil, errors.New("sm2: unsupported elliptic curve")
     }
 
     oidBytes, err := asn1.Marshal(oidPublicKeySM2)
     if err != nil {
-        return nil, errors.New("x509: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("sm2: failed to marshal algo param: " + err.Error())
     }
 
     algo.Algorithm = oidSM2

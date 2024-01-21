@@ -1,188 +1,208 @@
 ### SM2 使用说明
 
-* 使用
+* 包引入 / import pkg
 ~~~go
-package main
-
 import (
-    "fmt"
-
-    "github.com/deatil/lakego-filesystem/filesystem"
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
-    cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
+    "github.com/deatil/go-cryptobin/cryptobin/sm2"
 )
+~~~
 
+* 数据输入方式 / input funcs
+`FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
+
+* 数据输出方式 / output funcs
+`ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`,
+
+* 获取 error / get error
+`Error()`
+
+* 生成证书 / make keys
+~~~go
 func main() {
-    // 文件管理器
-    fs := filesystem.New()
+    obj := sm2.New().GenerateKey()
 
-    // 生成证书
-    key := cryptobin_sm2.
-        NewSM2().
-        GenerateKey()
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
 
-    priKey := key.
+    // 生成私钥
+    // create private key
+    var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword("123").
-        // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePrivateKeyWithPassword(psssword).
+        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
         // CreatePKCS1PrivateKey().
-        // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePKCS1PrivateKeyWithPassword(psssword, "AES256CBC").
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
         ToKeyString()
-    pubKey := key.
+
+    // 自定义私钥加密类型
+    // use custom encrypt options
+    var PriKeyPem string = obj.
+        CreatePKCS8PrivateKeyWithPassword(psssword, sm2.Opts{
+            Cipher:  sm2.GetCipherFromName("AES256CBC"),
+            KDFOpts: sm2.ScryptOpts{
+                CostParameter:            1 << 15,
+                BlockSize:                8,
+                ParallelizationParameter: 1,
+                SaltSize:                 8,
+            },
+        }).
+        ToKeyString()
+
+    // 生成公钥
+    // create public key
+    var PubKeyPem string = obj.
         CreatePublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/sm2", priKey)
-    fs.Put("./runtime/key/sm2.pub", pubKey)
+}
+~~~
 
-    // 验证
-    sm2 := cryptobin.NewSM2()
+* 签名验证 / sign data
+~~~go
+func main() {
+    // 待签名数据
+    // no sign data
+    var data string = "..."
 
-    priv, _ := fs.Get("./runtime/key/sm2")
-    signed := sm2.
-        FromString("test-pass").
-        FromPrivateKey([]byte(priv)).
-        // FromPrivateKeyWithPassword([]byte(priv), "123").
-        // FromPKCS1PrivateKey([]byte(priv)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(priv), "123").
-        // FromPKCS8PrivateKey([]byte(priv)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(priv), "123").
+    // 签名数据
+    // sign data
+    var sigBase64String string = "..."
+
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    obj := sm2.New()
+
+    // 私钥签名
+    // private key sign data
+    var priKeyPem string = ""
+    sigBase64String = obj.
+        FromString(data).
+        FromPrivateKey([]byte(priKeyPem)).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS1PrivateKey([]byte(priKeyPem)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS8PrivateKey([]byte(priKeyPem)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
         Sign().
         ToBase64String()
-    pub, _ := fs.Get("./runtime/key/sm2.pub")
-    verify := sm2.
-        FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(pub)).
-        Verify([]byte("test-pass")).
+
+    // 公钥验证
+    // public key verify signed data
+    var pubKeyPem string = ""
+    var res bool = obj.
+        FromBase64String(sigBase64String).
+        FromPublicKey([]byte(pubKeyPem)).
+        Verify([]byte(data)).
         ToVerify()
+}
+~~~
 
-    // =====
+* 加密解密 - 公钥加密/私钥解密 / Encrypt with public key
+~~~go
+func main() {
+    obj := sm2.New()
 
-    // SM2 加密
-    sm2 := cryptobin_sm2.NewSM2()
+    // 待加密数据
+    // no sign data
+    var data string = "..."
 
-    enkey2, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    sm2cypt := sm2.
-        FromString("test-pass").
-        FromPublicKey([]byte(enkey2)).
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    // 公钥加密
+    // public key Encrypt data
+    var pubKeyPem string = ""
+    var enData string = obj.
+        FromString(data).
+        FromPublicKey([]byte(pubKeyPem)).
+        // SetMode 为可选，默认为 C1C3C2
+        // SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Encrypt().
         ToBase64String()
-    dekey2, _ := fs.Get("./runtime/key/sm2_en_key")
-    sm2cyptde := sm2.
-        FromBase64String("MHECIBcuicIhrELarhD9IqQiJLRejx6R/ywwDlspYneUwF12AiAd8HNw///hnFQDBzFeYj3XzQdF792vcNhEsJ2bothR5wQgfFWNiPVht0Fv+DBPaxm5jMV2XKvQE7sNVkX1T7ep+cEECSnzLy6t5NtHOg==").
-        FromPrivateKeyWithPassword([]byte(dekey2), "123").
+
+    // 私钥解密
+    // private key Decrypt data
+    var priKeyPem string = ""
+    var deData string = obj.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(priKeyPem)).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS1PrivateKey([]byte(priKeyPem)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS8PrivateKey([]byte(priKeyPem)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // SetMode 为可选，默认为 C1C3C2
+        // SetMode("C1C3C2"). // C1C3C2 | C1C2C3
         Decrypt().
         ToString()
+}
+~~~
 
-    // =====
+* SM2 获取 x,y,d 16进制 / get x,y,d data
+~~~go
+func main() {
+    obj := sm2.New()
 
-    // SM2 加密2
-    sm2 := cryptobin_sm2.NewSM2()
-
-    pub, _ := fs.Get("./runtime/key/sm2_key.pub")
-    sm2cypt := sm2.
-        FromString("test-pass").
-        FromPublicKey([]byte(pub)).
-        SetMode("C1C3C2"). // C1C3C2 | C1C2C3
-        Encrypt().
-        ToBase64String()
-    priv, _ := fs.Get("./runtime/key/sm2_key")
-    sm2cyptde := sm2.
-        FromBase64String("MHECIFVKOBAB9uiXrFQlNexfJuv7tjuydu7UdMYpTxQ/mPeHAiBSZdqNaciEP3XgX8xT2JLap4dWedX1EDQh7JyqifhHQAQgPcr5+KHIz3v300sGPc7nv6VM9fOo/kgPTHqZy5MtXMMECVKFT0dwWJwdCQ==").
-        FromPrivateKey([]byte(priv)).
-        SetMode("C1C3C2"). // C1C3C2 | C1C2C3
-        Decrypt().
-        ToString()
-
-    // =====
-
-    // SM2 验证
-    sm2 := cryptobin_sm2.NewSM2()
-
-    priv, _ := fs.Get("./runtime/key/sm2_key")
-    signed := sm2.
-        FromString("test-pass").
-        FromPrivateKey([]byte(priv)).
-        Sign().
-        ToBase64String()
-    pub, _ := fs.Get("./runtime/key/sm2_key.pub")
-    verify := sm2.
-        FromBase64String("MEUCIDztMEbHBdSeU2xxM93nsluloXB06k8Tt62hW+3t1vOHAiEA8r+9O0zIe5hpB7MmT7NCw/bhwVJbBh6hNtgjSFilzrU=").
-        FromPublicKey([]byte(pub)).
-        Verify([]byte("test-pass")).
-        ToVerify()
-
-    // =====
-
-    // SM2 验证2
-    sm2 := cryptobin_sm2.NewSM2()
-
-    priv, _ := fs.Get("./runtime/key/sm2_en_key")
-    signed := sm2.
-        FromString("test-pass").
-        FromPrivateKeyWithPassword([]byte(priv), "123").
-        Sign().
-        ToBase64String()
-    pub, _ := fs.Get("./runtime/key/sm2_en_key.pub")
-    verify := sm2.
-        FromBase64String("MEQCIE4DzLVkR9W+zQfXiwfwcOe/mk6PUNHBrSJIRdHT7diaAiAHaNNSxgwVLkZzXoHV4Tgqsim7c4ZwaPF+mca4mFZxLw==").
-        FromPublicKey([]byte(pub)).
-        Verify([]byte("test-pass")).
-        ToVerify()
-
-    // =====
-
-    // SM2 生成 x,y,d 16进制
-    sm2 := cryptobin_sm2.NewSM2()
-
-    dekey2, _ := fs.Get("./runtime/key/sm2_key")
+    // 获取私钥明文 D
+    // get private key D data
+    var priKeyPem string = ""
     d := sm2.
-        FromPrivateKey([]byte(dekey2)).
+        FromPrivateKey([]byte(priKeyPem)).
         GetPrivateKeyDHexString()
-    x := sm2.
-        FromPrivateKey([]byte(dekey2)).
-        MakePublicKey().
-        GetPublicKeyXHexString()
-    y := sm2.
-        FromPrivateKey([]byte(dekey2)).
-        MakePublicKey().
-        GetPublicKeyYHexString()
 
-    // =====
+    // 获取公钥 X, Y 明文数据
+    // get public key x data and y data
+    var pubKeyPem string = ""
+    public := sm2.FromPrivateKey([]byte(pubKeyPem))
 
-    // SM2 加密2
+    x := public.GetPublicKeyXHexString()
+    y := public.GetPublicKeyYHexString()
+}
+~~~
+
+* SM2 用 x, y 生成公钥，用 d 生成私钥 / use x,y to make public key and use d to make private key
+~~~go
+func main() {
     sm2PublicKeyX  := "a4b75c4c8c44d11687bdd93c0883e630c895234beb685910efbe27009ad911fa"
     sm2PublicKeyY  := "d521f5e8249de7a405f254a9888cbb8e651fd60c50bd22bd182a4bc7d1261c94"
     sm2PrivateKeyD := "0f495b5445eb59ddecf0626f5ca0041c550584f0189e89d95f8d4c52499ff838"
 
-    sm2 := cryptobin_sm2.NewSM2()
-    sm2PriKey := sm2.
+    obj := sm2.New()
+    sm2PriKey := obj.
         FromPublicKeyXYString(sm2PublicKeyX, sm2PublicKeyY).
         CreatePublicKey().
         ToKeyString()
-    sm2PubKey := sm2.
+    sm2PubKey := obj.
         FromPrivateKeyString(sm2PrivateKeyD).
         CreatePrivateKey().
         ToKeyString()
-
-    // =====
-
-    // 检测私钥公钥是否匹配
-    pri, _ := fs.Get(prifile)
-    pub, _ := fs.Get(pubfile)
-
-    res := cryptobin_sm2.New().
-        FromPrivateKey([]byte(pri)).
-        FromPublicKey([]byte(pub)).
-        CheckKeyPair()
-
-    fmt.Printf("check res: %#v", res)
-
 }
 ~~~
 
-* 【招商银行】支付签名验证
+* 检测私钥公钥是否匹配 / Check KeyPair
+~~~go
+func main() {
+    var priKeyPem string = "..."
+    var pubKeyPem string = "..."
+
+    var res bool = sm2.New().
+        FromPrivateKey([]byte(priKeyPem)).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS1PrivateKey([]byte(priKeyPem)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPKCS8PrivateKey([]byte(priKeyPem)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        FromPublicKey([]byte(pubKeyPem)).
+        CheckKeyPair()
+}
+~~~
+
+* 【招商银行】支付签名验证 / zhaoshang bank check
 ~~~go
 package main
 
@@ -190,7 +210,7 @@ import (
     "fmt"
     "encoding/base64"
 
-    cryptobin_sm2 "github.com/deatil/go-cryptobin/cryptobin/sm2"
+    "github.com/deatil/go-cryptobin/cryptobin/sm2"
 )
 
 func main() {
@@ -201,7 +221,7 @@ func main() {
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
     sm2userid = sm2userid[0:16]
-    sm2Sign := cryptobin_sm2.NewSM2().
+    sm2Sign := sm2.New().
         FromString(sm2data).
         FromPrivateKeyBytes(sm2keyBytes).
         SignBytes([]byte(sm2userid)).
@@ -210,7 +230,7 @@ func main() {
 
     // sm2 验证【招商银行】
     sm2signdata := "CDAYcxm3jM+65XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
-    sm2Verify := cryptobin_sm2.NewSM2().
+    sm2Verify := sm2.New().
         FromBase64String(sm2signdata).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
@@ -220,6 +240,5 @@ func main() {
 
     fmt.Println("签名结果：", sm2Sign)
     fmt.Println("验证结果：", sm2Verify)
-
 }
 ~~~

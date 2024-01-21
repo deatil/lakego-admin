@@ -1,7 +1,6 @@
 package datebin
 
 import (
-	"bytes"
 	"strconv"
 	"strings"
 	"time"
@@ -105,7 +104,7 @@ func ParseWithLayout(date string, layout string, timezone ...string) Datebin {
 
 // 用格式化字符解析时间字符
 func (this Datebin) ParseWithFormat(date string, format string, timezone ...string) Datebin {
-	return this.ParseWithLayout(date, this.formatParseLayout(format), timezone...)
+	return this.ParseWithLayout(date, parseFormatString(format), timezone...)
 }
 
 // 用格式化字符解析时间字符
@@ -124,27 +123,4 @@ func ParseDatetimeString(date string, format ...string) Datebin {
 	}
 
 	return Parse(date)
-}
-
-// 格式化解析 layout
-func (this Datebin) formatParseLayout(str string) string {
-	var buffer bytes.Buffer
-
-	for i := 0; i < len(str); i++ {
-		val, ok := PaseFormats[str[i:i+1]]
-		if ok {
-			buffer.WriteString(val)
-		} else {
-			switch str[i] {
-			case '\\':
-				buffer.WriteByte(str[i+1])
-				i++
-				continue
-			default:
-				buffer.WriteByte(str[i])
-			}
-		}
-	}
-
-	return buffer.String()
 }

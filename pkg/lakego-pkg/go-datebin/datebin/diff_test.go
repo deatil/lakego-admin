@@ -1,6 +1,7 @@
 package datebin
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -533,5 +534,115 @@ func Test_Diff_Format(t *testing.T) {
 			Format(td.format)
 
 		eq(check, td.check, "failed Diff Format, index "+td.index)
+	}
+}
+
+func Test_Diff_DurationBetween(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date1 string
+		date2 string
+		check string
+	}{
+		{
+			index: "index-1",
+			date1: "2023-06-06 21:15:12",
+			date2: "2023-06-05 01:35:00",
+			check: "-43h40m12s",
+		},
+		{
+			index: "index-2",
+			date1: "2022-07-05 21:15:12",
+			date2: "2022-07-12 12:17:32",
+			check: "159h2m20s",
+		},
+	}
+
+	for _, td := range tests {
+		check := Parse(td.date1).
+			Diff(Parse(td.date2)).
+			DurationBetween()
+
+		eq(check.String(), td.check, "failed Diff DurationBetween, index "+td.index)
+	}
+}
+
+func Test_Diff_DurationBetweens(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date1 string
+		date2 string
+		check string
+	}{
+		{
+			index: "index-1",
+			date1: "2023-06-06 21:15:12",
+			date2: "2023-06-05 01:35:00",
+			check: "-1 days -19 hours -40 minutes -12 seconds",
+		},
+		{
+			index: "index-2",
+			date1: "2022-07-05 21:15:12",
+			date2: "2022-07-12 12:17:32",
+			check: "6 days 15 hours 02 minutes 20 seconds",
+		},
+	}
+
+	for _, td := range tests {
+		days, hours, minutes, seconds := Parse(td.date1).
+			Diff(Parse(td.date2)).
+			DurationBetweens()
+
+		eq(
+			fmt.Sprintf(
+				"%d days %02d hours %02d minutes %02d seconds",
+				days, hours, minutes, seconds,
+			),
+			td.check,
+			"failed Diff DurationBetweens, index "+td.index,
+		)
+	}
+}
+
+func Test_Diff_DurationBetweensAbs(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date1 string
+		date2 string
+		check string
+	}{
+		{
+			index: "index-1",
+			date1: "2023-06-06 21:15:12",
+			date2: "2023-06-05 01:35:00",
+			check: "1 days 19 hours 40 minutes 12 seconds",
+		},
+		{
+			index: "index-2",
+			date1: "2022-07-05 21:15:12",
+			date2: "2022-07-12 12:17:32",
+			check: "6 days 15 hours 02 minutes 20 seconds",
+		},
+	}
+
+	for _, td := range tests {
+		days, hours, minutes, seconds := Parse(td.date1).
+			Diff(Parse(td.date2)).
+			DurationBetweensAbs()
+
+		eq(
+			fmt.Sprintf(
+				"%d days %02d hours %02d minutes %02d seconds",
+				days, hours, minutes, seconds,
+			),
+			td.check,
+			"failed Diff DurationBetweensAbs, index "+td.index,
+		)
 	}
 }

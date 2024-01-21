@@ -60,16 +60,22 @@ func main() {
 // format timestamp
 var datetimeString string = datebin.FromTimestamp(1705329727, datebin.Shanghai).ToDatetimeString()
 // output: 2024-01-15 22:42:07
+
+// format timestamp with timezone
+var datetimeString string = datebin.FromTimestamp(1705329727).ToDatetimeString(datebin.Shanghai)
+// output: 2024-01-15 22:42:07
 ~~~
 
 ~~~go
 // get now timestamp
 var timestamp int64 = datebin.Now().Timestamp()
 // output: 1705329727
+~~~
 
-// get now timestamp with timezone
-var timestamp int64 = datebin.Now(datebin.UTC).Timestamp()
-// output: 1705329757
+~~~go
+// get now time
+var timestamp int64 = datebin.Now(datebin.Iran).ToRFC1123String()
+// output: Sun, 21 Jan 2024 07:48:22 +0330
 ~~~
 
 ~~~go

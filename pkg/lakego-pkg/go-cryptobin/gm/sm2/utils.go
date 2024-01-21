@@ -8,53 +8,23 @@ import (
     "encoding/binary"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/gm/sm2/p256"
 )
 
 func Decompress(a []byte) *PublicKey {
-    var aa, xx, xx3 sm2P256FieldElement
+    curve := p256.P256()
 
-    P256Sm2()
-
-    x := new(big.Int).SetBytes(a[1:])
-
-    curve := sm2P256
-
-    sm2P256FromBig(&xx, x)
-    sm2P256Square(&xx3, &xx)       // x3 = x ^ 2
-    sm2P256Mul(&xx3, &xx3, &xx)    // x3 = x ^ 2 * x
-    sm2P256Mul(&aa, &curve.a, &xx) // a = a * x
-    sm2P256Add(&xx3, &xx3, &aa)
-    sm2P256Add(&xx3, &xx3, &curve.b)
-
-    y2 := sm2P256ToBig(&xx3)
-    y := new(big.Int).ModSqrt(y2, sm2P256.P)
-
-    if getLastBit(y)!= uint(a[0]) {
-        y.Sub(sm2P256.P, y)
-    }
+    x, y := p256.UnmarshalCompressed(curve.(p256.P256Curve), a)
 
     return &PublicKey{
-        Curve: P256Sm2(),
+        Curve: curve,
         X:     x,
         Y:     y,
     }
 }
 
 func Compress(a *PublicKey) []byte {
-    buf := []byte{}
-
-    yp := getLastBit(a.Y)
-
-    buf = append(buf, a.X.Bytes()...)
-
-    buf = zeroPadding(buf, 32)
-    buf = append([]byte{byte(yp)}, buf...)
-
-    return buf
-}
-
-func getLastBit(a *big.Int) uint {
-    return 2 | a.Bit(0)
+    return p256.MarshalCompressed(a.X, a.Y)
 }
 
 func SignDigitToSignData(r, s *big.Int) ([]byte, error) {
