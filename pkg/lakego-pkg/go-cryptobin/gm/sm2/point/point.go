@@ -34,6 +34,12 @@ func (this *Point) NewPoint(x, y, z *big.Int) (*Point, error) {
     return this, nil
 }
 
+func (this *Point) NewPointWithXY(x, y *big.Int) (*Point, error) {
+    z := zForAffine(x, y)
+
+    return this.NewPoint(x, y, z)
+}
+
 func IsOnCurve(p *Point) bool {
     var a, b, y2, x3 field.Element
 
@@ -167,6 +173,7 @@ func (this *Point) ScalarBaseMult(scalar [32]uint8) *Point {
             bit1 := getBit(scalar, 95-i+j)
             bit2 := getBit(scalar, 159-i+j)
             bit3 := getBit(scalar, 223-i+j)
+
             index := bit0 | (bit1 << 1) | (bit2 << 2) | (bit3 << 3)
 
             p.SelectAffinePoint(precomputed[tableOffset:], index)

@@ -9,17 +9,16 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2/point"
 )
 
-type P256Curve struct {
+type sm2Curve struct {
     RInverse *big.Int
     *elliptic.CurveParams
     A, b, gx, gy field.Element
 }
 
 var initonce sync.Once
-var sm2P256 P256Curve
+var sm2P256 sm2Curve
 
 func initP256() {
-    // sm2
     sm2P256.CurveParams = &elliptic.CurveParams{
         Name: "SM2-P-256",
     }
@@ -45,38 +44,23 @@ func P256() elliptic.Curve {
     return sm2P256
 }
 
-func (curve P256Curve) Params() *elliptic.CurveParams {
+func (curve sm2Curve) Params() *elliptic.CurveParams {
     return sm2P256.CurveParams
 }
 
 // y^2 = x^3 + ax + b
-func (curve P256Curve) IsOnCurve(X, Y *big.Int) bool {
-    var a, x, y, y2, x3 field.Element
+func (curve sm2Curve) IsOnCurve(x, y *big.Int) bool {
+    var a point.Point
+    a.NewPointWithXY(x, y)
 
-    x.FromBig(X)
-    y.FromBig(Y)
-
-    x3.Square(&x)       // x3 = x ^ 2
-    x3.Mul(&x3, &x)     // x3 = x ^ 2 * x
-
-    a.Mul(&curve.A, &x) // a = a * x
-
-    x3.Add(&x3, &a)
-    x3.Add(&x3, &curve.b)
-
-    y2.Square(&y) // y2 = y ^ 2
-
-    return x3.ToBig().Cmp(y2.ToBig()) == 0
+    return point.IsOnCurve(&a)
 }
 
-func (curve P256Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
+func (curve sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
     var a, b, c point.Point
 
-    z1 := zForAffine(x1, y1)
-    z2 := zForAffine(x2, y2)
-
-    a.NewPoint(x1, y1, z1)
-    b.NewPoint(x2, y2, z2)
+    a.NewPointWithXY(x1, y1)
+    b.NewPointWithXY(x2, y2)
 
     c.Add(&a, &b)
 
@@ -84,24 +68,20 @@ func (curve P256Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
     return c.ToBig(xx, yy)
 }
 
-func (curve P256Curve) Double(x1, y1 *big.Int) (xx, yy *big.Int) {
+func (curve sm2Curve) Double(x1, y1 *big.Int) (xx, yy *big.Int) {
     var a point.Point
 
-    z1 := zForAffine(x1, y1)
-
-    a.NewPoint(x1, y1, z1)
+    a.NewPointWithXY(x1, y1)
     a.Double(&a)
 
     xx, yy = new(big.Int), new(big.Int)
     return a.ToBig(xx, yy)
 }
 
-func (curve P256Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
+func (curve sm2Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
     var a, b point.Point
 
-    z1 := zForAffine(x1, y1)
-
-    b.NewPoint(x1, y1, z1)
+    b.NewPointWithXY(x1, y1)
 
     scalar := genrateWNaf(k)
     scalarReversed := WNafReversed(scalar)
@@ -112,14 +92,109 @@ func (curve P256Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
     return a.ToBig(xx, yy)
 }
 
-func (curve P256Curve) ScalarBaseMult(k []byte) (xx, yy *big.Int) {
+func (curve sm2Curve) ScalarBaseMult(k []byte) (xx, yy *big.Int) {
     var scalarReversed [32]byte
     var a point.Point
 
-    getScalar(&scalarReversed, k)
+    scalarReversed = getScalar(k)
 
     a.ScalarBaseMult(scalarReversed)
 
     xx, yy = new(big.Int), new(big.Int)
     return a.ToBig(xx, yy)
+}
+
+func getScalar(a []byte) [32]byte {
+    var scalarBytes []byte
+    var b [32]byte
+
+    n := new(big.Int).SetBytes(a)
+    if n.Cmp(sm2P256.N) >= 0 {
+        n.Mod(n, sm2P256.N)
+        scalarBytes = n.Bytes()
+    } else {
+        scalarBytes = a
+    }
+
+    for i, v := range scalarBytes {
+        b[len(scalarBytes) - (1+i)] = v
+    }
+
+    return b
+}
+
+func WNafReversed(wnaf []int8) []int8 {
+    wnafRev := make([]int8, len(wnaf))
+
+    for i, v := range wnaf {
+        wnafRev[len(wnaf)-(1+i)] = v
+    }
+
+    return wnafRev
+}
+
+func genrateWNaf(b []byte) []int8 {
+    n:= new(big.Int).SetBytes(b)
+
+    var k *big.Int
+    if n.Cmp(sm2P256.N) >= 0 {
+        n.Mod(n, sm2P256.N)
+        k = n
+    } else {
+        k = n
+    }
+
+    wnaf := make([]int8, k.BitLen()+1, k.BitLen()+1)
+    if k.Sign() == 0 {
+        return wnaf
+    }
+
+    var width, pow2, sign int
+    width, pow2, sign = 4, 16, 8
+
+    var mask int64 = 15
+    var carry bool
+    var length, pos int
+
+    for pos <= k.BitLen() {
+        if k.Bit(pos) == boolToUint(carry) {
+            pos++
+            continue
+        }
+
+        k.Rsh(k, uint(pos))
+
+        var digit int
+        digit = int(k.Int64() & mask)
+        if carry {
+            digit++
+        }
+
+        carry = (digit & sign) != 0
+        if carry {
+            digit -= pow2
+        }
+
+        length += pos
+        wnaf[length] = int8(digit)
+
+        pos = int(width)
+    }
+
+    if len(wnaf) > length + 1 {
+        t := make([]int8, length+1, length+1)
+        copy(t, wnaf[0:length+1])
+
+        wnaf = t
+    }
+
+    return wnaf
+}
+
+func boolToUint(b bool) uint {
+    if b {
+        return 1
+    }
+
+    return 0
 }

@@ -584,7 +584,10 @@ func ZA(pub *PublicKey, uid []byte) ([]byte, error) {
         za.Write(uid)
     }
 
-    curve := pub.Curve.(p256.P256Curve)
+    curve, ok := p256.GetSM2Curve(pub.Curve)
+    if !ok {
+        return []byte{}, errors.New("SM2: incorrect curve")
+    }
 
     za.Write(curve.A.ToBig().Bytes())
     za.Write(curve.B.Bytes())

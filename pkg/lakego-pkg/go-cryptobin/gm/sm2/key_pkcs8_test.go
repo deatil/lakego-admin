@@ -1,12 +1,35 @@
 package sm2
 
 import (
+    "fmt"
+    "strings"
     "testing"
     "crypto/rand"
     "encoding/pem"
+    "encoding/hex"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
+
+func decodePEM(src string) []byte {
+    block, _ := pem.Decode([]byte(src))
+    if block == nil {
+        panic("failed to parse PEM block containing the key")
+    }
+
+    return block.Bytes
+}
+
+func encodePEM(src []byte, typ string) string {
+    keyBlock := &pem.Block{
+        Type:  typ,
+        Bytes: src,
+    }
+
+    keyData := pem.EncodeToMemory(keyBlock)
+
+    return string(keyData)
+}
 
 func Test_PKCS8(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
@@ -79,4 +102,51 @@ func Test_PKCS8_Check(t *testing.T) {
     }
 
     assertNotEmpty(priv, "PKCS8_Check")
+}
+
+var testPublicKey = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEW6gm/jIEusEuBZHnu/Yr5vN96pnh
+5NpeowHwvqpzXyzaTr/9Tb6A9M2RGkdSDYP7H6x8AI697Ea54u3opJqGMQ==
+-----END PUBLIC KEY-----
+`
+var testPublicKeyBytes = `035ba826fe3204bac12e0591e7bbf62be6f37dea99e1e4da5ea301f0beaa735f2c`
+
+func Test_Compress(t *testing.T) {
+    pub := decodePEM(testPublicKey)
+
+    pubkey, err := ParsePublicKey(pub)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    comkey := Compress(pubkey)
+
+    check := testPublicKeyBytes
+    got := fmt.Sprintf("%x", comkey)
+
+    if got != check {
+        t.Errorf("Compress error, got %s, want %s", got, check)
+    }
+}
+
+func Test_Decompress(t *testing.T) {
+    pub, err := hex.DecodeString(testPublicKeyBytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pubkey := Decompress(pub)
+
+    pubkeyBytes, err := MarshalPublicKey(pubkey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    check := testPublicKey
+    got := encodePEM(pubkeyBytes, "PUBLIC KEY")
+
+    if strings.TrimSpace(got) != strings.TrimSpace(check) {
+        t.Errorf("Decompress error, got %s, want %s", got, check)
+    }
 }

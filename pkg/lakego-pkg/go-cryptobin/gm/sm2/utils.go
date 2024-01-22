@@ -14,7 +14,7 @@ import (
 func Decompress(a []byte) *PublicKey {
     curve := p256.P256()
 
-    x, y := p256.UnmarshalCompressed(curve.(p256.P256Curve), a)
+    x, y := p256.UnmarshalCompressed(curve, a)
 
     return &PublicKey{
         Curve: curve,

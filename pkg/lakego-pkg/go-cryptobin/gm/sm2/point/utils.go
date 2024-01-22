@@ -1,5 +1,9 @@
 package point
 
+import (
+    "math/big"
+)
+
 var precomputed = [9 * 2 * 15 * 2]uint32{
     0x830053d, 0x328990f, 0x6c04fe1, 0xc0f72e5, 0x1e19f3c, 0x666b093, 0x175a87b, 0xec38276, 0x222cf4b,
     0x185a1bba, 0x354e593, 0x1295fac1, 0xf2bc469, 0x47c60fa, 0xc19b8a9, 0xf63533e, 0x903ae6b, 0xc79acba,
@@ -81,4 +85,13 @@ func abs(a int8) uint32 {
 // getBit returns the bit'th bit of scalar.
 func getBit(scalar [32]uint8, bit uint) uint32 {
     return uint32(((scalar[bit >> 3]) >> (bit & 7)) & 1)
+}
+
+func zForAffine(x, y *big.Int) *big.Int {
+    z := new(big.Int)
+    if x.Sign() != 0 || y.Sign() != 0 {
+        z.SetInt64(1)
+    }
+
+    return z
 }
