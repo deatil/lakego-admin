@@ -8,7 +8,6 @@ import (
 )
 
 var feZero field.Element
-
 var A, B, P *big.Int
 
 func init() {

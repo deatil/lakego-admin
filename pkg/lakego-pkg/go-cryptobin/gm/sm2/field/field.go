@@ -556,10 +556,10 @@ func (this *Element) Dup(a *Element) *Element {
     return this
 }
 
-// copyConditional sets out=in if mask = 0xffffffff in constant time.
+// Select sets out=in if mask = 0xffffffff in constant time.
 //
 // On entry: mask is either 0 or 0xffffffff.
-func (this *Element) CopyConditional(in *Element, mask uint32) *Element {
+func (this *Element) Select(in *Element, mask uint32) *Element {
     for i := 0; i < 9; i++ {
         tmp := mask & (in.l[i] ^ this.l[i])
 

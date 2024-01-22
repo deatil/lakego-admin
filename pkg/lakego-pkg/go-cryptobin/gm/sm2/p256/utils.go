@@ -8,13 +8,6 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
-// 获取 sm2Curve
-// get sm2Curve struct
-func GetSM2Curve(curve elliptic.Curve) (c sm2Curve, ok bool) {
-    c, ok = curve.(sm2Curve)
-    return
-}
-
 func UnmarshalCompressed(curve elliptic.Curve, a []byte) (x, y *big.Int) {
     var aa, xx, xx3 field.Element
 

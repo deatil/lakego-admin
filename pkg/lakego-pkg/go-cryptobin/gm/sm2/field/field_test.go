@@ -200,13 +200,13 @@ func Test_CopyConditional(t *testing.T) {
 
     a.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
 
-    d.CopyConditional(&a, 3)
+    d.Select(&a, 3)
 
     check := "[1 0 0 3 0 0 0 2 1]"
     got := fmt.Sprintf("%x", d.l)
 
     if got != check {
-        t.Errorf("CopyConditional error, got %s, want %s", got, check)
+        t.Errorf("Select error, got %s, want %s", got, check)
     }
 }
 
