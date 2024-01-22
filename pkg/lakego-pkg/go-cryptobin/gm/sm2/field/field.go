@@ -11,13 +11,6 @@ const (
     bottom29Bits = 0x1FFFFFFF
 )
 
-var P, RInverse *big.Int
-
-func init() {
-    P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
-    RInverse, _ = new(big.Int).SetString("7ffffffd80000002fffffffe000000017ffffffe800000037ffffffc80000002", 16)
-}
-
 // p256Zero31 is 0 mod p.
 var zero31 = []uint32{
     0x7FFFFFF8, 0x3FFFFFFC, 0x800003FC, 0x3FFFDFFC,
@@ -25,7 +18,12 @@ var zero31 = []uint32{
     0x7FFFFFFC,
 }
 
-type LargeElement [17]uint64
+var P, RInverse *big.Int
+
+func init() {
+    P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
+    RInverse, _ = new(big.Int).SetString("7ffffffd80000002fffffffe000000017ffffffe800000037ffffffc80000002", 16)
+}
 
 type Element struct {
     l [9]uint32
@@ -154,7 +152,7 @@ func (this *Element) Sub(a, b *Element) *Element {
 
 // c = a * b
 func (this *Element) Mul(a, b *Element) *Element {
-    var tmp LargeElement
+    var tmp [17]uint64
 
     tmp[0] = uint64(a.l[0]) * uint64(b.l[0])
     tmp[1] = uint64(a.l[0])*(uint64(b.l[1])<<0) +
@@ -241,12 +239,12 @@ func (this *Element) Mul(a, b *Element) *Element {
         uint64(a.l[8])*(uint64(b.l[7])<<0)
     tmp[16] = uint64(a.l[8]) * (uint64(b.l[8]) << 0)
 
-    return this.reduceDegree(&tmp)
+    return this.reduceDegree(tmp)
 }
 
 // b = a * a
 func (this *Element) Square(a *Element) *Element {
-    var tmp LargeElement
+    var tmp [17]uint64
 
     tmp[0] = uint64(a.l[0]) * uint64(a.l[0])
     tmp[1] = uint64(a.l[0]) * (uint64(a.l[1]) << 1)
@@ -297,7 +295,7 @@ func (this *Element) Square(a *Element) *Element {
     tmp[15] = uint64(a.l[7]) * (uint64(a.l[8]) << 1)
     tmp[16] = uint64(a.l[8]) * uint64(a.l[8])
 
-    return this.reduceDegree(&tmp)
+    return this.reduceDegree(tmp)
 }
 
 var Factor = []Element{
@@ -344,7 +342,7 @@ func (this *Element) reduce(carry uint32) *Element {
     return this
 }
 
-func (this *Element) reduceDegree(b *LargeElement) *Element {
+func (this *Element) reduceDegree(b [17]uint64) *Element {
     var tmp [18]uint32
     var carry, x, xMask uint32
 

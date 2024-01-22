@@ -16,20 +16,22 @@ func UnmarshalCompressed(curve elliptic.Curve, a []byte) (x, y *big.Int) {
         return
     }
 
+    params := c.Params()
+
     x = new(big.Int).SetBytes(a[1:])
 
     xx.FromBig(x)
     xx3.Square(&xx)    // x3 = x ^ 2
     xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
-    aa.Mul(&c.a, &xx)  // a = a * x
+    aa.Mul(&A, &xx)  // a = a * x
     xx3.Add(&xx3, &aa)
-    xx3.Add(&xx3, &c.b)
+    xx3.Add(&xx3, &B)
 
     y2 := xx3.ToBig()
-    y = new(big.Int).ModSqrt(y2, c.P)
+    y = new(big.Int).ModSqrt(y2, params.P)
 
     if getLastBit(y) != uint(a[0]) {
-        y.Sub(c.P, y)
+        y.Sub(params.P, y)
     }
 
     return
@@ -70,4 +72,22 @@ func zeroPadding(text []byte, size int) []byte {
     }
 
     return text[n-size:]
+}
+
+func bigFromDecimal(s string) *big.Int {
+    b, ok := new(big.Int).SetString(s, 10)
+    if !ok {
+        panic("cryptobin/sm2: internal error: invalid encoding")
+    }
+
+    return b
+}
+
+func bigFromHex(s string) *big.Int {
+    b, ok := new(big.Int).SetString(s, 16)
+    if !ok {
+        panic("cryptobin/sm2: internal error: invalid encoding")
+    }
+
+    return b
 }

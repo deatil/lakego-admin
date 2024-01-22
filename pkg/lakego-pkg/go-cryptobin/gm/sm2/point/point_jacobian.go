@@ -6,6 +6,8 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
+type incomparable [0]func()
+
 type PointJacobian struct {
     x, y, z field.Element
 
@@ -13,8 +15,6 @@ type PointJacobian struct {
     // equivalent points can be represented by different Go values.
     _ incomparable
 }
-
-type incomparable [0]func()
 
 func (this *PointJacobian) Zero() *PointJacobian {
     this.x.Zero()
@@ -95,7 +95,8 @@ func (this *PointJacobian) Equal(v *PointJacobian) int {
 
 // z1 = a, z2 = b
 func (this *PointJacobian) AddMixed(a *PointJacobian, b *Point) *PointJacobian {
-    var z1z1, z1z1z1, s2, u2, h, i, j, r, rr, v, tmp field.Element
+    var z1z1, z1z1z1, s2, u2 field.Element
+    var h, i, j, r, rr, v, tmp field.Element
 
     z1z1.Square(&a.z)
     tmp.Add(&a.z, &a.z)
@@ -131,11 +132,11 @@ func (this *PointJacobian) AddMixed(a *PointJacobian, b *Point) *PointJacobian {
 // little-endian number. Note that the value of scalar must be less than the
 // order of the group.
 func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
-    nIsInfinityMask := ^uint32(0)
-
-    var pIsNoninfiniteMask, mask, tableOffset uint32
+    var nIsInfinityMask, pIsNoninfiniteMask, mask, tableOffset uint32
     var p Point
     var t PointJacobian
+
+    nIsInfinityMask = ^uint32(0)
 
     this.Zero()
 
@@ -195,13 +196,12 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
     var q2 Point
     var nIsInfinityMask, index, pIsNoninfiniteMask, mask uint32
 
-    var one PointJacobian
-    one.x = q.x
-    one.y = q.y
-    one.z = field.Factor[1]
-
     // We precompute 0,1,2,... times {x,y}.
-    precomp[1] = one
+    precomp[1] = PointJacobian{
+        x: q.x,
+        y: q.y,
+        z: field.Factor[1],
+    }
 
     for i := 2; i < 8; i += 2 {
         precomp[i].Double(&precomp[i/2])
@@ -220,7 +220,7 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
         }
 
         if zeroes > 0 {
-            for  ; zeroes > 0; zeroes-- {
+            for ; zeroes > 0; zeroes-- {
                 this.Double(this)
             }
         }
@@ -252,7 +252,7 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
     }
 
     if zeroes > 0 {
-        for  ; zeroes > 0; zeroes-- {
+        for ; zeroes > 0; zeroes-- {
             this.Double(this)
         }
     }
@@ -263,7 +263,8 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
 // (x3, y3, z3) = (x1, y1, z1) + (x2, y2, z2)
 // this = a + b
 func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
-    var u1, u2, z22, z12, z23, z13, s1, s2, h, h2, r, r2, tm field.Element
+    var u1, u2, z22, z12, z23, z13 field.Element
+    var s1, s2, h, h2, r, r2, tm field.Element
 
     if a.z.ToBig().Sign() == 0 {
         this.x.Dup(&b.x)
@@ -324,7 +325,8 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
 // (x3, y3, z3) = (x1, y1, z1)- (x2, y2, z2)
 // this = a + b
 func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
-    var u1, u2, z22, z12, z23, z13, s1, s2, h, h2, r, r2, tm field.Element
+    var u1, u2, z22, z12, z23, z13 field.Element
+    var s1, s2, h, h2, r, r2, tm field.Element
 
     y := b.y.ToBig()
     zero := new(big.Int).SetInt64(0)
@@ -408,8 +410,7 @@ func (this *PointJacobian) Double(v *PointJacobian) *PointJacobian {
     s.Mul(&v.x, &y2)
     s.Scalar(4) // s = 4 * x * y ^ 2
 
-    // a
-    a.FromBig(A)
+    a.Set(&A)
 
     m.Dup(&x2)
     m.Scalar(3)

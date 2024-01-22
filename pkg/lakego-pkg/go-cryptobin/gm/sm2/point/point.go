@@ -7,13 +7,20 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
-var feZero field.Element
-var A, B, P *big.Int
+var (
+    feZero field.Element
+
+    A, B field.Element
+    P *big.Int
+)
 
 func init() {
-    A, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
-    B, _ = new(big.Int).SetString("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93", 16)
+    a, _ := new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
+    b, _ := new(big.Int).SetString("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93", 16)
     P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
+
+    A.FromBig(a)
+    B.FromBig(b)
 }
 
 type Point struct {
@@ -24,6 +31,7 @@ func (this *Point) NewPoint(x, y *big.Int) (*Point, error) {
     if x.Sign() < 0 || y.Sign() < 0 {
         return nil, errors.New("negative coordinate")
     }
+
     if x.BitLen() > 256 || y.BitLen() > 256 {
         return nil, errors.New("overflowing coordinate")
     }
@@ -37,14 +45,13 @@ func (this *Point) NewPoint(x, y *big.Int) (*Point, error) {
 func IsOnCurve(p *Point) bool {
     var a, b, y2, x3 field.Element
 
-    x3.Square(&p.x)  // x3 = x ^ 2
-    x3.Mul(&x3, &p.x)     // x3 = x ^ 2 * x
+    x3.Square(&p.x)   // x3 = x ^ 2
+    x3.Mul(&x3, &p.x) // x3 = x ^ 2 * x
 
-    // a
-    a.FromBig(A)
-    a.Mul(&a, &p.x) // a = a * x
+    a.Set(&A)
+    a.Mul(&a, &p.x)   // a = a * x
 
-    b.FromBig(B)
+    b.Set(&B)
 
     x3.Add(&x3, &a)
     x3.Add(&x3, &b)
@@ -71,8 +78,7 @@ func (this *Point) Set(q *Point) *Point {
 // Select sets {out_x,out_y} to the index'th entry of table.
 // On entry: index < 16, table[0] must be zero.
 func (this *Point) Select(table []uint32, index uint32) *Point {
-    this.x.Zero()
-    this.y.Zero()
+    this.Zero()
 
     for i := uint32(1); i < 16; i++ {
         mask := i ^ index
@@ -94,8 +100,7 @@ func (this *Point) Select(table []uint32, index uint32) *Point {
 // FromJacobian reverses the Jacobian transform. If the point is ∞ it returns 0, 0.
 func (this *Point) FromJacobian(v *PointJacobian) *Point {
     if v.z.Equal(&feZero) == 1 {
-        this.x.Zero()
-        this.y.Zero()
+        this.Zero()
         return this
     }
 
