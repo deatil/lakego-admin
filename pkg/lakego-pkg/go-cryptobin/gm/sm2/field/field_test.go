@@ -6,6 +6,38 @@ import (
     "math/big"
 )
 
+func Test_Bytes(t *testing.T) {
+    var d Element
+
+    d.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01})
+
+    bs := d.Bytes()
+
+    check := "08"
+    got := fmt.Sprintf("%x", bs)
+
+    if got != check {
+        t.Errorf("Bytes error, got %s, want %s", got, check)
+    }
+}
+
+func Test_SetBytes(t *testing.T) {
+    var el Element
+    var d *big.Int
+
+    d, _ = new(big.Int).SetString("08", 16)
+
+    el.SetBytes(d.Bytes())
+
+    check2 := [9]uint32{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01}
+    check := fmt.Sprintf("%x", check2)
+    got := fmt.Sprintf("%x", el.l)
+
+    if got != check {
+        t.Errorf("SetBytes error, got %s, want %s", got, check)
+    }
+}
+
 func Test_ToBig(t *testing.T) {
     var d Element
 
@@ -59,7 +91,7 @@ func Test_ReduceDegree(t *testing.T) {
 
     d = LargeElement([17]uint64{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01, 0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x01})
 
-    d2.ReduceDegree(&d)
+    d2.reduceDegree(&d)
 
     check := "[18 0 ffff800 2000 0 0 10000000 0 0]"
     got := fmt.Sprintf("%x", d2.l)
@@ -72,7 +104,7 @@ func Test_ReduceDegree(t *testing.T) {
 func Test_Reduce(t *testing.T) {
     var d Element
 
-    d.Reduce(3)
+    d.reduce(3)
 
     check := "[6 0 1ffffd00 17ff 0 0 0 6000000 0]"
     got := fmt.Sprintf("%x", d.l)
@@ -175,5 +207,37 @@ func Test_CopyConditional(t *testing.T) {
 
     if got != check {
         t.Errorf("CopyConditional error, got %s, want %s", got, check)
+    }
+}
+
+func Test_Equal(t *testing.T) {
+    var a, b Element
+
+    a.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    b.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+
+    eq := a.Equal(&b)
+    if eq != 1 {
+        t.Errorf("Equal fail, got %d", eq)
+    }
+}
+
+func Test_IsZero(t *testing.T) {
+    var a Element
+
+    a.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+
+    res := a.IsZero()
+    if res == 1 {
+        t.Errorf("IsZero fail, got %d", res)
+    }
+}
+
+func Test_IsZero2(t *testing.T) {
+    var a Element
+
+    res := a.IsZero()
+    if res != 1 {
+        t.Errorf("IsZero2 fail, got %d", res)
     }
 }

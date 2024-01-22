@@ -10,13 +10,15 @@ import (
 
 func Test_Double(t *testing.T) {
     var x, y, z field.Element
-    var a, d Point
+    var a, d PointJacobian
 
     x.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
     z.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
 
-    a.NewPoint(x.ToBig(), y.ToBig(), z.ToBig())
+    a.x = x
+    a.y = y
+    a.z = z
 
     d.Double(&a)
 
@@ -31,7 +33,7 @@ func Test_Double(t *testing.T) {
 func Test_Sub(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
-    var a, b, d Point
+    var a, b, d PointJacobian
 
     x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
@@ -41,8 +43,13 @@ func Test_Sub(t *testing.T) {
     y2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x1, 0x25, 0x0, 0x0, 0x01})
     z2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x26, 0x0, 0x1, 0x01})
 
-    a.NewPoint(x1.ToBig(), y1.ToBig(), z1.ToBig())
-    b.NewPoint(x2.ToBig(), y2.ToBig(), z2.ToBig())
+    a.x = x1
+    a.y = y1
+    a.z = z1
+
+    b.x = x2
+    b.y = y2
+    b.z = z2
 
     d.Sub(&a, &b)
 
@@ -57,7 +64,7 @@ func Test_Sub(t *testing.T) {
 func Test_Add(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
-    var a, b, d Point
+    var a, b, d PointJacobian
 
     x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
@@ -67,8 +74,13 @@ func Test_Add(t *testing.T) {
     y2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x1, 0x25, 0x0, 0x0, 0x01})
     z2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x26, 0x0, 0x1, 0x01})
 
-    a.NewPoint(x1.ToBig(), y1.ToBig(), z1.ToBig())
-    b.NewPoint(x2.ToBig(), y2.ToBig(), z2.ToBig())
+    a.x = x1
+    a.y = y1
+    a.z = z1
+
+    b.x = x2
+    b.y = y2
+    b.z = z2
 
     d.Add(&a, &b)
 
@@ -82,16 +94,19 @@ func Test_Add(t *testing.T) {
 
 func Test_ToBig(t *testing.T) {
     var x1, y1, z1 field.Element
-    var a Point
+    var a PointJacobian
+    var aa Point
 
     x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
     z1.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
 
-    a.NewPoint(x1.ToBig(), y1.ToBig(), z1.ToBig())
+    a.x = x1
+    a.y = y1
+    a.z = z1
 
     x, y := new(big.Int), new(big.Int)
-    a.ToBig(x, y)
+    aa.FromJacobian(&a).ToBig(x, y)
 
     check := "48b773fa77f8e7d6a9054eeaee6589dd52da31505670892b1967759dae416baa-1f6df16f8e02de4874bcd0009b33c01e530ed7b5f10cf9af3c190a9d2f9891fe"
     got := fmt.Sprintf("%x-%x", x.Bytes(), y.Bytes())
@@ -107,7 +122,7 @@ func Test_SelectAffinePoint(t *testing.T) {
 
     table = precomputed[0:]
 
-    a.SelectAffinePoint(table, 3)
+    a.Select(table, 3)
 
     check := "[1341b3b8 ee84e23 1edfa5b4 14e6030 19e87be9 92f533c 1665d96c 226653e a238d3e]-[f5c62c 95bb7a 1f0e5a41 28789c3 1f251d23 8726609 e918910 8096848 f63d028]"
     got := fmt.Sprintf("%x-%x", a.x.GetUint32(), a.y.GetUint32())
@@ -117,19 +132,11 @@ func Test_SelectAffinePoint(t *testing.T) {
     }
 }
 
-func zForAffineTest(x, y *big.Int) *big.Int {
-    z := new(big.Int)
-    if x.Sign() != 0 || y.Sign() != 0 {
-        z.SetInt64(1)
-    }
-
-    return z
-}
-
 func Test_AddMixed(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2 field.Element
-    var a, b, d Point
+    var a, d PointJacobian
+    var b Point
 
     x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
@@ -138,8 +145,12 @@ func Test_AddMixed(t *testing.T) {
     x2.SetUint32([9]uint32{0x15, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y2.SetUint32([9]uint32{0x16, 0x1, 0x1F2FF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
 
-    a.NewPoint(x1.ToBig(), y1.ToBig(), z1.ToBig())
-    b.NewPoint(x2.ToBig(), y2.ToBig(), zForAffineTest(x2.ToBig(), y2.ToBig()))
+    a.x = x1
+    a.y = y1
+    a.z = z1
+
+    b.x = x2
+    b.y = y2
 
     d.AddMixed(&a, &b)
 
@@ -152,7 +163,7 @@ func Test_AddMixed(t *testing.T) {
 }
 
 func Test_ScalarBaseMult(t *testing.T) {
-    var d Point
+    var d PointJacobian
     var scalar [32]uint8
 
     scalar = [32]uint8{
@@ -162,7 +173,7 @@ func Test_ScalarBaseMult(t *testing.T) {
         11, 12, 13, 14, 15, 16, 17, 18,
     }
 
-    d.ScalarBaseMult(scalar)
+    d.ScalarBaseMult(scalar[:])
 
     check := "[1137b5be f409beb 36820290 25ae555 1521a9bf f8635fa b1abc0b 1463bd2f f8ddaa2]-[2046271 a6f14e0 359702ec fe8db14 1e943f2e a7b047 13c08ebb 12ea1751 19955282]-[6d27b9f f13529c 42e89b5 6736455 1ed4df5f b4d368b 167d68f8 88c31dc 1a84e9b7]"
     got := fmt.Sprintf("%x-%x-%x", d.x.GetUint32(), d.y.GetUint32(), d.z.GetUint32())
@@ -174,13 +185,14 @@ func Test_ScalarBaseMult(t *testing.T) {
 
 func Test_ScalarMult(t *testing.T) {
     var x1, y1 field.Element
-    var a, d Point
+    var d, ad PointJacobian
+    var a Point
     var scalar []int8
 
     x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
     y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
 
-    a.NewPoint(x1.ToBig(), y1.ToBig(), zForAffineTest(x1.ToBig(), y1.ToBig()))
+    a.NewPoint(x1.ToBig(), y1.ToBig())
 
     scalar = []int8{
         1, 2, 3, 4, 5, 6, 7, 8,
@@ -189,12 +201,41 @@ func Test_ScalarMult(t *testing.T) {
         11, 12, 13, 14, 15, 16, 17, 18,
     }
 
-    d.ScalarMult(&a, scalar)
+    ad.FromAffine(&a)
+
+    d.ScalarMult(&ad, scalar)
 
     check := "[1082ca9 75c2be4 3612ef4b 974d572 1f69cde2 56e0330 2d3e4db 9eb94ba 121101dc]-[15c50be7 4f2c1f 2e500549 331dcb6 1d0f40fd 2328ba5 412a79d f5037f4 35143d3]-[4865a35 866aaf0 a877dcf ae9f27d a348969 bc72e9e 181252ed 1c28f8d 328543d]"
     got := fmt.Sprintf("%x-%x-%x", d.x.GetUint32(), d.y.GetUint32(), d.z.GetUint32())
 
     if got != check {
         t.Errorf("ScalarMult error, got %s, want %s", got, check)
+    }
+}
+
+func Test_Equal(t *testing.T) {
+    var x1, y1, z1 field.Element
+    var x2, y2, z2 field.Element
+    var a, b PointJacobian
+
+    x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+    z1.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+
+    x2.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    y2.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+    z2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+
+    a.x = x1
+    a.y = y1
+    a.z = z1
+
+    b.x = x2
+    b.y = y2
+    b.z = z2
+
+    eq := a.Equal(&b)
+    if eq != 1 {
+        t.Errorf("Equal error, got %d", eq)
     }
 }

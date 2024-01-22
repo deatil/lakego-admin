@@ -83,7 +83,7 @@ func abs(a int8) uint32 {
 }
 
 // getBit returns the bit'th bit of scalar.
-func getBit(scalar [32]uint8, bit uint) uint32 {
+func getBit(scalar []byte, bit uint) uint32 {
     return uint32(((scalar[bit >> 3]) >> (bit & 7)) & 1)
 }
 

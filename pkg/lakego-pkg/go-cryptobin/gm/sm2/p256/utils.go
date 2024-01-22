@@ -26,9 +26,9 @@ func UnmarshalCompressed(curve elliptic.Curve, a []byte) (x, y *big.Int) {
     x = new(big.Int).SetBytes(a[1:])
 
     xx.FromBig(x)
-    xx3.Square(&xx)       // x3 = x ^ 2
-    xx3.Mul(&xx3, &xx)    // x3 = x ^ 2 * x
-    aa.Mul(&c.A, &xx) // a = a * x
+    xx3.Square(&xx)    // x3 = x ^ 2
+    xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
+    aa.Mul(&c.a, &xx)  // a = a * x
     xx3.Add(&xx3, &aa)
     xx3.Add(&xx3, &c.b)
 

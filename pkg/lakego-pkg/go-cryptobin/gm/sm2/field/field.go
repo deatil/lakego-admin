@@ -1,6 +1,8 @@
 package field
 
 import (
+    "errors"
+    "strconv"
     "math/big"
 )
 
@@ -17,7 +19,11 @@ func init() {
 }
 
 // p256Zero31 is 0 mod p.
-var zero31 = []uint32{0x7FFFFFF8, 0x3FFFFFFC, 0x800003FC, 0x3FFFDFFC, 0x7FFFFFFC, 0x3FFFFFFC, 0x7FFFFFFC, 0x37FFFFFC, 0x7FFFFFFC}
+var zero31 = []uint32{
+    0x7FFFFFF8, 0x3FFFFFFC, 0x800003FC, 0x3FFFDFFC,
+    0x7FFFFFFC, 0x3FFFFFFC, 0x7FFFFFFC, 0x37FFFFFC,
+    0x7FFFFFFC,
+}
 
 type LargeElement [17]uint64
 
@@ -29,19 +35,61 @@ func (this *Element) Zero() {
     this.l = [9]uint32{}
 }
 
+func (this *Element) SetBytes(x []byte) error {
+    if len(x) > 32 {
+        return errors.New("too long bytes: " + strconv.Itoa(len(x)))
+    }
+
+    this.FromBig(new(big.Int).SetBytes(x))
+
+    return nil
+}
+
+func (this *Element) Bytes() []byte {
+    return this.ToBig().Bytes()
+}
+
+// Equal returns 1 if v and u are equal, and 0 otherwise.
+func (this *Element) Equal(x *Element) int {
+    var c uint32
+
+    for i := 0; i < 9; i++ {
+        c |= this.l[i] ^ x.l[i]
+    }
+
+    c = (c & 0xFFFF) | (c >> 16)
+    c--
+
+    return int(c >> 31)
+}
+
+// Equal returns 1 if v equals zero, and 0 otherwise.
+func (this *Element) IsZero() int {
+    var c uint32
+
+    for i := 0; i < 9; i++ {
+        c |= this.l[i]
+    }
+
+    c = (c & 0xFFFF) | (c >> 16)
+    c--
+
+    return int(c >> 31)
+}
+
 // Set sets v = a, and returns v.
 func (this *Element) Set(x *Element) *Element {
     *this = *x
     return this
 }
 
-// Set sets v = a, and returns v.
+// Set field data
 func (this *Element) SetUint32(x [9]uint32) *Element {
     copy(this.l[:], x[:])
     return this
 }
 
-// Set sets v = a, and returns v.
+// Get field data
 func (this *Element) GetUint32() [9]uint32 {
     return this.l
 }
@@ -71,7 +119,7 @@ func (this *Element) Add(a, b *Element) *Element {
         this.l[i] &= bottom28Bits
     }
 
-    return this.Reduce(carry)
+    return this.reduce(carry)
 }
 
 // c = a - b
@@ -101,7 +149,7 @@ func (this *Element) Sub(a, b *Element) *Element {
         this.l[i] &= bottom28Bits
     }
 
-    return this.Reduce(carry)
+    return this.reduce(carry)
 }
 
 // c = a * b
@@ -193,7 +241,7 @@ func (this *Element) Mul(a, b *Element) *Element {
         uint64(a.l[8])*(uint64(b.l[7])<<0)
     tmp[16] = uint64(a.l[8]) * (uint64(b.l[8]) << 0)
 
-    return this.ReduceDegree(&tmp)
+    return this.reduceDegree(&tmp)
 }
 
 // b = a * a
@@ -249,7 +297,7 @@ func (this *Element) Square(a *Element) *Element {
     tmp[15] = uint64(a.l[7]) * (uint64(a.l[8]) << 1)
     tmp[16] = uint64(a.l[8]) * uint64(a.l[8])
 
-    return this.ReduceDegree(&tmp)
+    return this.reduceDegree(&tmp)
 }
 
 var Factor = []Element{
@@ -287,7 +335,7 @@ var reduceCarry = [8 * 9]uint32{
 }
 
 // carry < 2 ^ 3
-func (this *Element) Reduce(carry uint32) *Element {
+func (this *Element) reduce(carry uint32) *Element {
     this.l[0] += reduceCarry[carry * 9 + 0]
     this.l[2] += reduceCarry[carry * 9 + 2]
     this.l[3] += reduceCarry[carry * 9 + 3]
@@ -296,7 +344,7 @@ func (this *Element) Reduce(carry uint32) *Element {
     return this
 }
 
-func (this *Element) ReduceDegree(b *LargeElement) *Element {
+func (this *Element) reduceDegree(b *LargeElement) *Element {
     var tmp [18]uint32
     var carry, x, xMask uint32
 
@@ -499,7 +547,7 @@ func (this *Element) ReduceDegree(b *LargeElement) *Element {
     carry = this.l[8] >> 29
     this.l[8] &= bottom29Bits
 
-    return this.Reduce(carry)
+    return this.reduce(carry)
 }
 
 // b = a

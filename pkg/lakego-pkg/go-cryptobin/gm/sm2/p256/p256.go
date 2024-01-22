@@ -2,6 +2,7 @@ package p256
 
 import (
     "sync"
+    "errors"
     "math/big"
     "crypto/elliptic"
 
@@ -12,8 +13,10 @@ import (
 type sm2Curve struct {
     RInverse *big.Int
     *elliptic.CurveParams
-    A, b, gx, gy field.Element
+    a, b, gx, gy field.Element
 }
+
+var A *big.Int
 
 var initonce sync.Once
 var sm2P256 sm2Curve
@@ -23,7 +26,7 @@ func initP256() {
         Name: "SM2-P-256",
     }
 
-    A, _ := new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
+    A, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
 
     sm2P256.P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
     sm2P256.N, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123", 16)
@@ -33,7 +36,7 @@ func initP256() {
     sm2P256.RInverse, _ = new(big.Int).SetString("7ffffffd80000002fffffffe000000017ffffffe800000037ffffffc80000002", 16)
     sm2P256.BitSize = 256
 
-    sm2P256.A.FromBig(A)
+    sm2P256.a.FromBig(A)
     sm2P256.gx.FromBig(sm2P256.Gx)
     sm2P256.gy.FromBig(sm2P256.Gy)
     sm2P256.b.FromBig(sm2P256.B)
@@ -51,89 +54,121 @@ func (curve sm2Curve) Params() *elliptic.CurveParams {
 // y^2 = x^3 + ax + b
 func (curve sm2Curve) IsOnCurve(x, y *big.Int) bool {
     var a point.Point
-    a.NewPointWithXY(x, y)
+    a.NewPoint(x, y)
 
     return point.IsOnCurve(&a)
 }
 
 func (curve sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
-    var a, b, c point.Point
+    a, err := curve.pointFromAffine(x1, y1)
+    if err != nil {
+        panic("cryptobin/sm2Curve: Add was called on an invalid point")
+    }
 
-    a.NewPointWithXY(x1, y1)
-    b.NewPointWithXY(x2, y2)
+    b, err := curve.pointFromAffine(x2, y2)
+    if err != nil {
+        panic("cryptobin/sm2Curve: Add was called on an invalid point")
+    }
 
+    var c point.PointJacobian
     c.Add(&a, &b)
 
-    xx, yy = new(big.Int), new(big.Int)
-    return c.ToBig(xx, yy)
+    return curve.pointToAffine(c)
 }
 
 func (curve sm2Curve) Double(x1, y1 *big.Int) (xx, yy *big.Int) {
-    var a point.Point
+    a, err := curve.pointFromAffine(x1, y1)
+    if err != nil {
+        panic("cryptobin/sm2Curve: Double was called on an invalid point")
+    }
 
-    a.NewPointWithXY(x1, y1)
     a.Double(&a)
 
-    xx, yy = new(big.Int), new(big.Int)
-    return a.ToBig(xx, yy)
+    return curve.pointToAffine(a)
 }
 
 func (curve sm2Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
-    var a, b point.Point
+    b, err := curve.pointFromAffine(x1, y1)
+    if err != nil {
+        panic("cryptobin/sm2Curve: ScalarMult was called on an invalid point")
+    }
 
-    b.NewPointWithXY(x1, y1)
+    scalar := curve.genrateWNaf(k)
+    scalarReversed := curve.wnafReversed(scalar)
 
-    scalar := genrateWNaf(k)
-    scalarReversed := WNafReversed(scalar)
-
+    var a point.PointJacobian
     a.ScalarMult(&b, scalarReversed)
 
-    xx, yy = new(big.Int), new(big.Int)
-    return a.ToBig(xx, yy)
+    return curve.pointToAffine(a)
 }
 
 func (curve sm2Curve) ScalarBaseMult(k []byte) (xx, yy *big.Int) {
-    var scalarReversed [32]byte
-    var a point.Point
+    scalarReversed := curve.normalizeScalar(k)
 
-    scalarReversed = getScalar(k)
-
+    var a point.PointJacobian
     a.ScalarBaseMult(scalarReversed)
 
-    xx, yy = new(big.Int), new(big.Int)
-    return a.ToBig(xx, yy)
+    return curve.pointToAffine(a)
 }
 
-func getScalar(a []byte) [32]byte {
-    var scalarBytes []byte
-    var b [32]byte
+func (curve sm2Curve) pointFromAffine(x, y *big.Int) (p point.PointJacobian, err error) {
+    if x.Sign() == 0 && y.Sign() == 0 {
+        return point.PointJacobian{}, nil
+    }
 
-    n := new(big.Int).SetBytes(a)
+    if x.Sign() < 0 || y.Sign() < 0 {
+        return p, errors.New("negative coordinate")
+    }
+
+    params := curve.Params()
+    if params == nil {
+        return p, errors.New("params coordinate")
+    }
+
+    if x.BitLen() > params.BitSize || y.BitLen() > params.BitSize {
+        return p, errors.New("overflowing coordinate")
+    }
+
+    var a point.Point
+    var b point.PointJacobian
+
+    _, err = a.NewPoint(x, y)
+    if err != nil {
+        return
+    }
+
+    b.FromAffine(&a)
+
+    return b, nil
+}
+
+func (curve sm2Curve) pointToAffine(p point.PointJacobian) (x, y *big.Int) {
+    var a point.Point
+
+    x, y = new(big.Int), new(big.Int)
+    return a.FromJacobian(&p).ToBig(x, y)
+}
+
+func (curve sm2Curve) normalizeScalar(scalar []byte) []byte {
+    var b [32]byte
+    var scalarBytes []byte
+
+    n := new(big.Int).SetBytes(scalar)
     if n.Cmp(sm2P256.N) >= 0 {
         n.Mod(n, sm2P256.N)
         scalarBytes = n.Bytes()
     } else {
-        scalarBytes = a
+        scalarBytes = scalar
     }
 
     for i, v := range scalarBytes {
         b[len(scalarBytes) - (1+i)] = v
     }
 
-    return b
+    return b[:]
 }
 
-func WNafReversed(wnaf []int8) []int8 {
-    wnafRev := make([]int8, len(wnaf))
-
-    for i, v := range wnaf {
-        wnafRev[len(wnaf)-(1+i)] = v
-    }
-
-    return wnafRev
-}
-
-func genrateWNaf(b []byte) []int8 {
+func (curve sm2Curve) genrateWNaf(b []byte) []int8 {
     n:= new(big.Int).SetBytes(b)
 
     var k *big.Int
@@ -189,6 +224,16 @@ func genrateWNaf(b []byte) []int8 {
     }
 
     return wnaf
+}
+
+func (curve sm2Curve) wnafReversed(wnaf []int8) []int8 {
+    wnafRev := make([]int8, len(wnaf))
+
+    for i, v := range wnaf {
+        wnafRev[len(wnaf)-(1+i)] = v
+    }
+
+    return wnafRev
 }
 
 func boolToUint(b bool) uint {
