@@ -584,12 +584,17 @@ func ZA(pub *PublicKey, uid []byte) ([]byte, error) {
         za.Write(uid)
     }
 
-    curve := pub.Curve.Params()
+    curve, ok := pub.Curve.(p256.Curve)
+    if !ok {
+        return []byte{}, errors.New("SM2: curve unsupported")
+    }
 
-    za.Write(p256.A.Bytes())
-    za.Write(curve.B.Bytes())
-    za.Write(curve.Gx.Bytes())
-    za.Write(curve.Gy.Bytes())
+    params := curve.BinaryParams()
+
+    za.Write(params.A.Bytes())
+    za.Write(params.B.Bytes())
+    za.Write(params.Gx.Bytes())
+    za.Write(params.Gy.Bytes())
 
     xBuf := pub.X.Bytes()
     yBuf := pub.Y.Bytes()

@@ -3,29 +3,23 @@ package p256
 import (
     "bytes"
     "math/big"
-    "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
-func UnmarshalCompressed(curve elliptic.Curve, a []byte) (x, y *big.Int) {
+func UnmarshalCompressed(curve Curve, a []byte) (x, y *big.Int) {
     var aa, xx, xx3 field.Element
 
-    c, ok := curve.(sm2Curve)
-    if !ok {
-        return
-    }
-
-    params := c.Params()
+    params := curve.BinaryParams()
 
     x = new(big.Int).SetBytes(a[1:])
 
     xx.FromBig(x)
     xx3.Square(&xx)    // x3 = x ^ 2
     xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
-    aa.Mul(&A, &xx)  // a = a * x
+    aa.Mul(&params.A, &xx)  // a = a * x
     xx3.Add(&xx3, &aa)
-    xx3.Add(&xx3, &B)
+    xx3.Add(&xx3, &params.B)
 
     y2 := xx3.ToBig()
     y = new(big.Int).ModSqrt(y2, params.P)

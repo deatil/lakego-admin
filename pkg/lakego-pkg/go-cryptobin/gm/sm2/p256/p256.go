@@ -11,46 +11,83 @@ import (
 )
 
 var (
-    A, B field.Element
-
     initonce sync.Once
     sm2P256  sm2Curve
 )
 
-type sm2Curve struct {
-    params *elliptic.CurveParams
+type CurveParams struct {
+    Name    string
+    BitSize int
+    P       *big.Int
+    A, B    field.Element // params
+    Gx, Gy  *big.Int      // generator
+    N       *big.Int      // order
 }
 
+type Curve interface {
+    elliptic.Curve
+    BinaryParams() *CurveParams
+}
+
+type sm2Curve struct {
+    params *CurveParams
+}
+
+var _ elliptic.Curve = (*sm2Curve)(nil)
+
 func initP256() {
-    sm2P256.params = &elliptic.CurveParams{
+    sm2P256.params = &CurveParams{
         Name:    "SM2-P-256",
         BitSize: 256,
         P:  bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF"),
         N:  bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123"),
-        B:  bigFromHex("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93"),
         Gx: bigFromHex("32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7"),
         Gy: bigFromHex("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0"),
     }
 
-    A.FromBig(bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC"))
-    B.FromBig(sm2P256.params.B)
+    sm2P256.params.A.FromBig(bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC"))
+    sm2P256.params.B.FromBig(bigFromHex("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93"))
 }
 
-func P256() elliptic.Curve {
+func P256() Curve {
     initonce.Do(initP256)
     return sm2P256
 }
 
 func (curve sm2Curve) Params() *elliptic.CurveParams {
+    return &elliptic.CurveParams{
+        P:       curve.params.P,
+        N:       curve.params.N,
+        B:       curve.params.B.ToBig(),
+        Gx:      curve.params.Gx,
+        Gy:      curve.params.Gy,
+        BitSize: curve.params.BitSize,
+        Name:    curve.params.Name,
+    }
+}
+
+func (curve sm2Curve) BinaryParams() *CurveParams {
     return curve.params
 }
 
 // y^2 = x^3 + ax + b
 func (curve sm2Curve) IsOnCurve(x, y *big.Int) bool {
-    var a point.Point
-    a.NewPoint(x, y)
+    var a, x1, y1, y2, x3 field.Element
 
-    return point.IsOnCurve(&a)
+    x1.FromBig(x)
+    y1.FromBig(y)
+
+    x3.Square(&x1)   // x3 = x ^ 2
+    x3.Mul(&x3, &x1) // x3 = x ^ 2 * x
+
+    a.Mul(&curve.params.A, &x1)   // a = a * x
+
+    x3.Add(&x3, &a)
+    x3.Add(&x3, &curve.params.B)
+
+    y2.Square(&y1) // y2 = y ^ 2
+
+    return x3.ToBig().Cmp(y2.ToBig()) == 0
 }
 
 func (curve sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
@@ -70,8 +107,8 @@ func (curve sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
     return curve.pointToAffine(c)
 }
 
-func (curve sm2Curve) Double(x1, y1 *big.Int) (xx, yy *big.Int) {
-    a, err := curve.pointFromAffine(x1, y1)
+func (curve sm2Curve) Double(x, y *big.Int) (xx, yy *big.Int) {
+    a, err := curve.pointFromAffine(x, y)
     if err != nil {
         panic("cryptobin/sm2Curve: Double was called on an invalid point")
     }
@@ -81,8 +118,8 @@ func (curve sm2Curve) Double(x1, y1 *big.Int) (xx, yy *big.Int) {
     return curve.pointToAffine(a)
 }
 
-func (curve sm2Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
-    b, err := curve.pointFromAffine(x1, y1)
+func (curve sm2Curve) ScalarMult(x, y *big.Int, k []byte) (xx, yy *big.Int) {
+    a, err := curve.pointFromAffine(x, y)
     if err != nil {
         panic("cryptobin/sm2Curve: ScalarMult was called on an invalid point")
     }
@@ -90,10 +127,10 @@ func (curve sm2Curve) ScalarMult(x1, y1 *big.Int, k []byte) (xx, yy *big.Int) {
     scalar := curve.genrateWNaf(k)
     scalar = curve.wnafReversed(scalar)
 
-    var a point.PointJacobian
-    a.ScalarMult(&b, scalar)
+    var b point.PointJacobian
+    b.ScalarMult(&a, scalar)
 
-    return curve.pointToAffine(a)
+    return curve.pointToAffine(b)
 }
 
 func (curve sm2Curve) ScalarBaseMult(k []byte) (xx, yy *big.Int) {

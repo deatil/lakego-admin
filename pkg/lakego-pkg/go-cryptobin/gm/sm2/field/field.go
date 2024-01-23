@@ -21,7 +21,7 @@ var zero31 = []uint32{
 var P, RInverse *big.Int
 
 func init() {
-    P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
+    P, _        = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
     RInverse, _ = new(big.Int).SetString("7ffffffd80000002fffffffe000000017ffffffe800000037ffffffc80000002", 16)
 }
 
@@ -76,14 +76,14 @@ func (this *Element) IsZero() int {
 }
 
 // Set sets v = a, and returns v.
-func (this *Element) Set(x *Element) *Element {
-    *this = *x
+func (this *Element) Set(a *Element) *Element {
+    *this = *a
     return this
 }
 
 // Set field data
-func (this *Element) SetUint32(x [9]uint32) *Element {
-    copy(this.l[:], x[:])
+func (this *Element) SetUint32(a [9]uint32) *Element {
+    copy(this.l[:], a[:])
     return this
 }
 
@@ -548,37 +548,22 @@ func (this *Element) reduceDegree(b [17]uint64) *Element {
     return this.reduce(carry)
 }
 
-// b = a
-func (this *Element) Dup(a *Element) *Element {
-    *this = *a
+func (this *Element) Select(in *Element, mask uint32) *Element {
+    for i := 0; i < 9; i++ {
+        this.l[i] |= in.l[i] & mask
+    }
+
     return this
 }
 
-// Select sets out=in if mask = 0xffffffff in constant time.
+// Swap sets out=in if mask = 0xffffffff in constant time.
 //
 // On entry: mask is either 0 or 0xffffffff.
-func (this *Element) Select(in *Element, mask uint32) *Element {
+func (this *Element) Swap(in *Element, mask uint32) *Element {
     for i := 0; i < 9; i++ {
         tmp := mask & (in.l[i] ^ this.l[i])
 
         this.l[i] ^= tmp
-    }
-
-    return this
-}
-
-func (this *Element) SelectAffine(table []uint32, mask uint32) *Element {
-    for i := 0; i < 9; i++ {
-        this.l[i] |= table[0] & mask
-        table = table[1:]
-    }
-
-    return this
-}
-
-func (this *Element) SelectJacobian(in *Element, mask uint32) *Element {
-    for i := 0; i < 9; i++ {
-        this.l[i] |= in.l[i] & mask
     }
 
     return this

@@ -32,30 +32,10 @@ func (this *PointJacobian) Set(v *PointJacobian) *PointJacobian {
     return this
 }
 
-// Select sets {out_x,out_y,out_z} to the index'th entry of
-// table.
-// On entry: index < 16, table[0] must be zero.
-func (this *PointJacobian) Select(table []PointJacobian, index uint32) *PointJacobian {
-    this.Zero()
-
-    // The implicit value at index 0 is all zero. We don't need to perform that
-    // iteration of the loop because we already set out_* to zero.
-    for i := uint32(1); i < 16; i++ {
-        mask := i ^ index
-        mask |= mask >> 2
-        mask |= mask >> 1
-        mask &= 1
-        mask--
-
-        tt0 := table[i].x
-        this.x.SelectJacobian(&tt0, mask)
-
-        tt1 := table[i].y
-        this.y.SelectJacobian(&tt1, mask)
-
-        tt2 := table[i].z
-        this.z.SelectJacobian(&tt2, mask)
-    }
+func (this *PointJacobian) Select(a *PointJacobian, cond uint32) *PointJacobian {
+    this.x.Select(&a.x, cond)
+    this.y.Select(&a.y, cond)
+    this.z.Select(&a.z, cond)
 
     return this
 }
@@ -156,7 +136,7 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
 
             index := bit0 | (bit1 << 1) | (bit2 << 2) | (bit3 << 3)
 
-            p.Select(precomputed[tableOffset:], index)
+            pointSelectInto(precomputed[tableOffset:], &p, index)
 
             tableOffset += 30 * 9
 
@@ -168,9 +148,9 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
             // The result of pointAddMixed is incorrect if {xOut,yOut,zOut} is zero
             // (a.k.a.  the point at infinity). We handle that situation by
             // copying the point from the table.
-            this.x.Select(&p.x, nIsInfinityMask)
-            this.y.Select(&p.y, nIsInfinityMask)
-            this.z.Select(&field.Factor[1], nIsInfinityMask)
+            this.x.Swap(&p.x, nIsInfinityMask)
+            this.y.Swap(&p.y, nIsInfinityMask)
+            this.z.Swap(&field.Factor[1], nIsInfinityMask)
 
             // Equally, the result is also wrong if the point from the table is
             // zero, which happens when the index is zero. We handle that by
@@ -178,9 +158,9 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
             pIsNoninfiniteMask = nonZeroToAllOnes(index)
 
             mask = pIsNoninfiniteMask & ^nIsInfinityMask
-            this.x.Select(&t.x, mask)
-            this.y.Select(&t.y, mask)
-            this.z.Select(&t.z, mask)
+            this.x.Swap(&t.x, mask)
+            this.y.Swap(&t.y, mask)
+            this.z.Swap(&t.z, mask)
 
             // If p was not zero, then n is now non-zero.
             nIsInfinityMask &^= pIsNoninfiniteMask
@@ -191,22 +171,11 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
 }
 
 func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJacobian {
-    var precomp [16]PointJacobian
     var p, t PointJacobian
-    var q2 Point
     var nIsInfinityMask, index, pIsNoninfiniteMask, mask uint32
 
-    // We precompute 0,1,2,... times {x,y}.
-    precomp[1] = PointJacobian{
-        x: q.x,
-        y: q.y,
-        z: field.Factor[1],
-    }
-
-    for i := 2; i < 8; i += 2 {
-        precomp[i].Double(&precomp[i/2])
-        precomp[i+1].AddMixed(&precomp[i], q2.FromJacobian(q))
-    }
+    var precomp lookupTable
+    precomp.Init(q)
 
     this.Zero()
 
@@ -228,7 +197,7 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
         index = abs(scalar[i])
 
         this.Double(this)
-        p.Select(precomp[:], index)
+        precomp.SelectInto(&p, index)
 
         if scalar[i] > 0 {
             t.Add(this, &p)
@@ -236,17 +205,17 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
             t.Sub(this, &p)
         }
 
-        this.x.Select(&p.x, nIsInfinityMask)
-        this.y.Select(&p.y, nIsInfinityMask)
-        this.z.Select(&p.z, nIsInfinityMask)
+        this.x.Swap(&p.x, nIsInfinityMask)
+        this.y.Swap(&p.y, nIsInfinityMask)
+        this.z.Swap(&p.z, nIsInfinityMask)
 
         pIsNoninfiniteMask = nonZeroToAllOnes(index)
 
         mask = pIsNoninfiniteMask & ^nIsInfinityMask
 
-        this.x.Select(&t.x, mask)
-        this.y.Select(&t.y, mask)
-        this.z.Select(&t.z, mask)
+        this.x.Swap(&t.x, mask)
+        this.y.Swap(&t.y, mask)
+        this.z.Swap(&t.z, mask)
 
         nIsInfinityMask &^= pIsNoninfiniteMask
     }
@@ -267,16 +236,16 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     var s1, s2, h, h2, r, r2, tm field.Element
 
     if a.z.ToBig().Sign() == 0 {
-        this.x.Dup(&b.x)
-        this.y.Dup(&b.y)
-        this.z.Dup(&b.z)
+        this.x.Set(&b.x)
+        this.y.Set(&b.y)
+        this.z.Set(&b.z)
         return this
     }
 
     if b.z.ToBig().Sign() == 0 {
-        this.x.Dup(&a.x)
-        this.y.Dup(&a.y)
-        this.z.Dup(&a.z)
+        this.x.Set(&a.x)
+        this.y.Set(&a.y)
+        this.z.Set(&a.z)
         return this
     }
 
@@ -322,8 +291,8 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     return this
 }
 
-// (x3, y3, z3) = (x1, y1, z1)- (x2, y2, z2)
-// this = a + b
+// (x3, y3, z3) = (x1, y1, z1) - (x2, y2, z2)
+// this = a - b
 func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     var u1, u2, z22, z12, z23, z13 field.Element
     var s1, s2, h, h2, r, r2, tm field.Element
@@ -336,16 +305,16 @@ func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     b.y.FromBig(y)
 
     if a.z.ToBig().Sign() == 0 {
-        this.x.Dup(&b.x)
-        this.y.Dup(&b.y)
-        this.z.Dup(&b.z)
+        this.x.Set(&b.x)
+        this.y.Set(&b.y)
+        this.z.Set(&b.z)
         return this
     }
 
     if b.z.ToBig().Sign() == 0 {
-        this.x.Dup(&a.x)
-        this.y.Dup(&a.y)
-        this.z.Dup(&a.z)
+        this.x.Set(&a.x)
+        this.y.Set(&a.y)
+        this.z.Set(&a.z)
         return this
     }
 
@@ -410,9 +379,9 @@ func (this *PointJacobian) Double(v *PointJacobian) *PointJacobian {
     s.Mul(&v.x, &y2)
     s.Scalar(4) // s = 4 * x * y ^ 2
 
-    a.Set(&A)
+    a.FromBig(A)
 
-    m.Dup(&x2)
+    m.Set(&x2)
     m.Scalar(3)
     az4.Mul(&a, &z4)
     m.Add(&m, &az4) // m = 3 * x ^ 2 + a * z ^ 4

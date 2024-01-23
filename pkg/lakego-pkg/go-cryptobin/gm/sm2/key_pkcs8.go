@@ -55,6 +55,10 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var r pkcs8
     var algo pkix.AlgorithmIdentifier
 
+    if key.Curve != p256.P256() {
+        return nil, errors.New("sm2: unsupported SM2 curve")
+    }
+
     oidBytes, err := asn1.Marshal(oidPublicKeySM2)
     if err != nil {
         return nil, errors.New("sm2: failed to marshal algo param: " + err.Error())
@@ -110,8 +114,8 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var r pkixPublicKey
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve.Params() != p256.P256().Params() {
-        return nil, errors.New("sm2: unsupported elliptic curve")
+    if key.Curve != p256.P256() {
+        return nil, errors.New("sm2: unsupported SM2 curve")
     }
 
     oidBytes, err := asn1.Marshal(oidPublicKeySM2)

@@ -70,28 +70,28 @@ func Test_FromBig(t *testing.T) {
     }
 }
 
-func Test_Dup(t *testing.T) {
+func Test_Set(t *testing.T) {
     var d, d2 Element
 
     d.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01})
 
-    d2.Dup(&d)
+    d2.Set(&d)
 
     check := fmt.Sprintf("%x", d.l)
     got := fmt.Sprintf("%x", d2.l)
 
     if got != check {
-        t.Errorf("Dup error, got %s, want %s", got, check)
+        t.Errorf("Set error, got %s, want %s", got, check)
     }
 }
 
 func Test_ReduceDegree(t *testing.T) {
-    var d LargeElement
+    var d [17]uint64
     var d2 Element
 
-    d = LargeElement([17]uint64{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01, 0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x01})
+    d = [17]uint64{0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x0, 0x01, 0x10, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x01}
 
-    d2.reduceDegree(&d)
+    d2.reduceDegree(d)
 
     check := "[18 0 ffff800 2000 0 0 10000000 0 0]"
     got := fmt.Sprintf("%x", d2.l)
@@ -195,7 +195,7 @@ func Test_Scalar(t *testing.T) {
     }
 }
 
-func Test_CopyConditional(t *testing.T) {
+func Test_Select(t *testing.T) {
     var a, d Element
 
     a.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})

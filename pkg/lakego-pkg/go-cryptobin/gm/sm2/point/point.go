@@ -10,17 +10,12 @@ import (
 var (
     feZero field.Element
 
-    A, B field.Element
-    P *big.Int
+    A, P *big.Int
 )
 
 func init() {
-    a, _ := new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
-    b, _ := new(big.Int).SetString("28E9FA9E9D9F5E344D5A9E4BCF6509A7F39789F515AB8F92DDBCBD414D940E93", 16)
+    A, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
     P, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)
-
-    A.FromBig(a)
-    B.FromBig(b)
 }
 
 type Point struct {
@@ -42,25 +37,6 @@ func (this *Point) NewPoint(x, y *big.Int) (*Point, error) {
     return this, nil
 }
 
-func IsOnCurve(p *Point) bool {
-    var a, b, y2, x3 field.Element
-
-    x3.Square(&p.x)   // x3 = x ^ 2
-    x3.Mul(&x3, &p.x) // x3 = x ^ 2 * x
-
-    a.Set(&A)
-    a.Mul(&a, &p.x)   // a = a * x
-
-    b.Set(&B)
-
-    x3.Add(&x3, &a)
-    x3.Add(&x3, &b)
-
-    y2.Square(&p.y) // y2 = y ^ 2
-
-    return x3.ToBig().Cmp(y2.ToBig()) == 0
-}
-
 func (this *Point) Zero() *Point {
     this.x.Zero()
     this.y.Zero()
@@ -75,24 +51,11 @@ func (this *Point) Set(q *Point) *Point {
     return this
 }
 
-// Select sets {out_x,out_y} to the index'th entry of table.
-// On entry: index < 16, table[0] must be zero.
-func (this *Point) Select(table []uint32, index uint32) *Point {
-    this.Zero()
-
-    for i := uint32(1); i < 16; i++ {
-        mask := i ^ index
-        mask |= mask >> 2
-        mask |= mask >> 1
-        mask &= 1
-        mask--
-
-        this.x.SelectAffine(table, mask)
-        table = table[9:]
-
-        this.y.SelectAffine(table, mask)
-        table = table[9:]
-    }
+// Select sets {out_x,out_y} to the cond'th entry of table.
+// On entry: cond < 16, table[0] must be zero.
+func (this *Point) Select(a *Point, cond uint32) *Point {
+    this.x.Select(&a.x, cond)
+    this.y.Select(&a.y, cond)
 
     return this
 }

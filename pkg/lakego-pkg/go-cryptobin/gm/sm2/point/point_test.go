@@ -116,22 +116,6 @@ func Test_ToBig(t *testing.T) {
     }
 }
 
-func Test_SelectAffinePoint(t *testing.T) {
-    var a Point
-    var table []uint32
-
-    table = precomputed[0:]
-
-    a.Select(table, 3)
-
-    check := "[1341b3b8 ee84e23 1edfa5b4 14e6030 19e87be9 92f533c 1665d96c 226653e a238d3e]-[f5c62c 95bb7a 1f0e5a41 28789c3 1f251d23 8726609 e918910 8096848 f63d028]"
-    got := fmt.Sprintf("%x-%x", a.x.GetUint32(), a.y.GetUint32())
-
-    if got != check {
-        t.Errorf("SelectAffinePoint error, got %s, want %s", got, check)
-    }
-}
-
 func Test_AddMixed(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2 field.Element
@@ -196,16 +180,16 @@ func Test_ScalarMult(t *testing.T) {
 
     scalar = []int8{
         1, 2, 3, 4, 5, 6, 7, 8,
-        21, 22, 23, 24, 25, 26, 27, 28,
-        31, 32, 33, 34, 35, 36, 37, 38,
-        11, 12, 13, 14, 15, 16, 17, 18,
+        3, 4, 5, 6, 11, 12, 13, 14,
+        1, 2, 3, 4, 5, 6, 7, 8,
+        11, 12, 13, 14, 15, 6, 7, 8,
     }
 
     ad.FromAffine(&a)
 
     d.ScalarMult(&ad, scalar)
 
-    check := "[1082ca9 75c2be4 3612ef4b 974d572 1f69cde2 56e0330 2d3e4db 9eb94ba 121101dc]-[15c50be7 4f2c1f 2e500549 331dcb6 1d0f40fd 2328ba5 412a79d f5037f4 35143d3]-[4865a35 866aaf0 a877dcf ae9f27d a348969 bc72e9e 181252ed 1c28f8d 328543d]"
+    check := "[1a3bf5b1 a7a1528 3fa9c542 8194ca8 704e170 1a0079 13d21c17 993c39d b4f6764]-[938f35c 7694ed4 2d66fd8e 4288eb7 12e95827 1d4eb75 dd72691 efbf7d7 842f7ec]-[18433d64 2de04a3 3e162a33 b18e77e 154f8bc1 df835b8 aa8b90b 1196e445 1792de56]"
     got := fmt.Sprintf("%x-%x-%x", d.x.GetUint32(), d.y.GetUint32(), d.z.GetUint32())
 
     if got != check {
