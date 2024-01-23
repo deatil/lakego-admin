@@ -70,7 +70,7 @@ func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, string, error) {
         return nil, "", err
     }
 
-    curve := sm2.P256Sm2()
+    curve := sm2.P256()
 
     X, Y := elliptic.Unmarshal(curve, key.Pub)
     if X == nil || Y == nil {

@@ -92,7 +92,7 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
     switch k := pv.(type) {
         case *ecdsa.PrivateKey:
             switch k.Curve {
-                case sm2.P256Sm2():
+                case sm2.P256():
                     sm2pub := &sm2.PublicKey{
                         Curve: k.Curve,
                         X:     k.X,

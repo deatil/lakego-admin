@@ -256,7 +256,7 @@ func (this SM2) FromPublicKeyXYString(xString, yString string) SM2 {
     y, _ := new(big.Int).SetString(yString[:], 16)
 
     this.publicKey = &sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
+        Curve: sm2.P256(),
         X:     x,
         Y:     y,
     }
@@ -270,7 +270,7 @@ func (this SM2) FromPublicKeyXYBytes(XBytes, YBytes []byte) SM2 {
     y := new(big.Int).SetBytes(YBytes)
 
     this.publicKey = &sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
+        Curve: sm2.P256(),
         X:     x,
         Y:     y,
     }
@@ -291,7 +291,7 @@ func (this SM2) FromPublicKeyUncompressString(keyString string) SM2 {
     y, _ := new(big.Int).SetString(keyString[64:], 16)
 
     this.publicKey = &sm2.PublicKey{
-        Curve: sm2.P256Sm2(),
+        Curve: sm2.P256(),
         X:     x,
         Y:     y,
     }
@@ -328,7 +328,7 @@ func (this SM2) FromPublicKeyString(key string) SM2 {
 // 私钥明文
 // private-key: 07e4********;
 func (this SM2) FromPrivateKeyString(keyString string) SM2 {
-    c := sm2.P256Sm2()
+    c := sm2.P256()
     k, _ := new(big.Int).SetString(keyString[:], 16)
 
     priv := new(sm2.PrivateKey)
@@ -352,7 +352,7 @@ func (this SM2) FromPublicKeyBytes(pubBytes []byte) SM2 {
 
 // 私钥明文, hex 或者 base64 解码后
 func (this SM2) FromPrivateKeyBytes(priBytes []byte) SM2 {
-    c := sm2.P256Sm2()
+    c := sm2.P256()
     k := new(big.Int).SetBytes(priBytes)
 
     priv := new(sm2.PrivateKey)

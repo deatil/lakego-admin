@@ -5,8 +5,6 @@ import (
     "encoding/asn1"
     "crypto/elliptic"
     "crypto/x509/pkix"
-
-    "github.com/deatil/go-cryptobin/gm/sm2/p256"
 )
 
 var (
@@ -55,7 +53,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var r pkcs8
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve != p256.P256() {
+    if key.Curve != P256() {
         return nil, errors.New("sm2: unsupported SM2 curve")
     }
 
@@ -97,7 +95,7 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
         return nil, errors.New("sm2: not sm2 elliptic curve")
     }
 
-    curve := p256.P256()
+    curve := P256()
 
     x, y := elliptic.Unmarshal(curve, pubkey.BitString.Bytes)
 
@@ -114,7 +112,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var r pkixPublicKey
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve != p256.P256() {
+    if key.Curve != P256() {
         return nil, errors.New("sm2: unsupported SM2 curve")
     }
 

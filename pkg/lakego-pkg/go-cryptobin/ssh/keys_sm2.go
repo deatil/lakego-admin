@@ -62,7 +62,7 @@ func parseSM2(in []byte) (out ssh.PublicKey, rest []byte, err error) {
         return nil, nil, err
     }
 
-    curve := sm2.P256Sm2()
+    curve := sm2.P256()
 
     X, Y := elliptic.Unmarshal(curve, w.Pub)
     if X == nil || Y == nil {

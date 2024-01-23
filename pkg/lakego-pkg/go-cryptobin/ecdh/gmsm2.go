@@ -28,7 +28,7 @@ func (c *gmsm2Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
         return nil, err
     }
 
-    size := (sm2.P256Sm2().Params().N.BitLen() + 7) / 8
+    size := (sm2.P256().Params().N.BitLen() + 7) / 8
     if key.D.BitLen() > size*8 {
         return nil, errors.New("crypto/ecdh: invalid private key")
     }
@@ -56,7 +56,7 @@ func (c *gmsm2Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
         panic("crypto/ecdh: converting the wrong key type")
     }
 
-    curve := sm2.P256Sm2()
+    curve := sm2.P256()
 
     x, y := curve.ScalarBaseMult(key.Bytes())
 
@@ -85,7 +85,7 @@ func (c *gmsm2Curve) NewPublicKey(key []byte) (*PublicKey, error) {
 }
 
 func (c *gmsm2Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) {
-    curve := sm2.P256Sm2()
+    curve := sm2.P256()
 
     // 公钥
     xx, yy := elliptic.Unmarshal(curve, remote.Bytes())
@@ -112,7 +112,7 @@ func isZero(a []byte) bool {
 
 // 公钥导入为 ECDH 公钥
 func SM2PublicKeyToECDH(pub *sm2.PublicKey) (*PublicKey, error) {
-    publicKey := elliptic.Marshal(sm2.P256Sm2(), pub.X, pub.Y)
+    publicKey := elliptic.Marshal(sm2.P256(), pub.X, pub.Y)
     if len(publicKey) == 1 {
         return nil, errors.New("crypto/ecdh: sm2 PublicKey error")
     }
@@ -122,7 +122,7 @@ func SM2PublicKeyToECDH(pub *sm2.PublicKey) (*PublicKey, error) {
 
 // 私钥导入为 ECDH 私钥
 func SM2PrivateKeyToECDH(pri *sm2.PrivateKey) (*PrivateKey, error) {
-    size := (sm2.P256Sm2().Params().N.BitLen() + 7) / 8
+    size := (sm2.P256().Params().N.BitLen() + 7) / 8
     if pri.D.BitLen() > size*8 {
         return nil, errors.New("crypto/ecdh: invalid private key")
     }

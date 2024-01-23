@@ -70,7 +70,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
             ret, _ := asn1.Marshal(pkix)
             return ret, nil
         case GmSM2():
-            c := sm2.P256Sm2()
+            c := sm2.P256()
 
             pubblic := new(sm2.PublicKey)
             pubblic.Curve = c
@@ -178,7 +178,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
                 return nil, fmt.Errorf("ecdh: failed to marshal private key: %v", err)
             }
         case GmSM2():
-            c := sm2.P256Sm2()
+            c := sm2.P256()
 
             k := new(big.Int).SetBytes(key.Bytes())
 

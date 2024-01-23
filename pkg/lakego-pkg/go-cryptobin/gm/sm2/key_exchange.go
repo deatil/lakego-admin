@@ -6,7 +6,6 @@ import (
     "math/big"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
-    "github.com/deatil/go-cryptobin/gm/sm2/p256"
 )
 
 // KeyExchangeB 协商第二部，用户B调用， 返回共享密钥k
@@ -29,7 +28,7 @@ func KeyExchangeA(klen int, ida, idb []byte, priA *PrivateKey, pubB *PublicKey, 
 // thisIsA: 如果是A调用，文档中的协商第三步，设置为true，否则设置为false
 // 返回 k 为klen长度的字节串
 func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpri *PrivateKey, rpub *PublicKey, thisISA bool) (k, s1, s2 []byte, err error) {
-    curve := p256.P256()
+    curve := P256()
     N := curve.Params().N
 
     x2hat := keXHat(rpri.PublicKey.X)

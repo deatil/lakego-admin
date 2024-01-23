@@ -12,11 +12,11 @@ import (
     "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
-    "github.com/deatil/go-cryptobin/gm/sm2/p256"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve"
 )
 
 // sm2 p256
-var P256Sm2 = p256.P256
+var P256 = curve.P256
 
 var defaultUid = []byte{
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
@@ -188,7 +188,7 @@ var one = new(big.Int).SetInt64(1)
 var two = new(big.Int).SetInt64(2)
 
 func GenerateKey(random io.Reader) (*PrivateKey, error) {
-    c := p256.P256()
+    c := P256()
 
     if random == nil {
         random = rand.Reader //If there is no external trusted random source,please use rand.Reader to instead of it.
@@ -221,7 +221,7 @@ func GenerateKey(random io.Reader) (*PrivateKey, error) {
 func NewPrivateKey(d []byte) (*PrivateKey, error) {
     k:= new(big.Int).SetBytes(d)
 
-    c := p256.P256()
+    c := P256()
     params := c.Params()
 
     n := new(big.Int).Sub(params.N, one)
@@ -253,7 +253,7 @@ func NewPublicKey(q []byte) (*PublicKey, error) {
     }
 
     pub := new(PublicKey)
-    pub.Curve = p256.P256()
+    pub.Curve = P256()
     pub.X = new(big.Int).SetBytes(q[:32])
     pub.Y = new(big.Int).SetBytes(q[32:])
 
@@ -584,14 +584,11 @@ func ZA(pub *PublicKey, uid []byte) ([]byte, error) {
         za.Write(uid)
     }
 
-    curve, ok := pub.Curve.(p256.Curve)
-    if !ok {
-        return []byte{}, errors.New("SM2: curve unsupported")
-    }
+    params := pub.Curve.Params()
 
-    params := curve.BinaryParams()
+    a := new(big.Int).Sub(params.P, big.NewInt(3))
 
-    za.Write(params.A.Bytes())
+    za.Write(a.Bytes())
     za.Write(params.B.Bytes())
     za.Write(params.Gx.Bytes())
     za.Write(params.Gy.Bytes())

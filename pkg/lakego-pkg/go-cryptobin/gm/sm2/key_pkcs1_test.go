@@ -48,7 +48,7 @@ func TestSM2ECDH(t *testing.T) {
 
 // ECDH 生成密钥
 func makeKey(pri *PrivateKey, pub *PublicKey) []byte {
-    curve := P256Sm2()
+    curve := P256()
 
     x, _ := curve.ScalarMult(pub.X, pub.Y, pri.D.Bytes())
     preMasterSecret := make([]byte, (curve.Params().BitSize+7)>>3)

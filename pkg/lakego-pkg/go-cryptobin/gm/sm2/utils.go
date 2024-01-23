@@ -8,23 +8,23 @@ import (
     "encoding/binary"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
-    "github.com/deatil/go-cryptobin/gm/sm2/p256"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve"
 )
 
 func Decompress(a []byte) *PublicKey {
-    curve := p256.P256()
+    c := P256()
 
-    x, y := p256.UnmarshalCompressed(curve, a)
+    x, y := curve.UnmarshalCompressed(c, a)
 
     return &PublicKey{
-        Curve: curve,
+        Curve: c,
         X:     x,
         Y:     y,
     }
 }
 
 func Compress(a *PublicKey) []byte {
-    return p256.MarshalCompressed(a.X, a.Y)
+    return curve.MarshalCompressed(a.X, a.Y)
 }
 
 func SignDigitToSignData(r, s *big.Int) ([]byte, error) {

@@ -1,30 +1,36 @@
-package p256
+package curve
 
 import (
     "bytes"
     "math/big"
+    "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
-func UnmarshalCompressed(curve Curve, a []byte) (x, y *big.Int) {
-    var aa, xx, xx3 field.Element
+func UnmarshalCompressed(curve elliptic.Curve, d []byte) (x, y *big.Int) {
+    var a, b, aa, xx, xx3 field.Element
 
-    params := curve.BinaryParams()
+    params := curve.Params()
 
-    x = new(big.Int).SetBytes(a[1:])
+    a1 := new(big.Int).Sub(params.P, big.NewInt(3))
+
+    a.FromBig(a1)
+    b.FromBig(params.B)
+
+    x = new(big.Int).SetBytes(d[1:])
 
     xx.FromBig(x)
     xx3.Square(&xx)    // x3 = x ^ 2
     xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
-    aa.Mul(&params.A, &xx)  // a = a * x
+    aa.Mul(&a, &xx)    // a = a * x
     xx3.Add(&xx3, &aa)
-    xx3.Add(&xx3, &params.B)
+    xx3.Add(&xx3, &b)
 
     y2 := xx3.ToBig()
     y = new(big.Int).ModSqrt(y2, params.P)
 
-    if getLastBit(y) != uint(a[0]) {
+    if getLastBit(y) != uint(d[0]) {
         y.Sub(params.P, y)
     }
 

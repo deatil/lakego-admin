@@ -53,7 +53,7 @@ func (this KeySignWithSM2) Verify(pkey crypto.PublicKey, signed []byte, signatur
             pub = k
         case *ecdsa.PublicKey:
             switch k.Curve {
-                case sm2.P256Sm2():
+                case sm2.P256():
                     pub = &sm2.PublicKey{
                         Curve: k.Curve,
                         X:     k.X,
