@@ -223,3 +223,43 @@ func Test_Equal(t *testing.T) {
         t.Errorf("Equal error, got %d", eq)
     }
 }
+
+func Test_NotEqual(t *testing.T) {
+    var x1, y1, z1 field.Element
+    var x2, y2, z2 field.Element
+    var a, b PointJacobian
+
+    x1.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    y1.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+    z1.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+
+    x2.SetUint32([9]uint32{0x11, 0x1, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    y2.SetUint32([9]uint32{0x10, 0x0, 0x1FFFF301, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+    z2.SetUint32([9]uint32{0x10, 0x2, 0x1FFFF801, 0x3FFF, 0x0, 0x25, 0x0, 0x0, 0x01})
+
+    a.x = x1
+    a.y = y1
+    a.z = z1
+
+    b.x = x2
+    b.y = y2
+    b.z = z2
+
+    eq := a.Equal(&b)
+    if eq == 1 {
+        t.Errorf("NotEqual error, got %d", eq)
+    }
+}
+
+func Test_NewGenerator(t *testing.T) {
+    var a Point
+
+    a.NewGenerator()
+
+    check := "32c4ae2c1f1981195f9904466a39c9948fe30bbff2660be1715a4589334c74c7-bc3736a2f4f6779c59bdcee36b692153d0a9877cc62a474002df32e52139f0a0"
+    got := fmt.Sprintf("%x-%x", a.x.Bytes(), a.y.Bytes())
+
+    if got != check {
+        t.Errorf("NewGenerator error, got %s, want %s", got, check)
+    }
+}

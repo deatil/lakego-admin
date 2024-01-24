@@ -74,15 +74,6 @@ func zeroPadding(text []byte, size int) []byte {
     return text[n-size:]
 }
 
-func bigFromDecimal(s string) *big.Int {
-    b, ok := new(big.Int).SetString(s, 10)
-    if !ok {
-        panic("cryptobin/sm2: internal error: invalid encoding")
-    }
-
-    return b
-}
-
 func bigFromHex(s string) *big.Int {
     b, ok := new(big.Int).SetString(s, 16)
     if !ok {

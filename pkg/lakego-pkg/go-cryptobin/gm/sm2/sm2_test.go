@@ -321,7 +321,7 @@ func Test_NewPrivateKey(t *testing.T) {
     }
 
     if !priv2.Equal(priv) {
-        t.Error("NewPrivateKey error")
+        t.Error("NewPrivateKey Equal error")
     }
 
     // ======
@@ -335,7 +335,7 @@ func Test_NewPrivateKey(t *testing.T) {
     }
 
     if !pub2.Equal(pub) {
-        t.Error("NewPublicKey error")
+        t.Error("NewPublicKey Equal error")
     }
 }
 

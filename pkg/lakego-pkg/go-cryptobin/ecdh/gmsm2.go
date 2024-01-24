@@ -28,7 +28,7 @@ func (c *gmsm2Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
         return nil, err
     }
 
-    size := (sm2.P256().Params().N.BitLen() + 7) / 8
+    size := (key.Curve.Params().N.BitLen() + 7) / 8
     if key.D.BitLen() > size*8 {
         return nil, errors.New("crypto/ecdh: invalid private key")
     }
@@ -122,7 +122,7 @@ func SM2PublicKeyToECDH(pub *sm2.PublicKey) (*PublicKey, error) {
 
 // 私钥导入为 ECDH 私钥
 func SM2PrivateKeyToECDH(pri *sm2.PrivateKey) (*PrivateKey, error) {
-    size := (sm2.P256().Params().N.BitLen() + 7) / 8
+    size := (pri.Curve.Params().N.BitLen() + 7) / 8
     if pri.D.BitLen() > size*8 {
         return nil, errors.New("crypto/ecdh: invalid private key")
     }

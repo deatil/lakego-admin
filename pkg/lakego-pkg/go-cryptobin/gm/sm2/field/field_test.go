@@ -222,6 +222,19 @@ func Test_Equal(t *testing.T) {
     }
 }
 
+func Test_Equal2(t *testing.T) {
+    var a, b Element
+
+    a.SetUint32([9]uint32{0x11, 0x0, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+    b.SetUint32([9]uint32{0x11, 0x1, 0x1FFFF800, 0x3FFF, 0x0, 0x0, 0x0, 0x12, 0x01})
+
+    // not equal
+    eq := a.Equal(&b)
+    if eq != 0 {
+        t.Errorf("Equal2 fail, got %d", eq)
+    }
+}
+
 func Test_IsZero(t *testing.T) {
     var a Element
 
@@ -235,6 +248,8 @@ func Test_IsZero(t *testing.T) {
 
 func Test_IsZero2(t *testing.T) {
     var a Element
+
+    a.SetUint32([9]uint32{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0})
 
     res := a.IsZero()
     if res != 1 {

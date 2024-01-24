@@ -1,8 +1,6 @@
 package point
 
 import (
-    "math/big"
-
     "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
@@ -67,10 +65,10 @@ func (this *PointJacobian) Equal(v *PointJacobian) int {
     y1.Mul(&this.y, &zzz2)
     y2.Mul(&v.y, &zzz1)
 
-    zero1 := this.z.IsZero()
-    zero2 := v.z.IsZero()
+    zero1 := this.z.IsBigZero()
+    zero2 := v.z.IsBigZero()
 
-    return (x1.Equal(&x2) & y1.Equal(&y2) & ^zero1 & ^zero2) | (zero1 & zero2)
+    return (x1.BigEqual(&x2) & y1.BigEqual(&y2) & ^zero1 & ^zero2) | (zero1 & zero2)
 }
 
 // z1 = a, z2 = b
@@ -235,14 +233,14 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     var u1, u2, z22, z12, z23, z13 field.Element
     var s1, s2, h, h2, r, r2, tm field.Element
 
-    if a.z.ToBig().Sign() == 0 {
+    if a.z.IsBigZero() == 1 {
         this.x.Set(&b.x)
         this.y.Set(&b.y)
         this.z.Set(&b.z)
         return this
     }
 
-    if b.z.ToBig().Sign() == 0 {
+    if b.z.IsBigZero() == 1 {
         this.x.Set(&a.x)
         this.y.Set(&a.y)
         this.z.Set(&a.z)
@@ -261,8 +259,7 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     s1.Mul(&a.y, &z23) // s1 = y1 * z2 ^ 3
     s2.Mul(&b.y, &z13) // s2 = y2 * z1 ^ 3
 
-    if u1.ToBig().Cmp(u2.ToBig()) == 0 &&
-        s1.ToBig().Cmp(s2.ToBig()) == 0 {
+    if u1.BigEqual(&u2) == 1 && s1.BigEqual(&s2) == 1 {
         a.Double(a)
     }
 
@@ -297,21 +294,17 @@ func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     var u1, u2, z22, z12, z23, z13 field.Element
     var s1, s2, h, h2, r, r2, tm field.Element
 
-    y := b.y.ToBig()
-    zero := new(big.Int).SetInt64(0)
+    zero := new(field.Element).Zero()
+    b.y.Sub(zero, &b.y)
 
-    y.Sub(zero, y)
-
-    b.y.FromBig(y)
-
-    if a.z.ToBig().Sign() == 0 {
+    if a.z.IsBigZero() == 1 {
         this.x.Set(&b.x)
         this.y.Set(&b.y)
         this.z.Set(&b.z)
         return this
     }
 
-    if b.z.ToBig().Sign() == 0 {
+    if b.z.IsBigZero() == 1 {
         this.x.Set(&a.x)
         this.y.Set(&a.y)
         this.z.Set(&a.z)
@@ -330,8 +323,7 @@ func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     s1.Mul(&a.y, &z23) // s1 = y1 * z2 ^ 3
     s2.Mul(&b.y, &z13) // s2 = y2 * z1 ^ 3
 
-    if u1.ToBig().Cmp(u2.ToBig()) == 0 &&
-        s1.ToBig().Cmp(s2.ToBig()) == 0 {
+    if u1.BigEqual(&u2) == 1 && s1.BigEqual(&s2) == 1 {
         a.Double(a)
     }
 

@@ -139,7 +139,7 @@ func (v *Element) Equal(x *Element) int {
     return int(c >> 63)
 }
 
-// Equal returns 1 if v equals zero, and 0 otherwise.
+// IsZero returns 1 if v equals zero, and 0 otherwise.
 func (v *Element) IsZero() int {
     var c uint64
     c |= v.l0

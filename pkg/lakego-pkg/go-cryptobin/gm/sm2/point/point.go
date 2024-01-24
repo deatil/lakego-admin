@@ -37,6 +37,21 @@ func (this *Point) NewPoint(x, y *big.Int) (*Point, error) {
     return this, nil
 }
 
+var generator Point
+
+func init() {
+    x, _ := new(big.Int).SetString("32C4AE2C1F1981195F9904466A39C9948FE30BBFF2660BE1715A4589334C74C7", 16)
+    y, _ := new(big.Int).SetString("BC3736A2F4F6779C59BDCEE36B692153D0A9877CC62A474002DF32E52139F0A0", 16)
+
+    generator.x.FromBig(x)
+    generator.y.FromBig(y)
+}
+
+func (this *Point) NewGenerator() *Point {
+    this.Set(&generator)
+    return this
+}
+
 func (this *Point) Zero() *Point {
     this.x.Zero()
     this.y.Zero()

@@ -387,3 +387,69 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
         assertEqual(newPrikey, prikey, "Test_CreatePKCS1PrivateKeyWithPassword")
     })
 }
+
+func Test_PKCS8PrivateKey_Der(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+    assertError(obj.Error(), "PKCS8PrivateKey_Der")
+
+    privDer := obj.
+        CreatePKCS8PrivateKey().
+        MakeKeyDer().
+        ToKeyBytes()
+    assertNotEmpty(privDer, "PKCS8PrivateKey_Der-der")
+
+    res := New().
+        SetCurve("P256").
+        FromPKCS8PrivateKeyDer(privDer)
+    assertError(res.Error(), "PKCS8PrivateKey_Der-res")
+
+    assertEqual(res.GetPrivateKey(), obj.GetPrivateKey(), "PKCS8PrivateKey_Der-res")
+}
+
+func Test_PKCS1PrivateKey_Der(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+    assertError(obj.Error(), "PKCS1PrivateKey_Der")
+
+    privDer := obj.
+        CreatePKCS1PrivateKey().
+        MakeKeyDer().
+        ToKeyBytes()
+    assertNotEmpty(privDer, "PKCS1PrivateKey_Der-der")
+
+    res := New().
+        SetCurve("P256").
+        FromPKCS1PrivateKeyDer(privDer)
+    assertError(res.Error(), "PKCS1PrivateKey_Der-res")
+
+    assertEqual(res.GetPrivateKey(), obj.GetPrivateKey(), "PKCS1PrivateKey_Der-res")
+}
+
+func Test_PublicKey_Der(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey("P256")
+    assertError(obj.Error(), "PublicKey_Der")
+
+    privDer := obj.
+        CreatePublicKey().
+        MakeKeyDer().
+        ToKeyBytes()
+    assertNotEmpty(privDer, "PublicKey_Der-der")
+
+    res := New().
+        SetCurve("P256").
+        FromPublicKeyDer(privDer)
+    assertError(res.Error(), "PublicKey_Der-res")
+
+    assertEqual(res.GetPublicKey(), obj.GetPublicKey(), "PublicKey_Der-res")
+}

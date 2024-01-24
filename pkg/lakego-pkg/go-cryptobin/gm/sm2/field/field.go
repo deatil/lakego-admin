@@ -29,8 +29,9 @@ type Element struct {
     l [9]uint32
 }
 
-func (this *Element) Zero() {
+func (this *Element) Zero() *Element {
     this.l = [9]uint32{}
+    return this
 }
 
 func (this *Element) SetBytes(x []byte) error {
@@ -61,7 +62,7 @@ func (this *Element) Equal(x *Element) int {
     return int(c >> 31)
 }
 
-// Equal returns 1 if v equals zero, and 0 otherwise.
+// IsZero returns 1 if v equals zero, and 0 otherwise.
 func (this *Element) IsZero() int {
     var c uint32
 
@@ -73,6 +74,24 @@ func (this *Element) IsZero() int {
     c--
 
     return int(c >> 31)
+}
+
+// BigEqual returns 1 if v and u are equal, and 0 otherwise.
+func (this *Element) BigEqual(x *Element) int {
+    if this.ToBig().Cmp(x.ToBig()) == 0 {
+        return 1
+    }
+
+    return 0
+}
+
+// IsBigZero returns 1 if v equals zero, and 0 otherwise.
+func (this *Element) IsBigZero() int {
+    if this.ToBig().Sign() == 0 {
+        return 1
+    }
+
+    return 0
 }
 
 // Set sets v = a, and returns v.

@@ -10,6 +10,7 @@ import (
     "crypto/subtle"
     "crypto/elliptic"
     "encoding/asn1"
+    "encoding/binary"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/gm/sm2/curve"
@@ -17,6 +18,9 @@ import (
 
 // sm2 p256
 var P256 = curve.P256
+
+var one = new(big.Int).SetInt64(1)
+var two = new(big.Int).SetInt64(2)
 
 var defaultUid = []byte{
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
@@ -33,10 +37,6 @@ const (
     C1C2C3
 )
 
-type sm2Signature struct {
-    R, S *big.Int
-}
-
 type EncrypterOpts struct {
     Mode Mode
 }
@@ -47,6 +47,25 @@ type SignerOpts struct {
 
 func (opt SignerOpts) HashFunc() crypto.Hash {
     return crypto.Hash(0)
+}
+
+type sm2Signature struct {
+    R, S *big.Int
+}
+
+func SignDigitToData(r, s *big.Int) ([]byte, error) {
+    return asn1.Marshal(sm2Signature{r, s})
+}
+
+func SignDataToDigit(sign []byte) (*big.Int, *big.Int, error) {
+    var sm2Sign sm2Signature
+
+    _, err := asn1.Unmarshal(sign, &sm2Sign)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    return sm2Sign.R, sm2Sign.S, nil
 }
 
 type PublicKey struct {
@@ -71,13 +90,12 @@ func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bo
         uid = opt.Uid
     }
 
-    var sm2Sign sm2Signature
-    _, err := asn1.Unmarshal(sign, &sm2Sign)
+    r, s, err := SignDataToDigit(sign)
     if err != nil {
         return false
     }
 
-    return VerifyWithSM2(pub, msg, uid, sm2Sign.R, sm2Sign.S)
+    return VerifyWithSM2(pub, msg, uid, r, s)
 }
 
 func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
@@ -143,7 +161,7 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
         return nil, err
     }
 
-    return asn1.Marshal(sm2Signature{r, s})
+    return SignDigitToData(r, s)
 }
 
 func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
@@ -184,9 +202,6 @@ func (priv *PrivateKey) DecryptASN1(data []byte, opts crypto.DecrypterOpts) ([]b
     return DecryptASN1(priv, data, mode)
 }
 
-var one = new(big.Int).SetInt64(1)
-var two = new(big.Int).SetInt64(2)
-
 func GenerateKey(random io.Reader) (*PrivateKey, error) {
     c := P256()
 
@@ -219,20 +234,20 @@ func GenerateKey(random io.Reader) (*PrivateKey, error) {
 
 // 根据私钥明文初始化私钥
 func NewPrivateKey(d []byte) (*PrivateKey, error) {
-    k:= new(big.Int).SetBytes(d)
+    k := new(big.Int).SetBytes(d)
 
     c := P256()
     params := c.Params()
 
     n := new(big.Int).Sub(params.N, one)
     if k.Cmp(n) >= 0 {
-        return nil, errors.New("privateKey's D is overflow.")
+        return nil, errors.New("sm2: privateKey's D is overflow.")
     }
 
     priv := new(PrivateKey)
     priv.PublicKey.Curve = c
     priv.D = k
-    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(d)
 
     return priv, nil
 }
@@ -243,41 +258,72 @@ func ToPrivateKey(key *PrivateKey) []byte {
 }
 
 // 根据公钥明文初始化公钥
-func NewPublicKey(q []byte) (*PublicKey, error) {
-    if len(q) == 65 && q[0] == byte(0x04) {
-        q = q[1:]
+func NewPublicKey(data []byte) (*PublicKey, error) {
+    curve := P256()
+
+    x, y := elliptic.Unmarshal(curve, data)
+    if x == nil || y == nil {
+        return nil, errors.New("sm2: publicKey is incorrect.")
     }
 
-    if len(q) != 64 {
-        return nil, errors.New("publicKey is not uncompressed.")
+    pub := &PublicKey{
+        Curve: curve,
+        X: x,
+        Y: y,
     }
-
-    pub := new(PublicKey)
-    pub.Curve = P256()
-    pub.X = new(big.Int).SetBytes(q[:32])
-    pub.Y = new(big.Int).SetBytes(q[32:])
 
     return pub, nil
 }
 
 // 输出公钥明文
 func ToPublicKey(key *PublicKey) []byte {
-    x := key.X.Bytes()
-    y := key.Y.Bytes()
-
-    x = zeroPadding(x, 32)
-    y = zeroPadding(y, 32)
-
-    c := []byte{}
-    c = append(c, x...)
-    c = append(c, y...)
-    c = append([]byte{0x04}, c...)
-
-    return c
+    return elliptic.Marshal(key.Curve, key.X, key.Y)
 }
 
 // sm2 密文结构: x + y + hash + CipherText
 func Encrypt(random io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
+    c, err := encrypt(random, pub, data)
+    if err != nil {
+        return nil, err
+    }
+
+    // 编码数据 / Marshal Data
+    c = marshalBytes(c, mode)
+
+    return c, nil
+}
+
+func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
+    // 解析数据 / Unmarshal Data
+    res, err := unmarshalBytes(data, mode)
+    if err != nil {
+        return nil, err
+    }
+
+    return decrypt(priv, res)
+}
+
+// sm2 加密，返回 asn.1 编码格式的密文内容
+func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
+    newData, err := encrypt(rand, pub, data)
+    if err != nil {
+        return nil, err
+    }
+
+    return marshalASN1(newData, mode)
+}
+
+// sm2解密，解析 asn.1 编码格式的密文内容
+func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
+    newData, err := unmarshalASN1(data, mode)
+    if err != nil {
+        return nil, err
+    }
+
+    return decrypt(pub, newData)
+}
+
+func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
     length := len(data)
 
     for {
@@ -325,54 +371,11 @@ func Encrypt(random io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, 
             c[96+i] ^= data[i]
         }
 
-        switch mode {
-            case C1C3C2:
-                return append([]byte{0x04}, c...), nil
-            case C1C2C3:
-                c1 := make([]byte, 64)
-                c2 := make([]byte, len(c) - 96)
-                c3 := make([]byte, 32)
-
-                copy(c1, c[:64])   // x1, y1
-                copy(c3, c[64:96]) // hash
-                copy(c2, c[96:])   // 密文
-
-                ciphertext := []byte{}
-                ciphertext = append(ciphertext, c1...)
-                ciphertext = append(ciphertext, c2...)
-                ciphertext = append(ciphertext, c3...)
-
-                return append([]byte{0x04}, ciphertext...), nil
-            default:
-                return append([]byte{0x04}, c...), nil
-        }
+        return c, nil
     }
 }
 
-func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
-    switch mode {
-        case C1C3C2:
-            data = data[1:]
-        case  C1C2C3:
-            data = data[1:]
-            c1 := make([]byte, 64)
-            c2 := make([]byte, len(data) - 96)
-            c3 := make([]byte, 32)
-
-            copy(c1, data[:64])               // x1, y1
-            copy(c2, data[64:len(data) - 32]) // 密文
-            copy(c3, data[len(data) - 32:])   // hash
-
-            c := []byte{}
-            c = append(c, c1...)
-            c = append(c, c3...)
-            c = append(c, c2...)
-
-            data = c
-        default:
-            data = data[1:]
-    }
-
+func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
     length := len(data) - 96
 
     curve := priv.Curve
@@ -409,37 +412,6 @@ func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
     }
 
     return c, nil
-}
-
-// sm2 加密，返回 asn.1 编码格式的密文内容
-func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
-    data, err := Encrypt(rand, pub, data, C1C3C2)
-    if err != nil {
-        return nil, err
-    }
-
-    if mode == C1C2C3 {
-        return ASN1MarshalC1C2C3(data)
-    }
-
-    return ASN1Marshal(data)
-}
-
-// sm2解密，解析asn.1编码格式的密文内容
-func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
-    var err error
-
-    if mode == C1C2C3 {
-        data, err = ASN1UnmarshalC1C2C3(data)
-    } else {
-        data, err = ASN1Unmarshal(data)
-    }
-
-    if err != nil {
-        return nil, err
-    }
-
-    return Decrypt(pub, data, C1C3C2)
 }
 
 func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
@@ -563,7 +535,9 @@ func msgHash(za, msg []byte) (*big.Int, error) {
     e.Write(za)
     e.Write(msg)
 
-    return new(big.Int).SetBytes(e.Sum(nil)[:32]), nil
+    msgHash := e.Sum(nil)
+
+    return new(big.Int).SetBytes(msgHash[:32]), nil
 }
 
 // ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
@@ -632,4 +606,64 @@ func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error
 // through timing side-channels.
 func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
+}
+
+func kdf(length int, x ...[]byte) ([]byte, bool) {
+    var c []byte
+
+    ct := 1
+    h := sm3.New()
+
+    for i, j := 0, (length+31)/32; i < j; i++ {
+        h.Reset()
+        for _, xx := range x {
+            h.Write(xx)
+        }
+
+        h.Write(intToBytes(ct))
+
+        hash := h.Sum(nil)
+        if i+1 == j && length%32 != 0 {
+            c = append(c, hash[:length%32]...)
+        } else {
+            c = append(c, hash...)
+        }
+
+        ct++
+    }
+
+    for i := 0; i < length; i++ {
+        if c[i] != 0 {
+            return c, true
+        }
+    }
+
+    return c, false
+}
+
+func intToBytes(x int) []byte {
+    var buf = make([]byte, 4)
+    binary.BigEndian.PutUint32(buf, uint32(x))
+
+    return buf
+}
+
+// zero padding
+func zeroPadding(text []byte, size int) []byte {
+    if size < 1 {
+        return text
+    }
+
+    n := len(text)
+
+    if n == size {
+        return text
+    }
+
+    if n < size {
+        r := bytes.Repeat([]byte("0"), size - n)
+        return append(r, text...)
+    }
+
+    return text[n-size:]
 }
