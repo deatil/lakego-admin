@@ -6,6 +6,8 @@ import (
     "math/big"
     "encoding/asn1"
     "crypto/elliptic"
+
+    "github.com/deatil/go-cryptobin/gm/sm2/curve"
 )
 
 const sm2PrivKeyVersion = 1
@@ -40,7 +42,7 @@ func ParseSM2PrivateKey(der []byte) (*PrivateKey, error) {
 func MarshalSM2PrivateKey(key *PrivateKey) ([]byte, error) {
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("sm2: unknown elliptic curve")
+        return nil, errors.New("sm2: unknown curve")
     }
 
     return marshalSM2PrivateKeyWithOID(key, oid)
@@ -50,7 +52,7 @@ func MarshalSM2PrivateKey(key *PrivateKey) ([]byte, error) {
 // sets the curve ID to the given OID, or omits it if OID is nil.
 func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("sm2: invalid elliptic key public key")
+        return nil, errors.New("sm2: invalid key public key")
     }
 
     privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
@@ -60,7 +62,7 @@ func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]
         PrivateKey:    key.D.FillBytes(privateKey),
         NamedCurveOID: oid,
         PublicKey:     asn1.BitString{
-            Bytes: elliptic.Marshal(key.Curve, key.X, key.Y),
+            Bytes: curve.Marshal(key.Curve, key.X, key.Y),
         },
     })
 }
@@ -87,13 +89,13 @@ func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *
     }
 
     if curve == nil {
-        return nil, errors.New("sm2: unknown elliptic curve")
+        return nil, errors.New("sm2: unknown curve")
     }
 
     k := new(big.Int).SetBytes(privKey.PrivateKey)
     curveOrder := curve.Params().N
     if k.Cmp(curveOrder) >= 0 {
-        return nil, errors.New("sm2: invalid elliptic curve private key value")
+        return nil, errors.New("sm2: invalid curve private key value")
     }
 
     priv := new(PrivateKey)

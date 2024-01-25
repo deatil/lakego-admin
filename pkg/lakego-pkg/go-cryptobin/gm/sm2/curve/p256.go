@@ -6,8 +6,7 @@ import (
     "math/big"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
-    "github.com/deatil/go-cryptobin/gm/sm2/point"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
 var (
@@ -40,29 +39,41 @@ func (curve *sm2Curve) Params() *elliptic.CurveParams {
     return curve.params
 }
 
-// y^2 = x^3 + ax + b
-func (curve *sm2Curve) IsOnCurve(x, y *big.Int) bool {
-    var a, b, x1, y1, y2, x3 field.Element
-
-    x1.FromBig(x)
-    y1.FromBig(y)
-
-    x3.Square(&x1)   // x3 = x ^ 2
-    x3.Mul(&x3, &x1) // x3 = x ^ 2 * x
+// polynomial returns x³ + a*x + b.
+func (curve *sm2Curve) polynomial(x *big.Int) *big.Int {
+    var a, b, aa, xx, xx3 field.Element
 
     a1 := new(big.Int).Sub(curve.params.P, big.NewInt(3))
 
     a.FromBig(a1)
     b.FromBig(curve.params.B)
 
-    a.Mul(&a, &x1)   // a = a * x
+    xx.FromBig(x)
+    xx3.Square(&xx)    // x3 = x ^ 2
+    xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
 
-    x3.Add(&x3, &a)
-    x3.Add(&x3, &b)
+    aa.Mul(&a, &xx)    // a = a * x
 
-    y2.Square(&y1) // y2 = y ^ 2
+    xx3.Add(&xx3, &aa)
+    xx3.Add(&xx3, &b)
 
-    return x3.ToBig().Cmp(y2.ToBig()) == 0
+    y := xx3.ToBig()
+
+    return y
+}
+
+// y^2 = x^3 + ax + b
+func (curve *sm2Curve) IsOnCurve(x, y *big.Int) bool {
+    if x.Sign() < 0 || x.Cmp(curve.params.P) >= 0 ||
+        y.Sign() < 0 || y.Cmp(curve.params.P) >= 0 {
+        return false
+    }
+
+    var y2 field.Element
+    y2.FromBig(y)
+    y2.Square(&y2) // y2 = y ^ 2
+
+    return curve.polynomial(x).Cmp(y2.ToBig()) == 0
 }
 
 func (curve *sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
@@ -76,7 +87,7 @@ func (curve *sm2Curve) Add(x1, y1, x2, y2 *big.Int) (xx, yy *big.Int) {
         panic("cryptobin/sm2Curve: Add was called on an invalid point")
     }
 
-    var c point.PointJacobian
+    var c PointJacobian
     c.Add(&a, &b)
 
     return curve.pointToAffine(c)
@@ -102,7 +113,7 @@ func (curve *sm2Curve) ScalarMult(x, y *big.Int, k []byte) (xx, yy *big.Int) {
     scalar := curve.genrateWNaf(k)
     scalar = curve.wnafReversed(scalar)
 
-    var b point.PointJacobian
+    var b PointJacobian
     b.ScalarMult(&a, scalar)
 
     return curve.pointToAffine(b)
@@ -111,15 +122,15 @@ func (curve *sm2Curve) ScalarMult(x, y *big.Int, k []byte) (xx, yy *big.Int) {
 func (curve *sm2Curve) ScalarBaseMult(k []byte) (xx, yy *big.Int) {
     scalarReversed := curve.normalizeScalar(k)
 
-    var a point.PointJacobian
+    var a PointJacobian
     a.ScalarBaseMult(scalarReversed)
 
     return curve.pointToAffine(a)
 }
 
-func (curve *sm2Curve) pointFromAffine(x, y *big.Int) (p point.PointJacobian, err error) {
+func (curve *sm2Curve) pointFromAffine(x, y *big.Int) (p PointJacobian, err error) {
     if x.Sign() == 0 && y.Sign() == 0 {
-        return point.PointJacobian{}, nil
+        return PointJacobian{}, nil
     }
 
     if x.Sign() < 0 || y.Sign() < 0 {
@@ -135,8 +146,8 @@ func (curve *sm2Curve) pointFromAffine(x, y *big.Int) (p point.PointJacobian, er
         return p, errors.New("cryptobin/sm2Curve: overflowing coordinate")
     }
 
-    var a point.Point
-    var b point.PointJacobian
+    var a Point
+    var b PointJacobian
 
     _, err = a.NewPoint(x, y)
     if err != nil {
@@ -148,8 +159,8 @@ func (curve *sm2Curve) pointFromAffine(x, y *big.Int) (p point.PointJacobian, er
     return b, nil
 }
 
-func (curve *sm2Curve) pointToAffine(p point.PointJacobian) (x, y *big.Int) {
-    var a point.Point
+func (curve *sm2Curve) pointToAffine(p PointJacobian) (x, y *big.Int) {
+    var a Point
 
     x, y = new(big.Int), new(big.Int)
     return a.FromJacobian(&p).ToBig(x, y)
@@ -252,4 +263,13 @@ func boolToUint(b bool) uint {
     }
 
     return 0
+}
+
+func bigFromHex(s string) *big.Int {
+    b, ok := new(big.Int).SetString(s, 16)
+    if !ok {
+        panic("cryptobin/sm2: internal error: invalid encoding")
+    }
+
+    return b
 }

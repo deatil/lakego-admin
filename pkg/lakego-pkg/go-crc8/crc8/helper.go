@@ -80,21 +80,7 @@ func ToHexString(data uint8) string {
     return fmt.Sprintf("%02X", data)
 }
 
-// 输出两位 16 进制字符，高低字节对调
-func ToReverseHexString(data uint8) string {
-    data = (data << 4) ^ (data >> 4)
-
-    return fmt.Sprintf("%02X", data)
-}
-
 // 输出二进制字符
 func ToBinString(data uint8) string {
-    return fmt.Sprintf("%08b", data)
-}
-
-// 输出二进制字符，高低字节对调
-func ToReverseHexBinString(data uint8) string {
-    data = (data << 4) ^ (data >> 4)
-
     return fmt.Sprintf("%08b", data)
 }

@@ -19,13 +19,13 @@ import (
 // sm2 p256
 var P256 = curve.P256
 
-var one = new(big.Int).SetInt64(1)
-var two = new(big.Int).SetInt64(2)
-
 var defaultUid = []byte{
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
 }
+
+var one = new(big.Int).SetInt64(1)
+var two = new(big.Int).SetInt64(2)
 
 var errZeroParam = errors.New("zero parameter")
 
@@ -259,15 +259,15 @@ func ToPrivateKey(key *PrivateKey) []byte {
 
 // 根据公钥明文初始化公钥
 func NewPublicKey(data []byte) (*PublicKey, error) {
-    curve := P256()
+    c := P256()
 
-    x, y := elliptic.Unmarshal(curve, data)
+    x, y := curve.Unmarshal(c, data)
     if x == nil || y == nil {
         return nil, errors.New("sm2: publicKey is incorrect.")
     }
 
     pub := &PublicKey{
-        Curve: curve,
+        Curve: c,
         X: x,
         Y: y,
     }
@@ -277,20 +277,20 @@ func NewPublicKey(data []byte) (*PublicKey, error) {
 
 // 输出公钥明文
 func ToPublicKey(key *PublicKey) []byte {
-    return elliptic.Marshal(key.Curve, key.X, key.Y)
+    return curve.Marshal(key.Curve, key.X, key.Y)
 }
 
 // sm2 密文结构: x + y + hash + CipherText
 func Encrypt(random io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
-    c, err := encrypt(random, pub, data)
+    ct, err := encrypt(random, pub, data)
     if err != nil {
         return nil, err
     }
 
     // 编码数据 / Marshal Data
-    c = marshalBytes(c, mode)
+    ct = marshalBytes(ct, mode)
 
-    return c, nil
+    return ct, nil
 }
 
 func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
@@ -305,22 +305,22 @@ func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
 
 // sm2 加密，返回 asn.1 编码格式的密文内容
 func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, error) {
-    newData, err := encrypt(rand, pub, data)
+    ct, err := encrypt(rand, pub, data)
     if err != nil {
         return nil, err
     }
 
-    return marshalASN1(newData, mode)
+    return marshalASN1(ct, mode)
 }
 
 // sm2解密，解析 asn.1 编码格式的密文内容
 func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
-    newData, err := unmarshalASN1(data, mode)
+    res, err := unmarshalASN1(data, mode)
     if err != nil {
         return nil, err
     }
 
-    return decrypt(pub, newData)
+    return decrypt(pub, res)
 }
 
 func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
@@ -339,15 +339,10 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
         x1, y1 := curve.ScalarBaseMult(k.Bytes())
         x2, y2 := curve.ScalarMult(pub.X, pub.Y, k.Bytes())
 
-        x1Buf := x1.Bytes()
-        y1Buf := y1.Bytes()
-        x2Buf := x2.Bytes()
-        y2Buf := y2.Bytes()
-
-        x1Buf = zeroPadding(x1Buf, 32)
-        y1Buf = zeroPadding(y1Buf, 32)
-        x2Buf = zeroPadding(x2Buf, 32)
-        y2Buf = zeroPadding(y2Buf, 32)
+        x1Buf := zeroPadding(x1.Bytes(), 32)
+        y1Buf := zeroPadding(y1.Bytes(), 32)
+        x2Buf := zeroPadding(x2.Bytes(), 32)
+        y2Buf := zeroPadding(y2.Bytes(), 32)
 
         c = append(c, x1Buf...) // x分量
         c = append(c, y1Buf...) // y分量
@@ -380,20 +375,17 @@ func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
 
     curve := priv.Curve
 
-    x := new(big.Int).SetBytes(data[:32])
+    x := new(big.Int).SetBytes(data[ 0:32])
     y := new(big.Int).SetBytes(data[32:64])
 
     x2, y2 := curve.ScalarMult(x, y, priv.D.Bytes())
 
-    x2Buf := x2.Bytes()
-    y2Buf := y2.Bytes()
-
-    x2Buf = zeroPadding(x2Buf, 32)
-    y2Buf = zeroPadding(y2Buf, 32)
+    x2Buf := zeroPadding(x2.Bytes(), 32)
+    y2Buf := zeroPadding(y2.Bytes(), 32)
 
     c, ok := kdf(length, x2Buf, y2Buf)
     if !ok {
-        return nil, errors.New("Decrypt: failed to decrypt")
+        return nil, errors.New("sm2: failed to decrypt")
     }
 
     for i := 0; i < length; i++ {
@@ -408,7 +400,7 @@ func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
     h := sm3.Sum(tm)
 
     if bytes.Compare(h[:], data[64:96]) != 0 {
-        return c, errors.New("Decrypt: failed to decrypt")
+        return c, errors.New("sm2: failed to decrypt")
     }
 
     return c, nil
@@ -494,7 +486,7 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
 }
 
 func SignWithSM2(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big.Int, err error) {
-    hash, err := sm3Digest(&priv.PublicKey, msg, uid)
+    hash, err := CalculateSM2Hash(&priv.PublicKey, msg, uid)
     if err != nil {
         return nil, nil, err
     }
@@ -503,7 +495,7 @@ func SignWithSM2(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big
 }
 
 func VerifyWithSM2(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
-    hash, err := sm3Digest(pub, msg, uid)
+    hash, err := CalculateSM2Hash(pub, msg, uid)
     if err != nil {
         return false
     }
@@ -511,77 +503,59 @@ func VerifyWithSM2(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
     return Verify(pub, hash, r, s)
 }
 
-func sm3Digest(pub *PublicKey, msg, uid []byte) ([]byte, error) {
+func CalculateSM2Hash(pub *PublicKey, msg, uid []byte) ([]byte, error) {
     if len(uid) == 0 {
         uid = defaultUid
     }
 
-    za, err := ZA(pub, uid)
+    za, err := CalculateZA(pub, uid)
     if err != nil {
         return nil, err
     }
 
-    e, err := msgHash(za, msg)
-    if err != nil {
-        return nil, err
-    }
+    md := sm3.New()
+    md.Write(za)
+    md.Write(msg)
 
-    return e.Bytes(), nil
+    return md.Sum(nil), nil
 }
 
-func msgHash(za, msg []byte) (*big.Int, error) {
-    e := sm3.New()
-
-    e.Write(za)
-    e.Write(msg)
-
-    msgHash := e.Sum(nil)
-
-    return new(big.Int).SetBytes(msgHash[:32]), nil
-}
-
-// ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
-func ZA(pub *PublicKey, uid []byte) ([]byte, error) {
-    za := sm3.New()
-
+// CalculateZA ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
+func CalculateZA(pub *PublicKey, uid []byte) ([]byte, error) {
     uidLen := len(uid)
-
     if uidLen >= 8192 {
-        return []byte{}, errors.New("SM2: uid too large")
+        return []byte{}, errors.New("sm2: uid too large")
     }
 
-    Entla := uint16(8 * uidLen)
-    za.Write([]byte{byte((Entla >> 8) & 0xFF)})
-    za.Write([]byte{byte(Entla & 0xFF)})
+    entla := uint16(8 * uidLen)
+
+    md := sm3.New()
+    md.Write([]byte{byte((entla >> 8) & 0xFF)})
+    md.Write([]byte{byte(entla & 0xFF)})
 
     if uidLen > 0 {
-        za.Write(uid)
+        md.Write(uid)
     }
 
     params := pub.Curve.Params()
 
     a := new(big.Int).Sub(params.P, big.NewInt(3))
 
-    za.Write(a.Bytes())
-    za.Write(params.B.Bytes())
-    za.Write(params.Gx.Bytes())
-    za.Write(params.Gy.Bytes())
+    md.Write(a.Bytes())
+    md.Write(params.B.Bytes())
+    md.Write(params.Gx.Bytes())
+    md.Write(params.Gy.Bytes())
+    md.Write(bigIntToBytes(pub.Curve, pub.X))
+    md.Write(bigIntToBytes(pub.Curve, pub.Y))
 
-    xBuf := pub.X.Bytes()
-    yBuf := pub.Y.Bytes()
-
-    xBuf = zeroPadding(xBuf, 32)
-    yBuf = zeroPadding(yBuf, 32)
-
-    za.Write(xBuf)
-    za.Write(yBuf)
-
-    return za.Sum(nil)[:32], nil
+    return md.Sum(nil), nil
 }
 
 func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error) {
     if random == nil {
-        random = rand.Reader //If there is no external trusted random source,please use rand.Reader to instead of it.
+        // If there is no external trusted random source,
+        // please use rand.Reader to instead of it.
+        random = rand.Reader
     }
 
     params := c.Params()
@@ -600,12 +574,6 @@ func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error
     k.Add(k, one)
 
     return
-}
-
-// bigIntEqual reports whether a and b are equal leaking only their bit length
-// through timing side-channels.
-func bigIntEqual(a, b *big.Int) bool {
-    return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
 
 func kdf(length int, x ...[]byte) ([]byte, bool) {
@@ -646,6 +614,21 @@ func intToBytes(x int) []byte {
     binary.BigEndian.PutUint32(buf, uint32(x))
 
     return buf
+}
+
+func bigIntToBytes(c elliptic.Curve, value *big.Int) []byte {
+    byteLen := (c.Params().BitSize + 7) / 8
+
+    buf := make([]byte, byteLen)
+    value.FillBytes(buf)
+
+    return buf
+}
+
+// bigIntEqual reports whether a and b are equal leaking only their bit length
+// through timing side-channels.
+func bigIntEqual(a, b *big.Int) bool {
+    return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
 
 // zero padding

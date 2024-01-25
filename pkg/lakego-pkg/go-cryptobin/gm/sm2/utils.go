@@ -16,6 +16,6 @@ func Decompress(a []byte) *PublicKey {
     }
 }
 
-func Compress(a *PublicKey) []byte {
-    return curve.MarshalCompressed(a.X, a.Y)
+func Compress(k *PublicKey) []byte {
+    return curve.MarshalCompressed(k.Curve, k.X, k.Y)
 }

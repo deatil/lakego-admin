@@ -3,8 +3,9 @@ package sm2
 import (
     "errors"
     "encoding/asn1"
-    "crypto/elliptic"
     "crypto/x509/pkix"
+
+    "github.com/deatil/go-cryptobin/gm/sm2/curve"
 )
 
 var (
@@ -70,7 +71,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("sm2: unknown elliptic curve")
+        return nil, errors.New("sm2: unknown curve")
     }
 
     r.Version = 0
@@ -92,15 +93,15 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
 
     if !pubkey.Algo.Algorithm.Equal(oidSM2) &&
         !pubkey.Algo.Algorithm.Equal(oidPublicKeySM2) {
-        return nil, errors.New("sm2: not sm2 elliptic curve")
+        return nil, errors.New("sm2: not sm2 curve")
     }
 
-    curve := P256()
+    c := P256()
 
-    x, y := elliptic.Unmarshal(curve, pubkey.BitString.Bytes)
+    x, y := curve.Unmarshal(c, pubkey.BitString.Bytes)
 
     pub := PublicKey{
-        Curve: curve,
+        Curve: c,
         X:     x,
         Y:     y,
     }
@@ -129,7 +130,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     r.Algo = algo
     r.BitString = asn1.BitString{
-        Bytes: elliptic.Marshal(key.Curve, key.X, key.Y),
+        Bytes: curve.Marshal(key.Curve, key.X, key.Y),
     }
 
     return asn1.Marshal(r)

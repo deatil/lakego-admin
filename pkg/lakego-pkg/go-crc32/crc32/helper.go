@@ -2,6 +2,7 @@ package crc32
 
 import (
     "fmt"
+    "math/bits"
 )
 
 // 构造函数
@@ -83,14 +84,14 @@ func ChecksumXFER(data []byte) uint32 {
     return NewCRC32(CRC32_XFER).Checksum(data)
 }
 
-// 生成 CRC32D
-func ChecksumCRC32D(data []byte) uint32 {
-    return NewCRC32(CRC32_CRC32D).Checksum(data)
-}
-
 // 生成 CRC32Q
 func ChecksumCRC32Q(data []byte) uint32 {
     return NewCRC32(CRC32_CRC32Q).Checksum(data)
+}
+
+// 生成 CRC32D
+func ChecksumCRC32D(data []byte) uint32 {
+    return NewCRC32(CRC32_CRC32D).Checksum(data)
 }
 
 // =======================
@@ -102,7 +103,7 @@ func ToHexString(data uint32) string {
 
 // 输出 16 进制字符，高低字节对调
 func ToReverseHexString(data uint32) string {
-    data = (data << 16) ^ (data >> 16)
+    data = bits.ReverseBytes32(data)
 
     return fmt.Sprintf("%08X", data)
 }
@@ -114,7 +115,7 @@ func ToBinString(data uint32) string {
 
 // 输出二进制字符，高低字节对调
 func ToReverseHexBinString(data uint32) string {
-    data = (data << 16) ^ (data >> 16)
+    data = bits.ReverseBytes32(data)
 
     return fmt.Sprintf("%032b", data)
 }

@@ -1,84 +1,164 @@
 package curve
 
 import (
-    "bytes"
     "math/big"
     "crypto/elliptic"
-
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
 )
 
-func UnmarshalCompressed(curve elliptic.Curve, d []byte) (x, y *big.Int) {
-    var a, b, aa, xx, xx3 field.Element
+// Marshal converts a point on the curve into the uncompressed
+func Marshal(curve elliptic.Curve, x, y *big.Int) []byte {
+    panicIfNotOnCurve(curve, x, y)
 
-    params := curve.Params()
+    byteLen := (curve.Params().BitSize + 7) / 8
 
-    a1 := new(big.Int).Sub(params.P, big.NewInt(3))
+    ret := make([]byte, 1+2*byteLen)
+    ret[0] = 4 // uncompressed point
 
-    a.FromBig(a1)
-    b.FromBig(params.B)
+    x.FillBytes(ret[1 : 1+byteLen])
+    y.FillBytes(ret[1+byteLen : 1+2*byteLen])
 
-    x = new(big.Int).SetBytes(d[1:])
+    return ret
+}
 
-    xx.FromBig(x)
-    xx3.Square(&xx)    // x3 = x ^ 2
-    xx3.Mul(&xx3, &xx) // x3 = x ^ 2 * x
-    aa.Mul(&a, &xx)    // a = a * x
-    xx3.Add(&xx3, &aa)
-    xx3.Add(&xx3, &b)
+// MarshalCompressed converts a point on the curve into the compressed form
+// specified in SEC 1, Version 2.0, Section 2.3.3. If the point is not on the
+// curve (or is the conventional point at infinity), the behavior is undefined.
+func MarshalCompressed(curve elliptic.Curve, x, y *big.Int) []byte {
+    panicIfNotOnCurve(curve, x, y)
 
-    y2 := xx3.ToBig()
-    y = new(big.Int).ModSqrt(y2, params.P)
+    byteLen := (curve.Params().BitSize + 7) / 8
 
-    if getLastBit(y) != uint(d[0]) {
-        y.Sub(params.P, y)
+    compressed := make([]byte, 1+byteLen)
+    compressed[0] = byte(y.Bit(0)) | 2
+
+    x.FillBytes(compressed[1:])
+
+    return compressed
+}
+
+// unmarshaler is implemented by curves with their own constant-time Unmarshal.
+//
+// There isn't an equivalent interface for Marshal/MarshalCompressed because
+// that doesn't involve any mathematical operations, only FillBytes and Bit.
+type unmarshaler interface {
+    Unmarshal([]byte) (x, y *big.Int)
+    UnmarshalCompressed([]byte) (x, y *big.Int)
+}
+
+// polynomial func
+type unmarshalerPolynomial interface {
+    polynomial(x *big.Int) *big.Int
+}
+
+// Unmarshal converts a point, serialized by Marshal, into an x, y pair. It is
+// an error if the point is not in uncompressed form, is not on the curve, or is
+// the point at infinity. On error, x = nil.
+func Unmarshal(curve elliptic.Curve, data []byte) (x, y *big.Int) {
+    if c, ok := curve.(unmarshaler); ok {
+        return c.Unmarshal(data)
+    }
+
+    byteLen := (curve.Params().BitSize + 7) / 8
+    if len(data) != 1+2*byteLen {
+        return nil, nil
+    }
+    if data[0] != 4 { // uncompressed form
+        return nil, nil
+    }
+
+    p := curve.Params().P
+    x = new(big.Int).SetBytes(data[1 : 1+byteLen])
+    y = new(big.Int).SetBytes(data[1+byteLen:])
+    if x.Cmp(p) >= 0 || y.Cmp(p) >= 0 {
+        return nil, nil
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        return nil, nil
     }
 
     return
 }
 
-func MarshalCompressed(x, y *big.Int) []byte {
-    buf := []byte{}
-
-    yp := getLastBit(y)
-
-    buf = append(buf, x.Bytes()...)
-
-    buf = zeroPadding(buf, 32)
-    buf = append([]byte{byte(yp)}, buf...)
-
-    return buf
-}
-
-func getLastBit(a *big.Int) uint {
-    return 2 | a.Bit(0)
-}
-
-// zero padding
-func zeroPadding(text []byte, size int) []byte {
-    if size < 1 {
-        return text
+// UnmarshalCompressed converts a point, serialized by MarshalCompressed, into
+// an x, y pair. It is an error if the point is not in compressed form, is not
+// on the curve, or is the point at infinity. On error, x = nil.
+func UnmarshalCompressed(curve elliptic.Curve, data []byte) (x, y *big.Int) {
+    if c, ok := curve.(unmarshaler); ok {
+        return c.UnmarshalCompressed(data)
     }
 
-    n := len(text)
-
-    if n == size {
-        return text
+    byteLen := (curve.Params().BitSize + 7) / 8
+    if len(data) != 1+byteLen {
+        return nil, nil
     }
 
-    if n < size {
-        r := bytes.Repeat([]byte("0"), size - n)
-        return append(r, text...)
+    if data[0] != 2 && data[0] != 3 { // compressed form
+        return nil, nil
     }
 
-    return text[n-size:]
-}
+    p := curve.Params().P
+    x = new(big.Int).SetBytes(data[1:])
+    if x.Cmp(p) >= 0 {
+        return nil, nil
+    }
 
-func bigFromHex(s string) *big.Int {
-    b, ok := new(big.Int).SetString(s, 16)
+    cu, ok := curve.(unmarshalerPolynomial)
     if !ok {
-        panic("cryptobin/sm2: internal error: invalid encoding")
+        return nil, nil
     }
 
-    return b
+    y = cu.polynomial(x)
+    y = new(big.Int).ModSqrt(y, p)
+
+    if byte(y.Bit(0)) != data[0]&1 {
+        y.Sub(p, y)
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
+}
+
+func panicIfNotOnCurve(curve elliptic.Curve, x, y *big.Int) {
+    // (0, 0) is the point at infinity by convention. It's ok to operate on it,
+    // although IsOnCurve is documented to return false for it. See Issue 37294.
+    if x.Sign() == 0 && y.Sign() == 0 {
+        return
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        panic("cryptobin/sm2: attempted operation on invalid point")
+    }
+}
+
+// nonZeroToAllOnes returns:
+//   0xffffffff for 0 < x <= 2**31
+//   0 for x == 0 or x > 2**31.
+func nonZeroToAllOnes(x uint32) uint32 {
+    return ((x - 1) >> 31) - 1
+}
+
+func abs(a int8) uint32 {
+    if a < 0 {
+        return uint32(-a)
+    }
+
+    return uint32(a)
+}
+
+// getBit returns the bit'th bit of scalar.
+func getBit(scalar []byte, bit uint) uint32 {
+    return uint32(((scalar[bit >> 3]) >> (bit & 7)) & 1)
+}
+
+func zForAffine(x, y *big.Int) *big.Int {
+    z := new(big.Int)
+    if x.Sign() != 0 || y.Sign() != 0 {
+        z.SetInt64(1)
+    }
+
+    return z
 }

@@ -2,6 +2,7 @@ package crc16
 
 import (
     "fmt"
+    "math/bits"
 )
 
 // 构造函数
@@ -157,7 +158,7 @@ func ToHexString(data uint16) string {
 
 // 输出四位 16 进制字符，高低字节对调
 func ToReverseHexString(data uint16) string {
-    data = (data << 8) ^ (data >> 8)
+    data = bits.ReverseBytes16(data)
 
     return fmt.Sprintf("%04X", data)
 }
@@ -169,7 +170,7 @@ func ToBinString(data uint16) string {
 
 // 输出二进制字符，高低字节对调
 func ToReverseHexBinString(data uint16) string {
-    data = (data << 8) ^ (data >> 8)
+    data = bits.ReverseBytes16(data)
 
     return fmt.Sprintf("%016b", data)
 }

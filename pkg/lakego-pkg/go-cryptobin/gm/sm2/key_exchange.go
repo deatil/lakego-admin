@@ -52,7 +52,7 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
         pza = &pri.PublicKey
     }
 
-    za, err := ZA(pza, ida)
+    za, err := CalculateZA(pza, ida)
     if err != nil {
         return
     }
@@ -67,7 +67,7 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
         pzb = &pri.PublicKey
     }
 
-    zb, err := ZA(pzb, idb)
+    zb, err := CalculateZA(pzb, idb)
     k, ok := kdf(klen, vx.Bytes(), vy.Bytes(), za, zb)
     if !ok {
         err = errors.New("kdf: zero key")

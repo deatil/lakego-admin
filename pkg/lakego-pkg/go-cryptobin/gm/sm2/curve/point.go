@@ -1,17 +1,13 @@
-package point
+package curve
 
 import (
     "errors"
     "math/big"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
-var (
-    feZero field.Element
-
-    A, P *big.Int
-)
+var A, P *big.Int
 
 func init() {
     A, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFC", 16)
@@ -77,7 +73,7 @@ func (this *Point) Select(a *Point, cond uint32) *Point {
 
 // FromJacobian reverses the Jacobian transform. If the point is ∞ it returns 0, 0.
 func (this *Point) FromJacobian(v *PointJacobian) *Point {
-    if v.z.Equal(&feZero) == 1 {
+    if v.z.IsZero() == 1 {
         this.Zero()
         return this
     }

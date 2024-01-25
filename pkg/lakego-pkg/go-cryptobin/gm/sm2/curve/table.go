@@ -1,7 +1,9 @@
-package point
+package curve
 
 import (
-    "math/big"
+    "strconv"
+
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
 var precomputed = [9 * 2 * 15 * 2]uint32{
@@ -67,31 +69,105 @@ var precomputed = [9 * 2 * 15 * 2]uint32{
     0x11902a0, 0x6c29cc9, 0x1d5ffbe6, 0xdb0b4c7, 0x10144c14, 0x2f2b719, 0x301189, 0x2343336, 0xa0bf2ac,
 }
 
-// nonZeroToAllOnes returns:
-//   0xffffffff for 0 < x <= 2**31
-//   0 for x == 0 or x > 2**31.
-func nonZeroToAllOnes(x uint32) uint32 {
-    return ((x - 1) >> 31) - 1
+type lookupTable struct {
+    points [16]PointJacobian
 }
 
-func abs(a int8) uint32 {
-    if a < 0 {
-        return uint32(-a)
+func (v *lookupTable) Init(p *PointJacobian) {
+    var p2 Point
+    var z field.Element
+
+    z.One()
+
+    points := &v.points
+
+    // We precompute 0,1,2,... times {x,y}.
+    points[1].Set(&PointJacobian{
+        x: p.x,
+        y: p.y,
+        z: z,
+    })
+
+    for i := 2; i < 8; i += 2 {
+        points[i].Double(&points[i/2])
+        points[i+1].AddMixed(&points[i], p2.FromJacobian(p))
+    }
+}
+
+// index must be in [0, 15].
+// Select sets {out_x,out_y,out_z} to the index'th entry of
+// table.
+// On entry: index < 16, table[0] must be zero.
+func (v *lookupTable) SelectInto(dest *PointJacobian, index uint32) {
+    if index >= 16 {
+        panic("cryptobin/sm2: out-of-bounds: " + strconv.Itoa(int(index)))
     }
 
-    return uint32(a)
+    dest.Zero()
+
+    // The implicit value at index 0 is all zero. We don't need to perform that
+    // iteration of the loop because we already set out_* to zero.
+    for i := uint32(1); i < 16; i++ {
+        mask := i ^ index
+        mask |= mask >> 2
+        mask |= mask >> 1
+        mask &= 1
+        mask--
+
+        dest.Select(&v.points[i], mask)
+    }
 }
 
-// getBit returns the bit'th bit of scalar.
-func getBit(scalar []byte, bit uint) uint32 {
-    return uint32(((scalar[bit >> 3]) >> (bit & 7)) & 1)
+// point init tables
+type pointTable struct {
+    points [16]Point
 }
 
-func zForAffine(x, y *big.Int) *big.Int {
-    z := new(big.Int)
-    if x.Sign() != 0 || y.Sign() != 0 {
-        z.SetInt64(1)
+// init
+func (v *pointTable) Init(table []uint32) {
+    var x, y [9]uint32
+
+    points := &v.points
+
+    // The implicit value at index 0 is all zero. We don't need to perform that
+    // iteration of the loop because we already set out_* to zero.
+    for i := uint32(1); i < 16; i++ {
+        copy(x[:], table[0:])
+        copy(y[:], table[9:])
+
+        table = table[18:]
+
+        points[i].x.SetUint32(x)
+        points[i].y.SetUint32(y)
+    }
+}
+
+// index must be in [0, 15].
+// Select sets {out_x,out_y,out_z} to the index'th entry of
+// table.
+// On entry: index < 16, table[0] must be zero.
+func (v *pointTable) SelectInto(dest *Point, index uint32) {
+    if index >= 16 {
+        panic("cryptobin/sm2: out-of-bounds: " + strconv.Itoa(int(index)))
     }
 
-    return z
+    dest.Zero()
+
+    // The implicit value at index 0 is all zero. We don't need to perform that
+    // iteration of the loop because we already set out_* to zero.
+    for i := uint32(1); i < 16; i++ {
+        mask := i ^ index
+        mask |= mask >> 2
+        mask |= mask >> 1
+        mask &= 1
+        mask--
+
+        dest.Select(&v.points[i], mask)
+    }
+}
+
+func pointSelectInto(table []uint32, dest *Point, index uint32) {
+    var p pointTable
+    p.Init(table)
+    p.SelectInto(dest, index)
 }

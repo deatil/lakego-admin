@@ -1,10 +1,10 @@
-package point
+package curve
 
 import (
     "fmt"
     "testing"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
 func Test_lookupTable(t *testing.T) {

@@ -6,7 +6,7 @@ import (
     "math/big"
 )
 
-func Test_Add(t *testing.T) {
+func Test_sm2Curve_Add(t *testing.T) {
     var x1, y1, x2, y2 *big.Int
 
     x1, _ = new(big.Int).SetString("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF", 16)

@@ -34,6 +34,11 @@ func (this *Element) Zero() *Element {
     return this
 }
 
+func (this *Element) One() *Element {
+    one := factor[1]
+    return this.Set(&one)
+}
+
 func (this *Element) SetBytes(x []byte) error {
     if len(x) > 32 {
         return errors.New("too long bytes: " + strconv.Itoa(len(x)))
@@ -50,34 +55,6 @@ func (this *Element) Bytes() []byte {
 
 // Equal returns 1 if v and u are equal, and 0 otherwise.
 func (this *Element) Equal(x *Element) int {
-    var c uint32
-
-    for i := 0; i < 9; i++ {
-        c |= this.l[i] ^ x.l[i]
-    }
-
-    c = (c & 0xFFFF) | (c >> 16)
-    c--
-
-    return int(c >> 31)
-}
-
-// IsZero returns 1 if v equals zero, and 0 otherwise.
-func (this *Element) IsZero() int {
-    var c uint32
-
-    for i := 0; i < 9; i++ {
-        c |= this.l[i]
-    }
-
-    c = (c & 0xFFFF) | (c >> 16)
-    c--
-
-    return int(c >> 31)
-}
-
-// BigEqual returns 1 if v and u are equal, and 0 otherwise.
-func (this *Element) BigEqual(x *Element) int {
     if this.ToBig().Cmp(x.ToBig()) == 0 {
         return 1
     }
@@ -85,8 +62,8 @@ func (this *Element) BigEqual(x *Element) int {
     return 0
 }
 
-// IsBigZero returns 1 if v equals zero, and 0 otherwise.
-func (this *Element) IsBigZero() int {
+// IsZero returns 1 if v equals zero, and 0 otherwise.
+func (this *Element) IsZero() int {
     if this.ToBig().Sign() == 0 {
         return 1
     }
@@ -317,7 +294,8 @@ func (this *Element) Square(a *Element) *Element {
     return this.reduceDegree(tmp)
 }
 
-var Factor = []Element{
+// big.int 0..8 data
+var factor = []Element{
     Element{l: [9]uint32{0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}},
     Element{l: [9]uint32{0x2, 0x0, 0x1FFFFF00, 0x7FF, 0x0, 0x0, 0x0, 0x2000000, 0x0}},
     Element{l: [9]uint32{0x4, 0x0, 0x1FFFFE00, 0xFFF, 0x0, 0x0, 0x0, 0x4000000, 0x0}},
@@ -330,7 +308,7 @@ var Factor = []Element{
 }
 
 func (this *Element) Scalar(a int) *Element {
-    return this.Mul(this, &Factor[a])
+    return this.Mul(this, &factor[a])
 }
 
 // nonZeroToAllOnes returns:

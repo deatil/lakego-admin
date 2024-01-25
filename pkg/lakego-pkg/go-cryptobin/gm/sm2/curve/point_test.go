@@ -1,14 +1,14 @@
-package point
+package curve
 
 import (
     "fmt"
     "testing"
     "math/big"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
-func Test_Double(t *testing.T) {
+func Test_Point_Double(t *testing.T) {
     var x, y, z field.Element
     var a, d PointJacobian
 
@@ -30,7 +30,7 @@ func Test_Double(t *testing.T) {
     }
 }
 
-func Test_Sub(t *testing.T) {
+func Test_Point_Sub(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
     var a, b, d PointJacobian
@@ -61,7 +61,7 @@ func Test_Sub(t *testing.T) {
     }
 }
 
-func Test_Add(t *testing.T) {
+func Test_Point_Add(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
     var a, b, d PointJacobian
@@ -92,7 +92,7 @@ func Test_Add(t *testing.T) {
     }
 }
 
-func Test_ToBig(t *testing.T) {
+func Test_Point_ToBig(t *testing.T) {
     var x1, y1, z1 field.Element
     var a PointJacobian
     var aa Point
@@ -116,7 +116,7 @@ func Test_ToBig(t *testing.T) {
     }
 }
 
-func Test_AddMixed(t *testing.T) {
+func Test_Point_AddMixed(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2 field.Element
     var a, d PointJacobian
@@ -146,7 +146,7 @@ func Test_AddMixed(t *testing.T) {
     }
 }
 
-func Test_ScalarBaseMult(t *testing.T) {
+func Test_Point_ScalarBaseMult(t *testing.T) {
     var d PointJacobian
     var scalar [32]uint8
 
@@ -167,7 +167,7 @@ func Test_ScalarBaseMult(t *testing.T) {
     }
 }
 
-func Test_ScalarMult(t *testing.T) {
+func Test_Point_ScalarMult(t *testing.T) {
     var x1, y1 field.Element
     var d, ad PointJacobian
     var a Point
@@ -197,7 +197,7 @@ func Test_ScalarMult(t *testing.T) {
     }
 }
 
-func Test_Equal(t *testing.T) {
+func Test_Point_Equal(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
     var a, b PointJacobian
@@ -224,7 +224,7 @@ func Test_Equal(t *testing.T) {
     }
 }
 
-func Test_NotEqual(t *testing.T) {
+func Test_Point_NotEqual(t *testing.T) {
     var x1, y1, z1 field.Element
     var x2, y2, z2 field.Element
     var a, b PointJacobian
@@ -251,7 +251,7 @@ func Test_NotEqual(t *testing.T) {
     }
 }
 
-func Test_NewGenerator(t *testing.T) {
+func Test_Point_NewGenerator(t *testing.T) {
     var a Point
 
     a.NewGenerator()

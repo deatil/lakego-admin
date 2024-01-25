@@ -1,7 +1,7 @@
-package point
+package curve
 
 import (
-    "github.com/deatil/go-cryptobin/gm/sm2/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
 type incomparable [0]func()
@@ -65,10 +65,10 @@ func (this *PointJacobian) Equal(v *PointJacobian) int {
     y1.Mul(&this.y, &zzz2)
     y2.Mul(&v.y, &zzz1)
 
-    zero1 := this.z.IsBigZero()
-    zero2 := v.z.IsBigZero()
+    zero1 := this.z.IsZero()
+    zero2 := v.z.IsZero()
 
-    return (x1.BigEqual(&x2) & y1.BigEqual(&y2) & ^zero1 & ^zero2) | (zero1 & zero2)
+    return (x1.Equal(&x2) & y1.Equal(&y2) & ^zero1 & ^zero2) | (zero1 & zero2)
 }
 
 // z1 = a, z2 = b
@@ -115,6 +115,7 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
     var t PointJacobian
 
     nIsInfinityMask = ^uint32(0)
+    one := new(field.Element).One()
 
     this.Zero()
 
@@ -148,7 +149,7 @@ func (this *PointJacobian) ScalarBaseMult(scalar []byte) *PointJacobian {
             // copying the point from the table.
             this.x.Swap(&p.x, nIsInfinityMask)
             this.y.Swap(&p.y, nIsInfinityMask)
-            this.z.Swap(&field.Factor[1], nIsInfinityMask)
+            this.z.Swap(one, nIsInfinityMask)
 
             // Equally, the result is also wrong if the point from the table is
             // zero, which happens when the index is zero. We handle that by
@@ -192,9 +193,9 @@ func (this *PointJacobian) ScalarMult(q *PointJacobian, scalar []int8) *PointJac
             }
         }
 
-        index = abs(scalar[i])
-
         this.Double(this)
+
+        index = abs(scalar[i])
         precomp.SelectInto(&p, index)
 
         if scalar[i] > 0 {
@@ -233,14 +234,14 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     var u1, u2, z22, z12, z23, z13 field.Element
     var s1, s2, h, h2, r, r2, tm field.Element
 
-    if a.z.IsBigZero() == 1 {
+    if a.z.IsZero() == 1 {
         this.x.Set(&b.x)
         this.y.Set(&b.y)
         this.z.Set(&b.z)
         return this
     }
 
-    if b.z.IsBigZero() == 1 {
+    if b.z.IsZero() == 1 {
         this.x.Set(&a.x)
         this.y.Set(&a.y)
         this.z.Set(&a.z)
@@ -259,7 +260,7 @@ func (this *PointJacobian) Add(a, b *PointJacobian) *PointJacobian {
     s1.Mul(&a.y, &z23) // s1 = y1 * z2 ^ 3
     s2.Mul(&b.y, &z13) // s2 = y2 * z1 ^ 3
 
-    if u1.BigEqual(&u2) == 1 && s1.BigEqual(&s2) == 1 {
+    if u1.Equal(&u2) == 1 && s1.Equal(&s2) == 1 {
         a.Double(a)
     }
 
@@ -297,14 +298,14 @@ func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     zero := new(field.Element).Zero()
     b.y.Sub(zero, &b.y)
 
-    if a.z.IsBigZero() == 1 {
+    if a.z.IsZero() == 1 {
         this.x.Set(&b.x)
         this.y.Set(&b.y)
         this.z.Set(&b.z)
         return this
     }
 
-    if b.z.IsBigZero() == 1 {
+    if b.z.IsZero() == 1 {
         this.x.Set(&a.x)
         this.y.Set(&a.y)
         this.z.Set(&a.z)
@@ -323,7 +324,7 @@ func (this *PointJacobian) Sub(a, b *PointJacobian) *PointJacobian {
     s1.Mul(&a.y, &z23) // s1 = y1 * z2 ^ 3
     s2.Mul(&b.y, &z13) // s2 = y2 * z1 ^ 3
 
-    if u1.BigEqual(&u2) == 1 && s1.BigEqual(&s2) == 1 {
+    if u1.Equal(&u2) == 1 && s1.Equal(&s2) == 1 {
         a.Double(a)
     }
 
