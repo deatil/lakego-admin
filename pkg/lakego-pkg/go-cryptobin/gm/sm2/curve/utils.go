@@ -133,32 +133,3 @@ func panicIfNotOnCurve(curve elliptic.Curve, x, y *big.Int) {
         panic("cryptobin/sm2: attempted operation on invalid point")
     }
 }
-
-// nonZeroToAllOnes returns:
-//   0xffffffff for 0 < x <= 2**31
-//   0 for x == 0 or x > 2**31.
-func nonZeroToAllOnes(x uint32) uint32 {
-    return ((x - 1) >> 31) - 1
-}
-
-func abs(a int8) uint32 {
-    if a < 0 {
-        return uint32(-a)
-    }
-
-    return uint32(a)
-}
-
-// getBit returns the bit'th bit of scalar.
-func getBit(scalar []byte, bit uint) uint32 {
-    return uint32(((scalar[bit >> 3]) >> (bit & 7)) & 1)
-}
-
-func zForAffine(x, y *big.Int) *big.Int {
-    z := new(big.Int)
-    if x.Sign() != 0 || y.Sign() != 0 {
-        z.SetInt64(1)
-    }
-
-    return z
-}

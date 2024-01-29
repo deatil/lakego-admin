@@ -1,5 +1,14 @@
 ## go-datebin
 
+<p align="center">
+<a href="https://pkg.go.dev/github.com/deatil/go-datebin"><img src="https://pkg.go.dev/badge/deatil/go-datebin.svg" alt="Go Reference"></a>
+<a href="https://codecov.io/gh/deatil/go-datebin" >
+    <img src="https://codecov.io/gh/deatil/go-datebin/graph/badge.svg"/>
+</a>
+<img src="https://goreportcard.com/badge/github.com/deatil/go-datebin" />
+<a href="https://github.com/avelino/awesome-go"><img src="https://awesome.re/mentioned-badge.svg" alt="Mentioned in Awesome Go"></a>
+</p>
+
 
 ### 项目介绍
 

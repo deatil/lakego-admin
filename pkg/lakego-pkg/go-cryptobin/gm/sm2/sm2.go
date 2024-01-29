@@ -9,7 +9,6 @@ import (
     "crypto/rand"
     "crypto/subtle"
     "crypto/elliptic"
-    "encoding/asn1"
     "encoding/binary"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
@@ -49,25 +48,6 @@ func (opt SignerOpts) HashFunc() crypto.Hash {
     return crypto.Hash(0)
 }
 
-type sm2Signature struct {
-    R, S *big.Int
-}
-
-func SignDigitToData(r, s *big.Int) ([]byte, error) {
-    return asn1.Marshal(sm2Signature{r, s})
-}
-
-func SignDataToDigit(sign []byte) (*big.Int, *big.Int, error) {
-    var sm2Sign sm2Signature
-
-    _, err := asn1.Unmarshal(sign, &sm2Sign)
-    if err != nil {
-        return nil, nil, err
-    }
-
-    return sm2Sign.R, sm2Sign.S, nil
-}
-
 type PublicKey struct {
     elliptic.Curve
     X, Y *big.Int
@@ -90,7 +70,7 @@ func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bo
         uid = opt.Uid
     }
 
-    r, s, err := SignDataToDigit(sign)
+    r, s, err := UnmarshalSignatureASN1(sign)
     if err != nil {
         return false
     }
@@ -104,8 +84,13 @@ func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpt
         uid = opt.Uid
     }
 
-    r := new(big.Int).SetBytes(sign[:32])
-    s := new(big.Int).SetBytes(sign[32:])
+    byteLen := (pub.Curve.Params().BitSize + 7) / 8
+    if len(sign) != 2*byteLen {
+        return false
+    }
+
+    r := new(big.Int).SetBytes(sign[      0:  byteLen])
+    s := new(big.Int).SetBytes(sign[byteLen:2*byteLen])
 
     return VerifyWithSM2(pub, msg, uid, r, s)
 }
@@ -161,7 +146,7 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
         return nil, err
     }
 
-    return SignDigitToData(r, s)
+    return MarshalSignatureASN1(r, s)
 }
 
 func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
@@ -175,12 +160,14 @@ func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.Sign
         return nil, err
     }
 
-    sign := make([]byte, 64)
+    byteLen := (priv.Curve.Params().BitSize + 7) / 8
 
-    copy(sign[:32], zeroPadding(r.Bytes(), 32))
-    copy(sign[32:], zeroPadding(s.Bytes(), 32))
+    buf := make([]byte, 2*byteLen)
 
-    return sign, nil
+    r.FillBytes(buf[0:byteLen])
+    s.FillBytes(buf[byteLen:2*byteLen])
+
+    return buf, nil
 }
 
 // crypto.Decrypter
@@ -241,7 +228,7 @@ func NewPrivateKey(d []byte) (*PrivateKey, error) {
 
     n := new(big.Int).Sub(params.N, one)
     if k.Cmp(n) >= 0 {
-        return nil, errors.New("sm2: privateKey's D is overflow.")
+        return nil, errors.New("cryptobin/sm2: privateKey's D is overflow.")
     }
 
     priv := new(PrivateKey)
@@ -263,7 +250,7 @@ func NewPublicKey(data []byte) (*PublicKey, error) {
 
     x, y := curve.Unmarshal(c, data)
     if x == nil || y == nil {
-        return nil, errors.New("sm2: publicKey is incorrect.")
+        return nil, errors.New("cryptobin/sm2: publicKey is incorrect.")
     }
 
     pub := &PublicKey{
@@ -288,14 +275,14 @@ func Encrypt(random io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte, 
     }
 
     // 编码数据 / Marshal Data
-    ct = marshalBytes(ct, mode)
+    ct = marshalCipherBytes(pub.Curve, ct, mode)
 
     return ct, nil
 }
 
 func Decrypt(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
     // 解析数据 / Unmarshal Data
-    res, err := unmarshalBytes(data, mode)
+    res, err := unmarshalCipherBytes(priv.Curve, data, mode)
     if err != nil {
         return nil, err
     }
@@ -310,20 +297,21 @@ func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, mode Mode) ([]byte
         return nil, err
     }
 
-    return marshalASN1(ct, mode)
+    return marshalCipherASN1(pub.Curve, ct, mode)
 }
 
 // sm2解密，解析 asn.1 编码格式的密文内容
-func DecryptASN1(pub *PrivateKey, data []byte, mode Mode) ([]byte, error) {
-    res, err := unmarshalASN1(data, mode)
+func DecryptASN1(priv *PrivateKey, data []byte, mode Mode) ([]byte, error) {
+    res, err := unmarshalCipherASN1(priv.Curve, data, mode)
     if err != nil {
         return nil, err
     }
 
-    return decrypt(pub, res)
+    return decrypt(priv, res)
 }
 
 func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
+    byteLen := (pub.Curve.Params().BitSize + 7) / 8
     length := len(data)
 
     for {
@@ -339,10 +327,14 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
         x1, y1 := curve.ScalarBaseMult(k.Bytes())
         x2, y2 := curve.ScalarMult(pub.X, pub.Y, k.Bytes())
 
-        x1Buf := zeroPadding(x1.Bytes(), 32)
-        y1Buf := zeroPadding(y1.Bytes(), 32)
-        x2Buf := zeroPadding(x2.Bytes(), 32)
-        y2Buf := zeroPadding(y2.Bytes(), 32)
+        x1Buf := make([]byte, byteLen)
+        x1.FillBytes(x1Buf)
+        y1Buf := make([]byte, byteLen)
+        y1.FillBytes(y1Buf)
+        x2Buf := make([]byte, byteLen)
+        x2.FillBytes(x2Buf)
+        y2Buf := make([]byte, byteLen)
+        y2.FillBytes(y2Buf)
 
         c = append(c, x1Buf...) // x分量
         c = append(c, y1Buf...) // y分量
@@ -362,35 +354,34 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
 
         c = append(c, ct...)
 
-        for i := 0; i < length; i++ {
-            c[96+i] ^= data[i]
-        }
+        subtle.XORBytes(c[2*byteLen+32:], c[2*byteLen+32:], data)
 
         return c, nil
     }
 }
 
 func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
-    length := len(data) - 96
-
     curve := priv.Curve
 
-    x := new(big.Int).SetBytes(data[ 0:32])
-    y := new(big.Int).SetBytes(data[32:64])
+    byteLen := (curve.Params().BitSize + 7) / 8
+    length := len(data) - 2*byteLen - 32
+
+    x := new(big.Int).SetBytes(data[0:byteLen])
+    y := new(big.Int).SetBytes(data[byteLen:2*byteLen])
 
     x2, y2 := curve.ScalarMult(x, y, priv.D.Bytes())
 
-    x2Buf := zeroPadding(x2.Bytes(), 32)
-    y2Buf := zeroPadding(y2.Bytes(), 32)
+    x2Buf := make([]byte, byteLen)
+    x2.FillBytes(x2Buf)
+    y2Buf := make([]byte, byteLen)
+    y2.FillBytes(y2Buf)
 
     c, ok := kdf(length, x2Buf, y2Buf)
     if !ok {
-        return nil, errors.New("sm2: failed to decrypt")
+        return nil, errors.New("cryptobin/sm2: failed to decrypt")
     }
 
-    for i := 0; i < length; i++ {
-        c[i] ^= data[i+96]
-    }
+    subtle.XORBytes(c, c, data[2*byteLen+32:])
 
     tm := []byte{}
     tm = append(tm, x2Buf...)
@@ -399,8 +390,8 @@ func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
 
     h := sm3.Sum(tm)
 
-    if bytes.Compare(h[:], data[64:96]) != 0 {
-        return c, errors.New("sm2: failed to decrypt")
+    if bytes.Compare(h[:], data[2*byteLen:2*byteLen+32]) != 0 {
+        return c, errors.New("cryptobin/sm2: failed to decrypt")
     }
 
     return c, nil
@@ -524,7 +515,7 @@ func CalculateSM2Hash(pub *PublicKey, msg, uid []byte) ([]byte, error) {
 func CalculateZA(pub *PublicKey, uid []byte) ([]byte, error) {
     uidLen := len(uid)
     if uidLen >= 8192 {
-        return []byte{}, errors.New("sm2: uid too large")
+        return []byte{}, errors.New("cryptobin/sm2: uid too large")
     }
 
     entla := uint16(8 * uidLen)
@@ -629,24 +620,4 @@ func bigIntToBytes(c elliptic.Curve, value *big.Int) []byte {
 // through timing side-channels.
 func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
-}
-
-// zero padding
-func zeroPadding(text []byte, size int) []byte {
-    if size < 1 {
-        return text
-    }
-
-    n := len(text)
-
-    if n == size {
-        return text
-    }
-
-    if n < size {
-        r := bytes.Repeat([]byte("0"), size - n)
-        return append(r, text...)
-    }
-
-    return text[n-size:]
 }
