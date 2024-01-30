@@ -3,7 +3,7 @@ package field_test
 import (
     "testing"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve/field"
 )
 
 func BenchmarkMul(b *testing.B) {

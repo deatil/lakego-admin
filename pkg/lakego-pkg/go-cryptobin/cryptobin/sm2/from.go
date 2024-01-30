@@ -311,7 +311,12 @@ func (this SM2) FromPublicKeyCompressString(key string) SM2 {
 
     d, _ := new(big.Int).SetString(key[:], 16)
 
-    this.publicKey = sm2.Decompress(d.Bytes())
+    publicKey, err := sm2.Decompress(d.Bytes())
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
 
     return this
 }

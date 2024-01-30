@@ -9,7 +9,7 @@ import (
     "crypto/x509/pkix"
     "encoding/asn1"
 
-    pkcs7_ber "github.com/deatil/go-cryptobin/pkcs7/ber"
+    "github.com/deatil/go-cryptobin/ber"
 )
 
 var (
@@ -52,7 +52,7 @@ func Parse(data []byte) (p7 *PKCS7, err error) {
     }
 
     var info contentInfo
-    der, err := pkcs7_ber.Ber2der(data)
+    der, err := ber.Ber2der(data)
     if err != nil {
         return nil, err
     }

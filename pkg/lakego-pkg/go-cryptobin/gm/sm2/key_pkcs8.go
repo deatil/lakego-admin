@@ -5,7 +5,7 @@ import (
     "encoding/asn1"
     "crypto/x509/pkix"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 var (
@@ -98,7 +98,7 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
 
     c := P256()
 
-    x, y := curve.Unmarshal(c, pubkey.BitString.Bytes)
+    x, y := sm2curve.Unmarshal(c, pubkey.BitString.Bytes)
 
     pub := PublicKey{
         Curve: c,
@@ -130,7 +130,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     r.Algo = algo
     r.BitString = asn1.BitString{
-        Bytes: curve.Marshal(key.Curve, key.X, key.Y),
+        Bytes: sm2curve.Marshal(key.Curve, key.X, key.Y),
     }
 
     return asn1.Marshal(r)

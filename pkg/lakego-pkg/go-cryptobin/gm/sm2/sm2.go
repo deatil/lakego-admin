@@ -12,11 +12,13 @@ import (
     "encoding/binary"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
-    "github.com/deatil/go-cryptobin/gm/sm2/curve"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 // sm2 p256
-var P256 = curve.P256
+func P256() elliptic.Curve {
+    return sm2curve.P256()
+}
 
 var defaultUid = []byte{
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
@@ -33,7 +35,7 @@ var errZeroParam = errors.New("zero parameter")
 type Mode uint
 
 const (
-    C1C3C2 Mode = 0 + iota
+    C1C3C2 Mode = iota
     C1C2C3
 )
 
@@ -260,7 +262,7 @@ func ToPrivateKey(key *PrivateKey) []byte {
 func NewPublicKey(data []byte) (*PublicKey, error) {
     c := P256()
 
-    x, y := curve.Unmarshal(c, data)
+    x, y := sm2curve.Unmarshal(c, data)
     if x == nil || y == nil {
         return nil, errors.New("cryptobin/sm2: publicKey is incorrect.")
     }
@@ -277,7 +279,7 @@ func NewPublicKey(data []byte) (*PublicKey, error) {
 // 输出公钥明文
 // output PublicKey data
 func ToPublicKey(key *PublicKey) []byte {
-    return curve.Marshal(key.Curve, key.X, key.Y)
+    return sm2curve.Marshal(key.Curve, key.X, key.Y)
 }
 
 // sm2 加密，返回字节拼接格式的密文内容

@@ -164,11 +164,15 @@ func Test_Compress(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    p := sm2.Compress(pub)
+    pk := sm2.Compress(pub)
 
-    newpub := sm2.Decompress(p)
+    newpub, err := sm2.Decompress(pk)
+    if err != nil {
+        t.Fatal(err)
+    }
+
     if !newpub.Equal(pub) {
-        t.Errorf("Compress got %x", p)
+        t.Errorf("Compress got %x", pk)
     }
 }
 

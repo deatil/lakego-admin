@@ -9,7 +9,7 @@ import (
     "crypto/x509/pkix"
     "encoding/asn1"
 
-    pkcs7_ber "github.com/deatil/go-cryptobin/pkcs7/ber"
+    "github.com/deatil/go-cryptobin/ber"
 )
 
 // 解析
@@ -133,7 +133,7 @@ func parseData(data []byte) ([]byte, asn1.ObjectIdentifier, error) {
         return nil, asn1.ObjectIdentifier{}, errors.New("pkcs7: input data is empty")
     }
 
-    der, err := pkcs7_ber.Ber2der(data)
+    der, err := ber.Ber2der(data)
     if err != nil {
         return nil, asn1.ObjectIdentifier{}, err
     }

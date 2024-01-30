@@ -2,20 +2,15 @@ package sm3
 
 import (
     "math/bits"
+    "encoding/binary"
 )
 
 func GETU32(ptr []byte) uint32 {
-    return uint32(ptr[0]) << 24 |
-           uint32(ptr[1]) << 16 |
-           uint32(ptr[2]) <<  8 |
-           uint32(ptr[3])
+    return binary.BigEndian.Uint32(ptr)
 }
 
 func PUTU32(ptr []byte, a uint32) {
-    ptr[0] = byte(a >> 24)
-    ptr[1] = byte(a >> 16)
-    ptr[2] = byte(a >>  8)
-    ptr[3] = byte(a)
+    binary.BigEndian.PutUint32(ptr, a)
 }
 
 func ROTL(x uint32, n uint32) uint32 {

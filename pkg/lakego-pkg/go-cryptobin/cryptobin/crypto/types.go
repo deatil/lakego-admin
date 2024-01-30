@@ -13,14 +13,6 @@ var TypeMode = NewTypeSet[Mode, string](maxMode)
 // 补码
 var TypePadding = NewTypeSet[Padding, string](maxPadding)
 
-// 构造函数
-func NewTypeSet[N TypeName, D any](max N) *TypeSet[N, D] {
-    return &TypeSet[N, D]{
-        max:   max,
-        names: NewDataSet[N, D](),
-    }
-}
-
 // 名称类型
 type TypeName interface {
     ~uint | ~int
@@ -33,6 +25,14 @@ type TypeSet[N TypeName, D any] struct {
 
     // 数据
     names *DataSet[N, D]
+}
+
+// 构造函数
+func NewTypeSet[N TypeName, D any](max N) *TypeSet[N, D] {
+    return &TypeSet[N, D]{
+        max:   max,
+        names: NewDataSet[N, D](),
+    }
 }
 
 // 生成新序列

@@ -136,7 +136,10 @@ func Test_Decompress(t *testing.T) {
         t.Fatal(err)
     }
 
-    pubkey := Decompress(pub)
+    pubkey, err := Decompress(pub)
+    if err != nil {
+        t.Fatal(err)
+    }
 
     pubkeyBytes, err := MarshalPublicKey(pubkey)
     if err != nil {

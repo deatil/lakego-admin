@@ -1,4 +1,4 @@
-package curve_test
+package sm2curve_test
 
 import (
     "io"
@@ -8,7 +8,7 @@ import (
     "crypto/rand"
     "encoding/hex"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 func randomK(r io.Reader, ord *big.Int) (k *big.Int, err error) {
@@ -34,7 +34,7 @@ func TestImplicitSig(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    res1, err := curve.ImplicitSig(sPriv.Bytes(), ePriv.Bytes(), k.Bytes())
+    res1, err := sm2curve.ImplicitSig(sPriv.Bytes(), ePriv.Bytes(), k.Bytes())
     if err != nil {
         t.Fatal(err)
     }

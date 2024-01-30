@@ -8,7 +8,7 @@ import (
     "crypto/rand"
     "encoding/hex"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve/field"
 )
 
 var ordN *big.Int

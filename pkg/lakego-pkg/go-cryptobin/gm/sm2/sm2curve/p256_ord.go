@@ -1,12 +1,12 @@
 //go:build (!amd64 && !arm64) || purego
 // +build !amd64,!arm64 purego
 
-package curve
+package sm2curve
 
 import (
     "errors"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve/field"
 )
 
 // P256OrdInverse, sets out to in⁻¹ mod org(G). If in is zero, out will be zero.

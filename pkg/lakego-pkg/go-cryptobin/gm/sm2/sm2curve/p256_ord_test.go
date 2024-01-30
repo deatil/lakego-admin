@@ -1,19 +1,19 @@
-package curve_test
+package sm2curve_test
 
 import (
     "bytes"
     "math/big"
     "testing"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 func TestP256OrdInverse(t *testing.T) {
-    N := curve.P256().Params().N
+    N := sm2curve.P256().Params().N
 
     // inv(0) is expected to be 0.
     zero := make([]byte, 32)
-    out, err := curve.P256OrdInverse(zero)
+    out, err := sm2curve.P256OrdInverse(zero)
     if err != nil {
         t.Fatal(err)
     }
@@ -24,7 +24,7 @@ func TestP256OrdInverse(t *testing.T) {
     // inv(N) is also 0 mod N.
     input := make([]byte, 32)
     N.FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }
@@ -38,7 +38,7 @@ func TestP256OrdInverse(t *testing.T) {
     // Check inv(1) and inv(N+1) against math/big
     exp := new(big.Int).ModInverse(big.NewInt(1), N).FillBytes(make([]byte, 32))
     big.NewInt(1).FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }
@@ -46,7 +46,7 @@ func TestP256OrdInverse(t *testing.T) {
         t.Error("unexpected output for inv(1)")
     }
     new(big.Int).Add(N, big.NewInt(1)).FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }
@@ -57,7 +57,7 @@ func TestP256OrdInverse(t *testing.T) {
     // Check inv(20) and inv(N+20) against math/big
     exp = new(big.Int).ModInverse(big.NewInt(20), N).FillBytes(make([]byte, 32))
     big.NewInt(20).FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }
@@ -65,7 +65,7 @@ func TestP256OrdInverse(t *testing.T) {
         t.Error("unexpected output for inv(20)")
     }
     new(big.Int).Add(N, big.NewInt(20)).FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }
@@ -78,7 +78,7 @@ func TestP256OrdInverse(t *testing.T) {
     bigInput.Sub(bigInput, big.NewInt(1))
     exp = new(big.Int).ModInverse(bigInput, N).FillBytes(make([]byte, 32))
     bigInput.FillBytes(input)
-    out, err = curve.P256OrdInverse(input)
+    out, err = sm2curve.P256OrdInverse(input)
     if err != nil {
         t.Fatal(err)
     }

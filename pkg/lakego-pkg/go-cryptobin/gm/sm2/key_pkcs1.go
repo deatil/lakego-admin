@@ -7,7 +7,7 @@ import (
     "encoding/asn1"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 const sm2PrivKeyVersion = 1
@@ -62,7 +62,7 @@ func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]
         PrivateKey:    key.D.FillBytes(privateKey),
         NamedCurveOID: oid,
         PublicKey:     asn1.BitString{
-            Bytes: curve.Marshal(key.Curve, key.X, key.Y),
+            Bytes: sm2curve.Marshal(key.Curve, key.X, key.Y),
         },
     })
 }

@@ -4,7 +4,7 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
-var (
+const (
     // 类型
     C1C3C2 = sm2.C1C3C2
     C1C2C3 = sm2.C1C2C3

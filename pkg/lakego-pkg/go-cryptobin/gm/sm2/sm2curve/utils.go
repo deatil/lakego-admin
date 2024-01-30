@@ -1,4 +1,4 @@
-package curve
+package sm2curve
 
 import (
     "math/big"

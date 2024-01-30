@@ -1,12 +1,12 @@
-package curve
+package sm2curve
 
 import (
-    "bytes"
-    "crypto/rand"
-    "encoding/hex"
     "fmt"
+    "bytes"
     "math/big"
     "testing"
+    "crypto/rand"
+    "encoding/hex"
 )
 
 // r = 2^256

@@ -1,14 +1,14 @@
 //go:build !amd64 && !arm64 || purego
 // +build !amd64,!arm64 purego
 
-package curve
+package sm2curve
 
 import (
     "sync"
     "errors"
     "crypto/subtle"
 
-    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve/field"
 )
 
 // p256ElementLength is the length of an element of the base or scalar field,
