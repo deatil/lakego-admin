@@ -4,12 +4,12 @@
 package curve
 
 import (
+    "io"
+    "time"
+    "testing"
+    "math/big"
     "crypto/rand"
     "encoding/hex"
-    "io"
-    "math/big"
-    "testing"
-    "time"
 )
 
 // fromBig converts a *big.Int into a format used by this code.

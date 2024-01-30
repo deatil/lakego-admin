@@ -453,7 +453,7 @@ func Test_ToOtherFormatString(t *testing.T) {
 		toDate   string
 	}{
 		{
-			index:  "index-1",
+			index:  "index-ToAnsicString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -462,7 +462,7 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "Wed May  3 21:15:12 2023",
 		},
 		{
-			index:  "index-2",
+			index:  "index-ToUnixDateString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -471,7 +471,7 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "Wed May  3 21:15:12 CST 2023",
 		},
 		{
-			index:  "index-3",
+			index:  "index-ToRubyDateString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -480,7 +480,25 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "Wed May 03 21:15:12 +0800 2023",
 		},
 		{
-			index:  "index-4",
+			index:  "index-ToRFC822String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC822String()
+			},
+			toDate: "03 May 23 21:15 CST",
+		},
+		{
+			index:  "index-ToRFC822ZString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC822ZString()
+			},
+			toDate: "03 May 23 21:15 +0800",
+		},
+		{
+			index:  "index-ToRFC850String",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -489,7 +507,25 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "Wednesday, 03-May-23 21:15:12 CST",
 		},
 		{
-			index:  "index-5",
+			index:  "index-ToRFC1123String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC1123String()
+			},
+			toDate: "Wed, 03 May 2023 21:15:12 CST",
+		},
+		{
+			index:  "index-ToRFC1123ZString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC1123ZString()
+			},
+			toDate: "Wed, 03 May 2023 21:15:12 +0800",
+		},
+		{
+			index:  "index-ToRssString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -498,7 +534,43 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "Wed, 03 May 2023 21:15:12 +0800",
 		},
 		{
-			index:  "index-6",
+			index:  "index-ToRFC2822String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC2822String()
+			},
+			toDate: "Wed, 03 May 2023 21:15:12 +0800",
+		},
+		{
+			index:  "index-ToRFC3339String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC3339String()
+			},
+			toDate: "2023-05-03T21:15:12+08:00",
+		},
+		{
+			index:  "index-ToKitchenString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToKitchenString()
+			},
+			toDate: "9:15PM",
+		},
+		{
+			index:  "index-ToCookieString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToCookieString()
+			},
+			toDate: "Wednesday, 03-May-2023 21:15:12 CST",
+		},
+		{
+			index:  "index-ToISO8601String",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -507,7 +579,34 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "2023-05-03T21:15:12+08:00",
 		},
 		{
-			index:  "index-7",
+			index:  "index-ToRFC1036String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC1036String()
+			},
+			toDate: "Wed, 03 May 23 21:15:12 +0800",
+		},
+		{
+			index:  "index-ToRFC7231String",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC7231String()
+			},
+			toDate: "Wed, 03 May 2023 21:15:12 GMT",
+		},
+		{
+			index:  "index-ToAtomString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToAtomString()
+			},
+			toDate: "2023-05-03T21:15:12+08:00",
+		},
+		{
+			index:  "index-ToW3CString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
@@ -516,13 +615,76 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "2023-05-03T21:15:12+08:00",
 		},
 		{
-			index:  "index-8",
+			index:  "index-ToDayDateTimeString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToDayDateTimeString()
+			},
+			toDate: "Wed, May 3, 2023 9:15 PM",
+		},
+		{
+			index:  "index-ToFormattedDateString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToFormattedDateString()
+			},
+			toDate: "May 3, 2023",
+		},
+		{
+			index:  "index-ToDatetimeString",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
 			toLayout: func(d Datebin) string {
 				return d.ToDatetimeString()
 			},
 			toDate: "2023-05-03 21:15:12",
+		},
+		{
+			index:  "index-ToDateString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToDateString()
+			},
+			toDate: "2023-05-03",
+		},
+		{
+			index:  "index-ToTimeString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToTimeString()
+			},
+			toDate: "21:15:12",
+		},
+		{
+			index:  "index-ToShortDatetimeString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToShortDatetimeString()
+			},
+			toDate: "20230503211512",
+		},
+		{
+			index:  "index-ToShortDateString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToShortDateString()
+			},
+			toDate: "20230503",
+		},
+		{
+			index:  "index-ToShortTimeString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToShortTimeString()
+			},
+			toDate: "211512",
 		},
 	}
 

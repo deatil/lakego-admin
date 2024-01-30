@@ -26,6 +26,12 @@ func Test_IsCapricornStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-01-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
@@ -58,6 +64,12 @@ func Test_IsAquariusStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-01-23 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-02-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -98,6 +110,12 @@ func Test_IsPiscesStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-03-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-05-05 21:15:12",
 			tz:    "CET",
@@ -130,6 +148,12 @@ func Test_IsAriesStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-03-23 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-04-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -170,6 +194,12 @@ func Test_IsTaurusStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-05-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
@@ -202,6 +232,12 @@ func Test_IsGeminiStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-06-19 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-06-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -242,6 +278,12 @@ func Test_IsCancerStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-07-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
@@ -274,6 +316,12 @@ func Test_IsLeoStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-08-19 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-08-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -314,6 +362,12 @@ func Test_IsVirgoStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-09-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
@@ -346,6 +400,12 @@ func Test_IsLibraStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-10-19 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-10-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -386,6 +446,12 @@ func Test_IsScorpioStar(t *testing.T) {
 			check: true,
 		},
 		{
+			index: "index-2-1",
+			date:  "2023-11-15 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
 			index: "index-3",
 			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
@@ -418,6 +484,12 @@ func Test_IsSagittariusStar(t *testing.T) {
 		{
 			index: "index-2",
 			date:  "2023-12-19 12:00:00",
+			tz:    "Local",
+			check: true,
+		},
+		{
+			index: "index-2-1",
+			date:  "2023-12-15 12:00:00",
 			tz:    "Local",
 			check: true,
 		},

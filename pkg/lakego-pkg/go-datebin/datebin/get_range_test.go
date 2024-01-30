@@ -29,6 +29,13 @@ func Test_NYearStart(t *testing.T) {
 			year:   35,
 			check:  "1995-01-01 00:00:00",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			year:   35,
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -64,6 +71,13 @@ func Test_NYearEnd(t *testing.T) {
 			year:   35,
 			check:  "2029-12-31 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			year:   35,
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -95,6 +109,12 @@ func Test_CenturyStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19350103211512",
 			check:  "1900-01-01 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -128,6 +148,12 @@ func Test_CenturyEnd(t *testing.T) {
 			date:   "19350103211512",
 			check:  "1999-12-31 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -159,6 +185,12 @@ func Test_DecadeStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19350103211512",
 			check:  "1930-01-01 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -192,6 +224,12 @@ func Test_DecadeEnd(t *testing.T) {
 			date:   "19350103211512",
 			check:  "1939-12-31 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -223,6 +261,12 @@ func Test_YearStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19350903211512",
 			check:  "1935-01-01 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -256,6 +300,12 @@ func Test_YearEnd(t *testing.T) {
 			date:   "19350903211512",
 			check:  "1935-12-31 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -287,6 +337,12 @@ func Test_SeasonStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003211512",
 			check:  "1935-09-01 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -320,6 +376,12 @@ func Test_SeasonEnd(t *testing.T) {
 			date:   "19351003211512",
 			check:  "1935-11-30 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -351,6 +413,12 @@ func Test_MonthStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003211512",
 			check:  "1935-10-01 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -384,6 +452,12 @@ func Test_MonthEnd(t *testing.T) {
 			date:   "19351003211512",
 			check:  "1935-10-31 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -415,6 +489,12 @@ func Test_WeekStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003211512",
 			check:  "1935-09-30 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -448,6 +528,12 @@ func Test_WeekEnd(t *testing.T) {
 			date:   "19351003211512",
 			check:  "1935-10-06 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -479,6 +565,12 @@ func Test_DayStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003211512",
 			check:  "1935-10-03 00:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -512,6 +604,12 @@ func Test_DayEnd(t *testing.T) {
 			date:   "19351003211512",
 			check:  "1935-10-03 23:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -543,6 +641,12 @@ func Test_HourStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003201512",
 			check:  "1935-10-03 20:00:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -576,6 +680,12 @@ func Test_HourEnd(t *testing.T) {
 			date:   "19351003201512",
 			check:  "1935-10-03 20:59:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -607,6 +717,12 @@ func Test_MinuteStart(t *testing.T) {
 			layout: "20060102150405",
 			date:   "19351003201552",
 			check:  "1935-10-03 20:15:00",
+		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
 		},
 	}
 
@@ -640,6 +756,12 @@ func Test_MinuteEnd(t *testing.T) {
 			date:   "19351003201552",
 			check:  "1935-10-03 20:15:59",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -672,6 +794,12 @@ func Test_SecondStart(t *testing.T) {
 			date:   "19351003201552.219999999",
 			check:  "1935-10-03 20:15:52",
 		},
+		{
+			index:  "index-3",
+			layout: "20060102150405",
+			date:   "",
+			check:  "",
+		},
 	}
 
 	for _, td := range tests {
@@ -703,6 +831,12 @@ func Test_SecondEnd(t *testing.T) {
 			layout: ShortDatetimeNanoFormat,
 			date:   "19351003201552.219999999",
 			check:  "1935-10-03 20:15:52.999999999",
+		},
+		{
+			index:  "index-3",
+			layout: ShortDatetimeNanoFormat,
+			date:   "",
+			check:  "",
 		},
 	}
 

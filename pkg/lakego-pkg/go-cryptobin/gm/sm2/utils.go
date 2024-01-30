@@ -4,10 +4,12 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2/curve"
 )
 
-func Decompress(a []byte) *PublicKey {
+// 解缩公钥
+// Decompress PublicKey data
+func Decompress(data []byte) *PublicKey {
     c := P256()
 
-    x, y := curve.UnmarshalCompressed(c, a)
+    x, y := curve.UnmarshalCompressed(c, data)
 
     return &PublicKey{
         Curve: c,
@@ -16,6 +18,8 @@ func Decompress(a []byte) *PublicKey {
     }
 }
 
-func Compress(k *PublicKey) []byte {
-    return curve.MarshalCompressed(k.Curve, k.X, k.Y)
+// 压缩公钥
+// Compress PublicKey struct
+func Compress(pub *PublicKey) []byte {
+    return curve.MarshalCompressed(pub.Curve, pub.X, pub.Y)
 }

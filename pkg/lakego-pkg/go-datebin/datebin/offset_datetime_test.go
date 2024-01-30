@@ -21,9 +21,9 @@ func Test_SubCenturies(t *testing.T) {
 		},
 		{
 			index:   "index-2",
-			date:    "2021-06-06 21:15:12",
+			date:    "2221-06-06 21:15:12",
 			century: 2,
-			check:   "1821-06-06 21:15:12",
+			check:   "2021-06-06 21:15:12",
 		},
 	}
 
@@ -51,9 +51,9 @@ func Test_SubCenturiesNoOverflow(t *testing.T) {
 		},
 		{
 			index:   "index-2",
-			date:    "2021-06-06 21:15:12",
+			date:    "2321-06-06 21:15:12",
 			century: 2,
-			check:   "1821-06-06 21:15:12",
+			check:   "2121-06-06 21:15:12",
 		},
 	}
 

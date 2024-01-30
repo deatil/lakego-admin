@@ -37,6 +37,26 @@ func Test_Statistics(t *testing.T) {
 			DayOfWeek:   1,
 			WeekOfYear:  20,
 		},
+		{
+			index:       "index-3",
+			date:        "",
+			DaysInMonth: 0,
+			MonthOfYear: 0,
+			DayOfYear:   0,
+			DayOfMonth:  0,
+			DayOfWeek:   0,
+			WeekOfYear:  0,
+		},
+		{
+			index:       "index-4",
+			date:        "0",
+			DaysInMonth: 0,
+			MonthOfYear: 0,
+			DayOfYear:   0,
+			DayOfMonth:  0,
+			DayOfWeek:   0,
+			WeekOfYear:  0,
+		},
 	}
 
 	for _, td := range tests {

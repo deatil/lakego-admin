@@ -30,15 +30,17 @@ func UnmarshalSignatureASN1(sign []byte) (*big.Int, *big.Int, error) {
 func marshalCipherBytes(curve elliptic.Curve, c []byte, mode Mode) []byte {
     byteLen := (curve.Params().BitSize + 7) / 8
 
+    // C1C3C2 密文结构: x + y + hash + CipherText
+    // C1C2C3 密文结构: x + y + CipherText + hash
     switch mode {
         case C1C2C3:
             c1 := make([]byte, 2*byteLen)
             c2 := make([]byte, len(c) - 2*byteLen - 32)
             c3 := make([]byte, 32)
 
-            copy(c1, c[:2*byteLen])             // x1, y1
-            copy(c3, c[2*byteLen:2*byteLen+32]) // hash
-            copy(c2, c[2*byteLen+32:])          // 密文
+            copy(c1, c[0:])    // x1, y1
+            copy(c3, c[2*byteLen:])    // hash
+            copy(c2, c[2*byteLen+32:]) // 密文
 
             ct := make([]byte, 0)
             ct = append(ct, c1...)
@@ -72,9 +74,9 @@ func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode) ([]byte,
             c2 := make([]byte, len(data) - 2*byteLen - 32)
             c3 := make([]byte, 32)
 
-            copy(c1, data[:2*byteLen])               // x1, y1
-            copy(c2, data[2*byteLen:len(data) - 32]) // 密文
-            copy(c3, data[len(data) - 32:])          // hash
+            copy(c1, data[0:])      // x1, y1
+            copy(c2, data[2*byteLen:])      // 密文
+            copy(c3, data[len(data) - 32:]) // hash
 
             c := make([]byte, 0)
             c = append(c, c1...)
@@ -138,12 +140,8 @@ func unmarshalCipherASN1New(curve elliptic.Curve, b []byte) ([]byte, error) {
         return nil, err
     }
 
-    byteLen := (curve.Params().BitSize + 7) / 8
-
-    xBuf := make([]byte, byteLen)
-    data.XCoordinate.FillBytes(xBuf)
-    yBuf := make([]byte, byteLen)
-    data.YCoordinate.FillBytes(yBuf)
+    xBuf := bigIntToBytes(curve, data.XCoordinate)
+    yBuf := bigIntToBytes(curve, data.YCoordinate)
 
     c := []byte{}
     c = append(c, xBuf...)            // x分量
@@ -184,12 +182,8 @@ func unmarshalCipherASN1Old(curve elliptic.Curve, b []byte) ([]byte, error) {
         return nil, err
     }
 
-    byteLen := (curve.Params().BitSize + 7) / 8
-
-    xBuf := make([]byte, byteLen)
-    data.XCoordinate.FillBytes(xBuf)
-    yBuf := make([]byte, byteLen)
-    data.YCoordinate.FillBytes(yBuf)
+    xBuf := bigIntToBytes(curve, data.XCoordinate)
+    yBuf := bigIntToBytes(curve, data.YCoordinate)
 
     c := []byte{}
     c = append(c, xBuf...)            // x分量

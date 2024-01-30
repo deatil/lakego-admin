@@ -26,6 +26,13 @@ func Test_Date(t *testing.T) {
 			month: 05,
 			day:   11,
 		},
+		{
+			index: "index-3",
+			date:  "0000-00-00 00:00:00",
+			year:  0,
+			month: 0,
+			day:   0,
+		},
 	}
 
 	for _, td := range tests {
@@ -58,6 +65,13 @@ func Test_Time(t *testing.T) {
 			hour:   15,
 			minute: 28,
 			second: 11,
+		},
+		{
+			index:  "index-3",
+			date:   "0000-00-00 00:00:00",
+			hour:   0,
+			minute: 0,
+			second: 0,
 		},
 	}
 
@@ -97,6 +111,16 @@ func Test_Datetime(t *testing.T) {
 			hour:   15,
 			minute: 28,
 			second: 11,
+		},
+		{
+			index:  "index-3",
+			date:   "0000-00-00 00:00:00",
+			year:   0,
+			month:  0,
+			day:    0,
+			hour:   0,
+			minute: 0,
+			second: 0,
 		},
 	}
 
@@ -141,6 +165,17 @@ func Test_DatetimeWithNanosecond(t *testing.T) {
 			minute:     28,
 			second:     11,
 			nanosecond: 123,
+		},
+		{
+			index:      "index-3",
+			date:       "0000-00-00 00:00:00",
+			year:       0,
+			month:      0,
+			day:        0,
+			hour:       0,
+			minute:     0,
+			second:     0,
+			nanosecond: 0,
 		},
 	}
 
@@ -187,6 +222,17 @@ func Test_DatetimeWithMicrosecond(t *testing.T) {
 			second:      11,
 			microsecond: 123,
 		},
+		{
+			index:       "index-3",
+			date:        "0000-00-00 00:00:00",
+			year:        0,
+			month:       0,
+			day:         0,
+			hour:        0,
+			minute:      0,
+			second:      0,
+			microsecond: 0,
+		},
 	}
 
 	for _, td := range tests {
@@ -231,6 +277,17 @@ func Test_DatetimeWithMillisecond(t *testing.T) {
 			minute:      28,
 			second:      11,
 			millisecond: 123,
+		},
+		{
+			index:       "index-3",
+			date:        "",
+			year:        0,
+			month:       0,
+			day:         0,
+			hour:        0,
+			minute:      0,
+			second:      0,
+			millisecond: 0,
 		},
 	}
 

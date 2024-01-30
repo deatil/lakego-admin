@@ -42,6 +42,13 @@ func Test_IsSameAs(t *testing.T) {
 			format: "Y-m H:i",
 			check:  true,
 		},
+		{
+			index:  "index-5",
+			date1:  "00",
+			date2:  "2024-06-03 21:15:12",
+			format: "Y-m-d H:i:s",
+			check:  false,
+		},
 	}
 
 	for _, td := range tests {
@@ -88,6 +95,13 @@ func Test_IsSameAsWithLayout(t *testing.T) {
 			date2:  "2024-06-06 21:15:15",
 			layout: "2006-01 15:04",
 			check:  true,
+		},
+		{
+			index:  "index-5",
+			date1:  "00",
+			date2:  "2024-06-03 21:15:12",
+			layout: "2006-01-02 15:04:05",
+			check:  false,
 		},
 	}
 
@@ -136,6 +150,13 @@ func Test_IsSameUnit(t *testing.T) {
 			unit:  "week",
 			check: true,
 		},
+		{
+			index: "index-5",
+			date1: "00",
+			date2: "2024-06-03 21:15:12",
+			unit:  "minute",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -165,6 +186,12 @@ func Test_IsSameYear(t *testing.T) {
 			date1: "2024-06-05 21:15:12",
 			date2: "2024-06-05 21:15:12",
 			check: true,
+		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-06-03 21:15:12",
+			check: false,
 		},
 	}
 
@@ -196,6 +223,12 @@ func Test_IsSameMonth(t *testing.T) {
 			date2: "2021-06-05 21:15:12",
 			check: true,
 		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -225,6 +258,12 @@ func Test_IsSameDay(t *testing.T) {
 			date1: "2024-06-05 21:15:12",
 			date2: "2021-06-05 21:15:12",
 			check: true,
+		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
 		},
 	}
 
@@ -256,6 +295,12 @@ func Test_IsSameHour(t *testing.T) {
 			date2: "2021-06-07 21:12:11",
 			check: true,
 		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -285,6 +330,12 @@ func Test_IsSameMinute(t *testing.T) {
 			date1: "2024-06-05 21:15:12",
 			date2: "2021-06-07 21:15:13",
 			check: true,
+		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
 		},
 	}
 
@@ -316,6 +367,12 @@ func Test_IsSameSecond(t *testing.T) {
 			date2: "2021-06-07 23:16:12",
 			check: true,
 		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -345,6 +402,12 @@ func Test_IsSameYearMonth(t *testing.T) {
 			date1: "2024-06-05 21:15:12",
 			date2: "2024-06-07 23:16:11",
 			check: true,
+		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
 		},
 	}
 
@@ -376,6 +439,12 @@ func Test_IsSameMonthDay(t *testing.T) {
 			date2: "2021-06-05 23:16:11",
 			check: true,
 		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -406,6 +475,12 @@ func Test_IsSameYearMonthDay(t *testing.T) {
 			date2: "2024-06-05 23:16:11",
 			check: true,
 		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
+		},
 	}
 
 	for _, td := range tests {
@@ -435,6 +510,12 @@ func Test_IsSameBirthday(t *testing.T) {
 			date1: "2024-06-05 21:15:12",
 			date2: "2021-06-05 23:16:11",
 			check: true,
+		},
+		{
+			index: "index-3",
+			date1: "00",
+			date2: "2024-07-03 21:15:12",
+			check: false,
 		},
 	}
 

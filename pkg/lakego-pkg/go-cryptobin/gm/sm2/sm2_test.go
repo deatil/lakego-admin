@@ -193,6 +193,73 @@ func Test_SignASN1(t *testing.T) {
     }
 }
 
+func Test_SignASN1_WithUID(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    opt := sm2.SignerOpts{Uid: []byte("N002362537000000")}
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := priv.Sign(rand.Reader, msg, opt)
+    if err != nil {
+        t.Error(err)
+    }
+
+    veri := pub.Verify(msg, signed, opt)
+    if !veri {
+        t.Error("veri error")
+    }
+}
+
+func Test_SignBytes(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := priv.SignBytes(rand.Reader, msg, nil)
+    if err != nil {
+        t.Error(err)
+    }
+
+    veri := pub.VerifyBytes(msg, signed, nil)
+    if !veri {
+        t.Error("veri error")
+    }
+}
+
+func Test_SignBytes_WithUID(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    opt := sm2.SignerOpts{Uid: []byte("N002362537000000")}
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := priv.SignBytes(rand.Reader, msg, opt)
+    if err != nil {
+        t.Error(err)
+    }
+
+    veri := pub.VerifyBytes(msg, signed, opt)
+    if !veri {
+        t.Error("veri error")
+    }
+}
+
 func Test_Sign(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
@@ -258,6 +325,36 @@ func Test_Encrypt(t *testing.T) {
     }
 
     plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{sm2.C1C3C2})
+    if err != nil {
+        t.Fatalf("decrypt failed %v", err)
+    }
+
+    if !reflect.DeepEqual(string(plaintext), plainText) {
+        t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
+func Test_Encrypt_C1C2C3(t *testing.T) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), sm2.C1C2C3)
+    if err != nil {
+        t.Fatalf("encrypt failed %v", err)
+    }
+
+    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{sm2.C1C2C3})
     if err != nil {
         t.Fatalf("decrypt failed %v", err)
     }

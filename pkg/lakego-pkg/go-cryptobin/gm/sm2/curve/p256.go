@@ -4,10 +4,11 @@
 package curve
 
 import (
-    "crypto/subtle"
-    "errors"
-    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
     "sync"
+    "errors"
+    "crypto/subtle"
+
+    "github.com/deatil/go-cryptobin/gm/sm2/curve/field"
 )
 
 // p256ElementLength is the length of an element of the base or scalar field,
