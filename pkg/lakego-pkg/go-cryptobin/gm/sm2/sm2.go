@@ -199,34 +199,20 @@ func (priv *PrivateKey) DecryptASN1(data []byte, opts crypto.DecrypterOpts) ([]b
     return DecryptASN1(priv, data, mode)
 }
 
+// 生成私钥证书
+// generate PrivateKey
 func GenerateKey(random io.Reader) (*PrivateKey, error) {
-    c := P256()
+    curve := P256()
 
-    if random == nil {
-        // If there is no external trusted random source,
-        // please use rand.Reader to instead of it.
-        random = rand.Reader
-    }
-
-    params := c.Params()
-
-    b := make([]byte, params.BitSize/8+8)
-
-    _, err := io.ReadFull(random, b)
+    k, err := randFieldElement(curve, random)
     if err != nil {
         return nil, err
     }
 
-    k := new(big.Int).SetBytes(b)
-    n := new(big.Int).Sub(params.N, two)
-
-    k.Mod(k, n)
-    k.Add(k, one)
-
     priv := new(PrivateKey)
-    priv.PublicKey.Curve = c
+    priv.PublicKey.Curve = curve
     priv.D = k
-    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(k.Bytes())
+    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(k.Bytes())
 
     return priv, nil
 }
@@ -236,17 +222,17 @@ func GenerateKey(random io.Reader) (*PrivateKey, error) {
 func NewPrivateKey(d []byte) (*PrivateKey, error) {
     k := new(big.Int).SetBytes(d)
 
-    c := P256()
+    curve := P256()
 
-    n := new(big.Int).Sub(c.Params().N, one)
+    n := new(big.Int).Sub(curve.Params().N, one)
     if k.Cmp(n) >= 0 {
         return nil, errors.New("cryptobin/sm2: privateKey's D is overflow.")
     }
 
     priv := new(PrivateKey)
-    priv.PublicKey.Curve = c
+    priv.PublicKey.Curve = curve
     priv.D = k
-    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(d)
+    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(d)
 
     return priv, nil
 }
@@ -260,15 +246,15 @@ func ToPrivateKey(key *PrivateKey) []byte {
 // 根据公钥明文初始化公钥
 // New a PublicKey from publicKey data
 func NewPublicKey(data []byte) (*PublicKey, error) {
-    c := P256()
+    curve := P256()
 
-    x, y := sm2curve.Unmarshal(c, data)
+    x, y := sm2curve.Unmarshal(curve, data)
     if x == nil || y == nil {
         return nil, errors.New("cryptobin/sm2: publicKey is incorrect.")
     }
 
     pub := &PublicKey{
-        Curve: c,
+        Curve: curve,
         X: x,
         Y: y,
     }
@@ -422,9 +408,9 @@ func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
 
 func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
     e := new(big.Int).SetBytes(hash)
-    c := priv.PublicKey.Curve
+    curve := priv.PublicKey.Curve
 
-    N := c.Params().N
+    N := curve.Params().N
     if N.Sign() == 0 {
         return nil, nil, errZeroParam
     }
@@ -433,13 +419,13 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err e
 
     for {
         for {
-            k, err = randFieldElement(c, random)
+            k, err = randFieldElement(curve, random)
             if err != nil {
                 r = nil
                 return
             }
 
-            r, _ = c.ScalarBaseMult(k.Bytes())
+            r, _ = curve.ScalarBaseMult(k.Bytes())
             r.Add(r, e)
             r.Mod(r, N)
 
@@ -469,8 +455,8 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err e
 }
 
 func Verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
-    c := pub.Curve
-    N := c.Params().N
+    curve := pub.Curve
+    N := curve.Params().N
 
     if r.Sign() <= 0 || s.Sign() <= 0 {
         return false
@@ -488,9 +474,9 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
 
     var x *big.Int
 
-    x1, y1 := c.ScalarBaseMult(s.Bytes())
-    x2, y2 := c.ScalarMult(pub.X, pub.Y, t.Bytes())
-    x, _ = c.Add(x1, y1, x2, y2)
+    x1, y1 := curve.ScalarBaseMult(s.Bytes())
+    x2, y2 := curve.ScalarMult(pub.X, pub.Y, t.Bytes())
+    x, _ = curve.Add(x1, y1, x2, y2)
 
     e := new(big.Int).SetBytes(hash)
     x.Add(x, e)
@@ -565,14 +551,14 @@ func CalculateZA(pub *PublicKey, uid []byte) ([]byte, error) {
     return md.Sum(nil), nil
 }
 
-func randFieldElement(c elliptic.Curve, random io.Reader) (k *big.Int, err error) {
+func randFieldElement(curve elliptic.Curve, random io.Reader) (k *big.Int, err error) {
     if random == nil {
         // If there is no external trusted random source,
         // please use rand.Reader to instead of it.
         random = rand.Reader
     }
 
-    params := c.Params()
+    params := curve.Params()
 
     b := make([]byte, params.BitSize/8+8)
 
@@ -630,8 +616,8 @@ func intToBytes(x int) []byte {
     return buf
 }
 
-func bigIntToBytes(c elliptic.Curve, value *big.Int) []byte {
-    byteLen := (c.Params().BitSize + 7) / 8
+func bigIntToBytes(curve elliptic.Curve, value *big.Int) []byte {
+    byteLen := (curve.Params().BitSize + 7) / 8
 
     buf := make([]byte, byteLen)
     value.FillBytes(buf)
