@@ -99,7 +99,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
 
     data := pfx.AuthSafe.Content.Bytes
 
-    var authenticatedSafes = make([]cryptobin_asn1.RawValue, 0)
+    authenticatedSafes := make([]byte, 0)
 
     for {
         var authenticatedSafe cryptobin_asn1.RawValue
@@ -108,16 +108,11 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
             return nil, errors.New("Unmarshal octet err: " + err.Error())
         }
 
-        authenticatedSafes = append(authenticatedSafes, authenticatedSafe)
+        authenticatedSafes = append(authenticatedSafes, authenticatedSafe.Bytes...)
 
         if len(data) == 0 {
             break
         }
-    }
-
-    newAuthenticatedSafes := make([]byte, 0)
-    for _, as := range authenticatedSafes {
-        newAuthenticatedSafes = append(newAuthenticatedSafes, as.Bytes...)
     }
 
     password, err = tool.BmpStringZeroTerminated(string(password))
@@ -130,10 +125,10 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
             return nil, errors.New("pkcs12: no MAC in data")
         }
     } else {
-        if err := pfx.MacData.Verify(newAuthenticatedSafes, password); err != nil {
+        if err := pfx.MacData.Verify(authenticatedSafes, password); err != nil {
             if err == cryptobin_pkcs12.ErrIncorrectPassword && len(password) == 2 && password[0] == 0 && password[1] == 0 {
                 password = nil
-                err = pfx.MacData.Verify(newAuthenticatedSafes, password)
+                err = pfx.MacData.Verify(authenticatedSafes, password)
             }
 
             if err != nil {
@@ -143,7 +138,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
     }
 
     var contentInfos []ContentInfo
-    _, err = cryptobin_asn1.Unmarshal(newAuthenticatedSafes, &contentInfos)
+    _, err = cryptobin_asn1.Unmarshal(authenticatedSafes, &contentInfos)
     if err != nil {
         return nil, err
     }

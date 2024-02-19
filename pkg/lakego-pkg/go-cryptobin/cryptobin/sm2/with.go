@@ -1,6 +1,7 @@
 package sm2
 
 import (
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
@@ -48,6 +49,26 @@ func (this SM2) WithData(data []byte) SM2 {
 // 设置 parsedData
 func (this SM2) WithParedData(data []byte) SM2 {
     this.parsedData = data
+
+    return this
+}
+
+// 设置 hash 类型
+func (this SM2) WithSignHash(data HashFunc) SM2 {
+    this.signHash = data
+
+    return this
+}
+
+// 设置 hash 类型
+// 可用参数可查看 Hash 结构体数据
+func (this SM2) SetSignHash(data string) SM2 {
+    hash, err := tool.GetHash(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.signHash = hash
 
     return this
 }

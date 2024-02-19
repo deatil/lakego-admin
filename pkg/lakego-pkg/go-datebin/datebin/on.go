@@ -2,10 +2,12 @@ package datebin
 
 type (
 	// 错误方法
+	// Error Func
 	ErrorFunc = func([]error)
 )
 
-// 引出错误信息
+// 错误信息
+// on Error with Error Func
 func (this Datebin) OnError(fn ErrorFunc) Datebin {
 	fn(this.Errors)
 

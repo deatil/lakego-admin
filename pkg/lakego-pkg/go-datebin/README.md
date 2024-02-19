@@ -110,7 +110,7 @@ var datetimeString string = datebin.FromDatetime(2024, 01, 15, 23, 35, 01).ToDat
 // output: 2024-01-15 23:35:01
 ~~~
 
-more docs and see [docs](example.md)
+more docs and see [docs](docs.md)
 
 
 ### LICENSE

@@ -1,7 +1,7 @@
 package rsa
 
 // 检测公钥私钥是否匹配
-func (this Rsa) CheckKeyPair() bool {
+func (this RSA) CheckKeyPair() bool {
     // 私钥导出的公钥
     pubKeyFromPriKey := this.MakePublicKey().
         CreatePKCS8PublicKey().

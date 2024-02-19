@@ -110,7 +110,7 @@ var datetimeString string = datebin.FromDatetime(2024, 01, 15, 23, 35, 01).ToDat
 // 输出: 2024-01-15 23:35:01
 ~~~
 
-更多示例可点击查看 [使用文档](example.md)
+更多示例可点击查看 [使用文档](docs_cn.md)
 
 
 ### 开源协议

@@ -10,22 +10,7 @@ import (
 )
 
 // 生成密钥
-func (this Dh) GenerateKey() Dh {
-    privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, rand.Reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKey(name string) Dh {
-    return defaultDH.SetGroup(name).GenerateKey()
-}
-
-// 生成密钥
-func (this Dh) GenerateKeyWithSeed(reader io.Reader) Dh {
+func (this DH) GenerateKeyWithSeed(reader io.Reader) DH {
     privateKey, publicKey, err := dh.GenerateKeyWithGroup(this.group, reader)
 
     this.privateKey = privateKey
@@ -35,14 +20,24 @@ func (this Dh) GenerateKeyWithSeed(reader io.Reader) Dh {
 }
 
 // 生成密钥
-func GenerateKeyWithSeed(reader io.Reader, name string) Dh {
+func GenerateKeyWithSeed(reader io.Reader, name string) DH {
     return defaultDH.SetGroup(name).GenerateKeyWithSeed(reader)
+}
+
+// 生成密钥
+func (this DH) GenerateKey() DH {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// 生成密钥
+func GenerateKey(name string) DH {
+    return defaultDH.SetGroup(name).GenerateKey()
 }
 
 // ==========
 
 // 私钥
-func (this Dh) FromPrivateKey(key []byte) Dh {
+func (this DH) FromPrivateKey(key []byte) DH {
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -54,12 +49,12 @@ func (this Dh) FromPrivateKey(key []byte) Dh {
 }
 
 // 私钥
-func FromPrivateKey(key []byte) Dh {
+func FromPrivateKey(key []byte) DH {
     return defaultDH.FromPrivateKey(key)
 }
 
 // 私钥带密码
-func (this Dh) FromPrivateKeyWithPassword(key []byte, password string) Dh {
+func (this DH) FromPrivateKeyWithPassword(key []byte, password string) DH {
     parsedKey, err := this.ParsePrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
@@ -71,12 +66,12 @@ func (this Dh) FromPrivateKeyWithPassword(key []byte, password string) Dh {
 }
 
 // 私钥
-func FromPrivateKeyWithPassword(key []byte, password string) Dh {
+func FromPrivateKeyWithPassword(key []byte, password string) DH {
     return defaultDH.FromPrivateKeyWithPassword(key, password)
 }
 
 // 公钥
-func (this Dh) FromPublicKey(key []byte) Dh {
+func (this DH) FromPublicKey(key []byte) DH {
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -88,14 +83,14 @@ func (this Dh) FromPublicKey(key []byte) Dh {
 }
 
 // 公钥
-func FromPublicKey(key []byte) Dh {
+func FromPublicKey(key []byte) DH {
     return defaultDH.FromPublicKey(key)
 }
 
 // ==========
 
 // 根据密钥 x, y 生成
-func (this Dh) FromKeyXYHexString(xString string, yString string) Dh {
+func (this DH) FromKeyXYHexString(xString string, yString string) DH {
     x, _ := new(big.Int).SetString(xString[:], 16)
     y, _ := new(big.Int).SetString(yString[:], 16)
 
@@ -118,12 +113,12 @@ func (this Dh) FromKeyXYHexString(xString string, yString string) Dh {
 }
 
 // 根据私钥 x, y 生成
-func FromKeyXYHexString(xString string, yString string) Dh {
+func FromKeyXYHexString(xString string, yString string) DH {
     return defaultDH.FromKeyXYHexString(xString, yString)
 }
 
 // 根据私钥 x 生成
-func (this Dh) FromPrivateKeyXHexString(xString string) Dh {
+func (this DH) FromPrivateKeyXHexString(xString string) DH {
     x, _ := new(big.Int).SetString(xString[:], 16)
 
     group := this.group
@@ -146,12 +141,12 @@ func (this Dh) FromPrivateKeyXHexString(xString string) Dh {
 }
 
 // 根据私钥 x 生成
-func FromPrivateKeyXHexString(xString string) Dh {
+func FromPrivateKeyXHexString(xString string) DH {
     return defaultDH.FromPrivateKeyXHexString(xString)
 }
 
 // 根据公钥 y 生成
-func (this Dh) FromPublicKeyYHexString(yString string) Dh {
+func (this DH) FromPublicKeyYHexString(yString string) DH {
     y, _ := new(big.Int).SetString(yString[:], 16)
 
     group := this.group
@@ -171,14 +166,14 @@ func (this Dh) FromPublicKeyYHexString(yString string) Dh {
 }
 
 // 根据公钥 y 生成
-func FromPublicKeyYHexString(yString string) Dh {
+func FromPublicKeyYHexString(yString string) DH {
     return defaultDH.FromPublicKeyYHexString(yString)
 }
 
 // ==========
 
 // DER 私钥
-func (this Dh) FromPrivateKeyDer(der []byte) Dh {
+func (this DH) FromPrivateKeyDer(der []byte) DH {
     key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
@@ -192,7 +187,7 @@ func (this Dh) FromPrivateKeyDer(der []byte) Dh {
 }
 
 // DER 公钥
-func (this Dh) FromPublicKeyDer(der []byte) Dh {
+func (this DH) FromPublicKeyDer(der []byte) DH {
     key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)

@@ -18,7 +18,7 @@ type Datetimes struct {
 	End datebin.Datebin
 }
 
-// 构造函数 / NewDatetimes
+// New Datetimes
 func NewDatetimes(start, end datebin.Datebin) Datetimes {
 	if start.Gt(end) {
 		start, end = end, start
@@ -30,12 +30,13 @@ func NewDatetimes(start, end datebin.Datebin) Datetimes {
 	}
 }
 
-// 构造函数 / New
+// New Datetimes
 func New(start, end datebin.Datebin) Datetimes {
 	return NewDatetimes(start, end)
 }
 
-// 交集 / Intersection
+// 获取交集数据
+// get Intersection times
 func (this Datetimes) Intersection(x Datetimes) Datetimes {
 	ds := Datetimes{}
 
@@ -56,7 +57,8 @@ func (this Datetimes) Intersection(x Datetimes) Datetimes {
 	return ds
 }
 
-// 并集 / Union
+// 获取并集数据
+// get Union times
 func (this Datetimes) Union(x Datetimes) []Datetimes {
 	ds := make([]Datetimes, 0)
 
@@ -75,7 +77,8 @@ func (this Datetimes) Union(x Datetimes) []Datetimes {
 	return ds
 }
 
-// 是否包含 x / if Contain x
+// a 是否包含 x
+// if a is Contain x
 func (this Datetimes) IsContain(x Datetimes) bool {
 	if this.Start.Gt(x.Start) {
 		return false
@@ -88,7 +91,8 @@ func (this Datetimes) IsContain(x Datetimes) bool {
 	return true
 }
 
-// 交换大小 / swap x, y
+// 交换大小
+// swap x, y
 func (this Datetimes) swap(x, y Datetimes) (Datetimes, Datetimes) {
 	left, right := x, y
 
@@ -99,42 +103,50 @@ func (this Datetimes) swap(x, y Datetimes) (Datetimes, Datetimes) {
 	return left, right
 }
 
-// 范围长度 / Length
+// 获取范围长度
+// get Length
 func (this Datetimes) Length() int64 {
 	return this.End.Timestamp() - this.Start.Timestamp()
 }
 
-// 范围长度纳米 / LengthWithNanosecond
+// 获取范围长度带纳米
+// get Length With Nanosecond
 func (this Datetimes) LengthWithNanosecond() int64 {
 	return this.End.TimestampWithNanosecond() - this.Start.TimestampWithNanosecond()
 }
 
-// 大于 d / gt
+// a 是否大于 d
+// if a gt d
 func (this Datetimes) Gt(d Datetimes) bool {
 	return this.LengthWithNanosecond() > d.LengthWithNanosecond()
 }
 
-// 小于 d / lt
+// a 是否小于 d
+// if a Lt d
 func (this Datetimes) Lt(d Datetimes) bool {
 	return this.LengthWithNanosecond() < d.LengthWithNanosecond()
 }
 
-// 等于 d / eq
+// a 是否等于 d
+// if a eq d
 func (this Datetimes) Eq(d Datetimes) bool {
 	return this.LengthWithNanosecond() == d.LengthWithNanosecond()
 }
 
-// 不等于 d / Ne
+// a 是否不等于 d
+// if a Not eq d
 func (this Datetimes) Ne(d Datetimes) bool {
 	return !this.Eq(d)
 }
 
-// 大于等于 d / Gte
+// a 是否大于等于 d
+// if a Gte d
 func (this Datetimes) Gte(d Datetimes) bool {
 	return this.Gt(d) || this.Eq(d)
 }
 
-// 小于等于 d / Lte
+// a 是否小于等于 d
+// if a Lte d
 func (this Datetimes) Lte(d Datetimes) bool {
 	return this.Lt(d) || this.Eq(d)
 }

@@ -6,12 +6,6 @@ import (
     "encoding/json"
 )
 
-func NewConfig() *Config {
-    return &Config{
-        data: make(map[string]any),
-    }
-}
-
 /**
  * 配置
  *
@@ -24,6 +18,12 @@ type Config struct {
 
     // 数据
     data map[string]any
+}
+
+func NewConfig() *Config {
+    return &Config{
+        data: make(map[string]any),
+    }
 }
 
 // 设置

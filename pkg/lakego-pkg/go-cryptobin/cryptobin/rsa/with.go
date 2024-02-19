@@ -8,28 +8,28 @@ import (
 )
 
 // 设置 PrivateKey
-func (this Rsa) WithPrivateKey(data *rsa.PrivateKey) Rsa {
+func (this RSA) WithPrivateKey(data *rsa.PrivateKey) RSA {
     this.privateKey = data
 
     return this
 }
 
 // 设置 PublicKey
-func (this Rsa) WithPublicKey(data *rsa.PublicKey) Rsa {
+func (this RSA) WithPublicKey(data *rsa.PublicKey) RSA {
     this.publicKey = data
 
     return this
 }
 
 // 设置 hash 类型
-func (this Rsa) WithSignHash(h crypto.Hash) Rsa {
+func (this RSA) WithSignHash(h crypto.Hash) RSA {
     this.signHash = h
 
     return this
 }
 
 // 设置 hash 类型
-func (this Rsa) SetSignHash(name string) Rsa {
+func (this RSA) SetSignHash(name string) RSA {
     hash, err := tool.GetCryptoHash(name)
     if err != nil {
         return this.AppendError(err)
@@ -41,28 +41,28 @@ func (this Rsa) SetSignHash(name string) Rsa {
 }
 
 // 设置 data
-func (this Rsa) WithData(data []byte) Rsa {
+func (this RSA) WithData(data []byte) RSA {
     this.data = data
 
     return this
 }
 
 // 设置 parsedData
-func (this Rsa) WithParedData(data []byte) Rsa {
+func (this RSA) WithParedData(data []byte) RSA {
     this.parsedData = data
 
     return this
 }
 
 // 设置 verify
-func (this Rsa) WithVerify(data bool) Rsa {
+func (this RSA) WithVerify(data bool) RSA {
     this.verify = data
 
     return this
 }
 
 // 设置错误
-func (this Rsa) WithError(errs []error) Rsa {
+func (this RSA) WithError(errs []error) RSA {
     this.Errors = errs
 
     return this

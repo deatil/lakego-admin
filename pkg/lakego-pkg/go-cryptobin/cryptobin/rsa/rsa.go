@@ -6,12 +6,12 @@ import (
 )
 
 /**
- * Rsa 加密
+ * RSA 加密
  *
  * @create 2021-8-28
  * @author deatil
  */
-type Rsa struct {
+type RSA struct {
     // 私钥
     privateKey *rsa.PrivateKey
 
@@ -38,8 +38,8 @@ type Rsa struct {
 }
 
 // 构造函数
-func NewRsa() Rsa {
-    return Rsa{
+func NewRSA() RSA {
+    return RSA{
         signHash: crypto.SHA256,
         verify:   false,
         Errors:   make([]error, 0),
@@ -47,11 +47,11 @@ func NewRsa() Rsa {
 }
 
 // 构造函数
-func New() Rsa {
-    return NewRsa()
+func New() RSA {
+    return NewRSA()
 }
 
 var (
     // 默认
-    defaultRSA = NewRsa()
+    defaultRSA = NewRSA()
 )

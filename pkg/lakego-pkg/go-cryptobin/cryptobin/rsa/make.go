@@ -6,11 +6,11 @@ import(
 )
 
 // 生成公钥
-func (this Rsa) MakePublicKey() Rsa {
+func (this RSA) MakePublicKey() RSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -20,10 +20,10 @@ func (this Rsa) MakePublicKey() Rsa {
 }
 
 // 生成密钥 der 数据
-func (this Rsa) MakeKeyDer() Rsa {
+func (this RSA) MakeKeyDer() RSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Rsa: keyData error.")
+        err := errors.New("rsa: keyData error.")
         return this.AppendError(err)
     }
 

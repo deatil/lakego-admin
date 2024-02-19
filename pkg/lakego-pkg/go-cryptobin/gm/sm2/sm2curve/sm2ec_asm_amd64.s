@@ -8,7 +8,7 @@
 // +build amd64,!purego,!plugin
 
 #include "textflag.h"
-#include "p256_macros_amd64.s"
+#include "sm2ec_macros_amd64.s"
 #define t1 R15
 
 /* ---------------------------------------*/

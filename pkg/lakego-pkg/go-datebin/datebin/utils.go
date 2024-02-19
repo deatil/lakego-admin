@@ -5,7 +5,7 @@ import (
 )
 
 // 取绝对值
-// abs data format
+// Format value to abs
 func absFormat(value int64) int64 {
 	if value < 0 {
 		return -value

@@ -17,7 +17,7 @@ var (
 )
 
 // 解析私钥
-func (this Dh) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
+func (this DH) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -42,7 +42,7 @@ func (this Dh) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
 }
 
 // 解析私钥带密码
-func (this Dh) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
+func (this DH) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -71,7 +71,7 @@ func (this Dh) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (
 }
 
 // 解析公钥
-func (this Dh) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
+func (this DH) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     var err error
 
     // Parse PEM block

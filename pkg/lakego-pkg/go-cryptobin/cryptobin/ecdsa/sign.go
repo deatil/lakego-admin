@@ -7,13 +7,13 @@ import (
     "crypto/rand"
     "crypto/ecdsa"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥签名
-func (this Ecdsa) Sign(separator ...string) Ecdsa {
+func (this ECDSA) Sign(separator ...string) ECDSA {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: privateKey error.")
+        err := errors.New("ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -50,9 +50,9 @@ func (this Ecdsa) Sign(separator ...string) Ecdsa {
 }
 
 // 公钥验证
-func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
+func (this ECDSA) Verify(data []byte, separator ...string) ECDSA {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: publicKey error.")
+        err := errors.New("ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        err := errors.New("Ecdsa: sign data is error.")
+        err := errors.New("ecdsa: sign data is error.")
         return this.AppendError(err)
     }
 
@@ -95,9 +95,9 @@ func (this Ecdsa) Verify(data []byte, separator ...string) Ecdsa {
 // ===============
 
 // 私钥签名
-func (this Ecdsa) SignASN1() Ecdsa {
+func (this ECDSA) SignASN1() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: privateKey error.")
+        err := errors.New("ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -118,9 +118,9 @@ func (this Ecdsa) SignASN1() Ecdsa {
 
 // 公钥验证, 官方默认
 // 使用原始数据[data]对比签名后数据
-func (this Ecdsa) VerifyASN1(data []byte) Ecdsa {
+func (this ECDSA) VerifyASN1(data []byte) ECDSA {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: publicKey error.")
+        err := errors.New("ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -137,9 +137,9 @@ func (this Ecdsa) VerifyASN1(data []byte) Ecdsa {
 // ===============
 
 // 私钥签名
-func (this Ecdsa) SignBytes() Ecdsa {
+func (this ECDSA) SignBytes() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: privateKey error.")
+        err := errors.New("ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -153,7 +153,7 @@ func (this Ecdsa) SignBytes() Ecdsa {
         return this.AppendError(err)
     }
 
-    encoding := cryptobin_tool.NewEncoding()
+    encoding := tool.NewEncoding()
 
     rHex := encoding.HexEncode(r.Bytes())
     sHex := encoding.HexEncode(s.Bytes())
@@ -169,13 +169,13 @@ func (this Ecdsa) SignBytes() Ecdsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Ecdsa) VerifyBytes(data []byte) Ecdsa {
+func (this ECDSA) VerifyBytes(data []byte) ECDSA {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: publicKey error.")
+        err := errors.New("ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
-    signData := cryptobin_tool.NewEncoding().HexEncode(this.data)
+    signData := tool.NewEncoding().HexEncode(this.data)
 
     r, _ := new(big.Int).SetString(signData[:64], 16)
     s, _ := new(big.Int).SetString(signData[64:], 16)
@@ -193,7 +193,7 @@ func (this Ecdsa) VerifyBytes(data []byte) Ecdsa {
 // ===============
 
 // 签名后数据
-func (this Ecdsa) DataHash(fn HashFunc, data []byte) ([]byte, error) {
+func (this ECDSA) DataHash(fn HashFunc, data []byte) ([]byte, error) {
     h := fn()
     h.Write(data)
 

@@ -3,7 +3,7 @@
 
 #include "textflag.h"
 
-#include "p256_macros_amd64.s"
+#include "sm2ec_macros_amd64.s"
 
 /* ---------------------------------------*/
 // func p256OrdLittleToBig(res *[32]byte, in *p256OrdElement)

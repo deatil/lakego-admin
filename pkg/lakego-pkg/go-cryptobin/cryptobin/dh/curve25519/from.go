@@ -9,21 +9,6 @@ import (
 )
 
 // 生成密钥
-func (this Curve25519) GenerateKey() Curve25519 {
-    privateKey, publicKey, err := curve25519.GenerateKey(rand.Reader)
-
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this.AppendError(err)
-}
-
-// 生成密钥
-func GenerateKey() Curve25519 {
-    return defaultCurve25519.GenerateKey()
-}
-
-// 生成密钥
 func (this Curve25519) GenerateKeyWithSeed(reader io.Reader) Curve25519 {
     privateKey, publicKey, err := curve25519.GenerateKey(reader)
 
@@ -36,6 +21,16 @@ func (this Curve25519) GenerateKeyWithSeed(reader io.Reader) Curve25519 {
 // 生成密钥
 func GenerateKeyWithSeed(reader io.Reader) Curve25519 {
     return defaultCurve25519.GenerateKeyWithSeed(reader)
+}
+
+// 生成密钥
+func (this Curve25519) GenerateKey() Curve25519 {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// 生成密钥
+func GenerateKey() Curve25519 {
+    return defaultCurve25519.GenerateKey()
 }
 
 // ==========

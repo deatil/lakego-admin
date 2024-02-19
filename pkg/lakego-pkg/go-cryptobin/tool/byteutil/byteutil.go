@@ -8,6 +8,7 @@ func GfnDouble(input []byte) []byte {
     if len(input) != 16 {
         panic("Doubling in GFn only implemented for n = 128")
     }
+
     // If the first bit is zero, return 2L = L << 1
     // Else return (L << 1) xor 0^120 10000111
     shifted := ShiftBytesLeft(input)
@@ -22,6 +23,7 @@ func ShiftBytesLeft(x []byte) []byte {
     for i := 0; i < l-1; i++ {
         dst[i] = (x[i] << 1) | (x[i+1] >> 7)
     }
+
     dst[l-1] = x[l-1] << 1
     return dst
 }
@@ -61,10 +63,13 @@ func XorBytes(Z, X, Y []byte) {
 func RightXor(X, Y []byte) []byte {
     offset := len(X) - len(Y)
     xored := make([]byte, len(X))
+
     copy(xored, X)
+
     for i := 0; i < len(Y); i++ {
         xored[offset+i] ^= Y[i]
     }
+
     return xored
 }
 
@@ -79,6 +84,7 @@ func SliceForAppend(in []byte, n int) (head, tail []byte) {
         head = make([]byte, total)
         copy(head, in)
     }
+
     tail = head[len(in):]
     return
 }

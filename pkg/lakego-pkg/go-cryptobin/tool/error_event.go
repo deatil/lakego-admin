@@ -1,14 +1,5 @@
 package tool
 
-// 构造函数
-func NewErrorEvent() ErrorEvent {
-    e := ErrorEvent{
-        errorFuncs: make([]ErrorFunc, 0),
-    }
-
-    return e
-}
-
 type (
     // 错误方法
     ErrorFunc = func([]error)
@@ -23,6 +14,15 @@ type (
 type ErrorEvent struct {
     // 错误方法列表
     errorFuncs []ErrorFunc
+}
+
+// 构造函数
+func NewErrorEvent() ErrorEvent {
+    e := ErrorEvent{
+        errorFuncs: make([]ErrorFunc, 0),
+    }
+
+    return e
 }
 
 // 添加

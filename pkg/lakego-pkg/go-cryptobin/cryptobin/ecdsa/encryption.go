@@ -8,10 +8,10 @@ import (
 )
 
 // 公钥加密
-// Ecdsa 核心为对称加密
-func (this Ecdsa) Encrypt() Ecdsa {
+// ECDSA 核心为对称加密
+func (this ECDSA) Encrypt() ECDSA {
     if this.publicKey == nil {
-        err := errors.New("Ecdsa: publicKey error.")
+        err := errors.New("ecdsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -28,10 +28,10 @@ func (this Ecdsa) Encrypt() Ecdsa {
 }
 
 // 私钥解密
-// Ecdsa 核心为对称加密
-func (this Ecdsa) Decrypt() Ecdsa {
+// ECDSA 核心为对称加密
+func (this ECDSA) Decrypt() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: privateKey error.")
+        err := errors.New("ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 

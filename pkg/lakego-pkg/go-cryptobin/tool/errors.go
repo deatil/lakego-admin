@@ -26,15 +26,6 @@ func NewError(errs ...error) error {
     return e
 }
 
-// 构造函数
-func NewErrors(errs []error) *Errors {
-    e := &Errors{
-        errs: make([]error, 0),
-    }
-
-    return e.Append(errs...)
-}
-
 /**
  * 错误记录
  *
@@ -44,6 +35,15 @@ func NewErrors(errs []error) *Errors {
 type Errors struct {
     // 错误列表
     errs []error
+}
+
+// 构造函数
+func NewErrors(errs []error) *Errors {
+    e := &Errors{
+        errs: make([]error, 0),
+    }
+
+    return e.Append(errs...)
 }
 
 // 设置

@@ -1,6 +1,7 @@
 package datebin
 
 // 获取当前世纪
+// get Century data
 func (this Datebin) Century() int {
 	if this.IsInvalid() {
 		return 0
@@ -10,6 +11,7 @@ func (this Datebin) Century() int {
 }
 
 // 获取当前年代
+// get Decade data
 func (this Datebin) Decade() int {
 	if this.IsInvalid() {
 		return 0
@@ -19,6 +21,7 @@ func (this Datebin) Decade() int {
 }
 
 // 获取当前年
+// get Year data
 func (this Datebin) Year() int {
 	if this.IsInvalid() {
 		return 0
@@ -28,6 +31,7 @@ func (this Datebin) Year() int {
 }
 
 // 获取 ISO 当前年
+// get ISOYear data
 func (this Datebin) ISOYear() int {
 	if this.IsInvalid() {
 		return 0
@@ -38,6 +42,7 @@ func (this Datebin) ISOYear() int {
 }
 
 // 获取当前季度
+// get Quarter data
 func (this Datebin) Quarter() (quarter int) {
 	if this.IsInvalid() {
 		return 0
@@ -61,6 +66,7 @@ func (this Datebin) Quarter() (quarter int) {
 }
 
 // 获取当前月
+// get Month data
 func (this Datebin) Month() int {
 	if this.IsInvalid() {
 		return 0
@@ -70,6 +76,7 @@ func (this Datebin) Month() int {
 }
 
 // 获取星期几数字
+// get Weekday data
 func (this Datebin) Weekday() int {
 	if this.IsInvalid() {
 		return 0
@@ -79,6 +86,7 @@ func (this Datebin) Weekday() int {
 }
 
 // 获取 ISO 星期几数字
+// get ISOWeek data
 func (this Datebin) ISOWeek() int {
 	if this.IsInvalid() {
 		return 0
@@ -89,6 +97,7 @@ func (this Datebin) ISOWeek() int {
 }
 
 // 获取当前日
+// get Day data
 func (this Datebin) Day() int {
 	if this.IsInvalid() {
 		return 0
@@ -98,6 +107,7 @@ func (this Datebin) Day() int {
 }
 
 // 获取当前小时
+// get Hour data
 func (this Datebin) Hour() int {
 	if this.IsInvalid() {
 		return 0
@@ -107,6 +117,7 @@ func (this Datebin) Hour() int {
 }
 
 // 获取当前分钟数
+// get Minute data
 func (this Datebin) Minute() int {
 	if this.IsInvalid() {
 		return 0
@@ -116,6 +127,7 @@ func (this Datebin) Minute() int {
 }
 
 // 获取当前秒数
+// get Second data
 func (this Datebin) Second() int {
 	if this.IsInvalid() {
 		return 0
@@ -125,6 +137,7 @@ func (this Datebin) Second() int {
 }
 
 // 获取当前毫秒数，范围[0, 999]
+// get Millisecond data, range [0, 999]
 func (this Datebin) Millisecond() int {
 	if this.IsInvalid() {
 		return 0
@@ -134,6 +147,7 @@ func (this Datebin) Millisecond() int {
 }
 
 // 获取当前微秒数，范围[0, 999999]
+// get Microsecond data, range [0, 999999]
 func (this Datebin) Microsecond() int {
 	if this.IsInvalid() {
 		return 0
@@ -143,6 +157,7 @@ func (this Datebin) Microsecond() int {
 }
 
 // 获取当前纳秒数，范围[0, 999999999]
+// get Nanosecond data, range [0, 999999999]
 func (this Datebin) Nanosecond() int {
 	if this.IsInvalid() {
 		return 0
@@ -152,11 +167,13 @@ func (this Datebin) Nanosecond() int {
 }
 
 // 秒级时间戳，10位
+// get Timestamp data, 10 length
 func (this Datebin) Timestamp() int64 {
 	return this.TimestampWithSecond()
 }
 
 // 秒级时间戳，10位
+// get Timestamp data, 10 length
 func (this Datebin) TimestampWithSecond() int64 {
 	if this.IsInvalid() {
 		return 0
@@ -166,6 +183,7 @@ func (this Datebin) TimestampWithSecond() int64 {
 }
 
 // 毫秒级时间戳，13位
+// get Timestamp With Millisecond data, 13 length
 func (this Datebin) TimestampWithMillisecond() int64 {
 	if this.IsInvalid() {
 		return 0
@@ -175,6 +193,7 @@ func (this Datebin) TimestampWithMillisecond() int64 {
 }
 
 // 微秒级时间戳，16位
+// get Timestamp With Microsecond data, 16 length
 func (this Datebin) TimestampWithMicrosecond() int64 {
 	if this.IsInvalid() {
 		return 0
@@ -184,6 +203,7 @@ func (this Datebin) TimestampWithMicrosecond() int64 {
 }
 
 // 纳秒级时间戳，19位
+// get Timestamp With Nanosecond data, 19 length
 func (this Datebin) TimestampWithNanosecond() int64 {
 	if this.IsInvalid() {
 		return 0

@@ -8,6 +8,16 @@ import (
     "encoding/base64"
 )
 
+var (
+    errPublicKeyXMLValue = func(name string) error {
+        return errors.New("dsa xml: public key [" + name + "] value is error")
+    }
+
+    errPrivateKeyXMLValue = func(name string) error {
+        return errors.New("dsa xml: private key [" + name + "] value is error")
+    }
+)
+
 // 私钥
 type xmlPrivateKey struct {
     XMLName     xml.Name `xml:"DSAKeyValue"`
@@ -32,16 +42,6 @@ type xmlPublicKey struct {
     Seed        string   `xml:"Seed,omitempty"`
     PgenCounter string   `xml:"PgenCounter,omitempty"`
 }
-
-var (
-    errPublicKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: public key [" + name + "] value is error")
-    }
-
-    errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: private key [" + name + "] value is error")
-    }
-)
 
 var defaultXMLKey = NewXMLKey()
 

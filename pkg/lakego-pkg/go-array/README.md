@@ -1,19 +1,28 @@
-## 数组数据获取
+## go-array
+
+<p align="center">
+<a href="https://pkg.go.dev/github.com/deatil/go-array"><img src="https://pkg.go.dev/badge/deatil/go-array.svg" alt="Go Reference"></a>
+<a href="https://codecov.io/gh/deatil/go-array" >
+ <img src="https://codecov.io/gh/deatil/go-array/graph/badge.svg?token=SS2Z1IY0XL"/>
+</a>
+<img src="https://goreportcard.com/badge/github.com/deatil/go-array" />
+</p>
+
+### Desc
+
+*  go-array can use `key` and get map or slice data.
+
+[中文](README_CN.md) | English
 
 
-### 项目介绍
-
-*  数组数据获取
-
-
-### 下载安装
+### Download
 
 ~~~go
 go get -u github.com/deatil/go-array
 ~~~
 
 
-### 使用
+### Get Starting
 
 ~~~go
 import "github.com/deatil/go-array/array"
@@ -54,28 +63,109 @@ arrData := map[string]any{
     },
 }
 
-data := array.ArrGet(arrData, "b.d.e")
+data := array.Get(arrData, "b.d.e")
 // output: eee
 
-data := array.ArrGet(arrData, "b.dd.1")
+data := array.Get(arrData, "b.dd.1")
 // output: ddddd
 
-data := array.ArrGet(arrData, "b.hh.3335.qq2")
+data := array.Get(arrData, "b.hh.3335.qq2")
 // output: qq2ddddd
 
-data := array.ArrGet(arrData, "b.kJh21ay.Hjk2", "defValString")
+data := array.Get(arrData, "b.kJh21ay.Hjk2", "defValString")
 // output: fccDcc
 
-data := array.ArrGet(arrData, "b.kJh21ay.Hjk23333", "defValString")
+data := array.Get(arrData, "b.kJh21ay.Hjk23333", "defValString")
 // output: defValString
 ~~~
 
 
-### 开源协议
+### Examples
 
-*  本软件包遵循 `Apache2` 开源协议发布，在保留本软件包版权的情况下提供个人及商业免费使用。
+* Exists data
+~~~go
+var res bool = array.New(arrData).Exists("b.kJh21ay.Hjk2")
+// output: true
+
+var res bool = array.New(arrData).Exists("b.kJh21ay.Hjk12")
+// output: false
+~~~
+
+* Get data
+~~~go
+var res any = array.New(arrData).Get("b.kJh21ay.Hjk2")
+// output: fccDcc
+
+var res any = array.New(arrData).Get("b.kJh21ay.Hjk12", "defVal")
+// output: defVal
+~~~
+
+* Find data
+~~~go
+var res any = array.New(arrData).Find("b.kJh21ay.Hjk2")
+// output: fccDcc
+
+var res any = array.New(arrData).Find("b.kJh21ay.Hjk12")
+// output: nil
+~~~
+
+* Use Sub to Find data
+~~~go
+var res any = array.New(arrData).Sub("b.kJh21ay.Hjk2").Value()
+// output: fccDcc
+
+var res any = array.New(arrData).Sub("b.kJh21ay.Hjk12").Value()
+// output: nil
+~~~
+
+* Use Search to Find data
+~~~go
+var res any = array.New(arrData).Search("b", "kJh21ay", "Hjk2").Value()
+// output: fccDcc
+
+var res any = array.New(arrData).Search("b", "kJh21ay", "Hjk12").Value()
+// output: nil
+~~~
+
+* Use Index to Find data
+~~~go
+var res any = array.New(arrData).Sub("b.dd").Index(1).Value()
+// output: ddddd
+
+var res any = array.New(arrData).Sub("b.dd").Index(6).Value()
+// output: nil
+~~~
+
+* Use Set to set data
+~~~go
+arr, err := array.New(arrData).Set("qqqyyy", "b", "ff", 222)
+// arr.Get("b.ff.222") output: qqqyyy
+~~~
+
+* Use SetIndex to set data
+~~~go
+arr, err := array.New(arrData).Sub("b.dd").SetIndex("qqqyyySetIndex", 1)
+// arr.Get("b.dd.1") output: qqqyyySetIndex
+~~~
+
+* Use Delete to delete data
+~~~go
+arr, err := array.New(arrData).Delete("b", "hh", 2225)
+// arr.Get("b.hh.2225") output: nil
+~~~
+
+* Use DeleteKey to delete data
+~~~go
+arr, err := array.New(arrData).DeleteKey("b.d.e")
+// arr.Get("b.d.e") output: nil
+~~~
 
 
-### 版权
+### LICENSE
 
-*  本软件包所属版权归 deatil(https://github.com/deatil) 所有。
+*  The library LICENSE is `Apache2`, using the library need keep the LICENSE.
+
+
+### Copyright
+
+*  Copyright deatil(https://github.com/deatil).

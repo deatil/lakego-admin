@@ -1,6 +1,7 @@
 package datebin
 
 // 摩羯座
+// if the time is Capricorn Star ?
 func (this Datebin) IsCapricornStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -18,6 +19,7 @@ func (this Datebin) IsCapricornStar() bool {
 }
 
 // 水瓶座
+// if the time is Aquarius Star ?
 func (this Datebin) IsAquariusStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -35,6 +37,7 @@ func (this Datebin) IsAquariusStar() bool {
 }
 
 // 双鱼座
+// if the time is Pisces Star ?
 func (this Datebin) IsPiscesStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -52,6 +55,7 @@ func (this Datebin) IsPiscesStar() bool {
 }
 
 // 白羊座
+// if the time is Aries Star ?
 func (this Datebin) IsAriesStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -69,6 +73,7 @@ func (this Datebin) IsAriesStar() bool {
 }
 
 // 金牛座
+// if the time is Taurus Star ?
 func (this Datebin) IsTaurusStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -86,6 +91,7 @@ func (this Datebin) IsTaurusStar() bool {
 }
 
 // 双子座
+// if the time is Gemini Star ?
 func (this Datebin) IsGeminiStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -103,6 +109,7 @@ func (this Datebin) IsGeminiStar() bool {
 }
 
 // 巨蟹座
+// if the time is Cancer Star ?
 func (this Datebin) IsCancerStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -120,6 +127,7 @@ func (this Datebin) IsCancerStar() bool {
 }
 
 // 狮子座
+// if the time is Leo Star ?
 func (this Datebin) IsLeoStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -136,6 +144,7 @@ func (this Datebin) IsLeoStar() bool {
 }
 
 // 处女座
+// if the time is Virgo Star ?
 func (this Datebin) IsVirgoStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -152,6 +161,7 @@ func (this Datebin) IsVirgoStar() bool {
 }
 
 // 天秤座
+// if the time is Libra Star ?
 func (this Datebin) IsLibraStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -169,6 +179,7 @@ func (this Datebin) IsLibraStar() bool {
 }
 
 // 天蝎座
+// if the time is Scorpio Star ?
 func (this Datebin) IsScorpioStar() bool {
 	if this.IsInvalid() {
 		return false
@@ -186,6 +197,7 @@ func (this Datebin) IsScorpioStar() bool {
 }
 
 // 射手座
+// if the time is Sagittarius Star ?
 func (this Datebin) IsSagittariusStar() bool {
 	if this.IsInvalid() {
 		return false

@@ -13,12 +13,12 @@ type (
 )
 
 /**
- * Ecdsa
+ * ECDSA
  *
  * @create 2022-4-3
  * @author deatil
  */
-type Ecdsa struct {
+type ECDSA struct {
     // 私钥
     privateKey *ecdsa.PrivateKey
 
@@ -48,8 +48,8 @@ type Ecdsa struct {
 }
 
 // 构造函数
-func NewEcdsa() Ecdsa {
-    return Ecdsa{
+func NewECDSA() ECDSA {
+    return ECDSA{
         curve:    elliptic.P256(),
         signHash: sha256.New,
         verify:   false,
@@ -58,11 +58,11 @@ func NewEcdsa() Ecdsa {
 }
 
 // 构造函数
-func New() Ecdsa {
-    return NewEcdsa()
+func New() ECDSA {
+    return NewECDSA()
 }
 
 var (
     // 默认
-    defaultECDSA = NewEcdsa()
+    defaultECDSA = NewECDSA()
 )

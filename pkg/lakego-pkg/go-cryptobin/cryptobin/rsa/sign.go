@@ -7,9 +7,9 @@ import (
 )
 
 // 私钥签名
-func (this Rsa) Sign() Rsa {
+func (this RSA) Sign() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -26,9 +26,9 @@ func (this Rsa) Sign() Rsa {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this Rsa) Verify(data []byte) Rsa {
+func (this RSA) Verify(data []byte) RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 

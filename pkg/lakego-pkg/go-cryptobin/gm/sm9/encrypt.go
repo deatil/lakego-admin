@@ -10,8 +10,8 @@ import (
 
     "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/kdf/smkdf"
+    "github.com/deatil/go-cryptobin/tool/alias"
     "github.com/deatil/go-cryptobin/gm/sm9/sm9curve"
-    cryptobin_subtle "github.com/deatil/go-cryptobin/tool/subtle"
 )
 
 // 默认 HID
@@ -354,7 +354,7 @@ func WrapKey(random io.Reader, pub *EncryptMasterPublicKey, uid []byte, hid byte
         buffer = append(buffer, uid...)
 
         key = smkdf.Key(sm3.New, buffer, kLen)
-        if !cryptobin_subtle.ConstantTimeAllZero(key) {
+        if !alias.ConstantTimeAllZero(key) {
             break
         }
     }
@@ -372,7 +372,7 @@ func UnwrapKey(priv *EncryptPrivateKey, uid []byte, cipher *sm9curve.G1, kLen in
     buffer = append(buffer, uid...)
 
     key := smkdf.Key(sm3.New, buffer, kLen)
-    if cryptobin_subtle.ConstantTimeAllZero(key) {
+    if alias.ConstantTimeAllZero(key) {
         return nil, errors.New("sm9: decryption error")
     }
 

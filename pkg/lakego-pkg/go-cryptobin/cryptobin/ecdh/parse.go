@@ -20,7 +20,7 @@ var (
 )
 
 // 解析私钥
-func (this Ecdh) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
+func (this ECDH) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -51,7 +51,7 @@ func (this Ecdh) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
 }
 
 // 解析私钥带密码
-func (this Ecdh) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
+func (this ECDH) ParsePrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -86,7 +86,7 @@ func (this Ecdh) ParsePrivateKeyFromPEMWithPassword(key []byte, password string)
 }
 
 // 解析公钥
-func (this Ecdh) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
+func (this ECDH) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -123,7 +123,7 @@ func (this Ecdh) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
 // ==========================================
 
 // 解析私钥
-func (this Ecdh) ParseECDHPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
+func (this ECDH) ParseECDHPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -149,7 +149,7 @@ func (this Ecdh) ParseECDHPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, erro
 }
 
 // 解析私钥带密码
-func (this Ecdh) ParseECDHPrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
+func (this ECDH) ParseECDHPrivateKeyFromPEMWithPassword(key []byte, password string) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -179,7 +179,7 @@ func (this Ecdh) ParseECDHPrivateKeyFromPEMWithPassword(key []byte, password str
 }
 
 // 解析公钥
-func (this Ecdh) ParseECDHPublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
+func (this ECDH) ParseECDHPublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     var err error
 
     // Parse PEM block

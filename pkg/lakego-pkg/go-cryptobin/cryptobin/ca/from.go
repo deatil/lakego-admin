@@ -3,11 +3,11 @@ package ca
 import (
     "errors"
     "crypto/rsa"
+    "crypto/rand"
     "crypto/x509"
     "crypto/ecdsa"
     "crypto/ed25519"
     "crypto/elliptic"
-    "crypto/rand"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
@@ -137,9 +137,7 @@ func (this CA) GenerateRSAKey(bits int) CA {
     }
 
     this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &privateKey.PublicKey
+    this.publicKey  = &privateKey.PublicKey
 
     return this
 }
@@ -169,9 +167,7 @@ func (this CA) GenerateECDSAKey(curve string) CA {
     }
 
     this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &privateKey.PublicKey
+    this.publicKey  = &privateKey.PublicKey
 
     return this
 }
@@ -183,8 +179,8 @@ func (this CA) GenerateEdDSAKey() CA {
         return this.AppendError(err)
     }
 
-    this.publicKey  = publicKey
     this.privateKey = privateKey
+    this.publicKey  = publicKey
 
     return this
 }
@@ -198,9 +194,7 @@ func (this CA) GenerateSM2Key() CA {
     }
 
     this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &privateKey.PublicKey
+    this.publicKey  = &privateKey.PublicKey
 
     return this
 }

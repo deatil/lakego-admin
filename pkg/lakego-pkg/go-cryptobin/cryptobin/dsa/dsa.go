@@ -24,9 +24,6 @@ type DSA struct {
     // 公钥
     publicKey *dsa.PublicKey
 
-    // 签名验证类型
-    signHash HashFunc
-
     // [私钥/公钥]数据
     keyData []byte
 
@@ -35,6 +32,9 @@ type DSA struct {
 
     // 解析后的数据
     parsedData []byte
+
+    // 签名验证类型
+    signHash HashFunc
 
     // 验证结果
     verify bool

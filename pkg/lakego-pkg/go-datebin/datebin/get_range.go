@@ -5,7 +5,7 @@ import (
 )
 
 // 当前n年开始
-// n years start
+// get n years start
 func (this Datebin) NYearStart(year int) Datebin {
 	if this.IsInvalid() {
 		return this
@@ -22,7 +22,7 @@ func (this Datebin) NYearStart(year int) Datebin {
 }
 
 // 当前n年结束
-// n years end
+// get n years end
 func (this Datebin) NYearEnd(year int) Datebin {
 	if this.IsInvalid() {
 		return this
@@ -39,7 +39,7 @@ func (this Datebin) NYearEnd(year int) Datebin {
 }
 
 // 当前百年开始
-// the Century start
+// get the Century start
 func (this Datebin) CenturyStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -52,7 +52,7 @@ func (this Datebin) CenturyStart() Datebin {
 }
 
 // 当前百年结束
-// the Century end
+// get the Century end
 func (this Datebin) CenturyEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -65,7 +65,7 @@ func (this Datebin) CenturyEnd() Datebin {
 }
 
 // 当前十年开始
-// the Decade start
+// get the Decade start
 func (this Datebin) DecadeStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -78,7 +78,7 @@ func (this Datebin) DecadeStart() Datebin {
 }
 
 // 当前十年结束
-// the Decade end
+// get the Decade end
 func (this Datebin) DecadeEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -91,7 +91,7 @@ func (this Datebin) DecadeEnd() Datebin {
 }
 
 // 本年开始
-// the Year start
+// get the Year start
 func (this Datebin) YearStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -104,7 +104,7 @@ func (this Datebin) YearStart() Datebin {
 }
 
 // 本年结束
-// the Year end
+// get the Year end
 func (this Datebin) YearEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -117,7 +117,7 @@ func (this Datebin) YearEnd() Datebin {
 }
 
 // 本季节开始时间
-// the Season start
+// get the Season start
 func (this Datebin) SeasonStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -136,7 +136,7 @@ func (this Datebin) SeasonStart() Datebin {
 }
 
 // 本季节结束时间
-// the Season end
+// get the Season end
 func (this Datebin) SeasonEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -154,7 +154,7 @@ func (this Datebin) SeasonEnd() Datebin {
 }
 
 // 本月开始时间
-// the Month start
+// get the Month start
 func (this Datebin) MonthStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -165,7 +165,7 @@ func (this Datebin) MonthStart() Datebin {
 }
 
 // 本月结束时间
-// the Month end
+// get the Month end
 func (this Datebin) MonthEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -176,7 +176,7 @@ func (this Datebin) MonthEnd() Datebin {
 }
 
 // 本周开始
-// the Week start
+// get the Week start
 func (this Datebin) WeekStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -191,7 +191,7 @@ func (this Datebin) WeekStart() Datebin {
 }
 
 // 本周结束
-// the Week end
+// get the Week end
 func (this Datebin) WeekEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -206,7 +206,7 @@ func (this Datebin) WeekEnd() Datebin {
 }
 
 // 本日开始时间
-// the Day start
+// get the Day start
 func (this Datebin) DayStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -217,7 +217,7 @@ func (this Datebin) DayStart() Datebin {
 }
 
 // 本日结束时间
-// the Day end
+// get the Day end
 func (this Datebin) DayEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -228,7 +228,7 @@ func (this Datebin) DayEnd() Datebin {
 }
 
 // 小时开始时间
-// the Hour start
+// get the Hour start
 func (this Datebin) HourStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -239,7 +239,7 @@ func (this Datebin) HourStart() Datebin {
 }
 
 // 小时结束时间
-// the Hour end
+// get the Hour end
 func (this Datebin) HourEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -250,7 +250,7 @@ func (this Datebin) HourEnd() Datebin {
 }
 
 // 分钟开始时间
-// the Minute start
+// get the Minute start
 func (this Datebin) MinuteStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -261,7 +261,7 @@ func (this Datebin) MinuteStart() Datebin {
 }
 
 // 分钟结束时间
-// the Minute end
+// get the Minute end
 func (this Datebin) MinuteEnd() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -272,7 +272,7 @@ func (this Datebin) MinuteEnd() Datebin {
 }
 
 // 秒开始时间
-// the Second start
+// get the Second start
 func (this Datebin) SecondStart() Datebin {
 	if this.IsInvalid() {
 		return this
@@ -283,7 +283,7 @@ func (this Datebin) SecondStart() Datebin {
 }
 
 // 秒结束时间
-// the Second end
+// get the Second end
 func (this Datebin) SecondEnd() Datebin {
 	if this.IsInvalid() {
 		return this

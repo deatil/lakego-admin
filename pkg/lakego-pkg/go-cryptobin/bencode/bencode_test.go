@@ -1,6 +1,9 @@
 package bencode
 
 import (
+    "fmt"
+    "time"
+    "bytes"
     "testing"
     "encoding/hex"
 
@@ -42,6 +45,7 @@ func Test_Bencode(t *testing.T) {
 
 func Test_Data(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     var data Data
 
@@ -55,20 +59,71 @@ func Test_Data(t *testing.T) {
         t.Error(err.Error())
     }
 
+    test0 := []string{
+        "announce",
+        "comment",
+        "created by",
+        "creation date",
+        "info",
+        "url-list",
+    }
+    assertEqual(data.GetKeys(), test0, "Data-GetKeys")
+
     test1 := "http://tracker.archlinux.org:6969/announce"
-    assertEqual(data.GetAnnounce(), test1, "RijndaelPKCS7Padding-res")
+    assertEqual(data.GetAnnounce(), test1, "Data-GetAnnounce")
 
     test2 := "Arch Linux 2011.08.19 (www.archlinux.org)"
-    assertEqual(data.GetComment(), test2, "RijndaelPKCS7Padding-res")
+    assertEqual(data.GetComment(), test2, "Data-GetComment")
 
     test3 := "mktorrent 1.0"
-    assertEqual(data.GetCreatedBy(), test3, "RijndaelPKCS7Padding-res")
+    assertEqual(data.GetCreatedBy(), test3, "Data-GetCreatedBy")
 
     test31 := int64(1313750171)
-    assertEqual(data.GetCreationDate(), test31, "RijndaelPKCS7Padding-res")
+    assertEqual(data.GetCreationDate(), test31, "Data-GetCreationDate")
+
+    test32 := "2011-08-19 18:36:11 +0800 CST"
+    assertEqual(fmt.Sprintf("%s", data.GetCreationDateTime()), test32, "Data-GetCreationDateTime")
+
+    test33 := []string{
+        "length",
+        "name",
+        "piece length",
+        "pieces",
+    }
+    assertEqual(data.GetInfoKeys(), test33, "Data-GetInfoKeys")
 
     test5 := "archlinux-2011.08.19-netinstall-i686.iso"
-    assertEqual(data.GetInfoItem("name"), test5, "RijndaelPKCS7Padding-res")
+    assertEqual(data.GetInfoItem("name"), test5, "Data-GetInfoItem")
+
+    assertNotEmpty(data.ToArray(), "Data-ToArray")
+    assertNotEmpty(data.ToJSON(), "Data-ToJSON")
+    assertNotEmpty(data.ToInfoArray(), "Data-ToInfoArray")
+    assertNotEmpty(data.ToInfoJSON(), "Data-ToInfoJSON")
+    assertNotEmpty(data.String(), "Data-String")
+
+    data = data.SetItem("key111", "test-data")
+    assertEqual(data.GetItem("key111"), "test-data", "Data-SetItem")
+    data = data.SetAnnounce("test-SetAnnounce")
+    assertEqual(data.GetItem("announce"), "test-SetAnnounce", "Data-SetAnnounce")
+    data = data.SetComment("test-SetComment")
+    assertEqual(data.GetItem("comment"), "test-SetComment", "Data-SetComment")
+    data = data.SetCreatedBy("test-SetCreatedBy")
+    assertEqual(data.GetItem("created by"), "test-SetCreatedBy", "Data-SetCreatedBy")
+
+    test315 := int64(1313750175)
+    data = data.SetCreationDate(test315)
+    assertEqual(data.GetCreationDate(), test315, "Data-SetCreationDate")
+
+    test316 := int64(1313750177)
+    data = data.SetCreationDateTime(time.Unix(test316, 0))
+    assertEqual(data.GetCreationDate(), test316, "Data-SetCreationDateTime")
+
+    test317 := map[string]any{
+        "test1": "11111111",
+        "test2": "222222222",
+    }
+    data = data.SetInfo(test317)
+    assertEqual(data.ToInfoArray(), test317, "Data-SetInfo")
 }
 
 func Test_SingleTorrent(t *testing.T) {
@@ -131,4 +186,50 @@ func Test_MultipleTorrent(t *testing.T) {
 
     test5 := "archlinux-2011.08.19-netinstall-i686.iso"
     assertEqual(data.Info.Name, test5, "RijndaelPKCS7Padding-res")
+}
+
+func Test_NewEncoder(t *testing.T) {
+    buf := bytes.NewBufferString("123")
+
+    en := NewEncoder(buf)
+    if en == nil {
+        t.Error("NewEncoder fail")
+    }
+}
+
+func Test_NewDecoder(t *testing.T) {
+    buf := bytes.NewBufferString("123")
+
+    en := NewDecoder(buf)
+    if en == nil {
+        t.Error("NewDecoder fail")
+    }
+}
+
+func Test_Marshal(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    buf := map[string]any{
+        "abc": "test123",
+        "efg": "test333",
+    }
+
+    res, err := Marshal(buf)
+
+    assertError(err, "Marshal")
+    assertNotEmpty(res, "Marshal")
+}
+
+func Test_MustMarshal(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    buf := map[string]any{
+        "abc": "test123",
+        "efg": "test333",
+    }
+
+    res := MustMarshal(buf)
+
+    assertNotEmpty(res, "MustMarshal")
 }

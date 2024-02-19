@@ -16,7 +16,7 @@ func (this DSA) Sign(separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, this.data)
+    hashed, err := this.dataHash(this.signHash, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -56,7 +56,7 @@ func (this DSA) Verify(data []byte, separator ...string) DSA {
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, data)
+    hashed, err := this.dataHash(this.signHash, data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -105,7 +105,7 @@ func (this DSA) SignASN1() DSA {
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, this.data)
+    hashed, err := this.dataHash(this.signHash, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -136,7 +136,7 @@ func (this DSA) VerifyASN1(data []byte) DSA {
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, data)
+    hashed, err := this.dataHash(this.signHash, data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -163,7 +163,7 @@ func (this DSA) SignBytes() DSA {
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, this.data)
+    hashed, err := this.dataHash(this.signHash, this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -208,7 +208,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
     r := new(big.Int).SetBytes(sig[:dsaSubgroupBytes])
     s := new(big.Int).SetBytes(sig[dsaSubgroupBytes:])
 
-    hashed, err := this.DataHash(this.signHash, data)
+    hashed, err := this.dataHash(this.signHash, data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -221,7 +221,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
 // ===============
 
 // 签名后数据
-func (this DSA) DataHash(fn HashFunc, data []byte) ([]byte, error) {
+func (this DSA) dataHash(fn HashFunc, data []byte) ([]byte, error) {
     h := fn()
     h.Write(data)
 

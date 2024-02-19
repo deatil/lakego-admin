@@ -80,7 +80,7 @@ func Test_SignASN1_RC2_40En(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC2_40En), "123").
         SignASN1()
@@ -94,7 +94,7 @@ func Test_SignASN1_RC2_64En(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC2_64En), "123").
         SignASN1()
@@ -108,7 +108,7 @@ func Test_SignASN1_RC2_128En(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC2_128En), "123").
         SignASN1()
@@ -122,7 +122,7 @@ func Test_SignASN1_RC5_256En(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC5_256En), "123").
         SignASN1()
@@ -136,7 +136,7 @@ func Test_SignASN1_RC5_192En(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC5_192En), "123").
         SignASN1()
@@ -151,7 +151,7 @@ func Test_SignASN1_RC5_128En(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKeyWithPassword([]byte(prikeyRC5_128En), "123").
         SignASN1()
@@ -160,7 +160,7 @@ func Test_SignASN1_RC5_128En(t *testing.T) {
     assertError(objSign.Error(), "SignASN1_RC5_128En-SignASN1")
     assertNotEmpty(signedData, "SignASN1_RC5_128En-SignASN1")
 
-    objVerify := NewEcdsa().
+    objVerify := NewECDSA().
         FromBase64String(signedData).
         FromPrivateKeyWithPassword([]byte(prikeyRC5_128En), "123").
         MakePublicKey().
@@ -176,7 +176,7 @@ func Test_VerifyASN1En(t *testing.T) {
 
     data := "test-pass"
     sig := "MEUCIBhAZzrS6jM4MfwibzA+j0vBkTEQGvkiDWhx7E6/ePUmAiEAt1uTZXUPGNU9nY8ZS3UxcJCRqwh/G8eeyrAVwM3qen4="
-    objVerify := NewEcdsa().
+    objVerify := NewECDSA().
         FromBase64String(sig).
         FromPublicKey([]byte(pubkeyEn)).
         VerifyASN1([]byte(data))

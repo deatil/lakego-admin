@@ -7,6 +7,7 @@ import (
 
 var (
 	// 解析的格式字符
+	// parse format list
 	PaseFormats = map[string]string{
 		"D": "Mon",
 		"d": "02",
@@ -42,6 +43,7 @@ var (
 	}
 
 	// 输出的格式字符
+	// output format list
 	ToFormats = map[string]string{
 		"D": "Mon",
 		"d": "02",
@@ -73,6 +75,7 @@ var (
 	}
 
 	// 月份
+	// Month list
 	Months = map[int]time.Month{
 		1:  time.January,
 		2:  time.February,
@@ -89,6 +92,7 @@ var (
 	}
 
 	// 周列表
+	// Weekday list
 	Weekdays = []string{
 		"Sunday",
 		"Monday",
@@ -101,10 +105,11 @@ var (
 )
 
 // 默认
+// default Datebin
 var defaultDatebin = NewDatebin()
 
 /**
- * 日期
+ * 日期 / Datebin
  *
  * @create 2022-3-6
  * @author deatil
@@ -123,7 +128,7 @@ type Datebin struct {
 	Errors []error
 }
 
-// 构造函数 / NewDatebin
+// New Datebin
 func NewDatebin() Datebin {
 	return Datebin{
 		loc:         time.Local,
@@ -131,13 +136,13 @@ func NewDatebin() Datebin {
 	}
 }
 
-// 构造函数 / New
+// New Datebin
 func New() Datebin {
 	return NewDatebin()
 }
 
 // 设置时间
-// With Time
+// set Time
 func (this Datebin) WithTime(time time.Time) Datebin {
 	this.time = time
 	return this
@@ -150,7 +155,7 @@ func (this Datebin) GetTime() time.Time {
 }
 
 // 设置周开始时间
-// With Start Week
+// set Start Week
 func (this Datebin) WithWeekStartAt(weekday time.Weekday) Datebin {
 	this.weekStartAt = weekday
 	return this
@@ -163,7 +168,7 @@ func (this Datebin) GetWeekStartAt() time.Weekday {
 }
 
 // 设置时区
-// With Location struct
+// set Location struct
 func (this Datebin) WithLocation(loc *time.Location) Datebin {
 	this.loc = loc
 	return this
@@ -201,7 +206,7 @@ func SetTimezone(timezone string) {
 }
 
 // 获取时区 Zone 名称
-// GetTimezone
+// Get Timezone string
 func (this Datebin) GetTimezone() string {
 	name, _ := this.time.Zone()
 	return name
@@ -237,14 +242,14 @@ func (this Datebin) FixedZone(name string, offset int) Datebin {
 }
 
 // 覆盖错误信息
-// WithErrors
+// set Errors
 func (this Datebin) WithErrors(errs []error) Datebin {
 	this.Errors = errs
 	return this
 }
 
 // 获取错误信息
-// GetErrors
+// Get Errors
 func (this Datebin) GetErrors() []error {
 	return this.Errors
 }

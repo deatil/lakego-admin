@@ -5,6 +5,7 @@ import (
 )
 
 // 设置一周的开始日期
+// set WeekStartsAt
 func (this Datebin) SetWeekStartsAt(day string) Datebin {
 	switch day {
 	case Monday:
@@ -27,12 +28,14 @@ func (this Datebin) SetWeekStartsAt(day string) Datebin {
 }
 
 // 日期时间带纳秒
+// Set Datetime With Nanosecond
 func (this Datebin) SetDatetimeWithNanosecond(year, month, day, hour, minute, second, nanosecond int) Datebin {
 	this.time = time.Date(year, time.Month(month), day, hour, minute, second, nanosecond, this.loc)
 	return this
 }
 
 // 日期时间带微秒
+// Set Datetime With Microsecond
 func (this Datebin) SetDatetimeWithMicrosecond(year, month, day, hour, minute, second, microsecond int) Datebin {
 	nanosecond := microsecond * 1e3
 
@@ -40,6 +43,7 @@ func (this Datebin) SetDatetimeWithMicrosecond(year, month, day, hour, minute, s
 }
 
 // 日期时间带毫秒
+// Set Datetime With Millisecond
 func (this Datebin) SetDatetimeWithMillisecond(year, month, day, hour, minute, second, millisecond int) Datebin {
 	nanosecond := millisecond * 1e6
 
@@ -47,6 +51,7 @@ func (this Datebin) SetDatetimeWithMillisecond(year, month, day, hour, minute, s
 }
 
 // 日期时间
+// Set Datetime
 func (this Datebin) SetDatetime(year, month, day, hour, minute, second int) Datebin {
 	nanosecond := this.Nanosecond()
 
@@ -54,6 +59,7 @@ func (this Datebin) SetDatetime(year, month, day, hour, minute, second int) Date
 }
 
 // 日期
+// Set Date
 func (this Datebin) SetDate(year, month, day int) Datebin {
 	hour, minute, second := this.Time()
 	nanosecond := this.Nanosecond()
@@ -62,6 +68,7 @@ func (this Datebin) SetDate(year, month, day int) Datebin {
 }
 
 // 时间
+// Set Time
 func (this Datebin) SetTime(hour, minute, second int) Datebin {
 	year, month, day := this.Date()
 	nanosecond := this.Nanosecond()
@@ -70,6 +77,7 @@ func (this Datebin) SetTime(hour, minute, second int) Datebin {
 }
 
 // 设置年份
+// Set Year
 func (this Datebin) SetYear(year int) Datebin {
 	_, month, day, hour, minute, second, nanosecond := this.DatetimeWithNanosecond()
 
@@ -77,6 +85,7 @@ func (this Datebin) SetYear(year int) Datebin {
 }
 
 // 设置月份
+// Set Month
 func (this Datebin) SetMonth(month int) Datebin {
 	year, _, day, hour, minute, second, nanosecond := this.DatetimeWithNanosecond()
 
@@ -84,6 +93,7 @@ func (this Datebin) SetMonth(month int) Datebin {
 }
 
 // 设置天
+// Set Day
 func (this Datebin) SetDay(day int) Datebin {
 	year, month, _, hour, minute, second, nanosecond := this.DatetimeWithNanosecond()
 
@@ -91,6 +101,7 @@ func (this Datebin) SetDay(day int) Datebin {
 }
 
 // 设置小时
+// Set Hour
 func (this Datebin) SetHour(hour int) Datebin {
 	year, month, day, _, minute, second, nanosecond := this.DatetimeWithNanosecond()
 
@@ -98,6 +109,7 @@ func (this Datebin) SetHour(hour int) Datebin {
 }
 
 // 设置分钟
+// Set Minute
 func (this Datebin) SetMinute(minute int) Datebin {
 	year, month, day, hour, _, second, nanosecond := this.DatetimeWithNanosecond()
 
@@ -105,6 +117,7 @@ func (this Datebin) SetMinute(minute int) Datebin {
 }
 
 // 设置秒数
+// Set Second
 func (this Datebin) SetSecond(second int) Datebin {
 	year, month, day, hour, minute, _, nanosecond := this.DatetimeWithNanosecond()
 
@@ -112,6 +125,7 @@ func (this Datebin) SetSecond(second int) Datebin {
 }
 
 // 设置毫秒
+// Set Millisecond
 func (this Datebin) SetMillisecond(millisecond int) Datebin {
 	year, month, day, hour, minute, second := this.Datetime()
 	nanosecond := millisecond * 1e6
@@ -120,6 +134,7 @@ func (this Datebin) SetMillisecond(millisecond int) Datebin {
 }
 
 // 设置微秒
+// Set Microsecond
 func (this Datebin) SetMicrosecond(microsecond int) Datebin {
 	year, month, day, hour, minute, second := this.Datetime()
 	nanosecond := microsecond * 1e3
@@ -128,6 +143,7 @@ func (this Datebin) SetMicrosecond(microsecond int) Datebin {
 }
 
 // 设置纳秒
+// Set Nanosecond
 func (this Datebin) SetNanosecond(nanosecond int) Datebin {
 	year, month, day, hour, minute, second := this.Datetime()
 

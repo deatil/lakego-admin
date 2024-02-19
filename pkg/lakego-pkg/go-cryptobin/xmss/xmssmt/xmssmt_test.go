@@ -10,7 +10,7 @@ import (
 )
 
 func Test_XMSSMT(t *testing.T) {
-    oid := uint32(0x00000002)
+    oid := uint32(0x00000001)
 
     prv, pub, err := GenerateKey(rand.Reader, oid)
     if err != nil {

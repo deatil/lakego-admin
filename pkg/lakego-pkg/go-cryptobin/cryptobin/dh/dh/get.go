@@ -5,12 +5,12 @@ import (
 )
 
 // 获取 PrivateKey
-func (this Dh) GetPrivateKey() *dh.PrivateKey {
+func (this DH) GetPrivateKey() *dh.PrivateKey {
     return this.privateKey
 }
 
 // 获取 X 16进制字符
-func (this Dh) GetPrivateKeyXHexString() string {
+func (this DH) GetPrivateKeyXHexString() string {
     if this.privateKey == nil {
         return ""
     }
@@ -21,12 +21,12 @@ func (this Dh) GetPrivateKeyXHexString() string {
 }
 
 // 获取 PublicKey
-func (this Dh) GetPublicKey() *dh.PublicKey {
+func (this DH) GetPublicKey() *dh.PublicKey {
     return this.publicKey
 }
 
 // 获取 Y 16进制字符
-func (this Dh) GetPublicKeyYHexString() string {
+func (this DH) GetPublicKeyYHexString() string {
     if this.publicKey == nil {
         return ""
     }
@@ -37,7 +37,7 @@ func (this Dh) GetPublicKeyYHexString() string {
 }
 
 // 获取 P 16进制字符
-func (this Dh) GetPublicKeyParametersPHexString() string {
+func (this DH) GetPublicKeyParametersPHexString() string {
     if this.publicKey == nil {
         return ""
     }
@@ -48,7 +48,7 @@ func (this Dh) GetPublicKeyParametersPHexString() string {
 }
 
 // 获取 G 16进制字符
-func (this Dh) GetPublicKeyParametersGHexString() string {
+func (this DH) GetPublicKeyParametersGHexString() string {
     if this.publicKey == nil {
         return ""
     }
@@ -59,21 +59,21 @@ func (this Dh) GetPublicKeyParametersGHexString() string {
 }
 
 // 获取 keyData
-func (this Dh) GetKeyData() []byte {
+func (this DH) GetKeyData() []byte {
     return this.keyData
 }
 
 // 获取分组
-func (this Dh) GetGroup() *dh.Group {
+func (this DH) GetGroup() *dh.Group {
     return this.group
 }
 
 // 获取 secretData
-func (this Dh) GetSecretData() []byte {
+func (this DH) GetSecretData() []byte {
     return this.secretData
 }
 
 // 获取错误
-func (this Dh) GetErrors() []error {
+func (this DH) GetErrors() []error {
     return this.Errors
 }

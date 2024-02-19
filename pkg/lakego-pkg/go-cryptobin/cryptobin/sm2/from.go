@@ -11,26 +11,6 @@ import (
     cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
-// 生成密钥对
-func (this SM2) GenerateKey() SM2 {
-    privateKey, err := sm2.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &this.privateKey.PublicKey
-
-    return this
-}
-
-// 生成密钥对
-func GenerateKey() SM2 {
-    return defaultSM2.GenerateKey()
-}
-
 // 使用自定义数据生成密钥对
 func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
     privateKey, err := sm2.GenerateKey(reader)
@@ -39,9 +19,7 @@ func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
     }
 
     this.privateKey = privateKey
-
-    // 生成公钥
-    this.publicKey = &this.privateKey.PublicKey
+    this.publicKey  = &privateKey.PublicKey
 
     return this
 }
@@ -49,6 +27,16 @@ func (this SM2) GenerateKeyWithSeed(reader io.Reader) SM2 {
 // 使用自定义数据生成密钥对
 func GenerateKeyWithSeed(reader io.Reader) SM2 {
     return defaultSM2.GenerateKeyWithSeed(reader)
+}
+
+// 生成密钥对
+func (this SM2) GenerateKey() SM2 {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// 生成密钥对
+func GenerateKey() SM2 {
+    return defaultSM2.GenerateKey()
 }
 
 // ==========

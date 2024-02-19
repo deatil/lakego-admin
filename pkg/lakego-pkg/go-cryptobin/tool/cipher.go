@@ -50,15 +50,6 @@ var defaultCipherFuncs = CipherFuncMap{
     "SM4":       sm4.NewCipher,
 }
 
-// 构造函数
-func NewCipher() Cipher {
-    cipher := Cipher{
-        funcs: defaultCipherFuncs,
-    }
-
-    return cipher
-}
-
 /**
  * 加密方式
  *
@@ -68,6 +59,15 @@ func NewCipher() Cipher {
 type Cipher struct {
     // 列表
     funcs CipherFuncMap
+}
+
+// 构造函数
+func NewCipher() Cipher {
+    cipher := Cipher{
+        funcs: defaultCipherFuncs,
+    }
+
+    return cipher
 }
 
 // 覆盖

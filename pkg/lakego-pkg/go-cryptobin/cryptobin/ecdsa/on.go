@@ -6,7 +6,7 @@ type (
 )
 
 // 引出错误信息
-func (this Ecdsa) OnError(fn EcdsaErrorFunc) Ecdsa {
+func (this ECDSA) OnError(fn EcdsaErrorFunc) ECDSA {
     fn(this.Errors)
 
     return this

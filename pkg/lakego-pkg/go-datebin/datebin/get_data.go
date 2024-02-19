@@ -1,6 +1,7 @@
 package datebin
 
 // 返回年月日数据
+// get year, month, day data
 func (this Datebin) Date() (year, month, day int) {
 	if this.IsInvalid() {
 		return
@@ -12,6 +13,7 @@ func (this Datebin) Date() (year, month, day int) {
 }
 
 // 返回时分秒数据
+// get hour, minute, second data
 func (this Datebin) Time() (hour, minute, second int) {
 	if this.IsInvalid() {
 		return
@@ -21,6 +23,7 @@ func (this Datebin) Time() (hour, minute, second int) {
 }
 
 // 返回年月日时分秒数据
+// get year, month, day, hour, minute, second data
 func (this Datebin) Datetime() (year, month, day, hour, minute, second int) {
 	if this.IsInvalid() {
 		return
@@ -33,6 +36,7 @@ func (this Datebin) Datetime() (year, month, day, hour, minute, second int) {
 }
 
 // 返回年月日时分秒数据带纳秒
+// get year, month, day, hour, minute, second, nanosecond data
 func (this Datebin) DatetimeWithNanosecond() (year, month, day, hour, minute, second, nanosecond int) {
 	if this.IsInvalid() {
 		return
@@ -45,6 +49,7 @@ func (this Datebin) DatetimeWithNanosecond() (year, month, day, hour, minute, se
 }
 
 // 返回年月日时分秒数据带微秒
+// get year, month, day, hour, minute, second, microsecond data
 func (this Datebin) DatetimeWithMicrosecond() (year, month, day, hour, minute, second, microsecond int) {
 	if this.IsInvalid() {
 		return
@@ -57,6 +62,7 @@ func (this Datebin) DatetimeWithMicrosecond() (year, month, day, hour, minute, s
 }
 
 // 返回年月日时分秒数据带毫秒
+// get year, month, day, hour, minute, second, millisecond data
 func (this Datebin) DatetimeWithMillisecond() (year, month, day, hour, minute, second, millisecond int) {
 	if this.IsInvalid() {
 		return

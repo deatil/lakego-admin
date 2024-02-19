@@ -1,7 +1,7 @@
 package dh
 
 // 检测公钥私钥是否匹配
-func (this Dh) CheckKeyPair() bool {
+func (this DH) CheckKeyPair() bool {
     // 私钥导出的公钥
     pubKeyFromPriKey := this.MakePublicKey().
         CreatePublicKey().

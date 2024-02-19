@@ -8,7 +8,7 @@ import (
     go_subtle "crypto/subtle"
 
     "github.com/deatil/go-cryptobin/tool/xor"
-    "github.com/deatil/go-cryptobin/tool/subtle"
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const (
@@ -178,8 +178,8 @@ func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     if uint64(len(plaintext)) > uint64(c.MaxLength()) {
         panic("cryptobin/ccm: message too large for CCM")
     }
-    ret, out := subtle.SliceForAppend(dst, len(plaintext)+c.tagSize)
-    if subtle.InexactOverlap(out, plaintext) {
+    ret, out := alias.SliceForAppend(dst, len(plaintext)+c.tagSize)
+    if alias.InexactOverlap(out, plaintext) {
         panic("cryptobin/ccm: invalid buffer overlap")
     }
 
@@ -224,8 +224,8 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     c.deriveCounter(&counter, nonce)
     c.cipher.Encrypt(tagMask[:], counter[:])
 
-    ret, out := subtle.SliceForAppend(dst, len(ciphertext))
-    if subtle.InexactOverlap(out, ciphertext) {
+    ret, out := alias.SliceForAppend(dst, len(ciphertext))
+    if alias.InexactOverlap(out, ciphertext) {
         panic("cryptobin/ccm: invalid buffer overlap")
     }
 

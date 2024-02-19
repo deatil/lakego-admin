@@ -1,7 +1,7 @@
 //go:build (amd64 && !purego && !plugin) || (arm64 && !purego)
 // +build amd64,!purego,!plugin arm64,!purego
 
-package curve
+package sm2curve
 
 import (
     "fmt"

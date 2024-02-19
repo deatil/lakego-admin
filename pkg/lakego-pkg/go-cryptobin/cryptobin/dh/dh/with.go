@@ -7,28 +7,28 @@ import (
 )
 
 // 设置 PrivateKey
-func (this Dh) WithPrivateKey(data *dh.PrivateKey) Dh {
+func (this DH) WithPrivateKey(data *dh.PrivateKey) DH {
     this.privateKey = data
 
     return this
 }
 
 // 设置 PublicKey
-func (this Dh) WithPublicKey(data *dh.PublicKey) Dh {
+func (this DH) WithPublicKey(data *dh.PublicKey) DH {
     this.publicKey = data
 
     return this
 }
 
 // 设置分组
-func (this Dh) WithGroup(data *dh.Group) Dh {
+func (this DH) WithGroup(data *dh.Group) DH {
     this.group = data
 
     return this
 }
 
 // 根据 Group 数据设置分组
-func (this Dh) SetGroup(name string) Dh {
+func (this DH) SetGroup(name string) DH {
     var param dh.GroupID
 
     switch name {
@@ -63,7 +63,7 @@ func (this Dh) SetGroup(name string) Dh {
 }
 
 // 根据 Group P和G 数据设置分组
-func (this Dh) SetGroupPG(p string, g int64) Dh {
+func (this DH) SetGroupPG(p string, g int64) DH {
     pInt, _ := new(big.Int).SetString(p, 16)
 
     this.group = &dh.Group{
@@ -75,7 +75,7 @@ func (this Dh) SetGroupPG(p string, g int64) Dh {
 }
 
 // 随机数
-func (this Dh) SetRandGroup(num int64) Dh {
+func (this DH) SetRandGroup(num int64) DH {
     hexLetters := []rune("0123456789abcdef")
 
     // p 值
@@ -92,21 +92,21 @@ func (this Dh) SetRandGroup(num int64) Dh {
 }
 
 // 设置 keyData
-func (this Dh) WithKeyData(data []byte) Dh {
+func (this DH) WithKeyData(data []byte) DH {
     this.keyData = data
 
     return this
 }
 
 // 设置 secretData
-func (this Dh) WithSecretData(data []byte) Dh {
+func (this DH) WithSecretData(data []byte) DH {
     this.secretData = data
 
     return this
 }
 
 // 设置错误
-func (this Dh) WithError(errs []error) Dh {
+func (this DH) WithError(errs []error) DH {
     this.Errors = errs
 
     return this

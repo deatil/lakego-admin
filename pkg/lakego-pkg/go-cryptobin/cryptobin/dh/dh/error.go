@@ -5,13 +5,13 @@ import (
 )
 
 // 添加错误
-func (this Dh) AppendError(err ...error) Dh {
+func (this DH) AppendError(err ...error) DH {
     this.Errors = append(this.Errors, err...)
 
     return this
 }
 
 // 获取错误
-func (this Dh) Error() error {
+func (this DH) Error() error {
     return cryptobin_tool.NewError(this.Errors...)
 }

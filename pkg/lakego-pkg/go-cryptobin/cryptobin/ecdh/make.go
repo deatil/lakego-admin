@@ -6,11 +6,11 @@ import (
 )
 
 // 生成公钥
-func (this Ecdh) MakePublicKey() Ecdh {
+func (this ECDH) MakePublicKey() ECDH {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -21,10 +21,10 @@ func (this Ecdh) MakePublicKey() Ecdh {
 }
 
 // 生成密钥 der 数据
-func (this Ecdh) MakeKeyDer() Ecdh {
+func (this ECDH) MakeKeyDer() ECDH {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Ecdh: keyData error.")
+        err := errors.New("ecdh: keyData error.")
         return this.AppendError(err)
     }
 

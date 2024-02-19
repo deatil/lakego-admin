@@ -11,7 +11,7 @@ import (
  * @create 2022-8-7
  * @author deatil
  */
-type Ecdh struct {
+type ECDH struct {
     // 私钥
     privateKey *ecdh.PrivateKey
 
@@ -32,19 +32,19 @@ type Ecdh struct {
 }
 
 // 构造函数
-func NewEcdh() Ecdh {
-    return Ecdh{
+func NewECDH() ECDH {
+    return ECDH{
         curve:  ecdh.P256(),
         Errors: make([]error, 0),
     }
 }
 
 // 构造函数
-func New() Ecdh {
-    return NewEcdh()
+func New() ECDH {
+    return NewECDH()
 }
 
 var (
     // 默认
-    defaultECDH = NewEcdh()
+    defaultECDH = NewECDH()
 )

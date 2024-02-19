@@ -17,7 +17,7 @@ var (
 )
 
 // 解析私钥
-func (this Ecdsa) ParsePKCS1PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, error) {
+func (this ECDSA) ParsePKCS1PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -43,7 +43,7 @@ func (this Ecdsa) ParsePKCS1PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, er
 }
 
 // 解析私钥带密码
-func (this Ecdsa) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*ecdsa.PrivateKey, error) {
+func (this ECDSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*ecdsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -76,7 +76,7 @@ func (this Ecdsa) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password s
 // ==========
 
 // 解析私钥
-func (this Ecdsa) ParsePKCS8PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, error) {
+func (this ECDSA) ParsePKCS8PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -102,7 +102,7 @@ func (this Ecdsa) ParsePKCS8PrivateKeyFromPEM(key []byte) (*ecdsa.PrivateKey, er
 }
 
 // 解析 PKCS8 带密码的私钥
-func (this Ecdsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*ecdsa.PrivateKey, error) {
+func (this ECDSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*ecdsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -134,7 +134,7 @@ func (this Ecdsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password s
 // ==========
 
 // 解析公钥
-func (this Ecdsa) ParsePublicKeyFromPEM(key []byte) (*ecdsa.PublicKey, error) {
+func (this ECDSA) ParsePublicKeyFromPEM(key []byte) (*ecdsa.PublicKey, error) {
     var err error
 
     // Parse PEM block

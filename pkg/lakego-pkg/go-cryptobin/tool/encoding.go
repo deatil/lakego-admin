@@ -11,11 +11,6 @@ var (
     defaultEncoding = NewEncoding()
 )
 
-// 构造函数
-func NewEncoding() Encoding {
-    return Encoding{}
-}
-
 /**
  * 编码
  *
@@ -23,6 +18,11 @@ func NewEncoding() Encoding {
  * @author deatil
  */
 type Encoding struct{}
+
+// 构造函数
+func NewEncoding() Encoding {
+    return Encoding{}
+}
 
 // Base64 编码
 func (this Encoding) Base64Encode(src []byte) string {
@@ -84,7 +84,7 @@ func HexPadding(text string, size int) string {
 }
 
 // BytesPadding
-func BytesPadding(text []byte, size int) []byte {
+func (this Encoding) BytesPadding(text []byte, size int) []byte {
     if size < 1 {
         return text
     }
@@ -101,4 +101,8 @@ func BytesPadding(text []byte, size int) []byte {
     }
 
     return text[n-size:]
+}
+
+func BytesPadding(text []byte, size int) []byte {
+    return defaultEncoding.BytesPadding(text, size)
 }

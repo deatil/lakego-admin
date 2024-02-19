@@ -6,11 +6,11 @@ import(
 )
 
 // 生成公钥
-func (this Ecdsa) MakePublicKey() Ecdsa {
+func (this ECDSA) MakePublicKey() ECDSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Ecdsa: privateKey error.")
+        err := errors.New("ecdsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -20,10 +20,10 @@ func (this Ecdsa) MakePublicKey() Ecdsa {
 }
 
 // 生成密钥 der 数据
-func (this Ecdsa) MakeKeyDer() Ecdsa {
+func (this ECDSA) MakeKeyDer() ECDSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Ecdsa: keyData error.")
+        err := errors.New("ecdsa: keyData error.")
         return this.AppendError(err)
     }
 

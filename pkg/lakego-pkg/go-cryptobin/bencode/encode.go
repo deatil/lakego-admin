@@ -19,11 +19,13 @@ func (e *Encoder) Encode(v any) (err error) {
     if v == nil {
         return
     }
+
     defer func() {
         if e := recover(); e != nil {
             if _, ok := e.(runtime.Error); ok {
                 panic(e)
             }
+
             var ok bool
             err, ok = e.(error)
             if !ok {
@@ -31,6 +33,7 @@ func (e *Encoder) Encode(v any) (err error) {
             }
         }
     }()
+
     e.reflectValue(reflect.ValueOf(v))
     return nil
 }

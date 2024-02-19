@@ -22,6 +22,7 @@ func (me Bytes) MarshalBencode() ([]byte, error) {
     if len(me) == 0 {
         return nil, errors.New("marshalled Bytes should not be zero-length")
     }
+
     return me, nil
 }
 

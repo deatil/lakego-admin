@@ -1,6 +1,8 @@
 package sm2
 
 import (
+    "hash"
+
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
@@ -8,6 +10,11 @@ const (
     // 类型
     C1C3C2 = sm2.C1C3C2
     C1C2C3 = sm2.C1C2C3
+)
+
+type (
+    // HashFunc
+    HashFunc = func() hash.Hash
 )
 
 /**
@@ -34,6 +41,9 @@ type SM2 struct {
 
     // 解析后的数据
     parsedData []byte
+
+    // 签名验证类型
+    signHash HashFunc
 
     // 验证结果
     verify bool

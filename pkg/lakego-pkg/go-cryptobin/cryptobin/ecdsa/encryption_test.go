@@ -28,7 +28,7 @@ func Test_Encrypt(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    obj := NewEcdsa().
+    obj := NewECDSA().
         FromString(data).
         FromPublicKey([]byte(enpubkey)).
         Encrypt()
@@ -43,7 +43,7 @@ func Test_Decrypt(t *testing.T) {
 
     data := "test-pass"
     endata := "BA6UmWJHLf/XOhge8ASuz11cMpX3YCu6Pfmp5tQ/OPK7rV27paYGB6V5vL/KhjVGznedvhGe0F3CNzoyxfp+r+41m+ehtIC0isWnDc8ZyZrmNVioOeaO5i6yEwiEwhTB8QzUSDE5JJB6ta0vObhBvFRVvgzv1VD0C4Y="
-    obj := NewEcdsa().
+    obj := NewECDSA().
         FromBase64String(endata).
         FromPrivateKey([]byte(enprikey)).
         Decrypt()

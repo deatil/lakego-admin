@@ -5,46 +5,46 @@ import (
 )
 
 // 私钥/公钥
-func (this Ecdsa) ToKeyBytes() []byte {
+func (this ECDSA) ToKeyBytes() []byte {
     return this.keyData
 }
 
 // 私钥/公钥
-func (this Ecdsa) ToKeyString() string {
+func (this ECDSA) ToKeyString() string {
     return string(this.keyData)
 }
 
 // ==========
 
 // 输出字节
-func (this Ecdsa) ToBytes() []byte {
+func (this ECDSA) ToBytes() []byte {
     return this.parsedData
 }
 
 // 输出字符
-func (this Ecdsa) ToString() string {
+func (this ECDSA) ToString() string {
     return string(this.parsedData)
 }
 
 // 输出Base64
-func (this Ecdsa) ToBase64String() string {
+func (this ECDSA) ToBase64String() string {
     return cryptobin_tool.NewEncoding().Base64Encode(this.parsedData)
 }
 
 // 输出Hex
-func (this Ecdsa) ToHexString() string {
+func (this ECDSA) ToHexString() string {
     return cryptobin_tool.NewEncoding().HexEncode(this.parsedData)
 }
 
 // ==========
 
 // 验证结果
-func (this Ecdsa) ToVerify() bool {
+func (this ECDSA) ToVerify() bool {
     return this.verify
 }
 
 // 验证结果，返回 int 类型
-func (this Ecdsa) ToVerifyInt() int {
+func (this ECDSA) ToVerifyInt() int {
     if this.verify {
         return 1
     }

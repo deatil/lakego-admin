@@ -6,7 +6,7 @@ type (
 )
 
 // 引出错误信息
-func (this Dh) OnError(fn ErrorFunc) Dh {
+func (this DH) OnError(fn ErrorFunc) DH {
     fn(this.Errors)
 
     return this

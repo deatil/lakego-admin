@@ -5,33 +5,33 @@ import (
 )
 
 // 私钥/公钥
-func (this Ecdh) ToKeyBytes() []byte {
+func (this ECDH) ToKeyBytes() []byte {
     return this.keyData
 }
 
 // 私钥/公钥
-func (this Ecdh) ToKeyString() string {
+func (this ECDH) ToKeyString() string {
     return string(this.keyData)
 }
 
 // =================
 
 // 输出字节
-func (this Ecdh) ToBytes() []byte {
+func (this ECDH) ToBytes() []byte {
     return this.secretData
 }
 
 // 输出字符
-func (this Ecdh) ToString() string {
+func (this ECDH) ToString() string {
     return string(this.secretData)
 }
 
 // 输出Base64
-func (this Ecdh) ToBase64String() string {
+func (this ECDH) ToBase64String() string {
     return cryptobin_tool.NewEncoding().Base64Encode(this.secretData)
 }
 
 // 输出Hex
-func (this Ecdh) ToHexString() string {
+func (this ECDH) ToHexString() string {
     return cryptobin_tool.NewEncoding().HexEncode(this.secretData)
 }

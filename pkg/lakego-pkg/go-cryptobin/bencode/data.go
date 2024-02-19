@@ -1,6 +1,7 @@
 package bencode
 
 import (
+    "sort"
     "time"
     "encoding/json"
 )
@@ -15,6 +16,8 @@ func (this Data) GetKeys() []string {
     for key, _ := range this {
         keys = append(keys, key)
     }
+
+    sort.Strings(keys)
 
     return keys
 }
@@ -101,6 +104,8 @@ func (this Data) GetInfoKeys() []string {
     for key, _ := range this.GetInfo() {
         keys = append(keys, key)
     }
+
+    sort.Strings(keys)
 
     return keys
 }

@@ -340,13 +340,14 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte) ([]byte, error) {
         c = append(c, x1Buf...) // x分量
         c = append(c, y1Buf...) // y分量
 
-        tm := []byte{}
-        tm = append(tm, x2Buf...)
-        tm = append(tm, data...)
-        tm = append(tm, y2Buf...)
+        md := sm3.New()
+        md.Write(x2Buf)
+        md.Write(data)
+        md.Write(y2Buf)
 
-        h := sm3.Sum(tm)
-        c = append(c, h[:]...)
+        h := md.Sum(nil)
+
+        c = append(c, h...)
 
         // 生成密钥 / make key
         ct, ok := kdf(length, x2Buf, y2Buf)
@@ -392,14 +393,14 @@ func decrypt(priv *PrivateKey, data []byte) ([]byte, error) {
     // 解密密文 / decrypt data
     subtle.XORBytes(c, c, data)
 
-    tm := []byte{}
-    tm = append(tm, x2Buf...)
-    tm = append(tm, c...)
-    tm = append(tm, y2Buf...)
+    md := sm3.New()
+    md.Write(x2Buf)
+    md.Write(c)
+    md.Write(y2Buf)
 
-    h := sm3.Sum(tm)
+    h := md.Sum(nil)
 
-    if bytes.Compare(h[:], hash) != 0 {
+    if bytes.Compare(h, hash) != 0 {
         return c, errors.New("cryptobin/sm2: failed to decrypt")
     }
 

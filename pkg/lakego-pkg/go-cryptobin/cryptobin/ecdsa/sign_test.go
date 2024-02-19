@@ -28,7 +28,7 @@ func Test_SignASN1(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-pass"
-    objSign := NewEcdsa().
+    objSign := NewECDSA().
         FromString(data).
         FromPrivateKey([]byte(prikey)).
         SignASN1()
@@ -43,7 +43,7 @@ func Test_VerifyASN1(t *testing.T) {
 
     data := "test-pass"
     sig := "MEUCIBhAZzrS6jM4MfwibzA+j0vBkTEQGvkiDWhx7E6/ePUmAiEAt1uTZXUPGNU9nY8ZS3UxcJCRqwh/G8eeyrAVwM3qen4="
-    objVerify := NewEcdsa().
+    objVerify := NewECDSA().
         FromBase64String(sig).
         FromPublicKey([]byte(pubkey)).
         VerifyASN1([]byte(data))

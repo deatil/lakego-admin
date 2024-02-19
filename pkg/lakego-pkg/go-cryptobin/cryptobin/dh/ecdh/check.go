@@ -1,7 +1,7 @@
 package ecdh
 
 // 检测公钥私钥是否匹配
-func (this Ecdh) CheckKeyPair() bool {
+func (this ECDH) CheckKeyPair() bool {
     // 私钥导出的公钥
     pubKeyFromPriKey := this.MakePublicKey().
         CreatePublicKey().

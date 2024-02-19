@@ -10,7 +10,7 @@ import (
  * @create 2022-8-7
  * @author deatil
  */
-type Ecdh struct {
+type ECDH struct {
     // 私钥
     privateKey *ecdh.PrivateKey
 
@@ -31,17 +31,17 @@ type Ecdh struct {
 }
 
 // 构造函数
-func NewEcdh() Ecdh {
+func NewEcdh() ECDH {
     curve := ecdh.P256()
 
-    return Ecdh{
+    return ECDH{
         curve: curve,
         Errors: make([]error, 0),
     }
 }
 
 // 构造函数
-func New() Ecdh {
+func New() ECDH {
     return NewEcdh()
 }
 

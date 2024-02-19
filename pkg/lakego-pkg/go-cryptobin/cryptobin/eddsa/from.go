@@ -9,32 +9,14 @@ import (
 )
 
 // 生成密钥
-func (this EdDSA) GenerateKey() EdDSA {
-    publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.publicKey  = publicKey
-    this.privateKey = privateKey
-
-    return this
-}
-
-// 生成密钥
-func GenerateKey() EdDSA {
-    return defaultEdDSA.GenerateKey()
-}
-
-// 生成密钥
 func (this EdDSA) GenerateKeyWithSeed(reader io.Reader) EdDSA {
     publicKey, privateKey, err := ed25519.GenerateKey(reader)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.publicKey  = publicKey
     this.privateKey = privateKey
+    this.publicKey  = publicKey
 
     return this
 }
@@ -42,6 +24,16 @@ func (this EdDSA) GenerateKeyWithSeed(reader io.Reader) EdDSA {
 // 生成密钥
 func GenerateKeyWithSeed(reader io.Reader) EdDSA {
     return defaultEdDSA.GenerateKeyWithSeed(reader)
+}
+
+// 生成密钥
+func (this EdDSA) GenerateKey() EdDSA {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// 生成密钥
+func GenerateKey() EdDSA {
+    return defaultEdDSA.GenerateKey()
 }
 
 // ==========

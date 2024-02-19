@@ -10,10 +10,9 @@ import (
     "crypto/x509"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs12"
     "github.com/deatil/go-cryptobin/gm/sm2"
-    sm2_x509 "github.com/deatil/go-cryptobin/gm/x509"
-
-    cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/gm/x509"
 )
 
 // 证书请求
@@ -28,13 +27,13 @@ func (this CA) CreateCSR() CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            certRequest, ok := this.certRequest.(*sm2_x509.CertificateRequest)
+            certRequest, ok := this.certRequest.(*cryptobin_x509.CertificateRequest)
             if !ok {
                 err := errors.New("CA: sm2 certRequest error.")
                 return this.AppendError(err)
             }
 
-            csrBytes, err = sm2_x509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
+            csrBytes, err = cryptobin_x509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
 
         default:
             certRequest, ok := this.certRequest.(*x509.CertificateRequest)
@@ -72,7 +71,7 @@ func (this CA) CreateCA() CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            cert, ok := this.cert.(*sm2_x509.Certificate)
+            cert, ok := this.cert.(*cryptobin_x509.Certificate)
             if !ok {
                 err := errors.New("CA: sm2 cert error.")
                 return this.AppendError(err)
@@ -80,7 +79,7 @@ func (this CA) CreateCA() CA {
 
             publicKey := &privateKey.PublicKey
 
-            caBytes, err = sm2_x509.CreateCertificate(cert, cert, publicKey, privateKey)
+            caBytes, err = cryptobin_x509.CreateCertificate(cert, cert, publicKey, privateKey)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -118,13 +117,13 @@ func (this CA) CreateCert(ca any) CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            newCert, certOk := this.cert.(*sm2_x509.Certificate)
+            newCert, certOk := this.cert.(*cryptobin_x509.Certificate)
             if !certOk {
                 err := errors.New("CA: sm2 cert error.")
                 return this.AppendError(err)
             }
 
-            newCa, caOk := ca.(*sm2_x509.Certificate)
+            newCa, caOk := ca.(*cryptobin_x509.Certificate)
             if !caOk {
                 err := errors.New("CA: sm2 ca error.")
                 return this.AppendError(err)
@@ -132,7 +131,7 @@ func (this CA) CreateCert(ca any) CA {
 
             publicKey := &privateKey.PublicKey
 
-            certBytes, err = sm2_x509.CreateCertificate(newCert, newCa, publicKey, privateKey)
+            certBytes, err = cryptobin_x509.CreateCertificate(newCert, newCa, publicKey, privateKey)
 
         default:
             newCert, certOk := this.cert.(*x509.Certificate)
@@ -241,13 +240,13 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
 
     switch privateKey := this.privateKey.(type) {
         case *sm2.PrivateKey:
-            cert, ok := this.cert.(*sm2_x509.Certificate)
+            cert, ok := this.cert.(*cryptobin_x509.Certificate)
             if !ok {
                 err := errors.New("sm2 cert error.")
                 return this.AppendError(err)
             }
 
-            pfxData, err = cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, cert.ToX509Certificate(), caCerts, pwd)
+            pfxData, err = pkcs12.EncodeChain(rand.Reader, privateKey, cert.ToX509Certificate(), caCerts, pwd)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -256,7 +255,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
                 return this.AppendError(err)
             }
 
-            pfxData, err = cryptobin_pkcs12.EncodeChain(rand.Reader, privateKey, cert, caCerts, pwd)
+            pfxData, err = pkcs12.EncodeChain(rand.Reader, privateKey, cert, caCerts, pwd)
     }
 
     if err != nil {
@@ -270,7 +269,7 @@ func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, pwd string) CA {
 
 // pkcs12 密钥
 func (this CA) CreatePKCS12CertTrustStore(certs []*x509.Certificate, password string) CA {
-    pfxData, err := cryptobin_pkcs12.EncodeTrustStore(rand.Reader, certs, password)
+    pfxData, err := pkcs12.EncodeTrustStore(rand.Reader, certs, password)
     if err != nil {
         return this.AppendError(err)
     }

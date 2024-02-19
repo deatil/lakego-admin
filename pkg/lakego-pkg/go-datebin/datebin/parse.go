@@ -7,6 +7,7 @@ import (
 )
 
 // 解析时间字符
+// Parse date string
 func (this Datebin) Parse(date string, timezone ...string) Datebin {
 	// 解析需要的格式
 	var layout = DatetimeFormat
@@ -77,11 +78,13 @@ func (this Datebin) Parse(date string, timezone ...string) Datebin {
 }
 
 // 解析时间字符
+// Parse date string
 func Parse(date string, timezone ...string) Datebin {
 	return defaultDatebin.Parse(date, timezone...)
 }
 
 // 用布局字符解析时间字符
+// Parse date string with layout
 func (this Datebin) ParseWithLayout(date string, layout string, timezone ...string) Datebin {
 	if len(timezone) > 0 {
 		this = this.SetTimezone(timezone[0])
@@ -98,21 +101,25 @@ func (this Datebin) ParseWithLayout(date string, layout string, timezone ...stri
 }
 
 // 用布局字符解析时间字符
+// Parse date string with layout
 func ParseWithLayout(date string, layout string, timezone ...string) Datebin {
 	return defaultDatebin.ParseWithLayout(date, layout, timezone...)
 }
 
 // 用格式化字符解析时间字符
+// Parse date string with format
 func (this Datebin) ParseWithFormat(date string, format string, timezone ...string) Datebin {
 	return this.ParseWithLayout(date, parseFormatString(format), timezone...)
 }
 
 // 用格式化字符解析时间字符
+// Parse date string with format
 func ParseWithFormat(date string, format string, timezone ...string) Datebin {
 	return defaultDatebin.ParseWithFormat(date, format, timezone...)
 }
 
-// 时间字符
+// 用格式化字符或者布局字符解析时间字符
+// Parse date string with format or layout
 func ParseDatetimeString(date string, format ...string) Datebin {
 	if len(format) > 1 && format[1] == "u" {
 		return ParseWithFormat(date, format[0])

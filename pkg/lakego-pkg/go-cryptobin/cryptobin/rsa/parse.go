@@ -19,7 +19,7 @@ var (
 )
 
 // 解析 PKCS1 私钥
-func (this Rsa) ParsePKCS1PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePKCS1PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -44,7 +44,7 @@ func (this Rsa) ParsePKCS1PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error)
 }
 
 // 解析 PKCS1 带密码的私钥
-func (this Rsa) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -74,7 +74,7 @@ func (this Rsa) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
 }
 
 // 解析 PKCS1 公钥
-func (this Rsa) ParsePKCS1PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
+func (this RSA) ParsePKCS1PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -101,7 +101,7 @@ func (this Rsa) ParsePKCS1PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
 // ====================
 
 // 解析 PKCS8 私钥
-func (this Rsa) ParsePKCS8PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePKCS8PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -126,7 +126,7 @@ func (this Rsa) ParsePKCS8PrivateKeyFromPEM(key []byte) (*rsa.PrivateKey, error)
 }
 
 // 解析 PKCS8 带密码的私钥
-func (this Rsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*rsa.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -157,7 +157,7 @@ func (this Rsa) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
 }
 
 // 解析 PKCS8 公钥
-func (this Rsa) ParsePKCS8PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
+func (this RSA) ParsePKCS8PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -189,7 +189,7 @@ func (this Rsa) ParsePKCS8PublicKeyFromPEM(key []byte) (*rsa.PublicKey, error) {
 // ============
 
 // 解析 pkf 证书
-func (this Rsa) ParsePKCS12CertFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePKCS12CertFromPEMWithPassword(pfxData []byte, password string) (*rsa.PrivateKey, error) {
     privateKey, _, err := pkcs12.Decode(pfxData, password)
     if err != nil {
         return nil, err
@@ -206,11 +206,11 @@ func (this Rsa) ParsePKCS12CertFromPEMWithPassword(pfxData []byte, password stri
 // ============
 
 // 解析 xml 私钥
-func (this Rsa) ParsePrivateKeyFromXML(key []byte) (*rsa.PrivateKey, error) {
+func (this RSA) ParsePrivateKeyFromXML(key []byte) (*rsa.PrivateKey, error) {
     return cryptobin_rsa.ParseXMLPrivateKey(key)
 }
 
 // 解析 xml 公钥
-func (this Rsa) ParsePublicKeyFromXML(key []byte) (*rsa.PublicKey, error) {
+func (this RSA) ParsePublicKeyFromXML(key []byte) (*rsa.PublicKey, error) {
     return cryptobin_rsa.ParseXMLPublicKey(key)
 }

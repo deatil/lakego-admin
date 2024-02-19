@@ -6,15 +6,6 @@ import(
     "reflect"
 )
 
-// 构造函数
-func NewEvents() *Events {
-    event := &Events{
-        dispatcher: NewEventDispatcher(),
-    }
-
-    return event
-}
-
 /**
  * 事件
  *
@@ -27,6 +18,15 @@ type Events struct {
 
     // 调度器
     dispatcher *EventDispatcher
+}
+
+// 构造函数
+func NewEvents() *Events {
+    event := &Events{
+        dispatcher: NewEventDispatcher(),
+    }
+
+    return event
 }
 
 // 监听

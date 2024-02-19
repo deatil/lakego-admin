@@ -5,6 +5,7 @@ import (
 )
 
 // 时间常量
+// time const
 const (
 	// 皮秒[ps] [Picosecond = Nanosecond * 0.001]
 	Picosecond = time.Nanosecond / 1000
@@ -27,7 +28,7 @@ const (
 )
 
 // 时区常量
-// const timezones
+// timezones const
 const (
 	Local = "Local"
 	CET   = "CET"
@@ -87,7 +88,7 @@ const (
 )
 
 // 周常量
-// const week
+// week const
 const (
 	Monday    = "Monday"
 	Tuesday   = "Tuesday"
@@ -99,7 +100,7 @@ const (
 )
 
 // 月份常量
-// const month
+// month const
 const (
 	January   = "January"   // 一月
 	February  = "February"  // 二月
@@ -116,7 +117,7 @@ const (
 )
 
 // 数字常量
-// const types
+// types const
 const (
 	YearsPerMillennium         = 1000    // 每千年1000年
 	YearsPerCentury            = 100     // 每世纪100年
@@ -144,7 +145,7 @@ const (
 )
 
 // 时间格式化常量
-// const formats
+// formats const
 const (
 	AnsicFormat              = time.ANSIC
 	UnixDateFormat           = time.UnixDate
@@ -162,6 +163,7 @@ const (
 	StampMilliFormat         = time.StampMilli
 	StampMicroFormat         = time.StampMicro
 	StampNanoFormat          = time.StampNano
+	W3CFormat                = RFC3339Format
 	RFC3339MilliFormat       = "2006-01-02T15:04:05.999Z07:00"
 	RFC3339MicroFormat       = "2006-01-02T15:04:05.999999Z07:00"
 	RFC3339NanoFormat        = "2006-01-02T15:04:05.999999999Z07:00"

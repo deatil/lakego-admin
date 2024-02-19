@@ -5,17 +5,6 @@ import(
     "encoding/pem"
 )
 
-// BlockType 列表
-var PemBlockTypeMap = map[string]string{
-    "pri_key":    "PRIVATE KEY",
-    "en_pri_key": "ENCRYPTED PRIVATE KEY",
-    "pub_key":    "PUBLIC KEY",
-
-    "ec_pri_key":  "EC PRIVATE KEY",
-    "dsa_pri_key": "DSA PRIVATE KEY",
-    "rsa_pri_key": "RSA PRIVATE KEY",
-}
-
 type (
     // Block
     Block = pem.Block
@@ -34,6 +23,17 @@ var (
     // Decode(data []byte) (p *Block, rest []byte)
     Decode = pem.Decode
 )
+
+// BlockType 列表
+var PemBlockTypeMap = map[string]string{
+    "pri_key":    "PRIVATE KEY",
+    "en_pri_key": "ENCRYPTED PRIVATE KEY",
+    "pub_key":    "PUBLIC KEY",
+
+    "ec_pri_key":  "EC PRIVATE KEY",
+    "dsa_pri_key": "DSA PRIVATE KEY",
+    "rsa_pri_key": "RSA PRIVATE KEY",
+}
 
 // 获取 BlockType 类型
 func GetBlockTypeFromName(name string) string {

@@ -10,9 +10,9 @@ import (
 )
 
 // 公钥加密
-func (this Rsa) Encrypt() Rsa {
+func (this RSA) Encrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -27,9 +27,9 @@ func (this Rsa) Encrypt() Rsa {
 }
 
 // 私钥解密
-func (this Rsa) Decrypt() Rsa {
+func (this RSA) Decrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -46,9 +46,9 @@ func (this Rsa) Decrypt() Rsa {
 // ====================
 
 // 私钥加密
-func (this Rsa) PrivateKeyEncrypt() Rsa {
+func (this RSA) PrivateKeyEncrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -63,9 +63,9 @@ func (this Rsa) PrivateKeyEncrypt() Rsa {
 }
 
 // 公钥解密
-func (this Rsa) PublicKeyDecrypt() Rsa {
+func (this RSA) PublicKeyDecrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -82,9 +82,9 @@ func (this Rsa) PublicKeyDecrypt() Rsa {
 // ====================
 
 // OAEP公钥加密
-func (this Rsa) EncryptOAEP(typ ...string) Rsa {
+func (this RSA) EncryptOAEP(typ ...string) RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -109,9 +109,9 @@ func (this Rsa) EncryptOAEP(typ ...string) Rsa {
 }
 
 // OAEP私钥解密
-func (this Rsa) DecryptOAEP(typ ...string) Rsa {
+func (this RSA) DecryptOAEP(typ ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -138,9 +138,9 @@ func (this Rsa) DecryptOAEP(typ ...string) Rsa {
 // ====================
 
 // 公钥加密, ECB 模式
-func (this Rsa) EncryptECB() Rsa {
+func (this RSA) EncryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -177,9 +177,9 @@ func (this Rsa) EncryptECB() Rsa {
 }
 
 // 私钥解密, ECB 模式
-func (this Rsa) DecryptECB() Rsa {
+func (this RSA) DecryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -218,9 +218,9 @@ func (this Rsa) DecryptECB() Rsa {
 // ====================
 
 // 私钥加密, ECB 模式
-func (this Rsa) PrivateKeyEncryptECB() Rsa {
+func (this RSA) PrivateKeyEncryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -256,9 +256,9 @@ func (this Rsa) PrivateKeyEncryptECB() Rsa {
     return this}
 
 // 公钥解密, ECB 模式
-func (this Rsa) PublicKeyDecryptECB() Rsa {
+func (this RSA) PublicKeyDecryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -297,9 +297,9 @@ func (this Rsa) PublicKeyDecryptECB() Rsa {
 // ====================
 
 // OAEP公钥加密, ECB 模式
-func (this Rsa) EncryptOAEPECB(typ ...string) Rsa {
+func (this RSA) EncryptOAEPECB(typ ...string) RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -346,9 +346,9 @@ func (this Rsa) EncryptOAEPECB(typ ...string) Rsa {
 }
 
 // OAEP私钥解密, ECB 模式
-func (this Rsa) DecryptOAEPECB(typ ...string) Rsa {
+func (this RSA) DecryptOAEPECB(typ ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 

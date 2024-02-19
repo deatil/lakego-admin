@@ -7,7 +7,7 @@ import (
 
 type (
     // Arr 别名
-    Arr = array.Arr
+    Arr = array.Array
 
     // Goch 别名
     Goch = goch.Goch

@@ -17,7 +17,7 @@ func Test_PrimeKeyGeneration(t *testing.T) {
         size = 256
     }
 
-    obj := NewRsa().GenerateMultiPrimeKey(3, size)
+    obj := NewRSA().GenerateMultiPrimeKey(3, size)
 
     objPriKey := obj.CreatePKCS1PrivateKey()
 
@@ -90,7 +90,7 @@ func Test_RSAPkcs1Sign(t *testing.T) {
 
     data := "test-pass"
 
-    obj := NewRsa()
+    obj := NewRSA()
 
     sign := obj.
         FromString(data).
@@ -120,7 +120,7 @@ func Test_RSAPkcs8Sign(t *testing.T) {
 
     data := "test-pass22222"
 
-    obj := NewRsa()
+    obj := NewRSA()
 
     sign := obj.
         FromString(data).
@@ -160,7 +160,7 @@ func Test_PubNE(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
-    en := NewRsa().
+    en := NewRSA().
         FromPublicKeyNE(testPubN, testPubE).
         CreatePKCS8PublicKey()
     enData := en.ToKeyString()

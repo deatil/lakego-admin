@@ -4,27 +4,9 @@ import (
     "io"
     "crypto/rand"
 
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/ed448"
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
-
-// 生成密钥
-func (this ED448) GenerateKey() ED448 {
-    publicKey, privateKey, err := ed448.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.publicKey  = publicKey
-    this.privateKey = privateKey
-
-    return this
-}
-
-// 生成密钥
-func GenerateKey() ED448 {
-    return defaultED448.GenerateKey()
-}
 
 // 生成密钥
 func (this ED448) GenerateKeyWithSeed(reader io.Reader) ED448 {
@@ -33,8 +15,8 @@ func (this ED448) GenerateKeyWithSeed(reader io.Reader) ED448 {
         return this.AppendError(err)
     }
 
-    this.publicKey  = publicKey
     this.privateKey = privateKey
+    this.publicKey  = publicKey
 
     return this
 }
@@ -42,6 +24,16 @@ func (this ED448) GenerateKeyWithSeed(reader io.Reader) ED448 {
 // 生成密钥
 func GenerateKeyWithSeed(reader io.Reader) ED448 {
     return defaultED448.GenerateKeyWithSeed(reader)
+}
+
+// 生成密钥
+func (this ED448) GenerateKey() ED448 {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// 生成密钥
+func GenerateKey() ED448 {
+    return defaultED448.GenerateKey()
 }
 
 // ==========
@@ -101,7 +93,7 @@ func FromPublicKey(key []byte) ED448 {
 
 // DER 私钥
 func (this ED448) FromPrivateKeyDer(der []byte) ED448 {
-    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -115,7 +107,7 @@ func (this ED448) FromPrivateKeyDer(der []byte) ED448 {
 
 // DER 公钥
 func (this ED448) FromPublicKeyDer(der []byte) ED448 {
-    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -169,7 +161,7 @@ func FromString(data string) ED448 {
 
 // Base64
 func (this ED448) FromBase64String(data string) ED448 {
-    newData, err := cryptobin_tool.Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
 
     this.data = newData
 
@@ -183,7 +175,7 @@ func FromBase64String(data string) ED448 {
 
 // Hex
 func (this ED448) FromHexString(data string) ED448 {
-    newData, err := cryptobin_tool.HexDecode(data)
+    newData, err := tool.HexDecode(data)
 
     this.data = newData
 

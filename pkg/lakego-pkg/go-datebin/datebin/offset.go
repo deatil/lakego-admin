@@ -17,52 +17,51 @@ func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin
 
 	field = strings.ToLower(field)
 
-	// 相关匹配
 	switch field {
-	// 百年
+	// 百年 / century
 	case "century":
 		offset = offset * YearsPerCentury
 		this.time = this.time.AddDate(offset, 0, 0)
-	// 十年
+	// 十年 / decade
 	case "decade":
 		offset = offset * YearsPerDecade
 		this.time = this.time.AddDate(offset, 0, 0)
-	// 一年
+	// 一年 / year
 	case "year":
 		this.time = this.time.AddDate(offset, 0, 0)
-	// 季度
+	// 季度 / quarter
 	case "quarter":
 		offset = offset * MonthsPerQuarter
 		this.time = this.time.AddDate(0, offset, 0)
-	// 一个月
+	// 一个月 / one month
 	case "month":
 		this.time = this.time.AddDate(0, offset, 0)
-	// 一周
+	// 一周 / one weekday
 	case "weekday":
 		offset = offset * DaysPerWeek
 		this.time = this.time.AddDate(0, 0, offset)
-	// 一天
+	// 一天 / one day
 	case "day":
 		this.time = this.time.AddDate(0, 0, offset)
-	// 一小时
+	// 一小时 / one hour
 	case "hour":
 		this.time = this.time.Add(time.Hour * time.Duration(offset))
-	// 一分钟
+	// 一分钟 / one minute
 	case "minute":
 		this.time = this.time.Add(time.Minute * time.Duration(offset))
-	// 一秒
+	// 一秒 / one second
 	case "second":
 		this.time = this.time.Add(time.Second * time.Duration(offset))
-	// 毫秒
+	// 毫秒 / one millisecond
 	case "millisecond", "milli":
 		this.time = this.time.Add(time.Millisecond * time.Duration(offset))
-	// 微妙
+	// 微妙 / one microsecond
 	case "microsecond", "micro":
 		this.time = this.time.Add(time.Microsecond * time.Duration(offset))
-	// 纳秒
+	// 纳秒 / one nanosecond
 	case "nanosecond", "nano":
 		this.time = this.time.Add(time.Nanosecond * time.Duration(offset))
-	// 默认不处理
+	// 默认不处理 / default
 	default:
 	}
 
@@ -73,6 +72,7 @@ func (this Datebin) Offset(field string, offset int, timezone ...string) Datebin
 // add or sub year NoOverflow
 func (this Datebin) OffsetYearsNoOverflow(years int) Datebin {
 	// N年后本月的最后一天
+	// lastday of the Month from n years after time
 	last := time.Date(this.Year()+years, time.Month(this.Month()), 1, this.Hour(), this.Minute(), this.Second(), this.Nanosecond(), this.loc).AddDate(0, 1, -1)
 
 	day := this.Day()
@@ -90,6 +90,7 @@ func (this Datebin) OffsetMonthsNoOverflow(months int) Datebin {
 	month := this.Month() + months
 
 	// n+1月第一天减一天
+	// the month last day
 	last := time.Date(this.Year(), time.Month(month), 1, this.Hour(), this.Minute(), this.Second(), this.Nanosecond(), this.loc).AddDate(0, 1, -1)
 
 	day := this.Day()

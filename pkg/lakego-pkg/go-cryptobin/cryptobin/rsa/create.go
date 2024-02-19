@@ -31,26 +31,26 @@ var (
 // 使用:
 // obj := New().GenerateKey(2048)
 // priKey := obj.CreatePrivateKey().ToKeyString()
-func (this Rsa) CreatePrivateKey() Rsa {
+func (this RSA) CreatePrivateKey() RSA {
     return this.CreatePKCS1PrivateKey()
 }
 
 // 生成私钥带密码 pem 数据, PKCS1 别名
-func (this Rsa) CreatePrivateKeyWithPassword(password string, opts ...string) Rsa {
+func (this RSA) CreatePrivateKeyWithPassword(password string, opts ...string) RSA {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
 // 生成公钥 pem 数据
-func (this Rsa) CreatePublicKey() Rsa {
+func (this RSA) CreatePublicKey() RSA {
     return this.CreatePKCS1PublicKey()
 }
 
 // ====================
 
 // 生成 PKCS1 私钥
-func (this Rsa) CreatePKCS1PrivateKey() Rsa {
+func (this RSA) CreatePKCS1PrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -69,9 +69,9 @@ func (this Rsa) CreatePKCS1PrivateKey() Rsa {
 // 生成 PKCS1 私钥带密码 pem 数据
 // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
-func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Rsa {
+func (this RSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -83,7 +83,7 @@ func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     // 加密方式
     cipher := cryptobin_pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("Rsa: PEMCipher not exists.")
+        err := errors.New("rsa: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -108,9 +108,9 @@ func (this Rsa) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
 }
 
 // 生成 pcks1 公钥 pem 数据
-func (this Rsa) CreatePKCS1PublicKey() Rsa {
+func (this RSA) CreatePKCS1PublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -129,9 +129,9 @@ func (this Rsa) CreatePKCS1PublicKey() Rsa {
 // ====================
 
 // 生成 PKCS8 私钥 pem 数据
-func (this Rsa) CreatePKCS8PrivateKey() Rsa {
+func (this RSA) CreatePKCS8PrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -152,9 +152,9 @@ func (this Rsa) CreatePKCS8PrivateKey() Rsa {
 
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Rsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Rsa {
+func (this RSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -187,9 +187,9 @@ func (this Rsa) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 }
 
 // 生成公钥 pem 数据
-func (this Rsa) CreatePKCS8PublicKey() Rsa {
+func (this RSA) CreatePKCS8PublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -211,9 +211,9 @@ func (this Rsa) CreatePKCS8PublicKey() Rsa {
 // ====================
 
 // 生成私钥 xml 数据
-func (this Rsa) CreateXMLPrivateKey() Rsa {
+func (this RSA) CreateXMLPrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("Rsa: privateKey error.")
+        err := errors.New("rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -228,9 +228,9 @@ func (this Rsa) CreateXMLPrivateKey() Rsa {
 }
 
 // 生成公钥 xml 数据
-func (this Rsa) CreateXMLPublicKey() Rsa {
+func (this RSA) CreateXMLPublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("Rsa: publicKey error.")
+        err := errors.New("rsa: publicKey error.")
         return this.AppendError(err)
     }
 

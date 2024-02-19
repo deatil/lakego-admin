@@ -15,7 +15,7 @@ type (
  * @create 2022-8-7
  * @author deatil
  */
-type Dh struct {
+type DH struct {
     // 私钥
     privateKey *cryptobin_dh.PrivateKey
 
@@ -36,17 +36,17 @@ type Dh struct {
 }
 
 // 构造函数
-func NewDH() Dh {
+func NewDH() DH {
     group, _ := cryptobin_dh.GetMODGroup(cryptobin_dh.P2048)
 
-    return Dh{
+    return DH{
         group: group,
         Errors: make([]error, 0),
     }
 }
 
 // 构造函数
-func New() Dh {
+func New() DH {
     return NewDH()
 }
 

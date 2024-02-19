@@ -5,31 +5,31 @@ import (
 )
 
 // 获取 PrivateKey
-func (this Ecdh) GetPrivateKey() *ecdh.PrivateKey {
+func (this ECDH) GetPrivateKey() *ecdh.PrivateKey {
     return this.privateKey
 }
 
 // 获取 PublicKey
-func (this Ecdh) GetPublicKey() *ecdh.PublicKey {
+func (this ECDH) GetPublicKey() *ecdh.PublicKey {
     return this.publicKey
 }
 
 // 获取散列方式
-func (this Ecdh) GetCurve() ecdh.Curve {
+func (this ECDH) GetCurve() ecdh.Curve {
     return this.curve
 }
 
 // 获取 keyData
-func (this Ecdh) GetKeyData() []byte {
+func (this ECDH) GetKeyData() []byte {
     return this.keyData
 }
 
 // 获取 secretData
-func (this Ecdh) GetSecretData() []byte {
+func (this ECDH) GetSecretData() []byte {
     return this.secretData
 }
 
 // 获取错误
-func (this Ecdh) GetErrors() []error {
+func (this ECDH) GetErrors() []error {
     return this.Errors
 }

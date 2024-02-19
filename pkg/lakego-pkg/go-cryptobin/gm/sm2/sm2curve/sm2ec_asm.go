@@ -1,7 +1,7 @@
 //go:build (amd64 && !purego) || (arm64 && !purego)
 // +build amd64,!purego arm64,!purego
 
-package curve
+package sm2curve
 
 import (
     _ "embed"
@@ -279,7 +279,7 @@ func p256Sqrt(e, x *p256Element) (isSquare bool) {
     return true
 }
 
-// The following assembly functions are implemented in p256_asm_*.s
+// The following assembly functions are implemented in sm2ec_asm_*.s
 var supportBMI2 = cpu.X86.HasBMI2
 
 var supportAVX2 = cpu.X86.HasAVX2
@@ -357,7 +357,7 @@ type p256AffineTable [32]p256AffinePoint
 // MUST NOT be modified, as it aliases into p256PrecomputedEmbed below.
 var p256Precomputed *[43]p256AffineTable
 
-//go:embed p256_asm_table.bin
+//go:embed sm2ec_asm_table.bin
 var p256PrecomputedEmbed string
 
 func init() {

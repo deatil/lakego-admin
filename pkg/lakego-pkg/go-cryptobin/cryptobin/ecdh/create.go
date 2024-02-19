@@ -31,9 +31,9 @@ var (
 // 使用:
 // obj := New().SetCurve("P256").GenerateKey()
 // priKey := obj.CreatePrivateKey().ToKeyString()
-func (this Ecdh) CreatePrivateKey() Ecdh {
+func (this ECDH) CreatePrivateKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -54,9 +54,9 @@ func (this Ecdh) CreatePrivateKey() Ecdh {
 
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh {
+func (this ECDH) CreatePrivateKeyWithPassword(password string, opts ...any) ECDH {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -89,9 +89,9 @@ func (this Ecdh) CreatePrivateKeyWithPassword(password string, opts ...any) Ecdh
 }
 
 // 生成公钥 pem 数据
-func (this Ecdh) CreatePublicKey() Ecdh {
+func (this ECDH) CreatePublicKey() ECDH {
     if this.publicKey == nil {
-        err := errors.New("Ecdh: publicKey error.")
+        err := errors.New("ecdh: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -113,9 +113,9 @@ func (this Ecdh) CreatePublicKey() Ecdh {
 // =======================
 
 // 生成私钥 pem 数据, 库自使用的 asn1 格式
-func (this Ecdh) CreateECDHPrivateKey() Ecdh {
+func (this ECDH) CreateECDHPrivateKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -140,9 +140,9 @@ func (this Ecdh) CreateECDHPrivateKey() Ecdh {
 }
 
 // 生成 PKCS8 私钥带密码 pem 数据, 库自使用的 asn1 格式
-func (this Ecdh) CreateECDHPrivateKeyWithPassword(password string, opts ...any) Ecdh {
+func (this ECDH) CreateECDHPrivateKeyWithPassword(password string, opts ...any) ECDH {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -180,9 +180,9 @@ func (this Ecdh) CreateECDHPrivateKeyWithPassword(password string, opts ...any) 
 }
 
 // 生成公钥 pem 数据, 库自使用的 asn1 格式
-func (this Ecdh) CreateECDHPublicKey() Ecdh {
+func (this ECDH) CreateECDHPublicKey() ECDH {
     if this.publicKey == nil {
-        err := errors.New("Ecdh: publicKey error.")
+        err := errors.New("ecdh: publicKey error.")
         return this.AppendError(err)
     }
 
@@ -209,14 +209,14 @@ func (this Ecdh) CreateECDHPublicKey() Ecdh {
 // =======================
 
 // 根据公钥和私钥生成对称密钥
-func (this Ecdh) CreateSecretKey() Ecdh {
+func (this ECDH) CreateSecretKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("Ecdh: privateKey error.")
+        err := errors.New("ecdh: privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Ecdh: publicKey error.")
+        err := errors.New("ecdh: publicKey error.")
         return this.AppendError(err)
     }
 

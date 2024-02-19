@@ -6,11 +6,11 @@ import (
 )
 
 // 生成公钥
-func (this Dh) MakePublicKey() Dh {
+func (this DH) MakePublicKey() DH {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("Dh: privateKey error.")
+        err := errors.New("dh: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -21,10 +21,10 @@ func (this Dh) MakePublicKey() Dh {
 }
 
 // 生成密钥 der 数据
-func (this Dh) MakeKeyDer() Dh {
+func (this DH) MakeKeyDer() DH {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("Dh: keyData error.")
+        err := errors.New("dh: keyData error.")
         return this.AppendError(err)
     }
 
