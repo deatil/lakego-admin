@@ -10,7 +10,7 @@ func (this EIGamal) MakePublicKey() EIGamal {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("EIGamal: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this EIGamal) MakePublicKey() EIGamal {
 func (this EIGamal) MakeKeyDer() EIGamal {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("EIGamal: keyData error.")
+        err := errors.New("keyData error.")
         return this.AppendError(err)
     }
 

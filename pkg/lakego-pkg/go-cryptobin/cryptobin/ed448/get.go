@@ -35,7 +35,7 @@ func (this ED448) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this ED448) GetParedData() []byte {
+func (this ED448) GetParsedData() []byte {
     return this.parsedData
 }
 

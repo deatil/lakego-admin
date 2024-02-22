@@ -28,7 +28,7 @@ func (this DSA) WithData(data []byte) DSA {
 }
 
 // 设置 parsedData
-func (this DSA) WithParedData(data []byte) DSA {
+func (this DSA) WithParsedData(data []byte) DSA {
     this.parsedData = data
 
     return this

@@ -46,7 +46,7 @@ func (this ECDSA) CreatePrivateKeyWithPassword(password string, opts ...string) 
 // 生成私钥 pem 数据
 func (this ECDSA) CreatePKCS1PrivateKey() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("ecdsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this ECDSA) CreatePKCS1PrivateKey() ECDSA {
 // 生成私钥带密码 pem 数据
 func (this ECDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) ECDSA {
     if this.privateKey == nil {
-        err := errors.New("ecdsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -80,7 +80,7 @@ func (this ECDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...str
     // 加密方式
     cipher := cryptobin_pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("ecdsa: PEMCipher not exists.")
+        err := errors.New("PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this ECDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...str
 // 生成 PKCS8 私钥 pem 数据
 func (this ECDSA) CreatePKCS8PrivateKey() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("ecdsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -135,7 +135,7 @@ func (this ECDSA) CreatePKCS8PrivateKey() ECDSA {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ECDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) ECDSA {
     if this.privateKey == nil {
-        err := errors.New("ecdsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -172,7 +172,7 @@ func (this ECDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any
 // 生成公钥 pem 数据
 func (this ECDSA) CreatePublicKey() ECDSA {
     if this.publicKey == nil {
-        err := errors.New("ecdsa: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

@@ -48,7 +48,7 @@ func (this RSA) WithData(data []byte) RSA {
 }
 
 // 设置 parsedData
-func (this RSA) WithParedData(data []byte) RSA {
+func (this RSA) WithParsedData(data []byte) RSA {
     this.parsedData = data
 
     return this

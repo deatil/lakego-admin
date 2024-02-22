@@ -47,7 +47,7 @@ func (this SM2) WithData(data []byte) SM2 {
 }
 
 // 设置 parsedData
-func (this SM2) WithParedData(data []byte) SM2 {
+func (this SM2) WithParsedData(data []byte) SM2 {
     this.parsedData = data
 
     return this
@@ -69,6 +69,20 @@ func (this SM2) SetSignHash(data string) SM2 {
     }
 
     this.signHash = hash
+
+    return this
+}
+
+// 设置 uid
+func (this SM2) WithUID(data []byte) SM2 {
+    this.uid = data
+
+    return this
+}
+
+// 设置 uid
+func (this SM2) SetUID(data string) SM2 {
+    this.uid = []byte(data)
 
     return this
 }

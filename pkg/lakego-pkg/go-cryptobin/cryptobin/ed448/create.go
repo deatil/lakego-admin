@@ -5,30 +5,30 @@ import (
     "crypto/rand"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs8"
     "github.com/deatil/go-cryptobin/ed448"
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 type (
     // 配置
-    Opts       = cryptobin_pkcs8.Opts
+    Opts       = pkcs8.Opts
     // PBKDF2 配置
-    PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
+    PBKDF2Opts = pkcs8.PBKDF2Opts
     // Scrypt 配置
-    ScryptOpts = cryptobin_pkcs8.ScryptOpts
+    ScryptOpts = pkcs8.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetCipherFromName = cryptobin_pkcs8.GetCipherFromName
+    GetCipherFromName = pkcs8.GetCipherFromName
     // 获取 hash 类型
-    GetHashFromName   = cryptobin_pkcs8.GetHashFromName
+    GetHashFromName   = pkcs8.GetHashFromName
 )
 
 // 生成私钥 pem 数据
 func (this ED448) CreatePrivateKey() ED448 {
     if this.privateKey == nil {
-        err := errors.New("ED448: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -51,11 +51,11 @@ func (this ED448) CreatePrivateKey() ED448 {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ED448) CreatePrivateKeyWithPassword(password string, opts ...any) ED448 {
     if this.privateKey == nil {
-        err := errors.New("ED448: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
+    opt, err := pkcs8.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
@@ -67,7 +67,7 @@ func (this ED448) CreatePrivateKeyWithPassword(password string, opts ...any) ED4
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8.EncryptPEMBlock(
+    privateBlock, err := pkcs8.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
         x509PrivateKey,
@@ -86,7 +86,7 @@ func (this ED448) CreatePrivateKeyWithPassword(password string, opts ...any) ED4
 // 生成公钥 pem 数据
 func (this ED448) CreatePublicKey() ED448 {
     if this.publicKey == nil {
-        err := errors.New("ED448: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

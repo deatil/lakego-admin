@@ -48,7 +48,7 @@ func (this RSA) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this RSA) GetParedData() []byte {
+func (this RSA) GetParsedData() []byte {
     return this.parsedData
 }
 

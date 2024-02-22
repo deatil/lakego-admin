@@ -31,7 +31,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this EdDSA) CreatePrivateKey() EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
-        err := errors.New("EdDSA: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -89,7 +89,7 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdD
 // 生成公钥 pem 数据
 func (this EdDSA) CreatePublicKey() EdDSA {
     if this.publicKey == nil {
-        err := errors.New("EdDSA: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

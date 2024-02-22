@@ -30,7 +30,7 @@ func (this DSA) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this DSA) GetParedData() []byte {
+func (this DSA) GetParsedData() []byte {
     return this.parsedData
 }
 

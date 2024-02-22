@@ -1,12 +1,15 @@
 package sm2
 
 import (
+    "errors"
     "testing"
     "crypto/md5"
     "crypto/rand"
     "encoding/hex"
     "encoding/base64"
 
+    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
@@ -24,7 +27,8 @@ func Test_SignBytesWithHashFunc(t *testing.T) {
     objSign := gen.
         FromString(data).
         WithSignHash(md5.New).
-        SignBytes(uid)
+        WithUID(uid).
+        SignBytes()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "SignBytesWithHashFunc-Sign")
@@ -34,7 +38,8 @@ func Test_SignBytesWithHashFunc(t *testing.T) {
     objVerify := gen.
         FromBase64String(signed).
         WithSignHash(md5.New).
-        VerifyBytes([]byte(data), uid)
+        WithUID(uid).
+        VerifyBytes([]byte(data))
 
     assertError(objVerify.Error(), "SignBytesWithHashFunc-Verify")
     assertBool(objVerify.ToVerify(), "SignBytesWithHashFunc-Verify")
@@ -56,7 +61,8 @@ func Test_SM2_SignBytes(t *testing.T) {
     signedData := NewSM2().
         FromString(data).
         FromPrivateKeyBytes(sm2keyBytes).
-        SignBytes([]byte(uid)).
+        WithUID([]byte(uid)).
+        SignBytes().
         ToBase64String()
 
     assertNotEmpty(signedData, "sm2-SignBytes")
@@ -80,7 +86,8 @@ func Test_SM2_VerifyBytes(t *testing.T) {
         FromBase64String(signedData).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        VerifyBytes([]byte(data), []byte(uid))
+        WithUID([]byte(uid)).
+        VerifyBytes([]byte(data))
 
     assertError(verify.Error(), "sm2VerifyError")
     assertBool(verify.ToVerify(), "sm2-VerifyBytes")
@@ -418,8 +425,9 @@ func Test_ZhaoshangBank_Check(t *testing.T) {
     sm2Sign := New().
         FromString(sm2data).
         FromPrivateKeyBytes(sm2keyBytes).
-        SignBytes([]byte(sm2userid)).
-        // SignASN1([]byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        SignBytes().
+        // SignASN1().
         ToBase64String()
 
     // sm2 验证【招商银行】
@@ -427,8 +435,9 @@ func Test_ZhaoshangBank_Check(t *testing.T) {
         FromBase64String(sm2Sign).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        VerifyBytes([]byte(sm2data), []byte(sm2userid)).
-        // VerifyASN1([]byte(sm2data), []byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        VerifyBytes([]byte(sm2data)).
+        // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
     assertBool(sm2Verify, "ZhaoshangBank_Check")
@@ -448,8 +457,9 @@ func Test_ZhaoshangBank_Sign(t *testing.T) {
     sm2Sign := New().
         FromString(sm2data).
         FromPrivateKeyBytes(sm2prikeyBytes).
-        SignBytes([]byte(sm2userid)).
-        // SignASN1([]byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        SignBytes().
+        // SignASN1().
         ToBase64String()
 
     assertNotEmpty(sm2Sign, "ZhaoshangBank_Sign")
@@ -468,8 +478,9 @@ func Test_ZhaoshangBank_Sign2(t *testing.T) {
     sm2Sign := New().
         FromString(sm2data).
         FromPrivateKeyString(sm2prikey).
-        SignBytes([]byte(sm2userid)).
-        // SignASN1([]byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        SignBytes().
+        // SignASN1().
         ToBase64String()
 
     assertNotEmpty(sm2Sign, "ZhaoshangBank_Sign")
@@ -490,8 +501,9 @@ func Test_ZhaoshangBank_Verify(t *testing.T) {
     sm2Verify := New().
         FromBase64String(sm2signdata).
         FromPublicKeyUncompressString(sm2pubkey).
-        VerifyBytes([]byte(sm2data), []byte(sm2userid)).
-        // VerifyASN1([]byte(sm2data), []byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        VerifyBytes([]byte(sm2data)).
+        // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
     assertBool(sm2Verify, "ZhaoshangBank_Verify")
@@ -512,8 +524,9 @@ func Test_ZhaoshangBank_Verify2(t *testing.T) {
     sm2Verify := New().
         FromHexString(sm2signdata).
         FromPublicKeyCompressString(sm2pubkey).
-        VerifyBytes([]byte(sm2data), []byte(sm2userid)).
-        // VerifyASN1([]byte(sm2data), []byte(sm2userid)).
+        WithUID([]byte(sm2userid)).
+        VerifyBytes([]byte(sm2data)).
+        // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
     assertBool(sm2Verify, "ZhaoshangBank_Verify")
@@ -615,7 +628,8 @@ func Test_PKCS1SignASN1WithHashFunc(t *testing.T) {
         FromString(data).
         FromPKCS1PrivateKey([]byte(prikeyPKCS1)).
         WithSignHash(md5.New).
-        SignASN1(uid)
+        WithUID(uid).
+        SignASN1()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
@@ -626,7 +640,8 @@ func Test_PKCS1SignASN1WithHashFunc(t *testing.T) {
         FromBase64String(signed).
         FromPublicKey([]byte(pubkeyPKCS1)).
         WithSignHash(md5.New).
-        VerifyASN1([]byte(data), uid)
+        WithUID(uid).
+        VerifyASN1([]byte(data))
 
     assertError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
     assertBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
@@ -645,7 +660,8 @@ func Test_PKCS1SignBytesWithHashFunc(t *testing.T) {
         FromString(data).
         FromPKCS1PrivateKey([]byte(prikeyPKCS1)).
         WithSignHash(md5.New).
-        SignBytes(uid)
+        WithUID(uid).
+        SignBytes()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
@@ -656,7 +672,8 @@ func Test_PKCS1SignBytesWithHashFunc(t *testing.T) {
         FromBase64String(signed).
         FromPublicKey([]byte(pubkeyPKCS1)).
         WithSignHash(md5.New).
-        VerifyBytes([]byte(data), uid)
+        WithUID(uid).
+        VerifyBytes([]byte(data))
 
     assertError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
     assertBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
@@ -675,7 +692,8 @@ func Test_PKCS1SignBytesWithHashFunc_Fail(t *testing.T) {
         FromString(data).
         FromPKCS1PrivateKey([]byte(prikeyPKCS1)).
         WithSignHash(md5.New).
-        SignBytes(uid)
+        WithUID(uid).
+        SignBytes()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "PKCS1SignWithHashFunc_Fail-Sign")
@@ -688,7 +706,8 @@ func Test_PKCS1SignBytesWithHashFunc_Fail(t *testing.T) {
         FromBase64String(sm2signdata).
         FromPublicKey([]byte(pubkeyPKCS1)).
         WithSignHash(md5.New).
-        VerifyBytes([]byte(data), uid)
+        WithUID(uid).
+        VerifyBytes([]byte(data))
 
     assertError(objVerify.Error(), "PKCS1SignWithHashFunc_Fail-Verify")
     assertNotBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc_Fail-Verify")
@@ -720,4 +739,101 @@ func Test_DecryptWithBCJavaEndata(t *testing.T) {
     assertNotEmpty(deData, "DecryptWithBCJavaEndata-Decrypt")
 
     assertEqual(deData, check, "DecryptWithBCJavaEndata-Dedata")
+}
+
+func Test_With(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    publicKey := &privateKey.PublicKey
+
+    mode := C1C3C2
+    data := []byte("test-pass")
+    parsedData := []byte("test-parsedData")
+    uid := []byte("N003261207000000")
+
+    hash, _ := tool.GetHash("MD5")
+
+    verify := true
+    errTest := []error{errors.New("test error")}
+
+    obj := New().
+        WithPrivateKey(privateKey).
+        WithPublicKey(publicKey).
+        WithMode(mode).
+        WithData(data).
+        WithParsedData(parsedData).
+        WithSignHash(hash).
+        WithUID(uid).
+        WithVerify(verify).
+        WithErrors(errTest)
+
+    assertEqual(obj.privateKey, privateKey, "With privateKey")
+    assertEqual(obj.publicKey, publicKey, "With publicKey")
+    assertEqual(obj.mode, mode, "With mode")
+    assertEqual(obj.data, data, "With data")
+    assertEqual(obj.parsedData, parsedData, "With parsedData")
+    assertNotEmpty(obj.signHash, "With signHash")
+    assertEqual(obj.uid, uid, "With uid")
+    assertEqual(obj.verify, verify, "With verify")
+    assertEqual(obj.Errors, errTest, "With errTest")
+
+    uid2 := "N0032612071111111"
+
+    obj = obj.
+        SetSignHash("SHA1").
+        SetMode("C1C2C3").
+        SetUID(uid2)
+
+    assertEqual(obj.mode, C1C2C3, "Set mode")
+    assertNotEmpty(obj.signHash, "Set signHash")
+    assertEqual(obj.uid, []byte(uid2), "Set uid")
+}
+
+func Test_Get(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    privateKey, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    publicKey := &privateKey.PublicKey
+
+    mode := C1C3C2
+    data := []byte("test-pass")
+    parsedData := []byte("test-parsedData")
+    uid := []byte("N003261207000000")
+
+    keyData := []byte("test-keyData")
+
+    verify := true
+    errTest := []error{errors.New("test error")}
+
+    obj := SM2{
+        privateKey: privateKey,
+        publicKey: publicKey,
+        keyData: keyData,
+        mode: mode,
+        data: data,
+        parsedData: parsedData,
+        uid: uid,
+        verify: verify,
+        Errors: errTest,
+    }
+
+    assertEqual(obj.GetPrivateKey(), privateKey, "GetPrivateKey")
+    assertEqual(obj.GetPublicKey(), publicKey, "GetPublicKey")
+    assertEqual(obj.GetKeyData(), keyData, "GetKeyData")
+    assertEqual(obj.GetMode(), mode, "GetMode")
+    assertEqual(obj.GetData(), data, "GetData")
+    assertEqual(obj.GetParsedData(), parsedData, "GetParsedData")
+    assertEqual(obj.GetUID(), uid, "GetUID")
+    assertEqual(obj.GetVerify(), verify, "GetVerify")
+    assertEqual(obj.GetErrors(), errTest, "GetErrors")
 }

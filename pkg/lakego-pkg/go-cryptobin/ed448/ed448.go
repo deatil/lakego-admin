@@ -183,7 +183,9 @@ func newKeyFromSeed(privateKey, seed []byte) {
     if err != nil {
         panic(err)
     }
+
     p := new(edwards448.Point).ScalarBaseMult(s)
+
     copy(privateKey, seed)
     copy(privateKey[57:], p.Bytes())
 }

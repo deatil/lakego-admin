@@ -2,12 +2,12 @@
 bencode 格式为 `Bt` 种子 `Torrent` 的自有格式
 
 
-* 引用
+#### 引用
 ~~~go
 import "github.com/deatil/go-cryptobin/bencode"
 ~~~
 
-* 解析文件数据
+#### 解析文件数据
 ~~~go
 // 读取文件获得的数据
 var torrentData []byte
@@ -25,7 +25,7 @@ var data map[string]any
 err := bencode.Unmarshal(torrentData, &data)
 ~~~
 
-* 生成文件数据
+#### 生成文件数据
 ~~~go
 // 解析结果
 var data map[string]any

@@ -174,7 +174,7 @@ func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.Sign
 
     buf := make([]byte, 2*byteLen)
 
-    r.FillBytes(buf[0:byteLen])
+    r.FillBytes(buf[      0:  byteLen])
     s.FillBytes(buf[byteLen:2*byteLen])
 
     return buf, nil

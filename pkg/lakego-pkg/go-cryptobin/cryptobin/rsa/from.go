@@ -154,13 +154,13 @@ func FromPublicKey(key []byte) RSA {
 func (this RSA) FromPublicKeyNE(nString string, eString string) RSA {
     n, ok := new(big.Int).SetString(nString[:], 16)
     if !ok {
-        err := errors.New("rsa: n is error")
+        err := errors.New("n is error")
         return this.AppendError(err)
     }
 
     e, ok := new(big.Int).SetString(eString[:], 16)
     if !ok {
-        err := errors.New("rsa: e is error")
+        err := errors.New("e is error")
         return this.AppendError(err)
     }
 

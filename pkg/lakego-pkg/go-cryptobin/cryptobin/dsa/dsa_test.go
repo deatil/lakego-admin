@@ -39,7 +39,7 @@ func Test_XMLSign(t *testing.T) {
     objSign := NewDSA().
         FromString(data).
         FromXMLPrivateKey([]byte(prikeyXML)).
-        SignASN1()
+        Sign()
     signed := objSign.ToBase64String()
 
     assertError(objSign.Error(), "XMLSign-Sign")
@@ -49,10 +49,64 @@ func Test_XMLSign(t *testing.T) {
     objVerify := NewDSA().
         FromBase64String(signed).
         FromXMLPublicKey([]byte(pubkeyXML)).
-        VerifyASN1([]byte(data))
+        Verify([]byte(data))
 
     assertError(objVerify.Error(), "XMLSign-Verify")
     assertBool(objVerify.ToVerify(), "XMLSign-Verify")
+}
+
+func Test_XMLSignASN1(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    // 签名
+    objSign := NewDSA().
+        FromString(data).
+        FromXMLPrivateKey([]byte(prikeyXML)).
+        SignASN1()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "XMLSignASN1-Sign")
+    assertNotEmpty(signed, "XMLSignASN1-Sign")
+
+    // 验证
+    objVerify := NewDSA().
+        FromBase64String(signed).
+        FromXMLPublicKey([]byte(pubkeyXML)).
+        VerifyASN1([]byte(data))
+
+    assertError(objVerify.Error(), "XMLSignASN1-Verify")
+    assertBool(objVerify.ToVerify(), "XMLSignASN1-Verify")
+}
+
+func Test_XMLSignBytes(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    // 签名
+    objSign := NewDSA().
+        FromString(data).
+        FromXMLPrivateKey([]byte(prikeyXML)).
+        SignBytes()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "XMLSignBytes-Sign")
+    assertNotEmpty(signed, "XMLSignBytes-Sign")
+
+    // 验证
+    objVerify := NewDSA().
+        FromBase64String(signed).
+        FromXMLPublicKey([]byte(pubkeyXML)).
+        VerifyBytes([]byte(data))
+
+    assertError(objVerify.Error(), "XMLSignBytes-Verify")
+    assertBool(objVerify.ToVerify(), "XMLSignBytes-Verify")
 }
 
 var testPEMCiphers = []string{
@@ -118,4 +172,45 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, gen DSA, cipher string
 
         assertEqual(newPrikey, prikey, "Test_CreatePKCS1PrivateKeyWithPassword")
     })
+}
+
+func Test_SignBytes(t *testing.T) {
+    types := []string{
+        "L1024N160",
+        "L2048N224",
+        "L2048N256",
+        "L3072N256",
+    }
+
+    for _, name := range types {
+        t.Run(name, func(t *testing.T) {
+            gen := New().GenerateKey(name)
+            test_SignBytes(t, gen)
+        })
+    }
+}
+
+func test_SignBytes(t *testing.T, gen DSA) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        SignBytes()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNotEmpty(signed, "SignBytes-Sign")
+
+    // 验证
+    objVerify := gen.
+        FromBase64String(signed).
+        VerifyBytes([]byte(data))
+
+    assertError(objVerify.Error(), "SignBytes-Verify")
+    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
 }

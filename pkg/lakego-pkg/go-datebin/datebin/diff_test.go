@@ -608,6 +608,38 @@ func Test_Diff_DurationBetweens(t *testing.T) {
 	}
 }
 
+func Test_Diff_DurationBetweenAbs(t *testing.T) {
+	eq := assertEqualT(t)
+
+	tests := []struct {
+		index string
+		date1 string
+		date2 string
+		check string
+	}{
+		{
+			index: "index-1",
+			date1: "2023-06-06 21:15:12",
+			date2: "2023-06-05 01:35:00",
+			check: "43h40m12s",
+		},
+		{
+			index: "index-2",
+			date1: "2022-07-05 21:15:12",
+			date2: "2022-07-12 12:17:32",
+			check: "159h2m20s",
+		},
+	}
+
+	for _, td := range tests {
+		check := Parse(td.date1).
+			Diff(Parse(td.date2)).
+			DurationBetweenAbs()
+
+		eq(check.String(), td.check, "failed Diff DurationBetweenAbs, index "+td.index)
+	}
+}
+
 func Test_Diff_DurationBetweensAbs(t *testing.T) {
 	eq := assertEqualT(t)
 

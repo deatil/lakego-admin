@@ -1,27 +1,27 @@
-## go-event
+## go 事件及事件订阅
 
 <p align="center">
-<a href="https://pkg.go.dev/github.com/deatil/go-event" target="_blank"><img src="https://pkg.go.dev/badge/deatil/go-event.svg" alt="Go Reference"></a>
-<a href="https://app.codecov.io/gh/deatil/go-event" target="_blank"><img src="https://codecov.io/gh/deatil/go-event/graph/badge.svg?token=SS2Z1IY0XL"/></a>
+<a href="https://pkg.go.dev/github.com/deatil/go-event" target="_blank"><img src="https://pkg.go.dev/badge/deatil/go-event.svg" alt="Go Reference" /></a>
+<a href="https://app.codecov.io/gh/deatil/go-event" target="_blank"><img src="https://codecov.io/gh/deatil/go-event/graph/badge.svg?token=SS2Z1IY0XL" /></a>
 <img src="https://goreportcard.com/badge/github.com/deatil/go-event" />
 </p>
 
 
-### Desc
+### 项目介绍
 
-*  go-event is a go event or event'subscribe pkg
+*  go 实现的事件及事件订阅
 
-[中文](README_CN.md) | English
+中文 | [English](README.md)
 
 
-### Download
+### 下载安装
 
 ~~~go
 go get -u github.com/deatil/go-event
 ~~~
 
 
-### Get Starting
+### 使用
 
 ~~~go
 package main
@@ -84,26 +84,26 @@ func (this *TestEventStructHandle) Handle(data any) {
 }
 
 func main() {
-    // Listen
+    // 事件注册
     event.Listen("data.error", func(data any) {
         fmt.Println(data)
     })
 
-    // Dispatch
+    // 事件触发
     eventData := "index data"
     event.Dispatch("data.error", eventData)
 
-    // call prefix `data.` all listener
+    // 触发 `data.` 为前缀的全部事件
     event.Dispatch("data.*", eventData)
 
     // ==================
 
-    // Subscribe struct
+    // 事件订阅
     event.Subscribe(&TestEvent{})
     event.Subscribe(TestEventPrefix{})
     event.Subscribe(&TestEventSubscribe{})
 
-    // call listens
+    // 事件订阅触发
     event.Dispatch("TestEvent", eventData)
     event.Dispatch("TestEventName", eventData)
     event.Dispatch("ABCTestEvent", eventData)
@@ -111,10 +111,10 @@ func main() {
 
     // ==================
 
-    // listen struct data
+    // 事件注册
     event.Listen(TestEventStructData{}, TestEventStruct)
 
-    // call
+    // 事件触发
     eventData2 := "index data"
     event.Dispatch(TestEventStructData{
         Data: eventData2,
@@ -122,21 +122,21 @@ func main() {
 
     // ==================
 
-    // listen struct and use struct Handle func to call
+    // 事件注册
     event.Listen("TestEventStructHandle", &TestEventStructHandle{})
 
-    // call
+    // 事件触发
     event.Dispatch("TestEventStructHandle", eventData)
 }
 
 ~~~
 
 
-### LICENSE
+### 开源协议
 
-*  The library LICENSE is `Apache2`, using the library need keep the LICENSE.
+*  本软件包遵循 `Apache2` 开源协议发布，在保留本软件包版权的情况下提供个人及商业免费使用。
 
 
-### Copyright
+### 版权
 
-*  Copyright deatil(https://github.com/deatil).
+*  本软件包所属版权归 deatil(https://github.com/deatil) 所有。

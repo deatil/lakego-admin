@@ -10,7 +10,7 @@ func (this ECDSA) MakePublicKey() ECDSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("ecdsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -23,7 +23,7 @@ func (this ECDSA) MakePublicKey() ECDSA {
 func (this ECDSA) MakeKeyDer() ECDSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("ecdsa: keyData error.")
+        err := errors.New("keyData error.")
         return this.AppendError(err)
     }
 

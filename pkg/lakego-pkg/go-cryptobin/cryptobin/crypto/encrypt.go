@@ -16,7 +16,7 @@ var UsePadding = NewDataSet[Padding, IPadding]()
 // 获取加密解密方式
 func getEncrypt(m Multiple) (IEncrypt, error) {
     if !UseEncrypt.Has(m) {
-        err := fmt.Errorf("Cryptobin: Multiple [%s] is error.", m)
+        err := fmt.Errorf("Multiple [%s] is error.", m)
         return nil, err
     }
 

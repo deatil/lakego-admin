@@ -1,6 +1,6 @@
 ### bks/uber 使用文档
 
-* bks 生成
+#### bks 生成
 ~~~go
 package main
 
@@ -48,7 +48,7 @@ func main() {
 }
 ~~~
 
-* bks 解析
+#### bks 解析
 ~~~go
 package main
 
@@ -117,7 +117,7 @@ func main() {
 }
 ~~~
 
-* uber 生成
+#### uber 生成
 ~~~go
 package main
 
@@ -164,7 +164,7 @@ func main() {
 }
 ~~~
 
-* uber 解析
+#### uber 解析
 ~~~go
 package main
 

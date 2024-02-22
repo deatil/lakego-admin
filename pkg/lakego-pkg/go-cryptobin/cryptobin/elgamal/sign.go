@@ -10,11 +10,11 @@ import (
 // 私钥签名
 func (this EIGamal) Sign() EIGamal {
     if this.privateKey == nil {
-        err := errors.New("elgamal: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, this.data)
+    hashed, err := this.dataHash(this.data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -33,26 +33,32 @@ func (this EIGamal) Sign() EIGamal {
 // 使用原始数据[data]对比签名后数据
 func (this EIGamal) Verify(data []byte) EIGamal {
     if this.publicKey == nil {
-        err := errors.New("elgamal: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
-    hashed, err := this.DataHash(this.signHash, data)
+    hashed, err := this.dataHash(data)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.verify, err = elgamal.VerifyASN1(this.publicKey, hashed, this.data)
+    verify, err := elgamal.VerifyASN1(this.publicKey, hashed, this.data)
     if err != nil {
         return this.AppendError(err)
     }
+
+    this.verify = verify
 
     return this
 }
 
 // 签名后数据
-func (this EIGamal) DataHash(fn HashFunc, data []byte) ([]byte, error) {
-    h := fn()
+func (this EIGamal) dataHash(data []byte) ([]byte, error) {
+    if this.signHash == nil {
+        return data, errors.New("sign hash error.")
+    }
+
+    h := this.signHash()
     h.Write(data)
 
     return h.Sum(nil), nil

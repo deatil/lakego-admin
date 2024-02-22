@@ -98,8 +98,13 @@ func (this SM2) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this SM2) GetParedData() []byte {
+func (this SM2) GetParsedData() []byte {
     return this.parsedData
+}
+
+// 获取 uid
+func (this SM2) GetUID() []byte {
+    return this.uid
 }
 
 // 获取验证后情况

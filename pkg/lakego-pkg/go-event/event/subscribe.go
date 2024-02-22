@@ -1,24 +1,24 @@
 package event
 
-import(
-    "reflect"
+import (
+	"reflect"
 )
 
 // 接口
 type ISubscribe interface {
-    Subscribe(*Events)
+	Subscribe(*Events)
 }
 
 // 接口
 type ISubscribePrefix interface {
-    EventPrefix() string
+	EventPrefix() string
 }
 
 // 订阅数据
 type EventSubscribe struct {
-    // 结构体
-    Struct reflect.Value
+	// 结构体
+	Struct reflect.Value
 
-    // 方法
-    Method reflect.Method
+	// 方法
+	Method reflect.Method
 }

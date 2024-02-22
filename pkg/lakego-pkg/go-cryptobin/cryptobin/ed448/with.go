@@ -60,7 +60,7 @@ func (this ED448) WithData(data []byte) ED448 {
 }
 
 // 设置 parsedData
-func (this ED448) WithParedData(data []byte) ED448 {
+func (this ED448) WithParsedData(data []byte) ED448 {
     this.parsedData = data
 
     return this

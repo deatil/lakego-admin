@@ -180,23 +180,21 @@ func (this DiffTime) DurationBetweens() (days, hours, minutes, seconds int) {
 	return
 }
 
+// 计算两个日期之间的持续时间，绝对值
+// get abs Duration data
+func (this DiffTime) DurationBetweenAbs() time.Duration {
+	return this.End.time.Sub(this.Start.time).Abs()
+}
+
 // 返回持续时间为人类可读的数据，绝对值
 // return abs Duration datas
 func (this DiffTime) DurationBetweensAbs() (days, hours, minutes, seconds int) {
-	days, hours, minutes, seconds = this.DurationBetweens()
+	duration := this.DurationBetweenAbs()
 
-	if days < 0 {
-		days = -days
-	}
-	if hours < 0 {
-		hours = -hours
-	}
-	if minutes < 0 {
-		minutes = -minutes
-	}
-	if seconds < 0 {
-		seconds = -seconds
-	}
+	days = int(duration.Hours() / 24)
+	hours = int(duration.Hours()) % 24
+	minutes = int(duration.Minutes()) % 60
+	seconds = int(duration.Seconds()) % 60
 
 	return
 }
@@ -204,14 +202,14 @@ func (this DiffTime) DurationBetweensAbs() (days, hours, minutes, seconds int) {
 // 获取格式化
 // get diff Formatter
 func (this DiffTime) Formatter() Formatter {
-	return NewFormatter().FromSecond(this.SecondsAbs())
+	return NewFormatter().FromSecond(this.Seconds())
 }
 
 // 格式化输出
 // output format data
 func (this DiffTime) Format(str string) string {
 	// 格式化
-	formatter := NewFormatter().FromSecond(this.SecondsAbs())
+	formatter := NewFormatter().FromSecond(this.Seconds())
 
 	// 使用周数和天数
 	weeks, days := formatter.WeekAndDay()

@@ -31,7 +31,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this DH) CreatePrivateKey() DH {
     if this.privateKey == nil {
-        err := errors.New("dh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this DH) CreatePrivateKey() DH {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this DH) CreatePrivateKeyWithPassword(password string, opts ...any) DH {
     if this.privateKey == nil {
-        err := errors.New("dh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -89,7 +89,7 @@ func (this DH) CreatePrivateKeyWithPassword(password string, opts ...any) DH {
 // 生成公钥 pem 数据
 func (this DH) CreatePublicKey() DH {
     if this.publicKey == nil {
-        err := errors.New("dh: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
@@ -111,12 +111,12 @@ func (this DH) CreatePublicKey() DH {
 // 根据公钥和私钥生成密钥
 func (this DH) CreateSecretKey() DH {
     if this.privateKey == nil {
-        err := errors.New("dh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("dh: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

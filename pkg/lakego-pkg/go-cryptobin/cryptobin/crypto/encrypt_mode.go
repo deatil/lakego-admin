@@ -325,13 +325,12 @@ type ModeGCM struct {}
 func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -346,13 +345,12 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
 func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -371,13 +369,12 @@ type ModeCCM struct {}
 func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -393,13 +390,12 @@ func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // ccm nounce size, should be in [7,13]
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -530,13 +526,12 @@ type ModeOCB struct {}
 func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -552,13 +547,12 @@ func (this ModeOCB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // ocb nounce size, should be in [0, cipher.block.BlockSize]
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -583,13 +577,12 @@ type ModeEAX struct {}
 func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 
@@ -605,13 +598,12 @@ func (this ModeEAX) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     // eax nounce size, should be in > 0
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
-        err := fmt.Errorf("Cryptobin: nonce is empty.")
+        err := fmt.Errorf("nonce is empty.")
         return nil, err
     }
 
     aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
     if err != nil {
-        err = fmt.Errorf("Cryptobin: %w", err)
         return nil, err
     }
 

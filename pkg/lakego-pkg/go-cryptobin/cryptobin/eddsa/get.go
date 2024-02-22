@@ -35,7 +35,7 @@ func (this EdDSA) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this EdDSA) GetParedData() []byte {
+func (this EdDSA) GetParsedData() []byte {
     return this.parsedData
 }
 

@@ -1,6 +1,6 @@
 ### DH 使用文档
 
-* DH 使用
+#### DH 使用
 ~~~go
 package main
 
@@ -63,7 +63,7 @@ func main() {
 }
 ~~~
 
-* ecdh 使用
+#### ecdh 使用
 ~~~go
 package main
 
@@ -126,7 +126,7 @@ func main() {
 }
 ~~~
 
-* curve25519 使用
+#### curve25519 使用
 ~~~go
 package main
 
@@ -187,7 +187,7 @@ func main() {
 }
 ~~~
 
-* 自定义使用使用
+#### 自定义使用使用
 ~~~go
 package main
 
@@ -230,7 +230,7 @@ func main() {
 }
 ~~~
 
-* 自定义使用使用2
+#### 自定义使用使用2
 ~~~go
 package main
 

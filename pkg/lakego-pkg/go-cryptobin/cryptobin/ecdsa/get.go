@@ -96,7 +96,7 @@ func (this ECDSA) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this ECDSA) GetParedData() []byte {
+func (this ECDSA) GetParsedData() []byte {
     return this.parsedData
 }
 

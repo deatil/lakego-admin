@@ -222,7 +222,7 @@ func (this EIGamal) CreatePKCS8PublicKey() EIGamal {
 // 生成私钥 xml 数据
 func (this EIGamal) CreateXMLPrivateKey() EIGamal {
     if this.privateKey == nil {
-        err := errors.New("EIGamal: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -239,7 +239,7 @@ func (this EIGamal) CreateXMLPrivateKey() EIGamal {
 // 生成公钥 xml 数据
 func (this EIGamal) CreateXMLPublicKey() EIGamal {
     if this.publicKey == nil {
-        err := errors.New("EIGamal: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

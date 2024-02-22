@@ -1,6 +1,6 @@
 ### pkcs7 使用文档
 
-* 使用
+#### 使用
 ~~~go
 package main
 
@@ -71,14 +71,14 @@ func SignAndDetach(content []byte, cert *x509.Certificate, privkey *rsa.PrivateK
 
 ~~~
 
-* SignAndDetach 使用
+#### SignAndDetach 使用
 ~~~go
 
     pkcs7Data := cryptobin_pkcs7.TestFixtureresult
     pkcs7Sign, pkcs7err := cryptobin_pkcs7.SignAndDetach([]byte("hello world"), pkcs7Data.Certificate, pkcs7Data.PrivateKey)
 ~~~
 
-* 测试数据
+#### 测试数据
 ~~~go
 // pkg: cryptobin_pkcs7
 

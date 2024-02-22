@@ -1,45 +1,98 @@
 ### EdDSA 使用说明
 
-* 使用
+#### 包引入 / import pkg
 ~~~go
-package main
-
 import (
-    "fmt"
-
-    cryptobin "github.com/deatil/go-cryptobin/cryptobin/eddsa"
-    "github.com/deatil/lakego-filesystem/filesystem"
+    "github.com/deatil/go-cryptobin/cryptobin/eddsa"
 )
+~~~
 
+#### 数据输入方式 / input funcs
+~~~go
+FromBytes(data []byte)
+FromString(data string)
+FromBase64String(data string)
+FromHexString(data string)
+~~~
+
+#### 数据输出方式 / output funcs
+~~~go
+ToBytes()
+ToString()
+ToBase64String()
+ToHexString()
+~~~
+
+#### 获取 error / get error
+~~~go
+Error()
+~~~
+
+#### 生成证书 / make keys
+~~~go
 func main() {
-    // 文件管理器
-    fs := filesystem.New()
+    obj := eddsa.New().GenerateKey()
 
-    // 生成证书
-    obj := cryptobin.
-        NewEdDSA().
-        GenerateKey()
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
 
-    objPriKey := obj.
+    // 生成私钥
+    // create private key
+    var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePrivateKeyWithPassword(psssword, "DESEDE3CBC").
         ToKeyString()
-    objPubKey := obj.
+
+    // 自定义私钥加密类型
+    // use custom encrypt options
+    var PriKeyPem string = obj.
+        CreatePrivateKeyWithPassword(psssword, sm2.Opts{
+            Cipher:  sm2.GetCipherFromName("AES256CBC"),
+            KDFOpts: sm2.ScryptOpts{
+                CostParameter:            1 << 15,
+                BlockSize:                8,
+                ParallelizationParameter: 1,
+                SaltSize:                 8,
+            },
+        }).
+        ToKeyString()
+
+    // 生成公钥
+    // create public key
+    var PubKeyPem string = obj.
         CreatePublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/eddsa", objPriKey)
-    fs.Put("./runtime/key/eddsa.pub", objPubKey)
+}
+~~~
 
-    // 验证
-    obj2 := cryptobin.NewEdDSA()
+#### 签名验证 / sign data
+~~~go
+func main() {
+    // 待签名数据
+    // no sign data
+    var data string = "..."
 
-    ctx := "123sedrftd35"
+    // 签名数据
+    // sign data
+    var sigBase64String string = "..."
 
-    obj2Pri, _ := fs.Get("./runtime/key/eddsa")
-    obj2cypt := obj2.
-        FromString("test-pass").
-        FromPrivateKey([]byte(obj2Pri)).
-        // FromPrivateKeyWithPassword([]byte(obj2Pri), "123").
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    // ctx 数据
+    var ctx string = ""
+
+    obj := eddsa.New()
+
+    // 私钥签名
+    // private key sign data
+    var priKeyPem string = ""
+    sigBase64String = obj.
+        FromString(data).
+        FromPrivateKey([]byte(priKeyPem)).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
         // 其他设置, 默认为 Ed25519 模式
         // SetOptions("Ed25519ph", ctx).
         // SetOptions("Ed25519ctx", ctx).
@@ -47,26 +100,35 @@ func main() {
         Sign().
         ToBase64String()
 
-    obj2Pub, _ := fs.Get("./runtime/key/eddsa.pub")
-    obj2cyptde := obj2.
-        FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(obj2Pub)).
+    // 公钥验证
+    // public key verify signed data
+    var pubKeyPem string = ""
+    var res bool = obj.
+        FromBase64String(sigBase64String).
+        FromPublicKey([]byte(pubKeyPem)).
+        // 其他设置, 默认为 Ed25519 模式
         // SetOptions("Ed25519ph", ctx).
         // SetOptions("Ed25519ctx", ctx).
         // SetOptions("Ed25519").
-        Verify([]byte("test-pass")).
+        Verify([]byte(data)).
         ToVerify()
+}
+~~~
 
-    // 检测私钥公钥是否匹配
-    pri, _ := fs.Get(prifile)
-    pub, _ := fs.Get(pubfile)
+#### 检测私钥公钥是否匹配 / Check KeyPair
+~~~go
+func main() {
+    var prikeyPem string = "..."
+    var pubkeyPem string = "..."
 
-    res := cryptobin_eddsa.New().
-        FromPrivateKey([]byte(pri)).
-        FromPublicKey([]byte(pub)).
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    var res bool = eddsa.New().
+        FromPrivateKey([]byte(prikeyPem)).
+        // FromPrivateKeyWithPassword([]byte(prikeyPem), psssword).
+        FromPublicKey([]byte(pubkeyPem)).
         CheckKeyPair()
-
-    fmt.Printf("check res: %#v", res)
-
 }
 ~~~

@@ -31,7 +31,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this Curve25519) CreatePrivateKey() Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this Curve25519) CreatePrivateKey() Curve25519 {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any) Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -89,7 +89,7 @@ func (this Curve25519) CreatePrivateKeyWithPassword(password string, opts ...any
 // 生成公钥 pem 数据
 func (this Curve25519) CreatePublicKey() Curve25519 {
     if this.publicKey == nil {
-        err := errors.New("Curve25519: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
@@ -111,12 +111,12 @@ func (this Curve25519) CreatePublicKey() Curve25519 {
 // 根据公钥和私钥生成密钥
 func (this Curve25519) CreateSecretKey() Curve25519 {
     if this.privateKey == nil {
-        err := errors.New("Curve25519: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("Curve25519: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

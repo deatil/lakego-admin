@@ -1,70 +1,139 @@
 ### DSA 使用说明
 
-* 使用 [pkcs1 / pkcs8] 证书，默认为 pkcs1 证书
+#### 包引入 / import pkg
 ~~~go
-package main
-
 import (
-    "fmt"
-
-    "github.com/deatil/lakego-filesystem/filesystem"
-    cryptobin_dsa "github.com/deatil/go-cryptobin/cryptobin/dsa"
+    "github.com/deatil/go-cryptobin/cryptobin/dsa"
 )
+~~~
 
+#### 数据输入方式 / input funcs
+~~~go
+FromBytes(data []byte)
+FromString(data string)
+FromBase64String(data string)
+FromHexString(data string)
+~~~
+
+#### 数据输出方式 / output funcs
+~~~go
+ToBytes()
+ToString()
+ToBase64String()
+ToHexString()
+~~~
+
+#### 获取 error / get error
+~~~go
+Error()
+~~~
+
+#### 生成证书 / make keys
+~~~go
 func main() {
-    // 文件管理器
-    fs := filesystem.New()
-
-    // 生成证书
     // 可用参数 [L1024N160 | L2048N224 | L2048N256 | L3072N256]
-    dsa := cryptobin_dsa.New().GenerateKey("L2048N256")
-    dsaPriKey := dsa.
+    obj := dsa.New().GenerateKey("L2048N256")
+
+    // 生成私钥
+    // create private key
+    var PriKeyPem string = obj.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePKCS1PrivateKey().
+        // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC").
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
+        // CreateXMLPrivateKey().
         ToKeyString()
-    dsaPubKey := dsa.
-        CreatePublicKey().
+
+    // 自定义私钥加密类型
+    // use custom encrypt options
+    var PriKeyPem string = obj.
+        CreatePKCS8PrivateKeyWithPassword("123", rsa.Opts{
+            Cipher:  rsa.GetCipherFromName("AES256CBC"),
+            KDFOpts: rsa.ScryptOpts{
+                CostParameter:            1 << 15,
+                BlockSize:                8,
+                ParallelizationParameter: 1,
+                SaltSize:                 8,
+            },
+        }).
+        ToKeyString()
+
+    // 生成公钥
+    // create public key
+    var PubKeyPem string = obj.
+        CreatePKCS1PublicKey().
         // CreatePKCS8PublicKey().
+        // CreateXMLPublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/dsa", dsaPriKey)
-    fs.Put("./runtime/key/dsa.pub", dsaPubKey)
+}
+~~~
 
-    // 验证
-    dsa := cryptobin_dsa.New()
+#### 签名验证 / sign data
+~~~go
+func main() {
+    obj := dsa.New()
 
-    dsaPri, _ := fs.Get("./runtime/key/dsa")
-    dsacypt := dsa.
-        FromString("test-pass").
-        FromPrivateKey([]byte(dsaPri)).
-        // FromPrivateKeyWithPassword([]byte(dsaPri), "123").
-        // FromPKCS8PrivateKey([]byte(dsaPri)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(dsaPri), "123").
+    // 待签名数据
+    // no sign data
+    var data string = "..."
+
+    // 签名数据
+    // sign data
+    var sigBase64String string = "..."
+
+    // 私钥签名
+    // private key sign data
+    var priKeyPem string = ""
+    sigBase64String = obj.
+        FromString(data).
+        FromPrivateKey([]byte(priKeyPem)).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), "123").
+        // FromPKCS1PrivateKey([]byte(priKeyPem)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), "123").
+        // FromPKCS8PrivateKey([]byte(priKeyPem)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), "123").
+        // FromXMLPrivateKey([]byte(priKeyXML)).
+        SetSignHash("SHA256").
         Sign().
+        // SignASN1().
+        // SignBytes().
         ToBase64String()
-    dsaPub, _ := fs.Get("./runtime/key/dsa.pub")
-    dsacyptde := dsa.
-        FromBase64String("MjkzNzYzMDE1NjgzNDExMTM0ODE1MzgxOTAxMDIxNzQ0Nzg3NTc3NTAxNTU2MDIwNzg4OTc1MzY4Mzc0OTE5NzcyOTg3NjI1MTc2OTErNDgzNDU3NDAyMzYyODAzMDM3MzE1NjE1NDk1NDEzOTQ4MDQ3NDQ3ODA0MDE4NDY5NDA1OTA3ODExNjM1Mzk3MDEzOTY4MTM5NDg2NDc=").
-        FromPublicKey([]byte(dsaPub)).
-        // FromPKCS8PublicKey([]byte(dsaPub)).
-        Verify([]byte("test-pass")).
+
+    // 公钥验证
+    // public key verify signed data
+    var pubKeyPem string = ""
+    var res bool = obj.
+        FromBase64String(sigBase64String).
+        FromPublicKey([]byte(pubKeyPem)).
+        // FromPKCS1PublicKey([]byte(pubKeyPem)).
+        // FromPKCS8PublicKey([]byte(pubKeyPem)).
+        // FromXMLPublicKey([]byte(pubKeyXML)).
+        SetSignHash("SHA256").
+        Verify([]byte(data)).
+        // VerifyASN1([]byte(data)).
+        // VerifyBytes([]byte(data)).
         ToVerify()
+}
+~~~
 
-    // 检测私钥公钥是否匹配
-    pri, _ := fs.Get(prifile)
-    pub, _ := fs.Get(pubfile)
+#### 检测私钥公钥是否匹配 / Check KeyPair
+~~~go
+func main() {
+    var prikeyPem string = "..."
+    var pubkeyPem string = "..."
 
-    res := cryptobin_dsa.New().
-        FromPKCS8PrivateKey([]byte(pri)).
-        // FromPrivateKey([]byte(pri)).
-        // FromPrivateKeyWithPassword([]byte(pri), "123").
-        // FromPKCS8PrivateKeyWithPassword([]byte(pri), "123").
-        // FromPublicKey([]byte(pub)).
-        FromPKCS8PublicKey([]byte(pub)).
+    var res bool = dsa.New().
+        // FromPrivateKey([]byte(prikeyPem)).
+        // FromPrivateKeyWithPassword([]byte(prikeyPem), "123").
+        // FromPKCS1PrivateKey([]byte(prikeyPem)).
+        // FromPKCS1PrivateKeyWithPassword([]byte(prikeyPem), "123").
+        FromPKCS8PrivateKey([]byte(prikeyPem)).
+        // FromPKCS8PrivateKeyWithPassword([]byte(prikeyPem), "123").
+        // FromPublicKey([]byte(pubkeyPem)).
+        // FromPKCS1PublicKey([]byte(pubkeyPem)).
+        FromPKCS8PublicKey([]byte(pubkeyPem)).
         CheckKeyPair()
-
-    fmt.Printf("check res: %#v", res)
-
 }
 ~~~

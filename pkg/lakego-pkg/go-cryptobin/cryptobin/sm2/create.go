@@ -44,7 +44,7 @@ func (this SM2) CreatePrivateKeyWithPassword(password string, opts ...any) SM2 {
 // 生成私钥 pem 数据
 func (this SM2) CreatePKCS1PrivateKey() SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -66,7 +66,7 @@ func (this SM2) CreatePKCS1PrivateKey() SM2 {
 // 生成私钥带密码 pem 数据
 func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -78,7 +78,7 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     // 加密方式
     cipher := cryptobin_pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("SM2: PEMCipher not exists.")
+        err := errors.New("PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -110,7 +110,7 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
 // 生成私钥 pem 数据
 func (this SM2) CreatePKCS8PrivateKey() SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -134,7 +134,7 @@ func (this SM2) CreatePKCS8PrivateKey() SM2 {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) SM2 {
     if this.privateKey == nil {
-        err := errors.New("SM2: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -171,7 +171,7 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
     if this.publicKey == nil {
-        err := errors.New("SM2: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

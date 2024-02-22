@@ -62,7 +62,7 @@ func (this EdDSA) WithData(data []byte) EdDSA {
 }
 
 // 设置 parsedData
-func (this EdDSA) WithParedData(data []byte) EdDSA {
+func (this EdDSA) WithParsedData(data []byte) EdDSA {
     this.parsedData = data
 
     return this

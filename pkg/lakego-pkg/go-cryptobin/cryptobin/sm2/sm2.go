@@ -12,6 +12,12 @@ const (
     C1C2C3 = sm2.C1C2C3
 )
 
+// 默认 UID
+var defaultUID = []byte{
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+}
+
 type (
     // HashFunc
     HashFunc = func() hash.Hash
@@ -45,6 +51,9 @@ type SM2 struct {
     // 签名验证类型
     signHash HashFunc
 
+    // UID
+    uid []byte
+
     // 验证结果
     verify bool
 
@@ -56,6 +65,7 @@ type SM2 struct {
 func NewSM2() SM2 {
     return SM2{
         mode:   C1C3C2,
+        uid:    defaultUID,
         verify: false,
         Errors: make([]error, 0),
     }

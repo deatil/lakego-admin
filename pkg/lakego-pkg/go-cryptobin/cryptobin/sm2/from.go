@@ -293,7 +293,7 @@ func (this SM2) FromPublicKeyUncompressString(keyString string) SM2 {
 // 023613B13F252F6FB2374A85D93C7FFE9CCAD1231BE866F5FE69255312CE85B9FF
 func (this SM2) FromPublicKeyCompressString(key string) SM2 {
     if len(key) != 66 || (!strings.HasPrefix(key, "02") && !strings.HasPrefix(key, "03")) {
-        err := errors.New("SM2: Compress PublicKey prefix is 02 or 03.")
+        err := errors.New("Compress PublicKey prefix is 02 or 03.")
         return this.AppendError(err)
     }
 

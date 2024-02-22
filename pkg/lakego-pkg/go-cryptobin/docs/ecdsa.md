@@ -1,21 +1,40 @@
 ### EcDsa 使用说明
 
-* 包引入
+#### 包引入
 ~~~go
 import (
     "github.com/deatil/go-cryptobin/cryptobin/ecdsa"
 )
 ~~~
 
-* 数据输入方式
-`FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
+#### 数据输入方式 / input funcs
+~~~go
+FromBytes(data []byte)
+FromString(data string)
+FromBase64String(data string)
+FromHexString(data string)
+~~~
 
-* 数据输出方式
-`ToBytes()`, `ToString()`, `ToBase64String()`, `ToHexString()`, 
+#### 数据输出方式 / output funcs
+~~~go
+ToBytes()
+ToString()
+ToBase64String()
+ToHexString()
+~~~
 
-* 生成证书
+#### 获取 error / get error
+~~~go
+Error()
+~~~
+
+#### 生成证书
 ~~~go
 func main() {
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
     // 生成证书
     // 可选参数 [P521 | P384 | P256 | P224]
     ec := ecdsa.GenerateKey("P521")
@@ -23,11 +42,11 @@ func main() {
     // 生成私钥 PEM 证书
     privateKeyString := ec.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
         // CreatePKCS1PrivateKey()
         // CreatePKCS1PrivateKeyWithPassword(password string, opts ...string)
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
         ToKeyString()
 
     // 生成公钥 PEM 证书
@@ -37,31 +56,40 @@ func main() {
 }
 ~~~
 
-* 签名验证
+#### 签名验证
 
 签名验证支持以下方式
 ~~~
-sep符号分割: Sign(separator ...string) / Verify(data []byte, separator ...string)
-ASN1方式: SignASN1() / VerifyASN1(data []byte)
-字节组合: SignBytes() / VerifyBytes(data []byte)
+默认方法:
+Sign() / Verify(data []byte)
+
+ASN1编码，为默认方法别名:
+SignASN1() / VerifyASN1(data []byte)
+
+字节拼接:
+SignBytes() / VerifyBytes(data []byte)
 ~~~
 
 示例
 ~~~go
 func main() {
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
     // 私钥签名
     var pri []byte = []byte("...")
     var base64signedString string = ecdsa.
         FromString("test-pass").
         FromPrivateKey(pri).
-        // FromPrivateKeyWithPassword(pri, "123").
+        // FromPrivateKeyWithPassword(pri, psssword).
         // FromPKCS1PrivateKey(pri).
-        // FromPKCS1PrivateKeyWithPassword(pri, "123").
+        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
         // FromPKCS8PrivateKey(pri).
-        // FromPKCS8PrivateKeyWithPassword(pri, "123").
+        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
         Sign().
         ToBase64String()
-    
+
     // 公钥验证
     var pub []byte = []byte("...")
     var base64signedString string = "..."
@@ -73,9 +101,9 @@ func main() {
 }
 ~~~
 
-* 加密解密
+#### 加密解密
 
-ECDSA 加密使用自身的 ECDH 生成密钥，使用 AES 对称加密解密数据
+ECDSA 加密使用自身的 ECDH 生成的密钥，使用 AES 对称加密解密数据
 
 ~~~go
 func main() {
@@ -113,14 +141,23 @@ Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 }
 ~~~
 
-* 检测私钥公钥是否匹配
+#### 检测私钥公钥是否匹配
 ~~~go
 func main() {
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
     var prikeyPem []byte = []byte("...")
     var pubkeyPem []byte = []byte("...")
 
     var res bool = ecdsa.New().
-        FromPrivateKey(prikey).
+        FromPrivateKey(pri).
+        // FromPrivateKeyWithPassword(pri, psssword).
+        // FromPKCS1PrivateKey(pri).
+        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
+        // FromPKCS8PrivateKey(pri).
+        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
         FromPublicKey(pubkey).
         CheckKeyPair()
 }

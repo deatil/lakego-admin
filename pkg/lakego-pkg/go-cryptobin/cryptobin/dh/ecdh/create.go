@@ -31,7 +31,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this ECDH) CreatePrivateKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("ecdh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -54,7 +54,7 @@ func (this ECDH) CreatePrivateKey() ECDH {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ECDH) CreatePrivateKeyWithPassword(password string, opts ...any) ECDH {
     if this.privateKey == nil {
-        err := errors.New("ecdh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -89,7 +89,7 @@ func (this ECDH) CreatePrivateKeyWithPassword(password string, opts ...any) ECDH
 // 生成公钥 pem 数据
 func (this ECDH) CreatePublicKey() ECDH {
     if this.publicKey == nil {
-        err := errors.New("ecdh: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
@@ -111,12 +111,12 @@ func (this ECDH) CreatePublicKey() ECDH {
 // 根据公钥和私钥生成密钥
 func (this ECDH) CreateSecretKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("ecdh: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("ecdh: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

@@ -50,7 +50,7 @@ func (this DSA) CreatePublicKey() DSA {
 // 生成 pkcs1 私钥 pem 数据
 func (this DSA) CreatePKCS1PrivateKey() DSA {
     if this.privateKey == nil {
-        err := errors.New("dsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -74,7 +74,7 @@ func (this DSA) CreatePKCS1PrivateKey() DSA {
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this DSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) DSA {
     if this.privateKey == nil {
-        err := errors.New("dsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -86,7 +86,7 @@ func (this DSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     // 加密方式
     cipher := cryptobin_pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("dsa: PEMCipher not exists.")
+        err := errors.New("PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -116,7 +116,7 @@ func (this DSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
 // 生成 pkcs1 公钥 pem 数据
 func (this DSA) CreatePKCS1PublicKey() DSA {
     if this.publicKey == nil {
-        err := errors.New("dsa: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
@@ -140,7 +140,7 @@ func (this DSA) CreatePKCS1PublicKey() DSA {
 // 生成 pkcs8 私钥 pem 数据
 func (this DSA) CreatePKCS8PrivateKey() DSA {
     if this.privateKey == nil {
-        err := errors.New("dsa: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -163,7 +163,7 @@ func (this DSA) CreatePKCS8PrivateKey() DSA {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) DSA {
     if this.privateKey == nil {
-        err := errors.New("DSA: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -198,7 +198,7 @@ func (this DSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据
 func (this DSA) CreatePKCS8PublicKey() DSA {
     if this.publicKey == nil {
-        err := errors.New("dsa: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 
@@ -222,7 +222,7 @@ func (this DSA) CreatePKCS8PublicKey() DSA {
 // 生成私钥 xml 数据
 func (this DSA) CreateXMLPrivateKey() DSA {
     if this.privateKey == nil {
-        err := errors.New("DSA: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -239,7 +239,7 @@ func (this DSA) CreateXMLPrivateKey() DSA {
 // 生成公钥 xml 数据
 func (this DSA) CreateXMLPublicKey() DSA {
     if this.publicKey == nil {
-        err := errors.New("DSA: publicKey error.")
+        err := errors.New("publicKey error.")
         return this.AppendError(err)
     }
 

@@ -12,7 +12,7 @@ func (this ED448) MakePublicKey() ED448 {
     this.publicKey = ed448.PublicKey{}
 
     if this.privateKey == nil {
-        err := errors.New("ED448: privateKey error.")
+        err := errors.New("privateKey error.")
         return this.AppendError(err)
     }
 
@@ -26,7 +26,7 @@ func (this ED448) MakePublicKey() ED448 {
 func (this ED448) MakeKeyDer() ED448 {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("ED448: keyData error.")
+        err := errors.New("keyData error.")
         return this.AppendError(err)
     }
 

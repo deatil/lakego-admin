@@ -1,67 +1,104 @@
 ### ECDH 使用文档
 
-该版本使用 go 标准库，go 最低版本需要 `1.20.1`。
-
-
-* ecdh 使用
+#### 包引入 / import pkg
 ~~~go
-package main
-
 import (
-    "fmt"
-
-    "github.com/deatil/lakego-filesystem/filesystem"
-    cryptobin_ecdh "github.com/deatil/go-cryptobin/cryptobin/ecdh"
+    "github.com/deatil/go-cryptobin/cryptobin/ecdh"
 )
+~~~
 
+#### 数据输入方式 / input funcs
+~~~go
+FromBytes(data []byte)
+FromString(data string)
+FromBase64String(data string)
+FromHexString(data string)
+~~~
+
+#### 数据输出方式 / output funcs
+~~~go
+ToBytes()
+ToString()
+ToBase64String()
+ToHexString()
+~~~
+
+#### 获取 error / get error
+~~~go
+Error()
+~~~
+
+#### 生成证书 / make keys
+~~~go
 func main() {
-    // 文件管理器
-    fs := filesystem.New()
-
-    // 生成证书
     // 可用参数 [P521 | P384 | P256 | X25519]
-    obj := cryptobin_ecdh.New().
+    obj := ecdh.New().
         SetCurve("P256").
         GenerateKey()
 
-    objPriKey := obj.
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    // 生成私钥
+    // create private key
+    var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword("123", "AES256CBC").
+        // CreatePrivateKeyWithPassword(psssword, "DESEDE3CBC").
         ToKeyString()
-    objPubKey := obj.
+
+    // 自定义私钥加密类型
+    // use custom encrypt options
+    var PriKeyPem string = obj.
+        CreatePrivateKeyWithPassword(psssword, sm2.Opts{
+            Cipher:  sm2.GetCipherFromName("AES256CBC"),
+            KDFOpts: sm2.ScryptOpts{
+                CostParameter:            1 << 15,
+                BlockSize:                8,
+                ParallelizationParameter: 1,
+                SaltSize:                 8,
+            },
+        }).
+        ToKeyString()
+
+    // 生成公钥
+    // create public key
+    var PubKeyPem string = obj.
         CreatePublicKey().
         ToKeyString()
-    fs.Put("./runtime/key/ecdh/ecdh", objPriKey)
-    fs.Put("./runtime/key/ecdh/ecdh.pub", objPubKey)
+}
+~~~
 
-    // 生成对称加密密钥
-    obj := cryptobin_ecdh.New()
+#### 生成对称加密密钥
+~~~go
+func main() {
+    var prikeyPem1 string = "..."
+    var pubkeyPem1 string = "..."
 
-    objPri1, _ := fs.Get("./runtime/key/ecdh/ecdh")
-    objPub1, _ := fs.Get("./runtime/key/ecdh/ecdh.pub")
+    var prikeyPem2 string = "..."
+    var pubkeyPem2 string = "..."
 
-    objPri2, _ := fs.Get("./runtime/key/ecdh/ecdh2")
-    objPub2, _ := fs.Get("./runtime/key/ecdh/ecdh2.pub")
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
 
-    objSecret1 := obj.
-        FromPrivateKey([]byte(objPri1)).
-        // FromPrivateKeyWithPassword([]byte(objPri1), "123").
-        FromPublicKey([]byte(objPub2)).
+    var secret1 string = obj.
+        FromPrivateKey([]byte(prikeyPem1)).
+        // FromPrivateKeyWithPassword([]byte(prikeyPem1), psssword).
+        FromPublicKey([]byte(pubkeyPem2)).
         CreateSecretKey().
         ToHexString()
 
-    objSecret2 := obj.
-        FromPrivateKey([]byte(objPri2)).
-        // FromPrivateKeyWithPassword([]byte(objPri2), "123").
-        FromPublicKey([]byte(objPub1)).
+    var secret2 string = obj.
+        FromPrivateKey([]byte(prikeyPem2)).
+        // FromPrivateKeyWithPassword([]byte(prikeyPem2), psssword).
+        FromPublicKey([]byte(pubkeyPem1)).
         CreateSecretKey().
         ToHexString()
 
-    dhStatus := false
-    if objSecret1 == objSecret2) {
-        dhStatus = true
+    status := false
+    if secret1 == secret2) {
+        status = true
     }
-
-    fmt.Println("生成的密钥是否相同结果: ", dhStatus)
 }
 ~~~

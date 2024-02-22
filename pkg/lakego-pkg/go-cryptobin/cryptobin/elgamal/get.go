@@ -30,7 +30,7 @@ func (this EIGamal) GetData() []byte {
 }
 
 // 获取 parsedData
-func (this EIGamal) GetParedData() []byte {
+func (this EIGamal) GetParsedData() []byte {
     return this.parsedData
 }
 
