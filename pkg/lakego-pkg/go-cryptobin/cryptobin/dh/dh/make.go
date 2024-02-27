@@ -10,7 +10,7 @@ func (this DH) MakePublicKey() DH {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 

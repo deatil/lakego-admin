@@ -13,6 +13,8 @@ import (
     "golang.org/x/crypto/pbkdf2"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
 )
 
 // pkcs8 可使用的 hash 方式
@@ -28,6 +30,8 @@ const (
     SHA512_224
     SHA512_256
     SM3
+    GOST34112012256
+    GOST34112012512
 )
 
 var (
@@ -51,6 +55,9 @@ var (
     oidHMACWithSHA512_224 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 12}
     oidHMACWithSHA512_256 = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 13}
     oidHMACWithSM3        = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401, 2}
+
+    oidHMACWithGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 4, 1}
+    oidHMACWithGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 4, 2}
 )
 
 // 返回使用的 Hash 方式
@@ -74,6 +81,10 @@ func prfByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return sha512.New512_256, nil
         case oid.Equal(oidHMACWithSM3):
             return sm3.New, nil
+        case oid.Equal(oidHMACWithGOST34112012256):
+            return gost34112012256.New, nil
+        case oid.Equal(oidHMACWithGOST34112012512):
+            return gost34112012512.New, nil
     }
 
     return nil, errors.New("pkcs8: unsupported hash function")
@@ -100,6 +111,10 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithSHA512_256, nil
         case SM3:
             return oidHMACWithSM3, nil
+        case GOST34112012256:
+            return oidHMACWithGOST34112012256, nil
+        case GOST34112012512:
+            return oidHMACWithGOST34112012512, nil
     }
 
     return nil, errors.New("pkcs8: unsupported hash function")

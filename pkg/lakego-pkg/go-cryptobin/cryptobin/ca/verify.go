@@ -5,7 +5,7 @@ import (
     "crypto/x509"
     "encoding/pem"
 
-    sm2X509 "github.com/deatil/go-cryptobin/gm/x509"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
 )
 
 // 验证
@@ -37,8 +37,8 @@ func (this CA) Verify(rootPEM string, certPEM string, opts x509.VerifyOptions) (
 }
 
 // SM2 验证
-func (this CA) SM2Verify(rootPEM string, certPEM string, opts sm2X509.VerifyOptions) (bool, error) {
-    roots := sm2X509.NewCertPool()
+func (this CA) SM2Verify(rootPEM string, certPEM string, opts cryptobin_x509.VerifyOptions) (bool, error) {
+    roots := cryptobin_x509.NewCertPool()
     ok := roots.AppendCertsFromPEM([]byte(rootPEM))
     if !ok {
         return false, errors.New("failed to parse root certificate")
@@ -49,7 +49,7 @@ func (this CA) SM2Verify(rootPEM string, certPEM string, opts sm2X509.VerifyOpti
         return false, errors.New("failed to parse certificate PEM")
     }
 
-    cert, err := sm2X509.ParseCertificate(block.Bytes)
+    cert, err := cryptobin_x509.ParseCertificate(block.Bytes)
     if err != nil {
         return false, errors.New("failed to parse certificate: " + err.Error())
     }

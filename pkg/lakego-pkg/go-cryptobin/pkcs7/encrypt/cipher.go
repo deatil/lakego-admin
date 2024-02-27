@@ -22,8 +22,16 @@ var (
 var (
     DESCBC     = pbes2.DESCBC
     DESEDE3CBC = pbes2.DESEDE3CBC
+
     RC2CBC     = pbes2.RC2CBC
+    RC2_40CBC  = pbes2.RC2_40CBC
+    RC2_64CBC  = pbes2.RC2_64CBC
+    RC2_128CBC = pbes2.RC2_128CBC
+
     RC5CBC     = pbes2.RC5CBC
+    RC5_128CBC = pbes2.RC5_128CBC
+    RC5_192CBC = pbes2.RC5_192CBC
+    RC5_256CBC = pbes2.RC5_256CBC
 
     AES128ECB = pbes2.AES128ECB
     AES128CBC = pbes2.AES128CBC
@@ -54,4 +62,6 @@ var (
     SM4CFB8 = pbes2.SM4CFB8
     SM4GCM  = pbes2.SM4GCM
     SM4CCM  = pbes2.SM4CCM
+
+    GostCipher = pbes2.GostCipher
 )

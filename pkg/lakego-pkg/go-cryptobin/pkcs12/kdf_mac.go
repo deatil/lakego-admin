@@ -13,8 +13,11 @@ import (
     "encoding/asn1"
 
     "golang.org/x/crypto/md4"
-    
+
     "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/kdf/gost_pbkdf2"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
     cryptobin_md2 "github.com/deatil/go-cryptobin/hash/md2"
     cryptobin_pbkdf "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )
@@ -34,6 +37,8 @@ const (
     SHA512_224
     SHA512_256
     SM3
+    GOST34112012256
+    GOST34112012512
 )
 
 var (
@@ -53,6 +58,9 @@ var (
     oidSHA512_224 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 5}
     oidSHA512_256 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 6}
     oidSM3        = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401}
+
+    oidGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 2}
+    oidGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 3}
 )
 
 // 返回使用的 Hash 方式
@@ -80,6 +88,10 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return sha512.New512_256, nil
         case oid.Equal(oidSM3):
             return sm3.New, nil
+        case oid.Equal(oidGOST34112012256):
+            return gost34112012256.New, nil
+        case oid.Equal(oidGOST34112012512):
+            return gost34112012512.New, nil
     }
 
     return nil, errors.New("pkcs12: unsupported hash function")
@@ -110,6 +122,10 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidSHA512_256, nil
         case SM3:
             return oidSM3, nil
+        case GOST34112012256:
+            return oidGOST34112012256, nil
+        case GOST34112012512:
+            return oidGOST34112012512, nil
     }
 
     return nil, errors.New("pkcs12: unsupported hash function")
@@ -148,9 +164,24 @@ func (this MacData) Verify(message []byte, password []byte) (err error) {
         }
     }
 
-    hashSize := h().Size()
+    oid := this.Mac.Algorithm.Algorithm
 
-    key := cryptobin_pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
+    var key []byte
+    switch {
+        case oid.Equal(oidGOST34112012256),
+            oid.Equal(oidGOST34112012512):
+            pass, err := decodeBMPString(password)
+            if err != nil {
+                return err
+            }
+
+            key = gost_pbkdf2.Key(h, []byte(pass), this.MacSalt, this.Iterations, 96)
+            key = key[len(key)-32:]
+        default:
+            hashSize := h().Size()
+
+            key = cryptobin_pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
+    }
 
     mac := hmac.New(h, key)
     mac.Write(message)
@@ -201,9 +232,22 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
         return nil, err
     }
 
-    hashSize := h().Size()
+    var key []byte
+    switch {
+        case alg.Equal(oidGOST34112012256),
+            alg.Equal(oidGOST34112012512):
+            pass, err := decodeBMPString(password)
+            if err != nil {
+                return nil, err
+            }
 
-    key := cryptobin_pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
+            key = gost_pbkdf2.Key(h, []byte(pass), macSalt, this.IterationCount, 96)
+            key = key[len(key)-32:]
+        default:
+            hashSize := h().Size()
+
+            key = cryptobin_pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
+    }
 
     mac := hmac.New(h, key)
     mac.Write(message)

@@ -9,10 +9,143 @@ import (
     "encoding/asn1"
 )
 
+type dsaSignature struct {
+    R, S *big.Int
+}
+
 // 私钥签名
-func (this DSA) Sign(separator ...string) DSA {
+func (this DSA) Sign() DSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    hashed, err := this.dataHash(this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.parsedData, err = asn1.Marshal(dsaSignature{r, s})
+
+    return this.AppendError(err)
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this DSA) Verify(data []byte) DSA {
+    if this.publicKey == nil {
+        err := errors.New("publicKey empty.")
+        return this.AppendError(err)
+    }
+
+    var dsaSign dsaSignature
+    _, err := asn1.Unmarshal(this.data, &dsaSign)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    hashed, err := this.dataHash(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.verify = dsa.Verify(this.publicKey, hashed, dsaSign.R, dsaSign.S)
+
+    return this
+}
+
+// ===============
+
+// 私钥签名
+func (this DSA) SignASN1() DSA {
+    return this.Sign()
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this DSA) VerifyASN1(data []byte) DSA {
+    return this.Verify(data)
+}
+
+// ===============
+
+const (
+    // 字节大小
+    dsaByteLen = 32
+)
+
+// 私钥签名
+func (this DSA) SignBytes() DSA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    hashed, err := this.dataHash(this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    if (r.BitLen() / 8) > dsaByteLen || (s.BitLen() / 8) > dsaByteLen {
+        err := errors.New("signature too large.")
+        return this.AppendError(err)
+    }
+
+    buf := make([]byte, 2*dsaByteLen)
+
+    r.FillBytes(buf[         0:  dsaByteLen])
+    s.FillBytes(buf[dsaByteLen:2*dsaByteLen])
+
+    this.parsedData = buf
+
+    return this
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this DSA) VerifyBytes(data []byte) DSA {
+    if this.publicKey == nil {
+        err := errors.New("publicKey empty.")
+        return this.AppendError(err)
+    }
+
+    // 签名结果数据
+    sig := this.data
+
+    if len(sig) != 2*dsaByteLen {
+        err := errors.New("sig data error.")
+        return this.AppendError(err)
+    }
+
+    r := new(big.Int).SetBytes(sig[:dsaByteLen])
+    s := new(big.Int).SetBytes(sig[dsaByteLen:])
+
+    hashed, err := this.dataHash(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
+
+    return this
+}
+
+// ===============
+
+// 私钥签名
+func (this DSA) SignWithSeparator(separator ...string) DSA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -50,9 +183,9 @@ func (this DSA) Sign(separator ...string) DSA {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this DSA) Verify(data []byte, separator ...string) DSA {
+func (this DSA) VerifyWithSeparator(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -92,130 +225,10 @@ func (this DSA) Verify(data []byte, separator ...string) DSA {
 
 // ===============
 
-type dsaSignature struct {
-    R, S *big.Int
-}
-
-// 私钥签名
-func (this DSA) SignASN1() DSA {
-    if this.privateKey == nil {
-        err := errors.New("privateKey error.")
-        return this.AppendError(err)
-    }
-
-    hashed, err := this.dataHash(this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.parsedData, err = asn1.Marshal(dsaSignature{r, s})
-
-    return this.AppendError(err)
-}
-
-// 公钥验证
-// 使用原始数据[data]对比签名后数据
-func (this DSA) VerifyASN1(data []byte) DSA {
-    if this.publicKey == nil {
-        err := errors.New("publicKey error.")
-        return this.AppendError(err)
-    }
-
-    var dsaSign dsaSignature
-    _, err := asn1.Unmarshal(this.data, &dsaSign)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    hashed, err := this.dataHash(data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.verify = dsa.Verify(this.publicKey, hashed, dsaSign.R, dsaSign.S)
-
-    return this
-}
-
-// ===============
-
-const (
-    // 字节大小
-    dsaByteLen = 32
-)
-
-// 私钥签名
-func (this DSA) SignBytes() DSA {
-    if this.privateKey == nil {
-        err := errors.New("privateKey error.")
-        return this.AppendError(err)
-    }
-
-    hashed, err := this.dataHash(this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    r, s, err := dsa.Sign(rand.Reader, this.privateKey, hashed)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    if r.BitLen() > (dsaByteLen * 8) || s.BitLen() > (dsaByteLen * 8) {
-        err := errors.New("DSA signature too large.")
-        return this.AppendError(err)
-    }
-
-    buf := make([]byte, 2*dsaByteLen)
-
-    r.FillBytes(buf[         0:  dsaByteLen])
-    s.FillBytes(buf[dsaByteLen:2*dsaByteLen])
-
-    this.parsedData = buf
-
-    return this
-}
-
-// 公钥验证
-// 使用原始数据[data]对比签名后数据
-func (this DSA) VerifyBytes(data []byte) DSA {
-    if this.publicKey == nil {
-        err := errors.New("publicKey error.")
-        return this.AppendError(err)
-    }
-
-    // 签名结果数据
-    sig := this.data
-
-    if len(sig) != 2*dsaByteLen {
-        err := errors.New("sig data error.")
-        return this.AppendError(err)
-    }
-
-    r := new(big.Int).SetBytes(sig[:dsaByteLen])
-    s := new(big.Int).SetBytes(sig[dsaByteLen:])
-
-    hashed, err := this.dataHash(data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.verify = dsa.Verify(this.publicKey, hashed, r, s)
-
-    return this
-}
-
-// ===============
-
 // 签名后数据
 func (this DSA) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return nil, errors.New("Hash func not set.")
+        return nil, errors.New("hash func empty.")
     }
 
     h := this.signHash()

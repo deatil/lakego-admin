@@ -407,6 +407,9 @@ func Test_RemoveListen(t *testing.T) {
 
 	RemoveListen("RemoveListen2.test111111", listener2)
 	eq(HasListen("RemoveListen2.test111111", listener2), false, "RemoveListen 2")
+
+	eq(RemoveListen(int64(123321), listener2), false, "RemoveListen 3")
+	eq(EventListeners(int64(123321)), []*EventListener{}, "EventListeners 3")
 }
 
 func Test_Reset(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 // 公钥加密
 func (this RSA) Encrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -29,7 +29,7 @@ func (this RSA) Encrypt() RSA {
 // 私钥解密
 func (this RSA) Decrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -48,7 +48,7 @@ func (this RSA) Decrypt() RSA {
 // 私钥加密
 func (this RSA) PrivateKeyEncrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -65,7 +65,7 @@ func (this RSA) PrivateKeyEncrypt() RSA {
 // 公钥解密
 func (this RSA) PublicKeyDecrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -84,7 +84,7 @@ func (this RSA) PublicKeyDecrypt() RSA {
 // OAEP公钥加密
 func (this RSA) EncryptOAEP(typ ...string) RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -111,7 +111,7 @@ func (this RSA) EncryptOAEP(typ ...string) RSA {
 // OAEP私钥解密
 func (this RSA) DecryptOAEP(typ ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -140,7 +140,7 @@ func (this RSA) DecryptOAEP(typ ...string) RSA {
 // 公钥加密, ECB 模式
 func (this RSA) EncryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -179,7 +179,7 @@ func (this RSA) EncryptECB() RSA {
 // 私钥解密, ECB 模式
 func (this RSA) DecryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -220,7 +220,7 @@ func (this RSA) DecryptECB() RSA {
 // 私钥加密, ECB 模式
 func (this RSA) PrivateKeyEncryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -258,7 +258,7 @@ func (this RSA) PrivateKeyEncryptECB() RSA {
 // 公钥解密, ECB 模式
 func (this RSA) PublicKeyDecryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -299,7 +299,7 @@ func (this RSA) PublicKeyDecryptECB() RSA {
 // OAEP公钥加密, ECB 模式
 func (this RSA) EncryptOAEPECB(typ ...string) RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -348,7 +348,7 @@ func (this RSA) EncryptOAEPECB(typ ...string) RSA {
 // OAEP私钥解密, ECB 模式
 func (this RSA) DecryptOAEPECB(typ ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("teKey error.")
+        err := errors.New("teKey empty.")
         return this.AppendError(err)
     }
 

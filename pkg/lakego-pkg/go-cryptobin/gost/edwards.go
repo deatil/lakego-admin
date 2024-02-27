@@ -17,6 +17,7 @@ func (c *Curve) EdwardsST() (*big.Int, *big.Int) {
     c.edS.Set(c.E)
     c.edS.Sub(c.edS, c.D)
     c.pos(c.edS)
+
     var t big.Int
     t.SetUint64(4)
     t.ModInverse(&t, c.P)
@@ -40,6 +41,7 @@ func XY2UV(c *Curve, x, y *big.Int) (*big.Int, *big.Int) {
     }
 
     edS, edT := c.EdwardsST()
+
     var t big.Int
     t.Sub(x, edT)
     c.pos(&t)

@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this EIGamal) Sign() EIGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -33,7 +33,7 @@ func (this EIGamal) Sign() EIGamal {
 // 使用原始数据[data]对比签名后数据
 func (this EIGamal) Verify(data []byte) EIGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -55,7 +55,7 @@ func (this EIGamal) Verify(data []byte) EIGamal {
 // 签名后数据
 func (this EIGamal) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return data, errors.New("sign hash error.")
+        return data, errors.New("sign hash empty.")
     }
 
     h := this.signHash()

@@ -1,4 +1,4 @@
-### ElGamal 使用说明
+### ElGamal 使用文档
 
 #### 包引入 / import pkg
 ~~~go

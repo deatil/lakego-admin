@@ -530,6 +530,27 @@ dDzN6HnxZ+uoYVqEGOE=
 -----END ENCRYPTED PRIVATE KEY-----
 `
 
+var testKey_GostCipher = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIC1DBTBgkqhkiG9w0BBQ0wRjAjBgkqhkiG9w0BBQwwFgQQ2ubZaNdrvbYhyDgn
+yCA38gICJxAwHwYGKoUDAgIVMBUECAtc/H5r8CI1BgkqhQMHAQIFAQEEggJ7Ddip
+iQDoLqtWaf7Yo8/bulx/9GJl16MO6oQFf/3UDUFbPOp8Jl9K67mkh1mXT8YaxAPI
+v9FXXbJS2IksXJlGxamo4auzR+R9LopRpXDzq+Gh+hIex+VUkOAKRMhurfDzpHuc
+WNmLKHDyI/Iv1qvK8j1JEsAnkOodtP53M6N5DE6ZcDDAnGBKX8Yp7y6FsASLzaaY
+YAqLd21FkkrwOeg6F6W9gemFHTnlCtqhTJU94A4j3G4421eHPFcLIrMJ6A/vE/tY
+rXgSNCwxqnL8sy/AqNm1Eh7PmTYUw96DefLF192anvXsrawZU7fPA1TdGDjI5PFm
+SK++l5hfdrBQURozJDjJ3PnY/imjUxerCyEuKkUaQU3iHkMwfsLJHuxUBPMBR3pN
+m9mrRLkmupXs0wZ+gn6wBmPUMoht6Bq3Sp5hsNcSClZV6ZOWWwtJAQkCvhrJEq1w
+pnsDzpCCxYnjmvEko78xWGwcH7EmNFtU0qyJULBSf5KOyEqufW2bMUtPEuGNd+S0
+7wQtgAvqCCfeuLdcxMT8OSxowml0ZSfUk3aa7eC+fu7yiADrlwbdXq2Dnu69yWFn
+UKoohmAoCZwg2Ntheghg/hb7UpIlsF4d/yWJWSVefCaXsZ2F5m4L/1ZrhOICA5SD
+HmrYUpY8VGmOS+weqoQoxXy1o0p27U7JgHRdbcrzLqLH1vWatlvuRzkcHr5+orhA
+2Ji4/w/Zo5RtVrJmgbG4xH7JbW4WU2tK9U6oTCnhQPwqtklVVwMJxwUB30NP6R5z
+tBppen9C1pLgYs90/2jR8SgwlA0fum7ONYwkR1woWzrzBzae1Q08iFcCYnWjcvh7
+u/wvi4jm4YU=
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
 func Test_Check_PEMBlock2(t *testing.T) {
     t.Run("SM4GCM", func(t *testing.T) {
         test_KeyEncryptPEMBlock2(t, testKey_SM4GCM)
@@ -549,6 +570,10 @@ func Test_Check_PEMBlock2(t *testing.T) {
     })
     t.Run("AES256GCM", func(t *testing.T) {
         test_KeyEncryptPEMBlock2(t, testKey_AES256GCM)
+    })
+
+    t.Run("GostCipher", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testKey_GostCipher)
     })
 }
 
@@ -885,4 +910,26 @@ func test_EncryptPEMBlock_Pkcs8(t *testing.T, key []byte, c any) {
     }
 
     assertEqual(bys, key, "DecryptPEMBlock error")
+}
+
+func Test_EncryptPEMBlock_Gost(t *testing.T) {
+    block, _ := pem.Decode([]byte(testKey_des_EDE3_CBC))
+
+    bys, err := DecryptPEMBlock(block, []byte("123"))
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("test-passsss"), GostCipher)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
 }

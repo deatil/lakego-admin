@@ -109,6 +109,33 @@ func Test_XMLSignBytes(t *testing.T) {
     assertBool(objVerify.ToVerify(), "XMLSignBytes-Verify")
 }
 
+func Test_XMLSignWithSeparator(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    // 签名
+    objSign := NewDSA().
+        FromString(data).
+        FromXMLPrivateKey([]byte(prikeyXML)).
+        SignWithSeparator()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "SignWithSeparator-Sign")
+    assertNotEmpty(signed, "SignWithSeparator-Sign")
+
+    // 验证
+    objVerify := NewDSA().
+        FromBase64String(signed).
+        FromXMLPublicKey([]byte(pubkeyXML)).
+        VerifyWithSeparator([]byte(data))
+
+    assertError(objVerify.Error(), "SignWithSeparator-Verify")
+    assertBool(objVerify.ToVerify(), "SignWithSeparator-Verify")
+}
+
 var testPEMCiphers = []string{
     "DESCBC",
     "DESEDE3CBC",

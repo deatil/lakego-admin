@@ -4,24 +4,70 @@ import (
     "math/big"
 )
 
-func Reverse(d []byte) {
+// Reverse bytes
+func Reverse(b []byte) []byte {
+    d := make([]byte, len(b))
+    copy(d, b)
+
     for i, j := 0, len(d)-1; i < j; i, j = i+1, j-1 {
         d[i], d[j] = d[j], d[i]
     }
+
+    return d
 }
 
-func BytesToBigint(d []byte) *big.Int {
-    return big.NewInt(0).SetBytes(d)
+func bytesToBigint(b []byte) *big.Int {
+    return new(big.Int).SetBytes(b)
 }
 
-func BytesPadding(d []byte, size int) []byte {
-    return append(make([]byte, size-len(d)), d...)
+// Marshal converts a point on the curve into the uncompressed
+func Marshal(curve *Curve, x, y *big.Int) []byte {
+    panicIfNotOnCurve(curve, x, y)
+
+    byteLen := curve.PointSize()
+
+    ret := make([]byte, 2*byteLen)
+
+    y.FillBytes(ret[0      :  byteLen])
+    x.FillBytes(ret[byteLen:2*byteLen])
+
+    return Reverse(ret)
 }
 
-func pointSize(p *big.Int) int {
-    if p.BitLen() > 256 {
-        return 64
+// Unmarshal converts a point, serialized by Marshal, into an x, y pair. It is
+// an error if the point is not in uncompressed form, is not on the curve, or is
+// the point at infinity. On error, x = nil.
+func Unmarshal(curve *Curve, data []byte) (x, y *big.Int) {
+    byteLen := curve.PointSize()
+    if len(data) != 2*byteLen {
+        return nil, nil
     }
 
-    return 32
+    data = Reverse(data)
+
+    y = new(big.Int).SetBytes(data[:byteLen])
+    x = new(big.Int).SetBytes(data[byteLen:])
+
+    p := curve.Params().P
+    if x.Cmp(p) >= 0 || y.Cmp(p) >= 0 {
+        return nil, nil
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
+}
+
+func panicIfNotOnCurve(curve *Curve, x, y *big.Int) {
+    // (0, 0) is the point at infinity by convention. It's ok to operate on it,
+    // although IsOnCurve is documented to return false for it. See Issue 37294.
+    if x.Sign() == 0 && y.Sign() == 0 {
+        return
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        panic("cryptobin/gost: attempted operation on invalid point")
+    }
 }

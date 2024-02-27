@@ -6,9 +6,9 @@ import (
     "crypto/x509"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs1"
+    "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_dsa "github.com/deatil/go-cryptobin/dsa"
-    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -53,7 +53,7 @@ func (this DSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs1.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = pkcs1.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 
@@ -140,7 +140,7 @@ func (this DSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

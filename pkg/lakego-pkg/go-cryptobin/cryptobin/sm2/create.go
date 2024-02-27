@@ -5,25 +5,25 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    cryptobin_sm2 "github.com/deatil/go-cryptobin/gm/sm2"
-    cryptobin_pkcs1 "github.com/deatil/go-cryptobin/pkcs1"
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pkcs1"
+    "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
 type (
     // 配置
-    Opts       = cryptobin_pkcs8.Opts
+    Opts       = pkcs8.Opts
     // PBKDF2 配置
-    PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
+    PBKDF2Opts = pkcs8.PBKDF2Opts
     // Scrypt 配置
-    ScryptOpts = cryptobin_pkcs8.ScryptOpts
+    ScryptOpts = pkcs8.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetCipherFromName = cryptobin_pkcs8.GetCipherFromName
+    GetCipherFromName = pkcs8.GetCipherFromName
     // 获取 hash 类型
-    GetHashFromName   = cryptobin_pkcs8.GetHashFromName
+    GetHashFromName   = pkcs8.GetHashFromName
 )
 
 // 生成私钥 pem 数据，默认使用 PKCS8 编码
@@ -44,11 +44,11 @@ func (this SM2) CreatePrivateKeyWithPassword(password string, opts ...any) SM2 {
 // 生成私钥 pem 数据
 func (this SM2) CreatePKCS1PrivateKey() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    privateKeyBytes, err := cryptobin_sm2.MarshalSM2PrivateKey(this.privateKey)
+    privateKeyBytes, err := sm2.MarshalSM2PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -66,7 +66,7 @@ func (this SM2) CreatePKCS1PrivateKey() SM2 {
 // 生成私钥带密码 pem 数据
 func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -76,20 +76,20 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     }
 
     // 加密方式
-    cipher := cryptobin_pkcs1.GetPEMCipher(opt)
+    cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
         err := errors.New("PEMCipher not exists.")
         return this.AppendError(err)
     }
 
     // 生成私钥
-    privateKeyBytes, err := cryptobin_sm2.MarshalSM2PrivateKey(this.privateKey)
+    privateKeyBytes, err := sm2.MarshalSM2PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs1.EncryptPEMBlock(
+    privateBlock, err := pkcs1.EncryptPEMBlock(
         rand.Reader,
         "SM2 PRIVATE KEY",
         privateKeyBytes,
@@ -110,12 +110,12 @@ func (this SM2) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
 // 生成私钥 pem 数据
 func (this SM2) CreatePKCS8PrivateKey() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
     // 生成私钥
-    privateKeyBytes, err := cryptobin_sm2.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := sm2.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -134,26 +134,26 @@ func (this SM2) CreatePKCS8PrivateKey() SM2 {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
+    opt, err := pkcs8.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成私钥
-    x509PrivateKey, err := cryptobin_sm2.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := sm2.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8.EncryptPEMBlock(
+    privateBlock, err := pkcs8.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
-        x509PrivateKey,
+        privateKeyBytes,
         []byte(password),
         opt,
     )
@@ -171,11 +171,11 @@ func (this SM2) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据
 func (this SM2) CreatePublicKey() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := cryptobin_sm2.MarshalPublicKey(this.publicKey)
+    publicKeyBytes, err := sm2.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

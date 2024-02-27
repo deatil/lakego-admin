@@ -28,10 +28,10 @@ func (this ECDH) ToString() string {
 
 // 输出Base64
 func (this ECDH) ToBase64String() string {
-    return cryptobin_tool.NewEncoding().Base64Encode(this.secretData)
+    return cryptobin_tool.Base64Encode(this.secretData)
 }
 
 // 输出Hex
 func (this ECDH) ToHexString() string {
-    return cryptobin_tool.NewEncoding().HexEncode(this.secretData)
+    return cryptobin_tool.HexEncode(this.secretData)
 }

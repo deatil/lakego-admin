@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this SM2) Sign() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -35,7 +35,7 @@ func (this SM2) Sign() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) Verify(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -70,7 +70,7 @@ func (this SM2) VerifyASN1(data []byte) SM2 {
 // 兼容[招行]
 func (this SM2) SignBytes() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -96,7 +96,7 @@ func (this SM2) SignBytes() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyBytes(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 

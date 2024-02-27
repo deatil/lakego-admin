@@ -5,9 +5,8 @@ import (
     "crypto"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs8"
     "github.com/deatil/go-cryptobin/dh/curve25519"
-
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -52,7 +51,7 @@ func (this Curve25519) ParsePrivateKeyFromPEMWithPassword(key []byte, password s
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

@@ -262,7 +262,7 @@ func (this *Events) EventListeners(name any) []*EventListener {
 
 	newName := formatName(name)
 	if newName == "" {
-		return nil
+		return []*EventListener{}
 	}
 
 	return this.dispatcher.EventListeners(newName)

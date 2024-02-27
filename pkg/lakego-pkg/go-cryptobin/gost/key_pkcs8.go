@@ -1,8 +1,8 @@
 package gost
 
 import (
-    "fmt"
     "errors"
+    "math/big"
     "encoding/asn1"
     "crypto/x509/pkix"
 
@@ -10,47 +10,86 @@ import (
 )
 
 var (
-    oidPublicKeyGOST = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
+    // PublicKey oid
+    oidGOSTPublicKey         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
+    oidGost2012PublicKey256  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
+    oidGost2012PublicKey512  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
+
+    // Digest oid
+    oidGost94Digest = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 9}
+
+    // param digest oid
+    oidCryptoProDigestA  = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 30, 1}
+    oidGost2012Digest256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 2}
+    oidGost2012Digest512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 3}
 
     oidGostR3410_2001_TestParamSet         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 0}
-
-    oidTc26_gost_3410_12_256_paramSetA     = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 1}
     oidGostR3410_2001_CryptoPro_A_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 1}
     oidGostR3410_2001_CryptoPro_B_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 2}
     oidGostR3410_2001_CryptoPro_C_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 35, 3}
 
-    oidTc26_gost_3410_12_512_paramSetA = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 1}
-    oidTc26_gost_3410_12_512_paramSetB = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 2}
-    oidTc26_gost_3410_12_512_paramSetC = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 3}
-
     /* OID for EC DH */
     oidGostR3410_2001_CryptoPro_XchA_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 36, 0}
     oidGostR3410_2001_CryptoPro_XchB_ParamSet = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 36, 1}
+
+    oidTc26_gost_3410_12_256_paramSetA = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 1}
+    oidTc26_gost_3410_12_256_paramSetB = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 2}
+    oidTc26_gost_3410_12_256_paramSetC = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 3}
+    oidTc26_gost_3410_12_256_paramSetD = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 4}
+
+    oidTc26_gost_3410_12_512_paramSetTest = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 0}
+    oidTc26_gost_3410_12_512_paramSetA    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 1}
+    oidTc26_gost_3410_12_512_paramSetB    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 2}
+    oidTc26_gost_3410_12_512_paramSetC    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 3}
+
+    oidCryptoPro2012Sign256A = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 1}
+    oidCryptoPro2012Sign256B = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 2}
+    oidCryptoPro2012Sign256C = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 3}
+    oidCryptoPro2012Sign256D = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 4}
+
+    oidCryptoPro2012Sign512Test = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 0}
+    oidCryptoPro2012Sign512A    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 1}
+    oidCryptoPro2012Sign512B    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 2}
+    oidCryptoPro2012Sign512C    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 3}
 )
 
 func init() {
-    AddNamedCurve(CurveIdGostR34102001TestParamSet(), oidGostR3410_2001_TestParamSet)
-
-    AddNamedCurve(CurveIdtc26gost341012256paramSetA(), oidTc26_gost_3410_12_256_paramSetA)
+    AddNamedCurve(CurveIdGostR34102001TestParamSet(),       oidGostR3410_2001_TestParamSet)
     AddNamedCurve(CurveIdGostR34102001CryptoProAParamSet(), oidGostR3410_2001_CryptoPro_A_ParamSet)
     AddNamedCurve(CurveIdGostR34102001CryptoProBParamSet(), oidGostR3410_2001_CryptoPro_B_ParamSet)
     AddNamedCurve(CurveIdGostR34102001CryptoProCParamSet(), oidGostR3410_2001_CryptoPro_C_ParamSet)
 
-    AddNamedCurve(CurveIdtc26gost341012512paramSetA(), oidTc26_gost_3410_12_512_paramSetA)
-    AddNamedCurve(CurveIdtc26gost341012512paramSetB(), oidTc26_gost_3410_12_512_paramSetB)
-    AddNamedCurve(CurveIdtc26gost341012512paramSetC(), oidTc26_gost_3410_12_512_paramSetC)
-
     AddNamedCurve(CurveIdGostR34102001CryptoProXchAParamSet(), oidGostR3410_2001_CryptoPro_XchA_ParamSet)
     AddNamedCurve(CurveIdGostR34102001CryptoProXchBParamSet(), oidGostR3410_2001_CryptoPro_XchB_ParamSet)
+
+    AddNamedCurve(CurveIdtc26gost34102012256paramSetA(), oidCryptoPro2012Sign256A)
+    AddNamedCurve(CurveIdtc26gost34102012256paramSetB(), oidCryptoPro2012Sign256B)
+    AddNamedCurve(CurveIdtc26gost34102012256paramSetC(), oidCryptoPro2012Sign256C)
+    AddNamedCurve(CurveIdtc26gost34102012256paramSetD(), oidCryptoPro2012Sign256D)
+
+    AddNamedCurve(CurveIdtc26gost34102012512paramSetTest(), oidCryptoPro2012Sign512Test)
+    AddNamedCurve(CurveIdtc26gost34102012512paramSetA(),    oidCryptoPro2012Sign512A)
+    AddNamedCurve(CurveIdtc26gost34102012512paramSetB(),    oidCryptoPro2012Sign512B)
+    AddNamedCurve(CurveIdtc26gost34102012512paramSetC(),    oidCryptoPro2012Sign512C)
 }
 
-const gostPrivKeyVersion = 1
+const (
+    Gost2012ParamOption bool = true
+
+    gostPrivKeyVersion = 1
+)
 
 // pkcs8 data
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
+}
+
+// Key Algo
+type keyAlgoParam struct {
+    Curve  asn1.ObjectIdentifier
+    Digest asn1.ObjectIdentifier `asn1:"optional"`
 }
 
 // PublicKey data
@@ -66,40 +105,49 @@ type publicKeyInfo struct {
     PublicKey asn1.BitString
 }
 
-// Per RFC 5915 the NamedCurveOID is marked as ASN.1 OPTIONAL, however in
-// most cases it is not.
-type gostPrivateKey struct {
-    Version       int
-    PrivateKey    []byte
-    NamedCurveOID asn1.ObjectIdentifier `asn1:"optional,explicit,tag:0"`
-    PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
-}
-
 // Marshal PublicKey
 func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
-    var publicKeyBytes []byte
+    var publicKey, publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
     oid, ok := OidFromNamedCurve(pub.Curve)
     if !ok {
-        return nil, errors.New("gost: unsupported gost curve")
+        return nil, errors.New("cryptobin/gost: unsupported gost curve")
+    }
+
+    keyAlgo := keyAlgoParam{
+        Curve: oid,
+    }
+
+    digestOid, ok := HashOidFromNamedCurve(pub.Curve)
+    if ok {
+        keyAlgo.Digest = digestOid
     }
 
     var paramBytes []byte
-    paramBytes, err = asn1.Marshal(oid)
+    paramBytes, err = asn1.Marshal(keyAlgo)
     if err != nil {
         return nil, err
     }
 
-    publicKeyAlgorithm.Algorithm = oidPublicKeyGOST
+    publicKeyAlgorithm.Algorithm = PublicKeyOidFromNamedCurve(pub.Curve)
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     if !pub.Curve.IsOnCurve(pub.X, pub.Y) {
-        return nil, errors.New("gost: invalid gost curve public key")
+        return nil, errors.New("cryptobin/gost: invalid gost curve public key")
     }
 
-    publicKeyBytes = ToPublicKey(pub)
+    publicKey = Marshal(pub.Curve, pub.X, pub.Y)
+
+    if Gost2012ParamOption {
+        publicKeyBytes, err = asn1.Marshal(publicKey)
+        if err != nil {
+            return nil, err
+        }
+    } else {
+        publicKeyBytes = publicKey
+    }
 
     pkix := pkixPublicKey{
         Algo: publicKeyAlgorithm,
@@ -113,13 +161,13 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 }
 
 // Parse PublicKey
-func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
+func ParsePublicKey(publicKey []byte) (pub *PublicKey, err error) {
     var pki publicKeyInfo
-    rest, err := asn1.Unmarshal(derBytes, &pki)
+    rest, err := asn1.Unmarshal(publicKey, &pki)
     if err != nil {
         return
     } else if len(rest) != 0 {
-        err = errors.New("gost: trailing data after ASN.1 of public-key")
+        err = errors.New("cryptobin/gost: trailing data after ASN.1 of public-key")
         return
     }
 
@@ -128,151 +176,206 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         return
     }
 
-    // parse
-    keyData := &pki
+    algo := pki.Algorithm.Algorithm
+    params := pki.Algorithm.Parameters
+    der := cryptobyte.String(pki.PublicKey.RightAlign())
 
-    oid := keyData.Algorithm.Algorithm
-    params := keyData.Algorithm.Parameters
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
-
-    algoEq := oid.Equal(oidPublicKeyGOST)
-    if !algoEq {
-        err = errors.New("gost: unknown public key algorithm")
+    if !algo.Equal(oidGOSTPublicKey) &&
+        !algo.Equal(oidGost2012PublicKey256) &&
+        !algo.Equal(oidGost2012PublicKey512) {
+        err = errors.New("cryptobin/gost: unknown public key algorithm")
         return
     }
 
-    paramsDer := cryptobyte.String(params.FullBytes)
-    namedCurveOID := new(asn1.ObjectIdentifier)
-    if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("gost: invalid ECDH parameters")
+    var param keyAlgoParam
+    if _, err := asn1.Unmarshal(params.FullBytes, &param); err != nil {
+        err = errors.New("cryptobin/gost: unknown public key algorithm curve")
+        return nil, err
     }
 
-    namedCurve := NamedCurveFromOid(*namedCurveOID)
+    namedCurve := NamedCurveFromOid(param.Curve)
     if namedCurve == nil {
-        err = errors.New("gost: unsupported gost curve")
+        err = errors.New("cryptobin/gost: unsupported gost curve")
         return
     }
 
-    pub, err = NewPublicKey(namedCurve, der)
-    if err != nil {
-        err = errors.New("gost: failed to unmarshal gost curve point")
-        return
+    x, y := Unmarshal(namedCurve, der)
+    if x == nil || y == nil {
+        var derBytes []byte
+        rest, err = asn1.Unmarshal(der, &derBytes)
+        if err != nil {
+            return
+        } else if len(rest) != 0 {
+            err = errors.New("cryptobin/gost: trailing data after ASN.1 of public-key der")
+            return
+        }
+
+        x, y = Unmarshal(namedCurve, derBytes)
+        if x == nil || y == nil {
+            err = errors.New("cryptobin/gost: failed to unmarshal gost curve point")
+            return
+        }
+    }
+
+    pub = &PublicKey{
+        Curve: namedCurve,
+        X:     x,
+        Y:     y,
     }
 
     return
 }
 
-// ====================
-
 // Marshal PrivateKey
-func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
-    var privKey pkcs8
-
-    oid, ok := OidFromNamedCurve(key.Curve)
+func MarshalPrivateKey(priv *PrivateKey) ([]byte, error) {
+    oid, ok := OidFromNamedCurve(priv.Curve)
     if !ok {
-        return nil, errors.New("gost: unsupported gost curve")
+        return nil, errors.New("cryptobin/gost: unsupported gost curve")
+    }
+
+    keyAlgo := keyAlgoParam{
+        Curve: oid,
+    }
+
+    digestOid, ok := HashOidFromNamedCurve(priv.Curve)
+    if ok {
+        keyAlgo.Digest = digestOid
     }
 
     // Marshal oid
-    oidBytes, err := asn1.Marshal(oid)
+    oidBytes, err := asn1.Marshal(keyAlgo)
     if err != nil {
-        return nil, errors.New("gost: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("cryptobin/gost: failed to marshal algo param: " + err.Error())
     }
 
+    var privKey pkcs8
     privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  oidPublicKeyGOST,
+        Algorithm:  PublicKeyOidFromNamedCurve(priv.Curve),
         Parameters: asn1.RawValue{
             FullBytes: oidBytes,
         },
     }
 
-    if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("invalid elliptic key public key")
-    }
-
-    privKey.PrivateKey, err = marshalGostPrivateKeyWithOID(key, oid)
-
+    privKey.PrivateKey, err = marshalGostPrivateKey(priv)
     if err != nil {
-        return nil, errors.New("gost: failed to marshal EC private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("cryptobin/gost: failed to marshal private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
 }
 
 // Parse PrivateKey
-func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
+func ParsePrivateKey(privateKey []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error
 
-    _, err = asn1.Unmarshal(derBytes, &privKey)
+    _, err = asn1.Unmarshal(privateKey, &privKey)
     if err != nil {
         return nil, err
     }
 
-    algoEq := privKey.Algo.Algorithm.Equal(oidPublicKeyGOST)
-    if !algoEq {
-        err = errors.New("gost: unknown private key algorithm")
+    algo := privKey.Algo.Algorithm
+    if !algo.Equal(oidGOSTPublicKey) &&
+        !algo.Equal(oidGost2012PublicKey256) &&
+        !algo.Equal(oidGost2012PublicKey512) {
+        err = errors.New("cryptobin/gost: unknown private key algorithm")
         return nil, err
     }
 
     bytes := privKey.Algo.Parameters.FullBytes
 
-    namedCurveOID := new(asn1.ObjectIdentifier)
-    if _, err := asn1.Unmarshal(bytes, namedCurveOID); err != nil {
-        namedCurveOID = nil
+    var param keyAlgoParam
+    if _, err := asn1.Unmarshal(bytes, &param); err != nil {
+        err = errors.New("cryptobin/gost: unknown private key algorithm curve")
+        return nil, err
     }
 
-    key, err := parseGostPrivateKey(namedCurveOID, privKey.PrivateKey)
+    key, err := parseGostPrivateKey(param.Curve, privKey.PrivateKey)
     if err != nil {
-        return nil, errors.New("gost: failed to parse EC private key embedded in PKCS#8: " + err.Error())
+        return nil, errors.New("cryptobin/gost: failed to parse private key embedded in PKCS#8: " + err.Error())
     }
 
     return key, nil
 }
 
-func marshalGostPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
+func marshalGostPrivateKey(key *PrivateKey) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("invalid gost key public key")
+        return nil, errors.New("invalid gost public key")
     }
 
-    privateKey := ToPrivateKey(key)
-    publicKey  := ToPublicKey(&key.PublicKey)
+    if Gost2012ParamOption {
+        var b cryptobyte.Builder
+        b.AddASN1BigInt(key.D)
+        return b.Bytes()
+    }
 
-    return asn1.Marshal(gostPrivateKey{
-        Version:       gostPrivKeyVersion,
-        PrivateKey:    privateKey,
-        NamedCurveOID: oid,
-        PublicKey:     asn1.BitString{
-            Bytes: publicKey,
-        },
-    })
+    pointSize := key.Curve.PointSize()
+    d := key.D.FillBytes(make([]byte, pointSize))
+
+    return Reverse(d), nil
 }
 
-func parseGostPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
-    var privKey gostPrivateKey
-    if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-        return nil, errors.New("gost: failed to parse EC private key: " + err.Error())
-    }
+func parseGostPrivateKey(namedCurveOID asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
+    var privKey big.Int
+    var private []byte
 
-    if privKey.Version != gostPrivKeyVersion {
-        return nil, fmt.Errorf("gost: unknown EC private key version %d", privKey.Version)
-    }
-
-    var curve *Curve
-    if namedCurveOID != nil {
-        curve = NamedCurveFromOid(*namedCurveOID)
+    input := cryptobyte.String(der)
+    if !input.ReadASN1Integer(&privKey) {
+        private = make([]byte, len(der))
+        copy(private, Reverse(der))
     } else {
-        curve = NamedCurveFromOid(privKey.NamedCurveOID)
+        private = privKey.Bytes()
     }
 
+    curve := NamedCurveFromOid(namedCurveOID)
     if curve == nil {
-        return nil, errors.New("gost: unknown gost curve")
+        return nil, errors.New("unknown gost curve")
     }
 
-    priv, err := NewPrivateKey(curve, privKey.PrivateKey)
-    if err != nil {
-        return nil, err
-    }
+    return newPrivateKey(curve, private)
+}
 
-    return priv, nil
+// get PublicKey oid
+func PublicKeyOidFromNamedCurve(curve *Curve) asn1.ObjectIdentifier {
+    switch {
+        case curve.Equal(CurveIdGostR34102001TestParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProAParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProBParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProCParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProXchAParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProXchBParamSet()),
+            curve.Equal(CurveIdtc26gost34102012256paramSetA()),
+            curve.Equal(CurveIdtc26gost34102012256paramSetB()),
+            curve.Equal(CurveIdtc26gost34102012256paramSetC()),
+            curve.Equal(CurveIdtc26gost34102012256paramSetD()):
+            return oidGost2012PublicKey256
+        case curve.Equal(CurveIdtc26gost34102012512paramSetTest()),
+            curve.Equal(CurveIdtc26gost34102012512paramSetA()),
+            curve.Equal(CurveIdtc26gost34102012512paramSetB()),
+            curve.Equal(CurveIdtc26gost34102012512paramSetC()):
+            return oidGost2012PublicKey512
+        default:
+            return oidGOSTPublicKey
+    }
+}
+
+// get Hash oid
+func HashOidFromNamedCurve(curve *Curve) (asn1.ObjectIdentifier, bool) {
+    switch {
+        case curve.Equal(CurveIdGostR34102001TestParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProAParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProBParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProCParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProXchAParamSet()),
+            curve.Equal(CurveIdGostR34102001CryptoProXchBParamSet()):
+            return oidGost2012Digest256, true
+        case curve.Equal(CurveIdtc26gost34102012512paramSetTest()),
+            curve.Equal(CurveIdtc26gost34102012512paramSetA()),
+            curve.Equal(CurveIdtc26gost34102012512paramSetB()):
+            return oidGost2012Digest512, true
+        case curve.Equal(CurveGostR34102001ParamSetcc()):
+            return oidCryptoProDigestA, true
+        default:
+            return asn1.ObjectIdentifier{}, false
+    }
 }

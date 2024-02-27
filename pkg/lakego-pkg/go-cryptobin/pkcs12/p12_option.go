@@ -88,9 +88,9 @@ var LegacyRC2Opts = Opts{
     KeyCipher:  pbes1.SHA1And3DES,
     CertCipher: CipherSHA1AndRC2_40,
     MacKDFOpts: MacOpts{
-        SaltSize: 8,
+        SaltSize:       8,
         IterationCount: 1,
-        HMACHash: SHA1,
+        HMACHash:       SHA1,
     },
 }
 
@@ -99,9 +99,9 @@ var LegacyDESOpts = Opts{
     KeyCipher:  pbes1.SHA1And3DES,
     CertCipher: CipherSHA1And3DES,
     MacKDFOpts: MacOpts{
-        SaltSize: 8,
+        SaltSize:       8,
         IterationCount: 1,
-        HMACHash: SHA1,
+        HMACHash:       SHA1,
     },
 }
 
@@ -125,9 +125,30 @@ var Modern2023Opts = Opts{
         IterationCount: 2048,
     },
     MacKDFOpts: MacOpts{
-        SaltSize: 16,
+        SaltSize:       16,
         IterationCount: 2048,
-        HMACHash: SHA256,
+        HMACHash:       SHA256,
+    },
+}
+
+// LegacyGost
+var LegacyGostOpts = Opts{
+    KeyCipher:  pbes2.GostCipher,
+    KeyKDFOpts: PBKDF2Opts{
+        SaltSize:       32,
+        IterationCount: 2000,
+        HMACHash:       GetPbes2HashFromName("GOST34112012512"),
+    },
+    CertCipher:  pbes2.GostCipher,
+    CertKDFOpts: PBKDF2Opts{
+        SaltSize:       32,
+        IterationCount: 2000,
+        HMACHash:       GetPbes2HashFromName("GOST34112012512"),
+    },
+    MacKDFOpts: MacOpts{
+        SaltSize:       32,
+        IterationCount: 2000,
+        HMACHash:       GOST34112012512,
     },
 }
 

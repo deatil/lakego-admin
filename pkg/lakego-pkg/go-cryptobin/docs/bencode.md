@@ -1,4 +1,4 @@
-### Torrent 文件解析使用说明
+### Torrent 文件解析使用文档
 bencode 格式为 `Bt` 种子 `Torrent` 的自有格式
 
 

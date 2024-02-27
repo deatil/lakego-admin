@@ -8,13 +8,13 @@ import (
     "encoding/pem"
     "encoding/asn1"
 
-    gmsm_x509 "github.com/deatil/go-cryptobin/gm/x509"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
 )
 
 func (this *PKCS12) formatCert(certsData []byte) (certs []*x509.Certificate, err error) {
     parsedCerts, err := x509.ParseCertificates(certsData)
     if err != nil {
-        gmsmCerts, err := gmsm_x509.ParseCertificates(certsData)
+        gmsmCerts, err := cryptobin_x509.ParseCertificates(certsData)
         if err != nil {
             err = errors.New("pkcs12: x509 error: " + err.Error())
             return nil, err

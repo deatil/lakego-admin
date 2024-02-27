@@ -12,7 +12,7 @@ func (this ED448) MakePublicKey() ED448 {
     this.publicKey = ed448.PublicKey{}
 
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 

@@ -10,6 +10,7 @@ import (
     "github.com/deatil/go-cryptobin/cipher/eax"
     "github.com/deatil/go-cryptobin/cipher/ccm"
     "github.com/deatil/go-cryptobin/cipher/hctr"
+    "github.com/deatil/go-cryptobin/cipher/mgm"
     cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
 )
 
@@ -745,5 +746,55 @@ func (this ModeHCTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 func init() {
     UseMode.Add(HCTR, func() IMode {
         return ModeHCTR{}
+    })
+}
+
+// ===================
+
+type ModeMGM struct {}
+
+// 加密
+func (this ModeMGM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := mgm.NewMGM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeMGM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    nonceBytes := opt.Config().GetBytes("nonce")
+    if nonceBytes == nil {
+        err := fmt.Errorf("nonce is empty.")
+        return nil, err
+    }
+
+    aead, err := mgm.NewMGM(block)
+    if err != nil {
+        return nil, err
+    }
+
+    additionalBytes := opt.Config().GetBytes("additional")
+
+    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+
+    return dst, err
+}
+
+func init() {
+    UseMode.Add(MGM, func() IMode {
+        return ModeMGM{}
     })
 }

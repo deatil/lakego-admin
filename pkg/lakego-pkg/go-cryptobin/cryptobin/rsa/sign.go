@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this RSA) Sign() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -28,7 +28,7 @@ func (this RSA) Sign() RSA {
 // 使用原始数据[data]对比签名后数据
 func (this RSA) Verify(data []byte) RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -50,7 +50,7 @@ func (this RSA) Verify(data []byte) RSA {
 // 签名后数据
 func (this RSA) dataHash(data []byte) ([]byte, error) {
     if this.signHash == crypto.Hash(0) {
-        return nil, errors.New("crypto.Hash not set.")
+        return nil, errors.New("signHash empty.")
     }
 
     h := this.signHash.New()

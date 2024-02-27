@@ -6,23 +6,23 @@ import (
     "crypto/x509"
     "encoding/pem"
 
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 type (
     // 配置
-    Opts       = cryptobin_pkcs8.Opts
+    Opts       = pkcs8.Opts
     // PBKDF2 配置
-    PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
+    PBKDF2Opts = pkcs8.PBKDF2Opts
     // Scrypt 配置
-    ScryptOpts = cryptobin_pkcs8.ScryptOpts
+    ScryptOpts = pkcs8.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetCipherFromName = cryptobin_pkcs8.GetCipherFromName
+    GetCipherFromName = pkcs8.GetCipherFromName
     // 获取 hash 类型
-    GetHashFromName   = cryptobin_pkcs8.GetHashFromName
+    GetHashFromName   = pkcs8.GetHashFromName
 )
 
 // 生成私钥 pem 数据
@@ -31,18 +31,18 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this EdDSA) CreatePrivateKey() EdDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
         Type:  "PRIVATE KEY",
-        Bytes: x509PrivateKey,
+        Bytes: privateKeyBytes,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -54,26 +54,26 @@ func (this EdDSA) CreatePrivateKey() EdDSA {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
+    opt, err := pkcs8.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成私钥
-    x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8.EncryptPEMBlock(
+    privateBlock, err := pkcs8.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
-        x509PrivateKey,
+        privateKeyBytes,
         []byte(password),
         opt,
     )
@@ -89,18 +89,18 @@ func (this EdDSA) CreatePrivateKeyWithPassword(password string, opts ...any) EdD
 // 生成公钥 pem 数据
 func (this EdDSA) CreatePublicKey() EdDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
-    x509PublicKey, err := x509.MarshalPKIXPublicKey(this.publicKey)
+    publicKeyBytes, err := x509.MarshalPKIXPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     publicBlock := &pem.Block{
         Type:  "PUBLIC KEY",
-        Bytes: x509PublicKey,
+        Bytes: publicKeyBytes,
     }
 
     this.keyData = pem.EncodeToMemory(publicBlock)

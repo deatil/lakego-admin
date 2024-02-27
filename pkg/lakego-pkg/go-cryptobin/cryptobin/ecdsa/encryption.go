@@ -11,7 +11,7 @@ import (
 // ECDSA 核心为对称加密
 func (this ECDSA) Encrypt() ECDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -31,7 +31,7 @@ func (this ECDSA) Encrypt() ECDSA {
 // ECDSA 核心为对称加密
 func (this ECDSA) Decrypt() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 

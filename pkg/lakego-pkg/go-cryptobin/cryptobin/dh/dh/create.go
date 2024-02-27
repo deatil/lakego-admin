@@ -5,24 +5,24 @@ import (
     "crypto/rand"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs8"
     "github.com/deatil/go-cryptobin/dh/dh"
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 type (
     // 配置
-    Opts       = cryptobin_pkcs8.Opts
+    Opts       = pkcs8.Opts
     // PBKDF2 配置
-    PBKDF2Opts = cryptobin_pkcs8.PBKDF2Opts
+    PBKDF2Opts = pkcs8.PBKDF2Opts
     // Scrypt 配置
-    ScryptOpts = cryptobin_pkcs8.ScryptOpts
+    ScryptOpts = pkcs8.ScryptOpts
 )
 
 var (
     // 获取 Cipher 类型
-    GetCipherFromName = cryptobin_pkcs8.GetCipherFromName
+    GetCipherFromName = pkcs8.GetCipherFromName
     // 获取 hash 类型
-    GetHashFromName   = cryptobin_pkcs8.GetHashFromName
+    GetHashFromName   = pkcs8.GetHashFromName
 )
 
 // 生成私钥 pem 数据
@@ -31,18 +31,18 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this DH) CreatePrivateKey() DH {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    privateKey, err := dh.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := dh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
         Type:  "PRIVATE KEY",
-        Bytes: privateKey,
+        Bytes: privateKeyBytes,
     }
 
     this.keyData = pem.EncodeToMemory(privateBlock)
@@ -54,26 +54,26 @@ func (this DH) CreatePrivateKey() DH {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this DH) CreatePrivateKeyWithPassword(password string, opts ...any) DH {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    opt, err := cryptobin_pkcs8.ParseOpts(opts...)
+    opt, err := pkcs8.ParseOpts(opts...)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成私钥
-    privateKey, err := dh.MarshalPrivateKey(this.privateKey)
+    privateKeyBytes, err := dh.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     // 生成加密数据
-    privateBlock, err := cryptobin_pkcs8.EncryptPEMBlock(
+    privateBlock, err := pkcs8.EncryptPEMBlock(
         rand.Reader,
         "ENCRYPTED PRIVATE KEY",
-        privateKey,
+        privateKeyBytes,
         []byte(password),
         opt,
     )
@@ -89,7 +89,7 @@ func (this DH) CreatePrivateKeyWithPassword(password string, opts ...any) DH {
 // 生成公钥 pem 数据
 func (this DH) CreatePublicKey() DH {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -111,12 +111,12 @@ func (this DH) CreatePublicKey() DH {
 // 根据公钥和私钥生成密钥
 func (this DH) CreateSecretKey() DH {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 

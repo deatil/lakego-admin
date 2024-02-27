@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this ED448) Sign() ED448 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -27,7 +27,7 @@ func (this ED448) Sign() ED448 {
 // 公钥验证
 func (this ED448) Verify(data []byte) ED448 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 

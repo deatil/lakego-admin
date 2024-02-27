@@ -71,6 +71,8 @@ var (
     SM4CFB8 = pbes2.SM4CFB8
     SM4GCM  = pbes2.SM4GCM
     SM4CCM  = pbes2.SM4CCM
+
+    GostCipher = pbes2.GostCipher
 )
 
 type (

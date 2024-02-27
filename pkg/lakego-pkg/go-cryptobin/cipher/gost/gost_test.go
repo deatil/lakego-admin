@@ -10,19 +10,19 @@ import (
 )
 
 func Test_Gosts(t *testing.T) {
-    test_Gost(t, DESDerivedSbox, "DESDerivedSbox")
-    test_Gost(t, TestSbox, "TestSbox")
-    test_Gost(t, TestParamSetSbox, "CryptoProSbox")
-    test_Gost(t, TestBankSbox, "CryptoProSbox")
-    test_Gost(t, TC26Sbox, "TC26Sbox")
+    test_Gost(t, SboxDESDerivedParamSet, "SboxDESDerivedParamSet")
+    test_Gost(t, SboxRFC4357TestParamSet, "SboxRFC4357TestParamSet")
+    test_Gost(t, SboxGost2814789TestParamSet, "SboxGost2814789TestParamSet")
+    test_Gost(t, SboxCentralBankTestParamSet, "SboxCentralBankTestParamSet")
+    test_Gost(t, SboxTC26gost28147paramZ, "SboxTC26gost28147paramZ")
 
-    test_Gost(t, CryptoProSbox, "CryptoProSbox")
-    test_Gost(t, CryptoProASbox, "CryptoProASbox")
-    test_Gost(t, CryptoProBSbox, "CryptoProBSbox")
-    test_Gost(t, CryptoProCSbox, "CryptoProCSbox")
-    test_Gost(t, CryptoProDSbox, "CryptoProDSbox")
+    test_Gost(t, SboxGostR341194CryptoProParamSet, "SboxGostR341194CryptoProParamSet")
+    test_Gost(t, SboxGost2814789CryptoProAParamSet, "SboxGost2814789CryptoProAParamSet")
+    test_Gost(t, SboxGost2814789CryptoProBParamSet, "SboxGost2814789CryptoProBParamSet")
+    test_Gost(t, SboxGost2814789CryptoProCParamSet, "SboxGost2814789CryptoProCParamSet")
+    test_Gost(t, SboxGost2814789CryptoProDParamSet, "SboxGost2814789CryptoProDParamSet")
 
-    test_Gost(t, EACSbox, "EACSbox")
+    test_Gost(t, SboxEACParamSet, "SboxEACParamSet")
 }
 
 func test_Gost(t *testing.T, sbox [][]byte, name string) {
@@ -72,7 +72,7 @@ func Test_Check(t *testing.T) {
     cipherBytes, _ := hex.DecodeString(ciphertext)
     plainBytes, _ := hex.DecodeString(plaintext)
 
-    cipher, err := NewCipher(key[:], TestBankSbox)
+    cipher, err := NewCipher(key[:], SboxCentralBankTestParamSet)
     if err != nil {
         t.Fatal(err.Error())
     }
@@ -86,7 +86,7 @@ func Test_Check(t *testing.T) {
 
     // ==========
 
-    cipher2, err := NewCipher(key[:], TestBankSbox)
+    cipher2, err := NewCipher(key[:], SboxCentralBankTestParamSet)
     if err != nil {
         t.Fatal(err.Error())
     }
@@ -108,7 +108,7 @@ func Test_Cryptomanager(t *testing.T) {
         0x1B, 0x40, 0x2A, 0x1B, 0xAA, 0x03, 0x0D, 0x1B,
     }
 
-    c, err := NewCipher(key, TestSbox)
+    c, err := NewCipher(key, SboxRFC4357TestParamSet)
     if err != nil {
         t.Fatal(err.Error())
     }
@@ -123,7 +123,7 @@ func Test_Cryptomanager(t *testing.T) {
 
 // Crypto++ 5.6.2 test vectors
 func Test_CryptoPPVectors(t *testing.T) {
-    sbox := AppliedCryptographySbox
+    sbox := SboxAppliedCryptographyParamSet
     tmp := make([]byte, BlockSize)
     var key []byte
     var pt []byte

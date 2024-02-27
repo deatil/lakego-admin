@@ -12,7 +12,7 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs12"
     "github.com/deatil/go-cryptobin/gm/sm2"
-    cryptobin_x509 "github.com/deatil/go-cryptobin/gm/x509"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
 )
 
 // 证书请求
@@ -174,44 +174,44 @@ func (this CA) CreatePrivateKey() CA {
 
     switch privateKey := this.privateKey.(type) {
         case *rsa.PrivateKey:
-            x509PrivateKey := x509.MarshalPKCS1PrivateKey(privateKey)
+            privateKeyBytes := x509.MarshalPKCS1PrivateKey(privateKey)
 
             privateBlock = &pem.Block{
                 Type: "RSA PRIVATE KEY",
-                Bytes: x509PrivateKey,
+                Bytes: privateKeyBytes,
             }
 
         case *ecdsa.PrivateKey:
-            x509PrivateKey, err := x509.MarshalECPrivateKey(privateKey)
+            privateKeyBytes, err := x509.MarshalECPrivateKey(privateKey)
             if err != nil {
                 return this.AppendError(err)
             }
 
             privateBlock = &pem.Block{
                 Type: "EC PRIVATE KEY",
-                Bytes: x509PrivateKey,
+                Bytes: privateKeyBytes,
             }
 
         case ed25519.PrivateKey:
-            x509PrivateKey, err := x509.MarshalPKCS8PrivateKey(privateKey)
+            privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(privateKey)
             if err != nil {
                 return this.AppendError(err)
             }
 
             privateBlock = &pem.Block{
                 Type: "PRIVATE KEY",
-                Bytes: x509PrivateKey,
+                Bytes: privateKeyBytes,
             }
 
         case *sm2.PrivateKey:
-            x509PrivateKey, err := sm2.MarshalPrivateKey(privateKey)
+            privateKeyBytes, err := sm2.MarshalPrivateKey(privateKey)
             if err != nil {
                 return this.AppendError(err)
             }
 
             privateBlock = &pem.Block{
                 Type: "PRIVATE KEY",
-                Bytes: x509PrivateKey,
+                Bytes: privateKeyBytes,
             }
 
         default:

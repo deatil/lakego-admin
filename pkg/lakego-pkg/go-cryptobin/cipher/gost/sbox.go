@@ -1,7 +1,7 @@
 package gost
 
 // S-box derived from the DES S-box, used in Bruce Schneier's Applied Cryptography
-var DESDerivedSbox = [][]byte{
+var SboxDESDerivedParamSet = [][]byte{
     {14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
     {15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10},
     {10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8},
@@ -13,8 +13,7 @@ var DESDerivedSbox = [][]byte{
 }
 
 // Test parameters s-box, defined in RFC 4357
-// GostR341194CryptoProParamSet
-var TestSbox = [][]byte{
+var SboxRFC4357TestParamSet = [][]byte{
     {4, 10, 9, 2, 13, 8, 0, 14, 6, 11, 1, 12, 7, 15, 5, 3},
     {14, 11, 4, 12, 6, 13, 15, 10, 2, 3, 8, 1, 0, 7, 5, 9},
     {5, 8, 1, 13, 10, 3, 4, 2, 14, 15, 12, 7, 6, 0, 9, 11},
@@ -25,10 +24,11 @@ var TestSbox = [][]byte{
     {1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8, 12},
 }
 
-var AppliedCryptographySbox = TestSbox
+// SboxAppliedCryptographyParamSet
+var SboxAppliedCryptographyParamSet = SboxRFC4357TestParamSet
 
 // Gost2814789TestParamSet
-var TestParamSetSbox = [][]byte{
+var SboxGost2814789TestParamSet = [][]byte{
     {4, 2, 15, 5, 9, 1, 0, 8, 14, 3, 11, 12, 13, 7, 10, 6},
     {12, 9, 15, 14, 8, 1, 3, 10, 2, 7, 4, 13, 6, 0, 11, 5},
     {13, 8, 14, 12, 7, 3, 9, 10, 1, 5, 2, 4, 6, 15, 0, 11},
@@ -40,7 +40,7 @@ var TestParamSetSbox = [][]byte{
 }
 
 // These were used in an application for the Central Bank of the Russian Federation
-var TestBankSbox = [][]byte{
+var SboxCentralBankTestParamSet = [][]byte{
     {1, 15, 13, 0, 5, 7, 10, 4, 9, 2, 3, 14, 6, 11, 8,  2},
     {13, 11, 4, 1, 3, 15, 5, 9, 0, 10, 14, 7, 6, 8, 2, 12},
     {4, 11, 10, 0, 7, 2, 1, 13, 3, 6, 8, 5, 9, 12, 15, 14},
@@ -53,7 +53,7 @@ var TestBankSbox = [][]byte{
 
 // S-box specified by the TC26, defined in RFC 8891
 // tc26gost28147paramZ
-var TC26Sbox = [][]byte{
+var SboxTC26gost28147paramZ = [][]byte{
     {12, 4, 6, 2, 10, 5, 11, 9, 14, 8, 13, 7, 0, 3, 15, 1},
     {6, 8, 2, 3, 9, 10, 5, 12, 1, 14, 4, 7, 11, 13, 0, 15},
     {11, 3, 5, 8, 2, 15, 10, 13, 14, 1, 7, 4, 12, 9, 6, 0},
@@ -66,7 +66,7 @@ var TC26Sbox = [][]byte{
 
 // S-box specified by the CryptoPro company, defined in RFC 4357
 // GostR341194CryptoProParamSet
-var CryptoProSbox = [][]byte{
+var SboxGostR341194CryptoProParamSet = [][]byte{
     {10, 4, 5, 6, 8, 1, 3, 7, 13, 12, 14, 0, 9, 2, 11, 15},
     {5, 15, 4, 0, 2, 13, 11, 9, 1, 7, 6, 3, 12, 14, 10, 8},
     {7, 15, 12, 14, 9, 4, 1, 0, 3, 11, 5, 2, 6, 10, 8, 13},
@@ -78,7 +78,7 @@ var CryptoProSbox = [][]byte{
 }
 
 // Gost2814789CryptoProAParamSet
-var CryptoProASbox = [][]byte{
+var SboxGost2814789CryptoProAParamSet = [][]byte{
     {9, 6, 3, 2, 8, 11, 1, 7, 10, 4, 14, 15, 12, 0, 13, 5},
     {3, 7, 14, 9, 8, 10, 15, 0, 5, 2, 6, 12, 11, 4, 13, 1},
     {14, 4, 6, 2, 11, 3, 13, 8, 12, 15, 5, 10, 0, 7, 1, 9},
@@ -90,7 +90,7 @@ var CryptoProASbox = [][]byte{
 }
 
 // Gost2814789CryptoProBParamSet
-var CryptoProBSbox = [][]byte{
+var SboxGost2814789CryptoProBParamSet = [][]byte{
     {8, 4, 11, 1, 3, 5, 0, 9, 2, 14, 10, 12, 13, 6, 7, 15},
     {0, 1, 2, 10, 4, 13, 5, 12, 9, 7, 3, 15, 11, 8, 6, 14},
     {14, 12, 0, 10, 9, 2, 13, 11, 7, 5, 8, 15, 3, 6, 1, 4},
@@ -102,7 +102,7 @@ var CryptoProBSbox = [][]byte{
 }
 
 // Gost2814789CryptoProCParamSet
-var CryptoProCSbox = [][]byte{
+var SboxGost2814789CryptoProCParamSet = [][]byte{
     {1, 11, 12, 2, 9, 13, 0, 15, 4, 5, 8, 14, 10, 7, 6, 3},
     {0, 1, 7, 13, 11, 4, 5, 2, 8, 14, 15, 12, 9, 10, 6, 3},
     {8, 2, 5, 0, 4, 9, 15, 10, 3, 7, 12, 13, 6, 14, 1, 11},
@@ -114,7 +114,7 @@ var CryptoProCSbox = [][]byte{
 }
 
 // Gost2814789CryptoProDParamSet
-var CryptoProDSbox = [][]byte{
+var SboxGost2814789CryptoProDParamSet = [][]byte{
     {15, 12, 2, 10, 6, 4, 5, 0, 7, 9, 14, 13, 1, 11, 8, 3},
     {11, 6, 3, 4, 12, 15, 14, 2, 7, 13, 8, 0, 5, 10, 9, 1},
     {1, 12, 11, 0, 15, 14, 6, 5, 10, 13, 4, 8, 9, 3, 7, 2},
@@ -126,7 +126,7 @@ var CryptoProDSbox = [][]byte{
 }
 
 // EACParamSet
-var EACSbox = [][]byte{
+var SboxEACParamSet = [][]byte{
     {11, 4, 8, 10, 9, 7, 0, 3, 1, 6, 2, 15, 14, 5, 12, 13},
     {1, 7, 14, 9, 11, 3, 15, 12, 0, 5, 4, 6, 13, 10, 8, 2},
     {7, 3, 1, 9, 2, 4, 13, 15, 8, 10, 12, 6, 5, 0, 11, 14},

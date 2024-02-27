@@ -911,3 +911,122 @@ func Test_P12_Attrs_Names(t *testing.T) {
     certOldNames := []string{"localKeyId"}
     assertEqual(certnames, certOldNames, "P12_Attrs_Names-certNames-Equal")
 }
+
+var testGostP12Pem = `-----BEGIN CERTIFICATE-----
+MIIFqgIBAzCCBSsGCSqGSIb3DQEHAaCCBRwEggUYMIIFFDCCASIGCSqGSIb3DQEH
+AaCCARMEggEPMIIBCzCCAQcGCyqGSIb3DQEMCgECoIHgMIHdMHEGCSqGSIb3DQEF
+DTBkMEEGCSqGSIb3DQEFDDA0BCD5qZr0TTIsBvdgUoq/zFwOzdyJohj6/4Wiyccg
+j9AK/QICB9AwDAYIKoUDBwEBBAIFADAfBgYqhQMCAhUwFQQI3Ip/Vp0IsyIGCSqF
+AwcBAgUBAQRoSfLhgx9s/zn+BjnhT0ror07vS55Ys5hgvVpWDx4mXGWWyez/2sMc
+aFgSr4H4UTGGwoMynGLpF1IOVo+bGJ0ePqHB+gS5OL9oV+PUmZ/ELrRENKlCDqfY
+WvpSystX29CvCFrnTnDsbBYxFTATBgkqhkiG9w0BCRUxBgQEAQAAADCCA+oGCSqG
+SIb3DQEHBqCCA9swggPXAgEAMIID0AYJKoZIhvcNAQcBMHEGCSqGSIb3DQEFDTBk
+MEEGCSqGSIb3DQEFDDA0BCCJTJLZQRi1WIpQHzyjXbq7+Vw2+1280C45x8ff6kMS
+VAICB9AwDAYIKoUDBwEBBAIFADAfBgYqhQMCAhUwFQQIxepowwvS11MGCSqFAwcB
+AgUBAYCCA06n09P/o+eDEKoSWpvlpOLKs7dKmVquKzJ81nCngvLQ5fEWL1WkxwiI
+rEhm53JKLD0wy4hekalEk011Bvc51XP9gkDkmaoBpnV/TyKIY35wl6ATfeGXno1M
+KoA+Ktdhv4gLnz0k2SXdkUj11JwYskXue+REA0p4m2ZsoaTmvoODamh9JeY/5Qjy
+Xe58CGnyXFzX3eU86qs4WfdWdS3NzYYOk9zzVl46le9u79O/LnW2j4n2of/Jpk/L
+YjrRmz5oYeQOqKOKhEyhpO6e+ejr6laduEv7TwJQKRNiygogbVvkNn3VjHTSOUG4
+W+3NRPhjb0jD9obdyx6MWa6O3B9bUzFMNav8/gYn0vTDxqXMLy/92oTngNrVx6Gc
+cNl128ISrDS6+RxtAMiEBRK6xNkemqX5yNXG5GrLQQFGP6mbs2nNpjKlgj3pljmX
+Eky2/G78XiJrv02OgGs6CKnI9nMpa6N7PBHV34MJ6EZzWOWDRQ420xk63mnicrs0
+WDVJ0xjdu4FW3iEk02EaiRTvGBpa6GL7LBp6QlaXSSwONx725cyRsL9cTlukqXER
+WHDlMpjYLbkGZRrCc1myWgEfsputfSIPNF/oLv9kJNWacP3uuDOfecg3us7eg2OA
+xo5zrYfn39GcBMF1WHAYRO/+PnJb9jrDuLAE8+ONNqjNulWNK9CStEhb6Te+yE6q
+oeP6hJjFLi+nFLE9ymIo0A7gLQD5vzFvl+7v1ZNVnQkwRUsWoRiEVVGnv3Z1iZU6
+xStxgoHMl62V/P5cz4dr9vJM2adEWNZcVXl6mk1H8DRc1sRGnvs2l237oKWRVntJ
+hoWnZ8qtD+3ZUqsX79QhVzUQBzKuBt6jwNhaHLGl5B+Or/zA9FezsOh6+Uc+fZaV
+W7fFfeUyWwGy90XD3ybTrjzep9f3nt55Z2c+fu2iEwhoyImWLuC3+CVhf9Af59j9
+8/BophMJuATDJEtgi8rt4vLnfxKu250Mv2ZpbfF69EGTgFYbwc55zRfaUG9zlyCu
+1YwMJ6HC9FUVtJp9gObSrirbzTH7mVaMjQkBLotazWbegzI+be8V3yT06C+ehD+2
+GdLWAVs9hp8gPHEUShb/XrgPpDSJmFlOiyeOFBO/j4edDACKqVcwdjBOMAoGCCqF
+AwcBAQIDBEAIFX0fyZe20QKKhWm6WYX+S92Gt6zaXroXOvAmayzLfZ5Sd9C2t9zZ
+JSg6M8RBUYpw/8ym5ou1o2nDa09M5zF3BCCpzyCQBI+rzfISeKvPV1ROfcXiYU93
+mwcl1xQV2G5/fgICB9A=
+-----END CERTIFICATE-----`
+
+func Test_P12_Gost(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testGostP12Pem)
+
+    password := "Пароль для PFX"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blocks, err := p12.ToOriginalPEM()
+    assertError(err, "Test_P12_Gost-ToPEM")
+    assertNotEmpty(blocks, "Test_P12_Gost-ToPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "Test_P12_Gost-ToPEM-Pem")
+        // t.Error(string(pemInfo))
+    }
+}
+
+func Test_P12_Gost_En(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testGostP12Pem)
+
+    password := "Пароль для PFX"
+
+    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    prikey, _, err := p12.GetPrivateKey()
+    assertError(err, "Test_P12_Gost_En-GetPrivateKey")
+    assertNotEmpty(prikey, "Test_P12_Gost_En-GetPrivateKey")
+
+    cert, _, err := p12.GetCert()
+    assertError(err, "Test_P12_Gost_En-GetCert")
+    assertNotEmpty(cert, "Test_P12_Gost_En-GetCert")
+
+    // =======
+
+    pkcs12 := NewPKCS12Encode()
+    pkcs12.WithLocalKeyId([]byte("01000000"))
+    pkcs12.AddPrivateKey(prikey)
+    pkcs12.AddCert(cert)
+
+    pass := "123123123"
+    opts := LegacyGostOpts
+
+    pfxEnData, err := pkcs12.Marshal(rand.Reader, pass, opts)
+    assertError(err, "Test_P12_Gost_En-pfxEnData")
+
+    assertNotEmpty(pfxEnData, "Test_P12_Gost_En-pfxEnData")
+
+    // newCert := encodePEM(pfxEnData, "CERTIFICATE")
+    // t.Error(newCert)
+
+    // 解析
+    p12De, err := LoadPKCS12FromBytes(pfxEnData, pass)
+    assertError(err, "Test_P12_Gost_En-pfxEnData")
+
+    blocks, err := p12De.ToOriginalPEM()
+    assertError(err, "Test_P12_Gost_En-ToOriginalPEM")
+    assertNotEmpty(blocks, "Test_P12_Gost_En-ToOriginalPEM")
+
+    var pemData [][]byte
+    for _, b := range blocks {
+        pemData = append(pemData, pem.EncodeToMemory(b))
+    }
+
+    for _, pemInfo := range pemData {
+        assertNotEmpty(pemInfo, "Test_P12_Gost_En-ToOriginalPEM-Pem")
+    }
+}

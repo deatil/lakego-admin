@@ -8,6 +8,8 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+// GOST 34.12-2015 128-bit Kuznechik block cipher.
+
 const BlockSize = 16
 
 type kuznyechikCipher struct {

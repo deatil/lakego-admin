@@ -1,4 +1,4 @@
-### 对称加密使用说明
+### 对称加密使用文档
 
 ~~~go
 package main
@@ -182,6 +182,7 @@ OCB(nonce string, additional ...string)
 EAX(nonce string, additional ...string)
 BC
 HCTR(tweak, hkey []byte)
+MGM(nonce string, additional ...string)
 ~~~
 
 支持的补码方式

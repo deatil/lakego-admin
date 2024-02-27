@@ -6,6 +6,7 @@ import (
     "crypto/ecdsa"
     "crypto/ed25519"
 
+    "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
@@ -24,5 +25,8 @@ func init() {
     })
     AddKey(GetStructName(&sm2.PrivateKey{}), func() Key {
         return new(KeySM2)
+    })
+    AddKey(GetStructName(&gost.PrivateKey{}), func() Key {
+        return new(KeyGost)
     })
 }

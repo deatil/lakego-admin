@@ -8,9 +8,9 @@ import (
     "crypto/ecdsa"
     "encoding/pem"
 
+    "github.com/deatil/go-cryptobin/pkcs8"
     cryptobin_ecdh "github.com/deatil/go-cryptobin/ecdh"
     cryptobin_ecdh_key "github.com/deatil/go-cryptobin/ecdh/key"
-    cryptobin_pkcs8 "github.com/deatil/go-cryptobin/pkcs8"
 )
 
 var (
@@ -61,7 +61,7 @@ func (this ECDH) ParsePrivateKeyFromPEMWithPassword(key []byte, password string)
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 
@@ -159,7 +159,7 @@ func (this ECDH) ParseECDHPrivateKeyFromPEMWithPassword(key []byte, password str
     }
 
     var blockDecrypted []byte
-    if blockDecrypted, err = cryptobin_pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
+    if blockDecrypted, err = pkcs8.DecryptPEMBlock(block, []byte(password)); err != nil {
         return nil, err
     }
 

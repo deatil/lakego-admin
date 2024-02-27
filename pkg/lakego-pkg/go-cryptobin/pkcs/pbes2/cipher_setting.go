@@ -7,6 +7,7 @@ import (
     "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/cipher/sm4"
+    "github.com/deatil/go-cryptobin/cipher/gost"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
 )
@@ -48,6 +49,8 @@ var (
     oidSM4CFB8    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
     oidSM4GCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
     oidSM4CCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
+
+    oidGostCipher = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 21}
 )
 
 var (
@@ -386,6 +389,18 @@ var SM4CCMIv = CipherCCMIv{
     hasKeyLength: false,
 }
 
+// ==========
+
+// GostCipher is the 256-bit key Gost cipher in CFB mode.
+var GostCipher = CipherGostCFB{
+    cipherFunc:   gost.NewCipher,
+    keySize:      32,
+    blockSize:    gost.BlockSize,
+    identifier:   oidGostCipher,
+    sboxOid:      oidGostTc26CipherZ,
+    hasKeyLength: false,
+}
+
 func init() {
     // des
     AddCipher(oidDESCBC, func() Cipher {
@@ -485,5 +500,10 @@ func init() {
     })
     AddCipher(oidSM4CCM, func() Cipher {
         return SM4CCM
+    })
+
+    // Gost
+    AddCipher(oidGostCipher, func() Cipher {
+        return GostCipher
     })
 }

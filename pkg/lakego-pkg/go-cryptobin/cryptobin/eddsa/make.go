@@ -11,7 +11,7 @@ func (this EdDSA) MakePublicKey() EdDSA {
     this.publicKey = ed25519.PublicKey{}
 
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 

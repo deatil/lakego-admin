@@ -17,6 +17,8 @@ import (
 
     "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/hash/md2"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
+    "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
 )
 
 type (
@@ -87,6 +89,8 @@ var funcHashes = map[string]HashFunc{
     "BLAKE2b_384": newBlake2b_384,
     "BLAKE2b_512": newBlake2b_512,
     "SM3":         sm3.New,
+    "GOST34112012256": gost34112012256.New,
+    "GOST34112012512": gost34112012512.New,
 }
 
 // 类型

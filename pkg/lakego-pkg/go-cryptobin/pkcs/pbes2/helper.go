@@ -52,6 +52,8 @@ var CipherMap = map[string]Cipher{
     "SM4GCMIv": SM4GCMIv,
     "SM4CCM":   SM4CCM,
     "SM4CCMIv": SM4CCMIv,
+
+    "GostCipher": GostCipher,
 }
 
 // 获取 Cipher 类型

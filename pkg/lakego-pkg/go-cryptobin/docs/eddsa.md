@@ -1,4 +1,4 @@
-### EdDSA 使用说明
+### EdDSA 使用文档
 
 #### 包引入 / import pkg
 ~~~go

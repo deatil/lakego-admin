@@ -7,7 +7,7 @@ import (
     "math/rand"
     "crypto/x509/pkix"
 
-    "github.com/deatil/go-cryptobin/gm/x509"
+    "github.com/deatil/go-cryptobin/x509"
 )
 
 // 生成证书请求

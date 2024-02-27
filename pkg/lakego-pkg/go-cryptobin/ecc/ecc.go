@@ -72,6 +72,7 @@ var (
     }
 )
 
+// curve list
 var paramsFromCurve = map[elliptic.Curve]*ECIESParams{
     secp256k1.S256(): ECIES_AES128_SHA256,
     elliptic.P256():  ECIES_AES128_SHA256,
@@ -190,13 +191,15 @@ func (priv *PrivateKey) GenerateShared(pub *PublicKey, skLen, macLen int) (sk []
         return nil, ErrSharedKeyIsPointAtInfinity
     }
 
-    sk = make([]byte, skLen + macLen)
-    skBytes := x.Bytes()
+    xBytes := x.Bytes()
 
-    if len(skBytes) > len(sk) {
-        copy(sk[:], skBytes)
+    sk = make([]byte, skLen + macLen)
+
+    if len(xBytes) > len(sk) {
+        // copy xBytes last data to sk
+        copy(sk, xBytes[len(xBytes)-len(sk):])
     } else {
-        copy(sk[len(sk)-len(skBytes):], skBytes)
+        copy(sk[len(sk)-len(xBytes):], xBytes)
     }
 
     return sk, nil
@@ -290,7 +293,7 @@ func (priv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
     }
 
     // 对称加密解出数据 / decrypt data
-    m, err = cipherDecrypt(params, Ke, c[mStart:mEnd])
+    m, err = symDecrypt(params, Ke, c[mStart:mEnd])
 
     return
 }
@@ -343,7 +346,7 @@ func Encrypt(rand io.Reader, pub *PublicKey, m, s1, s2 []byte) (ct []byte, err e
     hash.Reset()
 
     // 对称加密数据 / Encrypt data
-    em, err := cipherEncrypt(rand, params, Ke, m)
+    em, err := symEncrypt(rand, params, Ke, m)
     if err != nil || len(em) <= params.BlockSize {
         return
     }
@@ -437,21 +440,21 @@ func messageTag(hash func() hash.Hash, km, msg, shared []byte) []byte {
 }
 
 // Generate an initialisation vector for CTR mode.
-func generateIV(params *ECIESParams, rand io.Reader) (iv []byte, err error) {
+func generateIV(rand io.Reader, params *ECIESParams) (iv []byte, err error) {
     iv = make([]byte, params.BlockSize)
     _, err = io.ReadFull(rand, iv)
     return
 }
 
-// cipherEncrypt carries out CTR encryption using the block cipher specified in the
+// symEncrypt carries out CTR encryption using the block cipher specified in the
 // parameters.
-func cipherEncrypt(rand io.Reader, params *ECIESParams, key, m []byte) (ct []byte, err error) {
+func symEncrypt(rand io.Reader, params *ECIESParams, key, m []byte) (ct []byte, err error) {
     c, err := params.Cipher(key)
     if err != nil {
         return
     }
 
-    iv, err := generateIV(params, rand)
+    iv, err := generateIV(rand, params)
     if err != nil {
         return
     }
@@ -466,9 +469,9 @@ func cipherEncrypt(rand io.Reader, params *ECIESParams, key, m []byte) (ct []byt
     return
 }
 
-// cipherDecrypt carries out CTR decryption using the block cipher specified in
+// symDecrypt carries out CTR decryption using the block cipher specified in
 // the parameters
-func cipherDecrypt(params *ECIESParams, key, ct []byte) (m []byte, err error) {
+func symDecrypt(params *ECIESParams, key, ct []byte) (m []byte, err error) {
     c, err := params.Cipher(key)
     if err != nil {
         return

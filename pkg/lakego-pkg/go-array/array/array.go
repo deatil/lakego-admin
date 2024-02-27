@@ -240,6 +240,7 @@ func Search(source any, path ...string) *Array {
 	return New(source).Search(path...)
 }
 
+// 使用 index 搜索数据
 // Index attempts to find and return an element
 func (this *Array) Index(index int) *Array {
 	if array, ok := this.Value().([]any); ok {
@@ -286,6 +287,7 @@ func (this *Array) Index(index int) *Array {
 	}
 }
 
+// 返回 slice 数据
 // Children returns a slice of all children of an array element. This also works
 // for objects, however, the children returned for an source will be in a random
 // order and you lose the names of the returned objects this way. If the
@@ -320,6 +322,7 @@ func (this *Array) Children() []*Array {
 	return nil
 }
 
+// 返回 map 数据
 // ChildrenMap returns a map of all the children of an source element. IF the
 // underlying value isn't a source then an empty map is returned.
 func (this *Array) ChildrenMap() map[string]*Array {
@@ -567,7 +570,7 @@ func (this *Array) ArrayOfSizeKey(size int, key string) (*Array, error) {
 	return this.ArrayOfSize(size, formatPath(path)...)
 }
 
-// 删除根据 key
+// 使用 key 删除数据
 // delete data with key
 func (this *Array) DeleteKey(key string) error {
 	path := KeyDelimPathToSlice(key, this.keyDelim)
@@ -575,7 +578,7 @@ func (this *Array) DeleteKey(key string) error {
 	return this.Delete(formatPath(path)...)
 }
 
-// 删除更加路径
+// 使用路径删除数据
 // delete data with path
 func (this *Array) Delete(path ...any) error {
 	if this == nil || this.source == nil {

@@ -10,7 +10,7 @@ import (
 // 公钥加密
 func (this SM2) Encrypt() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -27,7 +27,7 @@ func (this SM2) Encrypt() SM2 {
 // 私钥解密
 func (this SM2) Decrypt() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -46,7 +46,7 @@ func (this SM2) Decrypt() SM2 {
 // 公钥加密，返回 asn.1 编码格式的密文内容
 func (this SM2) EncryptASN1() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -63,7 +63,7 @@ func (this SM2) EncryptASN1() SM2 {
 // 私钥解密，解析 asn.1 编码格式的密文内容
 func (this SM2) DecryptASN1() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 

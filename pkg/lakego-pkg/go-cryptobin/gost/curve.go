@@ -24,7 +24,7 @@ func NewCurve(p, q, a, b, x, y, e, d, co *big.Int) (*Curve, error) {
         Y:    y,
     }
     if !c.IsOnCurve(c.X, c.Y) {
-        return nil, errors.New("gost: invalid curve parameters")
+        return nil, errors.New("cryptobin/gost: invalid curve parameters")
     }
 
     if e != nil && d != nil {
@@ -87,7 +87,11 @@ func (c *Curve) IsOnCurve(x, y *big.Int) bool {
 // Get the size of the point's coordinate in bytes.
 // 32 for 256-bit curves, 64 for 512-bit ones.
 func (c *Curve) PointSize() int {
-    return pointSize(c.P)
+    if c.P.BitLen() > 256 {
+        return 64
+    }
+
+    return 32
 }
 
 func (c *Curve) Params() *Curve {
@@ -138,7 +142,7 @@ func (c *Curve) add(p1x, p1y, p2x, p2y *big.Int) {
 
 func (c *Curve) Exp(degree, xS, yS *big.Int) (*big.Int, *big.Int, error) {
     if degree.Cmp(zero) == 0 {
-        return nil, nil, errors.New("gost: zero degree value")
+        return nil, nil, errors.New("cryptobin/gost: zero degree value")
     }
     dg := big.NewInt(0).Sub(degree, bigInt1)
     tx := big.NewInt(0).Set(xS)
@@ -155,18 +159,19 @@ func (c *Curve) Exp(degree, xS, yS *big.Int) (*big.Int, *big.Int, error) {
     return tx, ty, nil
 }
 
-func (our *Curve) Equal(their *Curve) bool {
-    return our.P.Cmp(their.P) == 0 &&
-        our.Q.Cmp(their.Q) == 0 &&
-        our.A.Cmp(their.A) == 0 &&
-        our.B.Cmp(their.B) == 0 &&
-        our.X.Cmp(their.X) == 0 &&
-        our.Y.Cmp(their.Y) == 0 &&
-        ((our.E == nil && their.E == nil) || our.E.Cmp(their.E) == 0) &&
-        ((our.D == nil && their.D == nil) || our.D.Cmp(their.D) == 0) &&
-        our.Co.Cmp(their.Co) == 0
+func (c *Curve) Equal(x *Curve) bool {
+    return c.P.Cmp(x.P) == 0 &&
+        c.Q.Cmp(x.Q) == 0 &&
+        c.A.Cmp(x.A) == 0 &&
+        c.B.Cmp(x.B) == 0 &&
+        c.X.Cmp(x.X) == 0 &&
+        c.Y.Cmp(x.Y) == 0 &&
+        ((c.E == nil && x.E == nil) || c.E.Cmp(x.E) == 0) &&
+        ((c.D == nil && x.D == nil) || c.D.Cmp(x.D) == 0) &&
+        c.Co.Cmp(x.Co) == 0
 }
 
 func (c *Curve) String() string {
     return c.Name
 }
+

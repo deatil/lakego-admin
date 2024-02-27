@@ -2,15 +2,17 @@ package pbes2
 
 // hash 列表
 var HashMap = map[string]Hash{
-    "MD5":        MD5,
-    "SHA1":       SHA1,
-    "SHA224":     SHA224,
-    "SHA256":     SHA256,
-    "SHA384":     SHA384,
-    "SHA512":     SHA512,
-    "SHA512_224": SHA512_224,
-    "SHA512_256": SHA512_256,
-    "SM3":        SM3,
+    "MD5":             MD5,
+    "SHA1":            SHA1,
+    "SHA224":          SHA224,
+    "SHA256":          SHA256,
+    "SHA384":          SHA384,
+    "SHA512":          SHA512,
+    "SHA512_224":      SHA512_224,
+    "SHA512_256":      SHA512_256,
+    "SM3":             SM3,
+    "GOST34112012256": GOST34112012256,
+    "GOST34112012512": GOST34112012512,
 }
 
 // 获取 hash 类型

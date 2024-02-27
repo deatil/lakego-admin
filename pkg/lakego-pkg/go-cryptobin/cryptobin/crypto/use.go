@@ -213,7 +213,7 @@ func (this Cryptobin) Camellia() Cryptobin {
 
 // Gost
 // The key argument should be 32 bytes.
-// sbox is [DESDerivedSbox | TestSbox | CryptoProSbox | TC26Sbox | EACSbox]
+// sbox is [SboxDESDerivedParamSet | SboxRFC4357TestParamSet | SboxGostR341194CryptoProParamSet | SboxTC26gost28147paramZ | SboxEACParamSet]
 // or set [][]byte data
 func (this Cryptobin) Gost(sbox any) Cryptobin {
     this.multiple = Gost
@@ -672,6 +672,20 @@ func (this Cryptobin) HCTR(tweak, hkey []byte) Cryptobin {
 
     this.config.Set("tweak", tweak)
     this.config.Set("hkey", hkey)
+
+    return this
+}
+
+// MGM
+// ccm nounce size, should be 16 bytes
+func (this Cryptobin) MGM(nonce string, additional ...string) Cryptobin {
+    this.mode = MGM
+
+    this.config.Set("nonce", []byte(nonce))
+
+    if len(additional) > 0 {
+        this.config.Set("additional", []byte(additional[0]))
+    }
 
     return this
 }

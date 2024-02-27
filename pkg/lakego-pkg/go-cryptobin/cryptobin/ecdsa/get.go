@@ -80,6 +80,11 @@ func (this ECDSA) GetPublicKeyCompressString() string {
     return tool.HexEncode(key)
 }
 
+// 获取 Curve
+func (this ECDSA) GetCurve() elliptic.Curve {
+    return this.curve
+}
+
 // 获取 hash 类型
 func (this ECDSA) GetSignHash() HashFunc {
     return this.signHash

@@ -4,7 +4,7 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
 
-    sm2X509 "github.com/deatil/go-cryptobin/gm/x509"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
 )
 
 // pkix
@@ -64,23 +64,23 @@ type (
 // sm2-x905
 type (
     // SM2 证书
-    SM2CACertificate = sm2X509.Certificate
+    SM2CACertificate = cryptobin_x509.Certificate
 
     // SM2 证书请求
-    SM2CACertificateRequest = sm2X509.CertificateRequest
+    SM2CACertificateRequest = cryptobin_x509.CertificateRequest
 
     // 配置别名
-    SM2CAVerifyOptions = sm2X509.VerifyOptions
+    SM2CAVerifyOptions = cryptobin_x509.VerifyOptions
 
     // KeyUsage
-    SM2CAKeyUsage = sm2X509.KeyUsage
+    SM2CAKeyUsage = cryptobin_x509.KeyUsage
 
     // ExtKeyUsage
-    SM2CAExtKeyUsage = sm2X509.ExtKeyUsage
+    SM2CAExtKeyUsage = cryptobin_x509.ExtKeyUsage
 
     // SignatureAlgorithm
-    SM2CASignatureAlgorithm = sm2X509.SignatureAlgorithm
+    SM2CASignatureAlgorithm = cryptobin_x509.SignatureAlgorithm
 
     // PublicKeyAlgorithm
-    SM2CAPublicKeyAlgorithm = sm2X509.PublicKeyAlgorithm
+    SM2CAPublicKeyAlgorithm = cryptobin_x509.PublicKeyAlgorithm
 )

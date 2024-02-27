@@ -1002,16 +1002,16 @@ func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
             sbox = v
         case string:
             switch v {
-                case "DESDerivedSbox":
-                    sbox = cryptobin_gost.DESDerivedSbox
-                case "TestSbox":
-                    sbox = cryptobin_gost.TestSbox
-                case "CryptoProSbox":
-                    sbox = cryptobin_gost.CryptoProSbox
-                case "TC26Sbox":
-                    sbox = cryptobin_gost.TC26Sbox
-                case "EACSbox":
-                    sbox = cryptobin_gost.EACSbox
+                case "SboxDESDerivedParamSet":
+                    sbox = cryptobin_gost.SboxDESDerivedParamSet
+                case "SboxRFC4357TestParamSet":
+                    sbox = cryptobin_gost.SboxRFC4357TestParamSet
+                case "SboxGostR341194CryptoProParamSet":
+                    sbox = cryptobin_gost.SboxGostR341194CryptoProParamSet
+                case "SboxTC26gost28147paramZ":
+                    sbox = cryptobin_gost.SboxTC26gost28147paramZ
+                case "SboxEACParamSet":
+                    sbox = cryptobin_gost.SboxEACParamSet
             }
     }
 

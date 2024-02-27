@@ -609,11 +609,11 @@ func gostCFBPKCS7PaddingWithSbox(t *testing.T, sbox string) {
 
 func Test_GostCFBPKCS7Padding(t *testing.T) {
     sboxs := []string{
-        "DESDerivedSbox",
-        "TestSbox",
-        "CryptoProSbox",
-        "TC26Sbox",
-        "EACSbox",
+        "SboxDESDerivedParamSet",
+        "SboxRFC4357TestParamSet",
+        "SboxGostR341194CryptoProParamSet",
+        "SboxTC26gost28147paramZ",
+        "SboxEACParamSet",
     }
 
     for _, sbox := range sboxs {

@@ -1,4 +1,4 @@
-### Rsa 使用说明 / RSA Docs
+### Rsa 使用文档 / RSA Docs
 
 `EncryptECB`, `PrivateKeyEncryptECB`, `EncryptOAEPECB` 为 `JAVA` 对应的 `ECB` 模式，可加密大数据
 `EncryptECB`, `PrivateKeyEncryptECB`, `EncryptOAEPECB`  for `JAVA` `ECB` mode and can encrypt big data
