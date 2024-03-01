@@ -2012,3 +2012,213 @@ func Test_RijndaelPKCS7Padding(t *testing.T) {
 
     assert(data, cyptdeStr, "RijndaelPKCS7Padding-res")
 }
+
+func Test_GostGOFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Gost("SboxDESDerivedParamSet").
+        GOFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_GostGOFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Gost("SboxDESDerivedParamSet").
+        GOFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_GostGOFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_GostGOFBPKCS7Padding-res")
+}
+
+func Test_KuznyechikG3413CBCPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CBC().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413CBCPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413CBCPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413CBCPKCS7Padding-res")
+}
+
+func Test_KuznyechikG3413CFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413CFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413CFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413CFBPKCS7Padding-res")
+}
+
+func Test_KuznyechikG3413CFBPKCS7Padding_2(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CFB(8).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413CFBPKCS7Padding_2-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfertf12dfertf12dfertf12").
+        Kuznyechik().
+        G3413CFB(8).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413CFBPKCS7Padding_2-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413CFBPKCS7Padding_2-res")
+}
+
+func Test_KuznyechikG3413CTRPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Kuznyechik().
+        G3413CTR().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Kuznyechik().
+        G3413CTR().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413CTRPKCS7Padding-res")
+}
+
+func Test_KuznyechikG3413CTRPKCS7Padding_2(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Kuznyechik().
+        G3413CTR(8).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12").
+        Kuznyechik().
+        G3413CTR(8).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413CTRPKCS7Padding_2-res")
+}
+
+func Test_KuznyechikG3413OFBPKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfer1232dfertf12dfer1232").
+        Kuznyechik().
+        G3413OFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_KuznyechikG3413OFBPKCS7Padding-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12dfertf12dfertf12").
+        SetIv("dfertf12dfer1232dfertf12dfer1232").
+        Kuznyechik().
+        G3413OFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_KuznyechikG3413OFBPKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_KuznyechikG3413OFBPKCS7Padding-res")
+}

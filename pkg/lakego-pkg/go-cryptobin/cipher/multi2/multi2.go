@@ -33,7 +33,6 @@ func NewCipher(key []byte, rounds int32) (cipher.Block, error) {
     c := new(multi2Cipher)
 
     in_key := bytesToUint32s(key)
-
     c.expandKey(in_key, rounds)
 
     return c, nil

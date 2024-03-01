@@ -33,7 +33,7 @@ type ofbnlfEncrypter ofbnlf
 func NewOFBNLFEncrypter(newKey KeyCreator, key, iv []byte) cipher.BlockMode {
     b, err := newKey(key)
     if err != nil {
-        panic("cryptobin/ofbnlf: " + err.Error())
+        panic("cryptobin/ofbnlf.NewOFBNLFEncrypter: " + err.Error())
     }
 
     if len(iv) != b.BlockSize() {
@@ -97,7 +97,7 @@ type ofbnlfDecrypter ofbnlf
 func NewOFBNLFDecrypter(newKey KeyCreator, key, iv []byte) cipher.BlockMode {
     b, err := newKey(key)
     if err != nil {
-        panic("cryptobin/ofbnlf: " + err.Error())
+        panic("cryptobin/ofbnlf.NewOFBNLFDecrypter: " + err.Error())
     }
 
     if len(iv) != b.BlockSize() {

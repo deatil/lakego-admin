@@ -33,7 +33,7 @@ func NewCipher(key, nonce []byte) (cipher.Stream, error) {
 func NewCipherWithCounter(key, nonce []byte, counter uint64) (cipher.Stream, error) {
     var fixedSizedKey [32]byte
     if len(key) != 32 {
-        return nil, errors.New("key size must be 32")
+        return nil, errors.New("cryptobin/salsa20: key size must be 32")
     }
 
     copy(fixedSizedKey[:], key)

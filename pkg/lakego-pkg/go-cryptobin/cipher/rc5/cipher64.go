@@ -97,7 +97,7 @@ func (c *rc5Cipher64) Decrypt(dst, src []byte) {
     }
 
     if inexactOverlap(dst[:BlockSize64], src[:BlockSize64]) {
-        panic("cryptobin/cryptobin/rc5-64: invalid buffer overlap")
+        panic("cryptobin/rc5-64: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint64(src[:8])

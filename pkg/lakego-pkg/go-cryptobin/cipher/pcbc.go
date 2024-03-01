@@ -36,7 +36,7 @@ type pcbcEncAble interface {
 
 func NewPCBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cryptobin/pcbc: IV length must equal block size")
+        panic("cryptobin/pcbc.NewPCBCEncrypter: IV length must equal block size")
     }
 
     if pcbc, ok := b.(pcbcEncAble); ok {
@@ -97,7 +97,7 @@ type pcbcDecAble interface {
 
 func NewPCBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cryptobin/pcbc: IV length must equal block size")
+        panic("cryptobin/pcbc.NewPCBCDecrypter: IV length must equal block size")
     }
 
     if pcbc, ok := b.(pcbcDecAble); ok {

@@ -22,8 +22,7 @@ type gostSignature struct {
 // PublicKey represents an GOST public key.
 type PublicKey struct {
     Curve *Curve
-    X     *big.Int
-    Y     *big.Int
+    X, Y  *big.Int
 }
 
 // Equal reports whether pub and x have the same value.

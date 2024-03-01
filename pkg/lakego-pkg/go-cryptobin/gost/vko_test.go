@@ -33,6 +33,27 @@ func Test_KEK(t *testing.T) {
     }
 }
 
+func Test_KEK_Bad(t *testing.T) {
+    c := CurveIdGostR34102001TestParamSet()
+    c2 := CurveGostR34102001ParamSetcc()
+
+    priv1, err := GenerateKey(rand.Reader, c)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    priv2, err := GenerateKey(rand.Reader, c2)
+    if err != nil {
+        t.Fatal(err)
+    }
+    pub2 := &priv2.PublicKey
+
+    _, err = KEK(priv1, pub2, NewUKM(defaultUkm))
+    if err == nil {
+        t.Error("KEK should return error")
+    }
+}
+
 func Test_VKO2001(t *testing.T) {
     c := CurveIdGostR34102001TestParamSet()
 

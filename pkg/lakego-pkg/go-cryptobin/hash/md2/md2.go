@@ -33,19 +33,19 @@ var PI_SUBST = []uint8{
     31, 26, 219, 153, 141, 51, 159, 17, 131, 20,
 }
 
-// New returns a new hash.Hash computing the MD2 checksum.
-func New() hash.Hash {
-    d := new(digest)
-    d.Reset()
-    return d
-}
-
 // digest represents the partial evaluation of a checksum.
 type digest struct {
     digest [Size]byte   // the digest, Size
     state  [48]byte     // state, 48 ints
     x      [_Chunk]byte // temp storage buffer, 16 bytes, _Chunk
     nx     uint8        // how many bytes are there in the buffer
+}
+
+// New returns a new hash.Hash computing the MD2 checksum.
+func New() hash.Hash {
+    d := new(digest)
+    d.Reset()
+    return d
 }
 
 func (d *digest) Reset() {

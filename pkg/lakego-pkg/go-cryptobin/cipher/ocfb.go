@@ -29,7 +29,7 @@ const (
 func NewOCFBEncrypter(block cipher.Block, randData []byte, resync OCFBResyncOption) (cipher.Stream, []byte) {
     blockSize := block.BlockSize()
     if len(randData) != blockSize {
-        return nil, nil
+        panic("cryptobin/ocfb.NewOCFBEncrypter: randData length must equal block size")
     }
 
     x := &ocfbEncrypter{
@@ -55,6 +55,7 @@ func NewOCFBEncrypter(block cipher.Block, randData []byte, resync OCFBResyncOpti
         x.fre[1] = prefix[blockSize+1]
         x.outUsed = 2
     }
+
     return x, prefix
 }
 
@@ -87,7 +88,7 @@ type ocfbDecrypter struct {
 func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption) cipher.Stream {
     blockSize := block.BlockSize()
     if len(prefix) != blockSize+2 {
-        return nil
+        panic("cryptobin/ocfb.NewOCFBDecrypter: prefix length must equal block size add two")
     }
 
     x := &ocfbDecrypter{
@@ -109,7 +110,7 @@ func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption
 
     if prefixCopy[blockSize-2] != prefixCopy[blockSize] ||
         prefixCopy[blockSize-1] != prefixCopy[blockSize+1] {
-        return nil
+        panic("cryptobin/ocfb: invalid prefix overlap")
     }
 
     if resync {

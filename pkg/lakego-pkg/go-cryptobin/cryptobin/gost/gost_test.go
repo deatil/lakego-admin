@@ -315,3 +315,35 @@ func Test_MakePriKeyFromData(t *testing.T) {
         t.Error("make prikey fail")
     }
 }
+
+func Test_UseKeyBytes(t *testing.T) {
+    gen := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+
+    pri0 := gen.GetPrivateKey()
+    pub0 := gen.GetPublicKey()
+
+    priBytes := gen.GetPrivateKeyBytes()
+    pubBytes := gen.GetPublicKeyBytes()
+    if len(priBytes) == 0 {
+        t.Error("get priBytes fail")
+    }
+    if len(pubBytes) == 0 {
+        t.Error("get pubBytes fail")
+    }
+
+    obj := New().SetCurve("CurveIdtc26gost34102012256paramSetC")
+
+    pri := obj.
+        FromPrivateKeyBytes(priBytes).
+        GetPrivateKey()
+    pub := obj.
+        FromPublicKeyBytes(pubBytes).
+        GetPublicKey()
+
+    if !pri.Equal(pri0) {
+        t.Error("FromPrivateKeyBytes fail")
+    }
+    if !pub.Equal(pub0) {
+        t.Error("FromPublicKeyBytes fail")
+    }
+}

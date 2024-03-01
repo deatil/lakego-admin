@@ -41,6 +41,7 @@ var (
     oidTc26_gost_3410_12_512_paramSetA    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 1}
     oidTc26_gost_3410_12_512_paramSetB    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 2}
     oidTc26_gost_3410_12_512_paramSetC    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 3}
+    oidTc26_gost_3410_12_512_paramSetD    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 4}
 
     oidCryptoPro2012Sign256A = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 1}
     oidCryptoPro2012Sign256B = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 1, 2}
@@ -51,6 +52,7 @@ var (
     oidCryptoPro2012Sign512A    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 1}
     oidCryptoPro2012Sign512B    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 2}
     oidCryptoPro2012Sign512C    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 3}
+    oidCryptoPro2012Sign512D    = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 2, 1, 2, 4}
 )
 
 func init() {

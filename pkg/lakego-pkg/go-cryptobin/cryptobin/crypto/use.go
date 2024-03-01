@@ -690,6 +690,49 @@ func (this Cryptobin) MGM(nonce string, additional ...string) Cryptobin {
     return this
 }
 
+// GOFB
+func (this Cryptobin) GOFB() Cryptobin {
+    this.mode = GOFB
+
+    return this
+}
+
+// G3413CBC
+func (this Cryptobin) G3413CBC() Cryptobin {
+    this.mode = G3413CBC
+
+    return this
+}
+
+// G3413CFB
+func (this Cryptobin) G3413CFB(bitBlockSize ...int) Cryptobin {
+    this.mode = G3413CFB
+
+    if len(bitBlockSize) > 0 {
+        this.config.Set("bit_block_size", bitBlockSize[0])
+    }
+
+    return this
+}
+
+// G3413CTR
+func (this Cryptobin) G3413CTR(bitBlockSize ...int) Cryptobin {
+    this.mode = G3413CTR
+
+    if len(bitBlockSize) > 0 {
+        this.config.Set("bit_block_size", bitBlockSize[0])
+    }
+
+    return this
+}
+
+// G3413OFB
+func (this Cryptobin) G3413OFB() Cryptobin {
+    this.mode = G3413OFB
+
+    return this
+}
+
 // 使用模式
 func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
     this.mode = mode

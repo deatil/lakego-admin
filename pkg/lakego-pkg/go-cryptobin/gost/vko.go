@@ -26,6 +26,10 @@ func (prv *PrivateKey) KEK(pub *PublicKey, ukm *big.Int) ([]byte, error) {
         return nil, fmt.Errorf("cryptobin/gost.KEK: PublicKey empty")
     }
 
+    if !prv.Curve.Equal(pub.Curve) {
+        return nil, fmt.Errorf("cryptobin/gost.KEK: PublicKey not same Curve")
+    }
+
     keyX, keyY, err := prv.Curve.Exp(prv.D, pub.X, pub.Y)
     if err != nil {
         return nil, fmt.Errorf("cryptobin/gost.KEK: %w", err)

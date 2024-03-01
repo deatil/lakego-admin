@@ -798,3 +798,195 @@ func init() {
         return ModeMGM{}
     })
 }
+
+// ===================
+
+type ModeGOFB struct {}
+
+// 加密
+func (this ModeGOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewGOFB(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeGOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewGOFB(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(GOFB, func() IMode {
+        return ModeGOFB{}
+    })
+}
+
+// ===================
+
+type ModeG3413CBC struct {}
+
+// 加密
+func (this ModeG3413CBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewG3413CBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeG3413CBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewG3413CBCDecrypter(block, iv).CryptBlocks(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(G3413CBC, func() IMode {
+        return ModeG3413CBC{}
+    })
+}
+
+// ===================
+
+type ModeG3413CFB struct {}
+
+// 加密
+func (this ModeG3413CFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+
+    bitBlockSize := opt.Config().GetInt("bit_block_size")
+    if bitBlockSize > 0 {
+        cryptobin_cipher.NewG3413CFBEncrypterWithBitBlockSize(block, iv, bitBlockSize).
+            XORKeyStream(cryptText, plain)
+    } else {
+        cryptobin_cipher.NewG3413CFBEncrypter(block, iv).
+            XORKeyStream(cryptText, plain)
+    }
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeG3413CFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+
+    bitBlockSize := opt.Config().GetInt("bit_block_size")
+    if bitBlockSize > 0 {
+        cryptobin_cipher.NewG3413CFBDecrypterWithBitBlockSize(block, iv, bitBlockSize).
+            XORKeyStream(dst, data)
+    } else {
+        cryptobin_cipher.NewG3413CFBDecrypter(block, iv).
+            XORKeyStream(dst, data)
+    }
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(G3413CFB, func() IMode {
+        return ModeG3413CFB{}
+    })
+}
+
+// ===================
+
+type ModeG3413CTR struct {}
+
+// 加密
+func (this ModeG3413CTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+
+    bitBlockSize := opt.Config().GetInt("bit_block_size")
+    if bitBlockSize > 0 {
+        cryptobin_cipher.NewG3413CTRWithBitBlockSize(block, iv, bitBlockSize).
+            XORKeyStream(cryptText, plain)
+    } else {
+        cryptobin_cipher.NewG3413CTR(block, iv).
+            XORKeyStream(cryptText, plain)
+    }
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeG3413CTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+
+    bitBlockSize := opt.Config().GetInt("bit_block_size")
+    if bitBlockSize > 0 {
+        cryptobin_cipher.NewG3413CTRWithBitBlockSize(block, iv, bitBlockSize).
+            XORKeyStream(dst, data)
+    } else {
+        cryptobin_cipher.NewG3413CTR(block, iv).
+            XORKeyStream(dst, data)
+    }
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(G3413CTR, func() IMode {
+        return ModeG3413CTR{}
+    })
+}
+
+// ===================
+
+type ModeG3413OFB struct {}
+
+// 加密
+func (this ModeG3413OFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain))
+    cryptobin_cipher.NewG3413OFB(block, iv).XORKeyStream(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密
+func (this ModeG3413OFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data))
+    cryptobin_cipher.NewG3413OFB(block, iv).XORKeyStream(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(G3413OFB, func() IMode {
+        return ModeG3413CBC{}
+    })
+}

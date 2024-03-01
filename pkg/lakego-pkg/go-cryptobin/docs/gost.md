@@ -73,7 +73,6 @@ func main() {
     // create public key
     var PubKeyPem string = obj.
         CreatePublicKey().
-        // CreatePKCS8PublicKey().
         ToKeyString()
 }
 ~~~

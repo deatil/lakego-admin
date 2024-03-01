@@ -27,11 +27,11 @@ func NewCipher(key []byte, wordSize, r uint) (cipher.Block, error) {
         case 8, 16, 24, 32:
             break
         default:
-            return nil, fmt.Errorf("rc5: invalid key size %d, we support 16/24/32 now", k)
+            return nil, fmt.Errorf("cryptobin/rc5: invalid key size %d, we support 16/24/32 now", k)
     }
 
     if r < 8 || r > 127 {
-        return nil, fmt.Errorf("rc5: invalid rounds %d, should be between 8 and 127", r)
+        return nil, fmt.Errorf("cryptobin/rc5: invalid rounds %d, should be between 8 and 127", r)
     }
 
     switch wordSize {
@@ -42,7 +42,7 @@ func NewCipher(key []byte, wordSize, r uint) (cipher.Block, error) {
         case 64:
             return newCipher64(key, r)
         default:
-            return nil, fmt.Errorf("rc5: unsupported word size %d, support 16/32/64 now", wordSize)
+            return nil, fmt.Errorf("cryptobin/rc5: unsupported word size %d, support 16/32/64 now", wordSize)
     }
 }
 

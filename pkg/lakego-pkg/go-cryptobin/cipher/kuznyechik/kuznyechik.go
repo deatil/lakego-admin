@@ -22,42 +22,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
         return nil, fmt.Errorf("cryptobin/kuznyechik: invalid key size %d", len(key))
     }
 
-    k00 := binary.LittleEndian.Uint64(key[0:8])
-    k01 := binary.LittleEndian.Uint64(key[8:16])
-    k10 := binary.LittleEndian.Uint64(key[16:24])
-    k11 := binary.LittleEndian.Uint64(key[24:32])
-
     k := new(kuznyechikCipher)
-    k.erk[0][0] = k00
-    k.erk[0][1] = k01
-    k.erk[1][0] = k10
-    k.erk[1][1] = k11
-    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 0)
-    k.erk[2][0] = k00
-    k.erk[2][1] = k01
-    k.erk[3][0] = k10
-    k.erk[3][1] = k11
-    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 8)
-    k.erk[4][0] = k00
-    k.erk[4][1] = k01
-    k.erk[5][0] = k10
-    k.erk[5][1] = k11
-    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 16)
-    k.erk[6][0] = k00
-    k.erk[6][1] = k01
-    k.erk[7][0] = k10
-    k.erk[7][1] = k11
-    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 24)
-    k.erk[8][0] = k00
-    k.erk[8][1] = k01
-    k.erk[9][0] = k10
-    k.erk[9][1] = k11
-
-    // drf is based on erk
-    k.drk[0] = k.erk[0] // first element is just copied
-    for i := 1; i < 10; i++ {
-        k.drk[i][0], k.drk[i][1] = ilss(k.erk[i][0], k.erk[i][1])
-    }
+    k.expandKey(key)
 
     return k, nil
 }
@@ -76,7 +42,7 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/idea: invalid buffer overlap")
+        panic("cryptobin/kuznyechik: invalid buffer overlap")
     }
 
     k.encrypt(dst, src)
@@ -92,7 +58,7 @@ func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/idea: invalid buffer overlap")
+        panic("cryptobin/kuznyechik: invalid buffer overlap")
     }
 
     k.decrypt(dst, src)
@@ -176,4 +142,46 @@ func (k *kuznyechikCipher) decrypt(dst, src []byte) {
 
     binary.LittleEndian.PutUint64(dst[0:8], t1)
     binary.LittleEndian.PutUint64(dst[8:16], t2)
+}
+
+func (k *kuznyechikCipher) expandKey(key []byte) {
+    k00 := binary.LittleEndian.Uint64(key[0:8])
+    k01 := binary.LittleEndian.Uint64(key[8:16])
+    k10 := binary.LittleEndian.Uint64(key[16:24])
+    k11 := binary.LittleEndian.Uint64(key[24:32])
+
+    k.erk[0][0] = k00
+    k.erk[0][1] = k01
+    k.erk[1][0] = k10
+    k.erk[1][1] = k11
+
+    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 0)
+    k.erk[2][0] = k00
+    k.erk[2][1] = k01
+    k.erk[3][0] = k10
+    k.erk[3][1] = k11
+
+    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 8)
+    k.erk[4][0] = k00
+    k.erk[4][1] = k01
+    k.erk[5][0] = k10
+    k.erk[5][1] = k11
+
+    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 16)
+    k.erk[6][0] = k00
+    k.erk[6][1] = k01
+    k.erk[7][0] = k10
+    k.erk[7][1] = k11
+
+    k00, k01, k10, k11 = fk(k00, k01, k10, k11, 24)
+    k.erk[8][0] = k00
+    k.erk[8][1] = k01
+    k.erk[9][0] = k10
+    k.erk[9][1] = k11
+
+    // drf is based on erk
+    k.drk[0] = k.erk[0] // first element is just copied
+    for i := 1; i < 10; i++ {
+        k.drk[i][0], k.drk[i][1] = ilss(k.erk[i][0], k.erk[i][1])
+    }
 }
