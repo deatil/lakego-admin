@@ -20,7 +20,7 @@ func P256() elliptic.Curve {
     return sm2curve.P256()
 }
 
-var defaultUid = []byte{
+var defaultUID = []byte{
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
     0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
 }
@@ -70,7 +70,7 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 // 验证 asn.1 编码的数据 ans1(r, s)
 // Verify asn.1 marshal data
 func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
-    uid := defaultUid
+    uid := defaultUID
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
     }
@@ -86,7 +86,7 @@ func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bo
 // 验证 asn.1 编码的数据 ans1(r, s)
 // Verify Bytes marshal data
 func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
-    uid := defaultUid
+    uid := defaultUID
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
     }
@@ -144,7 +144,7 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
 // 签名返回 asn.1 编码数据
 // sign data and return asn.1 marshal data
 func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
-    uid := defaultUid
+    uid := defaultUID
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
     }
@@ -160,7 +160,7 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
 // 签名返回 Bytes 编码数据
 // sign data and return Bytes marshal data
 func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
-    uid := defaultUid
+    uid := defaultUID
     if opt, ok := opts.(SignerOpts); ok {
         uid = opt.Uid
     }
@@ -506,7 +506,7 @@ func VerifyWithSM2(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
 
 func CalculateSM2Hash(pub *PublicKey, msg, uid []byte) ([]byte, error) {
     if len(uid) == 0 {
-        uid = defaultUid
+        uid = defaultUID
     }
 
     za, err := CalculateZA(pub, uid)

@@ -2,7 +2,8 @@ package crypto
 
 import (
     "fmt"
-    "errors"
+
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 加密解密
@@ -29,15 +30,15 @@ func getEncrypt(m Multiple) (IEncrypt, error) {
 
 // 加密
 func (this Cryptobin) Encrypt() Cryptobin {
-    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
-        return crypt.encrypt()
+    err := tool.Recover(func() {
+        this = this.encrypt()
     })
 
     if err != nil {
         return this.AppendError(err).triggerError()
     }
 
-    return c
+    return this
 }
 
 // 加密
@@ -60,15 +61,15 @@ func (this Cryptobin) encrypt() Cryptobin {
 
 // 解密
 func (this Cryptobin) Decrypt() Cryptobin {
-    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
-        return crypt.decrypt()
+    err := tool.Recover(func() {
+        this = this.decrypt()
     })
 
     if err != nil {
         return this.AppendError(err).triggerError()
     }
 
-    return c
+    return this
 }
 
 // 解密
@@ -93,41 +94,26 @@ func (this Cryptobin) decrypt() Cryptobin {
 
 // 方法加密
 func (this Cryptobin) FuncEncrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
-    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
-        return fn(crypt).triggerError()
+    err := tool.Recover(func() {
+        this = fn(this).triggerError()
     })
 
     if err != nil {
         return this.AppendError(err).triggerError()
     }
 
-    return c
+    return this
 }
 
 // 方法解密
 func (this Cryptobin) FuncDecrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
-    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
-        return fn(crypt).triggerError()
+    err := tool.Recover(func() {
+        this = fn(this).triggerError()
     })
 
     if err != nil {
         return this.AppendError(err).triggerError()
     }
 
-    return c
-}
-
-// ====================
-
-// 方法加密
-func (this Cryptobin) recoverPanic(fn func(Cryptobin) Cryptobin) (crypt Cryptobin, err error) {
-    defer func() {
-        if e := recover(); e != nil {
-            err = errors.New(fmt.Sprintf("%v", e))
-        }
-    }()
-
-    crypt = fn(this)
-
-    return
+    return this
 }

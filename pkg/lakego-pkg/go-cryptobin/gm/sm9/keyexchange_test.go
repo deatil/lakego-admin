@@ -37,13 +37,13 @@ func Test_KeyExchange(t *testing.T) {
     }()
 
     // A1-A4
-    rA, err := initiator.InitKeyExchange(rand.Reader, hid)
+    rA, err := initiator.Init(rand.Reader, hid)
     if err != nil {
         t.Fatal(err)
     }
 
     // B1 - B7
-    rB, sigB, err := responder.RepondKeyExchange(rand.Reader, hid, rA)
+    rB, sigB, err := responder.Repond(rand.Reader, hid, rA)
     if err != nil {
         t.Fatal(err)
     }
@@ -94,13 +94,13 @@ func Test_KeyExchangeWithoutSignature(t *testing.T) {
     }()
 
     // A1-A4
-    rA, err := initiator.InitKeyExchange(rand.Reader, hid)
+    rA, err := initiator.Init(rand.Reader, hid)
     if err != nil {
         t.Fatal(err)
     }
 
     // B1 - B7
-    rB, sigB, err := responder.RepondKeyExchange(rand.Reader, hid, rA)
+    rB, sigB, err := responder.Repond(rand.Reader, hid, rA)
     if err != nil {
         t.Fatal(err)
     }
@@ -184,7 +184,7 @@ func Test_KeyExchangeSample(t *testing.T) {
 
     // A1-A4
     k, err := bigFromHex("5879DD1D51E175946F23B1B41E93BA31C584AE59A426EC1046A4D03B06C8")
-    initiator.initKeyExchange(hid, k)
+    initiator.init(hid, k)
 
     if hex.EncodeToString(initiator.secret.Marshal()) != "7cba5b19069ee66aa79d490413d11846b9ba76dd22567f809cf23b6d964bb265a9760c99cb6f706343fed05637085864958d6c90902aba7d405fbedf7b781599" {
         t.Fatal("not same")
@@ -196,7 +196,7 @@ func Test_KeyExchangeSample(t *testing.T) {
         t.Fatal(err)
     }
 
-    rB, sigB, err := responder.respondKeyExchange(hid, k, initiator.secret)
+    rB, sigB, err := responder.respond(hid, k, initiator.secret)
     if err != nil {
         t.Fatal(err)
     }

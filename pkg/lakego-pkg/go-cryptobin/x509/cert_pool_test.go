@@ -3,9 +3,111 @@ package x509
 import (
     "testing"
     "runtime"
+    "crypto/x509"
 )
 
 func TestCertPoolEqual(t *testing.T) {
+    tc := &x509.Certificate{Raw: []byte{1, 2, 3}, RawSubject: []byte{2}}
+    otherTC := &x509.Certificate{Raw: []byte{9, 8, 7}, RawSubject: []byte{8}}
+
+    emptyPool := x509.NewCertPool()
+    nonSystemPopulated := x509.NewCertPool()
+    nonSystemPopulated.AddCert(tc)
+    nonSystemPopulatedAlt := x509.NewCertPool()
+    nonSystemPopulatedAlt.AddCert(otherTC)
+    emptySystem, err := SysCertPool()
+    if err != nil {
+        t.Fatal(err)
+    }
+    populatedSystem, err := SysCertPool()
+    if err != nil {
+        t.Fatal(err)
+    }
+    populatedSystem.AddCert(tc)
+    populatedSystemAlt, err := SysCertPool()
+    if err != nil {
+        t.Fatal(err)
+    }
+    populatedSystemAlt.AddCert(otherTC)
+    tests := []struct {
+        name  string
+        a     *x509.CertPool
+        b     *x509.CertPool
+        equal bool
+    }{
+        {
+            name:  "two empty pools",
+            a:     emptyPool,
+            b:     emptyPool,
+            equal: true,
+        },
+        {
+            name:  "one empty pool, one populated pool",
+            a:     emptyPool,
+            b:     nonSystemPopulated,
+            equal: false,
+        },
+        {
+            name:  "two populated pools",
+            a:     nonSystemPopulated,
+            b:     nonSystemPopulated,
+            equal: true,
+        },
+        {
+            name:  "two populated pools, different content",
+            a:     nonSystemPopulated,
+            b:     nonSystemPopulatedAlt,
+            equal: false,
+        },
+        {
+            name:  "two empty system pools",
+            a:     emptySystem,
+            b:     emptySystem,
+            equal: true,
+        },
+        {
+            name:  "one empty system pool, one populated system pool",
+            a:     emptySystem,
+            b:     populatedSystem,
+            equal: false,
+        },
+        {
+            name:  "two populated system pools",
+            a:     populatedSystem,
+            b:     populatedSystem,
+            equal: true,
+        },
+        {
+            name:  "two populated pools, different content",
+            a:     populatedSystem,
+            b:     populatedSystemAlt,
+            equal: false,
+        },
+        {
+            name:  "two nil pools",
+            a:     nil,
+            b:     nil,
+            equal: true,
+        },
+        {
+            name:  "one nil pool, one empty pool",
+            a:     nil,
+            b:     emptyPool,
+            equal: false,
+        },
+    }
+
+    for _, tc := range tests {
+        t.Run(tc.name, func(t *testing.T) {
+            equal := tc.a.Equal(tc.b)
+            if equal != tc.equal {
+                t.Errorf("Unexpected Equal result: got %t, want %t", equal, tc.equal)
+            }
+        })
+    }
+}
+
+func TestCertPoolEqual2(t *testing.T) {
     if runtime.GOOS == "windows" {
         return
     }

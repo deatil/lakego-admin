@@ -8,6 +8,7 @@ import (
     "runtime"
     "io/ioutil"
     "encoding/pem"
+    "crypto/x509"
     "crypto/sha256"
 )
 
@@ -81,6 +82,14 @@ func loadSystemRoots() (*CertPool, error) {
     }
 
     return nil, firstErr
+}
+
+// SystemCertPool returns a copy of the system cert pool.
+//
+// Any mutations to the returned pool are not written to disk and do
+// not affect any other pool.
+func SysCertPool() (*x509.CertPool, error) {
+    return x509.SystemCertPool()
 }
 
 // SystemCertPool returns a copy of the system cert pool.

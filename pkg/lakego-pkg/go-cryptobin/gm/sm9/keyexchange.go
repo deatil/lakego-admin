@@ -13,7 +13,7 @@ import (
 
 // KeyExchange represents key exchange struct, include internal stat in whole key exchange flow.
 // Initiator's flow will be: NewKeyExchange -> InitKeyExchange -> transmission -> ConfirmResponder
-// Responder's flow will be: NewKeyExchange -> waiting ... -> RepondKeyExchange -> transmission -> ConfirmInitiator
+// Responder's flow will be: NewKeyExchange -> waiting ... -> Repond -> transmission -> ConfirmInitiator
 type KeyExchange struct {
     genSignature bool               // control the optional sign/verify step triggered by responsder
     keyLength    int                // key length
@@ -40,26 +40,22 @@ func NewKeyExchange(priv *EncryptPrivateKey, uid, peerUID []byte, keyLen int, ge
     return ke
 }
 
-// Reset clears all internal state and Ephemeral private/public keys
-func (ke *KeyExchange) Reset() {
-    if ke.r != nil {
-        ke.r.SetBytes([]byte{0})
+// Init generates random with responder uid, for initiator's step A1-A4
+func (ke *KeyExchange) Init(rand io.Reader, hid byte) (*sm9curve.G1, error) {
+    r, err := randFieldElement(rand, sm9curve.Order)
+    if err != nil {
+        return nil, err
     }
 
-    if ke.g1 != nil {
-        ke.g1.SetOne()
+    err = ke.init(hid, r)
+    if err != nil {
+        return nil, err
     }
 
-    if ke.g2 != nil {
-        ke.g2.SetOne()
-    }
-
-    if ke.g3 != nil {
-        ke.g3.SetOne()
-    }
+    return ke.secret, nil
 }
 
-func (ke *KeyExchange) initKeyExchange(hid byte, r *big.Int) error {
+func (ke *KeyExchange) init(hid byte, r *big.Int) error {
     pubB, err := ke.privateKey.GenerateUserPublicKey(ke.peerUID, hid)
     if err != nil {
         return err
@@ -77,19 +73,23 @@ func (ke *KeyExchange) initKeyExchange(hid byte, r *big.Int) error {
     return nil
 }
 
-// InitKeyExchange generates random with responder uid, for initiator's step A1-A4
-func (ke *KeyExchange) InitKeyExchange(rand io.Reader, hid byte) (*sm9curve.G1, error) {
-    r, err := randFieldElement(rand, sm9curve.Order)
-    if err != nil {
-        return nil, err
+// Reset clears all internal state and Ephemeral private/public keys
+func (ke *KeyExchange) Reset() {
+    if ke.r != nil {
+        ke.r.SetBytes([]byte{0})
     }
 
-    err = ke.initKeyExchange(hid, r)
-    if err != nil {
-        return nil, err
+    if ke.g1 != nil {
+        ke.g1.SetOne()
     }
 
-    return ke.secret, nil
+    if ke.g2 != nil {
+        ke.g2.SetOne()
+    }
+
+    if ke.g3 != nil {
+        ke.g3.SetOne()
+    }
 }
 
 func (ke *KeyExchange) sign(isResponder bool, prefix byte) []byte {
@@ -143,7 +143,17 @@ func (ke *KeyExchange) generateSharedKey(isResponder bool) ([]byte, error) {
     return smkdf.Key(sm3.New, buffer, ke.keyLength), nil
 }
 
-func (ke *KeyExchange) respondKeyExchange(hid byte, r *big.Int, rA *sm9curve.G1) (*sm9curve.G1, []byte, error) {
+// Repond when responder receive rA, for responder's step B1-B7
+func (ke *KeyExchange) Repond(rand io.Reader, hid byte, rA *sm9curve.G1) (*sm9curve.G1, []byte, error) {
+    r, err := randFieldElement(rand, sm9curve.Order)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    return ke.respond(hid, r, rA)
+}
+
+func (ke *KeyExchange) respond(hid byte, r *big.Int, rA *sm9curve.G1) (*sm9curve.G1, []byte, error) {
     if !rA.IsOnCurve() {
         return nil, nil, errors.New("sm9: invalid initiator's ephemeral public key")
     }
@@ -187,16 +197,6 @@ func (ke *KeyExchange) respondKeyExchange(hid byte, r *big.Int, rA *sm9curve.G1)
     return ke.secret, ke.sign(true, 0x82), nil
 }
 
-// RepondKeyExchange when responder receive rA, for responder's step B1-B7
-func (ke *KeyExchange) RepondKeyExchange(rand io.Reader, hid byte, rA *sm9curve.G1) (*sm9curve.G1, []byte, error) {
-    r, err := randFieldElement(rand, sm9curve.Order)
-    if err != nil {
-        return nil, nil, err
-    }
-
-    return ke.respondKeyExchange(hid, r, rA)
-}
-
 // ConfirmResponder for initiator's step A5-A7
 func (ke *KeyExchange) ConfirmResponder(rB *sm9curve.G1, sB []byte) ([]byte, []byte, error) {
     if !rB.IsOnCurve() {
@@ -213,14 +213,12 @@ func (ke *KeyExchange) ConfirmResponder(rB *sm9curve.G1, sB []byte) ([]byte, []b
     }
 
     ke.g1 = g1
-
     ke.g2 = sm9curve.Pair(ke.peerSecret, ke.privateKey.Sk)
 
     g3, err := sm9curve.ScalarMultGT(ke.g2, sm9curve.NormalizeScalar(ke.r.Bytes()))
     if err != nil {
         return nil, nil, err
     }
-
     ke.g3 = g3
 
     // step 6, verify signature

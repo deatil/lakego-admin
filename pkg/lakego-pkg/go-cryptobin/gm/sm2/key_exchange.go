@@ -74,17 +74,17 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
         return
     }
 
-    h1 := BytesCombine(vx.Bytes(), za, zb, rpub.X.Bytes(), rpub.Y.Bytes(), rpri.X.Bytes(), rpri.Y.Bytes())
+    h1 := bytesCombine(vx.Bytes(), za, zb, rpub.X.Bytes(), rpub.Y.Bytes(), rpri.X.Bytes(), rpri.Y.Bytes())
     if !thisISA {
-        h1 = BytesCombine(vx.Bytes(), za, zb, rpri.X.Bytes(), rpri.Y.Bytes(), rpub.X.Bytes(), rpub.Y.Bytes())
+        h1 = bytesCombine(vx.Bytes(), za, zb, rpri.X.Bytes(), rpri.Y.Bytes(), rpub.X.Bytes(), rpub.Y.Bytes())
     }
 
     hash := sm3.Sum(h1)
 
-    h2 := BytesCombine([]byte{0x02}, vy.Bytes(), hash[:])
+    h2 := bytesCombine([]byte{0x02}, vy.Bytes(), hash[:])
     S1 := sm3.Sum(h2)
 
-    h3 := BytesCombine([]byte{0x03}, vy.Bytes(), hash[:])
+    h3 := bytesCombine([]byte{0x03}, vy.Bytes(), hash[:])
     S2 := sm3.Sum(h3)
 
     return k, S1[:], S2[:], nil
@@ -109,7 +109,7 @@ func keXHat(x *big.Int) (xul *big.Int) {
     return r.Add(r, _2w)
 }
 
-func BytesCombine(pBytes ...[]byte) []byte {
+func bytesCombine(pBytes ...[]byte) []byte {
     num := len(pBytes)
 
     s := make([][]byte, num)
