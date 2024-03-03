@@ -79,7 +79,7 @@ func (this CA) CreateCA() CA {
 
             publicKey := &privateKey.PublicKey
 
-            caBytes, err = cryptobin_x509.CreateCertificate(cert, cert, publicKey, privateKey)
+            caBytes, err = cryptobin_x509.CreateCertificate(rand.Reader, cert, cert, publicKey, privateKey)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -131,7 +131,7 @@ func (this CA) CreateCert(ca any) CA {
 
             publicKey := &privateKey.PublicKey
 
-            certBytes, err = cryptobin_x509.CreateCertificate(newCert, newCa, publicKey, privateKey)
+            certBytes, err = cryptobin_x509.CreateCertificate(rand.Reader, newCert, newCa, publicKey, privateKey)
 
         default:
             newCert, certOk := this.cert.(*x509.Certificate)

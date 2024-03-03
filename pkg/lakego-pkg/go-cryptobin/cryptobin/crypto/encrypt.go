@@ -2,6 +2,7 @@ package crypto
 
 import (
     "fmt"
+    "errors"
 )
 
 // 加密解密
@@ -28,6 +29,19 @@ func getEncrypt(m Multiple) (IEncrypt, error) {
 
 // 加密
 func (this Cryptobin) Encrypt() Cryptobin {
+    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
+        return crypt.encrypt()
+    })
+
+    if err != nil {
+        return this.AppendError(err).triggerError()
+    }
+
+    return c
+}
+
+// 加密
+func (this Cryptobin) encrypt() Cryptobin {
     // 加密解密
     newEncrypt, err := getEncrypt(this.multiple)
     if err != nil {
@@ -46,6 +60,19 @@ func (this Cryptobin) Encrypt() Cryptobin {
 
 // 解密
 func (this Cryptobin) Decrypt() Cryptobin {
+    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
+        return crypt.decrypt()
+    })
+
+    if err != nil {
+        return this.AppendError(err).triggerError()
+    }
+
+    return c
+}
+
+// 解密
+func (this Cryptobin) decrypt() Cryptobin {
     // 加密解密
     newEncrypt, err := getEncrypt(this.multiple)
     if err != nil {
@@ -65,11 +92,42 @@ func (this Cryptobin) Decrypt() Cryptobin {
 // ====================
 
 // 方法加密
-func (this Cryptobin) FuncEncrypt(f func(Cryptobin) Cryptobin) Cryptobin {
-    return f(this).triggerError()
+func (this Cryptobin) FuncEncrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
+    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
+        return fn(crypt).triggerError()
+    })
+
+    if err != nil {
+        return this.AppendError(err).triggerError()
+    }
+
+    return c
 }
 
 // 方法解密
-func (this Cryptobin) FuncDecrypt(f func(Cryptobin) Cryptobin) Cryptobin {
-    return f(this).triggerError()
+func (this Cryptobin) FuncDecrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
+    c, err := this.recoverPanic(func(crypt Cryptobin) Cryptobin {
+        return fn(crypt).triggerError()
+    })
+
+    if err != nil {
+        return this.AppendError(err).triggerError()
+    }
+
+    return c
+}
+
+// ====================
+
+// 方法加密
+func (this Cryptobin) recoverPanic(fn func(Cryptobin) Cryptobin) (crypt Cryptobin, err error) {
+    defer func() {
+        if e := recover(); e != nil {
+            err = errors.New(fmt.Sprintf("%v", e))
+        }
+    }()
+
+    crypt = fn(this)
+
+    return
 }

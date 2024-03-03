@@ -38,8 +38,8 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 }
 
 func (pub *PublicKey) Encrypt(plaintext []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    h := sha256.Sum256(plaintext)
     p := new(big.Int).SetBytes(plaintext)
+    h := sha256.Sum256(p.Bytes())
 
     ciphertext := squareAndMultiple(p, two, pub.N)
     ciphertextBytes := append(ciphertext.Bytes(), h[:]...)

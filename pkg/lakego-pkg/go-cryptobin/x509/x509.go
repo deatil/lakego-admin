@@ -3,8 +3,8 @@ package x509
 import (
     "io"
     "net"
+    "net/url"
     "fmt"
-    "hash"
     "time"
     "bytes"
     "errors"
@@ -13,30 +13,26 @@ import (
     "crypto"
     "crypto/dsa"
     "crypto/ecdsa"
-    "crypto/cipher"
+    "crypto/ed25519"
     "crypto/elliptic"
-    "crypto/md5"
     "crypto/rsa"
-    "crypto/sha1"
-    "crypto/rand"
-    "crypto/sha256"
-    "crypto/sha512"
     "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
     "encoding/pem"
 
-    "golang.org/x/crypto/sha3"
-    "golang.org/x/crypto/ripemd160"
+    "golang.org/x/crypto/cryptobyte"
+    cryptobyte_asn1 "golang.org/x/crypto/cryptobyte/asn1"
 
     "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/gm/sm2"
-    "github.com/deatil/go-cryptobin/hash/sm3"
+)
 
-    cipher_gost "github.com/deatil/go-cryptobin/cipher/gost"
-    "github.com/deatil/go-cryptobin/hash/gost/gost341194"
-    "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
-    "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
+const (
+    nameTypeEmail = 1
+    nameTypeDNS   = 2
+    nameTypeURI   = 6
+    nameTypeIP    = 7
 )
 
 // rsaPublicKey reflects the ASN.1 structure of a PKCS#1 public key.
@@ -61,6 +57,24 @@ func marshalPublicKey(pub any) (publicKeyBytes []byte, publicKeyAlgorithm pkix.A
             publicKeyAlgorithm.Parameters = asn1.RawValue{
                 Tag: 5,
             }
+        case *dsa.PublicKey:
+            publicKeyBytes, err = asn1.Marshal(pub.Y)
+            if err != nil {
+                return nil, pkix.AlgorithmIdentifier{}, err
+            }
+
+            var paramBytes []byte
+            paramBytes, err = asn1.Marshal(dsaAlgorithmParameters{
+                P: pub.P,
+                Q: pub.Q,
+                G: pub.G,
+            })
+            if err != nil {
+                return
+            }
+
+            publicKeyAlgorithm.Algorithm = oidPublicKeyDSA
+            publicKeyAlgorithm.Parameters.FullBytes = paramBytes
         case *ecdsa.PublicKey:
             publicKeyBytes = elliptic.Marshal(pub.Curve, pub.X, pub.Y)
             oid, ok := oidFromNamedCurve(pub.Curve)
@@ -74,6 +88,9 @@ func marshalPublicKey(pub any) (publicKeyBytes []byte, publicKeyAlgorithm pkix.A
                 return
             }
             publicKeyAlgorithm.Parameters.FullBytes = paramBytes
+        case ed25519.PublicKey:
+            publicKeyBytes = pub
+            publicKeyAlgorithm.Algorithm = oidPublicKeyEd25519
         case *sm2.PublicKey:
             publicKeyBytes = elliptic.Marshal(pub.Curve, pub.X, pub.Y)
             oid, ok := oidFromNamedCurve(pub.Curve)
@@ -110,11 +127,13 @@ func marshalPublicKey(pub any) (publicKeyBytes []byte, publicKeyAlgorithm pkix.A
 
 func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error) {
     asn1Data := keyData.PublicKey.RightAlign()
+    params := keyData.Algorithm.Parameters
+
     switch algo {
         case RSA:
             // RSA public keys must have a NULL in the parameters
             // (https://tools.ietf.org/html/rfc3279#section-2.3.1).
-            if !bytes.Equal(keyData.Algorithm.Parameters.FullBytes, asn1Null) {
+            if !bytes.Equal(params.FullBytes, asn1Null) {
                 return nil, errors.New("x509: RSA key missing NULL parameters")
             }
 
@@ -148,7 +167,8 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
             if len(rest) != 0 {
                 return nil, errors.New("x509: trailing data after DSA public key")
             }
-            paramsData := keyData.Algorithm.Parameters.FullBytes
+
+            paramsData := params.FullBytes
             params := new(dsaAlgorithmParameters)
             rest, err = asn1.Unmarshal(paramsData, params)
             if err != nil {
@@ -157,9 +177,11 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
             if len(rest) != 0 {
                 return nil, errors.New("x509: trailing data after DSA parameters")
             }
+
             if p.Sign() <= 0 || params.P.Sign() <= 0 || params.Q.Sign() <= 0 || params.G.Sign() <= 0 {
                 return nil, errors.New("x509: zero or negative DSA parameter")
             }
+
             pub := &dsa.PublicKey{
                 Parameters: dsa.Parameters{
                     P: params.P,
@@ -168,9 +190,10 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
                 },
                 Y: p,
             }
+
             return pub, nil
         case ECDSA:
-            paramsData := keyData.Algorithm.Parameters.FullBytes
+            paramsData := params.FullBytes
             namedCurveOID := new(asn1.ObjectIdentifier)
             rest, err := asn1.Unmarshal(paramsData, namedCurveOID)
             if err != nil {
@@ -193,6 +216,16 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
                 Y:     y,
             }
             return pub, nil
+        case Ed25519:
+            // RFC 8410, Section 3
+            // > For all of the OIDs, the parameters MUST be absent.
+            if len(params.FullBytes) != 0 {
+                return nil, errors.New("x509: Ed25519 key encoded with illegal parameters")
+            }
+            if len(asn1Data) != ed25519.PublicKeySize {
+                return nil, errors.New("x509: wrong Ed25519 public key size")
+            }
+            return ed25519.PublicKey(asn1Data), nil
         case GOST3410:
             keyBytes, err := asn1.Marshal(*keyData)
             if err != nil {
@@ -259,132 +292,10 @@ type authKeyId struct {
 
 type SignatureAlgorithm int
 
-var newGOST34112001 = func() hash.Hash {
-    return gost341194.New(func(key []byte) cipher.Block {
-        cip, _ := cipher_gost.NewCipher(key, cipher_gost.SboxGostR341194CryptoProParamSet)
-
-        return cip
-    })
-}
-
-type Hash uint
-
-func init() {
-    RegisterHash(MD4, nil)
-    RegisterHash(MD5, md5.New)
-    RegisterHash(SHA1, sha1.New)
-    RegisterHash(SHA224, sha256.New224)
-    RegisterHash(SHA256, sha256.New)
-    RegisterHash(SHA384, sha512.New384)
-    RegisterHash(SHA512, sha512.New)
-    RegisterHash(MD5SHA1, nil)
-    RegisterHash(RIPEMD160, ripemd160.New)
-    RegisterHash(SHA3_224, sha3.New224)
-    RegisterHash(SHA3_256, sha3.New256)
-    RegisterHash(SHA3_384, sha3.New384)
-    RegisterHash(SHA3_512, sha3.New512)
-    RegisterHash(SHA512_224, sha512.New512_224)
-    RegisterHash(SHA512_256, sha512.New512_256)
-    RegisterHash(SM3, sm3.New)
-    RegisterHash(GOST34112001, newGOST34112001)
-    RegisterHash(GOST34112012256, gost34112012256.New)
-    RegisterHash(GOST34112012512, gost34112012512.New)
-}
-
-// HashFunc simply returns the value of h so that Hash implements SignerOpts.
-func (h Hash) HashFunc() crypto.Hash {
-    return crypto.Hash(h)
-}
-
-const (
-    MD4        Hash = 1 + iota // import golang.org/x/crypto/md4
-    MD5                        // import crypto/md5
-    SHA1                       // import crypto/sha1
-    SHA224                     // import crypto/sha256
-    SHA256                     // import crypto/sha256
-    SHA384                     // import crypto/sha512
-    SHA512                     // import crypto/sha512
-    MD5SHA1                    // no implementation; MD5+SHA1 used for TLS RSA
-    RIPEMD160                  // import golang.org/x/crypto/ripemd160
-    SHA3_224                   // import golang.org/x/crypto/sha3
-    SHA3_256                   // import golang.org/x/crypto/sha3
-    SHA3_384                   // import golang.org/x/crypto/sha3
-    SHA3_512                   // import golang.org/x/crypto/sha3
-    SHA512_224                 // import crypto/sha512
-    SHA512_256                 // import crypto/sha512
-    SM3
-    GOST34112001
-    GOST34112012256
-    GOST34112012512
-    maxHash
-)
-
-var digestSizes = []uint8{
-    MD4:        16,
-    MD5:        16,
-    SHA1:       20,
-    SHA224:     28,
-    SHA256:     32,
-    SHA384:     48,
-    SHA512:     64,
-    SHA512_224: 28,
-    SHA512_256: 32,
-    SHA3_224:   28,
-    SHA3_256:   32,
-    SHA3_384:   48,
-    SHA3_512:   64,
-    MD5SHA1:    36,
-    RIPEMD160:  20,
-    SM3:        32,
-    GOST34112001:    32,
-    GOST34112012256: 32,
-    GOST34112012512: 64,
-}
-
-// Size returns the length, in bytes, of a digest resulting from the given hash
-// function. It doesn't require that the hash function in question be linked
-// into the program.
-func (h Hash) Size() int {
-    if h > 0 && h < maxHash {
-        return int(digestSizes[h])
-    }
-    panic("crypto: Size of unknown hash function")
-}
-
-// New returns a new hash.Hash calculating the given hash function. New panics
-// if the hash function is not linked into the binary.
-func (h Hash) New() hash.Hash {
-    if h > 0 && h < maxHash {
-        f := hashes[h]
-        if f != nil {
-            return f()
-        }
-    }
-    panic("crypto: requested hash function #" + strconv.Itoa(int(h)) + " is unavailable")
-}
-
-// Available reports whether the given hash function is linked into the binary.
-func (h Hash) Available() bool {
-    return h < maxHash && hashes[h] != nil
-}
-
-var hashes = make([]func() hash.Hash, maxHash)
-
-// RegisterHash registers a function that returns a new instance of the given
-// hash function. This is intended to be called from the init function in
-// packages that implement hash functions.
-func RegisterHash(h Hash, f func() hash.Hash) {
-    if h >= maxHash {
-        panic("crypto: RegisterHash of unknown hash function")
-    }
-    hashes[h] = f
-}
-
 const (
     UnknownSignatureAlgorithm SignatureAlgorithm = iota
     MD2WithRSA
     MD5WithRSA
-    //	SM3WithRSA reserve
     SHA1WithRSA
     SHA256WithRSA
     SHA384WithRSA
@@ -398,9 +309,11 @@ const (
     SHA256WithRSAPSS
     SHA384WithRSAPSS
     SHA512WithRSAPSS
+    PureEd25519
     SM2WithSM3
     SM2WithSHA1
     SM2WithSHA256
+    SM3WithRSA
     GOST3410WithGOST34112001
     GOST3410WithGOST34112012256
     GOST3410WithGOST34112012512
@@ -419,13 +332,13 @@ var algoName = [...]string{
     MD2WithRSA:  "MD2-RSA",
     MD5WithRSA:  "MD5-RSA",
     SHA1WithRSA: "SHA1-RSA",
-    //	SM3WithRSA:       "SM3-RSA", reserve
     SHA256WithRSA:    "SHA256-RSA",
     SHA384WithRSA:    "SHA384-RSA",
     SHA512WithRSA:    "SHA512-RSA",
     SHA256WithRSAPSS: "SHA256-RSAPSS",
     SHA384WithRSAPSS: "SHA384-RSAPSS",
     SHA512WithRSAPSS: "SHA512-RSAPSS",
+    PureEd25519:      "Ed25519",
     DSAWithSHA1:      "DSA-SHA1",
     DSAWithSHA256:    "DSA-SHA256",
     ECDSAWithSHA1:    "ECDSA-SHA1",
@@ -435,6 +348,7 @@ var algoName = [...]string{
     SM2WithSM3:       "SM2-SM3",
     SM2WithSHA1:      "SM2-SHA1",
     SM2WithSHA256:    "SM2-SHA256",
+    SM3WithRSA:       "SM3-RSA",
     GOST3410WithGOST34112001:    "GOST3410-GOST34112001",
     GOST3410WithGOST34112012256: "GOST3410-GOST34112012256",
     GOST3410WithGOST34112012512: "GOST3410-GOST34112012512",
@@ -454,6 +368,7 @@ const (
     RSA
     DSA
     ECDSA
+    Ed25519
     SM2
     GOST3410
 )
@@ -522,10 +437,12 @@ var (
     oidSignatureECDSAWithSHA256 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 2}
     oidSignatureECDSAWithSHA384 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 3}
     oidSignatureECDSAWithSHA512 = asn1.ObjectIdentifier{1, 2, 840, 10045, 4, 3, 4}
+    oidSignatureEd25519         = asn1.ObjectIdentifier{1, 3, 101, 112}
+
     oidSignatureSM2WithSM3      = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 501}
     oidSignatureSM2WithSHA1     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 502}
     oidSignatureSM2WithSHA256   = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 503}
-    // oidSignatureSM3WithRSA      = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 504}
+    oidSignatureSM3WithRSA      = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 504}
 
     oidSignatureGOST3410WithGOST3411        = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3}
     oidSignatureGOST3410WithGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3, 2}
@@ -571,10 +488,11 @@ var signatureAlgorithmDetails = []struct {
     {ECDSAWithSHA256, oidSignatureECDSAWithSHA256, ECDSA, SHA256},
     {ECDSAWithSHA384, oidSignatureECDSAWithSHA384, ECDSA, SHA384},
     {ECDSAWithSHA512, oidSignatureECDSAWithSHA512, ECDSA, SHA512},
+    {PureEd25519, oidSignatureEd25519, Ed25519, Hash(0)},
     {SM2WithSM3, oidSignatureSM2WithSM3, ECDSA, SM3},
     {SM2WithSHA1, oidSignatureSM2WithSHA1, ECDSA, SHA1},
     {SM2WithSHA256, oidSignatureSM2WithSHA256, ECDSA, SHA256},
-    //	{SM3WithRSA, oidSignatureSM3WithRSA, RSA, SM3},
+    {SM3WithRSA, oidSignatureSM3WithRSA, RSA, SM3},
     {GOST3410WithGOST34112001, oidSignatureGOST3410WithGOST3411, GOST3410, GOST34112001},
     {GOST3410WithGOST34112012256, oidSignatureGOST3410WithGOST34112012256, GOST3410, GOST34112012256},
     {GOST3410WithGOST34112012512, oidSignatureGOST3410WithGOST34112012512, GOST3410, GOST34112012512},
@@ -598,12 +516,12 @@ func rsaPSSParameters(hashFunc Hash) asn1.RawValue {
     var hashOID asn1.ObjectIdentifier
 
     switch hashFunc {
-    case SHA256:
-        hashOID = oidSHA256
-    case SHA384:
-        hashOID = oidSHA384
-    case SHA512:
-        hashOID = oidSHA512
+        case SHA256:
+            hashOID = oidSHA256
+        case SHA384:
+            hashOID = oidSHA384
+        case SHA512:
+            hashOID = oidSHA512
     }
 
     params := pssParameters{
@@ -681,12 +599,12 @@ func getSignatureAlgorithmFromAI(ai pkix.AlgorithmIdentifier) SignatureAlgorithm
     }
 
     switch {
-    case params.Hash.Algorithm.Equal(oidSHA256) && params.SaltLength == 32:
-        return SHA256WithRSAPSS
-    case params.Hash.Algorithm.Equal(oidSHA384) && params.SaltLength == 48:
-        return SHA384WithRSAPSS
-    case params.Hash.Algorithm.Equal(oidSHA512) && params.SaltLength == 64:
-        return SHA512WithRSAPSS
+        case params.Hash.Algorithm.Equal(oidSHA256) && params.SaltLength == 32:
+            return SHA256WithRSAPSS
+        case params.Hash.Algorithm.Equal(oidSHA384) && params.SaltLength == 48:
+            return SHA384WithRSAPSS
+        case params.Hash.Algorithm.Equal(oidSHA512) && params.SaltLength == 64:
+            return SHA512WithRSAPSS
     }
 
     return UnknownSignatureAlgorithm
@@ -707,9 +625,10 @@ func getSignatureAlgorithmFromAI(ai pkix.AlgorithmIdentifier) SignatureAlgorithm
 // id-ecPublicKey OBJECT IDENTIFIER ::= {
 //       iso(1) member-body(2) us(840) ansi-X9-62(10045) keyType(2) 1 }
 var (
-    oidPublicKeyRSA   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
-    oidPublicKeyDSA   = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
-    oidPublicKeyECDSA = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
+    oidPublicKeyRSA     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
+    oidPublicKeyDSA     = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
+    oidPublicKeyECDSA   = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
+    oidPublicKeyEd25519 = asn1.ObjectIdentifier{1, 3, 101, 112}
 
     oidGOSTPublicKey         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
     oidGost2012PublicKey256  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
@@ -718,17 +637,20 @@ var (
 
 func getPublicKeyAlgorithmFromOID(oid asn1.ObjectIdentifier) PublicKeyAlgorithm {
     switch {
-    case oid.Equal(oidPublicKeyRSA):
-        return RSA
-    case oid.Equal(oidPublicKeyDSA):
-        return DSA
-    case oid.Equal(oidPublicKeyECDSA):
-        return ECDSA
-    case oid.Equal(oidGOSTPublicKey),
-        oid.Equal(oidGost2012PublicKey256),
-        oid.Equal(oidGost2012PublicKey512):
-        return GOST3410
+        case oid.Equal(oidPublicKeyRSA):
+            return RSA
+        case oid.Equal(oidPublicKeyDSA):
+            return DSA
+        case oid.Equal(oidPublicKeyECDSA):
+            return ECDSA
+        case oid.Equal(oidPublicKeyEd25519):
+            return Ed25519
+        case oid.Equal(oidGOSTPublicKey),
+            oid.Equal(oidGost2012PublicKey256),
+            oid.Equal(oidGost2012PublicKey512):
+            return GOST3410
     }
+
     return UnknownPublicKeyAlgorithm
 }
 
@@ -937,6 +859,7 @@ type Certificate struct {
 
     BasicConstraintsValid bool // if true then the next two fields are valid.
     IsCA                  bool
+
     MaxPathLen            int
     // MaxPathLenZero indicates that BasicConstraintsValid==true and
     // MaxPathLen==0 should be interpreted as an actual maximum path length
@@ -955,10 +878,18 @@ type Certificate struct {
     DNSNames       []string
     EmailAddresses []string
     IPAddresses    []net.IP
+    URIs           []*url.URL
 
     // Name constraints
     PermittedDNSDomainsCritical bool // if true then the name constraints are marked critical.
     PermittedDNSDomains         []string
+    ExcludedDNSDomains          []string
+    PermittedIPRanges           []*net.IPNet
+    ExcludedIPRanges            []*net.IPNet
+    PermittedEmailAddresses     []string
+    ExcludedEmailAddresses      []string
+    PermittedURIDomains         []string
+    ExcludedURIDomains          []string
 
     // CRL Distribution Points
     CRLDistributionPoints []string
@@ -988,6 +919,24 @@ func (ConstraintViolationError) Error() string {
 
 func (c *Certificate) Equal(other *Certificate) bool {
     return bytes.Equal(c.Raw, other.Raw)
+}
+
+func (c *Certificate) hasSANExtension() bool {
+    return oidInExtensions(oidExtensionSubjectAltName, c.Extensions)
+}
+
+func (c *Certificate) hasNameConstraints() bool {
+    return oidInExtensions(oidExtensionNameConstraints, c.Extensions)
+}
+
+func (c *Certificate) getSANExtension() []byte {
+    for _, e := range c.Extensions {
+        if e.Id.Equal(oidExtensionSubjectAltName) {
+            return e.Value
+        }
+    }
+
+    return nil
 }
 
 // Entrust have a broken root certificate (CN=Entrust.net Certification
@@ -1090,7 +1039,9 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             hashType = SHA512
         case MD2WithRSA, MD5WithRSA:
             return InsecureAlgorithmError(algo)
-        case SM2WithSM3: // SM3WithRSA reserve
+        case PureEd25519:
+            hashType = Hash(0)
+        case SM2WithSM3, SM3WithRSA:
             hashType = SM3
         case GOST3410WithGOST34112001:
             hashType = GOST34112001
@@ -1102,14 +1053,20 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             return ErrUnsupportedAlgorithm
     }
 
-    if !hashType.Available() {
-        return ErrUnsupportedAlgorithm
+    if algo != PureEd25519 {
+        if !hashType.Available() {
+            return ErrUnsupportedAlgorithm
+        }
     }
 
     fnHash := func() []byte {
-        h := hashType.New()
-        h.Write(signed)
-        return h.Sum(nil)
+        if hashType != 0 {
+            h := hashType.New()
+            h.Write(signed)
+            return h.Sum(nil)
+        } else {
+            return signed
+        }
     }
 
     switch pub := publicKey.(type) {
@@ -1117,7 +1074,14 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             if algo.isRSAPSS() {
                 return rsa.VerifyPSS(pub, crypto.Hash(hashType), fnHash(), signature, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash})
             } else {
-                return rsa.VerifyPKCS1v15(pub, crypto.Hash(hashType), fnHash(), signature)
+                var cHash crypto.Hash
+                if isRSASigHash(crypto.Hash(hashType)) {
+                    cHash = crypto.Hash(hashType)
+                } else {
+                    cHash = crypto.Hash(0)
+                }
+
+                return rsa.VerifyPKCS1v15(pub, cHash, fnHash(), signature)
             }
         case *dsa.PublicKey:
             dsaSig := new(dsaSignature)
@@ -1162,6 +1126,12 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
                         return errors.New("x509: ECDSA verification failure")
                     }
             }
+            return
+        case ed25519.PublicKey:
+            if !ed25519.Verify(pub, fnHash(), signature) {
+                return errors.New("x509: Ed25519 verification failure")
+            }
+
             return
         case *gost.PublicKey:
             gostOk, _ := gost.Verify(pub, fnHash(), signature)
@@ -1229,7 +1199,7 @@ type distributionPointName struct {
 // asn1Null is the ASN.1 encoding of a NULL value.
 var asn1Null = []byte{5, 0}
 
-func parseSANExtension(value []byte) (dnsNames, emailAddresses []string, ipAddresses []net.IP, err error) {
+func parseSANExtension(value []byte) (dnsNames, emailAddresses []string, ipAddresses []net.IP, uris []*url.URL, err error) {
     // RFC 5280, 4.2.1.6
 
     // SubjectAltName ::= GeneralNames
@@ -1267,18 +1237,52 @@ func parseSANExtension(value []byte) (dnsNames, emailAddresses []string, ipAddre
             return
         }
         switch v.Tag {
-        case 1:
-            emailAddresses = append(emailAddresses, string(v.Bytes))
-        case 2:
-            dnsNames = append(dnsNames, string(v.Bytes))
-        case 7:
-            switch len(v.Bytes) {
-            case net.IPv4len, net.IPv6len:
-                ipAddresses = append(ipAddresses, v.Bytes)
-            default:
-                err = errors.New("x509: certificate contained IP address of length " + strconv.Itoa(len(v.Bytes)))
-                return
-            }
+            case nameTypeEmail:
+                email := string(v.Bytes)
+                if err = isIA5String(email); err != nil {
+                    err = errors.New("x509: SAN rfc822Name is malformed")
+                    return
+                }
+
+                emailAddresses = append(emailAddresses, email)
+            case nameTypeDNS:
+                name := string(v.Bytes)
+                if err = isIA5String(name); err != nil {
+                    err = errors.New("x509: SAN dNSName is malformed")
+                    return
+                }
+
+                dnsNames = append(dnsNames, name)
+            case nameTypeURI:
+                uriStr := string(v.Bytes)
+                if err = isIA5String(uriStr); err != nil {
+                    err = errors.New("x509: SAN uniformResourceIdentifier is malformed")
+                    return
+                }
+
+                uri, e := url.Parse(uriStr)
+                if e != nil {
+                    err = fmt.Errorf("x509: cannot parse URI %q: %s", uriStr, err)
+                    return
+                }
+
+                if len(uri.Host) > 0 {
+                    if _, ok := domainToReverseLabels(uri.Host); !ok {
+                        err = fmt.Errorf("x509: cannot parse URI %q: invalid domain", uriStr)
+                        return
+                    }
+                }
+
+                uris = append(uris, uri)
+
+            case nameTypeIP:
+                switch len(v.Bytes) {
+                    case net.IPv4len, net.IPv6len:
+                        ipAddresses = append(ipAddresses, v.Bytes)
+                    default:
+                        err = errors.New("x509: certificate contained IP address of length " + strconv.Itoa(len(v.Bytes)))
+                        return
+                }
         }
     }
 
@@ -1365,7 +1369,7 @@ func parseCertificate(in *certificate) (*Certificate, error) {
                 out.MaxPathLenZero = out.MaxPathLen == 0
 
             case 17:
-                out.DNSNames, out.EmailAddresses, out.IPAddresses, err = parseSANExtension(e.Value)
+                out.DNSNames, out.EmailAddresses, out.IPAddresses, out.URIs, err = parseSANExtension(e.Value)
                 if err != nil {
                     return nil, err
                 }
@@ -1376,40 +1380,9 @@ func parseCertificate(in *certificate) (*Certificate, error) {
                 }
 
             case 30:
-                // RFC 5280, 4.2.1.10
-
-                // NameConstraints ::= SEQUENCE {
-                //      permittedSubtrees       [0]     GeneralSubtrees OPTIONAL,
-                //      excludedSubtrees        [1]     GeneralSubtrees OPTIONAL }
-                //
-                // GeneralSubtrees ::= SEQUENCE SIZE (1..MAX) OF GeneralSubtree
-                //
-                // GeneralSubtree ::= SEQUENCE {
-                //      base                    GeneralName,
-                //      minimum         [0]     BaseDistance DEFAULT 0,
-                //      maximum         [1]     BaseDistance OPTIONAL }
-                //
-                // BaseDistance ::= INTEGER (0..MAX)
-
-                var constraints nameConstraints
-                if rest, err := asn1.Unmarshal(e.Value, &constraints); err != nil {
+                unhandled, err = parseNameConstraintsExtension(out, e)
+                if err != nil {
                     return nil, err
-                } else if len(rest) != 0 {
-                    return nil, errors.New("x509: trailing data after X.509 NameConstraints")
-                }
-
-                if len(constraints.Excluded) > 0 && e.Critical {
-                    return out, UnhandledCriticalExtension{}
-                }
-
-                for _, subtree := range constraints.Permitted {
-                    if len(subtree.Name) == 0 {
-                        if e.Critical {
-                            return out, UnhandledCriticalExtension{}
-                        }
-                        continue
-                    }
-                    out.PermittedDNSDomains = append(out.PermittedDNSDomains, subtree.Name)
                 }
 
             case 31:
@@ -1497,16 +1470,9 @@ func parseCertificate(in *certificate) (*Certificate, error) {
                 out.SubjectKeyId = keyid
 
             case 32:
-                // RFC 5280 4.2.1.4: Certificate Policies
-                var policies []policyInformation
-                if rest, err := asn1.Unmarshal(e.Value, &policies); err != nil {
+                out.PolicyIdentifiers, err = parseCertificatePoliciesExtension(e.Value)
+                if err != nil {
                     return nil, err
-                } else if len(rest) != 0 {
-                    return nil, errors.New("x509: trailing data after X.509 certificate policies")
-                }
-                out.PolicyIdentifiers = make([]asn1.ObjectIdentifier, len(policies))
-                for i, policy := range policies {
-                    out.PolicyIdentifiers[i] = policy.Policy
                 }
 
             default:
@@ -1646,14 +1612,16 @@ func oidInExtensions(oid asn1.ObjectIdentifier, extensions []pkix.Extension) boo
 
 // marshalSANs marshals a list of addresses into a the contents of an X.509
 // SubjectAlternativeName extension.
-func marshalSANs(dnsNames, emailAddresses []string, ipAddresses []net.IP) (derBytes []byte, err error) {
+func marshalSANs(dnsNames, emailAddresses []string, ipAddresses []net.IP, uris []*url.URL) (derBytes []byte, err error) {
     var rawValues []asn1.RawValue
     for _, name := range dnsNames {
         rawValues = append(rawValues, asn1.RawValue{Tag: 2, Class: 2, Bytes: []byte(name)})
     }
+
     for _, email := range emailAddresses {
         rawValues = append(rawValues, asn1.RawValue{Tag: 1, Class: 2, Bytes: []byte(email)})
     }
+
     for _, rawIP := range ipAddresses {
         // If possible, we always want to encode IPv4 addresses in 4 bytes.
         ip := rawIP.To4()
@@ -1662,6 +1630,16 @@ func marshalSANs(dnsNames, emailAddresses []string, ipAddresses []net.IP) (derBy
         }
         rawValues = append(rawValues, asn1.RawValue{Tag: 7, Class: 2, Bytes: ip})
     }
+
+    for _, uri := range uris {
+        uriStr := uri.String()
+        if err := isIA5String(uriStr); err != nil {
+            return nil, err
+        }
+
+        rawValues = append(rawValues, asn1.RawValue{Tag: nameTypeURI, Class: 2, Bytes: []byte(uriStr)})
+    }
+
     return asn1.Marshal(rawValues)
 }
 
@@ -1771,10 +1749,10 @@ func buildExtensions(template *Certificate) (ret []pkix.Extension, err error) {
         n++
     }
 
-    if (len(template.DNSNames) > 0 || len(template.EmailAddresses) > 0 || len(template.IPAddresses) > 0) &&
+    if (len(template.DNSNames) > 0 || len(template.EmailAddresses) > 0 || len(template.IPAddresses) > 0 || len(template.URIs) > 0) &&
         !oidInExtensions(oidExtensionSubjectAltName, template.ExtraExtensions) {
         ret[n].Id = oidExtensionSubjectAltName
-        ret[n].Value, err = marshalSANs(template.DNSNames, template.EmailAddresses, template.IPAddresses)
+        ret[n].Value, err = marshalSANs(template.DNSNames, template.EmailAddresses, template.IPAddresses, template.URIs)
         if err != nil {
             return
         }
@@ -1795,19 +1773,100 @@ func buildExtensions(template *Certificate) (ret []pkix.Extension, err error) {
         n++
     }
 
-    if len(template.PermittedDNSDomains) > 0 &&
+    if (len(template.PermittedDNSDomains) > 0 || len(template.ExcludedDNSDomains) > 0 ||
+        len(template.PermittedIPRanges) > 0 || len(template.ExcludedIPRanges) > 0 ||
+        len(template.PermittedEmailAddresses) > 0 || len(template.ExcludedEmailAddresses) > 0 ||
+        len(template.PermittedURIDomains) > 0 || len(template.ExcludedURIDomains) > 0) &&
         !oidInExtensions(oidExtensionNameConstraints, template.ExtraExtensions) {
         ret[n].Id = oidExtensionNameConstraints
         ret[n].Critical = template.PermittedDNSDomainsCritical
 
-        var out nameConstraints
-        out.Permitted = make([]generalSubtree, len(template.PermittedDNSDomains))
-        for i, permitted := range template.PermittedDNSDomains {
-            out.Permitted[i] = generalSubtree{Name: permitted}
+        ipAndMask := func(ipNet *net.IPNet) []byte {
+            maskedIP := ipNet.IP.Mask(ipNet.Mask)
+            ipAndMask := make([]byte, 0, len(maskedIP)+len(ipNet.Mask))
+            ipAndMask = append(ipAndMask, maskedIP...)
+            ipAndMask = append(ipAndMask, ipNet.Mask...)
+            return ipAndMask
         }
-        ret[n].Value, err = asn1.Marshal(out)
+
+        serialiseConstraints := func(dns []string, ips []*net.IPNet, emails []string, uriDomains []string) (der []byte, err error) {
+            var b cryptobyte.Builder
+
+            for _, name := range dns {
+                if err = isIA5String(name); err != nil {
+                    return nil, err
+                }
+
+                b.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
+                    b.AddASN1(cryptobyte_asn1.Tag(2).ContextSpecific(), func(b *cryptobyte.Builder) {
+                        b.AddBytes([]byte(name))
+                    })
+                })
+            }
+
+            for _, ipNet := range ips {
+                b.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
+                    b.AddASN1(cryptobyte_asn1.Tag(7).ContextSpecific(), func(b *cryptobyte.Builder) {
+                        b.AddBytes(ipAndMask(ipNet))
+                    })
+                })
+            }
+
+            for _, email := range emails {
+                if err = isIA5String(email); err != nil {
+                    return nil, err
+                }
+
+                b.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
+                    b.AddASN1(cryptobyte_asn1.Tag(1).ContextSpecific(), func(b *cryptobyte.Builder) {
+                        b.AddBytes([]byte(email))
+                    })
+                })
+            }
+
+            for _, uriDomain := range uriDomains {
+                if err = isIA5String(uriDomain); err != nil {
+                    return nil, err
+                }
+
+                b.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
+                    b.AddASN1(cryptobyte_asn1.Tag(6).ContextSpecific(), func(b *cryptobyte.Builder) {
+                        b.AddBytes([]byte(uriDomain))
+                    })
+                })
+            }
+
+            return b.Bytes()
+        }
+
+        permitted, err := serialiseConstraints(template.PermittedDNSDomains, template.PermittedIPRanges, template.PermittedEmailAddresses, template.PermittedURIDomains)
         if err != nil {
-            return
+            return nil, err
+        }
+
+        excluded, err := serialiseConstraints(template.ExcludedDNSDomains, template.ExcludedIPRanges, template.ExcludedEmailAddresses, template.ExcludedURIDomains)
+        if err != nil {
+            return nil, err
+        }
+
+        var b cryptobyte.Builder
+        b.AddASN1(cryptobyte_asn1.SEQUENCE, func(b *cryptobyte.Builder) {
+            if len(permitted) > 0 {
+                b.AddASN1(cryptobyte_asn1.Tag(0).ContextSpecific().Constructed(), func(b *cryptobyte.Builder) {
+                    b.AddBytes(permitted)
+                })
+            }
+
+            if len(excluded) > 0 {
+                b.AddASN1(cryptobyte_asn1.Tag(1).ContextSpecific().Constructed(), func(b *cryptobyte.Builder) {
+                    b.AddBytes(excluded)
+                })
+            }
+        })
+
+        ret[n].Value, err = b.Bytes()
+        if err != nil {
+            return nil, err
         }
         n++
     }
@@ -1856,57 +1915,69 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
     var pubType PublicKeyAlgorithm
 
     switch pub := pub.(type) {
-    case *rsa.PublicKey:
-        pubType = RSA
-        hashFunc = SHA256
-        sigAlgo.Algorithm = oidSignatureSHA256WithRSA
-        sigAlgo.Parameters = asn1.RawValue{
-            Tag: 5,
-        }
-
-    case *ecdsa.PublicKey:
-        pubType = ECDSA
-        switch pub.Curve {
-        case elliptic.P224(), elliptic.P256():
+        case *rsa.PublicKey:
+            pubType = RSA
             hashFunc = SHA256
-            sigAlgo.Algorithm = oidSignatureECDSAWithSHA256
-        case elliptic.P384():
-            hashFunc = SHA384
-            sigAlgo.Algorithm = oidSignatureECDSAWithSHA384
-        case elliptic.P521():
-            hashFunc = SHA512
-            sigAlgo.Algorithm = oidSignatureECDSAWithSHA512
-        default:
-            err = errors.New("x509: unknown elliptic curve")
-        }
-    case *sm2.PublicKey:
-        pubType = ECDSA
-        switch pub.Curve {
-            case sm2.P256():
-                hashFunc = SM3
-                sigAlgo.Algorithm = oidSignatureSM2WithSM3
-            default:
-                err = errors.New("x509: unknown SM2 curve")
-        }
-    case *gost.PublicKey:
-        pubType = GOST3410
-        hashAlgo, _ := gost.HashOidFromNamedCurve(pub.Curve)
-        switch {
-        case hashAlgo.Equal(oidGostCryptoProDigestA):
-            hashFunc = GOST34112001
-            sigAlgo.Algorithm = oidSignatureGOST3410WithGOST3411
-        case hashAlgo.Equal(oidGost2012Digest256):
-            hashFunc = GOST34112012256
-            sigAlgo.Algorithm = oidSignatureGOST3410WithGOST34112012256
-        case hashAlgo.Equal(oidGost2012Digest512):
-            hashFunc = GOST34112012512
-            sigAlgo.Algorithm = oidSignatureGOST3410WithGOST34112012512
-        default:
-            err = errors.New("x509: unknown GOST3410 curve")
-        }
+            sigAlgo.Algorithm = oidSignatureSHA256WithRSA
+            sigAlgo.Parameters = asn1.RawValue{
+                Tag: 5,
+            }
 
-    default:
-        err = errors.New("x509: only RSA, SM2, GOST3410 and ECDSA keys supported")
+        case *dsa.PublicKey:
+            pubType = DSA
+            hashFunc = SHA256
+            sigAlgo.Algorithm = oidSignatureDSAWithSHA256
+            sigAlgo.Parameters = asn1.RawValue{
+                Tag: 5,
+            }
+
+        case *ecdsa.PublicKey:
+            pubType = ECDSA
+            switch pub.Curve {
+                case elliptic.P224(), elliptic.P256():
+                    hashFunc = SHA256
+                    sigAlgo.Algorithm = oidSignatureECDSAWithSHA256
+                case elliptic.P384():
+                    hashFunc = SHA384
+                    sigAlgo.Algorithm = oidSignatureECDSAWithSHA384
+                case elliptic.P521():
+                    hashFunc = SHA512
+                    sigAlgo.Algorithm = oidSignatureECDSAWithSHA512
+                default:
+                    err = errors.New("x509: unknown elliptic curve")
+            }
+        case ed25519.PublicKey:
+            pubType = Ed25519
+            hashFunc = Hash(0)
+            sigAlgo.Algorithm = oidSignatureEd25519
+        case *sm2.PublicKey:
+            pubType = ECDSA
+            switch pub.Curve {
+                case sm2.P256():
+                    hashFunc = SM3
+                    sigAlgo.Algorithm = oidSignatureSM2WithSM3
+                default:
+                    err = errors.New("x509: unknown SM2 curve")
+            }
+        case *gost.PublicKey:
+            pubType = GOST3410
+            hashAlgo, _ := gost.HashOidFromNamedCurve(pub.Curve)
+            switch {
+                case hashAlgo.Equal(oidGostCryptoProDigestA):
+                    hashFunc = GOST34112001
+                    sigAlgo.Algorithm = oidSignatureGOST3410WithGOST3411
+                case hashAlgo.Equal(oidGost2012Digest256):
+                    hashFunc = GOST34112012256
+                    sigAlgo.Algorithm = oidSignatureGOST3410WithGOST34112012256
+                case hashAlgo.Equal(oidGost2012Digest512):
+                    hashFunc = GOST34112012512
+                    sigAlgo.Algorithm = oidSignatureGOST3410WithGOST34112012512
+                default:
+                    err = errors.New("x509: unknown GOST3410 curve")
+            }
+
+        default:
+            err = errors.New("x509: only RSA, SM2, GOST3410 and ECDSA keys supported")
     }
 
     if err != nil {
@@ -1926,7 +1997,7 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
             }
 
             sigAlgo.Algorithm, hashFunc = details.oid, details.hash
-            if hashFunc == 0 {
+            if hashFunc == 0 && pubType != Ed25519 {
                 err = errors.New("x509: cannot sign with hash function requested")
                 return
             }
@@ -1996,12 +2067,17 @@ func ParseDERCRL(derBytes []byte) (*pkix.CertificateList, error) {
 // CreateCRL returns a DER encoded CRL, signed by this Certificate, that
 // contains the given list of revoked certificates.
 func (c *Certificate) CreateCRL(rand io.Reader, priv any, revokedCerts []pkix.RevokedCertificate, now, expiry time.Time) (crlBytes []byte, err error) {
-    key, ok := priv.(crypto.Signer)
-    if !ok {
-        return nil, errors.New("x509: certificate private key does not implement crypto.Signer")
+    var pubKey crypto.PublicKey
+    switch prikey := priv.(type) {
+        case crypto.Signer:
+            pubKey = prikey.Public()
+        case *dsa.PrivateKey:
+            pubKey = &prikey.PublicKey
+        default:
+            return nil, errors.New("x509: certificate private key does not implement crypto.Signer")
     }
 
-    hashFunc, signatureAlgorithm, err := signingParamsForPublicKey(key.Public(), 0)
+    hashFunc, signatureAlgorithm, err := signingParamsForPublicKey(pubKey, 0)
     if err != nil {
         return nil, err
     }
@@ -2040,18 +2116,36 @@ func (c *Certificate) CreateCRL(rand io.Reader, priv any, revokedCerts []pkix.Re
 
     digest := tbsCertListContents
     switch hashFunc {
-    case SM3:
-        break
-    default:
-        h := hashFunc.New()
-        h.Write(tbsCertListContents)
-        digest = h.Sum(nil)
+        case SM3:
+            break
+        default:
+            if hashFunc != 0 {
+                h := hashFunc.New()
+                h.Write(tbsCertListContents)
+                digest = h.Sum(nil)
+            }
     }
 
     var signature []byte
-    signature, err = key.Sign(rand, digest, hashFunc)
-    if err != nil {
-        return
+    switch signer := priv.(type) {
+        case crypto.Signer:
+            signature, err = signer.Sign(rand, digest, hashFunc)
+            if err != nil {
+                return nil, err
+            }
+        case *dsa.PrivateKey:
+            r, s, err := dsa.Sign(rand, signer, digest)
+            if err != nil {
+                return nil, err
+            }
+
+            signature, err = asn1.Marshal(dsaSignature{
+                R: r,
+                S: s,
+            })
+            if err != nil {
+                return nil, err
+            }
     }
 
     return asn1.Marshal(pkix.CertificateList{
@@ -2098,6 +2192,7 @@ type CertificateRequest struct {
     DNSNames       []string
     EmailAddresses []string
     IPAddresses    []net.IP
+    URIs           []*url.URL
 }
 
 // These structures reflect the ASN.1 structure of X.509 certificate
@@ -2196,26 +2291,36 @@ func parseCSRExtensions(rawAttributes []asn1.RawValue) ([]pkix.Extension, error)
 //
 // All keys types that are implemented via crypto.Signer are supported (This
 // includes *rsa.PublicKey and *ecdsa.PublicKey.)
-func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, signer crypto.Signer) (csr []byte, err error) {
+func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, priv any) (csr []byte, err error) {
+    var pubKey crypto.PublicKey
+    switch prikey := priv.(type) {
+        case crypto.Signer:
+            pubKey = prikey.Public()
+        case *dsa.PrivateKey:
+            pubKey = &prikey.PublicKey
+        default:
+            return nil, errors.New("x509: certificate private key does not implement crypto.Signer")
+    }
+
     var hashFunc Hash
     var sigAlgo pkix.AlgorithmIdentifier
-    hashFunc, sigAlgo, err = signingParamsForPublicKey(signer.Public(), template.SignatureAlgorithm)
+    hashFunc, sigAlgo, err = signingParamsForPublicKey(pubKey, template.SignatureAlgorithm)
     if err != nil {
         return nil, err
     }
 
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
-    publicKeyBytes, publicKeyAlgorithm, err = marshalPublicKey(signer.Public())
+    publicKeyBytes, publicKeyAlgorithm, err = marshalPublicKey(pubKey)
     if err != nil {
         return nil, err
     }
 
     var extensions []pkix.Extension
 
-    if (len(template.DNSNames) > 0 || len(template.EmailAddresses) > 0 || len(template.IPAddresses) > 0) &&
+    if (len(template.DNSNames) > 0 || len(template.EmailAddresses) > 0 || len(template.IPAddresses) > 0 || len(template.URIs) > 0) &&
         !oidInExtensions(oidExtensionSubjectAltName, template.ExtraExtensions) {
-        sanBytes, err := marshalSANs(template.DNSNames, template.EmailAddresses, template.IPAddresses)
+        sanBytes, err := marshalSANs(template.DNSNames, template.EmailAddresses, template.IPAddresses, template.URIs)
         if err != nil {
             return nil, err
         }
@@ -2323,15 +2428,46 @@ func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, sign
         case SM2WithSM3, SM2WithSHA1, SM2WithSHA256, UnknownSignatureAlgorithm:
             break
         default:
-            h := hashFunc.New()
-            h.Write(tbsCSRContents)
-            digest = h.Sum(nil)
+            if hashFunc != Hash(0) {
+                h := hashFunc.New()
+                h.Write(tbsCSRContents)
+                digest = h.Sum(nil)
+            }
+    }
+
+    var signerOpts crypto.SignerOpts
+    signerOpts = hashFunc
+    if template.SignatureAlgorithm != 0 && template.SignatureAlgorithm.isRSAPSS() {
+        signerOpts = &rsa.PSSOptions{
+            SaltLength: rsa.PSSSaltLengthEqualsHash,
+            Hash:       crypto.Hash(hashFunc),
+        }
+    }
+
+    if !isRSASigHash(crypto.Hash(hashFunc)) {
+        signerOpts = crypto.Hash(0)
     }
 
     var signature []byte
-    signature, err = signer.Sign(rand, digest, hashFunc)
-    if err != nil {
-        return
+    switch signer := priv.(type) {
+        case crypto.Signer:
+            signature, err = signer.Sign(rand, digest, signerOpts)
+            if err != nil {
+                return nil, err
+            }
+        case *dsa.PrivateKey:
+            r, s, err := dsa.Sign(rand, signer, digest)
+            if err != nil {
+                return nil, err
+            }
+
+            signature, err = asn1.Marshal(dsaSignature{
+                R: r,
+                S: s,
+            })
+            if err != nil {
+                return nil, err
+            }
     }
 
     return asn1.Marshal(certificateRequest{
@@ -2396,7 +2532,7 @@ func parseCertificateRequest(in *certificateRequest) (*CertificateRequest, error
 
     for _, extension := range out.Extensions {
         if extension.Id.Equal(oidExtensionSubjectAltName) {
-            out.DNSNames, out.EmailAddresses, out.IPAddresses, err = parseSANExtension(extension.Value)
+            out.DNSNames, out.EmailAddresses, out.IPAddresses, out.URIs, err = parseSANExtension(extension.Value)
             if err != nil {
                 return nil, err
             }
@@ -2536,12 +2672,22 @@ func (c *Certificate) FromX509Certificate(x509Cert *x509.Certificate) {
 //
 // All keys types that are implemented via crypto.Signer are supported (This
 // includes *rsa.PublicKey and *ecdsa.PublicKey.)
-func CreateCertificate(template, parent *Certificate, publicKey any, signer crypto.Signer) ([]byte, error) {
+func CreateCertificate(rand io.Reader, template, parent *Certificate, publicKey any, priv any) ([]byte, error) {
     if template.SerialNumber == nil {
         return nil, errors.New("x509: no SerialNumber given")
     }
 
-    hashFunc, signatureAlgorithm, err := signingParamsForPublicKey(signer.Public(), template.SignatureAlgorithm)
+    var pubKey crypto.PublicKey
+    switch prikey := priv.(type) {
+        case crypto.Signer:
+            pubKey = prikey.Public()
+        case *dsa.PrivateKey:
+            pubKey = &prikey.PublicKey
+        default:
+            return nil, errors.New("x509: certificate private key does not implement crypto.Signer")
+    }
+
+    hashFunc, signatureAlgorithm, err := signingParamsForPublicKey(pubKey, template.SignatureAlgorithm)
     if err != nil {
         return nil, err
     }
@@ -2593,9 +2739,11 @@ func CreateCertificate(template, parent *Certificate, publicKey any, signer cryp
         case SM2WithSM3, SM2WithSHA1, SM2WithSHA256:
             break
         default:
-            h := hashFunc.New()
-            h.Write(tbsCertContents)
-            digest = h.Sum(nil)
+            if hashFunc != 0 {
+                h := hashFunc.New()
+                h.Write(tbsCertContents)
+                digest = h.Sum(nil)
+            }
     }
 
     var signerOpts crypto.SignerOpts
@@ -2607,10 +2755,30 @@ func CreateCertificate(template, parent *Certificate, publicKey any, signer cryp
         }
     }
 
+    if !isRSASigHash(crypto.Hash(hashFunc)) {
+        signerOpts = crypto.Hash(0)
+    }
+
     var signature []byte
-    signature, err = signer.Sign(rand.Reader, digest, signerOpts)
-    if err != nil {
-        return nil, err
+    switch signer := priv.(type) {
+        case crypto.Signer:
+            signature, err = signer.Sign(rand, digest, signerOpts)
+            if err != nil {
+                return nil, err
+            }
+        case *dsa.PrivateKey:
+            r, s, err := dsa.Sign(rand, signer, digest)
+            if err != nil {
+                return nil, err
+            }
+
+            signature, err = asn1.Marshal(dsaSignature{
+                R: r,
+                S: s,
+            })
+            if err != nil {
+                return nil, err
+            }
     }
 
     return asn1.Marshal(certificate{

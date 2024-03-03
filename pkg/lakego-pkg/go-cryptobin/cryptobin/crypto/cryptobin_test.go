@@ -2,9 +2,38 @@ package crypto
 
 import (
     "testing"
+    "encoding/base64"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
+
+func Test_FuncEncrypt(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+
+    data := "test-pass"
+    cyptStr := FromString(data).
+        FuncEncrypt(func(c Cryptobin) Cryptobin {
+            res := base64.StdEncoding.EncodeToString(c.GetData())
+
+            return c.SetParsedData(res)
+        }).
+        Encrypt().
+        ToBase64String()
+
+    cyptdeStr := FromBase64String(cyptStr).
+        FuncDecrypt(func(c Cryptobin) Cryptobin {
+            res, err := base64.StdEncoding.DecodeString(string(c.GetData()))
+            if err != nil {
+                return c.AppendError(err)
+            }
+
+            return c.SetParsedData(string(res))
+        }).
+        Decrypt().
+        ToString()
+
+    assert(data, cyptdeStr, "Test_FuncEncrypt")
+}
 
 func Test_TripleDesPKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
@@ -2221,4 +2250,35 @@ func Test_KuznyechikG3413OFBPKCS7Padding(t *testing.T) {
     assertError(cyptde.Error(), "Test_KuznyechikG3413OFBPKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "Test_KuznyechikG3413OFBPKCS7Padding-res")
+}
+
+func Test_KuznyechikG3413OFBPKCS7Padding_Bad(t *testing.T) {
+    empty := cryptobin_test.AssertEmptyT(t)
+    notErrorNil := cryptobin_test.AssertNotErrorNilT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf112dfertf12dfertf12dfertf12").
+        SetIv("dfertf112dfer1232dfertf12dfer1232").
+        Kuznyechik().
+        G3413OFB().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    notErrorNil(cypt.Error(), "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Encode")
+    empty(cyptStr, "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Encode")
+
+    cyptedStr := "4ynA5GUBeN99ly1mXV7ZXGgjY+Y2Gy2ocgjcQkr6fYFIJsBjbF/DtI/y8hxto/MWVYGhU04K0cv7JQAdknoTXX7PdO28Mf5HTh22NDhG6ks6M8csANC66ynjQz5ttF+mOnTqsMfOJ7Ze9r2IhFpX5nA7LfmnRAJ981P92kb/PdGuDEHY/Wg9UIDH/vCSmM5HihASKm0e5bZypq628rXE7W9L5EW2lYrFWq7EuWfjmqUB7uWUTHOkswOSsoMy+dKxudIBx1vQ4lZ6FBzDQxqA62cXSpkTi+zNAo6IbDo2G7zvoEpvsQsSWHtKIQN+q9ANBqYgD0MfGgGnASVc2Qo6MQ=="
+    cyptde := FromBase64String(cyptedStr).
+        SetKey("dfertf1212dfertf12dfertf12dfertf12").
+        SetIv("dfertf1122dfer1232dfertf12dfer1232").
+        Kuznyechik().
+        G3413OFB().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    notErrorNil(cyptde.Error(), "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Decode")
+    empty(cyptdeStr, "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Encode")
 }
