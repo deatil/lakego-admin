@@ -91,7 +91,7 @@ func isValidIPMask(mask []byte) bool {
     return true
 }
 
-func isRSASigHash(h crypto.Hash) bool {
+func isRSASignHash(h crypto.Hash) bool {
     switch h {
         case crypto.MD5,
             crypto.SHA1,

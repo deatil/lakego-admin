@@ -81,11 +81,18 @@ const (
     gostPrivKeyVersion = 1
 )
 
-// pkcs8 data
+// pkcs8 info
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
+    Attributes []pkcs8Attribute `asn1:"optional,tag:0"`
+}
+
+// pkcs8 attribute info
+type pkcs8Attribute struct {
+    Id     asn1.ObjectIdentifier
+    Values []asn1.RawValue `asn1:"set"`
 }
 
 // Key Algo

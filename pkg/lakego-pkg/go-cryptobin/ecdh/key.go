@@ -27,6 +27,7 @@ type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
+    Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
 // 公钥 - 包装

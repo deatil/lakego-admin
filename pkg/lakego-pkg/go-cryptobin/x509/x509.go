@@ -1075,7 +1075,7 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
                 return rsa.VerifyPSS(pub, crypto.Hash(hashType), fnHash(), signature, &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash})
             } else {
                 var cHash crypto.Hash
-                if isRSASigHash(crypto.Hash(hashType)) {
+                if isRSASignHash(crypto.Hash(hashType)) {
                     cHash = crypto.Hash(hashType)
                 } else {
                     cHash = crypto.Hash(0)
@@ -2444,8 +2444,11 @@ func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, priv
         }
     }
 
-    if !isRSASigHash(crypto.Hash(hashFunc)) {
-        signerOpts = crypto.Hash(0)
+    // when priv is rsa
+    if _, ok := priv.(*rsa.PrivateKey); ok {
+        if !isRSASignHash(crypto.Hash(hashFunc)) {
+            signerOpts = crypto.Hash(0)
+        }
     }
 
     var signature []byte
@@ -2755,8 +2758,11 @@ func CreateCertificate(rand io.Reader, template, parent *Certificate, publicKey 
         }
     }
 
-    if !isRSASigHash(crypto.Hash(hashFunc)) {
-        signerOpts = crypto.Hash(0)
+    // when priv is rsa
+    if _, ok := priv.(*rsa.PrivateKey); ok {
+        if !isRSASignHash(crypto.Hash(hashFunc)) {
+            signerOpts = crypto.Hash(0)
+        }
     }
 
     var signature []byte

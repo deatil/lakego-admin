@@ -22,6 +22,13 @@ type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
+    Attributes []asn1.RawValue `asn1:"optional,tag:0"`
+}
+
+// pkcs8 attribute info
+type pkcs8Attribute struct {
+    Id     asn1.ObjectIdentifier
+    Values []asn1.RawValue `asn1:"set"`
 }
 
 type sm9PrivateKey struct {
@@ -38,7 +45,6 @@ type pkixPublicKey struct {
 
 func ParsePublicKey(der []byte) (key any, err error) {
     var pubkey pkixPublicKey
-
     if _, err := asn1.Unmarshal(der, &pubkey); err != nil {
         return nil, err
     }
@@ -127,7 +133,6 @@ func MarshalPublicKey(key any) ([]byte, error) {
 
 func ParsePrivateKey(der []byte) (any, error) {
     var privKey pkcs8
-
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
         return nil, err
     }

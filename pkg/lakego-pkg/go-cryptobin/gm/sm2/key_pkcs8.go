@@ -13,11 +13,18 @@ var (
     oidPublicKeySM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
 )
 
-// pkcs8
+// pkcs8 info
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
     PrivateKey []byte
+    Attributes []asn1.RawValue `asn1:"optional,tag:0"`
+}
+
+// pkcs8 attribute info
+type pkcs8Attribute struct {
+    Id     asn1.ObjectIdentifier
+    Values []asn1.RawValue `asn1:"set"`
 }
 
 // pkixPublicKey reflects a PKIX public key structure. See SubjectPublicKeyInfo

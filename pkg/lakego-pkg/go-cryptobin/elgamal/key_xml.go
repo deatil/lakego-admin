@@ -9,21 +9,21 @@ import (
 
 // 私钥
 type xmlPrivateKey struct {
-    XMLName     xml.Name `xml:"EIGamalKeyValue"`
-    G           string   `xml:"G"`
-    P           string   `xml:"P"`
-    Q           string   `xml:"Q,omitempty"`
-    Y           string   `xml:"Y"`
-    X           string   `xml:"X"`
+    XMLName xml.Name `xml:"EIGamalKeyValue"`
+    G       string   `xml:"G"`
+    P       string   `xml:"P"`
+    Q       string   `xml:"Q,omitempty"`
+    Y       string   `xml:"Y"`
+    X       string   `xml:"X"`
 }
 
 // 公钥
 type xmlPublicKey struct {
-    XMLName     xml.Name `xml:"EIGamalKeyValue"`
-    G           string   `xml:"G"`
-    P           string   `xml:"P"`
-    Q           string   `xml:"Q,omitempty"`
-    Y           string   `xml:"Y"`
+    XMLName xml.Name `xml:"EIGamalKeyValue"`
+    G       string   `xml:"G"`
+    P       string   `xml:"P"`
+    Q       string   `xml:"Q,omitempty"`
+    Y       string   `xml:"Y"`
 }
 
 var (
