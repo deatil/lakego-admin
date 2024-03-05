@@ -14,7 +14,10 @@ func (this SM2) Encrypt() SM2 {
         return this.AppendError(err)
     }
 
-    parsedData, err := sm2.Encrypt(rand.Reader, this.publicKey, this.data, this.mode)
+    parsedData, err := sm2.Encrypt(rand.Reader, this.publicKey, this.data, sm2.EncrypterOpts{
+        Mode: this.mode,
+        Hash: this.signHash,
+    })
     if err != nil {
         return this.AppendError(err)
     }
@@ -31,7 +34,10 @@ func (this SM2) Decrypt() SM2 {
         return this.AppendError(err)
     }
 
-    parsedData, err := sm2.Decrypt(this.privateKey, this.data, this.mode)
+    parsedData, err := sm2.Decrypt(this.privateKey, this.data, sm2.EncrypterOpts{
+        Mode: this.mode,
+        Hash: this.signHash,
+    })
     if err != nil {
         return this.AppendError(err)
     }
@@ -50,7 +56,10 @@ func (this SM2) EncryptASN1() SM2 {
         return this.AppendError(err)
     }
 
-    parsedData, err := sm2.EncryptASN1(rand.Reader, this.publicKey, this.data, this.mode)
+    parsedData, err := sm2.EncryptASN1(rand.Reader, this.publicKey, this.data, sm2.EncrypterOpts{
+        Mode: this.mode,
+        Hash: this.signHash,
+    })
     if err != nil {
         return this.AppendError(err)
     }
@@ -67,7 +76,10 @@ func (this SM2) DecryptASN1() SM2 {
         return this.AppendError(err)
     }
 
-    parsedData, err := sm2.DecryptASN1(this.privateKey, this.data, this.mode)
+    parsedData, err := sm2.DecryptASN1(this.privateKey, this.data, sm2.EncrypterOpts{
+        Mode: this.mode,
+        Hash: this.signHash,
+    })
     if err != nil {
         return this.AppendError(err)
     }

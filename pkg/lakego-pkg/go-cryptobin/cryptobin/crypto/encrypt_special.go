@@ -25,6 +25,7 @@ func init() {
 type EncryptAesCFB struct {}
 
 // 加密
+// Encrypt
 func (this EncryptAesCFB) Encrypt(origData []byte, opt IOption) ([]byte, error) {
     key := opt.Key()
 
@@ -47,6 +48,7 @@ func (this EncryptAesCFB) Encrypt(origData []byte, opt IOption) ([]byte, error) 
 }
 
 // 解密
+// Decrypt
 func (this EncryptAesCFB) Decrypt(encrypted []byte, opt IOption) ([]byte, error) {
     key := opt.Key()
 
@@ -77,6 +79,8 @@ func init() {
 
 // 特殊的 AesCFB 组合模式
 // 也可以使用: MultipleBy(AesCFB)
+// AesCFB Encrypt type
+// and can use MultipleBy(AesCFB)
 func (this Cryptobin) AesCFB() Cryptobin {
     this.multiple = AesCFB
 
@@ -145,6 +149,8 @@ func init() {
 
 // 特殊的 AesECB 组合模式
 // 也可以使用: MultipleBy(AesECB)
+// AesECB Encrypt type
+// and can use MultipleBy(AesECB)
 func (this Cryptobin) AesECB() Cryptobin {
     this.multiple = AesECB
 
@@ -154,6 +160,7 @@ func (this Cryptobin) AesECB() Cryptobin {
 // ===================
 
 // AesECB key 处理
+// AesECB Generate Key
 func AesECBGenerateKey(key []byte) (genKey []byte) {
     genKey = make([]byte, 16)
     copy(genKey, key)

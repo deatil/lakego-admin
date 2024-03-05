@@ -2282,3 +2282,26 @@ func Test_KuznyechikG3413OFBPKCS7Padding_Bad(t *testing.T) {
     notErrorNil(cyptde.Error(), "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Decode")
     empty(cyptdeStr, "Test_KuznyechikG3413OFBPKCS7Padding_Bad-Encode")
 }
+
+func Test_AESCBC_Check(t *testing.T) {
+    eq := cryptobin_test.AssertEqualT(t)
+    errChek := cryptobin_test.AssertErrorT(t)
+
+    key := "1234567812345678"
+    iv := "2233556612345678"
+    msg := "tes-Test_AESCBC-fghdfh345dfsty,;h.hktes-Test_AESCBC-fghdfh345dfsty,;h.hk"
+
+    cyptStr := "sHPZeRkUmU/EcqISg8VgW05t/69AregqYR5rwLgepJRmY/HxbpYTk8hYz1CZSwImlOyrqZ3Jsfodi5wBXRMqfsR+JlFpNYc8xR13tHLK/RI="
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey(key).
+        SetIv(iv).
+        Aes().
+        CBC().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    errChek(cyptde.Error(), "Test_AESCBC_Check-Decode")
+    eq(cyptdeStr, msg, "Test_AESCBC_Check")
+}

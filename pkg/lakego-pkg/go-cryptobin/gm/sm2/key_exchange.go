@@ -6,6 +6,7 @@ import (
     "math/big"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/kdf/smkdf"
 )
 
 // KeyExchangeB 协商第二部，用户B调用， 返回共享密钥k
@@ -68,11 +69,13 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
     }
 
     zb, err := CalculateZA(pzb, idb)
-    k, ok := kdf(klen, vx.Bytes(), vy.Bytes(), za, zb)
-    if !ok {
-        err = errors.New("kdf: zero key")
-        return
-    }
+
+    kk := make([]byte, 0)
+    kk = append(kk, vx.Bytes()...)
+    kk = append(kk, vy.Bytes()...)
+    kk = append(kk, za...)
+    kk = append(kk, zb...)
+    k = smkdf.Key(sm3.New, kk, klen)
 
     h1 := bytesCombine(vx.Bytes(), za, zb, rpub.X.Bytes(), rpub.Y.Bytes(), rpri.X.Bytes(), rpri.Y.Bytes())
     if !thisISA {

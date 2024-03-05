@@ -14,13 +14,9 @@ func (this SM2) Sign() SM2 {
         return this.AppendError(err)
     }
 
-    hashed, err := this.dataHash(this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    parsedData, err := this.privateKey.Sign(rand.Reader, hashed, sm2.SignerOpts{
-        Uid: this.uid,
+    parsedData, err := this.privateKey.Sign(rand.Reader, this.data, sm2.SignerOpts{
+        Uid:  this.uid,
+        Hash: this.signHash,
     })
     if err != nil {
         return this.AppendError(err)
@@ -39,13 +35,9 @@ func (this SM2) Verify(data []byte) SM2 {
         return this.AppendError(err)
     }
 
-    hashed, err := this.dataHash(data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.verify = this.publicKey.Verify(hashed, this.data, sm2.SignerOpts{
-        Uid: this.uid,
+    this.verify = this.publicKey.Verify(data, this.data, sm2.SignerOpts{
+        Uid:  this.uid,
+        Hash: this.signHash,
     })
 
     return this
@@ -74,13 +66,9 @@ func (this SM2) SignBytes() SM2 {
         return this.AppendError(err)
     }
 
-    hashed, err := this.dataHash(this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    parsedData, err := this.privateKey.SignBytes(rand.Reader, hashed, sm2.SignerOpts{
-        Uid: this.uid,
+    parsedData, err := this.privateKey.SignBytes(rand.Reader, this.data, sm2.SignerOpts{
+        Uid:  this.uid,
+        Hash: this.signHash,
     })
     if err != nil {
         return this.AppendError(err)
@@ -101,32 +89,14 @@ func (this SM2) VerifyBytes(data []byte) SM2 {
     }
 
     if len(this.data) != 64 {
-        err := errors.New("sig error.")
+        err := errors.New("sig data error.")
         return this.AppendError(err)
     }
 
-    hashed, err := this.dataHash(data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.verify = this.publicKey.VerifyBytes(hashed, this.data, sm2.SignerOpts{
-        Uid: this.uid,
+    this.verify = this.publicKey.VerifyBytes(data, this.data, sm2.SignerOpts{
+        Uid:  this.uid,
+        Hash: this.signHash,
     })
 
     return this
-}
-
-// ===============
-
-// 签名后数据
-func (this SM2) dataHash(data []byte) ([]byte, error) {
-    if this.signHash == nil {
-        return data, nil
-    }
-
-    h := this.signHash()
-    h.Write(data)
-
-    return h.Sum(nil), nil
 }

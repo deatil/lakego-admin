@@ -491,6 +491,7 @@ func (this Cryptobin) MultipleBy(multiple Multiple, cfg ...map[string]any) Crypt
 // ==========
 
 // 电码本模式
+// ECB mode
 func (this Cryptobin) ECB() Cryptobin {
     this.mode = ECB
 
@@ -498,6 +499,7 @@ func (this Cryptobin) ECB() Cryptobin {
 }
 
 // 密码分组链接模式
+// CBC mode
 func (this Cryptobin) CBC() Cryptobin {
     this.mode = CBC
 
@@ -505,6 +507,7 @@ func (this Cryptobin) CBC() Cryptobin {
 }
 
 // 填充密码块链接模式
+// PCBC mode
 func (this Cryptobin) PCBC() Cryptobin {
     this.mode = PCBC
 
@@ -512,13 +515,15 @@ func (this Cryptobin) PCBC() Cryptobin {
 }
 
 // 密码反馈模式
+// CFB mode
 func (this Cryptobin) CFB() Cryptobin {
     this.mode = CFB
 
     return this
 }
 
-// 密码反馈模式
+// 密码反馈模式, 1字节
+// CFB1 mode
 func (this Cryptobin) CFB1() Cryptobin {
     this.mode = CFB1
 
@@ -526,27 +531,31 @@ func (this Cryptobin) CFB1() Cryptobin {
 }
 
 // 密码反馈模式, 8字节
+// CFB8 mode
 func (this Cryptobin) CFB8() Cryptobin {
     this.mode = CFB8
 
     return this
 }
 
-// 密码反馈模式
+// 密码反馈模式, 16字节
+// CFB16 mode
 func (this Cryptobin) CFB16() Cryptobin {
     this.mode = CFB16
 
     return this
 }
 
-// 密码反馈模式
+// 密码反馈模式, 32字节
+// CFB32 mode
 func (this Cryptobin) CFB32() Cryptobin {
     this.mode = CFB32
 
     return this
 }
 
-// 密码反馈模式
+// 密码反馈模式, 64字节
+// CFB64 mode
 func (this Cryptobin) CFB64() Cryptobin {
     this.mode = CFB64
 
@@ -554,6 +563,7 @@ func (this Cryptobin) CFB64() Cryptobin {
 }
 
 // 密码反馈模式, 标准库 CFB 别名
+// CFB128 mode
 func (this Cryptobin) CFB128() Cryptobin {
     this.mode = CFB128
 
@@ -561,6 +571,7 @@ func (this Cryptobin) CFB128() Cryptobin {
 }
 
 // OpenPGP 反馈模式
+// OCFB mode
 func (this Cryptobin) OCFB(resync bool) Cryptobin {
     this.mode = OCFB
 
@@ -570,6 +581,7 @@ func (this Cryptobin) OCFB(resync bool) Cryptobin {
 }
 
 // 输出反馈模式
+// OFB mode
 func (this Cryptobin) OFB() Cryptobin {
     this.mode = OFB
 
@@ -577,6 +589,7 @@ func (this Cryptobin) OFB() Cryptobin {
 }
 
 // 输出反馈模式, 8字节
+// OFB8 mode
 func (this Cryptobin) OFB8() Cryptobin {
     this.mode = OFB8
 
@@ -584,6 +597,7 @@ func (this Cryptobin) OFB8() Cryptobin {
 }
 
 // 计算器模式
+// CTR mode
 func (this Cryptobin) CTR() Cryptobin {
     this.mode = CTR
 
@@ -734,6 +748,7 @@ func (this Cryptobin) G3413OFB() Cryptobin {
 }
 
 // 使用模式
+// use Mode By mode enum
 func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
     this.mode = mode
 
@@ -749,6 +764,7 @@ func (this Cryptobin) ModeBy(mode Mode, cfg ...map[string]any) Cryptobin {
 // ==========
 
 // 不补码
+// NoPadding
 func (this Cryptobin) NoPadding() Cryptobin {
     this.padding = NoPadding
 
@@ -756,6 +772,7 @@ func (this Cryptobin) NoPadding() Cryptobin {
 }
 
 // Zero 补码
+// ZeroPadding
 func (this Cryptobin) ZeroPadding() Cryptobin {
     this.padding = ZeroPadding
 
@@ -763,6 +780,7 @@ func (this Cryptobin) ZeroPadding() Cryptobin {
 }
 
 // PKCS5 补码
+// PKCS5Padding
 func (this Cryptobin) PKCS5Padding() Cryptobin {
     this.padding = PKCS5Padding
 
@@ -770,6 +788,7 @@ func (this Cryptobin) PKCS5Padding() Cryptobin {
 }
 
 // PKCS7 补码
+// PKCS7Padding
 func (this Cryptobin) PKCS7Padding() Cryptobin {
     this.padding = PKCS7Padding
 
@@ -777,6 +796,7 @@ func (this Cryptobin) PKCS7Padding() Cryptobin {
 }
 
 // X923 补码
+// X923Padding
 func (this Cryptobin) X923Padding() Cryptobin {
     this.padding = X923Padding
 
@@ -784,6 +804,7 @@ func (this Cryptobin) X923Padding() Cryptobin {
 }
 
 // ISO10126 补码
+// ISO10126Padding
 func (this Cryptobin) ISO10126Padding() Cryptobin {
     this.padding = ISO10126Padding
 
@@ -791,6 +812,7 @@ func (this Cryptobin) ISO10126Padding() Cryptobin {
 }
 
 // ISO7816_4 补码
+// ISO7816_4Padding
 func (this Cryptobin) ISO7816_4Padding() Cryptobin {
     this.padding = ISO7816_4Padding
 
@@ -798,6 +820,7 @@ func (this Cryptobin) ISO7816_4Padding() Cryptobin {
 }
 
 // ISO97971 补码
+// ISO97971Padding
 func (this Cryptobin) ISO97971Padding() Cryptobin {
     this.padding = ISO97971Padding
 
@@ -805,6 +828,7 @@ func (this Cryptobin) ISO97971Padding() Cryptobin {
 }
 
 // PBOC2 补码
+// PBOC2Padding
 func (this Cryptobin) PBOC2Padding() Cryptobin {
     this.padding = PBOC2Padding
 
@@ -812,6 +836,7 @@ func (this Cryptobin) PBOC2Padding() Cryptobin {
 }
 
 // TBC 补码
+// TBCPadding
 func (this Cryptobin) TBCPadding() Cryptobin {
     this.padding = TBCPadding
 
@@ -819,6 +844,7 @@ func (this Cryptobin) TBCPadding() Cryptobin {
 }
 
 // PKCS1 补码
+// PKCS1Padding
 func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
     this.padding = PKCS1Padding
 
@@ -830,6 +856,7 @@ func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
 }
 
 // 使用补码算法
+// use Padding by padding enum
 func (this Cryptobin) PaddingBy(padding Padding, cfg ...map[string]any) Cryptobin {
     this.padding = padding
 
@@ -845,6 +872,7 @@ func (this Cryptobin) PaddingBy(padding Padding, cfg ...map[string]any) Cryptobi
 // ==========
 
 // 不做处理
+// No Parse action to change data
 func (this Cryptobin) NoParse() Cryptobin {
     this.parsedData = this.data
 

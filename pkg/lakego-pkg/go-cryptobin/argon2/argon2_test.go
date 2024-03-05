@@ -50,6 +50,7 @@ func TestCompareHashWithPassword(t *testing.T) {
         {"Should Not Work 3", `badHash`, ``, false, true},
         {"Should Work 2", `argon2$4$32768$4$32$/WN2BY5NDzVlHYgw3pqahA==$oLGdDy23gAgbQXmphVVPG0Uax+XbfeUfH/TCpQbEHfc=`, `Y&jEA)_m7q@jb@J"<sXrS]HH"zU`, true, false},
         {"Should Not Work 4", `argon2$4$32768$4$32$/WN2BY5NDzVlHYgw3pqahA==$XLGdDy23gAgbQXmphVVPG0Uax+XbfeUfH/TCpQbEHfc=`, `Y&XEA)_m7q@jb@J"<sXrS]HH"zU`, false, true},
+        {"Should Not Work 5", `argon2$32768$4$32$/WN2BY5NDzVlHYgw3pqahA==$XLGdDy23gAgbQXmphVVPG0Uax+XbfeUfH/TCpQbEHfc=`, `Y&XEA)_m7q@jb@J"<sXrS]HH"zU`, false, true},
     }
     for _, tt := range tests {
         t.Run(tt.name, func(t *testing.T) {
@@ -62,6 +63,42 @@ func TestCompareHashWithPassword(t *testing.T) {
 
             if got != tt.isValid {
                 t.Errorf("CompareHashWithPassword() = %v, want %v", got, tt.isValid)
+            }
+        })
+    }
+}
+
+func TestGenerateSaltedHashWithType(t *testing.T) {
+    tests := []struct {
+        name         string
+        typ          string
+        password     string
+        hashSegments int
+        hashLength   int
+        wantErr      bool
+    }{
+        {"Should Work", "argon2id", "Password1", 7, 111, false},
+        {"Should Not Work", "argon2id", "", 1, 0, true},
+        {"Should Work 2", "argon2id", "gS</5Tu>3@(<FCtY", 7, 111, false},
+        {"Should Work 3", "argon2id", `Y&jEA)_m7q@jb@J"<sXrS]HH"zU`, 7, 111, false},
+        {"Should Work 31", "argon2i", `Y&jEA)_m7q@jb@J"<sXrS]HH"zU`, 7, 110, false},
+        {"Should Not Work 2", "argon2i", "", 1, 0, true},
+    }
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            got, err := GenerateSaltedHashWithType(tt.password, tt.typ)
+            hashSegments := strings.Split(got, "$")
+            if (err != nil) != tt.wantErr {
+                t.Errorf("GenerateSaltedHashWithType() = %v, want %v", err, tt.wantErr)
+                return
+            }
+
+            if len(hashSegments) != tt.hashSegments {
+                t.Errorf("GenerateSaltedHashWithType() had %d segments. Want %d", len(hashSegments), tt.hashSegments)
+            }
+
+            if len(got) != tt.hashLength {
+                t.Errorf("GenerateSaltedHashWithType() hash length = %v, want %v", len(got), tt.hashLength)
             }
         })
     }

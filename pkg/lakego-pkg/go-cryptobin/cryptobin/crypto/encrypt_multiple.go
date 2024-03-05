@@ -61,6 +61,7 @@ import (
 )
 
 // 获取模式方式
+// get mode type
 func getMode(opt IOption) (IMode, error) {
     mode := opt.Mode()
     if !UseMode.Has(mode) {
@@ -75,6 +76,7 @@ func getMode(opt IOption) (IMode, error) {
 }
 
 // 获取补码方式
+// get padding type
 func getPadding(opt IOption) (IPadding, error) {
     padding := opt.Padding()
     if !UsePadding.Has(padding) {
@@ -88,7 +90,8 @@ func getPadding(opt IOption) (IPadding, error) {
     return newPadding(), nil
 }
 
-// 加密
+// 块加密
+// Block Encrypt
 func BlockEncrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) {
     bs := block.BlockSize()
 
@@ -100,7 +103,7 @@ func BlockEncrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
 
     plainPadding := newPadding.Padding(data, bs, opt)
 
-    // 补码后需要验证
+    // 补码后需要验证 / check padding
     if opt.Padding() != NoPadding {
         if len(plainPadding)%bs != 0 {
             err := errors.New(fmt.Sprintf("the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
@@ -108,7 +111,7 @@ func BlockEncrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
         }
     }
 
-    // 模式
+    // 模式 / mode
     newMode, err := getMode(opt)
     if err != nil {
         return nil, err
@@ -117,11 +120,12 @@ func BlockEncrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
     return newMode.Encrypt(plainPadding, block, opt)
 }
 
-// 解密
+// 块解密
+// Block Decrypt
 func BlockDecrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) {
     bs := block.BlockSize()
 
-    // 补码后需要验证
+    // 补码后需要验证 / check padding
     if opt.Padding() != NoPadding {
         if len(data)%bs != 0 {
             err := errors.New(fmt.Sprintf("improper decrypt type, block size is %d", bs))
@@ -163,7 +167,7 @@ func BlockDecrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
 // AES-128, AES-192, or AES-256.
 type EncryptAes struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptAes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := aes.NewCipher(opt.Key())
     if err != nil {
@@ -173,7 +177,7 @@ func (this EncryptAes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptAes) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := aes.NewCipher(opt.Key())
     if err != nil {
@@ -187,7 +191,7 @@ func (this EncryptAes) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptDes struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := des.NewCipher(opt.Key())
     if err != nil {
@@ -197,7 +201,7 @@ func (this EncryptDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := des.NewCipher(opt.Key())
     if err != nil {
@@ -211,7 +215,7 @@ func (this EncryptDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptTwoDes struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTwoDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_des.NewTwoDESCipher(opt.Key())
     if err != nil {
@@ -221,7 +225,7 @@ func (this EncryptTwoDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptTwoDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_des.NewTwoDESCipher(opt.Key())
     if err != nil {
@@ -235,7 +239,7 @@ func (this EncryptTwoDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptTripleDes struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTripleDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := des.NewTripleDESCipher(opt.Key())
     if err != nil {
@@ -245,7 +249,7 @@ func (this EncryptTripleDes) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptTripleDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := des.NewTripleDESCipher(opt.Key())
     if err != nil {
@@ -261,7 +265,7 @@ func (this EncryptTripleDes) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // 16, 24 or 32 bytes.
 type EncryptTwofish struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTwofish) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := twofish.NewCipher(opt.Key())
     if err != nil {
@@ -271,7 +275,7 @@ func (this EncryptTwofish) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptTwofish) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := twofish.NewCipher(opt.Key())
     if err != nil {
@@ -285,7 +289,7 @@ func (this EncryptTwofish) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptBlowfish struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptBlowfish) getBlock(opt IOption) (cipher.Block, error) {
     if opt.Config().Has("salt") {
         return blowfish.NewSaltedCipher(opt.Key(), opt.Config().GetBytes("salt"))
@@ -294,7 +298,7 @@ func (this EncryptBlowfish) getBlock(opt IOption) (cipher.Block, error) {
     return blowfish.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptBlowfish) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -304,7 +308,7 @@ func (this EncryptBlowfish) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptBlowfish) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -318,7 +322,7 @@ func (this EncryptBlowfish) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptTea struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTea) getBlock(opt IOption) (cipher.Block, error) {
     // key is 16 bytes
     if opt.Config().Has("rounds") {
@@ -328,7 +332,7 @@ func (this EncryptTea) getBlock(opt IOption) (cipher.Block, error) {
     return tea.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -338,7 +342,7 @@ func (this EncryptTea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptTea) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -352,13 +356,13 @@ func (this EncryptTea) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptXtea struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptXtea) getBlock(opt IOption) (cipher.Block, error) {
     // XTEA only supports 128 bit (16 byte) keys.
     return xtea.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptXtea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -368,7 +372,7 @@ func (this EncryptXtea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptXtea) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -382,13 +386,13 @@ func (this EncryptXtea) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptCast5 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptCast5) getBlock(opt IOption) (cipher.Block, error) {
     // Cast5 only supports 128 bit (16 byte) keys.
     return cast5.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptCast5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -398,7 +402,7 @@ func (this EncryptCast5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptCast5) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -412,7 +416,7 @@ func (this EncryptCast5) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptRC2 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC2) getBlock(opt IOption) (cipher.Block, error) {
     // RC2 key, at least 1 byte and at most 128 bytes.
     key := opt.Key()
@@ -420,7 +424,7 @@ func (this EncryptRC2) getBlock(opt IOption) (cipher.Block, error) {
     return cryptobin_rc2.NewCipher(key, len(key)*8)
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -430,7 +434,7 @@ func (this EncryptRC2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRC2) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -444,7 +448,7 @@ func (this EncryptRC2) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptRC5 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC5) getBlock(opt IOption) (cipher.Block, error) {
     // wordSize is 16, 32 or 64
     wordSize := uint(32)
@@ -465,7 +469,7 @@ func (this EncryptRC5) getBlock(opt IOption) (cipher.Block, error) {
     return cryptobin_rc5.NewCipher(key, wordSize, rounds)
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -475,7 +479,7 @@ func (this EncryptRC5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRC5) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -489,7 +493,7 @@ func (this EncryptRC5) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptRC6 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC6) Encrypt(data []byte, opt IOption) ([]byte, error) {
     // RC6 key is 16 bytes.
     block, err := cryptobin_rc6.NewCipher(opt.Key())
@@ -500,7 +504,7 @@ func (this EncryptRC6) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRC6) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rc6.NewCipher(opt.Key())
     if err != nil {
@@ -514,13 +518,13 @@ func (this EncryptRC6) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptIdea struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptIdea) getBlock(opt IOption) (cipher.Block, error) {
     // Idea only supports 128 bit (16 byte) keys.
     return cryptobin_idea.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptIdea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -530,7 +534,7 @@ func (this EncryptIdea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptIdea) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -544,13 +548,13 @@ func (this EncryptIdea) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 type EncryptSM4 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSM4) getBlock(opt IOption) (cipher.Block, error) {
     // 国密 sm4 加密
     return cryptobin_sm4.NewCipher(opt.Key())
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSM4) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -560,7 +564,7 @@ func (this EncryptSM4) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSM4) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -575,7 +579,7 @@ func (this EncryptSM4) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // 32 bytes key and a 12 or 24 bytes nonce
 type EncryptChacha20 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("nonce") {
         err := fmt.Errorf("nonce is empty.")
@@ -600,7 +604,7 @@ func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("nonce") {
         err := fmt.Errorf("nonce is empty")
@@ -630,7 +634,7 @@ func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // 32 bytes key
 type EncryptChacha20poly1305 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, error) {
     aead, err := chacha20poly1305.New(opt.Key())
     if err != nil {
@@ -650,7 +654,7 @@ func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, e
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, error) {
     chacha, err := chacha20poly1305.New(opt.Key())
     if err != nil {
@@ -673,7 +677,7 @@ func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, e
 // 32 bytes key
 type EncryptChacha20poly1305X struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, error) {
     aead, err := chacha20poly1305.NewX(opt.Key())
     if err != nil {
@@ -693,7 +697,7 @@ func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, 
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, error) {
     chacha, err := chacha20poly1305.NewX(opt.Key())
     if err != nil {
@@ -716,7 +720,7 @@ func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, 
 // RC4 key, at least 1 byte and at most 256 bytes.
 type EncryptRC4 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC4) Encrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := rc4.NewCipher(opt.Key())
     if err != nil {
@@ -730,7 +734,7 @@ func (this EncryptRC4) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRC4) Decrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := rc4.NewCipher(opt.Key())
     if err != nil {
@@ -749,7 +753,7 @@ func (this EncryptRC4) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // RC4 key, at least 1 byte and at most 256 bytes.
 type EncryptRC4MD5 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC4MD5) getCipher(opt IOption) (cipher.Stream, error) {
     h := md5.New()
     h.Write(opt.Key())
@@ -758,7 +762,7 @@ func (this EncryptRC4MD5) getCipher(opt IOption) (cipher.Stream, error) {
     return rc4.NewCipher(h.Sum(nil))
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRC4MD5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := this.getCipher(opt)
     if err != nil {
@@ -772,7 +776,7 @@ func (this EncryptRC4MD5) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRC4MD5) Decrypt(data []byte, opt IOption) ([]byte, error) {
     rc, err := this.getCipher(opt)
     if err != nil {
@@ -791,7 +795,7 @@ func (this EncryptRC4MD5) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Sectors must be a multiple of 16 bytes and less than 2²⁴ bytes.
 type EncryptXts struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
         err := fmt.Errorf("cipher is empty.")
@@ -832,7 +836,7 @@ func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
         err := fmt.Errorf("cipher is empty.")
@@ -879,7 +883,7 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // nonce is 16 bytes.
 type EncryptSalsa20 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     nonce := opt.Config().GetBytes("nonce")
 
@@ -895,7 +899,7 @@ func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
     nonce := opt.Config().GetBytes("nonce")
 
@@ -916,7 +920,7 @@ func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Seed key is 16 bytes.
 type EncryptSeed struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSeed) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_seed.NewCipher(opt.Key())
     if err != nil {
@@ -926,7 +930,7 @@ func (this EncryptSeed) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSeed) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_seed.NewCipher(opt.Key())
     if err != nil {
@@ -941,7 +945,7 @@ func (this EncryptSeed) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Aria key is 16, 24, or 32 bytes.
 type EncryptAria struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptAria) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_aria.NewCipher(opt.Key())
     if err != nil {
@@ -951,7 +955,7 @@ func (this EncryptAria) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptAria) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_aria.NewCipher(opt.Key())
     if err != nil {
@@ -966,7 +970,7 @@ func (this EncryptAria) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Camellia key is 16, 24, or 32 bytes.
 type EncryptCamellia struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptCamellia) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_camellia.NewCipher(opt.Key())
     if err != nil {
@@ -976,7 +980,7 @@ func (this EncryptCamellia) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptCamellia) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_camellia.NewCipher(opt.Key())
     if err != nil {
@@ -991,7 +995,7 @@ func (this EncryptCamellia) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Gost key is 32 bytes.
 type EncryptGost struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
     s := opt.Config().Get("sbox")
 
@@ -1028,7 +1032,7 @@ func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
     return block, nil
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptGost) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getCipher(opt)
     if err != nil {
@@ -1038,7 +1042,7 @@ func (this EncryptGost) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptGost) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getCipher(opt)
     if err != nil {
@@ -1053,7 +1057,7 @@ func (this EncryptGost) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Kuznyechik key is 32 bytes.
 type EncryptKuznyechik struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptKuznyechik) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kuznyechik.NewCipher(opt.Key())
     if err != nil {
@@ -1063,7 +1067,7 @@ func (this EncryptKuznyechik) Encrypt(data []byte, opt IOption) ([]byte, error) 
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptKuznyechik) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kuznyechik.NewCipher(opt.Key())
     if err != nil {
@@ -1078,7 +1082,7 @@ func (this EncryptKuznyechik) Decrypt(data []byte, opt IOption) ([]byte, error) 
 // Skipjack key is 10 bytes.
 type EncryptSkipjack struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSkipjack) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_skipjack.NewCipher(opt.Key())
     if err != nil {
@@ -1088,7 +1092,7 @@ func (this EncryptSkipjack) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSkipjack) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_skipjack.NewCipher(opt.Key())
     if err != nil {
@@ -1103,7 +1107,7 @@ func (this EncryptSkipjack) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // Serpent key is 16, 24, 32 bytes.
 type EncryptSerpent struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSerpent) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_serpent.NewCipher(opt.Key())
     if err != nil {
@@ -1113,7 +1117,7 @@ func (this EncryptSerpent) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSerpent) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_serpent.NewCipher(opt.Key())
     if err != nil {
@@ -1217,7 +1221,7 @@ func init() {
 // Loki97 key is 16, 24, 32 bytes.
 type EncryptLoki97 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptLoki97) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_loki97.NewCipher(opt.Key())
     if err != nil {
@@ -1227,7 +1231,7 @@ func (this EncryptLoki97) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptLoki97) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_loki97.NewCipher(opt.Key())
     if err != nil {
@@ -1248,7 +1252,7 @@ func init() {
 // Saferplus key is 8, 16 bytes.
 type EncryptSaferplus struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSaferplus) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_saferplus.NewCipher(opt.Key())
     if err != nil {
@@ -1258,7 +1262,7 @@ func (this EncryptSaferplus) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSaferplus) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_saferplus.NewCipher(opt.Key())
     if err != nil {
@@ -1279,7 +1283,7 @@ func init() {
 // Mars key is 16, 24, 32 bytes.
 type EncryptMars struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptMars) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_mars.NewCipher(opt.Key())
     if err != nil {
@@ -1289,7 +1293,7 @@ func (this EncryptMars) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptMars) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_mars.NewCipher(opt.Key())
     if err != nil {
@@ -1310,7 +1314,7 @@ func init() {
 // Mars key is 16, 24, 32 bytes.
 type EncryptMars2 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptMars2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_mars2.NewCipher(opt.Key())
     if err != nil {
@@ -1320,7 +1324,7 @@ func (this EncryptMars2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptMars2) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_mars2.NewCipher(opt.Key())
     if err != nil {
@@ -1341,7 +1345,7 @@ func init() {
 // Wake key is 16 bytes.
 type EncryptWake struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptWake) Encrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_wake.NewCipher(opt.Key())
     if err != nil {
@@ -1355,7 +1359,7 @@ func (this EncryptWake) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptWake) Decrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_wake.NewCipher(opt.Key())
     if err != nil {
@@ -1380,7 +1384,7 @@ func init() {
 // Enigma key is 13 bytes.
 type EncryptEnigma struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptEnigma) Encrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_enigma.NewCipher(opt.Key())
     if err != nil {
@@ -1394,7 +1398,7 @@ func (this EncryptEnigma) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptEnigma) Decrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_enigma.NewCipher(opt.Key())
     if err != nil {
@@ -1419,7 +1423,7 @@ func init() {
 // Cast256 key is 32 bytes.
 type EncryptCast256 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptCast256) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_cast256.NewCipher(opt.Key())
     if err != nil {
@@ -1429,7 +1433,7 @@ func (this EncryptCast256) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptCast256) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_cast256.NewCipher(opt.Key())
     if err != nil {
@@ -1450,7 +1454,7 @@ func init() {
 // The key argument should be 16 bytes.
 type EncryptHight struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptHight) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_hight.NewCipher(opt.Key())
     if err != nil {
@@ -1460,7 +1464,7 @@ func (this EncryptHight) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptHight) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_hight.NewCipher(opt.Key())
     if err != nil {
@@ -1481,7 +1485,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptLea struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptLea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_lea.NewCipher(opt.Key())
     if err != nil {
@@ -1491,7 +1495,7 @@ func (this EncryptLea) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptLea) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_lea.NewCipher(opt.Key())
     if err != nil {
@@ -1512,7 +1516,7 @@ func init() {
 // The key argument should be 32 bytes.
 type EncryptPanama struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptPanama) Encrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_panama.NewCipher(opt.Key())
     if err != nil {
@@ -1526,7 +1530,7 @@ func (this EncryptPanama) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptPanama) Decrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_panama.NewCipher(opt.Key())
     if err != nil {
@@ -1551,7 +1555,7 @@ func init() {
 // The key argument should be 32 bytes.
 type EncryptSquare struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSquare) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_square.NewCipher(opt.Key())
     if err != nil {
@@ -1561,7 +1565,7 @@ func (this EncryptSquare) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSquare) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_square.NewCipher(opt.Key())
     if err != nil {
@@ -1582,7 +1586,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptMagenta struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptMagenta) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_magenta.NewCipher(opt.Key())
     if err != nil {
@@ -1592,7 +1596,7 @@ func (this EncryptMagenta) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptMagenta) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_magenta.NewCipher(opt.Key())
     if err != nil {
@@ -1613,7 +1617,7 @@ func init() {
 // The key argument should be 16 bytes.
 type EncryptKasumi struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptKasumi) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kasumi.NewCipher(opt.Key())
     if err != nil {
@@ -1623,7 +1627,7 @@ func (this EncryptKasumi) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptKasumi) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kasumi.NewCipher(opt.Key())
     if err != nil {
@@ -1644,7 +1648,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptE2 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptE2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_e2.NewCipher(opt.Key())
     if err != nil {
@@ -1654,7 +1658,7 @@ func (this EncryptE2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptE2) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_e2.NewCipher(opt.Key())
     if err != nil {
@@ -1675,7 +1679,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptCrypton1 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptCrypton1) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_crypton1.NewCipher(opt.Key())
     if err != nil {
@@ -1685,7 +1689,7 @@ func (this EncryptCrypton1) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptCrypton1) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_crypton1.NewCipher(opt.Key())
     if err != nil {
@@ -1706,7 +1710,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptClefia struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptClefia) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_clefia.NewCipher(opt.Key())
     if err != nil {
@@ -1716,7 +1720,7 @@ func (this EncryptClefia) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptClefia) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_clefia.NewCipher(opt.Key())
     if err != nil {
@@ -1737,7 +1741,7 @@ func init() {
 // The key argument should be 16, 24, 32 bytes.
 type EncryptSafer struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSafer) getBlock(opt IOption) (cipher.Block, error) {
     typ := opt.Config().GetString("type")
     rounds := opt.Config().GetInt32("rounds")
@@ -1749,7 +1753,7 @@ func (this EncryptSafer) getBlock(opt IOption) (cipher.Block, error) {
     return cryptobin_safer.NewKCipher(opt.Key(), rounds)
 }
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptSafer) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -1759,7 +1763,7 @@ func (this EncryptSafer) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptSafer) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := this.getBlock(opt)
     if err != nil {
@@ -1780,7 +1784,7 @@ func init() {
 // The key argument should be 16 bytes.
 type EncryptNoekeon struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptNoekeon) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_noekeon.NewCipher(opt.Key())
     if err != nil {
@@ -1790,7 +1794,7 @@ func (this EncryptNoekeon) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptNoekeon) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_noekeon.NewCipher(opt.Key())
     if err != nil {
@@ -1811,7 +1815,7 @@ func init() {
 // The key argument should be 40 bytes.
 type EncryptMulti2 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptMulti2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     rounds := opt.Config().GetInt32("rounds")
 
@@ -1823,7 +1827,7 @@ func (this EncryptMulti2) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptMulti2) Decrypt(data []byte, opt IOption) ([]byte, error) {
     rounds := opt.Config().GetInt32("rounds")
 
@@ -1846,7 +1850,7 @@ func init() {
 // The key argument should be 16 bytes.
 type EncryptKseed struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptKseed) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kseed.NewCipher(opt.Key())
     if err != nil {
@@ -1856,7 +1860,7 @@ func (this EncryptKseed) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptKseed) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_kseed.NewCipher(opt.Key())
     if err != nil {
@@ -1877,7 +1881,7 @@ func init() {
 // The key argument should be 16 bytes.
 type EncryptKhazad struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptKhazad) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_khazad.NewCipher(opt.Key())
     if err != nil {
@@ -1887,7 +1891,7 @@ func (this EncryptKhazad) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptKhazad) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_khazad.NewCipher(opt.Key())
     if err != nil {
@@ -1908,7 +1912,7 @@ func init() {
 // The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
 type EncryptAnubis struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptAnubis) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_anubis.NewCipher(opt.Key())
     if err != nil {
@@ -1918,7 +1922,7 @@ func (this EncryptAnubis) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptAnubis) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_anubis.NewCipher(opt.Key())
     if err != nil {
@@ -1939,7 +1943,7 @@ func init() {
 // The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
 type EncryptPresent struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptPresent) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_present.NewCipher(opt.Key())
     if err != nil {
@@ -1949,7 +1953,7 @@ func (this EncryptPresent) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptPresent) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_present.NewCipher(opt.Key())
     if err != nil {
@@ -1970,7 +1974,7 @@ func init() {
 // The key argument should be 10 bytes.
 type EncryptTrivium struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptTrivium) Encrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_trivium.NewCipher(opt.Key(), opt.Iv())
     if err != nil {
@@ -1984,7 +1988,7 @@ func (this EncryptTrivium) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptTrivium) Decrypt(data []byte, opt IOption) ([]byte, error) {
     c, err := cryptobin_trivium.NewCipher(opt.Key(), opt.Iv())
     if err != nil {
@@ -2009,7 +2013,7 @@ func init() {
 // The key argument should be 16, 24 or 32 bytes.
 type EncryptRijndael struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRijndael) Encrypt(data []byte, opt IOption) ([]byte, error) {
     blockSize := opt.Config().GetInt("block_size")
 
@@ -2021,7 +2025,7 @@ func (this EncryptRijndael) Encrypt(data []byte, opt IOption) ([]byte, error) {
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRijndael) Decrypt(data []byte, opt IOption) ([]byte, error) {
     blockSize := opt.Config().GetInt("block_size")
 
@@ -2044,7 +2048,7 @@ func init() {
 // The key argument should be 16, 24 or 32 bytes.
 type EncryptRijndael128 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRijndael128) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher128(opt.Key())
     if err != nil {
@@ -2054,7 +2058,7 @@ func (this EncryptRijndael128) Encrypt(data []byte, opt IOption) ([]byte, error)
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRijndael128) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher128(opt.Key())
     if err != nil {
@@ -2075,7 +2079,7 @@ func init() {
 // The key argument should be 16, 24 or 32 bytes.
 type EncryptRijndael192 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRijndael192) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher192(opt.Key())
     if err != nil {
@@ -2085,7 +2089,7 @@ func (this EncryptRijndael192) Encrypt(data []byte, opt IOption) ([]byte, error)
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRijndael192) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher192(opt.Key())
     if err != nil {
@@ -2106,7 +2110,7 @@ func init() {
 // The key argument should be 16, 24 or 32 bytes.
 type EncryptRijndael256 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this EncryptRijndael256) Encrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher256(opt.Key())
     if err != nil {
@@ -2116,7 +2120,7 @@ func (this EncryptRijndael256) Encrypt(data []byte, opt IOption) ([]byte, error)
     return BlockEncrypt(block, data, opt)
 }
 
-// 解密
+// 解密 / Decrypt
 func (this EncryptRijndael256) Decrypt(data []byte, opt IOption) ([]byte, error) {
     block, err := cryptobin_rijndael.NewCipher256(opt.Key())
     if err != nil {

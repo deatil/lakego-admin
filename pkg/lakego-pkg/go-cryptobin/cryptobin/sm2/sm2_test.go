@@ -837,3 +837,118 @@ func Test_Get(t *testing.T) {
     assertEqual(obj.GetVerify(), verify, "GetVerify")
     assertEqual(obj.GetErrors(), errTest, "GetErrors")
 }
+
+func Test_SignSM3Digest_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    uid := "sm2test@example.com"
+    msg := "hi chappy"
+    x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
+    r := "05890B9077B92E47B17A1FF42A814280E556AFD92B4A98B9670BF8B1A274C2FA"
+    s := "E3ABBB8DB2B6ECD9B24ECCEA7F679FB9A4B1DB52F4AA985E443AD73237FA1993"
+
+    sig, _ := hex.DecodeString(r+s)
+
+    obj := New().
+        FromBytes(sig).
+        FromPrivateKeyString(x).
+        MakePublicKey().
+        SetUID(uid).
+        VerifyBytes([]byte(msg))
+    veri := obj.ToVerify()
+
+    assertError(obj.Error(), "Test_SignSM3Digest_Check")
+    assertEqual(veri, true, "Test_SignSM3Digest_Check")
+}
+
+func Test_SignSHA256Digest_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    uid := "sm2test@example.com"
+    msg := "hi chappy"
+    x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
+    r := "94DA20EA69E4FC70692158BF3D30F87682A4B2F84DF4A4829A1EFC5D9C979D3F"
+    s := "EE15AF8D455B728AB80E592FCB654BF5B05620B2F4D25749D263D5C01FAD365F"
+
+    sig, _ := hex.DecodeString(r+s)
+
+    obj := New().
+        FromBytes(sig).
+        FromPrivateKeyString(x).
+        MakePublicKey().
+        SetUID(uid).
+        SetSignHash("SHA256").
+        VerifyBytes([]byte(msg))
+    veri := obj.ToVerify()
+
+    assertError(obj.Error(), "Test_SignSHA256Digest_Check")
+    assertEqual(veri, true, "Test_SignSHA256Digest_Check")
+}
+
+var testPrikey3 = `
+-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBG0wawIBAQQga0uyz+bU40mfdM/QWwSLOAIw1teD
+frvhqGWFAFT7r9uhRANCAATsU4K/XvtvANt0yF+eSabtX20tNXCMfaVMSmV7iq4gGxJKXppqIObD
+ccNE4TCP1uA7VyFgARYRXKGzV/eMSx17
+-----END PRIVATE KEY-----
+`
+
+func Test_EncryptHash_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    check := "testtest123123"
+
+    tests := []struct{
+        priv string
+        endata string
+        hash string
+        mode string // C1C3C2 | C1C2C3
+        check string
+    }{
+        {
+            priv: testPrikey3,
+            endata: "BF4VK8u+cxAMoUBuc5S0yi1GISy6qYhMeep3As+I9MhOh42yuMLCbV7p+srwgZACcmC8CgsEN3wOaZAiVKSqIPxLN8gQFseZ/7B2uJ+RvCKaJK1QeG+iToaDO19BI02gO6r5KYkFGnv4TFaNDHUW",
+            hash: "SM3",
+            mode: "C1C3C2",
+            check: check,
+        },
+        {
+            priv: testPrikey3,
+            endata: "BPSJaSfjaR5hy1mN6G5pVYXVbgzl0xo6YcCbxkrJgC91s2yLSBdDXcr+kJH6LTTCJ7wIb6M7xMn/lZslrzlGOsLV1uiFr9uHnI2p91GEbttKJ+8hE8Luiwb8gzB5DF4wDLee",
+            hash: "SHA1",
+            mode: "C1C3C2",
+            check: check,
+        },
+        {
+            priv: testPrikey3,
+            endata: "BF7X/kRsh3N9YWdYKBlVBRZXwVO79IocLQS6a69B5Gch9bbZf8jjqZnVLPdC9Dh21/HqLNDd1tjuu8VnHJFyp3soUCgN94A9+BWt1Uy6+uZuQXFcZHfVqyw/7tXMKtDVEV2aKodne7Boc7RZ0bO4",
+            hash: "SHA256",
+            mode: "C1C3C2",
+            check: check,
+        },
+        {
+            priv: testPrikey3,
+            endata: "BOnorWOFRDcSInLLTp9hDcydEg7Z2nUF2JbZ23SxnxzzsraiKUtPB9oTZezrBm3wRHgW0cRkOK9N0FP4CaCPThYeY/nz/nomkHIVyCc5cRZgI0IvPJevEjnGgq0Vu1k8X8LdX+5m3BA377y5jYJzVGZItXqW2Ns4Q/tIIDLZOPaEKGxkfcF2cykkhuggeyM=",
+            hash: "SHA512",
+            mode: "C1C3C2",
+            check: check,
+        },
+    }
+
+    for _, td := range tests {
+        de := New().
+            FromBase64String(td.endata).
+            FromPrivateKey([]byte(td.priv)).
+            SetSignHash(td.hash).
+            SetMode(td.mode).
+            Decrypt()
+        deData := de.ToString()
+
+        assertError(de.Error(), "Test_EncryptHash_Check-Decrypt-"+td.hash)
+        assertEqual(deData, td.check, "Test_EncryptHash_Check-deData-"+td.hash)
+    }
+
+}

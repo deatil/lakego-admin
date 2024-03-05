@@ -233,3 +233,166 @@ func Test_MustMarshal(t *testing.T) {
 
     assertNotEmpty(res, "MustMarshal")
 }
+
+func Test_SingleTorrent_Check(t *testing.T) {
+    errChek := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    now := time.Now()
+
+    st := SingleTorrent{
+        Announce: "Announce",
+        AnnounceList: [][]string{
+            {
+                "AnnounceList-c1",
+                "AnnounceList-c2",
+            },
+            {
+                "AnnounceList-d1",
+                "AnnounceList-d2",
+            },
+        },
+        CreatDate: now.Unix(),
+        Comment: "Comment",
+        CreatedBy: "github deatil",
+        Info: SingleInfo{
+            Pieces: "PiecesklolkoijuikjPiecesklolkoijuikj1w32",
+            PieceLength: 1,
+            Length: 2,
+
+            Name: "Name",
+            NameUtf8: "Utf-8",
+
+            Publisher: "Publisher",
+            PublisherUtf8: "Utf-8",
+
+            PublisherUrl: "PublisherUrl",
+            PublisherUrlUtf8: "Utf-8",
+
+            MD5Sum: "MD5Sum",
+            Private: false,
+        },
+        Nodes: [][]any{
+            {
+                "qqqqqqqqq",
+                "bbbbbbb",
+            },
+            {
+                "yyyyy",
+            },
+        },
+        Encoding: "Utf-8",
+        CommentUtf8: "Utf-8",
+    }
+
+    test1 := []string{
+        "AnnounceList-c1",
+        "AnnounceList-c2",
+        "AnnounceList-d1",
+        "AnnounceList-d2",
+    }
+    assertEqual(st.GetAnnounceList(), test1, "Test_SingleTorrent_Check-GetAnnounceList")
+
+    tlayout := "2006-01-02 15:04:05"
+
+    assertEqual(st.GetCreationDateTime().Format(tlayout), now.Format(tlayout), "Test_SingleTorrent_Check-GetCreationDateTime")
+
+    now2 := now.AddDate(0, 0, 1)
+    st = st.SetCreationDateTime(now2)
+    assertEqual(st.GetCreationDateTime().Format(tlayout), now2.Format(tlayout), "Test_SingleTorrent_Check-GetCreationDateTime-now2")
+
+    hh, err := st.GetInfoHash()
+    errChek(err, "Test_SingleTorrent_Check-GetInfoHash")
+    assertNotEmpty(hh[:], "Test_SingleTorrent_Check-GetInfoHash")
+
+    assertNotEmpty(st.GetInfoHashString(), "Test_SingleTorrent_Check-GetInfoHashString")
+
+    pha, err := st.Info.GetPieceHashes()
+    errChek(err, "Test_SingleTorrent_Check-GetPieceHashes")
+    assertNotEmpty(pha, "Test_SingleTorrent_Check-GetPieceHashes")
+
+}
+
+func Test_MultipleTorrent_Check(t *testing.T) {
+    errChek := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    now := time.Now()
+
+    st := MultipleTorrent{
+        Announce: "Announce",
+        AnnounceList: [][]string{
+            {
+                "AnnounceList-c1",
+                "AnnounceList-c2",
+            },
+            {
+                "AnnounceList-d1",
+                "AnnounceList-d2",
+            },
+        },
+        CreatDate: now.Unix(),
+        Comment: "Comment",
+        CreatedBy: "github deatil",
+        Info: MultipleInfo{
+            Pieces: "PiecesklolkoijuikjPiecesklolkoijuikj1w32",
+            PieceLength: 1,
+            Length: 2,
+
+            Name: "Name",
+            NameUtf8: "Utf-8",
+
+            Files: []MultipleInfoFile{
+                MultipleInfoFile{
+                    Length: 22,
+                    Path: []string{
+                        "pp",
+                    },
+                    PathUtf8: "Utf-8",
+                },
+            },
+        },
+        Nodes: [][]any{
+            {
+                "qqqqqqqqq",
+                "bbbbbbb",
+            },
+            {
+                "yyyyy",
+            },
+        },
+        Encoding: "Utf-8",
+        CommentUtf8: "Utf-8",
+    }
+
+    test1 := []string{
+        "AnnounceList-c1",
+        "AnnounceList-c2",
+        "AnnounceList-d1",
+        "AnnounceList-d2",
+    }
+    assertEqual(st.GetAnnounceList(), test1, "Test_MultipleTorrent_Check-GetAnnounceList")
+
+    tlayout := "2006-01-02 15:04:05"
+
+    assertEqual(st.GetCreationDateTime().Format(tlayout), now.Format(tlayout), "Test_MultipleTorrent_Check-GetCreationDateTime")
+
+    now2 := now.AddDate(0, 0, 1)
+    st = st.SetCreationDateTime(now2)
+    assertEqual(st.GetCreationDateTime().Format(tlayout), now2.Format(tlayout), "Test_MultipleTorrent_Check-GetCreationDateTime-now2")
+
+    hh, err := st.GetInfoHash()
+    errChek(err, "Test_MultipleTorrent_Check-GetInfoHash")
+    assertNotEmpty(hh[:], "Test_MultipleTorrent_Check-GetInfoHash")
+
+    assertNotEmpty(st.GetInfoHashString(), "Test_MultipleTorrent_Check-GetInfoHashString")
+
+    pha, err := st.Info.GetPieceHashes()
+    errChek(err, "Test_MultipleTorrent_Check-GetPieceHashes")
+    assertNotEmpty(pha, "Test_MultipleTorrent_Check-GetPieceHashes")
+
+    assertNotEmpty(st.Info.GetFileList(), "Test_MultipleTorrent_Check-GetFileList")
+
+}

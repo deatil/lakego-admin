@@ -22,13 +22,12 @@ func Key(h func() hash.Hash, z []byte, size int) []byte {
     for i := 0; i < int(limit); i++ {
         binary.BigEndian.PutUint32(countBytes[:], ct)
 
+        md.Reset()
         md.Write(z)
         md.Write(countBytes[:])
         k = md.Sum(k)
 
         ct++
-
-        md.Reset()
     }
 
     return k[:size]

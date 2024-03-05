@@ -5,6 +5,7 @@ import (
 )
 
 // 添加错误
+// Append Error
 func (this Cryptobin) AppendError(err ...error) Cryptobin {
     this.Errors = append(this.Errors, err...)
 
@@ -12,6 +13,7 @@ func (this Cryptobin) AppendError(err ...error) Cryptobin {
 }
 
 // 获取错误
+// get error
 func (this Cryptobin) Error() error {
     return tool.NewError(this.Errors...)
 }

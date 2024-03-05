@@ -16,7 +16,7 @@ import (
 
 type ModeECB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeECB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     cryptText := make([]byte, len(plain))
     cryptobin_cipher.NewECBEncrypter(block).CryptBlocks(cryptText, plain)
@@ -24,7 +24,7 @@ func (this ModeECB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeECB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     dst := make([]byte, len(data))
     cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(dst, data)
@@ -36,9 +36,9 @@ func (this ModeECB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModeCBC struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -47,9 +47,9 @@ func (this ModeCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -62,9 +62,9 @@ func (this ModeCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModePCBC struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModePCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -73,9 +73,9 @@ func (this ModePCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModePCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -88,9 +88,9 @@ func (this ModePCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
 type ModeCFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -99,9 +99,9 @@ func (this ModeCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -114,9 +114,9 @@ func (this ModeCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModeCFB1 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB1) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -125,9 +125,9 @@ func (this ModeCFB1) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB1) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -140,9 +140,9 @@ func (this ModeCFB1) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
 type ModeCFB8 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -151,9 +151,9 @@ func (this ModeCFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -166,9 +166,9 @@ func (this ModeCFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
 type ModeCFB16 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB16) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -177,9 +177,9 @@ func (this ModeCFB16) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB16) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -192,9 +192,9 @@ func (this ModeCFB16) Decrypt(data []byte, block cipher.Block, opt IOption) ([]b
 
 type ModeCFB32 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB32) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -203,9 +203,9 @@ func (this ModeCFB32) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB32) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -218,9 +218,9 @@ func (this ModeCFB32) Decrypt(data []byte, block cipher.Block, opt IOption) ([]b
 
 type ModeCFB64 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCFB64) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -229,9 +229,9 @@ func (this ModeCFB64) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCFB64) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -244,9 +244,9 @@ func (this ModeCFB64) Decrypt(data []byte, block cipher.Block, opt IOption) ([]b
 
 type ModeOFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -255,9 +255,9 @@ func (this ModeOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -270,9 +270,9 @@ func (this ModeOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModeOFB8 struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeOFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -281,9 +281,9 @@ func (this ModeOFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeOFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -296,9 +296,9 @@ func (this ModeOFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
 type ModeCTR struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -307,9 +307,9 @@ func (this ModeCTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -322,7 +322,7 @@ func (this ModeCTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModeGCM struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -342,7 +342,7 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -366,7 +366,7 @@ func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
 type ModeCCM struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -386,7 +386,7 @@ func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     // ccm nounce size, should be in [7,13]
     nonceBytes := opt.Config().GetBytes("nonce")
@@ -461,9 +461,10 @@ func init() {
 
 // OCFB 模式不需要补码
 // 默认 prefix 放置在结果数据之前
+// OCFB not need padding and return [prefix + encrypted]
 type ModeOCFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     blockSize := block.BlockSize()
 
@@ -487,7 +488,7 @@ func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeOCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     blockSize := block.BlockSize()
 
@@ -523,7 +524,7 @@ func init() {
 
 type ModeOCB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -543,7 +544,7 @@ func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeOCB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     // ocb nounce size, should be in [0, cipher.block.BlockSize]
     nonceBytes := opt.Config().GetBytes("nonce")
@@ -574,7 +575,7 @@ func init() {
 
 type ModeEAX struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -594,7 +595,7 @@ func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeEAX) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     // eax nounce size, should be in > 0
     nonceBytes := opt.Config().GetBytes("nonce")
@@ -625,9 +626,9 @@ func init() {
 
 type ModeNCFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeNCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -636,9 +637,9 @@ func (this ModeNCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeNCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -657,9 +658,9 @@ func init() {
 
 type ModeNOFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeNOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -668,9 +669,9 @@ func (this ModeNOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeNOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -689,9 +690,9 @@ func init() {
 
 type ModeBC struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -700,9 +701,9 @@ func (this ModeBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byt
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -721,7 +722,7 @@ func init() {
 
 type ModeHCTR struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeHCTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     tweak := opt.Config().GetBytes("tweak")
     hkey := opt.Config().GetBytes("hkey")
@@ -732,7 +733,7 @@ func (this ModeHCTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeHCTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     tweak := opt.Config().GetBytes("tweak")
     hkey := opt.Config().GetBytes("hkey")
@@ -753,7 +754,7 @@ func init() {
 
 type ModeMGM struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeMGM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -773,7 +774,7 @@ func (this ModeMGM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeMGM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     nonceBytes := opt.Config().GetBytes("nonce")
     if nonceBytes == nil {
@@ -803,9 +804,9 @@ func init() {
 
 type ModeGOFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeGOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -814,9 +815,9 @@ func (this ModeGOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeGOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -835,9 +836,9 @@ func init() {
 
 type ModeG3413CBC struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeG3413CBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -846,9 +847,9 @@ func (this ModeG3413CBC) Encrypt(plain []byte, block cipher.Block, opt IOption) 
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeG3413CBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -867,9 +868,9 @@ func init() {
 
 type ModeG3413CFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeG3413CFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -886,9 +887,9 @@ func (this ModeG3413CFB) Encrypt(plain []byte, block cipher.Block, opt IOption) 
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeG3413CFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -915,9 +916,9 @@ func init() {
 
 type ModeG3413CTR struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeG3413CTR) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -934,9 +935,9 @@ func (this ModeG3413CTR) Encrypt(plain []byte, block cipher.Block, opt IOption) 
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeG3413CTR) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
@@ -963,9 +964,9 @@ func init() {
 
 type ModeG3413OFB struct {}
 
-// 加密
+// 加密 / Encrypt
 func (this ModeG3413OFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
@@ -974,9 +975,9 @@ func (this ModeG3413OFB) Encrypt(plain []byte, block cipher.Block, opt IOption) 
     return cryptText, nil
 }
 
-// 解密
+// 解密 / Decrypt
 func (this ModeG3413OFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // 向量
+    // 向量 / iv
     iv := opt.Iv()
 
     dst := make([]byte, len(data))

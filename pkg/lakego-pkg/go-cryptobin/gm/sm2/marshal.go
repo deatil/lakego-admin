@@ -15,32 +15,33 @@ func MarshalSignatureASN1(r, s *big.Int) ([]byte, error) {
     return asn1.Marshal(sm2Signature{r, s})
 }
 
-func UnmarshalSignatureASN1(sign []byte) (*big.Int, *big.Int, error) {
+func UnmarshalSignatureASN1(sign []byte) (r, s *big.Int, err error) {
     var sm2Sign sm2Signature
 
-    _, err := asn1.Unmarshal(sign, &sm2Sign)
+    _, err = asn1.Unmarshal(sign, &sm2Sign)
     if err != nil {
-        return nil, nil, err
+        return
     }
 
     return sm2Sign.R, sm2Sign.S, nil
 }
 
 // 拼接编码
-func marshalCipherBytes(curve elliptic.Curve, c []byte, mode Mode) []byte {
+func marshalCipherBytes(curve elliptic.Curve, c []byte, mode Mode, h hashFunc) []byte {
     byteLen := (curve.Params().BitSize + 7) / 8
+    hashSize := h().Size()
 
     // C1C3C2 密文结构: x + y + hash + CipherText
     // C1C2C3 密文结构: x + y + CipherText + hash
     switch mode {
         case C1C2C3:
             c1 := make([]byte, 2*byteLen)
-            c2 := make([]byte, len(c) - 2*byteLen - 32)
-            c3 := make([]byte, 32)
+            c2 := make([]byte, len(c) - 2*byteLen - hashSize)
+            c3 := make([]byte, hashSize)
 
             copy(c1, c[0:])            // x1, y1
             copy(c3, c[2*byteLen:])    // hash
-            copy(c2, c[2*byteLen+32:]) // 密文
+            copy(c2, c[2*byteLen+hashSize:]) // 密文
 
             ct := make([]byte, 0)
             ct = append(ct, c1...)
@@ -55,14 +56,16 @@ func marshalCipherBytes(curve elliptic.Curve, c []byte, mode Mode) []byte {
     }
 }
 
-func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode) ([]byte, error) {
+func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode, h hashFunc) ([]byte, error) {
     typ := data[0]
     if typ != byte(0x04) {
         return nil, errors.New("cryptobin/sm2: encrypt data is error.")
     }
 
+    hashSize := h().Size()
+
     byteLen := (curve.Params().BitSize + 7) / 8
-    if len(data) < 2*byteLen + 32 {
+    if len(data) < 2*byteLen + hashSize {
         return nil, errors.New("cryptobin/sm2: encrypt data is too short.")
     }
 
@@ -71,12 +74,12 @@ func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode) ([]byte,
             data = data[1:]
 
             c1 := make([]byte, 2*byteLen)
-            c2 := make([]byte, len(data) - 2*byteLen - 32)
-            c3 := make([]byte, 32)
+            c2 := make([]byte, len(data) - 2*byteLen - hashSize)
+            c3 := make([]byte, hashSize)
 
             copy(c1, data[0:])              // x1, y1
             copy(c2, data[2*byteLen:])      // 密文
-            copy(c3, data[len(data) - 32:]) // hash
+            copy(c3, data[len(data) - hashSize:]) // hash
 
             c := make([]byte, 0)
             c = append(c, c1...)
@@ -94,12 +97,14 @@ func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode) ([]byte,
 }
 
 // asn.1 编码
-func marshalCipherASN1(curve elliptic.Curve, data []byte, mode Mode) ([]byte, error) {
+func marshalCipherASN1(curve elliptic.Curve, data []byte, mode Mode, h hashFunc) ([]byte, error) {
+    hashSize := h().Size()
+
     if mode == C1C2C3 {
-        return marshalCipherASN1Old(curve, data)
+        return marshalCipherASN1Old(curve, data, hashSize)
     }
 
-    return marshalCipherASN1New(curve, data)
+    return marshalCipherASN1New(curve, data, hashSize)
 }
 
 func unmarshalCipherASN1(curve elliptic.Curve, data []byte, mode Mode) ([]byte, error) {
@@ -120,14 +125,14 @@ type cipherASN1New struct {
 
 // sm2 密文转 asn.1 编码格式
 // sm2 密文结构: x + y + hash + CipherText
-func marshalCipherASN1New(curve elliptic.Curve, data []byte) ([]byte, error) {
+func marshalCipherASN1New(curve elliptic.Curve, data []byte, hashSize int) ([]byte, error) {
     byteLen := (curve.Params().BitSize + 7) / 8
 
     x := new(big.Int).SetBytes(data[:byteLen])
     y := new(big.Int).SetBytes(data[byteLen:2*byteLen])
 
-    hash       := data[2*byteLen:2*byteLen+32]
-    cipherText := data[2*byteLen+32:]
+    hash       := data[2*byteLen:2*byteLen+hashSize]
+    cipherText := data[2*byteLen+hashSize:]
 
     return asn1.Marshal(cipherASN1New{x, y, hash, cipherText})
 }
@@ -162,14 +167,14 @@ type cipherASN1Old struct {
 
 // sm2 密文转 asn.1 编码格式
 // sm2 密文结构: x + y + CipherText + hash
-func marshalCipherASN1Old(curve elliptic.Curve, data []byte) ([]byte, error) {
+func marshalCipherASN1Old(curve elliptic.Curve, data []byte, hashSize int) ([]byte, error) {
     byteLen := (curve.Params().BitSize + 7) / 8
 
     x := new(big.Int).SetBytes(data[:byteLen])
     y := new(big.Int).SetBytes(data[byteLen:2*byteLen])
 
-    hash       := data[2*byteLen:2*byteLen+32]
-    cipherText := data[2*byteLen+32:]
+    hash       := data[2*byteLen:2*byteLen+hashSize]
+    cipherText := data[2*byteLen+hashSize:]
 
     return asn1.Marshal(cipherASN1Old{x, y, cipherText, hash})
 }

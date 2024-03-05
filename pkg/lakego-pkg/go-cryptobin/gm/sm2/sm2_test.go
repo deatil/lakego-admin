@@ -8,6 +8,8 @@ import (
     "math/big"
     "io/ioutil"
     "crypto/rand"
+    "crypto/sha1"
+    "crypto/sha256"
     "encoding/pem"
     "encoding/hex"
     "encoding/base64"
@@ -328,7 +330,9 @@ func Test_Encrypt(t *testing.T) {
         t.Fatalf("encrypt failed %v", err)
     }
 
-    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{sm2.C1C3C2})
+    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+    })
     if err != nil {
         t.Fatalf("decrypt failed %v", err)
     }
@@ -358,7 +362,9 @@ func Test_Encrypt_C1C2C3(t *testing.T) {
         t.Fatalf("encrypt failed %v", err)
     }
 
-    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{sm2.C1C2C3})
+    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+    })
     if err != nil {
         t.Fatalf("decrypt failed %v", err)
     }
@@ -404,7 +410,9 @@ func Test_Sign_Check(t *testing.T) {
 
     design, _ := hex.DecodeString(sign)
 
-    if !pub.Verify(msg, design, sm2.SignerOpts{uid}) {
+    if !pub.Verify(msg, design, sm2.SignerOpts{
+        Uid: uid,
+    }) {
         t.Error("Verify error")
     }
 }
@@ -467,5 +475,154 @@ func Test_Encrypt_Check2(t *testing.T) {
 
     if bytes.Compare(msg, dedata) != 0 {
         t.Errorf("Encrypt_Check2 DecryptAsn1 error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_SignSha256WithSM2(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    var defaultUID = []byte{
+        0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+        0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    }
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    r, s, err := sm2.SignWithOpts(rand.Reader, priv, msg, sm2.SignerOpts{
+        Uid:  defaultUID,
+        Hash: sha256.New,
+    })
+    if err != nil {
+        t.Error(err)
+    }
+
+    veri := sm2.VerifyWithOpts(pub, msg, r, s, sm2.SignerOpts{
+        Uid:  defaultUID,
+        Hash: sha256.New,
+    })
+    if !veri {
+        t.Error("veri error")
+    }
+}
+
+func Test_SignSM3Digest_Check(t *testing.T) {
+    uid := "sm2test@example.com"
+    msg := "hi chappy"
+    x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
+    r := "05890B9077B92E47B17A1FF42A814280E556AFD92B4A98B9670BF8B1A274C2FA"
+    s := "E3ABBB8DB2B6ECD9B24ECCEA7F679FB9A4B1DB52F4AA985E443AD73237FA1993"
+
+    xb, _ := hex.DecodeString(x)
+    rr, _ := new(big.Int).SetString(r, 16)
+    ss, _ := new(big.Int).SetString(s, 16)
+
+    priv, err := sm2.NewPrivateKey(xb)
+    if err != nil {
+        t.Fatal(err)
+    }
+    pub := &priv.PublicKey
+
+    veri := sm2.VerifyWithOpts(pub, []byte(msg), rr, ss, sm2.SignerOpts{
+        Uid: []byte(uid),
+    })
+    if !veri {
+        t.Error("veri error")
+    }
+
+}
+
+func Test_SignSHA256Digest_Check(t *testing.T) {
+    uid := "sm2test@example.com"
+    msg := "hi chappy"
+    x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
+    r := "94DA20EA69E4FC70692158BF3D30F87682A4B2F84DF4A4829A1EFC5D9C979D3F"
+    s := "EE15AF8D455B728AB80E592FCB654BF5B05620B2F4D25749D263D5C01FAD365F"
+
+    xb, _ := hex.DecodeString(x)
+    rr, _ := new(big.Int).SetString(r, 16)
+    ss, _ := new(big.Int).SetString(s, 16)
+
+    priv, err := sm2.NewPrivateKey(xb)
+    if err != nil {
+        t.Fatal(err)
+    }
+    pub := &priv.PublicKey
+
+    veri := sm2.VerifyWithOpts(pub, []byte(msg), rr, ss, sm2.SignerOpts{
+        Uid:  []byte(uid),
+        Hash: sha256.New,
+    })
+    if !veri {
+        t.Error("veri error")
+    }
+
+}
+
+var testPrikey3 = `
+-----BEGIN PRIVATE KEY-----
+MIGHAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBG0wawIBAQQga0uyz+bU40mfdM/QWwSLOAIw1teD
+frvhqGWFAFT7r9uhRANCAATsU4K/XvtvANt0yF+eSabtX20tNXCMfaVMSmV7iq4gGxJKXppqIObD
+ccNE4TCP1uA7VyFgARYRXKGzV/eMSx17
+-----END PRIVATE KEY-----
+`
+var testPubkey3 = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAE7FOCv177bwDbdMhfnkmm7V9tLTVw
+jH2lTEple4quIBsSSl6aaiDmw3HDROEwj9bgO1chYAEWEVyhs1f3jEsdew==
+-----END PUBLIC KEY-----
+`
+
+func Test_EncryptSha1_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BPSJaSfjaR5hy1mN6G5pVYXVbgzl0xo6YcCbxkrJgC91s2yLSBdDXcr+kJH6LTTCJ7wIb6M7xMn/lZslrzlGOsLV1uiFr9uHnI2p91GEbttKJ+8hE8Luiwb8gzB5DF4wDLee"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+        Hash: sha1.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSha1_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptSha256_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BF7X/kRsh3N9YWdYKBlVBRZXwVO79IocLQS6a69B5Gch9bbZf8jjqZnVLPdC9Dh21/HqLNDd1tjuu8VnHJFyp3soUCgN94A9+BWt1Uy6+uZuQXFcZHfVqyw/7tXMKtDVEV2aKodne7Boc7RZ0bO4"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+        Hash: sha256.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSha256_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
     }
 }

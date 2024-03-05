@@ -6,12 +6,14 @@ import (
     "bytes"
 )
 
-// 生成
+// 编码
+// New Encoder
 func NewEncoder(w io.Writer) *Encoder {
     return &Encoder{w: w}
 }
 
 // 解析
+// New Decoder
 func NewDecoder(r io.Reader) *Decoder {
     return &Decoder{r: &scanner{r: r}}
 }
@@ -31,6 +33,7 @@ func Marshal(v any) ([]byte, error) {
     return buf.Bytes(), nil
 }
 
+// Marshal and throw panic when error
 func MustMarshal(v any) []byte {
     b, err := Marshal(v)
 

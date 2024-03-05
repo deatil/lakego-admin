@@ -5,7 +5,7 @@ import (
 )
 
 /**
- * 包装配置
+ * 配置 / Config
  *
  * @create 2023-3-30
  * @author deatil
@@ -14,39 +14,45 @@ type Config struct {
     crypto Cryptobin
 }
 
-// 构造函数
+// New Config
 func NewConfig(c Cryptobin) Config {
     return Config{
         crypto: c,
     }
 }
 
-// 密钥
+// 获取密钥
+// get Key
 func (this Config) Key() []byte {
     return this.crypto.key
 }
 
-// 向量
+// 获取向量
+// get Iv
 func (this Config) Iv() []byte {
     return this.crypto.iv
 }
 
-// 加密类型
+// 获取加密类型
+// get Multiple
 func (this Config) Multiple() Multiple {
     return this.crypto.multiple
 }
 
-// 加密模式
+// 获取加密模式
+// get Mode
 func (this Config) Mode() Mode {
     return this.crypto.mode
 }
 
-// 填充模式
+// 获取补码
+// get Padding
 func (this Config) Padding() Padding {
     return this.crypto.padding
 }
 
-// 额外配置
+// 获取额外配置
+// get extra Config
 func (this Config) Config() *tool.Config {
     return this.crypto.config
 }

@@ -5,20 +5,25 @@ import (
 )
 
 // 类型
+// Type Multiple
 var TypeMultiple = NewTypeSet[Multiple, string](maxMultiple)
 
 // 模式
+// Type Mode
 var TypeMode = NewTypeSet[Mode, string](maxMode)
 
 // 补码
+// Type Padding
 var TypePadding = NewTypeSet[Padding, string](maxPadding)
 
 // 名称类型
+// Type Name
 type TypeName interface {
     ~uint | ~int
 }
 
 // 类型数据
+// Type Set
 type TypeSet[N TypeName, D any] struct {
     // 最大值
     max N
@@ -28,6 +33,7 @@ type TypeSet[N TypeName, D any] struct {
 }
 
 // 构造函数
+// New TypeSet
 func NewTypeSet[N TypeName, D any](max N) *TypeSet[N, D] {
     return &TypeSet[N, D]{
         max:   max,
@@ -36,6 +42,7 @@ func NewTypeSet[N TypeName, D any](max N) *TypeSet[N, D] {
 }
 
 // 生成新序列
+// Generate new id
 func (this *TypeSet[N, D]) Generate() N {
     old := this.max
     this.max++
@@ -43,7 +50,8 @@ func (this *TypeSet[N, D]) Generate() N {
     return old
 }
 
-// 设置
+// 类型名称列表
+// name list
 func (this *TypeSet[N, D]) Names() *DataSet[N, D] {
     return this.names
 }
@@ -51,6 +59,7 @@ func (this *TypeSet[N, D]) Names() *DataSet[N, D] {
 // ===================
 
 // 加密类型
+// Multiple enum
 type Multiple uint
 
 func (this Multiple) String() string {
@@ -239,6 +248,7 @@ const (
 // ===================
 
 // 加密模式
+// Mode type
 type Mode uint
 
 func (this Mode) String() string {
@@ -343,6 +353,7 @@ const (
 // ===================
 
 // 补码类型
+// Padding type
 type Padding uint
 
 func (this Padding) String() string {
