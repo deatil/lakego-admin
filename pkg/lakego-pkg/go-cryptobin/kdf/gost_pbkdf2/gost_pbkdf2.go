@@ -45,23 +45,29 @@ func Key(hasher func() hash.Hash, password, salt []byte, iterations, dklen int) 
     }
 
     dkey := make([]byte, 0)
+    rkeyBytes := make([]byte, inner.Size())
+    pre, rkey := new(big.Int), new(big.Int)
 
+    var prev []byte
     var loop uint32 = 1
     var loopBytes [4]byte
 
     for len(dkey) < dklen {
         binary.BigEndian.PutUint32(loopBytes[:], loop)
-        prev := prf(append(salt, loopBytes[:]...))
 
-        rkey := new(big.Int).SetBytes(prev)
+        prev = prf(append(salt, loopBytes[:]...))
+
+        rkey.SetBytes(prev)
 
         for i := 0; i < iterations - 1; i++ {
             prev = prf(prev)
-            rkey.Xor(rkey, new(big.Int).SetBytes(prev))
+            rkey.Xor(rkey, pre.SetBytes(prev))
         }
 
         loop += 1
-        dkey = append(dkey, rkey.FillBytes(make([]byte, inner.Size()))...)
+
+        rkey.FillBytes(rkeyBytes)
+        dkey = append(dkey, rkeyBytes...)
     }
 
     return dkey[:dklen]

@@ -6,9 +6,7 @@ import (
     "math/big"
 )
 
-var (
-    one = big.NewInt(1)
-)
+var one = big.NewInt(1)
 
 func Key(h func() hash.Hash, u, v int, salt, password []byte, r int, ID byte, size int) (key []byte) {
     var D []byte
@@ -51,17 +49,22 @@ func Key(h func() hash.Hash, u, v int, salt, password []byte, r int, ID byte, si
                     if len(Ijb) > v {
                         Ijb = Ijb[len(Ijb)-v:]
                     }
+
                     if len(Ijb) < v {
                         if IjBuf == nil {
                             IjBuf = make([]byte, v)
                         }
+
                         bytesShort := v - len(Ijb)
                         for i := 0; i < bytesShort; i++ {
                             IjBuf[i] = 0
                         }
+
                         copy(IjBuf[bytesShort:], Ijb)
+
                         Ijb = IjBuf
                     }
+
                     copy(I[j*v:(j+1)*v], Ijb)
                 }
             }
@@ -84,6 +87,7 @@ func fillWithRepeats(pattern []byte, v int) []byte {
     if len(pattern) == 0 {
         return nil
     }
+
     outputLen := v * ((len(pattern) + v - 1) / v)
     return bytes.Repeat(pattern, (outputLen+len(pattern)-1)/len(pattern))[:outputLen]
 }

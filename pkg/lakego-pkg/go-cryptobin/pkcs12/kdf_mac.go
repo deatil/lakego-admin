@@ -14,12 +14,12 @@ import (
 
     "golang.org/x/crypto/md4"
 
-    "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/kdf/pbkdf"
     "github.com/deatil/go-cryptobin/kdf/gost_pbkdf2"
+    "github.com/deatil/go-cryptobin/hash/md2"
+    "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
-    cryptobin_md2 "github.com/deatil/go-cryptobin/hash/md2"
-    cryptobin_pbkdf "github.com/deatil/go-cryptobin/kdf/pbkdf"
 )
 
 // 可使用的 hash 方式
@@ -67,7 +67,7 @@ var (
 func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
         case oid.Equal(oidMD2):
-            return cryptobin_md2.New, nil
+            return md2.New, nil
         case oid.Equal(oidMD4):
             return md4.New, nil
         case oid.Equal(oidMD5):
@@ -180,7 +180,7 @@ func (this MacData) Verify(message []byte, password []byte) (err error) {
         default:
             hashSize := h().Size()
 
-            key = cryptobin_pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
+            key = pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
     }
 
     mac := hmac.New(h, key)
@@ -246,7 +246,7 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
         default:
             hashSize := h().Size()
 
-            key = cryptobin_pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
+            key = pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
     }
 
     mac := hmac.New(h, key)

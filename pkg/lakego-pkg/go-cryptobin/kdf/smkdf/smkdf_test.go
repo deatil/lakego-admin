@@ -1,44 +1,43 @@
 package smkdf
 
 import (
-    "encoding/hex"
     "fmt"
     "hash"
-    "math/big"
-    "reflect"
     "testing"
+    "math/big"
 
     "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
-func TestKdf(t *testing.T) {
+func Test_Kdf(t *testing.T) {
     type args struct {
         md  func() hash.Hash
         z   []byte
         len int
     }
+
     tests := []struct {
         name string
         args args
         want string
     }{
-        {"sm3 case 1", args{sm3.New, []byte("emmansun"), 16}, "708993ef1388a0ae4245a19bb6c02554"},
-        {"sm3 case 2", args{sm3.New, []byte("emmansun"), 32}, "708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd4"},
-        {"sm3 case 3", args{sm3.New, []byte("emmansun"), 48}, "708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd47eba4fa460e7b277bc6b4ce4d07ed493"},
-        {"sm3 case 4", args{sm3.New, []byte("708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd47eba4fa460e7b277bc6b4ce4d07ed493708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd47eba4fa460e7b277bc6b4ce4d07ed493"), 48}, "49cf14649f324a07e0d5bb2a00f7f05d5f5bdd6d14dff028e071327ec031104590eddb18f98b763e18bf382ff7c3875f"},
-        {"sm3 case 5", args{sm3.New, []byte("708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd47eba4fa460e7b277bc6b4ce4d07ed493708993ef1388a0ae4245a19bb6c02554c632633e356ddb989beb804fda96cfd47eba4fa460e7b277bc6b4ce4d07ed493"), 128}, "49cf14649f324a07e0d5bb2a00f7f05d5f5bdd6d14dff028e071327ec031104590eddb18f98b763e18bf382ff7c3875f30277f3179baebd795e7853fa643fdf280d8d7b81a2ab7829f615e132ab376d32194cd315908d27090e1180ce442d9be99322523db5bfac40ac5acb03550f5c93e5b01b1d71f2630868909a6a1250edb"},
+        {"sm3 case 1", args{sm3.New, []byte("cryptobin-test"), 16}, "a053a49125ebfe8c0b557fd8a24bb14d"},
+        {"sm3 case 2", args{sm3.New, []byte("cryptobin-test"), 32}, "a053a49125ebfe8c0b557fd8a24bb14d690199de297d73191a34163829199a5b"},
+        {"sm3 case 3", args{sm3.New, []byte("cryptobin-test"), 48}, "a053a49125ebfe8c0b557fd8a24bb14d690199de297d73191a34163829199a5b369ed82fde8772fd0fc5f6e3e584d72e"},
+        {"sm3 case 4", args{sm3.New, []byte("feaabc31a1eda4f7aa2d212baee0bb412074914bbb06d5e87d332ed43308b21a9c4644131924b58601a780d2a57d233ac74118c3af9cd94fb1e6949ef533406ee98777397a6a6421343f9e4858fbb65d7bf516c576f25a9338be013ef8159f81"), 48}, "e9c3c4c0d0011bd517c76e330d660b625704b4338176e9f6320de620360e386b1c9ecd7d91565417cf51bb53da01a457"},
+        {"sm3 case 5", args{sm3.New, []byte("feaabc31a1eda4f7aa2d212baee0bb412074914bbb06d5e87d332ed43308b21a9c4644131924b58601a780d2a57d233ac74118c3af9cd94fb1e6949ef533406ee98777397a6a6421343f9e4858fbb65d7bf516c576f25a9338be013ef8159f81"), 96}, "e9c3c4c0d0011bd517c76e330d660b625704b4338176e9f6320de620360e386b1c9ecd7d91565417cf51bb53da01a457f2679cd9407964ef77a45000b892e92a5f1916d6515db2439066f25deba6409e29eecc742621c769d1bb2e35ddc624de"},
     }
     for _, tt := range tests {
-        wantBytes, _ := hex.DecodeString(tt.want)
         t.Run(tt.name, func(t *testing.T) {
-            if got := Key(tt.args.md, tt.args.z, tt.args.len); !reflect.DeepEqual(got, wantBytes) {
-                t.Errorf("Key(%v) = %x, want %v", tt.name, got, tt.want)
+            got := Key(tt.args.md, tt.args.z, tt.args.len)
+            if fmt.Sprintf("%x", got) != tt.want {
+                t.Errorf("Key(%v) = %x, want %s", tt.name, got, tt.want)
             }
         })
     }
 }
 
-func TestKdfOldCase(t *testing.T) {
+func Test_KdfOldCase(t *testing.T) {
     x2, _ := new(big.Int).SetString("64D20D27D0632957F8028C1E024F6B02EDF23102A566C932AE8BD613A8E865FE", 16)
     y2, _ := new(big.Int).SetString("58D225ECA784AE300A81A2D48281A828E1CEDF11C4219099840265375077BF78", 16)
 
@@ -46,14 +45,12 @@ func TestKdfOldCase(t *testing.T) {
 
     result := Key(sm3.New, append(x2.Bytes(), y2.Bytes()...), 19)
 
-    resultStr := hex.EncodeToString(result)
-
-    if expected != resultStr {
-        t.Fatalf("expected %s, real value %s", expected, resultStr)
+    if fmt.Sprintf("%x", result) != expected {
+        t.Fatalf("got %x, want %s", result, expected)
     }
 }
 
-func BenchmarkKdf(b *testing.B) {
+func Benchmark_Kdf(b *testing.B) {
     tests := []struct {
         zLen int
         kLen int
