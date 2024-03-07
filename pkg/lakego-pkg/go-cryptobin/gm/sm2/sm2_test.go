@@ -626,3 +626,36 @@ func Test_EncryptSha256_Check(t *testing.T) {
         t.Errorf("Test_EncryptSha256_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
     }
 }
+
+func Test_SignFunc(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    t.Run("ASN1", func(t *testing.T) {
+        signed, err := sm2.Sign(rand.Reader, priv, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        if !sm2.Verify(pub, msg, signed, nil) {
+            t.Error("veri error")
+        }
+    })
+
+    t.Run("Bytes", func(t *testing.T) {
+        signed, err := sm2.SignBytes(rand.Reader, priv, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        if !sm2.VerifyBytes(pub, msg, signed, nil) {
+            t.Error("veri error")
+        }
+    })
+}

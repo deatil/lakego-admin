@@ -69,8 +69,8 @@ func NewKeyExchange(priv *PrivateKey, peerPub *PublicKey, uid, peerUID []byte, k
 
 // Init is for initiator's step A1-A3,
 // returns generated Ephemeral Public Key which will be passed to Reponder.
-func (ke *KeyExchange) Init(rand io.Reader) (*PublicKey, error) {
-    r, err := randFieldElement(ke.privateKey, rand)
+func (ke *KeyExchange) Init(random io.Reader) (*PublicKey, error) {
+    r, err := randFieldElement(random, ke.privateKey)
     if err != nil {
         return nil, err
     }
@@ -202,8 +202,8 @@ func (ke *KeyExchange) mqv() {
 // depends on KeyExchange.genSignature value.
 //
 // It will check if there are peer's public key and validate the peer's Ephemeral Public Key.
-func (ke *KeyExchange) Repond(rand io.Reader, rA *PublicKey) (*PublicKey, []byte, error) {
-    r, err := randFieldElement(ke.privateKey, rand)
+func (ke *KeyExchange) Repond(random io.Reader, rA *PublicKey) (*PublicKey, []byte, error) {
+    r, err := randFieldElement(random, ke.privateKey)
     if err != nil {
         return nil, nil, err
     }

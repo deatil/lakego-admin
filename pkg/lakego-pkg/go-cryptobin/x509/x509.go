@@ -97,12 +97,15 @@ func marshalPublicKey(pub any) (publicKeyBytes []byte, publicKeyAlgorithm pkix.A
             if !ok {
                 return nil, pkix.AlgorithmIdentifier{}, errors.New("x509: unsupported SM2 curve")
             }
+
             publicKeyAlgorithm.Algorithm = oidPublicKeyECDSA
+
             var paramBytes []byte
             paramBytes, err = asn1.Marshal(oid)
             if err != nil {
                 return
             }
+
             publicKeyAlgorithm.Parameters.FullBytes = paramBytes
         case *gost.PublicKey:
             publicKey, err := gost.MarshalPublicKey(pub)
@@ -202,19 +205,33 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
             if len(rest) != 0 {
                 return nil, errors.New("x509: trailing data after ECDSA parameters")
             }
+
             namedCurve := namedCurveFromOID(*namedCurveOID)
             if namedCurve == nil {
                 return nil, errors.New("x509: unsupported elliptic curve")
             }
+
             x, y := elliptic.Unmarshal(namedCurve, asn1Data)
             if x == nil {
                 return nil, errors.New("x509: failed to unmarshal elliptic curve point")
             }
-            pub := &ecdsa.PublicKey{
-                Curve: namedCurve,
-                X:     x,
-                Y:     y,
+
+            var pub any
+            switch namedCurve {
+                case sm2.P256():
+                    pub = &sm2.PublicKey{
+                        Curve: namedCurve,
+                        X:     x,
+                        Y:     y,
+                    }
+                default:
+                    pub = &ecdsa.PublicKey{
+                        Curve: namedCurve,
+                        X:     x,
+                        Y:     y,
+                    }
             }
+
             return pub, nil
         case Ed25519:
             // RFC 8410, Section 3
@@ -1099,7 +1116,6 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             return
         case *ecdsa.PublicKey:
             ecdsaSig := new(ecdsaSignature)
-
             if rest, err := asn1.Unmarshal(signature, ecdsaSig); err != nil {
                 return err
             } else if len(rest) != 0 {
@@ -1110,22 +1126,16 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
                 return errors.New("x509: ECDSA signature contained zero or negative values")
             }
 
-            switch pub.Curve {
-                case sm2.P256():
-                    sm2pub := &sm2.PublicKey{
-                        Curve: pub.Curve,
-                        X:     pub.X,
-                        Y:     pub.Y,
-                    }
-
-                    if !sm2.VerifyWithSM2(sm2pub, signed, nil, ecdsaSig.R, ecdsaSig.S) {
-                        return errors.New("x509: SM2 verification failure")
-                    }
-                default:
-                    if !ecdsa.Verify(pub, fnHash(), ecdsaSig.R, ecdsaSig.S) {
-                        return errors.New("x509: ECDSA verification failure")
-                    }
+            if !ecdsa.Verify(pub, fnHash(), ecdsaSig.R, ecdsaSig.S) {
+                return errors.New("x509: ECDSA verification failure")
             }
+
+            return
+        case *sm2.PublicKey:
+            if !pub.Verify(signed, signature, nil) {
+                return errors.New("x509: SM2 verification failure")
+            }
+
             return
         case ed25519.PublicKey:
             if !ed25519.Verify(pub, fnHash(), signature) {
@@ -1134,8 +1144,8 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
 
             return
         case *gost.PublicKey:
-            gostOk, _ := gost.Verify(pub, fnHash(), signature)
-            if !gostOk {
+            ok, _ := gost.Verify(pub, fnHash(), signature)
+            if !ok {
                 return errors.New("x509: GOST verification failure")
             }
 

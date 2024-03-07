@@ -1030,3 +1030,4 @@ func Test_P12_Gost_En(t *testing.T) {
         assertNotEmpty(pemInfo, "Test_P12_Gost_En-ToOriginalPEM-Pem")
     }
 }
+

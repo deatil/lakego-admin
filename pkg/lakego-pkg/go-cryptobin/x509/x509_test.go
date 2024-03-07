@@ -1166,3 +1166,79 @@ func Test_P12_Gost_222(t *testing.T) {
         // t.Fatal(err)
     }
 }
+
+var testSM2RootCaCert = `
+-----BEGIN CERTIFICATE-----
+MIIB4DCCAYagAwIBAgIBADAKBggqgRzPVQGDdTBGMQswCQYDVQQGEwJBQTELMAkG
+A1UECAwCQkIxCzAJBgNVBAoMAkNDMQswCQYDVQQLDAJERDEQMA4GA1UEAwwHcm9v
+dCBjYTAgFw0yMzAyMjIwMjMwMTNaGA8yMTIzMDEyOTAyMzAxM1owRjELMAkGA1UE
+BhMCQUExCzAJBgNVBAgMAkJCMQswCQYDVQQKDAJDQzELMAkGA1UECwwCREQxEDAO
+BgNVBAMMB3Jvb3QgY2EwWTATBgcqhkjOPQIBBggqgRzPVQGCLQNCAASN55Ju2pvU
+Bi8UrWHc4ZaKnsqiFPWfcM/6H2Gu/VQ7I1oVnyPktvlTrtwhSy6K43JoCnjVPHrq
+jOXxnkOtGVDVo2MwYTAdBgNVHQ4EFgQUxu7mMmVaB3vq7JRi8UEFHcxVFY4wHwYD
+VR0jBBgwFoAUxu7mMmVaB3vq7JRi8UEFHcxVFY4wDwYDVR0TAQH/BAUwAwEB/zAO
+BgNVHQ8BAf8EBAMCAYYwCgYIKoEcz1UBg3UDSAAwRQIhAIz7tgrp7LmOQEJGPAU3
+8m9PNzMOTqGWZqux8CxIuEGjAiB4cFVYQ4sTCYb/4fNayKYO1FH+Q2Cc7xGq7WPd
+knwWpw==
+-----END CERTIFICATE-----
+`
+var testSM2SubCaCert = `
+-----BEGIN CERTIFICATE-----
+MIIB4zCCAYigAwIBAgIBATAKBggqgRzPVQGDdTBGMQswCQYDVQQGEwJBQTELMAkG
+A1UECAwCQkIxCzAJBgNVBAoMAkNDMQswCQYDVQQLDAJERDEQMA4GA1UEAwwHcm9v
+dCBjYTAgFw0yMzAyMjIwMjMwMTNaGA8yMTIzMDEyOTAyMzAxM1owRTELMAkGA1UE
+BhMCQUExCzAJBgNVBAgMAkJCMQswCQYDVQQKDAJDQzELMAkGA1UECwwCREQxDzAN
+BgNVBAMMBnN1YiBjYTBZMBMGByqGSM49AgEGCCqBHM9VAYItA0IABH0feWwae0S0
+w4QQA5cBGYwaQPaxZFcLzIqph+I6BQQCGXaIAabqpO0zjAyf1twYmoM3ZRLJgbZz
+HE/2rRMPBiajZjBkMB0GA1UdDgQWBBSsYesigGJZCD6WyNF/znRcAq88mTAfBgNV
+HSMEGDAWgBTG7uYyZVoHe+rslGLxQQUdzFUVjjASBgNVHRMBAf8ECDAGAQH/AgEA
+MA4GA1UdDwEB/wQEAwIBhjAKBggqgRzPVQGDdQNJADBGAiEApoHDue1bzGukE97O
+BqQbboU1d3jqNg4gAgpMe5fFIosCIQDwndSp7Tc3DZ0QCifXKNqgykjepsWTPZ3R
+NrMzM0rflg==
+-----END CERTIFICATE-----
+`
+
+func Test_P12_SM2(t *testing.T) {
+    certpem := decodePEM(testSM2RootCaCert)
+
+    cert, err := ParseCertificate(certpem)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pubKey, ok := cert.PublicKey.(*sm2.PublicKey)
+    if !ok {
+        t.Fatal("PublicKey is not sm2 PublicKey")
+    }
+
+    publicKey, err := sm2.MarshalPublicKey(pubKey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    publicKeyPem := encodePEM(publicKey, "PUBLIC KEY")
+    if len(publicKeyPem) == 0 {
+        t.Error("fail make publicKey")
+    }
+
+    err = cert.CheckSignature(cert.SignatureAlgorithm, cert.RawTBSCertificate, cert.Signature)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    // ==========
+
+    subCertpem := decodePEM(testSM2SubCaCert)
+
+    subCert, err := ParseCertificate(subCertpem)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    // use root ca PublicKey to Check Signature
+    subCert.PublicKey = pubKey
+    err = subCert.CheckSignature(subCert.SignatureAlgorithm, subCert.RawTBSCertificate, subCert.Signature)
+    if err != nil {
+        t.Fatal(err)
+    }
+}

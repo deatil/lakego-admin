@@ -5,7 +5,7 @@ import (
     "testing"
 )
 
-func Test_Kdf(t *testing.T) {
+func Test_Pbkdf(t *testing.T) {
     type args struct {
         password []byte
         salt     []byte

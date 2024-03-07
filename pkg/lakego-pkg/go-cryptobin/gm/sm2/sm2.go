@@ -43,6 +43,7 @@ const (
     C1C2C3
 )
 
+// 加密设置
 // Encrypter Opts
 type EncrypterOpts struct {
     Mode Mode
@@ -66,6 +67,7 @@ func (this EncrypterOpts) GetHash() hashFunc {
     return sm3.New
 }
 
+// 签名设置
 // Signer Opts
 type SignerOpts struct {
     Uid  []byte
@@ -125,7 +127,7 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 
 // 验证 asn.1 编码的数据 ans1(r, s)
 // Verify asn.1 marshal data
-func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
+func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
     r, s, err := UnmarshalSignatureASN1(sign)
     if err != nil {
         return false
@@ -134,9 +136,9 @@ func (pub *PublicKey) Verify(msg []byte, sign []byte, opts crypto.SignerOpts) bo
     return VerifyWithOpts(pub, msg, r, s, opts)
 }
 
-// 验证 asn.1 编码的数据 ans1(r, s)
+// 验证 asn.1 编码的数据 bytes(r + s)
 // Verify Bytes marshal data
-func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpts) bool {
+func (pub *PublicKey) VerifyBytes(msg, sign []byte, opts crypto.SignerOpts) bool {
     byteLen := (pub.Curve.Params().BitSize + 7) / 8
     if len(sign) != 2*byteLen {
         return false
@@ -150,12 +152,35 @@ func (pub *PublicKey) VerifyBytes(msg []byte, sign []byte, opts crypto.SignerOpt
 
 // Encrypt with bytes
 func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    return Encrypt(random, pub, data, opts)
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    ct, err := encrypt(random, pub, data, opt.GetHash())
+    if err != nil {
+        return nil, err
+    }
+
+    // 编码数据 / Marshal Data
+    ct = marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+
+    return ct, nil
 }
 
 // Encrypt with ASN1
 func (pub *PublicKey) EncryptASN1(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    return EncryptASN1(random, pub, data, opts)
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    ct, err := encrypt(random, pub, data, opt.GetHash())
+    if err != nil {
+        return nil, err
+    }
+
+    return marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
 }
 
 // SM2 PrivateKey
@@ -210,13 +235,35 @@ func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.Sign
 }
 
 // crypto.Decrypter
-func (priv *PrivateKey) Decrypt(_ io.Reader, msg []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
-    return Decrypt(priv, msg, opts)
+func (priv *PrivateKey) Decrypt(_ io.Reader, data []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    // 解析数据 / Unmarshal Data
+    res, err := unmarshalCipherBytes(priv.Curve, data, opt.GetMode(), opt.GetHash())
+    if err != nil {
+        return nil, err
+    }
+
+    return decrypt(priv, res, opt.GetHash())
 }
 
 // Decrypt with ASN1
 func (priv *PrivateKey) DecryptASN1(data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    return DecryptASN1(priv, data, opts)
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    // 解析数据 / Unmarshal Data
+    res, err := unmarshalCipherASN1(priv.Curve, data, opt.GetMode())
+    if err != nil {
+        return nil, err
+    }
+
+    return decrypt(priv, res, opt.GetHash())
 }
 
 // 生成私钥证书
@@ -224,7 +271,7 @@ func (priv *PrivateKey) DecryptASN1(data []byte, opts crypto.DecrypterOpts) ([]b
 func GenerateKey(random io.Reader) (*PrivateKey, error) {
     curve := P256()
 
-    k, err := randFieldElement(curve, random)
+    k, err := randFieldElement(random, curve)
     if err != nil {
         return nil, err
     }
@@ -291,70 +338,41 @@ func ToPublicKey(key *PublicKey) []byte {
 // sm2 加密，返回字节拼接格式的密文内容
 // Encrypted and return bytes data
 func Encrypt(random io.Reader, pub *PublicKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    opt := DefaultEncrypterOpts
-    if o, ok := opts.(EncrypterOpts); ok {
-        opt = o
+    if pub == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect public key")
     }
 
-    ct, err := encrypt(random, pub, data, opt.GetHash())
-    if err != nil {
-        return nil, err
-    }
-
-    // 编码数据 / Marshal Data
-    ct = marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
-
-    return ct, nil
+    return pub.Encrypt(random, data, opts)
 }
 
 // sm2 解密，解析字节拼接格式的密文内容
 // Decrypt bytes marshal data
 func Decrypt(priv *PrivateKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    opt := DefaultEncrypterOpts
-    if o, ok := opts.(EncrypterOpts); ok {
-        opt = o
+    if priv == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect private key")
     }
 
-    // 解析数据 / Unmarshal Data
-    res, err := unmarshalCipherBytes(priv.Curve, data, opt.GetMode(), opt.GetHash())
-    if err != nil {
-        return nil, err
-    }
-
-    return decrypt(priv, res, opt.GetHash())
+    return priv.Decrypt(nil, data, opts)
 }
 
 // sm2 加密，返回 asn.1 编码格式的密文内容
 // Encrypted and return asn.1 data
-func EncryptASN1(rand io.Reader, pub *PublicKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    opt := DefaultEncrypterOpts
-    if o, ok := opts.(EncrypterOpts); ok {
-        opt = o
+func EncryptASN1(random io.Reader, pub *PublicKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    if pub == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect public key")
     }
 
-    ct, err := encrypt(rand, pub, data, opt.GetHash())
-    if err != nil {
-        return nil, err
-    }
-
-    return marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+    return pub.EncryptASN1(random, data, opts)
 }
 
 // sm2 解密，解析 asn.1 编码格式的密文内容
 // Decrypt asn.1 marshal data
 func DecryptASN1(priv *PrivateKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
-    opt := DefaultEncrypterOpts
-    if o, ok := opts.(EncrypterOpts); ok {
-        opt = o
+    if priv == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect private key")
     }
 
-
-    res, err := unmarshalCipherASN1(priv.Curve, data, opt.GetMode())
-    if err != nil {
-        return nil, err
-    }
-
-    return decrypt(priv, res, opt.GetHash())
+    return priv.DecryptASN1(data, opts)
 }
 
 func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte, error) {
@@ -365,7 +383,7 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte,
 
         curve := pub.Curve
 
-        k, err := randFieldElement(curve, random)
+        k, err := randFieldElement(random, curve)
         if err != nil {
             return nil, err
         }
@@ -443,20 +461,44 @@ func decrypt(priv *PrivateKey, data []byte, h hashFunc) ([]byte, error) {
     return c, nil
 }
 
-// sm2 sign with sm3
-func SignWithSM2(random io.Reader, priv *PrivateKey, msg, uid []byte) (r, s *big.Int, err error) {
-    return SignWithOpts(random, priv, msg, SignerOpts{
-        Uid:  uid,
-        Hash: sm3.New,
-    })
+// 签名返回 asn.1 编码数据
+// sign data and return asn.1 marshal data
+func Sign(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    if priv == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect private key")
+    }
+
+    return priv.Sign(random, msg, opts)
 }
 
-// sm2 verify with sm3
-func VerifyWithSM2(pub *PublicKey, msg, uid []byte, r, s *big.Int) bool {
-    return VerifyWithOpts(pub, msg, r, s, SignerOpts{
-        Uid:  uid,
-        Hash: sm3.New,
-    })
+// 验证 asn.1 编码的数据 ans1(r, s)
+// Verify asn.1 marshal data
+func Verify(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) bool {
+    if pub == nil {
+        return false
+    }
+
+    return pub.Verify(msg, sign, opts)
+}
+
+// 签名返回 Bytes 编码数据
+// sign data and return Bytes marshal data
+func SignBytes(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    if priv == nil {
+        return nil, errors.New("cryptobin/sm2: incorrect private key")
+    }
+
+    return priv.SignBytes(random, msg, opts)
+}
+
+// 验证 asn.1 编码的数据 bytes(r + s)
+// Verify Bytes marshal data
+func VerifyBytes(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) bool {
+    if pub == nil {
+        return false
+    }
+
+    return pub.VerifyBytes(msg, sign, opts)
 }
 
 // sm2 sign with SignerOpts
@@ -471,7 +513,7 @@ func SignWithOpts(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.Si
         return nil, nil, err
     }
 
-    return Sign(random, priv, hashed)
+    return sign(random, priv, hashed)
 }
 
 // sm2 verify with SignerOpts
@@ -486,11 +528,11 @@ func VerifyWithOpts(pub *PublicKey, msg []byte, r, s *big.Int, opts crypto.Signe
         return false
     }
 
-    return Verify(pub, hashed, r, s)
+    return verify(pub, hashed, r, s)
 }
 
 // sm2 sign
-func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
+func sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
     e := new(big.Int).SetBytes(hash)
     curve := priv.PublicKey.Curve
 
@@ -503,7 +545,7 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err e
 
     for {
         for {
-            k, err = randFieldElement(curve, random)
+            k, err = randFieldElement(random, curve)
             if err != nil {
                 r = nil
                 return
@@ -539,7 +581,7 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err e
 }
 
 // sm2 verify
-func Verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
+func verify(pub *PublicKey, hash []byte, r, s *big.Int) bool {
     curve := pub.Curve
     N := curve.Params().N
 
@@ -623,7 +665,7 @@ func calculateZA(pub *PublicKey, h hashFunc, uid []byte) ([]byte, error) {
     return md.Sum(nil), nil
 }
 
-func randFieldElement(curve elliptic.Curve, random io.Reader) (k *big.Int, err error) {
+func randFieldElement(random io.Reader, curve elliptic.Curve) (k *big.Int, err error) {
     if random == nil {
         // If there is no external trusted random source,
         // please use rand.Reader to instead of it.

@@ -33,14 +33,17 @@ func Key(h func() hash.Hash, secret []byte, label, seed []byte, length int) []by
     // The number of iterations, n <= 255
     n := uint8(length / mdSize)
 
+    mac := hmac.New(h, secret)
+
     for i := uint8(1); i <= n; i++ {
-        mac := hmac.New(h, secret)
+        mac.Reset()
         mac.Write([]byte{i})
         mac.Write(label)
         mac.Write([]byte{0x00})
         mac.Write(seed)
         mac.Write(Lb)
-        out = append(out, mac.Sum(nil)...)
+
+        out = mac.Sum(out)
     }
 
     return out
