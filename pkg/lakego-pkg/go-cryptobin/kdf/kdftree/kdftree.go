@@ -7,9 +7,10 @@ import (
 
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
 )
-// Key implements KDF_TREE_GOSTR3411_2012_256 algorithm for r = 1.
+
+// KDFTree implements KDF_TREE_GOSTR3411_2012_256 algorithm for r = 1.
 // https://tools.ietf.org/html/rfc7836#section-4.5
-func Kdftree(secret []byte, label, seed []byte, length int) []byte {
+func KDFTree(secret []byte, label, seed []byte, length int) []byte {
     return Key(gost34112012256.New, secret, label, seed, length)
 }
 

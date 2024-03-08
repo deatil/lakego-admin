@@ -6,6 +6,8 @@ import (
     "crypto"
     "crypto/rsa"
     "crypto/rand"
+
+    cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
 )
 
 // 公钥加密
@@ -122,6 +124,44 @@ func (this RSA) DecryptOAEP() RSA {
     }
 
     parsedData, err := rsa.DecryptOAEP(this.oaepHash, rand.Reader, this.privateKey, this.data, this.oaepLabel)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.parsedData = parsedData
+
+    return this
+}
+
+// ====================
+
+// 公钥加密
+// rsa no padding encrypt
+func (this RSA) LowerSafeEncrypt() RSA {
+    if this.publicKey == nil {
+        err := errors.New("publicKey empty.")
+        return this.AppendError(err)
+    }
+
+    parsedData, err := cryptobin_rsa.LowerSafeEncrypt(this.publicKey, this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.parsedData = parsedData
+
+    return this
+}
+
+// 私钥解密
+// rsa no padding decrypt
+func (this RSA) LowerSafeDecrypt() RSA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    parsedData, err := cryptobin_rsa.LowerSafeDecrypt(this.privateKey, this.data)
     if err != nil {
         return this.AppendError(err)
     }

@@ -269,6 +269,36 @@ func Test_PrivateKeyEncrypt(t *testing.T) {
     assertEqual(data, deData, "PrivateKeyEncrypt-Dedata")
 }
 
+func Test_LowerSafeEncrypt(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    data := "test-passtest-pass1111111111112222222222222222222222333333333333"
+
+    rsa := New()
+
+    en := rsa.
+        FromString(data).
+        FromPublicKey([]byte(testPubkey)).
+        LowerSafeEncrypt()
+    enData := en.ToBase64String()
+
+    assertError(en.Error(), "LowerSafeEncrypt-Encrypt")
+    assertNotEmpty(enData, "LowerSafeEncrypt-Encrypt")
+
+    de := rsa.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(testPrikey)).
+        LowerSafeDecrypt()
+    deData := de.ToString()
+
+    assertError(de.Error(), "LowerSafeEncrypt-Decrypt")
+    assertNotEmpty(deData, "LowerSafeEncrypt-Decrypt")
+
+    assertEqual(data, deData, "LowerSafeEncrypt-Dedata")
+}
+
 // ============
 
 func Test_EncryptECB(t *testing.T) {

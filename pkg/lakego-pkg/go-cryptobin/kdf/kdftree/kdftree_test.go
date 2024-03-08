@@ -58,7 +58,7 @@ func Test_KDFTreeOnReference512BitVector(t *testing.T) {
     }
 }
 
-func Test_KDFTreeAndKDFGOSTR34112012256_Kdftree(t *testing.T) {
+func Test_KDFTreeAndKDFGOSTR34112012256_KDFTree(t *testing.T) {
     key := []byte{
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -69,7 +69,7 @@ func Test_KDFTreeAndKDFGOSTR34112012256_Kdftree(t *testing.T) {
 
     seed := []byte{0xaf, 0x21, 0x43, 0x41, 0x45, 0x65, 0x63, 0x78}
 
-    out := Kdftree(key, label, seed, 32)
+    out := KDFTree(key, label, seed, 32)
 
     if !bytes.Equal(out, []byte{
         0xa1, 0xaa, 0x5f, 0x7d, 0xe4, 0x02, 0xd7, 0xb3,
@@ -82,7 +82,7 @@ func Test_KDFTreeAndKDFGOSTR34112012256_Kdftree(t *testing.T) {
 }
 
 // This test from https://files.stroyinf.ru/Data2/1/4293748/4293748842.pdf
-func Test_KDFTreeOnReference512BitVector_Kdftree(t *testing.T) {
+func Test_KDFTreeOnReference512BitVector_KDFTree(t *testing.T) {
     key := []byte{
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
@@ -93,7 +93,7 @@ func Test_KDFTreeOnReference512BitVector_Kdftree(t *testing.T) {
 
     seed := []byte{0xaf, 0x21, 0x43, 0x41, 0x45, 0x65, 0x63, 0x78}
 
-    out := Kdftree(key, label, seed, 64)
+    out := KDFTree(key, label, seed, 64)
 
     if !bytes.Equal(out, []byte{
         0x22, 0xb6, 0x83, 0x78, 0x45, 0xc6, 0xbe, 0xf6,
