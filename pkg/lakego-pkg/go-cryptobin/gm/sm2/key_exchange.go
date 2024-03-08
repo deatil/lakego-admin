@@ -7,6 +7,7 @@ import (
 
     "github.com/deatil/go-cryptobin/hash/sm3"
     "github.com/deatil/go-cryptobin/kdf/smkdf"
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // KeyExchangeB 协商第二部，用户B调用， 返回共享密钥k
@@ -75,7 +76,13 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
     kk = append(kk, vy.Bytes()...)
     kk = append(kk, za...)
     kk = append(kk, zb...)
+
     k = smkdf.Key(sm3.New, kk, klen)
+
+    if alias.ConstantTimeAllZero(k) {
+        err = errors.New("cryptobin/sm2: zero key")
+        return
+    }
 
     h1 := bytesCombine(vx.Bytes(), za, zb, rpub.X.Bytes(), rpub.Y.Bytes(), rpri.X.Bytes(), rpri.Y.Bytes())
     if !thisISA {
@@ -106,10 +113,13 @@ func keXHat(x *big.Int) (xul *big.Int) {
     }
 
     r := new(big.Int).SetBytes(buf)
-    _2w := new(big.Int).SetBytes([]byte{
+
+    w2 := new(big.Int).SetBytes([]byte{
         0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00})
-    return r.Add(r, _2w)
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    })
+
+    return r.Add(r, w2)
 }
 
 func bytesCombine(pBytes ...[]byte) []byte {
