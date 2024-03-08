@@ -1,8 +1,10 @@
 package rsa
 
 import (
+    "hash"
     "crypto"
     "crypto/rsa"
+    "crypto/sha1"
 )
 
 /**
@@ -20,6 +22,12 @@ type RSA struct {
 
     // 签名验证类型
     signHash crypto.Hash
+
+    // EncryptOAEP hash.Hash
+    oaepHash hash.Hash
+
+    // EncryptOAEP label
+    oaepLabel []byte
 
     // [私钥/公钥]数据
     keyData []byte
@@ -41,6 +49,7 @@ type RSA struct {
 func NewRSA() RSA {
     return RSA{
         signHash: crypto.SHA256,
+        oaepHash: sha1.New(),
         verify:   false,
         Errors:   make([]error, 0),
     }

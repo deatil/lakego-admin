@@ -153,7 +153,9 @@ func main() {
         // FromPKCS8PublicKey([]byte(pubKeyPem)).
         // FromXMLPublicKey([]byte(pubKeyXML)).
         Encrypt().
-        // EncryptOAEP("SHA1")
+        // SetOAEPHash("SHA256"). // OAEP 可选
+        // SetOAEPLabel("test-label"). // OAEP 可选
+        // EncryptOAEP()
         ToBase64String()
 
     // 私钥解密
@@ -169,7 +171,9 @@ func main() {
         // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
         // FromXMLPrivateKey([]byte(priKeyXML)).
         Decrypt().
-        // DecryptOAEP("SHA1")
+        // SetOAEPHash("SHA256"). // OAEP 可选
+        // SetOAEPLabel("test-label"). // OAEP 可选
+        // DecryptOAEP()
         ToString()
 }
 ~~~

@@ -748,7 +748,7 @@ func (c *Certificate) Verify(opts VerifyOptions) (chains [][]*Certificate, err e
         return nil, errNotParsed
     }
     for i := 0; i < opts.Intermediates.len(); i++ {
-        c, err := opts.Intermediates.cert(i)
+        c, _, err := opts.Intermediates.cert(i)
         if err != nil {
             return nil, fmt.Errorf("crypto/x509: error fetching intermediate: %w", err)
         }
@@ -936,10 +936,10 @@ func (c *Certificate) buildChains(currentChain []*Certificate, sigChecks *int, o
     }
 
     for _, root := range opts.Roots.findPotentialParents(c) {
-        considerCandidate(rootCertificate, root)
+        considerCandidate(rootCertificate, root.cert)
     }
     for _, intermediate := range opts.Intermediates.findPotentialParents(c) {
-        considerCandidate(intermediateCertificate, intermediate)
+        considerCandidate(intermediateCertificate, intermediate.cert)
     }
 
     if len(chains) > 0 {

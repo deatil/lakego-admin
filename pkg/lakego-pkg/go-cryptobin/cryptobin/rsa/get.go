@@ -1,6 +1,7 @@
 package rsa
 
 import (
+    "hash"
     "crypto"
     "crypto/rsa"
     "math/big"
@@ -35,6 +36,16 @@ func (this RSA) GetPublicKeyEHexString() string {
 // 获取 hash 类型
 func (this RSA) GetSignHash() crypto.Hash {
     return this.signHash
+}
+
+// 获取 oaepHash 类型
+func (this RSA) GetOAEPHash() hash.Hash {
+    return this.oaepHash
+}
+
+// 获取 oaepLabel
+func (this RSA) GetOAEPLabel() []byte {
+    return this.oaepLabel
 }
 
 // 获取 keyData

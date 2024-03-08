@@ -2257,6 +2257,7 @@ func parseRawAttributes(rawAttributes []asn1.RawValue) []pkix.AttributeTypeAndVa
             attributes = append(attributes, attr)
         }
     }
+
     return attributes
 }
 

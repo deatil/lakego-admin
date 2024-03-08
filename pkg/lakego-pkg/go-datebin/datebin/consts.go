@@ -147,9 +147,6 @@ const (
 // 时间格式化常量
 // formats const
 const (
-	AnsicFormat              = time.ANSIC
-	UnixDateFormat           = time.UnixDate
-	RubyDateFormat           = time.RubyDate
 	RFC822Format             = time.RFC822
 	RFC822ZFormat            = time.RFC822Z
 	RFC850Format             = time.RFC850
@@ -157,25 +154,33 @@ const (
 	RFC1123ZFormat           = time.RFC1123Z
 	RssFormat                = time.RFC1123Z
 	RFC2822Format            = time.RFC1123Z
-	KitchenFormat            = time.Kitchen
 	RFC3339Format            = time.RFC3339
+	W3CFormat                = RFC3339Format
+	AnsicFormat              = time.ANSIC
+	UnixDateFormat           = time.UnixDate
+	RubyDateFormat           = time.RubyDate
+	KitchenFormat            = time.Kitchen
 	StampFormat              = time.Stamp
 	StampMilliFormat         = time.StampMilli
 	StampMicroFormat         = time.StampMicro
 	StampNanoFormat          = time.StampNano
-	W3CFormat                = RFC3339Format
+	RFC1036Format            = "Mon, 02 Jan 06 15:04:05 -0700"
+	RFC7231Format            = "Mon, 02 Jan 2006 15:04:05 GMT"
 	RFC3339MilliFormat       = "2006-01-02T15:04:05.999Z07:00"
 	RFC3339MicroFormat       = "2006-01-02T15:04:05.999999Z07:00"
 	RFC3339NanoFormat        = "2006-01-02T15:04:05.999999999Z07:00"
-	CookieFormat             = "Monday, 02-Jan-2006 15:04:05 MST"
 	ISO8601Format            = "2006-01-02T15:04:05-07:00"
 	ISO8601MilliFormat       = "2006-01-02T15:04:05.999-07:00"
 	ISO8601MicroFormat       = "2006-01-02T15:04:05.999999-07:00"
 	ISO8601NanoFormat        = "2006-01-02T15:04:05.999999999-07:00"
-	RFC1036Format            = "Mon, 02 Jan 06 15:04:05 -0700"
-	RFC7231Format            = "Mon, 02 Jan 2006 15:04:05 GMT"
+	ISO8601ZuluFormat        = "2006-01-02T15:04:05Z"
+	ISO8601ZuluMilliFormat   = "2006-01-02T15:04:05.999Z"
+	ISO8601ZuluMicroFormat   = "2006-01-02T15:04:05.999999Z"
+	ISO8601ZuluNanoFormat    = "2006-01-02T15:04:05.999999999Z"
+	CookieFormat             = "Monday, 02-Jan-2006 15:04:05 MST"
 	DayDateTimeFormat        = "Mon, Jan 2, 2006 3:04 PM"
 	FormattedDateFormat      = "Jan 2, 2006"
+	FormattedDayDateFormat   = "Mon, Jan 2, 2006"
 	DatetimeNanoFormat       = "2006-01-02 15:04:05.999999999"
 	DatetimeMicroFormat      = "2006-01-02 15:04:05.999999"
 	DatetimeMilliFormat      = "2006-01-02 15:04:05.999"

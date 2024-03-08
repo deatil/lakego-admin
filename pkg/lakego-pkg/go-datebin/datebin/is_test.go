@@ -297,7 +297,7 @@ func Test_IsFuture(t *testing.T) {
 		},
 		{
 			index: "index-2",
-			date:  "2024-03-01 12:00:00",
+			date:  "2055-03-01 12:00:00",
 			tz:    "Local",
 			check: true,
 		},
@@ -333,7 +333,7 @@ func Test_IsPast(t *testing.T) {
 		},
 		{
 			index: "index-2",
-			date:  "2024-03-01 12:00:00",
+			date:  "2066-03-01 12:00:00",
 			tz:    "Local",
 			check: false,
 		},

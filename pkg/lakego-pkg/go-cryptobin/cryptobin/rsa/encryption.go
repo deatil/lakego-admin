@@ -3,10 +3,9 @@ package rsa
 import (
     "bytes"
     "errors"
+    "crypto"
     "crypto/rsa"
     "crypto/rand"
-
-    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 公钥加密
@@ -34,6 +33,23 @@ func (this RSA) Decrypt() RSA {
     }
 
     parsedData, err := priKeyByte(this.privateKey, this.data, false)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.parsedData = parsedData
+
+    return this
+}
+
+// 私钥解密带设置
+func (this RSA) DecryptWithOpts(opts crypto.DecrypterOpts) RSA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    parsedData, err := this.privateKey.Decrypt(rand.Reader, this.data, opts)
     if err != nil {
         return this.AppendError(err)
     }
@@ -82,23 +98,13 @@ func (this RSA) PublicKeyDecrypt() RSA {
 // ====================
 
 // OAEP公钥加密
-func (this RSA) EncryptOAEP(typ ...string) RSA {
+func (this RSA) EncryptOAEP() RSA {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
-    hashType := "SHA1"
-    if len(typ) > 0 {
-        hashType = typ[0]
-    }
-
-    newHash, err := tool.GetHash(hashType)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    parsedData, err := rsa.EncryptOAEP(newHash(), rand.Reader, this.publicKey, this.data, nil)
+    parsedData, err := rsa.EncryptOAEP(this.oaepHash, rand.Reader, this.publicKey, this.data, this.oaepLabel)
     if err != nil {
         return this.AppendError(err)
     }
@@ -109,23 +115,13 @@ func (this RSA) EncryptOAEP(typ ...string) RSA {
 }
 
 // OAEP私钥解密
-func (this RSA) DecryptOAEP(typ ...string) RSA {
+func (this RSA) DecryptOAEP() RSA {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    hashType := "SHA1"
-    if len(typ) > 0 {
-        hashType = typ[0]
-    }
-
-    newHash, err := tool.GetHash(hashType)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    parsedData, err := rsa.DecryptOAEP(newHash(), rand.Reader, this.privateKey, this.data, nil)
+    parsedData, err := rsa.DecryptOAEP(this.oaepHash, rand.Reader, this.privateKey, this.data, this.oaepLabel)
     if err != nil {
         return this.AppendError(err)
     }
@@ -297,7 +293,7 @@ func (this RSA) PublicKeyDecryptECB() RSA {
 // ====================
 
 // OAEP公钥加密, ECB 模式
-func (this RSA) EncryptOAEPECB(typ ...string) RSA {
+func (this RSA) EncryptOAEPECB() RSA {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -306,17 +302,7 @@ func (this RSA) EncryptOAEPECB(typ ...string) RSA {
     pub := this.GetPublicKey()
     plainText := this.data
 
-    hashType := "SHA1"
-    if len(typ) > 0 {
-        hashType = typ[0]
-    }
-
-    newHash, err := tool.GetHash(hashType)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    pubSize, plainTextSize := pub.Size()-2*newHash().Size()-2, len(plainText)
+    pubSize, plainTextSize := pub.Size()-2*this.oaepHash.Size()-2, len(plainText)
 
     offSet := 0
     buffer := bytes.Buffer{}
@@ -327,7 +313,7 @@ func (this RSA) EncryptOAEPECB(typ ...string) RSA {
             endIndex = plainTextSize
         }
 
-        rsa := this.FromBytes(plainText[offSet:endIndex]).EncryptOAEP(typ...)
+        rsa := this.FromBytes(plainText[offSet:endIndex]).EncryptOAEP()
 
         err := rsa.Error()
         if err != nil {
@@ -346,7 +332,7 @@ func (this RSA) EncryptOAEPECB(typ ...string) RSA {
 }
 
 // OAEP私钥解密, ECB 模式
-func (this RSA) DecryptOAEPECB(typ ...string) RSA {
+func (this RSA) DecryptOAEPECB() RSA {
     if this.privateKey == nil {
         err := errors.New("teKey empty.")
         return this.AppendError(err)

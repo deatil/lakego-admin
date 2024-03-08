@@ -3,6 +3,7 @@ package rsa
 import (
     "bytes"
     "testing"
+    go_rsa "crypto/rsa"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -159,6 +160,19 @@ func Test_Encrypt(t *testing.T) {
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
+
+    // =======
+
+    de = rsa.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(testPrikey)).
+        DecryptWithOpts(&go_rsa.PKCS1v15DecryptOptions{})
+    deData = de.ToString()
+
+    assertError(de.Error(), "Encrypt-DecryptWithOpts")
+    assertNotEmpty(deData, "Encrypt-DecryptWithOpts")
+
+    assertEqual(data, deData, "Encrypt-DecryptWithOpts-Dedata")
 }
 
 func Test_EncryptOAEP(t *testing.T) {
@@ -189,6 +203,40 @@ func Test_EncryptOAEP(t *testing.T) {
     assertNotEmpty(deData, "EncryptOAEP-Decrypt")
 
     assertEqual(data, deData, "EncryptOAEP-Dedata")
+}
+
+func Test_EncryptOAEP_WithLabel(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    data := "test-pass"
+
+    rsa := New()
+
+    en := rsa.
+        FromString(data).
+        FromPublicKey([]byte(testPubkey)).
+        SetOAEPHash("SHA256").
+        SetOAEPLabel("test-label").
+        EncryptOAEP()
+    enData := en.ToBase64String()
+
+    assertError(en.Error(), "Test_EncryptOAEP_WithLabel-Encrypt")
+    assertNotEmpty(enData, "Test_EncryptOAEP_WithLabel-Encrypt")
+
+    de := rsa.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(testPrikey)).
+        SetOAEPHash("SHA256").
+        SetOAEPLabel("test-label").
+        DecryptOAEP()
+    deData := de.ToString()
+
+    assertError(de.Error(), "Test_EncryptOAEP_WithLabel-Decrypt")
+    assertNotEmpty(deData, "Test_EncryptOAEP_WithLabel-Decrypt")
+
+    assertEqual(data, deData, "Test_EncryptOAEP_WithLabel-Dedata")
 }
 
 func Test_PrivateKeyEncrypt(t *testing.T) {
@@ -281,6 +329,40 @@ func Test_EncryptOAEPECB(t *testing.T) {
     assertNotEmpty(deData, "EncryptOAEPECB-Decrypt")
 
     assertEqual(data, deData, "EncryptOAEPECB-Dedata")
+}
+
+func Test_EncryptOAEPECB_WithLabel(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+
+    rsa := New()
+
+    en := rsa.
+        FromString(data).
+        FromPublicKey([]byte(testPubkey)).
+        SetOAEPHash("SHA256").
+        SetOAEPLabel("test-label").
+        EncryptOAEPECB()
+    enData := en.ToBase64String()
+
+    assertError(en.Error(), "Test_EncryptOAEPECB_WithLabel-Encrypt")
+    assertNotEmpty(enData, "Test_EncryptOAEPECB_WithLabel-Encrypt")
+
+    de := rsa.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(testPrikey)).
+        SetOAEPHash("SHA256").
+        SetOAEPLabel("test-label").
+        DecryptOAEPECB()
+    deData := de.ToString()
+
+    assertError(de.Error(), "Test_EncryptOAEPECB_WithLabel-Decrypt")
+    assertNotEmpty(deData, "Test_EncryptOAEPECB_WithLabel-Decrypt")
+
+    assertEqual(deData, data, "Test_EncryptOAEPECB_WithLabel-Dedata")
 }
 
 func Test_PrivateKeyEncryptECB(t *testing.T) {

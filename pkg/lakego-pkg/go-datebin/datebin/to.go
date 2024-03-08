@@ -344,6 +344,12 @@ func (this Datebin) ToISO8601String(timezone ...string) string {
 	return this.ToLayoutString(ISO8601Format, timezone...)
 }
 
+// 输出 ISO8601Zulu 格式字符串
+// output datetime with ISO8601Zulu layout
+func (this Datebin) ToISO8601ZuluString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601ZuluFormat, timezone...)
+}
+
 // 输出 RFC1036 格式字符串
 // output datetime with RFC1036 layout
 func (this Datebin) ToRFC1036String(timezone ...string) string {
@@ -378,6 +384,12 @@ func (this Datebin) ToDayDateTimeString(timezone ...string) string {
 // output datetime with FormattedDate layout
 func (this Datebin) ToFormattedDateString(timezone ...string) string {
 	return this.ToLayoutString(FormattedDateFormat, timezone...)
+}
+
+// 输出 FormattedDayDate 格式字符串
+// output datetime with FormattedDayDate layout
+func (this Datebin) ToFormattedDayDateString(timezone ...string) string {
+	return this.ToLayoutString(FormattedDayDateFormat, timezone...)
 }
 
 // 输出 Datetime 格式字符串

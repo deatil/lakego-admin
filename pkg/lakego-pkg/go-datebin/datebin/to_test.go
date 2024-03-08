@@ -579,6 +579,15 @@ func Test_ToOtherFormatString(t *testing.T) {
 			toDate: "2023-05-03T21:15:12+08:00",
 		},
 		{
+			index:  "index-ToISO8601ZuluString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601ZuluString()
+			},
+			toDate: "2023-05-03T21:15:12Z",
+		},
+		{
 			index:  "index-ToRFC1036String",
 			layout: "2006-01-02 15:04:05",
 			date:   "2023-05-03 21:15:12",
@@ -631,6 +640,15 @@ func Test_ToOtherFormatString(t *testing.T) {
 				return d.ToFormattedDateString()
 			},
 			toDate: "May 3, 2023",
+		},
+		{
+			index:  "index-ToFormattedDayDateString",
+			layout: "2006-01-02 15:04:05",
+			date:   "2023-05-03 21:15:12",
+			toLayout: func(d Datebin) string {
+				return d.ToFormattedDayDateString()
+			},
+			toDate: "Wed, May 3, 2023",
 		},
 		{
 			index:  "index-ToDatetimeString",

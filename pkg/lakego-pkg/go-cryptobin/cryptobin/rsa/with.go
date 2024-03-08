@@ -1,6 +1,7 @@
 package rsa
 
 import (
+    "hash"
     "crypto"
     "crypto/rsa"
 
@@ -30,12 +31,59 @@ func (this RSA) WithSignHash(h crypto.Hash) RSA {
 
 // 设置 hash 类型
 func (this RSA) SetSignHash(name string) RSA {
-    hash, err := tool.GetCryptoHash(name)
+    newHash, err := tool.GetCryptoHash(name)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.signHash = hash
+    this.signHash = newHash
+
+    return this
+}
+
+// 设置 oaepHash
+func (this RSA) WithOAEPHash(h hash.Hash) RSA {
+    this.oaepHash = h
+
+    return this
+}
+
+// 设置 oaepHash 类型
+func (this RSA) SetOAEPHash(name string) RSA {
+    newHash, err := tool.GetHash(name)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.oaepHash = newHash()
+
+    return this
+}
+
+// 设置 oaepLabel
+func (this RSA) WithOAEPLabel(data []byte) RSA {
+    this.oaepLabel = data
+
+    return this
+}
+
+// 设置 oaepLabel
+func (this RSA) SetOAEPLabel(data string) RSA {
+    this.oaepLabel = []byte(data)
+
+    return this
+}
+
+// 设置 keyData
+func (this RSA) WithKeyData(data []byte) RSA {
+    this.keyData = data
+
+    return this
+}
+
+// 设置 keyData
+func (this RSA) SetKeyData(data string) RSA {
+    this.keyData = []byte(data)
 
     return this
 }
