@@ -278,6 +278,12 @@ func (this Datebin) ToRubyDateString(timezone ...string) string {
 	return this.ToLayoutString(RubyDateFormat, timezone...)
 }
 
+// 输出 Kitchen 格式字符串
+// output datetime with Kitchen layout
+func (this Datebin) ToKitchenString(timezone ...string) string {
+	return this.ToLayoutString(KitchenFormat, timezone...)
+}
+
 // 输出 RFC822 格式字符串
 // output datetime with RFC822 layout
 func (this Datebin) ToRFC822String(timezone ...string) string {
@@ -326,28 +332,64 @@ func (this Datebin) ToRFC3339String(timezone ...string) string {
 	return this.ToLayoutString(RFC3339Format, timezone...)
 }
 
-// 输出 Kitchen 格式字符串
-// output datetime with Kitchen layout
-func (this Datebin) ToKitchenString(timezone ...string) string {
-	return this.ToLayoutString(KitchenFormat, timezone...)
+// 输出 RFC3339Milli 格式字符串
+// output datetime with RFC3339Milli layout
+func (this Datebin) ToRFC3339MilliString(timezone ...string) string {
+	return this.ToLayoutString(RFC3339MilliFormat, timezone...)
+}
+
+// 输出 RFC3339Milli 格式字符串
+// output datetime with RFC3339Milli layout
+func (this Datebin) ToRFC3339MicroString(timezone ...string) string {
+	return this.ToLayoutString(RFC3339MicroFormat, timezone...)
+}
+
+// 输出 RFC3339Nano 格式字符串
+// output datetime with RFC3339Nano layout
+func (this Datebin) ToRFC3339NanoString(timezone ...string) string {
+	return this.ToLayoutString(RFC3339NanoFormat, timezone...)
+}
+
+// 输出 W3C 格式字符串
+// output datetime with W3C layout
+func (this Datebin) ToW3CString(timezone ...string) string {
+	return this.ToLayoutString(W3CFormat, timezone...)
+}
+
+// 输出 ATOM 格式字符串
+// output datetime with ATOM layout
+func (this Datebin) ToAtomString(timezone ...string) string {
+	return this.ToLayoutString(AtomFormat, timezone...)
+}
+
+// 输出 Stamp 格式字符串
+// output datetime with Stamp layout
+func (this Datebin) ToStampString(timezone ...string) string {
+	return this.ToLayoutString(StampFormat, timezone...)
+}
+
+// 输出 StampMilli 格式字符串
+// output datetime with StampMilli layout
+func (this Datebin) ToStampMilliString(timezone ...string) string {
+	return this.ToLayoutString(StampMilliFormat, timezone...)
+}
+
+// 输出 StampMicro 格式字符串
+// output datetime with StampMicro layout
+func (this Datebin) ToStampMicroString(timezone ...string) string {
+	return this.ToLayoutString(StampMicroFormat, timezone...)
+}
+
+// 输出 StampNano 格式字符串
+// output datetime with StampNano layout
+func (this Datebin) ToStampNanoString(timezone ...string) string {
+	return this.ToLayoutString(StampNanoFormat, timezone...)
 }
 
 // 输出 Cookie 格式字符串
 // output datetime with Cookie layout
 func (this Datebin) ToCookieString(timezone ...string) string {
 	return this.ToLayoutString(CookieFormat, timezone...)
-}
-
-// 输出 ISO8601 格式字符串
-// output datetime with ISO8601 layout
-func (this Datebin) ToISO8601String(timezone ...string) string {
-	return this.ToLayoutString(ISO8601Format, timezone...)
-}
-
-// 输出 ISO8601Zulu 格式字符串
-// output datetime with ISO8601Zulu layout
-func (this Datebin) ToISO8601ZuluString(timezone ...string) string {
-	return this.ToLayoutString(ISO8601ZuluFormat, timezone...)
 }
 
 // 输出 RFC1036 格式字符串
@@ -362,16 +404,52 @@ func (this Datebin) ToRFC7231String(timezone ...string) string {
 	return this.ToLayoutString(RFC7231Format, timezone...)
 }
 
-// 输出 ATOM 格式字符串
-// output datetime with ATOM layout
-func (this Datebin) ToAtomString(timezone ...string) string {
-	return this.ToRFC3339String(timezone...)
+// 输出 ISO8601 格式字符串
+// output datetime with ISO8601 layout
+func (this Datebin) ToISO8601String(timezone ...string) string {
+	return this.ToLayoutString(ISO8601Format, timezone...)
 }
 
-// 输出 W3C 格式字符串
-// output datetime with W3C layout
-func (this Datebin) ToW3CString(timezone ...string) string {
-	return this.ToLayoutString(W3CFormat, timezone...)
+// 输出 ISO8601Milli 格式字符串
+// output datetime with ISO8601Milli layout
+func (this Datebin) ToISO8601MilliString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601MilliFormat, timezone...)
+}
+
+// 输出 ISO8601Micro 格式字符串
+// output datetime with ISO8601Micro layout
+func (this Datebin) ToISO8601MicroString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601MicroFormat, timezone...)
+}
+
+// 输出 ISO8601Nano 格式字符串
+// output datetime with ISO8601Nano layout
+func (this Datebin) ToISO8601NanoString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601NanoFormat, timezone...)
+}
+
+// 输出 ISO8601Zulu 格式字符串
+// output datetime with ISO8601Zulu layout
+func (this Datebin) ToISO8601ZuluString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601ZuluFormat, timezone...)
+}
+
+// 输出 ISO8601ZuluMilli 格式字符串
+// output datetime with ISO8601ZuluMilli layout
+func (this Datebin) ToISO8601ZuluMilliString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601ZuluMilliFormat, timezone...)
+}
+
+// 输出 ISO8601ZuluMicro 格式字符串
+// output datetime with ISO8601ZuluMicro layout
+func (this Datebin) ToISO8601ZuluMicroString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601ZuluMicroFormat, timezone...)
+}
+
+// 输出 ISO8601ZuluNano 格式字符串
+// output datetime with ISO8601ZuluNano layout
+func (this Datebin) ToISO8601ZuluNanoString(timezone ...string) string {
+	return this.ToLayoutString(ISO8601ZuluNanoFormat, timezone...)
 }
 
 // 输出 DayDateTime 格式字符串
@@ -398,6 +476,24 @@ func (this Datebin) ToDatetimeString(timezone ...string) string {
 	return this.ToLayoutString(DatetimeFormat, timezone...)
 }
 
+// 输出 DatetimeNano 格式字符串
+// output datetime with DatetimeNano layout
+func (this Datebin) ToDatetimeNanoString(timezone ...string) string {
+	return this.ToLayoutString(DatetimeNanoFormat, timezone...)
+}
+
+// 输出 DatetimeMicro 格式字符串
+// output datetime with DatetimeMicro layout
+func (this Datebin) ToDatetimeMicroString(timezone ...string) string {
+	return this.ToLayoutString(DatetimeMicroFormat, timezone...)
+}
+
+// 输出 DatetimeMilli 格式字符串
+// output datetime with DatetimeMilli layout
+func (this Datebin) ToDatetimeMilliString(timezone ...string) string {
+	return this.ToLayoutString(DatetimeMilliFormat, timezone...)
+}
+
 // 输出日期 Date 格式字符串
 // output datetime with Date layout
 func (this Datebin) ToDateString(timezone ...string) string {
@@ -410,10 +506,40 @@ func (this Datebin) ToTimeString(timezone ...string) string {
 	return this.ToLayoutString(TimeFormat, timezone...)
 }
 
+// 输出时间 HourMinute 格式字符串
+// output datetime with HourMinute layout
+func (this Datebin) ToHourMinuteString(timezone ...string) string {
+	return this.ToLayoutString(HourMinuteFormat, timezone...)
+}
+
+// 输出时间 Hour 格式字符串
+// output datetime with Hour layout
+func (this Datebin) ToHourString(timezone ...string) string {
+	return this.ToLayoutString(HourFormat, timezone...)
+}
+
 // 输出 ShortDatetime 格式字符串
 // output datetime with ShortDatetime layout
 func (this Datebin) ToShortDatetimeString(timezone ...string) string {
 	return this.ToLayoutString(ShortDatetimeFormat, timezone...)
+}
+
+// 输出 ShortDatetimeNano 格式字符串
+// output datetime with ShortDatetimeNano layout
+func (this Datebin) ToShortDatetimeNanoString(timezone ...string) string {
+	return this.ToLayoutString(ShortDatetimeNanoFormat, timezone...)
+}
+
+// 输出 ShortDatetimeMicro 格式字符串
+// output datetime with ShortDatetimeMicro layout
+func (this Datebin) ToShortDatetimeMicroString(timezone ...string) string {
+	return this.ToLayoutString(ShortDatetimeMicroFormat, timezone...)
+}
+
+// 输出 ShortDatetimeMilli 格式字符串
+// output datetime with ShortDatetimeMilli layout
+func (this Datebin) ToShortDatetimeMilliString(timezone ...string) string {
+	return this.ToLayoutString(ShortDatetimeMilliFormat, timezone...)
 }
 
 // 输出 ShortDate 格式字符串
@@ -426,4 +552,10 @@ func (this Datebin) ToShortDateString(timezone ...string) string {
 // output datetime with ShortTime layout
 func (this Datebin) ToShortTimeString(timezone ...string) string {
 	return this.ToLayoutString(ShortTimeFormat, timezone...)
+}
+
+// 输出 ShortHourMinute 格式字符串
+// output datetime with ShortHourMinute layout
+func (this Datebin) ToShortHourMinuteString(timezone ...string) string {
+	return this.ToLayoutString(ShortHourMinuteFormat, timezone...)
 }

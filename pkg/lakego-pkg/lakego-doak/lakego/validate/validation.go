@@ -14,55 +14,57 @@ import (
 // 当存在 translation 时, 其他均为可选, 表示重写一个 tag 的翻译器
 type Validation struct {
     // 标签名称
-    tag         string
+    Tag           string
     // 表示该标 Validate 的描述/解释
-    translation string
+    Translation   string
     // 是否覆盖已存在的验证器
-    override    bool
+    Override      bool
     // 用于验证字段的函数
-    validateFn    validator.Func
+    ValidateFn    validator.Func
     // 翻译注册函数
-    registerFn    validator.RegisterTranslationsFunc
+    RegisterFn    validator.RegisterTranslationsFunc
     // 翻译函数
-    translationFn validator.TranslationFunc
+    TranslationFn validator.TranslationFunc
 }
 
-func (this Validation) registerCustom(v validate) error {
-    return this.register(v.validate, v.trans)
+func (this Validation) RegisterCustom(v validate) error {
+    return this.Register(v.validate, v.trans)
 }
 
 // 注册关联验证器
-func (this *Validation) register(v *validator.Validate, t ut.Translator) (err error) {
+func (this *Validation) Register(v *validator.Validate, t ut.Translator) (err error) {
+    if this.ValidateFn != nil {
+        err = v.RegisterValidation(this.Tag, this.ValidateFn)
+    }
 
-    if this.validateFn != nil {
-        err = v.RegisterValidation(this.tag, this.validateFn)
-    }
     if err == nil {
-        err = this.registerTranslation(v, t)
+        err = this.RegisterTranslation(v, t)
     }
+
     return
 }
 
 // 以下方法支持
-func (this *Validation) registerTranslation(v *validator.Validate, t ut.Translator) (err error) {
-    if this.translationFn != nil && this.registerFn != nil {
-        err = v.RegisterTranslation(this.tag, t, this.registerFn, this.translationFn)
-    } else if this.translationFn != nil && this.registerFn == nil {
-        err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), this.translationFn)
-    } else if this.translationFn == nil && this.registerFn != nil {
-        err = v.RegisterTranslation(this.tag, t, this.registerFn, translateFunc)
-    } else {
-        err = v.RegisterTranslation(this.tag, t, registrationFunc(this.tag, this.translation, this.override), translateFunc)
+func (this *Validation) RegisterTranslation(v *validator.Validate, t ut.Translator) (err error) {
+    switch {
+        case this.TranslationFn != nil && this.RegisterFn != nil:
+            err = v.RegisterTranslation(this.Tag, t, this.RegisterFn, this.TranslationFn)
+        case this.TranslationFn != nil && this.RegisterFn == nil:
+            err = v.RegisterTranslation(this.Tag, t, registrationFunc(this.Tag, this.Translation, this.Override), this.TranslationFn)
+        case this.TranslationFn == nil && this.RegisterFn != nil:
+            err = v.RegisterTranslation(this.Tag, t, this.RegisterFn, translateFunc)
+        default:
+            err = v.RegisterTranslation(this.Tag, t, registrationFunc(this.Tag, this.Translation, this.Override), translateFunc)
     }
 
     return
 }
 
 // 创建正则验证器
-func validationOfRegexp(tag string, regex string, translation string) Validation {
+func ValidationOfRegexp(tag string, regex string, translation string) Validation {
     re, err := regexp.Compile(regex)
     if err != nil {
-        log.Print("创建正则自定义验证器: " + tag + " " + regex + " " + err.Error())
+        log.Print("Create Validation: " + tag + " " + regex + " " + err.Error())
     }
 
     // 闭包持有外部变量整个伴随自己的生命周期
@@ -72,9 +74,9 @@ func validationOfRegexp(tag string, regex string, translation string) Validation
     }
 
     return Validation {
-        tag:         tag,
-        translation: translation,
-        validateFn:  fn,
+        Tag:         tag,
+        Translation: translation,
+        ValidateFn:  fn,
     }
 }
 
@@ -83,6 +85,7 @@ func translateFunc(ut ut.Translator, fe validator.FieldError) string {
     if err != nil {
         return fe.(error).Error()
     }
+
     return t
 }
 

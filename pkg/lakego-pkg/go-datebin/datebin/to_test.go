@@ -704,6 +704,221 @@ func Test_ToOtherFormatString(t *testing.T) {
 			},
 			toDate: "211512",
 		},
+
+		{
+			index:  "index-ToStampString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToStampString()
+			},
+			toDate: "May  3 21:15:12",
+		},
+		{
+			index:  "index-ToStampMilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToStampMilliString()
+			},
+			toDate: "May  3 21:15:12.368",
+		},
+		{
+			index:  "index-ToStampMicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToStampMicroString()
+			},
+			toDate: "May  3 21:15:12.368699",
+		},
+		{
+			index:  "index-ToStampNanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToStampNanoString()
+			},
+			toDate: "May  3 21:15:12.368699551",
+		},
+
+		{
+			index:  "index-ToRFC3339MilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC3339MilliString()
+			},
+			toDate: "2023-05-03T21:15:12.368+08:00",
+		},
+		{
+			index:  "index-ToRFC3339MicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC3339MicroString()
+			},
+			toDate: "2023-05-03T21:15:12.368699+08:00",
+		},
+		{
+			index:  "index-ToRFC3339NanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToRFC3339NanoString()
+			},
+			toDate: "2023-05-03T21:15:12.368699551+08:00",
+		},
+
+		{
+			index:  "index-ToISO8601MilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601MilliString()
+			},
+			toDate: "2023-05-03T21:15:12.368+08:00",
+		},
+		{
+			index:  "index-ToISO8601MicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601MicroString()
+			},
+			toDate: "2023-05-03T21:15:12.368699+08:00",
+		},
+		{
+			index:  "index-ToISO8601NanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601NanoString()
+			},
+			toDate: "2023-05-03T21:15:12.368699551+08:00",
+		},
+
+		{
+			index:  "index-ToISO8601ZuluMilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601ZuluMilliString()
+			},
+			toDate: "2023-05-03T21:15:12.368Z",
+		},
+		{
+			index:  "index-ToISO8601ZuluMilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601ZuluMilliString()
+			},
+			toDate: "2023-05-03T21:15:12.368Z",
+		},
+		{
+			index:  "index-ToISO8601ZuluMicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601ZuluMicroString()
+			},
+			toDate: "2023-05-03T21:15:12.368699Z",
+		},
+		{
+			index:  "index-ToISO8601ZuluNanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToISO8601ZuluNanoString()
+			},
+			toDate: "2023-05-03T21:15:12.368699551Z",
+		},
+
+		{
+			index:  "index-ToDatetimeNanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToDatetimeNanoString()
+			},
+			toDate: "2023-05-03 21:15:12.368699551",
+		},
+		{
+			index:  "index-ToDatetimeMicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToDatetimeMicroString()
+			},
+			toDate: "2023-05-03 21:15:12.368699",
+		},
+		{
+			index:  "index-ToDatetimeMilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToDatetimeMilliString()
+			},
+			toDate: "2023-05-03 21:15:12.368",
+		},
+
+		{
+			index:  "index-ToHourMinuteString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToHourMinuteString()
+			},
+			toDate: "21:15",
+		},
+		{
+			index:  "index-ToHourString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToHourString()
+			},
+			toDate: "21",
+		},
+
+		{
+			index:  "index-ToShortDatetimeNanoString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToShortDatetimeNanoString()
+			},
+			toDate: "20230503211512.368699551",
+		},
+		{
+			index:  "index-ToShortDatetimeMicroString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToShortDatetimeMicroString()
+			},
+			toDate: "20230503211512.368699",
+		},
+		{
+			index:  "index-ToShortDatetimeMilliString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToShortDatetimeMilliString()
+			},
+			toDate: "20230503211512.368",
+		},
+
+		{
+			index:  "index-ToShortHourMinuteString",
+			layout: "2006-01-02 15:04:05.999999999",
+			date:   "2023-05-03 21:15:12.368699551",
+			toLayout: func(d Datebin) string {
+				return d.ToShortHourMinuteString()
+			},
+			toDate: "2115",
+		},
 	}
 
 	for _, td := range tests {
