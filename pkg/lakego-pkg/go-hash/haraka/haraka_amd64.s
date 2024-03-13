@@ -1,0 +1,269 @@
+
+#include "textflag.h"
+
+// func haraka256AES(rc *uint32, dst, src *byte)
+TEXT ·haraka256AES(SB),NOSPLIT,$0
+    MOVQ rc+0(FP), AX
+    MOVQ dst+8(FP), DX
+    MOVQ src+16(FP), BX
+    MOVUPS 0(BX), X0
+    MOVUPS 16(BX), X1
+    
+    // store original values for final XOR
+    MOVUPS X0, X2
+    MOVUPS X1, X3
+    
+    // 5 rounds of AES and MIX
+    AESENC 0(AX), X0
+    AESENC 16(AX), X1
+    AESENC 32(AX), X0
+    AESENC 48(AX), X1
+
+    MOVUPS X0, X4
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X4
+    MOVUPS X4, X1
+
+    AESENC 64(AX), X0
+    AESENC 80(AX), X1
+    AESENC 96(AX), X0
+    AESENC 112(AX), X1
+
+    MOVUPS X0, X4
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X4
+    MOVUPS X4, X1
+
+    AESENC 128(AX), X0
+    AESENC 144(AX), X1
+    AESENC 160(AX), X0
+    AESENC 176(AX), X1
+
+    MOVUPS X0, X4
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X4
+    MOVUPS X4, X1
+
+    AESENC 192(AX), X0
+    AESENC 208(AX), X1
+    AESENC 224(AX), X0
+    AESENC 240(AX), X1
+
+    MOVUPS X0, X4
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X4
+    MOVUPS X4, X1
+
+    AESENC 256(AX), X0
+    AESENC 272(AX), X1
+    AESENC 288(AX), X0
+    AESENC 304(AX), X1
+
+    MOVUPS X0, X4
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X4
+    MOVUPS X4, X1
+
+    // final XOR
+    PXOR X2, X0
+    PXOR X3, X1
+
+    MOVUPS X0, 0(DX)
+    MOVUPS X1, 16(DX)
+    RET
+
+// func haraka512AES(rc *uint32, dst, src *byte)
+TEXT ·haraka512AES(SB),NOSPLIT,$0
+    MOVQ rc+0(FP), AX
+    MOVQ dst+8(FP), DX
+    MOVQ src+16(FP), BX
+    MOVUPS 0(BX), X0
+    MOVUPS 16(BX), X1
+    MOVUPS 32(BX), X2
+    MOVUPS 48(BX), X3
+    
+    // store original values for final XOR
+    MOVUPS X0, X4
+    MOVUPS X1, X5
+    MOVUPS X2, X6
+    MOVUPS X3, X7
+    
+    // 5 rounds of AES and MIX
+    AESENC 0(AX), X0
+    AESENC 16(AX), X1
+    AESENC 32(AX), X2
+    AESENC 48(AX), X3
+    AESENC 64(AX), X0
+    AESENC 80(AX), X1
+    AESENC 96(AX), X2
+    AESENC 112(AX), X3
+
+    MOVUPS X0, X8
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X8
+    MOVUPS X8, X1
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X3, X2
+    PUNPCKHLQ X3, X8
+    MOVUPS X8, X3
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X0, X2
+    PUNPCKHLQ X0, X8
+    MOVUPS X8, X0
+
+    MOVUPS X1, X8
+    PUNPCKLLQ X3, X1
+    PUNPCKHLQ X3, X8
+
+    MOVUPS X1, X3
+    MOVUPS X2, X1
+    MOVUPS X0, X2
+    MOVUPS X8, X0
+
+    AESENC 128(AX), X0
+    AESENC 144(AX), X1
+    AESENC 160(AX), X2
+    AESENC 176(AX), X3
+    AESENC 192(AX), X0
+    AESENC 208(AX), X1
+    AESENC 224(AX), X2
+    AESENC 240(AX), X3
+
+    MOVUPS X0, X8
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X8
+    MOVUPS X8, X1
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X3, X2
+    PUNPCKHLQ X3, X8
+    MOVUPS X8, X3
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X0, X2
+    PUNPCKHLQ X0, X8
+    MOVUPS X8, X0
+
+    MOVUPS X1, X8
+    PUNPCKLLQ X3, X1
+    PUNPCKHLQ X3, X8
+
+    MOVUPS X1, X3
+    MOVUPS X2, X1
+    MOVUPS X0, X2
+    MOVUPS X8, X0
+
+    AESENC 256(AX), X0
+    AESENC 272(AX), X1
+    AESENC 288(AX), X2
+    AESENC 304(AX), X3
+    AESENC 320(AX), X0
+    AESENC 336(AX), X1
+    AESENC 352(AX), X2
+    AESENC 368(AX), X3
+
+    MOVUPS X0, X8
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X8
+    MOVUPS X8, X1
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X3, X2
+    PUNPCKHLQ X3, X8
+    MOVUPS X8, X3
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X0, X2
+    PUNPCKHLQ X0, X8
+    MOVUPS X8, X0
+
+    MOVUPS X1, X8
+    PUNPCKLLQ X3, X1
+    PUNPCKHLQ X3, X8
+
+    MOVUPS X1, X3
+    MOVUPS X2, X1
+    MOVUPS X0, X2
+    MOVUPS X8, X0
+
+    AESENC 384(AX), X0
+    AESENC 400(AX), X1
+    AESENC 416(AX), X2
+    AESENC 432(AX), X3
+    AESENC 448(AX), X0
+    AESENC 464(AX), X1
+    AESENC 480(AX), X2
+    AESENC 496(AX), X3
+
+    MOVUPS X0, X8
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X8
+    MOVUPS X8, X1
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X3, X2
+    PUNPCKHLQ X3, X8
+    MOVUPS X8, X3
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X0, X2
+    PUNPCKHLQ X0, X8
+    MOVUPS X8, X0
+
+    MOVUPS X1, X8
+    PUNPCKLLQ X3, X1
+    PUNPCKHLQ X3, X8
+
+    MOVUPS X1, X3
+    MOVUPS X2, X1
+    MOVUPS X0, X2
+    MOVUPS X8, X0
+
+    AESENC 512(AX), X0
+    AESENC 528(AX), X1
+    AESENC 544(AX), X2
+    AESENC 560(AX), X3
+    AESENC 576(AX), X0
+    AESENC 592(AX), X1
+    AESENC 608(AX), X2
+    AESENC 624(AX), X3
+
+    MOVUPS X0, X8
+    PUNPCKLLQ X1, X0
+    PUNPCKHLQ X1, X8
+    MOVUPS X8, X1
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X3, X2
+    PUNPCKHLQ X3, X8
+    MOVUPS X8, X3
+
+    MOVUPS X2, X8
+    PUNPCKLLQ X0, X2
+    PUNPCKHLQ X0, X8
+    MOVUPS X8, X0
+
+    MOVUPS X1, X8
+    PUNPCKLLQ X3, X1
+    PUNPCKHLQ X3, X8
+
+    MOVUPS X1, X3
+    MOVUPS X2, X1
+    MOVUPS X0, X2
+    MOVUPS X8, X0
+
+    // final XOR
+    PXOR X4, X0
+    PXOR X5, X1
+    PXOR X6, X2
+    PXOR X7, X3
+
+    // truncate the result
+    MOVHLPS X0, X1  // high 64-bits of first half
+    MOVLHPS	X3, X2  // low 64-bits of second half
+
+    MOVUPS X1, 0(DX)
+    MOVUPS X2, 16(DX)
+    RET

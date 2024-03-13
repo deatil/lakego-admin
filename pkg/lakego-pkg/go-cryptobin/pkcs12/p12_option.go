@@ -152,11 +152,32 @@ var LegacyGostOpts = Opts{
     },
 }
 
+// GmsmOpts
+var LegacyGmsmOpts = Opts{
+    KeyCipher:  pbes2.SM4CBC,
+    KeyKDFOpts: PBKDF2Opts{
+        SaltSize:       16,
+        IterationCount: 1000,
+        HMACHash:       GetPbes2HashFromName("SM3"),
+    },
+    CertCipher:  pbes2.SM4CBC,
+    CertKDFOpts: PBKDF2Opts{
+        SaltSize:       16,
+        IterationCount: 1000,
+        HMACHash:       GetPbes2HashFromName("SM3"),
+    },
+    MacKDFOpts: MacOpts{
+        SaltSize:       16,
+        IterationCount: 1000,
+        HMACHash:       SM3,
+    },
+}
+
 // LegacyOpts
 var LegacyOpts = LegacyDESOpts
 
 // ModernOpts
 var ModernOpts = Modern2023Opts
 
-// 默认配置
+// Default Opts
 var DefaultOpts = LegacyRC2Opts

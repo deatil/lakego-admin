@@ -33,11 +33,15 @@ var PI_SUBST = []uint8{
     31, 26, 219, 153, 141, 51, 159, 17, 131, 20,
 }
 
-// New returns a new hash.Hash computing the MD2 checksum.
-func New() hash.Hash {
-    d := new(digest)
-    d.Reset()
-    return d
+// Sum returns checksum of the data.
+func Sum(data []byte) (sum [Size]byte) {
+    var h digest
+    h.Reset()
+    h.Write(data)
+
+    hash := h.Sum(nil)
+    copy(sum[:], hash)
+    return
 }
 
 // digest represents the partial evaluation of a checksum.
@@ -46,6 +50,13 @@ type digest struct {
     state  [48]byte     // state, 48 ints
     x      [_Chunk]byte // temp storage buffer, 16 bytes, _Chunk
     nx     uint8        // how many bytes are there in the buffer
+}
+
+// New returns a new hash.Hash computing the MD2 checksum.
+func New() hash.Hash {
+    d := new(digest)
+    d.Reset()
+    return d
 }
 
 func (d *digest) Reset() {
@@ -64,9 +75,13 @@ func (d *digest) Reset() {
     d.nx = 0
 }
 
-func (d *digest) Size() int { return Size }
+func (d *digest) Size() int {
+    return Size
+}
 
-func (d *digest) BlockSize() int { return BlockSize }
+func (d *digest) BlockSize() int {
+    return BlockSize
+}
 
 // Write is the interface for IO Writer
 func (d *digest) Write(p []byte) (nn int, err error) {

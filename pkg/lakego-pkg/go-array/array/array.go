@@ -722,6 +722,40 @@ func (this *Array) flatten(includeEmpty bool) (map[string]any, error) {
 	return flattened, nil
 }
 
+// 获取 array, slice, map or string 的长度
+// get array, slice, map or string len
+func (this *Array) Len() (num int) {
+	defer func() {
+		if err := recover(); err != nil {
+			num = 0
+		}
+	}()
+
+	return reflect.ValueOf(this.source).Len()
+}
+
+// 判断是否是 slice 类型
+// if the source is slice and return true
+func (this *Array) IsSlice() bool {
+	kind := reflect.TypeOf(this.source).Kind()
+
+	return kind == reflect.Slice || kind == reflect.Array
+}
+
+// 判断是否是 map 类型
+// if the source is map and return true
+func (this *Array) IsMap() bool {
+	kind := reflect.TypeOf(this.source).Kind()
+
+	return kind == reflect.Map
+}
+
+// 判断是否是 slice or map 类型
+// if the source is slice or map and return true
+func (this *Array) IsArray() bool {
+	return this.IsSlice() || this.IsMap()
+}
+
 // 搜索
 // Search data with key from source
 func (this *Array) search(source any, path ...string) any {
@@ -980,7 +1014,7 @@ func (this *Array) anySliceFormat(data any) ([]any, bool) {
 	newData := dataValue.Interface()
 
 	newDataKind := reflect.TypeOf(newData).Kind()
-	if newDataKind == reflect.Slice {
+	if newDataKind == reflect.Slice || newDataKind == reflect.Array {
 		newDataValue := reflect.ValueOf(newData)
 		newDataLen := newDataValue.Len()
 

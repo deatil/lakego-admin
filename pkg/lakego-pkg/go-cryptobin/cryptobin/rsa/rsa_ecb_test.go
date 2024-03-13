@@ -329,6 +329,19 @@ func Test_EncryptECB(t *testing.T) {
     assertNotEmpty(deData, "EncryptECB-Decrypt")
 
     assertEqual(data, deData, "EncryptECB-Dedata")
+
+    // =========
+
+    de = rsa.
+        FromBase64String(enData).
+        FromPrivateKey([]byte(testPrikey)).
+        DecryptECBWithOpts(&go_rsa.PKCS1v15DecryptOptions{})
+    deData = de.ToString()
+
+    assertError(de.Error(), "EncryptECB-Decrypt")
+    assertNotEmpty(deData, "EncryptECB-Decrypt")
+
+    assertEqual(data, deData, "EncryptECB-Dedata")
 }
 
 func Test_EncryptOAEPECB(t *testing.T) {

@@ -1,16 +1,14 @@
 ## go-array
 
 <p align="center">
-<a href="https://pkg.go.dev/github.com/deatil/go-array"><img src="https://pkg.go.dev/badge/deatil/go-array.svg" alt="Go Reference"></a>
-<a href="https://codecov.io/gh/deatil/go-array" >
- <img src="https://codecov.io/gh/deatil/go-array/graph/badge.svg?token=SS2Z1IY0XL"/>
-</a>
+<a href="https://pkg.go.dev/github.com/deatil/go-array" ><img src="https://pkg.go.dev/badge/deatil/go-array.svg" alt="Go Reference"></a>
+<a href="https://codecov.io/gh/deatil/go-array" ><img src="https://codecov.io/gh/deatil/go-array/graph/badge.svg?token=SS2Z1IY0XL"/></a>
 <img src="https://goreportcard.com/badge/github.com/deatil/go-array" />
 </p>
 
-### 项目介绍
-
-*  go-array 可以使用 `key` 快速的获取数组数据，数组包括 `map` 和 `slice` 等
+<p align="center">
+go-array 可以快速的从 map, slice 及 json 中获取数据或者设置数据
+</p>
 
 中文 | [English](README.md)
 

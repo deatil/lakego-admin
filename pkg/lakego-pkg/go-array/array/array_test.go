@@ -25,10 +25,22 @@ var (
 				"ddddd",
 				"fffff",
 			},
+			"ddeef": []any{
+				"ccc中文",
+				"ddddd",
+				"fffff",
+			},
 			"ddd": []int64{
 				22,
 				333,
 				555,
+			},
+			"qqq": [10]int64{
+				22,
+				333,
+				555,
+				5557,
+				5558,
 			},
 			"ff": map[any]any{
 				111: "fccccc",
@@ -348,6 +360,11 @@ func Test_Find(t *testing.T) {
 			"[]any",
 		},
 		{
+			"b.qqq.2",
+			"555",
+			"[num]any",
+		},
+		{
 			"b.ff.222",
 			"fddddd",
 			"map[any]any",
@@ -419,6 +436,223 @@ func Test_Find_func(t *testing.T) {
 
 	for _, v := range testData {
 		check := Find(arrData, v.key)
+
+		assert(check, v.expected, v.msg)
+	}
+
+}
+
+func Test_Len(t *testing.T) {
+	assert := assertDeepEqualT(t)
+
+	testData := []struct {
+		key      string
+		expected int
+		msg      string
+	}{
+		{
+			"a",
+			0,
+			"int",
+		},
+		{
+			"b.ddeef.1",
+			5,
+			"string",
+		},
+		{
+			"b.dd",
+			3,
+			"[]any",
+		},
+		{
+			"b.qqq",
+			10,
+			"[num]any",
+		},
+		{
+			"b.ff",
+			3,
+			"map[any]any",
+		},
+		{
+			"b.hhTy3",
+			0,
+			"&map[int]any",
+		},
+		{
+			"b.hhTy3.333",
+			3,
+			"map[any]string",
+		},
+		{
+			"b.hhTy3.666",
+			4,
+			"Slice",
+		},
+	}
+
+	for _, v := range testData {
+		check := New(arrData).Sub(v.key).Len()
+
+		assert(check, v.expected, v.msg)
+	}
+
+}
+
+func Test_IsArray(t *testing.T) {
+	assert := assertDeepEqualT(t)
+
+	testData := []struct {
+		key      string
+		expected bool
+		msg      string
+	}{
+		{
+			"a",
+			false,
+			"int",
+		},
+		{
+			"b.dd",
+			true,
+			"[]any",
+		},
+		{
+			"b.qqq",
+			true,
+			"[num]any",
+		},
+		{
+			"b.ff",
+			true,
+			"map[any]any",
+		},
+		{
+			"b.hhTy3",
+			false,
+			"&map[int]any",
+		},
+		{
+			"b.hhTy3.333",
+			true,
+			"map[any]string",
+		},
+		{
+			"b.hhTy3.666",
+			true,
+			"Slice",
+		},
+	}
+
+	for _, v := range testData {
+		check := New(arrData).Sub(v.key).IsArray()
+
+		assert(check, v.expected, v.msg)
+	}
+
+}
+
+func Test_IsMap(t *testing.T) {
+	assert := assertDeepEqualT(t)
+
+	testData := []struct {
+		key      string
+		expected bool
+		msg      string
+	}{
+		{
+			"a",
+			false,
+			"int",
+		},
+		{
+			"b.dd",
+			false,
+			"[]any",
+		},
+		{
+			"b.qqq",
+			false,
+			"[num]any",
+		},
+		{
+			"b.ff",
+			true,
+			"map[any]any",
+		},
+		{
+			"b.hhTy3",
+			false,
+			"&map[int]any",
+		},
+		{
+			"b.hhTy3.333",
+			true,
+			"map[any]string",
+		},
+		{
+			"b.hhTy3.666",
+			false,
+			"Slice",
+		},
+	}
+
+	for _, v := range testData {
+		check := New(arrData).Sub(v.key).IsMap()
+
+		assert(check, v.expected, v.msg)
+	}
+
+}
+
+func Test_IsSlice(t *testing.T) {
+	assert := assertDeepEqualT(t)
+
+	testData := []struct {
+		key      string
+		expected bool
+		msg      string
+	}{
+		{
+			"a",
+			false,
+			"int",
+		},
+		{
+			"b.dd",
+			true,
+			"[]any",
+		},
+		{
+			"b.qqq",
+			true,
+			"[num]any",
+		},
+		{
+			"b.ff",
+			false,
+			"map[any]any",
+		},
+		{
+			"b.hhTy3",
+			false,
+			"&map[int]any",
+		},
+		{
+			"b.hhTy3.333",
+			false,
+			"map[any]string",
+		},
+		{
+			"b.hhTy3.666",
+			true,
+			"Slice",
+		},
+	}
+
+	for _, v := range testData {
+		check := New(arrData).Sub(v.key).IsSlice()
 
 		assert(check, v.expected, v.msg)
 	}

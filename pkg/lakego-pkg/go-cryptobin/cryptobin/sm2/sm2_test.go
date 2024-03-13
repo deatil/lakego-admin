@@ -952,3 +952,57 @@ func Test_EncryptHash_Check(t *testing.T) {
     }
 
 }
+
+// 测试 bc-java 库加密的数据解密
+func Test_DecryptWithBCJavaEndata2(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    java_prikey := "MIGTAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBHkwdwIBAQQg6rgCft6jHsmv5YnpZaWrk7fQQY9R2VoWyJ9d87XSfv6gCgYIKoEcz1UBgi2hRANCAAQRvBC+7ApOlK7fKzDb/XBCw7CrWZkC8orgyKbBbGxZRwVbCYmjygAUF6no4c1/g2lsxc+LiDUGXcAv1gr7+fGq"
+    java_pubkey := "MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEEbwQvuwKTpSu3ysw2/1wQsOwq1mZAvKK4MimwWxsWUcFWwmJo8oAFBep6OHNf4NpbMXPi4g1Bl3AL9YK+/nxqg=="
+
+    go_prikey := "MIGTAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBHkwdwIBAQQgUrsLxV86AjpYVYuIZdocV5v+1yHU+KO5U73If/Pe5fmgCgYIKoEcz1UBgi2hRANCAASpHt92CMRA92RyBfXQ1LzOPTjq1qOf/0Z7KVdyc/zmsbeCKmwaGQeXn9IU5R7khb5V8DQcl+n1kr5Z8DM1fIUW"
+    go_pubkey := "MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEqR7fdgjEQPdkcgX10NS8zj046tajn/9GeylXcnP85rG3gipsGhkHl5/SFOUe5IW+VfA0HJfp9ZK+WfAzNXyFFg=="
+
+    java_prikeyBytes, _ := base64.StdEncoding.DecodeString(java_prikey)
+    java_pubkeyBytes, _ := base64.StdEncoding.DecodeString(java_pubkey)
+
+    go_prikeyBytes, _ := base64.StdEncoding.DecodeString(go_prikey)
+    go_pubkeyBytes, _ := base64.StdEncoding.DecodeString(go_pubkey)
+
+    // 原始数据
+    oldData := "LoveLive!TypeMoon!Idoly-Pride！"
+
+    java_enData := "BPkRkx6Wl4KlHajh+V5znPxxpAFkZhQlxXFlaJxd/wRPHqxvnEaR/NI2d6+pa7CKXVHoJQ1Z6bAsXYEDYnKVJyNeIqhqQxxrNGl5rURnL0kDdwGJiEGQ54FRprdMIY0YEIngqw7fkorKk+6SLiTSDjuAr//z+VK4JoA6jEvuIy1l"
+    java_sign := "MEQCICAyzvt0lGp8TmErHdiQ4Ovkso0Ji8edFif04yhPuOY3AiBKeSzegV8Wh2KSHXt4AmXnoo8ELzF8PNLRgkzfbBhpmw=="
+
+    java_enDataBytes, _ := base64.StdEncoding.DecodeString(java_enData)
+
+    _ = go_prikeyBytes
+    _ = go_pubkeyBytes
+    _ = java_pubkeyBytes
+    _ = java_enDataBytes
+
+    de := FromBase64String(java_enData).
+        FromPKCS8PrivateKeyDer(java_prikeyBytes).
+        SetMode("C1C2C3").
+        Decrypt()
+    deData := de.ToString()
+
+    assertError(de.Error(), "Test_DecryptWithBCJavaEndata2-Decrypt")
+    assertNotEmpty(deData, "Test_DecryptWithBCJavaEndata2-Decrypt")
+
+    assertEqual(deData, oldData, "Test_DecryptWithBCJavaEndata2-Dedata")
+
+    // ==============
+
+    obj := FromBase64String(java_sign).
+        FromPublicKeyDer(go_pubkeyBytes).
+        VerifyASN1(java_enDataBytes)
+    veri := obj.ToVerify()
+
+    assertError(obj.Error(), "Test_DecryptWithBCJavaEndata2")
+    assertEqual(veri, true, "Test_DecryptWithBCJavaEndata2")
+
+}

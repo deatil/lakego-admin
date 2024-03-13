@@ -18,7 +18,7 @@ var (
 )
 
 // 公钥加密或解密byte
-func pubKeyByte(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, error) {
+func PublicKeyBytes(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, error) {
     k := (pub.N.BitLen() + 7) / 8
     if isEncrytp {
         k = k - 11
@@ -41,7 +41,7 @@ func pubKeyByte(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, error) {
 }
 
 // 私钥加密或解密byte
-func priKeyByte(pri *rsa.PrivateKey, in []byte, isEncrytp bool) ([]byte, error) {
+func PrivateKeyBytes(pri *rsa.PrivateKey, in []byte, isEncrytp bool) ([]byte, error) {
     k := (pri.N.BitLen() + 7) / 8
     if isEncrytp {
         k = k - 11

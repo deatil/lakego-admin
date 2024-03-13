@@ -86,7 +86,7 @@ func (this *panamaCipher) expandKey(
 
 func (this *panamaCipher) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/panama: dst buffer is to small")
+        panic("cryptobin/panama: dst buffer is too small")
     }
 
     var i int32

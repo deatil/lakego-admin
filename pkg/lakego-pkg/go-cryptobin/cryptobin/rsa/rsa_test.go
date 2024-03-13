@@ -1,8 +1,11 @@
 package rsa
 
 import (
+    "bytes"
+    "errors"
     "testing"
     "crypto/rand"
+    mrand "math/rand"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -234,4 +237,46 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
 
         assertEqual(newPrikey, prikey, "Test_CreatePKCS1PrivateKeyWithPassword")
     })
+}
+
+func Test_ManyTests(t *testing.T) {
+    obj := NewRSA().GenerateKey(1024)
+    priKey := obj.CreatePKCS8PrivateKey().ToKeyBytes()
+    pubKey := obj.CreatePKCS8PublicKey().ToKeyBytes()
+
+    rsaObj := NewRSA().
+        FromPKCS8PublicKey(pubKey).
+        FromPKCS8PrivateKey(priKey)
+
+    for i := 0; i < 50; i++ {
+        odata := make([]byte, mrand.Intn(100) + 50)
+        rand.Read(odata)
+
+        if len(odata)/8 != 0 {
+            // t.Errorf("fail len %d", len(odata)/8)
+            continue
+        }
+
+        cypt := rsaObj.FromBytes(odata).Encrypt().
+            OnError(func(errs []error) {
+                if len(errs) > 0 {
+                    e := errors.Join(errs...).Error()
+                    t.Errorf("Encrypt err: %s", e)
+                }
+            }).
+            ToBytes()
+        data := rsaObj.FromBytes(cypt).Decrypt().
+            OnError(func(errs []error) {
+                if len(errs) > 0 {
+                    e := errors.Join(errs...).Error()
+                    t.Errorf("Decrypt err: %s", e)
+                }
+            }).
+            ToBytes()
+
+        if !bytes.Equal(odata, data) {
+            mod := len(odata)%8
+            t.Errorf("fail, got %x(len=%d), want %x(len=%d,mod=%d)", data, len(data), odata, len(odata), mod)
+        }
+    }
 }

@@ -17,4 +17,12 @@ func Test_Check(t *testing.T) {
     if fmt.Sprintf("%x", out) != check {
         t.Errorf("Check error. got %x, want %s", out, check)
     }
+
+    // ==========
+
+    out2 := Sum(in)
+
+    if fmt.Sprintf("%x", out2) != check {
+        t.Errorf("Check error. got %x, want %s", out2, check)
+    }
 }

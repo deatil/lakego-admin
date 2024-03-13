@@ -140,7 +140,7 @@ func (mgm *MGM) crypt(out, in []byte, icn []byte) {
 
 func (mgm *MGM) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
     if len(nonce) != mgmBlockSize || nonce[0]&0x80 > 0 {
-        panic("mgm: incorrect nonce")
+        panic("mgm seal: incorrect nonce")
     }
     if len(plaintext) == 0 && len(additionalData) == 0 {
         panic("mgm seal: at least either *text or additionalData must be provided")

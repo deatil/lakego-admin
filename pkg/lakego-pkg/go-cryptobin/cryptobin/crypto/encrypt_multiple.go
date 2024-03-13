@@ -58,6 +58,8 @@ import (
     cryptobin_present "github.com/deatil/go-cryptobin/cipher/present"
     cryptobin_trivium "github.com/deatil/go-cryptobin/cipher/trivium"
     cryptobin_rijndael "github.com/deatil/go-cryptobin/cipher/rijndael"
+    cryptobin_twine "github.com/deatil/go-cryptobin/cipher/twine"
+    cryptobin_misty1 "github.com/deatil/go-cryptobin/cipher/misty1"
 )
 
 // 获取模式方式
@@ -2133,5 +2135,67 @@ func (this EncryptRijndael256) Decrypt(data []byte, opt IOption) ([]byte, error)
 func init() {
     UseEncrypt.Add(Rijndael256, func() IEncrypt {
         return EncryptRijndael256{}
+    })
+}
+
+// ===================
+
+// The key argument should be 10 or 16 bytes.
+type EncryptTwine struct {}
+
+// 加密 / Encrypt
+func (this EncryptTwine) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_twine.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密 / Decrypt
+func (this EncryptTwine) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_twine.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Twine, func() IEncrypt {
+        return EncryptTwine{}
+    })
+}
+
+// ===================
+
+// The key argument should be 16 bytes.
+type EncryptMisty1 struct {}
+
+// 加密 / Encrypt
+func (this EncryptMisty1) Encrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_misty1.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockEncrypt(block, data, opt)
+}
+
+// 解密 / Decrypt
+func (this EncryptMisty1) Decrypt(data []byte, opt IOption) ([]byte, error) {
+    block, err := cryptobin_misty1.NewCipher(opt.Key())
+    if err != nil {
+        return nil, err
+    }
+
+    return BlockDecrypt(block, data, opt)
+}
+
+func init() {
+    UseEncrypt.Add(Misty1, func() IEncrypt {
+        return EncryptMisty1{}
     })
 }

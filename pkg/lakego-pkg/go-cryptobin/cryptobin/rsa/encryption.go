@@ -10,6 +10,16 @@ import (
     cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
 )
 
+type (
+    // OAEPOptions is an interface for passing options to OAEP decryption using the
+    // crypto.Decrypter interface.
+    OAEPOptions = rsa.OAEPOptions
+
+    // PKCS1v15DecryptOptions is for passing options to PKCS #1 v1.5 decryption using
+    // the crypto.Decrypter interface.
+    PKCS1v15DecryptOptions = rsa.PKCS1v15DecryptOptions
+)
+
 // 公钥加密
 func (this RSA) Encrypt() RSA {
     if this.publicKey == nil {
@@ -17,7 +27,7 @@ func (this RSA) Encrypt() RSA {
         return this.AppendError(err)
     }
 
-    parsedData, err := pubKeyByte(this.publicKey, this.data, true)
+    parsedData, err := cryptobin_rsa.PublicKeyBytes(this.publicKey, this.data, true)
     if err != nil {
         return this.AppendError(err)
     }
@@ -34,7 +44,7 @@ func (this RSA) Decrypt() RSA {
         return this.AppendError(err)
     }
 
-    parsedData, err := priKeyByte(this.privateKey, this.data, false)
+    parsedData, err := cryptobin_rsa.PrivateKeyBytes(this.privateKey, this.data, false)
     if err != nil {
         return this.AppendError(err)
     }
@@ -70,7 +80,7 @@ func (this RSA) PrivateKeyEncrypt() RSA {
         return this.AppendError(err)
     }
 
-    parsedData, err := priKeyByte(this.privateKey, this.data, true)
+    parsedData, err := cryptobin_rsa.PrivateKeyBytes(this.privateKey, this.data, true)
     if err != nil {
         return this.AppendError(err)
     }
@@ -87,7 +97,7 @@ func (this RSA) PublicKeyDecrypt() RSA {
         return this.AppendError(err)
     }
 
-    parsedData, err := pubKeyByte(this.publicKey, this.data, false)
+    parsedData, err := cryptobin_rsa.PublicKeyBytes(this.publicKey, this.data, false)
     if err != nil {
         return this.AppendError(err)
     }
@@ -234,6 +244,46 @@ func (this RSA) DecryptECB() RSA {
         }
 
         rsa := this.FromBytes(cipherText[offSet:endIndex]).Decrypt()
+
+        err := rsa.Error()
+        if err != nil {
+            return this.AppendError(err)
+        }
+
+        bytesOnce := rsa.ToBytes()
+
+        buffer.Write(bytesOnce)
+        offSet = endIndex
+    }
+
+    this.parsedData = buffer.Bytes()
+
+    return this
+}
+
+// 私钥解密, ECB 模式
+func (this RSA) DecryptECBWithOpts(opts crypto.DecrypterOpts) RSA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    pri := this.GetPrivateKey()
+    cipherText := this.data
+
+    priSize, cipherTextSize := pri.Size(), len(cipherText)
+
+    offSet := 0
+    buffer := bytes.Buffer{}
+
+    for offSet < cipherTextSize {
+        endIndex := offSet + priSize
+        if endIndex > cipherTextSize {
+            endIndex = cipherTextSize
+        }
+
+        rsa := this.FromBytes(cipherText[offSet:endIndex]).
+            DecryptWithOpts(opts)
 
         err := rsa.Error()
         if err != nil {

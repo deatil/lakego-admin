@@ -2,10 +2,21 @@ package base62
 
 import (
     "math"
+    "unsafe"
     "reflect"
     "strconv"
-    "unsafe"
 )
+
+const encodeStd = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+
+// StdEncoding is the standard base62 encoding.
+var StdEncoding = NewEncoding(encodeStd)
+
+type CorruptInputError int64
+
+func (e CorruptInputError) Error() string {
+    return "illegal base62 data at input byte " + strconv.FormatInt(int64(e), 10)
+}
 
 /*
  * Encodings
@@ -16,8 +27,6 @@ type Encoding struct {
     encode    [62]byte
     decodeMap [256]byte
 }
-
-const encodeStd = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 // NewEncoding returns a new padded Encoding defined by the given alphabet,
 // which must be a 62-byte string that does not contain the padding character
@@ -43,9 +52,6 @@ func NewEncoding(encoder string) *Encoding {
     }
     return e
 }
-
-// StdEncoding is the standard base62 encoding.
-var StdEncoding = NewEncoding(encodeStd)
 
 /*
  * Encoder
@@ -94,12 +100,6 @@ func (enc *Encoding) EncodeToString(src []byte) string {
 /*
  * Decoder
  */
-
-type CorruptInputError int64
-
-func (e CorruptInputError) Error() string {
-    return "illegal base62 data at input byte " + strconv.FormatInt(int64(e), 10)
-}
 
 // Decode decodes src using the encoding enc.
 // If src contains invalid base62 data, it will return the

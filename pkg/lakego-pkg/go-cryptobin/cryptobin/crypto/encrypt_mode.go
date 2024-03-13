@@ -991,3 +991,35 @@ func init() {
         return ModeG3413CBC{}
     })
 }
+
+// ===================
+
+type ModeWrap struct {}
+
+// 加密 / Encrypt
+func (this ModeWrap) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量 / iv
+    iv := opt.Iv()
+
+    cryptText := make([]byte, len(plain)+8)
+    cryptobin_cipher.NewWrapEncrypter(block, iv).CryptBlocks(cryptText, plain)
+
+    return cryptText, nil
+}
+
+// 解密 / Decrypt
+func (this ModeWrap) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
+    // 向量 / iv
+    iv := opt.Iv()
+
+    dst := make([]byte, len(data)-8)
+    cryptobin_cipher.NewWrapDecrypter(block, iv).CryptBlocks(dst, data)
+
+    return dst, nil
+}
+
+func init() {
+    UseMode.Add(Wrap, func() IMode {
+        return ModeWrap{}
+    })
+}

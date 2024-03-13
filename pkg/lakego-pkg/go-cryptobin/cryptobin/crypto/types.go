@@ -176,6 +176,10 @@ func (this Multiple) String() string {
             return "Rijndael192"
         case Rijndael256:
             return "Rijndael256"
+        case Twine:
+            return "Twine"
+        case Misty1:
+            return "Misty1"
         default:
             if TypeMultiple.Names().Has(this) {
                 return (TypeMultiple.Names().Get(this))()
@@ -242,6 +246,8 @@ const (
     Rijndael128
     Rijndael192
     Rijndael256
+    Twine
+    Misty1
     maxMultiple
 )
 
@@ -309,6 +315,8 @@ func (this Mode) String() string {
             return "G3413CTR"
         case G3413OFB:
             return "G3413OFB"
+        case Wrap:
+            return "Wrap"
         default:
             if TypeMode.Names().Has(this) {
                 return (TypeMode.Names().Get(this))()
@@ -347,6 +355,7 @@ const (
     G3413CFB
     G3413CTR
     G3413OFB
+    Wrap
     maxMode
 )
 
