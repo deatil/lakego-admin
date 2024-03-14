@@ -47,6 +47,11 @@ func NewCipher(key []byte) (cipher.Block, error) {
 }
 
 func NewCipherWithIV(key, iv []byte) (cipher.Block, error) {
+    l := len(key)
+    if l == 0 {
+        return nil, KeySizeError(l)
+    }
+
     c := &spritzCipher{}
     c.keySetup(key)
     c.iv = iv

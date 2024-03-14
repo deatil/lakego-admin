@@ -8,12 +8,8 @@ import (
     "crypto"
     "crypto/rand"
     "crypto/subtle"
-
+    "encoding/asn1"
     math_rand "math/rand"
-    go_asn1 "encoding/asn1"
-
-    "golang.org/x/crypto/cryptobyte"
-    "golang.org/x/crypto/cryptobyte/asn1"
 )
 
 /*
@@ -124,59 +120,86 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
 }
 
 // Encrypt
-func Encrypt(random io.Reader, pub *PublicKey, message []byte) ([]byte, []byte, error) {
-    // choose random integer k from {1...p}
-    k, err := rand.Int(random, pub.P)
+func Encrypt(random io.Reader, pub *PublicKey, msg []byte) (c1, c2 *big.Int, err error) {
+    pLen := (pub.P.BitLen() + 7) / 8
+    if len(msg) > pLen-11 {
+        err = errors.New("elgamal: message too long")
+        return
+    }
+
+    // EM = 0x02 || PS || 0x00 || M
+    em := make([]byte, pLen-1)
+    em[0] = 2
+    ps, mm := em[1:len(em)-len(msg)-1], em[len(em)-len(msg):]
+    err = nonZeroRandomBytes(ps, random)
     if err != nil {
-        return nil, nil, err
+        return
     }
+    em[len(em)-len(msg)-1] = 0
+    copy(mm, msg)
 
-    m := new(big.Int).SetBytes(message)
-    if m.Cmp(pub.P) == 1 { //  m < P
-        return nil, nil, ErrMessageLarge
-    }
-
-    // c1 = g^k mod p
-    c1 := new(big.Int).Exp(pub.G, k, pub.P)
-    // s = y^k mod p
-    s := new(big.Int).Exp(pub.Y, k, pub.P)
-
-    // c2 = m*s mod p
-    c2 := new(big.Int).Mod(
-        new(big.Int).Mul(m, s),
-        pub.P,
-    )
-
-    return c1.Bytes(), c2.Bytes(), nil
+    return EncryptLegacy(random, pub, em)
 }
 
 // Decrypt
-func Decrypt(priv *PrivateKey, cipher1, cipher2 []byte) ([]byte, error) {
-    c1 := new(big.Int).SetBytes(cipher1)
-    c2 := new(big.Int).SetBytes(cipher2)
-    if c1.Cmp(priv.P) == 1 && c2.Cmp(priv.P) == 1 { //  (c1, c2) < P
-        return nil, ErrCipherLarge
+func Decrypt(priv *PrivateKey, c1, c2 *big.Int) (msg []byte, err error) {
+    em, err := DecryptLegacy(priv, c1, c2)
+    if err != nil {
+        return nil, err
     }
 
-    // s = c^x mod p
+    firstByteIsTwo := subtle.ConstantTimeByteEq(em[0], 2)
+
+    var lookingForIndex, index int
+    lookingForIndex = 1
+
+    for i := 1; i < len(em); i++ {
+        equals0 := subtle.ConstantTimeByteEq(em[i], 0)
+        index = subtle.ConstantTimeSelect(lookingForIndex&equals0, i, index)
+        lookingForIndex = subtle.ConstantTimeSelect(equals0, 0, lookingForIndex)
+    }
+
+    if firstByteIsTwo != 1 || lookingForIndex != 0 || index < 9 {
+        return nil, errors.New("elgamal: decryption error")
+    }
+
+    return em[index+1:], nil
+}
+
+// EncryptLegacy
+func EncryptLegacy(random io.Reader, pub *PublicKey, msg []byte) (c1, c2 *big.Int, err error) {
+    m := new(big.Int).SetBytes(msg)
+
+    k, err := rand.Int(random, pub.P)
+    if err != nil {
+        return
+    }
+
+    c1 = new(big.Int).Exp(pub.G, k, pub.P)
+    s := new(big.Int).Exp(pub.Y, k, pub.P)
+    c2 = s.Mul(s, m)
+    c2.Mod(c2, pub.P)
+
+    return
+}
+
+// DecryptLegacy
+func DecryptLegacy(priv *PrivateKey, c1, c2 *big.Int) (msg []byte, err error) {
     s := new(big.Int).Exp(c1, priv.X, priv.P)
-    // s = s(inv) = s^(-1) mod p
     if s.ModInverse(s, priv.P) == nil {
         return nil, errors.New("elgamal: invalid private key")
     }
 
-    // m = s(inv) * c2 mod p
-    m := new(big.Int).Mod(
-        new(big.Int).Mul(s, c2),
-        priv.P,
-    )
+    s.Mul(s, c2)
+    s.Mod(s, priv.P)
+    em := s.Bytes()
 
-    return m.Bytes(), nil
+    return em, nil
 }
 
 // c1 and c2 data
-type elgamalEncryptData struct {
-    C1, C2 []byte
+type elgamalEncrypt struct {
+    C1, C2 *big.Int
 }
 
 // Encrypt Asn1
@@ -186,34 +209,27 @@ func EncryptASN1(random io.Reader, pub *PublicKey, message []byte) ([]byte, erro
         return nil, err
     }
 
-    encryptData, err := go_asn1.Marshal(elgamalEncryptData{c1, c2})
-    if err != nil {
-        return nil, err
-    }
-
-    return encryptData, nil
+    return asn1.Marshal(elgamalEncrypt{
+        C1: c1,
+        C2: c2,
+    })
 }
 
 // Decrypt Asn1
 func DecryptASN1(priv *PrivateKey, cipherData []byte) ([]byte, error) {
-    var encryptData elgamalEncryptData
-    _, err := go_asn1.Unmarshal(cipherData, &encryptData)
+    var enc elgamalEncrypt
+    _, err := asn1.Unmarshal(cipherData, &enc)
     if err != nil {
         return nil, err
     }
 
-    deData, err := Decrypt(priv, encryptData.C1, encryptData.C2)
-    if err != nil {
-        return nil, err
-    }
-
-    return deData, nil
+    return Decrypt(priv, enc.C1, enc.C2)
 }
 
 // HomomorphicEncTwo performs homomorphic operation over two passed chiphers.
 // Elgamal has multiplicative homomorphic property, so resultant cipher
 // contains the product of two numbers.
-func HomomorphicEncTwo(pub *PublicKey, c1, c2, c1dash, c2dash []byte) ([]byte, []byte, error) {
+func HomomorphicEncTwo(pub *PublicKey, c1, c2, c1dash, c2dash []byte) (*big.Int, *big.Int, error) {
     cipher1 := new(big.Int).SetBytes(c1)
     cipher2 := new(big.Int).SetBytes(c2)
     if cipher1.Cmp(pub.P) == 1 && cipher2.Cmp(pub.P) == 1 { //  (c1, c2) < P
@@ -241,13 +257,13 @@ func HomomorphicEncTwo(pub *PublicKey, c1, c2, c1dash, c2dash []byte) ([]byte, [
         pub.P,
     )
 
-    return C1.Bytes(), C2.Bytes(), nil
+    return C1, C2, nil
 }
 
 // HommorphicEncMultiple performs homomorphic operation over multiple passed chiphers.
 // Elgamal has multiplicative homomorphic property, so resultant cipher
 // contains the product of multiple numbers.
-func HommorphicEncMultiple(pub *PublicKey, ciphertext [][2][]byte) ([]byte, []byte, error) {
+func HommorphicEncMultiple(pub *PublicKey, ciphertext [][2][]byte) (*big.Int, *big.Int, error) {
     // C1, C2, _ := pub.Encrypt(one.Bytes())
     C1 := one // since, c = 1^e mod n is equal to 1
     C2 := one
@@ -280,11 +296,11 @@ func HommorphicEncMultiple(pub *PublicKey, ciphertext [][2][]byte) ([]byte, []by
         )
     }
 
-    return C1.Bytes(), C2.Bytes(), nil
+    return C1, C2, nil
 }
 
 // Sign hash
-func Sign(random io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, error) {
+func Sign(random io.Reader, priv *PrivateKey, hash []byte) (*big.Int, *big.Int, error) {
     k := new(big.Int)
     gcd := new(big.Int)
 
@@ -300,11 +316,11 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, erro
 
         if k.Cmp(one) == 0 {
             continue
-        } else {
-            gcd = gcd.GCD(nil, nil, k, new(big.Int).Sub(priv.P, one))
-            if gcd.Cmp(one) == 0 {
-                break
-            }
+        }
+
+        gcd = gcd.GCD(nil, nil, k, new(big.Int).Sub(priv.P, one))
+        if gcd.Cmp(one) == 0 {
+            break
         }
     }
 
@@ -319,7 +335,7 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, erro
         new(big.Int).Sub(priv.P, one),
     )
 
-    // hmxr = [H(m) -xr]
+    // hmxr = [H(m)-xr]
     hmxr := new(big.Int).Sub(m, xr)
     // k = k^(-1)
     k = k.ModInverse(k, new(big.Int).Sub(priv.P, one))
@@ -330,24 +346,24 @@ func Sign(random io.Reader, priv *PrivateKey, hash []byte) ([]byte, []byte, erro
         new(big.Int).Sub(priv.P, one),
     )
 
-    return r.Bytes(), s.Bytes(), nil
+    return r, s, nil
 }
 
 // Verify hash
-func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
+func Verify(pub *PublicKey, hash []byte, r, s *big.Int) (bool, error) {
     // verify that 0 < r < p
-    signr := new(big.Int).SetBytes(r)
+    signr := new(big.Int).Set(r)
     if signr.Cmp(zero) == -1 {
-        return false, errors.New("r is smaller than zero")
+        return false, errors.New("elgamal: r is smaller than zero")
     } else if signr.Cmp(pub.P) == +1 {
-        return false, errors.New("r is larger than public key p")
+        return false, errors.New("elgamal: r is larger than public key p")
     }
 
-    signs := new(big.Int).SetBytes(s)
+    signs := new(big.Int).Set(s)
     if signs.Cmp(zero) == -1 {
-        return false, errors.New("s is smaller than zero")
+        return false, errors.New("elgamal: s is smaller than zero")
     } else if signs.Cmp(new(big.Int).Sub(pub.P, one)) == +1 {
-        return false, errors.New("s is larger than public key p")
+        return false, errors.New("elgamal: s is larger than public key p")
     }
 
     // m as H(m)
@@ -370,7 +386,12 @@ func Verify(pub *PublicKey, hash, r, s []byte) (bool, error) {
         return true, nil // signature is verified
     }
 
-    return false, errors.New("signature is not verified")
+    return false, errors.New("elgamal: signature is not verified")
+}
+
+// r and s data
+type elgamalSignature struct {
+    R, S *big.Int
 }
 
 // SignASN1 signs a hash (which should be the result of hashing a larger message)
@@ -383,64 +404,22 @@ func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
         return nil, err
     }
 
-    return encodeSignature(r, s)
+    return asn1.Marshal(elgamalSignature{
+        R: r,
+        S: s,
+    })
 }
 
 // VerifyASN1 verifies the ASN.1 encoded signature, sig, of hash using the
 // public key, pub. Its return value records whether the signature is valid.
 func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
-    rBytes, sBytes, err := parseSignature(sig)
+    var sign elgamalSignature
+    _, err := asn1.Unmarshal(sig, &sign)
     if err != nil {
         return false, err
     }
 
-    return Verify(pub, hash, rBytes, sBytes)
-}
-
-func encodeSignature(r, s []byte) ([]byte, error) {
-    var b cryptobyte.Builder
-    b.AddASN1(asn1.SEQUENCE, func(b *cryptobyte.Builder) {
-        addASN1IntBytes(b, r)
-        addASN1IntBytes(b, s)
-    })
-
-    return b.Bytes()
-}
-
-// addASN1IntBytes encodes in ASN.1 a positive integer represented as
-// a big-endian byte slice with zero or more leading zeroes.
-func addASN1IntBytes(b *cryptobyte.Builder, bytes []byte) {
-    for len(bytes) > 0 && bytes[0] == 0 {
-        bytes = bytes[1:]
-    }
-
-    if len(bytes) == 0 {
-        b.SetError(errors.New("invalid integer"))
-        return
-    }
-
-    b.AddASN1(asn1.INTEGER, func(c *cryptobyte.Builder) {
-        if bytes[0]&0x80 != 0 {
-            c.AddUint8(0)
-        }
-
-        c.AddBytes(bytes)
-    })
-}
-
-func parseSignature(sig []byte) (r, s []byte, err error) {
-    var inner cryptobyte.String
-
-    input := cryptobyte.String(sig)
-    if !input.ReadASN1(&inner, asn1.SEQUENCE) ||
-        !input.Empty() ||
-        !inner.ReadASN1Integer(&r) ||
-        !inner.ReadASN1Integer(&s) ||
-        !inner.Empty() {
-        return nil, nil, errors.New("invalid ASN.1")
-    }
-
-    return r, s, nil
+    return Verify(pub, hash, sign.R, sign.S)
 }
 
 // Gen emit <p,q,g>.
@@ -478,11 +457,30 @@ func GeneratePQZp(random io.Reader, n, probability int) (*big.Int, *big.Int, *bi
         }
     }
 
-    return nil, nil, nil, errors.New("can't emit <p,q,g>")
+    return nil, nil, nil, errors.New("elgamal: generate key fail")
 }
 
 // bigIntEqual reports whether a and b are equal leaking only their bit length
 // through timing side-channels.
 func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
+}
+
+// nonZeroRandomBytes fills the given slice with non-zero random octets.
+func nonZeroRandomBytes(s []byte, rand io.Reader) (err error) {
+    _, err = io.ReadFull(rand, s)
+    if err != nil {
+        return
+    }
+
+    for i := 0; i < len(s); i++ {
+        for s[i] == 0 {
+            _, err = io.ReadFull(rand, s[i:i+1])
+            if err != nil {
+                return
+            }
+        }
+    }
+
+    return
 }

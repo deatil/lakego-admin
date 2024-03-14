@@ -90,7 +90,7 @@ func NewWithTagSize(c cipher.Block, tagsize int) (hash.Hash, error) {
 
     switch blocksize {
         case 8, 16, 32, 64, 128:
-            //
+            break
         default:
             return nil, errUnsupportedCipher
     }

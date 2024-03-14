@@ -98,7 +98,9 @@ func Test_Encrypt(t *testing.T) {
         t.Fatal(err)
     }
 
-    if string(dedata) != string(message) {
-        t.Errorf("fail Decrypt, got %x, want %x", dedata, message)
+    m := new(big.Int).SetBytes(message).Bytes()
+
+    if string(dedata) != string(m) {
+        t.Errorf("fail Decrypt, got %x, want %x", dedata, m)
     }
 }
