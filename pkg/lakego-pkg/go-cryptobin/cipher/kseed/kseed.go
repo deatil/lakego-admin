@@ -30,10 +30,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(kseedCipher)
-
-    in_key := bytesToUint32s(key)
-
-    c.expandKey(in_key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -86,34 +83,6 @@ func (this *kseedCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *kseedCipher) expandKey(in_key []uint32) {
-    var i int32
-    var tmp, k1, k2, k3, k4 uint32
-
-    k1 = in_key[0]
-    k2 = in_key[1]
-    k3 = in_key[2]
-    k4 = in_key[3]
-
-    for i = 0; i < 16; i++ {
-        this.K[2*i+0] = G(k1 + k3 - KCi[i])
-        this.K[2*i+1] = G(k2 - k4 + KCi[i])
-
-        if (i&1) > 0 {
-            tmp = k3
-            k3 = ((k3 << 8) | (k4 >> 24)) & 0xFFFFFFFF
-            k4 = ((k4 << 8) | (tmp >> 24)) & 0xFFFFFFFF
-        } else {
-            tmp = k1
-            k1 = ((k1 >> 8) | (k2 << 24)) & 0xFFFFFFFF
-            k2 = ((k2 >> 8) | (tmp << 24)) & 0xFFFFFFFF
-        }
-
-        this.dK[2*(15-i)+0] = this.K[2*i+0]
-        this.dK[2*(15-i)+1] = this.K[2*i+1]
-    }
-}
-
 func (this *kseedCipher) encrypt(dst []uint32, src []uint32) {
     var p [4]uint32
 
@@ -144,4 +113,34 @@ func (this *kseedCipher) decrypt(dst []uint32, src []uint32) {
     dst[1] = p[3]
     dst[2] = p[0]
     dst[3] = p[1]
+}
+
+func (this *kseedCipher) expandKey(key []byte) {
+    var i int32
+    var tmp, k1, k2, k3, k4 uint32
+
+    in_key := bytesToUint32s(key)
+
+    k1 = in_key[0]
+    k2 = in_key[1]
+    k3 = in_key[2]
+    k4 = in_key[3]
+
+    for i = 0; i < 16; i++ {
+        this.K[2*i+0] = G(k1 + k3 - KCi[i])
+        this.K[2*i+1] = G(k2 - k4 + KCi[i])
+
+        if (i&1) > 0 {
+            tmp = k3
+            k3 = ((k3 << 8) | (k4 >> 24)) & 0xFFFFFFFF
+            k4 = ((k4 << 8) | (tmp >> 24)) & 0xFFFFFFFF
+        } else {
+            tmp = k1
+            k1 = ((k1 >> 8) | (k2 << 24)) & 0xFFFFFFFF
+            k2 = ((k2 >> 8) | (tmp << 24)) & 0xFFFFFFFF
+        }
+
+        this.dK[2*(15-i)+0] = this.K[2*i+0]
+        this.dK[2*(15-i)+1] = this.K[2*i+1]
+    }
 }

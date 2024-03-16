@@ -26,15 +26,11 @@ func NewCipher(key []byte) (cipher.Block, error) {
         case 16:
             break
         default:
-            return nil, KeySizeError(len(key))
+            return nil, KeySizeError(k)
     }
 
     c := new(noekeonCipher)
-
-    c.K = make([]uint32, 4)
-    c.dK = make([]uint32, 4)
-
-    c.expandKey(key, uint32(k) * 8)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -87,7 +83,10 @@ func (this *noekeonCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *noekeonCipher) expandKey(in_key []byte, key_len uint32) {
+func (this *noekeonCipher) expandKey(in_key []byte) {
+    this.K = make([]uint32, 4)
+    this.dK = make([]uint32, 4)
+
     K := bytesToUint32s(in_key)
     copy(this.K[0:], K)
 

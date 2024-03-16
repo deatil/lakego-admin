@@ -7,7 +7,29 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
-const BlockSize = 32
+/**
+ * The Square block cipher.
+ *
+ * Algorithm developed by Joan Daemen <daemen.j@protonworld.com> and
+ * Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>.  Description available
+ * from http://www.esat.kuleuven.ac.be/~cosicart/pdf/VR-9700.PDF
+ *
+ * This implementation is in the public domain.
+ *
+ * @author Paulo S.L.M. Barreto <pbarreto@nw.com.br>
+ * @author George Barwood <george.barwood@dial.pipex.com>
+ * @author Vincent Rijmen <vincent.rijmen@esat.kuleuven.ac.be>
+ *
+ * Caveat: this code assumes 32-bit words and probably will not work
+ * otherwise.
+ *
+ * To correctly visualize this file, please set tabstop = 4.
+ *
+ * @version 2.7 (1999.06.29)
+ *
+ */
+
+const BlockSize = 16
 
 type KeySizeError int
 
@@ -15,22 +37,28 @@ func (k KeySizeError) Error() string {
     return fmt.Sprintf("cryptobin/square: invalid key size %d", int(k))
 }
 
+/*
+ * This a byte level implementation.
+ * a[0] corresponds with the first byte of the plaintext block,
+ * a[0xF] with the last one. same for the ciphertext and the key.
+ */
 type squareCipher struct {
-    key []uint16
+    ekey [R+1][4]uint32
+    dkey [R+1][4]uint32
 }
 
 // NewCipher creates and returns a new cipher.Block.
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
-        case 32:
+        case 16:
             break
         default:
             return nil, KeySizeError(len(key))
     }
 
     c := new(squareCipher)
-    c.key = bytesToUint16s(key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -52,7 +80,14 @@ func (this *squareCipher) Encrypt(dst, src []byte) {
         panic("cryptobin/square: invalid buffer overlap")
     }
 
-    this.crypt(dst, src)
+    var a [4]uint32
+    aUints := bytesToUint32s(src)
+    copy(a[:], aUints)
+
+    squareEncrypt(&a, this.ekey)
+
+    dstBytes := uint32sToBytes(a[:])
+    copy(dst, dstBytes)
 }
 
 func (this *squareCipher) Decrypt(dst, src []byte) {
@@ -68,39 +103,21 @@ func (this *squareCipher) Decrypt(dst, src []byte) {
         panic("cryptobin/square: invalid buffer overlap")
     }
 
-    this.crypt(dst, src)
+    var a [4]uint32
+    aUints := bytesToUint32s(src)
+    copy(a[:], aUints)
+
+    squareDecrypt(&a, this.dkey)
+
+    dstBytes := uint32sToBytes(a[:])
+    copy(dst, dstBytes)
 }
 
-func (this *squareCipher) crypt(dst, src []byte) {
-    var rcon uint16
-    var rk [16]uint16
-    var i int32
+func (this *squareCipher) expandKey(key []byte) {
+    k := bytesToUint32s(key)
 
-    var a [16]uint16
-    aUint16s := bytesToUint16s(src)
-    copy(a[0:], aUint16s)
+    var a [4]uint32
+    copy(a[:], k)
 
-    rcon = 1
-    copy(rk[:], this.key)
-
-    theta(rk)
-    sigma(a, rk)
-
-    copy(rk[:], this.key)
-
-    gamma(a)
-    pi(a)
-    keysched(rk, &rcon)
-    sigma(a, rk)
-
-    for i = 2; i <= R; i++ {
-        theta(a)
-        gamma(a)
-        pi(a)
-        keysched(rk, &rcon)
-        sigma(a, rk)
-    }
-
-    dstBytes := uint16sToBytes(a[:])
-    copy(dst, dstBytes)
+    squareGenerateRoundKeys(a, &this.ekey, &this.dkey)
 }

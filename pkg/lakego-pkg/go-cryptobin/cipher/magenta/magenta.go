@@ -34,15 +34,13 @@ func NewCipher(key []byte) (cipher.Block, error) {
         case 16, 24, 32:
             break
         default:
-            return nil, KeySizeError(len(key))
+            return nil, KeySizeError(k)
     }
 
     once.Do(initAll)
 
     c := new(magentaCipher)
-
-    keyUint32s := bytesToUint32s(key)
-    c.expandKey(keyUint32s, uint32(k) * 8)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -95,7 +93,10 @@ func (this *magentaCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *magentaCipher) expandKey(in_key []uint32, key_len uint32) {
+func (this *magentaCipher) expandKey(key []byte) {
+    in_key := bytesToUint32s(key)
+    key_len := uint32(len(key)) * 8
+
     this.k_len = (key_len + 63) / 64;
 
     var l_key [16]uint32
@@ -159,18 +160,18 @@ func (this *magentaCipher) encrypt(out_blk []uint32, in_blk []uint32) {
     blk[2] = in_blk[2]
     blk[3] = in_blk[3]
 
-    r_fun(tt, blk[0:], blk[2:], l_key[0:])
-    r_fun(tt, blk[2:], blk[0:], l_key[2:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[0:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[2:])
 
-    r_fun(tt, blk[0:], blk[2:], l_key[4:])
-    r_fun(tt, blk[2:], blk[0:], l_key[6:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[4:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[6:])
 
-    r_fun(tt, blk[0:], blk[2:], l_key[8:])
-    r_fun(tt, blk[2:], blk[0:], l_key[10:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[8:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[10:])
 
     if this.k_len == 4 {
-        r_fun(tt, blk[0:], blk[2:], l_key[12:])
-        r_fun(tt, blk[2:], blk[0:], l_key[14:])
+        r_fun(&tt, blk[0:], blk[2:], l_key[12:])
+        r_fun(&tt, blk[2:], blk[0:], l_key[14:])
     }
 
     out_blk[0] = blk[0]
@@ -189,18 +190,18 @@ func (this *magentaCipher) decrypt(out_blk []uint32, in_blk []uint32) {
     blk[0] = in_blk[2]
     blk[1] = in_blk[3]
 
-    r_fun(tt, blk[0:], blk[2:], l_key[0:])
-    r_fun(tt, blk[2:], blk[0:], l_key[2:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[0:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[2:])
 
-    r_fun(tt, blk[0:], blk[2:], l_key[4:])
-    r_fun(tt, blk[2:], blk[0:], l_key[6:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[4:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[6:])
 
-    r_fun(tt, blk[0:], blk[2:], l_key[8:])
-    r_fun(tt, blk[2:], blk[0:], l_key[10:])
+    r_fun(&tt, blk[0:], blk[2:], l_key[8:])
+    r_fun(&tt, blk[2:], blk[0:], l_key[10:])
 
     if this.k_len == 4 {
-        r_fun(tt, blk[0:], blk[2:], l_key[12:])
-        r_fun(tt, blk[2:], blk[0:], l_key[14:])
+        r_fun(&tt, blk[0:], blk[2:], l_key[12:])
+        r_fun(&tt, blk[2:], blk[0:], l_key[14:])
     }
 
     out_blk[2] = blk[0]

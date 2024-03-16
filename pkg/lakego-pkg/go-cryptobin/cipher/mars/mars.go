@@ -29,7 +29,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(marsCipher)
-    c.expandKey(key, keyLen)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -70,7 +70,7 @@ func (this *marsCipher) Decrypt(dst, src []byte) {
     this.decryptBlock(dst, src)
 }
 
-func (this *marsCipher) expandKey(key []byte, keyLen int) {
+func (this *marsCipher) expandKey(key []byte) {
     var i uint
     var j uint
     var n uint
@@ -83,6 +83,8 @@ func (this *marsCipher) expandKey(key []byte, keyLen int) {
     var t2 uint32
 
     var t [15]uint32
+
+    keyLen := len(key)
 
     // Determine the number of 32-bit words in the key
     n = uint(keyLen) / 4

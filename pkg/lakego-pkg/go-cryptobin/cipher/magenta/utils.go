@@ -89,7 +89,7 @@ func init_tab() {
     f_tab[255] = 0
 }
 
-func pi_fun(y [4]uint32, x [4]uint32) {
+func pi_fun(y *[4]uint32, x [4]uint32) {
     y[0] = f_tab[Byte(x[0], 0) ^ f_tab[Byte(x[2], 0)]]         |
            (f_tab[Byte(x[2], 0) ^ f_tab[Byte(x[0], 0)]] <<  8) |
            (f_tab[Byte(x[0], 1) ^ f_tab[Byte(x[2], 1)]] << 16) |
@@ -111,7 +111,7 @@ func pi_fun(y [4]uint32, x [4]uint32) {
            (f_tab[Byte(x[3], 3) ^ f_tab[Byte(x[1], 3)]] << 24)
 }
 
-func e3_fun(x [4]uint32) {
+func e3_fun(x *[4]uint32) {
     var u, v [4]uint32
 
     u[0] = x[0]
@@ -119,10 +119,10 @@ func e3_fun(x [4]uint32) {
     u[2] = x[2]
     u[3] = x[3]
 
-    pi_fun(v, u)
-    pi_fun(u, v)
-    pi_fun(v, u)
-    pi_fun(u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
 
     v[0] = Byte(u[0], 0) | (Byte(u[0], 2) << 8) | (Byte(u[1], 0) << 16) | (Byte(u[1], 2) << 24)
     v[1] = Byte(u[2], 0) | (Byte(u[2], 2) << 8) | (Byte(u[3], 0) << 16) | (Byte(u[3], 2) << 24)
@@ -134,10 +134,10 @@ func e3_fun(x [4]uint32) {
     u[2] = x[2] ^ v[2]
     u[3] = x[3] ^ v[3]
 
-    pi_fun(v, u)
-    pi_fun(u, v)
-    pi_fun(v, u)
-    pi_fun(u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
 
     v[0] = Byte(u[0], 0) | (Byte(u[0], 2) << 8) | (Byte(u[1], 0) << 16) | (Byte(u[1], 2) << 24)
     v[1] = Byte(u[2], 0) | (Byte(u[2], 2) << 8) | (Byte(u[3], 0) << 16) | (Byte(u[3], 2) << 24)
@@ -149,10 +149,10 @@ func e3_fun(x [4]uint32) {
     u[2] = x[2] ^ v[2]
     u[3] = x[3] ^ v[3]
 
-    pi_fun(v, u)
-    pi_fun(u, v)
-    pi_fun(v, u)
-    pi_fun(u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
+    pi_fun(&v, u)
+    pi_fun(&u, v)
 
     v[0] = Byte(u[0], 0) | (Byte(u[0], 2) << 8) | (Byte(u[1], 0) << 16) | (Byte(u[1], 2) << 24)
     v[1] = Byte(u[2], 0) | (Byte(u[2], 2) << 8) | (Byte(u[3], 0) << 16) | (Byte(u[3], 2) << 24)
@@ -163,7 +163,7 @@ func e3_fun(x [4]uint32) {
     x[1] = v[1]
 }
 
-func r_fun(tt [4]uint32, x, y, k []uint32) {
+func r_fun(tt *[4]uint32, x, y, k []uint32) {
     tt[0] = y[0]
     tt[1] = y[1]
     tt[2] = k[0]

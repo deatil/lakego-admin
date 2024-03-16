@@ -47,29 +47,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
         return nil, KeySizeError(l)
     }
 
-    var L [keyWords]uint32
-
-    for i := 0; i < keyWords; i++ {
-        L[i] = binary.LittleEndian.Uint32(key[:4])
-        key = key[4:]
-    }
-
-    c := &rc6Cipher{}
-    copy(c.rk[:], skeytable)
-
-    var A uint32
-    var B uint32
-    var i, j int
-
-    for k := 0; k < 3*roundKeys; k++ {
-        c.rk[i] = bits.RotateLeft32(c.rk[i]+(A+B), 3)
-        A = c.rk[i]
-        L[j] = bits.RotateLeft32(L[j]+(A+B), int(A+B))
-        B = L[j]
-
-        i = (i + 1) % roundKeys
-        j = (j + 1) % keyWords
-    }
+    c := new(rc6Cipher)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -108,6 +87,31 @@ func (c *rc6Cipher) Decrypt(dst, src []byte) {
     }
 
     c.decrypt(dst, src)
+}
+
+func (c *rc6Cipher) expandKey(key []byte) {
+    var L [keyWords]uint32
+
+    for i := 0; i < keyWords; i++ {
+        L[i] = binary.LittleEndian.Uint32(key[:4])
+        key = key[4:]
+    }
+
+    copy(c.rk[:], skeytable)
+
+    var A uint32
+    var B uint32
+    var i, j int
+
+    for k := 0; k < 3*roundKeys; k++ {
+        c.rk[i] = bits.RotateLeft32(c.rk[i]+(A+B), 3)
+        A = c.rk[i]
+        L[j] = bits.RotateLeft32(L[j]+(A+B), int(A+B))
+        B = L[j]
+
+        i = (i + 1) % roundKeys
+        j = (j + 1) % keyWords
+    }
 }
 
 func (c *rc6Cipher) encrypt(dst, src []byte) {

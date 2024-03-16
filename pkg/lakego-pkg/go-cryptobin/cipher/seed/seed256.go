@@ -17,50 +17,10 @@ var (
 )
 
 func newSeed256Cipher(key []byte) cipher.Block {
-    block := new(seed256Cipher)
+    c := new(seed256Cipher)
+    c.expandKey(key)
 
-    A := binary.BigEndian.Uint32(key[0:])
-    B := binary.BigEndian.Uint32(key[4:])
-    C := binary.BigEndian.Uint32(key[8:])
-    D := binary.BigEndian.Uint32(key[12:])
-    E := binary.BigEndian.Uint32(key[16:])
-    F := binary.BigEndian.Uint32(key[20:])
-    G := binary.BigEndian.Uint32(key[24:])
-    H := binary.BigEndian.Uint32(key[28:])
-
-    var T0, T1 uint32
-    var rot int
-
-    T0 = (((A + C) ^ E) - F) ^ kc[0]
-    T1 = (((B - D) ^ G) + H) ^ kc[0]
-    block.pdwRoundKey[0] = g(T0)
-    block.pdwRoundKey[1] = g(T1)
-
-    for i := 1; i < 24; i++ {
-        rot = seed256rot[i%6]
-
-        if ((i + 1) % 2) == 0 {
-            T0 = D
-            D = (D >> rot) ^ (C << (32 - rot))
-            C = (C >> rot) ^ (B << (32 - rot))
-            B = (B >> rot) ^ (A << (32 - rot))
-            A = (A >> rot) ^ (T0 << (32 - rot))
-        } else {
-            T0 = E
-            E = (E << rot) ^ (F >> (32 - rot))
-            F = (F << rot) ^ (G >> (32 - rot))
-            G = (G << rot) ^ (H >> (32 - rot))
-            H = (H << rot) ^ (T0 >> (32 - rot))
-        }
-
-        T0 = (((A + C) ^ E) - F) ^ kc[i]
-        T1 = (((B - D) ^ G) + H) ^ kc[i]
-
-        block.pdwRoundKey[i*2+0] = g(T0)
-        block.pdwRoundKey[i*2+1] = g(T1)
-    }
-
-    return block
+    return c
 }
 
 func (s *seed256Cipher) BlockSize() int {
@@ -167,4 +127,47 @@ func (s *seed256Cipher) decrypt(dst, src []byte) {
     binary.BigEndian.PutUint32(dst[4:], data[3])
     binary.BigEndian.PutUint32(dst[8:], data[0])
     binary.BigEndian.PutUint32(dst[12:], data[1])
+}
+
+func (s *seed256Cipher) expandKey(key []byte) {
+    A := binary.BigEndian.Uint32(key[0:])
+    B := binary.BigEndian.Uint32(key[4:])
+    C := binary.BigEndian.Uint32(key[8:])
+    D := binary.BigEndian.Uint32(key[12:])
+    E := binary.BigEndian.Uint32(key[16:])
+    F := binary.BigEndian.Uint32(key[20:])
+    G := binary.BigEndian.Uint32(key[24:])
+    H := binary.BigEndian.Uint32(key[28:])
+
+    var T0, T1 uint32
+    var rot int
+
+    T0 = (((A + C) ^ E) - F) ^ kc[0]
+    T1 = (((B - D) ^ G) + H) ^ kc[0]
+    s.pdwRoundKey[0] = g(T0)
+    s.pdwRoundKey[1] = g(T1)
+
+    for i := 1; i < 24; i++ {
+        rot = seed256rot[i%6]
+
+        if ((i + 1) % 2) == 0 {
+            T0 = D
+            D = (D >> rot) ^ (C << (32 - rot))
+            C = (C >> rot) ^ (B << (32 - rot))
+            B = (B >> rot) ^ (A << (32 - rot))
+            A = (A >> rot) ^ (T0 << (32 - rot))
+        } else {
+            T0 = E
+            E = (E << rot) ^ (F >> (32 - rot))
+            F = (F << rot) ^ (G >> (32 - rot))
+            G = (G << rot) ^ (H >> (32 - rot))
+            H = (H << rot) ^ (T0 >> (32 - rot))
+        }
+
+        T0 = (((A + C) ^ E) - F) ^ kc[i]
+        T1 = (((B - D) ^ G) + H) ^ kc[i]
+
+        s.pdwRoundKey[i*2+0] = g(T0)
+        s.pdwRoundKey[i*2+1] = g(T1)
+    }
 }

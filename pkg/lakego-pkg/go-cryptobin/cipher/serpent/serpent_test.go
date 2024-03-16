@@ -44,7 +44,6 @@ func Test_Check(t *testing.T) {
     plaintextBytes, _ := hex.DecodeString(plaintext)
     ciphertextBytes, _ := hex.DecodeString(ciphertext)
 
-
     c, err := NewCipher(keyBytes)
     if err != nil {
         t.Fatal(err)

@@ -32,11 +32,15 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(threewayCipher)
-    c.key[0] = binary.BigEndian.Uint32(key[0:])
-    c.key[1] = binary.BigEndian.Uint32(key[4:])
-    c.key[2] = binary.BigEndian.Uint32(key[8:])
+    c.expandKey(key)
 
     return c, nil
+}
+
+func (this *threewayCipher) expandKey(key []byte) {
+    this.key[0] = binary.BigEndian.Uint32(key[0:])
+    this.key[1] = binary.BigEndian.Uint32(key[4:])
+    this.key[2] = binary.BigEndian.Uint32(key[8:])
 }
 
 func (this *threewayCipher) BlockSize() int {

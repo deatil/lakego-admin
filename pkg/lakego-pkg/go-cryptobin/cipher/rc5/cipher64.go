@@ -22,40 +22,9 @@ func newCipher64(key []byte, rounds uint) (cipher.Block, error) {
     c := &rc5Cipher64{}
     c.rounds = rounds
     c.rk = make([]uint64, (rounds+1)<<1)
-    expandKey64(key, c.rk)
+    c.expandKey(key)
+
     return c, nil
-}
-
-func expandKey64(key []byte, rk []uint64) {
-    roundKeys := len(rk)
-
-    // L is initially a c-length list of 0-valued w-length words
-    L := make([]uint64, len(key)/8)
-    lenL := len(L)
-    for i := 0; i < lenL; i++ {
-        L[i] = binary.LittleEndian.Uint64(key[:8])
-        key = key[8:]
-    }
-
-    // Initialize key-independent pseudorandom S array
-    // S is initially a t=2(r+1) length list of undefined w-length words
-    rk[0] = P64
-    for i := 1; i < roundKeys; i++ {
-        rk[i] = rk[i-1] + Q64
-    }
-
-    // The main key scheduling loop
-    var A uint64
-    var B uint64
-    var i, j int
-    for k := 0; k < 3*roundKeys; k++ {
-        rk[i] = bits.RotateLeft64(rk[i]+(A+B), 3)
-        A = rk[i]
-        L[j] = bits.RotateLeft64(L[j]+(A+B), int(A+B))
-        B = L[j]
-        i = (i + 1) % roundKeys
-        j = (j + 1) % lenL
-    }
 }
 
 func (c *rc5Cipher64) BlockSize() int {
@@ -109,4 +78,38 @@ func (c *rc5Cipher64) Decrypt(dst, src []byte) {
 
     binary.LittleEndian.PutUint64(dst[:8], A-c.rk[0])
     binary.LittleEndian.PutUint64(dst[8:16], B-c.rk[1])
+}
+
+func (c *rc5Cipher64) expandKey(key []byte) {
+    rk := c.rk
+
+    roundKeys := len(rk)
+
+    // L is initially a c-length list of 0-valued w-length words
+    L := make([]uint64, len(key)/8)
+    lenL := len(L)
+    for i := 0; i < lenL; i++ {
+        L[i] = binary.LittleEndian.Uint64(key[:8])
+        key = key[8:]
+    }
+
+    // Initialize key-independent pseudorandom S array
+    // S is initially a t=2(r+1) length list of undefined w-length words
+    rk[0] = P64
+    for i := 1; i < roundKeys; i++ {
+        rk[i] = rk[i-1] + Q64
+    }
+
+    // The main key scheduling loop
+    var A uint64
+    var B uint64
+    var i, j int
+    for k := 0; k < 3*roundKeys; k++ {
+        rk[i] = bits.RotateLeft64(rk[i]+(A+B), 3)
+        A = rk[i]
+        L[j] = bits.RotateLeft64(L[j]+(A+B), int(A+B))
+        B = L[j]
+        i = (i + 1) % roundKeys
+        j = (j + 1) % lenL
+    }
 }

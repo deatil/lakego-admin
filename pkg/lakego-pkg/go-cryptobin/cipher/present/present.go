@@ -29,7 +29,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(presentCipher)
-    c.expandKey(key, keyLen)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -70,12 +70,14 @@ func (this *presentCipher) Decrypt(dst, src []byte) {
     this.decryptBlock(dst, src)
 }
 
-func (this *presentCipher) expandKey(key []byte, keyLen int) {
+func (this *presentCipher) expandKey(key []byte) {
    var i uint
 
    var t uint64
    var kl uint64
    var kh uint64
+
+   keyLen := len(key)
 
    //PRESENT can take keys of either 80 or 128 bits
    if keyLen == 10 {

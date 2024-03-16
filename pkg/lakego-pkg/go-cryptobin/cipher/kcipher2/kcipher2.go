@@ -48,8 +48,6 @@ type kcipher2Cipher struct {
 
 // NewCipher returns a cipher.Stream implementing the KCipher-2 stream cipher.  The key and iv parameters must each be 16 bytes.
 func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
-    k := &kcipher2Cipher{}
-
     if l := len(key); l != 16 {
         return nil, KeySizeError(l)
     }
@@ -58,21 +56,10 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
         return nil, IVSizeError(l)
     }
 
-    var k32 [4]uint32
-    for i := 0; i < 4; i++ {
-        k32[i] = binary.BigEndian.Uint32(key)
-        key = key[4:]
-    }
+    c := &kcipher2Cipher{}
+    c.expandKey(key, iv)
 
-    var iv32 [4]uint32
-    for i := 0; i < 4; i++ {
-        iv32[i] = binary.BigEndian.Uint32(iv)
-        iv = iv[4:]
-    }
-
-    k.expandKey(k32[:], iv32[:])
-
-    return k, nil
+    return c, nil
 }
 
 func (k *kcipher2Cipher) XORKeyStream(dst, src []byte) {
@@ -171,14 +158,26 @@ func (k *kcipher2Cipher) setupStatueValues(key []uint32, iv []uint32) {
  * initialization vector (IV). It sets up the internal state value
  * and invokes next(INIT) iteratively 24 times. After this,
  * the system is ready to produce key streams. See Section 2.3.2.
- * @param    key[12] : (INPUT), (4*32) bits
- * @param    iv[4]   : (INPUT), (4*32) bits
+ * @param    key[16] : (INPUT), 16 bytes
+ * @param    iv[16]  : (INPUT), 16 bytes
  * @modify   IK      : (12*32) bits, by calling setup_state_values()
  * @modify   IV      : (4*32) bits,  by calling setup_state_values()
  * @modify   S       : (OUTPUT), (A, B, L1, R1, L2, R2)
  */
-func (k *kcipher2Cipher) expandKey(key []uint32, iv []uint32) {
-    k.setupStatueValues(key, iv)
+func (k *kcipher2Cipher) expandKey(key []byte, iv []byte) {
+    var k32 [4]uint32
+    for i := 0; i < 4; i++ {
+        k32[i] = binary.BigEndian.Uint32(key)
+        key = key[4:]
+    }
+
+    var iv32 [4]uint32
+    for i := 0; i < 4; i++ {
+        iv32[i] = binary.BigEndian.Uint32(iv)
+        iv = iv[4:]
+    }
+
+    k.setupStatueValues(k32[:], iv32[:])
 
     for i := 0; i < 24; i++ {
         k.next(modeInit)

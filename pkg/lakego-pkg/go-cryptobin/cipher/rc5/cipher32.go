@@ -22,40 +22,8 @@ func newCipher32(key []byte, rounds uint) (cipher.Block, error) {
     c := &rc5Cipher32{}
     c.rounds = rounds
     c.rk = make([]uint32, (rounds+1)<<1)
-    expandKey32(key, c.rk)
+    c.expandKey(key)
     return c, nil
-}
-
-func expandKey32(key []byte, rk []uint32) {
-    roundKeys := len(rk)
-
-    // L is initially a c-length list of 0-valued w-length words
-    L := make([]uint32, len(key)/4)
-    lenL := len(L)
-    for i := 0; i < lenL; i++ {
-        L[i] = binary.LittleEndian.Uint32(key[:4])
-        key = key[4:]
-    }
-
-    // Initialize key-independent pseudorandom S array
-    // S is initially a t=2(r+1) length list of undefined w-length words
-    rk[0] = P32
-    for i := 1; i < roundKeys; i++ {
-        rk[i] = rk[i-1] + Q32
-    }
-
-    // The main key scheduling loop
-    var A uint32
-    var B uint32
-    var i, j int
-    for k := 0; k < 3*roundKeys; k++ {
-        rk[i] = bits.RotateLeft32(rk[i]+(A+B), 3)
-        A = rk[i]
-        L[j] = bits.RotateLeft32(L[j]+(A+B), int(A+B))
-        B = L[j]
-        i = (i + 1) % roundKeys
-        j = (j + 1) % lenL
-    }
 }
 
 func (c *rc5Cipher32) BlockSize() int {
@@ -110,4 +78,38 @@ func (c *rc5Cipher32) Decrypt(dst, src []byte) {
 
     binary.LittleEndian.PutUint32(dst[:4], A-c.rk[0])
     binary.LittleEndian.PutUint32(dst[4:8], B-c.rk[1])
+}
+
+func (c *rc5Cipher32) expandKey(key []byte) {
+    rk := c.rk
+
+    roundKeys := len(rk)
+
+    // L is initially a c-length list of 0-valued w-length words
+    L := make([]uint32, len(key)/4)
+    lenL := len(L)
+    for i := 0; i < lenL; i++ {
+        L[i] = binary.LittleEndian.Uint32(key[:4])
+        key = key[4:]
+    }
+
+    // Initialize key-independent pseudorandom S array
+    // S is initially a t=2(r+1) length list of undefined w-length words
+    rk[0] = P32
+    for i := 1; i < roundKeys; i++ {
+        rk[i] = rk[i-1] + Q32
+    }
+
+    // The main key scheduling loop
+    var A uint32
+    var B uint32
+    var i, j int
+    for k := 0; k < 3*roundKeys; k++ {
+        rk[i] = bits.RotateLeft32(rk[i]+(A+B), 3)
+        A = rk[i]
+        L[j] = bits.RotateLeft32(L[j]+(A+B), int(A+B))
+        B = L[j]
+        i = (i + 1) % roundKeys
+        j = (j + 1) % lenL
+    }
 }

@@ -40,48 +40,9 @@ func NewCipher(key []byte) (cipher.Stream, error) {
     }
 
     c := new(panamaCipher)
-
-    c.buffer = PAN_BUFFER{}
-    c.stated = PAN_STATE{}
-
-    var in_key []uint32
-
-    keyints := bytesToUint32s(key[:16])
-    in_key = append(in_key, keyints[:]...)
-
-    keyints = bytesToUint32s(key[16:])
-    in_key = append(in_key, keyints[:]...)
-
-    c.expandKey(in_key, WORDLENGTH, nil, 0)
+    c.expandKey(key)
 
     return c, nil
-}
-
-func (this *panamaCipher) expandKey(
-    in_key []uint32,
-    keysize int32,
-    init_vec []uint32,
-    vecsize int32,
-) {
-    var keyblocks int32 = (8 * keysize) / (PAN_STAGE_SIZE * WORDLENGTH);
-    var vecblocks int32 = (8 * vecsize) / (PAN_STAGE_SIZE * WORDLENGTH);
-
-    /* initialize the Panama state machine for a fresh crypting operation */
-    this.pan_reset(&this.buffer, &this.stated)
-    this.pan_push(in_key, uint32(keyblocks), &this.buffer, &this.stated)
-
-    if len(init_vec) != 0 {
-        this.pan_push(init_vec, uint32(vecblocks), &this.buffer, &this.stated)
-    }
-
-    this.pan_pull(nil, nil, 32, &this.buffer, &this.stated);
-
-    wkeymat := this.pan_pull(nil, this.wkeymat[:], 1, &this.buffer, &this.stated)
-    copy(this.wkeymat[0:], wkeymat)
-
-    this.keymat_pointer = 0
-
-    this.keymat = keymatToBytes(this.wkeymat)
 }
 
 func (this *panamaCipher) XORKeyStream(dst, src []byte) {
@@ -106,6 +67,48 @@ func (this *panamaCipher) XORKeyStream(dst, src []byte) {
 
         this.keymat_pointer++
     }
+}
+
+func (this *panamaCipher) expandKey(key []byte) {
+    this.buffer = PAN_BUFFER{}
+    this.stated = PAN_STATE{}
+
+    var in_key []uint32
+
+    keyints := bytesToUint32s(key[:16])
+    in_key = append(in_key, keyints[:]...)
+
+    keyints = bytesToUint32s(key[16:])
+    in_key = append(in_key, keyints[:]...)
+
+    this.initialize(in_key, WORDLENGTH, nil, 0)
+}
+
+func (this *panamaCipher) initialize(
+    in_key []uint32,
+    keysize int32,
+    init_vec []uint32,
+    vecsize int32,
+) {
+    var keyblocks int32 = (8 * keysize) / (PAN_STAGE_SIZE * WORDLENGTH);
+    var vecblocks int32 = (8 * vecsize) / (PAN_STAGE_SIZE * WORDLENGTH);
+
+    /* initialize the Panama state machine for a fresh crypting operation */
+    this.pan_reset(&this.buffer, &this.stated)
+    this.pan_push(in_key, uint32(keyblocks), &this.buffer, &this.stated)
+
+    if len(init_vec) != 0 {
+        this.pan_push(init_vec, uint32(vecblocks), &this.buffer, &this.stated)
+    }
+
+    this.pan_pull(nil, nil, 32, &this.buffer, &this.stated);
+
+    wkeymat := this.pan_pull(nil, this.wkeymat[:], 1, &this.buffer, &this.stated)
+    copy(this.wkeymat[0:], wkeymat)
+
+    this.keymat_pointer = 0
+
+    this.keymat = keymatToBytes(this.wkeymat)
 }
 
 /**************************************************************************+

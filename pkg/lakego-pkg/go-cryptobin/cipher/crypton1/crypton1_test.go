@@ -6,7 +6,7 @@ import (
     "math/rand"
 )
 
-func Test_Magenta_Key16(t *testing.T) {
+func Test_Key16(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -39,7 +39,7 @@ func Test_Magenta_Key16(t *testing.T) {
     }
 }
 
-func Test_Magenta_Key24(t *testing.T) {
+func Test_Key24(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -72,7 +72,7 @@ func Test_Magenta_Key24(t *testing.T) {
     }
 }
 
-func Test_Magenta_Key32(t *testing.T) {
+func Test_Key32(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 

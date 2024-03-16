@@ -36,19 +36,10 @@ func NewCipher(key []byte) (cipher.Block, error) {
         return nil, KeySizeError(l)
     }
 
-    m := &misty1Cipher{}
+    c := &misty1Cipher{}
+    c.expandKey(key)
 
-    for i := 0; i < 8; i++ {
-        m.ek[i] = uint16(key[i*2])*256 + uint16(key[i*2+1])
-    }
-
-    for i := 0; i < 8; i++ {
-        m.ek[i+8] = fi(m.ek[i], m.ek[(i+1)%8])
-        m.ek[i+16] = m.ek[i+8] & 0x1ff
-        m.ek[i+24] = m.ek[i+8] >> 9
-    }
-
-    return m, nil
+    return c, nil
 }
 
 func (m *misty1Cipher) BlockSize() int {
@@ -119,6 +110,18 @@ func (m *misty1Cipher) Decrypt(dst, src []byte) {
 
     putUint32(dst, d0)
     putUint32(dst[4:], d1)
+}
+
+func (m *misty1Cipher) expandKey(key []byte) {
+    for i := 0; i < 8; i++ {
+        m.ek[i] = uint16(key[i*2])*256 + uint16(key[i*2+1])
+    }
+
+    for i := 0; i < 8; i++ {
+        m.ek[i+8] = fi(m.ek[i], m.ek[(i+1)%8])
+        m.ek[i+16] = m.ek[i+8] & 0x1ff
+        m.ek[i+24] = m.ek[i+8] >> 9
+    }
 }
 
 func (m *misty1Cipher) fo(fin uint32, k int) uint32 {

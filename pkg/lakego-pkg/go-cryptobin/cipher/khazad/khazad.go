@@ -31,7 +31,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(khazadCipher)
-
     c.expandKey(key)
 
     return c, nil

@@ -13,17 +13,6 @@ func rotr32(x, n uint32) uint32 {
     return rotl32(x, 32 - n);
 }
 
-func MemsetUint32(a []uint32, v uint32) {
-    if len(a) == 0 {
-        return
-    }
-
-    a[0] = v
-    for bp := 1; bp < len(a); bp *= 2 {
-        copy(a[bp:], a[:bp])
-    }
-}
-
 // Endianness option
 const littleEndian bool = true
 

@@ -30,7 +30,9 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(clefiaCipher)
-    c.skey = key
+
+    c.skey = make([]byte, len(key))
+    copy(c.skey, key)
 
     return c, nil
 }

@@ -29,23 +29,10 @@ func NewCipher(key []byte) (cipher.Block, error) {
         return nil, KeySizeError(l)
     }
 
-    block := new(hightCipher)
+    c := new(hightCipher)
+    c.expandKey(key)
 
-    for i := 0; i < 4; i++ {
-        block.roundKey[i+0] = key[i+12]
-        block.roundKey[i+4] = key[i+0]
-    }
-
-    for i := 0; i < 8; i++ {
-        for k := 0; k < 8; k++ {
-            block.roundKey[8+16*i+k+0] = key[((k-i)&7)+0] + delta[16*i+k+0]
-        }
-        for k := 0; k < 8; k++ {
-            block.roundKey[8+16*i+k+8] = key[((k-i)&7)+8] + delta[16*i+k+8]
-        }
-    }
-
-    return block, nil
+    return c, nil
 }
 
 func (s *hightCipher) BlockSize() int {
@@ -206,4 +193,20 @@ func (s *hightCipher) decrypt(dst, src []byte) {
     dst[5] = XX[5]
     dst[6] = XX[6] ^ s.roundKey[3]
     dst[7] = XX[7]
+}
+
+func (s *hightCipher) expandKey(key []byte) {
+    for i := 0; i < 4; i++ {
+        s.roundKey[i+0] = key[i+12]
+        s.roundKey[i+4] = key[i+0]
+    }
+
+    for i := 0; i < 8; i++ {
+        for k := 0; k < 8; k++ {
+            s.roundKey[8+16*i+k+0] = key[((k-i)&7)+0] + delta[16*i+k+0]
+        }
+        for k := 0; k < 8; k++ {
+            s.roundKey[8+16*i+k+8] = key[((k-i)&7)+8] + delta[16*i+k+8]
+        }
+    }
 }

@@ -32,7 +32,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(anubisCipher)
-    c.expandKey(key, int32(keylen))
+    c.expandKey(key)
 
     return c, nil
 }
@@ -167,13 +167,13 @@ func (this *anubisCipher) crypt(ciphertext []byte, plaintext []byte, roundKey [1
     }
 }
 
-func (this *anubisCipher) expandKey(key []byte, keylen int32) {
+func (this *anubisCipher) expandKey(key []byte) {
    var N, R, i, pos, r int32
    var kappa [MAX_N]uint32
    var inter [MAX_N]uint32 /* initialize as all zeroes */
    var v, K0, K1, K2, K3 uint32
 
-   this.keyBits = keylen * 8;
+   this.keyBits = int32(len(key)) * 8;
 
    /*
     * determine the N length parameter:

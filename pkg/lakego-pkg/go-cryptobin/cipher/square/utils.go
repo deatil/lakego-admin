@@ -1,190 +1,266 @@
 package square
 
 import (
+    "math/bits"
     "encoding/binary"
 )
 
 // Endianness option
 const littleEndian bool = false
 
-func bytesToUint16s(b []byte) []uint16 {
-    size := len(b) / 2
-    dst := make([]uint16, size)
+func bytesToUint32s(b []byte) []uint32 {
+    size := len(b) / 4
+    dst := make([]uint32, size)
 
     for i := 0; i < size; i++ {
-        j := i * 2
+        j := i * 4
 
         if littleEndian {
-            dst[i] = binary.LittleEndian.Uint16(b[j:])
+            dst[i] = binary.LittleEndian.Uint32(b[j:])
         } else {
-            dst[i] = binary.BigEndian.Uint16(b[j:])
+            dst[i] = binary.BigEndian.Uint32(b[j:])
         }
     }
 
     return dst
 }
 
-func uint16sToBytes(w []uint16) []byte {
-    size := len(w) * 2
+func uint32sToBytes(w []uint32) []byte {
+    size := len(w) * 4
     dst := make([]byte, size)
 
     for i := 0; i < len(w); i++ {
-        j := i * 2
+        j := i * 4
 
         if littleEndian {
-            binary.LittleEndian.PutUint16(dst[j:], w[i])
+            binary.LittleEndian.PutUint32(dst[j:], w[i])
         } else {
-            binary.BigEndian.PutUint16(dst[j:], w[i])
+            binary.BigEndian.PutUint32(dst[j:], w[i])
         }
     }
 
     return dst
 }
 
-func bytesToUint16(inp []byte) (blk uint16) {
+func bytesToUint32(inp []byte) (blk uint32) {
     if littleEndian {
-        blk = binary.LittleEndian.Uint16(inp[0:])
+        blk = binary.LittleEndian.Uint32(inp[0:])
     } else {
-        blk = binary.BigEndian.Uint16(inp[0:])
+        blk = binary.BigEndian.Uint32(inp[0:])
     }
 
     return
 }
 
-func uint16ToBytes(blk uint16) [2]byte {
-    var sav [2]byte
+func uint32ToBytes(blk uint32) [4]byte {
+    var sav [4]byte
 
     if littleEndian {
-        binary.LittleEndian.PutUint16(sav[0:], blk)
+        binary.LittleEndian.PutUint32(sav[0:], blk)
     } else {
-        binary.BigEndian.PutUint16(sav[0:], blk)
+        binary.BigEndian.PutUint32(sav[0:], blk)
     }
 
     return sav
 }
 
-const R = 8		 /* number of rounds	  */
-const ROOT = 0x1f5	 /* polynomial for generating GF(2^8) */
+const R = 8 /* number of rounds	  */
 
-var S_GAMMA = [0x100]uint16{
-    0xb1,0xce,0xc3,0x95,0x5a,0xad,0xe7,0x02,0x4d,0x44,0xfb,0x91,0x0c,0x87,0xa1,0x50,
-    0xcb,0x67,0x54,0xdd,0x46,0x8f,0xe1,0x4e,0xf0,0xfd,0xfc,0xeb,0xf9,0xc4,0x1a,0x6e,
-    0x5e,0xf5,0xcc,0x8d,0x1c,0x56,0x43,0xfe,0x07,0x61,0xf8,0x75,0x59,0xff,0x03,0x22,
-    0x8a,0xd1,0x13,0xee,0x88,0x00,0x0e,0x34,0x15,0x80,0x94,0xe3,0xed,0xb5,0x53,0x23,
-    0x4b,0x47,0x17,0xa7,0x90,0x35,0xab,0xd8,0xb8,0xdf,0x4f,0x57,0x9a,0x92,0xdb,0x1b,
-    0x3c,0xc8,0x99,0x04,0x8e,0xe0,0xd7,0x7d,0x85,0xbb,0x40,0x2c,0x3a,0x45,0xf1,0x42,
-    0x65,0x20,0x41,0x18,0x72,0x25,0x93,0x70,0x36,0x05,0xf2,0x0b,0xa3,0x79,0xec,0x08,
-    0x27,0x31,0x32,0xb6,0x7c,0xb0,0x0a,0x73,0x5b,0x7b,0xb7,0x81,0xd2,0x0d,0x6a,0x26,
-    0x9e,0x58,0x9c,0x83,0x74,0xb3,0xac,0x30,0x7a,0x69,0x77,0x0f,0xae,0x21,0xde,0xd0,
-    0x2e,0x97,0x10,0xa4,0x98,0xa8,0xd4,0x68,0x2d,0x62,0x29,0x6d,0x16,0x49,0x76,0xc7,
-    0xe8,0xc1,0x96,0x37,0xe5,0xca,0xf4,0xe9,0x63,0x12,0xc2,0xa6,0x14,0xbc,0xd3,0x28,
-    0xaf,0x2f,0xe6,0x24,0x52,0xc6,0xa0,0x09,0xbd,0x8c,0xcf,0x5d,0x11,0x5f,0x01,0xc5,
-    0x9f,0x3d,0xa2,0x9b,0xc9,0x3b,0xbe,0x51,0x19,0x1f,0x3f,0x5c,0xb2,0xef,0x4a,0xcd,
-    0xbf,0xba,0x6f,0x64,0xd9,0xf3,0x3e,0xb4,0xaa,0xdc,0xd5,0x06,0xc0,0x7e,0xf6,0x66,
-    0x6c,0x84,0x71,0x38,0xb9,0x1d,0x7f,0x9d,0x48,0x8b,0x2a,0xda,0xa5,0x33,0x82,0x39,
-    0xd6,0x78,0x86,0xfa,0xe4,0x2b,0xa9,0x1e,0x89,0x60,0x6b,0xea,0x55,0x4c,0xf7,0xe2,
+func ROTL(x, n uint32) uint32 {
+    return bits.RotateLeft32(x, int(n))
 }
 
-func xtime(x uint16) uint16 {
-    /* multiply with 2 in the Galois Field
-    */
-    x <<= 1
+func ROTR(x, n uint32) uint32 {
+    return ROTL(x, 32 - n);
+}
 
-    if (x & 0x100) != 0 {
-        x ^= ROOT
+func GETB0(x uint32) byte {
+    return byte(x >> 24)
+}
+func GETB1(x uint32) byte {
+    return byte(x >> 16)
+}
+func GETB2(x uint32) byte {
+    return byte(x >> 8)
+}
+func GETB3(x uint32) byte {
+    return byte(x)
+}
+
+func PUTB0(x byte) uint32 {
+    return uint32(x) << 24
+}
+func PUTB1(x byte) uint32 {
+    return uint32(x) << 16
+}
+func PUTB2(x byte) uint32 {
+    return uint32(x) << 8
+}
+func PUTB3(x byte) uint32 {
+    return uint32(x)
+}
+
+func PSI_ROTL(x, s uint32) uint32 {
+    return ROTL(x, s)
+}
+
+func PSI_ROTR(x, s uint32) uint32 {
+    return ROTR(x, s)
+}
+
+func squareTransform(roundKey *[4]uint32) {
+    roundKey[0] = phi[GETB0(roundKey[0])] ^
+        PSI_ROTR(phi[GETB1(roundKey[0])],  8) ^
+        PSI_ROTR(phi[GETB2(roundKey[0])], 16) ^
+        PSI_ROTR(phi[GETB3(roundKey[0])], 24);
+    roundKey[1] = phi[GETB0(roundKey[1])] ^
+        PSI_ROTR(phi[GETB1(roundKey[1])],  8) ^
+        PSI_ROTR(phi[GETB2(roundKey[1])], 16) ^
+        PSI_ROTR(phi[GETB3(roundKey[1])], 24);
+    roundKey[2] = phi[GETB0(roundKey[2])] ^
+        PSI_ROTR(phi[GETB1(roundKey[2])],  8) ^
+        PSI_ROTR(phi[GETB2(roundKey[2])], 16) ^
+        PSI_ROTR(phi[GETB3(roundKey[2])], 24);
+    roundKey[3] = phi[GETB0(roundKey[3])] ^
+        PSI_ROTR(phi[GETB1(roundKey[3])],  8) ^
+        PSI_ROTR(phi[GETB2(roundKey[3])], 16) ^
+        PSI_ROTR(phi[GETB3(roundKey[3])], 24);
+}
+
+func squareGenerateRoundKeys(
+    key [4]uint32,
+    roundKeys_e *[R+1][4]uint32,
+    roundKeys_d *[R+1][4]uint32,
+) {
+    var t int
+
+    copy(roundKeys_e[0][:], key[:])
+
+    for t = 1; t < R+1; t++ {
+        /* apply the key evolution function: */
+        roundKeys_e[t][0] = roundKeys_e[t-1][0] ^ PSI_ROTL(roundKeys_e[t-1][3], 8) ^ offset[t-1]
+        roundKeys_d[R-t][0] = roundKeys_e[t][0]
+
+        roundKeys_e[t][1] = roundKeys_e[t-1][1] ^ roundKeys_e[t][0]
+        roundKeys_d[R-t][1] = roundKeys_e[t][1]
+
+        roundKeys_e[t][2] = roundKeys_e[t-1][2] ^ roundKeys_e[t][1]
+        roundKeys_d[R-t][2] = roundKeys_e[t][2]
+
+        roundKeys_e[t][3] = roundKeys_e[t-1][3] ^ roundKeys_e[t][2]
+        roundKeys_d[R-t][3] = roundKeys_e[t][3]
+
+        /* apply the theta diffusion function: */
+        squareTransform(&roundKeys_e[t-1])
     }
 
-    return x;
+    copy(roundKeys_d[R][:], roundKeys_e[0][:])
 }
 
-func theta(a [16]uint16) {
-    var i, j int32
-    var b [16]uint16
+func squareExpandKey(key [4]uint32, roundKeys_e *[R+1][4]uint32) {
+    var t int
 
-    for i = 0; i < 4; i++ {
-        for j = 0; j < 4; j++ {
-            b[4*i+j]  = xtime(a[4*i +   j])
-            b[4*i+j] ^=	a[4*i + ((j+1)%4)]
-            b[4*i+j] ^= xtime(a[4*i + ((j+1)%4)])
-            b[4*i+j] ^=	a[4*i + ((j+2)%4)]
-            b[4*i+j] ^=	a[4*i + ((j+3)%4)]
-        }
-    }
+    copy(roundKeys_e[0][:], key[:])
 
-    for j = 0; j < 16; j++ {
-        a[j] = b[j]
+    for t = 1; t < R+1; t++ {
+        /* apply the key evolution function: */
+        roundKeys_e[t][0] = roundKeys_e[t-1][0] ^ PSI_ROTL(roundKeys_e[t-1][3], 8) ^ offset[t-1]
+        roundKeys_e[t][1] = roundKeys_e[t-1][1] ^ roundKeys_e[t][0]
+        roundKeys_e[t][2] = roundKeys_e[t-1][2] ^ roundKeys_e[t][1]
+        roundKeys_e[t][3] = roundKeys_e[t-1][3] ^ roundKeys_e[t][2]
+
+        /* apply the theta diffusion function: */
+        squareTransform(&roundKeys_e[t-1])
     }
 }
 
-func gamma(a [16]uint16) {
-    var i int32
-
-    for i = 0; i < 16; i++ {
-        a[i] = S_GAMMA[uint8(a[i])]
-    }
+func squareRound(text [4]uint32, temp *[4]uint32, T0, T1, T2, T3 [256]uint32, roundKey [4]uint32) {
+    temp[0] = T0[GETB0(text[0])] ^
+            T1[GETB0(text[1])] ^
+            T2[GETB0(text[2])] ^
+            T3[GETB0(text[3])] ^
+            roundKey[0];
+    temp[1] = T0[GETB1(text[0])] ^
+            T1[GETB1(text[1])] ^
+            T2[GETB1(text[2])] ^
+            T3[GETB1(text[3])] ^
+            roundKey[1];
+    temp[2] = T0[GETB2(text[0])] ^
+            T1[GETB2(text[1])] ^
+            T2[GETB2(text[2])] ^
+            T3[GETB2(text[3])] ^
+            roundKey[2];
+    temp[3] = T0[GETB3(text[0])] ^
+            T1[GETB3(text[1])] ^
+            T2[GETB3(text[2])] ^
+            T3[GETB3(text[3])] ^
+            roundKey[3];
 }
 
-func pi(a [16]uint16) {
-    var tmp uint16
-
-    tmp = a[1]
-    a[1] = a[4]
-    a[4] = tmp
-
-    tmp = a[2]
-    a[2] = a[8]
-    a[8] = tmp
-
-    tmp = a[6]
-    a[6] = a[9]
-    a[9] = tmp
-
-    tmp = a[3]
-    a[3] = a[0xC]
-    a[0xC] = tmp
-
-    tmp = a[7]
-    a[7] = a[0xD]
-    a[0xD] = tmp
-
-    tmp = a[0xB]
-    a[0xB] = a[0xE]
-    a[0xE] = tmp
+func squareFinal(text *[4]uint32, temp [4]uint32, S [256]byte, roundKey [4]uint32) {
+    text[0] = PUTB0(S[GETB0(temp[0])]) ^
+            PUTB1(S[GETB0(temp[1])]) ^
+            PUTB2(S[GETB0(temp[2])]) ^
+            PUTB3(S[GETB0(temp[3])]) ^
+            roundKey[0];
+    text[1] = PUTB0(S[GETB1(temp[0])]) ^
+            PUTB1(S[GETB1(temp[1])]) ^
+            PUTB2(S[GETB1(temp[2])]) ^
+            PUTB3(S[GETB1(temp[3])]) ^
+            roundKey[1];
+    text[2] = PUTB0(S[GETB2(temp[0])]) ^
+            PUTB1(S[GETB2(temp[1])]) ^
+            PUTB2(S[GETB2(temp[2])]) ^
+            PUTB3(S[GETB2(temp[3])]) ^
+            roundKey[2];
+    text[3] = PUTB0(S[GETB3(temp[0])]) ^
+            PUTB1(S[GETB3(temp[1])]) ^
+            PUTB2(S[GETB3(temp[2])]) ^
+            PUTB3(S[GETB3(temp[3])]) ^
+            roundKey[3];
 }
 
-func sigma(a [16]uint16, rk [16]uint16) {
-    var i int32
+func squareEncrypt(text *[4]uint32, roundKeys [R+1][4]uint32) {
+    var temp [4]uint32
 
-    for i = 0; i < 16; i++ {
-        a[i] ^= rk[i]
-    }
+    /* initial key addition */
+    text[0] ^= roundKeys[0][0]
+    text[1] ^= roundKeys[0][1]
+    text[2] ^= roundKeys[0][2]
+    text[3] ^= roundKeys[0][3]
+
+    /* R - 1 full rounds */
+    squareRound(*text, &temp, Te0, Te1, Te2, Te3, roundKeys[1])
+    squareRound(temp, text, Te0, Te1, Te2, Te3, roundKeys[2])
+    squareRound(*text, &temp, Te0, Te1, Te2, Te3, roundKeys[3])
+    squareRound(temp, text, Te0, Te1, Te2, Te3, roundKeys[4])
+    squareRound(*text, &temp, Te0, Te1, Te2, Te3, roundKeys[5])
+    squareRound(temp, text, Te0, Te1, Te2, Te3, roundKeys[6])
+    squareRound(*text, &temp, Te0, Te1, Te2, Te3, roundKeys[7])
+
+    /* last round(diffusion becomes only transposition) */
+    squareFinal(text, temp, Se, roundKeys[R])
 }
 
-func keysched(rk [16]uint16, prcon *uint16) {
-    var tmp uint16
+func squareDecrypt(text *[4]uint32, roundKeys [R+1][4]uint32) {
+    var temp [4]uint32
 
-    tmp = rk[0xC]
+    /* initial key addition */
+    text[0] ^= roundKeys[0][0]
+    text[1] ^= roundKeys[0][1]
+    text[2] ^= roundKeys[0][2]
+    text[3] ^= roundKeys[0][3]
 
-    rk[0] ^= *prcon
-    rk[0] ^= rk[0xD]
-    rk[4] ^= rk[0]
-    rk[8] ^= rk[4]
-    rk[0xC] ^= rk[8]
+    /* R - 1 full rounds */
+    squareRound(*text, &temp, Td0, Td1, Td2, Td3, roundKeys[1])
+    squareRound(temp, text, Td0, Td1, Td2, Td3, roundKeys[2])
+    squareRound(*text, &temp, Td0, Td1, Td2, Td3, roundKeys[3])
+    squareRound(temp, text, Td0, Td1, Td2, Td3, roundKeys[4])
+    squareRound(*text, &temp, Td0, Td1, Td2, Td3, roundKeys[5])
+    squareRound(temp, text, Td0, Td1, Td2, Td3, roundKeys[6])
+    squareRound(*text, &temp, Td0, Td1, Td2, Td3, roundKeys[7])
 
-    rk[1] ^= rk[0xE]
-    rk[5] ^= rk[1]
-    rk[9] ^= rk[5]
-    rk[0xD] ^= rk[9]
-
-    rk[2] ^= rk[0xF]
-    rk[6] ^= rk[2]
-    rk[0xA] ^= rk[6]
-    rk[0xE] ^= rk[0xA]
-
-    rk[3] ^= tmp
-    rk[7] ^= rk[3]
-    rk[0xB] ^= rk[7]
-    rk[0xF] ^= rk[0xB]
-
-    *prcon = xtime(*prcon)
+    /* last round(diffusion becomes only transposition) */
+    squareFinal(text, temp, Sd, roundKeys[R])
 }
+

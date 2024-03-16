@@ -1,7 +1,10 @@
 package crypto
 
 import (
+    "fmt"
     "testing"
+    "crypto/md5"
+    "encoding/hex"
     "encoding/base64"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
@@ -1449,8 +1452,8 @@ func Test_Square(t *testing.T) {
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12dfertf12dfertf12").
+        SetKey("dfertf12dfertf12").
+        SetIv("dertf1d2fgtyf12d").
         Square().
         CBC().
         PKCS7Padding().
@@ -1460,8 +1463,8 @@ func Test_Square(t *testing.T) {
     assertError(cypt.Error(), "Square-Encode")
 
     cyptde := FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12dfertf12dfertf12").
+        SetKey("dfertf12dfertf12").
+        SetIv("dertf1d2fgtyf12d").
         Square().
         CBC().
         PKCS7Padding().
@@ -2464,4 +2467,42 @@ func Test_Misty1PKCS7Padding(t *testing.T) {
     assertError(cyptde.Error(), "Test_Misty1PKCS7Padding-Decode")
 
     assert(cyptdeStr, data, "Test_Misty1PKCS7Padding-res")
+}
+
+func Test_Rijndael256NoPadding_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    uid := "m2Ux0QezsImyNFdtDzYUBWuPf7Ir2AEwJP5l"
+    str := "3365616430336134313637303438356562633734666333666136303361343062d9ac29251ae9a36ddb67f8f2ad55eea477239b4d53150feec4a01275d0b1f8b65ffc2f77774eb1203e26050d0f47273b0c35d663da0fa6ddb32b3e0f20cade3204d8f732a74f509c43251c088c523c79c87d02a91cfbc0ca0ff64e8c2e7fb4f6300c584ae84f7de531213747cd3ea50c3f3fa9fc430e784daab2f9777796b0c2"
+
+    data, _ := hex.DecodeString(str)
+
+    keyOld := uid + "xBre2!@348*|AdedFjsDWy01"
+
+    iv := data[:32]
+    data = data[32:]
+
+    keyOldMd5 := md5.Sum([]byte(keyOld))
+    key := hex.EncodeToString(keyOldMd5[:])
+
+    // iv = 3ead03a41670485ebc74fc3fa603a40b
+    // key[:16] = 87de18b595fe6d43
+    // hex(data) = d9ac29251ae9a36ddb67f8f2ad55eea477239b4d53150feec4a01275d0b1f8b65ffc2f77774eb1203e26050d0f47273b0c35d663da0fa6ddb32b3e0f20cade3204d8f732a74f509c43251c088c523c79c87d02a91cfbc0ca0ff64e8c2e7fb4f6300c584ae84f7de531213747cd3ea50c3f3fa9fc430e784daab2f9777796b0c2
+
+    cyptde := FromBytes(data).
+        SetKey(key[:16]).
+        WithIv(iv).
+        Rijndael256().
+        CBC().
+        NoPadding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Rijndael256NoPadding_Check-Decode")
+
+    // 解密结果: ok ok Request:59ded5eecc800830975a4a1159933981 Hardware:803BB1A8-FFFFA277 License-Type:Demo Multi-Tenant:20 CAL:1000
+    check := "6f6b0d0a6f6b0d0a526571756573743a35396465643565656363383030383330393735613461313135393933333938310d0a48617264776172653a38303342423141382d46464646413237370d0a4c6963656e73652d547970653a44656d6f0d0a4d756c74692d54656e616e743a32300d0a43414c3a313030300d0a00000000"
+
+    assert(fmt.Sprintf("%x", cyptdeStr), check, "Test_Rijndael256NoPadding_Check-res")
 }

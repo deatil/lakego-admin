@@ -35,14 +35,10 @@ func NewCipher(key []byte) (cipher.Block, error) {
         return nil, KeySizeError(l)
     }
 
-    cipher := &ideaCipher{}
+    c := &ideaCipher{}
+    c.expandKey(key)
 
-    expandKey(key, cipher.ek[:])
-
-    // key inversion is expensive, we could do this lazily
-    invertKey(cipher.ek[:], cipher.dk[:])
-
-    return cipher, nil
+    return c, nil
 }
 
 func (c *ideaCipher) BlockSize() int {
@@ -81,76 +77,30 @@ func (c *ideaCipher) Decrypt(dst, src []byte) {
     crypt(src, dst, c.dk[:])
 }
 
-// mulInv computes the multiplicative inverse of x mod 2^16+1
-func mulInv(x uint16) (ret uint16) {
-    if x <= 1 {
-        return x // 0 and 1 are self-inverse
-    }
-
-    t1 := uint16(0x10001 / uint32(x)) // Since x >= 2, this fits into 16 bits
-    y := uint16(0x10001 % uint32(x))
-
-    if y == 1 {
-        return 1 - t1
-    }
-
-    var t0 uint16 = 1
-    var q uint16
-
-    for y != 1 {
-        q = x / y
-        x = x % y
-        t0 += q * t1
-        if x == 1 {
-            return t0
-        }
-        q = y / x
-        y = y % x
-        t1 += q * t0
-    }
-
-    return 1 - t1
-}
-
-// mul computes x*y mod 2^16+1
-func mul(x, y uint16) uint16 {
-    if y == 0 {
-        return 1 - x
-    }
-
-    if x == 0 {
-        return 1 - y
-    }
-
-    t32 := uint32(x) * uint32(y)
-    x = uint16(t32)
-    y = uint16(t32 >> 16)
-
-    if x < y {
-        return x - y + 1
-    }
-
-    return x - y
-}
-
 // expandKey computes encryption round-keys from a user-supplied key
-func expandKey(key []byte, EK []uint16) {
+func (c *ideaCipher) expandKey(key []byte) {
     var i, j int
+
+    EK := c.ek[:]
 
     for j = 0; j < 8; j++ {
         EK[j] = (uint16(key[0]) << 8) + uint16(key[1])
         key = key[2:]
     }
+
     for i = 0; j < keyLen; j++ {
         i++
         EK[i+7] = EK[i&7]<<9 | EK[(i+1)&7]>>7
         EK = EK[i&8:]
         i &= 7
     }
+
+    // key inversion is expensive, we could do this lazily
+    c.invertKey(c.ek[:], c.dk[:])
 }
 
 // invertKey computes the decryption round-keys from a set of encryption round-keys
-func invertKey(EK []uint16, DK []uint16) {
+func (c *ideaCipher) invertKey(EK []uint16, DK []uint16) {
     var t1, t2, t3 uint16
     var p [keyLen]uint16
     pidx := keyLen
@@ -222,6 +172,58 @@ func invertKey(EK []uint16, DK []uint16) {
     p[pidx] = t1
 
     copy(DK, p[:])
+}
+
+// mulInv computes the multiplicative inverse of x mod 2^16+1
+func mulInv(x uint16) (ret uint16) {
+    if x <= 1 {
+        return x // 0 and 1 are self-inverse
+    }
+
+    t1 := uint16(0x10001 / uint32(x)) // Since x >= 2, this fits into 16 bits
+    y := uint16(0x10001 % uint32(x))
+
+    if y == 1 {
+        return 1 - t1
+    }
+
+    var t0 uint16 = 1
+    var q uint16
+
+    for y != 1 {
+        q = x / y
+        x = x % y
+        t0 += q * t1
+        if x == 1 {
+            return t0
+        }
+        q = y / x
+        y = y % x
+        t1 += q * t0
+    }
+
+    return 1 - t1
+}
+
+// mul computes x*y mod 2^16+1
+func mul(x, y uint16) uint16 {
+    if y == 0 {
+        return 1 - x
+    }
+
+    if x == 0 {
+        return 1 - y
+    }
+
+    t32 := uint32(x) * uint32(y)
+    x = uint16(t32)
+    y = uint16(t32 >> 16)
+
+    if x < y {
+        return x - y + 1
+    }
+
+    return x - y
 }
 
 // crypt performs IDEA encryption given input/output buffers and a set of round-keys

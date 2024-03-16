@@ -31,9 +31,7 @@ func NewCipher(key []byte, rounds int32) (cipher.Block, error) {
     }
 
     c := new(multi2Cipher)
-
-    in_key := bytesToUint32s(key)
-    c.expandKey(in_key, rounds)
+    c.expandKey(key, rounds)
 
     return c, nil
 }
@@ -86,9 +84,11 @@ func (this *multi2Cipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *multi2Cipher) expandKey(in_key []uint32, num_rounds int32) {
+func (this *multi2Cipher) expandKey(key []byte, num_rounds int32) {
     var sk [8]uint32
     var dk [2]uint32
+
+    in_key := bytesToUint32s(key)
 
     this.N = num_rounds;
 

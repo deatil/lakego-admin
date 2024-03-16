@@ -30,10 +30,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
             return nil, KeySizeError(len(key))
     }
 
-    inKey := keyToUint32s(key)
-
     c := new(marsCipher)
-    c.key = expandKey(inKey, uint32(k) * 8)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -84,4 +82,11 @@ func (this *marsCipher) Decrypt(dst, src []byte) {
     decBytes := uint32sToBytes(decBlock)
 
     copy(dst, decBytes[:])
+}
+
+func (this *marsCipher) expandKey(key []byte) {
+    inKey := keyToUint32s(key)
+    k := len(key)
+
+    this.key = expandKey(inKey, uint32(k) * 8)
 }

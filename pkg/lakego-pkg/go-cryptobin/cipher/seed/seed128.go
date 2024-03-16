@@ -13,33 +13,10 @@ type seed128Cipher struct {
 }
 
 func newSeed128Cipher(key []byte) cipher.Block {
-    block := new(seed128Cipher)
+    c := new(seed128Cipher)
+    c.expandKey(key)
 
-    A := binary.BigEndian.Uint32(key[0:])
-    B := binary.BigEndian.Uint32(key[4:])
-    C := binary.BigEndian.Uint32(key[8:])
-    D := binary.BigEndian.Uint32(key[12:])
-
-    var T0, T1 uint32
-    for i := 0; i < 16; i++ {
-        T0 = A + C - kc[i]
-        T1 = B - D + kc[i]
-
-        block.pdwRoundKey[i*2+0] = g(T0)
-        block.pdwRoundKey[i*2+1] = g(T1)
-
-        if (i % 2) == 0 {
-            T0 = A
-            A = (A >> 8) ^ (B << 24)
-            B = (B >> 8) ^ (T0 << 24)
-        } else {
-            T0 = C
-            C = (C << 8) ^ (D >> 24)
-            D = (D << 8) ^ (T0 >> 24)
-        }
-    }
-
-    return block
+    return c
 }
 
 func (s *seed128Cipher) BlockSize() int {
@@ -76,6 +53,32 @@ func (s *seed128Cipher) Decrypt(dst, src []byte) {
     }
 
     s.decrypt(dst, src)
+}
+
+func (s *seed128Cipher) expandKey(key []byte) {
+    A := binary.BigEndian.Uint32(key[0:])
+    B := binary.BigEndian.Uint32(key[4:])
+    C := binary.BigEndian.Uint32(key[8:])
+    D := binary.BigEndian.Uint32(key[12:])
+
+    var T0, T1 uint32
+    for i := 0; i < 16; i++ {
+        T0 = A + C - kc[i]
+        T1 = B - D + kc[i]
+
+        s.pdwRoundKey[i*2+0] = g(T0)
+        s.pdwRoundKey[i*2+1] = g(T1)
+
+        if (i % 2) == 0 {
+            T0 = A
+            A = (A >> 8) ^ (B << 24)
+            B = (B >> 8) ^ (T0 << 24)
+        } else {
+            T0 = C
+            C = (C << 8) ^ (D >> 24)
+            D = (D << 8) ^ (T0 >> 24)
+        }
+    }
 }
 
 func (s *seed128Cipher) encrypt(dst, src []byte) {

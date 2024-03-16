@@ -320,7 +320,7 @@ func (this Cryptobin) Panama() Cryptobin {
 }
 
 // Square
-// The key argument should be 32 bytes.
+// The key argument should be 16 bytes.
 func (this Cryptobin) Square() Cryptobin {
     this.multiple = Square
 

@@ -39,10 +39,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     once.Do(initAll)
 
     c := new(e2Cipher)
-
-    in_key := bytesToUint32s(key)
-
-    c.expandKey(in_key, uint32(k) * 8)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -95,11 +92,14 @@ func (this *e2Cipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
-func (this *e2Cipher) expandKey(in_key []uint32, key_len uint32) {
+func (this *e2Cipher) expandKey(key []byte) {
     var lk [8]uint32
     var v [2]uint32
     var lout [8]uint32
     var i, j, k, w uint32
+
+    in_key := bytesToUint32s(key)
+    key_len := uint32(len(key)) * 8
 
     v[0] = bswap(v_0)
     v[1] = bswap(v_1)

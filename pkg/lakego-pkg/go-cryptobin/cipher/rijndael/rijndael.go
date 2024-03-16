@@ -217,18 +217,11 @@ func (this *rijndaelCipher) decrypt(dst, src []byte) {
 func (this *rijndaelCipher) expandKey128(key []byte, nk int32) {
     var nb int32 = 4
 
-    nk /= 4
-    if nk < 4 {
-        nk = 4
-    }
-
     this.expandKey(key, nb, nk)
 }
 
 func (this *rijndaelCipher) expandKey160(key []byte, nk int32) {
     var nb int32 = 5
-
-    nk /= 4
 
     this.expandKey(key, nb, nk)
 }
@@ -236,23 +229,17 @@ func (this *rijndaelCipher) expandKey160(key []byte, nk int32) {
 func (this *rijndaelCipher) expandKey192(key []byte, nk int32) {
     var nb int32 = 6
 
-    nk /= 4
-
     this.expandKey(key, nb, nk)
 }
 
 func (this *rijndaelCipher) expandKey224(key []byte, nk int32) {
     var nb int32 = 7
 
-    nk /= 4
-
     this.expandKey(key, nb, nk)
 }
 
 func (this *rijndaelCipher) expandKey256(key []byte, nk int32) {
     var nb int32 = 8
-
-    nk /= 4
 
     this.expandKey(key, nb, nk)
 }
@@ -265,6 +252,11 @@ func (this *rijndaelCipher) expandKey(key []byte, nb int32, nk int32) {
     var i, j, k, m, N int32
     var C1, C2, C3 int32
     var CipherKey [8]uint32
+
+    nk /= 4
+    if nk < 4 {
+        nk = 4
+    }
 
     this.Nb = nb /* block size */
     this.Nk = nk

@@ -1554,7 +1554,7 @@ func init() {
 
 // ===================
 
-// The key argument should be 32 bytes.
+// The key argument should be 16 bytes.
 type EncryptSquare struct {}
 
 // 加密 / Encrypt

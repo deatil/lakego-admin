@@ -36,24 +36,10 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
         return nil, invalidIVXLenErr
     }
 
-    var k [4]uint32
-    for i := range k {
-        k[i] = binary.LittleEndian.Uint32(key[i*4:])
-    }
+    c := new(rabbitCipher)
+    c.expandKey(key, iv)
 
-    var r rabbitCipher
-    r.setupKey(k[:])
-
-    if len(iv) != 0 {
-        var v [4]uint16
-        for i := range v {
-            v[i] = binary.LittleEndian.Uint16(iv[i*2:])
-        }
-
-        r.setupIV(v[:])
-    }
-
-    return &r, nil
+    return c, nil
 }
 
 // XORKeyStream read from src and perform xor on every elemnt of src and
@@ -65,6 +51,24 @@ func (r *rabbitCipher) XORKeyStream(dst, src []byte) {
         }
         dst[i] = src[i] ^ r.ks[0]
         r.ks = r.ks[1:]
+    }
+}
+
+func (r *rabbitCipher) expandKey(key, iv []byte) {
+    var k [4]uint32
+    for i := range k {
+        k[i] = binary.LittleEndian.Uint32(key[i*4:])
+    }
+
+    r.setupKey(k[:])
+
+    if len(iv) != 0 {
+        var v [4]uint16
+        for i := range v {
+            v[i] = binary.LittleEndian.Uint16(iv[i*2:])
+        }
+
+        r.setupIV(v[:])
     }
 }
 

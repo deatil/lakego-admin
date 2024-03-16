@@ -34,13 +34,11 @@ func NewCipher(key []byte) (cipher.Block, error) {
         case 16:
             break
         default:
-            return nil, KeySizeError(len(key))
+            return nil, KeySizeError(k)
     }
 
-    in_key := bytesToUint32s(key)
-
     c := new(wakeCipher)
-    c.expandKey(in_key[:])
+    c.expandKey(key)
 
     return c, nil
 }
@@ -177,9 +175,11 @@ var tt = [10]uint32{
     0x9ee27cf3,
 }
 
-func (this *wakeCipher) expandKey(key []uint32) {
+func (this *wakeCipher) expandKey(inkey []byte) {
     var x, z, p uint32
     var k [4]uint32
+
+    key := bytesToUint32s(inkey)
 
     k[0] = key[0]
     k[1] = key[1]

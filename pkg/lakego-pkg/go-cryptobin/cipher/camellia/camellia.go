@@ -64,100 +64,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
 
     once.Do(initAll)
 
-    var d1, d2 uint64
-
-    var kl [2]uint64
-    var kr [2]uint64
-    var ka [2]uint64
-    var kb [2]uint64
-
-    kl[0] = binary.BigEndian.Uint64(key[0:])
-    kl[1] = binary.BigEndian.Uint64(key[8:])
-
-    switch klen {
-        case 24:
-            kr[0] = binary.BigEndian.Uint64(key[16:])
-            kr[1] = ^kr[0]
-        case 32:
-            kr[0] = binary.BigEndian.Uint64(key[16:])
-            kr[1] = binary.BigEndian.Uint64(key[24:])
-    }
-
-    d1 = (kl[0] ^ kr[0])
-    d2 = (kl[1] ^ kr[1])
-
-    d2 = d2 ^ f(d1, sigma1)
-    d1 = d1 ^ f(d2, sigma2)
-
-    d1 = d1 ^ (kl[0])
-    d2 = d2 ^ (kl[1])
-    d2 = d2 ^ f(d1, sigma3)
-    d1 = d1 ^ f(d2, sigma4)
-    ka[0] = d1
-    ka[1] = d2
-    d1 = (ka[0] ^ kr[0])
-    d2 = (ka[1] ^ kr[1])
-    d2 = d2 ^ f(d1, sigma5)
-    d1 = d1 ^ f(d2, sigma6)
-    kb[0] = d1
-    kb[1] = d2
-
     c := new(camelliaCipher)
-
-    c.klen = klen
-
-    if klen == 16 {
-
-        c.kw[1], c.kw[2] = rotl128(kl, 0)
-
-        c.k[1], c.k[2] = rotl128(ka, 0)
-        c.k[3], c.k[4] = rotl128(kl, 15)
-        c.k[5], c.k[6] = rotl128(ka, 15)
-
-        c.ke[1], c.ke[2] = rotl128(ka, 30)
-
-        c.k[7], c.k[8] = rotl128(kl, 45)
-        c.k[9], _ = rotl128(ka, 45)
-        _, c.k[10] = rotl128(kl, 60)
-        c.k[11], c.k[12] = rotl128(ka, 60)
-
-        c.ke[3], c.ke[4] = rotl128(kl, 77)
-
-        c.k[13], c.k[14] = rotl128(kl, 94)
-        c.k[15], c.k[16] = rotl128(ka, 94)
-        c.k[17], c.k[18] = rotl128(kl, 111)
-
-        c.kw[3], c.kw[4] = rotl128(ka, 111)
-
-    } else {
-        // 24 or 32
-
-        c.kw[1], c.kw[2] = rotl128(kl, 0)
-
-        c.k[1], c.k[2] = rotl128(kb, 0)
-        c.k[3], c.k[4] = rotl128(kr, 15)
-        c.k[5], c.k[6] = rotl128(ka, 15)
-
-        c.ke[1], c.ke[2] = rotl128(kr, 30)
-
-        c.k[7], c.k[8] = rotl128(kb, 30)
-        c.k[9], c.k[10] = rotl128(kl, 45)
-        c.k[11], c.k[12] = rotl128(ka, 45)
-
-        c.ke[3], c.ke[4] = rotl128(kl, 60)
-
-        c.k[13], c.k[14] = rotl128(kr, 60)
-        c.k[15], c.k[16] = rotl128(kb, 60)
-        c.k[17], c.k[18] = rotl128(kl, 77)
-
-        c.ke[5], c.ke[6] = rotl128(ka, 77)
-
-        c.k[19], c.k[20] = rotl128(kr, 94)
-        c.k[21], c.k[22] = rotl128(ka, 94)
-        c.k[23], c.k[24] = rotl128(kl, 111)
-
-        c.kw[3], c.kw[4] = rotl128(kb, 111)
-    }
+    c.expandKey(key)
 
     return c, nil
 }
@@ -306,4 +214,101 @@ func (this *camelliaCipher) decrypt(dst, src []byte) {
 
     binary.BigEndian.PutUint64(dst[0:], d1)
     binary.BigEndian.PutUint64(dst[8:], d2)
+}
+
+func (this *camelliaCipher) expandKey(key []byte) {
+    var d1, d2 uint64
+
+    var kl [2]uint64
+    var kr [2]uint64
+    var ka [2]uint64
+    var kb [2]uint64
+
+    klen := len(key)
+
+    kl[0] = binary.BigEndian.Uint64(key[0:])
+    kl[1] = binary.BigEndian.Uint64(key[8:])
+
+    switch klen {
+        case 24:
+            kr[0] = binary.BigEndian.Uint64(key[16:])
+            kr[1] = ^kr[0]
+        case 32:
+            kr[0] = binary.BigEndian.Uint64(key[16:])
+            kr[1] = binary.BigEndian.Uint64(key[24:])
+    }
+
+    d1 = (kl[0] ^ kr[0])
+    d2 = (kl[1] ^ kr[1])
+
+    d2 = d2 ^ f(d1, sigma1)
+    d1 = d1 ^ f(d2, sigma2)
+
+    d1 = d1 ^ (kl[0])
+    d2 = d2 ^ (kl[1])
+    d2 = d2 ^ f(d1, sigma3)
+    d1 = d1 ^ f(d2, sigma4)
+    ka[0] = d1
+    ka[1] = d2
+    d1 = (ka[0] ^ kr[0])
+    d2 = (ka[1] ^ kr[1])
+    d2 = d2 ^ f(d1, sigma5)
+    d1 = d1 ^ f(d2, sigma6)
+    kb[0] = d1
+    kb[1] = d2
+
+    this.klen = klen
+
+    if klen == 16 {
+
+        this.kw[1], this.kw[2] = rotl128(kl, 0)
+
+        this.k[1], this.k[2] = rotl128(ka, 0)
+        this.k[3], this.k[4] = rotl128(kl, 15)
+        this.k[5], this.k[6] = rotl128(ka, 15)
+
+        this.ke[1], this.ke[2] = rotl128(ka, 30)
+
+        this.k[7], this.k[8] = rotl128(kl, 45)
+        this.k[9], _ = rotl128(ka, 45)
+        _, this.k[10] = rotl128(kl, 60)
+        this.k[11], this.k[12] = rotl128(ka, 60)
+
+        this.ke[3], this.ke[4] = rotl128(kl, 77)
+
+        this.k[13], this.k[14] = rotl128(kl, 94)
+        this.k[15], this.k[16] = rotl128(ka, 94)
+        this.k[17], this.k[18] = rotl128(kl, 111)
+
+        this.kw[3], this.kw[4] = rotl128(ka, 111)
+
+    } else {
+        // 24 or 32
+
+        this.kw[1], this.kw[2] = rotl128(kl, 0)
+
+        this.k[1], this.k[2] = rotl128(kb, 0)
+        this.k[3], this.k[4] = rotl128(kr, 15)
+        this.k[5], this.k[6] = rotl128(ka, 15)
+
+        this.ke[1], this.ke[2] = rotl128(kr, 30)
+
+        this.k[7], this.k[8] = rotl128(kb, 30)
+        this.k[9], this.k[10] = rotl128(kl, 45)
+        this.k[11], this.k[12] = rotl128(ka, 45)
+
+        this.ke[3], this.ke[4] = rotl128(kl, 60)
+
+        this.k[13], this.k[14] = rotl128(kr, 60)
+        this.k[15], this.k[16] = rotl128(kb, 60)
+        this.k[17], this.k[18] = rotl128(kl, 77)
+
+        this.ke[5], this.ke[6] = rotl128(ka, 77)
+
+        this.k[19], this.k[20] = rotl128(kr, 94)
+        this.k[21], this.k[22] = rotl128(ka, 94)
+        this.k[23], this.k[24] = rotl128(kl, 111)
+
+        this.kw[3], this.kw[4] = rotl128(kb, 111)
+    }
 }

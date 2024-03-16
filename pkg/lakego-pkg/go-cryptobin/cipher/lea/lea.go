@@ -24,8 +24,6 @@ type leaCipher struct {
 // The key argument should be the LEA key,
 // either 16, 24, or 32 bytes to select LEA-128, LEA-192, or LEA-256.
 func NewCipher(key []byte) (cipher.Block, error) {
-    c := new(leaCipher)
-
     k := len(key)
     switch k {
         case 16, 24, 32:
@@ -34,8 +32,8 @@ func NewCipher(key []byte) (cipher.Block, error) {
             return nil, KeySizeError(k)
     }
 
-    MemsetUint32(c.rk[:], 0)
-    c.round = uint8(expandKey(c.rk[:], key))
+    c := new(leaCipher)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -312,8 +310,10 @@ func (this *leaCipher) decrypt(dst, src []byte) {
     copy(dst, dstBytes[:])
 }
 
-func expandKey(rk []uint32, key []byte) int {
+func (this *leaCipher) expandKey(key []byte) {
     keyLen := len(key)
+
+    rk := this.rk[:]
 
     switch keyLen {
         case 16:
@@ -808,5 +808,5 @@ func expandKey(rk []uint32, key []byte) int {
             rk[191] = rotl32(rk[183]+delta[7][4], 17)
     }
 
-    return (keyLen >> 1) + 16
+    this.round = uint8((keyLen >> 1) + 16)
 }
