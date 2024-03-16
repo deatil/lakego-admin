@@ -8,7 +8,7 @@ import (
     "encoding/hex"
 )
 
-func Test_Lea_Key16(t *testing.T) {
+func Test_Key16(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -41,7 +41,7 @@ func Test_Lea_Key16(t *testing.T) {
     }
 }
 
-func Test_Lea_Key24(t *testing.T) {
+func Test_Key24(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -74,7 +74,7 @@ func Test_Lea_Key24(t *testing.T) {
     }
 }
 
-func Test_Lea_Key32(t *testing.T) {
+func Test_Key32(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
