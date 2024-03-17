@@ -1,9 +1,9 @@
 package makwa
 
 import (
+    "fmt"
     "bytes"
     "errors"
-    "fmt"
     "strconv"
 )
 

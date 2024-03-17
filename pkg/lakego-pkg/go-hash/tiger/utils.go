@@ -1,7 +1,5 @@
 package tiger
 
-var littleEndian bool = true
-
 func round(a, b, c, x, mul uint64) (uint64, uint64, uint64) {
     c ^= x
 

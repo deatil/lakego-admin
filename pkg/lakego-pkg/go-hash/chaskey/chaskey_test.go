@@ -147,17 +147,23 @@ func testVectors(t *testing.T, rounds int, vectors *[64][4]uint32) {
     var m [64]byte
     k := [4]uint32{0x833D3433, 0x009F389F, 0x2398E64F, 0x417ACF39}
 
-    var tag [16]byte
+    var key [16]byte
+    binary.LittleEndian.PutUint32(key[0:], k[0])
+    binary.LittleEndian.PutUint32(key[4:], k[1])
+    binary.LittleEndian.PutUint32(key[8:], k[2])
+    binary.LittleEndian.PutUint32(key[12:], k[3])
 
-    h := newH(k, rounds)
+    var tag []byte
 
     for i := 0; i < 64; i++ {
         m[i] = byte(i)
 
-        h.MAC(m[:i], tag[:])
+        h, _ := newDigest(key[:], rounds)
+        h.Write(m[:i])
+        tag = h.Sum(nil)
 
         t32 := [4]uint32{
-            binary.LittleEndian.Uint32(tag[:]),
+            binary.LittleEndian.Uint32(tag[0:]),
             binary.LittleEndian.Uint32(tag[4:]),
             binary.LittleEndian.Uint32(tag[8:]),
             binary.LittleEndian.Uint32(tag[12:]),
@@ -168,27 +174,3 @@ func testVectors(t *testing.T, rounds int, vectors *[64][4]uint32) {
         }
     }
 }
-
-func benchmarkChaskey(b *testing.B, size int) {
-
-    buf := make([]byte, size)
-
-    var k H
-
-    k.r = 8
-
-    b.SetBytes(int64(size))
-
-    var t [16]byte
-
-    for i := 0; i < b.N; i++ {
-        k.MAC(buf, t[:])
-    }
-}
-
-func BenchmarkChaskey16(b *testing.B)   { benchmarkChaskey(b, 16) }
-func BenchmarkChaskey32(b *testing.B)   { benchmarkChaskey(b, 32) }
-func BenchmarkChaskey64(b *testing.B)   { benchmarkChaskey(b, 64) }
-func BenchmarkChaskey512(b *testing.B)  { benchmarkChaskey(b, 512) }
-func BenchmarkChaskey1024(b *testing.B) { benchmarkChaskey(b, 1024) }
-func BenchmarkChaskey2048(b *testing.B) { benchmarkChaskey(b, 2048) }

@@ -8,6 +8,11 @@ import (
 // The size of a Tiger hash value in bytes
 const Size = 24
 
+// The size list of a Tiger hash value in bytes
+const Size128 = 16
+const Size160 = 20
+const Size192 = 24
+
 // The blocksize of Tiger hash function in bytes
 const BlockSize = 64
 
@@ -134,6 +139,8 @@ func (this *digest) checkSum() []byte {
 
     return tmp[:24]
 }
+
+var littleEndian bool = true
 
 func (this *digest) compress(data []byte) {
     a := this.a
