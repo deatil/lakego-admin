@@ -33,7 +33,6 @@ func (x *gcfb) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/gcfb: output smaller than input")
     }
-
     if alias.InexactOverlap(dst[:len(src)], src) {
         panic("cryptobin/gcfb: invalid buffer overlap")
     }

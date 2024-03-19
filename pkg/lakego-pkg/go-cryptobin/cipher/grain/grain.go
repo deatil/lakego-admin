@@ -80,11 +80,11 @@ func (s *stream) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/grain: output smaller than input")
     }
-
-    dst = dst[:len(src)]
-    if alias.InexactOverlap(dst, src) {
+    if alias.InexactOverlap(dst[:len(src)], src) {
         panic("cryptobin/grain: invalid buffer overlap")
     }
+
+    dst = dst[:len(src)]
 
     // Remaining key stream.
     const mask = 0xff00

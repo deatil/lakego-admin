@@ -14,10 +14,6 @@ type hashFunc struct {
     hasMsg        bool
 }
 
-func (s *hashFunc) BlockSize() int { return threefish.BlockSize1024 }
-
-func (s *hashFunc) Size() int { return s.hashsize }
-
 func (s *hashFunc) Reset() {
     for i := range s.block {
         s.block[i] = 0
@@ -29,6 +25,14 @@ func (s *hashFunc) Reset() {
 
     s.tweak[0] = 0
     s.tweak[1] = skein.CfgMessage<<56 | skein.FirstBlock
+}
+
+func (s *hashFunc) Size() int {
+    return s.hashsize
+}
+
+func (s *hashFunc) BlockSize() int {
+    return threefish.BlockSize1024
 }
 
 func (s *hashFunc) Write(p []byte) (n int, err error) {

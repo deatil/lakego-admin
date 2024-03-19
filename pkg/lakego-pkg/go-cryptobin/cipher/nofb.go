@@ -71,7 +71,6 @@ func (x *nofb) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/nofb: output smaller than input")
     }
-
     if alias.InexactOverlap(dst[:len(src)], src) {
         panic("cryptobin/nofb: invalid buffer overlap")
     }

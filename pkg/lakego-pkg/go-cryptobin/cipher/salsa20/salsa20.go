@@ -6,6 +6,8 @@ import (
     "encoding/binary"
 
     "golang.org/x/crypto/salsa20/salsa"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 type Cipher struct {
@@ -46,10 +48,16 @@ func NewCipherWithCounter(key, nonce []byte, counter uint64) (cipher.Stream, err
 }
 
 func (c *Cipher) XORKeyStream(dst, src []byte) {
-    if len(dst) < len(src) {
-        panic("cryptobin/salsa20: dst buffer is to small")
+    if len(src) == 0 {
+        return
     }
-
+    if len(dst) < len(src) {
+        panic("cryptobin/salsa20: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/salsa20: invalid buffer overlap")
+    }
+    
     paddingLength := int(c.counter % 64)
     buf := make([]byte, len(src)+paddingLength)
 

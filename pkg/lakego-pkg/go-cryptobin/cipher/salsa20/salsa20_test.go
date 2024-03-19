@@ -28,6 +28,10 @@ func Test_Salsa20(t *testing.T) {
 
         cipher1.XORKeyStream(encrypted[:], value)
 
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
+
         cipher2, err := NewCipher(key, nonce)
         if err != nil {
             t.Fatal(err.Error())

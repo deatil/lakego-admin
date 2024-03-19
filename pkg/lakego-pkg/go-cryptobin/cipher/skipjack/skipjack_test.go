@@ -25,6 +25,11 @@ func Test_Skipjack(t *testing.T) {
         }
 
         cipher.Encrypt(encrypted[:], value)
+
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
+
         cipher.Decrypt(decrypted[:], encrypted[:])
 
         if !bytes.Equal(decrypted[:], value[:]) {

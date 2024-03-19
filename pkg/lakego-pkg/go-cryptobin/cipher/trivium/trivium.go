@@ -3,6 +3,8 @@ package trivium
 import (
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 type KeySizeError int
@@ -41,9 +43,12 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
 
 func (this *triviumCipher) XORKeyStream(dst []byte, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/trivium: input not full block")
+        panic("cryptobin/trivium: output smaller than input")
     }
-
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/trivium: invalid buffer overlap")
+    }
+    
     var i int
     var ks uint8
 

@@ -2506,3 +2506,72 @@ func Test_Rijndael256NoPadding_Check(t *testing.T) {
 
     assert(fmt.Sprintf("%x", cyptdeStr), check, "Test_Rijndael256NoPadding_Check-res")
 }
+
+// https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html
+// 微信小程序 api AES256_GCM 加密测试
+func Test_Weapp_AES256_GCM_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    real_plaintext := `{"_n":"o89QaPVsRu1yppIZzvSZc4","_appid":"wxba6223c06417af7b","_timestamp":1635927954,"appid":"wxba6223c06417af7b","openid":"oEWzBfmdLqhFS2mTXCo2E4Y9gJAM","scene":0,"client_ip":"127.0.0.1"}`
+
+    local_sym_key := "otUpngOjU+nVQaWJIC3D/yMLV17RKaP6t4Ot9tbnzLY="
+    real_key, _ := base64.StdEncoding.DecodeString(local_sym_key)
+
+    iv := "fmW/zNxXlytUZBgj"
+    real_iv, _ := base64.StdEncoding.DecodeString(iv)
+
+    real_aad := "https://api.weixin.qq.com/wxa/getuserriskrank|wxba6223c06417af7b|1635927954|fa05fe1e5bcc79b81ad5ad4b58acf787"
+
+    authtag := "5qeM/2vZv+6KtScN94IpMg=="
+    real_authTag, _ := base64.StdEncoding.DecodeString(authtag)
+
+    cypt := FromString(real_plaintext).
+        WithKey(real_key).
+        Aes().
+        GCM(string(real_iv), real_aad).
+        Encrypt()
+    cyptStr := cypt.ToBytes()
+
+    assertError(cypt.Error(), "Test_Weapp_AES256_GCM_Check-Decode")
+
+    check := "0IDVdrPtSPF/Oe2CTXCV2vVNPbVJdJlP2WaTMQnoYLh5iCrrSNfQFh25EnStDMf0hLlVNBCZQtf9NaV0m4aRA4AAYIO7oR/Ge+4yY4EmZp5EVPB42xjScgMx5X3D4VdLCfynXIUKUtZHZvk1zmLVE3RauzJgiM1BB1CPmwcENo3MTJ0z8Vfkf5tMv54kOXobDLlV5rfqKdAX7gM/rP82DgZdt9vvZX44ipdbHIjJvw83ZXAFtvftdVw2Qd8="
+    real_check, _ := base64.StdEncoding.DecodeString(check)
+    real_check = append(real_check, real_authTag...)
+
+    assert(fmt.Sprintf("%x", cyptStr), fmt.Sprintf("%x", real_check), "Test_Weapp_AES256_GCM_Check-res")
+}
+
+// 微信小程序 api AES256_GCM 解密测试
+func Test_Weapp_AES256_GCM_Check2(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    ct := `HExs66Ik3el+iM4IpeQ7SMEN934FRLFYOd3EmeaIrpP4EPTHckoco6O+PaoRZRa3lqaPRZT7r52f7LUok6gLxc6cdR8C4vpIIfh4xfLC4L7FNy9GbuMK1hcoi8b7gkWJcwZMkuCFNEDmqn3T49oWzAQOrY4LZnnnykv6oUJotdAsnKvmoJkLK7hRh7M2B1d2UnTnRuoIyarXc5Iojwoghx4BOvnV`
+    real_ct, _ := base64.StdEncoding.DecodeString(ct)
+
+    local_sym_key := "otUpngOjU+nVQaWJIC3D/yMLV17RKaP6t4Ot9tbnzLY="
+    real_key, _ := base64.StdEncoding.DecodeString(local_sym_key)
+
+    iv := "r2WDQt56rEAmMuoR"
+    real_iv, _ := base64.StdEncoding.DecodeString(iv)
+
+    real_aad := "https://api.weixin.qq.com/wxa/getuserriskrank|wxba6223c06417af7b|1635927956|fa05fe1e5bcc79b81ad5ad4b58acf787"
+
+    authtag := "z2BFD8QctKXTuBlhICGOjQ=="
+    real_authTag, _ := base64.StdEncoding.DecodeString(authtag)
+
+    real_ct = append(real_ct, real_authTag...)
+
+    cypt := FromBytes(real_ct).
+        WithKey(real_key).
+        Aes().
+        GCM(string(real_iv), real_aad).
+        Decrypt()
+    cyptStr := cypt.ToString()
+
+    assertError(cypt.Error(), "Test_Weapp_AES256_GCM_Check-Decode")
+
+    check := `{"_n":"ShYZpqdVgY+yQVAxNSWhYg","_appid":"wxba6223c06417af7b","_timestamp":1635927956,"errcode":0,"errmsg":"getuserriskrank succ","risk_rank":0,"unoin_id":2258658297}`
+    assert(cyptStr, check, "Test_Weapp_AES256_GCM_Check-res")
+}

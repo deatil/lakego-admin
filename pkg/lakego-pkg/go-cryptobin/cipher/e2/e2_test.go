@@ -6,7 +6,7 @@ import (
     "math/rand"
 )
 
-func Test_E2_Key16(t *testing.T) {
+func Test_Key16(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -26,6 +26,10 @@ func Test_E2_Key16(t *testing.T) {
 
         cipher1.Encrypt(encrypted[:], value)
 
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
+
         cipher2, err := NewCipher(key)
         if err != nil {
             t.Fatal(err.Error())
@@ -39,7 +43,7 @@ func Test_E2_Key16(t *testing.T) {
     }
 }
 
-func Test_E2_Key24(t *testing.T) {
+func Test_Key24(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -59,6 +63,10 @@ func Test_E2_Key24(t *testing.T) {
 
         cipher1.Encrypt(encrypted[:], value)
 
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
+
         cipher2, err := NewCipher(key)
         if err != nil {
             t.Fatal(err.Error())
@@ -72,7 +80,7 @@ func Test_E2_Key24(t *testing.T) {
     }
 }
 
-func Test_E2_Key32(t *testing.T) {
+func Test_Key32(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 5000
 
@@ -91,6 +99,10 @@ func Test_E2_Key32(t *testing.T) {
         }
 
         cipher1.Encrypt(encrypted[:], value)
+
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
 
         cipher2, err := NewCipher(key)
         if err != nil {

@@ -32,7 +32,11 @@ const BlockSize = b
 
 var invalidErr = errors.New("invalid CubeHash state")
 
-type cubehash struct {
+var _ hash.Hash = (*digest)(nil)
+var _ encoding.BinaryMarshaler = (*digest)(nil)
+var _ encoding.BinaryUnmarshaler = (*digest)(nil)
+
+type digest struct {
     s   [32]uint32
     buf [b]byte
     n   int
@@ -40,17 +44,13 @@ type cubehash struct {
 
 // New returns a new hash.Hash for CubeHash16+16/32+32–512.
 func New() hash.Hash {
-    var c cubehash
-    c.Reset()
-    return &c
+    var d digest
+    d.Reset()
+    return &d
 }
 
-var _ hash.Hash = (*cubehash)(nil)
-var _ encoding.BinaryMarshaler = (*cubehash)(nil)
-var _ encoding.BinaryUnmarshaler = (*cubehash)(nil)
-
-func (c *cubehash) Reset() {
-    x := &c.s
+func (this *digest) Reset() {
+    x := &this.s
 
     x[0] = h / 8
     x[1] = b
@@ -63,31 +63,31 @@ func (c *cubehash) Reset() {
     }
 
     // Sanitize the buffer while we're at it
-    c.n = 0
+    this.n = 0
     for n := 0; n < b; n++ {
-        c.buf[n] = 0
+        this.buf[n] = 0
     }
 }
 
-func (c *cubehash) Size() int {
+func (this *digest) Size() int {
     return Size
 }
 
-func (c *cubehash) BlockSize() int {
+func (this *digest) BlockSize() int {
     return BlockSize
 }
 
-func (c *cubehash) Write(p []byte) (total int, err error) {
-    x := &c.s
+func (this *digest) Write(p []byte) (total int, err error) {
+    x := &this.s
     total = len(p)
 
-    if c.n > 0 {
-        amt := copy(c.buf[c.n:], p[:])
-        c.n += amt
+    if this.n > 0 {
+        amt := copy(this.buf[this.n:], p[:])
+        this.n += amt
         p = p[amt:]
-        if c.n == b {
-            c.n = 0
-            ingest(x, c.buf[:])
+        if this.n == b {
+            this.n = 0
+            ingest(x, this.buf[:])
         } else {
             return
         }
@@ -97,17 +97,24 @@ func (c *cubehash) Write(p []byte) (total int, err error) {
         ingest(x, p[:b])
         p = p[b:]
     }
-    c.n = copy(c.buf[:], p[:])
+    this.n = copy(this.buf[:], p[:])
 
     return
 }
 
-func (c *cubehash) Sum(p []byte) []byte {
-    x := c.s // copy internal state!
+func (this *digest) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *this
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (this *digest) checkSum() [Size]byte {
+    x := this.s // copy internal state!
 
     var pad [b]byte
-    copy(pad[:], c.buf[:c.n])
-    pad[c.n] = 0x80
+    copy(pad[:], this.buf[:this.n])
+    pad[this.n] = 0x80
     ingest(&x, pad[:])
 
     x[31] ^= 1
@@ -115,25 +122,26 @@ func (c *cubehash) Sum(p []byte) []byte {
         round(&x)
     }
 
-    var buf [h / 8]byte
-    for n := 0; n < h/8/4; n++ {
+    var buf [Size]byte
+    for n := 0; n < Size/4; n++ {
         binary.LittleEndian.PutUint32(buf[n*4:], x[n])
     }
-    return append(p, buf[:]...)
+
+    return buf
 }
 
-func (c *cubehash) MarshalBinary() ([]byte, error) {
-    x := &c.s
-    buf := make([]byte, 128+1, 128+1+c.n)
+func (this *digest) MarshalBinary() ([]byte, error) {
+    x := &this.s
+    buf := make([]byte, 128+1, 128+1+this.n)
     for n := 0; n < 32; n++ {
         binary.LittleEndian.PutUint32(buf[n*4:], x[n])
     }
-    buf[128] = byte(c.n)
-    return append(buf, c.buf[:c.n]...), nil
+    buf[128] = byte(this.n)
+    return append(buf, this.buf[:this.n]...), nil
 }
 
-func (c *cubehash) UnmarshalBinary(data []byte) error {
-    x := &c.s
+func (this *digest) UnmarshalBinary(data []byte) error {
+    x := &this.s
     if len(data) < 128+1 {
         return invalidErr
     }
@@ -142,12 +150,12 @@ func (c *cubehash) UnmarshalBinary(data []byte) error {
     if n >= b || len(data) < 128+1+n {
         return invalidErr
     }
-    c.n = n
+    this.n = n
 
     for n := 0; n < 32; n++ {
         x[n] = binary.LittleEndian.Uint32(data[n*4:])
     }
-    copy(c.buf[:n], data[129:])
+    copy(this.buf[:n], data[129:])
     return nil
 }
 

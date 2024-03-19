@@ -3,6 +3,8 @@ package enigma
 import (
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const ROTORSZ int32 = 256
@@ -52,6 +54,9 @@ func NewCipherWithSeed(key []byte, seed int32) (cipher.Stream, error) {
 func (this *enigmaCipher) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/enigma: output not full block")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/enigma: invalid buffer overlap")
     }
 
     var i int32

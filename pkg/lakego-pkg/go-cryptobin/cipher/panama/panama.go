@@ -3,6 +3,8 @@ package panama
 import (
     "strconv"
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const NULL = 0
@@ -46,8 +48,14 @@ func NewCipher(key []byte) (cipher.Stream, error) {
 }
 
 func (this *panamaCipher) XORKeyStream(dst, src []byte) {
+    if len(src) == 0 {
+        return
+    }
     if len(dst) < len(src) {
-        panic("cryptobin/panama: dst buffer is too small")
+        panic("cryptobin/panama: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/panama: invalid buffer overlap")
     }
 
     var i int32

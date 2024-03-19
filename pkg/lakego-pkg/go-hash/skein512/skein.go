@@ -139,12 +139,12 @@ func (h *Hash) Reset() {
 // If the hash was created with output size greater than the maximum
 // size of int, the result is undefined.
 func (h *Hash) Size() int {
-    return int(h.outLen) 
+    return int(h.outLen)
 }
 
 // BlockSize returns the hash's underlying block size.
-func (h *Hash) BlockSize() int { 
-    return BlockSize 
+func (h *Hash) BlockSize() int {
+    return BlockSize
 }
 
 func (h *Hash) hashLastBlock() {
@@ -175,21 +175,25 @@ func (h *Hash) outputBlock(dst *[64]byte, counter uint64) {
     }
 }
 
-func (h *Hash) appendOutput(in []byte, length uint64) []byte {
+func (h *Hash) appendOutput(length uint64) []byte {
     var b [64]byte
     var counter uint64
+
+    var out []byte
 
     for length > 0 {
         h.outputBlock(&b, counter)
         counter++ // increment counter
         if length < 64 {
-            in = append(in, b[:length]...)
+            out = append(out, b[:length]...)
             break
         }
-        in = append(in, b[:]...)
+
+        out = append(out, b[:]...)
         length -= 64
     }
-    return in
+
+    return out
 }
 
 func (h *Hash) update(b []byte) {
@@ -201,11 +205,13 @@ func (h *Hash) update(b []byte) {
         h.hashBlock(h.x[:], 64)
         h.nx = 0
     }
+
     // Process full blocks except for the last one.
     for len(b) > 64 {
         h.hashBlock(b, 64)
         b = b[64:]
     }
+
     // Save leftovers.
     h.nx += copy(h.x[h.nx:], b)
 }
@@ -222,17 +228,20 @@ func (h *Hash) Write(b []byte) (n int, err error) {
 
 // Sum appends the current hash to in and returns the resulting slice.
 // It does not change the underlying hash state.
-func (h0 *Hash) Sum(in []byte) []byte {
-    // Make a copy of h0 so that caller can keep writing and summing.
-    h := new(Hash)
-    *h = *h0
+func (h *Hash) Sum(p []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *h
+    hash := d0.checkSum()
+    return append(p, hash...)
+}
 
+func (h *Hash) checkSum() (hash []byte) {
     if !h.noMsg {
         // Finalize message.
         h.hashLastBlock()
     }
 
-    return h.appendOutput(in, h.outLen)
+    return h.appendOutput(h.outLen)
 }
 
 // OutputReader returns an io.Reader that can be used to read

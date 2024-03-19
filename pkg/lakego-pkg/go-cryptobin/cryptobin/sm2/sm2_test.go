@@ -1006,3 +1006,36 @@ func Test_DecryptWithBCJavaEndata2(t *testing.T) {
     assertEqual(veri, true, "Test_DecryptWithBCJavaEndata2")
 
 }
+
+var testWeappPublicKey = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEKpbg7G/d0ReCOzaZk3O3SVkiFoRG
+iFskXEzc2/gYrHvQQMcg5imja570cQ7y7bx1ezNA4bjHEPFtbhj8h/RKig==
+-----END PUBLIC KEY-----
+`
+
+// https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html
+// 在小程序管理后台开启api加密后，
+// 开发者需要对原API的请求内容加密与签名，
+// 同时API的回包内容需要开发者验签与解密。
+// 微信小程序 SM2withSM3 验证
+func Test_SignSM3Digest_Weapp_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    uid := "8a98f6bba1415c0c4f6879bda6807861"
+
+    req_data := `{"iv":"b3sjwc9yvUEGH45l","data":"fa8VugXI8UA2ugS646ZvuX0wo4qn0Eua2J9jtwACQXeVys3hP/fZDcZC4eEF9es/z/Zx6GM2piwoHKPmPbwzfNXWc/rUH/USFoKo6OBSiR8bb6QgkzYzYL9KsawMr8X/z6y8o3UzE5w65nfTySQFSpEVplD5S+SwQrLi3I2nUwS5N3SoJYsf8BHVfsYLBI9h1NocLgfjjyPYmeKsQ/t1muVWlV2Z75VbqFhM+ECgHpEvcWPDeUN5ZhZ6C/0=","authtag":"cDZY4giOZgf73/CvObhypQ=="}`
+    data := "https://api.weixin.qq.com/wxa/getuserriskrank\nwxba6223c06417af7b\n1692932963\n" + req_data
+    signData := "MEUCIQC++rC5Zv+84JtUZx+2w/QzpIH3KyRsMCFPcSZlxD9gCQIgGfBRLUc0S13vSGmBPS5zyNfi1IEibxlaL0lPvV+Ap20="
+
+    obj := New().
+        FromBase64String(signData).
+        FromPublicKey([]byte(testWeappPublicKey)).
+        SetUID(uid).
+        VerifyASN1([]byte(data))
+    veri := obj.ToVerify()
+
+    assertError(obj.Error(), "Test_SignSM3Digest_Weapp_Check")
+    assertEqual(veri, true, "Test_SignSM3Digest_Weapp_Check")
+}

@@ -1,17 +1,51 @@
 package gost
 
-import "strconv"
+import (
+    "math/bits"
+    "encoding/binary"
+)
 
-type KeySizeError int
+// Endianness option
+const littleEndian bool = true
 
-func (k KeySizeError) Error() string {
-    return "cryptobin/gost: invalid key size: " + strconv.Itoa(int(k))
+// Convert a byte slice to a uint32 slice
+func bytesToUint32s(b []byte) []uint32 {
+    size := len(b) / 4
+    dst := make([]uint32, size)
+
+    for i := 0; i < size; i++ {
+        j := i * 4
+
+        if littleEndian {
+            dst[i] = binary.LittleEndian.Uint32(b[j:])
+        } else {
+            dst[i] = binary.BigEndian.Uint32(b[j:])
+        }
+    }
+
+    return dst
 }
 
-type SboxSizeError int
+// Convert a uint32 slice to a byte slice
+func uint32sToBytes(w []uint32) []byte {
+    size := len(w) * 4
+    dst := make([]byte, size)
 
-func (k SboxSizeError) Error() string {
-    return "cryptobin/gost: invalid sbox size: " + strconv.Itoa(int(k))
+    for i := 0; i < len(w); i++ {
+        j := i * 4
+
+        if littleEndian {
+            binary.LittleEndian.PutUint32(dst[j:], w[i])
+        } else {
+            binary.BigEndian.PutUint32(dst[j:], w[i])
+        }
+    }
+
+    return dst
+}
+
+func rotl32(x uint32, n int) uint32 {
+    return bits.RotateLeft32(x, n)
 }
 
 // Expand s-box
@@ -38,60 +72,8 @@ func cycle(x uint32, kbox [][]byte) uint32 {
     x = uint32(kbox[0][(x >> 24) & 255]) << 24 |
         uint32(kbox[1][(x >> 16) & 255]) << 16 |
         uint32(kbox[2][(x >>  8) & 255]) <<  8 |
-        uint32(kbox[3][x & 255])
+        uint32(kbox[3][ x        & 255])
 
-    return (x << 11) | (x >> (32 - 11))
-}
-
-// Endianness option
-const littleEndian bool = true
-
-// Convert a byte slice to a uint32 slice
-func bytesToUint32s(b []byte) []uint32 {
-    size := len(b) / 4
-    dst := make([]uint32, size)
-
-    for i := 0; i < size; i++ {
-        j := i * 4
-
-        if littleEndian {
-            dst[i] =
-                uint32(b[j+0])       |
-                uint32(b[j+1]) <<  8 |
-                uint32(b[j+2]) << 16 |
-                uint32(b[j+3]) << 24
-        } else {
-            dst[i] =
-                uint32(b[j+0]) << 24 |
-                uint32(b[j+1]) << 16 |
-                uint32(b[j+2]) <<  8 |
-                uint32(b[j+3])
-        }
-    }
-
-    return dst
-}
-
-// Convert a uint32 slice to a byte slice
-func uint32sToBytes(w []uint32) []byte {
-    size := len(w) * 4
-    dst := make([]byte, size)
-
-    for i := 0; i < len(w); i++ {
-        j := i * 4
-
-        if littleEndian {
-            dst[j+0] = byte(w[i])
-            dst[j+1] = byte(w[i] >>  8)
-            dst[j+2] = byte(w[i] >> 16)
-            dst[j+3] = byte(w[i] >> 24)
-        } else {
-            dst[j+0] = byte(w[i] >> 24)
-            dst[j+1] = byte(w[i] >> 16)
-            dst[j+2] = byte(w[i] >>  8)
-            dst[j+3] = byte(w[i])
-        }
-    }
-
-    return dst
+    // rotate result left by 11 bits
+    return rotl32(x, 11)
 }

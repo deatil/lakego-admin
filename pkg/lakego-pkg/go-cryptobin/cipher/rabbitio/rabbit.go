@@ -5,6 +5,8 @@ import (
     "math/bits"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 var (
@@ -45,6 +47,16 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
 // XORKeyStream read from src and perform xor on every elemnt of src and
 // write result on dst
 func (r *rabbitCipher) XORKeyStream(dst, src []byte) {
+    if len(src) == 0 {
+        return
+    }
+    if len(dst) < len(src) {
+        panic("cryptobin/rabbit: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/rabbit: invalid buffer overlap")
+    }
+    
     for i := range src {
         if len(r.ks) == 0 {
             r.extract()

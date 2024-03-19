@@ -24,7 +24,7 @@ var tests = []struct {
     },
 }
 
-func TestTWINE(t *testing.T) {
+func Test_Check(t *testing.T) {
 
     for _, tst := range tests {
 

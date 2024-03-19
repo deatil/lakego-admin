@@ -1,6 +1,10 @@
 package cipher
 
-import "crypto/cipher"
+import (
+    "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
+)
 
 const streamBufferSize = 512
 
@@ -65,7 +69,10 @@ func (x *ofb8) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/ofb8: output smaller than input")
     }
-
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/ofb8: invalid buffer overlap")
+    }
+    
     for len(src) > 0 {
         if x.outUsed >= len(x.out)-x.b.BlockSize() {
             x.refill()

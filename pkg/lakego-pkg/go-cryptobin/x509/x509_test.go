@@ -1242,3 +1242,99 @@ func Test_P12_SM2(t *testing.T) {
         t.Fatal(err)
     }
 }
+
+var testWeappRSACert = `
+-----BEGIN CERTIFICATE-----
+MIID0jCCArqgAwIBAgIUeE+Yy7vM/o+eHHsfM+1bGJJEZTQwDQYJKoZIhvcNAQEL
+BQAwXjELMAkGA1UEBhMCQ04xEzARBgNVBAoTClRlbnBheS5jb20xHTAbBgNVBAsT
+FFRlbnBheS5jb20gQ0EgQ2VudGVyMRswGQYDVQQDExJUZW5wYXkuY29tIFJvb3Qg
+Q0EwHhcNMjIwOTA1MDgzOTIyWhcNMjcwOTA0MDgzOTIyWjBkMRswGQYDVQQDDBJ3
+eGQ5MzBlYTVkNWEyNThmNGYxFTATBgNVBAoMDFRlbmNlbnQgSW5jLjEOMAwGA1UE
+CwwFV3hnTXAxCzAJBgNVBAYMAkNOMREwDwYDVQQHDAhTaGVuWmhlbjCCASIwDQYJ
+KoZIhvcNAQEBBQADggEPADCCAQoCggEBAM5D9qlkCmk1kr3FpF0e9pc3kGsvz5RA
+0/YRny9xPKIyV2UVMDZvRQ+mDHsiQQFE6etg457KFYSxTDKtItbdl6hJQVGeAvg0
+mqPYE9SkHRGTfL/AnXRbKBG2GC2OcaPSAprsLOersjay2me+9pF8VHybV8aox78A
+NsU75G/OO3V1iEE0s5Pmglqk8DEiw9gB/dGJzsNfXwzvyJyiUP9ZujYexyjsS+/Z
+GdSOUkqL/th+16yHj8alcdyga6YGfWEDyWkt/i/B28cwx4nzwk8xgrurifPaLuMk
+0+9wJQLCfAn/f7zyHrC8PcD1XvvRt9VBNMBASXs3710ODyyVf2lkMgkCAwEAAaOB
+gTB/MAkGA1UdEwQCMAAwCwYDVR0PBAQDAgTwMGUGA1UdHwReMFwwWqBYoFaGVGh0
+dHA6Ly9ldmNhLml0cnVzLmNvbS5jbi9wdWJsaWMvaXRydXNjcmw/Q0E9MUJENDIy
+MEU1MERCQzA0QjA2QUQzOTc1NDk4NDZDMDFDM0U4RUJEMjANBgkqhkiG9w0BAQsF
+AAOCAQEAL2MK9tYu+ljLVBlSbfEeaKyF07TN+G31Ya5NBzeS1ZCx4joUEIyACWmG
+fUkKNKiKV+EMzxeEhKRso1Qif3E7Ipl+PQBoQw6OSR/jFHciYurnGR9CLkL03Zo1
+qw1Xetv9OipsvlpA0SOWc207e/XpGdm8C7FMXM6bzvVp8I/STTjC1vqjIZu9WavI
+RgGM4jyAPz2XogUq0BNijef8BXbbav9fAsXjHSwn5BQv4iLms3fiLm/eoyQ6dZ2R
+oTudrlcyr1bG4vwETLmHF+3yfVp9dpvJ+lyfiviwDwyfa8t2WlJm27DuF4vWoxir
+mjgj9tDutIFqxLIovLyg3uiAYtSQ/Q==
+-----END CERTIFICATE-----
+`
+
+// https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html
+func Test_P12_RSA_Weapp(t *testing.T) {
+    certpem := decodePEM(testWeappRSACert)
+
+    cert, err := ParseCertificate(certpem)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pubKey, ok := cert.PublicKey.(*rsa.PublicKey)
+    if !ok {
+        t.Fatal("PublicKey is not rsa PublicKey")
+    }
+
+    publicKey, err := x509.MarshalPKIXPublicKey(pubKey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    publicKeyPem := encodePEM(publicKey, "PUBLIC KEY")
+    if len(publicKeyPem) == 0 {
+        t.Error("fail make publicKey")
+    }
+}
+
+var testWeappSM2Cert = `
+-----BEGIN CERTIFICATE-----
+MIICpTCCAkygAwIBAgIUaB2+dl2EhYIJt1KU3zYVk2Xb7+4wCgYIKoEcz1UBg3Uw
+gaUxCzAJBgNVBAYTAkNOMRIwEAYDVQQIDAlHdWFuZ0RvbmcxETAPBgNVBAcMCFNo
+ZW5aaGVuMRUwEwYDVQQKDAxUZW5jZW50IEluYy4xFjAUBgNVBAsMDVd4RGV2UGxh
+dGZvcm0xFjAUBgNVBAMMDVd4RGV2UGxhdGZvcm0xKDAmBgkqhkiG9w0BCQEWGVd4
+RGV2UGxhdGZvcm1AdGVuY2VudC5jb20wIhgPMjAyMjA5MDUxMjI0NTFaGA8yMDMy
+MDkwMjEyMjQ1MVowgZgxCzAJBgNVBAYTAkNOMRIwEAYDVQQIDAlHdWFuZ0Rvbmcx
+ETAPBgNVBAcMCFNoZW5aaGVuMRUwEwYDVQQKDAxUZW5jZW50IEluYy4xDjAMBgNV
+BAsMBVd4Z01wMRswGQYDVQQDDBJ3eDkzYTRjMDQ2MWJhNTg5YjQxHjAcBgkqhkiG
+9w0BCQEWD3dlaXhpbm1wQHFxLmNvbTBZMBMGByqGSM49AgEGCCqBHM9VAYItA0IA
+BCqW4Oxv3dEXgjs2mZNzt0lZIhaERohbJFxM3Nv4GKx70EDHIOYpo2ue9HEO8u28
+dXszQOG4xxDxbW4Y/If0SoqjYTBfMB8GA1UdIwQYMBaAFOZbGwNxANNz09qKnp4u
+iCDA9EJXMB0GA1UdDgQWBBThaf6MTqwNkDXulajs6lTR5Dkc2zAMBgNVHRMBAf8E
+AjAAMA8GA1UdDwEB/wQFAwMHwAAwCgYIKoEcz1UBg3UDRwAwRAIgOp0c64QSLUHx
+vbiPw/27dIcItvsN2F6m7VN41xebJx0CIHL0bp5okshjBF38XM07m4nWw55zAmmF
+EJc5Zq55kLC8
+-----END CERTIFICATE-----
+`
+
+// https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html
+func Test_P12_SM2_Weapp(t *testing.T) {
+    certpem := decodePEM(testWeappSM2Cert)
+
+    cert, err := ParseCertificate(certpem)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pubKey, ok := cert.PublicKey.(*sm2.PublicKey)
+    if !ok {
+        t.Fatal("PublicKey is not sm2 PublicKey")
+    }
+
+    publicKey, err := sm2.MarshalPublicKey(pubKey)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    publicKeyPem := encodePEM(publicKey, "PUBLIC KEY")
+    if len(publicKeyPem) == 0 {
+        t.Error("fail make publicKey")
+    }
+}

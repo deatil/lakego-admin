@@ -2,6 +2,8 @@ package cipher
 
 import (
     "crypto/cipher"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 // ocfb mode
@@ -60,6 +62,13 @@ func NewOCFBEncrypter(block cipher.Block, randData []byte, resync OCFBResyncOpti
 }
 
 func (x *ocfbEncrypter) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cryptobin/ocfb: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/ocfb: invalid buffer overlap")
+    }
+
     for i := 0; i < len(src); i++ {
         if x.outUsed == len(x.fre) {
             x.b.Encrypt(x.fre, x.fre)
@@ -125,6 +134,13 @@ func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption
 }
 
 func (x *ocfbDecrypter) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cryptobin/ocfb: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/ocfb: invalid buffer overlap")
+    }
+
     for i := 0; i < len(src); i++ {
         if x.outUsed == len(x.fre) {
             x.b.Encrypt(x.fre, x.fre)

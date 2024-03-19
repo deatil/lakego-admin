@@ -1,10 +1,23 @@
 package gost
 
 import (
+    "strconv"
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
+
+type KeySizeError int
+
+func (k KeySizeError) Error() string {
+    return "cryptobin/gost: invalid key size: " + strconv.Itoa(int(k))
+}
+
+type SboxSizeError int
+
+func (k SboxSizeError) Error() string {
+    return "cryptobin/gost: invalid sbox size: " + strconv.Itoa(int(k))
+}
 
 // GOST 28147-89 defines a block size of 64 bits
 const BlockSize = 8
@@ -67,7 +80,7 @@ func (this *gostCipher) Encrypt(dst, src []byte) {
     encSrc := bytesToUint32s(src)
     encDst := make([]uint32, len(encSrc))
 
-    this.encrypt32(encDst, encSrc)
+    this.encrypt(encDst, encSrc)
 
     resBytes := uint32sToBytes(encDst)
     copy(dst, resBytes)
@@ -89,105 +102,71 @@ func (this *gostCipher) Decrypt(dst, src []byte) {
     encSrc := bytesToUint32s(src)
     encDst := make([]uint32, len(encSrc))
 
-    this.decrypt32(encDst, encSrc)
+    this.decrypt(encDst, encSrc)
 
     resBytes := uint32sToBytes(encDst)
     copy(dst, resBytes)
 }
 
-// GOST block cipher round function
-func (this *gostCipher) f(x uint32) uint32 {
-    x = uint32(this.k[0][(x >> 24) & 255]) << 24 |
-        uint32(this.k[1][(x >> 16) & 255]) << 16 |
-        uint32(this.k[2][(x >>  8) & 255]) <<  8 |
-        uint32(this.k[3][x & 255])
-
-    // rotate result left by 11 bits
-    return (x << 11) | (x >> (32 - 11))
-}
-
 // Encrypt one block from src into dst.
-func (this *gostCipher) encrypt32(dst, src []uint32) {
+func (this *gostCipher) encrypt(dst, src []uint32) {
     n1, n2 := src[0], src[1]
 
-    n2 = n2 ^ this.f(n1 + this.key[0])
-    n1 = n1 ^ this.f(n2 + this.key[1])
-    n2 = n2 ^ this.f(n1 + this.key[2])
-    n1 = n1 ^ this.f(n2 + this.key[3])
-    n2 = n2 ^ this.f(n1 + this.key[4])
-    n1 = n1 ^ this.f(n2 + this.key[5])
-    n2 = n2 ^ this.f(n1 + this.key[6])
-    n1 = n1 ^ this.f(n2 + this.key[7])
+    var j int
 
-    n2 = n2 ^ this.f(n1 + this.key[0])
-    n1 = n1 ^ this.f(n2 + this.key[1])
-    n2 = n2 ^ this.f(n1 + this.key[2])
-    n1 = n1 ^ this.f(n2 + this.key[3])
-    n2 = n2 ^ this.f(n1 + this.key[4])
-    n1 = n1 ^ this.f(n2 + this.key[5])
-    n2 = n2 ^ this.f(n1 + this.key[6])
-    n1 = n1 ^ this.f(n2 + this.key[7])
+    // three rounds
+    for i := 0; i < 3; i++ {
+        for j = 0; j < 8; j++ {
+            if j%2 == 0 {
+                n2 = n2 ^ this.round(n1 + this.key[j])
+            } else {
+                n1 = n1 ^ this.round(n2 + this.key[j])
+            }
+        }
+    }
 
-    n2 = n2 ^ this.f(n1 + this.key[0])
-    n1 = n1 ^ this.f(n2 + this.key[1])
-    n2 = n2 ^ this.f(n1 + this.key[2])
-    n1 = n1 ^ this.f(n2 + this.key[3])
-    n2 = n2 ^ this.f(n1 + this.key[4])
-    n1 = n1 ^ this.f(n2 + this.key[5])
-    n2 = n2 ^ this.f(n1 + this.key[6])
-    n1 = n1 ^ this.f(n2 + this.key[7])
-
-    n2 = n2 ^ this.f(n1 + this.key[7])
-    n1 = n1 ^ this.f(n2 + this.key[6])
-    n2 = n2 ^ this.f(n1 + this.key[5])
-    n1 = n1 ^ this.f(n2 + this.key[4])
-    n2 = n2 ^ this.f(n1 + this.key[3])
-    n1 = n1 ^ this.f(n2 + this.key[2])
-    n2 = n2 ^ this.f(n1 + this.key[1])
-    n1 = n1 ^ this.f(n2 + this.key[0])
+    // last round
+    for j = 7; j >= 0; j-- {
+        if j%2 != 0 {
+            n2 = n2 ^ this.round(n1 + this.key[j])
+        } else {
+            n1 = n1 ^ this.round(n2 + this.key[j])
+        }
+    }
 
     dst[0], dst[1] = n2, n1
 }
 
 // Decrypt one block from src into dst.
-func (this *gostCipher) decrypt32(dst, src []uint32) {
+func (this *gostCipher) decrypt(dst, src []uint32) {
     n1, n2 := src[0], src[1]
 
-    n2 = n2 ^ this.f(n1 + this.key[0])
-    n1 = n1 ^ this.f(n2 + this.key[1])
-    n2 = n2 ^ this.f(n1 + this.key[2])
-    n1 = n1 ^ this.f(n2 + this.key[3])
-    n2 = n2 ^ this.f(n1 + this.key[4])
-    n1 = n1 ^ this.f(n2 + this.key[5])
-    n2 = n2 ^ this.f(n1 + this.key[6])
-    n1 = n1 ^ this.f(n2 + this.key[7])
+    var j int
 
-    n2 = n2 ^ this.f(n1 + this.key[7])
-    n1 = n1 ^ this.f(n2 + this.key[6])
-    n2 = n2 ^ this.f(n1 + this.key[5])
-    n1 = n1 ^ this.f(n2 + this.key[4])
-    n2 = n2 ^ this.f(n1 + this.key[3])
-    n1 = n1 ^ this.f(n2 + this.key[2])
-    n2 = n2 ^ this.f(n1 + this.key[1])
-    n1 = n1 ^ this.f(n2 + this.key[0])
+    // first round
+    for j = 0; j < 8; j++ {
+        if j%2 == 0 {
+            n2 = n2 ^ this.round(n1 + this.key[j])
+        } else {
+            n1 = n1 ^ this.round(n2 + this.key[j])
+        }
+    }
 
-    n2 = n2 ^ this.f(n1 + this.key[7])
-    n1 = n1 ^ this.f(n2 + this.key[6])
-    n2 = n2 ^ this.f(n1 + this.key[5])
-    n1 = n1 ^ this.f(n2 + this.key[4])
-    n2 = n2 ^ this.f(n1 + this.key[3])
-    n1 = n1 ^ this.f(n2 + this.key[2])
-    n2 = n2 ^ this.f(n1 + this.key[1])
-    n1 = n1 ^ this.f(n2 + this.key[0])
-
-    n2 = n2 ^ this.f(n1 + this.key[7])
-    n1 = n1 ^ this.f(n2 + this.key[6])
-    n2 = n2 ^ this.f(n1 + this.key[5])
-    n1 = n1 ^ this.f(n2 + this.key[4])
-    n2 = n2 ^ this.f(n1 + this.key[3])
-    n1 = n1 ^ this.f(n2 + this.key[2])
-    n2 = n2 ^ this.f(n1 + this.key[1])
-    n1 = n1 ^ this.f(n2 + this.key[0])
+    // three rounds
+    for i := 0; i < 3; i++ {
+        for j = 7; j >= 0; j-- {
+            if j%2 != 0 {
+                n2 = n2 ^ this.round(n1 + this.key[j])
+            } else {
+                n1 = n1 ^ this.round(n2 + this.key[j])
+            }
+        }
+    }
 
     dst[0], dst[1] = n2, n1
+}
+
+// GOST block cipher round function
+func (this *gostCipher) round(x uint32) uint32 {
+    return cycle(x, this.k)
 }

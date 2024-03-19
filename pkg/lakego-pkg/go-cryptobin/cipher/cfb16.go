@@ -24,7 +24,6 @@ func (x *cfb16) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
         panic("cryptobin/cfb16: output smaller than input")
     }
-
     if alias.InexactOverlap(dst[:len(src)], src) {
         panic("cryptobin/cfb16: invalid buffer overlap")
     }

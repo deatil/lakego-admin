@@ -26,6 +26,10 @@ func Test_Kuznyechik(t *testing.T) {
 
         cipher1.Encrypt(encrypted[:], value)
 
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal value\n")
+        }
+
         cipher2, err := NewCipher(key)
         if err != nil {
             t.Fatal(err.Error())

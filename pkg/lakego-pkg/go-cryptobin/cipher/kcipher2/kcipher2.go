@@ -5,6 +5,8 @@ import (
     "strconv"
     "crypto/cipher"
     "encoding/binary"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 /*
@@ -63,6 +65,13 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
 }
 
 func (k *kcipher2Cipher) XORKeyStream(dst, src []byte) {
+    if len(dst) < len(src) {
+        panic("cryptobin/kcipher2: output smaller than input")
+    }
+    if alias.InexactOverlap(dst[:len(src)], src) {
+        panic("cryptobin/kcipher2: invalid buffer overlap")
+    }
+
     for i := range src {
         if k.svalid == 0 {
             zh, zl := k.stream()
