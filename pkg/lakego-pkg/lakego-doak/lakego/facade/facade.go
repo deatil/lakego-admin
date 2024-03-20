@@ -2,7 +2,6 @@ package facade
 
 import (
     "gorm.io/gorm"
-    "github.com/deatil/lakego-doak/lakego/redis"
     "github.com/deatil/lakego-doak/lakego/cache"
     "github.com/deatil/lakego-doak/lakego/config"
     "github.com/deatil/lakego-doak/lakego/logger"
@@ -11,7 +10,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/captcha"
     "github.com/deatil/lakego-doak/lakego/permission"
 
-    facade_redis "github.com/deatil/lakego-doak/lakego/facade/redis"
     facade_cache "github.com/deatil/lakego-doak/lakego/facade/cache"
     facade_logger "github.com/deatil/lakego-doak/lakego/facade/logger"
     facade_upload "github.com/deatil/lakego-doak/lakego/facade/upload"
@@ -24,9 +22,6 @@ import (
 
 // 数据库
 var DB *gorm.DB
-
-// Redis
-var Redis redis.Redis
 
 // 缓存
 var Cache *cache.Cache
@@ -44,7 +39,7 @@ var Storage *storage.Storage
 var Config func(string) *config.Config
 
 // 验证码
-var Captcha captcha.Captcha
+var Captcha *captcha.Captcha
 
 // 权限
 var Permission *permission.Permission
@@ -52,29 +47,26 @@ var Permission *permission.Permission
 // 初始化
 func init() {
     // 数据库
-    DB = facade_database.New()
-
-    // Redis
-    Redis = facade_redis.New()
+    DB = facade_database.Default
 
     // 缓存
-    Cache = facade_cache.New()
+    Cache = facade_cache.Default
 
     // 日志
-    Logger = facade_logger.New()
+    Logger = facade_logger.Default
 
     // 上传
-    Upload = facade_upload.New()
+    Upload = facade_upload.Default
 
     // 文件操作
-    Storage = facade_storage.New()
+    Storage = facade_storage.Default
 
     // 配置
     Config = facade_config.New
 
     // 验证码
-    Captcha = facade_captcha.New()
+    Captcha = facade_captcha.Default
 
     // 权限
-    Permission = facade_permission.New()
+    Permission = facade_permission.Default
 }

@@ -9,41 +9,6 @@ import (
     "github.com/go-redis/redis/extra/redisotel/v8"
 )
 
-// 构造函数
-func New(config Config) *Redis {
-    client := redis.NewClient(&redis.Options{
-        Addr:     config.Addr,
-        Password: config.Password,
-        DB:       config.DB,
-
-        MinIdleConns: config.MinIdleConn,
-        DialTimeout:  config.DialTimeout,
-        ReadTimeout:  config.ReadTimeout,
-        WriteTimeout: config.WriteTimeout,
-        PoolSize:     config.PoolSize,
-        PoolTimeout:  config.PoolTimeout,
-    })
-
-    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-    defer cancel()
-
-    if _, err := client.Ping(ctx).Result(); err != nil {
-        if config.Logger != nil {
-            config.Logger.Errorf("cache-redis: %s", err.Error())
-        }
-    }
-
-    // 调试
-    if config.EnableTrace {
-        client.AddHook(redisotel.NewTracingHook())
-    }
-
-    return &Redis{
-        ctx:    context.Background(),
-        client: client,
-    }
-}
-
 // 日志接口
 type iLogger interface {
     Errorf(template string, args ...any)
@@ -79,6 +44,41 @@ type Redis struct {
 
     // 客户端
     client *redis.Client
+}
+
+// 构造函数
+func New(config Config) *Redis {
+    client := redis.NewClient(&redis.Options{
+        Addr:     config.Addr,
+        Password: config.Password,
+        DB:       config.DB,
+
+        MinIdleConns: config.MinIdleConn,
+        DialTimeout:  config.DialTimeout,
+        ReadTimeout:  config.ReadTimeout,
+        WriteTimeout: config.WriteTimeout,
+        PoolSize:     config.PoolSize,
+        PoolTimeout:  config.PoolTimeout,
+    })
+
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+    defer cancel()
+
+    if _, err := client.Ping(ctx).Result(); err != nil {
+        if config.Logger != nil {
+            config.Logger.Errorf("cache-redis: %s", err.Error())
+        }
+    }
+
+    // 调试
+    if config.EnableTrace {
+        client.AddHook(redisotel.NewTracingHook())
+    }
+
+    return &Redis{
+        ctx:    context.Background(),
+        client: client,
+    }
 }
 
 // 判断是否存在

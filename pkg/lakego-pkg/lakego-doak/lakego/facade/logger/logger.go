@@ -11,10 +11,16 @@ import (
     logrusDriver "github.com/deatil/lakego-doak/lakego/logger/driver/logrus"
 )
 
+// 默认
+var Default *logger.Logger
+
 // 初始化
 func init() {
     // 注册默认
     registerDriver()
+
+    // 默认
+    Default = New()
 }
 
 /**

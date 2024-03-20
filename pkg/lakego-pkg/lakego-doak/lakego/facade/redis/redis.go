@@ -7,11 +7,21 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
+// 默认
+var Default redis.Redis
+
+// 初始化
+func init() {
+    // 默认
+    Default = New()
+}
+
+
 /**
  * Redis
  *
- * redis.New().Set("go-redis", "go-redis-data", 60000)
- * redis.New().Get("go-redis", &redisData)
+ * redis.Default.Set("go-redis", "go-redis-data", 60000)
+ * redis.Default.Get("go-redis", &redisData)
  *
  * @create 2021-6-20
  * @author deatil

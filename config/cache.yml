@@ -15,7 +15,8 @@ caches:
     dial-timeout: 60s
     read-timeout: 500ms
     write-timeout: 500ms
-    pool-size: 100
+    # 启用的连接池数量
+    pool-size: 10
     pool-timeout: 240s
     enabletrace: false
 

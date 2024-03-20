@@ -78,39 +78,23 @@ drivers:
     dot-count: 80
 
 # 默认存储
-default-store: "redis"
+default-store: "cache"
 
 # 存储列表
 stores:
-  # redis 存储配置
-  redis:
+  # cache 配置
+  cache:
     # 类型
-    type: "redis"
-    # 前缀
-    key-prefix: "lakego-captcha"
-    # redis 使用数据库
-    db: 1
-    # 地址
-    addr: "127.0.0.1:6379"
-    # 密码
-    password: "admin123"
+    type: "cache"
     # 过期时间
-    ttl: 3600
-    # 其他配置
-    minidle-conn: 200
-    dial-timeout: 60s
-    read-timeout: 500ms
-    write-timeout: 500ms
-    pool-size: 100
-    pool-timeout: 240s
-    enabletrace: false
+    expiration: 6m
 
   # syncmap 配置
   syncmap:
     # 类型
     type: "syncmap"
     # 存活时间
-    livetime: 10m
+    livetime: 6m
 
   # memory 配置
   memory:
@@ -118,5 +102,5 @@ stores:
     type: "memory"
     # 数量
     collect-num: 10240
-    # 过期
-    expiration: 10m
+    # 过期时间
+    expiration: 6m

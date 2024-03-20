@@ -9,16 +9,21 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
+    "github.com/deatil/lakego-doak/lakego/facade/cache"
     "github.com/deatil/lakego-doak/lakego/captcha"
-    "github.com/deatil/lakego-doak/lakego/captcha/interfaces"
-    redis_store "github.com/deatil/lakego-doak/lakego/captcha/store/redis"
+    cache_store "github.com/deatil/lakego-doak/lakego/captcha/store/cache"
 )
+
+// 默认
+var Default *captcha.Captcha
 
 // 初始化
 func init() {
     // 注册默认
-    Register()
+    registerCaptcha()
+
+    // 默认
+    Default = New()
 }
 
 /**
@@ -27,7 +32,7 @@ func init() {
  * @create 2021-10-12
  * @author deatil
  */
-func New(once ...bool) captcha.Captcha {
+func New(once ...bool) *captcha.Captcha {
     // 默认驱动
     driver := GetDefaultDriver()
 
@@ -38,7 +43,7 @@ func New(once ...bool) captcha.Captcha {
 }
 
 // 验证码
-func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha {
+func Captcha(driverName string, storeName string, once ...bool) *captcha.Captcha {
     // 验证码配置
     conf := config.New("captcha")
 
@@ -88,7 +93,7 @@ func Captcha(driverName string, storeName string, once ...bool) captcha.Captcha 
         panic("验证码驱动[" + driverType + "]没有被注册")
     }
 
-    return captcha.New(driver.(interfaces.Driver), store.(interfaces.Store))
+    return captcha.New(driver.(captcha.IDriver), store.(captcha.IStore))
 }
 
 // 默认驱动
@@ -102,33 +107,17 @@ func GetDefaultStore() string {
 }
 
 // 注册
-func Register() {
+func registerCaptcha() {
     // 注册存储
     register.
         NewManagerWithPrefix("captcha-store").
         RegisterMany(map[string]func(map[string]any) any {
-            "redis": func(conf map[string]any) any {
+            "cache": func(conf map[string]any) any {
                 cfg := array.ArrayFrom(conf)
 
-                store := redis_store.New(redis_store.Config{
-                    DB:       cfg.Value("db").ToInt(),
-                    Addr:     cfg.Value("addr").ToString(),
-                    Password: cfg.Value("password").ToString(),
-
-                    MinIdleConn:  cfg.Value("minidle-conn").ToInt(),
-                    DialTimeout:  cfg.Value("dial-timeout").ToDuration(),
-                    ReadTimeout:  cfg.Value("read-timeout").ToDuration(),
-                    WriteTimeout: cfg.Value("write-timeout").ToDuration(),
-
-                    PoolSize:     cfg.Value("pool-size").ToInt(),
-                    PoolTimeout:  cfg.Value("pool-timeout").ToDuration(),
-
-                    EnableTrace:  cfg.Value("enabletrace").ToBool(),
-
-                    KeyPrefix:    cfg.Value("key-prefix").ToString(),
-                    TTL:          cfg.Value("ttl").ToInt(),
-
-                    Logger: logger.New(),
+                store := cache_store.New(cache_store.Config{
+                    Cache: cache.Default,
+                    Expir: cfg.Value("expiration").ToString(),
                 })
 
                 return store
@@ -269,5 +258,4 @@ func Register() {
             },
         })
 }
-
 

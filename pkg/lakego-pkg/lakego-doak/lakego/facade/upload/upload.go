@@ -6,6 +6,15 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade/storage"
 )
 
+// 默认
+var Default *upload.Upload
+
+// 初始化
+func init() {
+    // 默认
+    Default = New()
+}
+
 /**
  * 上传
  *

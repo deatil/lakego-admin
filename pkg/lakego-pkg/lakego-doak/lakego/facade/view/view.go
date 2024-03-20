@@ -11,10 +11,16 @@ import (
     pongo2Adapter "github.com/deatil/lakego-doak/lakego/view/html/adapter/pongo2"
 )
 
+// 默认
+var Default *html.Html
+
 // 初始化
 func init() {
     // 注册默认
-    Register()
+    registerHtml()
+
+    // 默认
+    Default = New()
 }
 
 /**
@@ -67,7 +73,7 @@ func GetDefaultAdapter() string {
 }
 
 // 注册
-func Register() {
+func registerHtml() {
     // 注册驱动
     register.
         NewManagerWithPrefix("view").

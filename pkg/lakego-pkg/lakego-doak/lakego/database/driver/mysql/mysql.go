@@ -6,6 +6,17 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/driver"
 )
 
+/**
+ * Mysql 驱动
+ *
+ * @create 2021-9-15
+ * @author deatil
+ */
+type Mysql struct {
+    // 继承默认
+    driver.Driver
+}
+
 // 构造函数
 func New(conf ...map[string]any) *Mysql {
     m := &Mysql{}
@@ -19,20 +30,7 @@ func New(conf ...map[string]any) *Mysql {
     return m
 }
 
-/**
- * Mysql 驱动
- *
- * @create 2021-9-15
- * @author deatil
- */
-type Mysql struct {
-    // 继承默认
-    driver.Driver
-}
-
-/**
- * 初始化
- */
+// 创建连接
 func (this *Mysql) CreateConnection() {
     var dsn string
 

@@ -15,18 +15,24 @@ import (
 /**
  * 缓存
  *
- * cache.New().Put("lakego-cache", "lakego-cache-data", 122222)
- * cache.New().Forever("lakego-cache-forever", "lakego-cache-Forever-data")
- * cacheData, err := cache.New().Get("lakego-cache")
+ * cache.Default.Put("lakego-cache", "lakego-cache-data", 122222)
+ * cache.Default.Forever("lakego-cache-forever", "lakego-cache-Forever-data")
+ * cacheData, err := cache.Default.Get("lakego-cache")
  *
  * @create 2021-7-3
  * @author deatil
  */
 
+// 默认
+var Default *cache.Cache
+
 // 初始化
 func init() {
     // 注册默认
     registerDriver()
+
+    // 默认
+    Default = New()
 }
 
 // 实例化

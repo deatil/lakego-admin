@@ -11,10 +11,16 @@ import (
     mysqlDriver "github.com/deatil/lakego-doak/lakego/database/driver/mysql"
 )
 
+// 默认
+var Default *gorm.DB
+
 // 初始化
 func init() {
     // 注册默认
-    Register()
+    registerDB()
+
+    // 默认
+    Default = New()
 }
 
 /**
@@ -103,7 +109,7 @@ func GetConfig(key string, typ ...string) (any, map[string]any) {
 }
 
 // 注册
-func Register() {
+func registerDB() {
     // 注册驱动
     register.
         NewManagerWithPrefix("database").

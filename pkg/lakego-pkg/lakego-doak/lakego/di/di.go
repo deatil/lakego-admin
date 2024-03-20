@@ -10,19 +10,6 @@ var instance *DI
 var once sync.Once
 
 /**
- * 单例模式
- */
-func New() *DI {
-    once.Do(func() {
-        instance = &DI{
-            container: dig.New(),
-        }
-    })
-
-    return instance
-}
-
-/**
  * 容器
  *
  * @create 2021-10-20
@@ -31,6 +18,17 @@ func New() *DI {
 type DI struct {
     // 容器
     container *dig.Container
+}
+
+// 单例模式
+func New() *DI {
+    once.Do(func() {
+        instance = &DI{
+            container: dig.New(),
+        }
+    })
+
+    return instance
 }
 
 // 设置容器

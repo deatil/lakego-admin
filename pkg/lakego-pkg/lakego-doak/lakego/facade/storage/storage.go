@@ -13,10 +13,16 @@ import(
     localAdapter "github.com/deatil/go-filesystem/filesystem/adapter/local"
 )
 
+// 默认
+var Default *storage.Storage
+
 // 初始化
 func init() {
     // 注册默认磁盘
-    Register()
+    registerStorage()
+
+    // 默认
+    Default = New()
 }
 
 // 实例化
@@ -75,7 +81,7 @@ func GetDefaultDisk() string {
 }
 
 // 注册磁盘
-func Register() {
+func registerStorage() {
     // 注册可用驱动
     register.
         NewManagerWithPrefix("database").

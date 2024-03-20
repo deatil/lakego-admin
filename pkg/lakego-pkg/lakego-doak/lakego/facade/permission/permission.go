@@ -21,10 +21,16 @@ import (
  * @author deatil
  */
 
+// 默认
+var Default *permission.Permission
+
 // 初始化
 func init() {
     // 注册默认适配器
-    Register()
+    registerPermission()
+
+    // 默认
+    Default = New()
 }
 
 // 实例化
@@ -81,7 +87,7 @@ func GetDefaultAdapter() string {
 }
 
 // 注册
-func Register() {
+func registerPermission() {
     // 注册可用驱动
     register.
         NewManagerWithPrefix("permission").
