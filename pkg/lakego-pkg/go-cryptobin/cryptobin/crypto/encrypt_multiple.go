@@ -578,19 +578,14 @@ func (this EncryptSM4) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
-// 32 bytes key and a 12 or 24 bytes nonce
+// 32 bytes key and a 12 or 24 bytes nonce(iv)
 type EncryptChacha20 struct {}
 
 // 加密 / Encrypt
 func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    nonce := opt.Config().GetBytes("nonce")
-
-    chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), nonce)
+    chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), iv)
     if err != nil {
         return nil, err
     }
@@ -608,14 +603,9 @@ func (this EncryptChacha20) Encrypt(data []byte, opt IOption) ([]byte, error) {
 
 // 解密 / Decrypt
 func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    nonce := opt.Config().GetBytes("nonce")
-
-    chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), nonce)
+    chacha, err := chacha20.NewUnauthenticatedCipher(opt.Key(), iv)
     if err != nil {
         return nil, err
     }
@@ -643,15 +633,15 @@ func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, e
         return nil, err
     }
 
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty.")
+    iv := opt.Iv()
+    if len(iv) == 0 {
+        err := fmt.Errorf("iv empty.")
         return nil, err
     }
 
-    nonce := opt.Config().GetBytes("nonce")
     additional := opt.Config().GetBytes("additional")
 
-    dst := aead.Seal(nil, nonce, data, additional)
+    dst := aead.Seal(nil, iv, data, additional)
 
     return dst, nil
 }
@@ -663,15 +653,15 @@ func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, e
         return nil, err
     }
 
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty.")
+    iv := opt.Iv()
+    if len(iv) == 0 {
+        err := fmt.Errorf("iv empty.")
         return nil, err
     }
 
-    nonce := opt.Config().GetBytes("nonce")
     additional := opt.Config().GetBytes("additional")
 
-    return chacha.Open(nil, nonce, data, additional)
+    return chacha.Open(nil, iv, data, additional)
 }
 
 // ===================
@@ -686,15 +676,15 @@ func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, 
         return nil, err
     }
 
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty.")
+    iv := opt.Iv()
+    if len(iv) == 0 {
+        err := fmt.Errorf("iv empty.")
         return nil, err
     }
 
-    nonce := opt.Config().GetBytes("nonce")
     additional := opt.Config().GetBytes("additional")
 
-    dst := aead.Seal(nil, nonce, data, additional)
+    dst := aead.Seal(nil, iv, data, additional)
 
     return dst, nil
 }
@@ -706,15 +696,15 @@ func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, 
         return nil, err
     }
 
-    if !opt.Config().Has("nonce") {
-        err := fmt.Errorf("nonce is empty.")
+    iv := opt.Iv()
+    if len(iv) == 0 {
+        err := fmt.Errorf("iv empty.")
         return nil, err
     }
 
-    nonce := opt.Config().GetBytes("nonce")
     additional := opt.Config().GetBytes("additional")
 
-    return chacha.Open(nil, nonce, data, additional)
+    return chacha.Open(nil, iv, data, additional)
 }
 
 // ===================
@@ -882,14 +872,14 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
 // ===================
 
 // Salsa20 key is 32 bytes.
-// nonce is 16 bytes.
+// iv is 16 bytes.
 type EncryptSalsa20 struct {}
 
 // 加密 / Encrypt
 func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    nonce := opt.Config().GetBytes("nonce")
+    iv := opt.Iv()
 
-    c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
+    c, err := cryptobin_salsa20.NewCipher(opt.Key(), iv)
     if err != nil {
         return nil, err
     }
@@ -903,9 +893,9 @@ func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
 
 // 解密 / Decrypt
 func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    nonce := opt.Config().GetBytes("nonce")
+    iv := opt.Iv()
 
-    c, err := cryptobin_salsa20.NewCipher(opt.Key(), nonce)
+    c, err := cryptobin_salsa20.NewCipher(opt.Key(), iv)
     if err != nil {
         return nil, err
     }

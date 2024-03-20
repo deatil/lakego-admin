@@ -2,9 +2,9 @@
 // Threefish is designed to be the core function of the Skein hash function
 // family.
 // There are three versions of Threefish
-// 		- Threefish256  processes 256  bit blocks
-//		- Threefish512  processes 512  bit blocks
-//		- Threefish1024 processes 1024 bit blocks
+//    - Threefish256  processes 256  bit blocks
+//    - Threefish512  processes 512  bit blocks
+//    - Threefish1024 processes 1024 bit blocks
 package threefish
 
 import (
@@ -31,19 +31,19 @@ var errKeySize = errors.New("invalid key size")
 // The length of the key must be 32, 64 or 128 byte.
 // The length of the tweak must be TweakSize.
 // The returned cipher implements:
-//		- Threefish-256  - if len(key) = 32
-//		- Threefish-512  - if len(key) = 64
-// 		- Threefish-1024 - if len(key) = 128
+//    - Threefish-256  - if len(key) = 32
+//    - Threefish-512  - if len(key) = 64
+//    - Threefish-1024 - if len(key) = 128
 func NewCipher(tweak *[TweakSize]byte, key []byte) (cipher.Block, error) {
     switch k := len(key); k {
-    default:
-        return nil, errKeySize
-    case BlockSize256:
-        return newCipher256(tweak, key), nil
-    case BlockSize512:
-        return newCipher512(tweak, key), nil
-    case BlockSize1024:
-        return newCipher1024(tweak, key), nil
+        default:
+            return nil, errKeySize
+        case BlockSize256:
+            return newCipher256(tweak, key), nil
+        case BlockSize512:
+            return newCipher512(tweak, key), nil
+        case BlockSize1024:
+            return newCipher1024(tweak, key), nil
     }
 }
 
@@ -64,7 +64,9 @@ type threefish256 struct {
     tweak [3]uint64
 }
 
-func (t *threefish256) BlockSize() int { return BlockSize256 }
+func (t *threefish256) BlockSize() int {
+    return BlockSize256
+}
 
 // The threefish-512 tweakable blockcipher
 type threefish512 struct {
@@ -72,7 +74,9 @@ type threefish512 struct {
     tweak [3]uint64
 }
 
-func (t *threefish512) BlockSize() int { return BlockSize512 }
+func (t *threefish512) BlockSize() int {
+    return BlockSize512
+}
 
 // The threefish-1024 tweakable blockcipher
 type threefish1024 struct {
@@ -80,4 +84,6 @@ type threefish1024 struct {
     tweak [3]uint64
 }
 
-func (t *threefish1024) BlockSize() int { return BlockSize1024 }
+func (t *threefish1024) BlockSize() int {
+    return BlockSize1024
+}

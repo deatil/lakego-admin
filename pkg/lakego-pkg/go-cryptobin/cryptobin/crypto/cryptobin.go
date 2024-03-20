@@ -55,7 +55,7 @@ func NewCryptobin() Cryptobin {
 }
 
 // 构造函数
-// New
+// New Cryptobin
 func New() Cryptobin {
     return NewCryptobin()
 }

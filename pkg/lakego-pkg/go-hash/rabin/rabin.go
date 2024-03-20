@@ -246,13 +246,20 @@ func (h *Hash) Write(p []byte) (n int, err error) {
 
 // Sum appends the least-significant byte first representation of the
 // current hash to b and returns the resulting slice.
-func (h *Hash) Sum(b []byte) []byte {
+func (h *Hash) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *h
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
+
+func (h *Hash) checkSum() []byte {
     var hbytes [8]byte
     for i := range hbytes {
         hbytes[i] = byte(h.hash >> uint(i*8))
     }
 
-    return append(b, hbytes[:h.Size()]...)
+    return hbytes[:h.Size()]
 }
 
 // Sum64 returns the hash of all bytes written to h.

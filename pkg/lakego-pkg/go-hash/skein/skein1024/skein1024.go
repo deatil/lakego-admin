@@ -70,22 +70,29 @@ func (s *hashFunc) Write(p []byte) (n int, err error) {
     return
 }
 
-func (s *hashFunc) Sum(b []byte) []byte {
-    s0 := *s // copy
+func (s *hashFunc) Sum(in []byte) []byte {
+    // Make a copy of d so that caller can keep writing and summing.
+    d0 := *s
+    hash := d0.checkSum()
+    return append(in, hash[:]...)
+}
 
-    if s0.hasMsg {
-        s0.finalizeHash()
+func (s *hashFunc) checkSum() []byte {
+    if s.hasMsg {
+        s.finalizeHash()
     }
+
+    var b []byte
 
     var out [threefish.BlockSize1024]byte
     var ctr uint64
-    for i := s0.hashsize; i > 0; i -= threefish.BlockSize1024 {
-        s0.output(&out, ctr)
+    for i := s.hashsize; i > 0; i -= threefish.BlockSize1024 {
+        s.output(&out, ctr)
         ctr++
         b = append(b, out[:]...)
     }
 
-    return b[:s0.hashsize]
+    return b[:s.hashsize]
 }
 
 func (s *hashFunc) update(block *[16]uint64) {

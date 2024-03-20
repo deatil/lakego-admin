@@ -4,10 +4,10 @@ import (
     "math"
     "errors"
     "encoding/binary"
+    "crypto/subtle"
     go_cipher "crypto/cipher"
     go_subtle "crypto/subtle"
 
-    "github.com/deatil/go-cryptobin/tool/xor"
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
@@ -17,6 +17,8 @@ const (
     ccmMinimumTagSize    = 4
     ccmStandardNonceSize = 12
 )
+
+var errOpen = errors.New("cipher: message authentication failed")
 
 // ccmAble is an interface implemented by ciphers that have a specific optimized
 // implementation of CCM.
@@ -28,29 +30,6 @@ type ccm struct {
     cipher    go_cipher.Block
     nonceSize int
     tagSize   int
-}
-
-func (c *ccm) NonceSize() int {
-    return c.nonceSize
-}
-
-func (c *ccm) Overhead() int {
-    return c.tagSize
-}
-
-func (c *ccm) MaxLength() int {
-    return maxlen(15-c.NonceSize(), c.Overhead())
-}
-
-func maxlen(L, tagsize int) int {
-    max := (uint64(1) << (8 * L)) - 1
-    if m64 := uint64(math.MaxInt64) - uint64(tagsize); L > 8 || max > m64 {
-        max = m64 // The maximum lentgh on a 64bit arch
-    }
-    if max != uint64(int(max)) {
-        return math.MaxInt32 - tagsize // We have only 32bit int's
-    }
-    return int(max)
 }
 
 // NewCCM returns the given 128-bit, block cipher wrapped in CCM
@@ -103,6 +82,31 @@ func NewCCMWithNonceAndTagSize(cipher go_cipher.Block, nonceSize, tagSize int) (
     return c, nil
 }
 
+func (c *ccm) NonceSize() int {
+    return c.nonceSize
+}
+
+func (c *ccm) Overhead() int {
+    return c.tagSize
+}
+
+func (c *ccm) MaxLength() int {
+    return maxlen(15-c.NonceSize(), c.Overhead())
+}
+
+func maxlen(L, tagsize int) int {
+    max := (uint64(1) << (8 * L)) - 1
+    if m64 := uint64(math.MaxInt64) - uint64(tagsize); L > 8 || max > m64 {
+        max = m64 // The maximum lentgh on a 64bit arch
+    }
+
+    if max != uint64(int(max)) {
+        return math.MaxInt32 - tagsize // We have only 32bit int's
+    }
+
+    return int(max)
+}
+
 // https://tools.ietf.org/html/rfc3610
 func (c *ccm) deriveCounter(counter *[ccmBlockSize]byte, nonce []byte) {
     counter[0] = byte(14 - c.nonceSize)
@@ -111,14 +115,15 @@ func (c *ccm) deriveCounter(counter *[ccmBlockSize]byte, nonce []byte) {
 
 func (c *ccm) cmac(out, data []byte) {
     for len(data) >= ccmBlockSize {
-        xor.XorBytes(out, out, data)
+        subtle.XORBytes(out, out, data)
         c.cipher.Encrypt(out, out)
         data = data[ccmBlockSize:]
     }
+
     if len(data) > 0 {
         var block [ccmBlockSize]byte
         copy(block[:], data)
-        xor.XorBytes(out, out, data)
+        subtle.XORBytes(out, out, data)
         c.cipher.Encrypt(out, out)
     }
 }
@@ -129,10 +134,12 @@ func (c *ccm) auth(nonce, plaintext, additionalData []byte, tagMask *[ccmBlockSi
     if len(additionalData) > 0 {
         out[0] = 1 << 6 // 64*Adata
     }
+
     out[0] |= byte(c.tagSize-2) << 2 // M' = ((tagSize - 2) / 2)*8
     out[0] |= byte(14 - c.nonceSize) // L'
     binary.BigEndian.PutUint64(out[ccmBlockSize-8:], uint64(len(plaintext)))
     copy(out[1:], nonce)
+
     // B0
     c.cipher.Encrypt(out[:], out[:])
 
@@ -160,14 +167,17 @@ func (c *ccm) auth(nonce, plaintext, additionalData []byte, tagMask *[ccmBlockSi
                 binary.BigEndian.PutUint64(block[2:i], uint64(n))
             }
         }
+
         i = copy(block[i:], additionalData) // first block start with additional data length
         c.cmac(out[:], block[:])
         c.cmac(out[:], additionalData[i:])
     }
+
     if len(plaintext) > 0 {
         c.cmac(out[:], plaintext)
     }
-    xor.XorWords(out[:], out[:], tagMask[:])
+
+    subtle.XORBytes(out[:], out[:], tagMask[:])
     return out[:c.tagSize]
 }
 
@@ -175,9 +185,11 @@ func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     if len(nonce) != c.nonceSize {
         panic("cryptobin/ccm: incorrect nonce length given to CCM")
     }
+
     if uint64(len(plaintext)) > uint64(c.MaxLength()) {
         panic("cryptobin/ccm: message too large for CCM")
     }
+
     ret, out := alias.SliceForAppend(dst, len(plaintext)+c.tagSize)
     if alias.InexactOverlap(out, plaintext) {
         panic("cryptobin/ccm: invalid buffer overlap")
@@ -197,12 +209,11 @@ func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     return ret
 }
 
-var errOpen = errors.New("cipher: message authentication failed")
-
 func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     if len(nonce) != c.nonceSize {
         panic("cryptobin/ccm: incorrect nonce length given to CCM")
     }
+
     // Sanity check to prevent the authentication from always succeeding if an implementation
     // leaves tagSize uninitialized, for example.
     if c.tagSize < ccmMinimumTagSize {
@@ -230,8 +241,10 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     }
 
     counter[len(counter)-1] |= 1
+
     ctr := go_cipher.NewCTR(c.cipher, counter[:])
     ctr.XORKeyStream(out, ciphertext)
+
     expectedTag := c.auth(nonce, out, data, &tagMask)
     if go_subtle.ConstantTimeCompare(expectedTag, tag) != 1 {
         // The AESNI code decrypts and authenticates concurrently, and
@@ -241,7 +254,9 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
         for i := range out {
             out[i] = 0
         }
+
         return nil, errOpen
     }
+
     return ret, nil
 }

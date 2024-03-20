@@ -94,10 +94,8 @@ func (this Cryptobin) SM4() Cryptobin {
 }
 
 // Chacha20 | Chacha20IETF | XChacha20
-func (this Cryptobin) Chacha20(nonce string, counter ...uint32) Cryptobin {
+func (this Cryptobin) Chacha20(counter ...uint32) Cryptobin {
     this.multiple = Chacha20
-
-    this.config.Set("nonce", []byte(nonce))
 
     if len(counter) > 0 {
         this.config.Set("counter", counter[0])
@@ -108,22 +106,24 @@ func (this Cryptobin) Chacha20(nonce string, counter ...uint32) Cryptobin {
 
 // Chacha20poly1305
 // nonce is 12 bytes
-func (this Cryptobin) Chacha20poly1305(nonce string, additional string) Cryptobin {
+func (this Cryptobin) Chacha20poly1305(additional ...[]byte) Cryptobin {
     this.multiple = Chacha20poly1305
 
-    this.config.Set("nonce", []byte(nonce))
-    this.config.Set("additional", []byte(additional))
+    if len(additional) > 0 {
+        this.config.Set("additional", additional[0])
+    }
 
     return this
 }
 
 // Chacha20poly1305X
 // nonce is 24 bytes
-func (this Cryptobin) Chacha20poly1305X(nonce string, additional string) Cryptobin {
+func (this Cryptobin) Chacha20poly1305X(additional ...[]byte) Cryptobin {
     this.multiple = Chacha20poly1305X
 
-    this.config.Set("nonce", []byte(nonce))
-    this.config.Set("additional", []byte(additional))
+    if len(additional) > 0 {
+        this.config.Set("additional", additional[0])
+    }
 
     return this
 }
@@ -178,11 +178,9 @@ func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
 }
 
 // Salsa20
-// key is 32 bytes, nonce is 16 bytes.
-func (this Cryptobin) Salsa20(nonce string) Cryptobin {
+// key is 32 bytes, iv is 16 bytes.
+func (this Cryptobin) Salsa20() Cryptobin {
     this.multiple = Salsa20
-
-    this.config.Set("nonce", []byte(nonce))
 
     return this
 }
@@ -621,28 +619,26 @@ func (this Cryptobin) CTR() Cryptobin {
 }
 
 // GCM
-func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
+func (this Cryptobin) GCM(additional ...[]byte) Cryptobin {
     this.mode = GCM
 
     this.config.Set("tagSize", 0)
-    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
 }
 
 // GCMWithTagSize
-func (this Cryptobin) GCMWithTagSize(tagSize int, nonce string, additional ...string) Cryptobin {
+func (this Cryptobin) GCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = GCM
 
     this.config.Set("tagSize", tagSize)
-    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
@@ -650,14 +646,13 @@ func (this Cryptobin) GCMWithTagSize(tagSize int, nonce string, additional ...st
 
 // CCM
 // ccm nounce size, should be in [7,13]
-func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
+func (this Cryptobin) CCM(additional ...[]byte) Cryptobin {
     this.mode = CCM
 
     this.config.Set("tagSize", 0)
-    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
@@ -665,28 +660,25 @@ func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
 
 // CCMWithTagSize
 // ccm nounce size, should be in [7,13]
-func (this Cryptobin) CCMWithTagSize(tagSize int, nonce string, additional ...string) Cryptobin {
+func (this Cryptobin) CCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = CCM
 
     this.config.Set("tagSize", tagSize)
-    this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
 }
 
 // OCB
-// OCB nounce size, should be in [0, cipher.block.BlockSize]
-func (this Cryptobin) OCB(nonce string, additional ...string) Cryptobin {
+// OCB iv size, should be in [0, cipher.block.BlockSize]
+func (this Cryptobin) OCB(additional ...[]byte) Cryptobin {
     this.mode = OCB
 
-    this.config.Set("nonce", []byte(nonce))
-
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
@@ -694,13 +686,11 @@ func (this Cryptobin) OCB(nonce string, additional ...string) Cryptobin {
 
 // EAX
 // EAX nounce size, should be in > 0
-func (this Cryptobin) EAX(nonce string, additional ...string) Cryptobin {
+func (this Cryptobin) EAX(additional ...[]byte) Cryptobin {
     this.mode = EAX
 
-    this.config.Set("nonce", []byte(nonce))
-
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this
@@ -738,14 +728,12 @@ func (this Cryptobin) HCTR(tweak, hkey []byte) Cryptobin {
 }
 
 // MGM
-// ccm nounce size, should be 16 bytes
-func (this Cryptobin) MGM(nonce string, additional ...string) Cryptobin {
+// MGM nounce(iv) size, should be 16 bytes
+func (this Cryptobin) MGM(additional ...[]byte) Cryptobin {
     this.mode = MGM
 
-    this.config.Set("nonce", []byte(nonce))
-
     if len(additional) > 0 {
-        this.config.Set("additional", []byte(additional[0]))
+        this.config.Set("additional", additional[0])
     }
 
     return this

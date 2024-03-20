@@ -502,7 +502,8 @@ func Test_Salsa20(t *testing.T) {
     data := "test-pass"
     cypt := FromString(data).
         SetKey("1234567890abcdef1234567890abcdef").
-        Salsa20("1234567890abcdef").
+        SetIv("1234567890abcdef").
+        Salsa20().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
@@ -510,7 +511,8 @@ func Test_Salsa20(t *testing.T) {
 
     cyptde := FromBase64String(cyptStr).
         SetKey("1234567890abcdef1234567890abcdef").
-        Salsa20("1234567890abcdef").
+        SetIv("1234567890abcdef").
+        Salsa20().
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
@@ -781,22 +783,24 @@ func Test_AesOCBPKCS7Padding(t *testing.T) {
     assertError := cryptobin_test.AssertErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
-    cypt := FromString(data).
+    cypt := New().
+        FromString(data).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfer").
         Aes().
-        OCB("dfertf12dfertf").
+        OCB().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
     assertError(cypt.Error(), "AesOCBPKCS7Padding-Encode")
 
-    cyptde := FromBase64String(cyptStr).
+    cyptde := New().
+        FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfer").
         Aes().
-        OCB("dfertf12dfertf").
+        OCB().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
@@ -813,27 +817,27 @@ func Test_AesEAXPKCS7Padding(t *testing.T) {
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfertf").
         Aes().
-        EAX("dfertf12dfertf").
+        EAX().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "AesOCBPKCS7Padding-Encode")
+    assertError(cypt.Error(), "Test_AesEAXPKCS7Padding-Encode")
 
     cyptde := FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfertf").
         Aes().
-        EAX("dfertf12dfertf").
+        EAX().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "AesOCBPKCS7Padding-Decode")
+    assertError(cyptde.Error(), "Test_AesEAXPKCS7Padding-Decode")
 
-    assert(data, cyptdeStr, "AesOCBPKCS7Padding")
+    assert(data, cyptdeStr, "Test_AesEAXPKCS7Padding")
 }
 
 func Test_AesCCMPKCS7Padding(t *testing.T) {
@@ -843,9 +847,9 @@ func Test_AesCCMPKCS7Padding(t *testing.T) {
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := FromString(data).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfe").
         Aes().
-        CCM("dfertf12dfe").
+        CCM().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
@@ -854,9 +858,9 @@ func Test_AesCCMPKCS7Padding(t *testing.T) {
 
     cyptde := FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
-        SetIv("dfertf12dfertf12").
+        SetIv("dfertf12dfe").
         Aes().
-        CCM("dfertf12dfe").
+        CCM().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
@@ -2528,8 +2532,9 @@ func Test_Weapp_AES256_GCM_Check(t *testing.T) {
 
     cypt := FromString(real_plaintext).
         WithKey(real_key).
+        WithIv(real_iv).
         Aes().
-        GCM(string(real_iv), real_aad).
+        GCM([]byte(real_aad)).
         Encrypt()
     cyptStr := cypt.ToBytes()
 
@@ -2565,8 +2570,9 @@ func Test_Weapp_AES256_GCM_Check2(t *testing.T) {
 
     cypt := FromBytes(real_ct).
         WithKey(real_key).
+        WithIv(real_iv).
         Aes().
-        GCM(string(real_iv), real_aad).
+        GCM([]byte(real_aad)).
         Decrypt()
     cyptStr := cypt.ToString()
 
@@ -2574,6 +2580,41 @@ func Test_Weapp_AES256_GCM_Check2(t *testing.T) {
 
     check := `{"_n":"ShYZpqdVgY+yQVAxNSWhYg","_appid":"wxba6223c06417af7b","_timestamp":1635927956,"errcode":0,"errmsg":"getuserriskrank succ","risk_rank":0,"unoin_id":2258658297}`
     assert(cyptStr, check, "Test_Weapp_AES256_GCM_Check-res")
+}
+
+// 微信小程序 api SM4_GCM 解密测试
+func Test_Weapp_SM4_GCM_Check(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    ct := `fa8VugXI8UA2ugS646ZvuX0wo4qn0Eua2J9jtwACQXeVys3hP/fZDcZC4eEF9es/z/Zx6GM2piwoHKPmPbwzfNXWc/rUH/USFoKo6OBSiR8bb6QgkzYzYL9KsawMr8X/z6y8o3UzE5w65nfTySQFSpEVplD5S+SwQrLi3I2nUwS5N3SoJYsf8BHVfsYLBI9h1NocLgfjjyPYmeKsQ/t1muVWlV2Z75VbqFhM+ECgHpEvcWPDeUN5ZhZ6C/0=`
+    real_ct, _ := base64.StdEncoding.DecodeString(ct)
+
+    local_sym_key := "YXBwaWRkdXNlZm9ydGVzdA=="
+    real_key, _ := base64.StdEncoding.DecodeString(local_sym_key)
+
+    iv := "b3sjwc9yvUEGH45l"
+    real_iv, _ := base64.StdEncoding.DecodeString(iv)
+
+    real_aad := "https://api.weixin.qq.com/wxa/getuserriskrank|wxba6223c06417af7b|1692932963|fa05fe1e5bcc79b81ad5ad4b58acf787"
+
+    authtag := "cDZY4giOZgf73/CvObhypQ=="
+    real_authTag, _ := base64.StdEncoding.DecodeString(authtag)
+
+    real_ct = append(real_ct, real_authTag...)
+
+    cypt := FromBytes(real_ct).
+        WithKey(real_key).
+        WithIv(real_iv).
+        SM4().
+        GCM([]byte(real_aad)).
+        Decrypt()
+    cyptStr := cypt.ToString()
+
+    assertError(cypt.Error(), "Test_Weapp_SM4_GCM_Check-Decode")
+
+    check := `{"appid":"wxba6223c06417af7b","openid":"oEWzBfmdLqhFS2mTXCo2E4Y9gJAM","scene":0,"client_ip":"127.0.0.1","_n":"Mku3TsYcg55vRdTNImb8+w","_appid":"wxba6223c06417af7b","_timestamp":1692932963}`
+    assert(cyptStr, check, "Test_Weapp_SM4_GCM_Check-res")
 }
 
 func Test_AesGCM(t *testing.T) {
@@ -2587,8 +2628,9 @@ func Test_AesGCM(t *testing.T) {
     data := "test-pass"
     cypt := FromString(data).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        GCM(nonce, additional).
+        GCM([]byte(additional)).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
@@ -2596,8 +2638,9 @@ func Test_AesGCM(t *testing.T) {
 
     cyptde := FromBase64String(cyptStr).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        GCM(nonce, additional).
+        GCM([]byte(additional)).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
@@ -2615,19 +2658,23 @@ func Test_AesGCMWithTagSize(t *testing.T) {
     additional := "123123"
 
     data := "test-pass"
-    cypt := FromString(data).
+    cypt := New().
+        FromString(data).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        GCMWithTagSize(13, nonce, additional).
+        GCMWithTagSize(13, []byte(additional)).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
     assertError(cypt.Error(), "Test_AesGCMWithTagSize-Encode")
 
-    cyptde := FromBase64String(cyptStr).
+    cyptde := New().
+        FromBase64String(cyptStr).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        GCMWithTagSize(13, nonce, additional).
+        GCMWithTagSize(13, []byte(additional)).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
@@ -2648,8 +2695,9 @@ func Test_AesCCM(t *testing.T) {
     cypt := New().
         FromString(data).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        CCM(nonce, additional).
+        CCM([]byte(additional)).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
@@ -2658,8 +2706,9 @@ func Test_AesCCM(t *testing.T) {
     cyptde := New().
         FromBase64String(cyptStr).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        CCM(nonce, additional).
+        CCM([]byte(additional)).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
@@ -2679,8 +2728,9 @@ func Test_AesCCMWithTagSize(t *testing.T) {
     data := "test-pass"
     cypt := FromString(data).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        CCMWithTagSize(12, nonce, additional).
+        CCMWithTagSize(12, []byte(additional)).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
@@ -2688,12 +2738,65 @@ func Test_AesCCMWithTagSize(t *testing.T) {
 
     cyptde := FromBase64String(cyptStr).
         SetKey(key).
+        SetIv(nonce).
         Aes().
-        CCMWithTagSize(12, nonce, additional).
+        CCMWithTagSize(12, []byte(additional)).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
     assertError(cyptde.Error(), "Test_AesCCMWithTagSize-Decode")
 
     assert(data, cyptdeStr, "Test_AesCCMWithTagSize")
+}
+
+func Test_Chacha20(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasef").
+        Chacha20().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Chacha20-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasef").
+        Chacha20().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Chacha20-Decode")
+
+    assert(data, cyptdeStr, "Test_Chacha20")
+}
+
+func Test_Chacha20poly1305(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasef").
+        Chacha20poly1305([]byte("test123")).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Chacha20poly1305-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasef").
+        Chacha20poly1305([]byte("test123")).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Chacha20poly1305-Decode")
+
+    assert(data, cyptdeStr, "Test_Chacha20poly1305")
 }

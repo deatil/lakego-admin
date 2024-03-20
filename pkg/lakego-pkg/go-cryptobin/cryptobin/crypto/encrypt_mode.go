@@ -1,7 +1,6 @@
 package crypto
 
 import (
-    "fmt"
     "errors"
     "crypto/cipher"
 
@@ -324,58 +323,50 @@ type ModeGCM struct {}
 
 // 加密 / Encrypt
 func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
-
     var aead cipher.AEAD
     var err error
+
+    iv := opt.Iv()
 
     tagSize := opt.Config().GetInt("tagSize")
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
     } else {
-        aead, err = cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+        aead, err = cipher.NewGCMWithNonceSize(block, len(iv))
     }
 
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+    cryptText := aead.Seal(nil, iv, plain, additional)
 
     return cryptText, nil
 }
 
 // 解密 / Decrypt
 func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
-
     var aead cipher.AEAD
     var err error
+
+    iv := opt.Iv()
 
     tagSize := opt.Config().GetInt("tagSize")
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
     } else {
-        aead, err = cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+        aead, err = cipher.NewGCMWithNonceSize(block, len(iv))
     }
 
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+    dst, err := aead.Open(nil, iv, data, additional)
 
     return dst, err
 }
@@ -386,55 +377,47 @@ type ModeCCM struct {}
 
 // 加密 / Encrypt
 func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
-
     var aead cipher.AEAD
     var err error
+
+    iv := opt.Iv()
 
     tagSize := opt.Config().GetInt("tagSize")
     if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
     } else {
-        aead, err = ccm.NewCCMWithNonceSize(block, len(nonceBytes))
+        aead, err = ccm.NewCCMWithNonceSize(block, len(iv))
     }
 
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+    cryptText := aead.Seal(nil, iv, plain, additional)
 
     return cryptText, nil
 }
 
 // 解密 / Decrypt
+// ccm nounce size, should be in [7,13]
 func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // ccm nounce size, should be in [7,13]
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
-
     var aead cipher.AEAD
     var err error
+
+    iv := opt.Iv()
 
     tagSize := opt.Config().GetInt("tagSize")
     if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
     } else {
-        aead, err = ccm.NewCCMWithNonceSize(block, len(nonceBytes))
+        aead, err = ccm.NewCCMWithNonceSize(block, len(iv))
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+    dst, err := aead.Open(nil, iv, data, additional)
 
     return dst, err
 }
@@ -554,45 +537,37 @@ func init() {
 
 // ===================
 
+// ocb nounce size, should be in [0, cipher.block.BlockSize]
 type ModeOCB struct {}
 
 // 加密 / Encrypt
 func (this ModeOCB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
+    aead, err := ocb.NewOCBWithNonceSize(block, len(iv))
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+    cryptText := aead.Seal(nil, iv, plain, additional)
 
     return cryptText, nil
 }
 
 // 解密 / Decrypt
 func (this ModeOCB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // ocb nounce size, should be in [0, cipher.block.BlockSize]
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    aead, err := ocb.NewOCBWithNonceSize(block, len(nonceBytes))
+    aead, err := ocb.NewOCBWithNonceSize(block, len(iv))
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+    dst, err := aead.Open(nil, iv, data, additional)
 
     return dst, err
 }
@@ -605,52 +580,44 @@ func init() {
 
 // ===================
 
+// eax nounce(iv) size, should be in > 0
 type ModeEAX struct {}
 
 // 加密 / Encrypt
 func (this ModeEAX) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
+    aead, err := eax.NewEAXWithNonceSize(block, len(iv))
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+    cryptText := aead.Seal(nil, iv, plain, additional)
 
     return cryptText, nil
 }
 
 // 解密 / Decrypt
 func (this ModeEAX) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    // eax nounce size, should be in > 0
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
-    aead, err := eax.NewEAXWithNonceSize(block, len(nonceBytes))
+    aead, err := eax.NewEAXWithNonceSize(block, len(iv))
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+    dst, err := aead.Open(nil, iv, data, additional)
 
     return dst, err
 }
 
 func init() {
     UseMode.Add(EAX, func() IMode {
-        return ModeOCB{}
+        return ModeEAX{}
     })
 }
 
@@ -784,44 +751,37 @@ func init() {
 
 // ===================
 
+// MGM nounce(iv) size, should be 16 bytes
 type ModeMGM struct {}
 
 // 加密 / Encrypt
 func (this ModeMGM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
     aead, err := mgm.NewMGM(block)
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    cryptText := aead.Seal(nil, nonceBytes, plain, additionalBytes)
+    cryptText := aead.Seal(nil, iv, plain, additional)
 
     return cryptText, nil
 }
 
 // 解密 / Decrypt
 func (this ModeMGM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
-    nonceBytes := opt.Config().GetBytes("nonce")
-    if nonceBytes == nil {
-        err := fmt.Errorf("nonce is empty.")
-        return nil, err
-    }
+    iv := opt.Iv()
 
     aead, err := mgm.NewMGM(block)
     if err != nil {
         return nil, err
     }
 
-    additionalBytes := opt.Config().GetBytes("additional")
+    additional := opt.Config().GetBytes("additional")
 
-    dst, err := aead.Open(nil, nonceBytes, data, additionalBytes)
+    dst, err := aead.Open(nil, iv, data, additional)
 
     return dst, err
 }
@@ -1020,7 +980,7 @@ func (this ModeG3413OFB) Decrypt(data []byte, block cipher.Block, opt IOption) (
 
 func init() {
     UseMode.Add(G3413OFB, func() IMode {
-        return ModeG3413CBC{}
+        return ModeG3413OFB{}
     })
 }
 
