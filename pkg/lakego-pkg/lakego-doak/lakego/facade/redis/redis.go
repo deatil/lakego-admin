@@ -4,6 +4,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/redis"
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
 /**
@@ -52,6 +53,8 @@ func New(connect ...string) redis.Redis {
         EnableTrace:  cfg.Value("enabletrace").ToBool(),
 
         KeyPrefix:    cfg.Value("key-prefix").ToString(),
+
+        Logger:       logger.New(),
     })
 }
 

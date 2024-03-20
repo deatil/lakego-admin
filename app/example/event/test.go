@@ -3,29 +3,29 @@ package event
 import (
     "github.com/deatil/go-event/event"
 
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 type TestEvent struct {}
 
 func (this *TestEvent) OnTestEvent(data any) {
-    logger.New().Info("1-TestEvent: ")
-    logger.New().Info(data)
+    facade.Logger.Info("1-TestEvent: ")
+    facade.Logger.Info(data)
 }
 
 func (this *TestEvent) OnTestEventName(data string, name any) {
-    logger.New().Info("2-TestEventName start: ")
-    logger.New().Info(data)
-    logger.New().Info(name)
-    logger.New().Info("2-TestEventName end: ")
+    facade.Logger.Info("2-TestEventName start: ")
+    facade.Logger.Info(data)
+    facade.Logger.Info(name)
+    facade.Logger.Info("2-TestEventName end: ")
 }
 
 func (this *TestEvent) OnTestEvents(e *event.Event, name string) {
-    logger.New().Info("===== 3-TestEvents start: =====")
-    logger.New().Info(e.Object)
-    logger.New().Info(e.Type)
-    logger.New().Info(name)
-    logger.New().Info("===== 3-TestEvents end: =====")
+    facade.Logger.Info("===== 3-TestEvents start: =====")
+    facade.Logger.Info(e.Object)
+    facade.Logger.Info(e.Type)
+    facade.Logger.Info(name)
+    facade.Logger.Info("===== 3-TestEvents end: =====")
 }
 
 type TestEventPrefix struct {}
@@ -35,8 +35,8 @@ func (this TestEventPrefix) EventPrefix() string {
 }
 
 func (this TestEventPrefix) OnTestEvent(data any) {
-    logger.New().Info("4-TestEventPrefix: ")
-    logger.New().Info(data)
+    facade.Logger.Info("4-TestEventPrefix: ")
+    facade.Logger.Info(data)
 }
 
 type TestEventSubscribe struct {}
@@ -46,8 +46,8 @@ func (this *TestEventSubscribe) Subscribe(e *event.Events) {
 }
 
 func (this *TestEventSubscribe) OnTestEvent(data any) {
-    logger.New().Info("5-TestEventSubscribe: ")
-    logger.New().Info(data)
+    facade.Logger.Info("5-TestEventSubscribe: ")
+    facade.Logger.Info(data)
 }
 
 // ====================
@@ -57,9 +57,9 @@ type TestEventStructData struct {
 }
 
 func TestEventStruct(data TestEventStructData, name any) {
-    logger.New().Info("6-TestEventStruct: ")
-    logger.New().Info(data.Data)
-    logger.New().Info(name)
+    facade.Logger.Info("6-TestEventStruct: ")
+    facade.Logger.Info(data.Data)
+    facade.Logger.Info(name)
 }
 
 // ====================
@@ -67,6 +67,6 @@ func TestEventStruct(data TestEventStructData, name any) {
 type TestEventStructHandle struct {}
 
 func (this *TestEventStructHandle) Handle(data any) {
-    logger.New().Info("7-TestEventStructHandle: ")
-    logger.New().Info(data)
+    facade.Logger.Info("7-TestEventStructHandle: ")
+    facade.Logger.Info(data)
 }

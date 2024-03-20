@@ -10,8 +10,8 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/facade/cache"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/model/scope"
@@ -834,7 +834,7 @@ func (this *Admin) Logout(ctx *router.Context) {
         return
     }
 
-    c := cache.New()
+    c := facade.Cache
 
     if c.Has(utils.MD5(refreshToken)) {
         this.Error(ctx, "refreshToken已失效")

@@ -13,8 +13,7 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 var (
@@ -53,7 +52,7 @@ func Handler() router.HandlerFunc {
                     }
                 }
 
-                mode := config.New("server").GetString("mode")
+                mode := facade.Config("server").GetString("mode")
 
                 var msg string
 
@@ -99,7 +98,7 @@ func Handler() router.HandlerFunc {
                 }
 
                 // 记录日志
-                logger.New().Error(logData)
+                facade.Logger.Error(logData)
 
                 if brokenPipe {
                     responseData(ctx, "服务器内部异常", responsedata)

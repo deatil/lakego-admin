@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/cache"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
@@ -50,7 +50,7 @@ func init() {
 
 // 强制将 jwt 的 refreshToken 放入黑名单
 func PassportLogout() {
-    c := cache.New()
+    c := facade.Cache
 
     if c.Has(utils.MD5(refreshToken)) {
         fmt.Println("refreshToken 已失效")

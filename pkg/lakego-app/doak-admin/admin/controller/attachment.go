@@ -7,8 +7,8 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/random"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
-    "github.com/deatil/lakego-doak/lakego/facade/cache"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/support/url"
@@ -348,7 +348,7 @@ func (this *Attachment) DownloadCode(ctx *router.Context) {
 
     // 添加到缓存
     code := utils.MD5(goch.ToString(datebin.NowTimestamp()) + random.String(10))
-    cache.New().Put(code, result["id"].(string), 300)
+    facade.Cache.Put(code, result["id"].(string), 300)
 
     // 数据输出
     this.SuccessWithData(ctx, "获取成功", router.H{
@@ -374,7 +374,7 @@ func (this *Attachment) Download(ctx *router.Context) {
         return
     }
 
-    fileId, _ := cache.New().Pull(code)
+    fileId, _ := facade.Cache.Pull(code)
     if fileId == "" {
         this.ReturnString(ctx, "文件ID错误")
         return

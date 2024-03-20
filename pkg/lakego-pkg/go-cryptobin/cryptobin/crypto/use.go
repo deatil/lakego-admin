@@ -624,6 +624,21 @@ func (this Cryptobin) CTR() Cryptobin {
 func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
     this.mode = GCM
 
+    this.config.Set("tagSize", 0)
+    this.config.Set("nonce", []byte(nonce))
+
+    if len(additional) > 0 {
+        this.config.Set("additional", []byte(additional[0]))
+    }
+
+    return this
+}
+
+// GCMWithTagSize
+func (this Cryptobin) GCMWithTagSize(tagSize int, nonce string, additional ...string) Cryptobin {
+    this.mode = GCM
+
+    this.config.Set("tagSize", tagSize)
     this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {
@@ -638,6 +653,22 @@ func (this Cryptobin) GCM(nonce string, additional ...string) Cryptobin {
 func (this Cryptobin) CCM(nonce string, additional ...string) Cryptobin {
     this.mode = CCM
 
+    this.config.Set("tagSize", 0)
+    this.config.Set("nonce", []byte(nonce))
+
+    if len(additional) > 0 {
+        this.config.Set("additional", []byte(additional[0]))
+    }
+
+    return this
+}
+
+// CCMWithTagSize
+// ccm nounce size, should be in [7,13]
+func (this Cryptobin) CCMWithTagSize(tagSize int, nonce string, additional ...string) Cryptobin {
+    this.mode = CCM
+
+    this.config.Set("tagSize", tagSize)
     this.config.Set("nonce", []byte(nonce))
 
     if len(additional) > 0 {

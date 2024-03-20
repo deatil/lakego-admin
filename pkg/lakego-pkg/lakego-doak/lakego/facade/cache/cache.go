@@ -6,6 +6,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
     "github.com/deatil/lakego-doak/lakego/cache"
     "github.com/deatil/lakego-doak/lakego/cache/interfaces"
     redisDriver "github.com/deatil/lakego-doak/lakego/cache/driver/redis"
@@ -25,7 +26,7 @@ import (
 // 初始化
 func init() {
     // 注册默认
-    Register()
+    registerDriver()
 }
 
 // 实例化
@@ -80,7 +81,7 @@ func GetDefaultCache() string {
 }
 
 // 注册
-func Register() {
+func registerDriver() {
     // 注册缓存驱动
     register.
         NewManagerWithPrefix("cache").
@@ -101,6 +102,8 @@ func Register() {
                 PoolTimeout:  cfg.Value("pool-timeout").ToDuration(),
 
                 EnableTrace:  cfg.Value("enabletrace").ToBool(),
+
+                Logger: logger.New(),
             })
 
             return driver

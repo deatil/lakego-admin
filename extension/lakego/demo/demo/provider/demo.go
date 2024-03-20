@@ -3,8 +3,8 @@ package provider
 import (
     "fmt"
 
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/provider"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
 
     iapp "github.com/deatil/lakego-doak/lakego/app/interfaces"
     "github.com/deatil/lakego-doak-extension/extension/extension"
@@ -35,12 +35,12 @@ func (this *Demo) Boot() {
 func (this *Demo) loadExtInfo() {
     // 加载后
     extension.Booting(func() {
-        logger.New().Error("demo Booting")
+        facade.Logger.Error("demo Booting")
     })
 
     // 加载前
     extension.Booted(func() {
-        logger.New().Error("demo Booted")
+        facade.Logger.Error("demo Booted")
     })
 
     slug := "lakego-admin.ext.demo"
@@ -63,7 +63,7 @@ func (this *Demo) loadExtInfo() {
         Version: "1.0.1",
         Adaptation: ">= 1.2.1",
         Install: func() error {
-            logger.New().Error("demo Install")
+            facade.Logger.Error("demo Install")
 
             rules := getRules(slug)
             extension.NewRule().Create(rules, "0")
@@ -71,26 +71,26 @@ func (this *Demo) loadExtInfo() {
             return nil
         },
         Uninstall: func() error {
-            logger.New().Error("demo Uninstall")
+            facade.Logger.Error("demo Uninstall")
 
             extension.NewRule().Delete(slug)
 
             return nil
         },
         Upgrade: func() error {
-            logger.New().Error("demo Upgrade")
+            facade.Logger.Error("demo Upgrade")
 
             return nil
         },
         Enable: func() error {
-            logger.New().Error("demo Enable")
+            facade.Logger.Error("demo Enable")
 
             extension.NewRule().Enable(slug)
 
             return nil
         },
         Disable: func() error {
-            logger.New().Error("demo Disable")
+            facade.Logger.Error("demo Disable")
 
             extension.NewRule().Disable(slug)
 
@@ -99,7 +99,7 @@ func (this *Demo) loadExtInfo() {
         Start: func(i iapp.App) error {
             fmt.Println("demo starting")
 
-            logger.New().Error("demo starting")
+            facade.Logger.Error("demo starting")
 
             return nil
         },

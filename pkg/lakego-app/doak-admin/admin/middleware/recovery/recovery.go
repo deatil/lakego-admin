@@ -12,8 +12,7 @@ import (
     "time"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/support/response"
     "github.com/deatil/lakego-doak-admin/admin/support/http/code"
@@ -56,7 +55,7 @@ func Handler() router.HandlerFunc {
                     }
                 }
 
-                mode := config.New("server").GetString("mode")
+                mode := facade.Config("server").GetString("mode")
 
                 msg := ""
 
@@ -102,7 +101,7 @@ func Handler() router.HandlerFunc {
                 }
 
                 // 记录日志
-                logger.New().Error(logData)
+                facade.Logger.Error(logData)
 
                 if brokenPipe {
                     responseData(ctx, "服务器内部异常", responsedata)
@@ -118,7 +117,7 @@ func Handler() router.HandlerFunc {
 
 func responseData(ctx *router.Context, msg string, data router.H) {
     // 前缀匹配
-    path := "/" + config.New("admin").GetString("Route.Prefix")
+    path := "/" + facade.Config("admin").GetString("Route.Prefix")
 
     url := ctx.Request.URL.String()
 

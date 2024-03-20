@@ -2575,3 +2575,125 @@ func Test_Weapp_AES256_GCM_Check2(t *testing.T) {
     check := `{"_n":"ShYZpqdVgY+yQVAxNSWhYg","_appid":"wxba6223c06417af7b","_timestamp":1635927956,"errcode":0,"errmsg":"getuserriskrank succ","risk_rank":0,"unoin_id":2258658297}`
     assert(cyptStr, check, "Test_Weapp_AES256_GCM_Check-res")
 }
+
+func Test_AesGCM(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    key := "dfertf12dfertf12"
+    nonce := "df35tf12df35"
+    additional := "123123"
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey(key).
+        Aes().
+        GCM(nonce, additional).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_AesGCM-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey(key).
+        Aes().
+        GCM(nonce, additional).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_AesGCM-Decode")
+
+    assert(data, cyptdeStr, "Test_AesGCM")
+}
+
+func Test_AesGCMWithTagSize(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    key := "dfertf12dfertf12"
+    nonce := "df35tf12df35"
+    additional := "123123"
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey(key).
+        Aes().
+        GCMWithTagSize(13, nonce, additional).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_AesGCMWithTagSize-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey(key).
+        Aes().
+        GCMWithTagSize(13, nonce, additional).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_AesGCMWithTagSize-Decode")
+
+    assert(data, cyptdeStr, "Test_AesGCMWithTagSize")
+}
+
+func Test_AesCCM(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    key := "dfertf12dfertf12"
+    nonce := "df35tf12df35"
+    additional := "123123"
+
+    data := "test-pass"
+    cypt := New().
+        FromString(data).
+        SetKey(key).
+        Aes().
+        CCM(nonce, additional).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_AesCCM-Encode")
+
+    cyptde := New().
+        FromBase64String(cyptStr).
+        SetKey(key).
+        Aes().
+        CCM(nonce, additional).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_AesCCM-Decode")
+
+    assert(data, cyptdeStr, "Test_AesCCM")
+}
+
+func Test_AesCCMWithTagSize(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    key := "dfertf12dfertf12"
+    nonce := "df35tf12df35"
+    additional := "123123"
+
+    data := "test-pass"
+    cypt := FromString(data).
+        SetKey(key).
+        Aes().
+        CCMWithTagSize(12, nonce, additional).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_AesCCMWithTagSize-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey(key).
+        Aes().
+        CCMWithTagSize(12, nonce, additional).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_AesCCMWithTagSize-Decode")
+
+    assert(data, cyptdeStr, "Test_AesCCMWithTagSize")
+}

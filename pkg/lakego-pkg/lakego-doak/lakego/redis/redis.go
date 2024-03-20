@@ -11,8 +11,12 @@ import (
     "github.com/go-redis/redis/extra/redisotel/v8"
 
     "github.com/deatil/go-goch/goch"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
+
+// 日志接口
+type iLogger interface {
+    Errorf(template string, args ...any)
+}
 
 // 缓存配置
 type Config struct {
@@ -30,6 +34,8 @@ type Config struct {
     EnableTrace  bool
 
     KeyPrefix    string
+
+    Logger iLogger
 }
 
 /**
@@ -71,7 +77,9 @@ func New(config Config) Redis {
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.New().Error(fmt.Sprintf("redis: %s", err.Error()))
+        if config.Logger != nil {
+            config.Logger.Errorf("redis: %s", err.Error())
+        }
     }
 
     // 调试

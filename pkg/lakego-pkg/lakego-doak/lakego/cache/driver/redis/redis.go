@@ -1,15 +1,12 @@
 package redis
 
 import (
-    "fmt"
     "time"
     "errors"
     "context"
 
     "github.com/go-redis/redis/v8"
     "github.com/go-redis/redis/extra/redisotel/v8"
-
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
 )
 
 // 构造函数
@@ -31,7 +28,9 @@ func New(config Config) *Redis {
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.New().Error(fmt.Sprintf("cache-redis: %s", err.Error()))
+        if config.Logger != nil {
+            config.Logger.Errorf("cache-redis: %s", err.Error())
+        }
     }
 
     // 调试
@@ -43,6 +42,11 @@ func New(config Config) *Redis {
         ctx:    context.Background(),
         client: client,
     }
+}
+
+// 日志接口
+type iLogger interface {
+    Errorf(template string, args ...any)
 }
 
 // 缓存配置
@@ -59,6 +63,8 @@ type Config struct {
     PoolTimeout  time.Duration
 
     EnableTrace  bool
+
+    Logger iLogger
 }
 
 /**

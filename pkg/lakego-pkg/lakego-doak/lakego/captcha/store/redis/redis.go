@@ -1,7 +1,6 @@
 package redis
 
 import (
-    "fmt"
     "time"
     "context"
 
@@ -9,7 +8,6 @@ import (
     "github.com/go-redis/redis/v8"
     "github.com/go-redis/redis/extra/redisotel/v8"
 
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
     "github.com/deatil/lakego-doak/lakego/captcha/store"
     "github.com/deatil/lakego-doak/lakego/captcha/interfaces"
 )
@@ -33,7 +31,9 @@ func New(config Config) interfaces.Store {
     defer cancel()
 
     if _, err := client.Ping(ctx).Result(); err != nil {
-        logger.New().Error(fmt.Sprintf("captcha-redis: %s", err.Error()))
+        if config.Logger != nil {
+            config.Logger.Errorf("captcha-redis: %s", err.Error())
+        }
     }
 
     // 调试
@@ -50,6 +50,11 @@ func New(config Config) interfaces.Store {
             LocalCache: cache.NewTinyLFU(1000, time.Minute),
         }),
     }
+}
+
+// 日志接口
+type iLogger interface {
+    Errorf(template string, args ...any)
 }
 
 // 缓存配置
@@ -69,6 +74,8 @@ type Config struct {
 
     KeyPrefix    string
     TTL          int
+
+    Logger iLogger
 }
 
 /**

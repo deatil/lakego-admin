@@ -2,7 +2,7 @@ package url
 
 import (
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
 )
 
@@ -13,7 +13,7 @@ func MatchPath(ctx *router.Context, path string, current string) bool {
 
 // 生成后台链接
 func AdminUrl(url string) string {
-    group := config.New("admin").GetString("Route.Prefix")
+    group := facade.Config("admin").GetString("Route.Prefix")
 
     return "/" + group + "/" + url
 }

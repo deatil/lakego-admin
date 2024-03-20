@@ -9,6 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/logger"
     "github.com/deatil/lakego-doak/lakego/captcha"
     "github.com/deatil/lakego-doak/lakego/captcha/interfaces"
     redis_store "github.com/deatil/lakego-doak/lakego/captcha/store/redis"
@@ -126,6 +127,8 @@ func Register() {
 
                     KeyPrefix:    cfg.Value("key-prefix").ToString(),
                     TTL:          cfg.Value("ttl").ToInt(),
+
+                    Logger: logger.New(),
                 })
 
                 return store

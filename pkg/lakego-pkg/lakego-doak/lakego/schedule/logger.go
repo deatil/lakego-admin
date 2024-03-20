@@ -1,7 +1,7 @@
 package schedule
 
 import (
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 构造函数
@@ -21,5 +21,5 @@ type Logger struct {}
 func (this Logger) Printf(msg string, v ...any) {
     msg = "schedule: " + msg
 
-    logger.New().Errorf(msg, v...)
+    facade.Logger.Errorf(msg, v...)
 }

@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/schedule"
-    "github.com/deatil/lakego-doak/lakego/facade/logger"
+    "github.com/deatil/lakego-doak/lakego/facade"
     providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 
     admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
@@ -56,13 +56,13 @@ func (this *ExampleServiceProvider) Boot() {
 // > go run main.go lakego:schedule
 func (this *ExampleServiceProvider) Schedule(s *schedule.Schedule) {
     s.AddFunc(func() {
-        logger.New().Info("计划任务111运行中...")
+        facade.Logger.Info("计划任务111运行中...")
 
         // panic("errors")
     }).EveryMinute().WithName("cron111")
 
     s.AddFunc(func() {
-        logger.New().Info("计划任务222运行中...")
+        facade.Logger.Info("计划任务222运行中...")
     }).EveryMinute().WithName("cron222")
 
     s.RemoveEntry("cron222")
@@ -154,8 +154,8 @@ func (this *ExampleServiceProvider) registerProviders() {
  */
 func (this *ExampleServiceProvider) registerPEvents() {
     dataFunc := func(data any) {
-        logger.New().Info("0-Test Func: ")
-        logger.New().Info(data)
+        facade.Logger.Info("0-Test Func: ")
+        facade.Logger.Info(data)
     }
     // 注册
     event.Listen("data.error", dataFunc)

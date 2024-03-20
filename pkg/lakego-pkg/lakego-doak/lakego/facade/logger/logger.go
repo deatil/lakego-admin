@@ -14,7 +14,7 @@ import (
 // 初始化
 func init() {
     // 注册默认
-    Register()
+    registerDriver()
 }
 
 /**
@@ -79,7 +79,7 @@ func GetDefaultDriver() string {
 }
 
 // 注册
-func Register() {
+func registerDriver() {
     // 注册驱动
     register.
         NewManagerWithPrefix("logger").

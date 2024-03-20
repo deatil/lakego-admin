@@ -330,7 +330,16 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
         return nil, err
     }
 
-    aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+    var aead cipher.AEAD
+    var err error
+
+    tagSize := opt.Config().GetInt("tagSize")
+    if tagSize > 0 {
+        aead, err = cipher.NewGCMWithTagSize(block, tagSize)
+    } else {
+        aead, err = cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+    }
+
     if err != nil {
         return nil, err
     }
@@ -350,7 +359,16 @@ func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
         return nil, err
     }
 
-    aead, err := cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+    var aead cipher.AEAD
+    var err error
+
+    tagSize := opt.Config().GetInt("tagSize")
+    if tagSize > 0 {
+        aead, err = cipher.NewGCMWithTagSize(block, tagSize)
+    } else {
+        aead, err = cipher.NewGCMWithNonceSize(block, len(nonceBytes))
+    }
+
     if err != nil {
         return nil, err
     }
@@ -374,7 +392,16 @@ func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
         return nil, err
     }
 
-    aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
+    var aead cipher.AEAD
+    var err error
+
+    tagSize := opt.Config().GetInt("tagSize")
+    if tagSize > 0 {
+        aead, err = ccm.NewCCMWithTagSize(block, tagSize)
+    } else {
+        aead, err = ccm.NewCCMWithNonceSize(block, len(nonceBytes))
+    }
+
     if err != nil {
         return nil, err
     }
@@ -395,9 +422,14 @@ func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
         return nil, err
     }
 
-    aead, err := ccm.NewCCMWithNonceSize(block, len(nonceBytes))
-    if err != nil {
-        return nil, err
+    var aead cipher.AEAD
+    var err error
+
+    tagSize := opt.Config().GetInt("tagSize")
+    if tagSize > 0 {
+        aead, err = ccm.NewCCMWithTagSize(block, tagSize)
+    } else {
+        aead, err = ccm.NewCCMWithNonceSize(block, len(nonceBytes))
     }
 
     additionalBytes := opt.Config().GetBytes("additional")
