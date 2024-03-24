@@ -3,16 +3,16 @@ package ascon
 import (
     "bufio"
     "bytes"
+    "crypto/cipher"
+    "encoding/hex"
     "fmt"
     "math/rand"
     "os"
+    "path/filepath"
     "reflect"
     "strings"
     "testing"
     "testing/quick"
-    "path/filepath"
-    "crypto/cipher"
-    "encoding/hex"
 )
 
 var stateType = reflect.TypeOf([5]uint64{})

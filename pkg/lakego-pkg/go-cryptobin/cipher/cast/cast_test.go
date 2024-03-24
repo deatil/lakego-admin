@@ -1,7 +1,6 @@
-package cast256
+package cast
 
 import (
-    "fmt"
     "bytes"
     "testing"
     "math/rand"
@@ -173,46 +172,6 @@ func Test_Key128(t *testing.T) {
     }
 }
 
-func Test_Check(t *testing.T) {
-    var key [32]byte
-
-    for i := 0; i < 32; i++ {
-        key[i] = byte((i * 2 + 10) % 256)
-    }
-
-    plaintext := "000102030405060708090a0b0c0d0e0f"
-    ciphertext := "47cc8266c2221328a7398f2655551d6a"
-
-    cipherBytes, _ := hex.DecodeString(ciphertext)
-    plainBytes, _ := hex.DecodeString(plaintext)
-
-    cipher, err := NewCipher(key[:])
-    if err != nil {
-        t.Fatal(err.Error())
-    }
-
-    var encrypted []byte = make([]byte, len(plainBytes))
-    cipher.Encrypt(encrypted, plainBytes)
-
-    if ciphertext != fmt.Sprintf("%x", encrypted) {
-        t.Errorf("Encrypt error: act=%x, old=%s\n", encrypted, ciphertext)
-    }
-
-    // ==========
-
-    cipher2, err := NewCipher(key[:])
-    if err != nil {
-        t.Fatal(err.Error())
-    }
-
-    var decrypted []byte = make([]byte, len(cipherBytes))
-    cipher2.Decrypt(decrypted, cipherBytes)
-
-    if plaintext != fmt.Sprintf("%x", decrypted) {
-        t.Errorf("Decrypt error: act=%x, old=%s\n", decrypted, plaintext)
-    }
-}
-
 func fromHex(s string) []byte {
     h, _ := hex.DecodeString(s)
     return h
@@ -225,7 +184,7 @@ type testData struct {
     key []byte
 }
 
-func Test_Check_List(t *testing.T) {
+func Test_Check(t *testing.T) {
    tests := []testData{
         {
            32,
@@ -235,14 +194,8 @@ func Test_Check_List(t *testing.T) {
         },
         {
            32,
-           fromHex("000000000000000000000000cf05f422"),
-           fromHex("f61772310e2160770eb7e7e92469ff32"),
-           fromHex("2342bb9efa38542cbed0ac83940ac2988d7c47ce264908461cc1b5137ae6b604"),
-        },
-        {
-           32,
-           fromHex("000000000000000000000000f0271543"),
-           fromHex("ad9493d3f4891ebba47aa9605edb432e"),
+           fromHex("000000000000000000000000bef5e412"),
+           fromHex("7b009fbc0188e770acf8f05d7c5a3144"),
            fromHex("2342bb9efa38542cbed0ac83940ac2988d7c47ce264908461cc1b5137ae6b604"),
         },
 

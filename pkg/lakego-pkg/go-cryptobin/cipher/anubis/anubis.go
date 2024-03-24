@@ -173,7 +173,7 @@ func (this *anubisCipher) expandKey(key []byte) {
    var inter [MAX_N]uint32 /* initialize as all zeroes */
    var v, K0, K1, K2, K3 uint32
 
-   this.keyBits = int32(len(key)) * 8;
+   this.keyBits = int32(len(key)) * 8
 
    /*
     * determine the N length parameter:

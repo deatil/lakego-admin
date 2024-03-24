@@ -23,7 +23,7 @@ type cast256Cipher struct {
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
-        case 32:
+        case 16, 20, 24, 28, 32:
             break
         default:
             return nil, KeySizeError(len(key))
@@ -74,19 +74,14 @@ func (this *cast256Cipher) Decrypt(dst, src []byte) {
 func (this *cast256Cipher) encrypt(dst, src []byte) {
     blk := bytesToUint32s(src)
 
-    blk = f_rnd(blk,  0, this.l_key)
-    blk = f_rnd(blk,  8, this.l_key)
-    blk = f_rnd(blk, 16, this.l_key)
-    blk = f_rnd(blk, 24, this.l_key)
-    blk = f_rnd(blk, 32, this.l_key)
-    blk = f_rnd(blk, 40, this.l_key)
+    var i uint32
+    for i = 0; i < 6; i++ {
+        f_rnd(&blk, i * 8, this.l_key)
+    }
 
-    blk = i_rnd(blk, 48, this.l_key)
-    blk = i_rnd(blk, 56, this.l_key)
-    blk = i_rnd(blk, 64, this.l_key)
-    blk = i_rnd(blk, 72, this.l_key)
-    blk = i_rnd(blk, 80, this.l_key)
-    blk = i_rnd(blk, 88, this.l_key)
+    for i = 6; i < 12; i++ {
+        i_rnd(&blk, i * 8, this.l_key)
+    }
 
     dstBytes := uint32sToBytes(blk)
 
@@ -96,19 +91,14 @@ func (this *cast256Cipher) encrypt(dst, src []byte) {
 func (this *cast256Cipher) decrypt(dst, src []byte) {
     blk := bytesToUint32s(src)
 
-    blk = f_rnd(blk, 88, this.l_key)
-    blk = f_rnd(blk, 80, this.l_key)
-    blk = f_rnd(blk, 72, this.l_key)
-    blk = f_rnd(blk, 64, this.l_key)
-    blk = f_rnd(blk, 56, this.l_key)
-    blk = f_rnd(blk, 48, this.l_key)
+    var i uint32
+    for i = 11; i > 5; i-- {
+        f_rnd(&blk, i * 8, this.l_key)
+    }
 
-    blk = i_rnd(blk, 40, this.l_key)
-    blk = i_rnd(blk, 32, this.l_key)
-    blk = i_rnd(blk, 24, this.l_key)
-    blk = i_rnd(blk, 16, this.l_key)
-    blk = i_rnd(blk,  8, this.l_key)
-    blk = i_rnd(blk,  0, this.l_key)
+    for i = 6; i > 0; i-- {
+        i_rnd(&blk, (i-1) * 8, this.l_key)
+    }
 
     dstBytes := uint32sToBytes(blk)
 
@@ -125,8 +115,8 @@ func (this *cast256Cipher) expandKey(key []byte) {
         lk[i] = inKey[i]
     }
 
-    cm = 0x5a827999;
-    cr = 19;
+    cm = 0x5a827999
+    cr = 19
 
     for i = 0; i < 96; i += 8 {
         for j = 0; j < 8; j++ {
@@ -136,7 +126,7 @@ func (this *cast256Cipher) expandKey(key []byte) {
             cr += 17
         }
 
-        lk = k_rnd(lk, tr, tm)
+        k_rnd(&lk, tr, tm)
 
         for j = 0; j < 8; j++ {
             tm[j] = cm
@@ -145,7 +135,7 @@ func (this *cast256Cipher) expandKey(key []byte) {
             cr += 17
         }
 
-        lk = k_rnd(lk, tr, tm)
+        k_rnd(&lk, tr, tm)
 
         this.l_key[i + 0] = lk[0]
         this.l_key[i + 1] = lk[2]

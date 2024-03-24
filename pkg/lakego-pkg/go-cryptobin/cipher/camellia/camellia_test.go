@@ -32,37 +32,6 @@ var camelliaTests = []struct {
     },
 }
 
-/*
-func TestRot(t  *testing.T) {
-
-    return
-
-    var u8 = uint8(1)
-    for i := 0; i < 8; i++ {
-        fmt.Printf("1: %d: %08b\n", i, rotl8(1, uint(i)))
-        u8 = rotl8(u8, 1)
-        fmt.Printf("u: %d: %08b\n", i+1, u8)
-    }
-
-    var u32 = uint32(1)
-    for i := 0; i < 32; i++ {
-        fmt.Printf("1: %02d: %032b\n", i, rotl32(1, uint(i)))
-        u32 = rotl32(u32, 1)
-        fmt.Printf("u: %02d: %032b\n", i+1, u32)
-    }
-
-    var u128 [2]uint64
-    u128[1] = 1
-    for i := 0; i < 128; i++ {
-        var one  = [2]uint64{0, 1}
-        u0, u1 := rotl128(one, uint(i))
-        fmt.Printf("1: %03d: %064b %064b\n", i, u0, u1)
-        u128[0], u128[1] = rotl128(u128, 1)
-        fmt.Printf("u: %03d: %064b %064b\n", i+1, u128[0], u128[1])
-    }
-}
-*/
-
 func TestCamellia(t *testing.T) {
 
     for _, tt := range camelliaTests {

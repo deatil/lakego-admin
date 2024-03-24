@@ -5,6 +5,7 @@ import (
     "bytes"
     "testing"
     "crypto/aes"
+    "encoding/hex"
 )
 
 func TestInvalidKeySize(t *testing.T) {
@@ -93,6 +94,89 @@ func TestEncryptAndDecrypt(t *testing.T) {
 
     if !bytes.Equal(input, plain) {
         t.Errorf("input(%x) != decrypted(%x)", input, plain)
+    }
+}
+
+func fromHex(s string) []byte {
+    h, _ := hex.DecodeString(s)
+    return h
+}
+
+type testData struct {
+    keylen int32
+    pt []byte
+    ct []byte
+    key []byte
+}
+
+func Test_Check(t *testing.T) {
+   tests := []testData{
+        {
+           32,
+           fromHex("00112233445566778899aabbccddeeff"),
+           fromHex("f92bd7c79fb72e2f2b8f80c1972d24fc"),
+           fromHex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"),
+        },
+        {
+           32,
+           fromHex("11111111aaaaaaaa11111111bbbbbbbb"),
+           fromHex("58a875e6044ad7fffa4f58420f7f442d"),
+           fromHex("00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"),
+        },
+
+        {
+           24,
+           fromHex("00112233445566778899aabbccddeeff"),
+           fromHex("26449c1805dbe7aa25a468ce263a9e79"),
+           fromHex("000102030405060708090a0b0c0d0e0f1011121314151617"),
+        },
+        {
+           24,
+           fromHex("33333333cccccccc33333333dddddddd"),
+           fromHex("f1f7188734863d7b8b6ede5a5b2f06a0"),
+           fromHex("00112233445566778899aabbccddeeff0011223344556677"),
+        },
+
+        {
+           16,
+           fromHex("11111111aaaaaaaa11111111bbbbbbbb"),
+           fromHex("c6ecd08e22c30abdb215cf74e2075e6e"),
+           fromHex("00112233445566778899aabbccddeeff"),
+        },
+        {
+           16,
+           fromHex("55555555aaaaaaaa55555555bbbbbbbb"),
+           fromHex("086953f752cc1e46c7c794ae85537dca"),
+           fromHex("00112233445566778899aabbccddeeff"),
+        },
+    }
+
+    for i, test := range tests {
+        c, err := NewCipher(test.key)
+        if err != nil {
+            t.Fatal(err.Error())
+        }
+
+        tmp := make([]byte, BlockSize)
+        c.Encrypt(tmp, test.pt)
+
+        if !bytes.Equal(tmp, test.ct) {
+            t.Errorf("[%d] Check error: got %x, want %x", i, tmp, test.ct)
+        }
+
+        // ===========
+
+        c2, err := NewCipher(test.key)
+        if err != nil {
+            t.Fatal(err.Error())
+        }
+
+        tmp2 := make([]byte, BlockSize)
+        c2.Decrypt(tmp2, test.ct)
+
+        if !bytes.Equal(tmp2, test.pt) {
+            t.Errorf("[%d] Check Decrypt error: got %x, want %x", i, tmp2, test.pt)
+        }
     }
 }
 

@@ -55,6 +55,7 @@ func (s *state) encrypt128a(dst, src []byte) {
         src = src[n:]
         dst = dst[n:]
     }
+
     if len(src) >= 8 {
         s.x0 ^= binary.BigEndian.Uint64(src[0:8])
         s.x1 ^= be64n(src[8:])
@@ -75,6 +76,7 @@ func (s *state) decrypt128a(dst, src []byte) {
         src = src[n:]
         dst = dst[n:]
     }
+
     if len(src) >= 8 {
         c0 := binary.BigEndian.Uint64(src[0:8])
         c1 := be64n(src[8:])

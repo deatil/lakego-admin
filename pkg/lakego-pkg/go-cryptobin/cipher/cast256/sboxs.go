@@ -1,6 +1,6 @@
 package cast256
 
-var cast256_sbox = [4][256]uint32{
+var sbox = [4][256]uint32{
     {
         0x30fb40d4, 0x9fa0ff0b, 0x6beccd2f,
         0x3f258c7a, 0x1e213f2f, 0x9C004dd3,

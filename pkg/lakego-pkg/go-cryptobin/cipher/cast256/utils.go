@@ -69,80 +69,64 @@ func rotr32(x, n uint32) uint32 {
     return rotl32(x, 32 - n);
 }
 
-func byteswap32(x uint32) uint32 {
-    return ((rotl32(x, 8) & 0x00ff00ff) | (rotr32(x, 8) & 0xff00ff00))
+func getByte(x, n uint32) byte {
+    return byte(x >> (8 * n))
 }
 
-func getByte(x, n uint32) uint8 {
-    return uint8(x >> (8 * n))
-}
-
-func f1(y, x, kr, km uint32) uint32 {
+func f1(y *uint32, x, kr, km uint32) {
     t := rotl32(km + x, kr)
 
-    u := cast256_sbox[0][getByte(t, 3)]
-    u ^= cast256_sbox[1][getByte(t, 2)]
-    u -= cast256_sbox[2][getByte(t, 1)]
-    u += cast256_sbox[3][getByte(t, 0)]
+    u := sbox[0][getByte(t, 3)]
+    u ^= sbox[1][getByte(t, 2)]
+    u -= sbox[2][getByte(t, 1)]
+    u += sbox[3][getByte(t, 0)]
 
-    y ^= u
-
-    return y
+    (*y) ^= u
 }
 
-func f2(y, x, kr, km uint32) uint32 {
+func f2(y *uint32, x, kr, km uint32) {
     t := rotl32(km ^ x, kr)
 
-    u := cast256_sbox[0][getByte(t, 3)]
-    u -= cast256_sbox[1][getByte(t, 2)]
-    u += cast256_sbox[2][getByte(t, 1)]
-    u ^= cast256_sbox[3][getByte(t, 0)]
+    u := sbox[0][getByte(t, 3)]
+    u -= sbox[1][getByte(t, 2)]
+    u += sbox[2][getByte(t, 1)]
+    u ^= sbox[3][getByte(t, 0)]
 
-    y ^= u
-
-    return y
+    (*y) ^= u
 }
 
-func f3(y, x, kr, km uint32) uint32 {
+func f3(y *uint32, x, kr, km uint32) {
     t := rotl32(km - x, kr)
 
-    u := cast256_sbox[0][getByte(t, 3)]
-    u += cast256_sbox[1][getByte(t, 2)]
-    u ^= cast256_sbox[2][getByte(t, 1)]
-    u -= cast256_sbox[3][getByte(t, 0)]
+    u := sbox[0][getByte(t, 3)]
+    u += sbox[1][getByte(t, 2)]
+    u ^= sbox[2][getByte(t, 1)]
+    u -= sbox[3][getByte(t, 0)]
 
-    y ^= u
-
-    return y
+    (*y) ^= u
 }
 
-func f_rnd(x [4]uint32, n uint32, l_key [96]uint32) [4]uint32 {
-    x[2] = f1(x[2], x[3], l_key[n],     l_key[n + 4])
-    x[1] = f2(x[1], x[2], l_key[n + 1], l_key[n + 5])
-    x[0] = f3(x[0], x[1], l_key[n + 2], l_key[n + 6])
-    x[3] = f1(x[3], x[0], l_key[n + 3], l_key[n + 7])
-
-    return x
+func f_rnd(x *[4]uint32, n uint32, l_key [96]uint32) {
+    f1(&x[2], x[3], l_key[n],     l_key[n + 4])
+    f2(&x[1], x[2], l_key[n + 1], l_key[n + 5])
+    f3(&x[0], x[1], l_key[n + 2], l_key[n + 6])
+    f1(&x[3], x[0], l_key[n + 3], l_key[n + 7])
 }
 
-func i_rnd(x [4]uint32, n uint32, l_key [96]uint32) [4]uint32 {
-    x[3] = f1(x[3], x[0], l_key[n + 3], l_key[n + 7])
-    x[0] = f3(x[0], x[1], l_key[n + 2], l_key[n + 6])
-    x[1] = f2(x[1], x[2], l_key[n + 1], l_key[n + 5])
-    x[2] = f1(x[2], x[3], l_key[n],     l_key[n + 4])
-
-    return x
+func i_rnd(x *[4]uint32, n uint32, l_key [96]uint32) {
+    f1(&x[3], x[0], l_key[n + 3], l_key[n + 7])
+    f3(&x[0], x[1], l_key[n + 2], l_key[n + 6])
+    f2(&x[1], x[2], l_key[n + 1], l_key[n + 5])
+    f1(&x[2], x[3], l_key[n],     l_key[n + 4])
 }
 
-func k_rnd(k, tr, tm [8]uint32) [8]uint32 {
-    k[6] = f1(k[6], k[7], tr[0], tm[0])
-    k[5] = f2(k[5], k[6], tr[1], tm[1])
-    k[4] = f3(k[4], k[5], tr[2], tm[2])
-    k[3] = f1(k[3], k[4], tr[3], tm[3])
-    k[2] = f2(k[2], k[3], tr[4], tm[4])
-    k[1] = f3(k[1], k[2], tr[5], tm[5])
-    k[0] = f1(k[0], k[1], tr[6], tm[6])
-    k[7] = f2(k[7], k[0], tr[7], tm[7])
-
-    return k
+func k_rnd(k *[8]uint32, tr, tm [8]uint32) {
+    f1(&k[6], k[7], tr[0], tm[0])
+    f2(&k[5], k[6], tr[1], tm[1])
+    f3(&k[4], k[5], tr[2], tm[2])
+    f1(&k[3], k[4], tr[3], tm[3])
+    f2(&k[2], k[3], tr[4], tm[4])
+    f3(&k[1], k[2], tr[5], tm[5])
+    f1(&k[0], k[1], tr[6], tm[6])
+    f2(&k[7], k[0], tr[7], tm[7])
 }

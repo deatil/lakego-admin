@@ -91,7 +91,6 @@ func gamma_tau(b0 []uint32, b1 []uint32, i uint32) {
             uint32(s_box[(i + 3) & 3][Byte(b1[1], i)]) <<  8 |
             uint32(s_box[ i         ][Byte(b1[2], i)]) << 16 |
             uint32(s_box[(i + 1) & 3][Byte(b1[3], i)]) << 24
-
 }
 
 const (
@@ -112,16 +111,16 @@ func row_perm(x uint32) uint32 {
 
 func fr0(y []uint32, x []uint32, i, k uint32) {
     y[i] = s_tab[ i         ][Byte(x[0], i)] ^
-              s_tab[(i + 1) & 3][Byte(x[1], i)] ^
-              s_tab[(i + 2) & 3][Byte(x[2], i)] ^
-              s_tab[(i + 3) & 3][Byte(x[3], i)] ^ k
+           s_tab[(i + 1) & 3][Byte(x[1], i)] ^
+           s_tab[(i + 2) & 3][Byte(x[2], i)] ^
+           s_tab[(i + 3) & 3][Byte(x[3], i)] ^ k
 }
 
 func fr1(y []uint32, x []uint32, i, k uint32) {
     y[i] = s_tab[(i + 2) & 3][Byte(x[0], i)] ^
-              s_tab[(i + 3) & 3][Byte(x[1], i)] ^
-              s_tab[ i         ][Byte(x[2], i)] ^
-              s_tab[(i + 1) & 3][Byte(x[3], i)] ^ k
+           s_tab[(i + 3) & 3][Byte(x[1], i)] ^
+           s_tab[ i         ][Byte(x[2], i)] ^
+           s_tab[(i + 1) & 3][Byte(x[3], i)] ^ k
 }
 
 func f0_rnd(b1 []uint32, b0 []uint32, kp []uint32) {
@@ -165,11 +164,13 @@ func gen_tab() {
         xl = uint32(p1[i >> 4])
         xr = uint32(p0[i & 15])
 
-        yl  = (xl & 0x0e) ^ ((xl << 3) & 0x08) ^ ((xl >> 3) & 0x01) ^
+        yl  = (xl & 0x0e) ^
+            ((xl << 3) & 0x08) ^ ((xl >> 3) & 0x01) ^
             ((xr << 1) & 0x0a) ^ ((xr << 2) & 0x04) ^
             ((xr >> 2) & 0x02) ^ ((xr >> 1) & 0x01)
 
-        yr  = (xr & 0x0d) ^ ((xr << 1) & 0x04) ^ ((xr >> 1) & 0x02) ^
+        yr  = (xr & 0x0d) ^
+            ((xr << 1) & 0x04) ^ ((xr >> 1) & 0x02) ^
             ((xl >> 1) & 0x05) ^ ((xl << 2) & 0x08) ^
             ((xl << 1) & 0x02) ^ ((xl >> 2) & 0x01)
 

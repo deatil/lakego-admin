@@ -256,6 +256,7 @@ func (s *state) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, err
         runtime.KeepAlive(out)
         return nil, errOpen
     }
+
     return ret, nil
 }
 

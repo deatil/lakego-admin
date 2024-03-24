@@ -108,51 +108,45 @@ func (this *crypton1Cipher) expandKey(key []byte) {
         in_key = append(in_key, bytesToUint32(key[l2:]))
     }
 
-    tu[0] = 0
-    tv[0] = 0
-    tu[1] = 0
-    tv[1] = 0
-    tu[2] = 0
-    tv[2] = 0
-    tu[3] = 0
-    tv[3] = 0
+    tu = [4]uint32{}
+    tv = [4]uint32{}
 
     kk := (key_len + 63) / 64
 
     switch kk {
         case 4:
-            tu[3] =  Byte(in_key[6],0) |
+            tu[3] = Byte(in_key[6],0) |
                 (Byte(in_key[6],2) <<  8) |
                 (Byte(in_key[7],0) << 16) |
                 (Byte(in_key[7],2) << 24)
-            tv[3] =  Byte(in_key[6],1) |
+            tv[3] = Byte(in_key[6],1) |
                 (Byte(in_key[6],3) <<  8) |
                 (Byte(in_key[7],1) << 16) |
                 (Byte(in_key[7],3) << 24)
         case 3:
-            tu[2] =  Byte(in_key[4],0) |
+            tu[2] = Byte(in_key[4],0) |
                 (Byte(in_key[4],2) <<  8) |
                 (Byte(in_key[5],0) << 16) |
                 (Byte(in_key[5],2) << 24)
-            tv[2] =  Byte(in_key[4],1) |
+            tv[2] = Byte(in_key[4],1) |
                 (Byte(in_key[4],3) <<  8) |
                 (Byte(in_key[5],1) << 16) |
                 (Byte(in_key[5],3) << 24)
         case 2:
-            tu[0] =  Byte(in_key[0],0) |
+            tu[0] = Byte(in_key[0],0) |
                 (Byte(in_key[0],2) <<  8) |
                 (Byte(in_key[1],0) << 16) |
                 (Byte(in_key[1],2) << 24)
-            tv[0] =  Byte(in_key[0],1) |
+            tv[0] = Byte(in_key[0],1) |
                 (Byte(in_key[0],3) <<  8) |
                 (Byte(in_key[1],1) << 16) |
                 (Byte(in_key[1],3) << 24)
 
-            tu[1] =  Byte(in_key[2],0) |
+            tu[1] = Byte(in_key[2],0) |
                 (Byte(in_key[2],2) <<  8) |
                 (Byte(in_key[3],0) << 16) |
                 (Byte(in_key[3],2) << 24)
-            tv[1] =  Byte(in_key[2],1) |
+            tv[1] = Byte(in_key[2],1) |
                 (Byte(in_key[2],3) <<  8) |
                 (Byte(in_key[3],1) << 16) |
                 (Byte(in_key[3],3) << 24)
