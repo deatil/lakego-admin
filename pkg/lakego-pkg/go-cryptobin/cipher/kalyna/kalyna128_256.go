@@ -66,7 +66,7 @@ func (this *kalynaCipher128_256) encrypt(out []byte, in []byte) {
     var t1, t2 []uint64
     t1, t2 = make([]uint64, 2), make([]uint64, 2)
 
-    ins := keyToUint64s(in)
+    ins := bytesToUint64s(in)
 
     rk := this.erk[:]
 
@@ -95,7 +95,7 @@ func (this *kalynaCipher128_256) decrypt(out []byte, in []byte) {
     var t1, t2 []uint64
     t1, t2 = make([]uint64, 2), make([]uint64, 2)
 
-    ins := keyToUint64s(in)
+    ins := bytesToUint64s(in)
 
     rk := this.drk[:]
 
@@ -131,7 +131,7 @@ func (this *kalynaCipher128_256) expandKey(key []byte) {
     ko = make([]uint64, 2)
     k = make([]uint64, 4)
 
-    keys := keyToUint64s(key)
+    keys := bytesToUint64s(key)
 
     t1[0] = (128 + 256 + 64) / 64
 

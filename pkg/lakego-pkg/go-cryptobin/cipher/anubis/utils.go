@@ -1,4 +1,4 @@
-package anubis2
+package anubis
 
 import (
     "encoding/binary"
@@ -42,7 +42,7 @@ func bytesToUint32s(inp []byte) [4]uint32 {
     return blk
 }
 
-func uint32sToBytes(blk [4]uint32) []byte {
+func uint32sToBytes(blk [4]uint32) [16]byte {
     var sav [16]byte
 
     if littleEndian {
@@ -57,5 +57,5 @@ func uint32sToBytes(blk [4]uint32) []byte {
         binary.BigEndian.PutUint32(sav[12:], blk[3])
     }
 
-    return sav[:]
+    return sav
 }

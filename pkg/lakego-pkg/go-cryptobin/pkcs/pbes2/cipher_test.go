@@ -68,6 +68,30 @@ func Test_Ciphers(t *testing.T) {
 
     test_cipher(t, GostCipher, "GostCipher", []byte("ghdfrt5tssdfrt5tghdfrt5tssdfrt5t"))
 
+    test_cipher(t, ARIA128ECB, "ARIA128ECB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128CBC, "ARIA128CBC", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128CFB, "ARIA128CFB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128OFB, "ARIA128OFB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128CTR, "ARIA128CTR", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128GCM, "ARIA128GCM", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA128CCM, "ARIA128CCM", []byte("ssdfrt5tssdfrt5t"))
+
+    test_cipher(t, ARIA192ECB, "ARIA192ECB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192CBC, "ARIA192CBC", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192CFB, "ARIA192CFB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192OFB, "ARIA192OFB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192CTR, "ARIA192CTR", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192GCM, "ARIA192GCM", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA192CCM, "ARIA192CCM", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+
+    test_cipher(t, ARIA256ECB, "ARIA256ECB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256CBC, "ARIA256CBC", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256CFB, "ARIA256CFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256OFB, "ARIA256OFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256CTR, "ARIA256CTR", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256GCM, "ARIA256GCM", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, ARIA256CCM, "ARIA256CCM", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+
 }
 
 

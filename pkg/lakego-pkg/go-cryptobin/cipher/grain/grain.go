@@ -397,10 +397,10 @@ func (s *state) tag(dst []byte) {
 
 func (s *state) setKey(key []byte) {
     _ = key[15] // bounds check hint to compiler
-    s.key[0] = binary.LittleEndian.Uint32(key[0:4])
-    s.key[1] = binary.LittleEndian.Uint32(key[4:8])
-    s.key[2] = binary.LittleEndian.Uint32(key[8:12])
-    s.key[3] = binary.LittleEndian.Uint32(key[12:16])
+    s.key[0] = binary.LittleEndian.Uint32(key[0:])
+    s.key[1] = binary.LittleEndian.Uint32(key[4:])
+    s.key[2] = binary.LittleEndian.Uint32(key[8:])
+    s.key[3] = binary.LittleEndian.Uint32(key[12:])
 }
 
 func (s *state) init(nonce []byte) {

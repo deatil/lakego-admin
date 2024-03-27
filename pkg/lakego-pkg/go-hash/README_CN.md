@@ -8,21 +8,20 @@
 
 [中文](README_CN.md) | English
 
+### 项目介绍
 
-### Desc
-
-*  A Go package that get data hash
-*  hashs: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost)
+*  常用的摘要算法
+*  算法包括: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost)
 
 
-### Download
+### 下载安装
 
 ~~~go
 go get -u github.com/deatil/go-hash
 ~~~
 
 
-### Get Starting
+### 使用
 
 ~~~go
 package main
@@ -35,19 +34,19 @@ import (
 func main() {
     var data string = "..."
 
-    // MD5 hash
+    // MD5 获取摘要
     var md5String string = hash.
-        FromString(data). // input data
-        MD5().            // hash type
-        ToHexString()     // output data
+        FromString(data). // 输入数据, 需要获取摘要的数据
+        MD5().            // 摘要方式
+        ToHexString()     // 输出数据, 返回数据类型
 
-    // NewMD5 hash
+    // NewMD5 获取摘要
     var md5String string = hash.
         Hashing().
-        NewMD5().            // new hash type
-        Write([]byte(data)). // write data
-        Sum(nil).            // sum
-        ToHexString()        // output data
+        NewMD5().            // 摘要方式
+        Write([]byte(data)). // 需要获取摘要的数据
+        Sum(nil).            // 计算
+        ToHexString()        // 输出数据, 返回数据类型
 
     // =============
     
@@ -55,32 +54,32 @@ func main() {
 
     // HmacSHA1 获取摘要
     var hmacMD5String string = hash.
-        FromString(data).              // input data
-        Hmac(hash.HmacSHA1.New, pass). // hash type
-        ToHexString()                  // output data
+        FromString(data).              // 输入数据, 需要获取摘要的数据
+        Hmac(hash.HmacSHA1.New, pass). // 摘要方式
+        ToHexString()                  // 输出数据, 返回数据类型
 
     // HmacSHA1 获取摘要
     var hmacMD5String string = hash.
-        Hashing().                        // input data
-        NewHmac(hash.HmacSHA1.New, pass). // hash type
-        Write([]byte(data)).              // write data
-        Sum(nil).                         // sum
-        ToHexString()                     // output data
+        Hashing().                        // 输入数据, 为空
+        NewHmac(hash.HmacSHA1.New, pass). // 摘要方式
+        Write([]byte(data)).              // 需要获取摘要的数据
+        Sum(nil).                         // 计算
+        ToHexString()                     // 输出数据, 返回数据类型
 }
 ~~~
 
 
-### Input or Output
+### 输入输出数据
 
-*  Input:
+*  输入数据:
 `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`, `FromReader(reader io.Reader)`
-*  Output:
+*  输出数据:
 `String() string`, `ToBytes() []byte`, `ToString() string`, `ToBase64String() string`, `ToHexString() string`, `ToReader() io.Reader`
 
 
-### Hash Types
+### 常用算法
 
-*  Types:
+*  直接使用:
 `Adler32()`,
 `Blake2b_256()`, `Blake2b_384()`, `Blake2b_512()`, `Blake2s_256()`, `Blake2s_128()`,
 `CRC16_X25()`, `CRC16_Modbus()`,
@@ -100,7 +99,7 @@ func main() {
 `Shake128()`, `Shake256()`,
 `SM3()`, `Xxhash()`, `Gost34112012256()`, `Gost34112012512()`, `HAS160()`, `LSH256()`, `LSH256_224()`, `LSH512()`, `LSH512_384()`, `LSH512_256()`, `LSH512_224()`, `Siphash64()`, `Siphash128()`, `Tiger()`, `Whirlpool()`
 
-*  New Types:
+*  New 使用:
 `NewAdler32()`,
 `NewBlake2b_256(key []byte)`, `NewBlake2b_384(key []byte)`, `NewBlake2b_512(key []byte)`, `NewBlake2s_256(key []byte)`, `NewBlake2s_128(key []byte)`,
 `NewCRC32_IEEE()`, `NewCRC32_Castagnoli()`, `NewCRC32_Koopman()`,
@@ -118,15 +117,15 @@ func main() {
 `NewSHA3_224()`, `NewSHA3_256()`, `NewSHA3_384()`, `NewSHA3_512()`,
 `NewSM3()`, `NewXxhash()`, `NewGost34112012256()`, `NewGost34112012512()`, `NewHAS160()`, `NewLSH256()`, `NewLSH256_224()`, `NewLSH512()`, `NewLSH512_384()`, `NewLSH512_256()`, `NewLSH512_224()`, `NewSiphash64()`, `NewSiphash128()`, `NewTiger()`, `NewWhirlpool()`
 
-*  Hmac hashs:
+*  Hmac 可用 hash:
 `HmacADLER32`, `HmacMD2`, `HmacMD4`, `HmacMD5`, `HmacSHA1`, `HmacSHA224`, `HmacSHA256`, `HmacSHA384`, `HmacSHA512`, `HmacSHA512_224`, `HmacSHA512_256`, `HmacRIPEMD160`, `HmacSHA3_224`, `HmacSHA3_256`, `HmacSHA3_384`, `HmacSHA3_512`
 
 
-### LICENSE
+### 开源协议
 
-*  The library LICENSE is `Apache2`, using the library need keep the LICENSE.
+*  本软件包遵循 `Apache2` 开源协议发布，在保留本软件包版权的情况下提供个人及商业免费使用。
 
 
-### Copyright
+### 版权
 
-*  Copyright deatil(https://github.com/deatil).
+*  本软件包所属版权归 deatil(https://github.com/deatil) 所有。

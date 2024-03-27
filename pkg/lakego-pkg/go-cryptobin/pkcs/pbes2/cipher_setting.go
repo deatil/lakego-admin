@@ -6,10 +6,11 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
+    "github.com/deatil/go-cryptobin/cipher/rc2"
+    "github.com/deatil/go-cryptobin/cipher/rc5"
     "github.com/deatil/go-cryptobin/cipher/sm4"
+    "github.com/deatil/go-cryptobin/cipher/aria"
     "github.com/deatil/go-cryptobin/cipher/gost"
-    cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
-    cryptobin_rc5 "github.com/deatil/go-cryptobin/cipher/rc5"
 )
 
 var (
@@ -19,6 +20,7 @@ var (
     oidRC2CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 2}
     oidRC5CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 9}
 
+    // AES
     oidAES        = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1}
     oidAES128ECB  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 1}
     oidAES128CBC  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 2}
@@ -41,6 +43,7 @@ var (
     oidAES256GCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 46}
     oidAES256CCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 47}
 
+    // SM4
     oidSM4ECB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 1}
     oidSM4CBC     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
     oidSM4OFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
@@ -50,12 +53,38 @@ var (
     oidSM4GCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
     oidSM4CCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
 
+    // gost
     oidGostCipher = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 21}
+
+    // ARIA
+    oidARIA128ECB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 1}
+    oidARIA128CBC = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 2}
+    oidARIA128CFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 3}
+    oidARIA128OFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 4}
+    oidARIA128CTR = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 5}
+    oidARIA128GCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 34}
+    oidARIA128CCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 37}
+
+    oidARIA192ECB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 6}
+    oidARIA192CBC = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 7}
+    oidARIA192CFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 8}
+    oidARIA192OFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 9}
+    oidARIA192CTR = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 10}
+    oidARIA192GCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 35}
+    oidARIA192CCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 38}
+
+    oidARIA256ECB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 11}
+    oidARIA256CBC = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 12}
+    oidARIA256CFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 13}
+    oidARIA256OFB = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 14}
+    oidARIA256CTR = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 15}
+    oidARIA256GCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 36}
+    oidARIA256CCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 39}
 )
 
 var (
     newRC2Cipher = func(key []byte) (cipher.Block, error) {
-        return cryptobin_rc2.NewCipher(key, len(key)*8)
+        return rc2.NewCipher(key, len(key)*8)
     }
 )
 
@@ -81,7 +110,7 @@ var RC2CBC = CipherRC2CBC{
     cipherFunc:   newRC2Cipher,
     rc2Version:   58,
     keySize:      16,
-    blockSize:    cryptobin_rc2.BlockSize,
+    blockSize:    rc2.BlockSize,
     identifier:   oidRC2CBC,
     hasKeyLength: true,
 }
@@ -93,7 +122,7 @@ var RC2_128CBC = RC2CBC.WithRC2Version(58).WithKeySize(16)
 // RC5CBC is the [16, 24, 32] bytes key RC5 cipher in CBC mode.
 // wordSize = [32, 64] | rounds = [8, 127]
 var RC5CBC = CipherRC5CBC{
-    cipherFunc:   cryptobin_rc5.NewCipher,
+    cipherFunc:   rc5.NewCipher,
     wordSize:     32,
     rounds:       16,
     keySize:      16,
@@ -401,6 +430,184 @@ var GostCipher = CipherGostCFB{
     hasKeyLength: false,
 }
 
+// ==========
+
+// ARIA128ECB is the 128-bit key ARIA cipher in ECB mode.
+var ARIA128ECB = CipherECB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA128ECB,
+    hasKeyLength: false,
+}
+// ARIA128CBC is the 128-bit key ARIA cipher in CBC mode.
+var ARIA128CBC = CipherCBC{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA128CBC,
+    hasKeyLength: false,
+}
+// ARIA128CFB is the 128-bit key ARIA cipher in CFB mode.
+var ARIA128CFB = CipherCFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA128CFB,
+    hasKeyLength: false,
+}
+// ARIA128OFB is the 128-bit key ARIA cipher in OFB mode.
+var ARIA128OFB = CipherOFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA128OFB,
+    hasKeyLength: false,
+}
+// ARIA128CTR is the 128-bit key ARIA cipher in CTR mode.
+var ARIA128CTR = CipherCTR{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA128CTR,
+    hasKeyLength: false,
+}
+// ARIA128GCM is the 128-bit key ARIA cipher in GCM mode.
+var ARIA128GCM = CipherGCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidARIA128GCM,
+    hasKeyLength: false,
+}
+// ARIA128CCM is the 128-bit key ARIA cipher in CCM mode.
+var ARIA128CCM = CipherCCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      16,
+    nonceSize:    12,
+    identifier:   oidARIA128CCM,
+    hasKeyLength: false,
+}
+
+// ==========
+
+// ARIA192ECB is the 192-bit key ARIA cipher in ECB mode.
+var ARIA192ECB = CipherECB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA192ECB,
+    hasKeyLength: false,
+}
+// ARIA192CBC is the 192-bit key ARIA cipher in CBC mode.
+var ARIA192CBC = CipherCBC{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA192CBC,
+    hasKeyLength: false,
+}
+// ARIA192CFB is the 192-bit key ARIA cipher in CFB mode.
+var ARIA192CFB = CipherCFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA192CFB,
+    hasKeyLength: false,
+}
+// ARIA192OFB is the 192-bit key ARIA cipher in OFB mode.
+var ARIA192OFB = CipherOFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA192OFB,
+    hasKeyLength: false,
+}
+// ARIA192CTR is the 192-bit key ARIA cipher in CTR mode.
+var ARIA192CTR = CipherCTR{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA192CTR,
+    hasKeyLength: false,
+}
+// ARIA192GCM is the 192-bit key ARIA cipher in GCM mode.
+var ARIA192GCM = CipherGCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidARIA192GCM,
+    hasKeyLength: false,
+}
+// ARIA192CCM is the 192-bit key ARIA cipher in CCM mode.
+var ARIA192CCM = CipherCCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      24,
+    nonceSize:    12,
+    identifier:   oidARIA192CCM,
+    hasKeyLength: false,
+}
+
+// ==========
+
+// ARIA256ECB is the 256-bit key ARIA cipher in ECB mode.
+var ARIA256ECB = CipherECB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA256ECB,
+    hasKeyLength: false,
+}
+// ARIA256CBC is the 256-bit key ARIA cipher in CBC mode.
+var ARIA256CBC = CipherCBC{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA256CBC,
+    hasKeyLength: false,
+}
+// ARIA256CFB is the 256-bit key ARIA cipher in CFB mode.
+var ARIA256CFB = CipherCFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA256CFB,
+    hasKeyLength: false,
+}
+// ARIA256OFB is the 256-bit key ARIA cipher in OFB mode.
+var ARIA256OFB = CipherOFB{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA256OFB,
+    hasKeyLength: false,
+}
+// ARIA256CTR is the 256-bit key ARIA cipher in CTR mode.
+var ARIA256CTR = CipherCTR{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    blockSize:    aria.BlockSize,
+    identifier:   oidARIA256CTR,
+    hasKeyLength: false,
+}
+// ARIA256GCM is the 256-bit key ARIA cipher in GCM mode.
+var ARIA256GCM = CipherGCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidARIA256GCM,
+    hasKeyLength: false,
+}
+// ARIA256CCM is the 256-bit key ARIA cipher in CCM mode.
+var ARIA256CCM = CipherCCM{
+    cipherFunc:   aria.NewCipher,
+    keySize:      32,
+    nonceSize:    12,
+    identifier:   oidARIA256CCM,
+    hasKeyLength: false,
+}
+
+
 func init() {
     // des
     AddCipher(oidDESCBC, func() Cipher {
@@ -416,7 +623,7 @@ func init() {
         return RC5CBC
     })
 
-    // aes128
+    // aes-128
     AddCipher(oidAES128ECB, func() Cipher {
         return AES128ECB
     })
@@ -436,7 +643,7 @@ func init() {
         return AES128CCM
     })
 
-    // aes192
+    // aes-192
     AddCipher(oidAES192ECB, func() Cipher {
         return AES192ECB
     })
@@ -456,7 +663,7 @@ func init() {
         return AES192CCM
     })
 
-    // aes256
+    // aes-256
     AddCipher(oidAES256ECB, func() Cipher {
         return AES256ECB
     })
@@ -505,5 +712,74 @@ func init() {
     // Gost
     AddCipher(oidGostCipher, func() Cipher {
         return GostCipher
+    })
+
+    // aria-128
+    AddCipher(oidARIA128ECB, func() Cipher {
+        return ARIA128ECB
+    })
+    AddCipher(oidARIA128CBC, func() Cipher {
+        return ARIA128CBC
+    })
+    AddCipher(oidARIA128CFB, func() Cipher {
+        return ARIA128CFB
+    })
+    AddCipher(oidARIA128OFB, func() Cipher {
+        return ARIA128OFB
+    })
+    AddCipher(oidARIA128CTR, func() Cipher {
+        return ARIA128CTR
+    })
+    AddCipher(oidARIA128GCM, func() Cipher {
+        return ARIA128GCM
+    })
+    AddCipher(oidARIA128CCM, func() Cipher {
+        return ARIA128CCM
+    })
+
+    // aria-192
+    AddCipher(oidARIA192ECB, func() Cipher {
+        return ARIA192ECB
+    })
+    AddCipher(oidARIA192CBC, func() Cipher {
+        return ARIA192CBC
+    })
+    AddCipher(oidARIA192CFB, func() Cipher {
+        return ARIA192CFB
+    })
+    AddCipher(oidARIA192OFB, func() Cipher {
+        return ARIA192OFB
+    })
+    AddCipher(oidARIA192CTR, func() Cipher {
+        return ARIA192CTR
+    })
+    AddCipher(oidARIA192GCM, func() Cipher {
+        return ARIA192GCM
+    })
+    AddCipher(oidARIA192CCM, func() Cipher {
+        return ARIA192CCM
+    })
+
+    // aria-256
+    AddCipher(oidARIA256ECB, func() Cipher {
+        return ARIA256ECB
+    })
+    AddCipher(oidARIA256CBC, func() Cipher {
+        return ARIA256CBC
+    })
+    AddCipher(oidARIA256CFB, func() Cipher {
+        return ARIA256CFB
+    })
+    AddCipher(oidARIA256OFB, func() Cipher {
+        return ARIA256OFB
+    })
+    AddCipher(oidARIA256CTR, func() Cipher {
+        return ARIA256CTR
+    })
+    AddCipher(oidARIA256GCM, func() Cipher {
+        return ARIA256GCM
+    })
+    AddCipher(oidARIA256CCM, func() Cipher {
+        return ARIA256CCM
     })
 }

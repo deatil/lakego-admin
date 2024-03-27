@@ -762,7 +762,101 @@ odNbWbLvU/aGnPj9eupOVmyf+mpy7iea6VXgXDiMIbP5hw==
 -----END RSA PRIVATE KEY-----
 `
 
+var testKey_Grasshopper_CBC = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: GRASSHOPPER-CBC,c5a38a0348b456991f6da17f41616ba3
+
+VqPWTXK/m9ZaUrWdJktSh1SSZSfNXjtcbuAE8NO3okQReyObg2Rq+0nBwGSVqXJr
+fHK9sr9t718lUcthfHldnDVOa168AwrjjG64pvNraA/QFFndiT8xJV9zlnlv2R2O
+ejjqyT8Pj8Uzw93Dhew+EiCWHk7ow4075O65JJu6LSjY43y7JZ4hX1mfZsch3+V9
+T061PUwBlsLUmesCH0gnpUizD3Syyy68IjpENw1gskm+GlHkaEL3JhlOo68NTKn+
+Acau2iCpjy3Gt/N2x8TypZP+5J+N5YIRKzTjE3vuCnOcmWzFyf123foQSK5K8KhH
+UuMF28rrQ+x0s46es8iJyP546PEFduY5fdcxfF/Iwpv8SjXWYbhQ7FXjk6MKH84V
+vCDmb682Ppegf+h6W4MZhw+3r/89YdVEp5og0qB6T8vJEQhsZLXTsfMfiLh2yvFK
+rZUrPm8RosWyNCpONTsx8P2jacMKP3uNZ5NDBFORPre5h+ntNiW9R9FYkm8Hh4mT
+QmCtJ7zYNRXZdPLiOCHjGeMUa6yCCmsSdto3qjLzVN4esDdlwsawa5XDR1QmCEpa
+tKru9ZOorwiRKqJYj8I40hff0+F3W/FVTenpKZmWlUvmZ0PxF4x0gfTGKgjULLYR
+JQBWmzKeQ7MSkW1QeaC4RqHZ9pXSzLfU9fW2CQ0tI5OSWgXiNWMWV1BcAY6JNIn+
+fPE5RCDM2sR9u+/4iqKE7U7v3lOAXqxT6flkgJumccfy0OU/PmgUtvJ81XEdRHuT
+b+cNhX7hB/N3svTWtDiVIFfSrAWfen///TNJ2iJozikcdKM3tzFxPZTHCQZgbs2w
+-----END RSA PRIVATE KEY-----
+`
+var testKey_Grasshopper_CTR = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: GRASSHOPPER-CTR,943f5df1163f4116cfd9da0fdeeda45f
+
+VOvdVcOabJO8s5BpjJNKyU1KjmJyIkkiRzI2Qze7omEbxBbsrz6W9xUMV9E7pq6G
+wmqbEtdZnVbUs7JrcqB5+6bMtRAnUw8s2yKTH1c2qz2HyP9IivOQIzNnvttkpmns
+iuFZ2Rt8AkHsxjGj4KRLWF5C08wMbFcPD0V3OAB8X4RgxpaNNxx5RqqaCc/nTWij
+XV83dXqrOORPtbUPC9qv9mVhUrlU+oE1S7y0yvSlaoEgw6GwnIJO6MzRTcMZCACH
+mTRt27Dlqi0aPhsHv4tJiinI92k2UBuMCmHAPn3n0XYChlmm33SrwcnD1dbvsDTN
+8CX7SVoiI1wj5O7qhYyvSaCiHlABFWMON6MFRpR3dL6WDwiSfPL+v6b2EIX4Wlei
+tlHTxFukfs2fLy1kQK6f2+U0W0QJgqlHfJ4Y/AAFBhOBDsw6IiAXq+F+gyh5MD+6
+Gf19sL+S+a6Xtv3LR810GJzlOm/zUr4Z+KI3TA8UDB3QA6hgqEY6u5ecayz6Stg6
+/pjWNtyP1E+xUULxkI+ruVCdMni9LPwJI+dheQ1yoMG4qwG1+qhxLvL9FvI/M8uJ
+X7wBSsGWNhIatRT27Zioz0GJAlgfg2yDY2it48kbwxlEfaghvK95PTf0LTIshLmG
+a8qPS1fq8YwnjMre3GHIUSXbZsq3AA+F/0WUDDZxRL8kh5L+oOHDqtPOg6Y66+NJ
+hZp/xSn88joWY67ANmosX09Gf0WaK5BXxUWwH8opVI+d0doVGTaVjQdWinNkS8cx
+QH/4ueDy4+ogKy/nplnnXqe4BHeXjwtXzR+vZ/+vTJTuVg==
+-----END RSA PRIVATE KEY-----
+`
+var testKey_Grasshopper_OFB = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: GRASSHOPPER-OFB,67941cfad62091dbb97af6146ef85576
+
+mQJ7symYdMS5iSpBrsE78i044FOfKpMsCNCamYEBuIDh5OWE2ZRxUCrlexxm4oMQ
+9Zs6At/JD8SCKJ/wpcAff/ZhyKAXBRgrWlcBMe+D6pVIYPLj5baOdba+7aiQHZeB
+eIWoQA2RghQ9axfcdudPZHjaYvhQ3bXdusCHcl/RmbHe/5PWz4bbQ9uJLow763Sl
+xw3UQ2f5mPMbw2qmV+UGV8ufZ/e/tlQdChfs7lKZH6zxEWPRpXiAMdRDcx7KHnso
+GSN0Mz3neR5yMvE4m5HqjH0Y1wztB2sUCrXex//hoFwX2B2aTpvCOd/bGzCLC+HT
+ZHjCyCfXaMAEgT/4VvXRmnZ3En+/A+yr1CbRJTOCX2L2e4JXARjK1/6kSdSBMJEe
+iPl+kkSf9RbrIWsUlrWbldg5gMBivxd2DWW+jxx05C/y4zgFzjiI6txloiOkGysS
+MAet/FP9kaleJ8zCmgoCRS9URfjkM0RspgW3YxN1jFW9IP40mDAlmDYHdPV55iMY
+rNqiqm50LqPp4SRLxNtAUKlmnde1US8X72HlikOhpBecBi1G9RxreWwMr70Niw81
+gArnmqjhXM0XsAOIPxIr80oBH5dSkeyVwgNCM8vF2bXALdymFrOM2yNykyqOaVXt
+zef6azVAd/aTISqmM1fUb+CtA7LVw7ZCIlvEaf/VFAnMGHhfNrwpwGc5hiVlCUy2
+S21CcAmfL0Ov5mQuaL359ysUDu5GLoFbp4tn8ZYplQnnNjEoRrzurlXUDdixemRW
+AATdgXrNCVOYN7VuFEAsiLYTwUcsQsD9fAL13kbShlHJ/A==
+-----END RSA PRIVATE KEY-----
+`
+var testKey_Grasshopper_CFB = `
+-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: GRASSHOPPER-CFB,5c2b8059ea61176cf26525b3921e4322
+
+U2cHBpoBGrOxunW6POfOAc7qvrlNUr6dCjOWZgu/hRD9rpzxv3OduCVoopO6fwdq
+jsQ9gTda9syusdosRXDkt4oyzANC8wquLFM7H/e2q3gwHF9XZWQw69hSWjS5kuvk
+AZOIch3hu744w8XXy2IgRCdPW+TR6edgXNBMwhU5aEf+ohTKa/nS5o5QbdHAu14L
+VLiZLDBbRMiGaJq23R9CSWPr2JSF+hhhUluQivFnPFJ+73C1dDDWcHXinr+NfraK
+TdK0JMZwRxo883dGuwezPPaA/pL15sacXzN1splXwE9d5xGnwRcETmv5kiyE+X3/
++xo63fwGsUGCZvwX/rEAE9VWq7yjq/oHoLMAIdYDyCbH8PkNvo/rzAr086aDZjFk
+r2pbWBtMtv3SrlJLZVkjgJb5MUKtDDW3VdGGcZmq6GNRwv5cGO4T5nLwClYVn78L
+t76UafKjtU9yAbmdpiAQ2PSTpPRWZiHeTflQP+1QG7lgYUlVy9MmgcSRfnLwrDl9
+IASEorl6rF/RhQK5fSOeHLLDwFS5j/PmFqusjNAvxg/mYz1wsw4vUQ4pF1dqka4l
+Ioe0rxPX2l6oADBv1EFwB7cJa0E3NW/0OAIwE5y77TFShx0Whux3k1XL8sj3RSIT
+Azr0FpS/I7CgYM2p1WX9bCdxY9jhwONCBDUGdfmiy7gRfSNBOuk/mSIhvvpQNZdS
+QO0RAe4sutURdz9SWi085hE9qyQn6IsCegO+DochsRpF4e0WryuBjbZqHr80jh5n
+oTekIprTtrfsayNZwxO1oblkgA8PlswN/ehJyt/GztnpYQ==
+-----END RSA PRIVATE KEY-----
+`
+
 func Test_Check_PEMBlock(t *testing.T) {
+    t.Run("Grasshopper_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_Grasshopper_CBC)
+    })
+    t.Run("Grasshopper_CTR", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_Grasshopper_CTR)
+    })
+    t.Run("Grasshopper_OFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_Grasshopper_OFB)
+    })
+    t.Run("Grasshopper_CFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_Grasshopper_CFB)
+    })
+
     t.Run("SM4_CBC", func(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_SM4_CBC)
     })
@@ -898,6 +992,19 @@ func Test_EncryptMake(t *testing.T) {
     })
     t.Run("CipherSM4CTR", func(t *testing.T) {
         test_EncryptMake(t, CipherSM4CTR)
+    })
+
+    t.Run("CipherGrasshopperCBC", func(t *testing.T) {
+        test_EncryptMake(t, CipherGrasshopperCBC)
+    })
+    t.Run("CipherGrasshopperCFB", func(t *testing.T) {
+        test_EncryptMake(t, CipherGrasshopperCFB)
+    })
+    t.Run("CipherGrasshopperOFB", func(t *testing.T) {
+        test_EncryptMake(t, CipherGrasshopperOFB)
+    })
+    t.Run("CipherGrasshopperCTR", func(t *testing.T) {
+        test_EncryptMake(t, CipherGrasshopperCTR)
     })
 }
 

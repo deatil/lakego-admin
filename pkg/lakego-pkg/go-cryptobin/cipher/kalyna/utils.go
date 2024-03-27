@@ -7,7 +7,7 @@ import (
 // Endianness option
 const littleEndian bool = true
 
-func keyToUint64s(b []byte) []uint64 {
+func bytesToUint64s(b []byte) []uint64 {
     size := len(b) / 8
     dst := make([]uint64, size)
 
@@ -493,7 +493,7 @@ func make_odd_key(evenkey []uint64, oddkey []uint64) {
     copy(oddkeys, evenkeys[19:64])
     copy(oddkeys[64-19:], evenkeys[:19])
 
-    res := keyToUint64s(oddkeys)
+    res := bytesToUint64s(oddkeys)
     copy(oddkey, res)
 }
 
@@ -601,7 +601,7 @@ func make_odd_key256(evenkey []uint64, oddkey []uint64) {
     copy(oddkeys, evenkeys[11:32])
     copy(oddkeys[21:], evenkeys[:11])
 
-    res := keyToUint64s(oddkeys)
+    res := bytesToUint64s(oddkeys)
     copy(oddkey, res)
 }
 
@@ -673,6 +673,6 @@ func make_odd_key128(evenkey []uint64, oddkey []uint64) {
     copy(oddkeys, evenkeys[7:16])
     copy(oddkeys[9:], evenkeys[:7])
 
-    res := keyToUint64s(oddkeys)
+    res := bytesToUint64s(oddkeys)
     copy(oddkey, res)
 }

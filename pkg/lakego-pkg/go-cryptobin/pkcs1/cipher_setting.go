@@ -5,6 +5,7 @@ import (
     "crypto/des"
 
     "github.com/deatil/go-cryptobin/cipher/sm4"
+    "github.com/deatil/go-cryptobin/cipher/kuznyechik"
 )
 
 // DES_CBC 模式
@@ -61,6 +62,16 @@ var CipherSM4CBC = CipherCBC{
     name:           "SM4-CBC",
 }
 
+// GRASSHOPPER_CBC 模式
+var CipherGrasshopperCBC = CipherCBC{
+    cipherFunc:     kuznyechik.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        32,
+    blockSize:      kuznyechik.BlockSize,
+    name:           "GRASSHOPPER-CBC",
+}
+
 func init() {
     AddCipher(CipherDESCBC.Name(), func() Cipher {
         return CipherDESCBC
@@ -81,6 +92,10 @@ func init() {
 
     AddCipher(CipherSM4CBC.Name(), func() Cipher {
         return CipherSM4CBC
+    })
+
+    AddCipher(CipherGrasshopperCBC.Name(), func() Cipher {
+        return CipherGrasshopperCBC
     })
 }
 
@@ -140,6 +155,16 @@ var CipherSM4CFB = CipherCFB{
     name:           "SM4-CFB",
 }
 
+// GRASSHOPPER_CFB 模式
+var CipherGrasshopperCFB = CipherCFB{
+    cipherFunc:     kuznyechik.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        32,
+    blockSize:      kuznyechik.BlockSize,
+    name:           "GRASSHOPPER-CFB",
+}
+
 func init() {
     AddCipher(CipherDESCFB.Name(), func() Cipher {
         return CipherDESCFB
@@ -160,6 +185,10 @@ func init() {
 
     AddCipher(CipherSM4CFB.Name(), func() Cipher {
         return CipherSM4CFB
+    })
+
+    AddCipher(CipherGrasshopperCFB.Name(), func() Cipher {
+        return CipherGrasshopperCFB
     })
 }
 
@@ -219,6 +248,16 @@ var CipherSM4OFB = CipherOFB{
     name:           "SM4-OFB",
 }
 
+// GRASSHOPPER_OFB 模式
+var CipherGrasshopperOFB = CipherOFB{
+    cipherFunc:     kuznyechik.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        32,
+    blockSize:      kuznyechik.BlockSize,
+    name:           "GRASSHOPPER-OFB",
+}
+
 func init() {
     AddCipher(CipherDESOFB.Name(), func() Cipher {
         return CipherDESOFB
@@ -239,6 +278,10 @@ func init() {
 
     AddCipher(CipherSM4OFB.Name(), func() Cipher {
         return CipherSM4OFB
+    })
+
+    AddCipher(CipherGrasshopperOFB.Name(), func() Cipher {
+        return CipherGrasshopperOFB
     })
 }
 
@@ -298,6 +341,16 @@ var CipherSM4CTR = CipherCTR{
     name:           "SM4-CTR",
 }
 
+// GRASSHOPPER_CTR 模式
+var CipherGrasshopperCTR = CipherCTR{
+    cipherFunc:     kuznyechik.NewCipher,
+    derivedKeyFunc: DeriveKey,
+    saltSize:       8,
+    keySize:        32,
+    blockSize:      kuznyechik.BlockSize,
+    name:           "GRASSHOPPER-CTR",
+}
+
 func init() {
     AddCipher(CipherDESCTR.Name(), func() Cipher {
         return CipherDESCTR
@@ -318,5 +371,9 @@ func init() {
 
     AddCipher(CipherSM4CTR.Name(), func() Cipher {
         return CipherSM4CTR
+    })
+
+    AddCipher(CipherGrasshopperCTR.Name(), func() Cipher {
+        return CipherGrasshopperCTR
     })
 }

@@ -66,7 +66,7 @@ func (this *kalynaCipher512_512) encrypt(out []byte, in []byte) {
     var t1, t2 []uint64
     t1, t2 = make([]uint64, 8), make([]uint64, 8)
 
-    ins := keyToUint64s(in)
+    ins := bytesToUint64s(in)
 
     rk := this.erk[:]
 
@@ -99,7 +99,7 @@ func (this *kalynaCipher512_512) decrypt(out []byte, in []byte) {
     var t1, t2 []uint64
     t1, t2 = make([]uint64, 8), make([]uint64, 8)
 
-    ins := keyToUint64s(in)
+    ins := bytesToUint64s(in)
 
     rk := this.drk[:]
 
@@ -139,7 +139,7 @@ func (this *kalynaCipher512_512) expandKey(key []byte) {
     t1 = make([]uint64, 8)
     t1[0] = (512 + 512 + 64) / 64
 
-    keys := keyToUint64s(key)
+    keys := bytesToUint64s(key)
 
     addkey(t1, t2, keys)
     G(t2, t1, keys)

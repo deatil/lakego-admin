@@ -17,8 +17,8 @@ func (k KeySizeError) Error() string {
 
 type anubisCipher struct {
    R int32
-   roundKeyEnc [][4]uint32
-   roundKeyDec [][4]uint32
+   roundKeyEnc [19][4]uint32
+   roundKeyDec [19][4]uint32
 }
 
 // NewCipher creates and returns a new cipher.Block.
@@ -53,7 +53,7 @@ func (this *anubisCipher) Encrypt(dst, src []byte) {
         panic("cryptobin/anubis: invalid buffer overlap")
     }
 
-    this.crypt(dst, src, this.roundKeyEnc)
+    this.crypt(dst, src, this.roundKeyEnc, this.R)
 }
 
 func (this *anubisCipher) Decrypt(dst, src []byte) {
@@ -69,90 +69,99 @@ func (this *anubisCipher) Decrypt(dst, src []byte) {
         panic("cryptobin/anubis: invalid buffer overlap")
     }
 
-    this.crypt(dst, src, this.roundKeyDec)
+    this.crypt(dst, src, this.roundKeyDec, this.R)
 }
 
-func (this *anubisCipher) crypt(out []byte, in []byte, W [][4]uint32) {
-    var R int32
-    var r uint32
-    var s0, s1, s2, s3 uint32
-    var t0, t1, t2, t3 uint32
+func (this *anubisCipher) crypt(ciphertext []byte, plaintext []byte, roundKey [19][4]uint32, R int32) {
+    var i, r int32
+    var state [4]uint32
+    var inter [4]uint32
 
-    R = this.R
+    pt := bytesToUint32s(plaintext)
 
-    pt := bytesToUint32s(in)
-
-    s0 = swap_uint32(pt[0]) ^ W[0][0]
-    s1 = swap_uint32(pt[1]) ^ W[0][1]
-    s2 = swap_uint32(pt[2]) ^ W[0][2]
-    s3 = swap_uint32(pt[3]) ^ W[0][3]
-
-    for r = 1; r < uint32(R); r++ {
-        t0 = T[0][byte(s0 >> 24)] ^
-             T[1][byte(s1 >> 24)] ^
-             T[2][byte(s2 >> 24)] ^
-             T[3][byte(s3 >> 24)] ^
-             W[r][0]
-        t1 = T[0][byte(s0 >> 16)] ^
-             T[1][byte(s1 >> 16)] ^
-             T[2][byte(s2 >> 16)] ^
-             T[3][byte(s3 >> 16)] ^
-             W[r][1]
-        t2 = T[0][byte(s0 >> 8)] ^
-             T[1][byte(s1 >> 8)] ^
-             T[2][byte(s2 >> 8)] ^
-             T[3][byte(s3 >> 8)] ^
-             W[r][2]
-        t3 = T[0][byte(s0)] ^
-             T[1][byte(s1)] ^
-             T[2][byte(s2)] ^
-             T[3][byte(s3)] ^
-             W[r][3]
-
-        s0 = t0
-        s1 = t1
-        s2 = t2
-        s3 = t3
+    /*
+    * map plaintext block to cipher state (mu)
+    * and add initial round key (sigma[K^0]):
+    */
+    for i = 0; i < 4; i++ {
+        state[i] = pt[i] ^ roundKey[0][i]
     }
 
-    // could also use U[0] here instead of T[n]
-    t0 = (T[0][byte(s0 >> (24 - 0 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 0 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 0 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 0 * 8))] & 0x000000ff) ^
-         W[R][0]
-    t1 = (T[0][byte(s0 >> (24 - 1 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 1 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 1 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 1 * 8))] & 0x000000ff) ^
-         W[R][1]
-    t2 = (T[0][byte(s0 >> (24 - 2 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 2 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 2 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 2 * 8))] & 0x000000ff) ^
-         W[R][2]
-    t3 = (T[0][byte(s0 >> (24 - 3 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 3 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 3 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 3 * 8))] & 0x000000ff) ^
-         W[R][3]
+    /*
+     * R - 1 full rounds:
+     */
+    for r = 1; r < R; r++ {
+        inter[0] =
+            T0[byte(state[0] >> 24)] ^
+            T1[byte(state[1] >> 24)] ^
+            T2[byte(state[2] >> 24)] ^
+            T3[byte(state[3] >> 24)] ^
+            roundKey[r][0]
+        inter[1] =
+            T0[byte(state[0] >> 16)] ^
+            T1[byte(state[1] >> 16)] ^
+            T2[byte(state[2] >> 16)] ^
+            T3[byte(state[3] >> 16)] ^
+            roundKey[r][1]
+        inter[2] =
+            T0[byte(state[0] >>  8)] ^
+            T1[byte(state[1] >>  8)] ^
+            T2[byte(state[2] >>  8)] ^
+            T3[byte(state[3] >>  8)] ^
+            roundKey[r][2]
+        inter[3] =
+            T0[byte(state[0]      )] ^
+            T1[byte(state[1]      )] ^
+            T2[byte(state[2]      )] ^
+            T3[byte(state[3]      )] ^
+            roundKey[r][3]
 
-    var dst [4]uint32
-    dst[0] = swap_uint32(t0)
-    dst[1] = swap_uint32(t1)
-    dst[2] = swap_uint32(t2)
-    dst[3] = swap_uint32(t3)
+        state[0] = inter[0]
+        state[1] = inter[1]
+        state[2] = inter[2]
+        state[3] = inter[3]
+    }
 
-    ct := uint32sToBytes(dst)
+    /*
+     * last round:
+     */
+    inter[0] =
+        (T0[byte(state[0] >> 24)] & 0xff000000) ^
+        (T1[byte(state[1] >> 24)] & 0x00ff0000) ^
+        (T2[byte(state[2] >> 24)] & 0x0000ff00) ^
+        (T3[byte(state[3] >> 24)] & 0x000000ff) ^
+        roundKey[R][0]
+    inter[1] =
+        (T0[byte(state[0] >> 16)] & 0xff000000) ^
+        (T1[byte(state[1] >> 16)] & 0x00ff0000) ^
+        (T2[byte(state[2] >> 16)] & 0x0000ff00) ^
+        (T3[byte(state[3] >> 16)] & 0x000000ff) ^
+        roundKey[R][1]
+    inter[2] =
+        (T0[byte(state[0] >>  8)] & 0xff000000) ^
+        (T1[byte(state[1] >>  8)] & 0x00ff0000) ^
+        (T2[byte(state[2] >>  8)] & 0x0000ff00) ^
+        (T3[byte(state[3] >>  8)] & 0x000000ff) ^
+        roundKey[R][2]
+    inter[3] =
+        (T0[byte(state[0]      )] & 0xff000000) ^
+        (T1[byte(state[1]      )] & 0x00ff0000) ^
+        (T2[byte(state[2]      )] & 0x0000ff00) ^
+        (T3[byte(state[3]      )] & 0x000000ff) ^
+        roundKey[R][3]
 
-    copy(out, ct[:])
+    /*
+     * map cipher state to ciphertext block (mu^{-1}):
+     */
+    ct := uint32sToBytes(inter)
+    copy(ciphertext, ct[:])
 }
 
 func (this *anubisCipher) expandKey(key []byte) {
     var N, R, i, r int32
-    var W [][4]uint32
-    var k []uint32
-    var t []uint32
+    var kappa [MAX_N]uint32
+    var inter [MAX_N]uint32 /* initialize as all zeroes */
+    var v, K0, K1, K2, K3 uint32
 
     /*
      * determine the N length parameter:
@@ -166,61 +175,108 @@ func (this *anubisCipher) expandKey(key []byte) {
     R = 8 + N
     this.R = R
 
-    W = make([][4]uint32, R+1)
-    k = make([]uint32, N)
-    t = make([]uint32, N)
-
+    /*
+     * map cipher key to initial key state (mu):
+     */
     keys := keyToUint32s(key)
-
     for i = 0; i < N; i++ {
-        k[i] = swap_uint32(keys[i])
+        kappa[i] = keys[i]
     }
 
-    // encrypt key
+    /*
+     * generate R + 1 round keys:
+     */
     for r = 0; r <= R; r++ {
-        W[r] = [4]uint32{}
-        for i = 0; i < N; i++ {
-            W[r][0] ^= U[i][byte(k[i] >> 24)]
-            W[r][1] ^= U[i][byte(k[i] >> 16)]
-            W[r][2] ^= U[i][byte(k[i] >>  8)]
-            W[r][3] ^= U[i][byte(k[i]      )]
+        /*
+         * generate r-th round key K^r:
+         */
+        K0 = T4[byte(kappa[N - 1] >> 24)]
+        K1 = T4[byte(kappa[N - 1] >> 16)]
+        K2 = T4[byte(kappa[N - 1] >>  8)]
+        K3 = T4[byte(kappa[N - 1]      )]
+
+        for i = N - 2; i >= 0; i-- {
+            K0 = T4[byte(kappa[i] >> 24)] ^
+                (T5[byte(K0 >> 24)] & 0xff000000) ^
+                (T5[byte(K0 >> 16)] & 0x00ff0000) ^
+                (T5[byte(K0 >>  8)] & 0x0000ff00) ^
+                (T5[byte(K0      )] & 0x000000ff)
+            K1 = T4[byte(kappa[i] >> 16)] ^
+                (T5[byte(K1 >> 24)] & 0xff000000) ^
+                (T5[byte(K1 >> 16)] & 0x00ff0000) ^
+                (T5[byte(K1 >>  8)] & 0x0000ff00) ^
+                (T5[byte(K1      )] & 0x000000ff)
+            K2 = T4[byte(kappa[i] >>  8)] ^
+                (T5[byte(K2 >> 24)] & 0xff000000) ^
+                (T5[byte(K2 >> 16)] & 0x00ff0000) ^
+                (T5[byte(K2 >>  8)] & 0x0000ff00) ^
+                (T5[byte(K2      )] & 0x000000ff)
+            K3 = T4[byte(kappa[i]      )] ^
+                (T5[byte(K3 >> 24)] & 0xff000000) ^
+                (T5[byte(K3 >> 16)] & 0x00ff0000) ^
+                (T5[byte(K3 >>  8)] & 0x0000ff00) ^
+                (T5[byte(K3      )] & 0x000000ff)
         }
 
-        if r != R {
-            for i = 0; i < N; i++ {
-                t[i] = T[0][byte(k[(N + i    ) % N] >> 24)] ^
-                       T[1][byte(k[(N + i - 1) % N] >> 16)] ^
-                       T[2][byte(k[(N + i - 2) % N] >>  8)] ^
-                       T[3][byte(k[(N + i - 3) % N]      )]
+        this.roundKeyEnc[r][0] = K0
+        this.roundKeyEnc[r][1] = K1
+        this.roundKeyEnc[r][2] = K2
+        this.roundKeyEnc[r][3] = K3
+
+        /*
+        * compute kappa^{r+1} from kappa^r:
+        */
+        if r == R {
+            break;
+        }
+
+        for i = 0; i < N; i++ {
+            var j int32 = i
+
+            inter[i]  = T0[byte(kappa[j] >> 24)]
+            j--
+            if j < 0 {
+                j = N - 1
             }
 
-            k[0] = t[0] ^ RC[r]
-            for i = 1; i < N; i++ {
-                k[i] = t[i]
+            inter[i] ^= T1[byte(kappa[j] >> 16)]
+            j--
+            if j < 0 {
+                j = N - 1
             }
+
+            inter[i] ^= T2[byte(kappa[j] >>  8)]
+            j--
+            if j < 0 {
+                j = N - 1
+            }
+
+            inter[i] ^= T3[byte(kappa[j  ]      )]
+        }
+
+        kappa[0] = inter[0] ^ rc[r]
+        for i = 1; i < N; i++ {
+            kappa[i] = inter[i]
         }
     }
 
-    this.roundKeyEnc = make([][4]uint32, len(W))
-    copy(this.roundKeyEnc, W)
-
-    // decrypt key
-    for i = 0; i < (R + 1) / 2; i++ {
-        W[i][0], W[R - i][0] = W[R - i][0], W[i][0]
-        W[i][1], W[R - i][1] = W[R - i][1], W[i][1]
-        W[i][2], W[R - i][2] = W[R - i][2], W[i][2]
-        W[i][3], W[R - i][3] = W[R - i][3], W[i][3]
+    /*
+     * generate inverse key schedule: K'^0 = K^R, K'^R = K^0, K'^r = theta(K^{R-r}):
+     */
+    for i = 0; i < 4; i++ {
+        this.roundKeyDec[0][i] = this.roundKeyEnc[R][i]
+        this.roundKeyDec[R][i] = this.roundKeyEnc[0][i]
     }
 
     for r = 1; r < R; r++ {
         for i = 0; i < 4; i++ {
-            W[r][i] = T[0][byte(U[0][byte(W[r][i] >> 24)])] ^
-                      T[1][byte(U[0][byte(W[r][i] >> 16)])] ^
-                      T[2][byte(U[0][byte(W[r][i] >>  8)])] ^
-                      T[3][byte(U[0][byte(W[r][i]      )])]
+            v = this.roundKeyEnc[R - r][i]
+
+            this.roundKeyDec[r][i] =
+                T0[byte(T4[byte(v >> 24)])] ^
+                T1[byte(T4[byte(v >> 16)])] ^
+                T2[byte(T4[byte(v >>  8)])] ^
+                T3[byte(T4[byte(v      )])]
         }
     }
-
-    this.roundKeyDec = make([][4]uint32, len(W))
-    copy(this.roundKeyDec, W)
 }

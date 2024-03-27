@@ -878,6 +878,72 @@ func Test_EncryptPEMBlock_Pkcs8(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4CCM)
     })
 
+    t.Run("ARIA128ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128ECB)
+    })
+    t.Run("ARIA128CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128CBC)
+    })
+    t.Run("ARIA128CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128CFB)
+    })
+    t.Run("ARIA128OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128OFB)
+    })
+    t.Run("ARIA128CTR", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128CTR)
+    })
+    t.Run("ARIA128GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128GCM)
+    })
+    t.Run("ARIA128CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA128CCM)
+    })
+
+    t.Run("ARIA192ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192ECB)
+    })
+    t.Run("ARIA192CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192CBC)
+    })
+    t.Run("ARIA192CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192CFB)
+    })
+    t.Run("ARIA192OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192OFB)
+    })
+    t.Run("ARIA192CTR", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192CTR)
+    })
+    t.Run("ARIA192GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192GCM)
+    })
+    t.Run("ARIA192CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA192CCM)
+    })
+
+    t.Run("ARIA256ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256ECB)
+    })
+    t.Run("ARIA256CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256CBC)
+    })
+    t.Run("ARIA256CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256CFB)
+    })
+    t.Run("ARIA256OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256OFB)
+    })
+    t.Run("ARIA256CTR", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256CTR)
+    })
+    t.Run("ARIA256GCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256GCM)
+    })
+    t.Run("ARIA256CCM", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256CCM)
+    })
+
 }
 
 func test_EncryptPEMBlock_Pkcs8(t *testing.T, key []byte, c any) {
