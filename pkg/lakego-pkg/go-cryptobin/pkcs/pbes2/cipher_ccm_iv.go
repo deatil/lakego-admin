@@ -96,6 +96,13 @@ func (this CipherCCMIv) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     return aead.Open(nil, nonce, ciphertext, nil)
 }
 
+// 设置 keySize
+func (this CipherCCMIv) WithKeySize(keySize int) CipherCCMIv {
+    this.keySize = keySize
+
+    return this
+}
+
 func (this CipherCCMIv) WithHasKeyLength(hasKeyLength bool) CipherCCMIv {
     this.hasKeyLength = hasKeyLength
 

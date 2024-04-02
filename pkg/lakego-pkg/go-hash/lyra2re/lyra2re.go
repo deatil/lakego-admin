@@ -261,8 +261,13 @@ func reducedDuplexRow1(state []uint64, rowIn []uint64, rowOut []uint64, nCols in
  * @param rowOut         Row receiving the output
  *
  */
-func reducedDuplexRowSetup(state []uint64, rowIn []uint64,
-    rowInOut []uint64, rowOut []uint64, nCols int) {
+func reducedDuplexRowSetup(
+    state []uint64,
+    rowIn []uint64,
+    rowInOut []uint64,
+    rowOut []uint64,
+    nCols int,
+) {
     ptrIn := 0
     ptrInOut := 0
     ptrOut := (nCols - 1) * blockLenInt64
@@ -339,8 +344,13 @@ func reducedDuplexRowSetup(state []uint64, rowIn []uint64,
  * @param rowOut         Row receiving the output
  *
  */
-func reducedDuplexRow(state []uint64, rowIn []uint64, rowInOut []uint64,
-    rowOut []uint64, nCols int) {
+func reducedDuplexRow(
+    state []uint64,
+    rowIn []uint64,
+    rowInOut []uint64,
+    rowOut []uint64,
+    nCols int,
+) {
     ptrIn := 0
     ptrInOut := 0
     ptrOut := 0
@@ -407,11 +417,8 @@ func reducedDuplexRow(state []uint64, rowIn []uint64, rowInOut []uint64,
 // of nCols, (i.e., basil = kLen || pwdlen || saltlen || timeCost || nRows || nCols).
 //
 // @param K The derived key to be output by the algorithm
-// @param kLen Desired key length
 // @param pwd User password
-// @param pwdlen Password length
 // @param salt Salt
-// @param saltlen Salt length
 // @param timeCost Parameter to determine the processing time (T)
 // @param nRows Number or rows of the memory matrix (R)
 // @param nCols Number of columns of the memory matrix (C)

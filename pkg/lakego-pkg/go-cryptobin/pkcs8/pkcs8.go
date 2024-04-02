@@ -98,6 +98,35 @@ var (
     ARIA256CTR = pbes2.ARIA256CTR
     ARIA256GCM = pbes2.ARIA256GCM
     ARIA256CCM = pbes2.ARIA256CCM
+
+    Misty1CBC = pbes2.Misty1CBC
+
+    // Serpent
+    Serpent128ECB = pbes2.Serpent128ECB
+    Serpent128CBC = pbes2.Serpent128CBC
+    Serpent128OFB = pbes2.Serpent128OFB
+    Serpent128CFB = pbes2.Serpent128CFB
+
+    Serpent192ECB = pbes2.Serpent192ECB
+    Serpent192CBC = pbes2.Serpent192CBC
+    Serpent192OFB = pbes2.Serpent192OFB
+    Serpent192CFB = pbes2.Serpent192CFB
+
+    Serpent256ECB = pbes2.Serpent256ECB
+    Serpent256CBC = pbes2.Serpent256CBC
+    Serpent256OFB = pbes2.Serpent256OFB
+    Serpent256CFB = pbes2.Serpent256CFB
+
+    // seed
+    SeedECB = pbes2.SeedECB
+    SeedCBC = pbes2.SeedCBC
+    SeedOFB = pbes2.SeedOFB
+    SeedCFB = pbes2.SeedCFB
+
+    Seed256ECB = pbes2.Seed256ECB
+    Seed256CBC = pbes2.Seed256CBC
+    Seed256OFB = pbes2.Seed256OFB
+    Seed256CFB = pbes2.Seed256CFB
 )
 
 type (

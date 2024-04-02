@@ -3,7 +3,6 @@ package skein
 import "github.com/deatil/go-hash/skein/threefish"
 
 const (
-    // The blocksize of Skein-512 in bytes.
     BlockSize = threefish.BlockSize512
 )
 

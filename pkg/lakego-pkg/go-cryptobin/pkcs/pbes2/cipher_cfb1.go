@@ -95,6 +95,13 @@ func (this CipherCFB1) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     return plaintext, nil
 }
 
+// 设置 keySize
+func (this CipherCFB1) WithKeySize(keySize int) CipherCFB1 {
+    this.keySize = keySize
+
+    return this
+}
+
 func (this CipherCFB1) WithHasKeyLength(hasKeyLength bool) CipherCFB1 {
     this.hasKeyLength = hasKeyLength
 

@@ -29,10 +29,9 @@ var (
 )
 
 func TestHaraka256(t *testing.T) {
-    in := &haraka256TestIn
-    got := new([32]byte)
+    in := haraka256TestIn
     want := &haraka256TestOut
-    Haraka256(got, in)
+    got := Haraka256(in)
     for i := range got {
         if got[i] != want[i] {
             t.Errorf("got:  %x\nwant: %x", got, want)
@@ -56,9 +55,8 @@ func TestHaraka256Ref(t *testing.T) {
 
 func TestHaraka256Consistent(t *testing.T) {
     f := func(x [32]byte) string {
-        dst := new([32]byte)
-        Haraka256(dst, &x)
-        return fmt.Sprintf("%0x", *dst)
+        dst := Haraka256(x)
+        return fmt.Sprintf("%0x", dst)
     }
     g := func(x [32]byte) string {
         dst := new([32]byte)
@@ -71,10 +69,9 @@ func TestHaraka256Consistent(t *testing.T) {
 }
 
 func TestHaraka512(t *testing.T) {
-    in := &haraka512TestIn
-    got := new([32]byte)
+    in := haraka512TestIn
     want := &haraka512TestOut
-    Haraka512(got, in)
+    got := Haraka512(in)
     for i := range got {
         if got[i] != want[i] {
             t.Errorf("got:  %x\nwant: %x", got, want)
@@ -98,9 +95,8 @@ func TestHaraka512Ref(t *testing.T) {
 
 func TestHaraka512Consistent(t *testing.T) {
     f := func(x [64]byte) string {
-        dst := new([32]byte)
-        Haraka512(dst, &x)
-        return fmt.Sprintf("%0x", *dst)
+        dst := Haraka512(x)
+        return fmt.Sprintf("%0x", dst)
     }
     g := func(x [64]byte) string {
         dst := new([32]byte)
@@ -113,39 +109,37 @@ func TestHaraka512Consistent(t *testing.T) {
 }
 
 func BenchmarkHaraka256(b *testing.B) {
-    in := new([32]byte)
-    out := new([32]byte)
+    var in [32]byte
     for i := 0; i < b.N; i++ {
-        Haraka256(out, in)
+        Haraka256(in)
     }
 }
 
 func BenchmarkHaraka512(b *testing.B) {
-    in := new([64]byte)
-    out := new([32]byte)
+    var in [64]byte
+
     for i := 0; i < b.N; i++ {
-        Haraka512(out, in)
+        Haraka512(in)
     }
 }
 
 func BenchmarkHaraka256Ref(b *testing.B) {
-    in := new([32]byte)
-    out := new([32]byte)
+    var in [32]byte
     prev := hasAES
     hasAES = false
     for i := 0; i < b.N; i++ {
-        Haraka256(out, in)
+        Haraka256(in)
     }
+
     hasAES = prev
 }
 
 func BenchmarkHaraka512Ref(b *testing.B) {
-    in := new([64]byte)
-    out := new([32]byte)
+    var in [64]byte
     prev := hasAES
     hasAES = false
     for i := 0; i < b.N; i++ {
-        Haraka512(out, in)
+        Haraka512(in)
     }
     hasAES = prev
 }

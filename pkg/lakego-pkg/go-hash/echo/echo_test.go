@@ -89,8 +89,10 @@ func Test_Hash224_Check(t *testing.T) {
         },
     }
 
+    h := New224()
+
     for i, test := range tests {
-        h := New224()
+        h.Reset()
         h.Write(test.msg)
         sum := h.Sum(nil)
 
@@ -124,8 +126,10 @@ func Test_Hash256_Check(t *testing.T) {
         },
     }
 
+    h := New256()
+
     for i, test := range tests {
-        h := New256()
+        h.Reset()
         h.Write(test.msg)
         sum := h.Sum(nil)
 
@@ -155,8 +159,10 @@ func Test_Hash384_Check(t *testing.T) {
         },
     }
 
+    h := New384()
+
     for i, test := range tests {
-        h := New384()
+        h.Reset()
         h.Write(test.msg)
         sum := h.Sum(nil)
 
@@ -186,8 +192,10 @@ func Test_Hash512_Check(t *testing.T) {
         },
     }
 
+    h := New512()
+
     for i, test := range tests {
-        h := New512()
+        h.Reset()
         h.Write(test.msg)
         sum := h.Sum(nil)
 

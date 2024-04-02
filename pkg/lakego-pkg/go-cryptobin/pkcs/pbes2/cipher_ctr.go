@@ -95,6 +95,13 @@ func (this CipherCTR) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     return plaintext, nil
 }
 
+// 设置 keySize
+func (this CipherCTR) WithKeySize(keySize int) CipherCTR {
+    this.keySize = keySize
+
+    return this
+}
+
 func (this CipherCTR) WithHasKeyLength(hasKeyLength bool) CipherCTR {
     this.hasKeyLength = hasKeyLength
 

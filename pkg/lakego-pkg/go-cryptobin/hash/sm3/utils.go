@@ -38,18 +38,7 @@ func GG00(x, y, z uint32) uint32 {
 }
 
 func GG16(x, y, z uint32) uint32 {
-    return (((y ^ z) & x) ^ z)
-}
-
-func memsetUint8(a []uint8, v uint8) {
-    if len(a) == 0 {
-        return
-    }
-
-    a[0] = v
-    for bp := 1; bp < len(a); bp *= 2 {
-        copy(a[bp:], a[:bp])
-    }
+    return ((y ^ z) & x) ^ z
 }
 
 var keys = [64]uint32{
@@ -86,7 +75,6 @@ func compressBlocks(digest []uint32, data []uint8, blocks int) {
     var j int32
 
     for ; blocks > 0; blocks-- {
-
         A = digest[0]
         B = digest[1]
         C = digest[2]

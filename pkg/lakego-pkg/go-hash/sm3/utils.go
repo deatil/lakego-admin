@@ -41,17 +41,6 @@ func GG16(x, y, z uint32) uint32 {
     return (((y ^ z) & x) ^ z)
 }
 
-func memsetUint8(a []uint8, v uint8) {
-    if len(a) == 0 {
-        return
-    }
-
-    a[0] = v
-    for bp := 1; bp < len(a); bp *= 2 {
-        copy(a[bp:], a[:bp])
-    }
-}
-
 var keys = [64]uint32{
     0x79cc4519, 0xf3988a32, 0xe7311465, 0xce6228cb,
     0x9cc45197, 0x3988a32f, 0x7311465e, 0xe6228cbc,

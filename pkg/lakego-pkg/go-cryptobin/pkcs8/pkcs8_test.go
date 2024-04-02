@@ -944,6 +944,75 @@ func Test_EncryptPEMBlock_Pkcs8(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, ARIA256CCM)
     })
 
+    t.Run("Misty1CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Misty1CBC)
+    })
+
+    t.Run("Serpent128ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent128ECB)
+    })
+    t.Run("Serpent128CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent128CBC)
+    })
+    t.Run("Serpent128OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent128OFB)
+    })
+    t.Run("Serpent128CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent128CFB)
+    })
+
+    t.Run("Serpent192ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent192ECB)
+    })
+    t.Run("Serpent192CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent192CBC)
+    })
+    t.Run("Serpent192OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent192OFB)
+    })
+    t.Run("Serpent192CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent192CFB)
+    })
+
+    t.Run("Serpent256ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent256ECB)
+    })
+    t.Run("Serpent256CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent256CBC)
+    })
+    t.Run("Serpent256OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent256OFB)
+    })
+    t.Run("Serpent256CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Serpent256CFB)
+    })
+
+    t.Run("SeedECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SeedECB)
+    })
+    t.Run("SeedCBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SeedCBC)
+    })
+    t.Run("SeedOFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SeedOFB)
+    })
+    t.Run("SeedCFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SeedCFB)
+    })
+
+    t.Run("Seed256ECB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Seed256ECB)
+    })
+    t.Run("Seed256CBC", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Seed256CBC)
+    })
+    t.Run("Seed256OFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Seed256OFB)
+    })
+    t.Run("Seed256CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, Seed256CFB)
+    })
+
 }
 
 func test_EncryptPEMBlock_Pkcs8(t *testing.T, key []byte, c any) {

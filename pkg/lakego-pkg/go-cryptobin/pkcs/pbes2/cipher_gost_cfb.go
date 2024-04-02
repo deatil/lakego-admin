@@ -166,6 +166,13 @@ func (this CipherGostCFB) Decrypt(key, params, ciphertext []byte) ([]byte, error
     return plaintext, nil
 }
 
+// 设置 keySize
+func (this CipherGostCFB) WithKeySize(keySize int) CipherGostCFB {
+    this.keySize = keySize
+
+    return this
+}
+
 func (this CipherGostCFB) WithHasKeyLength(hasKeyLength bool) CipherGostCFB {
     this.hasKeyLength = hasKeyLength
 

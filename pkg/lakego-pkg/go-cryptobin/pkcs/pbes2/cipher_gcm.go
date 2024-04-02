@@ -121,6 +121,13 @@ func (this CipherGCM) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     return aead.Open(nil, nonce, ciphertext, nil)
 }
 
+// 设置 keySize
+func (this CipherGCM) WithKeySize(keySize int) CipherGCM {
+    this.keySize = keySize
+
+    return this
+}
+
 func (this CipherGCM) WithHasKeyLength(hasKeyLength bool) CipherGCM {
     this.hasKeyLength = hasKeyLength
 

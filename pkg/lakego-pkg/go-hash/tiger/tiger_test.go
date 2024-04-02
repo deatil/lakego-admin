@@ -54,6 +54,64 @@ func Test_Golden(t *testing.T) {
     }
 }
 
+func Test_Golden128(t *testing.T) {
+    for i := 0; i < len(golden); i++ {
+        g := golden[i]
+        c := New128()
+        buf := make([]byte, len(g.in)+4)
+        for j := 0; j < 7; j++ {
+            if j < 2 {
+                io.WriteString(c, g.in)
+            } else if j == 2 {
+                io.WriteString(c, g.in[0:len(g.in)/2])
+                c.Sum(nil)
+                io.WriteString(c, g.in[len(g.in)/2:])
+            } else if j > 2 {
+                // test unaligned write
+                buf = buf[1:]
+                copy(buf, g.in)
+                c.Write(buf[:len(g.in)])
+            }
+
+            s := fmt.Sprintf("%x", c.Sum(nil))
+            if s != g.out[:32] {
+                t.Fatalf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out[:32])
+            }
+
+            c.Reset()
+        }
+    }
+}
+
+func Test_Golden160(t *testing.T) {
+    for i := 0; i < len(golden); i++ {
+        g := golden[i]
+        c := New160()
+        buf := make([]byte, len(g.in)+4)
+        for j := 0; j < 7; j++ {
+            if j < 2 {
+                io.WriteString(c, g.in)
+            } else if j == 2 {
+                io.WriteString(c, g.in[0:len(g.in)/2])
+                c.Sum(nil)
+                io.WriteString(c, g.in[len(g.in)/2:])
+            } else if j > 2 {
+                // test unaligned write
+                buf = buf[1:]
+                copy(buf, g.in)
+                c.Write(buf[:len(g.in)])
+            }
+
+            s := fmt.Sprintf("%x", c.Sum(nil))
+            if s != g.out[:40] {
+                t.Fatalf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out[:40])
+            }
+
+            c.Reset()
+        }
+    }
+}
+
 var goldenV2 = []Test{
     {"4441be75f6018773c206c22745374b924aa8313fef919f41", ""},
     {"67e6ae8e9e968999f70a23e72aeaa9251cbc7c78a7916636", "a"},
@@ -88,6 +146,64 @@ func Test_GoldenV2(t *testing.T) {
             s := fmt.Sprintf("%x", c.Sum(nil))
             if s != g.out {
                 t.Errorf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out)
+            }
+
+            c.Reset()
+        }
+    }
+}
+
+func Test_GoldenV2_128(t *testing.T) {
+    for i := 0; i < len(goldenV2); i++ {
+        g := goldenV2[i]
+        c := New2_128()
+        buf := make([]byte, len(g.in)+4)
+        for j := 0; j < 7; j++ {
+            if j < 2 {
+                io.WriteString(c, g.in)
+            } else if j == 2 {
+                io.WriteString(c, g.in[0:len(g.in)/2])
+                c.Sum(nil)
+                io.WriteString(c, g.in[len(g.in)/2:])
+            } else if j > 2 {
+                // test unaligned write
+                buf = buf[1:]
+                copy(buf, g.in)
+                c.Write(buf[:len(g.in)])
+            }
+
+            s := fmt.Sprintf("%x", c.Sum(nil))
+            if s != g.out[:32] {
+                t.Errorf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out[:32])
+            }
+
+            c.Reset()
+        }
+    }
+}
+
+func Test_GoldenV2_160(t *testing.T) {
+    for i := 0; i < len(goldenV2); i++ {
+        g := goldenV2[i]
+        c := New2_160()
+        buf := make([]byte, len(g.in)+4)
+        for j := 0; j < 7; j++ {
+            if j < 2 {
+                io.WriteString(c, g.in)
+            } else if j == 2 {
+                io.WriteString(c, g.in[0:len(g.in)/2])
+                c.Sum(nil)
+                io.WriteString(c, g.in[len(g.in)/2:])
+            } else if j > 2 {
+                // test unaligned write
+                buf = buf[1:]
+                copy(buf, g.in)
+                c.Write(buf[:len(g.in)])
+            }
+
+            s := fmt.Sprintf("%x", c.Sum(nil))
+            if s != g.out[:40] {
+                t.Errorf("tiger[%d](%s) = %s want %s", j, g.in, s, g.out[:40])
             }
 
             c.Reset()

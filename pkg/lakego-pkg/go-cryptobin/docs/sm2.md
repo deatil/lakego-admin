@@ -87,6 +87,7 @@ func main() {
     var psssword string = ""
 
     // 设置 UID 值
+    // set uid data
     var uid []byte = []byte("")
 
     obj := sm2.New()
@@ -164,7 +165,7 @@ func main() {
 }
 ~~~
 
-#### SM2 获取 x,y,d 16进制数据 / get x,y,d data
+#### SM2 获取 x, y, d 16进制数据 / get x, y, d data
 ~~~go
 func main() {
     obj := sm2.New()
@@ -176,10 +177,20 @@ func main() {
         FromPrivateKey([]byte(priKeyPem)).
         GetPrivateKeyDHexString()
 
-    // 获取公钥 X, Y 明文数据
-    // get public key x data and y data
+    // 获取公钥 X, Y 明文数据, 从私钥
+    // get public key x data and y data from private key
+    var priKeyPem string = ""
+    public := sm2.
+        FromPrivateKey([]byte(priKeyPem)).
+        MakePublicKey()
+
+    x := public.GetPublicKeyXHexString()
+    y := public.GetPublicKeyYHexString()
+
+    // 获取公钥 X, Y 明文数据, 从公钥
+    // get public key x data and y data from public key
     var pubKeyPem string = ""
-    public := sm2.FromPrivateKey([]byte(pubKeyPem))
+    public := sm2.FromPublicKey([]byte(pubKeyPem))
 
     x := public.GetPublicKeyXHexString()
     y := public.GetPublicKeyYHexString()

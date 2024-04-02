@@ -13,6 +13,10 @@ const (
     defaultNonceSize = 16
 )
 
+var eaxError = func(err string) error {
+    return errors.New("crypto/eax: " + err)
+}
+
 type eax struct {
     block     cipher.Block // Only AES-{128, 192, 256} supported
     tagSize   int          // At least 12 bytes recommended
@@ -51,9 +55,9 @@ func NewEAXWithTagSize(block cipher.Block, tagSize int) (cipher.AEAD, error) {
 // Only to be used for compatibility with existing cryptosystems with
 // non-standard parameters. For all other cases, prefer NewEAX.
 func NewEAXWithNonceAndTagSize(
-    block cipher.Block,
+    block     cipher.Block,
     nonceSize int,
-    tagSize int,
+    tagSize   int,
 ) (cipher.AEAD, error) {
     if nonceSize < 1 {
         return nil, eaxError("Cannot initialize EAX with nonceSize = 0")
@@ -74,7 +78,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
     if len(nonce) > e.nonceSize {
         panic("cryptobin/eax: Nonce too long for this instance")
     }
-    
+
     ret, out := byteutil.SliceForAppend(dst, len(plaintext)+e.tagSize)
     omacNonce := e.omacT(0, nonce)
     omacAdata := e.omacT(1, adata)
@@ -90,6 +94,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
     for i := 0; i < e.tagSize; i++ {
         tag[i] = omacCiphertext[i] ^ omacNonce[i] ^ omacAdata[i]
     }
+
     return ret
 }
 
@@ -138,6 +143,7 @@ func (e *eax) omacT(t byte, plaintext []byte) []byte {
 
 func (e *eax) omac(plaintext []byte) []byte {
     blockSize := e.block.BlockSize()
+
     // L ← E_K(0^n); B ← 2L; P ← 4L
     L := make([]byte, blockSize)
     e.block.Encrypt(L, L)
@@ -165,8 +171,4 @@ func (e *eax) pad(plaintext, B, P []byte) []byte {
     ending[0] = 0x80
     padded := append(plaintext, ending...)
     return byteutil.RightXor(padded, P)
-}
-
-func eaxError(err string) error {
-    return errors.New("crypto/eax: " + err)
 }

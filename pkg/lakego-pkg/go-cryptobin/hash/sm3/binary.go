@@ -11,30 +11,30 @@ const (
     marshaledSize = len(magic256) + 8*4 + chunk + 8
 )
 
-func (d *digest) MarshalBinary() ([]byte, error) {
+func (this *digest) MarshalBinary() ([]byte, error) {
     b := make([]byte, 0, marshaledSize)
     b = append(b, magic256...)
 
-    b = appendUint32(b, d.digest[0])
-    b = appendUint32(b, d.digest[1])
-    b = appendUint32(b, d.digest[2])
-    b = appendUint32(b, d.digest[3])
-    b = appendUint32(b, d.digest[4])
-    b = appendUint32(b, d.digest[5])
-    b = appendUint32(b, d.digest[6])
-    b = appendUint32(b, d.digest[7])
+    b = appendUint32(b, this.s[0])
+    b = appendUint32(b, this.s[1])
+    b = appendUint32(b, this.s[2])
+    b = appendUint32(b, this.s[3])
+    b = appendUint32(b, this.s[4])
+    b = appendUint32(b, this.s[5])
+    b = appendUint32(b, this.s[6])
+    b = appendUint32(b, this.s[7])
 
-    b = append(b, d.block[:d.num]...)
+    b = append(b, this.x[:this.len]...)
 
-    length := (d.nblocks * BlockSize) + uint64(d.num)
+    length := (this.nx * BlockSize) + uint64(this.len)
 
-    b = b[:len(b) + len(d.block) - int(d.num)]
+    b = b[:len(b) + len(this.x) - int(this.len)]
     b = appendUint64(b, length)
 
     return b, nil
 }
 
-func (d *digest) UnmarshalBinary(b []byte) error {
+func (this *digest) UnmarshalBinary(b []byte) error {
     if len(b) < len(magic256) || (string(b[:len(magic256)]) != magic256) {
         return errors.New("sm3: invalid hash state identifier")
     }
@@ -45,23 +45,23 @@ func (d *digest) UnmarshalBinary(b []byte) error {
 
     b = b[len(magic256):]
 
-    b, d.digest[0] = consumeUint32(b)
-    b, d.digest[1] = consumeUint32(b)
-    b, d.digest[2] = consumeUint32(b)
-    b, d.digest[3] = consumeUint32(b)
-    b, d.digest[4] = consumeUint32(b)
-    b, d.digest[5] = consumeUint32(b)
-    b, d.digest[6] = consumeUint32(b)
-    b, d.digest[7] = consumeUint32(b)
+    b, this.s[0] = consumeUint32(b)
+    b, this.s[1] = consumeUint32(b)
+    b, this.s[2] = consumeUint32(b)
+    b, this.s[3] = consumeUint32(b)
+    b, this.s[4] = consumeUint32(b)
+    b, this.s[5] = consumeUint32(b)
+    b, this.s[6] = consumeUint32(b)
+    b, this.s[7] = consumeUint32(b)
 
-    b = b[copy(d.block[:], b):]
+    b = b[copy(this.x[:], b):]
 
     var length uint64
 
     b, length = consumeUint64(b)
 
-    d.num = int(length % chunk)
-    d.nblocks = length / chunk
+    this.len = int(length % chunk)
+    this.nx = length / chunk
 
     return nil
 }

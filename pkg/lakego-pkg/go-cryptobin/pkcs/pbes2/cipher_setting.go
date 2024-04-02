@@ -9,8 +9,11 @@ import (
     "github.com/deatil/go-cryptobin/cipher/rc2"
     "github.com/deatil/go-cryptobin/cipher/rc5"
     "github.com/deatil/go-cryptobin/cipher/sm4"
+    "github.com/deatil/go-cryptobin/cipher/seed"
     "github.com/deatil/go-cryptobin/cipher/aria"
     "github.com/deatil/go-cryptobin/cipher/gost"
+    "github.com/deatil/go-cryptobin/cipher/misty1"
+    "github.com/deatil/go-cryptobin/cipher/serpent"
 )
 
 var (
@@ -18,7 +21,7 @@ var (
     oidDESCBC     = asn1.ObjectIdentifier{1, 3, 14, 3, 2, 7}
     oidDESEDE3CBC = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 7}
     oidRC2CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 2}
-    oidRC5CBC     = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 9}
+    oidRC5CBCPad  = asn1.ObjectIdentifier{1, 2, 840, 113549, 3, 9}
 
     // AES
     oidAES        = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1}
@@ -80,6 +83,31 @@ var (
     oidARIA256CTR = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 15}
     oidARIA256GCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 36}
     oidARIA256CCM = asn1.ObjectIdentifier{1, 2, 410, 200046, 1, 1, 39}
+
+    // Misty1
+    oidMisty1CBC = asn1.ObjectIdentifier{1, 2, 392, 200011, 61, 1, 1, 1, 1}
+
+    // Seed
+    oidSeedECB = asn1.ObjectIdentifier{1, 2, 410, 200004, 1, 3}
+    oidSeedCBC = asn1.ObjectIdentifier{1, 2, 410, 200004, 1, 4}
+    oidSeedOFB = asn1.ObjectIdentifier{1, 2, 410, 200004, 1, 5}
+    oidSeedCFB = asn1.ObjectIdentifier{1, 2, 410, 200004, 1, 6}
+
+    // Serpent
+    oidSerpent128ECB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 1}
+    oidSerpent128CBC = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 2}
+    oidSerpent128OFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 3}
+    oidSerpent128CFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 4}
+
+    oidSerpent192ECB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 21}
+    oidSerpent192CBC = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 22}
+    oidSerpent192OFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 23}
+    oidSerpent192CFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 24}
+
+    oidSerpent256ECB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 41}
+    oidSerpent256CBC = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 42}
+    oidSerpent256OFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 43}
+    oidSerpent256CFB = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 13, 2, 44}
 )
 
 var (
@@ -126,7 +154,7 @@ var RC5CBC = CipherRC5CBC{
     wordSize:     32,
     rounds:       16,
     keySize:      16,
-    identifier:   oidRC5CBC,
+    identifier:   oidRC5CBCPad,
     hasKeyLength: true,
 }
 
@@ -607,6 +635,162 @@ var ARIA256CCM = CipherCCM{
     hasKeyLength: false,
 }
 
+// ==========
+
+// Misty1CBC is the 168-bit key Misty1 cipher in CBC mode.
+var Misty1CBC = CipherCBC{
+    cipherFunc:   misty1.NewCipher,
+    keySize:      16,
+    blockSize:    misty1.BlockSize,
+    identifier:   oidMisty1CBC,
+    hasKeyLength: false,
+}
+
+// ==========
+
+// SeedECB is the 128-bit key Seed cipher in ECB mode.
+var SeedECB = CipherECB{
+    cipherFunc:   seed.NewCipher,
+    keySize:      16,
+    blockSize:    seed.BlockSize,
+    identifier:   oidSeedECB,
+    hasKeyLength: true,
+}
+// SeedCBC is the 128-bit key Seed cipher in CBC mode.
+var SeedCBC = CipherCBC{
+    cipherFunc:   seed.NewCipher,
+    keySize:      16,
+    blockSize:    seed.BlockSize,
+    identifier:   oidSeedCBC,
+    hasKeyLength: true,
+}
+// SeedOFB is the 128-bit key Seed cipher in OFB mode.
+var SeedOFB = CipherOFB{
+    cipherFunc:   seed.NewCipher,
+    keySize:      16,
+    blockSize:    seed.BlockSize,
+    identifier:   oidSeedOFB,
+    hasKeyLength: true,
+}
+// SeedCFB is the 128-bit key Seed cipher in CFB mode.
+var SeedCFB = CipherCFB{
+    cipherFunc:   seed.NewCipher,
+    keySize:      16,
+    blockSize:    seed.BlockSize,
+    identifier:   oidSeedCFB,
+    hasKeyLength: true,
+}
+
+// Seed is the 256-bit key Seed cipher in ECB mode.
+var Seed256ECB = SeedECB.WithKeySize(32)
+var Seed256CBC = SeedCBC.WithKeySize(32)
+var Seed256OFB = SeedOFB.WithKeySize(32)
+var Seed256CFB = SeedCFB.WithKeySize(32)
+
+// ==========
+
+// Serpent128ECB is the 128-bit key Serpent cipher in ECB mode.
+var Serpent128ECB = CipherECB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      16,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent128ECB,
+    hasKeyLength: false,
+}
+// Serpent128CBC is the 128-bit key Serpent cipher in CBC mode.
+var Serpent128CBC = CipherCBC{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      16,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent128CBC,
+    hasKeyLength: false,
+}
+// Serpent128OFB is the 128-bit key Serpent cipher in OFB mode.
+var Serpent128OFB = CipherOFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      16,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent128OFB,
+    hasKeyLength: false,
+}
+// Serpent128CFB is the 128-bit key Serpent cipher in CFB mode.
+var Serpent128CFB = CipherCFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      16,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent128CFB,
+    hasKeyLength: false,
+}
+
+// ==========
+
+// Serpent192ECB is the 192-bit key Serpent cipher in ECB mode.
+var Serpent192ECB = CipherECB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      24,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent192ECB,
+    hasKeyLength: false,
+}
+// Serpent192CBC is the 192-bit key Serpent cipher in CBC mode.
+var Serpent192CBC = CipherCBC{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      24,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent192CBC,
+    hasKeyLength: false,
+}
+// Serpent192OFB is the 192-bit key Serpent cipher in OFB mode.
+var Serpent192OFB = CipherOFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      24,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent192OFB,
+    hasKeyLength: false,
+}
+// Serpent192CFB is the 192-bit key Serpent cipher in CFB mode.
+var Serpent192CFB = CipherCFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      24,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent192CFB,
+    hasKeyLength: false,
+}
+
+// ==========
+
+// Serpent256ECB is the 256-bit key Serpent cipher in ECB mode.
+var Serpent256ECB = CipherECB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      32,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent256ECB,
+    hasKeyLength: false,
+}
+// Serpent256CBC is the 256-bit key Serpent cipher in CBC mode.
+var Serpent256CBC = CipherCBC{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      32,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent256CBC,
+    hasKeyLength: false,
+}
+// Serpent256OFB is the 256-bit key Serpent cipher in OFB mode.
+var Serpent256OFB = CipherOFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      32,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent256OFB,
+    hasKeyLength: false,
+}
+// Serpent256CFB is the 256-bit key Serpent cipher in CFB mode.
+var Serpent256CFB = CipherCFB{
+    cipherFunc:   serpent.NewCipher,
+    keySize:      32,
+    blockSize:    serpent.BlockSize,
+    identifier:   oidSerpent256CFB,
+    hasKeyLength: false,
+}
 
 func init() {
     // des
@@ -619,7 +803,7 @@ func init() {
     AddCipher(oidRC2CBC, func() Cipher {
         return RC2CBC
     })
-    AddCipher(oidRC5CBC, func() Cipher {
+    AddCipher(oidRC5CBCPad, func() Cipher {
         return RC5CBC
     })
 
@@ -781,5 +965,66 @@ func init() {
     })
     AddCipher(oidARIA256CCM, func() Cipher {
         return ARIA256CCM
+    })
+
+    // Misty1
+    AddCipher(oidMisty1CBC, func() Cipher {
+        return Misty1CBC
+    })
+
+    // serpent-128
+    AddCipher(oidSerpent128ECB, func() Cipher {
+        return Serpent128ECB
+    })
+    AddCipher(oidSerpent128CBC, func() Cipher {
+        return Serpent128CBC
+    })
+    AddCipher(oidSerpent128OFB, func() Cipher {
+        return Serpent128OFB
+    })
+    AddCipher(oidSerpent128CFB, func() Cipher {
+        return Serpent128CFB
+    })
+
+    // serpent-192
+    AddCipher(oidSerpent192ECB, func() Cipher {
+        return Serpent192ECB
+    })
+    AddCipher(oidSerpent192CBC, func() Cipher {
+        return Serpent192CBC
+    })
+    AddCipher(oidSerpent192OFB, func() Cipher {
+        return Serpent192OFB
+    })
+    AddCipher(oidSerpent192CFB, func() Cipher {
+        return Serpent192CFB
+    })
+
+    // serpent-256
+    AddCipher(oidSerpent256ECB, func() Cipher {
+        return Serpent256ECB
+    })
+    AddCipher(oidSerpent256CBC, func() Cipher {
+        return Serpent256CBC
+    })
+    AddCipher(oidSerpent256OFB, func() Cipher {
+        return Serpent256OFB
+    })
+    AddCipher(oidSerpent256CFB, func() Cipher {
+        return Serpent256CFB
+    })
+
+    // seed-256
+    AddCipher(oidSeedECB, func() Cipher {
+        return SeedECB
+    })
+    AddCipher(oidSeedCBC, func() Cipher {
+        return SeedCBC
+    })
+    AddCipher(oidSeedOFB, func() Cipher {
+        return SeedOFB
+    })
+    AddCipher(oidSeedCFB, func() Cipher {
+        return SeedCFB
     })
 }

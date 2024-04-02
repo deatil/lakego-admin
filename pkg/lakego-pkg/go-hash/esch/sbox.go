@@ -1,0 +1,6 @@
+package esch
+
+var C = [8]uint32{
+    0xb7e15162, 0xbf715880, 0x38b4da56, 0x324e7738,
+    0xbb1185eb, 0x4f7c7b57, 0xcfbfa1c8, 0xc2b3293d,
+}

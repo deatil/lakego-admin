@@ -2,7 +2,6 @@ package tiger
 
 import (
     "hash"
-    "encoding/binary"
 )
 
 // The size of a Tiger hash value in bytes
@@ -16,20 +15,20 @@ const Size192 = 24
 // The blocksize of Tiger hash function in bytes
 const BlockSize = 64
 
-const (
-    chunk = 64
-    initA = 0x0123456789abcdef
-    initB = 0xfedcba9876543210
-    initC = 0xf096a5b4c3b2e187
+var (
+    initH = [3]uint64{
+        0x0123456789abcdef,
+        0xfedcba9876543210,
+        0xf096a5b4c3b2e187,
+    }
 )
 
 type digest struct {
-    a      uint64
-    b      uint64
-    c      uint64
-    x      [chunk]byte
+    s      [3]uint64
+    x      [BlockSize]byte
     nx     int
     length uint64
+
     ver    int
 }
 
@@ -58,9 +57,7 @@ func (this *digest) BlockSize() int {
 }
 
 func (this *digest) Reset() {
-    this.a = initA
-    this.b = initB
-    this.c = initC
+    this.s = initH
     this.nx = 0
     this.length = 0
 }
@@ -72,24 +69,24 @@ func (this *digest) Write(p []byte) (length int, err error) {
 
     if this.nx > 0 {
         n := len(p)
-        if n > chunk-this.nx {
-            n = chunk - this.nx
+        if n > BlockSize-this.nx {
+            n = BlockSize - this.nx
         }
 
         copy(this.x[this.nx:this.nx+n], p[:n])
         this.nx += n
 
-        if this.nx == chunk {
-            this.compress(this.x[:chunk])
+        if this.nx == BlockSize {
+            this.compress(this.x[:BlockSize])
             this.nx = 0
         }
 
         p = p[n:]
     }
 
-    for len(p) >= chunk {
-        this.compress(p[:chunk])
-        p = p[chunk:]
+    for len(p) >= BlockSize {
+        this.compress(p[:BlockSize])
+        p = p[BlockSize:]
     }
 
     if len(p) > 0 {
@@ -132,55 +129,30 @@ func (this *digest) checkSum() []byte {
     this.Write(tmp[:8])
 
     for i := uint(0); i < 8; i++ {
-        tmp[i] = byte(this.a >> (8 * i))
-        tmp[i+8] = byte(this.b >> (8 * i))
-        tmp[i+16] = byte(this.c >> (8 * i))
+        tmp[i] = byte(this.s[0] >> (8 * i))
+        tmp[i+8] = byte(this.s[1] >> (8 * i))
+        tmp[i+16] = byte(this.s[2] >> (8 * i))
     }
 
     return tmp[:24]
 }
 
-var littleEndian bool = true
-
 func (this *digest) compress(data []byte) {
-    a := this.a
-    b := this.b
-    c := this.c
+    a := this.s[0]
+    b := this.s[1]
+    c := this.s[2]
 
-    var x []uint64
-    if littleEndian {
-        x = []uint64{
-            binary.LittleEndian.Uint64(data[0:]),
-            binary.LittleEndian.Uint64(data[8:]),
-            binary.LittleEndian.Uint64(data[16:]),
-            binary.LittleEndian.Uint64(data[24:]),
-            binary.LittleEndian.Uint64(data[32:]),
-            binary.LittleEndian.Uint64(data[40:]),
-            binary.LittleEndian.Uint64(data[48:]),
-            binary.LittleEndian.Uint64(data[56:]),
-        }
-    } else {
-        x = []uint64{
-            binary.BigEndian.Uint64(data[0:]),
-            binary.BigEndian.Uint64(data[8:]),
-            binary.BigEndian.Uint64(data[16:]),
-            binary.BigEndian.Uint64(data[24:]),
-            binary.BigEndian.Uint64(data[32:]),
-            binary.BigEndian.Uint64(data[40:]),
-            binary.BigEndian.Uint64(data[48:]),
-            binary.BigEndian.Uint64(data[56:]),
-        }
-    }
+    x := bytesToUint64s(data)
 
-    this.a, this.b, this.c = pass(this.a, this.b, this.c, x, 5)
+    this.s[0], this.s[1], this.s[2] = pass(this.s[0], this.s[1], this.s[2], x, 5)
 
     keySchedule(x)
-    this.c, this.a, this.b = pass(this.c, this.a, this.b, x, 7)
+    this.s[2], this.s[0], this.s[1] = pass(this.s[2], this.s[0], this.s[1], x, 7)
 
     keySchedule(x)
-    this.b, this.c, this.a = pass(this.b, this.c, this.a, x, 9)
+    this.s[1], this.s[2], this.s[0] = pass(this.s[1], this.s[2], this.s[0], x, 9)
 
-    this.a ^= a
-    this.b -= b
-    this.c += c
+    this.s[0] ^= a
+    this.s[1] -= b
+    this.s[2] += c
 }

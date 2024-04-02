@@ -27,14 +27,20 @@ func New224() hash.Hash {
 
 // Sum256 returns the LSH-256 checksum of the data.
 func Sum256(data []byte) (sum256 [Size]byte) {
-    sum := sum(Size, data)
-    copy(sum256[:], sum[:Size])
+    b := New()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum256[:], sum)
     return
 }
 
 // Sum224 returns the LSH-224 checksum of the data.
 func Sum224(data []byte) (sum224 [Size224]byte) {
-    sum := sum(Size224, data)
-    copy(sum224[:], sum[:Size224])
+    b := New224()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum224[:], sum)
     return
 }

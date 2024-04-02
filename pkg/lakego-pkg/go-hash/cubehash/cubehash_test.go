@@ -1,13 +1,25 @@
 package cubehash
 
 import (
+    "fmt"
+    "hash"
     "bytes"
     "encoding"
-    "fmt"
     "testing"
 )
 
-func TestSum(t *testing.T) {
+func Test_Interfaces(t *testing.T) {
+    var _ hash.Hash = (*digest)(nil)
+    var _ encoding.BinaryMarshaler = (*digest)(nil)
+    var _ encoding.BinaryUnmarshaler = (*digest)(nil)
+
+    // digest256
+    var _ hash.Hash = (*digest256)(nil)
+    var _ encoding.BinaryMarshaler = (*digest256)(nil)
+    var _ encoding.BinaryUnmarshaler = (*digest256)(nil)
+}
+
+func Test_Sum(t *testing.T) {
     table := []struct {
         in   string
         want string
@@ -36,10 +48,20 @@ func TestSum(t *testing.T) {
     }
 
     c := New()
+
     for _, r := range table {
         c.Reset()
         c.Write([]byte(r.in))
         got := fmt.Sprintf("%x", c.Sum(nil))
+        if got != r.want {
+            t.Errorf("New.Sum(%#v), got %#v, want %#v", r.in, got, r.want)
+        }
+
+        // =====
+
+        sum2 := Sum([]byte(r.in))
+
+        got = fmt.Sprintf("%x", sum2)
         if got != r.want {
             t.Errorf("Sum(%#v), got %#v, want %#v", r.in, got, r.want)
         }
@@ -63,12 +85,39 @@ func TestSum(t *testing.T) {
     }
 }
 
-func TestMarshal(t *testing.T) {
+func Test_Marshal(t *testing.T) {
     a := New()
     a.Write([]byte{1, 2, 3})
     save, _ := a.(encoding.BinaryMarshaler).MarshalBinary()
 
     b := New()
+    b.(encoding.BinaryUnmarshaler).UnmarshalBinary(save)
+
+    asum := a.Sum(nil)
+    bsum := b.Sum(nil)
+    if !bytes.Equal(asum, bsum) {
+        t.Errorf("UnmarshalBinary(...), got %x, want %x", bsum, asum)
+    }
+}
+
+func Test_Sum256(t *testing.T) {
+    msg := "78AECC1F4DBF27AC146780EEA8DCC56B"
+    check := "df8c13ad710ba02a0a293b94e144d3b212bbf37cbf51c17e0716f65126a23621"
+
+    dst := Sum256([]byte(msg))
+
+    if fmt.Sprintf("%x", dst) != check {
+        t.Errorf("fail, got %x, want %s", dst, check)
+    }
+
+}
+
+func Test_Marshal256(t *testing.T) {
+    a := New256()
+    a.Write([]byte{1, 2, 3})
+    save, _ := a.(encoding.BinaryMarshaler).MarshalBinary()
+
+    b := New256()
     b.(encoding.BinaryUnmarshaler).UnmarshalBinary(save)
 
     asum := a.Sum(nil)

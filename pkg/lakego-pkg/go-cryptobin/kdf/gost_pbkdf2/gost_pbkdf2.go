@@ -8,9 +8,9 @@ import (
     "encoding/binary"
 )
 
-func Key(hasher func() hash.Hash, password, salt []byte, iterations, dklen int) (key []byte) {
-    inner := hasher()
-    outer := hasher()
+func Key(h func() hash.Hash, password, salt []byte, iterations, dklen int) (key []byte) {
+    inner := h()
+    outer := h()
 
     blockSize := inner.BlockSize()
 

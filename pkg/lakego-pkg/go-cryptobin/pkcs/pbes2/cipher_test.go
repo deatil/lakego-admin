@@ -92,6 +92,31 @@ func Test_Ciphers(t *testing.T) {
     test_cipher(t, ARIA256GCM, "ARIA256GCM", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
     test_cipher(t, ARIA256CCM, "ARIA256CCM", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
 
+    test_cipher(t, Serpent128ECB, "Serpent128ECB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent128CBC, "Serpent128CBC", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent128OFB, "Serpent128OFB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent128CFB, "Serpent128CFB", []byte("ssdfrt5tssdfrt5t"))
+
+    test_cipher(t, Serpent192ECB, "Serpent192ECB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent192CBC, "Serpent192CBC", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent192OFB, "Serpent192OFB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent192CFB, "Serpent192CFB", []byte("ssdfrt5tssdfrt5tssdfrt5t"))
+
+    test_cipher(t, Serpent256ECB, "Serpent256ECB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent256CBC, "Serpent256CBC", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent256OFB, "Serpent256OFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Serpent256CFB, "Serpent256CFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+
+    // Seed
+    test_cipher(t, SeedECB, "SeedECB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, SeedCBC, "SeedCBC", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, SeedOFB, "SeedOFB", []byte("ssdfrt5tssdfrt5t"))
+    test_cipher(t, SeedCFB, "SeedCFB", []byte("ssdfrt5tssdfrt5t"))
+
+    test_cipher(t, Seed256ECB, "Seed256ECB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Seed256CBC, "Seed256CBC", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Seed256OFB, "Seed256OFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
+    test_cipher(t, Seed256CFB, "Seed256CFB", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
 }
 
 

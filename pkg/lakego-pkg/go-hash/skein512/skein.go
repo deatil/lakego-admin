@@ -23,18 +23,6 @@ type Args struct {
     // Nonce for stream cipher or randomized hashing
     Nonce []byte
     // NoMsg indicates whether message input is used by the function.
-    //
-    // If false (default), message input it used, and thus if zero-length
-    // message is supplied to Write or if Write was not called, it will be
-    // assumed that the message input is zero-length, and thus will be
-    // processed as such (padded with zeroes). This is the normal way Skein
-    // hash and MAC are used.
-    //
-    // If true, message input is not used, so any call to Write will
-    // return an error. This is useful for constructions such as a
-    // that skip message input, such as a stream cipher.
-    //
-    // The name is negative to preserve backward compatibility.
     NoMsg bool
 }
 
@@ -380,16 +368,16 @@ func New(outLen uint64, args *Args) *Hash {
         // Configuration without key.
         // Try using precomputed values for common sizes.
         switch outLen {
-        case 224 / 8:
-            h.k = iv224
-        case 256 / 8:
-            h.k = iv256
-        case 384 / 8:
-            h.k = iv384
-        case 512 / 8:
-            h.k = iv512
-        default:
-            h.addConfig(outLen * 8)
+            case 224 / 8:
+                h.k = iv224
+            case 256 / 8:
+                h.k = iv256
+            case 384 / 8:
+                h.k = iv384
+            case 512 / 8:
+                h.k = iv512
+            default:
+                h.addConfig(outLen * 8)
         }
     }
 

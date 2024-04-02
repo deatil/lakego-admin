@@ -1,10 +1,8 @@
-// Package chaskey implements the Chaskey MAC
 package chaskey
 
 import (
     "fmt"
     "hash"
-    "encoding/binary"
 )
 
 /*
@@ -33,12 +31,13 @@ func (k KeySizeError) Error() string {
 // digest represents the partial evaluation of a checksum.
 type digest struct {
     s   [4]uint32
-    k1  [4]uint32
-    k2  [4]uint32
-    r   int
     x   [BlockSize]byte
     nx  int
     len uint64
+
+    k1  [4]uint32
+    k2  [4]uint32
+    r   int
 }
 
 // New returns a new hash.Hash computing the chaskey checksum
@@ -58,32 +57,22 @@ func newDigest(key []byte, rounds int) (hash.Hash, error) {
         return nil, KeySizeError(l)
     }
 
-    var k [4]uint32
-
-    k[0] = binary.LittleEndian.Uint32(key[0:])
-    k[1] = binary.LittleEndian.Uint32(key[4:])
-    k[2] = binary.LittleEndian.Uint32(key[8:])
-    k[3] = binary.LittleEndian.Uint32(key[12:])
-
     d := new(digest)
     d.Reset()
-
-    d.s = k
     d.r = rounds
-
-    timestwo(d.k1[:], k[:])
-    timestwo(d.k2[:], d.k1[:])
+    d.expandKey(key)
 
     return d, nil
 }
 
 func (d *digest) Reset() {
     d.s = [4]uint32{}
-    d.k1 = [4]uint32{}
-    d.k2 = [4]uint32{}
     d.x = [BlockSize]byte{}
     d.nx = 0
     d.len = 0
+
+    d.k1 = [4]uint32{}
+    d.k2 = [4]uint32{}
 }
 
 func (d *digest) Size() int {
@@ -128,17 +117,23 @@ func (d *digest) Sum(in []byte) []byte {
     return append(in, hash[:]...)
 }
 
-func (d *digest) checkSum() [Size]byte {
+func (d *digest) checkSum() (out [Size]byte) {
     lastblock(d)
 
     if d.nx != 0 {
         panic("d.nx != 0")
     }
 
-    var digest [Size]byte
-    binary.LittleEndian.PutUint32(digest[0:], d.s[0])
-    binary.LittleEndian.PutUint32(digest[4:], d.s[1])
-    binary.LittleEndian.PutUint32(digest[8:], d.s[2])
-    binary.LittleEndian.PutUint32(digest[12:], d.s[3])
-    return digest
+    digest := uint32sToBytes(d.s[:])
+    copy(out[:], digest)
+
+    return
+}
+
+func (d *digest) expandKey(key []byte) {
+    k := bytesToUint32s(key)
+    copy(d.s[:], k)
+
+    timestwo(d.k1[:], k[:])
+    timestwo(d.k2[:], d.k1[:])
 }

@@ -20,13 +20,13 @@ func Test_Hash(t *testing.T) {
 }
 
 func Test_Check64(t *testing.T) {
-    var key [KEY_SIZE]byte
+    var key [KeySize]byte
     var in []byte
     var i int
 
     expected := []byte{ 0xdb, 0x9b, 0xc2, 0x57, 0x7f, 0xcc, 0x2a, 0x3f, }
 
-    for i = 0; i < KEY_SIZE; i++ {
+    for i = 0; i < KeySize; i++ {
         key[i] = byte(i)
     }
 
@@ -46,13 +46,13 @@ func Test_Check64(t *testing.T) {
 }
 
 func Test_Check128(t *testing.T) {
-    var key [KEY_SIZE]byte
+    var key [KeySize]byte
     var in []byte
     var i int
 
     expected := []byte{ 0x9e, 0x25, 0xfc, 0x83, 0x3f, 0x22, 0x90, 0x73, 0x3e, 0x93, 0x44, 0xa5, 0xe8, 0x38, 0x39, 0xeb, }
 
-    for i = 0; i < KEY_SIZE; i++ {
+    for i = 0; i < KeySize; i++ {
         key[i] = byte(i)
     }
 

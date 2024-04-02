@@ -78,6 +78,34 @@ var CipherMap = map[string]Cipher{
     "ARIA256CTR": ARIA256CTR,
     "ARIA256GCM": ARIA256GCM,
     "ARIA256CCM": ARIA256CCM,
+
+    "Misty1CBC": Misty1CBC,
+
+    "Serpent128ECB": Serpent128ECB,
+    "Serpent128CBC": Serpent128CBC,
+    "Serpent128OFB": Serpent128OFB,
+    "Serpent128CFB": Serpent128CFB,
+
+    "Serpent192ECB": Serpent192ECB,
+    "Serpent192CBC": Serpent192CBC,
+    "Serpent192OFB": Serpent192OFB,
+    "Serpent192CFB": Serpent192CFB,
+
+    "Serpent256ECB": Serpent256ECB,
+    "Serpent256CBC": Serpent256CBC,
+    "Serpent256OFB": Serpent256OFB,
+    "Serpent256CFB": Serpent256CFB,
+
+    // seed
+    "SeedECB": SeedECB,
+    "SeedCBC": SeedCBC,
+    "SeedOFB": SeedOFB,
+    "SeedCFB": SeedCFB,
+
+    "Seed256ECB": Seed256ECB,
+    "Seed256CBC": Seed256CBC,
+    "Seed256OFB": Seed256OFB,
+    "Seed256CFB": Seed256CFB,
 }
 
 // 获取 Cipher 类型

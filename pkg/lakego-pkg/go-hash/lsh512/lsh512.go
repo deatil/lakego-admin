@@ -40,26 +40,40 @@ func New224() hash.Hash {
 
 // Sum512 returns the LSH-512 checksum of the data.
 func Sum512(data []byte) (sum512 [Size]byte) {
-    return sum(Size, data)
+    b := New()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum512[:], sum)
+    return
 }
 
 // Sum384 returns the LSH-384 checksum of the data.
 func Sum384(data []byte) (sum384 [Size384]byte) {
-    sum := sum(Size384, data)
-    copy(sum384[:], sum[:Size384])
+    b := New()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum384[:], sum)
     return
 }
 
 // Sum256 returns the LSH-512-256 checksum of the data.
 func Sum256(data []byte) (sum256 [Size256]byte) {
-    sum := sum(Size256, data)
-    copy(sum256[:], sum[:Size256])
+    b := New()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum256[:], sum)
     return
 }
 
 // Sum224 returns the LSH-512-224 checksum of the data.
 func Sum224(data []byte) (sum224 [Size224]byte) {
-    sum := sum(Size224, data)
-    copy(sum224[:], sum[:Size224])
+    b := New()
+    b.Write(data)
+    sum := b.Sum(nil)
+
+    copy(sum224[:], sum)
     return
 }
