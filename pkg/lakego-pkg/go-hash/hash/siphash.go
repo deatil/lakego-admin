@@ -44,9 +44,13 @@ func (this Hash) NewSiphash128(k []byte) Hash {
 
 // SiphashWithCDroundsAndHashSize
 func (this Hash) SiphashWithCDroundsAndHashSize(k []byte, crounds, drounds int32, hashSize int) Hash {
-    h := siphash.NewWithCDroundsAndHashSize(k, crounds, drounds, hashSize)
-    h.Write(this.data)
+    h, err := siphash.NewWithCDroundsAndHashSize(k, crounds, drounds, hashSize)
+    if err != nil {
+        this.Error = err
+        return this
+    }
 
+    h.Write(this.data)
     this.data = h.Sum(nil)
 
     return this
@@ -54,7 +58,7 @@ func (this Hash) SiphashWithCDroundsAndHashSize(k []byte, crounds, drounds int32
 
 // NewSiphashWithCDroundsAndHashSize
 func (this Hash) NewSiphashWithCDroundsAndHashSize(k []byte, crounds, drounds int32, hashSize int) Hash {
-    this.hash = siphash.NewWithCDroundsAndHashSize(k, crounds, drounds, hashSize)
+    this.hash, this.Error = siphash.NewWithCDroundsAndHashSize(k, crounds, drounds, hashSize)
 
     return this
 }
