@@ -11,7 +11,7 @@ func TestThreefish512(t *testing.T) {
             key := make([]byte, BlockSize512-1)
             tweak := make([]byte, tweakSize)
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -30,7 +30,7 @@ func TestThreefish512(t *testing.T) {
             key := make([]byte, BlockSize512+1)
             tweak := make([]byte, tweakSize)
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -49,7 +49,7 @@ func TestThreefish512(t *testing.T) {
             key := make([]byte, BlockSize512)
             tweak := make([]byte, tweakSize-1)
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -68,7 +68,7 @@ func TestThreefish512(t *testing.T) {
             key := make([]byte, BlockSize512)
             tweak := make([]byte, tweakSize+1)
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -87,7 +87,7 @@ func TestThreefish512(t *testing.T) {
             key := make([]byte, BlockSize512)
             tweak := make([]byte, tweakSize)
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block == nil {
                 t.Fatal("expected cipher to be non-nil")
             }
@@ -127,7 +127,7 @@ func TestThreefish512(t *testing.T) {
                 t.Fatal("failed to decode tweak string")
             }
 
-            block, err := New512(key, tweak)
+            block, err := NewCipher512(key, tweak)
             if block == nil {
                 t.Fatal("expected cipher to be non-nil")
             }
@@ -159,7 +159,7 @@ func BenchmarkThreefish512(b *testing.B) {
     tweak := make([]byte, tweakSize)
     message := make([]byte, BlockSize512)
 
-    block, err := New512(key, tweak)
+    block, err := NewCipher512(key, tweak)
     if err != nil {
         b.Fatalf("failed to create cipher with error: %s", err)
     }

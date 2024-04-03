@@ -11,7 +11,7 @@ func TestThreefish256(t *testing.T) {
             key := make([]byte, BlockSize256-1)
             tweak := make([]byte, tweakSize)
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -30,7 +30,7 @@ func TestThreefish256(t *testing.T) {
             key := make([]byte, BlockSize256+1)
             tweak := make([]byte, tweakSize)
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -49,7 +49,7 @@ func TestThreefish256(t *testing.T) {
             key := make([]byte, BlockSize256)
             tweak := make([]byte, tweakSize-1)
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -68,7 +68,7 @@ func TestThreefish256(t *testing.T) {
             key := make([]byte, BlockSize256)
             tweak := make([]byte, tweakSize+1)
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block != nil {
                 t.Fatal("expected cipher to be nil")
             }
@@ -87,7 +87,7 @@ func TestThreefish256(t *testing.T) {
             key := make([]byte, BlockSize256)
             tweak := make([]byte, tweakSize)
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block == nil {
                 t.Fatal("expected cipher to be non-nil")
             }
@@ -126,7 +126,7 @@ func TestThreefish256(t *testing.T) {
                 t.Fatal("failed to decode tweak string")
             }
 
-            block, err := New256(key, tweak)
+            block, err := NewCipher256(key, tweak)
             if block == nil {
                 t.Fatal("expected cipher to be non-nil")
             }
@@ -158,7 +158,7 @@ func BenchmarkThreefish256(b *testing.B) {
     tweak := make([]byte, tweakSize)
     message := make([]byte, BlockSize256)
 
-    block, err := New256(key, tweak)
+    block, err := NewCipher256(key, tweak)
     if err != nil {
         b.Fatalf("failed to create cipher with error: %s", err)
     }

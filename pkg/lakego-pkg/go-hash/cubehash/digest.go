@@ -6,7 +6,13 @@ import (
 )
 
 // The size of an cubehash checksum in bytes.
-const Size = 64
+const Size    = 64
+const Size384 = 48
+const Size256 = 32
+const Size224 = 28
+const Size192 = 24
+const Size160 = 20
+const Size128 = 16
 
 // The blocksize of cubehash in bytes.
 const BlockSize = 32
@@ -15,45 +21,58 @@ var invalidErr = errors.New("invalid CubeHash state")
 
 type digest struct {
     s   [32]uint32
-    x   [BlockSize]byte
+    x   []byte
     nx  int
     len uint64
+
+    hs int
+    bs int
+    r  int // the number of rounds per message block
+    ir int // the number of initialization rounds
+    fr int // the number of finalization rounds
 }
 
-// New returns a new hash.Hash for CubeHash16+16/32+32–512.
-func New() hash.Hash {
-    var d digest
+// NewDigest returns a new hash.Hash.
+func NewDigest(hashSize, blockSize, r, ir, fr int) hash.Hash {
+    d := new(digest)
+
+    d.hs = hashSize
+    d.bs = blockSize
+    d.r = r
+    d.ir = ir
+    d.fr = fr
+
     d.Reset()
-    return &d
+    return d
 }
 
 func (this *digest) Reset() {
     x := &this.s
 
-    x[0] = Size
-    x[1] = BlockSize
-    x[2] = 16 // the number of rounds per message block
+    x[0] = uint32(this.hs / 8)
+    x[1] = uint32(this.bs)
+    x[2] = uint32(this.r) // the number of rounds per message block
     for n := 3; n < 32; n++ {
         x[n] = 0
     }
 
     // the number of initialization rounds
-    for n := 0; n < 16; n++ {
+    for n := 0; n < this.ir; n++ {
         round(x)
     }
 
-    this.x = [BlockSize]byte{}
+    this.x = make([]byte, this.bs)
 
     this.nx = 0
     this.len = 0
 }
 
 func (this *digest) Size() int {
-    return Size
+    return this.hs / 8
 }
 
 func (this *digest) BlockSize() int {
-    return BlockSize
+    return this.bs
 }
 
 func (this *digest) Write(p []byte) (nn int, err error) {
@@ -61,13 +80,13 @@ func (this *digest) Write(p []byte) (nn int, err error) {
 
     plen := len(p)
 
-    var limit = BlockSize
+    var limit = this.bs
     for this.nx + plen >= limit {
         xx := limit - this.nx
 
         copy(this.x[this.nx:], p)
 
-        ingest(&this.s, this.x[:])
+        this.ingest(&this.s, this.x[:])
 
         plen -= xx
 
@@ -88,26 +107,34 @@ func (this *digest) Sum(in []byte) []byte {
     return append(in, hash[:]...)
 }
 
-func (this *digest) checkSum() [Size]byte {
+func (this *digest) checkSum() []byte {
     x := this.s
 
-    var pad [BlockSize]byte
+    var pad = make([]byte, this.bs)
     copy(pad[:], this.x[:this.nx])
+
     pad[this.nx] = 0x80
-    ingest(&x, pad[:])
+    this.ingest(&x, pad[:])
 
     // the number of finalization rounds
     x[31] ^= 1
-    for n := 0; n < 32; n++ {
+    for n := 0; n < this.fr; n++ {
         round(&x)
     }
 
-    var buf [Size]byte
-    for n := 0; n < Size/4; n++ {
-        PUTU32(buf[n*4:], x[n])
+    buf := uint32sToBytes(x[:this.hs/32])
+    return buf
+}
+
+func (this *digest) ingest(x *[32]uint32, p []byte) {
+    for n := 0; n < this.bs/4; n++ {
+        x[n] ^= GETU32(p[n*4:])
     }
 
-    return buf
+    // the number of rounds per message block
+    for n := 0; n < this.r; n++ {
+        round(x)
+    }
 }
 
 func (this *digest) MarshalBinary() ([]byte, error) {
@@ -128,7 +155,7 @@ func (this *digest) UnmarshalBinary(data []byte) error {
     }
 
     n := int(data[128])
-    if n >= BlockSize || len(data) < 128+1+n {
+    if n >= this.bs || len(data) < 128+1+n {
         return invalidErr
     }
     this.nx = n

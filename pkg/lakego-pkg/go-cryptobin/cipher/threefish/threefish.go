@@ -3,7 +3,7 @@ package threefish
 
 import (
     "fmt"
-    "encoding/binary"
+    "crypto/cipher"
 )
 
 // Threefish is a block cipher that was developed as part of the Skein hash
@@ -30,12 +30,6 @@ const (
     c240 uint64 = 0x1bd11bdaa9fc1a22
 )
 
-// Aliases to help produce concise code
-var (
-    loadWord  = binary.LittleEndian.Uint64
-    storeWord = binary.LittleEndian.PutUint64
-)
-
 // A KeySizeError is returned when the provided key isn't the correct size.
 type KeySizeError int
 
@@ -52,15 +46,18 @@ func (e TweakSizeError) Error() string {
     return fmt.Sprintf("cryptobin/threefish: tweak size must be %d bytes", tweakSize)
 }
 
-// calculateTweak loads a tweak value from src and extends it into dst.
-func calculateTweak(dst *[(tweakSize / 8) + 1]uint64, src []byte) error {
-    if len(src) != tweakSize {
-        return new(TweakSizeError)
+// NewCipher creates and returns a new cipher.Block.
+// data bytes use BigEndian
+func NewCipher(key, tweak []byte) (cipher.Block, error) {
+    k := len(key)
+    switch k {
+        case BlockSize256:
+            return NewCipher256(key, tweak)
+        case BlockSize512:
+            return NewCipher512(key, tweak)
+        case BlockSize1024:
+            return NewCipher1024(key, tweak)
     }
 
-    dst[0] = loadWord(src[0:8])
-    dst[1] = loadWord(src[8:16])
-    dst[2] = dst[0] ^ dst[1]
-
-    return nil
+    return nil, KeySizeError(len(key))
 }

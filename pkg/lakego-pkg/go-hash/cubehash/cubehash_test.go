@@ -12,11 +12,6 @@ func Test_Interfaces(t *testing.T) {
     var _ hash.Hash = (*digest)(nil)
     var _ encoding.BinaryMarshaler = (*digest)(nil)
     var _ encoding.BinaryUnmarshaler = (*digest)(nil)
-
-    // digest256
-    var _ hash.Hash = (*digest256)(nil)
-    var _ encoding.BinaryMarshaler = (*digest256)(nil)
-    var _ encoding.BinaryUnmarshaler = (*digest256)(nil)
 }
 
 func Test_Sum(t *testing.T) {
@@ -100,31 +95,97 @@ func Test_Marshal(t *testing.T) {
     }
 }
 
-func Test_Sum256(t *testing.T) {
-    msg := "78AECC1F4DBF27AC146780EEA8DCC56B"
-    check := "df8c13ad710ba02a0a293b94e144d3b212bbf37cbf51c17e0716f65126a23621"
+func Test_EmptyMessage(t *testing.T) {
+    msg := ""
 
-    dst := Sum256([]byte(msg))
+    {
+        check := "44c6de3ac6c73c391bf0906cb7482600ec06b216c7c54a2a8688a6a42676577d"
 
-    if fmt.Sprintf("%x", dst) != check {
-        t.Errorf("fail, got %x, want %s", dst, check)
+        c := NewCubehash(256, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
+    }
+
+    {
+        check := "4a1d00bbcfcb5a9562fb981e7f7db3350fe2658639d948b9d57452c22328bb32f468b072208450bad5ee178271408be0b16e5633ac8a1e3cf9864cfbfc8e043a"
+
+        c := NewCubehash(512, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
     }
 
 }
 
-func Test_Marshal256(t *testing.T) {
-    a := New256()
-    a.Write([]byte{1, 2, 3})
-    save, _ := a.(encoding.BinaryMarshaler).MarshalBinary()
+func Test_ShortMessage(t *testing.T) {
+    msg := "Hello"
 
-    b := New256()
-    b.(encoding.BinaryUnmarshaler).UnmarshalBinary(save)
+    {
+        check := "e712139e3b892f2f5fe52d0f30d78a0cb16b51b217da0e4acb103dd0856f2db0"
 
-    asum := a.Sum(nil)
-    bsum := b.Sum(nil)
-    if !bytes.Equal(asum, bsum) {
-        t.Errorf("UnmarshalBinary(...), got %x, want %x", bsum, asum)
+        c := NewCubehash(256, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
     }
+
+    {
+        check := "dcc0503aae279a3c8c95fa1181d37c418783204e2e3048a081392fd61bace883a1f7c4c96b16b4060c42104f1ce45a622f1a9abaeb994beb107fed53a78f588c"
+
+        c := NewCubehash(512, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
+    }
+
+}
+
+func Test_LongerMessage(t *testing.T) {
+    msg := "The quick brown fox jumps over the lazy dog"
+
+    {
+        check := "5151e251e348cbbfee46538651c06b138b10eeb71cf6ea6054d7ca5fec82eb79"
+
+        c := NewCubehash(256, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
+    }
+
+    {
+        check := "bdba44a28cd16b774bdf3c9511def1a2baf39d4ef98b92c27cf5e37beb8990b7cdb6575dae1a548330780810618b8a5c351c1368904db7ebdf8857d596083a86"
+
+        c := NewCubehash(512, 32, 16, 160, 160)
+        c.Reset()
+        c.Write([]byte(msg))
+        dst := c.Sum(nil)
+
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
+    }
+
 }
 
 func BenchmarkSum(b *testing.B) {

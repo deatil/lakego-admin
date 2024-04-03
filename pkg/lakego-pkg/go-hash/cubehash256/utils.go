@@ -1,4 +1,4 @@
-package cubehash
+package cubehash256
 
 import (
     "math/bits"

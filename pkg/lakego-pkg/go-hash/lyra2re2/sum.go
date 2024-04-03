@@ -6,7 +6,7 @@ import (
     "github.com/deatil/go-hash/bmw"
     "github.com/deatil/go-hash/skein"
     "github.com/deatil/go-hash/blake256"
-    "github.com/deatil/go-hash/cubehash"
+    "github.com/deatil/go-hash/cubehash256"
 )
 
 // Sum returns the result of Lyra2re2 hash.
@@ -24,7 +24,7 @@ func Sum(data []byte) ([]byte, error) {
     }
     resultkeccak := keccak.Sum(nil)
 
-    resultcube := cubehash.Sum256(resultkeccak)
+    resultcube := cubehash256.Sum(resultkeccak)
 
     lyra2result := make([]byte, 32)
     Lyra2(lyra2result, resultcube[:], resultcube[:], 1, 4, 4)
@@ -32,7 +32,7 @@ func Sum(data []byte) ([]byte, error) {
     var skeinresult [32]byte
     skein.Sum256(&skeinresult, lyra2result, nil)
 
-    resultcube2 := cubehash.Sum256(skeinresult[:])
+    resultcube2 := cubehash256.Sum(skeinresult[:])
     resultbmw := bmw.Sum(resultcube2[:])
 
     return resultbmw[:], nil
