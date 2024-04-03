@@ -5,16 +5,16 @@ import "hash"
 // New returns a new hash.Hash computing the BLAKE-256 checksum.
 func New() hash.Hash {
     return &digest{
-        hashSize: 256,
-        h:        iv256,
+        hs: 256,
+        h:  iv256,
     }
 }
 
-// NewSalt is like New but initializes salt with the given 16-byte slice.
-func NewSalt(salt []byte) hash.Hash {
+// NewWithSalt is like New but initializes salt with the given 16-byte slice.
+func NewWithSalt(salt []byte) hash.Hash {
     d := &digest{
-        hashSize: 256,
-        h:        iv256,
+        hs: 256,
+        h:  iv256,
     }
     d.setSalt(salt)
     return d
@@ -23,37 +23,37 @@ func NewSalt(salt []byte) hash.Hash {
 // New224 returns a new hash.Hash computing the BLAKE-224 checksum.
 func New224() hash.Hash {
     return &digest{
-        hashSize: 224,
-        h:        iv224,
+        hs: 224,
+        h:  iv224,
     }
 }
 
-// New224Salt is like New224 but initializes salt with the given 16-byte slice.
-func New224Salt(salt []byte) hash.Hash {
+// New224WithSalt is like New224 but initializes salt with the given 16-byte slice.
+func New224WithSalt(salt []byte) hash.Hash {
     d := &digest{
-        hashSize: 224,
-        h:        iv224,
+        hs: 224,
+        h:  iv224,
     }
     d.setSalt(salt)
     return d
 }
 
 // Sum256 returns the BLAKE-256 checksum of the data.
-func Sum256(data []byte) [Size]byte {
-    var d digest
-    d.hashSize = 256
-    d.Reset()
+func Sum256(data []byte) (out [Size]byte) {
+    d := New()
     d.Write(data)
-    return d.checkSum()
+    sum := d.Sum(nil)
+
+    copy(out[:], sum)
+    return
 }
 
 // Sum224 returns the BLAKE-224 checksum of the data.
-func Sum224(data []byte) (sum224 [Size224]byte) {
-    var d digest
-    d.hashSize = 224
-    d.Reset()
+func Sum224(data []byte) (out [Size224]byte) {
+    d := New224()
     d.Write(data)
-    sum := d.checkSum()
-    copy(sum224[:], sum[:Size224])
+    sum := d.Sum(nil)
+
+    copy(out[:], sum)
     return
 }

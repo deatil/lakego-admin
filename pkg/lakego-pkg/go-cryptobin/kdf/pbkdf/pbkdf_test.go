@@ -3,12 +3,13 @@ package pbkdf
 import (
     "fmt"
     "hash"
+    "bytes"
     "testing"
     "crypto/md5"
     "crypto/sha1"
 )
 
-func Test_Kdf(t *testing.T) {
+func Test_PBKDF(t *testing.T) {
     type args struct {
         md         func() hash.Hash
         password   []byte
@@ -39,5 +40,13 @@ func Test_Kdf(t *testing.T) {
                 t.Errorf("Key(%v) = %x, want %s", tt.name, got, tt.want)
             }
         })
+    }
+}
+
+func Test_PBKDFHandlesLeadingZeros(t *testing.T) {
+    key := Key(sha1.New, 20, 64, []byte("\xf3\x7e\x05\xb5\x18\x32\x4b\x4b"), []byte("\x00\x00"), 2048, 1, 24)
+    expected := []byte("\x00\xf7\x59\xff\x47\xd1\x4d\xd0\x36\x65\xd5\x94\x3c\xb3\xc4\xa3\x9a\x25\x55\xc0\x2a\xed\x66\xe1")
+    if bytes.Compare(key, expected) != 0 {
+        t.Fatalf("expected key '%x', but found '%x'", expected, key)
     }
 }

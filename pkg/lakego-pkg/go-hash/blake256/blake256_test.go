@@ -1,13 +1,13 @@
 package blake256
 
 import (
-    "bytes"
     "fmt"
     "hash"
+    "bytes"
     "testing"
 )
 
-func Test256C(t *testing.T) {
+func Test_256C(t *testing.T) {
     // Test as in C program.
     var hashes = [][]byte{
         {
@@ -97,15 +97,15 @@ func newTestVectors(t *testing.T, hashfunc func() hash.Hash, vectors []blakeVect
     }
 }
 
-func TestNew256(t *testing.T) {
+func Test_New256(t *testing.T) {
     newTestVectors(t, New, vectors256)
 }
 
-func TestNew224(t *testing.T) {
+func Test_New224(t *testing.T) {
     newTestVectors(t, New224, vectors224)
 }
 
-func TestSum256(t *testing.T) {
+func Test_Sum256(t *testing.T) {
     for i, v := range vectors256 {
         res := fmt.Sprintf("%x", Sum256([]byte(v.in)))
         if res != v.out {
@@ -114,7 +114,7 @@ func TestSum256(t *testing.T) {
     }
 }
 
-func TestSum224(t *testing.T) {
+func Test_Sum224(t *testing.T) {
     for i, v := range vectors224 {
         res := fmt.Sprintf("%x", Sum224([]byte(v.in)))
         if res != v.out {
@@ -132,9 +132,9 @@ var vectors256salt = []struct{ out, in, salt string }{
         "SALTsaltSaltSALT"},
 }
 
-func TestSalt(t *testing.T) {
+func Test_Salt(t *testing.T) {
     for i, v := range vectors256salt {
-        h := NewSalt([]byte(v.salt))
+        h := NewWithSalt([]byte(v.salt))
         h.Write([]byte(v.in))
         res := fmt.Sprintf("%x", h.Sum(nil))
         if res != v.out {
@@ -148,10 +148,10 @@ func TestSalt(t *testing.T) {
             t.Errorf("expected panic for bad salt length")
         }
     }()
-    NewSalt([]byte{1, 2, 3, 4, 5, 6, 7, 8})
+    NewWithSalt([]byte{1, 2, 3, 4, 5, 6, 7, 8})
 }
 
-func TestTwoWrites(t *testing.T) {
+func Test_TwoWrites(t *testing.T) {
     b := make([]byte, 65)
     for i := range b {
         b[i] = byte(i)
