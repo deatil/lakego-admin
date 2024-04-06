@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "hash"
@@ -37,11 +37,9 @@ func (this KeySignWithSM2) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
         return nil, nil, errors.New("pkcs7: PrivateKey is not sm2 PrivateKey")
     }
 
-    hashData := hashFuncSignData(this.hashFunc, data)
+    signData, err := priv.Sign(rand.Reader, data, nil)
 
-    signData, err := priv.Sign(rand.Reader, hashData, nil)
-
-    return hashData, signData, err
+    return nil, signData, err
 }
 
 // 验证
@@ -68,7 +66,18 @@ func (this KeySignWithSM2) Verify(pkey crypto.PublicKey, signed []byte, signatur
             return false, errors.New("pkcs7: PublicKey is not sm2 PublicKey")
     }
 
-    hashData := hashFuncSignData(this.hashFunc, signed)
+    return pub.Verify(signed, signature, nil), nil
+}
 
-    return pub.Verify(hashData, signature, nil), nil
+// 检测证书
+func (this KeySignWithSM2) Check(pkey any) bool {
+    if _, ok := pkey.(*sm2.PrivateKey); ok {
+        return true
+    }
+
+    if _, ok := pkey.(*sm2.PublicKey); ok {
+        return true
+    }
+
+    return false
 }

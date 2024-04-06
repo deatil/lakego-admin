@@ -47,14 +47,15 @@ var (
     oidAES256CCM  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 1, 47}
 
     // SM4
-    oidSM4ECB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 1}
-    oidSM4CBC     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
-    oidSM4OFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
-    oidSM4CFB     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 4}
-    oidSM4CFB1    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 5}
-    oidSM4CFB8    = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
-    oidSM4GCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
-    oidSM4CCM     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
+    oidSM4     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104}
+    oidSM4ECB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 1}
+    oidSM4CBC  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 2}
+    oidSM4OFB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 3}
+    oidSM4CFB  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 4}
+    oidSM4CFB1 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 5}
+    oidSM4CFB8 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 6}
+    oidSM4GCM  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 8}
+    oidSM4CCM  = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 104, 9}
 
     // gost
     oidGostCipher = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 21}

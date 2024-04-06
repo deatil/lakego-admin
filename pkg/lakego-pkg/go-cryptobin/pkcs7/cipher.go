@@ -1,4 +1,4 @@
-package encrypt
+package pkcs7
 
 import(
     "github.com/deatil/go-cryptobin/pkcs/pbes2"
@@ -10,8 +10,9 @@ type (
 )
 
 var (
-    AddCipher = pbes2.AddCipher
-    GetCipher = pbes2.GetCipher
+    AddCipher     = pbes2.AddCipher
+    GetCipher     = pbes2.GetCipher
+    GetGmSMCipher = pbes2.GetGmSMCipher
 
     // 帮助函数
     GetCipherFromName   = pbes2.GetCipherFromName

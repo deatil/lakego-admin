@@ -53,10 +53,6 @@ const (
 )
 
 // Encode secret key in a pkcs8
-// See ftp://ftp.rsasecurity.com/pub/pkcs/pkcs-8/pkcs-8v1_2.asn, RFC 5208,
-// https://github.com/openjdk/jdk/blob/jdk8-b120/jdk/src/share/classes/sun/security/pkcs12/PKCS12KeyStore.java#L613,
-// https://github.com/openjdk/jdk/blob/jdk9-b94/jdk/src/java.base/share/classes/sun/security/pkcs12/PKCS12KeyStore.java#L624
-// and https://github.com/golang/go/blob/master/src/crypto/x509/pkcs8.go
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier

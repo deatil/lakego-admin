@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "errors"
@@ -9,24 +9,24 @@ import (
 )
 
 // ecdsa 签名
-type KeySignWithEcdsa struct {
+type KeySignWithECDSA struct {
     hashFunc   crypto.Hash
     hashId     asn1.ObjectIdentifier
     identifier asn1.ObjectIdentifier
 }
 
 // oid
-func (this KeySignWithEcdsa) HashOID() asn1.ObjectIdentifier {
+func (this KeySignWithECDSA) HashOID() asn1.ObjectIdentifier {
     return this.hashId
 }
 
 // oid
-func (this KeySignWithEcdsa) OID() asn1.ObjectIdentifier {
+func (this KeySignWithECDSA) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 签名
-func (this KeySignWithEcdsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []byte, error) {
+func (this KeySignWithECDSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []byte, error) {
     var priv *ecdsa.PrivateKey
     var ok bool
 
@@ -42,7 +42,7 @@ func (this KeySignWithEcdsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, 
 }
 
 // 验证
-func (this KeySignWithEcdsa) Verify(pkey crypto.PublicKey, signed []byte, signature []byte) (bool, error) {
+func (this KeySignWithECDSA) Verify(pkey crypto.PublicKey, signed []byte, signature []byte) (bool, error) {
     var pub *ecdsa.PublicKey
     var ok bool
 
@@ -53,4 +53,17 @@ func (this KeySignWithEcdsa) Verify(pkey crypto.PublicKey, signed []byte, signat
     hashData := hashSignData(this.hashFunc, signed)
 
     return ecdsa.VerifyASN1(pub, hashData, signature), nil
+}
+
+// 检测证书
+func (this KeySignWithECDSA) Check(pkey any) bool {
+    if _, ok := pkey.(*ecdsa.PrivateKey); ok {
+        return true
+    }
+
+    if _, ok := pkey.(*ecdsa.PublicKey); ok {
+        return true
+    }
+
+    return false
 }

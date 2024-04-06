@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "fmt"
@@ -7,7 +7,8 @@ import (
     "errors"
     "encoding/asn1"
     "crypto/subtle"
-    "crypto/x509"
+
+    "github.com/deatil/go-cryptobin/x509"
 )
 
 type unsignedData []byte
@@ -116,7 +117,7 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
     }
 
     // 签名
-    signFunc, err := parseSignFromOid(signer.DigestEncryptionAlgorithm.Algorithm, signer.DigestAlgorithm.Algorithm)
+    signFunc, err := parseSignFromOid(signer.DigestEncryptionAlgorithm.Algorithm)
     if err != nil {
         return err
     }
@@ -186,7 +187,7 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
     }
 
     // 签名
-    signFunc, err := parseSignFromOid(signer.DigestEncryptionAlgorithm.Algorithm, signer.DigestAlgorithm.Algorithm)
+    signFunc, err := parseSignFromOid(signer.DigestEncryptionAlgorithm.Algorithm)
     if err != nil {
         return err
     }
@@ -218,9 +219,11 @@ func (this *PKCS7) UnmarshalSignedAttribute(attributeType asn1.ObjectIdentifier,
     if !ok {
         return errors.New("pkcs7: payload is not signedData content")
     }
+
     if len(sd.SignerInfos) < 1 {
         return errors.New("pkcs7: payload has no signers")
     }
+
     attributes := sd.SignerInfos[0].AuthenticatedAttributes
     return unmarshalAttribute(attributes, attributeType, out)
 }
@@ -277,16 +280,19 @@ func verifyCertChain(ee *x509.Certificate, certs []*x509.Certificate, truststore
     for _, intermediate := range certs {
         intermediates.AddCert(intermediate)
     }
+
     verifyOptions := x509.VerifyOptions{
         Roots:         truststore,
         Intermediates: intermediates,
         KeyUsages:     []x509.ExtKeyUsage{x509.ExtKeyUsageAny},
         CurrentTime:   currentTime,
     }
+
     chains, err = ee.Verify(verifyOptions)
     if err != nil {
         return chains, fmt.Errorf("pkcs7: failed to verify certificate chain: %v", err)
     }
+
     return
 }
 
@@ -307,6 +313,7 @@ func getCertFromCertsByIssuerAndSerial(certs []*x509.Certificate, ias issuerAndS
             return cert
         }
     }
+
     return nil
 }
 
@@ -317,6 +324,7 @@ func unmarshalAttribute(attrs []attribute, attributeType asn1.ObjectIdentifier, 
             return err
         }
     }
+
     return errors.New("pkcs7: attribute type not in attributes")
 }
 

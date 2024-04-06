@@ -158,25 +158,23 @@ func (c *cipher512) expandKey(key, tweak []byte) error {
 }
 
 func g512(in []uint64, a, b, c, d int) {
-    in[0] += in[1]
-    in[1] = rotl64(in[1], a) ^ in[0]
-    in[2] += in[3]
-    in[3] = rotl64(in[3], b) ^ in[2]
-    in[4] += in[5]
-    in[5] = rotl64(in[5], c) ^ in[4]
-    in[6] += in[7]
-    in[7] = rotl64(in[7], d) ^ in[6]
-    in[0], in[2], in[3], in[4], in[6], in[7] = in[2], in[4], in[7], in[6], in[0], in[3]
+    n := []int{a, b, c, d}
+    for i := 0; i < 8; i += 2 {
+        in[i] += in[i+1]
+        in[i+1] = rotl64(in[i+1], n[i/2]) ^ in[i]
+    }
+
+    in[0], in[2], in[3], in[4], in[6], in[7] =
+        in[2], in[4], in[7], in[6], in[0], in[3]
 }
 
 func d512(ct []uint64, a, b, c, d int) {
-    ct[0], ct[2], ct[3], ct[4], ct[6], ct[7] = ct[6], ct[0], ct[7], ct[2], ct[4], ct[3]
-    ct[7] = rotr64(ct[7] ^ ct[6], a)
-    ct[6] -= ct[7]
-    ct[5] = rotr64(ct[5] ^ ct[4], b)
-    ct[4] -= ct[5]
-    ct[3] = rotr64(ct[3] ^ ct[2], c)
-    ct[2] -= ct[3]
-    ct[1] = rotr64(ct[1] ^ ct[0], d)
-    ct[0] -= ct[1]
+    ct[0], ct[2], ct[3], ct[4], ct[6], ct[7] =
+        ct[6], ct[0], ct[7], ct[2], ct[4], ct[3]
+
+    n := []int{d, c, b, a}
+    for i := 7; i > 0; i -= 2 {
+        ct[i] = rotr64(ct[i] ^ ct[i-1], n[i/2])
+        ct[i-1] -= ct[i]
+    }
 }

@@ -1,4 +1,4 @@
-package encrypt
+package pkcs7
 
 import (
     "crypto/sha1"
@@ -20,37 +20,37 @@ var(
 )
 
 // KeyEncryptRSA
-var KeyEncryptRSA = KeyEncryptWithRsa{
+var KeyEncryptRSA = KeyEncryptWithRSA{
     hashFunc:   nil,
     identifier: oidEncryptionAlgorithmRSA,
 }
 
 // KeyEncryptRSAESOAEP
-var KeyEncryptRSAESOAEP = KeyEncryptWithRsa{
+var KeyEncryptRSAESOAEP = KeyEncryptWithRSA{
     hashFunc:   sha1.New,
     identifier: oidEncryptionAlgorithmRSAESOAEP,
 }
 
 // KeyEncryptRSASHA1
-var KeyEncryptRSASHA1 = KeyEncryptWithRsa{
+var KeyEncryptRSASHA1 = KeyEncryptWithRSA{
     hashFunc:   sha1.New,
     identifier: oidEncryptionAlgorithmRSASHA1,
 }
 
 // KeyEncryptRSASHA256
-var KeyEncryptRSASHA256 = KeyEncryptWithRsa{
+var KeyEncryptRSASHA256 = KeyEncryptWithRSA{
     hashFunc:   sha256.New,
     identifier: oidEncryptionAlgorithmRSASHA256,
 }
 
 // KeyEncryptRSASHA384
-var KeyEncryptRSASHA384 = KeyEncryptWithRsa{
+var KeyEncryptRSASHA384 = KeyEncryptWithRSA{
     hashFunc:   sha512.New384,
     identifier: oidEncryptionAlgorithmRSASHA384,
 }
 
 // KeyEncryptRSASHA512
-var KeyEncryptRSASHA512 = KeyEncryptWithRsa{
+var KeyEncryptRSASHA512 = KeyEncryptWithRSA{
     hashFunc:   sha512.New,
     identifier: oidEncryptionAlgorithmRSASHA512,
 }

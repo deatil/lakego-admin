@@ -1,4 +1,4 @@
-package lyra2re
+package lyra2re2
 
 import (
     "encoding/binary"
@@ -50,11 +50,12 @@ func roundLyra(v []uint64) {
 }
 
 type lyra2re struct {
+    // The current state of the sponge
     state []uint64
 }
 
 /**
- * newLyra2 Initializes the Sponge State. The first 512 bits are set to zeros and the remainder
+ * newLyra2RE Initializes the Sponge State. The first 512 bits are set to zeros and the remainder
  * receive Blake2b's IV as per Blake2b's specification. <b>Note:</b> Even though sponges
  * typically have their internal state initialized with zeros, Blake2b's G function
  * has a fixed point: if the internal state and message are both filled with zeros. the
@@ -62,7 +63,7 @@ type lyra2re struct {
  * Blake2b does not use the constants originally employed in Blake2 inside its G function,
  * relying on the IV for avoiding possible fixed points.
  *
- * @param state         The 1024-bit array to be initialized
+ * @param state The 1024-bit array to be initialized
  */
 func newLyra2RE() *lyra2re {
     l := &lyra2re{}
@@ -76,7 +77,7 @@ func newLyra2RE() *lyra2re {
 /**
  * Eblake2bLyraxecute Blake2b's G function, with all 12 rounds.
  *
- * @param v  A 1024-bit (16 uint64_t) array to be processed by Blake2b's G function
+ * @param v     A 1024-bit (16 uint64_t) array to be processed by Blake2b's G function
  */
 func blake2bLyra(v []uint64) {
     for i := 0; i < 12; i++ {
@@ -86,7 +87,7 @@ func blake2bLyra(v []uint64) {
 
 /**
  * reducedBlake2bLyra Executes a reduced version of Blake2b's G function with only one round
- * @param v  A 1024-bit (16 uint64_t) array to be processed by Blake2b's G function
+ * @param v     A 1024-bit (16 uint64_t) array to be processed by Blake2b's G function
  */
 func reducedBlake2bLyra(v []uint64) {
     roundLyra(v)
@@ -97,6 +98,7 @@ func reducedBlake2bLyra(v []uint64) {
  * internal permutation
  *
  * @param out Array that will receive the data squeezed
+ * @param len The number of bytes to be squeezed into the "out" array
  */
 func (this *lyra2re) squeeze(out []byte) {
     tmp := make([]byte, blockLenBytes)
@@ -118,6 +120,7 @@ func (this *lyra2re) squeeze(out []byte) {
  * @param in The block to be absorbed (BLOCK_LEN_INT64 words)
  */
 func (this *lyra2re) absorbBlock(in []uint64) {
+    // XORs the first BLOCK_LEN_INT64 words of "in" with the current state
     for i := 0; i < 12; i++ {
         this.state[i] ^= in[i]
     }
@@ -133,6 +136,7 @@ func (this *lyra2re) absorbBlock(in []uint64) {
  * @param in The block to be absorbed (BLOCK_LEN_BLAKE2_SAFE_INT64 words)
  */
 func (this *lyra2re) absorbBlockBlake2Safe(in []uint64) {
+    // XORs the first BLOCK_LEN_BLAKE2_SAFE_INT64 words of "in" with the current state
     for i := 0; i < 8; i++ {
         this.state[i] ^= in[i]
     }
@@ -247,7 +251,7 @@ func (this *lyra2re) reducedDuplexRowSetup(
             this.state[j] ^= (ptrWordIn[j] + ptrWordInOut[j])
         }
 
-        //Applies the reduced-round transformation f to the sponge's state
+        // Applies the reduced-round transformation f to the sponge's state
         reducedBlake2bLyra(this.state)
 
         // M[row][col] = M[prev][col] XOR rand
@@ -261,10 +265,11 @@ func (this *lyra2re) reducedDuplexRowSetup(
             ptrWordInOut[j] ^= newState[j]
         }
 
-        //Inputs: next column (i.e., next block in sequence)
+        // Inputs: next column (i.e., next block in sequence)
         ptrInOut += blockLenInt64
         ptrIn += blockLenInt64
-        //Output: goes to previous column
+
+        // Output: goes to previous column
         ptrOut -= blockLenInt64
     }
 }
@@ -307,7 +312,7 @@ func (this *lyra2re) reducedDuplexRow(
         //Applies the reduced-round transformation f to the sponge's state
         reducedBlake2bLyra(this.state)
 
-        //M[rowOut][col] = M[rowOut][col] XOR rand
+        // M[rowOut][col] = M[rowOut][col] XOR rand
         for j = 0; j < 12; j++ {
             ptrWordOut[j] ^= this.state[j]
         }
@@ -358,10 +363,8 @@ func Lyra2(
 
     i = nRows * rowLenInt64
     wholeMatrix := make([]uint64, i)
-    //Allocates pointers to each row of the matrix
     memMatrix := make([][]uint64, nRows)
 
-    //Places the pointers in the correct positions
     ptrWord := 0
     for i = 0; i < nRows; i++ {
         memMatrix[i] = wholeMatrix[ptrWord:]
@@ -370,7 +373,7 @@ func Lyra2(
 
     //First, we clean enough blocks for the password, salt, basil and padding
     nBlocksInput := ((len(salt) + len(pwd) + 6*8) / blockLenBlake2SafeBytes) + 1
-    ptrByte := 0 // (byte*) wholeMatrix;
+    ptrByte := 0
 
     //Prepends the password
     for j := 0; j < len(pwd)/8; j++ {
@@ -404,14 +407,14 @@ func Lyra2(
     ptrByte = (nBlocksInput*blockLenBlake2SafeBytes)/8 - 1 //sets the pointer to the correct position: end of incomplete block
     wholeMatrix[ptrByte] ^= 0x0100000000000000             //last byte of padding: at the end of the last incomplete block00
 
-    //Sponge state: 16 uint64_t, BLOCK_LEN_INT64 words of them for the bitrate (b) and the remainder for the capacity (c)
+    // Sponge state: 16 uint64_t, BLOCK_LEN_INT64 words of them for the bitrate (b) and the remainder for the capacity (c)
     state := newLyra2RE()
 
     //Absorbing salt, password and basil: this is the only place in which the block length is hard-coded to 512 bits
     ptrWord = 0
     for i = 0; i < nBlocksInput; i++ {
         state.absorbBlockBlake2Safe(wholeMatrix[ptrWord:]) //absorbs each block of pad(pwd || salt || basil)
-        ptrWord += blockLenBlake2SafeBytes                  //goes to next block of pad(pwd || salt || basil)
+        ptrWord += blockLenBlake2SafeInt64                  //goes to next block of pad(pwd || salt || basil)
     }
 
     //Initializes M[0] and M[1]
@@ -462,8 +465,8 @@ func Lyra2(
         }
     }
 
-    // Absorbs the last block of the memory matrix
+    //Absorbs the last block of the memory matrix
     state.absorbBlock(memMatrix[rowa])
-    // Squeezes the key
+    //Squeezes the key
     state.squeeze(k)
 }

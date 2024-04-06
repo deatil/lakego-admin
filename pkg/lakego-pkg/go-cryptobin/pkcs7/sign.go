@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "fmt"
@@ -6,9 +6,10 @@ import (
     "bytes"
     "math/big"
     "crypto"
-    "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
+
+    "github.com/deatil/go-cryptobin/x509"
 )
 
 // SignedData is an opaque data structure for creating signed data payloads
@@ -18,6 +19,7 @@ type SignedData struct {
     data, messageDigest []byte
     digestOid           asn1.ObjectIdentifier
     encryptionOid       asn1.ObjectIdentifier
+    mode                Mode
 }
 
 // NewSignedData takes data and initializes a PKCS7 SignedData struct that is
@@ -28,19 +30,22 @@ func NewSignedData(data []byte) (*SignedData, error) {
     if err != nil {
         return nil, err
     }
+
     ci := contentInfo{
         ContentType: oidData,
         Content:     asn1.RawValue{Class: 2, Tag: 0, Bytes: content, IsCompound: true},
     }
+
     sd := signedData{
         ContentInfo: ci,
         Version:     1,
     }
+
     return &SignedData{
-        sd: sd,
-        data: data,
-        digestOid: oidDigestAlgorithmSHA1,
-        encryptionOid: oidDigestAlgorithmRSASHA1,
+        sd:            sd,
+        data:          data,
+        digestOid:     OidDigestAlgorithmSHA1,
+        encryptionOid: OidEncryptionAlgorithmRSASHA1,
     }, nil
 }
 
@@ -97,18 +102,23 @@ type issuerAndSerial struct {
     SerialNumber *big.Int
 }
 
+// This should be called before adding signers
+func (this *SignedData) SetMode(mode Mode) {
+    this.mode = mode
+}
+
 // SetDigestAlgorithm sets the digest algorithm to be used in the signing process.
 //
 // This should be called before adding signers
-func (this *SignedData) SetDigestAlgorithm(d asn1.ObjectIdentifier) {
-    this.digestOid = d
+func (this *SignedData) SetDigestAlgorithm(oid asn1.ObjectIdentifier) {
+    this.digestOid = oid
 }
 
 // SetEncryptionAlgorithm sets the encryption algorithm to be used in the signing process.
 //
 // This should be called before adding signers
-func (this *SignedData) SetEncryptionAlgorithm(d asn1.ObjectIdentifier) {
-    this.encryptionOid = d
+func (this *SignedData) SetEncryptionAlgorithm(oid asn1.ObjectIdentifier) {
+    this.encryptionOid = oid
 }
 
 // AddSigner is a wrapper around AddSignerChain() that adds a signer without any parent.
@@ -141,6 +151,7 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
         if err != nil {
             return err
         }
+
         // the first parent is the issuer
         ias.IssuerName = asn1.RawValue{FullBytes: parents[0].RawSubject}
     }
@@ -156,6 +167,7 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
 
     this.messageDigest = hashFunc.Sum(this.data)
 
+    // attrs append set
     attrs := &attributes{}
     attrs.Add(oidAttributeContentType, this.sd.ContentInfo.ContentType)
     attrs.Add(oidAttributeMessageDigest, this.messageDigest)
@@ -184,7 +196,7 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
         return err
     }
 
-    signFunc, err := parseSignFromOid(this.encryptionOid, this.digestOid)
+    signFunc, err := parseSignFromOid(this.encryptionOid)
 
     // create signature of signed attributes
     _, signature, err := signFunc.Sign(pkey, finalAttrsBytes)
@@ -223,13 +235,15 @@ func (this *SignedData) SignWithoutAttr(ee *x509.Certificate, pkey crypto.Privat
     this.sd.DigestAlgorithmIdentifiers = append(this.sd.DigestAlgorithmIdentifiers, pkix.AlgorithmIdentifier{Algorithm: this.digestOid})
 
     // 签名
-    signFunc, err := parseSignFromOid(this.encryptionOid, this.digestOid)
+    signFunc, err := parseSignFromOid(this.encryptionOid)
 
     // create signature of signed attributes
     hashData, signData, err := signFunc.Sign(pkey, this.data)
     if err != nil {
         return err
     }
+
+    this.digestOid = signFunc.HashOID()
 
     this.messageDigest = hashData
     signature = signData
@@ -282,7 +296,9 @@ func (this *SignedData) SetContentType(contentType asn1.ObjectIdentifier) {
 // Detach removes content from the signed data struct to make it a detached signature.
 // This must be called right before Finish()
 func (this *SignedData) Detach() {
-    this.sd.ContentInfo = contentInfo{ContentType: oidData}
+    this.sd.ContentInfo = contentInfo{
+        ContentType: this.mode.OidData(),
+    }
 }
 
 // GetSignedData returns the private Signed Data
@@ -300,8 +316,13 @@ func (this *SignedData) Finish() ([]byte, error) {
     }
 
     outer := contentInfo{
-        ContentType: oidSignedData,
-        Content:     asn1.RawValue{Class: 2, Tag: 0, Bytes: inner, IsCompound: true},
+        ContentType: this.mode.OidSignedData(),
+        Content:     asn1.RawValue{
+            Class: 2,
+            Tag: 0,
+            Bytes: inner,
+            IsCompound: true,
+        },
     }
 
     return asn1.Marshal(outer)
@@ -363,18 +384,27 @@ func marshalCertificateBytes(certs []byte) (rawCertificates, error) {
     if err != nil {
         return rawCertificates{}, err
     }
+
     return rawCertificates{Raw: b}, nil
 }
 
 // DegenerateCertificate creates a signed data structure containing only the
 // provided certificate or certificate chain.
-func DegenerateCertificate(cert []byte) ([]byte, error) {
+func DegenerateCertificate(cert []byte, mode ...Mode) ([]byte, error) {
     rawCert, err := marshalCertificateBytes(cert)
     if err != nil {
         return nil, err
     }
 
-    emptyContent := contentInfo{ContentType: oidData}
+    useMode := DefaultMode
+    if len(mode) > 0 {
+        useMode = mode[0]
+    }
+
+    emptyContent := contentInfo{
+        ContentType: useMode.OidData(),
+    }
+
     sd := signedData{
         Version:      1,
         ContentInfo:  emptyContent,
@@ -388,7 +418,7 @@ func DegenerateCertificate(cert []byte) ([]byte, error) {
     }
 
     signedContent := contentInfo{
-        ContentType: oidSignedData,
+        ContentType: useMode.OidSignedData(),
         Content:     asn1.RawValue{Class: 2, Tag: 0, Bytes: content, IsCompound: true},
     }
 

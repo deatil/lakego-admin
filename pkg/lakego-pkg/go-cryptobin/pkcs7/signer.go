@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "hash"

@@ -1,25 +1,13 @@
-package encrypt
+package pkcs7
 
 import (
     "io"
     "errors"
-    "math/big"
-    "crypto/x509"
-    "crypto/x509/pkix"
     "encoding/asn1"
-)
+    "crypto/x509/pkix"
 
-var (
-    // Signed Data OIDs
-    oidData          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
-    oidEnvelopedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
-    oidEncryptedData = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
+    "github.com/deatil/go-cryptobin/x509"
 )
-
-type issuerAndSerial struct {
-    IssuerName   asn1.RawValue
-    SerialNumber *big.Int
-}
 
 type envelopedData struct {
     Version              int
@@ -45,11 +33,6 @@ type encryptedContentInfo struct {
     EncryptedContent           asn1.RawValue `asn1:"tag:0,optional"`
 }
 
-type contentInfo struct {
-    ContentType asn1.ObjectIdentifier
-    Content     asn1.RawValue `asn1:"explicit,optional,tag:0"`
-}
-
 var ErrUnsupportedEncryptionAlgorithm = errors.New("pkcs7: cannot encrypt content: only DES-CBC, AES-CBC, and AES-GCM supported")
 
 var ErrPSKNotProvided = errors.New("pkcs7: cannot encrypt content: PSK not provided")
@@ -58,12 +41,14 @@ var ErrPSKNotProvided = errors.New("pkcs7: cannot encrypt content: PSK not provi
 type Opts struct {
     Cipher     Cipher
     KeyEncrypt KeyEncrypt
+    Mode       Mode
 }
 
 // 默认配置
 var DefaultOpts = Opts{
     Cipher:     AES256CBC,
     KeyEncrypt: KeyEncryptRSA,
+    Mode:       DefaultMode,
 }
 
 // 加密
@@ -87,6 +72,8 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
         return nil, errors.New("pkcs7: unknown opts keyEncrypt")
     }
 
+    useMode := opt.Mode
+
     // 生成密钥
     key = make([]byte, cipher.KeySize())
     if _, err := io.ReadFull(rand, key); err != nil {
@@ -99,7 +86,7 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
     }
 
     eci = &encryptedContentInfo{
-        ContentType: oidData,
+        ContentType: useMode.OidData(),
         ContentEncryptionAlgorithm: pkix.AlgorithmIdentifier{
             Algorithm: cipher.OID(),
             Parameters: asn1.RawValue{
@@ -146,7 +133,7 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
 
     // Prepare outer payload structure
     wrapper := contentInfo{
-        ContentType: oidEnvelopedData,
+        ContentType: useMode.OidEnvelopedData(),
         Content:     asn1.RawValue{Class: 2, Tag: 0, IsCompound: true, Bytes: innerContent},
     }
 
@@ -155,12 +142,17 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
 
 // EncryptUsingPSK creates and returns an encrypted data PKCS7 structure,
 // encrypted using caller provided pre-shared secret.
-func EncryptUsingPSK(rand io.Reader, content []byte, key []byte, cipher Cipher) ([]byte, error) {
+func EncryptUsingPSK(rand io.Reader, content []byte, key []byte, cipher Cipher, mode ...Mode) ([]byte, error) {
     var eci *encryptedContentInfo
     var err error
 
     if key == nil {
         return nil, ErrPSKNotProvided
+    }
+
+    useMode := DefaultMode
+    if len(mode) > 0 {
+        useMode = mode[0]
     }
 
     encrypted, paramBytes, err := cipher.Encrypt(rand, key, content)
@@ -169,7 +161,7 @@ func EncryptUsingPSK(rand io.Reader, content []byte, key []byte, cipher Cipher) 
     }
 
     eci = &encryptedContentInfo{
-        ContentType: oidData,
+        ContentType: useMode.OidData(),
         ContentEncryptionAlgorithm: pkix.AlgorithmIdentifier{
             Algorithm: cipher.OID(),
             Parameters: asn1.RawValue{
@@ -191,7 +183,7 @@ func EncryptUsingPSK(rand io.Reader, content []byte, key []byte, cipher Cipher) 
 
     // Prepare outer payload structure
     wrapper := contentInfo{
-        ContentType: oidEncryptedData,
+        ContentType: useMode.OidEncryptedData(),
         Content:     asn1.RawValue{
             Class: 2,
             Tag: 0,

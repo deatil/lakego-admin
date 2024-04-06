@@ -9,43 +9,43 @@ func NewCubehash(hashSize, blockSize, r, ir, fr int) hash.Hash {
     return NewDigest(hashSize, blockSize, r, ir, fr)
 }
 
-// New returns a new hash.Hash.
-func New() hash.Hash {
-    return NewCubehash(512, 32, 16, 16, 32)
-}
-
-// New512x returns a new hash.Hash.
-func New512x() hash.Hash {
+// NewHS512x returns a new hash.Hash.
+func NewHS512x() hash.Hash {
     return NewCubehash(512, 1, 16, 16, 32)
 }
 
-// New384 returns a new hash.Hash.
-func New384() hash.Hash {
+// NewHS512 returns a new hash.Hash.
+func NewHS512() hash.Hash {
+    return NewCubehash(512, 32, 16, 16, 32)
+}
+
+// NewHS384 returns a new hash.Hash.
+func NewHS384() hash.Hash {
     return NewCubehash(384, 32, 16, 16, 32)
 }
 
-// New256 returns a new hash.Hash.
-func New256() hash.Hash {
+// NewHS256 returns a new hash.Hash.
+func NewHS256() hash.Hash {
     return NewCubehash(256, 32, 16, 16, 32)
 }
 
-// New224 returns a new hash.Hash.
-func New224() hash.Hash {
+// NewHS224 returns a new hash.Hash.
+func NewHS224() hash.Hash {
     return NewCubehash(224, 32, 16, 16, 32)
 }
 
-// New192 returns a new hash.Hash.
-func New192() hash.Hash {
+// NewHS192 returns a new hash.Hash.
+func NewHS192() hash.Hash {
     return NewCubehash(192, 32, 16, 16, 32)
 }
 
-// New160 returns a new hash.Hash.
-func New160() hash.Hash {
+// NewHS160 returns a new hash.Hash.
+func NewHS160() hash.Hash {
     return NewCubehash(160, 32, 16, 16, 32)
 }
 
-// New128 returns a new hash.Hash.
-func New128() hash.Hash {
+// NewHS128 returns a new hash.Hash.
+func NewHS128() hash.Hash {
     return NewCubehash(128, 32, 16, 16, 32)
 }
 
@@ -73,10 +73,9 @@ func NewSH192() hash.Hash {
 
 // =======
 
-// Sum returns the cubehash checksum of the data.
-// Sum as Sum512
-func Sum(data []byte) (out [Size]byte) {
-    h := New()
+// SumHS512 returns the cubehash checksum of the data.
+func SumHS512(data []byte) (out [Size]byte) {
+    h := NewHS512()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -84,9 +83,9 @@ func Sum(data []byte) (out [Size]byte) {
     return
 }
 
-// Sum384 returns the cubehash checksum of the data.
-func Sum384(data []byte) (out [Size384]byte) {
-    h := New384()
+// SumHS384 returns the cubehash checksum of the data.
+func SumHS384(data []byte) (out [Size384]byte) {
+    h := NewHS384()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -94,9 +93,9 @@ func Sum384(data []byte) (out [Size384]byte) {
     return
 }
 
-// Sum256 returns the cubehash checksum of the data.
-func Sum256(data []byte) (out [Size256]byte) {
-    h := New256()
+// SumHS256 returns the cubehash checksum of the data.
+func SumHS256(data []byte) (out [Size256]byte) {
+    h := NewHS256()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -104,9 +103,9 @@ func Sum256(data []byte) (out [Size256]byte) {
     return
 }
 
-// Sum224 returns the cubehash checksum of the data.
-func Sum224(data []byte) (out [Size224]byte) {
-    h := New224()
+// SumHS224 returns the cubehash checksum of the data.
+func SumHS224(data []byte) (out [Size224]byte) {
+    h := NewHS224()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -114,9 +113,9 @@ func Sum224(data []byte) (out [Size224]byte) {
     return
 }
 
-// Sum192 returns the cubehash checksum of the data.
-func Sum192(data []byte) (out [Size192]byte) {
-    h := New192()
+// SumHS192 returns the cubehash checksum of the data.
+func SumHS192(data []byte) (out [Size192]byte) {
+    h := NewHS192()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -124,9 +123,9 @@ func Sum192(data []byte) (out [Size192]byte) {
     return
 }
 
-// Sum160 returns the cubehash checksum of the data.
-func Sum160(data []byte) (out [Size160]byte) {
-    h := New160()
+// SumHS160 returns the cubehash checksum of the data.
+func SumHS160(data []byte) (out [Size160]byte) {
+    h := NewHS160()
     h.Write(data)
     sum := h.Sum(nil)
 
@@ -134,9 +133,51 @@ func Sum160(data []byte) (out [Size160]byte) {
     return
 }
 
-// Sum128 returns the cubehash checksum of the data.
-func Sum128(data []byte) (out [Size128]byte) {
-    h := New128()
+// SumHS128 returns the cubehash checksum of the data.
+func SumHS128(data []byte) (out [Size128]byte) {
+    h := NewHS128()
+    h.Write(data)
+    sum := h.Sum(nil)
+
+    copy(out[:], sum)
+    return
+}
+
+// =======
+
+// SumSH512 returns the cubehash checksum of the data.
+func SumSH512(data []byte) (out [Size]byte) {
+    h := NewSH512()
+    h.Write(data)
+    sum := h.Sum(nil)
+
+    copy(out[:], sum)
+    return
+}
+
+// SumSH256 returns the cubehash checksum of the data.
+func SumSH256(data []byte) (out [Size256]byte) {
+    h := NewSH256()
+    h.Write(data)
+    sum := h.Sum(nil)
+
+    copy(out[:], sum)
+    return
+}
+
+// SumSH224 returns the cubehash checksum of the data.
+func SumSH224(data []byte) (out [Size224]byte) {
+    h := NewSH224()
+    h.Write(data)
+    sum := h.Sum(nil)
+
+    copy(out[:], sum)
+    return
+}
+
+// SumSH192 returns the cubehash checksum of the data.
+func SumSH192(data []byte) (out [Size192]byte) {
+    h := NewSH192()
     h.Write(data)
     sum := h.Sum(nil)
 

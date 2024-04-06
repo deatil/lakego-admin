@@ -156,17 +156,21 @@ func (c *cipher256) expandKey(key, tweak []byte) error {
 }
 
 func g256(in []uint64, a, b int) {
-    in[0] += in[1]
-    in[1] = rotl64(in[1], a) ^ in[0]
-    in[2] += in[3]
-    in[3] = rotl64(in[3], b) ^ in[2]
+    n := []int{a, b}
+    for i := 0; i < 4; i += 2 {
+        in[i] += in[i+1]
+        in[i+1] = rotl64(in[i+1], n[i/2]) ^ in[i]
+    }
+
     in[1], in[3] = in[3], in[1]
 }
 
 func d256(ct []uint64, a, b int) {
     ct[1], ct[3] = ct[3], ct[1]
-    ct[3] = rotr64(ct[3] ^ ct[2], a)
-    ct[2] -= ct[3]
-    ct[1] = rotr64(ct[1] ^ ct[0], b)
-    ct[0] -= ct[1]
+
+    n := []int{b, a}
+    for i := 3; i > 0; i -= 2 {
+        ct[i] = rotr64(ct[i] ^ ct[i-1], n[i/2])
+        ct[i-1] -= ct[i]
+    }
 }

@@ -85,6 +85,24 @@ func GetCipher(oid string) (Cipher, error) {
     return defaultCiphers.GetCipher(oid)
 }
 
+// 获取国密加密
+func (this *Ciphers) GetGmSMCipher(oid string, length int) (Cipher, error) {
+    if oid == oidSM4.String() {
+        if length > 0 {
+            oid = oidSM4CBC.String()
+        } else {
+            oid = oidSM4ECB.String()
+        }
+    }
+
+    return this.GetCipher(oid)
+}
+
+// 获取加密
+func GetGmSMCipher(oid string, length int) (Cipher, error) {
+    return defaultCiphers.GetGmSMCipher(oid, length)
+}
+
 // 全部
 func (this *Ciphers) All() map[string]CipherFunc {
     this.mu.RLock()

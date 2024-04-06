@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "hash"
@@ -7,7 +7,6 @@ import (
 
 // hash
 type SignHashWithFunc struct {
-    // hash 摘要
     hashFunc   func() hash.Hash
     identifier asn1.ObjectIdentifier
 }
@@ -17,7 +16,7 @@ func (this SignHashWithFunc) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
-// 值大小
+// hash checksum
 func (this SignHashWithFunc) Sum(data []byte) []byte {
     h := this.hashFunc()
     h.Write(data)

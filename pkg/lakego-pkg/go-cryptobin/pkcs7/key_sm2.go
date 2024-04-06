@@ -1,4 +1,4 @@
-package encrypt
+package pkcs7
 
 import (
     "errors"
@@ -57,4 +57,17 @@ func (this KeyEncryptWithSM2) Decrypt(ciphertext []byte, pkey crypto.PrivateKey)
     }
 
     return sm2.DecryptASN1(priv, ciphertext, sm2.C1C3C2)
+}
+
+// 检测证书
+func (this KeyEncryptWithSM2) Check(pkey any) bool {
+    if _, ok := pkey.(*sm2.PrivateKey); ok {
+        return true
+    }
+
+    if _, ok := pkey.(*sm2.PublicKey); ok {
+        return true
+    }
+
+    return false
 }

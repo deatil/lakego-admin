@@ -1,4 +1,4 @@
-package sign
+package pkcs7
 
 import (
     "errors"
@@ -9,7 +9,7 @@ import (
 )
 
 // rsa 签名
-type KeySignWithRsa struct {
+type KeySignWithRSA struct {
     isRSAPSS   bool
     hashFunc   crypto.Hash
     hashId     asn1.ObjectIdentifier
@@ -17,17 +17,17 @@ type KeySignWithRsa struct {
 }
 
 // oid
-func (this KeySignWithRsa) HashOID() asn1.ObjectIdentifier {
+func (this KeySignWithRSA) HashOID() asn1.ObjectIdentifier {
     return this.hashId
 }
 
 // oid
-func (this KeySignWithRsa) OID() asn1.ObjectIdentifier {
+func (this KeySignWithRSA) OID() asn1.ObjectIdentifier {
     return this.identifier
 }
 
 // 签名
-func (this KeySignWithRsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []byte, error) {
+func (this KeySignWithRSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []byte, error) {
     var priv *rsa.PrivateKey
     var ok bool
 
@@ -51,7 +51,7 @@ func (this KeySignWithRsa) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
 }
 
 // 验证
-func (this KeySignWithRsa) Verify(pkey crypto.PublicKey, data []byte, signature []byte) (bool, error) {
+func (this KeySignWithRSA) Verify(pkey crypto.PublicKey, data []byte, signature []byte) (bool, error) {
     var pub *rsa.PublicKey
     var ok bool
 
@@ -75,4 +75,17 @@ func (this KeySignWithRsa) Verify(pkey crypto.PublicKey, data []byte, signature 
     }
 
     return true, nil
+}
+
+// 检测证书
+func (this KeySignWithRSA) Check(pkey any) bool {
+    if _, ok := pkey.(*rsa.PrivateKey); ok {
+        return true
+    }
+
+    if _, ok := pkey.(*rsa.PublicKey); ok {
+        return true
+    }
+
+    return false
 }

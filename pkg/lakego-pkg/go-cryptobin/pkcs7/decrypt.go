@@ -1,15 +1,15 @@
-package encrypt
+package pkcs7
 
 import (
     "fmt"
     "errors"
     "bytes"
     "crypto"
-    "crypto/x509"
     "crypto/x509/pkix"
     "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/ber"
+    "github.com/deatil/go-cryptobin/x509"
 )
 
 // 解析
@@ -19,7 +19,8 @@ func Decrypt(data []byte, cert *x509.Certificate, pkey crypto.PrivateKey) ([]byt
         return nil, err
     }
 
-    if !contentType.Equal(oidEnvelopedData) {
+    if !DefaultMode.IsEnvelopedData(contentType) &&
+        !SM2Mode.IsEnvelopedData(contentType) {
         return nil, errors.New("pkcs7: contentType error")
     }
 
@@ -54,7 +55,8 @@ func DecryptUsingPSK(data []byte, key []byte) ([]byte, error) {
         return nil, err
     }
 
-    if !contentType.Equal(oidEncryptedData) {
+    if !DefaultMode.IsEncryptedData(contentType) &&
+        !SM2Mode.IsEncryptedData(contentType) {
         return nil, errors.New("pkcs7: contentType error")
     }
 
@@ -115,9 +117,15 @@ func parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyEncrypt, error) {
 }
 
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
+    length := 0
+    if len(encryptionScheme.Parameters.Bytes) != 0 ||
+        len(encryptionScheme.Parameters.FullBytes) != 0 {
+        length = 1
+    }
+
     oid := encryptionScheme.Algorithm.String()
 
-    newCipher, err := GetCipher(oid)
+    newCipher, err := GetGmSMCipher(oid, length)
     if err != nil {
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
@@ -159,8 +167,4 @@ func selectRecipientForCertificate(recipients []recipientInfo, cert *x509.Certif
     }
 
     return recipientInfo{}
-}
-
-func isCertMatchForIssuerAndSerial(cert *x509.Certificate, ias issuerAndSerial) bool {
-    return cert.SerialNumber.Cmp(ias.SerialNumber) == 0 && bytes.Equal(cert.RawIssuer, ias.IssuerName.FullBytes)
 }

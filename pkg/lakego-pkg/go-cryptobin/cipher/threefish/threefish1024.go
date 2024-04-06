@@ -157,22 +157,11 @@ func (c *cipher1024) expandKey(key, tweak []byte) error {
 }
 
 func g1024(in []uint64, a, b, c, d, e, f, g, h int) {
-    in[0] += in[1]
-    in[1] = rotl64(in[1], a) ^ in[0]
-    in[2] += in[3]
-    in[3] = rotl64(in[3], b) ^ in[2]
-    in[4] += in[5]
-    in[5] = rotl64(in[5], c) ^ in[4]
-    in[6] += in[7]
-    in[7] = rotl64(in[7], d) ^ in[6]
-    in[8] += in[9]
-    in[9] = rotl64(in[9], e) ^ in[8]
-    in[10] += in[11]
-    in[11] = rotl64(in[11], f) ^ in[10]
-    in[12] += in[13]
-    in[13] = rotl64(in[13], g) ^ in[12]
-    in[14] += in[15]
-    in[15] = rotl64(in[15], h) ^ in[14]
+    n := []int{a, b, c, d, e, f, g, h}
+    for i := 0; i < 16; i += 2 {
+        in[i] += in[i+1]
+        in[i+1] = rotl64(in[i+1], n[i/2]) ^ in[i]
+    }
 
     in[1], in[3], in[4], in[5], in[6], in[7], in[8], in[9], in[10], in[11], in[12], in[13], in[14], in[15] =
         in[9], in[13], in[6], in[11], in[4], in[15], in[10], in[7], in[12], in[3], in[14], in[5], in[8], in[1]
@@ -181,20 +170,10 @@ func g1024(in []uint64, a, b, c, d, e, f, g, h int) {
 func d1024(ct []uint64, a, b, c, d, e, f, g, h int) {
     ct[1], ct[3], ct[4], ct[5], ct[6], ct[7], ct[8], ct[9], ct[10], ct[11], ct[12], ct[13], ct[14], ct[15] =
         ct[15], ct[11], ct[6], ct[13], ct[4], ct[9], ct[14], ct[1], ct[8], ct[5], ct[10], ct[3], ct[12], ct[7]
-    ct[15] = rotr64(ct[15] ^ ct[14], a)
-    ct[14] -= ct[15]
-    ct[13] = rotr64(ct[13] ^ ct[12], b)
-    ct[12] -= ct[13]
-    ct[11] = rotr64(ct[11] ^ ct[10], c)
-    ct[10] -= ct[11]
-    ct[9] = rotr64(ct[9] ^ ct[8], d)
-    ct[8] -= ct[9]
-    ct[7] = rotr64(ct[7] ^ ct[6], e)
-    ct[6] -= ct[7]
-    ct[5] = rotr64(ct[5] ^ ct[4], f)
-    ct[4] -= ct[5]
-    ct[3] = rotr64(ct[3] ^ ct[2], g)
-    ct[2] -= ct[3]
-    ct[1] = rotr64(ct[1] ^ ct[0], h)
-    ct[0] -= ct[1]
+
+    n := []int{h, g, f, e, d, c, b, a}
+    for i := 15; i > 0; i -= 2 {
+        ct[i] = rotr64(ct[i] ^ ct[i-1], n[i/2])
+        ct[i-1] -= ct[i]
+    }
 }
