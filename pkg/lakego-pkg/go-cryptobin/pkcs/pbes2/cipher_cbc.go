@@ -106,12 +106,12 @@ func (this CipherCBC) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     // 解析加密数据
-    plaintext, err = pkcs7UnPadding(plaintext)
+    pt, err := pkcs7UnPadding(plaintext)
     if err != nil {
-        return nil, err
+        return plaintext, nil
     }
 
-    return plaintext, nil
+    return pt, nil
 }
 
 // 设置 keySize

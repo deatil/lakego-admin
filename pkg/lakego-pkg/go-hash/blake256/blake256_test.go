@@ -105,9 +105,9 @@ func Test_New224(t *testing.T) {
     newTestVectors(t, New224, vectors224)
 }
 
-func Test_Sum256(t *testing.T) {
+func Test_Sum(t *testing.T) {
     for i, v := range vectors256 {
-        res := fmt.Sprintf("%x", Sum256([]byte(v.in)))
+        res := fmt.Sprintf("%x", Sum([]byte(v.in)))
         if res != v.out {
             t.Errorf("%d: expected %q, got %q", i, v.out, res)
         }
@@ -203,20 +203,20 @@ func Benchmark64(b *testing.B) {
 func Benchmark1KNoAlloc(b *testing.B) {
     b.SetBytes(1024)
     for i := 0; i < b.N; i++ {
-        _ = Sum256(buf_in[:1024])
+        _ = Sum(buf_in[:1024])
     }
 }
 
 func Benchmark8KNoAlloc(b *testing.B) {
     b.SetBytes(int64(len(buf_in)))
     for i := 0; i < b.N; i++ {
-        _ = Sum256(buf_in)
+        _ = Sum(buf_in)
     }
 }
 
 func Benchmark64NoAlloc(b *testing.B) {
     b.SetBytes(64)
     for i := 0; i < b.N; i++ {
-        _ = Sum256(buf_in[:64])
+        _ = Sum(buf_in[:64])
     }
 }

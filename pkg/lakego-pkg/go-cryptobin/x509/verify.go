@@ -747,11 +747,13 @@ func (c *Certificate) Verify(opts VerifyOptions) (chains [][]*Certificate, err e
     if len(c.Raw) == 0 {
         return nil, errNotParsed
     }
+
     for i := 0; i < opts.Intermediates.len(); i++ {
         c, _, err := opts.Intermediates.cert(i)
         if err != nil {
             return nil, fmt.Errorf("crypto/x509: error fetching intermediate: %w", err)
         }
+
         if len(c.Raw) == 0 {
             return nil, errNotParsed
         }

@@ -44,6 +44,11 @@ var (
 
     // sm2 签名
     OidEncryptionAlgorithmSM2SM3 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 501}
+    OidDigestEncryptionAlgorithmSM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301, 1}
+
+    // sm9 签名
+    OidDigestAlgorithmSM9SM3 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 502}
+    OidDigestEncryptionAlgorithmSM9 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 302, 1}
 )
 
 var KeySignWithDSASHA1 = KeySignWithDSA{
@@ -133,7 +138,7 @@ var KeySignWithSM2SM3 = KeySignWithSM2{
 var KeySignWithSM2WithSM3 = KeySignWithSM2{
     hashFunc:   sm3.New,
     hashId:     OidDigestAlgorithmSM3,
-    identifier: oidDigestEncryptionAlgorithmSM2,
+    identifier: OidDigestEncryptionAlgorithmSM2,
 }
 
 func init() {

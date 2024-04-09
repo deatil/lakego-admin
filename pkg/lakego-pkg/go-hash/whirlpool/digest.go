@@ -1,9 +1,5 @@
 package whirlpool
 
-import (
-    "hash"
-)
-
 // The size of a whirlpool checksum in bytes.
 const Size = 64
 
@@ -22,8 +18,8 @@ type digest struct {
     hash [8]uint64
 }
 
-// New returns a new hash.Hash computing the whirlpool checksum.
-func New() hash.Hash {
+// newDigest returns a new hash.Hash computing the whirlpool checksum.
+func newDigest() *digest {
     h := new(digest)
     h.Reset()
 

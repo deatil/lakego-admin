@@ -12,49 +12,6 @@ import (
     "github.com/deatil/go-cryptobin/x509"
 )
 
-// SignedData is an opaque data structure for creating signed data payloads
-type SignedData struct {
-    sd                  signedData
-    certs               []*x509.Certificate
-    data, messageDigest []byte
-    digestOid           asn1.ObjectIdentifier
-    encryptionOid       asn1.ObjectIdentifier
-    mode                Mode
-}
-
-// NewSignedData takes data and initializes a PKCS7 SignedData struct that is
-// ready to be signed via AddSigner. The digest algorithm is set to SHA1 by default
-// and can be changed by calling SetDigestAlgorithm.
-func NewSignedData(data []byte) (*SignedData, error) {
-    content, err := asn1.Marshal(data)
-    if err != nil {
-        return nil, err
-    }
-
-    ci := contentInfo{
-        ContentType: oidData,
-        Content:     asn1.RawValue{Class: 2, Tag: 0, Bytes: content, IsCompound: true},
-    }
-
-    sd := signedData{
-        ContentInfo: ci,
-        Version:     1,
-    }
-
-    return &SignedData{
-        sd:            sd,
-        data:          data,
-        digestOid:     OidDigestAlgorithmSHA1,
-        encryptionOid: OidEncryptionAlgorithmRSASHA1,
-    }, nil
-}
-
-// SignerInfoConfig are optional values to include when adding a signer
-type SignerInfoConfig struct {
-    ExtraSignedAttributes   []Attribute
-    ExtraUnsignedAttributes []Attribute
-}
-
 type signedData struct {
     Version                    int                        `asn1:"default:1"`
     DigestAlgorithmIdentifiers []pkix.AlgorithmIdentifier `asn1:"set"`
@@ -100,6 +57,66 @@ type rawCertificates struct {
 type issuerAndSerial struct {
     IssuerName   asn1.RawValue
     SerialNumber *big.Int
+}
+
+// SignedData is an opaque data structure for creating signed data payloads
+type SignedData struct {
+    sd                  signedData
+    certs               []*x509.Certificate
+    data, messageDigest []byte
+    digestOid           asn1.ObjectIdentifier
+    encryptionOid       asn1.ObjectIdentifier
+    mode                Mode
+}
+
+// NewSignedData takes data and initializes a PKCS7 SignedData struct that is
+// ready to be signed via AddSigner. The digest algorithm is set to SHA1 by default
+// and can be changed by calling SetDigestAlgorithm.
+func NewSignedData(data []byte) (*SignedData, error) {
+    content, err := asn1.Marshal(data)
+    if err != nil {
+        return nil, err
+    }
+
+    ci := contentInfo{
+        ContentType: oidData,
+        Content:     asn1.RawValue{Class: 2, Tag: 0, Bytes: content, IsCompound: true},
+    }
+
+    sd := signedData{
+        ContentInfo: ci,
+        Version:     1,
+    }
+
+    return &SignedData{
+        sd:            sd,
+        data:          data,
+        digestOid:     OidDigestAlgorithmSHA1,
+        encryptionOid: OidEncryptionAlgorithmRSASHA1,
+    }, nil
+}
+
+// NewSMSignedData takes data and initializes a PKCS7 SignedData struct that is
+// ready to be signed via AddSigner. The digest algorithm is set to SM3 by default
+// and can be changed by calling SetDigestAlgorithm.
+func NewSMSignedData(data []byte) (*SignedData, error) {
+    sd, err := NewSignedData(data)
+    if err != nil {
+        return nil, err
+    }
+
+    sd.SetMode(SM2Mode)
+    sd.SetDigestAlgorithm(OidDigestAlgorithmSM3)
+    sd.SetEncryptionAlgorithm(OidDigestEncryptionAlgorithmSM2)
+
+    return sd, nil
+}
+
+// SignerInfoConfig are optional values to include when adding a signer
+type SignerInfoConfig struct {
+    ExtraSignedAttributes   []Attribute
+    ExtraUnsignedAttributes []Attribute
+    SkipCertificates        bool
 }
 
 // This should be called before adding signers
@@ -160,7 +177,7 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
         pkix.AlgorithmIdentifier{Algorithm: this.digestOid},
     )
 
-    hashFunc, err := parseHashFromOid(this.digestOid)
+    hashFunc, err := getHashFromOid(this.digestOid)
     if err != nil {
         return err
     }
@@ -196,7 +213,7 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
         return err
     }
 
-    signFunc, err := parseSignFromOid(this.encryptionOid)
+    signFunc, err := getSignatureFunc(this.encryptionOid, this.digestOid)
 
     // create signature of signed attributes
     _, signature, err := signFunc.Sign(pkey, finalAttrsBytes)
@@ -214,9 +231,11 @@ func (this *SignedData) AddSignerChain(ee *x509.Certificate, pkey crypto.Private
         Version:                   1,
     }
 
-    this.certs = append(this.certs, ee)
-    if len(parents) > 0 {
-        this.certs = append(this.certs, parents...)
+    if !config.SkipCertificates {
+        this.certs = append(this.certs, ee)
+        if len(parents) > 0 {
+            this.certs = append(this.certs, parents...)
+        }
     }
 
     this.sd.SignerInfos = append(this.sd.SignerInfos, signer)
@@ -234,8 +253,8 @@ func (this *SignedData) SignWithoutAttr(ee *x509.Certificate, pkey crypto.Privat
     var signature []byte
     this.sd.DigestAlgorithmIdentifiers = append(this.sd.DigestAlgorithmIdentifiers, pkix.AlgorithmIdentifier{Algorithm: this.digestOid})
 
-    // 签名
-    signFunc, err := parseSignFromOid(this.encryptionOid)
+    // sign
+    signFunc, err := getSignatureFunc(this.encryptionOid, this.digestOid)
 
     // create signature of signed attributes
     hashData, signData, err := signFunc.Sign(pkey, this.data)

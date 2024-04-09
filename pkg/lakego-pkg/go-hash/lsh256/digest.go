@@ -1,7 +1,6 @@
 package lsh256
 
 import (
-    "hash"
     "math/bits"
     "encoding/binary"
 )
@@ -28,7 +27,7 @@ type digest struct {
     hs int
 }
 
-func newDigest(size int) hash.Hash {
+func newDigest(size int) *digest {
     ctx := new(digest)
     ctx.hs = size
     ctx.Reset()

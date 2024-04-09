@@ -20,7 +20,8 @@ func Decrypt(data []byte, cert *x509.Certificate, pkey crypto.PrivateKey) ([]byt
     }
 
     if !DefaultMode.IsEnvelopedData(contentType) &&
-        !SM2Mode.IsEnvelopedData(contentType) {
+        !SM2Mode.IsEnvelopedData(contentType) &&
+        !SM9Mode.IsEnvelopedData(contentType) {
         return nil, errors.New("pkcs7: contentType error")
     }
 
@@ -56,7 +57,8 @@ func DecryptUsingPSK(data []byte, key []byte) ([]byte, error) {
     }
 
     if !DefaultMode.IsEncryptedData(contentType) &&
-        !SM2Mode.IsEncryptedData(contentType) {
+        !SM2Mode.IsEncryptedData(contentType) &&
+        !SM9Mode.IsEncryptedData(contentType) {
         return nil, errors.New("pkcs7: contentType error")
     }
 

@@ -35,6 +35,15 @@ type digest struct {
     nullt bool
 }
 
+func newDigest(hs int, iv [8]uint32) *digest {
+    d := &digest{
+        hs: hs,
+        h:  iv,
+    }
+
+    return d
+}
+
 // Reset resets the state of digest. It leaves salt intact.
 func (d *digest) Reset() {
     d.s = [4]uint32{}

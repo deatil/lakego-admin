@@ -1,7 +1,6 @@
 package cubehash
 
 import (
-    "hash"
     "errors"
 )
 
@@ -32,8 +31,8 @@ type digest struct {
     fr int // the number of finalization rounds
 }
 
-// NewDigest returns a new hash.Hash.
-func NewDigest(hashSize, blockSize, r, ir, fr int) hash.Hash {
+// newDigest returns a new hash.Hash.
+func newDigest(hashSize, blockSize, r, ir, fr int) *digest {
     d := new(digest)
 
     d.hs = hashSize
@@ -47,19 +46,7 @@ func NewDigest(hashSize, blockSize, r, ir, fr int) hash.Hash {
 }
 
 func (this *digest) Reset() {
-    x := &this.s
-
-    x[0] = uint32(this.hs / 8)
-    x[1] = uint32(this.bs)
-    x[2] = uint32(this.r) // the number of rounds per message block
-    for n := 3; n < 32; n++ {
-        x[n] = 0
-    }
-
-    // the number of initialization rounds
-    for n := 0; n < this.ir; n++ {
-        round(x)
-    }
+    this.initRound(this.ir)
 
     this.x = make([]byte, this.bs)
 
@@ -124,6 +111,22 @@ func (this *digest) checkSum() []byte {
 
     buf := uint32sToBytes(x[:this.hs/32])
     return buf
+}
+
+func (this *digest) initRound(r int) {
+    x := &this.s
+
+    x[0] = uint32(this.hs / 8)
+    x[1] = uint32(this.bs)
+    x[2] = uint32(this.r) // the number of rounds per message block
+    for n := 3; n < 32; n++ {
+        x[n] = 0
+    }
+
+    // the number of initialization rounds
+    for n := 0; n < r; n++ {
+        round(x)
+    }
 }
 
 func (this *digest) ingest(x *[32]uint32, p []byte) {

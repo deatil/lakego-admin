@@ -1,7 +1,6 @@
 package siphash
 
 import (
-    "hash"
     "errors"
 )
 
@@ -31,7 +30,7 @@ type digest struct {
 }
 
 // newDigest returns a new hash.Hash computing the Siphash checksum.
-func newDigest(k []byte, crounds, drounds int32, hashSize int) (hash.Hash, error) {
+func newDigest(k []byte, crounds, drounds int32, hashSize int) (*digest, error) {
     if len(k) != KeySize {
         return nil, errors.New("go-hash/siphash: invalid key")
     }

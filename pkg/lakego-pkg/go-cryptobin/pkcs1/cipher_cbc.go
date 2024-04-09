@@ -98,10 +98,10 @@ func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     }
 
     // 解析加密数据
-    plaintext, err = pkcs7UnPadding(plaintext)
+    pt, err := pkcs7UnPadding(plaintext)
     if err != nil {
-        return nil, IncorrectPasswordError
+        return plaintext, nil
     }
 
-    return plaintext, nil
+    return pt, nil
 }

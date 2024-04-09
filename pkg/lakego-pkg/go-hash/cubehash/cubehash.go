@@ -6,7 +6,7 @@ import (
 
 // NewCubehash returns a new hash.Hash.
 func NewCubehash(hashSize, blockSize, r, ir, fr int) hash.Hash {
-    return NewDigest(hashSize, blockSize, r, ir, fr)
+    return newDigest(hashSize, blockSize, r, ir, fr)
 }
 
 // NewHS512x returns a new hash.Hash.

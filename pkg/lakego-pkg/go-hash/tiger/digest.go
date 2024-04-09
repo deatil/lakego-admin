@@ -1,9 +1,5 @@
 package tiger
 
-import (
-    "hash"
-)
-
 // The size list of a Tiger hash value in bytes
 const Size128 = 16
 const Size160 = 20
@@ -31,20 +27,11 @@ type digest struct {
 }
 
 // newDigest returns a new hash.Hash computing the Tiger hash value
-func newDigest(hs int) hash.Hash {
+func newDigest(hs int, ver int) *digest {
     d := new(digest)
     d.Reset()
     d.hs = hs
-    d.ver = 1
-    return d
-}
-
-// newDigest2 returns a new hash.Hash computing the Tiger2 hash value
-func newDigest2(hs int) hash.Hash {
-    d := new(digest)
-    d.Reset()
-    d.hs = hs
-    d.ver = 2
+    d.ver = ver
     return d
 }
 

@@ -45,6 +45,13 @@ type Opts struct {
 }
 
 // 默认配置
+var SM2Opts = Opts{
+    Cipher:     SM4CBC,
+    KeyEncrypt: KeyEncryptSM2,
+    Mode:       SM2Mode,
+}
+
+// 默认配置
 var DefaultOpts = Opts{
     Cipher:     AES256CBC,
     KeyEncrypt: KeyEncryptRSA,
@@ -134,7 +141,12 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
     // Prepare outer payload structure
     wrapper := contentInfo{
         ContentType: useMode.OidEnvelopedData(),
-        Content:     asn1.RawValue{Class: 2, Tag: 0, IsCompound: true, Bytes: innerContent},
+        Content:     asn1.RawValue{
+            Class: 2,
+            Tag: 0,
+            IsCompound: true,
+            Bytes: innerContent,
+        },
     }
 
     return asn1.Marshal(wrapper)

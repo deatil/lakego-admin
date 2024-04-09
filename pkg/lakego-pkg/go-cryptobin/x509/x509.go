@@ -1028,8 +1028,6 @@ func (c *Certificate) CheckSignatureFrom(parent *Certificate) error {
         return ErrUnsupportedAlgorithm
     }
 
-    // TODO(agl): don't ignore the path length constraint.
-
     return parent.CheckSignature(c.SignatureAlgorithm, c.RawTBSCertificate, c.Signature)
 }
 

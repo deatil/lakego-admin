@@ -203,7 +203,7 @@ func (attrs *attributes) ForMarshalling() ([]attribute, error) {
     return sortables.Attributes(), nil
 }
 
-func parseSignFromOid(signOid asn1.ObjectIdentifier) (KeySign, error) {
+func getSignFromOid(signOid asn1.ObjectIdentifier) (KeySign, error) {
     oid := signOid.String()
     signFunc, ok := keySigns[oid]
     if !ok {
@@ -214,7 +214,7 @@ func parseSignFromOid(signOid asn1.ObjectIdentifier) (KeySign, error) {
     return newSignFunc, nil
 }
 
-func parseSignFromHashOid(pkey any, hashOid asn1.ObjectIdentifier) (KeySign, error) {
+func getSignFromHashOid(pkey any, hashOid asn1.ObjectIdentifier) (KeySign, error) {
     for _, signFunc := range keySigns {
         newSignFunc := signFunc()
         if newSignFunc.HashOID().Equal(hashOid) {
@@ -227,7 +227,7 @@ func parseSignFromHashOid(pkey any, hashOid asn1.ObjectIdentifier) (KeySign, err
     return nil, fmt.Errorf("pkcs7: unsupported signHash from hash (OID: %s)", hashOid.String())
 }
 
-func parseHashFromOid(hashOid asn1.ObjectIdentifier) (SignHash, error) {
+func getHashFromOid(hashOid asn1.ObjectIdentifier) (SignHash, error) {
     oid := hashOid.String()
     hashFunc, ok := signHashs[oid]
     if !ok {
@@ -236,4 +236,128 @@ func parseHashFromOid(hashOid asn1.ObjectIdentifier) (SignHash, error) {
 
     newHashFunc := hashFunc()
     return newHashFunc, nil
+}
+
+func getSignatureFunc(digestEncryption, digest asn1.ObjectIdentifier) (KeySign, error) {
+    switch {
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSASHA1):
+            return KeySignWithECDSASHA1, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSASHA224):
+            return KeySignWithECDSASHA224, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSASHA256):
+            return KeySignWithECDSASHA256, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSASHA384):
+            return KeySignWithECDSASHA384, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSASHA512):
+            return KeySignWithECDSASHA512, nil
+
+        // RSA
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSAMD5):
+            return KeySignWithRSAMD5, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSASHA1):
+            return KeySignWithRSASHA1, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSASHA224):
+            return KeySignWithRSASHA224, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSASHA256):
+            return KeySignWithRSASHA256, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSASHA384):
+            return KeySignWithRSASHA384, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSASHA512):
+            return KeySignWithRSASHA512, nil
+
+        case digestEncryption.Equal(OidEncryptionAlgorithmRSA):
+            switch {
+                case digest.Equal(OidDigestAlgorithmMD5):
+                    return KeySignWithRSAMD5, nil
+                case digest.Equal(OidDigestAlgorithmSHA1):
+                    return KeySignWithRSASHA1, nil
+                case digest.Equal(OidDigestAlgorithmSHA224):
+                    return KeySignWithRSASHA224, nil
+                case digest.Equal(OidDigestAlgorithmSHA256):
+                    return KeySignWithRSASHA256, nil
+                case digest.Equal(OidDigestAlgorithmSHA384):
+                    return KeySignWithRSASHA384, nil
+                case digest.Equal(OidDigestAlgorithmSHA512):
+                    return KeySignWithRSASHA512, nil
+                default:
+                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                        digest.String(), digestEncryption.String())
+            }
+
+        // DSA
+        case digestEncryption.Equal(OidEncryptionAlgorithmDSASHA1):
+            return KeySignWithDSASHA1, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmDSASHA224):
+            return KeySignWithDSASHA224, nil
+        case digestEncryption.Equal(OidEncryptionAlgorithmDSASHA256):
+            return KeySignWithDSASHA256, nil
+
+        case digestEncryption.Equal(OidEncryptionAlgorithmDSA):
+            switch {
+                case digest.Equal(OidDigestAlgorithmSHA1):
+                    return KeySignWithDSASHA1, nil
+                case digest.Equal(OidDigestAlgorithmSHA224):
+                    return KeySignWithDSASHA224, nil
+                case digest.Equal(OidDigestAlgorithmSHA256):
+                    return KeySignWithDSASHA256, nil
+                default:
+                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                        digest.String(), digestEncryption.String())
+            }
+
+        case digestEncryption.Equal(OidEncryptionAlgorithmECDSAP256),
+            digestEncryption.Equal(OidEncryptionAlgorithmECDSAP384),
+            digestEncryption.Equal(OidEncryptionAlgorithmECDSAP521):
+            switch {
+                case digest.Equal(OidDigestAlgorithmSHA1):
+                    return KeySignWithECDSASHA1, nil
+                case digest.Equal(OidDigestAlgorithmSHA224):
+                    return KeySignWithECDSASHA224, nil
+                case digest.Equal(OidDigestAlgorithmSHA256):
+                    return KeySignWithECDSASHA256, nil
+                case digest.Equal(OidDigestAlgorithmSHA384):
+                    return KeySignWithECDSASHA384, nil
+                case digest.Equal(OidDigestAlgorithmSHA512):
+                    return KeySignWithECDSASHA512, nil
+                default:
+                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                        digest.String(), digestEncryption.String())
+            }
+
+        // SM2
+        case digestEncryption.Equal(OidDigestEncryptionAlgorithmSM2):
+            return KeySignWithSM2WithSM3, nil
+
+        case digestEncryption.Equal(OidEncryptionAlgorithmSM2SM3):
+            switch {
+                case digest.Equal(OidDigestAlgorithmSM3):
+                    return KeySignWithSM2SM3, nil
+                default:
+                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                        digest.String(), digestEncryption.String())
+            }
+
+        default:
+            return nil, fmt.Errorf("pkcs7: unsupported algorithm %q",
+                digestEncryption.String())
+    }
+}
+
+// getDigestOIDForSignatureAlgorithm takes an x509.SignatureAlgorithm
+// and returns the corresponding OID digest algorithm
+func getDigestOIDForSignatureAlgorithm(digestAlg x509.SignatureAlgorithm) (asn1.ObjectIdentifier, error) {
+    switch digestAlg {
+        case x509.SHA1WithRSA, x509.ECDSAWithSHA1:
+            return OidDigestAlgorithmSHA1, nil
+        case x509.SHA256WithRSA, x509.ECDSAWithSHA256:
+            return OidDigestAlgorithmSHA256, nil
+        case x509.SHA384WithRSA, x509.ECDSAWithSHA384:
+            return OidDigestAlgorithmSHA384, nil
+        case x509.SHA512WithRSA, x509.ECDSAWithSHA512:
+            return OidDigestAlgorithmSHA512, nil
+        case x509.SM2WithSM3:
+            return OidDigestAlgorithmSM3, nil
+    }
+
+    return nil, fmt.Errorf("pkcs7: cannot convert hash to oid, unknown hash algorithm")
 }

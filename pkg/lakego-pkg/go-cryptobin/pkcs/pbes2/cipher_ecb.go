@@ -89,12 +89,12 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     // 解析加密数据
-    unpaddinged, err := pkcs7UnPadding(plaintext)
+    pt, err := pkcs7UnPadding(plaintext)
     if err != nil {
         return plaintext, nil
     }
 
-    return unpaddinged, nil
+    return pt, nil
 }
 
 // 设置 keySize

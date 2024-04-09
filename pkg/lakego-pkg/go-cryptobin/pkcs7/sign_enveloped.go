@@ -193,6 +193,18 @@ func NewSignedAndEnvelopedData(data []byte, cipher Cipher) (*SignedAndEnvelopedD
     }, nil
 }
 
+func NewSMSignedAndEnvelopedData(data []byte, cipher Cipher) (*SignedAndEnvelopedData, error) {
+    sd, err := NewSignedAndEnvelopedData(data, cipher)
+    if err != nil {
+        return nil, err
+    }
+
+    sd.SetMode(SM2Mode)
+    sd.SetDigestAlgorithm(OidDigestAlgorithmSM3)
+
+    return sd, nil
+}
+
 // This should be called before adding signers
 func (saed *SignedAndEnvelopedData) SetMode(mode Mode) {
     saed.mode = mode
@@ -237,7 +249,7 @@ func (saed *SignedAndEnvelopedData) AddSignerChain(ee *x509.Certificate, pkey cr
         pkix.AlgorithmIdentifier{Algorithm: saed.digestOid},
     )
 
-    signFunc, err := parseSignFromHashOid(pkey, saed.digestOid)
+    signFunc, err := getSignFromHashOid(pkey, saed.digestOid)
     if err != nil {
         return err
     }
