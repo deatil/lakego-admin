@@ -7,10 +7,12 @@ import (
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
+// BlockSize the sm4 block size in bytes.
 const BlockSize = 16
 
 const KeySchedule = 32
 
+// error for key size
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
@@ -77,86 +79,65 @@ func (this *sm4Cipher) Decrypt(dst, src []byte) {
 }
 
 func (this *sm4Cipher) encrypt(dst, src []byte) {
-    var B0 uint32 = bytesToUint32(src[0:])
-    var B1 uint32 = bytesToUint32(src[4:])
-    var B2 uint32 = bytesToUint32(src[8:])
-    var B3 uint32 = bytesToUint32(src[12:])
+    pt := bytesToUint32s(src)
 
     /*
      * Uses byte-wise sbox in the first and last rounds to provide some
      * protection from cache based side channels.
      */
-    this.rnds(&B0, &B1, &B2, &B3,  0,  1,  2,  3, tSlow)
-    this.rnds(&B0, &B1, &B2, &B3,  4,  5,  6,  7, t)
-    this.rnds(&B0, &B1, &B2, &B3,  8,  9, 10, 11, t)
-    this.rnds(&B0, &B1, &B2, &B3, 12, 13, 14, 15, t)
-    this.rnds(&B0, &B1, &B2, &B3, 16, 17, 18, 19, t)
-    this.rnds(&B0, &B1, &B2, &B3, 20, 21, 22, 23, t)
-    this.rnds(&B0, &B1, &B2, &B3, 24, 25, 26, 27, t)
-    this.rnds(&B0, &B1, &B2, &B3, 28, 29, 30, 31, tSlow)
+    for i := 0; i < 32; i += 4 {
+        if i == 0 || i == 28 {
+            this.rnds(pt, i, i+1, i+2, i+3, tSlow)
+        } else {
+            this.rnds(pt, i, i+1, i+2, i+3, t)
+        }
+    }
 
-    B3Bytes := uint32ToBytes(B3)
-    B2Bytes := uint32ToBytes(B2)
-    B1Bytes := uint32ToBytes(B1)
-    B0Bytes := uint32ToBytes(B0)
-
-    copy(dst, B3Bytes[:])
-    copy(dst[4:], B2Bytes[:])
-    copy(dst[8:], B1Bytes[:])
-    copy(dst[12:], B0Bytes[:])
+    putu32(dst, pt[3])
+    putu32(dst[4:], pt[2])
+    putu32(dst[8:], pt[1])
+    putu32(dst[12:], pt[0])
 }
 
 func (this *sm4Cipher) decrypt(dst, src []byte) {
-    var B0 uint32 = bytesToUint32(src[0:])
-    var B1 uint32 = bytesToUint32(src[4:])
-    var B2 uint32 = bytesToUint32(src[8:])
-    var B3 uint32 = bytesToUint32(src[12:])
+    ct := bytesToUint32s(src)
 
-    this.rnds(&B0, &B1, &B2, &B3, 31, 30, 29, 28, tSlow)
-    this.rnds(&B0, &B1, &B2, &B3, 27, 26, 25, 24, t)
-    this.rnds(&B0, &B1, &B2, &B3, 23, 22, 21, 20, t)
-    this.rnds(&B0, &B1, &B2, &B3, 19, 18, 17, 16, t)
-    this.rnds(&B0, &B1, &B2, &B3, 15, 14, 13, 12, t)
-    this.rnds(&B0, &B1, &B2, &B3, 11, 10,  9,  8, t)
-    this.rnds(&B0, &B1, &B2, &B3,  7,  6,  5,  4, t)
-    this.rnds(&B0, &B1, &B2, &B3,  3,  2,  1,  0, tSlow)
+    for i := 32; i > 0; i -= 4 {
+        if i == 32 || i == 4 {
+            this.rnds(ct, i-1, i-2, i-3, i-4, tSlow)
+        } else {
+            this.rnds(ct, i-1, i-2, i-3, i-4, t)
+        }
+    }
 
-    B3Bytes := uint32ToBytes(B3)
-    B2Bytes := uint32ToBytes(B2)
-    B1Bytes := uint32ToBytes(B1)
-    B0Bytes := uint32ToBytes(B0)
-
-    copy(dst, B3Bytes[:])
-    copy(dst[4:], B2Bytes[:])
-    copy(dst[8:], B1Bytes[:])
-    copy(dst[12:], B0Bytes[:])
+    putu32(dst, ct[3])
+    putu32(dst[4:], ct[2])
+    putu32(dst[8:], ct[1])
+    putu32(dst[12:], ct[0])
 }
 
-func (this *sm4Cipher) rnds(B0, B1, B2, B3 *uint32, k0, k1, k2, k3 int, F func(uint32) uint32) {
-    (*B0) ^= F((*B1) ^ (*B2) ^ (*B3) ^ this.rk[k0])
-    (*B1) ^= F((*B0) ^ (*B2) ^ (*B3) ^ this.rk[k1])
-    (*B2) ^= F((*B0) ^ (*B1) ^ (*B3) ^ this.rk[k2])
-    (*B3) ^= F((*B0) ^ (*B1) ^ (*B2) ^ this.rk[k3])
+func (this *sm4Cipher) rnds(b []uint32, k0, k1, k2, k3 int, fn func(uint32) uint32) {
+    b[0] ^= fn(b[1] ^ b[2] ^ b[3] ^ this.rk[k0])
+    b[1] ^= fn(b[2] ^ b[3] ^ b[0] ^ this.rk[k1])
+    b[2] ^= fn(b[3] ^ b[0] ^ b[1] ^ this.rk[k2])
+    b[3] ^= fn(b[0] ^ b[1] ^ b[2] ^ this.rk[k3])
 }
 
 func (this *sm4Cipher) expandKey(key []byte) {
     var k [4]uint32
     var i int32
 
-    k[0] = bytesToUint32(key[0:]) ^ fk[0]
-    k[1] = bytesToUint32(key[4:]) ^ fk[1]
-    k[2] = bytesToUint32(key[8:]) ^ fk[2]
-    k[3] = bytesToUint32(key[12:]) ^ fk[3]
+    keys := bytesToUint32s(key)
+    for i = 0; i < 4; i++ {
+        k[i] = keys[i] ^ fk[i]
+    }
 
     for i = 0; i < KeySchedule; i = i + 4 {
-        k[0] ^= keySub(k[1] ^ k[2] ^ k[3] ^ ck[i])
+        k[0] ^= keySub(k[1] ^ k[2] ^ k[3] ^ ck[i    ])
         k[1] ^= keySub(k[2] ^ k[3] ^ k[0] ^ ck[i + 1])
         k[2] ^= keySub(k[3] ^ k[0] ^ k[1] ^ ck[i + 2])
         k[3] ^= keySub(k[0] ^ k[1] ^ k[2] ^ ck[i + 3])
 
-        this.rk[i    ] = k[0]
-        this.rk[i + 1] = k[1]
-        this.rk[i + 2] = k[2]
-        this.rk[i + 3] = k[3]
+        copy(this.rk[i:], k[:])
     }
 }

@@ -73,79 +73,53 @@ func (this *anubisCipher) Decrypt(dst, src []byte) {
 }
 
 func (this *anubisCipher) crypt(out []byte, in []byte, W [][4]uint32) {
-    var R int32
-    var r uint32
-    var s0, s1, s2, s3 uint32
-    var t0, t1, t2, t3 uint32
+    var i, j, r int32
+    var state, inter [4]uint32
+    var ss [][]byte
 
-    R = this.R
+    R := this.R
 
     pt := bytesToUint32s(in)
 
-    s0 = pt[0] ^ W[0][0]
-    s1 = pt[1] ^ W[0][1]
-    s2 = pt[2] ^ W[0][2]
-    s3 = pt[3] ^ W[0][3]
+    for i = 0; i < 4; i++ {
+        state[i] = pt[i] ^ W[0][i]
+    }
 
-    for r = 1; r < uint32(R); r++ {
-        t0 = T[0][byte(s0 >> 24)] ^
-             T[1][byte(s1 >> 24)] ^
-             T[2][byte(s2 >> 24)] ^
-             T[3][byte(s3 >> 24)] ^
-             W[r][0]
-        t1 = T[0][byte(s0 >> 16)] ^
-             T[1][byte(s1 >> 16)] ^
-             T[2][byte(s2 >> 16)] ^
-             T[3][byte(s3 >> 16)] ^
-             W[r][1]
-        t2 = T[0][byte(s0 >> 8)] ^
-             T[1][byte(s1 >> 8)] ^
-             T[2][byte(s2 >> 8)] ^
-             T[3][byte(s3 >> 8)] ^
-             W[r][2]
-        t3 = T[0][byte(s0)] ^
-             T[1][byte(s1)] ^
-             T[2][byte(s2)] ^
-             T[3][byte(s3)] ^
-             W[r][3]
+    for r = 1; r < R; r++ {
+        ss = uint32sToSlice(state[:])
 
-        s0 = t0
-        s1 = t1
-        s2 = t2
-        s3 = t3
+        for j = 0; j < 4; j++ {
+            inter[j] = T[0][ss[0][j]] ^
+                 T[1][ss[1][j]] ^
+                 T[2][ss[2][j]] ^
+                 T[3][ss[3][j]] ^
+                 W[r][j]
+        }
+
+        copy(state[:], inter[:])
     }
 
     // could also use U[0] here instead of T[n]
-    t0 = (T[0][byte(s0 >> (24 - 0 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 0 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 0 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 0 * 8))] & 0x000000ff) ^
-         W[R][0]
-    t1 = (T[0][byte(s0 >> (24 - 1 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 1 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 1 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 1 * 8))] & 0x000000ff) ^
-         W[R][1]
-    t2 = (T[0][byte(s0 >> (24 - 2 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 2 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 2 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 2 * 8))] & 0x000000ff) ^
-         W[R][2]
-    t3 = (T[0][byte(s0 >> (24 - 3 * 8))] & 0xff000000) ^
-         (T[1][byte(s1 >> (24 - 3 * 8))] & 0x00ff0000) ^
-         (T[2][byte(s2 >> (24 - 3 * 8))] & 0x0000ff00) ^
-         (T[3][byte(s3 >> (24 - 3 * 8))] & 0x000000ff) ^
-         W[R][3]
+    for j = 0; j < 4; j++ {
+        ss = uint32sToSlice(state[:])
 
-    ct := uint32sToBytes([4]uint32{t0, t1, t2, t3})
-    copy(out, ct[:])
+        inter[j] =
+            (T[0][ss[0][j]] & states[0]) ^
+            (T[1][ss[1][j]] & states[1]) ^
+            (T[2][ss[2][j]] & states[2]) ^
+            (T[3][ss[3][j]] & states[3]) ^
+            W[R][j]
+    }
+
+    ct := uint32sToBytes(inter[:])
+    copy(out, ct)
 }
 
 func (this *anubisCipher) expandKey(key []byte) {
-    var N, R, i, r int32
+    var N, R, i, j, r int32
     var W [][4]uint32
-    var k []uint32
     var t []uint32
+    var kk, ww [][]byte
 
     /*
      * determine the N length parameter:
@@ -160,31 +134,27 @@ func (this *anubisCipher) expandKey(key []byte) {
     this.R = R
 
     W = make([][4]uint32, R+1)
-    k = make([]uint32, N)
     t = make([]uint32, N)
 
-    keys := keyToUint32s(key)
-
-    for i = 0; i < N; i++ {
-        k[i] = keys[i]
-    }
+    k := bytesToUint32s(key)
 
     // encrypt key
     for r = 0; r <= R; r++ {
+        kk = uint32sToSlice(k)
+
         W[r] = [4]uint32{}
         for i = 0; i < N; i++ {
-            W[r][0] ^= U[i][byte(k[i] >> 24)]
-            W[r][1] ^= U[i][byte(k[i] >> 16)]
-            W[r][2] ^= U[i][byte(k[i] >>  8)]
-            W[r][3] ^= U[i][byte(k[i]      )]
+            for j = 0; j < 4; j++ {
+                W[r][j] ^= U[i][kk[i][j]]
+            }
         }
 
         if r != R {
             for i = 0; i < N; i++ {
-                t[i] = T[0][byte(k[(N + i    ) % N] >> 24)] ^
-                       T[1][byte(k[(N + i - 1) % N] >> 16)] ^
-                       T[2][byte(k[(N + i - 2) % N] >>  8)] ^
-                       T[3][byte(k[(N + i - 3) % N]      )]
+                t[i] = T[0][kk[(N + i    ) % N][0]] ^
+                       T[1][kk[(N + i - 1) % N][1]] ^
+                       T[2][kk[(N + i - 2) % N][2]] ^
+                       T[3][kk[(N + i - 3) % N][3]]
             }
 
             k[0] = t[0] ^ RC[r]
@@ -199,18 +169,19 @@ func (this *anubisCipher) expandKey(key []byte) {
 
     // decrypt key
     for i = 0; i < (R + 1) / 2; i++ {
-        W[i][0], W[R - i][0] = W[R - i][0], W[i][0]
-        W[i][1], W[R - i][1] = W[R - i][1], W[i][1]
-        W[i][2], W[R - i][2] = W[R - i][2], W[i][2]
-        W[i][3], W[R - i][3] = W[R - i][3], W[i][3]
+        for j = 0; j < 4; j++ {
+            W[i][j], W[R - i][j] = W[R - i][j], W[i][j]
+        }
     }
 
     for r = 1; r < R; r++ {
+        ww = uint32sToSlice(W[r][:])
+
         for i = 0; i < 4; i++ {
-            W[r][i] = T[0][byte(U[0][byte(W[r][i] >> 24)])] ^
-                      T[1][byte(U[0][byte(W[r][i] >> 16)])] ^
-                      T[2][byte(U[0][byte(W[r][i] >>  8)])] ^
-                      T[3][byte(U[0][byte(W[r][i]      )])]
+            W[r][i] = T[0][byte(U[0][ww[i][0]])] ^
+                      T[1][byte(U[0][ww[i][1]])] ^
+                      T[2][byte(U[0][ww[i][2]])] ^
+                      T[3][byte(U[0][ww[i][3]])]
         }
     }
 

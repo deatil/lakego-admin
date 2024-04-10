@@ -7,7 +7,30 @@ import (
 // Endianness option
 const littleEndian bool = false
 
-func keyToUint32s(b []byte) []uint32 {
+func getu32(ptr []byte) uint32 {
+    if littleEndian {
+        return binary.LittleEndian.Uint32(ptr)
+    } else {
+        return binary.BigEndian.Uint32(ptr)
+    }
+}
+
+func putu32(ptr []byte, a uint32) {
+    if littleEndian {
+        binary.LittleEndian.PutUint32(ptr, a)
+    } else {
+        binary.BigEndian.PutUint32(ptr, a)
+    }
+}
+
+func getu32Bytes(a uint32) []byte {
+    var out [4]byte
+    putu32(out[:], a)
+
+    return out[:]
+}
+
+func bytesToUint32s(b []byte) []uint32 {
     size := len(b) / 4
     dst := make([]uint32, size)
 
@@ -24,38 +47,27 @@ func keyToUint32s(b []byte) []uint32 {
     return dst
 }
 
-func bytesToUint32s(inp []byte) [4]uint32 {
-    var blk [4]uint32
+func uint32sToBytes(w []uint32) []byte {
+    size := len(w) * 4
+    dst := make([]byte, size)
 
-    if littleEndian {
-        blk[0] = binary.LittleEndian.Uint32(inp[0:])
-        blk[1] = binary.LittleEndian.Uint32(inp[4:])
-        blk[2] = binary.LittleEndian.Uint32(inp[8:])
-        blk[3] = binary.LittleEndian.Uint32(inp[12:])
-    } else {
-        blk[0] = binary.BigEndian.Uint32(inp[0:])
-        blk[1] = binary.BigEndian.Uint32(inp[4:])
-        blk[2] = binary.BigEndian.Uint32(inp[8:])
-        blk[3] = binary.BigEndian.Uint32(inp[12:])
+    for i := 0; i < len(w); i++ {
+        j := i * 4
+
+        if littleEndian {
+            binary.LittleEndian.PutUint32(dst[j:], w[i])
+        } else {
+            binary.BigEndian.PutUint32(dst[j:], w[i])
+        }
     }
 
-    return blk
+    return dst
 }
 
-func uint32sToBytes(blk [4]uint32) [16]byte {
-    var sav [16]byte
-
-    if littleEndian {
-        binary.LittleEndian.PutUint32(sav[0:], blk[0])
-        binary.LittleEndian.PutUint32(sav[4:], blk[1])
-        binary.LittleEndian.PutUint32(sav[8:], blk[2])
-        binary.LittleEndian.PutUint32(sav[12:], blk[3])
-    } else {
-        binary.BigEndian.PutUint32(sav[0:], blk[0])
-        binary.BigEndian.PutUint32(sav[4:], blk[1])
-        binary.BigEndian.PutUint32(sav[8:], blk[2])
-        binary.BigEndian.PutUint32(sav[12:], blk[3])
+func uint32sToSlice(w []uint32) (out [][]byte) {
+    for _, v := range w {
+        out = append(out, getu32Bytes(v))
     }
 
-    return sav
+    return
 }
