@@ -38,7 +38,7 @@ func GG00(x, y, z uint32) uint32 {
 }
 
 func GG16(x, y, z uint32) uint32 {
-    return ((y ^ z) & x) ^ z
+    return (((y ^ z) & x) ^ z)
 }
 
 var keys = [64]uint32{

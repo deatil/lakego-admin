@@ -86,7 +86,7 @@ func (this *anubisCipher) crypt(out []byte, in []byte, W [][4]uint32) {
     }
 
     for r = 1; r < R; r++ {
-        ss = uint32sToSlice(state[:])
+        ss = uint32sToByteArray(state[:])
 
         for j = 0; j < 4; j++ {
             inter[j] = T[0][ss[0][j]] ^
@@ -100,9 +100,8 @@ func (this *anubisCipher) crypt(out []byte, in []byte, W [][4]uint32) {
     }
 
     // could also use U[0] here instead of T[n]
+    ss = uint32sToByteArray(state[:])
     for j = 0; j < 4; j++ {
-        ss = uint32sToSlice(state[:])
-
         inter[j] =
             (T[0][ss[0][j]] & states[0]) ^
             (T[1][ss[1][j]] & states[1]) ^
@@ -140,7 +139,7 @@ func (this *anubisCipher) expandKey(key []byte) {
 
     // encrypt key
     for r = 0; r <= R; r++ {
-        kk = uint32sToSlice(k)
+        kk = uint32sToByteArray(k)
 
         W[r] = [4]uint32{}
         for i = 0; i < N; i++ {
@@ -175,7 +174,7 @@ func (this *anubisCipher) expandKey(key []byte) {
     }
 
     for r = 1; r < R; r++ {
-        ww = uint32sToSlice(W[r][:])
+        ww = uint32sToByteArray(W[r][:])
 
         for i = 0; i < 4; i++ {
             W[r][i] = T[0][byte(U[0][ww[i][0]])] ^

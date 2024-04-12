@@ -123,7 +123,7 @@ func Test_NistStringEqual(t *testing.T) {
     assertEqual(fmt.Sprintf("%s", ecdh.GmSM2()), "GmSM2", "NistEqual")
 }
 
-func TestAllKeyBytes(t *testing.T) {
+func Test_AllKeyBytes(t *testing.T) {
     testKeyBytes(t, ecdh.P256())
     testKeyBytes(t, ecdh.P384())
     testKeyBytes(t, ecdh.P521())
@@ -170,4 +170,86 @@ func testKeyBytes(t *testing.T, curue ecdh.Curve) {
         }
 
     })
+}
+
+func Test_ECMQV(t *testing.T) {
+    aliceSKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    aliceEKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    bobSKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    bobEKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    bobSecret, err := bobSKey.ECMQV(bobEKey, aliceSKey.PublicKey(), aliceEKey.PublicKey())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    aliceSecret, err := aliceSKey.ECMQV(aliceEKey, bobSKey.PublicKey(), bobEKey.PublicKey())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !aliceSecret.Equal(bobSecret) {
+        t.Error("two ECMQV computations came out different")
+    }
+}
+
+func Test_SM2SharedKey(t *testing.T) {
+    aliceSKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    aliceEKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    bobSKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+    bobEKey, err := ecdh.GmSM2().GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    bobSecret, err := bobSKey.ECMQV(bobEKey, aliceSKey.PublicKey(), aliceEKey.PublicKey())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    aliceSecret, err := aliceSKey.ECMQV(aliceEKey, bobSKey.PublicKey(), bobEKey.PublicKey())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !aliceSecret.Equal(bobSecret) {
+        t.Error("two ECMQV computations came out different")
+    }
+
+    bobKey, err := bobSecret.SM2SharedKey(aliceSKey.PublicKey(), bobSKey.PublicKey(), []byte("Alice"), []byte("Bob"), 48)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    aliceKey, err := aliceSecret.SM2SharedKey(aliceSKey.PublicKey(), bobSKey.PublicKey(), []byte("Alice"), []byte("Bob"), 48)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !bytes.Equal(bobKey, aliceKey) {
+        t.Error("two SM2SharedKey computations came out different")
+    }
 }

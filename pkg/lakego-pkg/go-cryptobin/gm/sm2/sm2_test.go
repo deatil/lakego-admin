@@ -615,3 +615,24 @@ func Test_SignFunc(t *testing.T) {
         }
     })
 }
+
+func Test_SignLegacy(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+    hash := sha1.Sum(msg)
+
+    r, s, err := sm2.SignLegacy(rand.Reader, priv, hash[:])
+    if err != nil {
+        t.Error(err)
+    }
+
+    if sm2.VerifyLegacy(pub, hash[:], r, s) != nil {
+        t.Error("veri error")
+    }
+}

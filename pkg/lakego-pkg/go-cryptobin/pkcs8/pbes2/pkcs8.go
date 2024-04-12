@@ -265,7 +265,13 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
     oid := encryptionScheme.Algorithm.String()
 
-    newCipher, err := GetCipher(oid)
+    length := 0
+    if len(encryptionScheme.Parameters.Bytes) != 0 ||
+        len(encryptionScheme.Parameters.FullBytes) != 0 {
+        length = 1
+    }
+
+    newCipher, err := GetCipher(oid, length)
     if err != nil {
         return nil, nil, fmt.Errorf("unsupported cipher (OID: %s)", oid)
     }

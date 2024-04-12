@@ -119,15 +119,15 @@ func parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyEncrypt, error) {
 }
 
 func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
+    oid := encryptionScheme.Algorithm.String()
+
     length := 0
     if len(encryptionScheme.Parameters.Bytes) != 0 ||
         len(encryptionScheme.Parameters.FullBytes) != 0 {
         length = 1
     }
 
-    oid := encryptionScheme.Algorithm.String()
-
-    newCipher, err := GetGmSMCipher(oid, length)
+    newCipher, err := GetCipher(oid, length)
     if err != nil {
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }

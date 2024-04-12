@@ -40,9 +40,10 @@ type CipherFunc = func() Cipher
 
 // Ciphers
 type Ciphers struct {
-    // 锁定
-    mu sync.RWMutex
+    // 读写锁
+    mu      sync.RWMutex
 
+    // 列表
     ciphers map[string]CipherFunc
 }
 
@@ -66,9 +67,18 @@ func AddCipher(oid asn1.ObjectIdentifier, cipher CipherFunc) {
 }
 
 // 获取加密
-func (this *Ciphers) GetCipher(oid string) (Cipher, error) {
+func (this *Ciphers) GetCipher(oid string, length ...int) (Cipher, error) {
     this.mu.RLock()
     defer this.mu.RUnlock()
+
+    // 国密加密判断
+    if oid == oidSM4.String() && len(length) > 0 {
+        if length[0] > 0 {
+            oid = oidSM4CBC.String()
+        } else {
+            oid = oidSM4ECB.String()
+        }
+    }
 
     cipher, ok := this.ciphers[oid]
     if !ok {
@@ -81,26 +91,8 @@ func (this *Ciphers) GetCipher(oid string) (Cipher, error) {
 }
 
 // 获取加密
-func GetCipher(oid string) (Cipher, error) {
-    return defaultCiphers.GetCipher(oid)
-}
-
-// 获取国密加密
-func (this *Ciphers) GetGmSMCipher(oid string, length int) (Cipher, error) {
-    if oid == oidSM4.String() {
-        if length > 0 {
-            oid = oidSM4CBC.String()
-        } else {
-            oid = oidSM4ECB.String()
-        }
-    }
-
-    return this.GetCipher(oid)
-}
-
-// 获取加密
-func GetGmSMCipher(oid string, length int) (Cipher, error) {
-    return defaultCiphers.GetGmSMCipher(oid, length)
+func GetCipher(oid string, length ...int) (Cipher, error) {
+    return defaultCiphers.GetCipher(oid, length...)
 }
 
 // 全部

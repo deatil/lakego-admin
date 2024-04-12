@@ -572,6 +572,16 @@ func VerifyWithRS(pub *PublicKey, msg []byte, r, s *big.Int, opts crypto.SignerO
     return verify(pub, hashed, r, s)
 }
 
+// sm2 sign legacy
+func SignLegacy(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
+    return sign(random, priv, hash)
+}
+
+// sm2 verify legacy
+func VerifyLegacy(pub *PublicKey, hash []byte, r, s *big.Int) error {
+    return verify(pub, hash, r, s)
+}
+
 // sm2 sign
 func sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
     e := new(big.Int).SetBytes(hash)
@@ -675,6 +685,11 @@ func calculateHash(pub *PublicKey, h hashFunc, msg, uid []byte) ([]byte, error) 
 // CalculateZA ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
 func CalculateZA(pub *PublicKey, uid []byte) ([]byte, error) {
     return calculateZA(pub, sm3.New, uid)
+}
+
+// CalculateZALegacy ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)
+func CalculateZALegacy(pub *PublicKey, h hashFunc, uid []byte) ([]byte, error) {
+    return calculateZA(pub, h, uid)
 }
 
 // calculateZA ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA)

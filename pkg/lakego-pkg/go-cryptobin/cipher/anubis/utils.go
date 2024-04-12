@@ -64,7 +64,7 @@ func uint32sToBytes(w []uint32) []byte {
     return dst
 }
 
-func uint32sToSlice(w []uint32) (out [][]byte) {
+func uint32sToByteArray(w []uint32) (out [][]byte) {
     for _, v := range w {
         out = append(out, getu32Bytes(v))
     }

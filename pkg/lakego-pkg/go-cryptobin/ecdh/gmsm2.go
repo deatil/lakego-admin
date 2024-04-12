@@ -2,10 +2,12 @@ package ecdh
 
 import (
     "io"
+    "hash"
     "errors"
     "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
 )
 
 // Multiple invocations of this function will return the same value, so it can
@@ -99,6 +101,60 @@ func (c *gmsm2Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) 
     copy(preMasterSecret[len(preMasterSecret)-len(xBytes):], xBytes)
 
     return preMasterSecret, nil
+}
+
+func (c *gmsm2Curve) avf(secret *PublicKey) []byte {
+    bytes := secret.KeyBytes[1:33]
+
+    var result [32]byte
+    copy(result[16:], bytes[16:])
+
+    result[16] = (result[16] & 0x7f) | 0x80
+    return result[:]
+}
+
+func (c *gmsm2Curve) ECMQV(sLocal, eLocal *PrivateKey, sRemote, eRemote *PublicKey) (*PublicKey, error) {
+    // implicitSig: (sLocal + avf(eLocal.Pub) * ePriv) mod N
+    x2 := c.avf(eLocal.PublicKey())
+    t, err := sm2curve.ImplicitSig(sLocal.KeyBytes, eLocal.KeyBytes, x2)
+    if err != nil {
+        return nil, err
+    }
+
+    // new base point: peerPub + [x1](peerSecret)
+    x1 := c.avf(eRemote)
+    p2, err := sm2curve.NewPoint().SetBytes(eRemote.KeyBytes)
+    if err != nil {
+        return nil, err
+    }
+
+    if _, err := p2.ScalarMult(p2, x1); err != nil {
+        return nil, err
+    }
+
+    p1, err := sm2curve.NewPoint().SetBytes(sRemote.KeyBytes)
+    if err != nil {
+        return nil, err
+    }
+
+    p2.Add(p1, p2)
+
+    if _, err := p2.ScalarMult(p2, t); err != nil {
+        return nil, err
+    }
+
+    return c.NewPublicKey(p2.Bytes())
+}
+
+// CalculateZA ZA = H256(ENTLA || IDA || a || b || xG || yG || xA || yA).
+// Compliance with GB/T 32918.2-2016 5.5
+func (c *gmsm2Curve) SM2ZA(h func() hash.Hash, pub *PublicKey, uid []byte) ([]byte, error) {
+    pubkey, err := sm2.NewPublicKey(pub.Bytes())
+    if err != nil {
+        return nil, err
+    }
+
+    return sm2.CalculateZALegacy(pubkey, h, uid)
 }
 
 func isZero(a []byte) bool {
