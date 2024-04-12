@@ -5,6 +5,7 @@ import(
     "fmt"
     "sync"
     "encoding/asn1"
+    "crypto/x509/pkix"
 
     "github.com/deatil/go-cryptobin/tool"
 )
@@ -67,32 +68,39 @@ func AddCipher(oid asn1.ObjectIdentifier, cipher CipherFunc) {
 }
 
 // 获取加密
-func (this *Ciphers) GetCipher(oid string, length ...int) (Cipher, error) {
+func (this *Ciphers) GetCipher(alg any) (Cipher, error) {
     this.mu.RLock()
     defer this.mu.RUnlock()
 
-    // 国密加密判断
-    if oid == oidSM4.String() && len(length) > 0 {
-        if length[0] > 0 {
-            oid = oidSM4CBC.String()
-        } else {
-            oid = oidSM4ECB.String()
-        }
+    var oid string
+    switch scheme := alg.(type) {
+        case string:
+            oid = scheme
+        case pkix.AlgorithmIdentifier:
+            oid = scheme.Algorithm.String()
+
+            // 国密加密判断
+            if oid == oidSM4.String() {
+                if len(scheme.Parameters.Bytes) != 0 ||
+                    len(scheme.Parameters.FullBytes) != 0 {
+                    oid = oidSM4CBC.String()
+                } else {
+                    oid = oidSM4ECB.String()
+                }
+            }
     }
 
-    cipher, ok := this.ciphers[oid]
+    newCipher, ok := this.ciphers[oid]
     if !ok {
         return nil, fmt.Errorf("pkcs/cipher: unsupported cipher (OID: %s)", oid)
     }
 
-    newCipher := cipher()
-
-    return newCipher, nil
+    return newCipher(), nil
 }
 
 // 获取加密
-func GetCipher(oid string, length ...int) (Cipher, error) {
-    return defaultCiphers.GetCipher(oid, length...)
+func GetCipher(alg any) (Cipher, error) {
+    return defaultCiphers.GetCipher(alg)
 }
 
 // 全部

@@ -263,16 +263,9 @@ func (this Enveloped) parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyE
 }
 
 func (this Enveloped) parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, []byte, error) {
-    oid := encryptionScheme.Algorithm.String()
-
-    length := 0
-    if len(encryptionScheme.Parameters.Bytes) != 0 ||
-        len(encryptionScheme.Parameters.FullBytes) != 0 {
-        length = 1
-    }
-
-    newCipher, err := GetCipher(oid, length)
+    newCipher, err := GetCipher(encryptionScheme)
     if err != nil {
+        oid := encryptionScheme.Algorithm.String()
         return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
     }
 
