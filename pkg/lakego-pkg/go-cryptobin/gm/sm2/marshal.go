@@ -59,7 +59,7 @@ func marshalCipherBytes(curve elliptic.Curve, c []byte, mode Mode, h hashFunc) [
 func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode, h hashFunc) ([]byte, error) {
     typ := data[0]
     if typ != byte(0x04) {
-        return nil, errors.New("cryptobin/sm2: encrypted data is error and misss prefix '4'.")
+        return nil, errors.New("cryptobin/sm2: encrypted data is error and miss prefix '4'.")
     }
 
     hashSize := h().Size()

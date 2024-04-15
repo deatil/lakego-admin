@@ -24,26 +24,33 @@ func testCurve(t *testing.T, curve elliptic.Curve) {
     }
 }
 
-func TestP256t1(t *testing.T) {
-    testCurve(t, P256t1())
+type testData struct {
+    name  string
+    curve elliptic.Curve
 }
 
-func TestP256r1(t *testing.T) {
-    testCurve(t, P256r1())
-}
+func Test_Brainpool(t *testing.T) {
+    tests := []testData{
+        {"P160t1", P160t1()},
+        {"P160r1", P160r1()},
+        {"P192t1", P192t1()},
+        {"P192r1", P192r1()},
+        {"P224t1", P224t1()},
+        {"P224r1", P224r1()},
 
-func TestP384t1(t *testing.T) {
-    testCurve(t, P384t1())
-}
+        {"P256t1", P256t1()},
+        {"P256r1", P256r1()},
+        {"P320t1", P320t1()},
+        {"P320r1", P320r1()},
+        {"P384t1", P384t1()},
+        {"P384r1", P384r1()},
+        {"P512t1", P512t1()},
+        {"P512r1", P512r1()},
+    }
 
-func TestP384r1(t *testing.T) {
-    testCurve(t, P384r1())
-}
-
-func TestP512t1(t *testing.T) {
-    testCurve(t, P512t1())
-}
-
-func TestP512r1(t *testing.T) {
-    testCurve(t, P512r1())
+    for _, c := range tests {
+        t.Run(c.name, func(t *testing.T) {
+            testCurve(t, c.curve)
+        })
+    }
 }

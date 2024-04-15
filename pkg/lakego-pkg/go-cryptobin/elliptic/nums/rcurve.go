@@ -1,4 +1,4 @@
-package brainpool
+package nums
 
 import (
     "math/big"
