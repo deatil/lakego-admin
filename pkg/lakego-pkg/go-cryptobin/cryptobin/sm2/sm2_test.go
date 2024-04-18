@@ -1004,7 +1004,6 @@ func Test_DecryptWithBCJavaEndata2(t *testing.T) {
 
     assertError(obj.Error(), "Test_DecryptWithBCJavaEndata2")
     assertEqual(veri, true, "Test_DecryptWithBCJavaEndata2")
-
 }
 
 var testWeappPublicKey = `
@@ -1038,4 +1037,57 @@ func Test_SignSM3Digest_Weapp_Check(t *testing.T) {
 
     assertError(obj.Error(), "Test_SignSM3Digest_Weapp_Check")
     assertEqual(veri, true, "Test_SignSM3Digest_Weapp_Check")
+}
+
+var testEnPrivateKey22 = `
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEILVZdvMydZGiSaiwYU0u9sASEi2i3WwYE38MZjRvpGgroAoGCCqBHM9V
+AYItoUQDQgAEe6Nc0BJgsyrcKmbpYDox7iX3adD165XA0NnNmDkk/XmJ5xK/Lfnm
+MSTaI4vA+UGpGw5kqhKAbFzHJyKjgFz2sQ==
+-----END EC PRIVATE KEY-----
+`
+var testSignPublicKey22 = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEd5tZ/XlQgV9AbJbU5JuzZimcK/LC
+OX+xNwdI1XHHkIGl3W0VBmGRBK3VxkBSvp8tsGkZsxEmA7ngXyECzrDiuA==
+-----END PUBLIC KEY-----
+`
+
+func Test_SignAndDecrypt_Check22(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    encrypted := `MH8CIQC5vLQm7+4JYg5MD39ViKgeuHnAN3BZpzD36pHYOada9QIgLiKsD1GLVRW5bW7sanplYCi+
++e6wuarVffKZDnTTWCkEIMcgRSAXgDLhEJDtmed4LCPdRitNjd3ywVpfi12b5rchBBaObgYaK/8s
+h6D5seFQFqp7B246d9lr`
+    signData := `MEYCIQDr7Vgvt0pfMddIa94dxvc3IkpEvkMhm07A0NEKASHcWwIhANPaZzmsV5m4I3TKkWecCcV1
+jGAJaWDORkhDVOkYH2Rt`
+
+    uid := base64.StdEncoding.EncodeToString([]byte("qinnong"))
+
+    obj := New().
+        FromBase64String(signData).
+        FromPublicKey([]byte(testSignPublicKey22)).
+        SetUID(uid).
+        VerifyASN1([]byte(encrypted))
+    veri := obj.ToVerify()
+
+    assertError(obj.Error(), "Test_SignAndDecrypt_Check22")
+    assertEqual(veri, true, "Test_SignAndDecrypt_Check22")
+
+    // ===========
+
+    data, _ := base64.StdEncoding.DecodeString(encrypted)
+
+    de := New().
+        FromBytes(data).
+        FromPKCS1PrivateKey([]byte(testEnPrivateKey22)).
+        SetMode("C1C3C2").
+        DecryptASN1()
+    deData := de.ToString()
+
+    check := `["{\"data\":\"qwe\"}"]`
+
+    assertError(de.Error(), "Test_SignAndDecrypt_Check22-DecryptASN1")
+    assertEqual(deData, check, "Test_SignAndDecrypt_Check22-DecryptASN1")
 }
