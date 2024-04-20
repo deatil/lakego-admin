@@ -49,7 +49,7 @@ func (this Datebin) IsLocal() bool {
 		return false
 	}
 
-	return this.GetTimezone() == this.Now().GetTimezone()
+	return this.GetTimezone() == this.Now("Local").GetTimezone()
 }
 
 // 是否是上午

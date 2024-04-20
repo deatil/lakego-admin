@@ -126,9 +126,11 @@ func Test_WithKeyDelim(t *testing.T) {
 	}
 
 	for _, v := range testData {
-		arr := New("").WithKeyDelim(v.keyDelim)
+		t.Run(v.index, func(t *testing.T) {
+			arr := New("").WithKeyDelim(v.keyDelim)
 
-		assert(arr.keyDelim, v.check, "WithKeyDelim fail, index "+v.index)
+			assert(arr.keyDelim, v.check, "WithKeyDelim fail")
+		})
 	}
 
 }
@@ -167,10 +169,12 @@ func Test_Exists(t *testing.T) {
 	}
 
 	for _, v := range testData {
-		check := New(arrData).Exists(v.key)
-		if check != v.check {
-			t.Error("Exists fail, index " + v.index)
-		}
+		t.Run(v.index, func(t *testing.T) {
+			check := New(arrData).Exists(v.key)
+			if check != v.check {
+				t.Error("Exists fail")
+			}
+		})
 	}
 
 }
@@ -209,10 +213,12 @@ func Test_Exists_func(t *testing.T) {
 	}
 
 	for _, v := range testData {
-		check := Exists(arrData, v.key)
-		if check != v.check {
-			t.Error("Exists func fail, index " + v.index)
-		}
+		t.Run(v.index, func(t *testing.T) {
+			check := Exists(arrData, v.key)
+			if check != v.check {
+				t.Error("Exists func fail")
+			}
+		})
 	}
 
 }

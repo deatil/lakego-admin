@@ -4,6 +4,7 @@
 <a href="https://pkg.go.dev/github.com/deatil/go-array" ><img src="https://pkg.go.dev/badge/deatil/go-array.svg" alt="Go Reference"></a>
 <a href="https://codecov.io/gh/deatil/go-array" ><img src="https://codecov.io/gh/deatil/go-array/graph/badge.svg?token=SS2Z1IY0XL"/></a>
 <img src="https://goreportcard.com/badge/github.com/deatil/go-array" />
+<a href="https://github.com/avelino/awesome-go"><img src="https://awesome.re/mentioned-badge.svg" alt="Mentioned in Awesome Go"></a>
 </p>
 
 <p align="center">

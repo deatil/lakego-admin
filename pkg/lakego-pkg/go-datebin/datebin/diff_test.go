@@ -29,11 +29,13 @@ func Test_Diff_Seconds(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Seconds()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Seconds()
 
-		eq(check, td.check, "failed Diff_Seconds, index "+td.index)
+			eq(check, td.check, "failed Diff_Seconds")
+		})
 	}
 }
 
@@ -61,11 +63,13 @@ func Test_Diff_SecondsAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			SecondsAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				SecondsAbs()
 
-		eq(check, td.check, "failed Diff SecondsAbs, index "+td.index)
+			eq(check, td.check, "failed Diff SecondsAbs")
+		})
 	}
 }
 
@@ -93,11 +97,13 @@ func Test_Diff_Minutes(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Minutes()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Minutes()
 
-		eq(check, td.check, "failed Diff Minutes, index "+td.index)
+			eq(check, td.check, "failed Diff Minutes")
+		})
 	}
 }
 
@@ -125,11 +131,13 @@ func Test_Diff_MinutesAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			MinutesAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				MinutesAbs()
 
-		eq(check, td.check, "failed Diff MinutesAbs, index "+td.index)
+			eq(check, td.check, "failed Diff MinutesAbs")
+		})
 	}
 }
 
@@ -157,11 +165,13 @@ func Test_Diff_Hours(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Hours()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Hours()
 
-		eq(check, td.check, "failed Diff MinutesAbs, index "+td.index)
+			eq(check, td.check, "failed Diff MinutesAbs")
+		})
 	}
 }
 
@@ -189,11 +199,13 @@ func Test_Diff_HoursAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			HoursAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				HoursAbs()
 
-		eq(check, td.check, "failed Diff HoursAbs, index "+td.index)
+			eq(check, td.check, "failed Diff HoursAbs")
+		})
 	}
 }
 
@@ -221,11 +233,13 @@ func Test_Diff_Days(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Days()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Days()
 
-		eq(check, td.check, "failed Diff Days, index "+td.index)
+			eq(check, td.check, "failed Diff Days")
+		})
 	}
 }
 
@@ -253,11 +267,13 @@ func Test_Diff_DaysAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			DaysAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				DaysAbs()
 
-		eq(check, td.check, "failed Diff DaysAbs, index "+td.index)
+			eq(check, td.check, "failed Diff DaysAbs")
+		})
 	}
 }
 
@@ -285,11 +301,13 @@ func Test_Diff_Weeks(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Weeks()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Weeks()
 
-		eq(check, td.check, "failed Diff Weeks, index "+td.index)
+			eq(check, td.check, "failed Diff Weeks")
+		})
 	}
 }
 
@@ -317,11 +335,13 @@ func Test_Diff_WeeksAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			WeeksAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				WeeksAbs()
 
-		eq(check, td.check, "failed Diff WeeksAbs, index "+td.index)
+			eq(check, td.check, "failed Diff WeeksAbs")
+		})
 	}
 }
 
@@ -349,11 +369,13 @@ func Test_Diff_Months(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Months()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Months()
 
-		eq(check, td.check, "failed Diff Months, index "+td.index)
+			eq(check, td.check, "failed Diff Months")
+		})
 	}
 }
 
@@ -381,11 +403,13 @@ func Test_Diff_MonthsAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			MonthsAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				MonthsAbs()
 
-		eq(check, td.check, "failed Diff MonthsAbs, index "+td.index)
+			eq(check, td.check, "failed Diff MonthsAbs")
+		})
 	}
 }
 
@@ -413,11 +437,13 @@ func Test_Diff_Years(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Years()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Years()
 
-		eq(check, td.check, "failed Diff Years, index "+td.index)
+			eq(check, td.check, "failed Diff Years")
+		})
 	}
 }
 
@@ -445,11 +471,13 @@ func Test_Diff_YearsAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			YearsAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				YearsAbs()
 
-		eq(check, td.check, "failed Diff YearsAbs, index "+td.index)
+			eq(check, td.check, "failed Diff YearsAbs")
+		})
 	}
 }
 
@@ -529,11 +557,13 @@ func Test_Diff_Format(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			Format(td.format)
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				Format(td.format)
 
-		eq(check, td.check, "failed Diff Format, index "+td.index)
+			eq(check, td.check, "failed Diff Format")
+		})
 	}
 }
 
@@ -561,11 +591,13 @@ func Test_Diff_DurationBetween(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			DurationBetween()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				DurationBetween()
 
-		eq(check.String(), td.check, "failed Diff DurationBetween, index "+td.index)
+			eq(check.String(), td.check, "failed Diff DurationBetween")
+		})
 	}
 }
 
@@ -593,18 +625,20 @@ func Test_Diff_DurationBetweens(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		days, hours, minutes, seconds := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			DurationBetweens()
+		t.Run(td.index, func(t *testing.T) {
+			days, hours, minutes, seconds := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				DurationBetweens()
 
-		eq(
-			fmt.Sprintf(
-				"%d days %02d hours %02d minutes %02d seconds",
-				days, hours, minutes, seconds,
-			),
-			td.check,
-			"failed Diff DurationBetweens, index "+td.index,
-		)
+			eq(
+				fmt.Sprintf(
+					"%d days %02d hours %02d minutes %02d seconds",
+					days, hours, minutes, seconds,
+				),
+				td.check,
+				"failed Diff DurationBetweens",
+			)
+		})
 	}
 }
 
@@ -632,11 +666,13 @@ func Test_Diff_DurationBetweenAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			DurationBetweenAbs()
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				DurationBetweenAbs()
 
-		eq(check.String(), td.check, "failed Diff DurationBetweenAbs, index "+td.index)
+			eq(check.String(), td.check, "failed Diff DurationBetweenAbs")
+		})
 	}
 }
 
@@ -664,17 +700,19 @@ func Test_Diff_DurationBetweensAbs(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		days, hours, minutes, seconds := Parse(td.date1).
-			Diff(Parse(td.date2)).
-			DurationBetweensAbs()
+		t.Run(td.index, func(t *testing.T) {
+			days, hours, minutes, seconds := Parse(td.date1).
+				Diff(Parse(td.date2)).
+				DurationBetweensAbs()
 
-		eq(
-			fmt.Sprintf(
-				"%d days %02d hours %02d minutes %02d seconds",
-				days, hours, minutes, seconds,
-			),
-			td.check,
-			"failed Diff DurationBetweensAbs, index "+td.index,
-		)
+			eq(
+				fmt.Sprintf(
+					"%d days %02d hours %02d minutes %02d seconds",
+					days, hours, minutes, seconds,
+				),
+				td.check,
+				"failed Diff DurationBetweensAbs",
+			)
+		})
 	}
 }

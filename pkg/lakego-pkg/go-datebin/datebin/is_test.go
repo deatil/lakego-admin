@@ -160,7 +160,7 @@ func Test_IsLocal(t *testing.T) {
 		{
 			index: "index-3",
 			date:  "2024-06-05 21:15:12",
-			tz:    "CET",
+			tz:    "Eire",
 			check: false,
 		},
 	}

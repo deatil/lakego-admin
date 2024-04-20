@@ -28,9 +28,11 @@ func Test_Gt(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Gt(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Gt(Parse(td.date2))
 
-		eq(check, td.check, "failed Gt, index "+td.index)
+			eq(check, td.check, "failed Gt")
+		})
 	}
 }
 
@@ -58,9 +60,11 @@ func Test_Lt(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Lt(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Lt(Parse(td.date2))
 
-		eq(check, td.check, "failed Lt, index "+td.index)
+			eq(check, td.check, "failed Lt")
+		})
 	}
 }
 
@@ -88,9 +92,11 @@ func Test_Eq(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Eq(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Eq(Parse(td.date2))
 
-		eq(check, td.check, "failed Eq, index "+td.index)
+			eq(check, td.check, "failed Eq")
+		})
 	}
 }
 
@@ -118,9 +124,11 @@ func Test_Ne(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Ne(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Ne(Parse(td.date2))
 
-		eq(check, td.check, "failed Ne, index "+td.index)
+			eq(check, td.check, "failed Ne")
+		})
 	}
 }
 
@@ -154,9 +162,11 @@ func Test_Gte(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Gte(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Gte(Parse(td.date2))
 
-		eq(check, td.check, "failed Gte, index "+td.index)
+			eq(check, td.check, "failed Gte")
+		})
 	}
 }
 
@@ -190,9 +200,11 @@ func Test_Lte(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date1).Lte(Parse(td.date2))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date1).Lte(Parse(td.date2))
 
-		eq(check, td.check, "failed Lte, index "+td.index)
+			eq(check, td.check, "failed Lte")
+		})
 	}
 }
 
@@ -223,9 +235,11 @@ func Test_Between(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date).Between(Parse(td.start), Parse(td.end))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date).Between(Parse(td.start), Parse(td.end))
 
-		eq(check, td.check, "failed Between, index "+td.index)
+			eq(check, td.check, "failed Between")
+		})
 	}
 }
 
@@ -270,9 +284,11 @@ func Test_BetweenIncluded(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date).BetweenIncluded(Parse(td.start), Parse(td.end))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date).BetweenIncluded(Parse(td.start), Parse(td.end))
 
-		eq(check, td.check, "failed BetweenIncluded, index "+td.index)
+			eq(check, td.check, "failed BetweenIncluded")
+		})
 	}
 }
 
@@ -317,9 +333,11 @@ func Test_BetweenIncludStart(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date).BetweenIncludStart(Parse(td.start), Parse(td.end))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date).BetweenIncludStart(Parse(td.start), Parse(td.end))
 
-		eq(check, td.check, "failed BetweenIncludStart, index "+td.index)
+			eq(check, td.check, "failed BetweenIncludStart")
+		})
 	}
 }
 
@@ -364,8 +382,10 @@ func Test_BetweenIncludEnd(t *testing.T) {
 	}
 
 	for _, td := range tests {
-		check := Parse(td.date).BetweenIncludEnd(Parse(td.start), Parse(td.end))
+		t.Run(td.index, func(t *testing.T) {
+			check := Parse(td.date).BetweenIncludEnd(Parse(td.start), Parse(td.end))
 
-		eq(check, td.check, "failed BetweenIncludEnd, index "+td.index)
+			eq(check, td.check, "failed BetweenIncludEnd")
+		})
 	}
 }
