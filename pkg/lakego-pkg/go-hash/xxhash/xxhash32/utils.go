@@ -24,6 +24,10 @@ func putu32(ptr []byte, a uint32) {
     }
 }
 
+func putu32be(ptr []byte, a uint32) {
+    binary.BigEndian.PutUint32(ptr, a)
+}
+
 func bytesToUint32s(b []byte) []uint32 {
     size := len(b) / 4
     dst := make([]uint32, size)
@@ -60,4 +64,22 @@ func uint32sToBytes(w []uint32) []byte {
 
 func rotl(x, n uint32) uint32 {
     return bits.RotateLeft32(x, int(n))
+}
+
+func round(acc, input uint32) uint32 {
+    acc += input * prime[1]
+    acc  = rotl(acc, 13)
+    acc *= prime[0]
+
+    return acc
+}
+
+func avalanche(h32 uint32) uint32 {
+    h32 ^= h32 >> 15
+    h32 *= prime[1]
+    h32 ^= h32 >> 13
+    h32 *= prime[2]
+    h32 ^= h32 >> 16
+
+    return h32
 }

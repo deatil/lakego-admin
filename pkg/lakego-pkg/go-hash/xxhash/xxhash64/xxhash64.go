@@ -15,7 +15,7 @@ func NewWithSeed(seed uint64) hash.Hash64 {
 // Checksum returns the 64bits Hash value.
 func Sum(input []byte) (out [Size]byte) {
     sum := checksum(input, 0)
-    putu64(out[:], sum)
+    putu64be(out[:], sum)
 
     return
 }
@@ -23,7 +23,7 @@ func Sum(input []byte) (out [Size]byte) {
 // Checksum returns the 64bits Hash value.
 func SumWithSeed(input []byte, seed uint64) (out [Size]byte) {
     sum := checksum(input, seed)
-    putu64(out[:], sum)
+    putu64be(out[:], sum)
 
     return
 }

@@ -9,9 +9,9 @@ var xxhashTests32 = []struct {
     input  string
     output string
 }{
-    {"sdfgsdgfsdfg123132", "0c4945ce"},
-    {"dfg.;kp[jewijr0-34lsd", "9c992a85"},
-    {"123123", "d101fddb"},
+    {"sdfgsdgfsdfg123132", "ce45490c"},
+    {"dfg.;kp[jewijr0-34lsd", "852a999c"},
+    {"123123", "dbfd01d1"},
 }
 
 func Test_Xxhash32(t *testing.T) {
@@ -48,9 +48,9 @@ var xxhashTests64 = []struct {
     input  string
     output string
 }{
-    {"sdfgsdgfsdfg123132", "8d0fdbb4dbb8d378"},
-    {"dfg.;kp[jewijr0-34lsd", "c31905eb318e9950"},
-    {"123123", "27d5eb80dea2899a"},
+    {"sdfgsdgfsdfg123132", "78d3b8dbb4db0f8d"},
+    {"dfg.;kp[jewijr0-34lsd", "50998e31eb0519c3"},
+    {"123123", "9a89a2de80ebd527"},
 }
 
 func Test_Xxhash64(t *testing.T) {

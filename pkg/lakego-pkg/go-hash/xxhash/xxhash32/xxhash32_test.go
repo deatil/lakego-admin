@@ -1,6 +1,7 @@
 package xxhash32_test
 
 import (
+    "fmt"
     "testing"
     "encoding/binary"
 
@@ -61,16 +62,14 @@ func TestData(t *testing.T) {
         xxh.Write(data)
         if h := xxh.Sum32(); h != td.sum {
             t.Errorf("test %d: xxh32(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
-            t.FailNow()
         }
 
         if h := xxhash32.Checksum(data); h != td.sum {
             t.Errorf("test %d: xxh32(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
-            t.FailNow()
         }
 
         sum := xxhash32.Sum(data)
-        sumh := binary.LittleEndian.Uint32(sum[:])
+        sumh := binary.BigEndian.Uint32(sum[:])
         if sumh != td.sum {
             t.Errorf("test %d: Sum(%s)=0x%x expected 0x%x", i, td.printable, sumh, td.sum)
             t.FailNow()
@@ -83,16 +82,14 @@ func TestData(t *testing.T) {
         xxh.Write(data)
         if h := xxh.Sum32(); h != td.sum {
             t.Errorf("test NewWithSeed %d: xxh32(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
-            t.FailNow()
         }
 
         if h := xxhash32.ChecksumWithSeed(data, 0); h != td.sum {
             t.Errorf("test ChecksumWithSeed %d: xxh32(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
-            t.FailNow()
         }
 
         sum = xxhash32.SumWithSeed(data, 0)
-        sumh = binary.LittleEndian.Uint32(sum[:])
+        sumh = binary.BigEndian.Uint32(sum[:])
         if sumh != td.sum {
             t.Errorf("test %d: SumWithSeed(%s, 0)=0x%x expected 0x%x", i, td.printable, sumh, td.sum)
             t.FailNow()
@@ -121,7 +118,7 @@ func TestSum(t *testing.T) {
         data := []byte(td.data)
         xxh.Write(data)
         b := xxh.Sum(data)
-        if h := binary.LittleEndian.Uint32(b[len(data):]); h != td.sum {
+        if h := binary.BigEndian.Uint32(b[len(data):]); h != td.sum {
             t.Errorf("test %d: xxh32(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
             t.FailNow()
         }
@@ -138,6 +135,40 @@ func TestReset(t *testing.T) {
             t.FailNow()
         }
         xxh.Reset()
+    }
+}
+
+type testString struct {
+    sum  string
+    data string
+}
+
+var testdataStrings = []testString{
+    {"02cc5d05", ""},
+    {"550d7456", "a"},
+    {"4999fc53", "ab"},
+    {"32d153ff", "abc"},
+    {"a3643705", "abcd"},
+    {"9738f19b", "abcde"},
+    {"8b7cd587", "abcdef"},
+    {"9dd093b3", "abcdefg"},
+    {"0bb3c6bb", "abcdefgh"},
+    {"d03c13fd", "abcdefghi"},
+    {"8b988cfe", "abcdefghij"},
+    {"9d2d8b62", "abcdefghijklmnop"},
+    {"42ae804d", "abcdefghijklmnopqrstuvwxyz0123456789"},
+    {"62b4ed00", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."},
+}
+
+func TestDataString(t *testing.T) {
+    for i, td := range testdataStrings {
+        xxh := xxhash32.New()
+        xxh.Write([]byte(td.data))
+        h := xxh.Sum(nil)
+
+        if fmt.Sprintf("%x", h) != td.sum {
+            t.Errorf("test %d: got %x, want %s", i, h, td.sum)
+        }
     }
 }
 

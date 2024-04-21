@@ -15,7 +15,7 @@ func NewWithSeed(seed uint32) hash.Hash32 {
 // Checksum returns the 32bits Hash value.
 func Sum(input []byte) (out [Size]byte) {
     sum := checksum(input, 0)
-    putu32(out[:], sum)
+    putu32be(out[:], sum)
 
     return
 }
@@ -23,7 +23,7 @@ func Sum(input []byte) (out [Size]byte) {
 // Checksum returns the 32bits Hash value.
 func SumWithSeed(input []byte, seed uint32) (out [Size]byte) {
     sum := checksum(input, seed)
-    putu32(out[:], sum)
+    putu32be(out[:], sum)
 
     return
 }

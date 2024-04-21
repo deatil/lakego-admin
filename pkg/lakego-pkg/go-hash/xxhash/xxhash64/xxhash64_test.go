@@ -1,6 +1,7 @@
 package xxhash64_test
 
 import (
+    "fmt"
     "testing"
     "encoding/binary"
 
@@ -86,7 +87,7 @@ func TestData(t *testing.T) {
         }
 
         sum := xxhash64.Sum(data)
-        sumh := binary.LittleEndian.Uint64(sum[:])
+        sumh := binary.BigEndian.Uint64(sum[:])
         if sumh != td.sum {
             t.Errorf("test %d: Sum(%s)=0x%x expected 0x%x", i, td.printable, sumh, td.sum)
             t.FailNow()
@@ -108,7 +109,7 @@ func TestData(t *testing.T) {
         }
 
         sum = xxhash64.SumWithSeed(data, 0)
-        sumh = binary.LittleEndian.Uint64(sum[:])
+        sumh = binary.BigEndian.Uint64(sum[:])
         if sumh != td.sum {
             t.Errorf("test %d: SumWithSeed(%s, 0)=0x%x expected 0x%x", i, td.printable, sumh, td.sum)
             t.FailNow()
@@ -138,7 +139,7 @@ func TestSum(t *testing.T) {
         data := []byte(td.data)
         xxh.Write(data)
         b := xxh.Sum(data)
-        if h := binary.LittleEndian.Uint64(b[len(data):]); h != td.sum {
+        if h := binary.BigEndian.Uint64(b[len(data):]); h != td.sum {
             t.Errorf("test %d: xxh64(%s)=0x%x expected 0x%x", i, td.printable, h, td.sum)
             t.FailNow()
         }
@@ -155,6 +156,60 @@ func TestReset(t *testing.T) {
             t.FailNow()
         }
         xxh.Reset()
+    }
+}
+
+type testString struct {
+    sum  string
+    data string
+}
+
+var testdataStrings = []testString{
+    {"ef46db3751d8e999", ""},
+    {"d24ec4f1a98c6e5b", "a"},
+    {"65f708ca92d04a61", "ab"},
+    {"44bc2cf5ad770999", "abc"},
+    {"de0327b0d25d92cc", "abcd"},
+    {"07e3670c0c8dc7eb", "abcde"},
+    {"fa8afd82c423144d", "abcdef"},
+    {"1860940e2902822d", "abcdefg"},
+    {"3ad351775b4634b7", "abcdefgh"},
+    {"27f1a34fdbb95e13", "abcdefghi"},
+    {"d6287a1de5498bb2", "abcdefghij"},
+    {"bf2cd639b4143b80", "abcdefghijklmnopqrstuvwxyz012345"},
+    {"64f23ecf1609b766", "abcdefghijklmnopqrstuvwxyz0123456789"},
+    {"c5a8b11443765630", "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."},
+
+    {"1c330fb2d66be179", "as"},
+    {"631c37ce72a97393", "asd"},
+    {"415872f599cea71e", "asdf"},
+    {
+        // Exactly 63 characters, which exercises all code paths.
+        "02a2e85470d6fd96",
+        "Call me Ishmael. Some years ago--never mind how long precisely-",
+    },
+    {
+        "93267f9820452ead",
+        "The quick brown fox jumps over the lazy dog http://i.imgur.com/VHQXScB.gif",
+    },
+}
+
+func TestDataString(t *testing.T) {
+    for i, td := range testdataStrings {
+        data := []byte(td.data)
+
+        xxh := xxhash64.New()
+        xxh.Write(data)
+        h := xxh.Sum(nil)
+        if fmt.Sprintf("%x", h) != td.sum {
+            t.Errorf("test %d: got %x, want %x", i, h, td.sum)
+        }
+
+        sum := xxhash64.Sum(data)
+        if fmt.Sprintf("%x", sum) != td.sum {
+            t.Errorf("test %d: got %x, want %x", i, sum, td.sum)
+        }
+
     }
 }
 
