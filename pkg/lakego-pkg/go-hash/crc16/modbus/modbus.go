@@ -39,8 +39,8 @@ var MbTable = []uint16{
     0X8201, 0X42C0, 0X4380, 0X8341, 0X4100, 0X81C1, 0X8081, 0X4040,
 }
 
-// CRC16 / modbus
-func CRC16Modbus(s string) string {
+// modbus
+func Checksum(s string) string {
     data := []byte(s)
 
     var crc16 uint16

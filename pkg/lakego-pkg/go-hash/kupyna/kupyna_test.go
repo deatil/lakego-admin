@@ -59,19 +59,14 @@ func Test_Hash256_Check(t *testing.T) {
     if fmt.Sprintf("%x", dst) != check {
         t.Errorf("fail, got %x, want %s", dst, check)
     }
-}
 
-func Test_Hash512_Check(t *testing.T) {
-    msg := []byte("012345678901234567890123456789012345678901234567890123456789012")
+    // =========
 
-    h := New512()
-    h.Write(msg)
-    dst := h.Sum(nil)
-
-    check := "9dc29544cd5f184cf5cfe0ccc9ab895c3a7cebff36805eba4468cfe8cb33c68fc57b61ef61d8ac65629eb3291d62bc7efb98aa422b2a2aa9d8fb236634d49aa9"
-
-    if fmt.Sprintf("%x", dst) != check {
-        t.Errorf("fail, got %x, want %s", dst, check)
+    {
+        dst := Sum256(msg)
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
     }
 }
 
@@ -86,6 +81,38 @@ func Test_Hash384_Check(t *testing.T) {
 
     if fmt.Sprintf("%x", dst) != check {
         t.Errorf("fail, got %x, want %s", dst, check)
+    }
+
+    // =========
+
+    {
+        dst := Sum384(msg)
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
+    }
+}
+
+func Test_Hash512_Check(t *testing.T) {
+    msg := []byte("012345678901234567890123456789012345678901234567890123456789012")
+
+    h := New512()
+    h.Write(msg)
+    dst := h.Sum(nil)
+
+    check := "9dc29544cd5f184cf5cfe0ccc9ab895c3a7cebff36805eba4468cfe8cb33c68fc57b61ef61d8ac65629eb3291d62bc7efb98aa422b2a2aa9d8fb236634d49aa9"
+
+    if fmt.Sprintf("%x", dst) != check {
+        t.Errorf("fail, got %x, want %s", dst, check)
+    }
+
+    // =========
+
+    {
+        dst := Sum512(msg)
+        if fmt.Sprintf("%x", dst) != check {
+            t.Errorf("fail, got %x, want %s", dst, check)
+        }
     }
 }
 

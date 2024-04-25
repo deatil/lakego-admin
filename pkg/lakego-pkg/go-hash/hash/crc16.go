@@ -7,7 +7,7 @@ import (
 
 // CRC16_X25 哈希值
 func (this Hash) CRC16_X25() Hash {
-    data := x25.CRC16X25(string(this.data))
+    data := x25.Checksum(string(this.data))
 
     this.data, this.Error = this.HexDecode(data)
 
@@ -16,7 +16,7 @@ func (this Hash) CRC16_X25() Hash {
 
 // CRC16_Modbus 哈希值
 func (this Hash) CRC16_Modbus() Hash {
-    data := modbus.CRC16Modbus(string(this.data))
+    data := modbus.Checksum(string(this.data))
 
     this.data, this.Error = this.HexDecode(data)
 

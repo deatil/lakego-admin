@@ -1,9 +1,11 @@
 package streebog
 
 import (
-    "hash"
     "errors"
 )
+
+// GOST R 34.11-2012 hash function.
+// RFC 6986.
 
 const (
     // hash size
@@ -24,10 +26,13 @@ type digest struct {
     hs int
 }
 
-// New returns a new hash.Hash computing the streebog checksum
-func New(hashsize int) (hash.Hash, error) {
-    if hashsize != 256 && hashsize != 512 {
-        return nil, errors.New("go-hash/streebog: invalid hash size")
+// newDigest returns a new *digest computing the Streebog checksum
+func newDigest(hashsize int) (*digest, error) {
+    switch hashsize {
+        case 256, 512:
+            break
+        default:
+            return nil, errors.New("go-hash/streebog: invalid hash size")
     }
 
     d := new(digest)
@@ -48,14 +53,9 @@ func (d *digest) Reset() {
     d.s = [8]uint64{}
 
     if d.hs == 512 {
-        d.s = [8]uint64{0, 0, 0, 0, 0, 0, 0, 0}
+        d.s = initIv512
     } else {
-        d.s = [8]uint64{
-            0x101010101010101, 0x101010101010101,
-            0x101010101010101, 0x101010101010101,
-            0x101010101010101, 0x101010101010101,
-            0x101010101010101, 0x101010101010101,
-        }
+        d.s = initIv256
     }
 
     d.S = [8]uint64{}

@@ -15,7 +15,7 @@ type digest384 struct {
     h hash.Hash
 }
 
-// New384 returns a new hash.Hash computing the kupyna384 checksum
+// New384 returns a new hash.Hash computing the Kupyna384 checksum
 func New384() hash.Hash {
     d := new(digest384)
     d.h = New512()

@@ -16,24 +16,24 @@ func New2() hash.Hash {
 
 // ===========
 
-// New160 returns a new hash.Hash computing the tiger160 checksum
+// New160 returns a new hash.Hash computing the Tiger160 checksum
 func New160() hash.Hash {
     return newDigest(Size160, 1)
 }
 
-// New2_160 returns a new hash.Hash computing the tiger160 checksum
+// New2_160 returns a new hash.Hash computing the Tiger2_160 checksum
 func New2_160() hash.Hash {
     return newDigest(Size160, 2)
 }
 
 // ===========
 
-// New128 returns a new hash.Hash computing the tiger128 checksum
+// New128 returns a new hash.Hash computing the Tiger128 checksum
 func New128() hash.Hash {
     return newDigest(Size128, 1)
 }
 
-// New2_128 returns a new hash.Hash computing the tiger128 checksum
+// New2_128 returns a new hash.Hash computing the Tiger2_128 checksum
 func New2_128() hash.Hash {
     return newDigest(Size128, 2)
 }

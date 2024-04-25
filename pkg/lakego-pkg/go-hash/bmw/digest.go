@@ -22,7 +22,7 @@ type digest struct {
     q  [32]uint32
 }
 
-// New returns a new hash.Hash computing the echo checksum
+// New returns a new hash.Hash computing the bmw checksum
 func New() hash.Hash {
     d := new(digest)
     d.Reset()

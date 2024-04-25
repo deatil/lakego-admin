@@ -4,25 +4,25 @@ import (
     "hash"
 )
 
-// New224 returns a new hash.Hash computing the echo checksum
+// New224 returns a new hash.Hash computing the ECHO checksum
 func New224() hash.Hash {
     h, _ := New(224)
     return h
 }
 
-// New256 returns a new hash.Hash computing the echo checksum
+// New256 returns a new hash.Hash computing the ECHO checksum
 func New256() hash.Hash {
     h, _ := New(256)
     return h
 }
 
-// New384 returns a new hash.Hash computing the echo checksum
+// New384 returns a new hash.Hash computing the ECHO checksum
 func New384() hash.Hash {
     h, _ := New(384)
     return h
 }
 
-// New512 returns a new hash.Hash computing the echo checksum
+// New512 returns a new hash.Hash computing the ECHO checksum
 func New512() hash.Hash {
     h, _ := New(512)
     return h

@@ -58,7 +58,17 @@ func Test_Hash64(t *testing.T) {
         out := Sum64(in)
 
         if fmt.Sprintf("%x", out) != check {
-            t.Errorf("Check error. got %x, want %s", out, check)
+            t.Errorf("Sum64 error. got %x, want %s", out, check)
+        }
+    }
+
+    // ==========
+
+    {
+        out := Checksum64(in)
+
+        if fmt.Sprintf("%x", out) != check {
+            t.Errorf("Sum64 error. got %x, want %s", out, check)
         }
     }
 
@@ -68,7 +78,7 @@ func Test_Hash64(t *testing.T) {
         out := Hash_64bits(in)
 
         if fmt.Sprintf("%x", out) != check {
-            t.Errorf("Check error. got %x, want %s", out, check)
+            t.Errorf("Hash_64bits error. got %x, want %s", out, check)
         }
     }
 }
@@ -81,7 +91,17 @@ func Test_Hash128(t *testing.T) {
         out := Sum128(in)
 
         if fmt.Sprintf("%x", out) != check {
-            t.Errorf("Check error. got %x, want %s", out, check)
+            t.Errorf("Sum128 error. got %x, want %s", out, check)
+        }
+    }
+
+    // ===========
+
+    {
+        out := Checksum128(in)
+
+        if fmt.Sprintf("%x", out.Bytes()) != check {
+            t.Errorf("Checksum128 error. got %x, want %s", out, check)
         }
     }
 
@@ -91,7 +111,7 @@ func Test_Hash128(t *testing.T) {
         out := Hash_128bits(in).Bytes()
 
         if fmt.Sprintf("%x", out) != check {
-            t.Errorf("Check error. got %x, want %s", out, check)
+            t.Errorf("Hash_128bits error. got %x, want %s", out, check)
         }
     }
 }
@@ -127,7 +147,14 @@ func Test_Hash128_Check(t *testing.T) {
         {
             out := Sum128(td.msg)
             if fmt.Sprintf("%x", out) != td.md {
-                t.Errorf("[%d] Check error. got %x, want %s", i, out, td.md)
+                t.Errorf("[%d] Sum128 error. got %x, want %s", i, out, td.md)
+            }
+        }
+
+        {
+            out := Checksum128(td.msg)
+            if fmt.Sprintf("%x", out.Bytes()) != td.md {
+                t.Errorf("[%d] Checksum128 error. got %x, want %s", i, out, td.md)
             }
         }
 
@@ -138,7 +165,7 @@ func Test_Hash128_Check(t *testing.T) {
             out := md.Sum(nil)
 
             if fmt.Sprintf("%x", out) != td.md {
-                t.Errorf("[%d] New128 Check error. got %x, want %s", i, out, td.md)
+                t.Errorf("[%d] New128 error. got %x, want %s", i, out, td.md)
             }
         }
 

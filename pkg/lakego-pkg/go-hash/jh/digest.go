@@ -1,14 +1,13 @@
 package jh
 
 import (
-    "hash"
     "unsafe"
 )
 
-// The size of an jh checksum in bytes.
+// The size of an JH checksum in bytes.
 const Size = 32
 
-// The blocksize of jh in bytes.
+// The blocksize of JH in bytes.
 const BlockSize = 64
 
 // For memset
@@ -21,10 +20,11 @@ type digest struct {
     len uint64
 }
 
-func New() hash.Hash {
-    return &digest{
-        x: jh256H0,
-    }
+func newDigest() *digest {
+    d := new(digest)
+    d.Reset()
+
+    return d
 }
 
 func (d *digest) Reset() {

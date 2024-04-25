@@ -32,18 +32,18 @@ type digest160 struct {
     len uint64             // total count of bytes processed
 }
 
-// implement of hash.Hash
-func (d *digest160) Reset() {
-    d.s[0], d.s[1], d.s[2], d.s[3], d.s[4] = s0, s1, s2, s3, s4
-    d.nx = 0
-    d.len = 0
-}
-
 // New160 returns a new hash.Hash computing the checksum.
 func New160() hash.Hash {
     result := new(digest160)
     result.Reset()
     return result
+}
+
+// implement of hash.Hash
+func (d *digest160) Reset() {
+    d.s[0], d.s[1], d.s[2], d.s[3], d.s[4] = s0, s1, s2, s3, s4
+    d.nx = 0
+    d.len = 0
 }
 
 func (d *digest160) Size() int {

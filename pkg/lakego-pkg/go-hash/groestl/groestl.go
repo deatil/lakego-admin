@@ -4,31 +4,31 @@ import (
     "hash"
 )
 
-// New224 returns a new hash.Hash computing the groestl checksum
+// New224 returns a new hash.Hash computing the Groestl checksum
 func New224() hash.Hash {
     h, _ := New(224)
     return h
 }
 
-// New256 returns a new hash.Hash computing the groestl checksum
+// New256 returns a new hash.Hash computing the Groestl checksum
 func New256() hash.Hash {
     h, _ := New(256)
     return h
 }
 
-// New384 returns a new hash.Hash computing the groestl checksum
+// New384 returns a new hash.Hash computing the Groestl checksum
 func New384() hash.Hash {
     h, _ := New(384)
     return h
 }
 
-// New512 returns a new hash.Hash computing the groestl checksum
+// New512 returns a new hash.Hash computing the Groestl checksum
 func New512() hash.Hash {
     h, _ := New(512)
     return h
 }
 
-// Sum224 returns the ECHO-224 checksum of the data.
+// Sum224 returns the Groestl-224 checksum of the data.
 func Sum224(data []byte) (sum224 [Size224]byte) {
     h := New224()
     h.Write(data)
@@ -38,7 +38,7 @@ func Sum224(data []byte) (sum224 [Size224]byte) {
     return
 }
 
-// Sum256 returns the ECHO-256 checksum of the data.
+// Sum256 returns the Groestl-256 checksum of the data.
 func Sum256(data []byte) (sum256 [Size256]byte) {
     h := New256()
     h.Write(data)
@@ -48,7 +48,7 @@ func Sum256(data []byte) (sum256 [Size256]byte) {
     return
 }
 
-// Sum384 returns the ECHO-384 checksum of the data.
+// Sum384 returns the Groestl-384 checksum of the data.
 func Sum384(data []byte) (sum384 [Size384]byte) {
     h := New384()
     h.Write(data)
@@ -58,7 +58,7 @@ func Sum384(data []byte) (sum384 [Size384]byte) {
     return
 }
 
-// Sum512 returns the ECHO-512 checksum of the data.
+// Sum512 returns the Groestl-512 checksum of the data.
 func Sum512(data []byte) (sum512 [Size512]byte) {
     h := New512()
     h.Write(data)

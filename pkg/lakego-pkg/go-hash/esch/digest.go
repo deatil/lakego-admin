@@ -24,7 +24,7 @@ type digest struct {
     hs, bs int
 }
 
-// New returns a new hash.Hash computing the esch checksum
+// New returns a new hash.Hash computing the ESCH checksum
 func New(hashsize int) (hash.Hash, error) {
     if hashsize == 0 {
         return nil, errors.New("go-hash/esch: hash size can't be zero")

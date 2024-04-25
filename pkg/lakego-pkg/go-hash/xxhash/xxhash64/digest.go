@@ -1,9 +1,9 @@
 package xxhash64
 
-// The size of a xxhash64 hash value in bytes
+// The size of a XXHash64 hash value in bytes
 const Size = 8
 
-// The blocksize of xxhash64 hash function in bytes
+// The blocksize of XXHash64 hash function in bytes
 const BlockSize = 32
 
 type digest struct {

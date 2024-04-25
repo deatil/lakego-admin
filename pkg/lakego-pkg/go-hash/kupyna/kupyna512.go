@@ -18,7 +18,7 @@ type digest512 struct {
     len uint64
 }
 
-// New512 returns a new hash.Hash computing the kupyna512 checksum
+// New512 returns a new hash.Hash computing the Kupyna512 checksum
 func New512() hash.Hash {
     d := new(digest512)
     d.Reset()

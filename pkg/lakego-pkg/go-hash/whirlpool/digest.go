@@ -18,7 +18,7 @@ type digest struct {
     hash [8]uint64
 }
 
-// newDigest returns a new hash.Hash computing the whirlpool checksum.
+// newDigest returns a new hash.Hash computing the Whirlpool checksum.
 func newDigest() *digest {
     h := new(digest)
     h.Reset()

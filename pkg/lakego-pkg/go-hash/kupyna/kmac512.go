@@ -11,7 +11,7 @@ type kmac512 struct {
     len uint64
 }
 
-// NewKmac512 returns a new hash.Hash computing the kmac512 checksum
+// NewKmac512 returns a new hash.Hash computing the Kmac512 checksum
 func NewKmac512(key []byte) (hash.Hash, error) {
     l := len(key)
     if l != 64 {

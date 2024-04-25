@@ -1,9 +1,5 @@
 package has160
 
-import (
-    "hash"
-)
-
 // The size of a HAS-160 checksum in bytes.
 const Size = 20
 
@@ -17,8 +13,8 @@ type digest struct {
     len uint64
 }
 
-// New returns a new hash.Hash computing the HAS-160 checksum.
-func New() hash.Hash {
+// newDigest returns a new *digest computing the HAS-160 checksum.
+func newDigest() *digest {
     c := new(digest)
     c.Reset()
     return c

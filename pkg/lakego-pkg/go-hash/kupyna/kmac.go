@@ -11,7 +11,7 @@ func (k KeySizeError) Error() string {
     return fmt.Sprintf("go-hash/kupyna: invalid key size %d", int(k))
 }
 
-// NewKmac returns a new hash.Hash computing the kmac checksum
+// NewKmac returns a new hash.Hash computing the Kmac checksum
 func NewKmac(key []byte) (hash.Hash, error) {
     l := len(key)
     switch l {

@@ -39,8 +39,8 @@ var crctab16 = []uint16{
     0X7BC7, 0X6A4E, 0X58D5, 0X495C, 0X3DE3, 0X2C6A, 0X1EF1, 0X0F78,
 }
 
-// CRC16 / x25
-func CRC16X25(s string) string {
+// x25
+func Checksum(s string) string {
     bs := []byte(s)
 
     // 初始化

@@ -23,7 +23,7 @@ type digest struct {
     hs, bs int
 }
 
-// New returns a new hash.Hash computing the groestl checksum
+// New returns a new hash.Hash computing the Groestl checksum
 func New(hashsize int) (hash.Hash, error) {
     if hashsize == 0 {
         return nil, errors.New("go-hash/groestl: hash size can't be zero")

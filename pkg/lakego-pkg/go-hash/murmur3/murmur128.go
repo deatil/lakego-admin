@@ -10,13 +10,6 @@ const (
     c2_128 = 0x4cf5ad432745937f
 )
 
-// Make sure interfaces are correctly implemented.
-var (
-    _ hash.Hash = new(digest128)
-    _ Hash128   = new(digest128)
-    _ bmixer    = new(digest128)
-)
-
 // Hash128 represents a 128-bit hasher
 // Hack: the standard api doesn't define any Hash128 interface.
 type Hash128 interface {
@@ -199,7 +192,9 @@ func rotl64(x uint64, r byte) uint64 {
 //     hasher := New128()
 //     hasher.Write(data)
 //     return hasher.Sum128()
-func Sum128(data []byte) (h1 uint64, h2 uint64) { return Sum128WithSeed(data, 0) }
+func Sum128(data []byte) (h1 uint64, h2 uint64) {
+    return Sum128WithSeed(data, 0)
+}
 
 // Sum128WithSeed returns the MurmurHash3 sum of data. It is equivalent to the
 // following sequence (without the extra burden and the extra allocation):

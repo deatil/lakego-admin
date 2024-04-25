@@ -4,13 +4,6 @@ import (
     "hash"
 )
 
-// Make sure interfaces are correctly implemented.
-var (
-    _ hash.Hash   = new(digest64)
-    _ hash.Hash64 = new(digest64)
-    _ bmixer      = new(digest64)
-)
-
 // digest64 is half a digest128.
 type digest64 digest128
 
@@ -49,7 +42,9 @@ func (d *digest64) Sum64() uint64 {
 //     hasher := New64()
 //     hasher.Write(data)
 //     return hasher.Sum64()
-func Sum64(data []byte) uint64 { return Sum64WithSeed(data, 0) }
+func Sum64(data []byte) uint64 {
+    return Sum64WithSeed(data, 0)
+}
 
 // Sum64WithSeed returns the MurmurHash3 sum of data. It is equivalent to the
 // following sequence (without the extra burden and the extra allocation):

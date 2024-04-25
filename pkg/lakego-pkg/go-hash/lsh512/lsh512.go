@@ -38,8 +38,8 @@ func New224() hash.Hash {
     return newDigest(Size224)
 }
 
-// Sum512 returns the LSH-512 checksum of the data.
-func Sum512(data []byte) (sum512 [Size]byte) {
+// Sum returns the LSH-512 checksum of the data.
+func Sum(data []byte) (sum512 [Size]byte) {
     b := New()
     b.Write(data)
     sum := b.Sum(nil)

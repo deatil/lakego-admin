@@ -18,7 +18,7 @@ type digest256 struct {
     len uint64
 }
 
-// New256 returns a new hash.Hash computing the kupyna256 checksum
+// New256 returns a new hash.Hash computing the Kupyna256 checksum
 func New256() hash.Hash {
     d := new(digest256)
     d.Reset()

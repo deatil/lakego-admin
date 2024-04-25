@@ -1,7 +1,9 @@
 // Package skein implements the Skein512 hash function
 // based on the Threefish tweakable block cipher.
-//
-//
+package skein
+
+import "hash"
+
 // Overview
 //
 // Skein is a hash function family using the tweakable block cipher
@@ -29,9 +31,6 @@
 // Skein512 for most applications. Skein256 should be used for small devices
 // like smartcards. Skein1024 is the ultra-conservative variant providing a level of
 // security (mostly) not needed.
-package skein 
-
-import "hash"
 
 // Config contains the Skein configuration:
 // - Key for computing MACs

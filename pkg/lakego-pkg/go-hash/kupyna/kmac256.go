@@ -11,7 +11,7 @@ type kmac256 struct {
     len uint64
 }
 
-// NewKmac256 returns a new hash.Hash computing the kmac256 checksum
+// NewKmac256 returns a new hash.Hash computing the Kmac256 checksum
 func NewKmac256(key []byte) (hash.Hash, error) {
     l := len(key)
     if l != 32 {

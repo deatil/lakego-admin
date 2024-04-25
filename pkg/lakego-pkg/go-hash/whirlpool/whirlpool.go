@@ -4,7 +4,7 @@ import (
     "hash"
 )
 
-// New returns a new hash.Hash computing the whirlpool checksum.
+// New returns a new hash.Hash computing the Whirlpool checksum.
 func New() hash.Hash {
     h := new(digest)
     h.Reset()
@@ -12,7 +12,7 @@ func New() hash.Hash {
     return h
 }
 
-// Sum returns the whirlpool checksum of the data.
+// Sum returns the Whirlpool checksum of the data.
 func Sum(data []byte) (out [Size]byte) {
     var h digest
     h.Reset()

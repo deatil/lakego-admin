@@ -5,10 +5,6 @@ import (
     "encoding/binary"
 )
 
-func ROTL(x, n uint64) uint64 {
-    return bits.RotateLeft64(x, int(n))
-}
-
 // Endianness option
 const littleEndian bool = true
 
@@ -48,4 +44,8 @@ func sipround(v0, v1, v2, v3 *uint64) {
 
     (*v1) ^= (*v2)
     (*v2) = ROTL((*v2), 32)
+}
+
+func ROTL(x, n uint64) uint64 {
+    return bits.RotateLeft64(x, int(n))
 }

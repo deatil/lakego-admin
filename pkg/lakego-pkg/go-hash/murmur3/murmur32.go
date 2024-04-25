@@ -7,13 +7,6 @@ import (
     "unsafe"
 )
 
-// Make sure interfaces are correctly implemented.
-var (
-    _ hash.Hash   = new(digest32)
-    _ hash.Hash32 = new(digest32)
-    _ bmixer      = new(digest32)
-)
-
 const (
     c1_32 uint32 = 0xcc9e2d51
     c2_32 uint32 = 0x1b873593
@@ -26,7 +19,9 @@ type digest32 struct {
 }
 
 // New32 returns new 32-bit hasher
-func New32() hash.Hash32 { return New32WithSeed(0) }
+func New32() hash.Hash32 {
+    return New32WithSeed(0)
+}
 
 // New32WithSeed returns new 32-bit hasher set with explicit seed value
 func New32WithSeed(seed uint32) hash.Hash32 {

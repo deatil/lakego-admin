@@ -2,9 +2,35 @@ package murmur3
 
 import (
     "fmt"
+    "hash"
     "strconv"
     "testing"
 )
+
+func Test_Interfaces(t *testing.T) {
+    var (
+        _ hash.Hash   = new(digest32)
+        _ hash.Hash32 = new(digest32)
+        _ bmixer      = new(digest32)
+    )
+
+    // ============
+
+    var (
+        _ hash.Hash   = new(digest64)
+        _ hash.Hash64 = new(digest64)
+        _ bmixer      = new(digest64)
+    )
+
+    // ============
+
+    // Make sure interfaces are correctly implemented.
+    var (
+        _ hash.Hash = new(digest128)
+        _ Hash128   = new(digest128)
+        _ bmixer    = new(digest128)
+    )
+}
 
 var data = []struct {
     seed  uint32

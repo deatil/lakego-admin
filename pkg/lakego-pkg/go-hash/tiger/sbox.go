@@ -267,3 +267,9 @@ var t4 = []uint64{
     0xbf6c70e5f776cbb1, 0x411218f2ef552bed, 0xcb0c0708705a36a3, 0xe74d14754f986044,
     0xcd56d9430ea8280e, 0xc12591d7535f5065, 0xc83223f1720aef96, 0xc3a0396f7363a51f,
 }
+
+var initH = [3]uint64{
+    0x0123456789abcdef,
+    0xfedcba9876543210,
+    0xf096a5b4c3b2e187,
+}

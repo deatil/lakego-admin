@@ -4,13 +4,13 @@ import (
     "hash"
 )
 
-// New256 returns a new hash.Hash computing the esch checksum
+// New256 returns a new hash.Hash computing the ESCH checksum
 func New256() hash.Hash {
     h, _ := New(256)
     return h
 }
 
-// New384 returns a new hash.Hash computing the esch checksum
+// New384 returns a new hash.Hash computing the ESCH checksum
 func New384() hash.Hash {
     h, _ := New(384)
     return h

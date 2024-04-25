@@ -1,9 +1,9 @@
 package xxh3
 
-// The size of a xxh3_64 hash value in bytes
+// The size of a XXH3_64 hash value in bytes
 const Size64 = 8
 
-// The blocksize of xxh3_64 hash function in bytes
+// The blocksize of XXH3_64 hash function in bytes
 const BlockSize64 = 256
 
 // digest64 represents the partial evaluation of a checksum.
@@ -35,18 +35,13 @@ func newDigest64(seed uint64, secret []byte) *digest64 {
 }
 
 func (d *digest64) Reset() {
-    d.s = [8]uint64{
-        PRIME32_3, PRIME64_1,
-        PRIME64_2, PRIME64_3,
-        PRIME64_4, PRIME32_2,
-        PRIME64_5, PRIME32_1,
-    }
-
     // buffer
     d.x = [BlockSize64]byte{}
     // bufferedSize
     d.nx = 0
     d.len = 0
+
+    copy(d.s[:], INIT_ACC)
 
     d.secretLimit = len(d.secret) - STRIPE_LEN
     d.nbStripesSoFar = 0

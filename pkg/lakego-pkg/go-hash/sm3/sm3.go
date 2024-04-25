@@ -4,7 +4,7 @@ import (
     "hash"
 )
 
-// New returns a new hash.Hash computing the MD2 checksum.
+// New returns a new hash.Hash computing the SM3 checksum.
 func New() hash.Hash {
     d := new(digest)
     d.Reset()

@@ -8,14 +8,6 @@ const Size192 = 24
 // The blocksize of Tiger hash function in bytes
 const BlockSize = 64
 
-var (
-    initH = [3]uint64{
-        0x0123456789abcdef,
-        0xfedcba9876543210,
-        0xf096a5b4c3b2e187,
-    }
-)
-
 type digest struct {
     s   [3]uint64
     x   [BlockSize]byte
