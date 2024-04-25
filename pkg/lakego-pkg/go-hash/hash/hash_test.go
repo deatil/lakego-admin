@@ -3,7 +3,13 @@ package hash
 import (
     "testing"
     "reflect"
+    "encoding/hex"
 )
+
+func fromHex(s string) []byte {
+    h, _ := hex.DecodeString(s)
+    return h
+}
 
 func assertT(t *testing.T) func(any, any, string) {
     return func(actual any, expected any, msg string) {

@@ -1,8 +1,6 @@
 package rijndael
 
 import (
-    "sync"
-    "errors"
     "strconv"
     "crypto/cipher"
 
@@ -17,16 +15,16 @@ const (
     BlockSize256 = 32
 )
 
-var once sync.Once
-
-func initAll() {
-    genTables()
-}
-
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
     return "cryptobin/rijndael: invalid key size " + strconv.Itoa(int(k))
+}
+
+type BlockSizeError int
+
+func (k BlockSizeError) Error() string {
+    return "cryptobin/rijndael: invalid block size " + strconv.Itoa(int(k))
 }
 
 type rijndaelCipher struct {
@@ -47,29 +45,16 @@ func NewCipher(key []byte, blockSize int) (cipher.Block, error) {
             return nil, KeySizeError(k)
     }
 
-    once.Do(initAll)
+    switch blockSize {
+        case 16, 20, 24, 28, 32:
+            break
+        default:
+            return nil, BlockSizeError(k)
+    }
 
     c := new(rijndaelCipher)
-
-    switch blockSize {
-        case 16:
-            c.blockSize = BlockSize128
-            c.expandKey128(key, int32(k))
-        case 20:
-            c.blockSize = BlockSize160
-            c.expandKey160(key, int32(k))
-        case 24:
-            c.blockSize = BlockSize192
-            c.expandKey192(key, int32(k))
-        case 28:
-            c.blockSize = BlockSize224
-            c.expandKey224(key, int32(k))
-        case 32:
-            c.blockSize = BlockSize256
-            c.expandKey256(key, int32(k))
-        default:
-            return nil, errors.New("cryptobin/rijndael: invalid blockSize")
-    }
+    c.blockSize = blockSize
+    c.expandKey(key, int32(blockSize) / 4, int32(k))
 
     return c, nil
 }
@@ -214,37 +199,7 @@ func (this *rijndaelCipher) decrypt(dst, src []byte) {
     }
 }
 
-func (this *rijndaelCipher) expandKey128(key []byte, nk int32) {
-    var nb int32 = 4
-
-    this.expandKey(key, nb, nk)
-}
-
-func (this *rijndaelCipher) expandKey160(key []byte, nk int32) {
-    var nb int32 = 5
-
-    this.expandKey(key, nb, nk)
-}
-
-func (this *rijndaelCipher) expandKey192(key []byte, nk int32) {
-    var nb int32 = 6
-
-    this.expandKey(key, nb, nk)
-}
-
-func (this *rijndaelCipher) expandKey224(key []byte, nk int32) {
-    var nb int32 = 7
-
-    this.expandKey(key, nb, nk)
-}
-
-func (this *rijndaelCipher) expandKey256(key []byte, nk int32) {
-    var nb int32 = 8
-
-    this.expandKey(key, nb, nk)
-}
-
-func (this *rijndaelCipher) expandKey(key []byte, nb int32, nk int32) {
+func (this *rijndaelCipher) expandKey(key []byte, nb, nk int32) {
     /* blocksize=32*nb bits. Key=32*nk bits */
     /* currently nb,bk = 4, 6 or 8          */
     /* key comes as 4*rinst->Nk bytes              */

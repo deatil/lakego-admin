@@ -1,15 +1,5 @@
 package rijndael
 
-/* Inverse Coefficients */
-var inCo = [4]byte{ 0xB, 0xD, 0x9, 0xE }
-
-var fbsub [256]byte
-var rbsub [256]byte
-var ptab, ltab [256]byte
-var ftable [256]uint32
-var rtable [256]uint32
-var rco [30]uint32
-
 func rotl(x byte) byte {
     return (x >> 7) | (x << 1)
 }
