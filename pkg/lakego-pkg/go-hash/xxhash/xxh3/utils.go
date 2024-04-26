@@ -134,11 +134,11 @@ func avalanche(h64 uint64) uint64 {
 }
 
 func mult32to64(x uint32, y uint32) uint64 {
-    return uint64(x & 0xFFFFFFFF) * uint64(y & 0xFFFFFFFF)
+    return uint64(x) * uint64(y)
 }
 
-func mult32to64_add64(lhs, rhs, acc uint64) uint64 {
-    return mult32to64(uint32(lhs), uint32(rhs)) + acc
+func mult32to64_add64(lhs, rhs uint32, acc uint64) uint64 {
+    return mult32to64(lhs, rhs) + acc
 }
 
 func mult64to128(lhs, rhs uint64) Uint128 {
@@ -176,8 +176,8 @@ func scalarRound(
     data_val := getu64(input[lane * 8:])
     data_key := data_val ^ getu64(secret[lane * 8:])
 
-    acc[lane ^ 1] += data_val;
-    acc[lane] = mult32to64_add64(data_key, data_key >> 32, acc[lane])
+    acc[lane ^ 1] += data_val
+    acc[lane] = mult32to64_add64(uint32(data_key), uint32(data_key >> 32), acc[lane])
 }
 
 func accumulate_512(acc []uint64, input []byte, secret []byte) {
@@ -708,7 +708,7 @@ func Hash_hashLong_64b_withSeed(
     return Hash_hashLong_64b_withSeed_internal(acc, input, seed)
 }
 
-type hashLong64_f func(input []byte, seed uint64, secret []byte) uint64
+type hashLong64_f = func(input []byte, seed uint64, secret []byte) uint64
 
 func Hash_64bits_internal(
     input      []byte,
@@ -818,7 +818,7 @@ func Hash_hashLong_128b_withSeed(
     return Hash_hashLong_128b_withSeed_internal(acc, input, seed64)
 }
 
-type hashLong128_f func([]byte, uint64, []byte) Uint128
+type hashLong128_f = func(input []byte, seed64 uint64, secret []byte) Uint128
 
 func Hash_128bits_internal(
     input  []byte,

@@ -41,27 +41,28 @@ import (
 
 func main() {
     // 加密
-    cypt := crypto.
+    cypten := crypto.
         FromString("useData").
         SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
         Aes().
-        ECB().
+        CBC().
         PKCS7Padding().
         Encrypt().
         ToBase64String()
 
     // 解密
     cyptde := crypto.
-        FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
+        FromBase64String(cypten).
         SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
         Aes().
-        ECB().
+        CBC().
         PKCS7Padding().
         Decrypt().
         ToString()
 
-    // i3FhtTp5v6aPJx0wTbarwg==
-    fmt.Println("加密结果：", cypt)
+    fmt.Println("加密结果：", cypten)
     fmt.Println("解密结果：", cyptde)
 }
 
@@ -92,7 +93,7 @@ cyptde := crypto.
 // 注意: 设置密码,加密类型,加密模式,补码方式 在 操作类型 之前, 可以调换顺序
 ret := crypto.
     FromString("string"). // 数据来源, 待加密数据/待解密数据
-    SetKey("key").        // 设置密码
+    SetKey("key_string"). // 设置密码
     SetIv("iv_string").   // 设置向量
     Aes().                // 加密类型
     CBC().                // 加密模式

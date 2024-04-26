@@ -885,7 +885,6 @@ func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
     }
 
     dst := make([]byte, len(data))
-
     c.XORKeyStream(dst, data)
 
     return dst, nil
@@ -901,7 +900,6 @@ func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
     }
 
     dst := make([]byte, len(data))
-
     c.XORKeyStream(dst, data)
 
     return dst, nil

@@ -117,11 +117,11 @@ RC5
 RC6
 Idea
 SM4
-Chacha20(nonce string, counter ...uint32)
-Chacha20poly1305(nonce string, additional string)
-Chacha20poly1305X(nonce string, additional string)
+Chacha20(counter ...uint32)
+Chacha20poly1305(additional ...[]byte)
+Chacha20poly1305X(additional ...[]byte)
 Xts(cipher string, sectorNum uint64)
-Salsa20(nonce string)
+Salsa20()
 Seed
 Aria
 Camellia
@@ -176,13 +176,13 @@ OFB8
 NCFB
 NOFB
 CTR
-GCM(nonce string, additional ...string)
-CCM(nonce string, additional ...string)
-OCB(nonce string, additional ...string)
-EAX(nonce string, additional ...string)
+GCM(additional ...[]byte)
+CCM(additional ...[]byte)
+OCB(additional ...[]byte)
+EAX(additional ...[]byte)
 BC
 HCTR(tweak, hkey []byte)
-MGM(nonce string, additional ...string)
+MGM(additional ...[]byte)
 ~~~
 
 支持的补码方式

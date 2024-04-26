@@ -28,7 +28,7 @@ go get -u github.com/deatil/go-cryptobin
 ~~~
 
 
-### Using
+### Get Starting
 
 ~~~go
 package main
@@ -41,11 +41,12 @@ import (
 
 func main() {
     // encrypt
-    cypt := crypto.
+    cypten := crypto.
         FromString("useData").
         SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
         Aes().
-        ECB().
+        CBC().
         PKCS7Padding().
         Encrypt().
         ToBase64String()
@@ -54,8 +55,9 @@ func main() {
     cyptde := crypto.
         FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
         SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
         Aes().
-        ECB().
+        CBC().
         PKCS7Padding().
         Decrypt().
         ToString()
@@ -92,7 +94,7 @@ cyptde := crypto.
 // Tips: SetKey,SetIv,Encrypt Type,Mode,Padding at `Action Type` before can move sorts
 ret := crypto.
     FromString("string"). // Data Src
-    SetKey("key").        // Set Key
+    SetKey("key_string"). // Set Key
     SetIv("iv_string").   // Set Iv
     Aes().                // Encrypt Type
     CBC().                // Mode
@@ -102,7 +104,7 @@ ret := crypto.
 ~~~
 
 
-### Can Funcs
+### PKG Funcs
 
 *  Data From:
 `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`
@@ -111,9 +113,9 @@ ret := crypto.
 *  Set IV:
 `SetIv(data string)`, `WithIv(iv []byte)`
 *  Encrypt Type:
-`Aes()`, `Des()`, `TripleDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `RC4()`, `Idea()`, `SM4()`, `Chacha20(nonce string, counter ...uint32)`, `Chacha20poly1305(nonce string, additional string)`, `Xts(cipher string, sectorNum uint64)`
+`Aes()`, `Des()`, `TripleDes()`, `Twofish()`, `Blowfish()`, `Tea(rounds ...int)`, `Xtea()`, `Cast5()`, `RC4()`, `Idea()`, `SM4()`, `Chacha20(counter ...uint32)`, `Chacha20poly1305(additional ...[]byte)`, `Xts(cipher string, sectorNum uint64)`
 *  Encrypt Mode:
-`ECB()`, `CBC()`, `PCBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(nonce string, additional ...string)`, `CCM(nonce string, additional ...string)`
+`ECB()`, `CBC()`, `PCBC()`, `CFB()`, `OFB()`, `CTR()`, `GCM(additional ...[]byte)`, `CCM(additional ...[]byte)`
 *  Paddings:
 `NoPadding()`, `ZeroPadding()`, `PKCS5Padding()`, `PKCS7Padding()`, `X923Padding()`, `ISO10126Padding()`, `ISO7816_4Padding()`,`ISO97971Padding()`,`PBOC2Padding()`, `TBCPadding()`, `PKCS1Padding(bt ...string)`
 *  Action Type:
