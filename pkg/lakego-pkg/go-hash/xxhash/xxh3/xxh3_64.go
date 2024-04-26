@@ -29,26 +29,36 @@ func New64WithSeed(seed uint64) hash.Hash64 {
 
 // Sum64 returns the 64bits Hash value.
 func Sum64(input []byte) (out [Size64]byte) {
-    sum := checksum64(input, 0, kSecret)
-    putu64be(out[:], sum)
+    d := New64()
+    d.Write(input)
+    sum := d.Sum(nil)
 
+    copy(out[:], sum)
     return
 }
 
 // Sum64WithSeed returns the 64bits Hash value.
 func Sum64WithSeed(input []byte, seed uint64) (out [Size64]byte) {
-    sum := checksum64(input, seed, kSecret)
-    putu64be(out[:], sum)
+    d := New64WithSeed(seed)
+    d.Write(input)
+    sum := d.Sum(nil)
 
+    copy(out[:], sum)
     return
 }
 
 // Checksum64 returns the uint64 value.
 func Checksum64(input []byte) uint64 {
-    return checksum64(input, 0, kSecret)
+    d := New64()
+    d.Write(input)
+
+    return d.Sum64()
 }
 
 // Checksum64WithSeed returns the uint64 value.
 func Checksum64WithSeed(input []byte, seed uint64) uint64 {
-    return checksum64(input, seed, kSecret)
+    d := New64WithSeed(seed)
+    d.Write(input)
+
+    return d.Sum64()
 }

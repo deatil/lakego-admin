@@ -50,6 +50,8 @@ func Test_XXH3_128(t *testing.T) {
     }
 }
 
+// ==========
+
 func Test_Hash64(t *testing.T) {
     in := []byte("nonce-asdfg56d6dd148d3df5947b54f0a0fb5e5b0234680cd7b4614bf3005c86fffb45257419b3133c39e551347cd3ad26850bd9513877ee2b708829f3f8f902377720655f56d6dd148d3df5947b54f0a0fb5e5b0234680cd7b4614bf3005c86fffb45257419b3133c39e551347cd3ad26850bd9513877ee2b708829f3f8f902377720655f")
     check := "3ddf6d234465a3df"
@@ -116,6 +118,8 @@ func Test_Hash128(t *testing.T) {
     }
 }
 
+// ==========
+
 type testHash128Data struct {
     msg []byte
     md  string
@@ -169,5 +173,170 @@ func Test_Hash128_Check(t *testing.T) {
             }
         }
 
+    }
+}
+
+func Test_Hash128WithSeed_Check(t *testing.T) {
+    var seed uint64 = 0x0102030405060708
+
+    tests := []testHash128Data{
+        {
+            msg: []byte("Hello World !"),
+            md: "641a4c1676726aa33decc8da7d355f0a",
+        },
+        {
+            msg: []byte("The quick brown fox jumps over the lazy dog"),
+            md: "c2f76f0a1f9eaff4656c57536b34ac18",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/Square Polano.txt"),
+            md: "fe255318b1475caaf82c6de470ec8783",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/The Three-Cornered World.txt"),
+            md: "3999e43adf2532a610ce308d1dc63f09",
+        },
+    }
+
+    for i, td := range tests {
+        in := td.msg
+        check := td.md
+
+        {
+            d := New128WithSeed(seed)
+            d.Write(in)
+            out := d.Sum(nil)
+
+            if fmt.Sprintf("%x", out) != check {
+                t.Errorf("[%d] New128WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
+
+        {
+            out := Sum128WithSeed(in, seed)
+
+            if fmt.Sprintf("%x", out) != check {
+                t.Errorf("[%d] Sum128WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
+
+        {
+            out := Checksum128WithSeed(in, seed)
+
+            if fmt.Sprintf("%x", out.Bytes()) != check {
+                t.Errorf("[%d] Checksum128WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
+
+    }
+}
+
+type testHash64Data struct {
+    msg []byte
+    md  string
+}
+
+func Test_Hash64_Check(t *testing.T) {
+    tests := []testHash64Data{
+        {
+            msg: []byte("Hello World !"),
+            md: "27e997346a1d82bf",
+        },
+        {
+            msg: []byte("The quick brown fox jumps over the lazy dog"),
+            md: "ce7d19a5418fb365",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/Square Polano.txt"),
+            md: "e1d87af33b6a3c0c",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/The Three-Cornered World.txt"),
+            md: "2f81241fcb240c15",
+        },
+    }
+
+    md := New64()
+
+    for i, td := range tests {
+        {
+            out := Sum64(td.msg)
+            if fmt.Sprintf("%x", out) != td.md {
+                t.Errorf("[%d] Sum64 error. got %x, want %s", i, out, td.md)
+            }
+        }
+
+        {
+            out := Checksum64(td.msg)
+            if fmt.Sprintf("%x", out) != td.md {
+                t.Errorf("[%d] Checksum64 error. got %x, want %s", i, out, td.md)
+            }
+        }
+
+        // new use
+        {
+            md.Reset()
+            md.Write(td.msg)
+            out := md.Sum(nil)
+
+            if fmt.Sprintf("%x", out) != td.md {
+                t.Errorf("[%d] New64 error. got %x, want %s", i, out, td.md)
+            }
+        }
+
+    }
+}
+
+func Test_Hash64WithSeed_Check(t *testing.T) {
+    var seed uint64 = 0x0102030405060708
+
+    tests := []testHash64Data{
+        {
+            msg: []byte("Hello World !"),
+            md: "6ce9dcb902845315",
+        },
+        {
+            msg: []byte("The quick brown fox jumps over the lazy dog"),
+            md: "d95e3752ff73665c",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/Square Polano.txt"),
+            md: "f1e09d71715e08dc",
+        },
+        {
+            msg: testMustReadFile(t, "testdata/The Three-Cornered World.txt"),
+            md: "10ce308d1dc63f09",
+        },
+    }
+
+    for i, td := range tests {
+        in := td.msg
+        check := td.md
+
+        {
+            d := New64WithSeed(seed)
+            d.Write(in)
+            out := d.Sum(nil)
+
+            if fmt.Sprintf("%x", out) != check {
+                t.Errorf("[%d] New64WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
+
+        {
+            out := Sum64WithSeed(in, seed)
+
+            if fmt.Sprintf("%x", out) != check {
+                t.Errorf("[%d] Sum64WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
+
+        {
+            out := Checksum64WithSeed(in, seed)
+
+            if fmt.Sprintf("%x", out) != check {
+                t.Errorf("[%d] Checksum64WithSeed error. got %x, want %s", i, out, check)
+            }
+        }
     }
 }

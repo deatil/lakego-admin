@@ -23,31 +23,41 @@ func New128WithSeed(seed uint64) Hash128 {
     secret := make([]byte, SECRET_DEFAULT_SIZE)
     GenCustomSecret(secret, seed)
 
-    return newDigest128(seed, kSecret)
+    return newDigest128(seed, secret)
 }
 
 // Sum128 returns the 128bits Hash value.
 func Sum128(input []byte) (out [Size128]byte) {
-    sum := checksum128(input, 0, kSecret).Bytes()
+    d := New128()
+    d.Write(input)
+    sum := d.Sum(nil)
 
-    copy(out[:], sum[:])
+    copy(out[:], sum)
     return
 }
 
 // Sum128WithSeed returns the 128bits Hash value.
 func Sum128WithSeed(input []byte, seed uint64) (out [Size128]byte) {
-    sum := checksum128(input, seed, kSecret).Bytes()
+    d := New128WithSeed(seed)
+    d.Write(input)
+    sum := d.Sum(nil)
 
-    copy(out[:], sum[:])
+    copy(out[:], sum)
     return
 }
 
 // Checksum128 returns the Uint128 value.
 func Checksum128(input []byte) Uint128 {
-    return checksum128(input, 0, kSecret)
+    d := New128()
+    d.Write(input)
+
+    return d.Sum128()
 }
 
 // Checksum128WithSeed returns the Uint128 value.
 func Checksum128WithSeed(input []byte, seed uint64) Uint128 {
-    return checksum128(input, seed, kSecret)
+    d := New128WithSeed(seed)
+    d.Write(input)
+
+    return d.Sum128()
 }

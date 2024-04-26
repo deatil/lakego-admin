@@ -648,7 +648,7 @@ func consumeStripes(
 
 // =============
 
-func Hash_hashLong_64bits_internal(
+func Hash_hashLong_64b_internal(
     acc    []uint64,
     input  []byte,
     secret []byte,
@@ -668,14 +668,53 @@ func Hash_hashLong_64b_withSecret(
     acc := make([]uint64, 8)
     copy(acc, INIT_ACC)
 
-    return Hash_hashLong_64bits_internal(acc, input, secret)
+    return Hash_hashLong_64b_internal(acc, input, secret)
 }
 
-func Hash_64bits_internal(
-    acc    []uint64,
+func Hash_hashLong_64b_default(
     input  []byte,
     seed64 uint64,
     secret []byte,
+) uint64 {
+    acc := make([]uint64, 8)
+    copy(acc, INIT_ACC)
+
+    return Hash_hashLong_64b_internal(acc, input, kSecret)
+}
+
+func Hash_hashLong_64b_withSeed_internal(
+    acc   []uint64,
+    input []byte,
+    seed  uint64,
+) uint64 {
+    if seed == 0 {
+        return Hash_hashLong_64b_internal(acc, input, kSecret)
+    }
+
+    var secret [SECRET_DEFAULT_SIZE]byte
+    GenCustomSecret(secret[:], seed)
+
+    return Hash_hashLong_64b_internal(acc, input, secret[:])
+}
+
+func Hash_hashLong_64b_withSeed(
+    input  []byte,
+    seed   uint64,
+    secret []byte,
+) uint64 {
+    acc := make([]uint64, 8)
+    copy(acc, INIT_ACC)
+
+    return Hash_hashLong_64b_withSeed_internal(acc, input, seed)
+}
+
+type hashLong64_f func(input []byte, seed uint64, secret []byte) uint64
+
+func Hash_64bits_internal(
+    input      []byte,
+    seed64     uint64,
+    secret     []byte,
+    f_hashLong hashLong64_f,
 ) uint64 {
     len := len(input)
 
@@ -691,28 +730,19 @@ func Hash_64bits_internal(
         return len_129to240_64b(input, secret, seed64)
     }
 
-    return Hash_hashLong_64bits_internal(acc, input, secret)
+    return f_hashLong(input, seed64, secret)
 }
 
 func Hash_64bits(input []byte) uint64 {
-    acc := make([]uint64, 8)
-    copy(acc, INIT_ACC)
-
-    return Hash_64bits_internal(acc, input, 0, kSecret)
+    return Hash_64bits_internal(input, 0, kSecret, Hash_hashLong_64b_default)
 }
 
 func Hash_64bits_withSecret(input []byte, secret []byte) uint64 {
-    acc := make([]uint64, 8)
-    copy(acc, INIT_ACC)
-
-    return Hash_64bits_internal(acc, input, 0, secret)
+    return Hash_64bits_internal(input, 0, secret, Hash_hashLong_64b_withSecret)
 }
 
 func Hash_64bits_withSeed(input []byte, seed uint64) uint64 {
-    acc := make([]uint64, 8)
-    copy(acc, INIT_ACC)
-
-    return Hash_64bits_internal(acc, input, seed, kSecret)
+    return Hash_64bits_internal(input, seed, kSecret, Hash_hashLong_64b_withSeed)
 }
 
 func Hash_64bits_withSecretandSeed(
@@ -720,12 +750,9 @@ func Hash_64bits_withSecretandSeed(
     secret []byte,
     seed   uint64,
 ) uint64 {
-    acc := make([]uint64, 8)
-    copy(acc, INIT_ACC)
-
     length := len(input)
     if length <= MIDSIZE_MAX {
-        return Hash_64bits_internal(acc, input, seed, kSecret)
+        return Hash_64bits_internal(input, seed, kSecret, nil)
     }
 
     return Hash_hashLong_64b_withSecret(input, seed, secret)

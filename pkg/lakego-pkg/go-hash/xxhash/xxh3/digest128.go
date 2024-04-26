@@ -13,11 +13,11 @@ type digest128 struct {
     nx  int
     len uint64
 
-    seed    uint64
+    seed   uint64
     secret []byte
 
-    secretLimit int
-    nbStripesSoFar int
+    secretLimit       int
+    nbStripesSoFar    int
     nbStripesPerBlock int
 }
 
@@ -189,12 +189,4 @@ func (d *digest128) hashLong(acc []uint64, secret []byte) {
         lastStripePtr,
         secret[d.secretLimit - SECRET_LASTACC_START:],
     )
-}
-
-// checksum128 returns the 64bits Hash value.
-func checksum128(data []byte, seed uint64, secret []byte) Uint128 {
-    h := newDigest128(seed, secret)
-    h.Write(data)
-
-    return h.Sum128()
 }
