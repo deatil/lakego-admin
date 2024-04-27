@@ -1,17 +1,6 @@
 package router
 
 /**
- * New
- */
-func NewGroup() *Group {
-    groups := make(map[string]*Middlewares)
-
-    return &Group{
-        groups: groups,
-    }
-}
-
-/**
  * 分组
  *
  * @create 2021-10-16
@@ -20,6 +9,17 @@ func NewGroup() *Group {
 type Group struct {
     // 中间件分组
     groups map[string]*Middlewares
+}
+
+/**
+ * New
+ */
+func NewGroup() *Group {
+    groups := make(map[string]*Middlewares)
+
+    return &Group{
+        groups: groups,
+    }
 }
 
 /**

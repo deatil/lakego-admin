@@ -25,32 +25,6 @@ import (
     iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
-// App结构体
-func New() *App {
-    cfg := config.New("server")
-
-    // 开发者模式
-    var dev bool
-    mode := cfg.GetString("mode")
-    if mode == "dev" {
-        dev = true
-    } else {
-        dev = false
-    }
-
-    // 计划任务
-    scheduler := schedule.New().SetShowLogInfo(dev)
-
-    return &App{
-        dev:              dev,
-        runned:           false,
-        config:           cfg,
-        schedule:         scheduler,
-        serviceProviders: make([]iprovider.ServiceProvider, 0),
-        loadedProviders:  make(map[string]bool),
-    }
-}
-
 // 计划任务接口
 type ServiceProviderSchedule interface {
     Schedule(*schedule.Schedule)
@@ -101,6 +75,32 @@ type App struct {
 
     // 自定义运行监听
     netListener net.Listener
+}
+
+// App 结构体
+func New() *App {
+    cfg := config.New("server")
+
+    // 开发者模式
+    var dev bool
+    mode := cfg.GetString("mode")
+    if mode == "dev" {
+        dev = true
+    } else {
+        dev = false
+    }
+
+    // 计划任务
+    scheduler := schedule.New().SetShowLogInfo(dev)
+
+    return &App{
+        dev:              dev,
+        runned:           false,
+        config:           cfg,
+        schedule:         scheduler,
+        serviceProviders: make([]iprovider.ServiceProvider, 0),
+        loadedProviders:  make(map[string]bool),
+    }
 }
 
 // 设置配置

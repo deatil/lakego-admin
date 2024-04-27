@@ -1,17 +1,6 @@
 package router
 
 /**
- * New
- */
-func NewMiddlewares() *Middlewares {
-    middlewares:= make([]any, 0)
-
-    return &Middlewares{
-        middlewares: middlewares,
-    }
-}
-
-/**
  * 中间件切片
  *
  * @create 2021-10-16
@@ -20,6 +9,17 @@ func NewMiddlewares() *Middlewares {
 type Middlewares struct {
     // 中间件
     middlewares []any
+}
+
+/**
+ * New
+ */
+func NewMiddlewares() *Middlewares {
+    middlewares:= make([]any, 0)
+
+    return &Middlewares{
+        middlewares: middlewares,
+    }
 }
 
 /**

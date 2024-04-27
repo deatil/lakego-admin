@@ -8,17 +8,6 @@ var instanceName *RouteName
 var onceName sync.Once
 
 // 单例
-func NewName() *RouteName {
-    onceName.Do(func() {
-        instanceName = &RouteName{
-            routes: make(RouterInfoMap),
-        }
-    })
-
-    return instanceName
-}
-
-// 单例
 func Name(name string) *RouteName {
     return NewName().SetName(name)
 }
@@ -58,6 +47,17 @@ type RouteName struct {
 
     // 列表
     routes RouterInfoMap
+}
+
+// 单例
+func NewName() *RouteName {
+    onceName.Do(func() {
+        instanceName = &RouteName{
+            routes: make(RouterInfoMap),
+        }
+    })
+
+    return instanceName
 }
 
 // 设置

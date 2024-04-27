@@ -163,25 +163,16 @@ func (this *Admin) loadRoute() {
         // 全局中间件
         engine.Use(globalMiddlewares...)
 
-        // 中间件
-        groupMiddlewares := router.GetMiddlewares(conf.GetString("route.middleware"))
-
         // 路由
-        admin := engine.Group(conf.GetString("route.prefix"))
+        admin := router.Groups(engine, conf.GetString("route.prefix"), conf.GetString("route.middleware"))
         {
-            admin.Use(groupMiddlewares...)
+            // 常规路由
+            adminRoute.Route(admin)
+
+            // 需要管理员权限
+            router.Use(admin, conf.GetString("route.admin-middleware"))
             {
-                // 常规路由
-                adminRoute.Route(admin)
-
-                // 管理员中间件
-                adminGroupMiddlewares := router.GetMiddlewares(conf.GetString("route.admin-middleware"))
-
-                // 需要管理员权限
-                admin.Use(adminGroupMiddlewares...)
-                {
-                    adminRoute.AdminRoute(admin)
-                }
+                adminRoute.AdminRoute(admin)
             }
         }
 

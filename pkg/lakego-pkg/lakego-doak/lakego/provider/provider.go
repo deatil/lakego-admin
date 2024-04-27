@@ -86,8 +86,8 @@ func (this *ServiceProvider) AddGroup(conf map[string]string, fn func(*router.Ro
     }
 
     // 中间件
-    middleware, ok2 := conf["middleware"]
-    if !ok2 {
+    middleware, ok := conf["middleware"]
+    if !ok {
         return
     }
 

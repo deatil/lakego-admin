@@ -8,35 +8,6 @@ var instance *Middleware
 var once sync.Once
 
 /**
- * New
- */
-func NewMiddleware() *Middleware {
-    globalName := "lakego::router-group"
-
-    alias := NewAlias()
-    middlewares := NewMiddlewares()
-    group := NewGroup()
-
-    return &Middleware{
-        globalName: globalName,
-        alias: alias,
-        middlewares: middlewares,
-        group: group,
-    }
-}
-
-/**
- * 单例模式
- */
-func InstanceMiddleware() *Middleware {
-    once.Do(func() {
-        instance = NewMiddleware()
-    })
-
-    return instance
-}
-
-/**
  * 中间件
  *
  * @create 2021-9-15
@@ -54,6 +25,35 @@ type Middleware struct {
 
     // 中间件分组
     group *Group
+}
+
+/**
+ * New
+ */
+func NewMiddleware() *Middleware {
+    globalName := "lakego::router-group"
+
+    alias := NewAlias()
+    middlewares := NewMiddlewares()
+    group := NewGroup()
+
+    return &Middleware{
+        globalName:  globalName,
+        alias:       alias,
+        middlewares: middlewares,
+        group:       group,
+    }
+}
+
+/**
+ * 单例模式
+ */
+func InstanceMiddleware() *Middleware {
+    once.Do(func() {
+        instance = NewMiddleware()
+    })
+
+    return instance
 }
 
 /**

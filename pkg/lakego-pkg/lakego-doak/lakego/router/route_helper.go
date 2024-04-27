@@ -15,6 +15,13 @@ func MiddlewareGroup(name string, middlewares []any) {
 }
 
 /**
+ * 添加全局中间件
+ */
+func PushMiddleware(middleware any) {
+    InstanceMiddleware().PushMiddleware(middleware)
+}
+
+/**
  * 获取中间件列表
  */
 func GetMiddlewares(name string) (handlerFuncs []HandlerFunc) {

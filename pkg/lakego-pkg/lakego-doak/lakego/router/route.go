@@ -7,14 +7,6 @@ import (
 var instanceRoute *Route
 var onceRoute sync.Once
 
-func NewRoute() *Route {
-    onceRoute.Do(func() {
-        instanceRoute = &Route{}
-    })
-
-    return instanceRoute
-}
-
 /**
  * 缓存路由信息
  *
@@ -24,6 +16,14 @@ func NewRoute() *Route {
 type Route struct {
     // 路由
     routeEngine *Engine
+}
+
+func NewRoute() *Route {
+    onceRoute.Do(func() {
+        instanceRoute = &Route{}
+    })
+
+    return instanceRoute
 }
 
 // 设置
