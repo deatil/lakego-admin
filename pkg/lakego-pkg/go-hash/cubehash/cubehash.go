@@ -74,7 +74,7 @@ func NewSH192() hash.Hash {
 // =======
 
 // SumHS512 returns the cubehash checksum of the data.
-func SumHS512(data []byte) (out [Size]byte) {
+func SumHS512(data []byte) (out [Size512]byte) {
     h := NewHS512()
     h.Write(data)
     sum := h.Sum(nil)
@@ -146,7 +146,7 @@ func SumHS128(data []byte) (out [Size128]byte) {
 // =======
 
 // SumSH512 returns the cubehash checksum of the data.
-func SumSH512(data []byte) (out [Size]byte) {
+func SumSH512(data []byte) (out [Size512]byte) {
     h := NewSH512()
     h.Write(data)
     sum := h.Sum(nil)

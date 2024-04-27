@@ -5,7 +5,7 @@ import (
 )
 
 // The size of an cubehash checksum in bytes.
-const Size    = 64
+const Size512 = 64
 const Size384 = 48
 const Size256 = 32
 const Size224 = 28

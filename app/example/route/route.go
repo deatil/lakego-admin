@@ -23,6 +23,12 @@ func GinRoute(engine gin.IRouter) {
             "exampleData2": exampleData2,
         })
     })
+
+    // 视图
+    viewController := new(controller.View)
+    engine.GET("/example/view/index", viewController.Index)
+    engine.GET("/example/view/index2", viewController.Index2)
+
 }
 
 /**

@@ -4,14 +4,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/view/html/interfaces"
 )
 
-// 构造函数
-func New(adapter interfaces.Adapter) *Html {
-    html := &Html{}
-    html.WithAdapter(adapter)
-
-    return html
-}
-
 /**
  * 模板
  *
@@ -21,6 +13,14 @@ func New(adapter interfaces.Adapter) *Html {
 type Html struct {
     // 适配器
     Adapter interfaces.Adapter
+}
+
+// 构造函数
+func New(adapter interfaces.Adapter) *Html {
+    html := &Html{}
+    html.WithAdapter(adapter)
+
+    return html
 }
 
 // 设置适配器

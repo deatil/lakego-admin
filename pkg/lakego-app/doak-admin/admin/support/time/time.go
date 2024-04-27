@@ -127,7 +127,8 @@ func Now() Time {
 
 // 解析时间
 func Parse(str string) Time {
-    t := datebin.Parse(str).
+    t := datebin.
+        Parse(str).
         WithLocation(timeLoc()).
         ToStdTime()
 

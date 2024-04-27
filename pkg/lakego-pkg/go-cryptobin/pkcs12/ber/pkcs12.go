@@ -76,6 +76,7 @@ type EncryptedData struct {
 }
 
 // 转换 BER 编码的 PKCS12 证书为 DER 编码
+// change DER encoded PKCS12 cert to the DER
 func Parse(ber []byte, password []byte) ([]byte, error) {
     var pfx *PfxPdu
     var err error
@@ -97,22 +98,25 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
         return nil, err
     }
 
-    data := pfx.AuthSafe.Content.Bytes
+    var authenticatedSafes []byte
+    if pfx.AuthSafe.Content.IsCompound {
+        var buf bytes.Buffer
+        authSafeBytes := pfx.AuthSafe.Content.Bytes
 
-    authenticatedSafes := make([]byte, 0)
+        for {
+            var part []byte
+            authSafeBytes, _ = asn1.Unmarshal(authSafeBytes, &part)
 
-    for {
-        var authenticatedSafe cryptobin_asn1.RawValue
-        data, err = cryptobin_asn1.Unmarshal(data, &authenticatedSafe)
-        if err != nil {
-            return nil, errors.New("Unmarshal octet err: " + err.Error())
+            buf.Write(part)
+
+            if authSafeBytes == nil {
+                break
+            }
         }
 
-        authenticatedSafes = append(authenticatedSafes, authenticatedSafe.Bytes...)
-
-        if len(data) == 0 {
-            break
-        }
+        authenticatedSafes = buf.Bytes()
+    } else {
+        authenticatedSafes = pfx.AuthSafe.Content.Bytes
     }
 
     password, err = tool.BmpStringZeroTerminated(string(password))
@@ -213,7 +217,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
     var pfxPdu cryptobin_pkcs12.PfxPdu
     pfxPdu.Version = 3
 
-    // mac
+    // mac opts
     macOpts := cryptobin_pkcs12.MacOpts{
         SaltSize: 8,
         IterationCount: pfx.MacData.Iterations,
@@ -229,7 +233,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
 
     pfxPdu.MacData = kdfMacData.(cryptobin_pkcs12.MacData)
 
-    // AuthSafe
+    // compute the AuthSafe
     pfxPdu.AuthSafe.ContentType = asn1.ObjectIdentifier(oidDataContentType)
     pfxPdu.AuthSafe.Content.Class = 2
     pfxPdu.AuthSafe.Content.Tag = 0
@@ -247,6 +251,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
 }
 
 // 解析 ber 编码的 PKCS12 证书
+// Decode for PKCS12
 func Decode(pfxData []byte, password string) (
     privateKey any,
     certificate *x509.Certificate,
@@ -261,6 +266,7 @@ func Decode(pfxData []byte, password string) (
 }
 
 // 解析 ber 编码的 PKCS12 证书
+// DecodeChain for PKCS12
 func DecodeChain(pfxData []byte, password string) (
     privateKey any,
     certificate *x509.Certificate,
@@ -276,6 +282,7 @@ func DecodeChain(pfxData []byte, password string) (
 }
 
 // 解析 ber 编码的 PKCS12 证书
+// DecodeTrustStore for PKCS12
 func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
     data, err := Parse(pfxData, []byte(password))
     if err != nil {
@@ -286,6 +293,7 @@ func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificat
 }
 
 // 解析 ber 编码的 PKCS12 证书
+// DecodeTrustStoreEntries for PKCS12
 func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []cryptobin_pkcs12.TrustStoreKey, err error) {
     data, err := Parse(pfxData, []byte(password))
     if err != nil {
@@ -296,6 +304,7 @@ func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []
 }
 
 // 解析 ber 编码的 PKCS12 证书
+// DecodeSecret for PKCS12
 func DecodeSecret(pfxData []byte, password string) (secretKey []byte, err error) {
     data, err := Parse(pfxData, []byte(password))
     if err != nil {

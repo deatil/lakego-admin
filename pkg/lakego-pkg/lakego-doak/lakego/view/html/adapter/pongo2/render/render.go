@@ -1,9 +1,8 @@
 package render
 
 import (
-    "path"
-    "path/filepath"
     "net/http"
+    "path/filepath"
 
     "github.com/flosch/pongo2/v6"
 
@@ -13,16 +12,16 @@ import (
     "github.com/deatil/lakego-doak/lakego/view/funcs"
 )
 
-// TemplatePath html files path
-func TemplatePath(tmplDir string) *PongoRender {
-    return &PongoRender{
-        TmplDir: tmplDir,
-    }
-}
-
 // PongoRender struct init
 type PongoRender struct {
     TmplDir string
+}
+
+// New html files path
+func New(tmplDir string) *PongoRender {
+    return &PongoRender{
+        TmplDir: tmplDir,
+    }
 }
 
 // Instance init
@@ -30,9 +29,13 @@ func (this *PongoRender) Instance(name string, data any) render.Render {
     var template *pongo2.Template
     var fileName string
 
+    if hintName, ok := hintPath(name); ok {
+        name = hintName
+    }
+
     // 判断相对路径
     if !filepath.IsAbs(name) {
-        fileName = path.Join(this.TmplDir, name)
+        fileName = filepath.Join(this.TmplDir, name)
 
         // 相对路径
         fileName, _ = filepath.Abs(fileName)
@@ -41,8 +44,8 @@ func (this *PongoRender) Instance(name string, data any) render.Render {
     }
 
     // 初始化视图
-    // lakegoLoader := pongo2.NewHttpFileSystemLoader(fs, "")
-    lakegoLoader := pongo2.MustNewLocalFileSystemLoader("")
+    // lakegoLoader := pongo2.NewHttpFileSystemLoader(fs, this.TmplDir)
+    lakegoLoader := MustNewLocalFileSystemLoader(this.TmplDir)
     lakegoSet := pongo2.NewSet("lakego", lakegoLoader)
 
     // 获取已注册函数

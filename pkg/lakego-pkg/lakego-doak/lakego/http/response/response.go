@@ -2,21 +2,13 @@ package response
 
 import (
     "io"
-    "strings"
     "net/http"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    view_finder "github.com/deatil/lakego-doak/lakego/view/finder"
 )
 
-// 使用
-func New() *Response {
-    response := &Response{}
-
-    response.WithHttpCode(http.StatusOK)
-
-    return response
-}
+// 默认
+var Default = New()
 
 /**
  * 响应
@@ -30,6 +22,14 @@ type Response struct {
 
     // 上下文
     ctx *router.Context
+}
+
+// 使用
+func New() *Response {
+    resp := new(Response)
+    resp.WithHttpCode(http.StatusOK)
+
+    return resp
 }
 
 // 设置上下文
@@ -88,12 +88,7 @@ func (this *Response) ReturnJsonFromString(jsonStr string) {
 }
 
 // 渲染模板
-func (this *Response) Fetch(template string, obj any) {
-    hintPathDelimiter := "::"
-    if strings.Contains(template, hintPathDelimiter) {
-        template = view_finder.Finder.Find(template)
-    }
-
+func (this *Response) View(template string, obj any) {
     this.ctx.HTML(this.httpCode, template, obj)
 }
 

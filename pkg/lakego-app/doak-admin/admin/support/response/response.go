@@ -20,6 +20,9 @@ type JSONResult struct {
     Data    any    `json:"data"`
 }
 
+// 默认
+var Default = New()
+
 /**
  * 响应
  *
@@ -28,18 +31,23 @@ type JSONResult struct {
  */
 type Response struct {}
 
+// 使用
+func New() *Response {
+    return &Response{}
+}
+
 /**
  * 设置 header
  */
 func (this *Response) SetHeader(ctx *router.Context, key string, value string) {
-    response.New().WithContext(ctx).WithHeader(key, value)
+    response.Default.WithContext(ctx).WithHeader(key, value)
 }
 
 /**
  * 返回字符
  */
 func (this *Response) ReturnString(ctx *router.Context, data string, httpCode ...int) {
-    resp := response.New().WithContext(ctx)
+    resp := response.Default.WithContext(ctx)
 
     if len(httpCode) > 0 {
         resp.WithHttpCode(httpCode[0])
@@ -52,7 +60,7 @@ func (this *Response) ReturnString(ctx *router.Context, data string, httpCode ..
  * 将json字符窜以标准json格式返回
  */
 func (this *Response) ReturnJsonFromString(ctx *router.Context, jsonStr string, httpCode ...int) {
-    resp := response.New().WithContext(ctx)
+    resp := response.Default.WithContext(ctx)
 
     if len(httpCode) > 0 {
         resp.WithHttpCode(httpCode[0])
@@ -72,7 +80,7 @@ func (this *Response) ReturnJson(
     data any,
     httpCode ...int,
 ) {
-    resp := response.New().WithContext(ctx)
+    resp := response.Default.WithContext(ctx)
 
     if len(httpCode) > 0 {
         resp.WithHttpCode(httpCode[0])
@@ -97,7 +105,7 @@ func (this *Response) ReturnJsonWithAbort(
     data any,
     httpCode ...int,
 ) {
-    resp := response.New().WithContext(ctx)
+    resp := response.Default.WithContext(ctx)
 
     if len(httpCode) > 0 {
         resp.WithHttpCode(httpCode[0])
@@ -115,7 +123,7 @@ func (this *Response) ReturnJsonWithAbort(
 
 // 错误暂停
 func (this *Response) Abort(ctx *router.Context) {
-    resp := response.New().WithContext(ctx)
+    resp := response.Default.WithContext(ctx)
 
     resp.Abort()
 }
@@ -160,26 +168,19 @@ func (this *Response) ErrorWithData(ctx *router.Context, msg string, dataCode in
 /**
  * 渲染模板
  */
-func (this *Response) Fetch(ctx *router.Context, template string, obj any, httpCode ...int) {
-    resp := response.New().WithContext(ctx)
+func (this *Response) View(ctx *router.Context, template string, obj any, httpCode ...int) {
+    resp := response.Default.WithContext(ctx)
 
     if len(httpCode) > 0 {
         resp.WithHttpCode(httpCode[0])
     }
 
-    resp.Fetch(template, obj)
+    resp.View(template, obj)
 }
 
 /**
  * 下载文件
  */
 func (this *Response) DownloadFile(ctx *router.Context, filePath string, fileName string) {
-    response.New().WithContext(ctx).Download(filePath, fileName)
-}
-
-// 使用
-func New() *Response {
-    resp := &Response{}
-
-    return resp
+    response.Default.WithContext(ctx).Download(filePath, fileName)
 }

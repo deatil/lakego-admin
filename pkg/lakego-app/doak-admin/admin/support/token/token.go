@@ -14,15 +14,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
 )
 
-// 授权结构体
-func New(j *jwt.JWT) *Token {
-    return &Token{
-        JWT: j,
-        Config: make(ConfigMap),
-        Claims: make(ClaimMap),
-    }
-}
-
 type (
     // 配置
     ConfigMap = map[string]any
@@ -49,6 +40,15 @@ type Token struct {
 
     // 载荷
     Claims ClaimMap
+}
+
+// 授权结构体
+func New(j *jwt.JWT) *Token {
+    return &Token{
+        JWT: j,
+        Config: make(ConfigMap),
+        Claims: make(ClaimMap),
+    }
 }
 
 /**
@@ -468,8 +468,5 @@ func (this *Token) FormatPath(file string) string {
 }
 
 func base64Decode(data string) string {
-    return encoding.
-        FromString(data).
-        Base64Decode().
-        ToString()
+    return encoding.FromString(data).Base64Decode().ToString()
 }

@@ -340,7 +340,7 @@ func Test_NewSH256(t *testing.T) {
 
 }
 
-func BenchmarkSum(b *testing.B) {
+func Benchmark_Sum(b *testing.B) {
     var buf [1 << 20]byte
     c := NewHS512()
     for i := 0; i < b.N; i++ {
