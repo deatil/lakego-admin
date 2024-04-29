@@ -26,7 +26,7 @@ type ariaCipher struct {
 // NewCipher creates and returns a new cipher.Block.
 // The key argument should be the ARIA key,
 // either 16, 24, or 32 bytes to select
-// ARIA-128, ARIA-192, or AES-256.
+// ARIA-128, ARIA-192, or ARIA-256.
 func NewCipher(key []byte) (cipher.Block, error) {
     k := len(key)
     switch k {
@@ -36,16 +36,10 @@ func NewCipher(key []byte) (cipher.Block, error) {
             return nil, KeySizeError(k)
     }
 
-    n := k + 36
-    c := ariaCipher{
-        k:   k,
-        enc: make([]uint32, n),
-        dec: make([]uint32, n),
-    }
-
+    c := new(ariaCipher)
     c.expandKey(key)
 
-    return &c, nil
+    return c, nil
 }
 
 func (c *ariaCipher) BlockSize() int {
@@ -109,6 +103,17 @@ func (c *ariaCipher) cryptBlock(dst, src []byte, xk []uint32) {
 }
 
 func (c *ariaCipher) expandKey(key []byte) {
+    k := len(key)
+    n := k + 36
+
+    c.k = k
+    c.enc = make([]uint32, n)
+    c.dec = make([]uint32, n)
+
+    c.keyRound(key)
+}
+
+func (c *ariaCipher) keyRound(key []byte) {
     n := c.rounds()
 
     var kl, kr [16]byte

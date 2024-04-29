@@ -74,6 +74,7 @@ func (fs *LocalFilesystemLoader) Get(path string) (io.Reader, error) {
     if err != nil {
         return nil, err
     }
+
     return bytes.NewReader(buf), nil
 }
 

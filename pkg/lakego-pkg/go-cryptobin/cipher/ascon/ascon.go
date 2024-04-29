@@ -1,9 +1,4 @@
 // Package ascon implements the ASCON AEAD cipher.
-//
-// References:
-//
-//    [ascon]: https://ascon.iaik.tugraz.at
-//
 package ascon
 
 import (
@@ -12,7 +7,6 @@ import (
     "strconv"
     "crypto/subtle"
     "crypto/cipher"
-    "encoding/binary"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
@@ -45,7 +39,11 @@ type ascon struct {
     iv     uint64
 }
 
-var _ cipher.AEAD = (*ascon)(nil)
+//
+// References:
+//
+//    [ascon]: https://ascon.iaik.tugraz.at
+//
 
 // New128 creates a 128-bit ASCON-128 AEAD.
 //
@@ -67,8 +65,8 @@ func New128(key []byte) (cipher.AEAD, error) {
     }
 
     return &ascon{
-        k0: binary.BigEndian.Uint64(key[0:]),
-        k1: binary.BigEndian.Uint64(key[8:]),
+        k0: getu64(key[0:]),
+        k1: getu64(key[8:]),
         iv: iv128,
     }, nil
 }
@@ -93,8 +91,8 @@ func New128a(key []byte) (cipher.AEAD, error) {
     }
 
     return &ascon{
-        k0: binary.BigEndian.Uint64(key[0:]),
-        k1: binary.BigEndian.Uint64(key[8:]),
+        k0: getu64(key[0:]),
+        k1: getu64(key[8:]),
         iv: iv128a,
     }, nil
 }
@@ -112,8 +110,8 @@ func (a *ascon) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
         panic("cryptobin/ascon: incorrect nonce length: " + strconv.Itoa(len(nonce)))
     }
 
-    n0 := binary.BigEndian.Uint64(nonce[0:])
-    n1 := binary.BigEndian.Uint64(nonce[8:])
+    n0 := getu64(nonce[0:])
+    n1 := getu64(nonce[8:])
 
     var s state
     s.init(a.iv, a.k0, a.k1, n0, n1)
@@ -158,8 +156,8 @@ func (a *ascon) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, err
     tag := ciphertext[len(ciphertext)-TagSize:]
     ciphertext = ciphertext[:len(ciphertext)-TagSize]
 
-    n0 := binary.BigEndian.Uint64(nonce[0:])
-    n1 := binary.BigEndian.Uint64(nonce[8:])
+    n0 := getu64(nonce[0:])
+    n1 := getu64(nonce[8:])
 
     var s state
     s.init(a.iv, a.k0, a.k1, n0, n1)

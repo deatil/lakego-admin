@@ -2,19 +2,12 @@ package e2
 
 import (
     "fmt"
-    "sync"
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 16
-
-var once sync.Once
-
-func initAll() {
-    init_box()
-}
 
 type KeySizeError int
 
@@ -35,8 +28,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
         default:
             return nil, KeySizeError(len(key))
     }
-
-    once.Do(initAll)
 
     c := new(e2Cipher)
     c.expandKey(key)

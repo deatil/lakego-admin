@@ -2,29 +2,10 @@ package finder
 
 import (
     "os"
-    "strings"
     "path"
+    "strings"
     "path/filepath"
 )
-
-// 默认
-var Finder = New()
-
-// 构造函数
-func New() *ViewFinder {
-    return &ViewFinder{
-        HintPathDelimiter: "::",
-        Paths: make(PathsArray, 0),
-        Views: make(ViewsMap),
-        Hints: make(HintsMap),
-        Extensions: ExtensionsArray{
-            "htm",
-            "php",
-            "css",
-            "html",
-        },
-    }
-}
 
 type (
     // 路径
@@ -39,6 +20,9 @@ type (
     // 后缀
     ExtensionsArray = []string
 )
+
+// 默认
+var Finder = New()
 
 /**
  * 视图
@@ -61,6 +45,22 @@ type ViewFinder struct {
 
     // 后缀
     Extensions ExtensionsArray
+}
+
+// 构造函数
+func New() *ViewFinder {
+    return &ViewFinder{
+        HintPathDelimiter: "::",
+        Paths: make(PathsArray, 0),
+        Views: make(ViewsMap),
+        Hints: make(HintsMap),
+        Extensions: ExtensionsArray{
+            "htm",
+            "php",
+            "css",
+            "html",
+        },
+    }
 }
 
 // 查找视图

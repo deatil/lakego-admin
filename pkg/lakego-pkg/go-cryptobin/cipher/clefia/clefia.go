@@ -30,9 +30,7 @@ func NewCipher(key []byte) (cipher.Block, error) {
     }
 
     c := new(clefiaCipher)
-
-    c.skey = make([]byte, len(key))
-    copy(c.skey, key)
+    c.expandKey(key)
 
     return c, nil
 }
@@ -87,4 +85,9 @@ func (this *clefiaCipher) decrypt(dst, src []byte) {
 
     r = ClefiaKeySet(rk[:], this.skey, int32(len(this.skey)) * 8)
     ClefiaDecrypt(dst, src, rk[:], r)
+}
+
+func (this *clefiaCipher) expandKey(key []byte) {
+    this.skey = make([]byte, len(key))
+    copy(this.skey, key)
 }

@@ -2,19 +2,12 @@ package crypton1
 
 import (
     "fmt"
-    "sync"
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 const BlockSize = 16
-
-var once sync.Once
-
-func initAll() {
-    gen_tab()
-}
 
 type KeySizeError int
 
@@ -35,8 +28,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
         default:
             return nil, KeySizeError(len(key))
     }
-
-    once.Do(initAll)
 
     c := new(crypton1Cipher)
     c.expandKey(key)

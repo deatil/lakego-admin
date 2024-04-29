@@ -48,14 +48,8 @@ func NewCipher(key []byte, sbox [][]byte) (cipher.Block, error) {
         }
     }
 
-    newKey := bytesToUint32s(key)
-    kbox := sboxExpansion(sbox)
-
-    c := &gostCipher{
-        key: newKey,
-        s:   sbox,
-        k:   kbox,
-    }
+    c := new(gostCipher)
+    c.expandKey(key, sbox)
 
     return c, nil
 }
@@ -169,4 +163,13 @@ func (this *gostCipher) decrypt(dst, src []uint32) {
 // GOST block cipher round function
 func (this *gostCipher) round(x uint32) uint32 {
     return cycle(x, this.k)
+}
+
+func (this *gostCipher) expandKey(key []byte, sbox [][]byte) {
+    newKey := bytesToUint32s(key)
+    kbox := sboxExpansion(sbox)
+
+    this.key = newKey
+    this.s = sbox
+    this.k = kbox
 }

@@ -2,7 +2,27 @@ package camellia
 
 import (
     "math/bits"
+    "encoding/binary"
 )
+
+// Endianness option
+const littleEndian bool = false
+
+func getu64(ptr []byte) uint64 {
+    if littleEndian {
+        return binary.LittleEndian.Uint64(ptr)
+    } else {
+        return binary.BigEndian.Uint64(ptr)
+    }
+}
+
+func putu64(ptr []byte, a uint64) {
+    if littleEndian {
+        binary.LittleEndian.PutUint64(ptr, a)
+    } else {
+        binary.BigEndian.PutUint64(ptr, a)
+    }
+}
 
 func rotl128(k [2]uint64, rot uint) (hi, lo uint64) {
     if rot > 64 {

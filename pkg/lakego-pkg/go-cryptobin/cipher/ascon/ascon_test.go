@@ -15,6 +15,10 @@ import (
     "testing/quick"
 )
 
+func Test_Interface(t *testing.T) {
+    var _ cipher.AEAD = (*ascon)(nil)
+}
+
 var stateType = reflect.TypeOf([5]uint64{})
 
 func randState(rng *rand.Rand) state {

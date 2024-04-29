@@ -1,11 +1,8 @@
 package camellia
 
 import (
-    "sync"
     "strconv"
-    "math/bits"
     "crypto/cipher"
-    "encoding/binary"
 
     "github.com/deatil/go-cryptobin/tool/alias"
 )
@@ -17,26 +14,6 @@ import (
 //   https://info.isl.ntt.co.jp/crypt/eng/camellia/
 
 const BlockSize = 16
-
-const (
-    sigma1 = 0xA09E667F3BCC908B
-    sigma2 = 0xB67AE8584CAA73B2
-    sigma3 = 0xC6EF372FE94F82BE
-    sigma4 = 0x54FF53A5F1D36F1C
-    sigma5 = 0x10E527FADE682D1D
-    sigma6 = 0xB05688C2B3E6C1FD
-)
-
-var once sync.Once
-
-func initAll() {
-    // initialize other sboxes
-    for i := range sbox1 {
-        sbox2[i] = bits.RotateLeft8(sbox1[i], 1)
-        sbox3[i] = bits.RotateLeft8(sbox1[i], 7)
-        sbox4[i] = sbox1[bits.RotateLeft8(uint8(i), 1)]
-    }
-}
 
 type KeySizeError int
 
@@ -61,8 +38,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
         case 16, 24, 32:
             break
     }
-
-    once.Do(initAll)
 
     c := new(camelliaCipher)
     c.expandKey(key)
@@ -107,8 +82,8 @@ func (this *camelliaCipher) Decrypt(dst, src []byte) {
 }
 
 func (this *camelliaCipher) encrypt(dst, src []byte) {
-    d1 := binary.BigEndian.Uint64(src[0:])
-    d2 := binary.BigEndian.Uint64(src[8:])
+    d1 := getu64(src[0:])
+    d2 := getu64(src[8:])
 
     d1 ^= this.kw[1]
     d2 ^= this.kw[2]
@@ -157,13 +132,13 @@ func (this *camelliaCipher) encrypt(dst, src []byte) {
     d2 = d2 ^ this.kw[3]
     d1 = d1 ^ this.kw[4]
 
-    binary.BigEndian.PutUint64(dst[0:], d2)
-    binary.BigEndian.PutUint64(dst[8:], d1)
+    putu64(dst[0:], d2)
+    putu64(dst[8:], d1)
 }
 
 func (this *camelliaCipher) decrypt(dst, src []byte) {
-    d2 := binary.BigEndian.Uint64(src[0:])
-    d1 := binary.BigEndian.Uint64(src[8:])
+    d2 := getu64(src[0:])
+    d1 := getu64(src[8:])
 
     d1 = d1 ^ this.kw[4]
     d2 = d2 ^ this.kw[3]
@@ -212,8 +187,8 @@ func (this *camelliaCipher) decrypt(dst, src []byte) {
     d2 ^= this.kw[2]
     d1 ^= this.kw[1]
 
-    binary.BigEndian.PutUint64(dst[0:], d1)
-    binary.BigEndian.PutUint64(dst[8:], d2)
+    putu64(dst[0:], d1)
+    putu64(dst[8:], d2)
 }
 
 func (this *camelliaCipher) expandKey(key []byte) {
@@ -226,16 +201,16 @@ func (this *camelliaCipher) expandKey(key []byte) {
 
     klen := len(key)
 
-    kl[0] = binary.BigEndian.Uint64(key[0:])
-    kl[1] = binary.BigEndian.Uint64(key[8:])
+    kl[0] = getu64(key[0:])
+    kl[1] = getu64(key[8:])
 
     switch klen {
         case 24:
-            kr[0] = binary.BigEndian.Uint64(key[16:])
+            kr[0] = getu64(key[16:])
             kr[1] = ^kr[0]
         case 32:
-            kr[0] = binary.BigEndian.Uint64(key[16:])
-            kr[1] = binary.BigEndian.Uint64(key[24:])
+            kr[0] = getu64(key[16:])
+            kr[1] = getu64(key[24:])
     }
 
     d1 = (kl[0] ^ kr[0])

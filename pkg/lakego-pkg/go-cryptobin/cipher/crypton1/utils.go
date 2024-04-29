@@ -144,19 +144,6 @@ const (
     mc3 = 0x65656565
 )
 
-var  p0 = [16]byte{ 15, 14, 10,  1, 11,  5,  8, 13,  9,  3,  2,  7,  0,  6,  4, 12 };
-var  p1 = [16]byte{ 11, 10, 13,  7,  8, 14,  0,  5, 15,  6,  3,  4,  1,  9,  2, 12 };
-var ip0 = [16]byte{ 12,  3, 10,  9, 14,  5, 13, 11,  6,  8,  2,  4, 15,  7,  1,  0 };
-var ip1 = [16]byte{  6, 12, 14, 10, 11,  7,  9,  3,  4, 13,  1,  0, 15,  2,  5,  8 };
-
-var kp = [4]uint32{ 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f };
-var kq = [4]uint32{ 0x9b05688c, 0x1f83d9ab, 0x5be0cd19, 0xcbbb9d5d };
-
-var s_box [4][256]uint32
-var s_tab [4][256]uint32
-var ce [52]uint32
-var cd [52]uint32
-
 func gen_tab() {
     var i, xl, xr, y, yl, yr uint32
 
