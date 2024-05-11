@@ -4,11 +4,13 @@ import (
     "bytes"
 )
 
-// The size of an MD2 checksum in bytes.
-const Size = 16
+const (
+    // The size of an MD2 checksum in bytes.
+    Size = 16
 
-// The blocksize of MD2 in bytes.
-const BlockSize = 16
+    // The blocksize of MD2 in bytes.
+    BlockSize = 16
+)
 
 // digest represents the partial evaluation of a checksum.
 type digest struct {

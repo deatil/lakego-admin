@@ -1,5 +1,28 @@
 package kuznyechik
 
+import (
+    "encoding/binary"
+)
+
+// Endianness option
+const littleEndian bool = true
+
+func getu64(ptr []byte) uint64 {
+    if littleEndian {
+        return binary.LittleEndian.Uint64(ptr)
+    } else {
+        return binary.BigEndian.Uint64(ptr)
+    }
+}
+
+func putu64(ptr []byte, a uint64) {
+    if littleEndian {
+        binary.LittleEndian.PutUint64(ptr, a)
+    } else {
+        binary.BigEndian.PutUint64(ptr, a)
+    }
+}
+
 func ls(x1, x2 uint64) (t1, t2 uint64) {
     t1 = t[0][uint8(x1)][0] ^ t[1][uint8(x1>>8)][0] ^ t[2][uint8(x1>>16)][0] ^ t[3][uint8(x1>>24)][0] ^ t[4][uint8(x1>>32)][0] ^ t[5][uint8(x1>>40)][0] ^ t[6][uint8(x1>>48)][0] ^ t[7][uint8(x1>>56)][0] ^ t[8][uint8(x2)][0] ^ t[9][uint8(x2>>8)][0] ^ t[10][uint8(x2>>16)][0] ^ t[11][uint8(x2>>24)][0] ^ t[12][uint8(x2>>32)][0] ^ t[13][uint8(x2>>40)][0] ^ t[14][uint8(x2>>48)][0] ^ t[15][uint8(x2>>56)][0]
     t2 = t[0][uint8(x1)][1] ^ t[1][uint8(x1>>8)][1] ^ t[2][uint8(x1>>16)][1] ^ t[3][uint8(x1>>24)][1] ^ t[4][uint8(x1>>32)][1] ^ t[5][uint8(x1>>40)][1] ^ t[6][uint8(x1>>48)][1] ^ t[7][uint8(x1>>56)][1] ^ t[8][uint8(x2)][1] ^ t[9][uint8(x2>>8)][1] ^ t[10][uint8(x2>>16)][1] ^ t[11][uint8(x2>>24)][1] ^ t[12][uint8(x2>>32)][1] ^ t[13][uint8(x2>>40)][1] ^ t[14][uint8(x2>>48)][1] ^ t[15][uint8(x2>>56)][1]
@@ -44,5 +67,6 @@ func fk(k00, k01, k10, k11 uint64, ist int) (o00, i01, o10, o11 uint64) {
         t00, t01, t10, t11 = f(k00, k01, k10, k11, i+ist)
         k00, k01, k10, k11 = f(t00, t01, t10, t11, i+1+ist)
     }
+
     return k00, k01, k10, k11
 }

@@ -37,3 +37,16 @@ var u512 = [16]uint64{
   0x0801f2e2858efc16, 0x636920d871574e69,
 }
 
+var (
+    iv256 = [8]uint32{
+        0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
+        0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
+    }
+
+    iv224 = [8]uint32{
+        0xC1059ED8, 0x367CD507, 0x3070DD17, 0xF70E5939,
+        0xFFC00B31, 0x68581511, 0x64F98FA7, 0xBEFA4FA4,
+    }
+
+    pad = [64]byte{0x80}
+)

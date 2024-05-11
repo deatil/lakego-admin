@@ -17,7 +17,7 @@ type CipherCFB struct {
     blockSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
-    needPassBmp  bool
+    needBmpPass  bool
 }
 
 // 值大小
@@ -36,8 +36,8 @@ func (this CipherCFB) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherCFB) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherCFB) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -106,8 +106,8 @@ func (this CipherCFB) WithHasKeyLength(hasKeyLength bool) CipherCFB {
     return this
 }
 
-func (this CipherCFB) WithNeedPasswordBmpString(needPassBmp bool) CipherCFB {
-    this.needPassBmp = needPassBmp
+func (this CipherCFB) WithNeedBmpPassword(needBmpPass bool) CipherCFB {
+    this.needBmpPass = needBmpPass
 
     return this
 }

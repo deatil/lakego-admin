@@ -136,3 +136,17 @@ var SboxEACParamSet = [][]byte{
     {4, 0, 14, 1, 5, 11, 8, 3, 12, 2, 9, 7, 6, 10, 13, 15},
     {7, 14, 12, 13, 9, 4, 8, 15, 10, 2, 6, 0, 3, 11, 5, 1},
 }
+
+var SboxIdGost2814789TestParamSet = SboxGost2814789TestParamSet
+var SboxIdGost2814789CryptoProAParamSet = SboxGost2814789CryptoProAParamSet
+var SboxIdGost2814789CryptoProBParamSet = SboxGost2814789CryptoProBParamSet
+var SboxIdGost2814789CryptoProCParamSet = SboxGost2814789CryptoProCParamSet
+var SboxIdGost2814789CryptoProDParamSet = SboxGost2814789CryptoProDParamSet
+var SboxIdtc26gost28147paramZ = SboxTC26gost28147paramZ
+
+// SboxIdGostR341194TestParamSet
+var SboxIdGostR341194TestParamSet = SboxRFC4357TestParamSet
+
+var SboxIdGostR341194CryptoProParamSet = SboxGostR341194CryptoProParamSet
+
+var SboxDefault = SboxIdGost2814789CryptoProAParamSet

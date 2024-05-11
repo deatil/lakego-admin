@@ -17,7 +17,7 @@ type CipherCTR struct {
     blockSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
-    needPassBmp  bool
+    needBmpPass  bool
 }
 
 // 值大小
@@ -36,8 +36,8 @@ func (this CipherCTR) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherCTR) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherCTR) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -108,8 +108,8 @@ func (this CipherCTR) WithHasKeyLength(hasKeyLength bool) CipherCTR {
     return this
 }
 
-func (this CipherCTR) WithNeedPasswordBmpString(needPassBmp bool) CipherCTR {
-    this.needPassBmp = needPassBmp
+func (this CipherCTR) WithNeedBmpPassword(needBmpPass bool) CipherCTR {
+    this.needBmpPass = needBmpPass
 
     return this
 }

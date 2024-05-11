@@ -4,7 +4,7 @@ import (
     "github.com/deatil/go-hash/blake256"
 )
 
-// Blake256 哈希值
+// Blake256 hash
 func (this Hash) Blake256() Hash {
     h := blake256.New()
     h.Write(this.data)
@@ -23,7 +23,7 @@ func (this Hash) NewBlake256() Hash {
 
 // ===========
 
-// Blake256 哈希值
+// Blake224 hash
 func (this Hash) Blake224() Hash {
     h := blake256.New224()
     h.Write(this.data)

@@ -5,7 +5,13 @@ import (
     "hash"
     "bytes"
     "testing"
+    "encoding/hex"
 )
+
+func fromHex(s string) string {
+    h, _ := hex.DecodeString(s)
+    return string(h)
+}
 
 func Test_256C(t *testing.T) {
     // Test as in C program.
@@ -71,6 +77,13 @@ var vectors256 = []blakeVector{
     {"af95fffc7768821b1e08866a2f9f66916762bfc9d71c4acb5fd515f31fd6785a", // test with one padding byte
         "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec a diam lectus. Sed sit amet ipsum mauris. Maecenas congu",
     },
+
+    {"258020d5b04a814f2b72c1c661e1f5a5c395d9799e5eee8b8519cf7300e90cb1",
+        fromHex("3c5871cd619c69a63b540eb5a625")},
+    {"75d95470d72557d86cad03967552b34d925f6e5e9be7e887b57d6d444ec93d70",
+        fromHex("6892540f964c8c74bd2db02c0ad884510cb38afd4438af31fc912756f3efec6b32b58ebc38fc2a6b913596a8")},
+    {"6d40d076120ae4a5a5301fbc2fc5764f83fcfcfbb608738527b769108a33bb41",
+        fromHex("08461f006cff4cc64b752c957287e5a0faabc05c9bff89d23fd902d324c79903b48fcb8f8f4b01f3e4ddb483593d25f000386698f5ade7faade9615fdc50d32785ea51d49894e45baa3dc707e224688c6408b68b11")},
 }
 
 var vectors224 = []blakeVector{
@@ -84,6 +97,13 @@ var vectors224 = []blakeVector{
         "Go"},
     {"9f655b0a92d4155754fa35e055ce7c5e18eb56347081ea1e5158e751",
         "Buffalo buffalo Buffalo buffalo buffalo buffalo Buffalo buffalo"},
+
+    {"4239b4afa926f2269b117059dc0310033c9c85acea1a031f97cd4e2a",
+        fromHex("1f877c")},
+    {"dced7bb2e882d4586e867e49df28e445dcdd029ccd202b21ce0afb51",
+        fromHex("512a6d292e67ecb2fe486bfe92660953a75484ff4c4f2eca2b0af0edcdd4339c6b2ee4e542")},
+    {"09b07523037d6c00bb6aa44f3c6748739275cda0f0d0387517c769db",
+        fromHex("13bd2811f6ed2b6f04ff3895aceed7bef8dcd45eb121791bc194a0f806206bffc3b9281c2b308b1a729ce008119dd3066e9378acdcc50a98a82e20738800b6cddbe5fe9694ad6d")},
 }
 
 func newTestVectors(t *testing.T, hashfunc func() hash.Hash, vectors []blakeVector) {
@@ -97,7 +117,7 @@ func newTestVectors(t *testing.T, hashfunc func() hash.Hash, vectors []blakeVect
     }
 }
 
-func Test_New256(t *testing.T) {
+func Test_New(t *testing.T) {
     newTestVectors(t, New, vectors256)
 }
 
@@ -148,7 +168,37 @@ func Test_Salt(t *testing.T) {
             t.Errorf("expected panic for bad salt length")
         }
     }()
+
     NewWithSalt([]byte{1, 2, 3, 4, 5, 6, 7, 8})
+}
+
+var vectors224salt = []struct{ out, in, salt string }{
+    {"e28df478e7e4bc7ab73111f3352f3e9ac10200fa1f00f6717301c019",
+        "",
+        "1234567890123456"},
+    {"288b80c5de334c0d3283c25ccd691ccee5c842b62ecc49e3dce8edcb",
+        "It's so salty out there!",
+        "SALTsaltSaltSALT"},
+}
+
+func Test_Salt224(t *testing.T) {
+    for i, v := range vectors224salt {
+        h := New224WithSalt([]byte(v.salt))
+        h.Write([]byte(v.in))
+        res := fmt.Sprintf("%x", h.Sum(nil))
+        if res != v.out {
+            t.Errorf("%d: expected %q, got %q", i, v.out, res)
+        }
+    }
+
+    // Check that passing bad salt length panics.
+    defer func() {
+        if err := recover(); err == nil {
+            t.Errorf("expected panic for bad salt length")
+        }
+    }()
+
+    New224WithSalt([]byte{1, 2, 3, 4, 5, 6, 7, 8, 7, 8})
 }
 
 func Test_TwoWrites(t *testing.T) {

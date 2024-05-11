@@ -10,14 +10,14 @@ import (
 // see http://www.watersprings.org/pub/id/draft-black-numscurves-01.html
 
 var (
-    oidNums = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0}
+    OIDNums = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0}
 
-    oidNumsp256d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 1}
-    oidNumsp256t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 2}
-    oidNumsp384d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 3}
-    oidNumsp384t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 4}
-    oidNumsp512d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 5}
-    oidNumsp512t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 6}
+    OIDNumsp256d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 1}
+    OIDNumsp256t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 2}
+    OIDNumsp384d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 3}
+    OIDNumsp384t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 4}
+    OIDNumsp512d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 5}
+    OIDNumsp512t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 6}
 )
 
 var (

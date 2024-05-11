@@ -33,7 +33,7 @@ type CipherRC4 struct {
     // 是否有 KeyLength
     hasKeyLength   bool
     // 密码是否需要 Bmp 处理
-    needPassBmp    bool
+    needBmpPass    bool
 }
 
 // 值大小
@@ -52,8 +52,8 @@ func (this CipherRC4) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherRC4) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherRC4) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -128,8 +128,8 @@ func (this CipherRC4) WithHasKeyLength(hasKeyLength bool) CipherRC4 {
     return this
 }
 
-func (this CipherRC4) WithNeedPasswordBmpString(needPassBmp bool) CipherRC4 {
-    this.needPassBmp = needPassBmp
+func (this CipherRC4) WithNeedBmpPassword(needBmpPass bool) CipherRC4 {
+    this.needBmpPass = needBmpPass
 
     return this
 }

@@ -33,7 +33,7 @@ func Sum(data []byte) ([]byte, error) {
     skein.Sum256(&skeinresult, lyra2result, nil)
 
     resultcube2 := cubehash256(skeinresult[:])
-    resultbmw := bmw.Sum(resultcube2)
+    resultbmw := bmw.Sum256(resultcube2)
 
     return resultbmw[:], nil
 }

@@ -75,11 +75,28 @@ func init() {
     AddNamedCurve(CurveIdtc26gost34102012512paramSetC(),    oidCryptoPro2012Sign512C)
 }
 
-const (
-    Gost2012ParamOption bool = true
+// gost version
+const gostPrivKeyVersion = 1
 
-    gostPrivKeyVersion = 1
+// Gost param type mode
+type ParamMode uint
+
+const (
+    Gost2001Param ParamMode = iota
+    Gost2012Param
 )
+
+// Param Opts
+type ParamOpts struct {
+    Mode         ParamMode
+    DigestOid    asn1.ObjectIdentifier
+    PublicKeyOid asn1.ObjectIdentifier
+}
+
+// set default options
+var DefaultParamOpts = ParamOpts{
+    Mode: Gost2012Param,
+}
 
 // pkcs8 info
 type pkcs8 struct {
@@ -116,6 +133,11 @@ type publicKeyInfo struct {
 
 // Marshal PublicKey
 func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
+    return MarshalPublicKeyWithOpts(pub, DefaultParamOpts)
+}
+
+// Marshal PublicKey with options
+func MarshalPublicKeyWithOpts(pub *PublicKey, opts ParamOpts) ([]byte, error) {
     var publicKey, publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
@@ -129,9 +151,13 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
         Curve: oid,
     }
 
-    digestOid, ok := HashOidFromNamedCurve(pub.Curve)
-    if ok {
-        keyAlgo.Digest = digestOid
+    if opts.DigestOid != nil {
+        keyAlgo.Digest = opts.DigestOid
+    } else {
+        digestOid, ok := HashOidFromNamedCurve(pub.Curve)
+        if ok {
+            keyAlgo.Digest = digestOid
+        }
     }
 
     var paramBytes []byte
@@ -140,7 +166,11 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
         return nil, err
     }
 
-    publicKeyAlgorithm.Algorithm = PublicKeyOidFromNamedCurve(pub.Curve)
+    if opts.PublicKeyOid != nil {
+        publicKeyAlgorithm.Algorithm = opts.PublicKeyOid
+    } else {
+        publicKeyAlgorithm.Algorithm = PublicKeyOidFromNamedCurve(pub.Curve)
+    }
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     if !pub.Curve.IsOnCurve(pub.X, pub.Y) {
@@ -149,7 +179,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 
     publicKey = Marshal(pub.Curve, pub.X, pub.Y)
 
-    if Gost2012ParamOption {
+    if opts.Mode == Gost2012Param {
         publicKeyBytes, err = asn1.Marshal(publicKey)
         if err != nil {
             return nil, err
@@ -237,6 +267,11 @@ func ParsePublicKey(publicKey []byte) (pub *PublicKey, err error) {
 
 // Marshal PrivateKey
 func MarshalPrivateKey(priv *PrivateKey) ([]byte, error) {
+    return MarshalPrivateKeyWithOpts(priv, DefaultParamOpts)
+}
+
+// Marshal PrivateKey with options
+func MarshalPrivateKeyWithOpts(priv *PrivateKey, opts ParamOpts) ([]byte, error) {
     oid, ok := OidFromNamedCurve(priv.Curve)
     if !ok {
         return nil, errors.New("cryptobin/gost: unsupported gost curve")
@@ -246,9 +281,13 @@ func MarshalPrivateKey(priv *PrivateKey) ([]byte, error) {
         Curve: oid,
     }
 
-    digestOid, ok := HashOidFromNamedCurve(priv.Curve)
-    if ok {
-        keyAlgo.Digest = digestOid
+    if opts.DigestOid != nil {
+        keyAlgo.Digest = opts.DigestOid
+    } else {
+        digestOid, ok := HashOidFromNamedCurve(priv.Curve)
+        if ok {
+            keyAlgo.Digest = digestOid
+        }
     }
 
     // Marshal oid
@@ -257,15 +296,22 @@ func MarshalPrivateKey(priv *PrivateKey) ([]byte, error) {
         return nil, errors.New("cryptobin/gost: failed to marshal algo param: " + err.Error())
     }
 
+    var publicKeyOid asn1.ObjectIdentifier
+    if opts.PublicKeyOid != nil {
+        publicKeyOid = opts.PublicKeyOid
+    } else {
+        publicKeyOid = PublicKeyOidFromNamedCurve(priv.Curve)
+    }
+
     var privKey pkcs8
     privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  PublicKeyOidFromNamedCurve(priv.Curve),
+        Algorithm:  publicKeyOid,
         Parameters: asn1.RawValue{
             FullBytes: oidBytes,
         },
     }
 
-    privKey.PrivateKey, err = marshalGostPrivateKey(priv)
+    privKey.PrivateKey, err = marshalGostPrivateKey(priv, opts)
     if err != nil {
         return nil, errors.New("cryptobin/gost: failed to marshal private key while building PKCS#8: " + err.Error())
     }
@@ -307,12 +353,12 @@ func ParsePrivateKey(privateKey []byte) (*PrivateKey, error) {
     return key, nil
 }
 
-func marshalGostPrivateKey(key *PrivateKey) ([]byte, error) {
+func marshalGostPrivateKey(key *PrivateKey, opts ParamOpts) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
         return nil, errors.New("invalid gost public key")
     }
 
-    if Gost2012ParamOption {
+    if opts.Mode == Gost2012Param {
         var b cryptobyte.Builder
         b.AddASN1BigInt(key.D)
         return b.Bytes()

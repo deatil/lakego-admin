@@ -46,7 +46,7 @@ var SHA1AndRC4_128 = CipherRC4{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC4_128,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 var SHA1AndRC4_40 = CipherRC4{
     hashFunc:       sha1.New,
@@ -57,7 +57,7 @@ var SHA1AndRC4_40 = CipherRC4{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC4_40,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 var SHA1And3DES = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
@@ -69,7 +69,7 @@ var SHA1And3DES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And3DES,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 var SHA1And2DES = CipherBlockCBC{
     cipherFunc:     cryptobin_des.NewTwoDESCipher,
@@ -81,7 +81,7 @@ var SHA1And2DES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1And2DES,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 var SHA1AndRC2_128 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -93,7 +93,7 @@ var SHA1AndRC2_128 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_128,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 var SHA1AndRC2_40 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -105,7 +105,7 @@ var SHA1AndRC2_40 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_40,
     hasKeyLength:   false,
-    needPassBmp:    true,
+    needBmpPass:    true,
 }
 
 // PBES1
@@ -119,7 +119,7 @@ var MD2AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndDES,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 var MD2AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -131,7 +131,7 @@ var MD2AndRC2_64 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD2AndRC2_64,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 var MD5AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
@@ -143,7 +143,7 @@ var MD5AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndDES,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 var MD5AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -155,7 +155,7 @@ var MD5AndRC2_64 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithMD5AndRC2_64,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 var SHA1AndDES = CipherBlockCBC{
     cipherFunc:     des.NewCipher,
@@ -167,7 +167,7 @@ var SHA1AndDES = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndDES,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 var SHA1AndRC2_64 = CipherBlockCBC{
     cipherFunc:     newRC2Cipher,
@@ -179,7 +179,7 @@ var SHA1AndRC2_64 = CipherBlockCBC{
     iterationCount: 2048,
     oid:            oidPbeWithSHA1AndRC2_64,
     hasKeyLength:   false,
-    needPassBmp:    false,
+    needBmpPass:    false,
 }
 
 func init() {

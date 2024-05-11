@@ -28,7 +28,7 @@ func (this envelopedCipher) HasKeyLength() bool {
     return false
 }
 
-func (this envelopedCipher) NeedPasswordBmpString() bool {
+func (this envelopedCipher) NeedBmpPassword() bool {
     return false
 }
 

@@ -21,7 +21,7 @@ type CipherRC2CBC struct {
     blockSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
-    needPassBmp  bool
+    needBmpPass  bool
 }
 
 // 值大小
@@ -40,8 +40,8 @@ func (this CipherRC2CBC) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherRC2CBC) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherRC2CBC) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -148,8 +148,8 @@ func (this CipherRC2CBC) WithHasKeyLength(hasKeyLength bool) CipherRC2CBC {
     return this
 }
 
-func (this CipherRC2CBC) WithNeedPasswordBmpString(needPassBmp bool) CipherRC2CBC {
-    this.needPassBmp = needPassBmp
+func (this CipherRC2CBC) WithNeedBmpPassword(needBmpPass bool) CipherRC2CBC {
+    this.needBmpPass = needBmpPass
 
     return this
 }

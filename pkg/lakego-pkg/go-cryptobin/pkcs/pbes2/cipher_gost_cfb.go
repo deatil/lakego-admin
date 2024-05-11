@@ -75,7 +75,7 @@ type CipherGostCFB struct {
     identifier   asn1.ObjectIdentifier
     sboxOid      asn1.ObjectIdentifier
     hasKeyLength bool
-    needPassBmp  bool
+    needBmpPass  bool
 }
 
 // 值大小
@@ -94,8 +94,8 @@ func (this CipherGostCFB) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherGostCFB) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherGostCFB) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -179,8 +179,8 @@ func (this CipherGostCFB) WithHasKeyLength(hasKeyLength bool) CipherGostCFB {
     return this
 }
 
-func (this CipherGostCFB) WithNeedPasswordBmpString(needPassBmp bool) CipherGostCFB {
-    this.needPassBmp = needPassBmp
+func (this CipherGostCFB) WithNeedBmpPassword(needBmpPass bool) CipherGostCFB {
+    this.needBmpPass = needBmpPass
 
     return this
 }

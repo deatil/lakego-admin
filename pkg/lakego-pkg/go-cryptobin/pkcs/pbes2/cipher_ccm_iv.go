@@ -19,7 +19,7 @@ type CipherCCMIv struct {
     nonceSize    int
     identifier   asn1.ObjectIdentifier
     hasKeyLength bool
-    needPassBmp  bool
+    needBmpPass  bool
 }
 
 // 值大小
@@ -38,8 +38,8 @@ func (this CipherCCMIv) HasKeyLength() bool {
 }
 
 // 密码是否需要 Bmp 处理
-func (this CipherCCMIv) NeedPasswordBmpString() bool {
-    return this.needPassBmp
+func (this CipherCCMIv) NeedBmpPassword() bool {
+    return this.needBmpPass
 }
 
 // 加密
@@ -109,8 +109,8 @@ func (this CipherCCMIv) WithHasKeyLength(hasKeyLength bool) CipherCCMIv {
     return this
 }
 
-func (this CipherCCMIv) WithNeedPasswordBmpString(needPassBmp bool) CipherCCMIv {
-    this.needPassBmp = needPassBmp
+func (this CipherCCMIv) WithNeedBmpPassword(needBmpPass bool) CipherCCMIv {
+    this.needBmpPass = needBmpPass
 
     return this
 }

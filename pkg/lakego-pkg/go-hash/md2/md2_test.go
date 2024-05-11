@@ -2,8 +2,19 @@ package md2
 
 import (
     "fmt"
+    "bytes"
     "testing"
+    "encoding/hex"
 )
+
+func fromHex(s string) []byte {
+    h, _ := hex.DecodeString(s)
+    return h
+}
+
+func fromString(s string) []byte {
+    return []byte(s)
+}
 
 func Test_Check(t *testing.T) {
     in := []byte("nonce-asdfg")
@@ -38,5 +49,82 @@ func Test_Check2(t *testing.T) {
 
     if fmt.Sprintf("%x", out) != check {
         t.Errorf("Check error. got %x, want %s", out, check)
+    }
+}
+
+type testData struct {
+    msg []byte
+    md  []byte
+}
+
+func Test_Hash_Check(t *testing.T) {
+   tests := []testData{
+        {
+           fromString(""),
+           fromHex("8350e5a3e24c153df2275c9f80692773"),
+        },
+        {
+           fromString("a"),
+           fromHex("32ec01ec4a6dac72c0ab96fb34c0b5d1"),
+        },
+        {
+           fromString("abc"),
+           fromHex("da853b0d3f88d99b30283a69e6ded6bb"),
+        },
+        {
+           fromString("message digest"),
+           fromHex("ab4f496bfb2a530b219ff33031fe06b0"),
+        },
+        {
+           fromString("abcdefghijklmnopqrstuvwxyz"),
+           fromHex("4e8ddff3650292ab5a4108c3aa47940b"),
+        },
+        {
+           fromString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"),
+           fromHex("da33def2a42df13975352846c30338cd"),
+        },
+        {
+           fromString("12345678901234567890123456789012345678901234567890123456789012345678901234567890"),
+           fromHex("d5976f79d83d3a0dc9806c3c66f3efd8"),
+        },
+    }
+
+    h := New()
+
+    for i, test := range tests {
+        h.Reset()
+        h.Write(test.msg)
+        sum := h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
+        sum2 := Sum(test.msg)
+
+        if !bytes.Equal(sum2[:], test.md) {
+            t.Errorf("[%d] Sum fail, got %x, want %x", i, sum2, test.md)
+        }
+    }
+}
+
+func Test_KatMillionA_Hash(t *testing.T) {
+    msg := make([]byte, 1000)
+    for i := 0; i < 1000; i++ {
+        msg[i] = 'a'
+    }
+
+    check := "8c0a09ff1216ecaf95c8130953c62efd"
+
+    h := New()
+    for i := 0; i < 1000; i++ {
+        h.Write(msg)
+    }
+
+    got := fmt.Sprintf("%x", h.Sum(nil))
+    if got != check {
+        t.Errorf("fail, got %s, want %s", got, check)
     }
 }

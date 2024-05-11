@@ -11,8 +11,8 @@
 
 ### Desc
 
-*  A Go package that get data hash
-*  hashs: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost)
+*  A Go package that get data digest hash
+*  hashs has MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost etc.
 
 
 ### Download

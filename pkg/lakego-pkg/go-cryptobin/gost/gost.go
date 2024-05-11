@@ -142,7 +142,7 @@ func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
 
     x, y, err := curve.Exp(k, curve.X, curve.Y)
     if err != nil {
-        return nil, fmt.Errorf("cryptobin/gost: %w", err)
+        return nil, err
     }
 
     priv := new(PrivateKey)
@@ -154,7 +154,7 @@ func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
     return priv, nil
 }
 
-// GenerateKey generates a random GOST private key of the given bit size.
+// GenerateKey generates a random GOST private key.
 func GenerateKey(rand io.Reader, curve *Curve) (*PrivateKey, error) {
     private := make([]byte, curve.PointSize())
     if _, err := io.ReadFull(rand, private); err != nil {
@@ -271,7 +271,7 @@ Retry:
 
     r, _, err = priv.Curve.Exp(k, priv.Curve.X, priv.Curve.Y)
     if err != nil {
-        return nil, nil, fmt.Errorf("cryptobin/gost: %w", err)
+        return nil, nil, err
     }
 
     r.Mod(r, priv.Curve.Q)

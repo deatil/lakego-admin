@@ -16,7 +16,7 @@ const Size128 = 16
 // The blocksize of cubehash in bytes.
 const BlockSize = 32
 
-var invalidErr = errors.New("invalid CubeHash state")
+var errInvalid = errors.New("invalid CubeHash state")
 
 type digest struct {
     s   [32]uint32
@@ -154,12 +154,12 @@ func (this *digest) MarshalBinary() ([]byte, error) {
 func (this *digest) UnmarshalBinary(data []byte) error {
     x := &this.s
     if len(data) < 128+1 {
-        return invalidErr
+        return errInvalid
     }
 
     n := int(data[128])
     if n >= this.bs || len(data) < 128+1+n {
-        return invalidErr
+        return errInvalid
     }
     this.nx = n
 

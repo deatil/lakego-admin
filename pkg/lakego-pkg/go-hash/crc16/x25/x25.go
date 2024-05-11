@@ -4,7 +4,7 @@ import (
     "strconv"
 )
 
-var crctab16 = []uint16{
+var sbox = []uint16{
     0X0000, 0X1189, 0X2312, 0X329B, 0X4624, 0X57AD, 0X6536, 0X74BF,
     0X8C48, 0X9DC1, 0XAF5A, 0XBED3, 0XCA6C, 0XDBE5, 0XE97E, 0XF8F7,
     0X1081, 0X0108, 0X3393, 0X221A, 0X56A5, 0X472C, 0X75B7, 0X643E,
@@ -48,7 +48,7 @@ func Checksum(s string) string {
     l := len(bs)
 
     for i := 0; i < l; i++ {
-        fcs = (fcs >> 8) ^ crctab16[(fcs^uint16(bs[i]))&0xff]
+        fcs = (fcs >> 8) ^ sbox[(fcs^uint16(bs[i]))&0xff]
     }
 
     res := ^fcs

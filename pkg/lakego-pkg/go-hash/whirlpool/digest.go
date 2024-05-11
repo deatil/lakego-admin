@@ -16,11 +16,16 @@ type digest struct {
     len  int
 
     hash [8]uint64
+
+    c  [8][256]uint64
+    rc [rounds + 1]uint64
 }
 
 // newDigest returns a new hash.Hash computing the Whirlpool checksum.
-func newDigest() *digest {
+func newDigest(c [8][256]uint64, rc [rounds + 1]uint64) *digest {
     h := new(digest)
+    h.c = c
+    h.rc = rc
     h.Reset()
 
     return h
@@ -164,19 +169,29 @@ func (this *digest) transform() {
         state[i] = block[i] ^ K[i]
     }
 
+    c0 := this.c[0]
+    c1 := this.c[1]
+    c2 := this.c[2]
+    c3 := this.c[3]
+    c4 := this.c[4]
+    c5 := this.c[5]
+    c6 := this.c[6]
+    c7 := this.c[7]
+
     for r := 1; r <= rounds; r++ {
         // Compute K^rounds from K^(rounds-1).
         for i := 0; i < 8; i++ {
-            L[i] = C0[byte(K[i%8]>>56)] ^
-                C1[byte(K[(i+7)%8]>>48)] ^
-                C2[byte(K[(i+6)%8]>>40)] ^
-                C3[byte(K[(i+5)%8]>>32)] ^
-                C4[byte(K[(i+4)%8]>>24)] ^
-                C5[byte(K[(i+3)%8]>>16)] ^
-                C6[byte(K[(i+2)%8]>>8)] ^
-                C7[byte(K[(i+1)%8])]
+            L[i] = c0[byte(K[i%8]>>56)] ^
+                c1[byte(K[(i+7)%8]>>48)] ^
+                c2[byte(K[(i+6)%8]>>40)] ^
+                c3[byte(K[(i+5)%8]>>32)] ^
+                c4[byte(K[(i+4)%8]>>24)] ^
+                c5[byte(K[(i+3)%8]>>16)] ^
+                c6[byte(K[(i+2)%8]>>8)] ^
+                c7[byte(K[(i+1)%8])]
         }
-        L[0] ^= rc[r]
+
+        L[0] ^= this.rc[r]
 
         for i := 0; i < 8; i++ {
             K[i] = L[i]
@@ -184,14 +199,14 @@ func (this *digest) transform() {
 
         // Apply r-th round transformation.
         for i := 0; i < 8; i++ {
-            L[i] = C0[byte(state[ i   %8]>>56)] ^
-                   C1[byte(state[(i+7)%8]>>48)] ^
-                   C2[byte(state[(i+6)%8]>>40)] ^
-                   C3[byte(state[(i+5)%8]>>32)] ^
-                   C4[byte(state[(i+4)%8]>>24)] ^
-                   C5[byte(state[(i+3)%8]>>16)] ^
-                   C6[byte(state[(i+2)%8]>> 8)] ^
-                   C7[byte(state[(i+1)%8]    )] ^
+            L[i] = c0[byte(state[ i   %8]>>56)] ^
+                   c1[byte(state[(i+7)%8]>>48)] ^
+                   c2[byte(state[(i+6)%8]>>40)] ^
+                   c3[byte(state[(i+5)%8]>>32)] ^
+                   c4[byte(state[(i+4)%8]>>24)] ^
+                   c5[byte(state[(i+3)%8]>>16)] ^
+                   c6[byte(state[(i+2)%8]>> 8)] ^
+                   c7[byte(state[(i+1)%8]    )] ^
                    K[i%8]
         }
 

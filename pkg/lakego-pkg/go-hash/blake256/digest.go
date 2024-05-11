@@ -1,26 +1,14 @@
 package blake256
 
-// The block size of the hash algorithm in bytes.
-const BlockSize = 64
+const (
+    // The block size of the hash algorithm in bytes.
+    BlockSize = 64
 
-// The size of BLAKE-256 hash in bytes.
-const Size = 32
+    // The size of BLAKE-256 hash in bytes.
+    Size = 32
 
-// The size of BLAKE-224 hash in bytes.
-const Size224 = 28
-
-var (
-    iv256 = [8]uint32{
-        0x6A09E667, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A,
-        0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
-    }
-
-    iv224 = [8]uint32{
-        0xC1059ED8, 0x367CD507, 0x3070DD17, 0xF70E5939,
-        0xFFC00B31, 0x68581511, 0x64F98FA7, 0xBEFA4FA4,
-    }
-
-    pad = [64]byte{0x80}
+    // The size of BLAKE-224 hash in bytes.
+    Size224 = 28
 )
 
 type digest struct {
@@ -33,13 +21,15 @@ type digest struct {
     t     uint64
     hs    int
     nullt bool
+
+    initVal [8]uint32
 }
 
 func newDigest(hs int, iv [8]uint32) *digest {
-    d := &digest{
-        hs: hs,
-        h:  iv,
-    }
+    d := new(digest)
+    d.hs = hs
+    d.initVal = iv
+    d.Reset()
 
     return d
 }
@@ -51,12 +41,7 @@ func (d *digest) Reset() {
     d.nx = 0
     d.len = 0
 
-    if d.hs == 224 {
-        d.h = iv224
-    } else {
-        d.h = iv256
-    }
-
+    d.h = d.initVal
     d.t = 0
     d.nullt = false
 }
@@ -98,20 +83,16 @@ func (d *digest) Sum(in []byte) []byte {
     d0 := *d
     sum := d0.checkSum()
 
-    if d0.Size() == Size224 {
-        return append(in, sum[:Size224]...)
-    }
-
     return append(in, sum[:]...)
 }
 
-func (d *digest) checkSum() (out [Size]byte) {
+func (d *digest) checkSum() (out []byte) {
     nx := uint64(d.nx)
 
     l := d.t + nx<<3
 
     var msglen [8]byte
-    PUTU64(msglen[:], l)
+    putu64(msglen[:], l)
 
     if nx == 55 {
         // One padding byte.
@@ -153,19 +134,12 @@ func (d *digest) checkSum() (out [Size]byte) {
     d.t -= 64
     d.Write(msglen[:])
 
+    out = make([]byte, d.Size())
+
     sum := uint32sToBytes(d.h[:d.hs>>5])
     copy(out[:], sum)
 
     return
-}
-
-func (d *digest) setSalt(s []byte) {
-    if len(s) != 16 {
-        panic("salt length must be 16 bytes")
-    }
-
-    ss := bytesToUint32s(s)
-    copy(d.s[:], ss)
 }
 
 func (d *digest) compress(p []uint8) {
@@ -218,4 +192,13 @@ func (d *digest) compress(p []uint8) {
     for i = 0; i < 8 ; i++ {
         d.h[i] ^= d.s[i % 4]
     }
+}
+
+func (d *digest) setSalt(s []byte) {
+    if len(s) != 16 {
+        panic("salt length must be 16 bytes")
+    }
+
+    ss := bytesToUint32s(s)
+    copy(d.s[:], ss)
 }

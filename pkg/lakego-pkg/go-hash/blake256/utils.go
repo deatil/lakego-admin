@@ -8,7 +8,7 @@ import (
 // Endianness option
 const littleEndian bool = false
 
-func PUTU64(ptr []byte, a uint64) {
+func putu64(ptr []byte, a uint64) {
     if littleEndian {
         binary.LittleEndian.PutUint64(ptr, a)
     } else {

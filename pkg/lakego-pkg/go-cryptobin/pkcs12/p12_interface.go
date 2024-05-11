@@ -20,7 +20,7 @@ type Cipher interface {
     HasKeyLength() bool
 
     // 密码是否需要 Bmp 处理
-    NeedPasswordBmpString() bool
+    NeedBmpPassword() bool
 
     // 加密, 返回: [加密后数据, 参数, error]
     Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error)

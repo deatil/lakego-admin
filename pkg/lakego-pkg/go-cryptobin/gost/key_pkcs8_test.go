@@ -5,6 +5,7 @@ import (
     "testing"
     "crypto/rand"
     "encoding/pem"
+    "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/gost"
 )
@@ -126,6 +127,78 @@ func Test_Pkcs8(t *testing.T) {
 
     // t.Error(pri2)
     // t.Error(pub2)
+}
+
+func Test_Pkcs8WithOpts(t *testing.T) {
+    test_Pkcs8WithOpts(t, gost.DefaultParamOpts)
+
+    // ==============
+
+    oidGost2012Digest256    := asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 2}
+    oidGost2012PublicKey256 := asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
+
+    test_Pkcs8WithOpts(t, gost.ParamOpts{
+        Mode: gost.Gost2012Param,
+        DigestOid: oidGost2012Digest256,
+        PublicKeyOid: oidGost2012PublicKey256,
+    })
+
+    // ==============
+
+    oidGost94Digest  := asn1.ObjectIdentifier{1, 2, 643, 2, 2, 9}
+    oidGOSTPublicKey := asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
+
+    test_Pkcs8WithOpts(t, gost.ParamOpts{
+        Mode: gost.Gost2001Param,
+        DigestOid: oidGost94Digest,
+        PublicKeyOid: oidGOSTPublicKey,
+    })
+}
+
+func test_Pkcs8WithOpts(t *testing.T, opts gost.ParamOpts) {
+    curue := gost.CurveIdtc26gost34102012512paramSetA()
+
+    priv, err := gost.GenerateKey(rand.Reader, curue)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := priv.Public().(*gost.PublicKey)
+
+    pubDer, err := gost.MarshalPublicKeyWithOpts(pub, opts)
+    if err != nil {
+        t.Fatal(err)
+    }
+    privDer, err := gost.MarshalPrivateKeyWithOpts(priv, opts)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if len(privDer) == 0 {
+        t.Error("expected export key Der error: priv")
+    }
+    if len(pubDer) == 0 {
+        t.Error("expected export key Der error: pub")
+    }
+
+    _, err = gost.ParsePublicKey(pubDer)
+    if err != nil {
+        t.Fatal(err)
+    }
+    _, err = gost.ParsePrivateKey(privDer)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pri2 := encodePEM(privDer, "PRIVATE KEY")
+    pub2 := encodePEM(pubDer, "PUBLIC KEY")
+
+    if len(pri2) == 0 {
+        t.Error("expected export key PEM error: priv")
+    }
+    if len(pub2) == 0 {
+        t.Error("expected export key PEM error: pub")
+    }
 }
 
 var GostR3410_2001_CryptoPro_A_ParamSet_prikey = `

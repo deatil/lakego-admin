@@ -1,13 +1,26 @@
 package jceks
 
 import (
+    "fmt"
     "testing"
+    "io/ioutil"
     "crypto/rsa"
     "crypto/x509"
     "encoding/pem"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
+
+func testMustReadFile(tb testing.TB, filename string) []byte {
+    tb.Helper()
+
+    b, err := ioutil.ReadFile(filename)
+    if err != nil {
+        tb.Fatal(err)
+    }
+
+    return b
+}
 
 func decodePEM(pubPEM string) []byte {
     block, _ := pem.Decode([]byte(pubPEM))
@@ -222,5 +235,149 @@ func Test_JceksEncode(t *testing.T) {
     assertError(err, "JceksEncode-GetSecretKey")
     assertNotEmpty(secret, "JceksEncode-GetSecretKey")
     assertEqual(secret, secretKey, "JceksEncode-GetSecretKey")
+
+}
+
+// ========
+
+func Test_Jceks_Check(t *testing.T) {
+    test_Jceks_Check(t, testMustReadFile(t, "testdata/jceks/example-custom-oid.jceks"), "password", 1)
+    test_Jceks_Check(t, testMustReadFile(t, "testdata/jceks/example-elliptic-sha1.jceks"), "password", 1)
+    test_Jceks_Check(t, testMustReadFile(t, "testdata/jceks/example-sha1.jceks"), "password", 1)
+    test_Jceks_Check(t, testMustReadFile(t, "testdata/jceks/example-root.jceks"), "password", 1)
+    test_Jceks_Check(t, testMustReadFile(t, "testdata/jceks/example-small-key.jceks"), "password", 1)
+}
+
+func test_Jceks_Check(t *testing.T, data []byte, pass string, num int) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    ks, err := LoadFromBytes(data, pass)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if num == 1 {
+        priAliases := ks.ListPrivateKeys()
+        assertNotEmpty(priAliases, "Jceks_Check-ListPrivateKeys")
+    }
+
+    if num == 2 {
+        certsAliases := ks.ListCerts()
+        assertNotEmpty(certsAliases, "Jceks_Check-ListCerts")
+    }
+
+    if num == 3 {
+        secretsAliases := ks.ListSecretKeys()
+        assertNotEmpty(secretsAliases, "Jceks_Check-ListSecretKeys")
+    }
+
+}
+
+func Test_Jks_Check(t *testing.T) {
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/diff_pass.jks"), "password1", 1)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/DSA_1024_keystore.jks"), "password", 1)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/EC_256_keystore.jks"), "password", 1)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/RSA_2048_keystore.jks"), "password", 1)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/RSA_2048_truststore.jks"), "password", 2)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/RSA_2048_MD5withRSA_keystore.jks"), "password", 1)
+
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/androidstudio_default_123456_myalias.jks"), "123456", 1)
+    test_Jks_Check(t, testMustReadFile(t, "testdata/jks/windows_defaults_123456_mykey.jks"), "123456", 1)
+}
+
+func test_Jks_Check(t *testing.T, data []byte, pass string, num int) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    ks, err := LoadJksFromBytes(data, pass)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if num == 1 {
+        priAliases := ks.ListPrivateKeys()
+        assertNotEmpty(priAliases, fmt.Sprintf("[%d] Jks_Check-ListPrivateKeys", num))
+    }
+
+    if num == 2 {
+        certsAliases := ks.ListCerts()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListCerts", num))
+    }
+
+}
+
+func Test_Bks_Check(t *testing.T) {
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/christmas.bksv1"), "12345678", 1)
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/christmas.bksv2"), "12345678", 1)
+
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/custom_entry_passwords.bksv1"), "store_password", 5)
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/custom_entry_passwords.bksv2"), "store_password", 5)
+
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/empty.bksv1"), "", 6)
+    test_Bks_Check(t, testMustReadFile(t, "testdata/bks/empty.bksv2"), "", 6)
+}
+
+func test_Bks_Check(t *testing.T, data []byte, pass string, num int) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    ks, err := LoadBksFromBytes(data, pass)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if num == 1 {
+        priAliases := ks.ListKeys()
+        assertNotEmpty(priAliases, fmt.Sprintf("[%d] Jks_Check-ListKeys", num))
+    }
+
+    if num == 2 {
+        certsAliases := ks.ListSecrets()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListSecrets", num))
+    }
+
+    if num == 3 {
+        certsAliases := ks.ListCerts()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListCerts", num))
+    }
+
+    if num == 5 {
+        certsAliases := ks.ListSealedKeys()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListSealedKeys", num))
+    }
+
+}
+
+func Test_Uber_Check(t *testing.T) {
+    test_Uber_Check(t, testMustReadFile(t, "testdata/uber/christmas.uber"), "12345678", 1)
+    test_Uber_Check(t, testMustReadFile(t, "testdata/uber/custom_entry_passwords.uber"), "store_password", 5)
+    test_Uber_Check(t, testMustReadFile(t, "testdata/uber/empty.uber"), "", 6)
+}
+
+func test_Uber_Check(t *testing.T, data []byte, pass string, num int) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    ks, err := LoadUberFromBytes(data, pass)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if num == 1 {
+        priAliases := ks.ListKeys()
+        assertNotEmpty(priAliases, fmt.Sprintf("[%d] Jks_Check-ListKeys", num))
+    }
+
+    if num == 2 {
+        certsAliases := ks.ListSecrets()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListSecrets", num))
+    }
+
+    if num == 3 {
+        certsAliases := ks.ListCerts()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListCerts", num))
+    }
+
+    if num == 5 {
+        certsAliases := ks.ListSealedKeys()
+        assertNotEmpty(certsAliases, fmt.Sprintf("[%d] Jks_Check-ListSealedKeys", num))
+    }
 
 }
