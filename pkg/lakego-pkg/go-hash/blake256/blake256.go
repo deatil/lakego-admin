@@ -14,6 +14,18 @@ func NewWithSalt(salt []byte) hash.Hash {
     return d
 }
 
+// Sum returns the BLAKE-256 checksum of the data.
+func Sum(data []byte) (out [Size]byte) {
+    d := New()
+    d.Write(data)
+    sum := d.Sum(nil)
+
+    copy(out[:], sum)
+    return
+}
+
+// =======
+
 // New224 returns a new hash.Hash computing the BLAKE-224 checksum.
 func New224() hash.Hash {
     return newDigest(224, iv224)
@@ -24,16 +36,6 @@ func New224WithSalt(salt []byte) hash.Hash {
     d := newDigest(224, iv224)
     d.setSalt(salt)
     return d
-}
-
-// Sum returns the BLAKE-256 checksum of the data.
-func Sum(data []byte) (out [Size]byte) {
-    d := New()
-    d.Write(data)
-    sum := d.Sum(nil)
-
-    copy(out[:], sum)
-    return
 }
 
 // Sum224 returns the BLAKE-224 checksum of the data.
