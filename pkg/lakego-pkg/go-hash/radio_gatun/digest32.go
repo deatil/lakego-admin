@@ -52,7 +52,7 @@ func (d *digest32) Write(p []byte) (nn int, err error) {
 
     plen := len(p)
 
-    for d.nx+plen >= BlockSize32 {
+    for d.nx + plen >= BlockSize32 {
         copy(d.x[d.nx:], p)
 
         d.processBlock(d.x[:])
@@ -102,16 +102,16 @@ func (d *digest32) checkSum() (out []byte) {
 }
 
 func (d *digest32) processBlock(data []byte) {
-    var a00 = d.a[0]
-    var a01 = d.a[1]
-    var a02 = d.a[2]
-    var a03 = d.a[3]
-    var a04 = d.a[4]
-    var a05 = d.a[5]
-    var a06 = d.a[6]
-    var a07 = d.a[7]
-    var a08 = d.a[8]
-    var a09 = d.a[9]
+    var a00 = d.a[ 0]
+    var a01 = d.a[ 1]
+    var a02 = d.a[ 2]
+    var a03 = d.a[ 3]
+    var a04 = d.a[ 4]
+    var a05 = d.a[ 5]
+    var a06 = d.a[ 6]
+    var a07 = d.a[ 7]
+    var a08 = d.a[ 8]
+    var a09 = d.a[ 9]
     var a10 = d.a[10]
     var a11 = d.a[11]
     var a12 = d.a[12]
@@ -124,9 +124,9 @@ func (d *digest32) processBlock(data []byte) {
 
     dp := 0
     for mk := 12; mk >= 0; mk-- {
-        var p0 = getu32(data[dp+0:])
-        var p1 = getu32(data[dp+4:])
-        var p2 = getu32(data[dp+8:])
+        var p0 = getu32(data[dp + 0:])
+        var p1 = getu32(data[dp + 4:])
+        var p2 = getu32(data[dp + 8:])
 
         dp += 12
 
@@ -137,9 +137,9 @@ func (d *digest32) processBlock(data []byte) {
             bj = 3 * (mk + 1)
         }
 
-        d.b[bj+0] ^= p0
-        d.b[bj+1] ^= p1
-        d.b[bj+2] ^= p2
+        d.b[bj + 0] ^= p0
+        d.b[bj + 1] ^= p1
+        d.b[bj + 2] ^= p2
         a16 ^= p0
         a17 ^= p1
         a18 ^= p2
@@ -150,73 +150,73 @@ func (d *digest32) processBlock(data []byte) {
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+0] ^= a01
+        d.b[bj + 0] ^= a01
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+1] ^= a02
+        d.b[bj + 1] ^= a02
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+2] ^= a03
+        d.b[bj + 2] ^= a03
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+0] ^= a04
+        d.b[bj + 0] ^= a04
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+1] ^= a05
+        d.b[bj + 1] ^= a05
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+2] ^= a06
+        d.b[bj + 2] ^= a06
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+0] ^= a07
+        d.b[bj + 0] ^= a07
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+1] ^= a08
+        d.b[bj + 1] ^= a08
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+2] ^= a09
+        d.b[bj + 2] ^= a09
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+0] ^= a10
+        d.b[bj + 0] ^= a10
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+1] ^= a11
+        d.b[bj + 1] ^= a11
 
         bj += 3
         if bj == 39 {
             bj = 0
         }
-        d.b[bj+2] ^= a12
+        d.b[bj + 2] ^= a12
 
         var t00 = a00 ^ (a01 | ^a02)
         var t01 = a01 ^ (a02 | ^a03)
@@ -239,23 +239,23 @@ func (d *digest32) processBlock(data []byte) {
         var t18 = a18 ^ (a00 | ^a01)
 
         a00 = t00
-        a01 = (t07 << 31) | (t07 >> 1)
-        a02 = (t14 << 29) | (t14 >> 3)
-        a03 = (t02 << 26) | (t02 >> 6)
+        a01 = (t07 << 31) | (t07 >>  1)
+        a02 = (t14 << 29) | (t14 >>  3)
+        a03 = (t02 << 26) | (t02 >>  6)
         a04 = (t09 << 22) | (t09 >> 10)
         a05 = (t16 << 17) | (t16 >> 15)
         a06 = (t04 << 11) | (t04 >> 21)
-        a07 = (t11 << 4) | (t11 >> 28)
-        a08 = (t18 << 28) | (t18 >> 4)
+        a07 = (t11 <<  4) | (t11 >> 28)
+        a08 = (t18 << 28) | (t18 >>  4)
         a09 = (t06 << 19) | (t06 >> 13)
-        a10 = (t13 << 9) | (t13 >> 23)
-        a11 = (t01 << 30) | (t01 >> 2)
+        a10 = (t13 <<  9) | (t13 >> 23)
+        a11 = (t01 << 30) | (t01 >>  2)
         a12 = (t08 << 18) | (t08 >> 14)
-        a13 = (t15 << 5) | (t15 >> 27)
-        a14 = (t03 << 23) | (t03 >> 9)
-        a15 = (t10 << 8) | (t10 >> 24)
-        a16 = (t17 << 24) | (t17 >> 8)
-        a17 = (t05 << 7) | (t05 >> 25)
+        a13 = (t15 <<  5) | (t15 >> 27)
+        a14 = (t03 << 23) | (t03 >>  9)
+        a15 = (t10 <<  8) | (t10 >> 24)
+        a16 = (t17 << 24) | (t17 >>  8)
+        a17 = (t05 <<  7) | (t05 >> 25)
         a18 = (t12 << 21) | (t12 >> 11)
 
         t00 = a00 ^ a01 ^ a04
@@ -299,21 +299,21 @@ func (d *digest32) processBlock(data []byte) {
         a18 = t18
 
         bj = mk * 3
-        a13 ^= d.b[bj+0]
-        a14 ^= d.b[bj+1]
-        a15 ^= d.b[bj+2]
+        a13 ^= d.b[bj + 0]
+        a14 ^= d.b[bj + 1]
+        a15 ^= d.b[bj + 2]
     }
 
-    d.a[0] = a00
-    d.a[1] = a01
-    d.a[2] = a02
-    d.a[3] = a03
-    d.a[4] = a04
-    d.a[5] = a05
-    d.a[6] = a06
-    d.a[7] = a07
-    d.a[8] = a08
-    d.a[9] = a09
+    d.a[ 0] = a00
+    d.a[ 1] = a01
+    d.a[ 2] = a02
+    d.a[ 3] = a03
+    d.a[ 4] = a04
+    d.a[ 5] = a05
+    d.a[ 6] = a06
+    d.a[ 7] = a07
+    d.a[ 8] = a08
+    d.a[ 9] = a09
     d.a[10] = a10
     d.a[11] = a11
     d.a[12] = a12
@@ -326,16 +326,16 @@ func (d *digest32) processBlock(data []byte) {
 }
 
 func (d *digest32) blank(num int) (out []byte) {
-    var a00 = d.a[0]
-    var a01 = d.a[1]
-    var a02 = d.a[2]
-    var a03 = d.a[3]
-    var a04 = d.a[4]
-    var a05 = d.a[5]
-    var a06 = d.a[6]
-    var a07 = d.a[7]
-    var a08 = d.a[8]
-    var a09 = d.a[9]
+    var a00 = d.a[ 0]
+    var a01 = d.a[ 1]
+    var a02 = d.a[ 2]
+    var a03 = d.a[ 3]
+    var a04 = d.a[ 4]
+    var a05 = d.a[ 5]
+    var a06 = d.a[ 6]
+    var a07 = d.a[ 7]
+    var a08 = d.a[ 8]
+    var a09 = d.a[ 9]
     var a10 = d.a[10]
     var a11 = d.a[11]
     var a12 = d.a[12]
@@ -350,10 +350,10 @@ func (d *digest32) blank(num int) (out []byte) {
 
     off := 0
     for num > 0 {
-        d.b[0] ^= a01
-        d.b[4] ^= a02
-        d.b[8] ^= a03
-        d.b[9] ^= a04
+        d.b[ 0] ^= a01
+        d.b[ 4] ^= a02
+        d.b[ 8] ^= a03
+        d.b[ 9] ^= a04
         d.b[13] ^= a05
         d.b[17] ^= a06
         d.b[18] ^= a07
@@ -384,23 +384,23 @@ func (d *digest32) blank(num int) (out []byte) {
         var t18 = a18 ^ (a00 | ^a01)
 
         a00 = t00
-        a01 = (t07 << 31) | (t07 >> 1)
-        a02 = (t14 << 29) | (t14 >> 3)
-        a03 = (t02 << 26) | (t02 >> 6)
+        a01 = (t07 << 31) | (t07 >>  1)
+        a02 = (t14 << 29) | (t14 >>  3)
+        a03 = (t02 << 26) | (t02 >>  6)
         a04 = (t09 << 22) | (t09 >> 10)
         a05 = (t16 << 17) | (t16 >> 15)
         a06 = (t04 << 11) | (t04 >> 21)
-        a07 = (t11 << 4) | (t11 >> 28)
-        a08 = (t18 << 28) | (t18 >> 4)
+        a07 = (t11 <<  4) | (t11 >> 28)
+        a08 = (t18 << 28) | (t18 >>  4)
         a09 = (t06 << 19) | (t06 >> 13)
-        a10 = (t13 << 9) | (t13 >> 23)
-        a11 = (t01 << 30) | (t01 >> 2)
+        a10 = (t13 <<  9) | (t13 >> 23)
+        a11 = (t01 << 30) | (t01 >>  2)
         a12 = (t08 << 18) | (t08 >> 14)
-        a13 = (t15 << 5) | (t15 >> 27)
-        a14 = (t03 << 23) | (t03 >> 9)
-        a15 = (t10 << 8) | (t10 >> 24)
-        a16 = (t17 << 24) | (t17 >> 8)
-        a17 = (t05 << 7) | (t05 >> 25)
+        a13 = (t15 <<  5) | (t15 >> 27)
+        a14 = (t03 << 23) | (t03 >>  9)
+        a15 = (t10 <<  8) | (t10 >> 24)
+        a16 = (t17 << 24) | (t17 >>  8)
+        a17 = (t05 <<  7) | (t05 >> 25)
         a18 = (t12 << 21) | (t12 >> 11)
 
         t00 = a00 ^ a01 ^ a04
@@ -457,8 +457,8 @@ func (d *digest32) blank(num int) (out []byte) {
         d.b[2] = bt2
 
         if num <= 4 {
-            putu32(out[off+0:], a01)
-            putu32(out[off+4:], a02)
+            putu32(out[off + 0:], a01)
+            putu32(out[off + 4:], a02)
 
             off += 8
         }
@@ -468,3 +468,4 @@ func (d *digest32) blank(num int) (out []byte) {
 
     return
 }
+

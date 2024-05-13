@@ -18,7 +18,7 @@ func fromString(s string) []byte {
 
 type testData struct {
     msg []byte
-    md  []byte
+    md []byte
 }
 
 func Test_MillionA_Check(t *testing.T) {
@@ -41,14 +41,14 @@ func Test_MillionA_Check(t *testing.T) {
 }
 
 func Test_Hash_Check(t *testing.T) {
-    tests := []testData{
+   tests := []testData{
         {
-            fromString("abc"),
-            fromHex("0164b8a914cd2a5e74c4f7ff082c4d97f1edf880"),
+           fromString("abc"),
+           fromHex("0164b8a914cd2a5e74c4f7ff082c4d97f1edf880"),
         },
         {
-            fromString("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
-            fromHex("d2516ee1acfa5baf33dfc1c471e438449ef134c8"),
+           fromString("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"),
+           fromHex("d2516ee1acfa5baf33dfc1c471e438449ef134c8"),
         },
     }
 

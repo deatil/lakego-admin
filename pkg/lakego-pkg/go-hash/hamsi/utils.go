@@ -79,5 +79,5 @@ func rol(x uint32, n int) uint32 {
 }
 
 func ror(x uint32, n int) uint32 {
-    return rol(x, 32-n)
+    return rol(x, 32 - n)
 }

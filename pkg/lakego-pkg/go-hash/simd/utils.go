@@ -87,5 +87,5 @@ func REDS2(x int32) int32 {
 }
 
 func INNER(l, h, mm int32) uint32 {
-    return (uint32(l*mm) & 0xFFFF) + (uint32(h*mm) << 16)
+    return (uint32(l * mm) & 0xFFFF)  + (uint32(h * mm) << 16)
 }

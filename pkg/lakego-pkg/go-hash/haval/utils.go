@@ -79,7 +79,7 @@ func circularLeft(x uint32, n int) uint32 {
 }
 
 func circularRight(x uint32, n int) uint32 {
-    return circularLeft(x, 32-n)
+    return circularLeft(x, 32 - n)
 }
 
 func F1(x6, x5, x4, x3, x2, x1, x0 uint32) uint32 {
@@ -108,9 +108,9 @@ func F5(x6, x5, x4, x3, x2, x1, x0 uint32) uint32 {
 
 func mix128(a0, a1, a2, a3 uint32, n int) uint32 {
     tmp := (a0 & 0x000000FF) |
-        (a1 & 0x0000FF00) |
-        (a2 & 0x00FF0000) |
-        (a3 & 0xFF000000)
+           (a1 & 0x0000FF00) |
+           (a2 & 0x00FF0000) |
+           (a3 & 0xFF000000)
     if n > 0 {
         tmp = circularLeft(tmp, n)
     }
@@ -120,18 +120,18 @@ func mix128(a0, a1, a2, a3 uint32, n int) uint32 {
 
 func mix160_0(x5, x6, x7 uint32) uint32 {
     return circularLeft(
-        (x5&0x01F80000)|
-            (x6&0xFE000000)|
-            (x7&0x0000003F),
+        (x5 & 0x01F80000) |
+        (x6 & 0xFE000000) |
+        (x7 & 0x0000003F),
         13,
     )
 }
 
 func mix160_1(x5, x6, x7 uint32) uint32 {
     return circularLeft(
-        (x5&0xFE000000)|
-            (x6&0x0000003F)|
-            (x7&0x00000FC0),
+        (x5 & 0xFE000000) |
+        (x6 & 0x0000003F) |
+        (x7 & 0x00000FC0),
         7,
     )
 }
@@ -155,7 +155,7 @@ func mix160_4(x5, x6, x7 uint32) uint32 {
 }
 
 func mix192_0(x6, x7 uint32) uint32 {
-    return circularLeft((x6&0xFC000000)|(x7&0x0000001F), 6)
+    return circularLeft((x6 & 0xFC000000) | (x7 & 0x0000001F), 6)
 }
 
 func mix192_1(x6, x7 uint32) uint32 {

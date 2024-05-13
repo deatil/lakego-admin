@@ -54,7 +54,7 @@ func (d *digest256) Write(p []byte) (nn int, err error) {
 
     plen := len(p)
 
-    for d.nx+plen >= BlockSize256 {
+    for d.nx + plen >= BlockSize256 {
         copy(d.x[d.nx:], p)
 
         d.processBlock(d.x[:])
@@ -88,7 +88,7 @@ func (d *digest256) checkSum() (out []byte) {
 
     bc := d.len / BlockSize256
 
-    bitLen := (bc << 9) + uint64(ptr<<3)
+    bitLen := (bc << 9) + uint64(ptr << 3)
 
     var cnt0 = uint32(bitLen)
     var cnt1 = uint32(bitLen >> 32)
@@ -129,7 +129,7 @@ func (d *digest256) checkSum() (out []byte) {
     }
 
     putu32(buf[54:], uint32(bitLen))
-    putu32(buf[58:], uint32(bitLen>>32))
+    putu32(buf[58:], uint32(bitLen >> 32))
 
     dlen := d.hs
     buf[62] = byte(dlen << 3)
@@ -138,7 +138,7 @@ func (d *digest256) checkSum() (out []byte) {
 
     out = make([]byte, dlen)
     for i := 0; i < dlen; i += 4 {
-        putu32(out[i:], d.s[i>>2])
+        putu32(out[i:], d.s[i >> 2])
     }
 
     return
@@ -147,7 +147,7 @@ func (d *digest256) checkSum() (out []byte) {
 func (d *digest256) processBlock(data []byte) {
     var bitLen = ((d.len / BlockSize256) + 1) << 9
 
-    d.process(data, uint32(bitLen), uint32(bitLen>>32))
+    d.process(data, uint32(bitLen), uint32(bitLen >> 32))
 }
 
 func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
@@ -158,10 +158,10 @@ func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
     rk := &d.rk
 
     for u = 0; u < 16; u += 4 {
-        rk[u+0] = getu32(data[(u<<2)+0:])
-        rk[u+1] = getu32(data[(u<<2)+4:])
-        rk[u+2] = getu32(data[(u<<2)+8:])
-        rk[u+3] = getu32(data[(u<<2)+12:])
+        rk[u + 0] = getu32(data[(u << 2) +  0:])
+        rk[u + 1] = getu32(data[(u << 2) +  4:])
+        rk[u + 2] = getu32(data[(u << 2) +  8:])
+        rk[u + 3] = getu32(data[(u << 2) + 12:])
     }
 
     for r := 0; r < 4; r++ {
@@ -169,55 +169,55 @@ func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
             var x0, x1, x2, x3 uint32
             var t0, t1, t2, t3 uint32
 
-            x0 = rk[u-15]
-            x1 = rk[u-14]
-            x2 = rk[u-13]
-            x3 = rk[u-16]
-            t0 = AES0[x0&0xFF] ^
-                AES1[(x1>>8)&0xFF] ^
-                AES2[(x2>>16)&0xFF] ^
-                AES3[x3>>24]
-            t1 = AES0[x1&0xFF] ^
-                AES1[(x2>>8)&0xFF] ^
-                AES2[(x3>>16)&0xFF] ^
-                AES3[x0>>24]
-            t2 = AES0[x2&0xFF] ^
-                AES1[(x3>>8)&0xFF] ^
-                AES2[(x0>>16)&0xFF] ^
-                AES3[x1>>24]
-            t3 = AES0[x3&0xFF] ^
-                AES1[(x0>>8)&0xFF] ^
-                AES2[(x1>>16)&0xFF] ^
-                AES3[x2>>24]
-            rk[u+0] = t0 ^ rk[u-4]
-            rk[u+1] = t1 ^ rk[u-3]
-            rk[u+2] = t2 ^ rk[u-2]
-            rk[u+3] = t3 ^ rk[u-1]
+            x0 = rk[u - 15]
+            x1 = rk[u - 14]
+            x2 = rk[u - 13]
+            x3 = rk[u - 16]
+            t0 = AES0[x0 & 0xFF] ^
+                AES1[(x1 >> 8) & 0xFF] ^
+                AES2[(x2 >> 16) & 0xFF] ^
+                AES3[x3 >> 24]
+            t1 = AES0[x1 & 0xFF] ^
+                AES1[(x2 >> 8) & 0xFF] ^
+                AES2[(x3 >> 16) & 0xFF] ^
+                AES3[x0 >> 24]
+            t2 = AES0[x2 & 0xFF] ^
+                AES1[(x3 >> 8) & 0xFF] ^
+                AES2[(x0 >> 16) & 0xFF] ^
+                AES3[x1 >> 24]
+            t3 = AES0[x3 & 0xFF] ^
+                AES1[(x0 >> 8) & 0xFF] ^
+                AES2[(x1 >> 16) & 0xFF] ^
+                AES3[x2 >> 24]
+            rk[u + 0] = t0 ^ rk[u - 4]
+            rk[u + 1] = t1 ^ rk[u - 3]
+            rk[u + 2] = t2 ^ rk[u - 2]
+            rk[u + 3] = t3 ^ rk[u - 1]
             if u == 16 {
-                rk[16] ^= cnt0
-                rk[17] ^= ^cnt1
-            } else if u == 56 {
-                rk[57] ^= cnt1
-                rk[58] ^= ^cnt0
+                rk[ 16] ^= cnt0
+                rk[ 17] ^= ^cnt1
+            } else if (u == 56) {
+                rk[ 57] ^= cnt1
+                rk[ 58] ^= ^cnt0
             }
             u += 4
 
-            x0 = rk[u-15]
-            x1 = rk[u-14]
-            x2 = rk[u-13]
-            x3 = rk[u-16]
-            t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-            t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-            t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-            t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
-            rk[u+0] = t0 ^ rk[u-4]
-            rk[u+1] = t1 ^ rk[u-3]
-            rk[u+2] = t2 ^ rk[u-2]
-            rk[u+3] = t3 ^ rk[u-1]
+            x0 = rk[u - 15]
+            x1 = rk[u - 14]
+            x2 = rk[u - 13]
+            x3 = rk[u - 16]
+            t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+            t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+            t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+            t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
+            rk[u + 0] = t0 ^ rk[u - 4]
+            rk[u + 1] = t1 ^ rk[u - 3]
+            rk[u + 2] = t2 ^ rk[u - 2]
+            rk[u + 3] = t3 ^ rk[u - 1]
             if u == 84 {
-                rk[86] ^= cnt1
-                rk[87] ^= ^cnt0
-            } else if u == 124 {
+                rk[ 86] ^= cnt1
+                rk[ 87] ^= ^cnt0
+            } else if (u == 124) {
                 rk[124] ^= cnt0
                 rk[127] ^= ^cnt1
             }
@@ -225,10 +225,10 @@ func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
         }
 
         for s := 0; s < 4; s++ {
-            rk[u+0] = rk[u-16] ^ rk[u-3]
-            rk[u+1] = rk[u-15] ^ rk[u-2]
-            rk[u+2] = rk[u-14] ^ rk[u-1]
-            rk[u+3] = rk[u-13] ^ rk[u-0]
+            rk[u + 0] = rk[u - 16] ^ rk[u - 3]
+            rk[u + 1] = rk[u - 15] ^ rk[u - 2]
+            rk[u + 2] = rk[u - 14] ^ rk[u - 1]
+            rk[u + 3] = rk[u - 13] ^ rk[u - 0]
             u += 4
         }
     }
@@ -247,83 +247,59 @@ func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
         var x0, x1, x2, x3 uint32
         var t0, t1, t2, t3 uint32
 
-        x0 = p4 ^ rk[u]
-        u++
-        x1 = p5 ^ rk[u]
-        u++
-        x2 = p6 ^ rk[u]
-        u++
-        x3 = p7 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
-        x0 = t0 ^ rk[u]
-        u++
-        x1 = t1 ^ rk[u]
-        u++
-        x2 = t2 ^ rk[u]
-        u++
-        x3 = t3 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
-        x0 = t0 ^ rk[u]
-        u++
-        x1 = t1 ^ rk[u]
-        u++
-        x2 = t2 ^ rk[u]
-        u++
-        x3 = t3 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
+        x0 = p4 ^ rk[u]; u++
+        x1 = p5 ^ rk[u]; u++
+        x2 = p6 ^ rk[u]; u++
+        x3 = p7 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
+        x0 = t0 ^ rk[u]; u++
+        x1 = t1 ^ rk[u]; u++
+        x2 = t2 ^ rk[u]; u++
+        x3 = t3 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
+        x0 = t0 ^ rk[u]; u++
+        x1 = t1 ^ rk[u]; u++
+        x2 = t2 ^ rk[u]; u++
+        x3 = t3 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
         p0 ^= t0
         p1 ^= t1
         p2 ^= t2
         p3 ^= t3
 
-        x0 = p0 ^ rk[u]
-        u++
-        x1 = p1 ^ rk[u]
-        u++
-        x2 = p2 ^ rk[u]
-        u++
-        x3 = p3 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
-        x0 = t0 ^ rk[u]
-        u++
-        x1 = t1 ^ rk[u]
-        u++
-        x2 = t2 ^ rk[u]
-        u++
-        x3 = t3 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
-        x0 = t0 ^ rk[u]
-        u++
-        x1 = t1 ^ rk[u]
-        u++
-        x2 = t2 ^ rk[u]
-        u++
-        x3 = t3 ^ rk[u]
-        u++
-        t0 = AES0[x0&0xFF] ^ AES1[(x1>>8)&0xFF] ^ AES2[(x2>>16)&0xFF] ^ AES3[x3>>24]
-        t1 = AES0[x1&0xFF] ^ AES1[(x2>>8)&0xFF] ^ AES2[(x3>>16)&0xFF] ^ AES3[x0>>24]
-        t2 = AES0[x2&0xFF] ^ AES1[(x3>>8)&0xFF] ^ AES2[(x0>>16)&0xFF] ^ AES3[x1>>24]
-        t3 = AES0[x3&0xFF] ^ AES1[(x0>>8)&0xFF] ^ AES2[(x1>>16)&0xFF] ^ AES3[x2>>24]
+        x0 = p0 ^ rk[u]; u++
+        x1 = p1 ^ rk[u]; u++
+        x2 = p2 ^ rk[u]; u++
+        x3 = p3 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
+        x0 = t0 ^ rk[u]; u++
+        x1 = t1 ^ rk[u]; u++
+        x2 = t2 ^ rk[u]; u++
+        x3 = t3 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
+        x0 = t0 ^ rk[u]; u++
+        x1 = t1 ^ rk[u]; u++
+        x2 = t2 ^ rk[u]; u++
+        x3 = t3 ^ rk[u]; u++
+        t0 = AES0[x0 & 0xFF] ^ AES1[(x1 >> 8) & 0xFF] ^ AES2[(x2 >> 16) & 0xFF] ^ AES3[x3 >> 24]
+        t1 = AES0[x1 & 0xFF] ^ AES1[(x2 >> 8) & 0xFF] ^ AES2[(x3 >> 16) & 0xFF] ^ AES3[x0 >> 24]
+        t2 = AES0[x2 & 0xFF] ^ AES1[(x3 >> 8) & 0xFF] ^ AES2[(x0 >> 16) & 0xFF] ^ AES3[x1 >> 24]
+        t3 = AES0[x3 & 0xFF] ^ AES1[(x0 >> 8) & 0xFF] ^ AES2[(x1 >> 16) & 0xFF] ^ AES3[x2 >> 24]
         p4 ^= t0
         p5 ^= t1
         p6 ^= t2
@@ -339,3 +315,4 @@ func (d *digest256) process(data []byte, cnt0, cnt1 uint32) {
     h[0x6] ^= p6
     h[0x7] ^= p7
 }
+

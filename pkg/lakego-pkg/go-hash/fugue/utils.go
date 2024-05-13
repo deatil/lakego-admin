@@ -63,22 +63,22 @@ func rol(x uint32, n int) uint32 {
 }
 
 func ror(x uint32, n int) uint32 {
-    return rol(x, 32-n)
+    return rol(x, 32 - n)
 }
 
 func cmix30(S []uint32) {
-    S[0] ^= S[4]
-    S[1] ^= S[5]
-    S[2] ^= S[6]
+    S[ 0] ^= S[4]
+    S[ 1] ^= S[5]
+    S[ 2] ^= S[6]
     S[15] ^= S[4]
     S[16] ^= S[5]
     S[17] ^= S[6]
 }
 
 func cmix36(S []uint32) {
-    S[0] ^= S[4]
-    S[1] ^= S[5]
-    S[2] ^= S[6]
+    S[ 0] ^= S[4]
+    S[ 1] ^= S[5]
+    S[ 2] ^= S[6]
     S[18] ^= S[4]
     S[19] ^= S[5]
     S[20] ^= S[6]
@@ -99,67 +99,67 @@ func smix(S []uint32, i0, i1, i2, i3 int) {
     var xt uint32
 
     xt = S[i0]
-    tmp = mixtab0[byte(xt>>24)&0xFF]
+    tmp = mixtab0[byte(xt >> 24) & 0xFF]
     c0 ^= tmp
-    tmp = mixtab1[byte(xt>>16)&0xFF]
+    tmp = mixtab1[byte(xt >> 16) & 0xFF]
     c0 ^= tmp
     r1 ^= tmp
-    tmp = mixtab2[byte(xt>>8)&0xFF]
+    tmp = mixtab2[byte(xt >>  8) & 0xFF]
     c0 ^= tmp
     r2 ^= tmp
-    tmp = mixtab3[byte(xt>>0)&0xFF]
+    tmp = mixtab3[byte(xt >>  0) & 0xFF]
     c0 ^= tmp
     r3 ^= tmp
     xt = S[i1]
-    tmp = mixtab0[byte(xt>>24)&0xFF]
+    tmp = mixtab0[byte(xt >> 24) & 0xFF]
     c1 ^= tmp
     r0 ^= tmp
-    tmp = mixtab1[byte(xt>>16)&0xFF]
+    tmp = mixtab1[byte(xt >> 16) & 0xFF]
     c1 ^= tmp
-    tmp = mixtab2[byte(xt>>8)&0xFF]
+    tmp = mixtab2[byte(xt >>  8) & 0xFF]
     c1 ^= tmp
     r2 ^= tmp
-    tmp = mixtab3[byte(xt>>0)&0xFF]
+    tmp = mixtab3[byte(xt >>  0) & 0xFF]
     c1 ^= tmp
     r3 ^= tmp
     xt = S[i2]
-    tmp = mixtab0[byte(xt>>24)&0xFF]
+    tmp = mixtab0[byte(xt >> 24) & 0xFF]
     c2 ^= tmp
     r0 ^= tmp
-    tmp = mixtab1[byte(xt>>16)&0xFF]
+    tmp = mixtab1[byte(xt >> 16) & 0xFF]
     c2 ^= tmp
     r1 ^= tmp
-    tmp = mixtab2[byte(xt>>8)&0xFF]
+    tmp = mixtab2[byte(xt >>  8) & 0xFF]
     c2 ^= tmp
-    tmp = mixtab3[byte(xt>>0)&0xFF]
+    tmp = mixtab3[byte(xt >>  0) & 0xFF]
     c2 ^= tmp
     r3 ^= tmp
     xt = S[i3]
-    tmp = mixtab0[byte(xt>>24)&0xFF]
+    tmp = mixtab0[byte(xt >> 24) & 0xFF]
     c3 ^= tmp
     r0 ^= tmp
-    tmp = mixtab1[byte(xt>>16)&0xFF]
+    tmp = mixtab1[byte(xt >> 16) & 0xFF]
     c3 ^= tmp
     r1 ^= tmp
-    tmp = mixtab2[byte(xt>>8)&0xFF]
+    tmp = mixtab2[byte(xt >>  8) & 0xFF]
     c3 ^= tmp
     r2 ^= tmp
-    tmp = mixtab3[byte(xt>>0)&0xFF]
+    tmp = mixtab3[byte(xt >>  0) & 0xFF]
     c3 ^= tmp
-    S[i0] = ((c0 ^ (r0 << 0)) & 0xFF000000) |
-        ((c1 ^ (r1 << 0)) & 0x00FF0000) |
-        ((c2 ^ (r2 << 0)) & 0x0000FF00) |
-        ((c3 ^ (r3 << 0)) & 0x000000FF)
-    S[i1] = ((c1 ^ (r0 << 8)) & 0xFF000000) |
-        ((c2 ^ (r1 << 8)) & 0x00FF0000) |
-        ((c3 ^ (r2 << 8)) & 0x0000FF00) |
-        ((c0 ^ (r3 >> 24)) & 0x000000FF)
+    S[i0] = ((c0 ^ (r0 <<  0)) & 0xFF000000) |
+            ((c1 ^ (r1 <<  0)) & 0x00FF0000) |
+            ((c2 ^ (r2 <<  0)) & 0x0000FF00) |
+            ((c3 ^ (r3 <<  0)) & 0x000000FF)
+    S[i1] = ((c1 ^ (r0 <<  8)) & 0xFF000000) |
+            ((c2 ^ (r1 <<  8)) & 0x00FF0000) |
+            ((c3 ^ (r2 <<  8)) & 0x0000FF00) |
+            ((c0 ^ (r3 >> 24)) & 0x000000FF)
     S[i2] = ((c2 ^ (r0 << 16)) & 0xFF000000) |
-        ((c3 ^ (r1 << 16)) & 0x00FF0000) |
-        ((c0 ^ (r2 >> 16)) & 0x0000FF00) |
-        ((c1 ^ (r3 >> 16)) & 0x000000FF)
+            ((c3 ^ (r1 << 16)) & 0x00FF0000) |
+            ((c0 ^ (r2 >> 16)) & 0x0000FF00) |
+            ((c1 ^ (r3 >> 16)) & 0x000000FF)
     S[i3] = ((c3 ^ (r0 << 24)) & 0xFF000000) |
-        ((c0 ^ (r1 >> 8)) & 0x00FF0000) |
-        ((c1 ^ (r2 >> 8)) & 0x0000FF00) |
-        ((c2 ^ (r3 >> 8)) & 0x000000FF)
+            ((c0 ^ (r1 >>  8)) & 0x00FF0000) |
+            ((c1 ^ (r2 >>  8)) & 0x0000FF00) |
+            ((c2 ^ (r3 >>  8)) & 0x000000FF)
 }

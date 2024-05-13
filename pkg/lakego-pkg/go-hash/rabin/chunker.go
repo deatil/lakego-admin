@@ -4,6 +4,22 @@ import (
     "io"
 )
 
+type errReadZero struct{}
+
+func (e *errReadZero) Error() string {
+    return "io.Reader returned 0 bytes and no error"
+}
+
+// A Discarder supports discarding bytes from an input stream.
+type Discarder interface {
+    // Discard skips the next n bytes, returning the number of
+    // bytes discarded.
+    //
+    // If Discard skips fewer than n bytes, it also returns an
+    // error. Discard must not skip beyond the end of the file.
+    Discard(n int) (discarded int, err error)
+}
+
 // A Chunker performs content-defined chunking. It divides a sequence
 // of bytes into chunks such that insertions and deletions in the
 // sequence will only affect chunk boundaries near those
@@ -30,16 +46,6 @@ type Chunker struct {
 
     // ioErr is the sticky error returned from r.Read.
     ioErr error
-}
-
-// A Discarder supports discarding bytes from an input stream.
-type Discarder interface {
-    // Discard skips the next n bytes, returning the number of
-    // bytes discarded.
-    //
-    // If Discard skips fewer than n bytes, it also returns an
-    // error. Discard must not skip beyond the end of the file.
-    Discard(n int) (discarded int, err error)
 }
 
 // NewChunker returns a content-defined chunker for data read from r
@@ -261,10 +267,4 @@ func (c *Chunker) more() error {
     // Make the error sticky.
     c.ioErr = err
     return err
-}
-
-type errReadZero struct{}
-
-func (e *errReadZero) Error() string {
-    return "io.Reader returned 0 bytes and no error"
 }

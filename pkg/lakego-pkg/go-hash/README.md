@@ -70,7 +70,7 @@ func main() {
 ~~~
 
 
-### Input or Output
+### Input and Output
 
 *  Input:
 `FromBytes(data []byte)`, `FromString(data string)`, `FromBase64String(data string)`, `FromHexString(data string)`, `FromReader(reader io.Reader)`

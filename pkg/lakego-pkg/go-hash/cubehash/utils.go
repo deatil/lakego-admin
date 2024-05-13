@@ -8,7 +8,7 @@ import (
 // Endianness option
 const littleEndian bool = true
 
-func GETU32(ptr []byte) uint32 {
+func getu32(ptr []byte) uint32 {
     if littleEndian {
         return binary.LittleEndian.Uint32(ptr)
     } else {
@@ -16,7 +16,7 @@ func GETU32(ptr []byte) uint32 {
     }
 }
 
-func PUTU32(ptr []byte, a uint32) {
+func putu32(ptr []byte, a uint32) {
     if littleEndian {
         binary.LittleEndian.PutUint32(ptr, a)
     } else {

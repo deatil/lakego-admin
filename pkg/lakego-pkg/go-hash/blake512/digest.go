@@ -107,7 +107,7 @@ func (d *digest) checkSum() (out []byte) {
 
     if ptr < 112 {
         for i := ptr + 1; i < 112; i++ {
-            tmpBuf[i] = 0x00;
+            tmpBuf[i] = 0x00
         }
 
         if d.hs == 64 {

@@ -26,7 +26,7 @@ type digest256 struct {
     partialLen uint32
 
     initVal [8]uint32
-    hs      int
+    hs int
 }
 
 func initAll256() {
@@ -76,7 +76,7 @@ func (d *digest256) Write(p []byte) (nn int, err error) {
     off := 0
     if d.partialLen != 0 {
         for d.partialLen < 4 && plen > 0 {
-            d.partial = (d.partial << 8) | uint32(p[off]&0xFF)
+            d.partial = (d.partial << 8) | uint32(p[off] & 0xFF)
             d.partialLen++
             plen--
             off++
@@ -87,20 +87,20 @@ func (d *digest256) Write(p []byte) (nn int, err error) {
         }
 
         d.process(
-            d.partial>>24,
-            (d.partial>>16)&0xFF,
-            (d.partial>>8)&0xFF,
-            d.partial&0xFF,
+            d.partial >> 24,
+            (d.partial >> 16) & 0xFF,
+            (d.partial >> 8) & 0xFF,
+            d.partial & 0xFF,
         )
         d.partialLen = 0
     }
 
     for plen >= 4 {
         d.process(
-            uint32(p[off+0]&0xFF),
-            uint32(p[off+1]&0xFF),
-            uint32(p[off+2]&0xFF),
-            uint32(p[off+3]&0xFF),
+            uint32(p[off + 0] & 0xFF),
+            uint32(p[off + 1] & 0xFF),
+            uint32(p[off + 2] & 0xFF),
+            uint32(p[off + 3] & 0xFF),
         )
 
         off += 4
@@ -109,7 +109,7 @@ func (d *digest256) Write(p []byte) (nn int, err error) {
 
     d.partialLen = uint32(plen)
     for plen > 0 {
-        d.partial = (d.partial << 8) | uint32(p[off]&0xFF)
+        d.partial = (d.partial << 8) | uint32(p[off] & 0xFF)
         plen--
         off++
     }
@@ -134,17 +134,17 @@ func (d *digest256) checkSum() (out []byte) {
     }
 
     d.process(
-        uint32(bitCount>>56)&0xFF,
-        uint32(bitCount>>48)&0xFF,
-        uint32(bitCount>>40)&0xFF,
-        uint32(bitCount>>32)&0xFF,
+        uint32(bitCount >> 56) & 0xFF,
+        uint32(bitCount >> 48) & 0xFF,
+        uint32(bitCount >> 40) & 0xFF,
+        uint32(bitCount >> 32) & 0xFF,
     )
 
     d.processFinal(
-        uint32(bitCount>>24)&0xFF,
-        uint32(bitCount>>16)&0xFF,
-        uint32(bitCount>>8)&0xFF,
-        uint32(bitCount)&0xFF,
+        uint32(bitCount >> 24) & 0xFF,
+        uint32(bitCount >> 16) & 0xFF,
+        uint32(bitCount >>  8) & 0xFF,
+        uint32(bitCount) & 0xFF,
     )
 
     len := d.hs

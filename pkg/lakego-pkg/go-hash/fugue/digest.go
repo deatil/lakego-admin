@@ -23,7 +23,7 @@ type digest struct {
     tmpS       [36]uint32
 
     initVal []uint32
-    hs      int
+    hs int
 }
 
 // newDigest returns a new *digest computing the bmw checksum
@@ -77,7 +77,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
     plen := len(p)
     off := 0
     for d.partialLen < 4 && plen > 0 {
-        d.partial = (d.partial << 8) | uint32(p[off]&0xFF)
+        d.partial = (d.partial << 8) | uint32(p[off] & 0xFF)
         d.partialLen++
         off++
         plen--
@@ -85,7 +85,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
     if d.partialLen == 4 || plen > 0 {
         zlen := plen & ^3
-        d.process(d.partial, p[off:], zlen>>2)
+        d.process(d.partial, p[off:], zlen >> 2)
 
         off += zlen
         plen -= zlen
@@ -94,7 +94,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
         d.partialLen = plen
 
         for plen > 0 {
-            d.partial = (d.partial << 8) | uint32(p[off]&0xFF)
+            d.partial = (d.partial << 8) | uint32(p[off] & 0xFF)
             off++
             plen--
         }
@@ -132,31 +132,31 @@ func (d *digest) processBlock(w uint32) {
 
 func (d *digest) process(w uint32, buf []byte, num int) {
     switch d.hs {
-    case 28, 32:
-        d.process2(w, buf, num)
-    case 48:
-        d.process384(w, buf, num)
-    case 64:
-        d.process512(w, buf, num)
+        case 28, 32:
+            d.process2(w, buf, num)
+        case 48:
+            d.process384(w, buf, num)
+        case 64:
+            d.process512(w, buf, num)
     }
 }
 
 func (d *digest) processFinal() []byte {
     switch d.hs {
-    case 28, 32:
-        return d.processFinal2()
-    case 48:
-        return d.processFinal384()
-    case 64:
-        return d.processFinal512()
+        case 28, 32:
+            return d.processFinal2()
+        case 48:
+            return d.processFinal384()
+        case 64:
+            return d.processFinal512()
     }
 
     return nil
 }
 
 func (d *digest) ror(rc uint32, len uint32) {
-    copy(d.tmpS[0:], d.s[len-rc:len])
-    copy(d.s[rc:], d.s[0:len-rc])
+    copy(d.tmpS[0:], d.s[len - rc:len])
+    copy(d.s[rc:], d.s[0:len - rc])
     copy(d.s[0:], d.tmpS[0:rc])
 }
 
@@ -169,23 +169,23 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
 
     switch d.rshift {
     case 1:
-        S[4] ^= S[24]
+        S[ 4] ^= S[24]
         S[24] = w
-        S[2] ^= S[24]
+        S[ 2] ^= S[24]
         S[25] ^= S[18]
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[6] ^= S[25]
-        S[7] ^= S[26]
-        S[8] ^= S[27]
+        S[ 6] ^= S[25]
+        S[ 7] ^= S[26]
+        S[ 8] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[3] ^= S[22]
-        S[4] ^= S[23]
-        S[5] ^= S[24]
+        S[ 3] ^= S[22]
+        S[ 4] ^= S[23]
+        S[ 5] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
         if num <= 0 {
             d.rshift = 2
@@ -206,9 +206,9 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         S[15] ^= S[19]
         S[16] ^= S[20]
         S[17] ^= S[21]
-        S[0] ^= S[19]
-        S[1] ^= S[20]
-        S[2] ^= S[21]
+        S[ 0] ^= S[19]
+        S[ 1] ^= S[20]
+        S[ 2] ^= S[21]
         smix(S[:], 15, 16, 17, 18)
         S[12] ^= S[16]
         S[13] ^= S[17]
@@ -232,21 +232,21 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         S[22] ^= S[12]
         S[12] = w
         S[20] ^= S[12]
-        S[13] ^= S[6]
-        S[9] ^= S[13]
+        S[13] ^= S[ 6]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[24] ^= S[13]
         S[25] ^= S[14]
         S[26] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        smix(S[:],  9, 10, 11, 12)
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[21] ^= S[10]
         S[22] ^= S[11]
         S[23] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
+        smix(S[:],  6,  7,  8,  9)
         if num <= 0 {
             d.rshift = 4
             return
@@ -259,24 +259,24 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         fallthrough
         /* fall through */
     case 4:
-        S[16] ^= S[6]
-        S[6] = w
-        S[14] ^= S[6]
-        S[7] ^= S[0]
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[18] ^= S[7]
-        S[19] ^= S[8]
-        S[20] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[15] ^= S[4]
-        S[16] ^= S[5]
-        S[17] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        S[16] ^= S[ 6]
+        S[ 6] = w
+        S[14] ^= S[ 6]
+        S[ 7] ^= S[ 0]
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[18] ^= S[ 7]
+        S[19] ^= S[ 8]
+        S[20] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[15] ^= S[ 4]
+        S[16] ^= S[ 5]
+        S[17] ^= S[ 6]
+        smix(S[:],  0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -289,23 +289,23 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
 
     for {
         /* ================ */
-        S[10] ^= S[0]
-        S[0] = w
-        S[8] ^= S[0]
-        S[1] ^= S[24]
-        S[27] ^= S[1]
-        S[28] ^= S[2]
-        S[29] ^= S[3]
-        S[12] ^= S[1]
-        S[13] ^= S[2]
-        S[14] ^= S[3]
-        smix(S[:], 27, 28, 29, 0)
+        S[10] ^= S[ 0]
+        S[ 0] = w
+        S[ 8] ^= S[ 0]
+        S[ 1] ^= S[24]
+        S[27] ^= S[ 1]
+        S[28] ^= S[ 2]
+        S[29] ^= S[ 3]
+        S[12] ^= S[ 1]
+        S[13] ^= S[ 2]
+        S[14] ^= S[ 3]
+        smix(S[:], 27, 28, 29,  0)
         S[24] ^= S[28]
         S[25] ^= S[29]
-        S[26] ^= S[0]
-        S[9] ^= S[28]
+        S[26] ^= S[ 0]
+        S[ 9] ^= S[28]
         S[10] ^= S[29]
-        S[11] ^= S[0]
+        S[11] ^= S[ 0]
         smix(S[:], 24, 25, 26, 27)
         if num <= 0 {
             d.rshift = 1
@@ -317,23 +317,23 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         off += 4
 
         /* ================ */
-        S[4] ^= S[24]
+        S[ 4] ^= S[24]
         S[24] = w
-        S[2] ^= S[24]
+        S[ 2] ^= S[24]
         S[25] ^= S[18]
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[6] ^= S[25]
-        S[7] ^= S[26]
-        S[8] ^= S[27]
+        S[ 6] ^= S[25]
+        S[ 7] ^= S[26]
+        S[ 8] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[3] ^= S[22]
-        S[4] ^= S[23]
-        S[5] ^= S[24]
+        S[ 3] ^= S[22]
+        S[ 4] ^= S[23]
+        S[ 5] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
         if num <= 0 {
             d.rshift = 2
@@ -352,9 +352,9 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         S[15] ^= S[19]
         S[16] ^= S[20]
         S[17] ^= S[21]
-        S[0] ^= S[19]
-        S[1] ^= S[20]
-        S[2] ^= S[21]
+        S[ 0] ^= S[19]
+        S[ 1] ^= S[20]
+        S[ 2] ^= S[21]
         smix(S[:], 15, 16, 17, 18)
         S[12] ^= S[16]
         S[13] ^= S[17]
@@ -376,21 +376,21 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         S[22] ^= S[12]
         S[12] = w
         S[20] ^= S[12]
-        S[13] ^= S[6]
-        S[9] ^= S[13]
+        S[13] ^= S[ 6]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[24] ^= S[13]
         S[25] ^= S[14]
         S[26] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        smix(S[:],  9, 10, 11, 12)
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[21] ^= S[10]
         S[22] ^= S[11]
         S[23] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
+        smix(S[:],  6,  7,  8,  9)
         if num <= 0 {
             d.rshift = 4
             return
@@ -401,24 +401,24 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
         off += 4
 
         /* ================ */
-        S[16] ^= S[6]
-        S[6] = w
-        S[14] ^= S[6]
-        S[7] ^= S[0]
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[18] ^= S[7]
-        S[19] ^= S[8]
-        S[20] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[15] ^= S[4]
-        S[16] ^= S[5]
-        S[17] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        S[16] ^= S[ 6]
+        S[ 6] = w
+        S[14] ^= S[ 6]
+        S[ 7] ^= S[ 0]
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[18] ^= S[ 7]
+        S[19] ^= S[ 8]
+        S[20] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[15] ^= S[ 4]
+        S[16] ^= S[ 5]
+        S[17] ^= S[ 6]
+        smix(S[:], 0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -433,7 +433,7 @@ func (d *digest) process2(w uint32, buf []byte, num int) {
 func (d *digest) processFinal2() (out []byte) {
     S := &d.s
 
-    d.ror(6*d.rshift, 30)
+    d.ror(6 * d.rshift, 30)
 
     for i := 0; i < 10; i++ {
         d.ror(3, 30)
@@ -442,18 +442,18 @@ func (d *digest) processFinal2() (out []byte) {
     }
 
     for i := 0; i < 13; i++ {
-        S[4] ^= S[0]
-        S[15] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[15] ^= S[ 0]
         d.ror(15, 30)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[16] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[16] ^= S[ 0]
         d.ror(14, 30)
         smix(S[:], 0, 1, 2, 3)
     }
 
-    S[4] ^= S[0]
-    S[15] ^= S[0]
+    S[ 4] ^= S[ 0]
+    S[15] ^= S[ 0]
 
     if d.hs >= 32 {
         out = make([]byte, 32)
@@ -485,7 +485,7 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
 
     switch d.rshift {
     case 1:
-        S[7] ^= S[27]
+        S[ 7] ^= S[27]
         S[27] = w
         S[35] ^= S[27]
         S[28] ^= S[18]
@@ -493,23 +493,23 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[24] ^= S[28]
         S[25] ^= S[29]
         S[26] ^= S[30]
-        S[6] ^= S[28]
-        S[7] ^= S[29]
-        S[8] ^= S[30]
+        S[ 6] ^= S[28]
+        S[ 7] ^= S[29]
+        S[ 8] ^= S[30]
         smix(S[:], 24, 25, 26, 27)
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[3] ^= S[25]
-        S[4] ^= S[26]
-        S[5] ^= S[27]
+        S[ 3] ^= S[25]
+        S[ 4] ^= S[26]
+        S[ 5] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[0] ^= S[22]
-        S[1] ^= S[23]
-        S[2] ^= S[24]
+        S[ 0] ^= S[22]
+        S[ 1] ^= S[23]
+        S[ 2] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
 
         if num <= 0 {
@@ -527,7 +527,7 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[34] ^= S[18]
         S[18] = w
         S[26] ^= S[18]
-        S[19] ^= S[9]
+        S[19] ^= S[ 9]
         S[22] ^= S[12]
         S[15] ^= S[19]
         S[16] ^= S[20]
@@ -543,13 +543,13 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[31] ^= S[17]
         S[32] ^= S[18]
         smix(S[:], 12, 13, 14, 15)
-        S[9] ^= S[13]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[27] ^= S[13]
         S[28] ^= S[14]
         S[29] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
+        smix(S[:],  9, 10, 11, 12)
         if num <= 0 {
             d.rshift = 3
             return
@@ -562,32 +562,32 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         fallthrough
         /* fall through */
     case 3:
-        S[25] ^= S[9]
-        S[9] = w
-        S[17] ^= S[9]
-        S[10] ^= S[0]
-        S[13] ^= S[3]
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        S[25] ^= S[ 9]
+        S[ 9] = w
+        S[17] ^= S[ 9]
+        S[10] ^= S[ 0]
+        S[13] ^= S[ 3]
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[24] ^= S[10]
         S[25] ^= S[11]
         S[26] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[21] ^= S[7]
-        S[22] ^= S[8]
-        S[23] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[18] ^= S[4]
-        S[19] ^= S[5]
-        S[20] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        smix(S[:],  6,  7,  8,  9)
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[21] ^= S[ 7]
+        S[22] ^= S[ 8]
+        S[23] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[18] ^= S[ 4]
+        S[19] ^= S[ 5]
+        S[20] ^= S[ 6]
+        smix(S[:],  0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -600,29 +600,29 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
 
     for {
         /* ================ */
-        S[16] ^= S[0]
-        S[0] = w
-        S[8] ^= S[0]
-        S[1] ^= S[27]
-        S[4] ^= S[30]
-        S[33] ^= S[1]
-        S[34] ^= S[2]
-        S[35] ^= S[3]
-        S[15] ^= S[1]
-        S[16] ^= S[2]
-        S[17] ^= S[3]
-        smix(S[:], 33, 34, 35, 0)
+        S[16] ^= S[ 0]
+        S[ 0] = w
+        S[ 8] ^= S[ 0]
+        S[ 1] ^= S[27]
+        S[ 4] ^= S[30]
+        S[33] ^= S[ 1]
+        S[34] ^= S[ 2]
+        S[35] ^= S[ 3]
+        S[15] ^= S[ 1]
+        S[16] ^= S[ 2]
+        S[17] ^= S[ 3]
+        smix(S[:], 33, 34, 35,  0)
         S[30] ^= S[34]
         S[31] ^= S[35]
-        S[32] ^= S[0]
+        S[32] ^= S[ 0]
         S[12] ^= S[34]
         S[13] ^= S[35]
-        S[14] ^= S[0]
+        S[14] ^= S[ 0]
         smix(S[:], 30, 31, 32, 33)
         S[27] ^= S[31]
         S[28] ^= S[32]
         S[29] ^= S[33]
-        S[9] ^= S[31]
+        S[ 9] ^= S[31]
         S[10] ^= S[32]
         S[11] ^= S[33]
         smix(S[:], 27, 28, 29, 30)
@@ -636,7 +636,7 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         off += 4
 
         /* ================ */
-        S[7] ^= S[27]
+        S[ 7] ^= S[27]
         S[27] = w
         S[35] ^= S[27]
         S[28] ^= S[18]
@@ -644,23 +644,23 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[24] ^= S[28]
         S[25] ^= S[29]
         S[26] ^= S[30]
-        S[6] ^= S[28]
-        S[7] ^= S[29]
-        S[8] ^= S[30]
+        S[ 6] ^= S[28]
+        S[ 7] ^= S[29]
+        S[ 8] ^= S[30]
         smix(S[:], 24, 25, 26, 27)
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[3] ^= S[25]
-        S[4] ^= S[26]
-        S[5] ^= S[27]
+        S[ 3] ^= S[25]
+        S[ 4] ^= S[26]
+        S[ 5] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[0] ^= S[22]
-        S[1] ^= S[23]
-        S[2] ^= S[24]
+        S[ 0] ^= S[22]
+        S[ 1] ^= S[23]
+        S[ 2] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
         if num <= 0 {
             d.rshift = 2
@@ -675,7 +675,7 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[34] ^= S[18]
         S[18] = w
         S[26] ^= S[18]
-        S[19] ^= S[9]
+        S[19] ^= S[ 9]
         S[22] ^= S[12]
         S[15] ^= S[19]
         S[16] ^= S[20]
@@ -691,13 +691,13 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         S[31] ^= S[17]
         S[32] ^= S[18]
         smix(S[:], 12, 13, 14, 15)
-        S[9] ^= S[13]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[27] ^= S[13]
         S[28] ^= S[14]
         S[29] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
+        smix(S[:],  9, 10, 11, 12)
         if num <= 0 {
             d.rshift = 3
             return
@@ -708,32 +708,32 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
         off += 4
 
         /* ================ */
-        S[25] ^= S[9]
-        S[9] = w
-        S[17] ^= S[9]
-        S[10] ^= S[0]
-        S[13] ^= S[3]
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        S[25] ^= S[ 9]
+        S[ 9] = w
+        S[17] ^= S[ 9]
+        S[10] ^= S[ 0]
+        S[13] ^= S[ 3]
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[24] ^= S[10]
         S[25] ^= S[11]
         S[26] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[21] ^= S[7]
-        S[22] ^= S[8]
-        S[23] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[18] ^= S[4]
-        S[19] ^= S[5]
-        S[20] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        smix(S[:],  6,  7,  8,  9)
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[21] ^= S[ 7]
+        S[22] ^= S[ 8]
+        S[23] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[18] ^= S[ 4]
+        S[19] ^= S[ 5]
+        S[20] ^= S[ 6]
+        smix(S[:],  0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -748,7 +748,7 @@ func (d *digest) process384(w uint32, buf []byte, num int) {
 func (d *digest) processFinal384() (out []byte) {
     S := &d.s
 
-    d.ror(9*d.rshift, 36)
+    d.ror(9 * d.rshift, 36)
 
     for i := 0; i < 18; i++ {
         d.ror(3, 36)
@@ -757,26 +757,26 @@ func (d *digest) processFinal384() (out []byte) {
     }
 
     for i := 0; i < 13; i++ {
-        S[4] ^= S[0]
-        S[12] ^= S[0]
-        S[24] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[12] ^= S[ 0]
+        S[24] ^= S[ 0]
         d.ror(12, 36)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[13] ^= S[0]
-        S[24] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[13] ^= S[ 0]
+        S[24] ^= S[ 0]
         d.ror(12, 36)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[13] ^= S[0]
-        S[25] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[13] ^= S[ 0]
+        S[25] ^= S[ 0]
         d.ror(11, 36)
         smix(S[:], 0, 1, 2, 3)
     }
 
-    S[4] ^= S[0]
-    S[12] ^= S[0]
-    S[24] ^= S[0]
+    S[ 4] ^= S[ 0]
+    S[12] ^= S[ 0]
+    S[24] ^= S[ 0]
 
     out = make([]byte, 48)
 
@@ -814,16 +814,16 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[3] ^= S[25]
-        S[4] ^= S[26]
-        S[5] ^= S[27]
+        S[ 3] ^= S[25]
+        S[ 4] ^= S[26]
+        S[ 5] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[0] ^= S[22]
-        S[1] ^= S[23]
-        S[2] ^= S[24]
+        S[ 0] ^= S[22]
+        S[ 1] ^= S[23]
+        S[ 2] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
         S[15] ^= S[19]
         S[16] ^= S[20]
@@ -854,37 +854,37 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
         S[34] ^= S[12]
         S[12] = w
         S[20] ^= S[12]
-        S[13] ^= S[0]
-        S[16] ^= S[3]
-        S[19] ^= S[6]
-        S[9] ^= S[13]
+        S[13] ^= S[ 0]
+        S[16] ^= S[ 3]
+        S[19] ^= S[ 6]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[27] ^= S[13]
         S[28] ^= S[14]
         S[29] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        smix(S[:],  9, 10, 11, 12)
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[24] ^= S[10]
         S[25] ^= S[11]
         S[26] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[21] ^= S[7]
-        S[22] ^= S[8]
-        S[23] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[18] ^= S[4]
-        S[19] ^= S[5]
-        S[20] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        smix(S[:],  6,  7,  8,  9)
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[21] ^= S[ 7]
+        S[22] ^= S[ 8]
+        S[23] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[18] ^= S[ 4]
+        S[19] ^= S[ 5]
+        S[20] ^= S[ 6]
+        smix(S[:],  0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -897,39 +897,39 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
 
     for {
         /* ================ */
-        S[22] ^= S[0]
-        S[0] = w
-        S[8] ^= S[0]
-        S[1] ^= S[24]
-        S[4] ^= S[27]
-        S[7] ^= S[30]
-        S[33] ^= S[1]
-        S[34] ^= S[2]
-        S[35] ^= S[3]
-        S[15] ^= S[1]
-        S[16] ^= S[2]
-        S[17] ^= S[3]
-        smix(S[:], 33, 34, 35, 0)
+        S[22] ^= S[ 0]
+        S[ 0] = w
+        S[ 8] ^= S[ 0]
+        S[ 1] ^= S[24]
+        S[ 4] ^= S[27]
+        S[ 7] ^= S[30]
+        S[33] ^= S[ 1]
+        S[34] ^= S[ 2]
+        S[35] ^= S[ 3]
+        S[15] ^= S[ 1]
+        S[16] ^= S[ 2]
+        S[17] ^= S[ 3]
+        smix(S[:], 33, 34, 35,  0)
         S[30] ^= S[34]
         S[31] ^= S[35]
-        S[32] ^= S[0]
+        S[32] ^= S[ 0]
         S[12] ^= S[34]
         S[13] ^= S[35]
-        S[14] ^= S[0]
+        S[14] ^= S[ 0]
         smix(S[:], 30, 31, 32, 33)
         S[27] ^= S[31]
         S[28] ^= S[32]
         S[29] ^= S[33]
-        S[9] ^= S[31]
+        S[ 9] ^= S[31]
         S[10] ^= S[32]
         S[11] ^= S[33]
         smix(S[:], 27, 28, 29, 30)
         S[24] ^= S[28]
         S[25] ^= S[29]
         S[26] ^= S[30]
-        S[6] ^= S[28]
-        S[7] ^= S[29]
-        S[8] ^= S[30]
+        S[ 6] ^= S[28]
+        S[ 7] ^= S[29]
+        S[ 8] ^= S[30]
         smix(S[:], 24, 25, 26, 27)
         if num <= 0 {
             d.rshift = 1
@@ -950,16 +950,16 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
         S[21] ^= S[25]
         S[22] ^= S[26]
         S[23] ^= S[27]
-        S[3] ^= S[25]
-        S[4] ^= S[26]
-        S[5] ^= S[27]
+        S[ 3] ^= S[25]
+        S[ 4] ^= S[26]
+        S[ 5] ^= S[27]
         smix(S[:], 21, 22, 23, 24)
         S[18] ^= S[22]
         S[19] ^= S[23]
         S[20] ^= S[24]
-        S[0] ^= S[22]
-        S[1] ^= S[23]
-        S[2] ^= S[24]
+        S[ 0] ^= S[22]
+        S[ 1] ^= S[23]
+        S[ 2] ^= S[24]
         smix(S[:], 18, 19, 20, 21)
         S[15] ^= S[19]
         S[16] ^= S[20]
@@ -988,37 +988,37 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
         S[34] ^= S[12]
         S[12] = w
         S[20] ^= S[12]
-        S[13] ^= S[0]
-        S[16] ^= S[3]
-        S[19] ^= S[6]
-        S[9] ^= S[13]
+        S[13] ^= S[ 0]
+        S[16] ^= S[ 3]
+        S[19] ^= S[ 6]
+        S[ 9] ^= S[13]
         S[10] ^= S[14]
         S[11] ^= S[15]
         S[27] ^= S[13]
         S[28] ^= S[14]
         S[29] ^= S[15]
-        smix(S[:], 9, 10, 11, 12)
-        S[6] ^= S[10]
-        S[7] ^= S[11]
-        S[8] ^= S[12]
+        smix(S[:],  9, 10, 11, 12)
+        S[ 6] ^= S[10]
+        S[ 7] ^= S[11]
+        S[ 8] ^= S[12]
         S[24] ^= S[10]
         S[25] ^= S[11]
         S[26] ^= S[12]
-        smix(S[:], 6, 7, 8, 9)
-        S[3] ^= S[7]
-        S[4] ^= S[8]
-        S[5] ^= S[9]
-        S[21] ^= S[7]
-        S[22] ^= S[8]
-        S[23] ^= S[9]
-        smix(S[:], 3, 4, 5, 6)
-        S[0] ^= S[4]
-        S[1] ^= S[5]
-        S[2] ^= S[6]
-        S[18] ^= S[4]
-        S[19] ^= S[5]
-        S[20] ^= S[6]
-        smix(S[:], 0, 1, 2, 3)
+        smix(S[:],  6,  7,  8,  9)
+        S[ 3] ^= S[ 7]
+        S[ 4] ^= S[ 8]
+        S[ 5] ^= S[ 9]
+        S[21] ^= S[ 7]
+        S[22] ^= S[ 8]
+        S[23] ^= S[ 9]
+        smix(S[:],  3,  4,  5,  6)
+        S[ 0] ^= S[ 4]
+        S[ 1] ^= S[ 5]
+        S[ 2] ^= S[ 6]
+        S[18] ^= S[ 4]
+        S[19] ^= S[ 5]
+        S[20] ^= S[ 6]
+        smix(S[:],  0,  1,  2,  3)
         if num <= 0 {
             d.rshift = 0
             return
@@ -1033,7 +1033,7 @@ func (d *digest) process512(w uint32, buf []byte, num int) {
 func (d *digest) processFinal512() (out []byte) {
     S := &d.s
 
-    d.ror(12*d.rshift, 36)
+    d.ror(12 * d.rshift, 36)
 
     for i := 0; i < 32; i++ {
         d.ror(3, 36)
@@ -1042,35 +1042,35 @@ func (d *digest) processFinal512() (out []byte) {
     }
 
     for i := 0; i < 13; i++ {
-        S[4] ^= S[0]
-        S[9] ^= S[0]
-        S[18] ^= S[0]
-        S[27] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[ 9] ^= S[ 0]
+        S[18] ^= S[ 0]
+        S[27] ^= S[ 0]
         d.ror(9, 36)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[10] ^= S[0]
-        S[18] ^= S[0]
-        S[27] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[10] ^= S[ 0]
+        S[18] ^= S[ 0]
+        S[27] ^= S[ 0]
         d.ror(9, 36)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[10] ^= S[0]
-        S[19] ^= S[0]
-        S[27] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[10] ^= S[ 0]
+        S[19] ^= S[ 0]
+        S[27] ^= S[ 0]
         d.ror(9, 36)
         smix(S[:], 0, 1, 2, 3)
-        S[4] ^= S[0]
-        S[10] ^= S[0]
-        S[19] ^= S[0]
-        S[28] ^= S[0]
+        S[ 4] ^= S[ 0]
+        S[10] ^= S[ 0]
+        S[19] ^= S[ 0]
+        S[28] ^= S[ 0]
         d.ror(8, 36)
         smix(S[:], 0, 1, 2, 3)
     }
-    S[4] ^= S[0]
-    S[9] ^= S[0]
-    S[18] ^= S[0]
-    S[27] ^= S[0]
+    S[ 4] ^= S[ 0]
+    S[ 9] ^= S[ 0]
+    S[18] ^= S[ 0]
+    S[27] ^= S[ 0]
 
     out = make([]byte, 64)
 
@@ -1093,3 +1093,4 @@ func (d *digest) processFinal512() (out []byte) {
 
     return
 }
+

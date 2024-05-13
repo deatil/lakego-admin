@@ -57,7 +57,7 @@ func (d *digest512) Write(p []byte) (nn int, err error) {
     var etype int
 
     plen := len(p)
-    for d.nx+plen >= BlockSize512 {
+    for d.nx + plen >= BlockSize512 {
         copy(d.x[d.nx:], p)
 
         if d.bcount == 0 {
@@ -142,27 +142,27 @@ func (d *digest512) ubi(etype int, extra int) {
     var p7 = m7
 
     h[8] = ((h[0] ^ h[1]) ^ (h[2] ^ h[3])) ^
-        ((h[4] ^ h[5]) ^ (h[6] ^ h[7])) ^ 0x1BD11BDAA9FC1A22
+           ((h[4] ^ h[5]) ^ (h[6] ^ h[7])) ^ 0x1BD11BDAA9FC1A22
     var t0 = (d.bcount << 6) + uint64(extra)
     var t1 = (d.bcount >> 58) + (uint64(etype) << 55)
     var t2 = t0 ^ t1
 
     for u := 0; u <= 15; u += 3 {
-        h[u+9] = h[u+0]
-        h[u+10] = h[u+1]
-        h[u+11] = h[u+2]
+        h[u + 9] = h[u + 0]
+        h[u + 10] = h[u + 1]
+        h[u + 11] = h[u + 2]
     }
 
     for u := 0; u < 9; u++ {
         s := u << 1
-        p0 += h[s+0]
-        p1 += h[s+1]
-        p2 += h[s+2]
-        p3 += h[s+3]
-        p4 += h[s+4]
-        p5 += h[s+5] + t0
-        p6 += h[s+6] + t1
-        p7 += h[s+7] + uint64(s)
+        p0 += h[s + 0]
+        p1 += h[s + 1]
+        p2 += h[s + 2]
+        p3 += h[s + 3]
+        p4 += h[s + 4]
+        p5 += h[s + 5] + t0
+        p6 += h[s + 6] + t1
+        p7 += h[s + 7] + uint64(s)
         p0 += p1
         p1 = (p1 << 46) ^ (p1 >> (64 - 46)) ^ p0
         p2 += p3
@@ -195,14 +195,14 @@ func (d *digest512) ubi(etype int, extra int) {
         p5 = (p5 << 54) ^ (p5 >> (64 - 54)) ^ p2
         p4 += p3
         p3 = (p3 << 56) ^ (p3 >> (64 - 56)) ^ p4
-        p0 += h[s+1+0]
-        p1 += h[s+1+1]
-        p2 += h[s+1+2]
-        p3 += h[s+1+3]
-        p4 += h[s+1+4]
-        p5 += h[s+1+5] + t1
-        p6 += h[s+1+6] + t2
-        p7 += h[s+1+7] + uint64(s) + 1
+        p0 += h[s + 1 + 0]
+        p1 += h[s + 1 + 1]
+        p2 += h[s + 1 + 2]
+        p3 += h[s + 1 + 3]
+        p4 += h[s + 1 + 4]
+        p5 += h[s + 1 + 5] + t1
+        p6 += h[s + 1 + 6] + t2
+        p7 += h[s + 1 + 7] + uint64(s) + 1
         p0 += p1
         p1 = (p1 << 39) ^ (p1 >> (64 - 39)) ^ p0
         p2 += p3
@@ -242,14 +242,14 @@ func (d *digest512) ubi(etype int, extra int) {
         t0 = tmp
     }
 
-    p0 += h[18+0]
-    p1 += h[18+1]
-    p2 += h[18+2]
-    p3 += h[18+3]
-    p4 += h[18+4]
-    p5 += h[18+5] + t0
-    p6 += h[18+6] + t1
-    p7 += h[18+7] + 18
+    p0 += h[18 + 0]
+    p1 += h[18 + 1]
+    p2 += h[18 + 2]
+    p3 += h[18 + 3]
+    p4 += h[18 + 4]
+    p5 += h[18 + 5] + t0
+    p6 += h[18 + 6] + t1
+    p7 += h[18 + 7] + 18
 
     h[0] = m0 ^ p0
     h[1] = m1 ^ p1
@@ -260,3 +260,4 @@ func (d *digest512) ubi(etype int, extra int) {
     h[6] = m6 ^ p6
     h[7] = m7 ^ p7
 }
+

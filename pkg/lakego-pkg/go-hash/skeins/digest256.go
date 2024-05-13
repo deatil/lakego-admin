@@ -57,7 +57,7 @@ func (d *digest256) Write(p []byte) (nn int, err error) {
     var etype int
 
     plen := len(p)
-    for d.nx+plen >= BlockSize256 {
+    for d.nx + plen >= BlockSize256 {
         copy(d.x[d.nx:], p)
 
         if d.bcount == 0 {
@@ -529,3 +529,4 @@ func (d *digest256) ubi(etype int, extra int) {
     d.s[2] = m2 ^ p2
     d.s[3] = m3 ^ p3
 }
+

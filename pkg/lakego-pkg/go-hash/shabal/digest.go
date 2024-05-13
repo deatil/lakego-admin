@@ -33,7 +33,7 @@ type digest struct {
 
 // newDigest returns a new *digest computing the shabal checksum
 func newDigest(outSize int) (*digest, error) {
-    if outSize < 32 || outSize > 512 || (outSize&31) != 0 {
+    if outSize < 32 || outSize > 512 || (outSize & 31) != 0 {
         return nil, errors.New(fmt.Sprintf("go-hash/shabal: invalid Shabal output size: %d", outSize))
     }
 
@@ -55,18 +55,18 @@ func (d *digest) Reset() {
     d.W = 1
 
     switch d.outSizeW32 {
-    case 6:
-        d.state = iv192
-    case 7:
-        d.state = iv224
-    case 8:
-        d.state = iv256
-    case 12:
-        d.state = iv384
-    case 16:
-        d.state = iv512
-    default:
-        d.state = d.getIV(d.outSizeW32)
+        case 6:
+            d.state = iv192
+        case 7:
+            d.state = iv224
+        case 8:
+            d.state = iv256
+        case 12:
+            d.state = iv384
+        case 16:
+            d.state = iv512
+        default:
+            d.state = d.getIV(d.outSizeW32)
     }
 }
 
@@ -164,14 +164,14 @@ func (d *digest) getIV(outSizeW32 int) [44]uint32 {
 
     sg.W = int64(-1)
     for i := 0; i < 16; i++ {
-        sg.buf[(i<<2)+0] = byte(outSize + i)
-        sg.buf[(i<<2)+1] = byte((outSize + i) >> 8)
+        sg.buf[(i << 2) + 0] = byte(outSize + i)
+        sg.buf[(i << 2) + 1] = byte((outSize + i) >> 8)
     }
 
     sg.core(sg.buf[:], 1)
     for i := 0; i < 16; i++ {
-        sg.buf[(i<<2)+0] = byte(outSize + i + 16)
-        sg.buf[(i<<2)+1] = byte((outSize + i + 16) >> 8)
+        sg.buf[(i << 2) + 0] = byte(outSize + i + 16)
+        sg.buf[(i << 2) + 1] = byte((outSize + i + 16) >> 8)
     }
 
     sg.core(sg.buf[:], 1)
@@ -182,16 +182,16 @@ func (d *digest) getIV(outSizeW32 int) [44]uint32 {
 func (d *digest) core(data []byte, num int) {
     state := &d.state
 
-    var A0 = state[0]
-    var A1 = state[1]
-    var A2 = state[2]
-    var A3 = state[3]
-    var A4 = state[4]
-    var A5 = state[5]
-    var A6 = state[6]
-    var A7 = state[7]
-    var A8 = state[8]
-    var A9 = state[9]
+    var A0 = state[ 0]
+    var A1 = state[ 1]
+    var A2 = state[ 2]
+    var A3 = state[ 3]
+    var A4 = state[ 4]
+    var A5 = state[ 5]
+    var A6 = state[ 6]
+    var A7 = state[ 7]
+    var A8 = state[ 8]
+    var A9 = state[ 9]
     var AA = state[10]
     var AB = state[11]
 
@@ -231,52 +231,52 @@ func (d *digest) core(data []byte, num int) {
 
     off := 0
     for num > 0 {
-        var M0 = getu32(data[off+0:])
+        var M0 = getu32(data[off +  0:])
         B0 += M0
         B0 = (B0 << 17) | (B0 >> 15)
-        var M1 = getu32(data[off+4:])
+        var M1 = getu32(data[off +  4:])
         B1 += M1
         B1 = (B1 << 17) | (B1 >> 15)
-        var M2 = getu32(data[off+8:])
+        var M2 = getu32(data[off +  8:])
         B2 += M2
         B2 = (B2 << 17) | (B2 >> 15)
-        var M3 = getu32(data[off+12:])
+        var M3 = getu32(data[off + 12:])
         B3 += M3
         B3 = (B3 << 17) | (B3 >> 15)
-        var M4 = getu32(data[off+16:])
+        var M4 = getu32(data[off + 16:])
         B4 += M4
         B4 = (B4 << 17) | (B4 >> 15)
-        var M5 = getu32(data[off+20:])
+        var M5 = getu32(data[off + 20:])
         B5 += M5
         B5 = (B5 << 17) | (B5 >> 15)
-        var M6 = getu32(data[off+24:])
+        var M6 = getu32(data[off + 24:])
         B6 += M6
         B6 = (B6 << 17) | (B6 >> 15)
-        var M7 = getu32(data[off+28:])
+        var M7 = getu32(data[off + 28:])
         B7 += M7
         B7 = (B7 << 17) | (B7 >> 15)
-        var M8 = getu32(data[off+32:])
+        var M8 = getu32(data[off + 32:])
         B8 += M8
         B8 = (B8 << 17) | (B8 >> 15)
-        var M9 = getu32(data[off+36:])
+        var M9 = getu32(data[off + 36:])
         B9 += M9
         B9 = (B9 << 17) | (B9 >> 15)
-        var MA = getu32(data[off+40:])
+        var MA = getu32(data[off + 40:])
         BA += MA
         BA = (BA << 17) | (BA >> 15)
-        var MB = getu32(data[off+44:])
+        var MB = getu32(data[off + 44:])
         BB += MB
         BB = (BB << 17) | (BB >> 15)
-        var MC = getu32(data[off+48:])
+        var MC = getu32(data[off + 48:])
         BC += MC
         BC = (BC << 17) | (BC >> 15)
-        var MD = getu32(data[off+52:])
+        var MD = getu32(data[off + 52:])
         BD += MD
         BD = (BD << 17) | (BD >> 15)
-        var ME = getu32(data[off+56:])
+        var ME = getu32(data[off + 56:])
         BE += ME
         BE = (BE << 17) | (BE >> 15)
-        var MF = getu32(data[off+60:])
+        var MF = getu32(data[off + 60:])
         BF += MF
         BF = (BF << 17) | (BF >> 15)
 
@@ -396,68 +396,36 @@ func (d *digest) core(data []byte, num int) {
         A0 += CB + CF + C3
 
         var tmp uint32
-        tmp = B0
-        B0 = C0 - M0
-        C0 = tmp
-        tmp = B1
-        B1 = C1 - M1
-        C1 = tmp
-        tmp = B2
-        B2 = C2 - M2
-        C2 = tmp
-        tmp = B3
-        B3 = C3 - M3
-        C3 = tmp
-        tmp = B4
-        B4 = C4 - M4
-        C4 = tmp
-        tmp = B5
-        B5 = C5 - M5
-        C5 = tmp
-        tmp = B6
-        B6 = C6 - M6
-        C6 = tmp
-        tmp = B7
-        B7 = C7 - M7
-        C7 = tmp
-        tmp = B8
-        B8 = C8 - M8
-        C8 = tmp
-        tmp = B9
-        B9 = C9 - M9
-        C9 = tmp
-        tmp = BA
-        BA = CA - MA
-        CA = tmp
-        tmp = BB
-        BB = CB - MB
-        CB = tmp
-        tmp = BC
-        BC = CC - MC
-        CC = tmp
-        tmp = BD
-        BD = CD - MD
-        CD = tmp
-        tmp = BE
-        BE = CE - ME
-        CE = tmp
-        tmp = BF
-        BF = CF - MF
-        CF = tmp
+        tmp = B0; B0 = C0 - M0; C0 = tmp
+        tmp = B1; B1 = C1 - M1; C1 = tmp
+        tmp = B2; B2 = C2 - M2; C2 = tmp
+        tmp = B3; B3 = C3 - M3; C3 = tmp
+        tmp = B4; B4 = C4 - M4; C4 = tmp
+        tmp = B5; B5 = C5 - M5; C5 = tmp
+        tmp = B6; B6 = C6 - M6; C6 = tmp
+        tmp = B7; B7 = C7 - M7; C7 = tmp
+        tmp = B8; B8 = C8 - M8; C8 = tmp
+        tmp = B9; B9 = C9 - M9; C9 = tmp
+        tmp = BA; BA = CA - MA; CA = tmp
+        tmp = BB; BB = CB - MB; CB = tmp
+        tmp = BC; BC = CC - MC; CC = tmp
+        tmp = BD; BD = CD - MD; CD = tmp
+        tmp = BE; BE = CE - ME; CE = tmp
+        tmp = BF; BF = CF - MF; CF = tmp
 
         num--
     }
 
-    state[0] = A0
-    state[1] = A1
-    state[2] = A2
-    state[3] = A3
-    state[4] = A4
-    state[5] = A5
-    state[6] = A6
-    state[7] = A7
-    state[8] = A8
-    state[9] = A9
+    state[ 0] = A0
+    state[ 1] = A1
+    state[ 2] = A2
+    state[ 3] = A3
+    state[ 4] = A4
+    state[ 5] = A5
+    state[ 6] = A6
+    state[ 7] = A7
+    state[ 8] = A8
+    state[ 9] = A9
     state[10] = AA
     state[11] = AB
 

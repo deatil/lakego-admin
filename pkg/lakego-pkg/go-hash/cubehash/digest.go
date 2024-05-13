@@ -4,14 +4,16 @@ import (
     "errors"
 )
 
-// The size of an cubehash checksum in bytes.
-const Size512 = 64
-const Size384 = 48
-const Size256 = 32
-const Size224 = 28
-const Size192 = 24
-const Size160 = 20
-const Size128 = 16
+const (
+    // The size of an cubehash checksum in bytes.
+    Size512 = 64
+    Size384 = 48
+    Size256 = 32
+    Size224 = 28
+    Size192 = 24
+    Size160 = 20
+    Size128 = 16
+)
 
 // The blocksize of cubehash in bytes.
 const BlockSize = 32
@@ -131,7 +133,7 @@ func (this *digest) initRound(r int) {
 
 func (this *digest) ingest(x *[32]uint32, p []byte) {
     for n := 0; n < this.bs/4; n++ {
-        x[n] ^= GETU32(p[n*4:])
+        x[n] ^= getu32(p[n*4:])
     }
 
     // the number of rounds per message block
@@ -144,7 +146,7 @@ func (this *digest) MarshalBinary() ([]byte, error) {
     x := &this.s
     buf := make([]byte, 128+1, 128+1+this.nx)
     for n := 0; n < 32; n++ {
-        PUTU32(buf[n*4:], x[n])
+        putu32(buf[n*4:], x[n])
     }
 
     buf[128] = byte(this.nx)
@@ -164,7 +166,7 @@ func (this *digest) UnmarshalBinary(data []byte) error {
     this.nx = n
 
     for n := 0; n < 32; n++ {
-        x[n] = GETU32(data[n*4:])
+        x[n] = getu32(data[n*4:])
     }
 
     this.len = 0
