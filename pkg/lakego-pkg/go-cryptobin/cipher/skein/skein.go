@@ -1,4 +1,4 @@
-package skein512
+package skein
 
 import (
     "crypto/cipher"
@@ -7,7 +7,7 @@ import (
 // BlockSize is the block size of Skein-512 in bytes.
 const BlockSize = 64
 
-type skein512Cipher struct {
+type skeinCipher struct {
     k [8]uint64
     t [2]uint64
 
@@ -21,7 +21,7 @@ type skein512Cipher struct {
 // and nonce. The same key-nonce combination must not be used to encrypt more
 // than one message. There are no limits on the length of key or nonce.
 func NewCipher(key []byte, nonce []byte) cipher.Stream {
-    c := new(skein512Cipher)
+    c := new(skeinCipher)
     c.expandKey(key, nonce)
 
     return c
@@ -29,7 +29,7 @@ func NewCipher(key []byte, nonce []byte) cipher.Stream {
 
 // XORKeyStream XORs each byte in the given slice with the next byte from the
 // hash output. Dst and src may point to the same memory.
-func (cip *skein512Cipher) XORKeyStream(dst, src []byte) {
+func (cip *skeinCipher) XORKeyStream(dst, src []byte) {
     left := BlockSize - cip.nx
 
     if len(src) < left {
@@ -63,7 +63,7 @@ func (cip *skein512Cipher) XORKeyStream(dst, src []byte) {
     }
 }
 
-func (cip *skein512Cipher) expandKey(key []byte, nonce []byte) {
+func (cip *skeinCipher) expandKey(key []byte, nonce []byte) {
     // Key argument comes before configuration.
     cip.addArg(keyArg, key)
     // Configuration.
@@ -80,7 +80,7 @@ func (cip *skein512Cipher) expandKey(key []byte, nonce []byte) {
     cip.nx = BlockSize
 }
 
-func (cip *skein512Cipher) hashLastBlock() {
+func (cip *skeinCipher) hashLastBlock() {
     // Pad buffer with zeros.
     for i := cip.nx; i < len(cip.x); i++ {
         cip.x[i] = 0
@@ -92,7 +92,7 @@ func (cip *skein512Cipher) hashLastBlock() {
     cip.nx = 0
 }
 
-func (cip *skein512Cipher) outputBlock(dst *[64]byte, counter uint64) {
+func (cip *skeinCipher) outputBlock(dst *[64]byte, counter uint64) {
     var u [8]uint64
     u[0] = counter
 
@@ -110,7 +110,7 @@ func (cip *skein512Cipher) outputBlock(dst *[64]byte, counter uint64) {
     }
 }
 
-func (cip *skein512Cipher) update(b []byte) {
+func (cip *skeinCipher) update(b []byte) {
     left := 64 - cip.nx
     if len(b) > left {
         // Process leftovers.
@@ -130,7 +130,7 @@ func (cip *skein512Cipher) update(b []byte) {
     cip.nx += copy(cip.x[cip.nx:], b)
 }
 
-func (cip *skein512Cipher) hashBlock(b []byte, unpaddedLen uint64) {
+func (cip *skeinCipher) hashBlock(b []byte, unpaddedLen uint64) {
     var u [8]uint64
 
     // Update block counter.
@@ -160,14 +160,14 @@ func (cip *skein512Cipher) hashBlock(b []byte, unpaddedLen uint64) {
 }
 
 // nextBlock puts the next hash output block into the internal buffer.
-func (cip *skein512Cipher) nextBlock() {
+func (cip *skeinCipher) nextBlock() {
     cip.outputBlock(&cip.x, cip.counter)
     cip.counter++ // increment counter
     cip.nx = 0
 }
 
 // addArg adds Skein argument into the hash state.
-func (cip *skein512Cipher) addArg(argType uint64, arg []byte) {
+func (cip *skeinCipher) addArg(argType uint64, arg []byte) {
     cip.t[0] = 0
     cip.t[1] = argType<<56 | firstBlockFlag
     cip.update(arg)
@@ -175,7 +175,7 @@ func (cip *skein512Cipher) addArg(argType uint64, arg []byte) {
 }
 
 // addConfig adds configuration block into the hash state.
-func (cip *skein512Cipher) addConfig(outBits uint64) {
+func (cip *skeinCipher) addConfig(outBits uint64) {
     var c [32]byte
     copy(c[:], schemaId)
 

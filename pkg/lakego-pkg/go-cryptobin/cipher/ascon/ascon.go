@@ -16,23 +16,27 @@ const (
     iv128a uint64 = 0x80800c0800000000 // Ascon-128a
 )
 
-var errOpen = errors.New("ascon: message authentication failed")
-
 const (
     // BlockSize128a is the size in bytes of an ASCON-128a block.
     BlockSize128a = 16
+
     // BlockSize128 is the size in bytes of an ASCON-128 block.
     BlockSize128 = 8
+
     // KeySize is the size in bytes of ASCON-128 and ASCON-128a
     // keys.
     KeySize = 16
+
     // NonceSize is the size in bytes of ASCON-128 and ASCON-128a
     // nonces.
     NonceSize = 16
+
     // TagSize is the size in bytes of ASCON-128 and ASCON-128a
     // authenticators.
     TagSize = 16
 )
+
+var errOpen = errors.New("cryptobin/ascon: message authentication failed")
 
 type ascon struct {
     k0, k1 uint64
@@ -45,21 +49,8 @@ type ascon struct {
 //    [ascon]: https://ascon.iaik.tugraz.at
 //
 
-// New128 creates a 128-bit ASCON-128 AEAD.
-//
-// ASCON-128 provides lower throughput but increased robustness
-// against partial or full state recovery compared to ASCON-128a.
-//
-// Each unique key can encrypt a maximum 2^68 bytes (i.e., 2^64
-// plaintext and associated data blocks). Nonces must never be
-// reused with the same key. Violating either of these
-// constraints compromises the security of the algorithm.
-//
-// There are no other constraints on the composition of the
-// nonce. For example, the nonce can be a counter.
-//
-// Refer to ASCON's documentation for more information.
-func New128(key []byte) (cipher.AEAD, error) {
+// NewCipher creates a 128-bit ASCON-128 AEAD.
+func NewCipher(key []byte) (cipher.AEAD, error) {
     if len(key) != KeySize {
         return nil, errors.New("cryptobin/ascon: bad key length")
     }
@@ -71,21 +62,8 @@ func New128(key []byte) (cipher.AEAD, error) {
     }, nil
 }
 
-// New128a creates a 128-bit ASCON-128a AEAD.
-//
-// ASCON-128a provides higher throughput but reduced robustness
-// against partial or full state recovery compared to ASCON-128.
-//
-// Each unique key can encrypt a maximum 2^68 bytes (i.e., 2^64
-// plaintext and associated data blocks). Nonces must never be
-// reused with the same key. Violating either of these
-// constraints compromises the security of the algorithm.
-//
-// There are no other constraints on the composition of the
-// nonce. For example, the nonce can be a counter.
-//
-// Refer to ASCON's documentation for more information.
-func New128a(key []byte) (cipher.AEAD, error) {
+// NewCiphera creates a 128-bit ASCON-128a AEAD.
+func NewCiphera(key []byte) (cipher.AEAD, error) {
     if len(key) != KeySize {
         return nil, errors.New("cryptobin/ascon: bad key length")
     }

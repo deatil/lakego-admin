@@ -11,106 +11,46 @@ func fromHex(s string) []byte {
     return h
 }
 
-type testData struct {
-    msg []byte
-    md []byte
-}
-
-func Test_HashHS224_Check(t *testing.T) {
-   tests := []testData{
-        {
-           fromHex(""),
-           fromHex("1f18a672ca5d4aa91b1035f85f21468cc9ffd5e23cb14b19ba80c8b9"),
-        },
-        {
-           fromHex("cc"),
-           fromHex("5b8196077ce5e8a545cd5f7d92eca8ac079e950b46ddfcf04752f9b5"),
-        },
-        {
-           fromHex("1F877C"),
-           fromHex("13a3d46e3b288daf1b39ce7e9d8fbdbfa68a9fcaa4366cbb89f11fed"),
-        },
-
-        {
-           fromHex("1f66ab4185ed9b6375"),
-           fromHex("018b6cd33a42aa93eb7f7d60b465e58130b4b20f359b3ed321d8016b"),
-        },
-        {
-           fromHex("a746273228122f381c3b46e4f1"),
-           fromHex("ba8de86c06f244aca0111da3e376764fdfe99513a531bc36935c63aa"),
-        },
-        {
-           fromHex("03d9f92b2c565709a568724a0aff90f8f347f43b02338f94a03ed32e6f33666ff5802da4c81bdce0d0e86c04afd4edc2fc8b4141c2975b6f07639b1994c973d9a9afce3d9d365862003498513bfa166d2629e314d97441667b007414e739d7febf0fe3c32c17aa188a8683"),
-           fromHex("841e82ccc3652edd0ce4eed218a8430f3723072ca7430c81af73f346"),
-        },
-    }
-
-    iv := [4]uint64{
-        0xCCD0616248677224, 0xCBA65CF3A92339EF,
-        0x8CCD69D652FF4B64, 0x398AED7B3AB890B4,
-    }
-
-    h := NewHS224(iv)
-
-    for i, test := range tests {
-        h.Reset()
-        h.Write(test.msg)
-        sum := h.Sum(nil)
-
-        if !bytes.Equal(sum, test.md) {
-            t.Errorf("[%d] NewHS224 fail, got %x, want %x", i, sum, test.md)
-        }
-    }
+type testData1 struct {
+    hashsize  int
+    iv        [4]uint64
+    msg, hash string
 }
 
 func Test_HashHS256_Check(t *testing.T) {
-   tests := []testData{
+   tests := []testData1{
         {
-           fromHex(""),
-           fromHex("dc41c46b107e7cbe55b5d9c4a119c5f9d448bee67fc84f6337c355b096d7163f"),
-        },
-        {
-           fromHex("cc"),
-           fromHex("93bd18b5de8dff951e187ab6c681c2aa2cd63a2b1acd9529cf2795b843cb762e"),
-        },
-        {
-           fromHex("1F877C"),
-           fromHex("0531d9b94efa9347f5196f5bfd09f04fe5f572944f3074c056c5feb2142d1d5d"),
-        },
-
-        {
-           fromHex("1f66ab4185ed9b6375"),
-           fromHex("4ecbbffb4cfa05f2b961bdd6c43c707dad5b6a766fbdf5fe1984fa61f5d05061"),
-        },
-        {
-           fromHex("a746273228122f381c3b46e4f1"),
-           fromHex("a4b86177b09ecc15e3d23f35132f0164537590464e88b21b0353a5ee100b750d"),
-        },
-        {
-           fromHex("03d9f92b2c565709a568724a0aff90f8f347f43b02338f94a03ed32e6f33666ff5802da4c81bdce0d0e86c04afd4edc2fc8b4141c2975b6f07639b1994c973d9a9afce3d9d365862003498513bfa166d2629e314d97441667b007414e739d7febf0fe3c32c17aa188a8683"),
-           fromHex("e0ed645c3a7776d90cf5fa441f1ece1abd0564018f2db01d4e54c80b9a9e2335"),
+            hashsize: 32,
+            iv:       [4]uint64{
+                0xCCD0616248677224, 0xCBA65CF3A92339EF,
+                0x8CCD69D652FF4B64, 0x398AED7B3AB890B4,
+            },
+            msg:      "8ba7e9",
+            hash:     "9890e13c21ebfcc9bced1c0ec0937a40458d2b15e5130aa52f237a32006f853d",
         },
     }
-
-    iv := [4]uint64{
-        0xCCD044A12FDB3E13, 0xE83590301A79A9EB,
-        0x55AEA0614F816E6F, 0x2A2767A4AE9B94DB,
-    }
-
-    h := NewHS256(iv)
 
     for i, test := range tests {
+        msg, ref := fromHex(test.msg), fromHex(test.hash)
+
+        h := NewHS256(test.hashsize, test.iv)
+
         h.Reset()
-        h.Write(test.msg)
+        h.Write(msg)
         sum := h.Sum(nil)
 
-        if !bytes.Equal(sum, test.md) {
-            t.Errorf("[%d] NewHS256 fail, got %x, want %x", i, sum, test.md)
+        if !bytes.Equal(sum, ref) {
+            t.Errorf("[%d] NewHS256 fail, got %x, want %x", i, sum, ref)
         }
     }
 }
 
 // ======
+
+type testData struct {
+    msg []byte
+    md []byte
+}
 
 func Test_Hash224_Check(t *testing.T) {
    tests := []testData{

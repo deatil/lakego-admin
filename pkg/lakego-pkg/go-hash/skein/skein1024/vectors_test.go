@@ -158,7 +158,7 @@ func TestVectors(t *testing.T) {
         case 64:
             {
                 var out [64]byte
-                Sum512(&out, msg, key)
+                out = Sum512(msg, key)
                 if !bytes.Equal(out[:], ref) {
                     t.Fatalf("Test vector %d : Hash does not match:\nFound:      %s\nExpected: %s", i, hex.EncodeToString(out[:]), hex.EncodeToString(ref))
                 }
@@ -166,7 +166,7 @@ func TestVectors(t *testing.T) {
         case 48:
             {
                 var out [48]byte
-                Sum384(&out, msg, key)
+                out = Sum384(msg, key)
                 if !bytes.Equal(out[:], ref) {
                     t.Fatalf("Test vector %d : Hash does not match:\nFound:      %s\nExpected: %s", i, hex.EncodeToString(out[:]), hex.EncodeToString(ref))
                 }
@@ -174,7 +174,7 @@ func TestVectors(t *testing.T) {
         case 32:
             {
                 var out [32]byte
-                Sum256(&out, msg, key)
+                out = Sum256(msg, key)
                 if !bytes.Equal(out[:], ref) {
                     t.Fatalf("Test vector %d : Hash does not match:\nFound:      %s\nExpected: %s", i, hex.EncodeToString(out[:]), hex.EncodeToString(ref))
                 }
@@ -182,7 +182,7 @@ func TestVectors(t *testing.T) {
         case 20:
             {
                 var out [20]byte
-                Sum160(&out, msg, key)
+                out = Sum160(msg, key)
                 if !bytes.Equal(out[:], ref) {
                     t.Fatalf("Test vector %d : Hash does not match:\nFound:      %s\nExpected: %s", i, hex.EncodeToString(out[:]), hex.EncodeToString(ref))
                 }

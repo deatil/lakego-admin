@@ -29,8 +29,7 @@ func Sum(data []byte) ([]byte, error) {
     lyra2result := make([]byte, 32)
     Lyra2(lyra2result, resultcube, resultcube, 1, 4, 4)
 
-    var skeinresult [32]byte
-    skein.Sum256(&skeinresult, lyra2result, nil)
+    skeinresult := skein.Sum256(lyra2result, nil)
 
     resultcube2 := cubehash256(skeinresult[:])
     resultbmw := bmw.Sum256(resultcube2)

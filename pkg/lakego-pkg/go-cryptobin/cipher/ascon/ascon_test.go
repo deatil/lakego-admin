@@ -76,11 +76,11 @@ func TestPermute(t *testing.T) {
 }
 
 func TestVectors128(t *testing.T) {
-    testVectors(t, New128, filepath.Join("testdata", "vectors_128.txt"))
+    testVectors(t, NewCipher, filepath.Join("testdata", "vectors_128.txt"))
 }
 
 func TestVectors128a(t *testing.T) {
-    testVectors(t, New128a, filepath.Join("testdata", "vectors_128a.txt"))
+    testVectors(t, NewCiphera, filepath.Join("testdata", "vectors_128a.txt"))
 }
 
 func testVectors(t *testing.T, fn func([]byte) (cipher.AEAD, error), path string) {
@@ -108,35 +108,35 @@ func testVectors(t *testing.T, fn func([]byte) (cipher.AEAD, error), path string
 }
 
 func BenchmarkSeal1K_128a(b *testing.B) {
-    benchmarkSeal(b, New128a, make([]byte, 1024))
+    benchmarkSeal(b, NewCiphera, make([]byte, 1024))
 }
 
 func BenchmarkOpen1K_128a(b *testing.B) {
-    benchmarkOpen(b, New128a, make([]byte, 1024))
+    benchmarkOpen(b, NewCiphera, make([]byte, 1024))
 }
 
 func BenchmarkSeal8K_128a(b *testing.B) {
-    benchmarkSeal(b, New128a, make([]byte, 8*1024))
+    benchmarkSeal(b, NewCiphera, make([]byte, 8*1024))
 }
 
 func BenchmarkOpen8K_128a(b *testing.B) {
-    benchmarkOpen(b, New128a, make([]byte, 8*1024))
+    benchmarkOpen(b, NewCiphera, make([]byte, 8*1024))
 }
 
 func BenchmarkSeal1K_128(b *testing.B) {
-    benchmarkSeal(b, New128, make([]byte, 1024))
+    benchmarkSeal(b, NewCipher, make([]byte, 1024))
 }
 
 func BenchmarkOpen1K_128(b *testing.B) {
-    benchmarkOpen(b, New128, make([]byte, 1024))
+    benchmarkOpen(b, NewCipher, make([]byte, 1024))
 }
 
 func BenchmarkSeal8K_128(b *testing.B) {
-    benchmarkSeal(b, New128, make([]byte, 8*1024))
+    benchmarkSeal(b, NewCipher, make([]byte, 8*1024))
 }
 
 func BenchmarkOpen8K_128(b *testing.B) {
-    benchmarkOpen(b, New128, make([]byte, 8*1024))
+    benchmarkOpen(b, NewCipher, make([]byte, 8*1024))
 }
 
 func benchmarkSeal(b *testing.B, fn func([]byte) (cipher.AEAD, error), buf []byte) {

@@ -1,4 +1,4 @@
-package skein512
+package skein
 
 import (
     "bytes"

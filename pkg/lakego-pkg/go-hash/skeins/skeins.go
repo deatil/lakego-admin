@@ -4,14 +4,9 @@ import (
     "hash"
 )
 
-// NewHS224 returns a new hash.Hash computing the Skein-HS224 checksum
-func NewHS224(iv [4]uint64) hash.Hash {
-    return newDigest256(Size224, iv)
-}
-
-// NewHS256 returns a new hash.Hash computing the Skein-HS256 checksum
-func NewHS256(iv [4]uint64) hash.Hash {
-    return newDigest256(Size256, iv)
+// NewHS256 returns a new hash.Hash computing the Skein-HS224 checksum
+func NewHS256(hs int, iv [4]uint64) hash.Hash {
+    return newDigest256(hs, iv)
 }
 
 // ==============

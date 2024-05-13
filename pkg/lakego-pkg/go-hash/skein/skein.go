@@ -49,7 +49,7 @@ type Config struct {
 
 // Sum512 computes the 512 bit Skein512 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum512(out *[64]byte, msg, key []byte) {
+func Sum512(msg, key []byte) (out [64]byte) {
     s := new(hashFunc)
 
     if len(key) > 0 {
@@ -63,14 +63,19 @@ func Sum512(out *[64]byte, msg, key []byte) {
     }
 
     s.Write(msg)
-
     s.finalizeHash()
-    s.output(out, 0)
+
+    var out512 [64]byte
+    s.output(&out512, 0)
+
+    copy(out[:], out512[:])
+
+    return
 }
 
 // Sum384 computes the 384 bit Skein512 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum384(out *[48]byte, msg, key []byte) {
+func Sum384(msg, key []byte) (out [48]byte) {
     var out512 [64]byte
     s := new(hashFunc)
 
@@ -90,11 +95,13 @@ func Sum384(out *[48]byte, msg, key []byte) {
     s.output(&out512, 0)
 
     copy(out[:], out512[:48])
+
+    return
 }
 
 // Sum256 computes the 256 bit Skein512 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum256(out *[32]byte, msg, key []byte) {
+func Sum256(msg, key []byte) (out [32]byte) {
     var out512 [64]byte
     s := new(hashFunc)
 
@@ -114,11 +121,13 @@ func Sum256(out *[32]byte, msg, key []byte) {
     s.output(&out512, 0)
 
     copy(out[:], out512[:32])
+
+    return
 }
 
 // Sum160 computes the 160 bit Skein512 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum160(out *[20]byte, msg, key []byte) {
+func Sum160(msg, key []byte) (out [20]byte) {
     var out512 [64]byte
     s := new(hashFunc)
 
@@ -138,6 +147,8 @@ func Sum160(out *[20]byte, msg, key []byte) {
     s.output(&out512, 0)
 
     copy(out[:], out512[:20])
+
+    return
 }
 
 // Sum returns the Skein512 checksum with the given hash size of msg using the (optional)

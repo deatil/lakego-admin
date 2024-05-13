@@ -1,4 +1,4 @@
-package skein512
+package skein
 
 const keyScheduleParity = 0x1bd11bdaa9fc1a22
 

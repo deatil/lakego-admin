@@ -1,4 +1,4 @@
-package skein512
+package skein
 
 const streamOutLen = (1<<64 - 1) / 8 // 2^64 - 1 bits
 

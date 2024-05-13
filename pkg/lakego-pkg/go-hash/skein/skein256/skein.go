@@ -10,7 +10,7 @@ import (
 
 // Sum512 computes the 512 bit Skein256 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum512(out *[64]byte, msg, key []byte) {
+func Sum512(msg, key []byte) (out [64]byte) {
     var out256 [32]byte
 
     s := new(hashFunc)
@@ -22,13 +22,16 @@ func Sum512(out *[64]byte, msg, key []byte) {
 
     s.output(&out256, 0)
     copy(out[:], out256[:])
+
     s.output(&out256, 1)
     copy(out[32:], out256[:])
+
+    return
 }
 
 // Sum384 computes the 384 bit Skein256 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum384(out *[48]byte, msg, key []byte) {
+func Sum384(msg, key []byte) (out [48]byte) {
     var out256 [32]byte
 
     s := new(hashFunc)
@@ -40,25 +43,34 @@ func Sum384(out *[48]byte, msg, key []byte) {
 
     s.output(&out256, 0)
     copy(out[:], out256[:])
+
     s.output(&out256, 1)
     copy(out[32:], out256[:16])
+
+    return
 }
 
 // Sum256 computes the 256 bit Skein256 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum256(out *[32]byte, msg, key []byte) {
+func Sum256(msg, key []byte) (out [32]byte) {
+    var out256 [32]byte
+
     s := new(hashFunc)
     s.initialize(32, &skein.Config{Key: key})
 
     s.Write(msg)
 
     s.finalizeHash()
-    s.output(out, 0)
+
+    s.output(&out256, 0)
+    copy(out[:], out256[:])
+
+    return
 }
 
 // Sum160 computes the 160 bit Skein256 checksum (or MAC if key is set) of msg
 // and writes it to out. The key is optional and can be nil.
-func Sum160(out *[20]byte, msg, key []byte) {
+func Sum160(msg, key []byte) (out [20]byte) {
     var out256 [32]byte
     s := new(hashFunc)
     s.initialize(20, &skein.Config{Key: key})
@@ -66,9 +78,11 @@ func Sum160(out *[20]byte, msg, key []byte) {
     s.Write(msg)
 
     s.finalizeHash()
-    s.output(&out256, 0)
 
+    s.output(&out256, 0)
     copy(out[:], out256[:20])
+
+    return
 }
 
 // Sum returns the Skein256 checksum with the given hash size of msg using the (optional)

@@ -54,7 +54,7 @@ func TestSum(t *testing.T) {
         case 20:
             {
                 var sum0 [20]byte
-                Sum160(&sum0, msg, key)
+                sum0 = Sum160(msg, key)
                 sum1 := Sum(msg, hashsize, c)
                 if !bytes.Equal(sum0[:], sum1) {
                     t.Fatalf("Sum160 differ from Sum: Sum160: %s\n Sum: %s", hex.EncodeToString(sum0[:]), hex.EncodeToString(sum1))
@@ -63,7 +63,7 @@ func TestSum(t *testing.T) {
         case 32:
             {
                 var sum0 [32]byte
-                Sum256(&sum0, msg, key)
+                sum0 = Sum256(msg, key)
                 sum1 := Sum(msg, hashsize, c)
                 if !bytes.Equal(sum0[:], sum1) {
                     t.Fatalf("Sum256 differ from Sum: Sum256: %s\n Sum: %s", hex.EncodeToString(sum0[:]), hex.EncodeToString(sum1))
@@ -72,7 +72,7 @@ func TestSum(t *testing.T) {
         case 48:
             {
                 var sum0 [48]byte
-                Sum384(&sum0, msg, key)
+                sum0 = Sum384(msg, key)
                 sum1 := Sum(msg, hashsize, c)
                 if !bytes.Equal(sum0[:], sum1) {
                     t.Fatalf("Sum384 differ from Sum: Sum384: %s\n Sum: %s", hex.EncodeToString(sum0[:]), hex.EncodeToString(sum1))
@@ -81,7 +81,7 @@ func TestSum(t *testing.T) {
         case 64:
             {
                 var sum0 [64]byte
-                Sum512(&sum0, msg, key)
+                sum0 = Sum512(msg, key)
                 sum1 := Sum(msg, hashsize, c)
                 if !bytes.Equal(sum0[:], sum1) {
                     t.Fatalf("Sum512 differ from Sum: Sum512: %s\n Sum: %s", hex.EncodeToString(sum0[:]), hex.EncodeToString(sum1))
@@ -126,12 +126,11 @@ func benchmarkSum(b *testing.B, size int) {
 }
 
 func benchmarkSum512(b *testing.B, size int) {
-    var sum [64]byte
     msg := make([]byte, size)
     b.SetBytes(int64(size))
     b.ResetTimer()
     for i := 0; i < b.N; i++ {
-        Sum512(&sum, msg, nil)
+        _ = Sum512(msg, nil)
     }
 }
 
