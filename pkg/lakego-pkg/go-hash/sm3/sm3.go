@@ -6,18 +6,15 @@ import (
 
 // New returns a new hash.Hash computing the SM3 checksum.
 func New() hash.Hash {
-    d := new(digest)
-    d.Reset()
-    return d
+    return newDigest()
 }
 
 // Sum returns the SM3 checksum of the data.
 func Sum(data []byte) (sum [Size]byte) {
-    var h digest
-    h.Reset()
+    h := New()
     h.Write(data)
-
     hash := h.Sum(nil)
+
     copy(sum[:], hash)
     return
 }

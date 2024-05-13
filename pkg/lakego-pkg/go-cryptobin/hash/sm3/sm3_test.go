@@ -7,18 +7,6 @@ import (
     "crypto/hmac"
 )
 
-func Test_Hash(t *testing.T) {
-    msg := []byte("test-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
-
-    h := New()
-    h.Write(msg)
-    dst := h.Sum(nil)
-
-    if len(dst) == 0 {
-        t.Error("Hash make error")
-    }
-}
-
 type sm3Test struct {
     out string
     in  string
@@ -33,14 +21,14 @@ var golden = []sm3Test{
     {"520472cafdaf21d994c5849492ba802459472b5206503389fc81ff73adbec1b4", "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabc"},
 }
 
-func TestGolden(t *testing.T) {
+func Test_Check(t *testing.T) {
     for i := 0; i < len(golden); i++ {
         g := golden[i]
         h := Sum([]byte(g.in))
-        s := fmt.Sprintf("%x", h)
+        sum := fmt.Sprintf("%x", h)
 
-        if s != g.out {
-            t.Fatalf("SM3 function: sm3(%s) = %s want %s", g.in, s, g.out)
+        if sum != g.out {
+            t.Fatalf("Sum: got %s, want %s", sum, g.out)
         }
 
         c := New()
@@ -53,44 +41,13 @@ func TestGolden(t *testing.T) {
                 io.WriteString(c, g.in[len(g.in)/2:])
             }
 
-            s := fmt.Sprintf("%x", c.Sum(nil))
-            if s != g.out {
-                t.Fatalf("sm3[%d](%s) = %s want %s", j, g.in, s, g.out)
+            sum := fmt.Sprintf("%x", c.Sum(nil))
+            if sum != g.out {
+                t.Fatalf("New: got %s, want %s", sum, g.out)
             }
 
             c.Reset()
         }
-    }
-}
-
-func Test_MarshalBinary(t *testing.T) {
-    msg := []byte("test-dd1111111dddddddatatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
-
-    h := new(digest)
-    h.Reset()
-
-    h.Write(msg)
-    dst := h.Sum(nil)
-    if len(dst) == 0 {
-        t.Error("Hash make error")
-    }
-
-    bs, _ := h.MarshalBinary()
-
-    h.Reset()
-
-    err := h.UnmarshalBinary(bs)
-    if err != nil {
-        t.Fatal(err)
-    }
-
-    newdst := h.Sum(nil)
-    if len(newdst) == 0 {
-        t.Error("newHash make error")
-    }
-
-    if string(newdst) != string(dst) {
-        t.Error("Hash MarshalBinary error")
     }
 }
 

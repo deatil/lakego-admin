@@ -10,14 +10,22 @@ const BlockSize = 64
 type digest struct {
     s   [8]uint32
     x   [BlockSize]byte
-    nx  uint64
-    len int
+    nx  int
+    len uint64
 }
 
 func newDigest() *digest {
     d := new(digest)
     d.Reset()
     return d
+}
+
+func (this *digest) Reset() {
+    this.s = iv
+    this.x = [BlockSize]byte{}
+
+    this.len = 0
+    this.nx = 0
 }
 
 func (this *digest) Size() int {
@@ -28,56 +36,29 @@ func (this *digest) BlockSize() int {
     return BlockSize
 }
 
-func (this *digest) Reset() {
-    this.s = iv
-    this.x = [BlockSize]byte{}
-
-    this.nx = 0
-    this.len = 0
-}
-
 // Write is the interface for IO Writer
-func (this *digest) Write(data []byte) (nn int, err error) {
-    nn = len(data)
+func (this *digest) Write(p []byte) (nn int, err error) {
+    nn = len(p)
 
-    var blocks int
+    this.len += uint64(nn)
 
-    dataLen := len(data)
+    this.nx &= 0x3f
 
-    this.len &= 0x3f
-    if this.len > 0 {
-        var left int = BlockSize - this.len
+    plen := len(p)
+    for this.nx + plen >= BlockSize {
+        copy(this.x[this.nx:], p)
 
-        if dataLen < left {
-            copy(this.x[this.len:], data)
-            this.len += dataLen
+        this.processBlock(this.x[:])
 
-            return
-        } else {
-            copy(this.x[this.len:], data[:left])
-            compressBlocks(this.s[:], this.x[:], 1)
+        xx := BlockSize - this.nx
+        plen -= xx
 
-            this.nx++
-
-            data = data[left:]
-            dataLen -= left
-        }
+        p = p[xx:]
+        this.nx = 0
     }
 
-    blocks = dataLen / BlockSize
-    if blocks > 0 {
-        compressBlocks(this.s[:], data, blocks)
-
-        this.nx += uint64(blocks)
-
-        data = data[BlockSize * blocks:]
-        dataLen -= BlockSize * blocks
-    }
-
-    this.len = dataLen
-    if dataLen > 0 {
-        copy(this.x[:], data)
-    }
+    copy(this.x[this.nx:], p)
+    this.nx += plen
 
     return
 }
@@ -92,23 +73,25 @@ func (this *digest) Sum(in []byte) []byte {
 func (this *digest) checkSum() [Size]byte {
     var i int32
 
-    this.len &= 0x3f
-    this.x[this.len] = 0x80
+    this.nx &= 0x3f
+    this.x[this.nx] = 0x80
 
     zeros := make([]byte, BlockSize)
 
-    if this.len <= BlockSize - 9 {
-        copy(this.x[this.len + 1:BlockSize - 8], zeros)
+    if this.nx <= BlockSize - 9 {
+        copy(this.x[this.nx + 1:BlockSize - 8], zeros)
     } else {
-        copy(this.x[this.len + 1:BlockSize], zeros)
-        compressBlocks(this.s[:], this.x[:], 1)
+        copy(this.x[this.nx + 1:BlockSize], zeros)
+        this.processBlock(this.x[:])
         copy(this.x[:BlockSize - 8], zeros)
     }
 
-    PUTU32(this.x[56:], uint32(this.nx >> 23))
-    PUTU32(this.x[60:], uint32((this.nx << 9) + uint64(this.len << 3)))
+    bcount := this.len / BlockSize
 
-    compressBlocks(this.s[:], this.x[:], 1)
+    PUTU32(this.x[56:], uint32(bcount >> 23))
+    PUTU32(this.x[60:], uint32((bcount << 9) + (uint64(this.nx) << 3)))
+
+    this.processBlock(this.x[:])
 
     var digest [Size]byte
     for i = 0; i < 8; i++ {
@@ -116,4 +99,8 @@ func (this *digest) checkSum() [Size]byte {
     }
 
     return digest
+}
+
+func (this *digest) processBlock(data []byte) {
+    compressBlocks(this.s[:], data)
 }

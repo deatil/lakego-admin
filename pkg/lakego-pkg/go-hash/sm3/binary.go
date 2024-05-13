@@ -7,13 +7,13 @@ import (
 
 const (
     chunk         = 64
-    magic256      = "sm3\x03"
-    marshaledSize = len(magic256) + 8*4 + chunk + 8
+    magic         = "sm3\x03"
+    marshaledSize = len(magic) + 8*4 + chunk + 8
 )
 
 func (this *digest) MarshalBinary() ([]byte, error) {
     b := make([]byte, 0, marshaledSize)
-    b = append(b, magic256...)
+    b = append(b, magic...)
 
     b = appendUint32(b, this.s[0])
     b = appendUint32(b, this.s[1])
@@ -24,26 +24,24 @@ func (this *digest) MarshalBinary() ([]byte, error) {
     b = appendUint32(b, this.s[6])
     b = appendUint32(b, this.s[7])
 
-    b = append(b, this.x[:this.len]...)
+    b = append(b, this.x[:this.nx]...)
 
-    length := (this.nx * BlockSize) + uint64(this.len)
-
-    b = b[:len(b) + len(this.x) - int(this.len)]
-    b = appendUint64(b, length)
+    b = b[:len(b) + len(this.x) - int(this.nx)]
+    b = appendUint64(b, this.len)
 
     return b, nil
 }
 
 func (this *digest) UnmarshalBinary(b []byte) error {
-    if len(b) < len(magic256) || (string(b[:len(magic256)]) != magic256) {
-        return errors.New("sm3: invalid hash state identifier")
+    if len(b) < len(magic) || (string(b[:len(magic)]) != magic) {
+        return errors.New("go-hahs/sm3: invalid hash state identifier")
     }
 
     if len(b) != marshaledSize {
-        return errors.New("sm3: invalid hash state size")
+        return errors.New("go-hahs/sm3: invalid hash state size")
     }
 
-    b = b[len(magic256):]
+    b = b[len(magic):]
 
     b, this.s[0] = consumeUint32(b)
     b, this.s[1] = consumeUint32(b)
@@ -57,11 +55,10 @@ func (this *digest) UnmarshalBinary(b []byte) error {
     b = b[copy(this.x[:], b):]
 
     var length uint64
-
     b, length = consumeUint64(b)
 
-    this.len = int(length % chunk)
-    this.nx = length / chunk
+    this.nx = int(length % chunk)
+    this.len = length
 
     return nil
 }
