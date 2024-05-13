@@ -10,9 +10,7 @@ func Test_MarshalBinary(t *testing.T) {
     msg := []byte("abcdefghijklmnopqrstuvwxyz")
     check := "4e8ddff3650292ab5a4108c3aa47940b"
 
-    h := new(digest)
-    h.Reset()
-
+    h := newDigest()
     h.Write(msg)
     dst := h.Sum(nil)
     if len(dst) == 0 {
@@ -21,13 +19,13 @@ func Test_MarshalBinary(t *testing.T) {
 
     bs, _ := h.MarshalBinary()
 
-    h.Reset()
-    err := h.UnmarshalBinary(bs)
+    h2 := newDigest()
+    err := h2.UnmarshalBinary(bs)
     if err != nil {
         t.Fatal(err)
     }
 
-    newdst := h.Sum(nil)
+    newdst := h2.Sum(nil)
     if len(newdst) == 0 {
         t.Error("newHash make error")
     }
