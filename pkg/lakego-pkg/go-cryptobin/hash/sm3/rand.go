@@ -9,17 +9,19 @@ import (
 const MAX_RESEED_COUNTER = (1<<20)
 const MAX_RESEED_SECONDS = 600
 
-var num = [4]uint8{ 0, 1, 2, 3 }
+var num = [4]byte{ 0, 1, 2, 3 }
 
 type Rand struct {
-    V [55]uint8
-    C [55]uint8
+    V []byte
+    C []byte
     reseedCounter uint32
     lastReseedTime time.Time
 }
 
 func NewRand(nonce []byte, label []byte) *Rand {
     rand := new(Rand)
+    rand.V = make([]byte, 55)
+    rand.C = make([]byte, 55)
     rand.init(nonce, label)
 
     return rand
@@ -39,13 +41,13 @@ func (this *Rand) init(nonce []byte, label []byte) {
     df.Write(entropy[:])
     df.Write(nonce[:])
     df.Write(label[:])
-    this.V = df.Sum()
+    this.V = df.Sum(nil)
 
     // C = sm3_df(0x00 || V)
     df = NewDF()
     df.Write(num[0:1])
     df.Write(this.V[:])
-    this.C = df.Sum()
+    this.C = df.Sum(nil)
 
     // reseedCounter = 1, last_ressed_time = now()
     this.reseedCounter = 1
@@ -126,13 +128,13 @@ func (this *Rand) reseed(addin []byte) {
     df.Write(entropy[:])
     df.Write(this.V[:])
     df.Write(addin[:])
-    this.V = df.Sum()
+    this.V = df.Sum(nil)
 
     // C = sm3_df(0x00 || V)
     df = NewDF()
     df.Write(num[0:1])
     df.Write(this.V[:])
-    this.C = df.Sum()
+    this.C = df.Sum(nil)
 
     // reseedCounter = 1, last_ressed_time = now()
     this.reseedCounter = 1

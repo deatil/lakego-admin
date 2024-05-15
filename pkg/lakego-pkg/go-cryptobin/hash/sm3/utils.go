@@ -41,7 +41,7 @@ func GG16(x, y, z uint32) uint32 {
     return (((y ^ z) & x) ^ z)
 }
 
-func compressBlocks(digest []uint32, data []uint8) {
+func compressBlocks(digest []uint32, data []byte) {
     var A uint32
     var B uint32
     var C uint32
