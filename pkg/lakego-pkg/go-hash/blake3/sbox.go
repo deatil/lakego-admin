@@ -5,8 +5,6 @@ const BLAKE3_OUT_LEN   = 32
 const BLAKE3_BLOCK_LEN = 64
 const BLAKE3_CHUNK_LEN = 1024
 const BLAKE3_MAX_DEPTH = 54
-const MAX_SIMD_DEGREE  = 1
-const MAX_SIMD_DEGREE_OR_2 = 2
 
 const (
     CHUNK_START         = 1 << 0

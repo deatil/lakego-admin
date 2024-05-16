@@ -67,8 +67,8 @@ func (d *digest) Write(p []byte) (nn int, err error) {
             output := d.chunk.output()
 
             var chunk_cv [32]byte
-            output.chaining_value(&chunk_cv)
-            d.push_cv(chunk_cv, d.chunk.chunk_counter)
+            output.chainingValue(&chunk_cv)
+            d.pushCV(chunk_cv, d.chunk.chunk_counter)
             d.chunk.reset(d.key, d.chunk.chunk_counter + 1)
         } else {
             return
@@ -93,8 +93,8 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
             output := chunk_state.output()
             var cv [BLAKE3_OUT_LEN]byte
-            output.chaining_value(&cv)
-            d.push_cv(cv, chunk_state.chunk_counter)
+            output.chainingValue(&cv)
+            d.pushCV(cv, chunk_state.chunk_counter)
         } else {
             var cv_pair [2 * BLAKE3_OUT_LEN]byte
             cv_pair = compress_subtree_to_parent_node(
@@ -105,10 +105,10 @@ func (d *digest) Write(p []byte) (nn int, err error) {
             )
 
             copy(tmp_cv[:], cv_pair[:])
-            d.push_cv(tmp_cv, d.chunk.chunk_counter)
+            d.pushCV(tmp_cv, d.chunk.chunk_counter)
 
             copy(tmp_cv[:], cv_pair[BLAKE3_OUT_LEN:])
-            d.push_cv(tmp_cv, d.chunk.chunk_counter + (subtree_chunks / 2))
+            d.pushCV(tmp_cv, d.chunk.chunk_counter + (subtree_chunks / 2))
         }
 
         d.chunk.chunk_counter += subtree_chunks
@@ -118,7 +118,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
     if input_len > 0 {
         d.chunk.update(input_bytes[:input_len])
-        d.merge_cv_stack(d.chunk.chunk_counter)
+        d.mergeCvStack(d.chunk.chunk_counter)
     }
 
     return
@@ -135,12 +135,12 @@ func (d *digest) Sum(in []byte) []byte {
 
 func (d *digest) checkSum() (out []byte) {
     out = make([]byte, d.hs)
-    d.finalize_seek(0, out)
+    d.finalizeSeek(0, out)
 
     return
 }
 
-func (d *digest) finalize_seek(seek uint64, out []byte) {
+func (d *digest) finalizeSeek(seek uint64, out []byte) {
     out_len := len(out)
 
     if out_len == 0 {
@@ -149,7 +149,7 @@ func (d *digest) finalize_seek(seek uint64, out []byte) {
 
     if d.cv_stack_len == 0 {
         output := d.chunk.output()
-        output.root_bytes(seek, out, out_len)
+        output.rootBytes(seek, out, out_len)
         return
     }
 
@@ -177,16 +177,16 @@ func (d *digest) finalize_seek(seek uint64, out []byte) {
 
         copy(parent_block[:], d.cv_stack[cvs_remaining * 32 : cvs_remaining * 32 + 32])
 
-        outbuf.chaining_value(&tmp)
+        outbuf.chainingValue(&tmp)
         copy(parent_block[32:], tmp[:])
 
         outbuf = parent_output(parent_block, d.key, d.chunk.flags)
     }
 
-    outbuf.root_bytes(seek, out, out_len)
+    outbuf.rootBytes(seek, out, out_len)
 }
 
-func (d *digest) merge_cv_stack(total_len uint64) {
+func (d *digest) mergeCvStack(total_len uint64) {
     post_merge_stack_len := int(popcnt(total_len))
 
     var parent_node [BLAKE3_BLOCK_LEN]byte
@@ -195,7 +195,7 @@ func (d *digest) merge_cv_stack(total_len uint64) {
 
         output := parent_output(parent_node, d.key, d.chunk.flags)
         var cv [32]byte
-        output.chaining_value(&cv)
+        output.chainingValue(&cv)
 
         copy(d.cv_stack[(d.cv_stack_len - 2) * BLAKE3_OUT_LEN:(d.cv_stack_len - 2) * BLAKE3_OUT_LEN+BLAKE3_BLOCK_LEN], cv[:])
 
@@ -203,11 +203,11 @@ func (d *digest) merge_cv_stack(total_len uint64) {
     }
 }
 
-func (d *digest) push_cv(
+func (d *digest) pushCV(
     new_cv [BLAKE3_OUT_LEN]byte,
     chunk_counter uint64,
 ) {
-    d.merge_cv_stack(chunk_counter)
+    d.mergeCvStack(chunk_counter)
     copy(d.cv_stack[d.cv_stack_len * BLAKE3_OUT_LEN:], new_cv[:BLAKE3_OUT_LEN])
     d.cv_stack_len += 1
 }

@@ -26,7 +26,7 @@ func newOutput(
     return ret
 }
 
-func (o *output) chaining_value(cv *[32]byte) {
+func (o *output) chainingValue(cv *[32]byte) {
     var cv_words [8]uint32
     copy(cv_words[:], o.input_cv[:])
 
@@ -42,7 +42,7 @@ func (o *output) chaining_value(cv *[32]byte) {
     copy(cv[:], buf)
 }
 
-func (o *output) root_bytes(seek uint64, out []byte, out_len int) {
+func (o *output) rootBytes(seek uint64, out []byte, out_len int) {
     var output_block_counter uint64 = seek / 64;
     var offset_within_block int = int(seek % 64)
     var wide_buf [64]byte

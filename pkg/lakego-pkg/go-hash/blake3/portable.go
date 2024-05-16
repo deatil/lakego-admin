@@ -1,12 +1,12 @@
 package blake3
 
 func compress_pre(
-    state *[16]uint32,
-    cv [8]uint32,
-    block [BLAKE3_BLOCK_LEN]byte,
+    state     *[16]uint32,
+    cv        [8]uint32,
+    block     [BLAKE3_BLOCK_LEN]byte,
     block_len uint8,
-    counter uint64,
-    flags uint8,
+    counter   uint64,
+    flags     uint8,
 ) {
     var block_words [16]uint32
     block_words[0] = getu32(block[4 * 0:])
@@ -53,11 +53,11 @@ func compress_pre(
 }
 
 func blake3_compress_in_place(
-    cv *[8]uint32,
-    block [BLAKE3_BLOCK_LEN]byte,
+    cv        *[8]uint32,
+    block     [BLAKE3_BLOCK_LEN]byte,
     block_len uint8,
-    counter uint64,
-    flags uint8,
+    counter   uint64,
+    flags     uint8,
 ) {
     var state [16]uint32
     compress_pre(&state, *cv, block, block_len, counter, flags)
@@ -73,12 +73,12 @@ func blake3_compress_in_place(
 }
 
 func blake3_compress_xof(
-    cv [8]uint32,
-    block [BLAKE3_BLOCK_LEN]byte,
+    cv        [8]uint32,
+    block     [BLAKE3_BLOCK_LEN]byte,
     block_len uint8,
-    counter uint64,
-    flags uint8,
-    out *[64]byte,
+    counter   uint64,
+    flags     uint8,
+    out       *[64]byte,
 ) {
     var state [16]uint32
     compress_pre(&state, cv, block, block_len, counter, flags)
@@ -102,13 +102,13 @@ func blake3_compress_xof(
 }
 
 func hash_one(
-    input []byte,
-    blocks int,
-    key [8]uint32,
-    counter uint64,
-    flags uint8,
+    input       []byte,
+    blocks      int,
+    key         [8]uint32,
+    counter     uint64,
+    flags       uint8,
     flags_start uint8,
-    flags_end uint8,
+    flags_end   uint8,
 ) (out [BLAKE3_OUT_LEN]byte) {
     var cv [8]uint32
     copy(cv[:], key[:])
@@ -145,15 +145,15 @@ func hash_one(
 }
 
 func blake3_hash_many(
-    inputs [][]byte,
-    num_inputs int,
-    blocks int,
-    key [8]uint32,
-    counter uint64,
+    inputs            [][]byte,
+    num_inputs        int,
+    blocks            int,
+    key               [8]uint32,
+    counter           uint64,
     increment_counter bool,
-    flags uint8,
-    flags_start uint8,
-    flags_end uint8,
+    flags             uint8,
+    flags_start       uint8,
+    flags_end         uint8,
 ) (out []byte) {
     var block [BLAKE3_OUT_LEN]byte
 

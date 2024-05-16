@@ -10,13 +10,13 @@ func New(k []byte) hash.Hash {
     return h
 }
 
-// return 8 bytes
+// New64 returns a new hash.Hash computing the Siphash checksum.
 func New64(k []byte) hash.Hash {
     h, _ := NewWithCDroundsAndHashSize(k, 0, 0, HashSize64)
     return h
 }
 
-// New alias, return 16 bytes
+// New128 returns a new hash.Hash computing the Siphash checksum.
 func New128(k []byte) hash.Hash {
     h, _ := NewWithCDroundsAndHashSize(k, 0, 0, HashSize128)
     return h
