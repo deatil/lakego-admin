@@ -17,6 +17,8 @@ const (
     // 320
 )
 
+// =========
+
 // work buffer indices and roll amounts for one line
 var sbox128n0 = [64]uint{
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,

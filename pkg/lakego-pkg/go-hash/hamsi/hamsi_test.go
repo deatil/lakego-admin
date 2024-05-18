@@ -3,6 +3,7 @@ package hamsi
 import (
     "bytes"
     "testing"
+    "crypto/hmac"
     "encoding/hex"
 )
 
@@ -85,6 +86,17 @@ func Test_Hash224_Check(t *testing.T) {
 
         // =====
 
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New224 half fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
         sum2 := Sum224(test.msg)
 
         if !bytes.Equal(sum2[:], test.md) {
@@ -162,6 +174,17 @@ func Test_Hash256_Check(t *testing.T) {
 
         // =====
 
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New256 half fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
         sum2 := Sum256(test.msg)
 
         if !bytes.Equal(sum2[:], test.md) {
@@ -235,6 +258,17 @@ func Test_Hash384_Check(t *testing.T) {
 
         if !bytes.Equal(sum, test.md) {
             t.Errorf("[%d] New384 fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New384 half fail, got %x, want %x", i, sum, test.md)
         }
 
         // =====
@@ -320,10 +354,187 @@ func Test_Hash512_Check(t *testing.T) {
 
         // =====
 
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New512 half fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
         sum2 := Sum512(test.msg)
 
         if !bytes.Equal(sum2[:], test.md) {
             t.Errorf("[%d] Sum512 fail, got %x, want %x", i, sum2, test.md)
+        }
+    }
+}
+
+func Test_Hash256_Hmac_Check(t *testing.T) {
+   tests := []testData{
+        {
+           fromHex(""),
+           fromHex("8ab549c2fe9a5a172888c22a2fdb59a42b6bc3983b94e09e2d5ff9d2594eb600"),
+        },
+        {
+           fromHex("cc"),
+           fromHex("274b05602f6c44d7d61481ee3390b9ae1b415615da50521aaa935ca4dae619bb"),
+        },
+        {
+           fromHex("41fb"),
+           fromHex("6764299f2aaa246ffc5db8da526a1ceb86dc2a306a4b161a5f553d5a8bd32be8"),
+        },
+        {
+           fromHex("1f877c"),
+           fromHex("dfea742a618258f42bcf330c06b2ab567300143fbd23d000a9fe47011b038ed5"),
+        },
+        {
+           fromHex("c1ecfdfc"),
+           fromHex("5e7dacdd5e9d9bb1b054e186d9ffb0674ddda70df576fa6b819790ab0ec89147"),
+        },
+        {
+           fromHex("21f134ac57"),
+           fromHex("3c9c8bfeada42bb4d71a59b1655cb122b3fdf85f804fed92099f4cb83de5b8a5"),
+        },
+        {
+           fromHex("c6f50bb74e29"), // 12 | 6
+           fromHex("4cc5f93b92f62088a351c0b5327762c2bb7558d68be8b005fb0b945f4bd89ae0"),
+        },
+        {
+           fromHex("119713cc83eeef"),
+           fromHex("a53c3a3e4fe787a17eaf8b311c82362783a9bed5b0d9ceded965f81e3cadb306"),
+        },
+        {
+           fromHex("4a4f202484512526"),
+           fromHex("a654c13875a79d2c6f78bc77dce72513004026b18b5f24c68598427eda0368fa"),
+        },
+        {
+           fromHex("1f66ab4185ed9b6375"),
+           fromHex("0e7c97962f121500fe391bfd9d1b7263bc67063f42ce7a7bab386310a4264fca"),
+        },
+        {
+           fromHex("eed7422227613b6f53c9"), // 20 | 10
+           fromHex("6b0262904796319823243326edf2067d78ab01fa7c71e41b4cbddb4e496647b4"),
+        },
+        {
+           fromHex("eaeed5cdffd89dece455f1"),
+           fromHex("f9eb803ea1f4ad22414f0129d5f876e8d96e89ce167fbbce382756082a49f2e9"),
+        },
+        {
+           fromHex("5be43c90f22902e4fe8ed2d3"),
+           fromHex("7d08c54dd6a59511cdc587b146ccbb0e8e50ace8d46b8f529190f069bb7664f1"),
+        },
+        {
+           fromHex("a746273228122f381c3b46e4f1"),
+           fromHex("f9ea09434216c4def3d65dd06a31662b692786c27722609b673a5df7d7d14ec0"),
+        },
+        {
+           fromHex("3c5871cd619c69a63b540eb5a625"),
+           fromHex("aa383f45cf2483233344560be60aca392fbbe86f8fae0889ca9bdcc16d2b73ff"),
+        },
+        {
+           fromHex("fa22874bcc068879e8ef11a69f0722"),
+           fromHex("91164fc8f2cbbd2b96804a891131593c28a36f6d9c289d9b62079e89a8ef1a30"),
+        },
+    }
+
+    key := []byte("1234567812345678")
+
+    h := hmac.New(New256, key)
+
+    for i, test := range tests {
+        h.Reset()
+        h.Write(test.msg)
+        sum := h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] Hmac With New256 fail, got %x, want %x", i, sum, test.md)
+        }
+    }
+}
+
+func Test_Hash512_Hmac_Check(t *testing.T) {
+   tests := []testData{
+        {
+           fromHex(""),
+           fromHex("0d68727373000f1c5ef602f2822c088e47a16f84d3e869685763255a88e8794e482abf882d056dd3dd58697b5eb036b4bd9deec81dfac8629ef0537e0d2b4da5"),
+        },
+        {
+           fromHex("cc"),
+           fromHex("bc6a0f2c37b5de94d9a58e78ab5109a0ae5acde6cb6535f6cc0e892d4dc9bae3a5c4bd1f1a0b8d15201f01cadd5329af4aad58a588fa076901db2e224ca3b164"),
+        },
+        {
+           fromHex("41fb"),
+           fromHex("15814eab20bd488e787c2d7960361bf9967400bafaf84ae716d5a963f760b243578a960a4cbaa11f65323d9674d30438d5ad97c3ca453ba2d1c61b1b8a70b3ff"),
+        },
+        {
+           fromHex("1f877c"),
+           fromHex("b55f8347678505d7db618a3de3592987f978c51d46740b09200e3bad3a2f19417857dcd1c9b3ae02d5ea8703699d6b18d79ff9cb83e77e81bbdee197bb92c103"),
+        },
+        {
+           fromHex("c1ecfdfc"),
+           fromHex("6e43ff025034570e5a7c301293c3d7400c3c28e3566072539fb9119b481e5b07dfb897d9caf67b5b04d927aef65ddcbc227a3fa51ecfaeead2e07e7df548fee0"),
+        },
+        {
+           fromHex("21f134ac57"),
+           fromHex("e3dc2fdc5ed452ed7744ea91cd8d404958aa03b5928aa963902cfa2cfb716c739d9de3a30481e6ce1475fe5903f8d2001a3a6e82105d31bffbd9172d36a5363b"),
+        },
+        {
+           fromHex("c6f50bb74e29"), // 12 | 6
+           fromHex("9af2cfabfa9b459e43d877f24758367767cd952e49134a055e22f8791c9587f0c47b1489643491b62886d267fa4f1b4eb26f73bbf04a90e1732d500ec40fd71f"),
+        },
+        {
+           fromHex("119713cc83eeef"),
+           fromHex("b74944ab473074ef48481adfb8726be4d015e5bf3d33f5c86037317dc5cfc41a146f717ab94213a9545553541365ed2b8baa9aac0710f667c8129d3cdeefc358"),
+        },
+        {
+           fromHex("4a4f202484512526"),
+           fromHex("c5b9025c54adb84950bd244c4943824f06b04a3cfc83db64ceccd77d73e899ef5a75895b933d998f8fbdbb84ad4afe3afb3b3f14c9ce1dcb44d89d4025170328"),
+        },
+        {
+           fromHex("1f66ab4185ed9b6375"),
+           fromHex("b6c37ae7b3aca844a55bcc40dce26b5981d101e96e38fb9050849e7cf67b3191909e3cc844cbcbc8567986028e4989f0f0a485eeaafcb13664510c7fc500b1c1"),
+        },
+        {
+           fromHex("eed7422227613b6f53c9"), // 20 | 10
+           fromHex("4ed9400358e385274bda06b589a8d2fcb77c88887ee7ec8af34166896f0a578dbb23efe1b9d024d0c012bac733914b50734f3ce7c4ed969b5b88c97c9a4d8920"),
+        },
+        {
+           fromHex("eaeed5cdffd89dece455f1"),
+           fromHex("431c8c1ef51d76a460a746fbcc1fcca74ae99ea3efe1e421587f94f78296eee943c8df4099e83ee04524b0609c202565dfc25c1f4aaec1e6288c6cd315a4c156"),
+        },
+        {
+           fromHex("5be43c90f22902e4fe8ed2d3"),
+           fromHex("fc85adf6525db2c99a7c41929992f2f76b85768f529dc1f2e78f2c1674737147afb50866b0765f27dbba7ca8b50abe67544ba30ad75ce7817b00b90016815556"),
+        },
+        {
+           fromHex("a746273228122f381c3b46e4f1"),
+           fromHex("b61aeec4b131bcad50ddfa689a3c8c41f6a287026783024844013a4a598856fc7d736d3a77bdf2f576305fc9422c097f9b39d19390138f5cd74fd5e5341819f9"),
+        },
+        {
+           fromHex("3c5871cd619c69a63b540eb5a625"),
+           fromHex("84fe0b288687a44d41b12da59adece54f4d6c8bd7ae492570539d279495e3022e2e4c03ca99e1a6424636eeae18d594702a909821e1175805be029b15f05a104"),
+        },
+        {
+           fromHex("fa22874bcc068879e8ef11a69f0722"),
+           fromHex("24f8f64bbe2b8b683b1b5b8786e5cf1bd345947bb0367d09acdfdadab43b9d48475bba3bf3220d0ad70b96817ddbffe44c9b750a885a087be9220883e2b7747c"),
+        },
+    }
+
+    key := []byte("1234567812345678")
+
+    h := hmac.New(New512, key)
+
+    for i, test := range tests {
+        h.Reset()
+        h.Write(test.msg)
+        sum := h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] Hmac With New512 fail, got %x, want %x", i, sum, test.md)
         }
     }
 }

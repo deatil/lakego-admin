@@ -45,8 +45,8 @@ func (pub *PublicKey) Verify(digest, signature []byte) (bool, error) {
         return false, fmt.Errorf("cryptobin/gost: len(signature)=%d != %d", len(signature), 2*pointSize)
     }
 
-    s := bytesToBigint(signature[:pointSize])
-    r := bytesToBigint(signature[pointSize:])
+    s := bigIntFromBytes(signature[:pointSize])
+    r := bigIntFromBytes(signature[pointSize:])
 
     verify, err := VerifyWithRS(pub, digest, r, s)
     if err != nil {
@@ -133,7 +133,7 @@ func (priv *PrivateKey) SignASN1(rand io.Reader, digest []byte, opts crypto.Sign
 }
 
 func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
-    k := bytesToBigint(raw)
+    k := bigIntFromBytes(raw)
     if k.Cmp(zero) == 0 {
         return nil, errors.New("cryptobin/gost: zero private key")
     }
@@ -242,7 +242,7 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
 func SignToRS(rand io.Reader, priv *PrivateKey, digest []byte) (*big.Int, *big.Int, error) {
     digest = Reverse(digest)
 
-    e := bytesToBigint(digest)
+    e := bigIntFromBytes(digest)
 
     e.Mod(e, priv.Curve.Q)
     if e.Cmp(zero) == 0 {
@@ -263,7 +263,7 @@ Retry:
         return nil, nil, fmt.Errorf("cryptobin/gost: %w", err)
     }
 
-    k = bytesToBigint(kRaw)
+    k = bigIntFromBytes(kRaw)
     k.Mod(k, priv.Curve.Q)
     if k.Cmp(zero) == 0 {
         goto Retry
@@ -301,7 +301,7 @@ func VerifyWithRS(pub *PublicKey, digest []byte, r, s *big.Int) (bool, error) {
 
     digest = Reverse(digest)
 
-    e := bytesToBigint(digest)
+    e := bigIntFromBytes(digest)
     e.Mod(e, pub.Curve.Q)
     if e.Cmp(zero) == 0 {
         e = big.NewInt(1)

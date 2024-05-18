@@ -7,7 +7,7 @@ const (
     Size384 = 48
     Size512 = 64
 
-    BlockSize = 0
+    BlockSize = 4
 )
 
 // digest represents the partial evaluation of a checksum.
@@ -23,7 +23,7 @@ type digest struct {
     tmpS       [36]uint32
 
     initVal []uint32
-    hs int
+    hs      int
 }
 
 // newDigest returns a new *digest computing the bmw checksum

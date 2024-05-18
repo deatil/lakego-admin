@@ -11,7 +11,7 @@ const (
     Size384 = 48
     Size512 = 64
 
-    BlockSize512 = 128
+    BlockSize512 = 8
 )
 
 // digest512 represents the partial evaluation of a checksum.
@@ -25,7 +25,7 @@ type digest512 struct {
     partialLen uint32
 
     initVal [16]uint32
-    hs int
+    hs      int
 }
 
 func initAll512() {

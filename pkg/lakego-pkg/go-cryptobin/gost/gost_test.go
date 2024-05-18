@@ -369,8 +369,8 @@ func Test_UVXYConversion(t *testing.T) {
     t.Run("test curve1", func(t *testing.T) {
         c := CurveIdtc26gost34102012256paramSetA()
 
-        u := bytesToBigint([]byte{0x0D})
-        v := bytesToBigint(decodeHex("60CA1E32AA475B348488C38FAB07649CE7EF8DBE87F22E81F92B2592DBA300E7"))
+        u := bigIntFromBytes([]byte{0x0D})
+        v := bigIntFromBytes(decodeHex("60CA1E32AA475B348488C38FAB07649CE7EF8DBE87F22E81F92B2592DBA300E7"))
 
         x, y := UV2XY(c, u, v)
         eq([]*big.Int{x, y}, []*big.Int{c.X, c.Y}, "UV2XY")
@@ -382,8 +382,8 @@ func Test_UVXYConversion(t *testing.T) {
     t.Run("test curve2", func(t *testing.T) {
         c := CurveIdtc26gost34102012512paramSetC()
 
-        u := bytesToBigint([]byte{0x12})
-        v := bytesToBigint(decodeHex("469AF79D1FB1F5E16B99592B77A01E2A0FDFB0D01794368D9A56117F7B38669522DD4B650CF789EEBF068C5D139732F0905622C04B2BAAE7600303EE73001A3D"))
+        u := bigIntFromBytes([]byte{0x12})
+        v := bigIntFromBytes(decodeHex("469AF79D1FB1F5E16B99592B77A01E2A0FDFB0D01794368D9A56117F7B38669522DD4B650CF789EEBF068C5D139732F0905622C04B2BAAE7600303EE73001A3D"))
 
         x, y := UV2XY(c, u, v)
         eq([]*big.Int{x, y}, []*big.Int{c.X, c.Y}, "UV2XY")

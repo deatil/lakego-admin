@@ -9,7 +9,7 @@ import (
     "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
-func Test_Kdf(t *testing.T) {
+func Test_Check(t *testing.T) {
     type args struct {
         md  func() hash.Hash
         z   []byte

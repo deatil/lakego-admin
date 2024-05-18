@@ -174,6 +174,45 @@ func test_SignASN1(t *testing.T, gen Gost) {
     assertBool(objVerify.ToVerify(), "SignASN1-Verify")
 }
 
+func Test_SignBytes(t *testing.T) {
+    types := []string{
+        "CurveIdGostR34102001CryptoProAParamSet",
+        "CurveIdtc26gost34102012256paramSetC",
+    }
+
+    for _, name := range types {
+        t.Run(name, func(t *testing.T) {
+            gen := GenerateKey(name)
+            test_SignBytes(t, gen)
+        })
+    }
+}
+
+func test_SignBytes(t *testing.T, gen Gost) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        SignBytes()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNotEmpty(signed, "SignBytes-Sign")
+
+    // 验证
+    objVerify := gen.
+        FromBase64String(signed).
+        VerifyBytes([]byte(data))
+
+    assertError(objVerify.Error(), "SignBytes-Verify")
+    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
+}
+
 func Test_MakeKey(t *testing.T) {
     gen := GenerateKey("CurveIdtc26gost34102012256paramSetC")
 

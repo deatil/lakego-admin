@@ -18,7 +18,7 @@ func NewUKM(raw []byte) *big.Int {
         t[i] = raw[len(raw)-i-1]
     }
 
-    return bytesToBigint(t)
+    return bigIntFromBytes(t)
 }
 
 func (prv *PrivateKey) KEK(pub *PublicKey, ukm *big.Int) ([]byte, error) {

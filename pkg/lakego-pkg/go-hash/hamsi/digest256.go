@@ -11,8 +11,7 @@ const (
     Size224 = 28
     Size256 = 32
 
-    // -32
-    BlockSize256 = 0
+    BlockSize256 = 4
 )
 
 // digest256 represents the partial evaluation of a checksum.
@@ -26,7 +25,7 @@ type digest256 struct {
     partialLen uint32
 
     initVal [8]uint32
-    hs int
+    hs      int
 }
 
 func initAll256() {

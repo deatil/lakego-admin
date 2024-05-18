@@ -169,7 +169,7 @@ func (c *Curve) Double(p1x, p1y *big.Int) (x *big.Int, y *big.Int) {
 }
 
 func (c *Curve) ScalarMult(x1, y1 *big.Int, key []byte) (x *big.Int, y *big.Int) {
-    k := bytesToBigint(key)
+    k := bigIntFromBytes(key)
     if k.Cmp(zero) == 0 {
         panic("cryptobin/gost: zero key")
     }
@@ -185,7 +185,7 @@ func (c *Curve) ScalarMult(x1, y1 *big.Int, key []byte) (x *big.Int, y *big.Int)
 }
 
 func (c *Curve) ScalarBaseMult(key []byte) (x, y *big.Int) {
-    k := bytesToBigint(key)
+    k := bigIntFromBytes(key)
     if k.Cmp(zero) == 0 {
         panic("cryptobin/gost: zero key")
     }

@@ -3,6 +3,7 @@ package fugue
 import (
     "bytes"
     "testing"
+    "crypto/hmac"
     "encoding/hex"
 )
 
@@ -53,6 +54,17 @@ func Test_Hash224_Check(t *testing.T) {
 
         if !bytes.Equal(sum, test.md) {
             t.Errorf("[%d] New224 fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New224 half fail, got %x, want %x", i, sum, test.md)
         }
 
         // =====
@@ -150,13 +162,22 @@ func Test_Hash256_Check(t *testing.T) {
 
         // =====
 
-        /*
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New256 half fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
         sum2 := Sum256(test.msg)
 
         if !bytes.Equal(sum2[:], test.md) {
             t.Errorf("[%d] Sum256 fail, got %x, want %x", i, sum2, test.md)
         }
-        */
     }
 }
 
@@ -197,6 +218,17 @@ func Test_Hash384_Check(t *testing.T) {
 
         if !bytes.Equal(sum, test.md) {
             t.Errorf("[%d] New384 fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New384 half fail, got %x, want %x", i, sum, test.md)
         }
 
         // =====
@@ -250,10 +282,104 @@ func Test_Hash512_Check(t *testing.T) {
 
         // =====
 
+        h.Reset()
+        h.Write(test.msg[:len(test.msg)/2])
+        h.Write(test.msg[len(test.msg)/2:])
+        sum = h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] New512 half fail, got %x, want %x", i, sum, test.md)
+        }
+
+        // =====
+
         sum2 := Sum512(test.msg)
 
         if !bytes.Equal(sum2[:], test.md) {
             t.Errorf("[%d] Sum512 fail, got %x, want %x", i, sum2, test.md)
+        }
+    }
+}
+
+func Test_Hash256_Hmac_Check(t *testing.T) {
+   tests := []testData{
+        {
+           fromHex(""),
+           fromHex("327ab04111c87bcdd3692072bc2dd58809ac97894483ef25eaa51577e1808dec"),
+        },
+        {
+           fromHex("cc"),
+           fromHex("469be4dc3d5068ad624d2e32214ad26d19d56d932d6d53cc2969690f5683ae6e"),
+        },
+        {
+           fromHex("41fb"),
+           fromHex("ce242fadf9e290db1282df69f8064515cc8a094c23d8285440fed5a70aadf288"),
+        },
+        {
+           fromHex("1f877c"),
+           fromHex("36a6963f05d41e0b712d34317ae3e5e92ccf7d7ebcbbdf4fd614de42239f9756"),
+        },
+        {
+           fromHex("c1ecfdfc"),
+           fromHex("3f1b101c70613cb3951209cdb8d4a2e18abf0fc5018b83961626e881acc2b69d"),
+        },
+        {
+           fromHex("21f134ac57"),
+           fromHex("2fe874afa43eb11b62aac63ea1751038020f67750b306c9de2d7bc21f99abb28"),
+        },
+        {
+           fromHex("c6f50bb74e29"), // 12 | 6
+           fromHex("34819f943d467b7a260e886b95388c7b9146180e5717e338b55b1ddfaf11adab"),
+        },
+        {
+           fromHex("119713cc83eeef"),
+           fromHex("79934086689a21269792f7fab2ed944b424593cdab6004cf9176149634c18b51"),
+        },
+        {
+           fromHex("4a4f202484512526"),
+           fromHex("beddc19a567bad0e48c41dddad4c53509192334e2d270f5ed0a102ea1fcd5adf"),
+        },
+        {
+           fromHex("1f66ab4185ed9b6375"),
+           fromHex("5b601a2552280235624b35e9fe9c31af6318202229c381f94d20ac8737071a8f"),
+        },
+        {
+           fromHex("eed7422227613b6f53c9"), // 20 | 10
+           fromHex("dc1b418f2a814f0cdf5bf17303466e136abb29117553f5d0b4021157609bf007"),
+        },
+        {
+           fromHex("eaeed5cdffd89dece455f1"),
+           fromHex("f350e4f512b1c615a756c58e37bf3dc879ae818a34912a54e5a6a6d7e628c358"),
+        },
+        {
+           fromHex("5be43c90f22902e4fe8ed2d3"),
+           fromHex("8d37aa57c3eadd3d7c4dd0defd265d439848b2d28439caf1623ec2935b850319"),
+        },
+        {
+           fromHex("a746273228122f381c3b46e4f1"),
+           fromHex("9718163e75e751aec18225184696791740a96e8764438a52613e765089fe80d4"),
+        },
+        {
+           fromHex("3c5871cd619c69a63b540eb5a625"),
+           fromHex("ffdc05af40667d0db0d0666181532975c937a7dfbaa9d67a5906924d0fc67039"),
+        },
+        {
+           fromHex("fa22874bcc068879e8ef11a69f0722"),
+           fromHex("8ba8ec52bf7cc2f3c43fe642382004cff43e477980e92a845655ed90da8eefef"),
+        },
+    }
+
+    key := []byte("1234567812345678")
+
+    h := hmac.New(New256, key)
+
+    for i, test := range tests {
+        h.Reset()
+        h.Write(test.msg)
+        sum := h.Sum(nil)
+
+        if !bytes.Equal(sum, test.md) {
+            t.Errorf("[%d] Hmac With New256 fail, got %x, want %x", i, sum, test.md)
         }
     }
 }

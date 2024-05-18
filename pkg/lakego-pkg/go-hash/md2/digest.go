@@ -29,12 +29,12 @@ func newDigest() *digest {
 }
 
 func (d *digest) Reset() {
-    d.digest = [Size]byte{}
     d.s = [48]byte{}
     d.x = [BlockSize]byte{}
-
     d.nx = 0
     d.len = 0
+
+    d.digest = [Size]byte{}
 }
 
 func (d *digest) Size() int {

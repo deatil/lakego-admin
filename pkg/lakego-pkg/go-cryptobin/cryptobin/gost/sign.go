@@ -8,6 +8,7 @@ import (
 )
 
 // 私钥签名
+// privateKey Sign
 func (this Gost) Sign() Gost {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
@@ -31,6 +32,7 @@ func (this Gost) Sign() Gost {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
+// publicKey Verify
 func (this Gost) Verify(data []byte) Gost {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
@@ -50,6 +52,7 @@ func (this Gost) Verify(data []byte) Gost {
 // ===============
 
 // 私钥签名
+// privateKey Sign with asn.1
 func (this Gost) SignASN1() Gost {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
@@ -73,6 +76,7 @@ func (this Gost) SignASN1() Gost {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
+// publicKey Verify with asn.1
 func (this Gost) VerifyASN1(data []byte) Gost {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
@@ -91,7 +95,23 @@ func (this Gost) VerifyASN1(data []byte) Gost {
 
 // ===============
 
-// 签名后数据
+// 私钥签名
+// privateKey Sign with bytes
+func (this Gost) SignBytes() Gost {
+    return this.Sign()
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+// publicKey Verify with bytes
+func (this Gost) VerifyBytes(data []byte) Gost {
+    return this.Verify(data)
+}
+
+// ===============
+
+// 签名数据
+// sign data with hash
 func (this Gost) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
         return nil, errors.New("hash func empty.")
