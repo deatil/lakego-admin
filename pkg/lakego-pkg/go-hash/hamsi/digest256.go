@@ -11,7 +11,7 @@ const (
     Size224 = 28
     Size256 = 32
 
-    BlockSize256 = 4
+    BlockSize256 = 32
 )
 
 // digest256 represents the partial evaluation of a checksum.

@@ -377,67 +377,67 @@ func Test_Hash256_Hmac_Check(t *testing.T) {
    tests := []testData{
         {
            fromHex(""),
-           fromHex("8ab549c2fe9a5a172888c22a2fdb59a42b6bc3983b94e09e2d5ff9d2594eb600"),
+           fromHex("3336e020b23b6af389fafad9040fe4157b7b8bf628926e7398f9f18a7a3aeb73"),
         },
         {
            fromHex("cc"),
-           fromHex("274b05602f6c44d7d61481ee3390b9ae1b415615da50521aaa935ca4dae619bb"),
+           fromHex("05605b9a24fb4aa5db5e3ec031ea5d4ce513cbbca30207eed1e6d41bc62a1605"),
         },
         {
            fromHex("41fb"),
-           fromHex("6764299f2aaa246ffc5db8da526a1ceb86dc2a306a4b161a5f553d5a8bd32be8"),
+           fromHex("030b7869f501d924ed3cad11295a3e472ad3da3fd406ae6d0ed418e66f0741f4"),
         },
         {
            fromHex("1f877c"),
-           fromHex("dfea742a618258f42bcf330c06b2ab567300143fbd23d000a9fe47011b038ed5"),
+           fromHex("01f7174a518bca96e37fbc370ab7208c7635135988d75c31be68a8ec9aa7fe56"),
         },
         {
            fromHex("c1ecfdfc"),
-           fromHex("5e7dacdd5e9d9bb1b054e186d9ffb0674ddda70df576fa6b819790ab0ec89147"),
+           fromHex("cd0fa4057029f5e6a08b9fc3d1b66e1081e8a1e073dcb95db4d0ee4e1b325815"),
         },
         {
            fromHex("21f134ac57"),
-           fromHex("3c9c8bfeada42bb4d71a59b1655cb122b3fdf85f804fed92099f4cb83de5b8a5"),
+           fromHex("7b6ad644edbc61a976b7e78281e0bbd43b8b7b72ddf5e96dfaf7055bfc9f7754"),
         },
         {
            fromHex("c6f50bb74e29"), // 12 | 6
-           fromHex("4cc5f93b92f62088a351c0b5327762c2bb7558d68be8b005fb0b945f4bd89ae0"),
+           fromHex("aed99280915e4785e5179c5e3ae59ff1805ac0d30eb5ea82921478304ba22769"),
         },
         {
            fromHex("119713cc83eeef"),
-           fromHex("a53c3a3e4fe787a17eaf8b311c82362783a9bed5b0d9ceded965f81e3cadb306"),
+           fromHex("157599297b087a2373e56bfc0974504773928be7dfb729ff461b518d3d0cf5da"),
         },
         {
            fromHex("4a4f202484512526"),
-           fromHex("a654c13875a79d2c6f78bc77dce72513004026b18b5f24c68598427eda0368fa"),
+           fromHex("b321341cdfebc29553d8e7f086ca491844caa3036931f550a316921eb0ce41fe"),
         },
         {
            fromHex("1f66ab4185ed9b6375"),
-           fromHex("0e7c97962f121500fe391bfd9d1b7263bc67063f42ce7a7bab386310a4264fca"),
+           fromHex("4f0e5fd7d8997c09d0db4ab173fedf2e846df188e23a661b76d8a8244aaced0f"),
         },
         {
            fromHex("eed7422227613b6f53c9"), // 20 | 10
-           fromHex("6b0262904796319823243326edf2067d78ab01fa7c71e41b4cbddb4e496647b4"),
+           fromHex("54e7f6c65b99a2d4fd568926ee4dada8c4454d13509e335f7e3bb7f5bae87577"),
         },
         {
            fromHex("eaeed5cdffd89dece455f1"),
-           fromHex("f9eb803ea1f4ad22414f0129d5f876e8d96e89ce167fbbce382756082a49f2e9"),
+           fromHex("9bdcb56cb6a354445279cea6a9177de73a078a6d44442bc641f9ffce073d6b1f"),
         },
         {
            fromHex("5be43c90f22902e4fe8ed2d3"),
-           fromHex("7d08c54dd6a59511cdc587b146ccbb0e8e50ace8d46b8f529190f069bb7664f1"),
+           fromHex("bae305d823556430d16dbef96fccf8991149bc41a2442d8512c8d01df32e6ade"),
         },
         {
            fromHex("a746273228122f381c3b46e4f1"),
-           fromHex("f9ea09434216c4def3d65dd06a31662b692786c27722609b673a5df7d7d14ec0"),
+           fromHex("65f7f2f4462c66f013fbf426aa29742a998bcf0e12557ae11708f642d213bd89"),
         },
         {
            fromHex("3c5871cd619c69a63b540eb5a625"),
-           fromHex("aa383f45cf2483233344560be60aca392fbbe86f8fae0889ca9bdcc16d2b73ff"),
+           fromHex("6a95e99e1703be1d143c19287d449292a5b0890702ee2f004caea3524116024c"),
         },
         {
            fromHex("fa22874bcc068879e8ef11a69f0722"),
-           fromHex("91164fc8f2cbbd2b96804a891131593c28a36f6d9c289d9b62079e89a8ef1a30"),
+           fromHex("710515c20d253efdba3fa1263c9e9d2ac93f7f32afaacef5461deae8670c95dd"),
         },
     }
 
@@ -460,67 +460,67 @@ func Test_Hash512_Hmac_Check(t *testing.T) {
    tests := []testData{
         {
            fromHex(""),
-           fromHex("0d68727373000f1c5ef602f2822c088e47a16f84d3e869685763255a88e8794e482abf882d056dd3dd58697b5eb036b4bd9deec81dfac8629ef0537e0d2b4da5"),
+           fromHex("ffe3162094a89608ee885e72123931204516a55480a9936620697e0ec54bb208b3e30ec398b04f71c019f51f9e7efddcc770fa1266a4d6e58b07bcf8391de377"),
         },
         {
            fromHex("cc"),
-           fromHex("bc6a0f2c37b5de94d9a58e78ab5109a0ae5acde6cb6535f6cc0e892d4dc9bae3a5c4bd1f1a0b8d15201f01cadd5329af4aad58a588fa076901db2e224ca3b164"),
+           fromHex("984f9bcbfdcd3c0edb87252160dd760f032c8a200acba44ebd7138be63be5ed916c3f583d42e38afb9bcfad481277ec0b9f94bd08ddcdf54eb8f2309fd7a4005"),
         },
         {
            fromHex("41fb"),
-           fromHex("15814eab20bd488e787c2d7960361bf9967400bafaf84ae716d5a963f760b243578a960a4cbaa11f65323d9674d30438d5ad97c3ca453ba2d1c61b1b8a70b3ff"),
+           fromHex("e1b7a974b2700bf74d76d99f8e96ba72af22e693a5373b7b01159ae5276fc976d3cb2a268f2fb5c411a687be0db05026d27f1cea57c918db25980ce9e5357b78"),
         },
         {
            fromHex("1f877c"),
-           fromHex("b55f8347678505d7db618a3de3592987f978c51d46740b09200e3bad3a2f19417857dcd1c9b3ae02d5ea8703699d6b18d79ff9cb83e77e81bbdee197bb92c103"),
+           fromHex("600030903cf11f1f272c9a0cdd141e1ae210e6363d25d2f8766c10481355d31752dd82135a3333ee407d0ebd0e8d3a8cff82133e4e7063246f485594cf35f5b6"),
         },
         {
            fromHex("c1ecfdfc"),
-           fromHex("6e43ff025034570e5a7c301293c3d7400c3c28e3566072539fb9119b481e5b07dfb897d9caf67b5b04d927aef65ddcbc227a3fa51ecfaeead2e07e7df548fee0"),
+           fromHex("1007a7ada3af5874f3ef1ab671f0529c6c2cf671aa54d54f0e5106b4fa7fac46e56385fc59fdc7a5d91fbc238a94957f151b3639702978f8ad462748b134a8ff"),
         },
         {
            fromHex("21f134ac57"),
-           fromHex("e3dc2fdc5ed452ed7744ea91cd8d404958aa03b5928aa963902cfa2cfb716c739d9de3a30481e6ce1475fe5903f8d2001a3a6e82105d31bffbd9172d36a5363b"),
+           fromHex("1c5c83907e430689d3b757bd23c761e728b99e8dc0b858d2c3eb99818c7f0a1941af3595f1c825203f2d8aae80475c220762ab1f06ebc6915e3a9e43ed0f356b"),
         },
         {
            fromHex("c6f50bb74e29"), // 12 | 6
-           fromHex("9af2cfabfa9b459e43d877f24758367767cd952e49134a055e22f8791c9587f0c47b1489643491b62886d267fa4f1b4eb26f73bbf04a90e1732d500ec40fd71f"),
+           fromHex("767d10a937048191c1f0c9cf63a81b43e7bb14305e1bdbc0f3af7f8c60d04eb8c3c201a154f6b12b61f96c7c910ef76d526e6bb49df16a257909d0630383dc20"),
         },
         {
            fromHex("119713cc83eeef"),
-           fromHex("b74944ab473074ef48481adfb8726be4d015e5bf3d33f5c86037317dc5cfc41a146f717ab94213a9545553541365ed2b8baa9aac0710f667c8129d3cdeefc358"),
+           fromHex("493b442f4ee2573f439c54f5bb9628ceeda1957e24fd1f38e257d9b7be2b1d0c53fbe95e7e5dcd2f545b6c872ae1ae592b5208f0f0247a3949a050d403fb8170"),
         },
         {
            fromHex("4a4f202484512526"),
-           fromHex("c5b9025c54adb84950bd244c4943824f06b04a3cfc83db64ceccd77d73e899ef5a75895b933d998f8fbdbb84ad4afe3afb3b3f14c9ce1dcb44d89d4025170328"),
+           fromHex("487114528794f8441f7e725e6e43ae34fe4d7529a3c6c7538e4c0d57d00909d0cc26f1289778c9ce973c98292b724a69916abe006a9dd88cfb8d6147bf6199a5"),
         },
         {
            fromHex("1f66ab4185ed9b6375"),
-           fromHex("b6c37ae7b3aca844a55bcc40dce26b5981d101e96e38fb9050849e7cf67b3191909e3cc844cbcbc8567986028e4989f0f0a485eeaafcb13664510c7fc500b1c1"),
+           fromHex("1d263c4103d7552cd38555f7fc769b7d0b74ef32375686980a0c02774c0729ce5dca516caea59f39bf6cc4818409f1740b7fb405176f939664d9a4d11766bd28"),
         },
         {
            fromHex("eed7422227613b6f53c9"), // 20 | 10
-           fromHex("4ed9400358e385274bda06b589a8d2fcb77c88887ee7ec8af34166896f0a578dbb23efe1b9d024d0c012bac733914b50734f3ce7c4ed969b5b88c97c9a4d8920"),
+           fromHex("ea8d4b7f0f82f785ed750fca0f5ce152cf74e101967c4b200c0fea0eaa66cbed2991d79d7805d68dd369f9cef101755bc5e600a500e09377d7881843900da316"),
         },
         {
            fromHex("eaeed5cdffd89dece455f1"),
-           fromHex("431c8c1ef51d76a460a746fbcc1fcca74ae99ea3efe1e421587f94f78296eee943c8df4099e83ee04524b0609c202565dfc25c1f4aaec1e6288c6cd315a4c156"),
+           fromHex("de2b669e9307df8a21755e8ca07602cc2a5c8fe9806439ee11e693c38e016a45edd771997600915be53a4ae51c719af1ba018a828c37e8be257b75ab3cb02a8c"),
         },
         {
            fromHex("5be43c90f22902e4fe8ed2d3"),
-           fromHex("fc85adf6525db2c99a7c41929992f2f76b85768f529dc1f2e78f2c1674737147afb50866b0765f27dbba7ca8b50abe67544ba30ad75ce7817b00b90016815556"),
+           fromHex("f6c21b4a428c8528d56a2b8ee8c1432c8df21b8f9cba42dab83700697dbfde62e325661eec2743d06f3322e571132455ce81bb0b73fba8f791c6d9cb2352540a"),
         },
         {
            fromHex("a746273228122f381c3b46e4f1"),
-           fromHex("b61aeec4b131bcad50ddfa689a3c8c41f6a287026783024844013a4a598856fc7d736d3a77bdf2f576305fc9422c097f9b39d19390138f5cd74fd5e5341819f9"),
+           fromHex("d63e2850d5ff8350d79272e138a6f2e91bbd15d3f0d6156f6d17d0a1c6f7054ffa6ccbe50ce6e251f9c1afd89b52ad680a9c9b3dc943e1ad56927b5094253542"),
         },
         {
            fromHex("3c5871cd619c69a63b540eb5a625"),
-           fromHex("84fe0b288687a44d41b12da59adece54f4d6c8bd7ae492570539d279495e3022e2e4c03ca99e1a6424636eeae18d594702a909821e1175805be029b15f05a104"),
+           fromHex("5caeeb04c2bfa844445838df36ac357c05e3daea6e7c66bd9d0fb13fa2e3ee763258a75943f0bf28e1103d1933a1ad7ee92539ff9fe3f9af88f467086a73a78e"),
         },
         {
            fromHex("fa22874bcc068879e8ef11a69f0722"),
-           fromHex("24f8f64bbe2b8b683b1b5b8786e5cf1bd345947bb0367d09acdfdadab43b9d48475bba3bf3220d0ad70b96817ddbffe44c9b750a885a087be9220883e2b7747c"),
+           fromHex("4ddc76d2d1136559ddd592625dea161186f2a24222e797ce89e2c4018af443bbef4d908aea6ca6cba1b19f4435aa9507543d4af9729bb56879e3f5bbf7f5cf6c"),
         },
     }
 

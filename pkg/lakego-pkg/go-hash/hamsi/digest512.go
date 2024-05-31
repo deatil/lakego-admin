@@ -11,7 +11,7 @@ const (
     Size384 = 48
     Size512 = 64
 
-    BlockSize512 = 8
+    BlockSize512 = 32
 )
 
 // digest512 represents the partial evaluation of a checksum.

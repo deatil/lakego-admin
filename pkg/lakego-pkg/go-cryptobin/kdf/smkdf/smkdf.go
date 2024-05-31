@@ -12,7 +12,7 @@ func Key(h func() hash.Hash, z []byte, size int) []byte {
     mdSize := md.Size()
 
     limit := (uint64(size) + uint64(mdSize) - 1) / uint64(mdSize)
-    if limit >= (1 << uint64(mdSize) - 1) {
+    if limit >= uint64(1 << 32) - 1 {
         panic("kdf: key length too long")
     }
 
@@ -20,7 +20,7 @@ func Key(h func() hash.Hash, z []byte, size int) []byte {
     var count uint32 = 1
     var k []byte
 
-    for i := 0; i < int(limit); i++ {
+    for i := uint64(0); i < limit; i++ {
         binary.BigEndian.PutUint32(countBytes[:], count)
 
         md.Reset()

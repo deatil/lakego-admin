@@ -36,7 +36,7 @@ const (
 	EST   = "EST"
 	GMT   = "GMT"
 	UTC   = "UTC"
-	UCT   = "UCT"
+	CTT   = "CTT"
 	MST   = "MST"
 
 	Cuba      = "Cuba"      // 古巴

@@ -129,6 +129,12 @@ type PublicKey struct {
     X, Y *big.Int
 }
 
+// Size returns the maximum length of the shared key the
+// public key can produce.
+func (pub *PublicKey) Size() int {
+    return (pub.Curve.Params().BitSize + 7) / 8
+}
+
 // Equal reports whether pub and x have the same value.
 func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
     xx, ok := x.(*PublicKey)

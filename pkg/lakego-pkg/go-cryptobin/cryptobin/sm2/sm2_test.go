@@ -3,6 +3,7 @@ package sm2
 import (
     "errors"
     "testing"
+    "strings"
     "crypto/md5"
     "crypto/rand"
     "encoding/hex"
@@ -1090,4 +1091,76 @@ jGAJaWDORkhDVOkYH2Rt`
 
     assertError(de.Error(), "Test_SignAndDecrypt_Check22-DecryptASN1")
     assertEqual(deData, check, "Test_SignAndDecrypt_Check22-DecryptASN1")
+}
+
+func Test_SM2_EncryptECB(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
+    sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
+
+    assertError(err2, "Test_SM2_EncryptECB-sm2keyDecode")
+
+    data := strings.Repeat("test-pass", 1 << 12)
+
+    sm2 := NewSM2()
+
+    en := sm2.
+        FromString(data).
+        FromPrivateKeyBytes(sm2keyBytes).
+        MakePublicKey().
+        Encrypt()
+    enData := en.ToBase64String()
+
+    assertError(en.Error(), "Test_SM2_EncryptECB-Encrypt")
+    assertNotEmpty(enData, "Test_SM2_EncryptECB-Encrypt")
+
+    de := sm2.
+        FromBase64String(enData).
+        FromPrivateKeyBytes(sm2keyBytes).
+        Decrypt()
+    deData := de.ToString()
+
+    assertError(de.Error(), "Test_SM2_EncryptECB-Decrypt")
+    assertNotEmpty(deData, "Test_SM2_EncryptECB-Decrypt")
+
+    assertEqual(data, deData, "Test_SM2_EncryptECB-Dedata")
+}
+
+func Test_SM2_EncryptASN1ECB(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
+    sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
+
+    assertError(err2, "Test_SM2_EncryptASN1ECB-sm2keyDecode")
+
+    data := strings.Repeat("test-pass", 1 << 12)
+
+    sm2 := NewSM2()
+
+    en := sm2.
+        FromString(data).
+        FromPrivateKeyBytes(sm2keyBytes).
+        MakePublicKey().
+        EncryptASN1()
+    enData := en.ToBase64String()
+
+    assertError(en.Error(), "Test_SM2_EncryptASN1ECB-Encrypt")
+    assertNotEmpty(enData, "Test_SM2_EncryptASN1ECB-Encrypt")
+
+    de := sm2.
+        FromBase64String(enData).
+        FromPrivateKeyBytes(sm2keyBytes).
+        DecryptASN1()
+    deData := de.ToString()
+
+    assertError(de.Error(), "Test_SM2_EncryptASN1ECB-Decrypt")
+    assertNotEmpty(deData, "Test_SM2_EncryptASN1ECB-Decrypt")
+
+    assertEqual(data, deData, "Test_SM2_EncryptASN1ECB-Dedata")
 }
