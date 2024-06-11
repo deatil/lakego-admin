@@ -1,7 +1,7 @@
 package sm2
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 私钥/公钥
@@ -28,12 +28,12 @@ func (this SM2) ToString() string {
 
 // 输出Base64
 func (this SM2) ToBase64String() string {
-    return cryptobin_tool.NewEncoding().Base64Encode(this.parsedData)
+    return tool.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this SM2) ToHexString() string {
-    return cryptobin_tool.NewEncoding().HexEncode(this.parsedData)
+    return tool.HexEncode(this.parsedData)
 }
 
 // ==========

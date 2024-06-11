@@ -4,6 +4,7 @@ import (
     "bytes"
     "errors"
     "crypto/rand"
+    "encoding/asn1"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
@@ -113,16 +114,16 @@ func (this SM2) EncryptECB() SM2 {
             endIndex = plainTextSize
         }
 
-        enc := this.FromBytes(plainText[offSet:endIndex]).Encrypt()
+        enc := this.
+            FromBytes(plainText[offSet:endIndex]).
+            Encrypt()
 
         err := enc.Error()
         if err != nil {
             return this.AppendError(err)
         }
 
-        bytesOnce := enc.ToBytes()
-
-        buffer.Write(bytesOnce)
+        buffer.Write(enc.ToBytes())
         offSet = endIndex
     }
 
@@ -139,7 +140,16 @@ func (this SM2) DecryptECB() SM2 {
     }
 
     cipherText := this.data
-    priSize, cipherTextSize := ecbSize, len(cipherText)
+
+    size := 32
+    if this.signHash != nil {
+        size = this.signHash().Size()
+    }
+
+    byteLen := (this.privateKey.Curve.Params().BitSize + 7) / 8
+
+    priSize := 1 + 2*byteLen + size + ecbSize
+    cipherTextSize := len(cipherText)
 
     offSet := 0
     buffer := bytes.Buffer{}
@@ -150,16 +160,16 @@ func (this SM2) DecryptECB() SM2 {
             endIndex = cipherTextSize
         }
 
-        dec := this.FromBytes(cipherText[offSet:endIndex]).Decrypt()
+        dec := this.
+            FromBytes(cipherText[offSet:endIndex]).
+            Decrypt()
 
         err := dec.Error()
         if err != nil {
             return this.AppendError(err)
         }
 
-        bytesOnce := dec.ToBytes()
-
-        buffer.Write(bytesOnce)
+        buffer.Write(dec.ToBytes())
         offSet = endIndex
     }
 
@@ -189,16 +199,16 @@ func (this SM2) EncryptASN1ECB() SM2 {
             endIndex = plainTextSize
         }
 
-        enc := this.FromBytes(plainText[offSet:endIndex]).EncryptASN1()
+        enc := this.
+            FromBytes(plainText[offSet:endIndex]).
+            EncryptASN1()
 
         err := enc.Error()
         if err != nil {
             return this.AppendError(err)
         }
 
-        bytesOnce := enc.ToBytes()
-
-        buffer.Write(bytesOnce)
+        buffer.Write(enc.ToBytes())
         offSet = endIndex
     }
 
@@ -215,28 +225,26 @@ func (this SM2) DecryptASN1ECB() SM2 {
     }
 
     cipherText := this.data
-    priSize, cipherTextSize := ecbSize, len(cipherText)
 
-    offSet := 0
     buffer := bytes.Buffer{}
+    for {
+        var part asn1.RawValue
+        cipherText, _ = asn1.Unmarshal(cipherText, &part)
 
-    for offSet < cipherTextSize {
-        endIndex := offSet + priSize
-        if endIndex > cipherTextSize {
-            endIndex = cipherTextSize
-        }
-
-        dec := this.FromBytes(cipherText[offSet:endIndex]).DecryptASN1()
+        dec := this.
+            FromBytes(part.FullBytes).
+            DecryptASN1()
 
         err := dec.Error()
         if err != nil {
             return this.AppendError(err)
         }
 
-        bytesOnce := dec.ToBytes()
+        buffer.Write(dec.ToBytes())
 
-        buffer.Write(bytesOnce)
-        offSet = endIndex
+        if cipherText == nil || len(cipherText) == 0 {
+            break
+        }
     }
 
     this.parsedData = buffer.Bytes()

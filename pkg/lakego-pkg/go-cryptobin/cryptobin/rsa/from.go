@@ -7,7 +7,7 @@ import (
     "crypto/rsa"
     "crypto/rand"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 生成密钥
@@ -287,7 +287,7 @@ func FromPKCS8PublicKey(key []byte) RSA {
 
 // Pkcs1 DER
 func (this RSA) FromPKCS1PrivateKeyDer(der []byte) RSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "RSA PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "RSA PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -301,7 +301,7 @@ func (this RSA) FromPKCS1PrivateKeyDer(der []byte) RSA {
 
 // PKCS1 DER 公钥
 func (this RSA) FromPKCS1PublicKeyDer(der []byte) RSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "RSA PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "RSA PUBLIC KEY")
 
     publicKey, err := this.ParsePKCS1PublicKeyFromPEM(key)
     if err != nil {
@@ -317,7 +317,7 @@ func (this RSA) FromPKCS1PublicKeyDer(der []byte) RSA {
 
 // Pkcs8 DER
 func (this RSA) FromPKCS8PrivateKeyDer(der []byte) RSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -331,7 +331,7 @@ func (this RSA) FromPKCS8PrivateKeyDer(der []byte) RSA {
 
 // PKCS8 DER 公钥
 func (this RSA) FromPKCS8PublicKeyDer(der []byte) RSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     publicKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
@@ -443,7 +443,7 @@ func FromString(data string) RSA {
 
 // Base64
 func (this RSA) FromBase64String(data string) RSA {
-    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -460,7 +460,7 @@ func FromBase64String(data string) RSA {
 
 // Hex
 func (this RSA) FromHexString(data string) RSA {
-    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := tool.HexDecode(data)
     if err != nil {
         return this.AppendError(err)
     }

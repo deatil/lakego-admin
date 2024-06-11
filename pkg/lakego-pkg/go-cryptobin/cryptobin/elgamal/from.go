@@ -340,7 +340,7 @@ func FromString(data string) EIGamal {
 
 // Base64
 func (this EIGamal) FromBase64String(data string) EIGamal {
-    newData, err := tool.NewEncoding().Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
 
     this.data = newData
 
@@ -354,7 +354,7 @@ func FromBase64String(data string) EIGamal {
 
 // Hex
 func (this EIGamal) FromHexString(data string) EIGamal {
-    newData, err := tool.NewEncoding().HexDecode(data)
+    newData, err := tool.HexDecode(data)
 
     this.data = newData
 

@@ -1111,7 +1111,7 @@ func Test_SM2_EncryptECB(t *testing.T) {
         FromString(data).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        Encrypt()
+        EncryptECB()
     enData := en.ToBase64String()
 
     assertError(en.Error(), "Test_SM2_EncryptECB-Encrypt")
@@ -1120,13 +1120,13 @@ func Test_SM2_EncryptECB(t *testing.T) {
     de := sm2.
         FromBase64String(enData).
         FromPrivateKeyBytes(sm2keyBytes).
-        Decrypt()
+        DecryptECB()
     deData := de.ToString()
 
     assertError(de.Error(), "Test_SM2_EncryptECB-Decrypt")
     assertNotEmpty(deData, "Test_SM2_EncryptECB-Decrypt")
 
-    assertEqual(data, deData, "Test_SM2_EncryptECB-Dedata")
+    assertEqual(deData, data, "Test_SM2_EncryptECB-Dedata")
 }
 
 func Test_SM2_EncryptASN1ECB(t *testing.T) {
@@ -1147,7 +1147,7 @@ func Test_SM2_EncryptASN1ECB(t *testing.T) {
         FromString(data).
         FromPrivateKeyBytes(sm2keyBytes).
         MakePublicKey().
-        EncryptASN1()
+        EncryptASN1ECB()
     enData := en.ToBase64String()
 
     assertError(en.Error(), "Test_SM2_EncryptASN1ECB-Encrypt")
@@ -1156,11 +1156,11 @@ func Test_SM2_EncryptASN1ECB(t *testing.T) {
     de := sm2.
         FromBase64String(enData).
         FromPrivateKeyBytes(sm2keyBytes).
-        DecryptASN1()
+        DecryptASN1ECB()
     deData := de.ToString()
 
     assertError(de.Error(), "Test_SM2_EncryptASN1ECB-Decrypt")
     assertNotEmpty(deData, "Test_SM2_EncryptASN1ECB-Decrypt")
 
-    assertEqual(data, deData, "Test_SM2_EncryptASN1ECB-Dedata")
+    assertEqual(deData, data, "Test_SM2_EncryptASN1ECB-Dedata")
 }

@@ -175,7 +175,7 @@ func main() {
     var priKeyPem string = ""
     d := sm2.
         FromPrivateKey([]byte(priKeyPem)).
-        GetPrivateKeyDHexString()
+        GetPrivateKeyDString()
 
     // 获取公钥 X, Y 明文数据, 从私钥
     // get public key x data and y data from private key
@@ -184,16 +184,16 @@ func main() {
         FromPrivateKey([]byte(priKeyPem)).
         MakePublicKey()
 
-    x := public.GetPublicKeyXHexString()
-    y := public.GetPublicKeyYHexString()
+    x := public.GetPublicKeyXString()
+    y := public.GetPublicKeyYString()
 
     // 获取公钥 X, Y 明文数据, 从公钥
     // get public key x data and y data from public key
     var pubKeyPem string = ""
     public := sm2.FromPublicKey([]byte(pubKeyPem))
 
-    x := public.GetPublicKeyXHexString()
-    y := public.GetPublicKeyYHexString()
+    x := public.GetPublicKeyXString()
+    y := public.GetPublicKeyYString()
 }
 ~~~
 

@@ -90,10 +90,8 @@ func FromPublicKey(key []byte) Curve25519 {
 
 // 根据私钥 x, y 生成
 func (this Curve25519) FromKeyXYHexString(xString string, yString string) Curve25519 {
-    encoding := tool.NewEncoding()
-
-    x, _ := encoding.HexDecode(xString)
-    y, _ := encoding.HexDecode(yString)
+    x, _ := tool.HexDecode(xString)
+    y, _ := tool.HexDecode(yString)
 
     priv := &curve25519.PrivateKey{}
     priv.X = x
@@ -112,9 +110,7 @@ func FromKeyXYHexString(xString string, yString string) Curve25519 {
 
 // 根据私钥 x 生成
 func (this Curve25519) FromPrivateKeyXHexString(xString string) Curve25519 {
-    encoding := tool.NewEncoding()
-
-    x, _ := encoding.HexDecode(xString)
+    x, _ := tool.HexDecode(xString)
 
     priv := &curve25519.PrivateKey{}
     priv.X = x
@@ -134,9 +130,7 @@ func FromPrivateKeyXHexString(xString string) Curve25519 {
 
 // 根据公钥 y 生成
 func (this Curve25519) FromPublicKeyYHexString(yString string) Curve25519 {
-    encoding := tool.NewEncoding()
-
-    y, _ := encoding.HexDecode(yString)
+    y, _ := tool.HexDecode(yString)
 
     public := &curve25519.PublicKey{}
     public.Y = y

@@ -669,7 +669,7 @@ func Test_IsLatelyMonth(t *testing.T) {
 		},
 		{
 			index: "index-3",
-			date:  "2021-06-05 21:15:12",
+			date:  "2021-03-05 21:15:12",
 			tz:    "CET",
 			check: false,
 		},

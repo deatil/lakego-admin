@@ -92,10 +92,8 @@ func FromPublicKey(key []byte) ECDH {
 
 // 根据私钥 x, y 生成
 func (this ECDH) FromKeyXYHexString(xString string, yString string) ECDH {
-    encoding := tool.NewEncoding()
-
-    x, _ := encoding.HexDecode(xString)
-    y, _ := encoding.HexDecode(yString)
+    x, _ := tool.HexDecode(xString)
+    y, _ := tool.HexDecode(yString)
 
     priv := &ecdh.PrivateKey{}
     priv.X = x
@@ -115,9 +113,7 @@ func FromKeyXYHexString(xString string, yString string) ECDH {
 
 // 根据私钥 x 生成
 func (this ECDH) FromPrivateKeyXHexString(xString string) ECDH {
-    encoding := tool.NewEncoding()
-
-    x, _ := encoding.HexDecode(xString)
+    x, _ := tool.HexDecode(xString)
 
     priv := &ecdh.PrivateKey{}
     priv.X = x
@@ -138,9 +134,7 @@ func FromPrivateKeyXHexString(xString string) ECDH {
 
 // 根据公钥 y 生成
 func (this ECDH) FromPublicKeyYHexString(yString string) ECDH {
-    encoding := tool.NewEncoding()
-
-    y, _ := encoding.HexDecode(yString)
+    y, _ := tool.HexDecode(yString)
 
     public := &ecdh.PublicKey{}
     public.Y = y

@@ -1,9 +1,8 @@
 package curve25519
 
 import (
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/dh/curve25519"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -15,9 +14,7 @@ func (this Curve25519) GetPrivateKey() *curve25519.PrivateKey {
 func (this Curve25519) GetPrivateKeyXHexString() string {
     data := this.privateKey.X
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data)
+    dataHex := tool.HexEncode(data)
 
     return dataHex
 }
@@ -31,9 +28,7 @@ func (this Curve25519) GetPublicKey() *curve25519.PublicKey {
 func (this Curve25519) GetPublicKeyYHexString() string {
     data := this.publicKey.Y
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data)
+    dataHex := tool.HexEncode(data)
 
     return dataHex
 }

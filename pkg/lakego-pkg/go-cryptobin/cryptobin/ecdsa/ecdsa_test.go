@@ -246,8 +246,8 @@ func Test_PublickeyXY_String(t *testing.T) {
 
     assertError(obj.Error(), "PublickeyXY_3")
 
-    x := obj.GetPublicKeyXHexString()
-    y := obj.GetPublicKeyYHexString()
+    x := obj.GetPublicKeyXString()
+    y := obj.GetPublicKeyYString()
 
     assertNotEmpty(x, "PublickeyXY_3-x")
     assertNotEmpty(y, "PublickeyXY_3-y")

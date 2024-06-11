@@ -5,7 +5,7 @@ import (
     "crypto/rand"
     "crypto/ed25519"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 生成密钥
@@ -93,7 +93,7 @@ func FromPublicKey(key []byte) EdDSA {
 
 // DER 私钥
 func (this EdDSA) FromPrivateKeyDer(der []byte) EdDSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -107,7 +107,7 @@ func (this EdDSA) FromPrivateKeyDer(der []byte) EdDSA {
 
 // DER 公钥
 func (this EdDSA) FromPublicKeyDer(der []byte) EdDSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -161,7 +161,7 @@ func FromString(data string) EdDSA {
 
 // Base64
 func (this EdDSA) FromBase64String(data string) EdDSA {
-    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
 
     this.data = newData
 
@@ -175,7 +175,7 @@ func FromBase64String(data string) EdDSA {
 
 // Hex
 func (this EdDSA) FromHexString(data string) EdDSA {
-    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := tool.HexDecode(data)
 
     this.data = newData
 

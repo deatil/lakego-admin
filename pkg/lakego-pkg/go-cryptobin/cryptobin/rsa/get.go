@@ -6,7 +6,7 @@ import (
     "crypto/rsa"
     "math/big"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -23,14 +23,14 @@ func (this RSA) GetPublicKey() *rsa.PublicKey {
 func (this RSA) GetPublicKeyNHexString() string {
     data := this.publicKey.N
 
-    return cryptobin_tool.HexEncode(data.Bytes())
+    return tool.HexEncode(data.Bytes())
 }
 
 // 获取 PublicKeyE
 func (this RSA) GetPublicKeyEHexString() string {
     e := big.NewInt(int64(this.publicKey.E))
 
-    return cryptobin_tool.HexEncode(e.Bytes())
+    return tool.HexEncode(e.Bytes())
 }
 
 // 获取 hash 类型

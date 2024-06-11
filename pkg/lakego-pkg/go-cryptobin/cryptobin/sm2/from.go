@@ -7,8 +7,8 @@ import (
     "math/big"
     "crypto/rand"
 
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/gm/sm2"
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 使用自定义数据生成密钥对
@@ -195,7 +195,7 @@ func FromPublicKey(key []byte) SM2 {
 
 // PKCS1 编码 DER 私钥
 func (this SM2) FromPKCS1PrivateKeyDer(der []byte) SM2 {
-    key := cryptobin_tool.EncodeDerToPem(der, "SM2 PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "SM2 PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -209,7 +209,7 @@ func (this SM2) FromPKCS1PrivateKeyDer(der []byte) SM2 {
 
 // PKCS8 编码 DER 私钥
 func (this SM2) FromPKCS8PrivateKeyDer(der []byte) SM2 {
-    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -223,7 +223,7 @@ func (this SM2) FromPKCS8PrivateKeyDer(der []byte) SM2 {
 
 // DER 公钥
 func (this SM2) FromPublicKeyDer(der []byte) SM2 {
-    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -338,7 +338,7 @@ func (this SM2) FromPrivateKeyString(keyString string) SM2 {
 
 // 公钥明文, hex 或者 base64 解码后
 func (this SM2) FromPublicKeyBytes(pubBytes []byte) SM2 {
-    key := cryptobin_tool.HexEncode(pubBytes)
+    key := tool.HexEncode(pubBytes)
 
     return this.FromPublicKeyString(key)
 }
@@ -386,7 +386,7 @@ func FromString(data string) SM2 {
 
 // Base64数据
 func (this SM2) FromBase64String(data string) SM2 {
-    newData, err := cryptobin_tool.Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -403,7 +403,7 @@ func FromBase64String(data string) SM2 {
 
 // 16进制数据
 func (this SM2) FromHexString(data string) SM2 {
-    newData, err := cryptobin_tool.HexDecode(data)
+    newData, err := tool.HexDecode(data)
     if err != nil {
         return this.AppendError(err)
     }

@@ -487,7 +487,6 @@ func decrypt(priv *PrivateKey, data []byte, h hashFunc) ([]byte, error) {
     md.Write(y2Buf)
 
     hashed := md.Sum(nil)
-
     if bytes.Compare(hashed, hash) != 0 {
         return nil, errDecryption
     }

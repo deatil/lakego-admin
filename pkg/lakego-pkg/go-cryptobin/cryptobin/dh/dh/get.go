@@ -26,7 +26,7 @@ func (this DH) GetPublicKey() *dh.PublicKey {
 }
 
 // 获取 Y 16进制字符
-func (this DH) GetPublicKeyYHexString() string {
+func (this DH) GetPublicKeyYString() string {
     if this.publicKey == nil {
         return ""
     }

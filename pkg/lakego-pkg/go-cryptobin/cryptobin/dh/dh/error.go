@@ -1,7 +1,7 @@
 package dh
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this DH) AppendError(err ...error) DH {
 
 // 获取错误
 func (this DH) Error() error {
-    return cryptobin_tool.NewError(this.Errors...)
+    return tool.NewError(this.Errors...)
 }

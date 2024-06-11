@@ -1,14 +1,14 @@
 package blake256
 
 const (
-    // The block size of the hash algorithm in bytes.
-    BlockSize = 64
-
     // The size of BLAKE-256 hash in bytes.
     Size = 32
 
     // The size of BLAKE-224 hash in bytes.
     Size224 = 28
+
+    // The block size of the hash algorithm in bytes.
+    BlockSize = 64
 )
 
 type digest struct {
@@ -19,9 +19,9 @@ type digest struct {
 
     h     [8]uint32
     t     uint64
-    hs    int
     nullt bool
 
+    hs      int
     initVal [8]uint32
 }
 
@@ -56,6 +56,8 @@ func (d *digest) BlockSize() int {
 
 func (d *digest) Write(p []byte) (nn int, err error) {
     nn = len(p)
+
+    d.len += uint64(nn)
 
     plen := len(p)
 

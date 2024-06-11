@@ -1,9 +1,8 @@
 package ecdh
 
 import (
+    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/dh/ecdh"
-
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
 )
 
 // 获取 PrivateKey
@@ -15,9 +14,7 @@ func (this ECDH) GetPrivateKey() *ecdh.PrivateKey {
 func (this ECDH) GetPrivateKeyXHexString() string {
     data := this.privateKey.X
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data)
+    dataHex := tool.HexEncode(data)
 
     return dataHex
 }
@@ -28,12 +25,10 @@ func (this ECDH) GetPublicKey() *ecdh.PublicKey {
 }
 
 // 获取 Y 16进制字符
-func (this ECDH) GetPublicKeyYHexString() string {
+func (this ECDH) GetPublicKeyYString() string {
     data := this.publicKey.Y
 
-    dataHex := cryptobin_tool.
-        NewEncoding().
-        HexEncode(data)
+    dataHex := tool.HexEncode(data)
 
     return dataHex
 }

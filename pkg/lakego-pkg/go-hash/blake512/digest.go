@@ -20,8 +20,8 @@ type digest struct {
     h      [8]uint64
     t      [2]uint64
 
-    initVal [8]uint64
     hs      int
+    initVal [8]uint64
 }
 
 func newDigest(hs int, iv [8]uint64) *digest {
@@ -54,6 +54,8 @@ func (d *digest) BlockSize() int {
 
 func (d *digest) Write(p []byte) (nn int, err error) {
     nn = len(p)
+
+    d.len += uint64(nn)
 
     plen := len(p)
 

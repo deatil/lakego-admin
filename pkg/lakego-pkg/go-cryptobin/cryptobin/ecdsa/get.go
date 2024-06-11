@@ -7,18 +7,18 @@ import (
     "github.com/deatil/go-cryptobin/tool"
 )
 
-// 获取 PrivateKey
+// get PrivateKey
 func (this ECDSA) GetPrivateKey() *ecdsa.PrivateKey {
     return this.privateKey
 }
 
-// 获取 PrivateKeyCurve
+// get PrivateKey Curve
 func (this ECDSA) GetPrivateKeyCurve() elliptic.Curve {
     return this.privateKey.Curve
 }
 
-// 获取 PrivateKeyD
-func (this ECDSA) GetPrivateKeyDHexString() string {
+// get PrivateKey D hex string
+func (this ECDSA) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
     dataHex := tool.HexEncode(data.Bytes())
@@ -26,23 +26,23 @@ func (this ECDSA) GetPrivateKeyDHexString() string {
     return dataHex
 }
 
-// 获取私钥明文
+// get PrivateKey data hex string
 func (this ECDSA) GetPrivateKeyString() string {
-    return this.GetPrivateKeyDHexString()
+    return this.GetPrivateKeyDString()
 }
 
-// 获取 PublicKey
+// get PublicKey
 func (this ECDSA) GetPublicKey() *ecdsa.PublicKey {
     return this.publicKey
 }
 
-// 获取 PublicKeyCurve
+// get PublicKey Curve
 func (this ECDSA) GetPublicKeyCurve() elliptic.Curve {
     return this.publicKey.Curve
 }
 
-// 获取 PublicKeyX
-func (this ECDSA) GetPublicKeyXHexString() string {
+// get PublicKey X hex string
+func (this ECDSA) GetPublicKeyXString() string {
     data := this.publicKey.X
 
     dataHex := tool.HexEncode(data.Bytes())
@@ -50,8 +50,8 @@ func (this ECDSA) GetPublicKeyXHexString() string {
     return dataHex
 }
 
-// 获取 PublicKeyY
-func (this ECDSA) GetPublicKeyYHexString() string {
+// get PublicKey Y hex string
+func (this ECDSA) GetPublicKeyYString() string {
     data := this.publicKey.Y
 
     dataHex := tool.HexEncode(data.Bytes())
@@ -59,58 +59,58 @@ func (this ECDSA) GetPublicKeyYHexString() string {
     return dataHex
 }
 
-// 获取 PublicKeyXYHex
-func (this ECDSA) GetPublicKeyXYHexString() string {
-    dataHex := this.GetPublicKeyXHexString() + this.GetPublicKeyYHexString()
+// get PublicKey X and Y Hex string
+func (this ECDSA) GetPublicKeyXYString() string {
+    dataHex := this.GetPublicKeyXString() + this.GetPublicKeyYString()
 
     return dataHex
 }
 
-// 获取未压缩公钥
+// get PublicKey Uncompress Hex string
 func (this ECDSA) GetPublicKeyUncompressString() string {
     key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
     return tool.HexEncode(key)
 }
 
-// 获取压缩公钥
+// get PublicKey Compress Hex string
 func (this ECDSA) GetPublicKeyCompressString() string {
     key := elliptic.MarshalCompressed(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
     return tool.HexEncode(key)
 }
 
-// 获取 Curve
+// get Curve
 func (this ECDSA) GetCurve() elliptic.Curve {
     return this.curve
 }
 
-// 获取 hash 类型
+// get signHash type
 func (this ECDSA) GetSignHash() HashFunc {
     return this.signHash
 }
 
-// 获取 keyData
+// get keyData
 func (this ECDSA) GetKeyData() []byte {
     return this.keyData
 }
 
-// 获取 data
+// get data
 func (this ECDSA) GetData() []byte {
     return this.data
 }
 
-// 获取 parsedData
+// get parsedData
 func (this ECDSA) GetParsedData() []byte {
     return this.parsedData
 }
 
-// 获取验证后情况
+// get verify data
 func (this ECDSA) GetVerify() bool {
     return this.verify
 }
 
-// 获取错误
+// get errors
 func (this ECDSA) GetErrors() []error {
     return this.Errors
 }

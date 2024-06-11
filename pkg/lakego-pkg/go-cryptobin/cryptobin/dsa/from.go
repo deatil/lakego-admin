@@ -5,7 +5,7 @@ import (
     "crypto/dsa"
     "crypto/rand"
 
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 生成密钥
@@ -239,7 +239,7 @@ func FromPKCS8PublicKey(key []byte) DSA {
 
 // Pkcs1 DER 私钥
 func (this DSA) FromPKCS1PrivateKeyDer(der []byte) DSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "DSA PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "DSA PRIVATE KEY")
 
     parsedKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -253,7 +253,7 @@ func (this DSA) FromPKCS1PrivateKeyDer(der []byte) DSA {
 
 // PKCS1 DER 公钥
 func (this DSA) FromPKCS1PublicKeyDer(der []byte) DSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "DSA PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "DSA PUBLIC KEY")
 
     parsedKey, err := this.ParsePKCS1PublicKeyFromPEM(key)
     if err != nil {
@@ -269,7 +269,7 @@ func (this DSA) FromPKCS1PublicKeyDer(der []byte) DSA {
 
 // Pkcs8 DER 私钥
 func (this DSA) FromPKCS8PrivateKeyDer(der []byte) DSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -283,7 +283,7 @@ func (this DSA) FromPKCS8PrivateKeyDer(der []byte) DSA {
 
 // PKCS8 DER 公钥
 func (this DSA) FromPKCS8PublicKeyDer(der []byte) DSA {
-    key := cryptobin_tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
@@ -359,7 +359,7 @@ func FromString(data string) DSA {
 
 // Base64
 func (this DSA) FromBase64String(data string) DSA {
-    newData, err := cryptobin_tool.NewEncoding().Base64Decode(data)
+    newData, err := tool.Base64Decode(data)
 
     this.data = newData
 
@@ -373,7 +373,7 @@ func FromBase64String(data string) DSA {
 
 // Hex
 func (this DSA) FromHexString(data string) DSA {
-    newData, err := cryptobin_tool.NewEncoding().HexDecode(data)
+    newData, err := tool.HexDecode(data)
 
     this.data = newData
 

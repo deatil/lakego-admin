@@ -22,10 +22,6 @@ func Rotr32(x, n uint32) uint32 {
     return Rotl32(x, 32 - n);
 }
 
-func Byteswap32(x uint32) uint32 {
-    return ((Rotl32(x, 8) & 0x00ff00ff) | (Rotr32(x, 8) & 0xff00ff00))
-}
-
 func Rotl64(x, n uint64) uint64 {
     return bits.RotateLeft64(x, int(n))
 }

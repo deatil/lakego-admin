@@ -1,7 +1,7 @@
 package curve25519
 
 import (
-    cryptobin_tool "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this Curve25519) AppendError(err ...error) Curve25519 {
 
 // 获取错误
 func (this Curve25519) Error() error {
-    return cryptobin_tool.NewError(this.Errors...)
+    return tool.NewError(this.Errors...)
 }
