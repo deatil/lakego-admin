@@ -91,7 +91,7 @@ func FromPublicKey(key []byte) ECDH {
 // ==========
 
 // 根据私钥 x, y 生成
-func (this ECDH) FromKeyXYHexString(xString string, yString string) ECDH {
+func (this ECDH) FromKeyXYString(xString string, yString string) ECDH {
     x, _ := tool.HexDecode(xString)
     y, _ := tool.HexDecode(yString)
 
@@ -107,12 +107,12 @@ func (this ECDH) FromKeyXYHexString(xString string, yString string) ECDH {
 }
 
 // 根据私钥 x, y 生成
-func FromKeyXYHexString(xString string, yString string) ECDH {
-    return defaultECDH.FromKeyXYHexString(xString, yString)
+func FromKeyXYString(xString string, yString string) ECDH {
+    return defaultECDH.FromKeyXYString(xString, yString)
 }
 
 // 根据私钥 x 生成
-func (this ECDH) FromPrivateKeyXHexString(xString string) ECDH {
+func (this ECDH) FromPrivateKeyXString(xString string) ECDH {
     x, _ := tool.HexDecode(xString)
 
     priv := &ecdh.PrivateKey{}
@@ -128,12 +128,12 @@ func (this ECDH) FromPrivateKeyXHexString(xString string) ECDH {
 }
 
 // 根据私钥 x 生成
-func FromPrivateKeyXHexString(xString string) ECDH {
-    return defaultECDH.FromPrivateKeyXHexString(xString)
+func FromPrivateKeyXString(xString string) ECDH {
+    return defaultECDH.FromPrivateKeyXString(xString)
 }
 
 // 根据公钥 y 生成
-func (this ECDH) FromPublicKeyYHexString(yString string) ECDH {
+func (this ECDH) FromPublicKeyYString(yString string) ECDH {
     y, _ := tool.HexDecode(yString)
 
     public := &ecdh.PublicKey{}
@@ -146,8 +146,8 @@ func (this ECDH) FromPublicKeyYHexString(yString string) ECDH {
 }
 
 // 根据公钥 y 生成
-func FromPublicKeyYHexString(yString string) ECDH {
-    return defaultECDH.FromPublicKeyYHexString(yString)
+func FromPublicKeyYString(yString string) ECDH {
+    return defaultECDH.FromPublicKeyYString(yString)
 }
 
 // ==========

@@ -20,14 +20,14 @@ func (this RSA) GetPublicKey() *rsa.PublicKey {
 }
 
 // 获取 PublicKeyN
-func (this RSA) GetPublicKeyNHexString() string {
+func (this RSA) GetPublicKeyNString() string {
     data := this.publicKey.N
 
     return tool.HexEncode(data.Bytes())
 }
 
 // 获取 PublicKeyE
-func (this RSA) GetPublicKeyEHexString() string {
+func (this RSA) GetPublicKeyEString() string {
     e := big.NewInt(int64(this.publicKey.E))
 
     return tool.HexEncode(e.Bytes())

@@ -11,7 +11,7 @@ func (this Curve25519) GetPrivateKey() *curve25519.PrivateKey {
 }
 
 // 获取 X 16进制字符
-func (this Curve25519) GetPrivateKeyXHexString() string {
+func (this Curve25519) GetPrivateKeyXString() string {
     data := this.privateKey.X
 
     dataHex := tool.HexEncode(data)
@@ -25,7 +25,7 @@ func (this Curve25519) GetPublicKey() *curve25519.PublicKey {
 }
 
 // 获取 Y 16进制字符
-func (this Curve25519) GetPublicKeyYHexString() string {
+func (this Curve25519) GetPublicKeyYString() string {
     data := this.publicKey.Y
 
     dataHex := tool.HexEncode(data)

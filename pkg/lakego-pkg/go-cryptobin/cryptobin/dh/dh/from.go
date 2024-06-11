@@ -90,7 +90,7 @@ func FromPublicKey(key []byte) DH {
 // ==========
 
 // 根据密钥 x, y 生成
-func (this DH) FromKeyXYHexString(xString string, yString string) DH {
+func (this DH) FromKeyXYString(xString string, yString string) DH {
     x, _ := new(big.Int).SetString(xString[:], 16)
     y, _ := new(big.Int).SetString(yString[:], 16)
 
@@ -113,12 +113,12 @@ func (this DH) FromKeyXYHexString(xString string, yString string) DH {
 }
 
 // 根据私钥 x, y 生成
-func FromKeyXYHexString(xString string, yString string) DH {
-    return defaultDH.FromKeyXYHexString(xString, yString)
+func FromKeyXYString(xString string, yString string) DH {
+    return defaultDH.FromKeyXYString(xString, yString)
 }
 
 // 根据私钥 x 生成
-func (this DH) FromPrivateKeyXHexString(xString string) DH {
+func (this DH) FromPrivateKeyXString(xString string) DH {
     x, _ := new(big.Int).SetString(xString[:], 16)
 
     group := this.group
@@ -141,12 +141,12 @@ func (this DH) FromPrivateKeyXHexString(xString string) DH {
 }
 
 // 根据私钥 x 生成
-func FromPrivateKeyXHexString(xString string) DH {
-    return defaultDH.FromPrivateKeyXHexString(xString)
+func FromPrivateKeyXString(xString string) DH {
+    return defaultDH.FromPrivateKeyXString(xString)
 }
 
 // 根据公钥 y 生成
-func (this DH) FromPublicKeyYHexString(yString string) DH {
+func (this DH) FromPublicKeyYString(yString string) DH {
     y, _ := new(big.Int).SetString(yString[:], 16)
 
     group := this.group
@@ -166,8 +166,8 @@ func (this DH) FromPublicKeyYHexString(yString string) DH {
 }
 
 // 根据公钥 y 生成
-func FromPublicKeyYHexString(yString string) DH {
-    return defaultDH.FromPublicKeyYHexString(yString)
+func FromPublicKeyYString(yString string) DH {
+    return defaultDH.FromPublicKeyYString(yString)
 }
 
 // ==========

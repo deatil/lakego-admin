@@ -10,7 +10,7 @@ func (this DH) GetPrivateKey() *dh.PrivateKey {
 }
 
 // 获取 X 16进制字符
-func (this DH) GetPrivateKeyXHexString() string {
+func (this DH) GetPrivateKeyXString() string {
     if this.privateKey == nil {
         return ""
     }
@@ -37,7 +37,7 @@ func (this DH) GetPublicKeyYString() string {
 }
 
 // 获取 P 16进制字符
-func (this DH) GetPublicKeyParametersPHexString() string {
+func (this DH) GetPublicKeyParametersPString() string {
     if this.publicKey == nil {
         return ""
     }
@@ -48,7 +48,7 @@ func (this DH) GetPublicKeyParametersPHexString() string {
 }
 
 // 获取 G 16进制字符
-func (this DH) GetPublicKeyParametersGHexString() string {
+func (this DH) GetPublicKeyParametersGString() string {
     if this.publicKey == nil {
         return ""
     }

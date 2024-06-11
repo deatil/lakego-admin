@@ -11,7 +11,7 @@ func (this ECDH) GetPrivateKey() *ecdh.PrivateKey {
 }
 
 // 获取 X 16进制字符
-func (this ECDH) GetPrivateKeyXHexString() string {
+func (this ECDH) GetPrivateKeyXString() string {
     data := this.privateKey.X
 
     dataHex := tool.HexEncode(data)
