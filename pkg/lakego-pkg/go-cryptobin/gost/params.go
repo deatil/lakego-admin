@@ -676,6 +676,6 @@ var (
         return c
     }
 
-    // id default curve
+    // Param default curve
     CurveDefault = CurveIdGostR34102001CryptoProAParamSet
 )

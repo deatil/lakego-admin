@@ -21,9 +21,7 @@ func (this ECDSA) GetPrivateKeyCurve() elliptic.Curve {
 func (this ECDSA) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(data.Bytes())
 }
 
 // get PrivateKey data hex string
@@ -43,27 +41,23 @@ func (this ECDSA) GetPublicKeyCurve() elliptic.Curve {
 
 // get PublicKey X hex string
 func (this ECDSA) GetPublicKeyXString() string {
-    data := this.publicKey.X
+    x := this.publicKey.X
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(x.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this ECDSA) GetPublicKeyYString() string {
-    data := this.publicKey.Y
+    y := this.publicKey.Y
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(y.Bytes())
 }
 
 // get PublicKey X and Y Hex string
 func (this ECDSA) GetPublicKeyXYString() string {
-    dataHex := this.GetPublicKeyXString() + this.GetPublicKeyYString()
+    key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return dataHex
+    return tool.HexEncode(key[1:])
 }
 
 // get PublicKey Uncompress Hex string

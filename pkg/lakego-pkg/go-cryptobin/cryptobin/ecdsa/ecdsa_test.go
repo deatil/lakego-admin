@@ -453,3 +453,53 @@ func Test_PublicKey_Der(t *testing.T) {
 
     assertEqual(res.GetPublicKey(), obj.GetPublicKey(), "PublicKey_Der-res")
 }
+
+var testPublicKeyForGet = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+
+Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
+-----END PUBLIC KEY-----
+`
+var testPrivateKeyForGet = `
+-----BEGIN EC PRIVATE KEY-----
+MHcCAQEEIGfqpFWW2kecvy/V0mxus+ZMuODGcqfyZVJMgBbWRhYJoAoGCCqGSM49
+AwEHoUQDQgAEqktVUz5Og3mBcnhpnfWWSOhrZqO+Vu0zCh5hkl/0r9vPzPeqGpHJ
+v3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
+-----END EC PRIVATE KEY-----
+`
+
+func Test_PublicKeyForGet_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    xStringCheck := `aa4b55533e4e8379817278699df59648e86b66a3be56ed330a1e61925ff4afdb`
+    yStringCheck := `cfccf7aa1a91c9bf7789c3fcc5fa0656c67d8bbcb70a9104dc1aeb52c1575545`
+    xyStringCheck := `aa4b55533e4e8379817278699df59648e86b66a3be56ed330a1e61925ff4afdbcfccf7aa1a91c9bf7789c3fcc5fa0656c67d8bbcb70a9104dc1aeb52c1575545`
+    xyUncompressStringCheck := `04aa4b55533e4e8379817278699df59648e86b66a3be56ed330a1e61925ff4afdbcfccf7aa1a91c9bf7789c3fcc5fa0656c67d8bbcb70a9104dc1aeb52c1575545`
+    dStringCheck := `67eaa45596da479cbf2fd5d26c6eb3e64cb8e0c672a7f265524c8016d6461609`
+
+    xString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyXString()
+
+    yString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyYString()
+
+    xyString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyXYString()
+
+    xyUncompressString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyUncompressString()
+
+    dString := New().
+        FromPrivateKey([]byte(testPrivateKeyForGet)).
+        GetPrivateKeyDString()
+
+    assertEqual(xString, xStringCheck, "Test_PublicKeyForGet_x_Check")
+    assertEqual(yString, yStringCheck, "Test_PublicKeyForGet_y_Check")
+    assertEqual(xyString, xyStringCheck, "Test_PublicKeyForGet_xy_Check")
+    assertEqual(xyUncompressString, xyUncompressStringCheck, "Test_PublicKeyForGet_xyu_Check")
+    assertEqual(dString, dStringCheck, "Test_PublicKeyForGet_d_Check")
+}

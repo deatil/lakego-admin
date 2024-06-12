@@ -1164,3 +1164,53 @@ func Test_SM2_EncryptASN1ECB(t *testing.T) {
 
     assertEqual(deData, data, "Test_SM2_EncryptASN1ECB-Dedata")
 }
+
+var testPublicKeyForGet = `
+-----BEGIN PUBLIC KEY-----
+MFkwEwYHKoZIzj0CAQYIKoEcz1UBgi0DQgAEd5tZ/XlQgV9AbJbU5JuzZimcK/LC
+OX+xNwdI1XHHkIGl3W0VBmGRBK3VxkBSvp8tsGkZsxEmA7ngXyECzrDiuA==
+-----END PUBLIC KEY-----
+`
+var testPrivateKeyForGet = `
+-----BEGIN SM2 PRIVATE KEY-----
+MHcCAQEEIAVunzkO+VYC1MFl3TfjjEHkc21eRBz+qRxbgEA6BP/FoAoGCCqBHM9V
+AYItoUQDQgAEAnfcXztAc2zQ+uHuRlXuMohDdsncWxQFjrpxv5Ae3/PgH9vewt4A
+oEvRqcwOBWtAXNDP6E74e5ocagfMUbq4hQ==
+-----END SM2 PRIVATE KEY-----
+`
+
+func Test_PublicKeyForGet_Check(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    xStringCheck := `779b59fd7950815f406c96d4e49bb366299c2bf2c2397fb1370748d571c79081`
+    yStringCheck := `a5dd6d1506619104add5c64052be9f2db06919b3112603b9e05f2102ceb0e2b8`
+    xyStringCheck := `779b59fd7950815f406c96d4e49bb366299c2bf2c2397fb1370748d571c79081a5dd6d1506619104add5c64052be9f2db06919b3112603b9e05f2102ceb0e2b8`
+    xyUncompressStringCheck := `04779b59fd7950815f406c96d4e49bb366299c2bf2c2397fb1370748d571c79081a5dd6d1506619104add5c64052be9f2db06919b3112603b9e05f2102ceb0e2b8`
+    dStringCheck := `056e9f390ef95602d4c165dd37e38c41e4736d5e441cfea91c5b80403a04ffc5`
+
+    xString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyXString()
+
+    yString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyYString()
+
+    xyString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyXYString()
+
+    xyUncompressString := New().
+        FromPublicKey([]byte(testPublicKeyForGet)).
+        GetPublicKeyUncompressString()
+
+    dString := New().
+        FromPrivateKey([]byte(testPrivateKeyForGet)).
+        GetPrivateKeyDString()
+
+    assertEqual(xString, xStringCheck, "Test_PublicKeyForGet_x_Check")
+    assertEqual(yString, yStringCheck, "Test_PublicKeyForGet_y_Check")
+    assertEqual(xyString, xyStringCheck, "Test_PublicKeyForGet_xy_Check")
+    assertEqual(xyUncompressString, xyUncompressStringCheck, "Test_PublicKeyForGet_xyu_Check")
+    assertEqual(dString, dStringCheck, "Test_PublicKeyForGet_d_Check")
+}

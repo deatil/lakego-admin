@@ -21,9 +21,7 @@ func (this SM2) GetPrivateKeyCurve() elliptic.Curve {
 func (this SM2) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(data.Bytes())
 }
 
 // get PrivateKey data hex string
@@ -45,41 +43,35 @@ func (this SM2) GetPublicKeyCurve() elliptic.Curve {
 func (this SM2) GetPublicKeyXString() string {
     data := this.publicKey.X
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(data.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this SM2) GetPublicKeyYString() string {
     data := this.publicKey.Y
 
-    dataHex := tool.HexEncode(data.Bytes())
-
-    return dataHex
+    return tool.HexEncode(data.Bytes())
 }
 
 // get PublicKey X and Y Hex string
 func (this SM2) GetPublicKeyXYString() string {
-    dataHex := this.GetPublicKeyXString() + this.GetPublicKeyYString()
+    data := sm2.ToPublicKey(this.publicKey)
 
-    return dataHex
+    return tool.HexEncode(data[1:])
 }
 
 // get PublicKey Uncompress Hex string
 func (this SM2) GetPublicKeyUncompressString() string {
-    dataHex := "04" + this.GetPublicKeyXString() + this.GetPublicKeyYString()
+    data := sm2.ToPublicKey(this.publicKey)
 
-    return dataHex
+    return tool.HexEncode(data)
 }
 
 // get PublicKey Compress Hex string
 func (this SM2) GetPublicKeyCompressString() string {
     data := sm2.Compress(this.publicKey)
 
-    dataHex := tool.HexEncode(data)
-
-    return dataHex
+    return tool.HexEncode(data)
 }
 
 // get key Data
