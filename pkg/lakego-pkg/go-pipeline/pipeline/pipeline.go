@@ -4,18 +4,6 @@ import(
     "reflect"
 )
 
-// 构造函数
-func New() Pipeline {
-    return NewPipeline()
-}
-
-// 构造函数
-func NewPipeline() Pipeline {
-    return Pipeline{
-        Pipes: make([]PipeItem, 0),
-    }
-}
-
 type (
     // 管道单个
     PipeItem = any
@@ -45,6 +33,18 @@ type PipeInterface interface {
     Handle(any, NextFunc) any
 }
 
+// 构造函数
+func NewPipeline() *Pipeline {
+    return &Pipeline{
+        Pipes: make([]PipeItem, 0),
+    }
+}
+
+// 构造函数
+func New() *Pipeline {
+    return NewPipeline()
+}
+
 /**
  * 管道
  *
@@ -69,53 +69,53 @@ type Pipeline struct {
 }
 
 // 设置数据
-func (this Pipeline) Send(passable any) Pipeline {
+func (this *Pipeline) Send(passable any) *Pipeline {
     this.Passable = passable
 
     return this
 }
 
 // 设置管道
-func (this Pipeline) Through(pipes ...PipeItem) Pipeline {
+func (this *Pipeline) Through(pipes ...PipeItem) *Pipeline {
     this.Pipes = pipes
 
     return this
 }
 
 // 数组
-func (this Pipeline) ThroughArray(pipes []PipeItem) Pipeline {
+func (this *Pipeline) ThroughArray(pipes []PipeItem) *Pipeline {
     this.Pipes = pipes
 
     return this
 }
 
 // 添加管道
-func (this Pipeline) Pipe(pipes ...PipeItem) Pipeline {
+func (this *Pipeline) Pipe(pipes ...PipeItem) *Pipeline {
     this.Pipes = append(this.Pipes, pipes...)
 
     return this
 }
 
 // 添加管道
-func (this Pipeline) PipeArray(pipes []PipeItem) Pipeline {
+func (this *Pipeline) PipeArray(pipes []PipeItem) *Pipeline {
     this.Pipes = append(this.Pipes, pipes...)
 
     return this
 }
 
 // 设置自定义方法
-func (this Pipeline) Via(method string) Pipeline {
+func (this *Pipeline) Via(method string) *Pipeline {
     this.Method = method
 
     return this
 }
 
 // 返回
-func (this Pipeline) Then(destination DestinationFunc) any {
+func (this *Pipeline) Then(destination DestinationFunc) any {
     pipeline := ArrayReduce(
         ArrayReverse(this.Pipes),
-        this.Carry(),
-        this.PrepareDestination(destination),
+        this.carry(),
+        this.prepareDestination(destination),
     )
 
     newPipeline := pipeline.(NextFunc)
@@ -124,21 +124,40 @@ func (this Pipeline) Then(destination DestinationFunc) any {
 }
 
 // 返回数据
-func (this Pipeline) ThenReturn() any {
+func (this *Pipeline) ThenReturn() any {
     return this.Then(func(passable any) any {
         return passable
     })
 }
 
+// 设置 Carry 回调函数
+func (this *Pipeline) WithCarryCallback(callback CarryCallbackFunc) *Pipeline {
+    this.CarryCallback = callback
+
+    return this
+}
+
+// 设置 Exception 回调函数
+func (this *Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) *Pipeline {
+    this.ExceptionCallback = callback
+
+    return this
+}
+
+// 获取设置的管道
+func (this *Pipeline) GetPipes() []PipeItem {
+    return this.Pipes
+}
+
 // 包装
-func (this Pipeline) PrepareDestination(destination DestinationFunc) NextFunc {
+func (this *Pipeline) prepareDestination(destination DestinationFunc) NextFunc {
     return func(passable any) any {
         return destination(passable)
     }
 }
 
 // 格式化数据
-func (this Pipeline) Carry() CarryFunc {
+func (this *Pipeline) carry() CarryFunc {
     return func(stack any, pipe any) any {
         newStack := stack.(NextFunc)
 
@@ -154,29 +173,40 @@ func (this Pipeline) Carry() CarryFunc {
                 case PipeInterface:
                     carry := newPipe.Handle(passable, newStack)
 
-                    return this.HandleCarry(carry)
+                    return this.handleCarry(carry)
+
+                // slice
+                case []any:
+                    if len(newPipe) > 0 {
+                        pipeFunc := newPipe[0]
+
+                        params := []any{passable, newStack}
+                        params = append(params, newPipe[1:]...)
+
+                        // 执行自定义函数
+                        if carry, ok := this.pipeCallMethod(pipeFunc, this.Method, params); ok {
+                            return this.handleCarry(carry)
+                        }
+                    }
+
+                    return this.handleException(passable, pipe, newStack)
 
                 // 默认报错
                 default:
                     // 执行自定义函数
                     if carry, ok := this.pipeCallMethod(pipe, this.Method, []any{passable, newStack}); ok {
-                        return this.HandleCarry(carry)
+                        return this.handleCarry(carry)
                     }
 
-                    return this.HandleException(passable, pipe, newStack)
+                    return this.handleException(passable, pipe, newStack)
             }
 
         }
     }
 }
 
-// 获取设置的管道
-func (this Pipeline) GetPipes() []PipeItem {
-    return this.Pipes
-}
-
 // 返回数据
-func (this Pipeline) HandleCarry(carry any) any {
+func (this *Pipeline) handleCarry(carry any) any {
     if this.CarryCallback != nil {
         callback := this.CarryCallback
 
@@ -187,7 +217,7 @@ func (this Pipeline) HandleCarry(carry any) any {
 }
 
 // 报错信息
-func (this Pipeline) HandleException(passable any, pipe any, stack NextFunc) any {
+func (this *Pipeline) handleException(passable any, pipe any, stack NextFunc) any {
     if this.ExceptionCallback != nil {
         callback := this.ExceptionCallback
 
@@ -197,40 +227,8 @@ func (this Pipeline) HandleException(passable any, pipe any, stack NextFunc) any
     return stack(passable)
 }
 
-// 设置 Carry 回调函数
-func (this Pipeline) WithCarryCallback(callback CarryCallbackFunc) Pipeline {
-    this.CarryCallback = callback
-
-    return this
-}
-
-// 设置 Exception 回调函数
-func (this Pipeline) WithExceptionCallback(callback ExceptionCallbackFunc) Pipeline {
-    this.ExceptionCallback = callback
-
-    return this
-}
-
 // 执行自定义方法
-func (this Pipeline) pipeCallMethod(pipe any, method string, params []any) (any, bool) {
-    if method == "" {
-        return nil, false
-    }
-
-    // 不是结构体时
-    pipeKind := reflect.TypeOf(pipe).Kind()
-    if pipeKind != reflect.Struct {
-        return nil, false
-    }
-
-    pipeObject := reflect.ValueOf(pipe)
-
-    // 获取到方法
-    newPipe := pipeObject.MethodByName(method)
-    if !newPipe.IsValid() {
-        return nil, false
-    }
-
+func (this *Pipeline) pipeCallMethod(pipe any, method string, params []any) (any, bool) {
     // 添加参数
     pipeParams := make([]reflect.Value, 0)
 
@@ -240,14 +238,50 @@ func (this Pipeline) pipeCallMethod(pipe any, method string, params []any) (any,
         }
     }
 
-    // 执行并获取结果
-    carrys := newPipe.Call(pipeParams)
-    if len(carrys) == 0 {
-        return nil, false
+    // 不是结构体时
+    pipeType := reflect.TypeOf(pipe)
+    for pipeType.Kind() == reflect.Ptr {
+        pipeType = pipeType.Elem()
     }
 
-    carry := carrys[0].Interface()
+    pipeKind := pipeType.Kind()
+    switch {
+        case pipeKind == reflect.Struct:
+            if method == "" {
+                return nil, false
+            }
 
-    return carry, true
+            pipeObject := reflect.ValueOf(pipe)
+
+            // 获取到方法
+            newPipe := pipeObject.MethodByName(method)
+            if !newPipe.IsValid() {
+                return nil, false
+            }
+
+            // 执行并获取结果
+            carrys := newPipe.Call(pipeParams)
+            if len(carrys) == 0 {
+                return nil, false
+            }
+
+            carry := carrys[0].Interface()
+
+            return carry, true
+        case pipeKind == reflect.Func:
+            newPipe := reflect.ValueOf(pipe)
+
+            // 执行并获取结果
+            carrys := newPipe.Call(pipeParams)
+            if len(carrys) == 0 {
+                return nil, false
+            }
+
+            carry := carrys[0].Interface()
+
+            return carry, true
+    }
+
+    return nil, false
 }
 

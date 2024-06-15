@@ -133,7 +133,7 @@ var DESEDE3CBC = CipherCBC{
     identifier:   oidDESEDE3CBC,
     hasKeyLength: false,
 }
-// RC2CBC is the [40-bit, 64-bit, 168-bit] key RC2 cipher in CBC mode.
+// RC2CBC is the [40-bit, 64-bit, 128-bit] key RC2 cipher in CBC mode.
 // [rc2Version, keySize] = [58, 16] | [120, 8] | [160, 5]
 var RC2CBC = CipherRC2CBC{
     cipherFunc:   newRC2Cipher,
@@ -638,7 +638,7 @@ var ARIA256CCM = CipherCCM{
 
 // ==========
 
-// Misty1CBC is the 168-bit key Misty1 cipher in CBC mode.
+// Misty1CBC is the 128-bit key Misty1 cipher in CBC mode.
 var Misty1CBC = CipherCBC{
     cipherFunc:   misty1.NewCipher,
     keySize:      16,

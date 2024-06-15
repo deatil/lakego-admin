@@ -1,21 +1,21 @@
-## go Pipeline
+## go 通用管道
 
 
-### Desc
+### 项目介绍
 
-*  A pipeline library for go.
+*  go 实现的通用管道
 
-[中文](README_CN.md) | English
+中文 | [English](README.md)
 
 
-### Download
+### 下载安装
 
 ~~~go
 go get -u github.com/deatil/go-pipeline
 ~~~
 
 
-### Get Starting
+### 开始使用
 
 ~~~go
 package main
@@ -26,7 +26,7 @@ import (
 )
 
 func main() {
-    // pipeline test
+    // 管道测试
     data := pipeline.NewPipeline().
         Send("开始的数据").
         Through(
@@ -54,7 +54,7 @@ func main() {
     fmt.Println(data)
     // 输出: 开始的数据, 第1次数据1, 第2次数据1, struct 数据1, struct 数据2, 第2次数据2, 第1次数据2
 
-    // hub test
+    // hub 测试
     hub := pipeline.NewHub()
     hub.Pipeline("hub", func(pipe pipeline.Pipeline, object any) any {
         data := pipe.
@@ -81,7 +81,7 @@ func main() {
 
 /* ======================== */
 
-// pipeline struct
+// 管道测试
 type PipelineEx struct {}
 
 func (this PipelineEx) Handle(data any, next pipeline.NextFunc) any {
@@ -99,11 +99,11 @@ func (this PipelineEx) Handle(data any, next pipeline.NextFunc) any {
 ~~~
 
 
-### LICENSE
+### 开源协议
 
-*  The library LICENSE is `Apache2`, using the library need keep the LICENSE.
+*  本软件包遵循 `Apache2` 开源协议发布，在保留本软件包版权的情况下提供个人及商业免费使用。
 
 
-### Copyright
+### 版权
 
-*  Copyright deatil(https://github.com/deatil).
+*  本软件包所属版权归 deatil(https://github.com/deatil) 所有。

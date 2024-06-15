@@ -41,16 +41,16 @@ func (this SM2) GetPublicKeyCurve() elliptic.Curve {
 
 // get PublicKey X hex string
 func (this SM2) GetPublicKeyXString() string {
-    data := this.publicKey.X
+    x := this.publicKey.X
 
-    return tool.HexEncode(data.Bytes())
+    return tool.HexEncode(x.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this SM2) GetPublicKeyYString() string {
-    data := this.publicKey.Y
+    y := this.publicKey.Y
 
-    return tool.HexEncode(data.Bytes())
+    return tool.HexEncode(y.Bytes())
 }
 
 // get PublicKey X and Y Hex string
