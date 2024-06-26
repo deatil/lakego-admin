@@ -18,30 +18,30 @@ func ROTL(x uint32, n uint32) uint32 {
 }
 
 func P0(x uint32) uint32 {
-    return (x ^ ROTL(x, 9) ^ ROTL(x, 17))
+    return x ^ ROTL(x, 9) ^ ROTL(x, 17)
 }
 
 func P1(x uint32) uint32 {
-    return (x ^ ROTL(x, 15) ^ ROTL(x, 23))
+    return x ^ ROTL(x, 15) ^ ROTL(x, 23)
 }
 
 func FF00(x, y, z uint32) uint32 {
-    return (x ^ y ^ z)
+    return x ^ y ^ z
 }
 
 func FF16(x, y, z uint32) uint32 {
-    return ((x & y) | (x & z) | (y & z))
+    return (x & y) | (x & z) | (y & z)
 }
 
 func GG00(x, y, z uint32) uint32 {
-    return (x ^ y ^ z)
+    return x ^ y ^ z
 }
 
 func GG16(x, y, z uint32) uint32 {
-    return (((y ^ z) & x) ^ z)
+    return ((y ^ z) & x) ^ z
 }
 
-func compressBlocks(digest []uint32, data []uint8) {
+func compressBlock(digest []uint32, data []byte) {
     var A uint32
     var B uint32
     var C uint32
@@ -74,7 +74,7 @@ func compressBlocks(digest []uint32, data []uint8) {
     }
 
     for j = 0; j < 16; j++ {
-        SS1 = ROTL((ROTL(A, 12) + E + keys[j]), 7)
+        SS1 = ROTL((ROTL(A, 12) + E + tSbox[j]), 7)
         SS2 = SS1 ^ ROTL(A, 12)
 
         TT1 = FF00(A, B, C) + D + SS2 + (W[j] ^ W[j + 4])
@@ -91,7 +91,7 @@ func compressBlocks(digest []uint32, data []uint8) {
     }
 
     for ; j < 64; j++ {
-        SS1 = ROTL((ROTL(A, 12) + E + keys[j]), 7)
+        SS1 = ROTL((ROTL(A, 12) + E + tSbox[j]), 7)
         SS2 = SS1 ^ ROTL(A, 12)
 
         TT1 = FF16(A, B, C) + D + SS2 + (W[j] ^ W[j + 4])
@@ -115,4 +115,27 @@ func compressBlocks(digest []uint32, data []uint8) {
     digest[5] ^= F
     digest[6] ^= G
     digest[7] ^= H
+}
+
+func GenT() []uint32 {
+    init1 := 0x79CC4519
+    init2 := 0x7A879D8A
+
+    var T = make([]uint32, 0)
+    for j := 0; j < 16; j++ {
+        Tj := (init1 << uint32(j)) | (init1 >> (32 - uint32(j)))
+
+        T = append(T, uint32(Tj))
+    }
+
+    for j := 16; j < 64; j++ {
+        n := j % 32
+        Tj := (init2 << uint32(n)) | (init2 >> (32 - uint32(n)))
+
+        T = append(T, uint32(Tj))
+    }
+
+    // fmt.Printf("0x%08X, ", Tj)
+
+    return T
 }

@@ -1,4 +1,4 @@
-package rabbitio_test
+package rabbit_test
 
 import (
     "fmt"
@@ -6,20 +6,20 @@ import (
     "testing"
     "encoding/hex"
 
-    "github.com/deatil/go-cryptobin/cipher/rabbitio"
+    "github.com/deatil/go-cryptobin/cipher/rabbit"
 )
 
 func Test_NewCipher(t *testing.T) {
     key, ivt := []byte("12345678abcdefgh"), []byte("1234qwer")
     txt := "test NewReadercipher text dummy tx"
-    cph, err := rabbitio.NewCipher(key, ivt)
+    cph, err := rabbit.NewCipher(key, ivt)
     if err != nil {
         t.Fatal(err)
     }
     dst := make([]byte, len(txt))
     cph.XORKeyStream(dst, []byte(txt))
 
-    cph, err = rabbitio.NewCipher(key, ivt)
+    cph, err = rabbit.NewCipher(key, ivt)
     if err != nil {
         t.Fatal(err)
     }
@@ -65,7 +65,7 @@ func Test_Check(t *testing.T) {
         plainBytes, _ := hex.DecodeString(v.plain)
         cipherBytes, _ := hex.DecodeString(v.cipher)
 
-        c, err := rabbitio.NewCipher(keyBytes, ivBytes)
+        c, err := rabbit.NewCipher(keyBytes, ivBytes)
         if err != nil {
             t.Fatal(err.Error())
         }
@@ -79,7 +79,7 @@ func Test_Check(t *testing.T) {
 
         // =================
 
-        c2, err := rabbitio.NewCipher(keyBytes, ivBytes)
+        c2, err := rabbit.NewCipher(keyBytes, ivBytes)
         if err != nil {
             t.Fatal(err.Error())
         }
@@ -98,14 +98,14 @@ func Benchmark_NewCipher(b *testing.B) {
         for i := 0; i < b.N; i++ {
             key, ivt := []byte("12345678abcdefgh"), []byte("1234qwer")
             txt := "test NewReadercipher text dummy tx"
-            cph, err := rabbitio.NewCipher(key, ivt)
+            cph, err := rabbit.NewCipher(key, ivt)
             if err != nil {
                 b.Fatal(err)
             }
             dst := make([]byte, len(txt))
             cph.XORKeyStream(dst, []byte(txt))
 
-            cph, err = rabbitio.NewCipher(key, ivt)
+            cph, err = rabbit.NewCipher(key, ivt)
             if err != nil {
                 b.Fatal(err)
             }

@@ -1,4 +1,4 @@
-package rabbitio
+package rabbit
 
 var aro = []uint32{
     0x4D34D34D, 0xD34D34D3, 0x34D34D34, 0x4D34D34D,

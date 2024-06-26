@@ -7,6 +7,9 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
+    "golang.org/x/crypto/cast5"
+    "golang.org/x/crypto/twofish"
+
     cryptobin_md2 "github.com/deatil/go-cryptobin/hash/md2"
     cryptobin_rc2 "github.com/deatil/go-cryptobin/cipher/rc2"
     cryptobin_des "github.com/deatil/go-cryptobin/cipher/des"
@@ -21,6 +24,9 @@ var (
     oidPbeWithSHA1AndRC2_128 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 5}
     oidPbeWithSHA1AndRC2_40  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 6}
 
+    oidPbeWithMD5AndCAST5   = asn1.ObjectIdentifier{1, 2, 840, 113533, 7, 66, 12}
+    oidPbeWithSHAAndTwofish = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 21}
+
     // PBES1
     oidPbeWithMD2AndDES      = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 1}
     oidPbeWithMD2AndRC2_64   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 4}
@@ -33,6 +39,12 @@ var (
 var (
     newRC2Cipher = func(key []byte) (cipher.Block, error) {
         return cryptobin_rc2.NewCipher(key, len(key)*8)
+    }
+    newCAST5Cipher = func(key []byte) (cipher.Block, error) {
+        return cast5.NewCipher(key)
+    }
+    newTwofishCipher = func(key []byte) (cipher.Block, error) {
+        return twofish.NewCipher(key)
     }
 )
 
@@ -107,6 +119,35 @@ var SHA1AndRC2_40 = CipherBlockCBC{
     hasKeyLength:   false,
     needBmpPass:    true,
 }
+
+var MD5AndCAST5 = CipherBlockCBC{
+    cipherFunc:     newCAST5Cipher,
+    hashFunc:       md5.New,
+    derivedKeyFunc: DerivedKeyPkcs12,
+    saltSize:       cast5.BlockSize,
+    keySize:        16,
+    blockSize:      cast5.BlockSize,
+    iterationCount: 2048,
+    oid:            oidPbeWithMD5AndCAST5,
+    hasKeyLength:   false,
+    needBmpPass:    true,
+}
+var SHAAndTwofish = CipherBlockCBC{
+    cipherFunc:     newTwofishCipher,
+    hashFunc:       sha1.New,
+    derivedKeyFunc: DerivedKeyPkcs12,
+    saltSize:       twofish.BlockSize,
+    keySize:        16,
+    blockSize:      twofish.BlockSize,
+    iterationCount: 2048,
+    oid:            oidPbeWithSHAAndTwofish,
+    hasKeyLength:   true,
+    needBmpPass:    true,
+}
+
+var SHAAndTwofish_16 = SHAAndTwofish.WithKeySize(16)
+var SHAAndTwofish_24 = SHAAndTwofish.WithKeySize(24)
+var SHAAndTwofish_32 = SHAAndTwofish.WithKeySize(32)
 
 // PBES1
 var MD2AndDES = CipherBlockCBC{
@@ -203,6 +244,13 @@ func init() {
         return SHA1AndRC4_40
     })
 
+    AddCipher(oidPbeWithMD5AndCAST5, func() Cipher {
+        return MD5AndCAST5
+    })
+    AddCipher(oidPbeWithSHAAndTwofish, func() Cipher {
+        return SHAAndTwofish
+    })
+
     // PBES1
     AddCipher(oidPbeWithMD2AndDES, func() Cipher {
         return MD2AndDES
@@ -222,4 +270,5 @@ func init() {
     AddCipher(oidPbeWithSHA1AndRC2_64, func() Cipher {
         return SHA1AndRC2_64
     })
+
 }

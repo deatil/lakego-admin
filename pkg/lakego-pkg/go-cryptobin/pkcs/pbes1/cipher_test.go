@@ -41,6 +41,13 @@ func Test_Ciphers(t *testing.T) {
     test_cipher(t, SHA1AndDES, "SHA1AndDES", []byte("hsdfrt5t"))
     test_cipher(t, SHA1AndRC2_64, "SHA1AndRC2_64", []byte("hsdfrt5t"))
 
+    test_cipher(t, MD5AndCAST5, "MD5AndCAST5", []byte("hsdfrt5thsdfrt5t"))
+
+    test_cipher(t, SHAAndTwofish, "SHAAndTwofish", []byte("hsdfrt5thsdfrt5t"))
+    test_cipher(t, SHAAndTwofish_16, "SHAAndTwofish_16", []byte("hsdfrt5thsdfrt5t"))
+    test_cipher(t, SHAAndTwofish_24, "SHAAndTwofish_24", []byte("hsdfrt5thsdfrt5t"))
+    test_cipher(t, SHAAndTwofish_32, "SHAAndTwofish_32", []byte("hsdfrt5thsdfrt5t"))
+
 }
 
 

@@ -38,6 +38,28 @@ func Test_FuncEncrypt(t *testing.T) {
     assert(data, cyptdeStr, "Test_FuncEncrypt")
 }
 
+func Test_Default(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "useData5useData5"
+    cypt := FromString(data).
+        SetKey("dfertf12dfertf12").
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Default-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Default-Decode")
+
+    assert(data, cyptdeStr, "Test_Default")
+}
+
 func Test_TripleDesPKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
 

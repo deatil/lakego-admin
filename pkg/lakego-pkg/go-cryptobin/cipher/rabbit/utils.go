@@ -1,4 +1,4 @@
-package rabbitio
+package rabbit
 
 import (
     "math/bits"
@@ -37,7 +37,7 @@ func rol32(x uint32, n int) uint32 {
 }
 
 func gfunction(u, v uint32) uint32 {
-    uv := uint64(u + v)
+    uv := uint64(u) + uint64(v)
     uv *= uv
     return uint32(uv>>32) ^ uint32(uv)
 }

@@ -71,17 +71,18 @@ func main() {
 
 ### 结构说明
 
-*  默认方式 `Aes`, `ECB`, `NoPadding`
+*  默认方式 `Aes`, `ECB`, `NoPadding`。默认没有用补码, 默认输入值需为 16 长度倍数, 不是正确长度可以使用其他补码
 ~~~go
 // 加密数据
 cypt := crypto.
-    FromString("useData").
+    FromString("useData5useData5").
     SetKey("dfertf12dfertf12").
     Encrypt().
     ToBase64String()
+
 // 解密数据
 cyptde := crypto.
-    FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
+    FromBase64String("eZf7c3fcwKlmrqogiEHbJg==").
     SetKey("dfertf12dfertf12").
     Decrypt().
     ToString()

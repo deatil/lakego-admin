@@ -102,5 +102,5 @@ func (this *digest) checkSum() [Size]byte {
 }
 
 func (this *digest) processBlock(data []byte) {
-    compressBlocks(this.s[:], data)
+    compressBlock(this.s[:], data)
 }

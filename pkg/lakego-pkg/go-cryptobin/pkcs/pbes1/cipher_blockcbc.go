@@ -140,6 +140,13 @@ func (this CipherBlockCBC) WithSaltSize(saltSize int) CipherBlockCBC {
     return this
 }
 
+// 设置 saltSize
+func (this CipherBlockCBC) WithKeySize(keySize int) CipherBlockCBC {
+    this.keySize = keySize
+
+    return this
+}
+
 // 设置 derivedKeyFunc
 func (this CipherBlockCBC) WithDerivedKeyFunc(derivedKeyFunc DerivedKeyFunc) CipherBlockCBC {
     this.derivedKeyFunc = derivedKeyFunc

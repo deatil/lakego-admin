@@ -1,4 +1,4 @@
-package rabbitio
+package rabbit
 
 import (
     "errors"
@@ -9,8 +9,8 @@ import (
 )
 
 var (
-    errInvalidKeyLen = errors.New("cryptobin/rabbitio: key must be 16 byte len, not more not less")
-    errInvalidIVXLen = errors.New("cryptobin/rabbitio: iv must be 8 byte len or nothing (zero) at all")
+    errInvalidKeyLen = errors.New("cryptobin/rabbit: key must be 16 byte len, not more not less")
+    errInvalidIVLen  = errors.New("cryptobin/rabbit: iv must be 8 byte len or nothing (zero) at all")
 )
 
 type rabbitCipher struct {
@@ -29,7 +29,7 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
         return nil, errInvalidKeyLen
     }
     if len(iv) != 0 && len(iv) != 8 {
-        return nil, errInvalidIVXLen
+        return nil, errInvalidIVLen
     }
 
     c := new(rabbitCipher)

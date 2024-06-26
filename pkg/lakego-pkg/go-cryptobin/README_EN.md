@@ -72,17 +72,17 @@ func main() {
 
 ### Struct Desc
 
-*  default setting `Aes`, `ECB`, `NoPadding`
+*  default setting `Aes`, `ECB`, `NoPadding`. default not use padding, input need n*16 length, not right length need other padding
 ~~~go
 // encrypt data
 cypt := crypto.
-    FromString("useData").
+    FromString("useData5useData5").
     SetKey("dfertf12dfertf12").
     Encrypt().
     ToBase64String()
 // decrypt data
 cyptde := crypto.
-    FromBase64String("i3FhtTp5v6aPJx0wTbarwg==").
+    FromBase64String("eZf7c3fcwKlmrqogiEHbJg==").
     SetKey("dfertf12dfertf12").
     Decrypt().
     ToString()
