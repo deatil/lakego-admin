@@ -59,7 +59,7 @@ func Test_P12_Decode(t *testing.T) {
 
     password := "notasecret"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12Decode-pfxData")
 
     if err == nil {
@@ -115,7 +115,7 @@ func Test_P12_EncodeChain(t *testing.T) {
     assertError(err, "P12_EncodeChain-pfxData")
     assertNotEmpty(pfxData, "P12_EncodeChain-pfxData")
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12Decode-pfxData")
 
     privateKey2, attrs, _ := pp12.GetPrivateKey()
@@ -149,7 +149,7 @@ func Test_P12_EncodeSecret(t *testing.T) {
     pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
     assertError(err, "P12_EncodeSecret")
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeSecret-pfxData")
 
     secretKey2, attrs, _ := pp12.GetSecretKey()
@@ -201,7 +201,7 @@ func Test_P12_EncodeTrustStore(t *testing.T) {
     assertNotEmpty(pfxData, "P12_EncodeTrustStore-pfxData")
 
     // 新版本
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeTrustStore-pfxData")
 
     certificates2, _ := pp12.GetTrustStores()
@@ -240,7 +240,7 @@ func Test_P12_EncodeTrustStoreEntries(t *testing.T) {
     assertNotEmpty(pfxData, "P12_EncodeTrustStoreEntries-pfxData")
 
     // 新版本
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeTrustStoreEntries-pfxData")
 
     certificates2, _ := pp12.GetTrustStoreEntries()
@@ -274,7 +274,7 @@ func Test_P12_EncodePbes2_Check(t *testing.T) {
 
         password := "pass"
 
-        pp12, err := LoadPKCS12FromBytes(pfxData, password)
+        pp12, err := LoadFromBytes(pfxData, password)
         assertError(err, "P12_EncodePbes2_Check-pfxData")
 
         privateKey2, _, _ := pp12.GetPrivateKey()
@@ -307,7 +307,7 @@ func Test_P12_EncodeChain_Check(t *testing.T) {
 
     password := "pass"
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeChain_Check-pfxData")
 
     privateKey2, _, _ := pp12.GetPrivateKey()
@@ -355,7 +355,7 @@ func test_P12_Encode(t *testing.T, opts Opts, password string, name string) {
         assertNotEmpty(pfxData, "P12_Encode-pfxData")
 
         // 解析
-        pp12, err := LoadPKCS12FromBytes(pfxData, password)
+        pp12, err := LoadFromBytes(pfxData, password)
         assertError(err, "P12Decode-pfxData")
 
         privateKey2, _, _ := pp12.GetPrivateKey()
@@ -381,7 +381,7 @@ func Test_P12_ToPem(t *testing.T) {
 
     password := "notasecret"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_ToPem-pfxData")
 
     blocks, err := p12.ToPEM()
@@ -406,7 +406,7 @@ func Test_P12_ToOriginalPEM(t *testing.T) {
 
     password := "notasecret"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "Test_P12_ToOriginalPEM-pfxData")
 
     blocks, err := p12.ToOriginalPEM()
@@ -434,7 +434,7 @@ func Test_P12_Attrs_Verify(t *testing.T) {
 
     password := "pass"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_Attrs_Verify-pfxData")
 
     privateKey2, priAttrs, _ := p12.GetPrivateKey()
@@ -473,7 +473,7 @@ func Test_P12_EncodeSecret_SetLocalKeyId(t *testing.T) {
     assertError(err, "P12_EncodeSecret")
 
     // 解析
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeSecret_SetLocalKeyId-pfxData")
 
     secretKey2, attrs, _ := pp12.GetSecretKey()
@@ -507,7 +507,7 @@ func Test_P12_EncodeSdsiCert(t *testing.T) {
     pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
     assertError(err, "P12_EncodeSdsiCert")
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeSdsiCert-pfxData")
 
     sdsiCert2, attrs, _ := pp12.GetSdsiCertBytes()
@@ -535,7 +535,7 @@ func Test_P12_EncodeCRL(t *testing.T) {
     pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
     assertError(err, "P12_EncodeSdsiCert")
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeSdsiCert-pfxData")
 
     crlBytes2, attrs, _ := pp12.GetCRLBytes()
@@ -639,7 +639,7 @@ func Test_P12_EncodeCRL_OBJ(t *testing.T) {
     pfxData, err := p12.Marshal(rand.Reader, password, DefaultOpts)
     assertError(err, "P12_EncodeCRL_OBJ")
 
-    pp12, err := LoadPKCS12FromBytes(pfxData, password)
+    pp12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_EncodeCRL_OBJ-pfxData")
 
     crlBytes2, attrs, _ := pp12.GetCRLBytes()
@@ -864,7 +864,7 @@ func Test_P12_UnknowOid_Check(t *testing.T) {
 
     password := "passpass word"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_UnknowOid_Check-pfxData")
 
     unknows, err := p12.GetUnknowsBytes()
@@ -886,7 +886,7 @@ func Test_P12_Attrs_Names(t *testing.T) {
 
     password := "pass"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     assertError(err, "P12_Attrs_Names-pfxData")
 
     privateKey2, priAttrs, _ := p12.GetPrivateKey()
@@ -954,7 +954,7 @@ func Test_P12_Gost(t *testing.T) {
 
     password := "Пароль для PFX"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         t.Fatal(err)
     }
@@ -982,7 +982,7 @@ func Test_P12_Gost_En(t *testing.T) {
 
     password := "Пароль для PFX"
 
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         t.Fatal(err)
     }
@@ -1014,7 +1014,7 @@ func Test_P12_Gost_En(t *testing.T) {
     // t.Error(newCert)
 
     // 解析
-    p12De, err := LoadPKCS12FromBytes(pfxEnData, pass)
+    p12De, err := LoadFromBytes(pfxEnData, pass)
     assertError(err, "Test_P12_Gost_En-pfxEnData")
 
     blocks, err := p12De.ToOriginalPEM()

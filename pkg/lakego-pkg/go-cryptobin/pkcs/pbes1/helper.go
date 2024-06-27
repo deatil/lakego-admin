@@ -10,6 +10,9 @@ var PEMCipherMap = map[string]Cipher{
     "SHA1AndRC2_128": SHA1AndRC2_128,
     "SHA1AndRC2_40":  SHA1AndRC2_40,
 
+    "MD5AndCAST5":   MD5AndCAST5,
+    "SHAAndTwofish": SHAAndTwofish,
+
     // PBES1
     "MD2AndDES":      MD2AndDES,
     "MD2AndRC2_64":   MD2AndRC2_64,

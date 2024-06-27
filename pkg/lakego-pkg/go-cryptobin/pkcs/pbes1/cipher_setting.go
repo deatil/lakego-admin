@@ -132,22 +132,19 @@ var MD5AndCAST5 = CipherBlockCBC{
     hasKeyLength:   false,
     needBmpPass:    true,
 }
+// use 32 bytes key length
 var SHAAndTwofish = CipherBlockCBC{
     cipherFunc:     newTwofishCipher,
     hashFunc:       sha1.New,
     derivedKeyFunc: DerivedKeyPkcs12,
     saltSize:       twofish.BlockSize,
-    keySize:        16,
+    keySize:        32,
     blockSize:      twofish.BlockSize,
     iterationCount: 2048,
     oid:            oidPbeWithSHAAndTwofish,
-    hasKeyLength:   true,
+    hasKeyLength:   false,
     needBmpPass:    true,
 }
-
-var SHAAndTwofish_16 = SHAAndTwofish.WithKeySize(16)
-var SHAAndTwofish_24 = SHAAndTwofish.WithKeySize(24)
-var SHAAndTwofish_32 = SHAAndTwofish.WithKeySize(32)
 
 // PBES1
 var MD2AndDES = CipherBlockCBC{

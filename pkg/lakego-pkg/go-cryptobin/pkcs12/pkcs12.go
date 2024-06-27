@@ -38,7 +38,7 @@ func (this trustStoreKey) FriendlyName() string {
 
 // ToPEM converts all "safe bags" contained in pfxData to PEM blocks.
 func ToPEM(pfxData []byte, password string) ([]*pem.Block, error) {
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         return nil, err
     }
@@ -70,7 +70,7 @@ func DecodeChain(pfxData []byte, password string) (
     caCerts []*x509.Certificate,
     err error,
 ) {
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         return
     }
@@ -92,7 +92,7 @@ func DecodeChain(pfxData []byte, password string) (
 
 // DecodeTrustStore extracts the certificates from pfxData, which must be a DER-encoded
 func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificate, err error) {
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         return nil, err
     }
@@ -102,7 +102,7 @@ func DecodeTrustStore(pfxData []byte, password string) (certs []*x509.Certificat
 
 // DecodeTrustStoreEntries extracts the certificates from pfxData, which must be a DER-encoded
 func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []TrustStoreKey, err error) {
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         return nil, err
     }
@@ -125,7 +125,7 @@ func DecodeTrustStoreEntries(pfxData []byte, password string) (trustStoreKeys []
 
 // DecodeSecret extracts the Secret key from pfxData, which must be a DER-encoded
 func DecodeSecret(pfxData []byte, password string) (secretKey []byte, err error) {
-    p12, err := LoadPKCS12FromBytes(pfxData, password)
+    p12, err := LoadFromBytes(pfxData, password)
     if err != nil {
         return nil, err
     }

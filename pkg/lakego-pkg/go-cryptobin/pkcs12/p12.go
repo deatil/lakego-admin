@@ -158,6 +158,10 @@ func NewPKCS12() *PKCS12 {
     }
 }
 
+func New() *PKCS12 {
+    return NewPKCS12()
+}
+
 func (this *PKCS12) WithLocalKeyId(id []byte) *PKCS12 {
     this.localKeyId = id
 
@@ -174,8 +178,8 @@ func (this *PKCS12) String() string {
     return "PKCS12"
 }
 
-// LoadPKCS12FromReader loads the key store from the specified file.
-func LoadPKCS12FromReader(reader io.Reader, password string) (*PKCS12, error) {
+// LoadFromReader loads the key store from the specified file.
+func LoadFromReader(reader io.Reader, password string) (*PKCS12, error) {
     buf := bytes.NewBuffer(nil)
 
     // 保存
@@ -183,11 +187,11 @@ func LoadPKCS12FromReader(reader io.Reader, password string) (*PKCS12, error) {
         return nil, err
     }
 
-    return LoadPKCS12FromBytes(buf.Bytes(), password)
+    return LoadFromBytes(buf.Bytes(), password)
 }
 
-// LoadPKCS12FromBytes loads the key store from the bytes data.
-func LoadPKCS12FromBytes(data []byte, password string) (*PKCS12, error) {
+// LoadFromBytes loads the key store from the bytes data.
+func LoadFromBytes(data []byte, password string) (*PKCS12, error) {
     pkcs12 := NewPKCS12()
 
     _, err := pkcs12.Parse(data, password)
@@ -199,5 +203,19 @@ func LoadPKCS12FromBytes(data []byte, password string) (*PKCS12, error) {
 }
 
 // 别名
-var LoadPKCS12      = LoadPKCS12FromBytes
-var NewPKCS12Encode = NewPKCS12
+var (
+    // marshal pkcs12
+    NewEncode = New
+
+    // marshal pkcs12
+    NewPKCS12Encode = NewPKCS12
+
+    // LoadPKCS12 loads the key store from the bytes data.
+    LoadPKCS12 = LoadFromBytes
+
+    // LoadPKCS12FromBytes loads the key store from the bytes data.
+    LoadPKCS12FromBytes = LoadFromBytes
+
+    // LoadPKCS12FromReader loads the key store from the specified file.
+    LoadPKCS12FromReader = LoadFromReader
+)

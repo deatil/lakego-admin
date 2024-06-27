@@ -314,8 +314,8 @@ func DecodeSecret(pfxData []byte, password string) (secretKey []byte, err error)
     return cryptobin_pkcs12.DecodeSecret(data, password)
 }
 
-// LoadPKCS12FromReader loads the key store from the specified file.
-func LoadPKCS12FromReader(reader io.Reader, password string) (*cryptobin_pkcs12.PKCS12, error) {
+// LoadFromReader loads the key store from the specified file.
+func LoadFromReader(reader io.Reader, password string) (*cryptobin_pkcs12.PKCS12, error) {
     buf := bytes.NewBuffer(nil)
 
     // 保存
@@ -323,17 +323,27 @@ func LoadPKCS12FromReader(reader io.Reader, password string) (*cryptobin_pkcs12.
         return nil, err
     }
 
-    return LoadPKCS12FromBytes(buf.Bytes(), password)
+    return LoadFromBytes(buf.Bytes(), password)
 }
 
-// LoadPKCS12FromBytes loads the key store from the bytes data.
-func LoadPKCS12FromBytes(pfxData []byte, password string) (*cryptobin_pkcs12.PKCS12, error) {
+// LoadFromBytes loads the key store from the bytes data.
+func LoadFromBytes(pfxData []byte, password string) (*cryptobin_pkcs12.PKCS12, error) {
     data, err := Parse(pfxData, []byte(password))
     if err != nil {
         return nil, err
     }
 
-    return cryptobin_pkcs12.LoadPKCS12FromBytes(data, password)
+    return cryptobin_pkcs12.LoadFromBytes(data, password)
 }
 
-var LoadPKCS12 = LoadPKCS12FromBytes
+// 别名
+var (
+    // LoadPKCS12 loads the key store from the bytes data.
+    LoadPKCS12 = LoadFromBytes
+
+    // LoadPKCS12FromBytes loads the key store from the bytes data.
+    LoadPKCS12FromBytes = LoadFromBytes
+
+    // LoadPKCS12FromReader loads the key store from the specified file.
+    LoadPKCS12FromReader = LoadFromReader
+)

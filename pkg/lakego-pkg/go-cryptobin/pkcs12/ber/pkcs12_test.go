@@ -120,7 +120,7 @@ func Test_P12_SM2Pkcs12_Decode(t *testing.T) {
 
     password := "12345678"
 
-    p12, err := LoadPKCS12FromBytes(ber, password)
+    p12, err := LoadFromBytes(ber, password)
     if err != nil {
         t.Errorf("P12_SM2Pkcs12_Decode err: %v", err)
     }

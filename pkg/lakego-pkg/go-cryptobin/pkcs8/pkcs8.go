@@ -20,6 +20,9 @@ var (
     SHA1AndRC4_128 = pbes1.SHA1AndRC4_128
     SHA1AndRC4_40  = pbes1.SHA1AndRC4_40
 
+    MD5AndCAST5   = pbes1.MD5AndCAST5
+    SHAAndTwofish = pbes1.SHAAndTwofish
+
     // pkcs8 - PBES1
     MD2AndDES     = pbes1.MD2AndDES
     MD2AndRC2_64  = pbes1.MD2AndRC2_64

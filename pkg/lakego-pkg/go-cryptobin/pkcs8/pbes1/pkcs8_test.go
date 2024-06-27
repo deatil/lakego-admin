@@ -15,6 +15,9 @@ func Test_EncryptPKCS8PrivateKey(t *testing.T) {
     test_EncryptPKCS8PrivateKey(t, "SHA1AndRC4_128", SHA1AndRC4_128)
     test_EncryptPKCS8PrivateKey(t, "SHA1AndRC4_40", SHA1AndRC4_40)
 
+    test_EncryptPKCS8PrivateKey(t, "MD5AndCAST5", MD5AndCAST5)
+    test_EncryptPKCS8PrivateKey(t, "SHAAndTwofish", SHAAndTwofish)
+
     test_EncryptPKCS8PrivateKey(t, "MD2AndDES", MD2AndDES)
     test_EncryptPKCS8PrivateKey(t, "MD2AndRC2_64", MD2AndRC2_64)
     test_EncryptPKCS8PrivateKey(t, "MD5AndDES", MD5AndDES)
@@ -53,6 +56,9 @@ func Test_EncryptPKCS8Privatekey(t *testing.T) {
     test_EncryptPKCS8Privatekey(t, "SHA1AndRC2_40", SHA1AndRC2_40)
     test_EncryptPKCS8Privatekey(t, "SHA1AndRC4_128", SHA1AndRC4_128)
     test_EncryptPKCS8Privatekey(t, "SHA1AndRC4_40", SHA1AndRC4_40)
+
+    test_EncryptPKCS8Privatekey(t, "MD5AndCAST5", MD5AndCAST5)
+    test_EncryptPKCS8Privatekey(t, "SHAAndTwofish", SHAAndTwofish)
 
     test_EncryptPKCS8Privatekey(t, "MD2AndDES", MD2AndDES)
     test_EncryptPKCS8Privatekey(t, "MD2AndRC2_64", MD2AndRC2_64)

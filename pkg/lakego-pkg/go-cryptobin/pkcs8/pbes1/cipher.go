@@ -34,6 +34,9 @@ var (
     SHA1AndRC2_128 = pbes1.SHA1AndRC2_128
     SHA1AndRC2_40  = pbes1.SHA1AndRC2_40
 
+    MD5AndCAST5   = pbes1.MD5AndCAST5
+    SHAAndTwofish = pbes1.SHAAndTwofish
+
     // PBES1
     MD2AndDES     = pbes1.MD2AndDES
     MD2AndRC2_64  = pbes1.MD2AndRC2_64

@@ -744,6 +744,13 @@ func Test_EncryptPEMBlock_Pkcs8(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHA1AndRC4_40)
     })
 
+    t.Run("MD5AndCAST5", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD5AndCAST5)
+    })
+    t.Run("SHAAndTwofish", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SHAAndTwofish)
+    })
+
     t.Run("MD2AndDES", func(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, MD2AndDES)
     })
