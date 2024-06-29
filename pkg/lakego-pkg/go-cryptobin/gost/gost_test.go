@@ -392,3 +392,45 @@ func Test_UVXYConversion(t *testing.T) {
         eq([]*big.Int{x2, y2}, []*big.Int{u, v}, "XY2UV")
     })
 }
+
+func Test_NamedCurveFromName(t *testing.T) {
+    eq := cryptobin_test.AssertEqualT(t)
+
+    tests := []string{
+        // "GostR34102001ParamSetcc",
+        "id-GostR3410-2001-TestParamSet",
+        // "id-tc26-gost-3410-12-256-paramSetA",
+        // "id-tc26-gost-3410-12-256-paramSetB",
+        // "id-tc26-gost-3410-12-256-paramSetC",
+        // "id-tc26-gost-3410-12-256-paramSetD",
+        // "id-tc26-gost-3410-12-512-paramSetTest",
+        // "id-tc26-gost-3410-12-512-paramSetA",
+        // "id-tc26-gost-3410-12-512-paramSetB",
+        // "id-tc26-gost-3410-12-512-paramSetC",
+        "id-GostR3410-2001-CryptoPro-A-ParamSet",
+        "id-GostR3410-2001-CryptoPro-B-ParamSet",
+        "id-GostR3410-2001-CryptoPro-C-ParamSet",
+        "id-GostR3410-2001-CryptoPro-XchA-ParamSet",
+        "id-GostR3410-2001-CryptoPro-XchB-ParamSet",
+        "id-tc26-gost-3410-2012-256-paramSetA",
+        "id-tc26-gost-3410-2012-256-paramSetB",
+        "id-tc26-gost-3410-2012-256-paramSetC",
+        "id-tc26-gost-3410-2012-256-paramSetD",
+        "id-tc26-gost-3410-2012-512-paramSetTest",
+        "id-tc26-gost-3410-2012-512-paramSetA",
+        "id-tc26-gost-3410-2012-512-paramSetB",
+        "id-tc26-gost-3410-2012-512-paramSetC",
+    }
+
+    for _, td := range tests {
+        t.Run("test " + td, func(t *testing.T) {
+            curve := NamedCurveFromName(td)
+            if curve != nil {
+                eq(curve.Name, td, "NamedCurveFromName")
+            } else {
+                t.Error(td)
+            }
+        })
+    }
+
+}

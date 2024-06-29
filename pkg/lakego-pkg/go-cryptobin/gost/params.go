@@ -583,8 +583,6 @@ var (
         return curve
     }
 
-    // Aliases
-
     // id-GostR3410-2001-CryptoPro-A-ParamSet
     CurveIdGostR34102001CryptoProAParamSet = func() *Curve {
         c := CurveIdtc26gost341012256paramSetB()

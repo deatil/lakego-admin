@@ -34,6 +34,7 @@ func (this Gost) WithParsedData(data []byte) Gost {
 }
 
 // 设置曲线类型
+// set gost curve
 func (this Gost) WithCurve(curve *gost.Curve) Gost {
     this.curve = curve
 
@@ -42,52 +43,52 @@ func (this Gost) WithCurve(curve *gost.Curve) Gost {
 
 // 设置曲线类型
 // 可选参数:
-// CurveIdGostR34102001TestParamSet
-// CurveIdGostR34102001CryptoProAParamSet
-// CurveIdGostR34102001CryptoProBParamSet
-// CurveIdGostR34102001CryptoProCParamSet
-// CurveIdGostR34102001CryptoProXchAParamSet
-// CurveIdGostR34102001CryptoProXchBParamSet
-// CurveIdtc26gost34102012256paramSetA
-// CurveIdtc26gost34102012256paramSetB
-// CurveIdtc26gost34102012256paramSetC
-// CurveIdtc26gost34102012256paramSetD
-// CurveIdtc26gost34102012512paramSetTest
-// CurveIdtc26gost34102012512paramSetA
-// CurveIdtc26gost34102012512paramSetB
-// CurveIdtc26gost34102012512paramSetC
+// IdGostR34102001TestParamSet
+// IdGostR34102001CryptoProAParamSet
+// IdGostR34102001CryptoProBParamSet
+// IdGostR34102001CryptoProCParamSet
+// IdGostR34102001CryptoProXchAParamSet
+// IdGostR34102001CryptoProXchBParamSet
+// Idtc26gost34102012256paramSetA
+// Idtc26gost34102012256paramSetB
+// Idtc26gost34102012256paramSetC
+// Idtc26gost34102012256paramSetD
+// Idtc26gost34102012512paramSetTest
+// Idtc26gost34102012512paramSetA
+// Idtc26gost34102012512paramSetB
+// Idtc26gost34102012512paramSetC
 func (this Gost) SetCurve(curve string) Gost {
     switch curve {
-        case "CurveIdGostR34102001TestParamSet":
+        case "IdGostR34102001TestParamSet":
             this.curve = gost.CurveIdGostR34102001TestParamSet()
-        case "CurveIdGostR34102001CryptoProAParamSet":
+        case "IdGostR34102001CryptoProAParamSet":
             this.curve = gost.CurveIdGostR34102001CryptoProAParamSet()
-        case "CurveIdGostR34102001CryptoProBParamSet":
+        case "IdGostR34102001CryptoProBParamSet":
             this.curve = gost.CurveIdGostR34102001CryptoProBParamSet()
-        case "CurveIdGostR34102001CryptoProCParamSet":
+        case "IdGostR34102001CryptoProCParamSet":
             this.curve = gost.CurveIdGostR34102001CryptoProCParamSet()
 
-        case "CurveIdGostR34102001CryptoProXchAParamSet":
+        case "IdGostR34102001CryptoProXchAParamSet":
             this.curve = gost.CurveIdGostR34102001CryptoProXchAParamSet()
-        case "CurveIdGostR34102001CryptoProXchBParamSet":
+        case "IdGostR34102001CryptoProXchBParamSet":
             this.curve = gost.CurveIdGostR34102001CryptoProXchBParamSet()
 
-        case "CurveIdtc26gost34102012256paramSetA":
+        case "Idtc26gost34102012256paramSetA":
             this.curve = gost.CurveIdtc26gost34102012256paramSetA()
-        case "CurveIdtc26gost34102012256paramSetB":
+        case "Idtc26gost34102012256paramSetB":
             this.curve = gost.CurveIdtc26gost34102012256paramSetB()
-        case "CurveIdtc26gost34102012256paramSetC":
+        case "Idtc26gost34102012256paramSetC":
             this.curve = gost.CurveIdtc26gost34102012256paramSetC()
-        case "CurveIdtc26gost34102012256paramSetD":
+        case "Idtc26gost34102012256paramSetD":
             this.curve = gost.CurveIdtc26gost34102012256paramSetD()
 
-        case "CurveIdtc26gost34102012512paramSetTest":
+        case "Idtc26gost34102012512paramSetTest":
             this.curve = gost.CurveIdtc26gost34102012512paramSetTest()
-        case "CurveIdtc26gost34102012512paramSetA":
+        case "Idtc26gost34102012512paramSetA":
             this.curve = gost.CurveIdtc26gost34102012512paramSetA()
-        case "CurveIdtc26gost34102012512paramSetB":
+        case "Idtc26gost34102012512paramSetB":
             this.curve = gost.CurveIdtc26gost34102012512paramSetB()
-        case "CurveIdtc26gost34102012512paramSetC":
+        case "Idtc26gost34102012512paramSetC":
             this.curve = gost.CurveIdtc26gost34102012512paramSetC()
     }
 

@@ -19,7 +19,7 @@ var testPEMCiphers = []string{
 }
 
 func Test_CreatePKCS8PrivateKeyWithPassword(t *testing.T) {
-    gen := GenerateKey("CurveIdGostR34102001CryptoProAParamSet")
+    gen := GenerateKey("IdGostR34102001CryptoProAParamSet")
 
     for _, cipher := range testPEMCiphers {
         test_CreatePKCS8PrivateKeyWithPassword(t, gen, cipher)
@@ -58,7 +58,7 @@ func test_CreatePKCS8PrivateKeyWithPassword(t *testing.T, gen Gost, cipher strin
 }
 
 func Test_CreatePublicKey(t *testing.T) {
-    gen := GenerateKey("CurveIdGostR34102001CryptoProAParamSet")
+    gen := GenerateKey("IdGostR34102001CryptoProAParamSet")
 
     for _, cipher := range testPEMCiphers {
         test_CreatePublicKey(t, gen, cipher)
@@ -98,8 +98,8 @@ func test_CreatePublicKey(t *testing.T, gen Gost, cipher string) {
 
 func Test_Sign(t *testing.T) {
     types := []string{
-        "CurveIdGostR34102001CryptoProAParamSet",
-        "CurveIdtc26gost34102012256paramSetC",
+        "IdGostR34102001CryptoProAParamSet",
+        "Idtc26gost34102012256paramSetC",
     }
 
     for _, name := range types {
@@ -137,8 +137,8 @@ func test_Sign(t *testing.T, gen Gost) {
 
 func Test_SignASN1(t *testing.T) {
     types := []string{
-        "CurveIdGostR34102001CryptoProAParamSet",
-        "CurveIdtc26gost34102012256paramSetC",
+        "IdGostR34102001CryptoProAParamSet",
+        "Idtc26gost34102012256paramSetC",
     }
 
     for _, name := range types {
@@ -176,8 +176,8 @@ func test_SignASN1(t *testing.T, gen Gost) {
 
 func Test_SignBytes(t *testing.T) {
     types := []string{
-        "CurveIdGostR34102001CryptoProAParamSet",
-        "CurveIdtc26gost34102012256paramSetC",
+        "IdGostR34102001CryptoProAParamSet",
+        "Idtc26gost34102012256paramSetC",
     }
 
     for _, name := range types {
@@ -214,7 +214,10 @@ func test_SignBytes(t *testing.T, gen Gost) {
 }
 
 func Test_MakeKey(t *testing.T) {
-    gen := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen := GenerateKey("Idtc26gost34102012256paramSetC")
+    eq(gen.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "MakeKey")
 
     prikey := gen.
         CreatePKCS8PrivateKey().
@@ -225,9 +228,50 @@ func Test_MakeKey(t *testing.T) {
     }
 }
 
+func Test_MakeKeys(t *testing.T) {
+    eq := cryptobin_test.AssertEqualT(t)
+
+    tests := map[string]string{
+        "id-GostR3410-2001-TestParamSet": "IdGostR34102001TestParamSet",
+        "id-GostR3410-2001-CryptoPro-A-ParamSet": "IdGostR34102001CryptoProAParamSet",
+        "id-GostR3410-2001-CryptoPro-B-ParamSet": "IdGostR34102001CryptoProBParamSet",
+        "id-GostR3410-2001-CryptoPro-C-ParamSet": "IdGostR34102001CryptoProCParamSet",
+        "id-GostR3410-2001-CryptoPro-XchA-ParamSet": "IdGostR34102001CryptoProXchAParamSet",
+        "id-GostR3410-2001-CryptoPro-XchB-ParamSet": "IdGostR34102001CryptoProXchBParamSet",
+        "id-tc26-gost-3410-2012-256-paramSetA": "Idtc26gost34102012256paramSetA",
+        "id-tc26-gost-3410-2012-256-paramSetB": "Idtc26gost34102012256paramSetB",
+        "id-tc26-gost-3410-2012-256-paramSetC": "Idtc26gost34102012256paramSetC",
+        "id-tc26-gost-3410-2012-256-paramSetD": "Idtc26gost34102012256paramSetD",
+        "id-tc26-gost-3410-2012-512-paramSetTest": "Idtc26gost34102012512paramSetTest",
+        "id-tc26-gost-3410-2012-512-paramSetA": "Idtc26gost34102012512paramSetA",
+        "id-tc26-gost-3410-2012-512-paramSetB": "Idtc26gost34102012512paramSetB",
+        "id-tc26-gost-3410-2012-512-paramSetC": "Idtc26gost34102012512paramSetC",
+    }
+
+    for name, td := range tests {
+        t.Run("test " + td, func(t *testing.T) {
+            gen := GenerateKey(td)
+            eq(gen.GetPrivateKey().Curve.Name, name, "MakeKeys")
+
+            err := gen.
+                CreatePKCS8PrivateKey().
+                Error()
+
+            if err != nil {
+                t.Error(err)
+            }
+        })
+    }
+}
+
 func Test_Vko_KEK(t *testing.T) {
-    gen1 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
-    gen2 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen1 := GenerateKey("Idtc26gost34102012256paramSetC")
+    gen2 := GenerateKey("Idtc26gost34102012256paramSetC")
+
+    eq(gen1.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK")
+    eq(gen2.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK")
 
     ukm := "123456"
 
@@ -255,8 +299,13 @@ func Test_Vko_KEK(t *testing.T) {
 }
 
 func Test_Vko_KEK2001(t *testing.T) {
-    gen1 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
-    gen2 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen1 := GenerateKey("Idtc26gost34102012256paramSetC")
+    gen2 := GenerateKey("Idtc26gost34102012256paramSetC")
+
+    eq(gen1.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2001")
+    eq(gen2.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2001")
 
     ukm := "123456"
 
@@ -284,8 +333,13 @@ func Test_Vko_KEK2001(t *testing.T) {
 }
 
 func Test_Vko_KEK2012256(t *testing.T) {
-    gen1 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
-    gen2 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen1 := GenerateKey("Idtc26gost34102012256paramSetC")
+    gen2 := GenerateKey("Idtc26gost34102012256paramSetC")
+
+    eq(gen1.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2012256")
+    eq(gen2.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2012256")
 
     ukm := "123456"
 
@@ -313,8 +367,13 @@ func Test_Vko_KEK2012256(t *testing.T) {
 }
 
 func Test_Vko_KEK2012512(t *testing.T) {
-    gen1 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
-    gen2 := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen1 := GenerateKey("Idtc26gost34102012256paramSetC")
+    gen2 := GenerateKey("Idtc26gost34102012256paramSetC")
+
+    eq(gen1.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2012512")
+    eq(gen2.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_Vko_KEK2012512")
 
     ukm := "123456"
 
@@ -345,7 +404,7 @@ func Test_MakePriKeyFromData(t *testing.T) {
     pri := decodeHex("7A929ADE789BB9BE10ED359DD39A72C11B60961F49397EEE1D19CE9891EC3B28")
 
     prikey := New().
-        SetCurve("CurveIdGostR34102001TestParamSet").
+        SetCurve("IdGostR34102001TestParamSet").
         FromPrivateKeyBytes(pri).
         CreatePrivateKey().
         ToKeyString()
@@ -356,7 +415,11 @@ func Test_MakePriKeyFromData(t *testing.T) {
 }
 
 func Test_UseKeyBytes(t *testing.T) {
-    gen := GenerateKey("CurveIdtc26gost34102012256paramSetC")
+    eq := cryptobin_test.AssertEqualT(t)
+
+    gen := GenerateKey("Idtc26gost34102012256paramSetC")
+
+    eq(gen.GetPrivateKey().Curve.Name, "id-tc26-gost-3410-2012-256-paramSetC", "Test_UseKeyBytes")
 
     pri0 := gen.GetPrivateKey()
     pub0 := gen.GetPublicKey()
@@ -370,7 +433,7 @@ func Test_UseKeyBytes(t *testing.T) {
         t.Error("get pubBytes fail")
     }
 
-    obj := New().SetCurve("CurveIdtc26gost34102012256paramSetC")
+    obj := New().SetCurve("Idtc26gost34102012256paramSetC")
 
     pri := obj.
         FromPrivateKeyBytes(priBytes).

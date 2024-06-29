@@ -29,6 +29,17 @@ func NamedCurveFromOid(oid asn1.ObjectIdentifier) *Curve {
     return nil
 }
 
+func NamedCurveFromName(name string) *Curve {
+    for i := range namedCurves {
+        cur := &namedCurves[i]
+        if cur.namedCurve.Name == name {
+            return cur.namedCurve
+        }
+    }
+
+    return nil
+}
+
 func OidFromNamedCurve(curve *Curve) (asn1.ObjectIdentifier, bool) {
     for i := range namedCurves {
         cur := &namedCurves[i]
