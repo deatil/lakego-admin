@@ -344,6 +344,7 @@ var SM4OFBEncrypt = NewOFBEncrypt(sm4.NewCipher, sm4.BlockSize)
 // XorEncrypt default option represents XOR mode
 var XorEncrypt = NewXOREncrypt()
 
+// Default Encrypt
 var DefaultEncrypt = SM4CBCEncrypt
 
 func GetEncryptType(encType int) IEncrypt {

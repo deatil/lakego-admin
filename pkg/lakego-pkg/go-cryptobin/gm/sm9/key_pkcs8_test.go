@@ -842,6 +842,9 @@ var testEncDatas = []testEncData{
         en: "30818b020102034200044b9b4eef83b20d1d042017b89b89b83cb4169eef026672709db8a83e4795e37a797cf019bb180fde705c8d88f55a54bb93f2be28efe4f68d841ad99f23699fbf0420e312a7f02f97b4e5c9a4a533ab66764b55e58ee09c78cba2acd3c7f468a3953f0420f777cd6cf7f83f6d9930bbc07bb98c382cb8f5bf36847c7e63f1342521305dda",
         hash: SM3Hash,
     },
+    {
+        en: "30818b020102034200044b9b4eef83b20d1d042017b89b89b83cb4169eef026672709db8a83e4795e37a797cf019bb180fde705c8d88f55a54bb93f2be28efe4f68d841ad99f23699fbf0420e312a7f02f97b4e5c9a4a533ab66764b55e58ee09c78cba2acd3c7f468a3953f0420f777cd6cf7f83f6d9930bbc07bb98c382cb8f5bf36847c7e63f1342521305dda",
+    },
 }
 
 func Test_EncryptKey_Check3(t *testing.T) {
@@ -860,9 +863,15 @@ func Test_EncryptKey_Check3(t *testing.T) {
 
             uk := prikey.(*EncryptPrivateKey)
 
-            de, err := DecryptASN1(uk, uid, enBytes, &Opts{
-                Hash: d.hash,
-            })
+            var de []byte
+            if d.hash != nil {
+                de, err = DecryptASN1(uk, uid, enBytes, &Opts{
+                    Hash: d.hash,
+                })
+            } else {
+                de, err = DecryptASN1(uk, uid, enBytes, nil)
+            }
+
             if err != nil {
                 t.Error("sm9 DecryptASN1 2 failed。" + err.Error())
                 return

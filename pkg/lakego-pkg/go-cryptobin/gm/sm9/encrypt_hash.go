@@ -47,17 +47,19 @@ func (this *HashMac) Mac(k, c []byte) []byte {
     return hash.Sum(nil)
 }
 
-// HmacSM3
-var HmacSM3Hash = NewHashHmac(sm3.New)
+var (
+    // HmacSM3
+    HmacSM3Hash = NewHashHmac(sm3.New)
 
-// HmacSHA256
-var HmacSHA256Hash = NewHashHmac(sha256.New)
+    // HmacSHA256
+    HmacSHA256Hash = NewHashHmac(sha256.New)
 
-// SM3Hash
-var SM3Hash = NewHashMac(sm3.New)
+    // SM3Hash
+    SM3Hash = NewHashMac(sm3.New)
 
-// SHA256Hash
-var SHA256Hash = NewHashMac(sha256.New)
+    // SHA256Hash
+    SHA256Hash = NewHashMac(sha256.New)
 
-// 默认 Hash
-var DefaultHash = HmacSHA256Hash
+    // Default Hash
+    DefaultHash = SM3Hash
+)
