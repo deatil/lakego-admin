@@ -266,7 +266,7 @@ func (this Enveloped) parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdent
     newCipher, err := GetCipher(encryptionScheme)
     if err != nil {
         oid := encryptionScheme.Algorithm.String()
-        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("pkcs12: unsupported cipher (OID: %s)", oid)
     }
 
     params := encryptionScheme.Parameters.FullBytes

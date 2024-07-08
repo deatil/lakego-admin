@@ -102,9 +102,9 @@ func (this *Redis) Get(key string) (any, error) {
 
     val, err = this.client.Get(this.ctx, key).Result()
     if err == redis.Nil {
-        return val, errors.New("获取存储数据失败")
+        return val, errors.New("redis nil")
     } else if err != nil {
-        return val, errors.New("获取存储数据失败")
+        return val, err
     } else {
         return val, nil
     }
@@ -114,7 +114,7 @@ func (this *Redis) Get(key string) (any, error) {
 func (this *Redis) Put(key string, value any, ttl time.Duration) error {
     err := this.client.Set(this.ctx, key, value, ttl).Err()
     if err != nil {
-        return errors.New("缓存存储失败")
+        return err
     }
 
     return nil
@@ -124,7 +124,7 @@ func (this *Redis) Put(key string, value any, ttl time.Duration) error {
 func (this *Redis) Forever(key string, value any) error {
     err := this.client.Set(this.ctx, key, value, 0).Err()
     if err != nil {
-        return errors.New("缓存存储失败")
+        return err
     }
 
     return nil
@@ -141,7 +141,7 @@ func (this *Redis) Increment(key string, value ...int64) error {
     }
 
     if err != nil {
-        return errors.New("增加数据量失败")
+        return err
     }
 
     return nil
@@ -158,7 +158,7 @@ func (this *Redis) Decrement(key string, value ...int64) error {
     }
 
     if err != nil {
-        return errors.New("减少数据量失败")
+        return err
     }
 
     return nil
@@ -168,7 +168,7 @@ func (this *Redis) Decrement(key string, value ...int64) error {
 func (this *Redis) Forget(key string) (bool, error) {
     _, err := this.client.Del(this.ctx, key).Result()
     if err != nil {
-        return false, errors.New("删除数据失败")
+        return false, err
     }
 
     return true, nil
@@ -178,7 +178,7 @@ func (this *Redis) Forget(key string) (bool, error) {
 func (this *Redis) Flush() (bool, error) {
     _, err := this.client.FlushDB(this.ctx).Result()
     if err != nil {
-        return false, errors.New("清空数据失败")
+        return false, err
     }
 
     return true, nil

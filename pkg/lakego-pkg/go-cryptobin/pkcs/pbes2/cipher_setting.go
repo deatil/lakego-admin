@@ -366,6 +366,14 @@ var AES256CCMIv = CipherCCMIv{
 
 // ==========
 
+// SM4Cipher is the 128-bit key SM4 cipher in CBC mode.
+var SM4Cipher = CipherCBC{
+    cipherFunc:   sm4.NewCipher,
+    keySize:      16,
+    blockSize:    sm4.BlockSize,
+    identifier:   oidSM4,
+    hasKeyLength: false,
+}
 // SM4ECB is the 128-bit key SM4 cipher in ECB mode.
 var SM4ECB = CipherECB{
     cipherFunc:   sm4.NewCipher,
@@ -869,6 +877,9 @@ func init() {
     })
 
     // sm4
+    AddCipher(oidSM4, func() Cipher {
+        return SM4Cipher
+    })
     AddCipher(oidSM4ECB, func() Cipher {
         return SM4ECB
     })

@@ -860,6 +860,9 @@ func Test_EncryptPEMBlock_Pkcs8(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, AES256CCM)
     })
 
+    t.Run("SM4Cipher", func(t *testing.T) {
+        test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4Cipher)
+    })
     t.Run("SM4ECB", func(t *testing.T) {
         test_EncryptPEMBlock_Pkcs8(t, x509PrivateKey, SM4ECB)
     })

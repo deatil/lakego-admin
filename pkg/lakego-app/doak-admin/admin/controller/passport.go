@@ -38,6 +38,7 @@ func (this *Passport) Captcha(ctx *router.Context) {
     id, b64s, err := facade.Captcha.Make()
     if err != nil {
         this.Error(ctx, "error", code.StatusError)
+        return
     }
 
     key := facade.Config("auth").GetString("passport.header-captcha-key")

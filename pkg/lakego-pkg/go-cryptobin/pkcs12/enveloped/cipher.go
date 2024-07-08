@@ -46,12 +46,13 @@ var (
     AES256GCM = pbes2.AES256GCM
     AES256CCM = pbes2.AES256CCM
 
-    SM4ECB  = pbes2.SM4ECB
-    SM4CBC  = pbes2.SM4CBC
-    SM4OFB  = pbes2.SM4OFB
-    SM4CFB  = pbes2.SM4CFB
-    SM4CFB1 = pbes2.SM4CFB1
-    SM4CFB8 = pbes2.SM4CFB8
-    SM4GCM  = pbes2.SM4GCM
-    SM4CCM  = pbes2.SM4CCM
+    SM4Cipher = pbes2.SM4Cipher
+    SM4ECB    = pbes2.SM4ECB
+    SM4CBC    = pbes2.SM4CBC
+    SM4OFB    = pbes2.SM4OFB
+    SM4CFB    = pbes2.SM4CFB
+    SM4CFB1   = pbes2.SM4CFB1
+    SM4CFB8   = pbes2.SM4CFB8
+    SM4GCM    = pbes2.SM4GCM
+    SM4CCM    = pbes2.SM4CCM
 )

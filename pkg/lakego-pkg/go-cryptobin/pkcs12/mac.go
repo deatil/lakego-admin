@@ -1,6 +1,7 @@
 package pkcs12
 
 import (
+    "fmt"
     "hash"
     "errors"
     "crypto/rand"
@@ -94,7 +95,7 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return gost34112012512.New, nil
     }
 
-    return nil, errors.New("pkcs12: unsupported hash function")
+    return nil, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
 }
 
 // 返回使用的 Hash 对应的 asn1
@@ -144,43 +145,20 @@ type MacData struct {
 }
 
 func (this MacData) Verify(message []byte, password []byte) (err error) {
-    var alg asn1.ObjectIdentifier
     var h func() hash.Hash
-
-    if this.Mac.Algorithm.Algorithm.String() != "" {
-        h, err = hashByOID(this.Mac.Algorithm.Algorithm)
-        if err != nil {
-            return err
-        }
-    } else {
-        alg, err = oidByHash(DefaultHash)
-        if err != nil {
-            return err
-        }
-
-        h, err = hashByOID(alg)
-        if err != nil {
-            return err
-        }
-    }
-
-    oid := this.Mac.Algorithm.Algorithm
-
     var key []byte
+
     switch {
-        case oid.Equal(oidGOST34112012256),
-            oid.Equal(oidGOST34112012512):
-            pass, err := decodeBMPString(password)
+        case this.Mac.Algorithm.Algorithm.Equal(oidPBMAC1):
+            h, key, err = parsePBMAC1Param(this.Mac.Algorithm.Parameters.FullBytes, password)
             if err != nil {
                 return err
             }
-
-            key = gost_pbkdf2.Key(h, []byte(pass), this.MacSalt, this.Iterations, 96)
-            key = key[len(key)-32:]
         default:
-            hashSize := h().Size()
-
-            key = pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
+            h, key, err = this.parseMacParam(password)
+            if err != nil {
+                return err
+            }
     }
 
     mac := hmac.New(h, key)
@@ -189,6 +167,47 @@ func (this MacData) Verify(message []byte, password []byte) (err error) {
 
     if !hmac.Equal(this.Mac.Digest, expectedMAC) {
         return ErrIncorrectPassword
+    }
+
+    return
+}
+
+func (this MacData) parseMacParam(password []byte) (h func() hash.Hash, key []byte, err error) {
+    var alg asn1.ObjectIdentifier
+
+    if this.Mac.Algorithm.Algorithm.String() != "" {
+        h, err = hashByOID(this.Mac.Algorithm.Algorithm)
+        if err != nil {
+            return
+        }
+    } else {
+        alg, err = oidByHash(DefaultHash)
+        if err != nil {
+            return
+        }
+
+        h, err = hashByOID(alg)
+        if err != nil {
+            return
+        }
+    }
+
+    oid := this.Mac.Algorithm.Algorithm
+
+    switch {
+        case oid.Equal(oidGOST34112012256),
+            oid.Equal(oidGOST34112012512):
+            pass, err := decodeBMPString(password)
+            if err != nil {
+                return nil, nil, err
+            }
+
+            key = gost_pbkdf2.Key(h, []byte(pass), this.MacSalt, this.Iterations, 96)
+            key = key[len(key)-32:]
+        default:
+            hashSize := h().Size()
+
+            key = pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
     }
 
     return
@@ -254,12 +273,12 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
     digest := mac.Sum(nil)
 
     data = MacData{
-        DigestInfo{
-            prfParam,
-            digest,
+        Mac: DigestInfo{
+            Algorithm: prfParam,
+            Digest:    digest,
         },
-        macSalt,
-        this.IterationCount,
+        MacSalt:    macSalt,
+        Iterations: this.IterationCount,
     }
 
     return

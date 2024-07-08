@@ -384,7 +384,7 @@ func (this *PKCS12) parseContentEncryptionAlgorithm(contentEncryptionAlgorithm p
 
     newCipher, err := pbes1.GetCipher(oid)
     if err != nil {
-        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("pkcs12: unsupported cipher (OID: %s)", oid)
     }
 
     params := contentEncryptionAlgorithm.Parameters.FullBytes

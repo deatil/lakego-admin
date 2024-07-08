@@ -152,7 +152,7 @@ var LegacyGostOpts = Opts{
     },
 }
 
-// GmsmOpts
+// LegacyGmsm
 var LegacyGmsmOpts = Opts{
     KeyCipher:  pbes2.SM4CBC,
     KeyKDFOpts: PBKDF2Opts{
@@ -170,6 +170,27 @@ var LegacyGmsmOpts = Opts{
         SaltSize:       16,
         IterationCount: 1000,
         HMACHash:       SM3,
+    },
+}
+
+// LegacyPBMAC1
+var LegacyPBMAC1Opts = Opts{
+    KeyCipher:  pbes2.AES256CBC,
+    KeyKDFOpts: PBKDF2Opts{
+        SaltSize:       8,
+        IterationCount: 2048,
+    },
+    CertCipher:  pbes2.AES256CBC,
+    CertKDFOpts: PBKDF2Opts{
+        SaltSize:       8,
+        IterationCount: 2048,
+    },
+    MacKDFOpts: PBMAC1Opts{
+        hasKeyLength:   true,
+        SaltSize:       8,
+        IterationCount: 2048,
+        KDFHash:        PBMAC1_SHA256,
+        HMACHash:       PBMAC1_SHA256,
     },
 }
 

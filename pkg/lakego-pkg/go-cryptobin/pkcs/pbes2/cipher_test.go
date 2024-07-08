@@ -56,6 +56,7 @@ func Test_Ciphers(t *testing.T) {
     test_cipher(t, AES256CCM, "AES256CCM", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
     test_cipher(t, AES256CCMIv, "AES256CCMIv", []byte("ghiolkjmssdfrt5tssdfrt5tssdfrt5t"))
 
+    test_cipher(t, SM4Cipher, "SM4Cipher", []byte("ghdfrt5tssdfrt5t"))
     test_cipher(t, SM4CBC, "SM4CBC", []byte("ghdfrt5tssdfrt5t"))
     test_cipher(t, SM4OFB, "SM4OFB", []byte("ghdfrt5tssdfrt5t"))
     test_cipher(t, SM4CFB, "SM4CFB", []byte("ghdfrt5tssdfrt5t"))
