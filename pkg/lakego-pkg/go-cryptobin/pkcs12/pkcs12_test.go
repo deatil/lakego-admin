@@ -153,10 +153,14 @@ var testOpt = Opts{
 
 func Test_Encode(t *testing.T) {
     test_Encode(t, testOpt, "password-testkjjj", "testOpt")
+
     test_Encode(t, LegacyRC2Opts, "password-testkjjj", "LegacyRC2Opts")
     test_Encode(t, LegacyDESOpts, "password-testkjjj", "LegacyDESOpts")
+    test_Encode(t, PasswordlessOpts, "", "PasswordlessOpts")
     test_Encode(t, Modern2023Opts, "passwordpasswordpasswordpassword", "Modern2023Opts")
-
+    test_Encode(t, LegacyGostOpts, "passwordpasswordpasswordpassword", "LegacyGostOpts")
+    test_Encode(t, LegacyGmsmOpts, "passwordpasswordpasswordpassword", "LegacyGmsmOpts")
+    test_Encode(t, Shangmi2024Opts, "passwordpasswordpasswordpassword", "Shangmi2024Opts")
     test_Encode(t, LegacyPBMAC1Opts, "1234", "LegacyPBMAC1Opts")
 
     var LegacyPBMAC1Opts2 = Opts{

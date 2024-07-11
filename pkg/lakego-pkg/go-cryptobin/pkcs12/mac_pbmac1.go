@@ -246,7 +246,7 @@ func (this PBMAC1Opts) Compute(message []byte, password []byte) (data MacKDFPara
         },
     }
 
-    encryptedParams, err := asn1.Marshal(params)
+    encodedParams, err := asn1.Marshal(params)
     if err != nil {
         return nil, err
     }
@@ -254,7 +254,7 @@ func (this PBMAC1Opts) Compute(message []byte, password []byte) (data MacKDFPara
     prfParam := pkix.AlgorithmIdentifier{
         Algorithm:  oidPBMAC1,
         Parameters: asn1.RawValue{
-            FullBytes: encryptedParams,
+            FullBytes: encodedParams,
         },
     }
 

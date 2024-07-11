@@ -1,0 +1,410 @@
+package lms
+
+import (
+    "io"
+    "errors"
+    "encoding/binary"
+)
+
+const HSS_MAX_LEVELS = 5
+
+// A HSSPublicKey is used to verify messages signed by a HSSPrivateKey
+type HSSPublicKey struct {
+    Levels int
+    LmsPub PublicKey
+}
+
+// Verify returns true if sig is valid for msg and this public key.
+// It returns false otherwise.
+func (pub *HSSPublicKey) Verify(msg []byte, sig []byte) bool {
+    var i uint32
+    var lms_pub *PublicKey
+    var next_lms_pub *PublicKey
+    var lms_sig Signature
+
+    if len(sig) < 4 {
+        return false
+    }
+
+    num := binary.BigEndian.Uint32(sig[0:4])
+    if num != uint32(pub.Levels - 1) {
+        return false
+    }
+
+    sig = sig[4:]
+
+    lms_pub = &pub.LmsPub
+
+    var err error
+    for i = 0; i < num; i++ {
+        lms_sig, sig, err = pub.parseSignature(sig)
+        if err != nil {
+            return false
+        }
+
+        next_lms_pub, sig, err = pub.parsePublicKey(sig)
+        if err != nil {
+            return false
+        }
+
+        q := lms_sig.q
+        C := lms_sig.ots.c
+
+        pub_dgst := hssDigest(lms_pub, q, C, next_lms_pub.ToBytes())
+
+        if !lms_pub.Verify(pub_dgst, lms_sig) {
+            return false
+        }
+
+        lms_pub = next_lms_pub
+    }
+
+    lms_sig, err = NewSignatureFromBytes(sig)
+    if err != nil {
+        return false
+    }
+
+    if !lms_pub.Verify(msg, lms_sig) {
+        return false
+    }
+
+    return true
+}
+
+// ToBytes() serializes the public key into a byte string for transmission or storage.
+func (pub *HSSPublicKey) ToBytes() []byte {
+    var serialized []byte
+    var u32_be [4]byte
+
+    binary.BigEndian.PutUint32(u32_be[:], uint32(pub.Levels))
+    serialized = append(serialized, u32_be[:]...)
+
+    pubBytes := pub.LmsPub.ToBytes()
+    serialized = append(serialized, pubBytes...)
+
+    return serialized
+}
+
+func (pub *HSSPublicKey) parseSignature(b []byte) (sig Signature, other []byte, err error) {
+    newOtstc, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    if err != nil {
+        return Signature{}, nil, err
+    }
+
+    otstc := newOtstc()
+
+    otsSiglen := otstc.SigLength()
+
+    otsigmax := 4 + otsSiglen
+    if uint64(4+len(b)) <= otsigmax {
+        return Signature{}, nil, errors.New("parseSignature(): Signature is too short for LM-OTS typecode")
+    }
+
+    newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
+    if err != nil {
+        return Signature{}, nil, err
+    }
+
+    typecode := newTypecode()
+
+    siglen := typecode.SigLength(otstc)
+
+    sigBytes := b[:siglen]
+    other = b[siglen:]
+
+    sig2, err := NewSignatureFromBytes(sigBytes)
+    if err != nil {
+        return Signature{}, nil, err
+    }
+
+    return sig2, other, nil
+}
+
+func (pub *HSSPublicKey) parsePublicKey(b []byte) (pubkey *PublicKey, other []byte, err error) {
+    if len(b) < 8 {
+        return nil, nil, errors.New("parsePublicKey(): key must be more than 8 bytes long")
+    }
+
+    _, err = GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    if err != nil {
+        return nil, nil, err
+    }
+
+    newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    if err != nil {
+        return nil, nil, err
+    }
+
+    otstype := newOtstype()
+    hasher := otstype.Params().Hash()
+
+    pubSize := 4 + 4 + 16 + hasher.Size()
+
+    pubBytes := b[:pubSize]
+    other = b[pubSize:]
+
+    pub2, err := NewPublicKeyFromBytes(pubBytes)
+    if err != nil {
+        return nil, nil, err
+    }
+
+    return &pub2, other, nil
+}
+
+// NewHSSPublicKeyFromBytes returns an HSSPublicKey that represents b.
+func NewHSSPublicKeyFromBytes(b []byte) (HSSPublicKey, error) {
+    if len(b) < 4 {
+        return HSSPublicKey{}, errors.New("NewHSSPublicKeyFromBytes(): key must be more than 4 bytes long")
+    }
+
+    levels := int(binary.BigEndian.Uint32(b[0:4]))
+
+    pub, err := NewPublicKeyFromBytes(b[4:])
+    if err != nil {
+        return HSSPublicKey{}, err
+    }
+
+    return HSSPublicKey{
+        Levels: levels,
+        LmsPub: pub,
+    }, nil
+}
+
+// A HSSPrivateKey is used to sign a finite number of messages
+type HSSPrivateKey struct {
+    HSSPublicKey
+    LmsKey [5]PrivateKey
+    LmsSig [4]Signature
+}
+
+// Public returns an HSSPublicKey that validates signatures for this private key
+func (priv *HSSPrivateKey) Public() HSSPublicKey {
+    return priv.HSSPublicKey
+}
+
+// Sign calculates the LMS-HSS signature of a chosen message.
+func (priv *HSSPrivateKey) Sign(rng io.Reader, msg []byte) ([]byte, error) {
+    var out []byte
+
+    num := priv.HSSPublicKey.Levels - 1
+
+    var numbytes [4]byte
+    binary.BigEndian.PutUint32(numbytes[:], uint32(num))
+
+    out = append(out, numbytes[:]...)
+
+    var i int
+    for i = 0; i < num; i++ {
+        sig, err := priv.LmsSig[i].ToBytes()
+        if err != nil {
+            return nil, err
+        }
+
+        out = append(out, sig...)
+
+        pubBytes := priv.LmsKey[i + 1].PublicKey.ToBytes()
+        out = append(out, pubBytes...)
+    }
+
+    sig2, err := priv.LmsKey[i].Sign(rng, msg)
+    if err != nil {
+        return nil, err
+    }
+
+    sig2Bytes, err := sig2.ToBytes()
+    if err != nil {
+        return nil, err
+    }
+
+    out = append(out, sig2Bytes...)
+
+    return out, nil
+}
+
+// ToBytes() serializes the public key into a byte string for transmission or storage.
+func (priv *HSSPrivateKey) ToBytes() ([]byte, error) {
+    var serialized []byte
+    var u32_be [4]byte
+
+    binary.BigEndian.PutUint32(u32_be[:], uint32(priv.Levels))
+    serialized = append(serialized, u32_be[:]...)
+
+    for i := 0; i < priv.Levels; i++ {
+        keyBytes := priv.LmsKey[i].ToBytes()
+        serialized = append(serialized, keyBytes...)
+    }
+
+    for i := 0; i < priv.Levels - 1; i++ {
+        sigBytes, err := priv.LmsSig[i].ToBytes()
+        if err != nil {
+            return nil, err
+        }
+
+        serialized = append(serialized, sigBytes...)
+    }
+
+    return serialized, nil
+}
+
+func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey PrivateKey, other []byte, err error) {
+    if len(b) < 8 {
+        return PrivateKey{}, nil, errors.New("parsePrivateKey(): key must be more than 8 bytes long")
+    }
+
+    newTc, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    if err != nil {
+        return PrivateKey{}, nil, err
+    }
+
+    tc := newTc()
+
+    privSize := 4 + 4 + 4 + 16 + tc.Params().M
+
+    privBytes := b[:privSize]
+    other = b[privSize:]
+
+    priv2, err := NewPrivateKeyFromBytes(privBytes)
+    if err != nil {
+        return PrivateKey{}, nil, err
+    }
+
+    return priv2, other, nil
+}
+
+// NewHSSPrivateKeyFromBytes returns an HSSPrivateKey that represents b.
+func NewHSSPrivateKeyFromBytes(b []byte) (HSSPrivateKey, error) {
+    if len(b) < 4 {
+        return HSSPrivateKey{}, errors.New("NewHSSPrivateKeyFromBytes(): key must be more than 4 bytes long")
+    }
+
+    levels := int(binary.BigEndian.Uint32(b[0:4]))
+    b = b[4:]
+
+    var priv HSSPrivateKey
+
+    var err error
+    var privTmp PrivateKey
+    var sigTmp Signature
+
+    for i := 0; i < levels; i++ {
+        privTmp, b, err = priv.parsePrivateKey(b)
+        if err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+        priv.LmsKey[i] = privTmp
+    }
+
+    for i := 0; i < levels - 1; i++ {
+        sigTmp, b, err = priv.HSSPublicKey.parseSignature(b)
+        if err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+        priv.LmsSig[i] = sigTmp
+    }
+
+    priv.HSSPublicKey = HSSPublicKey{
+        Levels: levels,
+        LmsPub: priv.LmsKey[0].Public(),
+    }
+
+    return priv, nil
+}
+
+// HSS options
+type HSSOpts struct {
+    Tc    ILmsParam
+    Otstc ILmotsParam
+}
+
+// Default Opts
+var DefaultOpts = []HSSOpts{
+    HSSOpts{
+        Tc:    LMS_SHA256_M32_H5_Param,
+        Otstc: LMOTS_SHA256_N32_W8_Param,
+    },
+    HSSOpts{
+        Tc:    LMS_SHA256_M32_H5_Param,
+        Otstc: LMOTS_SHA256_N32_W8_Param,
+    },
+}
+
+// GenerateHSSKey returns a new HSSPrivateKey
+func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (HSSPrivateKey, error) {
+    var q uint32 = 0
+    var i int
+
+    levels := len(opts)
+    if (levels <= 0 || levels > HSS_MAX_LEVELS) {
+        return HSSPrivateKey{}, errors.New("lms: levels too large")
+    }
+
+    seed := make([]byte, 32)
+    if _, err := rng.Read(seed); err != nil {
+        return HSSPrivateKey{}, err
+    }
+
+    idbytes := make([]byte, ID_LEN)
+    if _, err := rng.Read(idbytes); err != nil {
+        return HSSPrivateKey{}, err
+    }
+
+    id := ID(idbytes)
+
+    var err error
+    var key HSSPrivateKey
+    key.LmsKey[0], err = GenerateKeyFromSeed(opts[0].Tc, opts[0].Otstc, id, seed)
+    if err != nil {
+        return HSSPrivateKey{}, err
+    }
+
+    key.HSSPublicKey.Levels = levels
+    key.HSSPublicKey.LmsPub = key.LmsKey[0].Public()
+
+    for i = 1; i < levels; i++ {
+        idbytes := make([]byte, ID_LEN)
+        if _, err := rng.Read(idbytes); err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+        key.LmsKey[i], err = GenerateKeyFromSeed(opts[i].Tc, opts[i].Otstc, ID(idbytes), seed)
+        if err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+        C := make([]byte, 32)
+        if _, err := rng.Read(C); err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+        pub := key.LmsKey[i - 1].Public()
+        nowPub := key.LmsKey[i].Public()
+        dgst := hssDigest(&pub, q, C, nowPub.ToBytes())
+
+        key.LmsSig[i - 1], err = key.LmsKey[i - 1].SignWithData(C, dgst)
+        if err != nil {
+            return HSSPrivateKey{}, err
+        }
+
+    }
+
+    return key, nil
+}
+
+func hssDigest(pub *PublicKey, q uint32, C []byte, data []byte) (dgst []byte) {
+    var qbytes [4]byte
+    binary.BigEndian.PutUint32(qbytes[:], q)
+
+    otsParams := pub.otsType.Params()
+
+    hasher := otsParams.Hash()
+    hasher.Write(pub.id[:])
+    hasher.Write(qbytes[:])
+    hasher.Write(D_MESG[:])
+    hasher.Write(C[:])
+    hasher.Write(data)
+    dgst = hasher.Sum(nil)
+
+    return
+}

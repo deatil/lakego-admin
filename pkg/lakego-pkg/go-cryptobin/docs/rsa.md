@@ -243,3 +243,89 @@ func main() {
         CheckKeyPair()
 }
 ~~~
+
+#### 私钥公钥证书解析 / Parse PrivateKey or PublicKey
+~~~go
+import (
+    go_rsa "crypto/rsa"
+)
+
+func main() {
+    // 私钥解析
+    // Parse PrivateKey
+    var priKeyPem []byte = []byte("")
+    var priKeyXML []byte = []byte("")
+
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    var parsedPrivateKey *go_rsa.PrivateKey = rsa.New().
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromXMLPrivateKey(priKeyXML).
+        GetPrivateKey()
+
+    // 公钥解析
+    // Parse PublicKey
+    var pubKeyPem []byte = []byte("")
+    var pubKeyXML []byte = []byte("")
+
+    var parsedPublicKey *go_rsa.PublicKey = rsa.New().
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
+        GetPublicKey()
+}
+~~~
+
+#### 私钥公钥证书编码格式转换 / Change PrivateKey or PublicKey type
+~~~go
+func main() {
+    // 私钥编码转换
+    // PrivateKey change type
+    var priKeyPem []byte = []byte("")
+    var priKeyXML []byte = []byte("")
+
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    var newPrivateKey string = rsa.New().
+        // FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS1PrivateKey(priKeyPem).
+        FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromXMLPrivateKey(priKeyXML).
+        // CreatePrivateKey().
+        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePKCS1PrivateKey().
+        // CreatePKCS1PrivateKeyWithPassword(psssword, "AES256CBC").
+        CreatePKCS8PrivateKey(). // 转为 PKCS8 编码
+        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        // CreateXMLPrivateKey().
+        ToKeyString()
+
+    // 公钥编码转换
+    // PublicKey change type
+    var pubKeyPem []byte = []byte("")
+    var pubKeyXML []byte = []byte("")
+
+    var newPublicKey string = rsa.New().
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
+        // CreatePKCS1PublicKey().
+        CreatePKCS8PublicKey(). // 转为 PKCS8 编码
+        // CreateXMLPublicKey().
+        ToKeyString()
+}
+~~~

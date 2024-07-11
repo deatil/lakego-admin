@@ -200,5 +200,8 @@ var LegacyOpts = LegacyDESOpts
 // ModernOpts
 var ModernOpts = Modern2023Opts
 
+// Shangmi2024Opts
+var Shangmi2024Opts = LegacyGmsmOpts
+
 // Default Opts
 var DefaultOpts = LegacyRC2Opts

@@ -234,6 +234,73 @@ func main() {
 }
 ~~~
 
+#### 私钥公钥证书解析 / Parse PrivateKey or PublicKey
+~~~go
+import (
+    gmsm2 "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/cryptobin/sm2"
+)
+
+func main() {
+    // 私钥解析
+    // Parse PrivateKey
+    var priKeyPem []byte = []byte("")
+
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    var parsedPrivateKey *gmsm2.PrivateKey = sm2.New().
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        GetPrivateKey()
+
+    // 公钥解析
+    // Parse PublicKey
+    var pubKeyPem []byte = []byte("")
+
+    var parsedPublicKey *gmsm2.PublicKey = sm2.New().
+        FromPublicKey(pubKeyPem).
+        GetPublicKey()
+}
+~~~
+
+#### 私钥证书编码格式转换 / Change PrivateKey type
+~~~go
+import (
+    "github.com/deatil/go-cryptobin/cryptobin/sm2"
+)
+
+func main() {
+    // 私钥编码转换
+    // PrivateKey change type
+    var priKeyPem []byte = []byte("")
+
+    // 私钥密码
+    // privatekey password
+    var psssword string = ""
+
+    var newPrivateKey string = sm2.New().
+        // FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS1PrivateKey(priKeyPem).
+        FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword). // PKCS1 有密码证书
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        // CreatePrivateKey().
+        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePKCS1PrivateKey().
+        // CreatePKCS1PrivateKeyWithPassword(psssword, "AES256CBC").
+        CreatePKCS8PrivateKey(). // 转为 PKCS8 编码
+        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        ToKeyString()
+}
+~~~
+
 #### 【招商银行】支付签名验证 / zhaoshang bank check
 ~~~go
 package main
