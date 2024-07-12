@@ -343,9 +343,9 @@ func NewLmotsPublicKeyFromBytes(b []byte) (*LmotsPublicKey, error) {
 
     // ensure that the length of the slice is correct
     if uint64(len(b)) < 4+ID_LEN+4+params.N {
-        return nil, errors.New("LmotsPublicKeyFromBytes(): OTS public key too short")
+        return nil, errors.New("lms: OTS public key too short")
     } else if uint64(len(b)) > 4+ID_LEN+4+params.N {
-        return nil, errors.New("LmotsPublicKeyFromBytes(): OTS public key too long")
+        return nil, errors.New("lms: OTS public key too long")
     } else {
         // The next ID_LEN bytes are the id
         id := ID(b[4 : 4+ID_LEN])
@@ -402,7 +402,7 @@ type LmotsSignature struct {
 // NewLmotsSignatureFromBytes returns an LmotsSignature represented by b.
 func NewLmotsSignatureFromBytes(b []byte) (*LmotsSignature, error) {
     if len(b) < 4 {
-        return nil, errors.New("NewLmotsSignatureFromBytes(): No typecode")
+        return nil, errors.New("lms: No typecode")
     }
 
     // Typecode is the first 4 bytes
@@ -420,9 +420,9 @@ func NewLmotsSignatureFromBytes(b []byte) (*LmotsSignature, error) {
 
     // check the length of the signature
     if uint64(len(b)) < sigLen {
-        return nil, errors.New("LmotsSignatureFromBytes(): LMOTS signature too short")
+        return nil, errors.New("lms: LMOTS signature too short")
     } else if uint64(len(b)) > sigLen {
-        return nil, errors.New("LmotsSignatureFromBytes(): LMOTS signature too long")
+        return nil, errors.New("lms: LMOTS signature too long")
     } else {
         // parse the signature
         c := b[4 : 4+int(params.N)]
