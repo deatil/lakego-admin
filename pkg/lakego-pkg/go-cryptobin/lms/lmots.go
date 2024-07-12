@@ -3,10 +3,23 @@ package lms
 import (
     "io"
     "errors"
+    "crypto"
     "crypto/rand"
     "crypto/subtle"
     "encoding/binary"
 )
+
+// Signer Opts
+type LmsOtsSignerOpts struct {
+    C []byte
+}
+
+func (this LmsOtsSignerOpts) HashFunc() crypto.Hash {
+    return crypto.Hash(0)
+}
+
+// default Signer Opts
+var DefaultLmsOtsSignerOpts = LmsOtsSignerOpts{}
 
 // A LmsOtsPrivateKey is used to sign exactly one message.
 type LmsOtsPrivateKey struct {
@@ -17,13 +30,13 @@ type LmsOtsPrivateKey struct {
 
 // NewLmsOtsPrivateKey returns a LmsOtsPrivateKey, seeded by a cryptographically secure
 // random number generator.
-func NewLmsOtsPrivateKey(lop ILmotsParam, q uint32, id ID) (LmsOtsPrivateKey, error) {
+func NewLmsOtsPrivateKey(lop ILmotsParam, q uint32, id ID) (*LmsOtsPrivateKey, error) {
     params := lop.Params()
 
     seed := make([]byte, params.N)
     _, err := rand.Read(seed)
     if err != nil {
-        return LmsOtsPrivateKey{}, err
+        return nil, err
     }
 
     return NewLmsOtsPrivateKeyFromSeed(lop, q, id, seed)
@@ -31,7 +44,7 @@ func NewLmsOtsPrivateKey(lop ILmotsParam, q uint32, id ID) (LmsOtsPrivateKey, er
 
 // NewLmsOtsPrivateKeyFromSeed returns a new LmsOtsPrivateKey, using the algorithm from
 // Appendix A of <https://datatracker.ietf.org/doc/html/rfc8554#appendix-A>
-func NewLmsOtsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) (LmsOtsPrivateKey, error) {
+func NewLmsOtsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) (*LmsOtsPrivateKey, error) {
     params := lop.Params()
 
     x := make([][]byte, params.P)
@@ -64,65 +77,77 @@ func NewLmsOtsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) 
     }
     pk.LmsOtsPublicKey.k = pk.computeRoot()
 
-    return pk, nil
+    return &pk, nil
 }
 
 // Public returns an LmsOtsPublicKey that validates signatures for this private key.
-func (x *LmsOtsPrivateKey) Public() LmsOtsPublicKey {
-    return x.LmsOtsPublicKey
+func (priv *LmsOtsPrivateKey) Public() crypto.PublicKey {
+    return priv.LmsOtsPublicKey
 }
 
 // Sign calculates the LM-OTS signature of a chosen message.
-func (x *LmsOtsPrivateKey) Sign(rng io.Reader, msg []byte) (LmsOtsSignature, error) {
-    params := x.typ.Params()
-
-    c := make([]byte, params.N)
-    if _, err := rng.Read(c); err != nil {
-        return LmsOtsSignature{}, err
+func (priv *LmsOtsPrivateKey) Sign(rng io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    sig, err := priv.SignToSignature(rng, msg, opts)
+    if err != nil {
+        return nil, err
     }
 
-    return x.SignWithData(c, msg)
+    return sig.ToBytes()
 }
 
-func (x *LmsOtsPrivateKey) SignWithData(c []byte, msg []byte) (LmsOtsSignature, error) {
-    if !x.valid {
-        return LmsOtsSignature{}, errors.New("Sign(): invalid private key")
+// SignToSignature calculates the LM-OTS signature of a chosen message.
+func (priv *LmsOtsPrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.SignerOpts) (*LmsOtsSignature, error) {
+    if !priv.valid {
+        return nil, errors.New("Sign(): invalid private key")
     }
 
     var err error
     var be16 [2]byte
     var be32 [4]byte
 
-    params := x.typ.Params()
+    params := priv.typ.Params()
 
-    binary.BigEndian.PutUint32(be32[:], x.q)
+    opt := DefaultLmsOtsSignerOpts
+    if o, ok := opts.(LmsOtsSignerOpts); ok {
+        opt = o
+    }
+
+    c := opt.C
+    if c == nil {
+        c = make([]byte, params.N)
+        if _, err := rng.Read(c); err != nil {
+            return nil, err
+        }
+    }
+
+    binary.BigEndian.PutUint32(be32[:], priv.q)
 
     hasher := params.Hash()
-    hasher.Write(x.id[:])
+    hasher.Write(priv.id[:])
     hasher.Write(be32[:])
     hasher.Write(D_MESG[:])
     hasher.Write(c)
     hasher.Write(msg)
 
     q := hasher.Sum(nil)
-    expanded, err := Expand(q, x.typ)
+    expanded, err := Expand(q, priv.typ)
     if err != nil {
-        return LmsOtsSignature{}, err
+        return nil, err
     }
 
     y := make([][]byte, params.P)
 
     for i := uint64(0); i < params.P; i++ {
         a := uint64(expanded[i])
-        y[i] = make([]byte, len(x.x[i]))
-        copy(y[i], x.x[i])
+        y[i] = make([]byte, len(priv.x[i]))
+        copy(y[i], priv.x[i])
 
         for j := uint64(0); j < a; j++ {
-            binary.BigEndian.PutUint32(be32[:], x.q)
+            binary.BigEndian.PutUint32(be32[:], priv.q)
             binary.BigEndian.PutUint16(be16[:], uint16(i))
 
             inner := params.Hash()
-            inner.Write(x.id[:])
+            inner.Write(priv.id[:])
             inner.Write(be32[:])
             inner.Write(be16[:])
             inner.Write([]byte{byte(j)})
@@ -133,40 +158,40 @@ func (x *LmsOtsPrivateKey) SignWithData(c []byte, msg []byte) (LmsOtsSignature, 
     }
 
     // mark private key as invalid
-    x.x = nil
-    x.valid = false
+    priv.x = nil
+    priv.valid = false
 
-    return LmsOtsSignature{
-        typ: x.typ,
+    return &LmsOtsSignature{
+        typ: priv.typ,
         c:   c,
         y:   y,
     }, nil
 }
 
-func (x *LmsOtsPrivateKey) computeRoot() []byte {
+func (priv *LmsOtsPrivateKey) computeRoot() []byte {
     var be16 [2]byte
     var be32 [4]byte
     var tmp []byte
 
-    params := x.typ.Params()
+    params := priv.typ.Params()
 
-    binary.BigEndian.PutUint32(be32[:], x.q)
+    binary.BigEndian.PutUint32(be32[:], priv.q)
 
     hasher := params.Hash()
-    hasher.Write(x.id[:])
+    hasher.Write(priv.id[:])
     hasher.Write(be32[:])
     hasher.Write(D_PBLC[:])
 
     for i := uint64(0); i < params.P; i++ {
-        tmp = make([]byte, len(x.x[i]))
-        copy(tmp, x.x[i])
+        tmp = make([]byte, len(priv.x[i]))
+        copy(tmp, priv.x[i])
 
         for j := uint64(0); j < (uint64(1)<<int(params.W.Window()))-1; j++ {
-            binary.BigEndian.PutUint32(be32[:], x.q)
+            binary.BigEndian.PutUint32(be32[:], priv.q)
             binary.BigEndian.PutUint16(be16[:], uint16(i))
 
             inner := params.Hash()
-            inner.Write(x.id[:])
+            inner.Write(priv.id[:])
             inner.Write(be32[:])
             inner.Write(be16[:])
             inner.Write([]byte{byte(j)})
@@ -193,7 +218,18 @@ type LmsOtsPublicKey struct {
 
 // Verify returns true if sig is valid for msg and this public key.
 // It returns false otherwise.
-func (pub *LmsOtsPublicKey) Verify(msg []byte, sig LmsOtsSignature) bool {
+func (pub *LmsOtsPublicKey) Verify(msg []byte, sig []byte) bool {
+    newSig, err := NewLmsOtsSignatureFromBytes(sig)
+    if err != nil {
+        return false
+    }
+
+    return pub.VerifyWithSignature(msg, newSig)
+}
+
+// VerifyWithSignature returns true if sig is valid for msg and this public key.
+// It returns false otherwise.
+func (pub *LmsOtsPublicKey) VerifyWithSignature(msg []byte, sig *LmsOtsSignature) bool {
     // sanity check ots type
     if pub.typ.GetType() != sig.typ.GetType() {
         return false
@@ -291,15 +327,15 @@ func (pub *LmsOtsPublicKey) Key() []byte {
 
 // NewLmsOtsPublicKeyFromBytes returns an LmsOtsPublicKey that represents b.
 // This is the inverse of the ToBytes() method on the LmsOtsPublicKey object.
-func NewLmsOtsPublicKeyFromBytes(b []byte) (LmsOtsPublicKey, error) {
+func NewLmsOtsPublicKeyFromBytes(b []byte) (*LmsOtsPublicKey, error) {
     if len(b) < 4 {
-        return LmsOtsPublicKey{}, errors.New("NewLmsOtsPublicKeyFromBytes(): OTS public key too short")
+        return nil, errors.New("NewLmsOtsPublicKeyFromBytes(): OTS public key too short")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
     newType, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[0:4])))
     if err != nil {
-        return LmsOtsPublicKey{}, err
+        return nil, err
     }
 
     typecode := newType()
@@ -308,9 +344,9 @@ func NewLmsOtsPublicKeyFromBytes(b []byte) (LmsOtsPublicKey, error) {
 
     // ensure that the length of the slice is correct
     if uint64(len(b)) < 4+ID_LEN+4+params.N {
-        return LmsOtsPublicKey{}, errors.New("LmsOtsPublicKeyFromBytes(): OTS public key too short")
+        return nil, errors.New("LmsOtsPublicKeyFromBytes(): OTS public key too short")
     } else if uint64(len(b)) > 4+ID_LEN+4+params.N {
-        return LmsOtsPublicKey{}, errors.New("LmsOtsPublicKeyFromBytes(): OTS public key too long")
+        return nil, errors.New("LmsOtsPublicKeyFromBytes(): OTS public key too long")
     } else {
         // The next ID_LEN bytes are the id
         id := ID(b[4 : 4+ID_LEN])
@@ -321,12 +357,14 @@ func NewLmsOtsPublicKeyFromBytes(b []byte) (LmsOtsPublicKey, error) {
         // The public key, k, is the remaining bytes
         k := b[8+ID_LEN:]
 
-        return LmsOtsPublicKey{
+        pub := LmsOtsPublicKey{
             typ: typecode,
             id:  id,
             q:   q,
             k:   k,
-        }, nil
+        }
+
+        return &pub, nil
     }
 }
 
@@ -363,15 +401,15 @@ type LmsOtsSignature struct {
 }
 
 // NewLmsOtsSignatureFromBytes returns an LmsOtsSignature represented by b.
-func NewLmsOtsSignatureFromBytes(b []byte) (LmsOtsSignature, error) {
+func NewLmsOtsSignatureFromBytes(b []byte) (*LmsOtsSignature, error) {
     if len(b) < 4 {
-        return LmsOtsSignature{}, errors.New("NewLmsOtsSignatureFromBytes(): No typecode")
+        return nil, errors.New("NewLmsOtsSignatureFromBytes(): No typecode")
     }
 
     // Typecode is the first 4 bytes
     newType, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[0:4])))
     if err != nil {
-        return LmsOtsSignature{}, err
+        return nil, err
     }
 
     typecode := newType()
@@ -379,11 +417,13 @@ func NewLmsOtsSignatureFromBytes(b []byte) (LmsOtsSignature, error) {
     // Panic if not a valid LM-OTS algorithm:
     params := typecode.Params()
 
+    sigLen := params.SigLength()
+
     // check the length of the signature
-    if uint64(len(b)) < params.SIG_LEN {
-        return LmsOtsSignature{}, errors.New("LmsOtsSignatureFromBytes(): LMOTS signature too short")
-    } else if uint64(len(b)) > params.SIG_LEN {
-        return LmsOtsSignature{}, errors.New("LmsOtsSignatureFromBytes(): LMOTS signature too long")
+    if uint64(len(b)) < sigLen {
+        return nil, errors.New("LmsOtsSignatureFromBytes(): LMOTS signature too short")
+    } else if uint64(len(b)) > sigLen {
+        return nil, errors.New("LmsOtsSignatureFromBytes(): LMOTS signature too long")
     } else {
         // parse the signature
         c := b[4 : 4+int(params.N)]
@@ -395,7 +435,7 @@ func NewLmsOtsSignatureFromBytes(b []byte) (LmsOtsSignature, error) {
             cur += params.N
         }
 
-        return LmsOtsSignature{
+        return &LmsOtsSignature{
             typ: typecode,
             c:   c,
             y:   y,
@@ -425,4 +465,9 @@ func (sig *LmsOtsSignature) ToBytes() ([]byte, error) {
     }
 
     return serialized, nil
+}
+
+// C returns a bytes for c
+func (sig *LmsOtsSignature) C() []byte {
+    return sig.c
 }

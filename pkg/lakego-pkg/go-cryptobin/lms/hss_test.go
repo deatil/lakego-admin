@@ -2,12 +2,17 @@ package lms
 
 import (
     "testing"
+    "crypto"
     "crypto/rand"
 
     "github.com/deatil/go-cryptobin/tool/test"
 )
 
-func Test_HSSSignVerify(t *testing.T) {
+func Test_HSS_SignerInterface(t *testing.T) {
+    var _ crypto.Signer = &HSSPrivateKey{}
+}
+
+func Test_HSS_SignVerify(t *testing.T) {
     assertBool := test.AssertBoolT(t)
 
     priv, err := GenerateHSSKey(rand.Reader, DefaultOpts)
@@ -15,9 +20,9 @@ func Test_HSSSignVerify(t *testing.T) {
         panic(err)
     }
 
-    pub := priv.Public()
+    pub := priv.HSSPublicKey
 
-    sig, err := priv.Sign(rand.Reader, []byte("example"))
+    sig, err := priv.Sign(rand.Reader, []byte("example"), nil)
     if err != nil {
         panic(err)
     }
@@ -26,7 +31,7 @@ func Test_HSSSignVerify(t *testing.T) {
     assertBool(result, "HSSSignVerify")
 }
 
-func Test_HSSPublicKey_ToBytes(t *testing.T) {
+func Test_HSS_PublicKey_ToBytes(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
     assertNotEmpty := test.AssertNotEmptyT(t)
 
@@ -35,7 +40,7 @@ func Test_HSSPublicKey_ToBytes(t *testing.T) {
         panic(err)
     }
 
-    pub := priv.Public()
+    pub := priv.HSSPublicKey
 
     pubBytes := pub.ToBytes()
     assertNotEmpty(pubBytes, "pub.ToBytes")
@@ -49,7 +54,7 @@ func Test_HSSPublicKey_ToBytes(t *testing.T) {
     assertEqual(pub2.LmsPub.ToBytes(), pub.LmsPub.ToBytes(), "pub.LmsPub.ToBytes")
 }
 
-func Test_HSSPrivateKey_ToBytes(t *testing.T) {
+func Test_HSS_PrivateKey_ToBytes(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
     assertNotEmpty := test.AssertNotEmptyT(t)
 

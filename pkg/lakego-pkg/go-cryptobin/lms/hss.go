@@ -3,6 +3,8 @@ package lms
 import (
     "io"
     "errors"
+    "crypto"
+    "crypto/rand"
     "encoding/binary"
 )
 
@@ -20,7 +22,7 @@ func (pub *HSSPublicKey) Verify(msg []byte, sig []byte) bool {
     var i uint32
     var lms_pub *PublicKey
     var next_lms_pub *PublicKey
-    var lms_sig Signature
+    var lms_sig *Signature
 
     if len(sig) < 4 {
         return false
@@ -52,7 +54,7 @@ func (pub *HSSPublicKey) Verify(msg []byte, sig []byte) bool {
 
         pub_dgst := hssDigest(lms_pub, q, C, next_lms_pub.ToBytes())
 
-        if !lms_pub.Verify(pub_dgst, lms_sig) {
+        if !lms_pub.VerifyWithSignature(pub_dgst, lms_sig) {
             return false
         }
 
@@ -64,7 +66,7 @@ func (pub *HSSPublicKey) Verify(msg []byte, sig []byte) bool {
         return false
     }
 
-    if !lms_pub.Verify(msg, lms_sig) {
+    if !lms_pub.VerifyWithSignature(msg, lms_sig) {
         return false
     }
 
@@ -85,10 +87,10 @@ func (pub *HSSPublicKey) ToBytes() []byte {
     return serialized
 }
 
-func (pub *HSSPublicKey) parseSignature(b []byte) (sig Signature, other []byte, err error) {
+func (pub *HSSPublicKey) parseSignature(b []byte) (sig *Signature, other []byte, err error) {
     newOtstc, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
     if err != nil {
-        return Signature{}, nil, err
+        return nil, nil, err
     }
 
     otstc := newOtstc()
@@ -97,12 +99,12 @@ func (pub *HSSPublicKey) parseSignature(b []byte) (sig Signature, other []byte, 
 
     otsigmax := 4 + otsSiglen
     if uint64(4+len(b)) <= otsigmax {
-        return Signature{}, nil, errors.New("parseSignature(): Signature is too short for LM-OTS typecode")
+        return nil, nil, errors.New("parseSignature(): Signature is too short for LM-OTS typecode")
     }
 
     newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
     if err != nil {
-        return Signature{}, nil, err
+        return nil, nil, err
     }
 
     typecode := newTypecode()
@@ -114,7 +116,7 @@ func (pub *HSSPublicKey) parseSignature(b []byte) (sig Signature, other []byte, 
 
     sig2, err := NewSignatureFromBytes(sigBytes)
     if err != nil {
-        return Signature{}, nil, err
+        return nil, nil, err
     }
 
     return sig2, other, nil
@@ -148,25 +150,25 @@ func (pub *HSSPublicKey) parsePublicKey(b []byte) (pubkey *PublicKey, other []by
         return nil, nil, err
     }
 
-    return &pub2, other, nil
+    return pub2, other, nil
 }
 
 // NewHSSPublicKeyFromBytes returns an HSSPublicKey that represents b.
-func NewHSSPublicKeyFromBytes(b []byte) (HSSPublicKey, error) {
+func NewHSSPublicKeyFromBytes(b []byte) (*HSSPublicKey, error) {
     if len(b) < 4 {
-        return HSSPublicKey{}, errors.New("NewHSSPublicKeyFromBytes(): key must be more than 4 bytes long")
+        return nil, errors.New("NewHSSPublicKeyFromBytes(): key must be more than 4 bytes long")
     }
 
     levels := int(binary.BigEndian.Uint32(b[0:4]))
 
     pub, err := NewPublicKeyFromBytes(b[4:])
     if err != nil {
-        return HSSPublicKey{}, err
+        return nil, err
     }
 
-    return HSSPublicKey{
+    return &HSSPublicKey{
         Levels: levels,
-        LmsPub: pub,
+        LmsPub: *pub,
     }, nil
 }
 
@@ -178,12 +180,12 @@ type HSSPrivateKey struct {
 }
 
 // Public returns an HSSPublicKey that validates signatures for this private key
-func (priv *HSSPrivateKey) Public() HSSPublicKey {
+func (priv *HSSPrivateKey) Public() crypto.PublicKey {
     return priv.HSSPublicKey
 }
 
 // Sign calculates the LMS-HSS signature of a chosen message.
-func (priv *HSSPrivateKey) Sign(rng io.Reader, msg []byte) ([]byte, error) {
+func (priv *HSSPrivateKey) Sign(rng io.Reader, msg []byte, _ crypto.SignerOpts) ([]byte, error) {
     var out []byte
 
     num := priv.HSSPublicKey.Levels - 1
@@ -206,7 +208,7 @@ func (priv *HSSPrivateKey) Sign(rng io.Reader, msg []byte) ([]byte, error) {
         out = append(out, pubBytes...)
     }
 
-    sig2, err := priv.LmsKey[i].Sign(rng, msg)
+    sig2, err := priv.LmsKey[i].SignToSignature(rng, msg, nil)
     if err != nil {
         return nil, err
     }
@@ -246,14 +248,14 @@ func (priv *HSSPrivateKey) ToBytes() ([]byte, error) {
     return serialized, nil
 }
 
-func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey PrivateKey, other []byte, err error) {
+func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey *PrivateKey, other []byte, err error) {
     if len(b) < 8 {
-        return PrivateKey{}, nil, errors.New("parsePrivateKey(): key must be more than 8 bytes long")
+        return nil, nil, errors.New("parsePrivateKey(): key must be more than 8 bytes long")
     }
 
     newTc, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
     if err != nil {
-        return PrivateKey{}, nil, err
+        return nil, nil, err
     }
 
     tc := newTc()
@@ -265,16 +267,16 @@ func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey PrivateKey, other 
 
     priv2, err := NewPrivateKeyFromBytes(privBytes)
     if err != nil {
-        return PrivateKey{}, nil, err
+        return nil, nil, err
     }
 
     return priv2, other, nil
 }
 
 // NewHSSPrivateKeyFromBytes returns an HSSPrivateKey that represents b.
-func NewHSSPrivateKeyFromBytes(b []byte) (HSSPrivateKey, error) {
+func NewHSSPrivateKeyFromBytes(b []byte) (*HSSPrivateKey, error) {
     if len(b) < 4 {
-        return HSSPrivateKey{}, errors.New("NewHSSPrivateKeyFromBytes(): key must be more than 4 bytes long")
+        return nil, errors.New("NewHSSPrivateKeyFromBytes(): key must be more than 4 bytes long")
     }
 
     levels := int(binary.BigEndian.Uint32(b[0:4]))
@@ -283,33 +285,33 @@ func NewHSSPrivateKeyFromBytes(b []byte) (HSSPrivateKey, error) {
     var priv HSSPrivateKey
 
     var err error
-    var privTmp PrivateKey
-    var sigTmp Signature
+    var privTmp *PrivateKey
+    var sigTmp *Signature
 
     for i := 0; i < levels; i++ {
         privTmp, b, err = priv.parsePrivateKey(b)
         if err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
 
-        priv.LmsKey[i] = privTmp
+        priv.LmsKey[i] = *privTmp
     }
 
     for i := 0; i < levels - 1; i++ {
         sigTmp, b, err = priv.HSSPublicKey.parseSignature(b)
         if err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
 
-        priv.LmsSig[i] = sigTmp
+        priv.LmsSig[i] = *sigTmp
     }
 
     priv.HSSPublicKey = HSSPublicKey{
         Levels: levels,
-        LmsPub: priv.LmsKey[0].Public(),
+        LmsPub: priv.LmsKey[0].PublicKey,
     }
 
-    return priv, nil
+    return &priv, nil
 }
 
 // HSS options
@@ -331,65 +333,72 @@ var DefaultOpts = []HSSOpts{
 }
 
 // GenerateHSSKey returns a new HSSPrivateKey
-func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (HSSPrivateKey, error) {
+func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (*HSSPrivateKey, error) {
     var q uint32 = 0
     var i int
 
     levels := len(opts)
     if (levels <= 0 || levels > HSS_MAX_LEVELS) {
-        return HSSPrivateKey{}, errors.New("lms: levels too large")
+        return nil, errors.New("lms: levels too large")
     }
 
     seed := make([]byte, 32)
     if _, err := rng.Read(seed); err != nil {
-        return HSSPrivateKey{}, err
+        return nil, err
     }
 
     idbytes := make([]byte, ID_LEN)
     if _, err := rng.Read(idbytes); err != nil {
-        return HSSPrivateKey{}, err
+        return nil, err
     }
 
     id := ID(idbytes)
 
     var err error
     var key HSSPrivateKey
-    key.LmsKey[0], err = GenerateKeyFromSeed(opts[0].Tc, opts[0].Otstc, id, seed)
+    lmsKey, err := GenerateKeyFromSeed(opts[0].Tc, opts[0].Otstc, id, seed)
     if err != nil {
-        return HSSPrivateKey{}, err
+        return nil, err
     }
 
+    key.LmsKey[0] = *lmsKey
+
     key.HSSPublicKey.Levels = levels
-    key.HSSPublicKey.LmsPub = key.LmsKey[0].Public()
+    key.HSSPublicKey.LmsPub = key.LmsKey[0].PublicKey
 
     for i = 1; i < levels; i++ {
         idbytes := make([]byte, ID_LEN)
         if _, err := rng.Read(idbytes); err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
 
-        key.LmsKey[i], err = GenerateKeyFromSeed(opts[i].Tc, opts[i].Otstc, ID(idbytes), seed)
+        lmsKey, err = GenerateKeyFromSeed(opts[i].Tc, opts[i].Otstc, ID(idbytes), seed)
         if err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
+
+        key.LmsKey[i] = *lmsKey
 
         C := make([]byte, 32)
         if _, err := rng.Read(C); err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
 
-        pub := key.LmsKey[i - 1].Public()
-        nowPub := key.LmsKey[i].Public()
+        pub := key.LmsKey[i - 1].PublicKey
+        nowPub := key.LmsKey[i].PublicKey
         dgst := hssDigest(&pub, q, C, nowPub.ToBytes())
 
-        key.LmsSig[i - 1], err = key.LmsKey[i - 1].SignWithData(C, dgst)
+        lmsSig, err := key.LmsKey[i - 1].SignToSignature(rand.Reader, dgst, SignerOpts{
+            C: C,
+        })
         if err != nil {
-            return HSSPrivateKey{}, err
+            return nil, err
         }
 
+        key.LmsSig[i - 1] = *lmsSig
     }
 
-    return key, nil
+    return &key, nil
 }
 
 func hssDigest(pub *PublicKey, q uint32, C []byte, data []byte) (dgst []byte) {

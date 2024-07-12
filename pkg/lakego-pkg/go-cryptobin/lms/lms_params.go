@@ -45,7 +45,7 @@ func (this LmsParam) GetType() LmsType {
 func (this LmsParam) SigLength(otstc ILmotsParam) uint64 {
     otsSigLen := otstc.SigLength()
 
-    return uint64(4 + 4) + otsSigLen + (this.H * this.M)
+    return 4 + 4 + otsSigLen + (this.H * this.M)
 }
 
 // Returns a Params

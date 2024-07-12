@@ -2,11 +2,17 @@ package lms
 
 import (
     "testing"
+    "crypto"
     "crypto/rand"
     "encoding/hex"
 
     "github.com/deatil/go-cryptobin/tool/test"
 )
+
+func Test_Interface(t *testing.T) {
+    var _ crypto.Signer = &PrivateKey{}
+    var _ crypto.SignerOpts = SignerOpts{}
+}
 
 func Test_PKTreeKAT1(t *testing.T) {
     assertError := test.AssertErrorT(t)
@@ -33,7 +39,7 @@ func Test_PKTreeKAT1(t *testing.T) {
     lms_priv, err := GenerateKeyFromSeed(tc, otstc, ID(id), seed)
     assertError(err, "GenerateKeyFromSeed")
 
-    lms_pub := lms_priv.Public()
+    lms_pub := lms_priv.PublicKey
 
     assertEqual(lms_pub.ID(), ID(id), "ID")
     assertEqual(lms_pub.Key(), expected_k, "Key")
@@ -113,14 +119,14 @@ func Test_SignKAT1(t *testing.T) {
     }
 
     // Generate a signature
-    sig, err := lms_priv.Sign(rand.Reader, msg)
-    assertError(err, "Sign")
+    sig, err := lms_priv.SignToSignature(rand.Reader, msg, nil)
+    assertError(err, "SignToSignature")
 
     // Assert incremented
     assertEqual(lms_priv.Q(), uint32(6), "priv.Q")
 
     // Get the public key
-    lms_public := lms_priv.Public()
+    lms_public := lms_priv.PublicKey
     expected_public_key, err := hex.DecodeString(
         "0000000600000003" +
             "d08fabd4a2091ff0a8cb4ed834e74534" +
@@ -132,9 +138,9 @@ func Test_SignKAT1(t *testing.T) {
     }
     assertEqual(expected_public_key, lms_public.ToBytes(), "public_key")
 
-    // Verify the signature is true
-    result := lms_public.Verify(msg, sig)
-    assertBool(result, "public.Verify")
+    // VerifyWithSignature the signature is true
+    result := lms_public.VerifyWithSignature(msg, sig)
+    assertBool(result, "public.VerifyWithSignature")
 
     // Is the signature as long as we expect?
     sigbytes, err := sig.ToBytes()
@@ -153,8 +159,8 @@ func Test_SignKAT1(t *testing.T) {
     }
 
     // Flipping a bit in the signature should yield a false
-    result = lms_public.Verify(msg, sig2)
-    assertNotBool(result, "public.Verify bad")
+    result = lms_public.VerifyWithSignature(msg, sig2)
+    assertNotBool(result, "public.VerifyWithSignature bad")
 }
 
 func Test_Verify(t *testing.T) {
@@ -196,8 +202,8 @@ func Test_Verify(t *testing.T) {
         panic(err)
     }
 
-    result := publickey.Verify(msg, sig)
-    assertBool(result, "Verify")
+    result := publickey.VerifyWithSignature(msg, sig)
+    assertBool(result, "VerifyWithSignature")
 
     // If we change the signature, it should fail
     sigbytes[3]++
@@ -206,8 +212,8 @@ func Test_Verify(t *testing.T) {
         panic(err)
     }
 
-    result = publickey.Verify(msg, sig)
-    assertNotBool(result, "Verify bad")
+    result = publickey.VerifyWithSignature(msg, sig)
+    assertNotBool(result, "VerifyWithSignature bad")
 }
 
 func Test_ShortPublicKeyReturnsError(t *testing.T) {
@@ -783,8 +789,8 @@ func Test_Rfc8554KAT2(t *testing.T) {
         panic(err)
     }
 
-    result := pk.Verify(message_bytes, sig)
-    assertBool(result, "Verify")
+    result := pk.VerifyWithSignature(message_bytes, sig)
+    assertBool(result, "VerifyWithSignature")
 }
 
 func Test_SignatureFromBytes(t *testing.T) {
@@ -814,10 +820,10 @@ func test_SignVerify(t *testing.T, tc ILmsParam, otstc ILmotsParam) {
     lms_priv, err := GenerateKeyFromSeed(tc, otstc, ID(id), seed)
     assertError(err, "GenerateKeyFromSeed")
 
-    lms_pub := lms_priv.Public()
+    lms_pub := lms_priv.PublicKey
 
-    lms_sig, err := lms_priv.Sign(rand.Reader, []byte("example"))
-    assertError(err, "priv.Sign()")
+    lms_sig, err := lms_priv.Sign(rand.Reader, []byte("example"), nil)
+    assertError(err, "priv.SignToSignature()")
 
     result := lms_pub.Verify([]byte("example"), lms_sig)
     assertBool(result, "SignVerify")

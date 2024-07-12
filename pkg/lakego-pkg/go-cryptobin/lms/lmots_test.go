@@ -2,11 +2,17 @@ package lms
 
 import (
     "testing"
+    "crypto"
     "crypto/rand"
     "encoding/hex"
 
     "github.com/deatil/go-cryptobin/tool/test"
 )
+
+func Test_Ots_Interface(t *testing.T) {
+    var _ crypto.Signer = &LmsOtsPrivateKey{}
+    var _ crypto.SignerOpts = LmsOtsSignerOpts{}
+}
 
 func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
     assertBool := test.AssertBoolT(t)
@@ -23,9 +29,9 @@ func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
         panic(err)
     }
 
-    ots_pub := ots_priv.Public()
+    ots_pub := ots_priv.LmsOtsPublicKey
 
-    ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"))
+    ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"), nil)
     if err != nil {
         panic(err)
     }
@@ -58,7 +64,7 @@ func Test_OtsSignVerify(t *testing.T) {
         test_OtsSignVerify(t, LMOTS_SM3_N32_W4_Param)
     })
     t.Run("OtsSignVerify_SM3_W8", func(t *testing.T) {
-        test_OtsSignVerify(t, LMOTS_SM3_N32_W8_W8_Param)
+        test_OtsSignVerify(t, LMOTS_SM3_N32_W8_Param)
     })
 }
 
@@ -77,9 +83,9 @@ func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
         panic(err)
     }
 
-    ots_pub := ots_priv.Public()
+    ots_pub := ots_priv.LmsOtsPublicKey
 
-    ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"))
+    ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"), nil)
     if err != nil {
         panic(err)
     }
@@ -87,12 +93,12 @@ func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
     // modify q so that the verification fails
     ots_pub_bytes := ots_pub.ToBytes()
     ots_pub_bytes[23] = 6
-    ots_pub, err = NewLmsOtsPublicKeyFromBytes(ots_pub_bytes)
+    ots_pub2, err := NewLmsOtsPublicKeyFromBytes(ots_pub_bytes)
     if err != nil {
         panic(err)
     }
 
-    result := ots_pub.Verify([]byte("example"), ots_sig)
+    result := ots_pub2.Verify([]byte("example"), ots_sig)
     assertNotBool(result, "OtsSignVerifyFail")
 }
 
@@ -123,9 +129,9 @@ func Test_DoubleSign(t *testing.T) {
     ots_priv, err := NewLmsOtsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id))
     assertError(err, "NewLmsOtsPrivateKey")
 
-    _, err = ots_priv.Sign(rand.Reader, []byte("example"))
+    _, err = ots_priv.Sign(rand.Reader, []byte("example"), nil)
     assertError(err, "priv.Sign")
 
-    _, err = ots_priv.Sign(rand.Reader, []byte("example2"))
+    _, err = ots_priv.Sign(rand.Reader, []byte("example2"), nil)
     assertNotErrorNil(err, "priv.Sign 2")
 }

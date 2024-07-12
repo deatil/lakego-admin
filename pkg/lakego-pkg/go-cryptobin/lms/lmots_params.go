@@ -29,13 +29,13 @@ type ILmotsParam interface {
 }
 
 type LmotsParam struct {
-    Type    LmotsType
-    Hash    Hasher
-    N       uint64
-    W       ByteWindow
-    P       uint64
-    LS      uint64
-    SIG_LEN uint64
+    Type   LmotsType
+    Hash   Hasher
+    N      uint64
+    W      ByteWindow
+    P      uint64
+    LS     uint64
+    SigLen uint64
 }
 
 // Returns a uint32 of the same value as the LmotsType
@@ -45,12 +45,11 @@ func (this LmotsParam) GetType() LmotsType {
 
 // Returns the expected byte length of a given LM-OTS signature algorithm
 func (this LmotsParam) SigLength() uint64 {
-    if this.SIG_LEN > 0 {
-        return this.SIG_LEN
+    if this.SigLen > 0 {
+        return this.SigLen
     }
 
-    sigLen := 4 + this.N + (this.P * this.N)
-    return uint64(sigLen)
+    return 4 + this.N + (this.P * this.N)
 }
 
 // Returns a Params
@@ -82,78 +81,78 @@ func AllLmotsParams() map[LmotsType]func() ILmotsParam {
 
 var (
     LMOTS_SHA256_N32_W1_Param = LmotsParam{
-        Type:    LMOTS_SHA256_N32_W1,
-        Hash:    sha256.New,
-        N:       sha256.Size,
-        W:       WINDOW_W1,
-        P:       265,
-        LS:      7,
-        SIG_LEN: 8516,
+        Type:   LMOTS_SHA256_N32_W1,
+        Hash:   sha256.New,
+        N:      sha256.Size,
+        W:      WINDOW_W1,
+        P:      265,
+        LS:     7,
+        SigLen: 8516,
     }
     LMOTS_SHA256_N32_W2_Param = LmotsParam{
-        Type:    LMOTS_SHA256_N32_W2,
-        Hash:    sha256.New,
-        N:       sha256.Size,
-        W:       WINDOW_W2,
-        P:       133,
-        LS:      6,
-        SIG_LEN: 4292,
+        Type:   LMOTS_SHA256_N32_W2,
+        Hash:   sha256.New,
+        N:      sha256.Size,
+        W:      WINDOW_W2,
+        P:      133,
+        LS:     6,
+        SigLen: 4292,
     }
     LMOTS_SHA256_N32_W4_Param = LmotsParam{
-        Type:    LMOTS_SHA256_N32_W4,
-        Hash:    sha256.New,
-        N:       sha256.Size,
-        W:       WINDOW_W4,
-        P:       67,
-        LS:      4,
-        SIG_LEN: 2180,
+        Type:   LMOTS_SHA256_N32_W4,
+        Hash:   sha256.New,
+        N:      sha256.Size,
+        W:      WINDOW_W4,
+        P:      67,
+        LS:     4,
+        SigLen: 2180,
     }
     LMOTS_SHA256_N32_W8_Param = LmotsParam{
-        Type:    LMOTS_SHA256_N32_W8,
-        Hash:    sha256.New,
-        N:       sha256.Size,
-        W:       WINDOW_W8,
-        P:       34,
-        LS:      0,
-        SIG_LEN: 1124,
+        Type:   LMOTS_SHA256_N32_W8,
+        Hash:   sha256.New,
+        N:      sha256.Size,
+        W:      WINDOW_W8,
+        P:      34,
+        LS:     0,
+        SigLen: 1124,
     }
 
     // SM3 hash
     LMOTS_SM3_N32_W1_Param = LmotsParam{
-        Type:    LMOTS_SM3_N32_W1,
-        Hash:    sm3.New,
-        N:       sm3.Size,
-        W:       WINDOW_W1,
-        P:       265,
-        LS:      7,
-        SIG_LEN: 8516,
+        Type:   LMOTS_SM3_N32_W1,
+        Hash:   sm3.New,
+        N:      sm3.Size,
+        W:      WINDOW_W1,
+        P:      265,
+        LS:     7,
+        SigLen: 8516,
     }
     LMOTS_SM3_N32_W2_Param = LmotsParam{
-        Type:    LMOTS_SM3_N32_W2,
-        Hash:    sm3.New,
-        N:       sm3.Size,
-        W:       WINDOW_W2,
-        P:       133,
-        LS:      6,
-        SIG_LEN: 4292,
+        Type:   LMOTS_SM3_N32_W2,
+        Hash:   sm3.New,
+        N:      sm3.Size,
+        W:      WINDOW_W2,
+        P:      133,
+        LS:     6,
+        SigLen: 4292,
     }
     LMOTS_SM3_N32_W4_Param = LmotsParam{
-        Type:    LMOTS_SM3_N32_W4,
-        Hash:    sm3.New,
-        N:       sm3.Size,
-        W:       WINDOW_W4,
-        P:       67,
-        LS:      4,
-        SIG_LEN: 2180,
+        Type:   LMOTS_SM3_N32_W4,
+        Hash:   sm3.New,
+        N:      sm3.Size,
+        W:      WINDOW_W4,
+        P:      67,
+        LS:     4,
+        SigLen: 2180,
     }
-    LMOTS_SM3_N32_W8_W8_Param = LmotsParam{
-        Type:    LMOTS_SM3_N32_W8,
-        Hash:    sm3.New,
-        N:       sm3.Size,
-        W:       WINDOW_W8,
-        P:       34,
-        LS:      0,
-        SIG_LEN: 1124,
+    LMOTS_SM3_N32_W8_Param = LmotsParam{
+        Type:   LMOTS_SM3_N32_W8,
+        Hash:   sm3.New,
+        N:      sm3.Size,
+        W:      WINDOW_W8,
+        P:      34,
+        LS:     0,
+        SigLen: 1124,
     }
 )
 
@@ -181,8 +180,8 @@ func init() {
     AddLmotsParam(LMOTS_SM3_N32_W4_Param.Type, func() ILmotsParam {
         return LMOTS_SM3_N32_W4_Param
     })
-    AddLmotsParam(LMOTS_SM3_N32_W8_W8_Param.Type, func() ILmotsParam {
-        return LMOTS_SM3_N32_W8_W8_Param
+    AddLmotsParam(LMOTS_SM3_N32_W8_Param.Type, func() ILmotsParam {
+        return LMOTS_SM3_N32_W8_Param
     })
 
 }

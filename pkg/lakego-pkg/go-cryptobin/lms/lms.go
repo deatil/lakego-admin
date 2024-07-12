@@ -3,9 +3,22 @@ package lms
 import (
     "io"
     "errors"
+    "crypto"
     "crypto/subtle"
     "encoding/binary"
 )
+
+// Signer Opts
+type SignerOpts struct {
+    C []byte
+}
+
+func (this SignerOpts) HashFunc() crypto.Hash {
+    return crypto.Hash(0)
+}
+
+// default Signer Opts
+var DefaultSignerOpts = SignerOpts{}
 
 // A PrivateKey is used to sign a finite number of messages
 type PrivateKey struct {
@@ -17,17 +30,17 @@ type PrivateKey struct {
 
 // GenerateKey returns a PrivateKey, seeded by a cryptographically secure
 // random number generator.
-func GenerateKey(rng io.Reader, tc ILmsParam, otstc ILmotsParam) (PrivateKey, error) {
+func GenerateKey(rng io.Reader, tc ILmsParam, otstc ILmotsParam) (*PrivateKey, error) {
     params := tc.Params()
 
     seed := make([]byte, params.M)
     if _, err := rng.Read(seed); err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
     idbytes := make([]byte, ID_LEN)
     if _, err := rng.Read(idbytes); err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
     id := ID(idbytes)
@@ -37,13 +50,13 @@ func GenerateKey(rng io.Reader, tc ILmsParam, otstc ILmotsParam) (PrivateKey, er
 
 // GenerateKeyFromSeed returns a new PrivateKey, using the algorithm from
 // Appendix A of <https://datatracker.ietf.org/doc/html/rfc8554#appendix-A>
-func GenerateKeyFromSeed(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) (PrivateKey, error) {
+func GenerateKeyFromSeed(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) (*PrivateKey, error) {
     tree, err := GeneratePKTree(tc, otstc, id, seed)
     if err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
-    return PrivateKey{
+    return &PrivateKey{
         PublicKey: PublicKey{
             typ:     tc,
             otsType: otstc,
@@ -57,71 +70,46 @@ func GenerateKeyFromSeed(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) (P
 }
 
 // Public returns an PublicKey that validates signatures for this private key
-func (priv *PrivateKey) Public() PublicKey {
+func (priv *PrivateKey) Public() crypto.PublicKey {
     return priv.PublicKey
 }
 
 // Sign calculates the LMS signature of a chosen message.
-func (priv *PrivateKey) Sign(rng io.Reader, msg []byte) (Signature, error) {
-    params := priv.typ.Params()
-
-    height := int(params.H)
-    var leaves uint32 = 1 << height
-    if priv.q >= leaves {
-        return Signature{}, errors.New("Sign(): invalid private key")
-    }
-
-    // ots_params := ots_tc.Params()
-    ots_priv, err := NewLmsOtsPrivateKeyFromSeed(priv.otsType, priv.q, priv.id, priv.seed)
+func (priv *PrivateKey) Sign(rng io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    sig, err := priv.SignToSignature(rng, msg, opts)
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
-    ots_sig, err := ots_priv.Sign(rng, msg)
-    if err != nil {
-        return Signature{}, err
-    }
-
-    authpath := make([][]byte, params.H)
-
-    var r uint32 = leaves + priv.q
-    var temp uint32
-    for i := 0; i < height; i++ {
-        temp = (r >> i) ^ 1
-        // We use x-1 because T[x] is indexed from 1, not 0, in the spec
-        authpath[i] = priv.authtree[temp-1][:]
-    }
-
-    // We incremenet q to signal the this keys should not be reused
-    priv.incrementQ()
-
-    return Signature{
-        typ:  priv.typ,
-        q:    priv.q - 1,
-        ots:  ots_sig,
-        path: authpath,
-    }, nil
+    return sig.ToBytes()
 }
 
-// Sign calculates the LMS signature of a chosen message.
-func (priv *PrivateKey) SignWithData(c, msg []byte) (Signature, error) {
+// SignToSignature calculates the LMS signature of a chosen message.
+func (priv *PrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.SignerOpts) (*Signature, error) {
+    opt := DefaultSignerOpts
+    if o, ok := opts.(SignerOpts); ok {
+        opt = o
+    }
+
     params := priv.typ.Params()
 
     height := int(params.H)
     var leaves uint32 = 1 << height
     if priv.q >= leaves {
-        return Signature{}, errors.New("Sign(): invalid private key")
+        return nil, errors.New("Sign(): invalid private key")
     }
 
     // ots_params := ots_tc.Params()
     ots_priv, err := NewLmsOtsPrivateKeyFromSeed(priv.otsType, priv.q, priv.id, priv.seed)
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
-    ots_sig, err := ots_priv.SignWithData(c, msg)
+    ots_sig, err := ots_priv.SignToSignature(rng, msg, LmsOtsSignerOpts{
+        C: opt.C,
+    })
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
     authpath := make([][]byte, params.H)
@@ -137,10 +125,10 @@ func (priv *PrivateKey) SignWithData(c, msg []byte) (Signature, error) {
     // We incremenet q to signal the this keys should not be reused
     priv.incrementQ()
 
-    return Signature{
+    return &Signature{
         typ:  priv.typ,
         q:    priv.q - 1,
-        ots:  ots_sig,
+        ots:  *ots_sig,
         path: authpath,
     }, nil
 }
@@ -191,21 +179,21 @@ func (priv *PrivateKey) Q() uint32 {
 
 // NewPrivateKeyFromBytes returns an PrivateKey that represents b.
 // This is the inverse of the ToBytes() method on the PrivateKey object.
-func NewPrivateKeyFromBytes(b []byte) (PrivateKey, error) {
+func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
     if len(b) < 8 {
-        return PrivateKey{}, errors.New("NewPrivateKeyFromBytes(): Input is too short")
+        return nil, errors.New("NewPrivateKeyFromBytes(): Input is too short")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
     newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
     if err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
     // The OTS typecode is bytes 4-7 (4 bytes)
     newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
     if err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
     typecode := newTypecode()
@@ -214,7 +202,7 @@ func NewPrivateKeyFromBytes(b []byte) (PrivateKey, error) {
     lmsparams := typecode.Params()
 
     if len(b) < int(lmsparams.M+28) {
-        return PrivateKey{}, errors.New("NewPrivateKeyFromBytes(): Input is too short")
+        return nil, errors.New("NewPrivateKeyFromBytes(): Input is too short")
     }
 
     // Internal counter is bytes 8-11 (4 bytes)
@@ -229,7 +217,7 @@ func NewPrivateKeyFromBytes(b []byte) (PrivateKey, error) {
     // Load private key, then set q to what was persisted
     privateKey, err := GenerateKeyFromSeed(typecode, otstype, id, seed)
     if err != nil {
-        return PrivateKey{}, err
+        return nil, err
     }
 
     privateKey.q = q
@@ -257,7 +245,7 @@ func GeneratePKTree(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) ([][]by
             return nil, err
         }
 
-        ots_pub := ots_priv.Public()
+        ots_pub := ots_priv.LmsOtsPublicKey
 
         binary.BigEndian.PutUint32(r_be[:], r)
 
@@ -298,13 +286,13 @@ type PublicKey struct {
 
 // NewPublicKey return a new PublicKey, given the LMS typecode, LM-OTS typecode, ID, and
 // root of the authentication tree (called k).
-func NewPublicKey(tc ILmsParam, otstc ILmotsParam, id ID, k []byte) (PublicKey, error) {
+func NewPublicKey(tc ILmsParam, otstc ILmotsParam, id ID, k []byte) (*PublicKey, error) {
     // Explicit check from Algorithm 6, Step 1 of RFC 8554
     if len(k) < 8 {
-        return PublicKey{}, errors.New("NewPublicKey(): invalid public key")
+        return nil, errors.New("NewPublicKey(): invalid public key")
     }
 
-    return PublicKey{
+    return &PublicKey{
         typ:     tc,
         otsType: otstc,
         id:      id,
@@ -314,7 +302,18 @@ func NewPublicKey(tc ILmsParam, otstc ILmotsParam, id ID, k []byte) (PublicKey, 
 
 // Verify returns true if sig is valid for msg and this public key.
 // It returns false otherwise.
-func (pub *PublicKey) Verify(msg []byte, sig Signature) bool {
+func (pub *PublicKey) Verify(msg []byte, sig []byte) bool {
+    newSig, err := NewSignatureFromBytes(sig)
+    if err != nil {
+        return false
+    }
+
+    return pub.VerifyWithSignature(msg, newSig)
+}
+
+// VerifyWithSignature returns true if sig is valid for msg and this public key.
+// It returns false otherwise.
+func (pub *PublicKey) VerifyWithSignature(msg []byte, sig *Signature) bool {
     params := pub.typ.Params()
     ots_params := pub.otsType.Params()
 
@@ -404,21 +403,21 @@ func (pub *PublicKey) ID() ID {
 
 // NewPublicKeyFromBytes returns an PublicKey that represents b.
 // This is the inverse of the ToBytes() method on the PublicKey object.
-func NewPublicKeyFromBytes(b []byte) (PublicKey, error) {
+func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
     if len(b) < 8 {
-        return PublicKey{}, errors.New("PublicKeyFromBytes(): key must be more than 8 bytes long")
+        return nil, errors.New("PublicKeyFromBytes(): key must be more than 8 bytes long")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
     newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
     if err != nil {
-        return PublicKey{}, err
+        return nil, err
     }
 
     // The OTS typecode is bytes 4-7 (4 bytes)
     newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
     if err != nil {
-        return PublicKey{}, err
+        return nil, err
     }
 
     typecode := newTypecode()
@@ -428,7 +427,7 @@ func NewPublicKeyFromBytes(b []byte) (PublicKey, error) {
     lmsparams := typecode.Params()
 
     if uint64(len(b)) != lmsparams.M+24 {
-        return PublicKey{}, errors.New("PublicKeyFromBytes(): invalid key length")
+        return nil, errors.New("PublicKeyFromBytes(): invalid key length")
     }
 
     // The ID is bytes 8-23 (16 bytes)
@@ -436,7 +435,7 @@ func NewPublicKeyFromBytes(b []byte) (PublicKey, error) {
     // The public key, k, is the remaining bytes
     k := b[24:]
 
-    return PublicKey{
+    return &PublicKey{
         typ:     typecode,
         otsType: otstype,
         id:      id,
@@ -455,22 +454,22 @@ type Signature struct {
 
 // NewSignature returns a Signature, given an LMS algorithm type, internal counter,
 // LM-OTS signature, and authentication path.
-func NewSignature(tc ILmsParam, q uint32, otsig LmsOtsSignature, path [][]byte) (Signature, error) {
+func NewSignature(tc ILmsParam, q uint32, otsig LmsOtsSignature, path [][]byte) (*Signature, error) {
     params := tc.Params()
 
     var tmp uint32 = 1 << params.H
 
     // From step 2i of Algorithm 6a in RFC 8554
     if q >= tmp {
-        return Signature{}, errors.New("NewSignature(): Invalid signature")
+        return nil, errors.New("NewSignature(): Invalid signature")
     }
 
     // There should be H elements in the authpath
     if uint64(len(path)) != params.H {
-        return Signature{}, errors.New("NewSignature(): Invalid signature authentication path")
+        return nil, errors.New("NewSignature(): Invalid signature authentication path")
     }
 
-    return Signature{
+    return &Signature{
         typ:  tc,
         q:    q,
         ots:  otsig,
@@ -480,9 +479,9 @@ func NewSignature(tc ILmsParam, q uint32, otsig LmsOtsSignature, path [][]byte) 
 
 // NewSignatureFromBytes returns an Signature represented by b.
 // This is the inverse of the ToBytes() on Signature.
-func NewSignatureFromBytes(b []byte) (Signature, error) {
+func NewSignatureFromBytes(b []byte) (*Signature, error) {
     if len(b) < 8 {
-        return Signature{}, errors.New("NewSignatureFromBytes(): Signature is too short")
+        return nil, errors.New("NewSignatureFromBytes(): Signature is too short")
     }
 
     var err error
@@ -493,7 +492,7 @@ func NewSignatureFromBytes(b []byte) (Signature, error) {
     // The OTS signature starts at byte 4, with the typecode first
     newOtstc, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
     otstc := newOtstc()
@@ -504,13 +503,13 @@ func NewSignatureFromBytes(b []byte) (Signature, error) {
     otsigmax := 4 + otsSiglen
     if uint64(4+len(b)) <= otsigmax {
         // We are only ensuring that we can read the LMS typecode
-        return Signature{}, errors.New("NewSignatureFromBytes(): Signature is too short for LM-OTS typecode")
+        return nil, errors.New("NewSignatureFromBytes(): Signature is too short for LM-OTS typecode")
     }
 
     // Now that we know we have enough bytes for LMS, look at the typecode
     newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
     typecode := newTypecode()
@@ -519,13 +518,13 @@ func NewSignatureFromBytes(b []byte) (Signature, error) {
     siglen := typecode.SigLength(otstc)
 
     if siglen != uint64(len(b)) {
-        return Signature{}, errors.New("NewSignatureFromBytes(): Invalid LMS signature length")
+        return nil, errors.New("NewSignatureFromBytes(): Invalid LMS signature length")
     }
 
     // currenly undefined func
     otsig, err := NewLmsOtsSignatureFromBytes(b[4:otsigmax])
     if err != nil {
-        return Signature{}, err
+        return nil, err
     }
 
     // With the lengths and OTS sig in hand, we can now parse the LMS sig
@@ -537,7 +536,7 @@ func NewSignatureFromBytes(b []byte) (Signature, error) {
 
     // Explicitly check that q < 2^H
     if q >= (1 << height) {
-        return Signature{}, errors.New("NewSignatureFromBytes(): Internal counter is too high")
+        return nil, errors.New("NewSignatureFromBytes(): Internal counter is too high")
     }
 
     // Read the authentication path
@@ -549,10 +548,10 @@ func NewSignatureFromBytes(b []byte) (Signature, error) {
         start += m
     }
 
-    return Signature{
+    return &Signature{
         typ:  typecode,
         q:    q,
-        ots:  otsig,
+        ots:  *otsig,
         path: path,
     }, nil
 }
