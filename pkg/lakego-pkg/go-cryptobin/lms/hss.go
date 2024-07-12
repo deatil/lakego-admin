@@ -99,7 +99,7 @@ func (pub *HSSPublicKey) parseSignature(b []byte) (sig *Signature, other []byte,
 
     otsigmax := 4 + otsSiglen
     if uint64(4+len(b)) <= otsigmax {
-        return nil, nil, errors.New("parseSignature(): Signature is too short for LM-OTS typecode")
+        return nil, nil, errors.New("lms: Signature is too short for LM-OTS typecode")
     }
 
     newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
@@ -124,7 +124,7 @@ func (pub *HSSPublicKey) parseSignature(b []byte) (sig *Signature, other []byte,
 
 func (pub *HSSPublicKey) parsePublicKey(b []byte) (pubkey *PublicKey, other []byte, err error) {
     if len(b) < 8 {
-        return nil, nil, errors.New("parsePublicKey(): key must be more than 8 bytes long")
+        return nil, nil, errors.New("lms: key must be more than 8 bytes long")
     }
 
     _, err = GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
@@ -156,7 +156,7 @@ func (pub *HSSPublicKey) parsePublicKey(b []byte) (pubkey *PublicKey, other []by
 // NewHSSPublicKeyFromBytes returns an HSSPublicKey that represents b.
 func NewHSSPublicKeyFromBytes(b []byte) (*HSSPublicKey, error) {
     if len(b) < 4 {
-        return nil, errors.New("NewHSSPublicKeyFromBytes(): key must be more than 4 bytes long")
+        return nil, errors.New("lms: key must be more than 4 bytes long")
     }
 
     levels := int(binary.BigEndian.Uint32(b[0:4]))
@@ -250,7 +250,7 @@ func (priv *HSSPrivateKey) ToBytes() ([]byte, error) {
 
 func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey *PrivateKey, other []byte, err error) {
     if len(b) < 8 {
-        return nil, nil, errors.New("parsePrivateKey(): key must be more than 8 bytes long")
+        return nil, nil, errors.New("lms: key must be more than 8 bytes long")
     }
 
     newTc, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
@@ -276,7 +276,7 @@ func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey *PrivateKey, other
 // NewHSSPrivateKeyFromBytes returns an HSSPrivateKey that represents b.
 func NewHSSPrivateKeyFromBytes(b []byte) (*HSSPrivateKey, error) {
     if len(b) < 4 {
-        return nil, errors.New("NewHSSPrivateKeyFromBytes(): key must be more than 4 bytes long")
+        return nil, errors.New("lms: key must be more than 4 bytes long")
     }
 
     levels := int(binary.BigEndian.Uint32(b[0:4]))

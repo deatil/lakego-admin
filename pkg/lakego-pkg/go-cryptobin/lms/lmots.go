@@ -98,7 +98,7 @@ func (priv *LmsOtsPrivateKey) Sign(rng io.Reader, msg []byte, opts crypto.Signer
 // SignToSignature calculates the LM-OTS signature of a chosen message.
 func (priv *LmsOtsPrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.SignerOpts) (*LmsOtsSignature, error) {
     if !priv.valid {
-        return nil, errors.New("Sign(): invalid private key")
+        return nil, errors.New("lms: invalid private key")
     }
 
     var err error
@@ -329,7 +329,7 @@ func (pub *LmsOtsPublicKey) Key() []byte {
 // This is the inverse of the ToBytes() method on the LmsOtsPublicKey object.
 func NewLmsOtsPublicKeyFromBytes(b []byte) (*LmsOtsPublicKey, error) {
     if len(b) < 4 {
-        return nil, errors.New("NewLmsOtsPublicKeyFromBytes(): OTS public key too short")
+        return nil, errors.New("lms: OTS public key too short")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
