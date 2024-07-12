@@ -12,10 +12,10 @@ func Test_HSS_SignerInterface(t *testing.T) {
     var _ crypto.Signer = &HSSPrivateKey{}
 }
 
-func Test_HSS_SignVerify(t *testing.T) {
+func test_HSS_SignVerify(t *testing.T, opts []HSSOpts) {
     assertBool := test.AssertBoolT(t)
 
-    priv, err := GenerateHSSKey(rand.Reader, DefaultOpts)
+    priv, err := GenerateHSSKey(rand.Reader, opts)
     if err != nil {
         panic(err)
     }
@@ -29,6 +29,93 @@ func Test_HSS_SignVerify(t *testing.T) {
 
     result := pub.Verify([]byte("example"), sig)
     assertBool(result, "HSSSignVerify")
+}
+
+func Test_HSS_SignVerify(t *testing.T) {
+    t.Run("DefaultOpts", func(t *testing.T) {
+        test_HSS_SignVerify(t, DefaultOpts)
+    })
+    t.Run("Opts 1", func(t *testing.T) {
+        test_HSS_SignVerify(t, []HSSOpts{
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+        })
+    })
+    t.Run("Opts 2", func(t *testing.T) {
+        test_HSS_SignVerify(t, []HSSOpts{
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+        })
+    })
+    t.Run("Opts 3", func(t *testing.T) {
+        test_HSS_SignVerify(t, []HSSOpts{
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+        })
+    })
+    t.Run("Opts 4", func(t *testing.T) {
+        test_HSS_SignVerify(t, []HSSOpts{
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+        })
+    })
+    t.Run("Opts 5", func(t *testing.T) {
+        test_HSS_SignVerify(t, []HSSOpts{
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+            HSSOpts{
+                Tc:    LMS_SHA256_M32_H5_Param,
+                Otstc: LMOTS_SHA256_N32_W8_Param,
+            },
+        })
+    })
+
 }
 
 func Test_HSS_PublicKey_ToBytes(t *testing.T) {
@@ -85,4 +172,56 @@ func Test_HSS_PrivateKey_ToBytes(t *testing.T) {
     sig0_2, _ := priv2.LmsSig[0].ToBytes()
     sig0, _ := priv.LmsSig[0].ToBytes()
     assertEqual(sig0_2, sig0, "priv.LmsSig[0].ToBytes")
+}
+
+func Test_HSS_Equal(t *testing.T) {
+    assertBool := test.AssertBoolT(t)
+    assertNotBool := test.AssertNotBoolT(t)
+
+    t.Run("good", func(t *testing.T) {
+        priv, err := GenerateHSSKey(rand.Reader, DefaultOpts)
+        if err != nil {
+            panic(err)
+        }
+
+        pub := priv.HSSPublicKey
+
+        priv2 := priv
+        pub2 := pub
+
+        assertBool(priv2.Equal(priv), "HSSPrivateKey")
+        assertBool(pub2.Equal(&pub), "HSSPublicKey")
+
+        // =========
+
+        privBytes, _ := priv.ToBytes()
+        pubBytes := pub.ToBytes()
+
+        priv3, _ := NewHSSPrivateKeyFromBytes(privBytes)
+        pub3, _ := NewHSSPublicKeyFromBytes(pubBytes)
+
+        assertBool(priv3.Equal(priv), "PrivateKey Bytes")
+        assertBool(pub3.Equal(&pub), "PublicKey Bytes")
+    })
+
+    t.Run("bad", func(t *testing.T) {
+        priv, err := GenerateHSSKey(rand.Reader, DefaultOpts)
+        if err != nil {
+            panic(err)
+        }
+
+        pub := priv.HSSPublicKey
+
+        // ===========
+
+        priv2, err := GenerateHSSKey(rand.Reader, DefaultOpts)
+        if err != nil {
+            panic(err)
+        }
+
+        pub2 := priv2.HSSPublicKey
+
+        assertNotBool(priv2.Equal(priv), "HSSPrivateKey")
+        assertNotBool(pub2.Equal(&pub), "HSSPublicKey")
+    })
 }

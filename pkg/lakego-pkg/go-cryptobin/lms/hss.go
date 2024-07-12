@@ -5,6 +5,7 @@ import (
     "errors"
     "crypto"
     "crypto/rand"
+    "crypto/subtle"
 )
 
 const HSS_MAX_LEVELS = 5
@@ -13,6 +14,17 @@ const HSS_MAX_LEVELS = 5
 type HSSPublicKey struct {
     Levels int
     LmsPub PublicKey
+}
+
+// Equal reports whether pub and x have the same value.
+func (pub *HSSPublicKey) Equal(x crypto.PublicKey) bool {
+    xx, ok := x.(*HSSPublicKey)
+    if !ok {
+        return false
+    }
+
+    return pub.Levels == xx.Levels &&
+        pub.LmsPub.Equal(&xx.LmsPub)
 }
 
 // Verify returns true if sig is valid for msg and this public key.
@@ -178,8 +190,48 @@ type HSSPrivateKey struct {
     LmsSig [4]Signature
 }
 
-// Public returns an HSSPublicKey that validates signatures for this private key
+// Equal reports whether priv and x have the same value.
+func (priv *HSSPrivateKey) Equal(x crypto.PrivateKey) bool {
+    xx, ok := x.(*HSSPrivateKey)
+    if !ok {
+        return false
+    }
+
+    var checkKey = func(x1, x2 *HSSPrivateKey) bool {
+        if x1.Levels != x2.Levels {
+            return false
+        }
+
+        levels := x1.Levels
+
+        for i := 0; i < levels; i++ {
+            if !x1.LmsKey[i].Equal(&x2.LmsKey[i]) {
+                return false
+            }
+        }
+
+        for i := 0; i < levels - 1; i++ {
+            sig1, _ := x1.LmsSig[i].ToBytes()
+            sig2, _ := x2.LmsSig[i].ToBytes()
+            if subtle.ConstantTimeCompare(sig1, sig2) != 1 {
+                 return false
+            }
+        }
+
+        return true
+    }
+
+    return priv.HSSPublicKey.Equal(&xx.HSSPublicKey) &&
+        checkKey(priv, xx)
+}
+
+// Public returns a crypto.PublicKey that validates signatures for this private key
 func (priv *HSSPrivateKey) Public() crypto.PublicKey {
+    return priv.HSSPublicKey
+}
+
+// PublicKey returns a HSSPublicKey that validates signatures for this private key
+func (priv *HSSPrivateKey) PublicKey() HSSPublicKey {
     return priv.HSSPublicKey
 }
 

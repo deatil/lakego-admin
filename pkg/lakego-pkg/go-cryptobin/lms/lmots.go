@@ -79,8 +79,39 @@ func NewLmotsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) (
     return &pk, nil
 }
 
-// Public returns an LmotsPublicKey that validates signatures for this private key.
+// Equal reports whether priv and x have the same value.
+func (priv *LmotsPrivateKey) Equal(x crypto.PrivateKey) bool {
+    xx, ok := x.(*LmotsPrivateKey)
+    if !ok {
+        return false
+    }
+
+    var checkX = func(x1, x2 [][]byte) bool {
+        if len(x1) != len(x2) {
+            return false
+        }
+
+        for i := 0; i < len(x1); i++ {
+            if subtle.ConstantTimeCompare(x1[i], x2[i]) != 1 {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    return priv.LmotsPublicKey.Equal(&xx.LmotsPublicKey) &&
+        checkX(priv.x, xx.x) &&
+        priv.valid == xx.valid
+}
+
+// Public returns a crypto.PublicKey that validates signatures for this private key.
 func (priv *LmotsPrivateKey) Public() crypto.PublicKey {
+    return priv.LmotsPublicKey
+}
+
+// PublicKey returns a LmotsPublicKey that validates signatures for this private key.
+func (priv *LmotsPrivateKey) PublicKey() LmotsPublicKey {
     return priv.LmotsPublicKey
 }
 
@@ -213,6 +244,19 @@ type LmotsPublicKey struct {
     q   uint32
     id  ID
     k   []byte
+}
+
+// Equal reports whether pub and x have the same value.
+func (pub *LmotsPublicKey) Equal(x crypto.PublicKey) bool {
+    xx, ok := x.(*LmotsPublicKey)
+    if !ok {
+        return false
+    }
+
+    return pub.typ.GetType() == xx.typ.GetType() &&
+        pub.q == xx.q &&
+        subtle.ConstantTimeCompare(pub.id[:], xx.id[:]) == 1 &&
+        subtle.ConstantTimeCompare(pub.k, xx.k) == 1
 }
 
 // Verify returns true if sig is valid for msg and this public key.

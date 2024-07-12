@@ -49,10 +49,9 @@ func Test_BadPrivateKeyPanics(t *testing.T) {
     assertNotErrorNil := test.AssertNotErrorNilT(t)
 
     priv_bytes, err := hex.DecodeString(
-
         "000000060000000300000005" +
-            "d08fabd4a2091ff0a8cb4ed834e74534" +
-            "558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439",
+        "d08fabd4a2091ff0a8cb4ed834e74534" +
+        "558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439",
     )
     if err != nil {
         panic(err)
@@ -84,8 +83,8 @@ func Test_SignKAT1(t *testing.T) {
 
     lms_priv_bytes, err := hex.DecodeString(
         "000000060000000300000005" +
-            "d08fabd4a2091ff0a8cb4ed834e74534" +
-            "558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439",
+        "d08fabd4a2091ff0a8cb4ed834e74534" +
+        "558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439",
     )
     if err != nil {
         panic(err)
@@ -104,16 +103,17 @@ func Test_SignKAT1(t *testing.T) {
     // Test an actual signed message
     msg, err := hex.DecodeString(
         "54686520706f77657273206e6f742064" +
-            "656c65676174656420746f2074686520" +
-            "556e6974656420537461746573206279" +
-            "2074686520436f6e737469747574696f" +
-            "6e2c206e6f722070726f686962697465" +
-            "6420627920697420746f207468652053" +
-            "74617465732c20617265207265736572" +
-            "76656420746f20746865205374617465" +
-            "7320726573706563746976656c792c20" +
-            "6f7220746f207468652070656f706c65" +
-            "2e0a")
+        "656c65676174656420746f2074686520" +
+        "556e6974656420537461746573206279" +
+        "2074686520436f6e737469747574696f" +
+        "6e2c206e6f722070726f686962697465" +
+        "6420627920697420746f207468652053" +
+        "74617465732c20617265207265736572" +
+        "76656420746f20746865205374617465" +
+        "7320726573706563746976656c792c20" +
+        "6f7220746f207468652070656f706c65" +
+        "2e0a",
+    )
     if err != nil {
         panic(err)
     }
@@ -129,9 +129,9 @@ func Test_SignKAT1(t *testing.T) {
     lms_public := lms_priv.PublicKey
     expected_public_key, err := hex.DecodeString(
         "0000000600000003" +
-            "d08fabd4a2091ff0a8cb4ed834e74534" +
-            "32a58885cd9ba0431235466bff9651c6" +
-            "c92124404d45fa53cf161c28f1ad5a8e",
+        "d08fabd4a2091ff0a8cb4ed834e74534" +
+        "32a58885cd9ba0431235466bff9651c6" +
+        "c92124404d45fa53cf161c28f1ad5a8e",
     )
     if err != nil {
         panic(err)
@@ -170,9 +170,9 @@ func Test_Verify(t *testing.T) {
     // Decode from hex
     pubkeybytes, err := hex.DecodeString(
         "0000000500000004" +
-            "d08fabd4a2091ff0a8cb4ed834e74534" +
-            "8b9a583d74439771b52302706a4463e3" +
-            "e342a868bcb02f698f6316b6d92279f8",
+        "d08fabd4a2091ff0a8cb4ed834e74534" +
+        "8b9a583d74439771b52302706a4463e3" +
+        "e342a868bcb02f698f6316b6d92279f8",
     )
     if err != nil {
         panic(err)
@@ -237,9 +237,9 @@ func Test_Encode(t *testing.T) {
     // Decode from hex
     pubkeybytes, err := hex.DecodeString(
         "0000000500000004" +
-            "d08fabd4a2091ff0a8cb4ed834e74534" +
-            "8b9a583d74439771b52302706a4463e3" +
-            "e342a868bcb02f698f6316b6d92279f8",
+        "d08fabd4a2091ff0a8cb4ed834e74534" +
+        "8b9a583d74439771b52302706a4463e3" +
+        "e342a868bcb02f698f6316b6d92279f8",
     )
     if err != nil {
         panic(err)
@@ -852,4 +852,60 @@ func Test_ParamName(t *testing.T) {
     assertEqual(LMS_SM3_M32_H15_Param.String(), "LMS_SM3_M32_H15", "")
     assertEqual(LMS_SM3_M32_H20_Param.String(), "LMS_SM3_M32_H20", "")
     assertEqual(LMS_SM3_M32_H25_Param.String(), "LMS_SM3_M32_H25", "")
+}
+
+func Test_Equal(t *testing.T) {
+    assertBool := test.AssertBoolT(t)
+    assertNotBool := test.AssertNotBoolT(t)
+    assertError := test.AssertErrorT(t)
+
+    t.Run("good", func(t *testing.T) {
+        tc := LMS_SHA256_M32_H10_Param
+        otstc := LMOTS_SHA256_N32_W4_Param
+
+        lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
+        assertError(err, "GenerateKey")
+
+        lms_pub := lms_priv.PublicKey
+
+        lms_priv2 := lms_priv
+        lms_pub2 := lms_pub
+
+        assertBool(lms_priv2.Equal(lms_priv), "PrivateKey")
+        assertBool(lms_pub2.Equal(&lms_pub), "PublicKey")
+
+        // =========
+
+        privBytes := lms_priv.ToBytes()
+        pubBytes := lms_pub.ToBytes()
+
+        lms_priv3, _ := NewPrivateKeyFromBytes(privBytes)
+        lms_pub3, _ := NewPublicKeyFromBytes(pubBytes)
+
+        assertBool(lms_priv3.Equal(lms_priv), "PrivateKey Bytes")
+        assertBool(lms_pub3.Equal(&lms_pub), "PublicKey Bytes")
+    })
+
+    t.Run("bad", func(t *testing.T) {
+        tc := LMS_SHA256_M32_H10_Param
+        otstc := LMOTS_SHA256_N32_W4_Param
+
+        lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
+        assertError(err, "GenerateKey")
+
+        lms_pub := lms_priv.PublicKey
+
+        // ===========
+
+        tc2 := LMS_SHA256_M32_H10_Param
+        otstc2 := LMOTS_SHA256_N32_W4_Param
+
+        lms_priv2, err := GenerateKey(rand.Reader, tc2, otstc2)
+        assertError(err, "GenerateKey2")
+
+        lms_pub2 := lms_priv2.PublicKey
+
+        assertNotBool(lms_priv2.Equal(lms_priv), "PrivateKey")
+        assertNotBool(lms_pub2.Equal(&lms_pub), "PublicKey")
+    })
 }

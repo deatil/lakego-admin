@@ -149,3 +149,59 @@ func Test_OTS_ParamName(t *testing.T) {
     assertEqual(LMOTS_SM3_N32_W4_Param.String(), "LMOTS_SM3_N32_W4", "")
     assertEqual(LMOTS_SM3_N32_W8_Param.String(), "LMOTS_SM3_N32_W8", "")
 }
+
+func Test_Ots_Equal(t *testing.T) {
+    assertBool := test.AssertBoolT(t)
+    assertNotBool := test.AssertNotBoolT(t)
+
+    t.Run("good", func(t *testing.T) {
+        id, err := hex.DecodeString("d08fabd4a2091ff0a8cb4ed834e74534")
+        if err != nil {
+            panic(err)
+        }
+
+        ots_priv, err := NewLmotsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id))
+        if err != nil {
+            panic(err)
+        }
+
+        ots_pub := ots_priv.LmotsPublicKey
+
+        ots_priv2 := ots_priv
+        ots_pub2 := ots_pub
+
+        assertBool(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
+        assertBool(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
+    })
+
+    t.Run("bad", func(t *testing.T) {
+        id, err := hex.DecodeString("d08fabd4a2091ff0a8cb4ed834e74534")
+        if err != nil {
+            panic(err)
+        }
+
+        ots_priv, err := NewLmotsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id))
+        if err != nil {
+            panic(err)
+        }
+
+        ots_pub := ots_priv.LmotsPublicKey
+
+        // ===========
+
+        id2, err := hex.DecodeString("d58fabd4a2091ff0a8cb4ed834e74534")
+        if err != nil {
+            panic(err)
+        }
+
+        ots_priv2, err := NewLmotsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id2))
+        if err != nil {
+            panic(err)
+        }
+
+        ots_pub2 := ots_priv2.LmotsPublicKey
+
+        assertNotBool(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
+        assertNotBool(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
+    })
+}
