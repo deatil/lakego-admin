@@ -837,3 +837,19 @@ func Test_SignVerify(t *testing.T) {
         test_SignVerify(t, LMS_SHA256_M32_H5_Param, LMOTS_SHA256_N32_W2_Param)
     })
 }
+
+func Test_ParamName(t *testing.T) {
+    assertEqual := test.AssertEqualT(t)
+
+    assertEqual(LMS_SHA256_M32_H5_Param.String(), "LMS_SHA256_M32_H5", "")
+    assertEqual(LMS_SHA256_M32_H10_Param.String(), "LMS_SHA256_M32_H10", "")
+    assertEqual(LMS_SHA256_M32_H15_Param.String(), "LMS_SHA256_M32_H15", "")
+    assertEqual(LMS_SHA256_M32_H20_Param.String(), "LMS_SHA256_M32_H20", "")
+    assertEqual(LMS_SHA256_M32_H25_Param.String(), "LMS_SHA256_M32_H25", "")
+
+    assertEqual(LMS_SM3_M32_H5_Param.String(), "LMS_SM3_M32_H5", "")
+    assertEqual(LMS_SM3_M32_H10_Param.String(), "LMS_SM3_M32_H10", "")
+    assertEqual(LMS_SM3_M32_H15_Param.String(), "LMS_SM3_M32_H15", "")
+    assertEqual(LMS_SM3_M32_H20_Param.String(), "LMS_SM3_M32_H20", "")
+    assertEqual(LMS_SM3_M32_H25_Param.String(), "LMS_SM3_M32_H25", "")
+}

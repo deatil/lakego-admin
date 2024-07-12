@@ -5,7 +5,6 @@ import (
     "errors"
     "crypto"
     "crypto/subtle"
-    "encoding/binary"
 )
 
 // Leighton-Micali Hash-Based Signatures (RFC 8554)
@@ -102,12 +101,12 @@ func (priv *PrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.S
         return nil, errors.New("lms: invalid private key")
     }
 
-    ots_priv, err := NewLmsOtsPrivateKeyFromSeed(priv.otsType, priv.q, priv.id, priv.seed)
+    ots_priv, err := NewLmotsPrivateKeyFromSeed(priv.otsType, priv.q, priv.id, priv.seed)
     if err != nil {
         return nil, err
     }
 
-    ots_sig, err := ots_priv.SignToSignature(rng, msg, LmsOtsSignerOpts{
+    ots_sig, err := ots_priv.SignToSignature(rng, msg, LmotsSignerOpts{
         C: opt.C,
     })
     if err != nil {
@@ -150,18 +149,18 @@ func (priv *PrivateKey) ToBytes() []byte {
     typecode := priv.typ.GetType()
 
     // ToBytes() is only ever called on a valid object, so this will never return an error
-    binary.BigEndian.PutUint32(u32_be[:], uint32(typecode))
+    putu32(u32_be[:], uint32(typecode))
     serialized = append(serialized, u32_be[:]...)
 
     // Next 4 bytes: OTS typecode
     otstype := priv.otsType.GetType()
 
     // ToBytes() is only ever called on a valid object, so this will never return an error
-    binary.BigEndian.PutUint32(u32_be[:], uint32(otstype))
+    putu32(u32_be[:], uint32(otstype))
     serialized = append(serialized, u32_be[:]...)
 
     // Next 4 bytes: q
-    binary.BigEndian.PutUint32(u32_be[:], priv.q)
+    putu32(u32_be[:], priv.q)
     serialized = append(serialized, u32_be[:]...)
 
     // Next 16 bytes: id
@@ -187,13 +186,13 @@ func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
     }
 
     // The typecode is bytes 0-3 (4 bytes)
-    newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    newTypecode, err := GetLmsParam(LmsType(getu32(b[0:4])))
     if err != nil {
         return nil, err
     }
 
     // The OTS typecode is bytes 4-7 (4 bytes)
-    newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    newOtstype, err := GetLmotsParam(LmotsType(getu32(b[4:8])))
     if err != nil {
         return nil, err
     }
@@ -208,7 +207,7 @@ func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
     }
 
     // Internal counter is bytes 8-11 (4 bytes)
-    q := binary.BigEndian.Uint32(b[8:12])
+    q := getu32(b[8:12])
     // ID is bytes 12-27 (16 bytes)
     id := ID(b[12:28])
 
@@ -242,14 +241,14 @@ func GeneratePKTree(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) ([][]by
     var r_be [4]byte
     for i = 0; i < leaves; i++ {
         r = i + leaves
-        ots_priv, err := NewLmsOtsPrivateKeyFromSeed(otstc, i, id, seed)
+        ots_priv, err := NewLmotsPrivateKeyFromSeed(otstc, i, id, seed)
         if err != nil {
             return nil, err
         }
 
-        ots_pub := ots_priv.LmsOtsPublicKey
+        ots_pub := ots_priv.LmotsPublicKey
 
-        binary.BigEndian.PutUint32(r_be[:], r)
+        putu32(r_be[:], r)
 
         hasher := ots_params.Hash()
         hasher.Write(id[:])
@@ -263,7 +262,7 @@ func GeneratePKTree(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) ([][]by
             r = (r - 1) >> 1
             j = (j - 1) >> 1
 
-            binary.BigEndian.PutUint32(r_be[:], r)
+            putu32(r_be[:], r)
 
             hasher := ots_params.Hash()
             hasher.Write(id[:])
@@ -331,7 +330,7 @@ func (pub *PublicKey) VerifyWithSignature(msg []byte, sig *Signature) bool {
 
     var node_num_bytes [4]byte
     var tmp_be [4]byte
-    binary.BigEndian.PutUint32(node_num_bytes[:], node_num)
+    putu32(node_num_bytes[:], node_num)
 
     hasher := ots_params.Hash()
     hasher.Write(pub.id[:])
@@ -341,7 +340,7 @@ func (pub *PublicKey) VerifyWithSignature(msg []byte, sig *Signature) bool {
     tmp := hasher.Sum(nil)
 
     for i := 0; i < height; i++ {
-        binary.BigEndian.PutUint32(tmp_be[:], node_num>>1)
+        putu32(tmp_be[:], node_num>>1)
 
         hasher := ots_params.Hash()
         hasher.Write(pub.id[:])
@@ -372,14 +371,14 @@ func (pub *PublicKey) ToBytes() []byte {
     typecode := pub.typ.GetType()
 
     // ToBytes() is only ever called on a valid object, so this will never return an error
-    binary.BigEndian.PutUint32(u32_be[:], uint32(typecode))
+    putu32(u32_be[:], uint32(typecode))
     serialized = append(serialized, u32_be[:]...)
 
     // Next 4 bytes: OTS typecode
     otstype := pub.otsType.GetType()
 
     // ToBytes() is only ever called on a valid object, so this will never return an error
-    binary.BigEndian.PutUint32(u32_be[:], uint32(otstype))
+    putu32(u32_be[:], uint32(otstype))
     serialized = append(serialized, u32_be[:]...)
 
     // Next 16 bytes: id
@@ -411,13 +410,13 @@ func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
     }
 
     // The typecode is bytes 0-3 (4 bytes)
-    newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    newTypecode, err := GetLmsParam(LmsType(getu32(b[0:4])))
     if err != nil {
         return nil, err
     }
 
     // The OTS typecode is bytes 4-7 (4 bytes)
-    newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    newOtstype, err := GetLmotsParam(LmotsType(getu32(b[4:8])))
     if err != nil {
         return nil, err
     }
@@ -450,13 +449,13 @@ func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
 type Signature struct {
     typ  ILmsParam
     q    uint32
-    ots  LmsOtsSignature
+    ots  LmotsSignature
     path [][]byte
 }
 
 // NewSignature returns a Signature, given an LMS algorithm type, internal counter,
 // LM-OTS signature, and authentication path.
-func NewSignature(tc ILmsParam, q uint32, otsig LmsOtsSignature, path [][]byte) (*Signature, error) {
+func NewSignature(tc ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) (*Signature, error) {
     params := tc.Params()
 
     var tmp uint32 = 1 << params.H
@@ -489,10 +488,10 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     var err error
 
     // The internal counter is bytes 0-3
-    q := binary.BigEndian.Uint32(b[0:4])
+    q := getu32(b[0:4])
 
     // The OTS signature starts at byte 4, with the typecode first
-    newOtstc, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    newOtstc, err := GetLmotsParam(LmotsType(getu32(b[4:8])))
     if err != nil {
         return nil, err
     }
@@ -509,7 +508,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     }
 
     // Now that we know we have enough bytes for LMS, look at the typecode
-    newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
+    newTypecode, err := GetLmsParam(LmsType(getu32(b[otsigmax : otsigmax+4])))
     if err != nil {
         return nil, err
     }
@@ -524,7 +523,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     }
 
     // currenly undefined func
-    otsig, err := NewLmsOtsSignatureFromBytes(b[4:otsigmax])
+    otsig, err := NewLmotsSignatureFromBytes(b[4:otsigmax])
     if err != nil {
         return nil, err
     }
@@ -567,7 +566,7 @@ func (sig *Signature) ToBytes() ([]byte, error) {
     params := sig.typ.Params()
 
     // First 4 bytes: q
-    binary.BigEndian.PutUint32(u32_be[:], sig.q)
+    putu32(u32_be[:], sig.q)
     serialized = append(serialized, u32_be[:]...)
 
     // Encode the LM-OTS signature next
@@ -580,7 +579,7 @@ func (sig *Signature) ToBytes() ([]byte, error) {
     serialized = append(serialized, ots_sig[:]...)
 
     // Next 4 bytes: LMS typecode
-    binary.BigEndian.PutUint32(u32_be[:], uint32(typecode))
+    putu32(u32_be[:], uint32(typecode))
     serialized = append(serialized, u32_be[:]...)
 
     // Next M * H bytes: Path

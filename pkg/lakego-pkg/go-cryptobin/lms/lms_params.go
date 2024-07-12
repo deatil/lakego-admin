@@ -30,10 +30,16 @@ type ILmsParam interface {
 }
 
 type LmsParam struct {
+    Name string
     Type LmsType
     Hash Hasher
     M    uint64
     H    uint64
+}
+
+// Returns a param name string
+func (this LmsParam) String() string {
+    return this.Name
 }
 
 // Returns a uint32 of the same value as the LmsType
@@ -77,30 +83,35 @@ func AllLmsParams() map[LmsType]func() ILmsParam {
 
 var (
     LMS_SHA256_M32_H5_Param = LmsParam{
+        Name: "LMS_SHA256_M32_H5",
         Type: LMS_SHA256_M32_H5,
         Hash: sha256.New,
         M:    32,
         H:    5,
     }
     LMS_SHA256_M32_H10_Param = LmsParam{
+        Name: "LMS_SHA256_M32_H10",
         Type: LMS_SHA256_M32_H10,
         Hash: sha256.New,
         M:    32,
         H:    10,
     }
     LMS_SHA256_M32_H15_Param = LmsParam{
+        Name: "LMS_SHA256_M32_H15",
         Type: LMS_SHA256_M32_H15,
         Hash: sha256.New,
         M:    32,
         H:    15,
     }
     LMS_SHA256_M32_H20_Param = LmsParam{
+        Name: "LMS_SHA256_M32_H20",
         Type: LMS_SHA256_M32_H20,
         Hash: sha256.New,
         M:    32,
         H:    20,
     }
     LMS_SHA256_M32_H25_Param = LmsParam{
+        Name: "LMS_SHA256_M32_H25",
         Type: LMS_SHA256_M32_H25,
         Hash: sha256.New,
         M:    32,
@@ -109,30 +120,35 @@ var (
 
     // SM3
     LMS_SM3_M32_H5_Param = LmsParam{
+        Name: "LMS_SM3_M32_H5",
         Type: LMS_SM3_M32_H5,
         Hash: sm3.New,
         M:    32,
         H:    5,
     }
     LMS_SM3_M32_H10_Param = LmsParam{
+        Name: "LMS_SM3_M32_H10",
         Type: LMS_SM3_M32_H10,
         Hash: sm3.New,
         M:    32,
         H:    10,
     }
     LMS_SM3_M32_H15_Param = LmsParam{
+        Name: "LMS_SM3_M32_H15",
         Type: LMS_SM3_M32_H15,
         Hash: sm3.New,
         M:    32,
         H:    15,
     }
     LMS_SM3_M32_H20_Param = LmsParam{
+        Name: "LMS_SM3_M32_H20",
         Type: LMS_SM3_M32_H20,
         Hash: sm3.New,
         M:    32,
         H:    20,
     }
     LMS_SM3_M32_H25_Param = LmsParam{
+        Name: "LMS_SM3_M32_H25",
         Type: LMS_SM3_M32_H25,
         Hash: sm3.New,
         M:    32,

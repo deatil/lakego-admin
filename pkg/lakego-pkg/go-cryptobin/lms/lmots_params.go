@@ -29,6 +29,7 @@ type ILmotsParam interface {
 }
 
 type LmotsParam struct {
+    Name   string
     Type   LmotsType
     Hash   Hasher
     N      uint64
@@ -36,6 +37,11 @@ type LmotsParam struct {
     P      uint64
     LS     uint64
     SigLen uint64
+}
+
+// Returns a param name string
+func (this LmotsParam) String() string {
+    return this.Name
 }
 
 // Returns a uint32 of the same value as the LmotsType
@@ -81,6 +87,7 @@ func AllLmotsParams() map[LmotsType]func() ILmotsParam {
 
 var (
     LMOTS_SHA256_N32_W1_Param = LmotsParam{
+        Name:   "LMOTS_SHA256_N32_W1",
         Type:   LMOTS_SHA256_N32_W1,
         Hash:   sha256.New,
         N:      sha256.Size,
@@ -90,6 +97,7 @@ var (
         SigLen: 8516,
     }
     LMOTS_SHA256_N32_W2_Param = LmotsParam{
+        Name:   "LMOTS_SHA256_N32_W2",
         Type:   LMOTS_SHA256_N32_W2,
         Hash:   sha256.New,
         N:      sha256.Size,
@@ -99,6 +107,7 @@ var (
         SigLen: 4292,
     }
     LMOTS_SHA256_N32_W4_Param = LmotsParam{
+        Name:   "LMOTS_SHA256_N32_W4",
         Type:   LMOTS_SHA256_N32_W4,
         Hash:   sha256.New,
         N:      sha256.Size,
@@ -108,6 +117,7 @@ var (
         SigLen: 2180,
     }
     LMOTS_SHA256_N32_W8_Param = LmotsParam{
+        Name:   "LMOTS_SHA256_N32_W8",
         Type:   LMOTS_SHA256_N32_W8,
         Hash:   sha256.New,
         N:      sha256.Size,
@@ -119,6 +129,7 @@ var (
 
     // SM3 hash
     LMOTS_SM3_N32_W1_Param = LmotsParam{
+        Name:   "LMOTS_SM3_N32_W1",
         Type:   LMOTS_SM3_N32_W1,
         Hash:   sm3.New,
         N:      sm3.Size,
@@ -128,6 +139,7 @@ var (
         SigLen: 8516,
     }
     LMOTS_SM3_N32_W2_Param = LmotsParam{
+        Name:   "LMOTS_SM3_N32_W2",
         Type:   LMOTS_SM3_N32_W2,
         Hash:   sm3.New,
         N:      sm3.Size,
@@ -137,6 +149,7 @@ var (
         SigLen: 4292,
     }
     LMOTS_SM3_N32_W4_Param = LmotsParam{
+        Name:   "LMOTS_SM3_N32_W4",
         Type:   LMOTS_SM3_N32_W4,
         Hash:   sm3.New,
         N:      sm3.Size,
@@ -146,6 +159,7 @@ var (
         SigLen: 2180,
     }
     LMOTS_SM3_N32_W8_Param = LmotsParam{
+        Name:   "LMOTS_SM3_N32_W8",
         Type:   LMOTS_SM3_N32_W8,
         Hash:   sm3.New,
         N:      sm3.Size,

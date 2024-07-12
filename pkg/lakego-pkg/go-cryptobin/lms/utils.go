@@ -5,8 +5,6 @@ import (
     "encoding/binary"
 )
 
-type Hasher = func() hash.Hash
-
 const ID_LEN uint64 = 16
 
 var D_PBLC = [2]uint8{0x80, 0x80}
@@ -16,6 +14,8 @@ var D_INTR = [2]uint8{0x83, 0x83}
 
 // ID is a fixed-legnth []byte used in LM-OTS and LM-OTS
 type ID = [ID_LEN]byte
+
+type Hasher = func() hash.Hash
 
 type window uint8
 
@@ -51,6 +51,18 @@ func (w window) Mask() uint8 {
         default:
             panic("invalid window")
     }
+}
+
+func putu16(ptr []byte, a uint16) {
+    binary.BigEndian.PutUint16(ptr, a)
+}
+
+func getu32(ptr []byte) uint32 {
+    return binary.BigEndian.Uint32(ptr)
+}
+
+func putu32(ptr []byte, a uint32) {
+    binary.BigEndian.PutUint32(ptr, a)
 }
 
 // Returns a []byte representing the Winternitz coefficients of x for a given window, w
@@ -93,7 +105,7 @@ func Expand(msg []byte, mode ILmotsParam) ([]uint8, error) {
     res := Coefs(msg, params.W)
 
     var cksm [2]byte
-    binary.BigEndian.PutUint16(cksm[:], Cksm(res, params.W, params.LS))
+    putu16(cksm[:], Cksm(res, params.W, params.LS))
 
     res = append(res, Coefs(cksm[:], params.W)...)
 

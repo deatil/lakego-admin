@@ -10,8 +10,8 @@ import (
 )
 
 func Test_Ots_Interface(t *testing.T) {
-    var _ crypto.Signer = &LmsOtsPrivateKey{}
-    var _ crypto.SignerOpts = LmsOtsSignerOpts{}
+    var _ crypto.Signer = &LmotsPrivateKey{}
+    var _ crypto.SignerOpts = LmotsSignerOpts{}
 }
 
 func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
@@ -24,12 +24,12 @@ func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
         panic(err)
     }
 
-    ots_priv, err := NewLmsOtsPrivateKey(otstc, 0, ID(id))
+    ots_priv, err := NewLmotsPrivateKey(otstc, 0, ID(id))
     if err != nil {
         panic(err)
     }
 
-    ots_pub := ots_priv.LmsOtsPublicKey
+    ots_pub := ots_priv.LmotsPublicKey
 
     ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"), nil)
     if err != nil {
@@ -78,12 +78,12 @@ func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
         panic(err)
     }
 
-    ots_priv, err := NewLmsOtsPrivateKey(otstc, 0, ID(id))
+    ots_priv, err := NewLmotsPrivateKey(otstc, 0, ID(id))
     if err != nil {
         panic(err)
     }
 
-    ots_pub := ots_priv.LmsOtsPublicKey
+    ots_pub := ots_priv.LmotsPublicKey
 
     ots_sig, err := ots_priv.Sign(rand.Reader, []byte("example"), nil)
     if err != nil {
@@ -93,7 +93,7 @@ func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
     // modify q so that the verification fails
     ots_pub_bytes := ots_pub.ToBytes()
     ots_pub_bytes[23] = 6
-    ots_pub2, err := NewLmsOtsPublicKeyFromBytes(ots_pub_bytes)
+    ots_pub2, err := NewLmotsPublicKeyFromBytes(ots_pub_bytes)
     if err != nil {
         panic(err)
     }
@@ -126,12 +126,26 @@ func Test_DoubleSign(t *testing.T) {
     id, err := hex.DecodeString("d08fabd4a2091ff0a8cb4ed834e74534")
     assertError(err, "hex.DecodeString")
 
-    ots_priv, err := NewLmsOtsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id))
-    assertError(err, "NewLmsOtsPrivateKey")
+    ots_priv, err := NewLmotsPrivateKey(LMOTS_SHA256_N32_W1_Param, 0, ID(id))
+    assertError(err, "NewLmotsPrivateKey")
 
     _, err = ots_priv.Sign(rand.Reader, []byte("example"), nil)
     assertError(err, "priv.Sign")
 
     _, err = ots_priv.Sign(rand.Reader, []byte("example2"), nil)
     assertNotErrorNil(err, "priv.Sign 2")
+}
+
+func Test_OTS_ParamName(t *testing.T) {
+    assertEqual := test.AssertEqualT(t)
+
+    assertEqual(LMOTS_SHA256_N32_W1_Param.String(), "LMOTS_SHA256_N32_W1", "")
+    assertEqual(LMOTS_SHA256_N32_W2_Param.String(), "LMOTS_SHA256_N32_W2", "")
+    assertEqual(LMOTS_SHA256_N32_W4_Param.String(), "LMOTS_SHA256_N32_W4", "")
+    assertEqual(LMOTS_SHA256_N32_W8_Param.String(), "LMOTS_SHA256_N32_W8", "")
+
+    assertEqual(LMOTS_SM3_N32_W1_Param.String(), "LMOTS_SM3_N32_W1", "")
+    assertEqual(LMOTS_SM3_N32_W2_Param.String(), "LMOTS_SM3_N32_W2", "")
+    assertEqual(LMOTS_SM3_N32_W4_Param.String(), "LMOTS_SM3_N32_W4", "")
+    assertEqual(LMOTS_SM3_N32_W8_Param.String(), "LMOTS_SM3_N32_W8", "")
 }

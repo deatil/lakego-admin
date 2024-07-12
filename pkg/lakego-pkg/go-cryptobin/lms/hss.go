@@ -5,7 +5,6 @@ import (
     "errors"
     "crypto"
     "crypto/rand"
-    "encoding/binary"
 )
 
 const HSS_MAX_LEVELS = 5
@@ -28,7 +27,7 @@ func (pub *HSSPublicKey) Verify(msg []byte, sig []byte) bool {
         return false
     }
 
-    num := binary.BigEndian.Uint32(sig[0:4])
+    num := getu32(sig[0:4])
     if num != uint32(pub.Levels - 1) {
         return false
     }
@@ -78,7 +77,7 @@ func (pub *HSSPublicKey) ToBytes() []byte {
     var serialized []byte
     var u32_be [4]byte
 
-    binary.BigEndian.PutUint32(u32_be[:], uint32(pub.Levels))
+    putu32(u32_be[:], uint32(pub.Levels))
     serialized = append(serialized, u32_be[:]...)
 
     pubBytes := pub.LmsPub.ToBytes()
@@ -88,7 +87,7 @@ func (pub *HSSPublicKey) ToBytes() []byte {
 }
 
 func (pub *HSSPublicKey) parseSignature(b []byte) (sig *Signature, other []byte, err error) {
-    newOtstc, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    newOtstc, err := GetLmotsParam(LmotsType(getu32(b[4:8])))
     if err != nil {
         return nil, nil, err
     }
@@ -102,7 +101,7 @@ func (pub *HSSPublicKey) parseSignature(b []byte) (sig *Signature, other []byte,
         return nil, nil, errors.New("lms: Signature is too short for LM-OTS typecode")
     }
 
-    newTypecode, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[otsigmax : otsigmax+4])))
+    newTypecode, err := GetLmsParam(LmsType(getu32(b[otsigmax : otsigmax+4])))
     if err != nil {
         return nil, nil, err
     }
@@ -127,12 +126,12 @@ func (pub *HSSPublicKey) parsePublicKey(b []byte) (pubkey *PublicKey, other []by
         return nil, nil, errors.New("lms: key must be more than 8 bytes long")
     }
 
-    _, err = GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    _, err = GetLmsParam(LmsType(getu32(b[0:4])))
     if err != nil {
         return nil, nil, err
     }
 
-    newOtstype, err := GetLmotsParam(LmotsType(binary.BigEndian.Uint32(b[4:8])))
+    newOtstype, err := GetLmotsParam(LmotsType(getu32(b[4:8])))
     if err != nil {
         return nil, nil, err
     }
@@ -159,7 +158,7 @@ func NewHSSPublicKeyFromBytes(b []byte) (*HSSPublicKey, error) {
         return nil, errors.New("lms: key must be more than 4 bytes long")
     }
 
-    levels := int(binary.BigEndian.Uint32(b[0:4]))
+    levels := int(getu32(b[0:4]))
 
     pub, err := NewPublicKeyFromBytes(b[4:])
     if err != nil {
@@ -191,7 +190,7 @@ func (priv *HSSPrivateKey) Sign(rng io.Reader, msg []byte, _ crypto.SignerOpts) 
     num := priv.HSSPublicKey.Levels - 1
 
     var numbytes [4]byte
-    binary.BigEndian.PutUint32(numbytes[:], uint32(num))
+    putu32(numbytes[:], uint32(num))
 
     out = append(out, numbytes[:]...)
 
@@ -228,7 +227,7 @@ func (priv *HSSPrivateKey) ToBytes() ([]byte, error) {
     var serialized []byte
     var u32_be [4]byte
 
-    binary.BigEndian.PutUint32(u32_be[:], uint32(priv.Levels))
+    putu32(u32_be[:], uint32(priv.Levels))
     serialized = append(serialized, u32_be[:]...)
 
     for i := 0; i < priv.Levels; i++ {
@@ -253,7 +252,7 @@ func (priv *HSSPrivateKey) parsePrivateKey(b []byte) (privkey *PrivateKey, other
         return nil, nil, errors.New("lms: key must be more than 8 bytes long")
     }
 
-    newTc, err := GetLmsParam(LmsType(binary.BigEndian.Uint32(b[0:4])))
+    newTc, err := GetLmsParam(LmsType(getu32(b[0:4])))
     if err != nil {
         return nil, nil, err
     }
@@ -279,7 +278,7 @@ func NewHSSPrivateKeyFromBytes(b []byte) (*HSSPrivateKey, error) {
         return nil, errors.New("lms: key must be more than 4 bytes long")
     }
 
-    levels := int(binary.BigEndian.Uint32(b[0:4]))
+    levels := int(getu32(b[0:4]))
     b = b[4:]
 
     var priv HSSPrivateKey
@@ -403,7 +402,7 @@ func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (*HSSPrivateKey, error) {
 
 func hssDigest(pub *PublicKey, q uint32, C []byte, data []byte) (dgst []byte) {
     var qbytes [4]byte
-    binary.BigEndian.PutUint32(qbytes[:], q)
+    putu32(qbytes[:], q)
 
     otsParams := pub.otsType.Params()
 
