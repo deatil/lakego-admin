@@ -17,6 +17,12 @@ type ID = [ID_LEN]byte
 
 type Hasher = func() hash.Hash
 
+// ByteWindow is the representation of bytes used in calculating LM-OTS signatures
+type ByteWindow interface {
+    Window() window
+    Mask() uint8
+}
+
 type window uint8
 
 const (
@@ -25,12 +31,6 @@ const (
     WINDOW_W4
     WINDOW_W8
 )
-
-// ByteWindow is the representation of bytes used in calculating LM-OTS signatures
-type ByteWindow interface {
-    Window() window
-    Mask() uint8
-}
 
 // Return the actual window value
 func (w window) Window() window {

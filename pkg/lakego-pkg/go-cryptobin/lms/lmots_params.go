@@ -9,16 +9,16 @@ import (
 type LmotsType uint32
 
 const (
-    LMOTS_RESERVED      LmotsType = 0
-    LMOTS_SHA256_N32_W1 LmotsType = 1
-    LMOTS_SHA256_N32_W2 LmotsType = 2
-    LMOTS_SHA256_N32_W4 LmotsType = 3
-    LMOTS_SHA256_N32_W8 LmotsType = 4
+    type_LMOTS_RESERVED      LmotsType = 0
+    type_LMOTS_SHA256_N32_W1 LmotsType = 1
+    type_LMOTS_SHA256_N32_W2 LmotsType = 2
+    type_LMOTS_SHA256_N32_W4 LmotsType = 3
+    type_LMOTS_SHA256_N32_W8 LmotsType = 4
 
-    LMOTS_SM3_N32_W1 LmotsType = 17
-    LMOTS_SM3_N32_W2 LmotsType = 18
-    LMOTS_SM3_N32_W4 LmotsType = 19
-    LMOTS_SM3_N32_W8 LmotsType = 20
+    type_LMOTS_SM3_N32_W1 LmotsType = 17
+    type_LMOTS_SM3_N32_W2 LmotsType = 18
+    type_LMOTS_SM3_N32_W4 LmotsType = 19
+    type_LMOTS_SM3_N32_W8 LmotsType = 20
 )
 
 // ILmotsParam represents a specific instance of LM-OTS
@@ -86,9 +86,9 @@ func AllLmotsParams() map[LmotsType]func() ILmotsParam {
 // ===============
 
 var (
-    LMOTS_SHA256_N32_W1_Param = LmotsParam{
+    LMOTS_SHA256_N32_W1 = LmotsParam{
         Name:   "LMOTS_SHA256_N32_W1",
-        Type:   LMOTS_SHA256_N32_W1,
+        Type:   type_LMOTS_SHA256_N32_W1,
         Hash:   sha256.New,
         N:      sha256.Size,
         W:      WINDOW_W1,
@@ -96,9 +96,9 @@ var (
         LS:     7,
         SigLen: 8516,
     }
-    LMOTS_SHA256_N32_W2_Param = LmotsParam{
+    LMOTS_SHA256_N32_W2 = LmotsParam{
         Name:   "LMOTS_SHA256_N32_W2",
-        Type:   LMOTS_SHA256_N32_W2,
+        Type:   type_LMOTS_SHA256_N32_W2,
         Hash:   sha256.New,
         N:      sha256.Size,
         W:      WINDOW_W2,
@@ -106,9 +106,9 @@ var (
         LS:     6,
         SigLen: 4292,
     }
-    LMOTS_SHA256_N32_W4_Param = LmotsParam{
+    LMOTS_SHA256_N32_W4 = LmotsParam{
         Name:   "LMOTS_SHA256_N32_W4",
-        Type:   LMOTS_SHA256_N32_W4,
+        Type:   type_LMOTS_SHA256_N32_W4,
         Hash:   sha256.New,
         N:      sha256.Size,
         W:      WINDOW_W4,
@@ -116,9 +116,9 @@ var (
         LS:     4,
         SigLen: 2180,
     }
-    LMOTS_SHA256_N32_W8_Param = LmotsParam{
+    LMOTS_SHA256_N32_W8 = LmotsParam{
         Name:   "LMOTS_SHA256_N32_W8",
-        Type:   LMOTS_SHA256_N32_W8,
+        Type:   type_LMOTS_SHA256_N32_W8,
         Hash:   sha256.New,
         N:      sha256.Size,
         W:      WINDOW_W8,
@@ -128,9 +128,9 @@ var (
     }
 
     // SM3 hash
-    LMOTS_SM3_N32_W1_Param = LmotsParam{
+    LMOTS_SM3_N32_W1 = LmotsParam{
         Name:   "LMOTS_SM3_N32_W1",
-        Type:   LMOTS_SM3_N32_W1,
+        Type:   type_LMOTS_SM3_N32_W1,
         Hash:   sm3.New,
         N:      sm3.Size,
         W:      WINDOW_W1,
@@ -138,9 +138,9 @@ var (
         LS:     7,
         SigLen: 8516,
     }
-    LMOTS_SM3_N32_W2_Param = LmotsParam{
+    LMOTS_SM3_N32_W2 = LmotsParam{
         Name:   "LMOTS_SM3_N32_W2",
-        Type:   LMOTS_SM3_N32_W2,
+        Type:   type_LMOTS_SM3_N32_W2,
         Hash:   sm3.New,
         N:      sm3.Size,
         W:      WINDOW_W2,
@@ -148,9 +148,9 @@ var (
         LS:     6,
         SigLen: 4292,
     }
-    LMOTS_SM3_N32_W4_Param = LmotsParam{
+    LMOTS_SM3_N32_W4 = LmotsParam{
         Name:   "LMOTS_SM3_N32_W4",
-        Type:   LMOTS_SM3_N32_W4,
+        Type:   type_LMOTS_SM3_N32_W4,
         Hash:   sm3.New,
         N:      sm3.Size,
         W:      WINDOW_W4,
@@ -158,9 +158,9 @@ var (
         LS:     4,
         SigLen: 2180,
     }
-    LMOTS_SM3_N32_W8_Param = LmotsParam{
+    LMOTS_SM3_N32_W8 = LmotsParam{
         Name:   "LMOTS_SM3_N32_W8",
-        Type:   LMOTS_SM3_N32_W8,
+        Type:   type_LMOTS_SM3_N32_W8,
         Hash:   sm3.New,
         N:      sm3.Size,
         W:      WINDOW_W8,
@@ -171,31 +171,31 @@ var (
 )
 
 func init() {
-    AddLmotsParam(LMOTS_SHA256_N32_W1_Param.Type, func() ILmotsParam {
-        return LMOTS_SHA256_N32_W1_Param
+    AddLmotsParam(LMOTS_SHA256_N32_W1.Type, func() ILmotsParam {
+        return LMOTS_SHA256_N32_W1
     })
-    AddLmotsParam(LMOTS_SHA256_N32_W2_Param.Type, func() ILmotsParam {
-        return LMOTS_SHA256_N32_W2_Param
+    AddLmotsParam(LMOTS_SHA256_N32_W2.Type, func() ILmotsParam {
+        return LMOTS_SHA256_N32_W2
     })
-    AddLmotsParam(LMOTS_SHA256_N32_W4_Param.Type, func() ILmotsParam {
-        return LMOTS_SHA256_N32_W4_Param
+    AddLmotsParam(LMOTS_SHA256_N32_W4.Type, func() ILmotsParam {
+        return LMOTS_SHA256_N32_W4
     })
-    AddLmotsParam(LMOTS_SHA256_N32_W8_Param.Type, func() ILmotsParam {
-        return LMOTS_SHA256_N32_W8_Param
+    AddLmotsParam(LMOTS_SHA256_N32_W8.Type, func() ILmotsParam {
+        return LMOTS_SHA256_N32_W8
     })
 
     // SM3 hash
-    AddLmotsParam(LMOTS_SM3_N32_W1_Param.Type, func() ILmotsParam {
-        return LMOTS_SM3_N32_W1_Param
+    AddLmotsParam(LMOTS_SM3_N32_W1.Type, func() ILmotsParam {
+        return LMOTS_SM3_N32_W1
     })
-    AddLmotsParam(LMOTS_SM3_N32_W2_Param.Type, func() ILmotsParam {
-        return LMOTS_SM3_N32_W2_Param
+    AddLmotsParam(LMOTS_SM3_N32_W2.Type, func() ILmotsParam {
+        return LMOTS_SM3_N32_W2
     })
-    AddLmotsParam(LMOTS_SM3_N32_W4_Param.Type, func() ILmotsParam {
-        return LMOTS_SM3_N32_W4_Param
+    AddLmotsParam(LMOTS_SM3_N32_W4.Type, func() ILmotsParam {
+        return LMOTS_SM3_N32_W4
     })
-    AddLmotsParam(LMOTS_SM3_N32_W8_Param.Type, func() ILmotsParam {
-        return LMOTS_SM3_N32_W8_Param
+    AddLmotsParam(LMOTS_SM3_N32_W8.Type, func() ILmotsParam {
+        return LMOTS_SM3_N32_W8
     })
 
 }

@@ -38,80 +38,80 @@ func Test_HSS_SignVerify(t *testing.T) {
     t.Run("Opts 1", func(t *testing.T) {
         test_HSS_SignVerify(t, []HSSOpts{
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
         })
     })
     t.Run("Opts 2", func(t *testing.T) {
         test_HSS_SignVerify(t, []HSSOpts{
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
         })
     })
     t.Run("Opts 3", func(t *testing.T) {
         test_HSS_SignVerify(t, []HSSOpts{
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
         })
     })
     t.Run("Opts 4", func(t *testing.T) {
         test_HSS_SignVerify(t, []HSSOpts{
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
         })
     })
     t.Run("Opts 5", func(t *testing.T) {
         test_HSS_SignVerify(t, []HSSOpts{
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
             HSSOpts{
-                Tc:    LMS_SHA256_M32_H5_Param,
-                Otstc: LMOTS_SHA256_N32_W8_Param,
+                Type:    LMS_SHA256_M32_H5,
+                OtsType: LMOTS_SHA256_N32_W8,
             },
         })
     })

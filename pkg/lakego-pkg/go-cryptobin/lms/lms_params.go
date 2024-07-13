@@ -9,17 +9,17 @@ import (
 type LmsType uint32
 
 const (
-    LMS_SHA256_M32_H5  LmsType = 5
-    LMS_SHA256_M32_H10 LmsType = 6
-    LMS_SHA256_M32_H15 LmsType = 7
-    LMS_SHA256_M32_H20 LmsType = 8
-    LMS_SHA256_M32_H25 LmsType = 9
+    type_LMS_SHA256_M32_H5  LmsType = 5
+    type_LMS_SHA256_M32_H10 LmsType = 6
+    type_LMS_SHA256_M32_H15 LmsType = 7
+    type_LMS_SHA256_M32_H20 LmsType = 8
+    type_LMS_SHA256_M32_H25 LmsType = 9
 
-    LMS_SM3_M32_H5  LmsType = 25
-    LMS_SM3_M32_H10 LmsType = 26
-    LMS_SM3_M32_H15 LmsType = 27
-    LMS_SM3_M32_H20 LmsType = 28
-    LMS_SM3_M32_H25 LmsType = 29
+    type_LMS_SM3_M32_H5  LmsType = 25
+    type_LMS_SM3_M32_H10 LmsType = 26
+    type_LMS_SM3_M32_H15 LmsType = 27
+    type_LMS_SM3_M32_H20 LmsType = 28
+    type_LMS_SM3_M32_H25 LmsType = 29
 )
 
 // ILmsParam represents a specific instance of LMS
@@ -82,74 +82,74 @@ func AllLmsParams() map[LmsType]func() ILmsParam {
 // ===============
 
 var (
-    LMS_SHA256_M32_H5_Param = LmsParam{
+    LMS_SHA256_M32_H5 = LmsParam{
         Name: "LMS_SHA256_M32_H5",
-        Type: LMS_SHA256_M32_H5,
+        Type: type_LMS_SHA256_M32_H5,
         Hash: sha256.New,
         M:    32,
         H:    5,
     }
-    LMS_SHA256_M32_H10_Param = LmsParam{
+    LMS_SHA256_M32_H10 = LmsParam{
         Name: "LMS_SHA256_M32_H10",
-        Type: LMS_SHA256_M32_H10,
+        Type: type_LMS_SHA256_M32_H10,
         Hash: sha256.New,
         M:    32,
         H:    10,
     }
-    LMS_SHA256_M32_H15_Param = LmsParam{
+    LMS_SHA256_M32_H15 = LmsParam{
         Name: "LMS_SHA256_M32_H15",
-        Type: LMS_SHA256_M32_H15,
+        Type: type_LMS_SHA256_M32_H15,
         Hash: sha256.New,
         M:    32,
         H:    15,
     }
-    LMS_SHA256_M32_H20_Param = LmsParam{
+    LMS_SHA256_M32_H20 = LmsParam{
         Name: "LMS_SHA256_M32_H20",
-        Type: LMS_SHA256_M32_H20,
+        Type: type_LMS_SHA256_M32_H20,
         Hash: sha256.New,
         M:    32,
         H:    20,
     }
-    LMS_SHA256_M32_H25_Param = LmsParam{
+    LMS_SHA256_M32_H25 = LmsParam{
         Name: "LMS_SHA256_M32_H25",
-        Type: LMS_SHA256_M32_H25,
+        Type: type_LMS_SHA256_M32_H25,
         Hash: sha256.New,
         M:    32,
         H:    25,
     }
 
     // SM3
-    LMS_SM3_M32_H5_Param = LmsParam{
+    LMS_SM3_M32_H5 = LmsParam{
         Name: "LMS_SM3_M32_H5",
-        Type: LMS_SM3_M32_H5,
+        Type: type_LMS_SM3_M32_H5,
         Hash: sm3.New,
         M:    32,
         H:    5,
     }
-    LMS_SM3_M32_H10_Param = LmsParam{
+    LMS_SM3_M32_H10 = LmsParam{
         Name: "LMS_SM3_M32_H10",
-        Type: LMS_SM3_M32_H10,
+        Type: type_LMS_SM3_M32_H10,
         Hash: sm3.New,
         M:    32,
         H:    10,
     }
-    LMS_SM3_M32_H15_Param = LmsParam{
+    LMS_SM3_M32_H15 = LmsParam{
         Name: "LMS_SM3_M32_H15",
-        Type: LMS_SM3_M32_H15,
+        Type: type_LMS_SM3_M32_H15,
         Hash: sm3.New,
         M:    32,
         H:    15,
     }
-    LMS_SM3_M32_H20_Param = LmsParam{
+    LMS_SM3_M32_H20 = LmsParam{
         Name: "LMS_SM3_M32_H20",
-        Type: LMS_SM3_M32_H20,
+        Type: type_LMS_SM3_M32_H20,
         Hash: sm3.New,
         M:    32,
         H:    20,
     }
-    LMS_SM3_M32_H25_Param = LmsParam{
+    LMS_SM3_M32_H25 = LmsParam{
         Name: "LMS_SM3_M32_H25",
-        Type: LMS_SM3_M32_H25,
+        Type: type_LMS_SM3_M32_H25,
         Hash: sm3.New,
         M:    32,
         H:    25,
@@ -158,37 +158,37 @@ var (
 )
 
 func init() {
-    AddLmsParam(LMS_SHA256_M32_H5_Param.Type, func() ILmsParam {
-        return LMS_SHA256_M32_H5_Param
+    AddLmsParam(LMS_SHA256_M32_H5.Type, func() ILmsParam {
+        return LMS_SHA256_M32_H5
     })
-    AddLmsParam(LMS_SHA256_M32_H10_Param.Type, func() ILmsParam {
-        return LMS_SHA256_M32_H10_Param
+    AddLmsParam(LMS_SHA256_M32_H10.Type, func() ILmsParam {
+        return LMS_SHA256_M32_H10
     })
-    AddLmsParam(LMS_SHA256_M32_H15_Param.Type, func() ILmsParam {
-        return LMS_SHA256_M32_H15_Param
+    AddLmsParam(LMS_SHA256_M32_H15.Type, func() ILmsParam {
+        return LMS_SHA256_M32_H15
     })
-    AddLmsParam(LMS_SHA256_M32_H20_Param.Type, func() ILmsParam {
-        return LMS_SHA256_M32_H20_Param
+    AddLmsParam(LMS_SHA256_M32_H20.Type, func() ILmsParam {
+        return LMS_SHA256_M32_H20
     })
-    AddLmsParam(LMS_SHA256_M32_H25_Param.Type, func() ILmsParam {
-        return LMS_SHA256_M32_H25_Param
+    AddLmsParam(LMS_SHA256_M32_H25.Type, func() ILmsParam {
+        return LMS_SHA256_M32_H25
     })
 
     // SM3
-    AddLmsParam(LMS_SM3_M32_H5_Param.Type, func() ILmsParam {
-        return LMS_SM3_M32_H5_Param
+    AddLmsParam(LMS_SM3_M32_H5.Type, func() ILmsParam {
+        return LMS_SM3_M32_H5
     })
-    AddLmsParam(LMS_SM3_M32_H10_Param.Type, func() ILmsParam {
-        return LMS_SM3_M32_H10_Param
+    AddLmsParam(LMS_SM3_M32_H10.Type, func() ILmsParam {
+        return LMS_SM3_M32_H10
     })
-    AddLmsParam(LMS_SM3_M32_H15_Param.Type, func() ILmsParam {
-        return LMS_SM3_M32_H15_Param
+    AddLmsParam(LMS_SM3_M32_H15.Type, func() ILmsParam {
+        return LMS_SM3_M32_H15
     })
-    AddLmsParam(LMS_SM3_M32_H20_Param.Type, func() ILmsParam {
-        return LMS_SM3_M32_H20_Param
+    AddLmsParam(LMS_SM3_M32_H20.Type, func() ILmsParam {
+        return LMS_SM3_M32_H20
     })
-    AddLmsParam(LMS_SM3_M32_H25_Param.Type, func() ILmsParam {
-        return LMS_SM3_M32_H25_Param
+    AddLmsParam(LMS_SM3_M32_H25.Type, func() ILmsParam {
+        return LMS_SM3_M32_H25
     })
 
 }

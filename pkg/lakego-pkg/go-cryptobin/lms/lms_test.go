@@ -33,8 +33,8 @@ func Test_PKTreeKAT1(t *testing.T) {
         panic(err)
     }
 
-    tc := LMS_SHA256_M32_H10_Param
-    otstc := LMOTS_SHA256_N32_W4_Param
+    tc := LMS_SHA256_M32_H10
+    otstc := LMOTS_SHA256_N32_W4
 
     lms_priv, err := GenerateKeyFromSeed(tc, otstc, ID(id), seed)
     assertError(err, "GenerateKeyFromSeed")
@@ -831,27 +831,27 @@ func test_SignVerify(t *testing.T, tc ILmsParam, otstc ILmotsParam) {
 
 func Test_SignVerify(t *testing.T) {
     t.Run("SignVerify_H5_W1", func(t *testing.T) {
-        test_SignVerify(t, LMS_SHA256_M32_H5_Param, LMOTS_SHA256_N32_W1_Param)
+        test_SignVerify(t, LMS_SHA256_M32_H5, LMOTS_SHA256_N32_W1)
     })
     t.Run("SignVerify_H5_W2", func(t *testing.T) {
-        test_SignVerify(t, LMS_SHA256_M32_H5_Param, LMOTS_SHA256_N32_W2_Param)
+        test_SignVerify(t, LMS_SHA256_M32_H5, LMOTS_SHA256_N32_W2)
     })
 }
 
 func Test_ParamName(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
 
-    assertEqual(LMS_SHA256_M32_H5_Param.String(), "LMS_SHA256_M32_H5", "")
-    assertEqual(LMS_SHA256_M32_H10_Param.String(), "LMS_SHA256_M32_H10", "")
-    assertEqual(LMS_SHA256_M32_H15_Param.String(), "LMS_SHA256_M32_H15", "")
-    assertEqual(LMS_SHA256_M32_H20_Param.String(), "LMS_SHA256_M32_H20", "")
-    assertEqual(LMS_SHA256_M32_H25_Param.String(), "LMS_SHA256_M32_H25", "")
+    assertEqual(LMS_SHA256_M32_H5.String(), "LMS_SHA256_M32_H5", "")
+    assertEqual(LMS_SHA256_M32_H10.String(), "LMS_SHA256_M32_H10", "")
+    assertEqual(LMS_SHA256_M32_H15.String(), "LMS_SHA256_M32_H15", "")
+    assertEqual(LMS_SHA256_M32_H20.String(), "LMS_SHA256_M32_H20", "")
+    assertEqual(LMS_SHA256_M32_H25.String(), "LMS_SHA256_M32_H25", "")
 
-    assertEqual(LMS_SM3_M32_H5_Param.String(), "LMS_SM3_M32_H5", "")
-    assertEqual(LMS_SM3_M32_H10_Param.String(), "LMS_SM3_M32_H10", "")
-    assertEqual(LMS_SM3_M32_H15_Param.String(), "LMS_SM3_M32_H15", "")
-    assertEqual(LMS_SM3_M32_H20_Param.String(), "LMS_SM3_M32_H20", "")
-    assertEqual(LMS_SM3_M32_H25_Param.String(), "LMS_SM3_M32_H25", "")
+    assertEqual(LMS_SM3_M32_H5.String(), "LMS_SM3_M32_H5", "")
+    assertEqual(LMS_SM3_M32_H10.String(), "LMS_SM3_M32_H10", "")
+    assertEqual(LMS_SM3_M32_H15.String(), "LMS_SM3_M32_H15", "")
+    assertEqual(LMS_SM3_M32_H20.String(), "LMS_SM3_M32_H20", "")
+    assertEqual(LMS_SM3_M32_H25.String(), "LMS_SM3_M32_H25", "")
 }
 
 func Test_Equal(t *testing.T) {
@@ -860,8 +860,8 @@ func Test_Equal(t *testing.T) {
     assertError := test.AssertErrorT(t)
 
     t.Run("good", func(t *testing.T) {
-        tc := LMS_SHA256_M32_H10_Param
-        otstc := LMOTS_SHA256_N32_W4_Param
+        tc := LMS_SHA256_M32_H10
+        otstc := LMOTS_SHA256_N32_W4
 
         lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
         assertError(err, "GenerateKey")
@@ -887,8 +887,8 @@ func Test_Equal(t *testing.T) {
     })
 
     t.Run("bad", func(t *testing.T) {
-        tc := LMS_SHA256_M32_H10_Param
-        otstc := LMOTS_SHA256_N32_W4_Param
+        tc := LMS_SHA256_M32_H10
+        otstc := LMOTS_SHA256_N32_W4
 
         lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
         assertError(err, "GenerateKey")
@@ -897,8 +897,8 @@ func Test_Equal(t *testing.T) {
 
         // ===========
 
-        tc2 := LMS_SHA256_M32_H10_Param
-        otstc2 := LMOTS_SHA256_N32_W4_Param
+        tc2 := LMS_SHA256_M32_H10
+        otstc2 := LMOTS_SHA256_N32_W4
 
         lms_priv2, err := GenerateKey(rand.Reader, tc2, otstc2)
         assertError(err, "GenerateKey2")

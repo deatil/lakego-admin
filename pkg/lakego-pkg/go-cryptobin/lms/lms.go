@@ -32,8 +32,8 @@ type PrivateKey struct {
 
 // GenerateKey returns a PrivateKey, seeded by a cryptographically secure
 // random number generator.
-func GenerateKey(rng io.Reader, tc ILmsParam, otstc ILmotsParam) (*PrivateKey, error) {
-    params := tc.Params()
+func GenerateKey(rng io.Reader, typ ILmsParam, otsType ILmotsParam) (*PrivateKey, error) {
+    params := typ.Params()
 
     seed := make([]byte, params.M)
     if _, err := rng.Read(seed); err != nil {
@@ -47,21 +47,21 @@ func GenerateKey(rng io.Reader, tc ILmsParam, otstc ILmotsParam) (*PrivateKey, e
 
     id := ID(idbytes)
 
-    return GenerateKeyFromSeed(tc, otstc, id, seed)
+    return GenerateKeyFromSeed(typ, otsType, id, seed)
 }
 
 // GenerateKeyFromSeed returns a new PrivateKey, using the algorithm from
 // Appendix A of <https://datatracker.ietf.org/doc/html/rfc8554#appendix-A>
-func GenerateKeyFromSeed(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) (*PrivateKey, error) {
-    tree, err := GeneratePKTree(tc, otstc, id, seed)
+func GenerateKeyFromSeed(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) (*PrivateKey, error) {
+    tree, err := GeneratePKTree(typ, otsType, id, seed)
     if err != nil {
         return nil, err
     }
 
     return &PrivateKey{
         PublicKey: PublicKey{
-            typ:     tc,
-            otsType: otstc,
+            typ:     typ,
+            otsType: otsType,
             id:      id,
             k:       tree[0],
         },
@@ -249,9 +249,9 @@ func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
 
 // GeneratePKTree generates the Merkle Tree needed to derive the public key and
 // authentication path for any message.
-func GeneratePKTree(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) ([][]byte, error) {
-    params := tc.Params()
-    ots_params := otstc.Params()
+func GeneratePKTree(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) ([][]byte, error) {
+    params := typ.Params()
+    ots_params := otsType.Params()
 
     var tree_nodes uint32 = (1 << (params.H + 1)) - 1
     var leaves uint32 = 1 << params.H
@@ -263,7 +263,7 @@ func GeneratePKTree(tc ILmsParam, otstc ILmotsParam, id ID, seed []byte) ([][]by
     var r_be [4]byte
     for i = 0; i < leaves; i++ {
         r = i + leaves
-        ots_priv, err := NewLmotsPrivateKeyFromSeed(otstc, i, id, seed)
+        ots_priv, err := NewLmotsPrivateKeyFromSeed(otsType, i, id, seed)
         if err != nil {
             return nil, err
         }
@@ -309,15 +309,15 @@ type PublicKey struct {
 
 // NewPublicKey return a new PublicKey, given the LMS typecode, LM-OTS typecode, ID, and
 // root of the authentication tree (called k).
-func NewPublicKey(tc ILmsParam, otstc ILmotsParam, id ID, k []byte) (*PublicKey, error) {
+func NewPublicKey(typ ILmsParam, otsType ILmotsParam, id ID, k []byte) (*PublicKey, error) {
     // Explicit check from Algorithm 6, Step 1 of RFC 8554
     if len(k) < 8 {
         return nil, errors.New("lms: invalid public key")
     }
 
     return &PublicKey{
-        typ:     tc,
-        otsType: otstc,
+        typ:     typ,
+        otsType: otsType,
         id:      id,
         k:       k[:],
     }, nil
@@ -490,8 +490,8 @@ type Signature struct {
 
 // NewSignature returns a Signature, given an LMS algorithm type, internal counter,
 // LM-OTS signature, and authentication path.
-func NewSignature(tc ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) (*Signature, error) {
-    params := tc.Params()
+func NewSignature(typ ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) (*Signature, error) {
+    params := typ.Params()
 
     var tmp uint32 = 1 << params.H
 
@@ -506,7 +506,7 @@ func NewSignature(tc ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) (
     }
 
     return &Signature{
-        typ:  tc,
+        typ:  typ,
         q:    q,
         ots:  otsig,
         path: path,
@@ -531,10 +531,10 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
         return nil, err
     }
 
-    otstc := newOtstc()
+    otsType := newOtstc()
 
     // 4 + LM-OTS signature length is the first byte after the LM-OTS sig
-    otsSiglen := otstc.SigLength()
+    otsSiglen := otsType.SigLength()
 
     otsigmax := 4 + otsSiglen
     if uint64(4+len(b)) <= otsigmax {
@@ -551,7 +551,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     typecode := newTypecode()
 
     // With both typecodes, we can calculate the total signature length
-    siglen := typecode.SigLength(otstc)
+    siglen := typecode.SigLength(otsType)
 
     if siglen != uint64(len(b)) {
         return nil, errors.New("lms: Invalid LMS signature length")

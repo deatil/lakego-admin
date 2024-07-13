@@ -367,19 +367,19 @@ func NewHSSPrivateKeyFromBytes(b []byte) (*HSSPrivateKey, error) {
 
 // HSS options
 type HSSOpts struct {
-    Tc    ILmsParam
-    Otstc ILmotsParam
+    Type    ILmsParam
+    OtsType ILmotsParam
 }
 
 // Default Opts
 var DefaultOpts = []HSSOpts{
     HSSOpts{
-        Tc:    LMS_SHA256_M32_H5_Param,
-        Otstc: LMOTS_SHA256_N32_W8_Param,
+        Type:    LMS_SHA256_M32_H5,
+        OtsType: LMOTS_SHA256_N32_W8,
     },
     HSSOpts{
-        Tc:    LMS_SHA256_M32_H5_Param,
-        Otstc: LMOTS_SHA256_N32_W8_Param,
+        Type:    LMS_SHA256_M32_H5,
+        OtsType: LMOTS_SHA256_N32_W8,
     },
 }
 
@@ -407,7 +407,7 @@ func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (*HSSPrivateKey, error) {
 
     var err error
     var key HSSPrivateKey
-    lmsKey, err := GenerateKeyFromSeed(opts[0].Tc, opts[0].Otstc, id, seed)
+    lmsKey, err := GenerateKeyFromSeed(opts[0].Type, opts[0].OtsType, id, seed)
     if err != nil {
         return nil, err
     }
@@ -423,7 +423,7 @@ func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (*HSSPrivateKey, error) {
             return nil, err
         }
 
-        lmsKey, err = GenerateKeyFromSeed(opts[i].Tc, opts[i].Otstc, ID(idbytes), seed)
+        lmsKey, err = GenerateKeyFromSeed(opts[i].Type, opts[i].OtsType, ID(idbytes), seed)
         if err != nil {
             return nil, err
         }
@@ -453,16 +453,16 @@ func GenerateHSSKey(rng io.Reader, opts []HSSOpts) (*HSSPrivateKey, error) {
 }
 
 func hssDigest(pub *PublicKey, q uint32, C []byte, data []byte) (dgst []byte) {
-    var qbytes [4]byte
-    putu32(qbytes[:], q)
-
     otsParams := pub.otsType.Params()
+
+    var qBytes [4]byte
+    putu32(qBytes[:], q)
 
     hasher := otsParams.Hash()
     hasher.Write(pub.id[:])
-    hasher.Write(qbytes[:])
+    hasher.Write(qBytes[:])
     hasher.Write(D_MESG[:])
-    hasher.Write(C[:])
+    hasher.Write(C)
     hasher.Write(data)
     dgst = hasher.Sum(nil)
 

@@ -29,8 +29,8 @@ type LmotsPrivateKey struct {
 
 // NewLmotsPrivateKey returns a LmotsPrivateKey, seeded by a cryptographically secure
 // random number generator.
-func NewLmotsPrivateKey(lop ILmotsParam, q uint32, id ID) (*LmotsPrivateKey, error) {
-    params := lop.Params()
+func NewLmotsPrivateKey(typ ILmotsParam, q uint32, id ID) (*LmotsPrivateKey, error) {
+    params := typ.Params()
 
     seed := make([]byte, params.N)
     _, err := rand.Read(seed)
@@ -38,27 +38,27 @@ func NewLmotsPrivateKey(lop ILmotsParam, q uint32, id ID) (*LmotsPrivateKey, err
         return nil, err
     }
 
-    return NewLmotsPrivateKeyFromSeed(lop, q, id, seed)
+    return NewLmotsPrivateKeyFromSeed(typ, q, id, seed)
 }
 
 // NewLmotsPrivateKeyFromSeed returns a new LmotsPrivateKey, using the algorithm from
 // Appendix A of <https://datatracker.ietf.org/doc/html/rfc8554#appendix-A>
-func NewLmotsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) (*LmotsPrivateKey, error) {
-    params := lop.Params()
+func NewLmotsPrivateKeyFromSeed(typ ILmotsParam, q uint32, id ID, seed []byte) (*LmotsPrivateKey, error) {
+    params := typ.Params()
 
     x := make([][]byte, params.P)
 
     for i := uint64(0); i < params.P; i++ {
-        var q_be [4]byte
-        var i_be [2]byte
+        var qBytes [4]byte
+        var iBytes [2]byte
 
-        putu32(q_be[:], q)
-        putu16(i_be[:], uint16(i))
+        putu32(qBytes[:], q)
+        putu16(iBytes[:], uint16(i))
 
         hasher := params.Hash()
         hasher.Write(id[:])
-        hasher.Write(q_be[:])
-        hasher.Write(i_be[:])
+        hasher.Write(qBytes[:])
+        hasher.Write(iBytes[:])
         hasher.Write([]byte{0xff})
         hasher.Write(seed)
 
@@ -67,7 +67,7 @@ func NewLmotsPrivateKeyFromSeed(lop ILmotsParam, q uint32, id ID, seed []byte) (
 
     pk := LmotsPrivateKey{
         LmotsPublicKey: LmotsPublicKey{
-            typ: lop,
+            typ: typ,
             q:   q,
             id:  id,
         },
@@ -287,7 +287,7 @@ func (pub *LmotsPublicKey) VerifyWithSignature(msg []byte, sig *LmotsSignature) 
 
 // RecoverPublicKey calculates the public key for a given message.
 // This is used in signature verification.
-func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (LmotsPublicKey, bool) {
+func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (*LmotsPublicKey, bool) {
     var be16 [2]byte
     var be32 [4]byte
     var tmp []byte
@@ -299,17 +299,17 @@ func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (LmotsP
 
     // verify length of nonce
     if len(sig.c) != hash_len {
-        return LmotsPublicKey{}, false
+        return nil, false
     }
 
     // verify length of y and y[i]
     if uint64(len(sig.y)) != params.P {
-        return LmotsPublicKey{}, false
+        return nil, false
     }
 
     for i := uint64(0); i < params.P; i++ {
         if len(sig.y[i]) != hash_len {
-            return LmotsPublicKey{}, false
+            return nil, false
         }
     }
 
@@ -324,7 +324,7 @@ func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (LmotsP
     Q := hasher.Sum(nil)
     expanded, err := Expand(Q, sig.typ)
     if err != nil {
-        return LmotsPublicKey{}, false
+        return nil, false
     }
 
     hasher.Reset()
@@ -354,7 +354,7 @@ func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (LmotsP
         hasher.Write(tmp)
     }
 
-    return LmotsPublicKey{
+    return &LmotsPublicKey{
         typ: sig.typ,
         q:   q,
         id:  id,
@@ -443,6 +443,11 @@ type LmotsSignature struct {
     y   [][]byte
 }
 
+// C returns a bytes for c
+func (sig *LmotsSignature) C() []byte {
+    return sig.c
+}
+
 // NewLmotsSignatureFromBytes returns an LmotsSignature represented by b.
 func NewLmotsSignatureFromBytes(b []byte) (*LmotsSignature, error) {
     if len(b) < 4 {
@@ -508,9 +513,4 @@ func (sig *LmotsSignature) ToBytes() ([]byte, error) {
     }
 
     return serialized, nil
-}
-
-// C returns a bytes for c
-func (sig *LmotsSignature) C() []byte {
-    return sig.c
 }
