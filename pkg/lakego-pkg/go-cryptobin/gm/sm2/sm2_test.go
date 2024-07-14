@@ -13,6 +13,7 @@ import (
     "encoding/base64"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
 func Test_Sm2(t *testing.T) {
@@ -635,4 +636,97 @@ func Test_SignLegacy(t *testing.T) {
     if sm2.VerifyLegacy(pub, hash[:], r, s) != nil {
         t.Error("veri error")
     }
+}
+
+func test_Encrypt_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    ciphertext, err := pub.Encrypt(rand.Reader, []byte(plainText), opts)
+    if err != nil {
+        t.Fatalf("encrypt failed %v", err)
+    }
+
+    plaintext, err := pri.Decrypt(rand.Reader, ciphertext, opts)
+    if err != nil {
+        t.Fatalf("decrypt failed %v", err)
+    }
+
+    if !reflect.DeepEqual(string(plaintext), plainText) {
+        t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
+func Test_Encrypt_Encoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_Encrypt_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+            Hash: sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_Encrypt_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+            Hash: sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
+
+}
+
+func test_Sign_Encoding(t *testing.T, opts sm2.SignerOpts) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := priv.Sign(rand.Reader, msg, opts)
+    if err != nil {
+        t.Error(err)
+    }
+
+    veri := pub.Verify(msg, signed, opts)
+    if !veri {
+        t.Error("veri error")
+    }
+}
+
+var usedUID = []byte{
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+}
+
+func Test_Sign_Encoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_Sign_Encoding(t, sm2.SignerOpts{
+            Uid:  usedUID,
+            Hash: sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_Sign_Encoding(t, sm2.SignerOpts{
+            Uid:  usedUID,
+            Hash: sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
 }

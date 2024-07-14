@@ -251,7 +251,7 @@ func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
 // authentication path for any message.
 func GeneratePKTree(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) ([][]byte, error) {
     params := typ.Params()
-    ots_params := otsType.Params()
+    otsParams := otsType.Params()
 
     var tree_nodes uint32 = (1 << (params.H + 1)) - 1
     var leaves uint32 = 1 << params.H
@@ -272,7 +272,7 @@ func GeneratePKTree(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) ([][
 
         putu32(r_be[:], r)
 
-        hasher := ots_params.Hash()
+        hasher := otsParams.Hash()
         hasher.Write(id[:])
         hasher.Write(r_be[:])
         hasher.Write(D_LEAF[:])
@@ -286,7 +286,7 @@ func GeneratePKTree(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) ([][
 
             putu32(r_be[:], r)
 
-            hasher := ots_params.Hash()
+            hasher := otsParams.Hash()
             hasher.Write(id[:])
             hasher.Write(r_be[:])
             hasher.Write(D_INTR[:])
@@ -351,38 +351,42 @@ func (pub *PublicKey) Verify(msg []byte, sig []byte) bool {
 // It returns false otherwise.
 func (pub *PublicKey) VerifyWithSignature(msg []byte, sig *Signature) bool {
     params := pub.typ.Params()
-    ots_params := pub.otsType.Params()
+    otsParams := pub.otsType.Params()
 
     height := int(params.H)
     leaves := uint32(1 << height)
 
-    key_candidate, valid := sig.ots.RecoverPublicKey(msg, pub.id, sig.q)
+    if pub.typ.GetType() != sig.typ.GetType(){
+        return false
+    }
+
+    keyCandidate, valid := sig.ots.RecoverPublicKey(msg, pub.otsType, pub.id, sig.q)
     if !valid {
         return false
     }
 
-    node_num := sig.q + leaves
+    nodeNum := sig.q + leaves
 
-    var node_num_bytes [4]byte
-    var tmp_be [4]byte
-    putu32(node_num_bytes[:], node_num)
+    var nodeNumBytes [4]byte
+    var tmpBytes [4]byte
+    putu32(nodeNumBytes[:], nodeNum)
 
-    hasher := ots_params.Hash()
+    hasher := otsParams.Hash()
     hasher.Write(pub.id[:])
-    hasher.Write(node_num_bytes[:])
+    hasher.Write(nodeNumBytes[:])
     hasher.Write(D_LEAF[:])
-    hasher.Write(key_candidate.Key())
+    hasher.Write(keyCandidate.Key())
     tmp := hasher.Sum(nil)
 
     for i := 0; i < height; i++ {
-        putu32(tmp_be[:], node_num>>1)
+        putu32(tmpBytes[:], nodeNum>>1)
 
-        hasher := ots_params.Hash()
+        hasher := otsParams.Hash()
         hasher.Write(pub.id[:])
-        hasher.Write(tmp_be[:])
+        hasher.Write(tmpBytes[:])
         hasher.Write(D_INTR[:])
 
-        if node_num%2 == 1 {
+        if nodeNum%2 == 1 {
             hasher.Write(sig.path[i])
             hasher.Write(tmp)
         } else {
@@ -391,7 +395,7 @@ func (pub *PublicKey) VerifyWithSignature(msg []byte, sig *Signature) bool {
         }
 
         tmp = hasher.Sum(nil)
-        node_num >>= 1
+        nodeNum >>= 1
     }
 
     return subtle.ConstantTimeCompare(tmp, pub.k) == 1

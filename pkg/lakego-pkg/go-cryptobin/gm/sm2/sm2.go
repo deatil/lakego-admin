@@ -54,15 +54,25 @@ type hashFunc = func() hash.Hash
 type Mode uint
 
 const (
-    C1C3C2 Mode = iota
+    C1C3C2 Mode = 1 + iota
     C1C2C3
+)
+
+// 数据编码方式
+// marshal data mode
+type Encoding uint
+
+const (
+    EncodingASN1 Encoding = 1 + iota
+    EncodingBytes
 )
 
 // 加密设置
 // Encrypter Opts
 type EncrypterOpts struct {
-    Mode Mode
-    Hash hashFunc
+    Mode     Mode
+    Hash     hashFunc
+    Encoding Encoding
 }
 
 func (this EncrypterOpts) GetMode() Mode {
@@ -82,11 +92,21 @@ func (this EncrypterOpts) GetHash() hashFunc {
     return sm3.New
 }
 
+func (this EncrypterOpts) GetEncoding() Encoding {
+    switch this.Encoding {
+        case EncodingASN1, EncodingBytes:
+            return this.Encoding
+        default:
+            return EncodingBytes
+    }
+}
+
 // 签名设置
 // Signer Opts
 type SignerOpts struct {
-    Uid  []byte
-    Hash hashFunc
+    Uid      []byte
+    Hash     hashFunc
+    Encoding Encoding
 }
 
 func (this SignerOpts) HashFunc() crypto.Hash {
@@ -109,16 +129,25 @@ func (this SignerOpts) GetHash() hashFunc {
     return sm3.New
 }
 
-var (
-    // default Encrypter Opts
-    DefaultEncrypterOpts = EncrypterOpts{
-        Mode: C1C3C2,
-        Hash: sm3.New,
+func (this SignerOpts) GetEncoding() Encoding {
+    switch this.Encoding {
+        case EncodingASN1, EncodingBytes:
+            return this.Encoding
+        default:
+            return EncodingASN1
     }
+}
 
+var (
     // default Signer Opts
     DefaultSignerOpts = SignerOpts{
         Uid:  defaultUID,
+        Hash: sm3.New,
+    }
+
+    // default Encrypter Opts
+    DefaultEncrypterOpts = EncrypterOpts{
+        Mode: C1C3C2,
         Hash: sm3.New,
     }
 )
@@ -150,8 +179,24 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 // 验证 asn.1 编码的数据 ans1(r, s)
 // Verify asn.1 marshal data
 func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
-    if Verify(pub, msg, sign, opts) == nil {
-        return true
+    opt := DefaultSignerOpts
+    if o, ok := opts.(SignerOpts); ok {
+        opt = o
+    }
+
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            if Verify(pub, msg, sign, opts) == nil {
+                return true
+            }
+
+            return false
+        case EncodingBytes:
+            if VerifyBytes(pub, msg, sign, opts) == nil {
+                return true
+            }
+
+            return false
     }
 
     return false
@@ -179,10 +224,15 @@ func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.Decrypt
         return nil, err
     }
 
-    // 编码数据 / Marshal Data
-    ct = marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            return marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+        case EncodingBytes:
+            res := marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+            return res, nil
+    }
 
-    return ct, nil
+    return nil, errors.New("cryptobin/sm2: Encrypt fail")
 }
 
 // Encrypt with ASN1
@@ -225,12 +275,31 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
 // 签名返回 asn.1 编码数据
 // sign data and return asn.1 marshal data
 func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    opt := DefaultSignerOpts
+    if o, ok := opts.(SignerOpts); ok {
+        opt = o
+    }
+
     r, s, err := SignToRS(random, priv, msg, opts)
     if err != nil {
         return nil, err
     }
 
-    return MarshalSignatureASN1(r, s)
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            return MarshalSignatureASN1(r, s)
+        case EncodingBytes:
+            byteLen := (priv.Curve.Params().BitSize + 7) / 8
+
+            buf := make([]byte, 2*byteLen)
+
+            r.FillBytes(buf[      0:  byteLen])
+            s.FillBytes(buf[byteLen:2*byteLen])
+
+            return buf, nil
+    }
+
+    return nil, errors.New("cryptobin/sm2: Sign fail")
 }
 
 // 签名返回 Bytes 编码数据
@@ -258,10 +327,21 @@ func (priv *PrivateKey) Decrypt(_ io.Reader, data []byte, opts crypto.DecrypterO
         opt = o
     }
 
-    // 解析数据 / Unmarshal Data
-    res, err := unmarshalCipherBytes(priv.Curve, data, opt.GetMode(), opt.GetHash())
-    if err != nil {
-        return nil, err
+    var res []byte
+
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            // 解析数据 / Unmarshal Data
+            res, err = unmarshalCipherASN1(priv.Curve, data, opt.GetMode())
+            if err != nil {
+                return nil, err
+            }
+        case EncodingBytes:
+            // 解析数据 / Unmarshal Data
+            res, err = unmarshalCipherBytes(priv.Curve, data, opt.GetMode(), opt.GetHash())
+            if err != nil {
+                return nil, err
+            }
     }
 
     return decrypt(priv, res, opt.GetHash())

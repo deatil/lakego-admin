@@ -279,7 +279,7 @@ func (pub *LmotsPublicKey) VerifyWithSignature(msg []byte, sig *LmotsSignature) 
     }
 
     // try to recover the public key
-    kc, valid := sig.RecoverPublicKey(msg, pub.id, pub.q)
+    kc, valid := sig.RecoverPublicKey(msg, pub.typ, pub.id, pub.q)
 
     // this short circuits if valid == false and does the key comparison otherwise
     return valid && subtle.ConstantTimeCompare(pub.k, kc.k) == 1
@@ -287,10 +287,14 @@ func (pub *LmotsPublicKey) VerifyWithSignature(msg []byte, sig *LmotsSignature) 
 
 // RecoverPublicKey calculates the public key for a given message.
 // This is used in signature verification.
-func (sig *LmotsSignature) RecoverPublicKey(msg []byte, id ID, q uint32) (*LmotsPublicKey, bool) {
+func (sig *LmotsSignature) RecoverPublicKey(msg []byte, typ ILmotsParam, id ID, q uint32) (*LmotsPublicKey, bool) {
     var be16 [2]byte
     var be32 [4]byte
     var tmp []byte
+
+    if sig.typ.GetType() != typ.GetType(){
+        return nil, false
+    }
 
     params := sig.typ.Params()
 
