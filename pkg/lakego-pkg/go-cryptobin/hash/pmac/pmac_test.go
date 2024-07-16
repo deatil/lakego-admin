@@ -10,6 +10,11 @@ import (
     "encoding/json"
 )
 
+func fromHex(s string) []byte {
+    res, _ := hex.DecodeString(s)
+    return res
+}
+
 // A cipher.Block mock, simulating block ciphers
 // with any block size.
 type dummyCipher int
@@ -318,4 +323,83 @@ func Test_DES_Check(t *testing.T) {
     if fmt.Sprintf("%x", out) != check {
         t.Errorf("Check error. got %x, want %s", out, check)
     }
+}
+
+type testData2 struct {
+    index string
+    key []byte
+    tagsize int
+    msg []byte
+    check []byte
+}
+
+func Test_NewWithTagSize_Check(t *testing.T) {
+    tests := []testData2{
+        {
+            index: "tagsize 16",
+            key: []byte("1234567812345678"),
+            tagsize: 16,
+            msg: []byte("message"),
+            check: fromHex("8cd539b11648bf574e463a33377b5250"),
+        },
+        {
+            index: "tagsize 14",
+            key: []byte("1234567812345678"),
+            tagsize: 14,
+            msg: []byte("message"),
+            check: fromHex("8cd539b11648bf574e463a33377b"),
+        },
+        {
+            index: "tagsize 12",
+            key: []byte("1234567812345678"),
+            tagsize: 12,
+            msg: []byte("message"),
+            check: fromHex("8cd539b11648bf574e463a33"),
+        },
+        {
+            index: "tagsize 10",
+            key: []byte("1234567812345678"),
+            tagsize: 10,
+            msg: []byte("message"),
+            check: fromHex("8cd539b11648bf574e46"),
+        },
+        {
+            index: "tagsize 8",
+            key: []byte("1234567812345678"),
+            tagsize: 8,
+            msg: []byte("message"),
+            check: fromHex("8cd539b11648bf57"),
+        },
+    }
+
+    for _, td := range tests {
+        t.Run(td.index, func(t *testing.T) {
+            c, err := aes.NewCipher(td.key)
+            if err != nil {
+                t.Fatalf("Could not create AES instance: %s", err)
+            }
+
+            h, err := NewWithTagSize(c, td.tagsize)
+            if err != nil {
+                t.Fatalf("Could not create PMAC instance: %s", err)
+            }
+
+            if size := h.Size(); size != td.tagsize {
+                t.Fatalf("Size() got: %d, want: %d", size, td.tagsize)
+            }
+
+            if bs := h.BlockSize(); bs != c.BlockSize() {
+                t.Fatalf("BlockSize() got: %d, want: %d", bs, c.BlockSize())
+            }
+
+            h.Write(td.msg)
+            res := h.Sum(nil)
+
+            if !bytes.Equal(res, td.check) {
+                t.Fatalf("Sum() got: %x, want: %x", res, td.check)
+            }
+        })
+
+    }
+
 }

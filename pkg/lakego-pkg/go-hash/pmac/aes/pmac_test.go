@@ -1,29 +1,11 @@
-package pmac
+package aes
 
 import (
-    "fmt"
     "bytes"
     "testing"
-    "crypto/aes"
-    "crypto/des"
     "encoding/hex"
     "encoding/json"
 )
-
-func fromHex(s string) []byte {
-    res, _ := hex.DecodeString(s)
-    return res
-}
-
-// A cipher.Block mock, simulating block ciphers
-// with any block size.
-type dummyCipher int
-
-func (c dummyCipher) BlockSize() int { return int(c) }
-
-func (c dummyCipher) Encrypt(dst, src []byte) { copy(dst, src) }
-
-func (c dummyCipher) Decrypt(dst, src []byte) { copy(dst, src) }
 
 type pmacAESExample struct {
     key     []byte
@@ -172,12 +154,12 @@ func loadPMACAESExamples() []pmacAESExample {
 
 func TestPMACAES(t *testing.T) {
     for i, tt := range loadPMACAESExamples() {
-        c, err := aes.NewCipher(tt.key)
+        d, err := New(tt.key)
         if err != nil {
-            t.Errorf("test %d: NewCipher: %s", i, err)
+            t.Errorf("test %d: New: %s", i, err)
             continue
         }
-        d, _ := New(c)
+
         n, err := d.Write(tt.message)
         if err != nil || n != len(tt.message) {
             t.Errorf("test %d: Write %d: %d, %s", i, len(tt.message), n, err)
@@ -194,11 +176,12 @@ func TestPMACAES(t *testing.T) {
 func TestWrite(t *testing.T) {
     pmacAESTests := loadPMACAESExamples()
     tt := pmacAESTests[len(pmacAESTests)-1]
-    c, err := aes.NewCipher(tt.key)
+
+    d, err := New(tt.key)
     if err != nil {
-        t.Fatal(err)
+        t.Errorf("test: New: %s", err)
+        return
     }
-    d, _ := New(c)
 
     // Test writing byte-by-byte
     for _, b := range tt.message {
@@ -249,14 +232,11 @@ func TestWrite(t *testing.T) {
 }
 
 func TestSum(t *testing.T) {
-    c, err := aes.NewCipher(make([]byte, 16))
-    if err != nil {
-        t.Fatalf("Could not create AES instance: %s", err)
-    }
-
     msg := make([]byte, 64)
+    key := make([]byte, 16)
+
     for i := range msg {
-        h, err := New(c)
+        h, err := New(key)
         if err != nil {
             t.Fatalf("Iteration %d: Failed to create CMAC instance: %s", i, err)
         }
@@ -264,7 +244,7 @@ func TestSum(t *testing.T) {
         h.Write(msg[:i])
         tag0 := h.Sum(nil)
 
-        tag1, err := Sum(msg[:i], c, c.BlockSize())
+        tag1, err := Sum(msg[:i], key, 16)
         if err != nil {
             t.Fatalf("Iteration %d: Failed to compute CMAC tag: %s", i, err)
         }
@@ -273,133 +253,20 @@ func TestSum(t *testing.T) {
             t.Fatalf("Iteration %d: Sum differ from cmac.Sum\n Sum: %s \n cmac.Sum %s", i, hex.EncodeToString(tag0), hex.EncodeToString(tag1))
         }
     }
-
-    _, err = Sum(nil, dummyCipher(20), 20)
-    if err == nil {
-        t.Fatalf("cmac.Sum allowed invalid block size: %d", 20)
-    }
-}
-
-func TestVerify(t *testing.T) {
-    var mac [16]byte
-    mac[0] = 128
-
-    if Verify(mac[:], nil, dummyCipher(20), 20) {
-        t.Fatalf("cmac.Verify allowed invalid block size: %d", 20)
-    }
 }
 
 func BenchmarkPMAC_AES128(b *testing.B) {
     pmacAESTests := loadPMACAESExamples()
-    c, _ := aes.NewCipher(pmacAESTests[0].key)
+
     v := make([]byte, 1024)
     out := make([]byte, 16)
     b.SetBytes(int64(len(v)))
     for i := 0; i < b.N; i++ {
-        d, _ := New(c)
+        d, _ := New(pmacAESTests[0].key)
         _, err := d.Write(v)
         if err != nil {
             panic(err)
         }
         out = d.Sum(out[:0])
     }
-}
-
-func Test_DES_Check(t *testing.T) {
-    key := []byte("test1235")
-    in := []byte("nonce-asdfg")
-    check := "40b82d71e4d30a9d"
-
-    block, err := des.NewCipher(key)
-    if err != nil {
-        t.Fatal(err)
-    }
-
-    h, _ := New(block)
-    h.Write(in)
-
-    out := h.Sum(nil)
-
-    if fmt.Sprintf("%x", out) != check {
-        t.Errorf("Check error. got %x, want %s", out, check)
-    }
-}
-
-type testData2 struct {
-    index string
-    key []byte
-    tagsize int
-    msg []byte
-    check []byte
-}
-
-func Test_NewWithTagSize_Check(t *testing.T) {
-    tests := []testData2{
-        {
-            index: "tagsize 16",
-            key: []byte("1234567812345678"),
-            tagsize: 16,
-            msg: []byte("message"),
-            check: fromHex("8cd539b11648bf574e463a33377b5250"),
-        },
-        {
-            index: "tagsize 14",
-            key: []byte("1234567812345678"),
-            tagsize: 14,
-            msg: []byte("message"),
-            check: fromHex("8cd539b11648bf574e463a33377b"),
-        },
-        {
-            index: "tagsize 12",
-            key: []byte("1234567812345678"),
-            tagsize: 12,
-            msg: []byte("message"),
-            check: fromHex("8cd539b11648bf574e463a33"),
-        },
-        {
-            index: "tagsize 10",
-            key: []byte("1234567812345678"),
-            tagsize: 10,
-            msg: []byte("message"),
-            check: fromHex("8cd539b11648bf574e46"),
-        },
-        {
-            index: "tagsize 8",
-            key: []byte("1234567812345678"),
-            tagsize: 8,
-            msg: []byte("message"),
-            check: fromHex("8cd539b11648bf57"),
-        },
-    }
-
-    for _, td := range tests {
-        t.Run(td.index, func(t *testing.T) {
-            c, err := aes.NewCipher(td.key)
-            if err != nil {
-                t.Fatalf("Could not create AES instance: %s", err)
-            }
-
-            h, err := NewWithTagSize(c, td.tagsize)
-            if err != nil {
-                t.Fatalf("Could not create PMAC instance: %s", err)
-            }
-
-            if size := h.Size(); size != td.tagsize {
-                t.Fatalf("Size() got: %d, want: %d", size, td.tagsize)
-            }
-
-            if bs := h.BlockSize(); bs != c.BlockSize() {
-                t.Fatalf("BlockSize() got: %d, want: %d", bs, c.BlockSize())
-            }
-
-            h.Write(td.msg)
-            res := h.Sum(nil)
-
-            if !bytes.Equal(res, td.check) {
-                t.Fatalf("Sum() got: %x, want: %x", res, td.check)
-            }
-        })
-
-    }
-
 }

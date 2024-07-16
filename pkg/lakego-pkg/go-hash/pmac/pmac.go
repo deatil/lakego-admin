@@ -16,8 +16,8 @@ var (
 )
 
 type pmac struct {
-    // c is the block cipher we're using (i.e. AES-128 or AES-256)
-    c cipher.Block
+    // cipher is the block cipher we're using (i.e. AES-128 or AES-256)
+    cipher cipher.Block
 
     l []Block
 
@@ -67,28 +67,28 @@ func NewWithTagSize(c cipher.Block, tagsize int) (hash.Hash, error) {
 
     switch blocksize {
         case 8, 16, 32, 64, 128:
-            //
+            break
         default:
             return nil, errUnsupportedCipher
     }
 
     d := new(pmac)
-    d.c = c
+    d.cipher = c
     d.pcbs = 2*blocksize-1
     d.tagsize = tagsize
 
-    tmp := NewBlock(d.tagsize)
+    tmp := NewBlock(blocksize)
     tmp.Encrypt(c)
 
     d.l = make([]Block, d.pcbs)
 
-    d.lInv = NewBlock(d.tagsize)
-    d.digest = NewBlock(d.tagsize)
-    d.offset = NewBlock(d.tagsize)
-    d.buf = NewBlock(d.tagsize)
+    d.lInv = NewBlock(blocksize)
+    d.digest = NewBlock(blocksize)
+    d.offset = NewBlock(blocksize)
+    d.buf = NewBlock(blocksize)
 
     for i := range d.l {
-        d.l[i] = NewBlock(d.tagsize)
+        d.l[i] = NewBlock(blocksize)
 
         copy(d.l[i].Data, tmp.Data)
         tmp.Dbl()
@@ -100,16 +100,16 @@ func NewWithTagSize(c cipher.Block, tagsize int) (hash.Hash, error) {
     //     (a>>1) ⊕ 10¹²⁰1000011 if lastbit(a)=1
     //
     copy(tmp.Data, d.l[0].Data)
-    lastBit := int(tmp.Data[d.tagsize-1] & 0x01)
+    lastBit := int(tmp.Data[blocksize-1] & 0x01)
 
-    for i := d.tagsize - 1; i > 0; i-- {
+    for i := blocksize - 1; i > 0; i-- {
         carry := byte(subtle.ConstantTimeSelect(int(tmp.Data[i-1]&1), 0x80, 0))
         tmp.Data[i] = (tmp.Data[i] >> 1) | carry
     }
 
     tmp.Data[0] >>= 1
     tmp.Data[0] ^= byte(subtle.ConstantTimeSelect(lastBit, 0x80, 0))
-    tmp.Data[d.tagsize-1] ^= byte(subtle.ConstantTimeSelect(lastBit, R>>1, 0))
+    tmp.Data[blocksize-1] ^= byte(subtle.ConstantTimeSelect(lastBit, R>>1, 0))
     copy(d.lInv.Data, tmp.Data)
 
     return d, nil
@@ -130,7 +130,7 @@ func (d *pmac) Size() int {
 }
 
 func (d *pmac) BlockSize() int {
-    return d.tagsize
+    return d.cipher.BlockSize()
 }
 
 // Write adds the given data to the digest state.
@@ -139,9 +139,11 @@ func (d *pmac) Write(msg []byte) (int, error) {
         panic("pmac: already finished")
     }
 
+    blocksize := d.cipher.BlockSize()
+
     var msgPos, msgLen, remaining uint
     msgLen = uint(len(msg))
-    remaining = uint(d.tagsize) - d.pos
+    remaining = uint(blocksize) - d.pos
 
     // Finish filling the internal buf with the message
     if msgLen > remaining {
@@ -155,11 +157,11 @@ func (d *pmac) Write(msg []byte) (int, error) {
 
     // So long as we have more than a blocks worth of data, compute
     // whole-sized blocks at a time.
-    for msgLen > uint(d.tagsize) {
-        copy(d.buf.Data[:], msg[msgPos:msgPos+uint(d.tagsize)])
+    for msgLen > uint(blocksize) {
+        copy(d.buf.Data[:], msg[msgPos:msgPos+uint(blocksize)])
 
-        msgPos += uint(d.tagsize)
-        msgLen -= uint(d.tagsize)
+        msgPos += uint(blocksize)
+        msgLen -= uint(blocksize)
 
         d.processBuffer()
     }
@@ -188,7 +190,9 @@ func (d *pmac) checkSum() []byte {
         panic("pmac: already finished")
     }
 
-    if d.pos == uint(d.tagsize) {
+    blocksize := d.cipher.BlockSize()
+
+    if d.pos == uint(blocksize) {
         xor(d.digest.Data, d.buf.Data)
         xor(d.digest.Data, d.lInv.Data)
     } else {
@@ -196,10 +200,10 @@ func (d *pmac) checkSum() []byte {
         d.digest.Data[d.pos] ^= 0x80
     }
 
-    d.digest.Encrypt(d.c)
+    d.digest.Encrypt(d.cipher)
     d.finished = true
 
-    return d.digest.Data
+    return d.digest.Data[:d.tagsize]
 }
 
 // Update the internal tag state based on the buf contents
@@ -208,12 +212,7 @@ func (d *pmac) processBuffer() {
     xor(d.buf.Data, d.offset.Data)
     d.ctr++
 
-    d.buf.Encrypt(d.c)
+    d.buf.Encrypt(d.cipher)
     xor(d.digest.Data, d.buf.Data)
     d.pos = 0
-}
-
-// XOR the contents of b into a in-place
-func xor(a, b []byte) {
-    subtle.XORBytes(a, a, b)
 }

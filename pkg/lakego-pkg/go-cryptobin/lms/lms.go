@@ -301,10 +301,10 @@ func GeneratePKTree(typ ILmsParam, otsType ILmotsParam, id ID, seed []byte) ([][
 
 // A PublicKey is used to verify messages signed by a PrivateKey
 type PublicKey struct {
-    typ      ILmsParam
-    otsType  ILmotsParam
-    id       ID
-    k        []byte
+    typ     ILmsParam
+    otsType ILmotsParam
+    id      ID
+    k       []byte
 }
 
 // NewPublicKey return a new PublicKey, given the LMS typecode, LM-OTS typecode, ID, and

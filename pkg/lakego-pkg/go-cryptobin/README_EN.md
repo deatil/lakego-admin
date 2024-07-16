@@ -12,7 +12,7 @@ go-cryptobin is a go encrypt or decrypt library
 *  encrypt mode（ECB/CBC/PCBC/CFB/NCFB/OFB/NOFB/CTR/GCM/CCM）
 *  encrypt padding（NoPadding/ZeroPadding/PKCS5Padding/PKCS7Padding/X923Padding/ISO10126Padding/ISO97971Padding/ISO7816_4Padding/PBOC2Padding/TBCPadding/PKCS1Padding）
 *  asym encrypts（Aes（RSA/SM2/EIGamal）
-*  asym sign（RSA/PSS/DSA/ECDSA/EdDSA/SM2/EIGamal/ED448/Gost）
+*  asym sign（RSA/RSA-PSS/DSA/ECDSA/EdDSA/SM2/EIGamal/ED448/Gost）
 *  default setting `Aes`, `ECB`, `NoPadding`
 
 
