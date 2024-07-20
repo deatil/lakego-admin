@@ -78,6 +78,23 @@ func (this ECDSA) WithParsedData(data []byte) ECDSA {
     return this
 }
 
+// 设置编码方式
+func (this ECDSA) WithEncoding(encoding EncodingType) ECDSA {
+    this.encoding = encoding
+
+    return this
+}
+
+// 设置 ASN1 编码方式
+func (this ECDSA) WithEncodingASN1() ECDSA {
+    return this.WithEncoding(EncodingASN1)
+}
+
+// 设置明文编码方式
+func (this ECDSA) WithEncodingBytes() ECDSA {
+    return this.WithEncoding(EncodingBytes)
+}
+
 // 设置验证结果
 func (this ECDSA) WithVerify(data bool) ECDSA {
     this.verify = data

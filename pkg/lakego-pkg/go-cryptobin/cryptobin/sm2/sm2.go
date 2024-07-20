@@ -23,6 +23,15 @@ type (
     HashFunc = func() hash.Hash
 )
 
+// 数据编码方式
+// marshal data type
+type EncodingType uint
+
+const (
+    EncodingASN1 EncodingType = 1 + iota
+    EncodingBytes
+)
+
 /**
  * 国密 SM2 加密
  *
@@ -53,6 +62,9 @@ type SM2 struct {
 
     // UID
     uid []byte
+
+    // 数据编码方式
+    encoding EncodingType
 
     // 验证结果
     verify bool

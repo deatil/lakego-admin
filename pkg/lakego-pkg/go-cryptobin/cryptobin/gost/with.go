@@ -115,6 +115,23 @@ func (this Gost) SetSignHash(data string) Gost {
     return this
 }
 
+// 设置编码方式
+func (this Gost) WithEncoding(encoding EncodingType) Gost {
+    this.encoding = encoding
+
+    return this
+}
+
+// 设置 ASN1 编码方式
+func (this Gost) WithEncodingASN1() Gost {
+    return this.WithEncoding(EncodingASN1)
+}
+
+// 设置明文编码方式
+func (this Gost) WithEncodingBytes() Gost {
+    return this.WithEncoding(EncodingBytes)
+}
+
 // 设置 verify
 func (this Gost) WithVerify(data bool) Gost {
     this.verify = data

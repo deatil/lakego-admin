@@ -10,7 +10,7 @@ import (
     "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
-    cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
+    "github.com/deatil/go-cryptobin/pkcs12"
 )
 
 // 证书
@@ -71,7 +71,7 @@ func (this CA) FromPublicKey(key any) CA {
 
 // pkcs12
 func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
-    privateKey, cert, err := cryptobin_pkcs12.Decode(pfxData, password)
+    privateKey, cert, err := pkcs12.Decode(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }
@@ -84,7 +84,7 @@ func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
 
 // pkcs12
 func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
-    pv, cert, err := cryptobin_pkcs12.Decode(pfxData, password)
+    pv, cert, err := pkcs12.Decode(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }

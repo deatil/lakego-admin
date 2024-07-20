@@ -59,6 +59,11 @@ func (this Gost) GetParsedData() []byte {
     return this.parsedData
 }
 
+// 获取编码类型
+func (this Gost) GetEncoding() EncodingType {
+    return this.encoding
+}
+
 // 获取验证后情况
 func (this Gost) GetVerify() bool {
     return this.verify

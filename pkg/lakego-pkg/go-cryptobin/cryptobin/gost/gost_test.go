@@ -449,3 +449,98 @@ func Test_UseKeyBytes(t *testing.T) {
         t.Error("FromPublicKeyBytes fail")
     }
 }
+
+func Test_EncodingType(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    var gost Gost
+
+    gost = NewGost().WithEncoding(EncodingASN1)
+    assertEqual(gost.encoding, EncodingASN1, "EncodingASN1 1")
+
+    gost = NewGost().WithEncodingASN1()
+    assertEqual(gost.encoding, EncodingASN1, "EncodingASN1")
+
+    gost = NewGost().WithEncodingBytes()
+    assertEqual(gost.encoding, EncodingBytes, "EncodingBytes")
+
+    gost = Gost{
+        encoding: EncodingASN1,
+    }
+    assertEqual(gost.GetEncoding(), EncodingASN1, "new EncodingASN1")
+
+    gost = Gost{
+        encoding: EncodingBytes,
+    }
+    assertEqual(gost.GetEncoding(), EncodingBytes, "new EncodingBytes")
+}
+
+func Test_SignWithEncoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_SignWithEncoding(t, EncodingASN1)
+    })
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_SignWithEncoding(t, EncodingBytes)
+    })
+}
+
+func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    gen := GenerateKey("IdGostR34102001CryptoProAParamSet")
+
+    data := "test-pass"
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        WithEncoding(encoding).
+        Sign()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "test_SignWithEncoding-Sign")
+    assertNotEmpty(signed, "test_SignWithEncoding-Sign")
+
+    // 验证
+    objVerify := gen.
+        FromBase64String(signed).
+        WithEncoding(encoding).
+        Verify([]byte(data))
+
+    assertError(objVerify.Error(), "test_SignWithEncoding-Verify")
+    assertBool(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
+}
+
+func Test_SignWithEncoding_Two_Check(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertNotEqual := cryptobin_test.AssertNotEqualT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+
+    gen := GenerateKey("IdGostR34102001CryptoProAParamSet")
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        WithEncoding(EncodingASN1).
+        Sign()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
+
+    // 签名
+    objSign2 := gen.
+        FromString(data).
+        WithEncoding(EncodingBytes).
+        Sign()
+    signed2 := objSign2.ToBase64String()
+
+    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
+
+    assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")
+}

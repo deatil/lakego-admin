@@ -14,11 +14,6 @@ func (this DSA) GetPublicKey() *dsa.PublicKey {
     return this.publicKey
 }
 
-// 获取 hash 类型
-func (this DSA) GetSignHash() HashFunc {
-    return this.signHash
-}
-
 // 获取 keyData
 func (this DSA) GetKeyData() []byte {
     return this.keyData
@@ -32,6 +27,16 @@ func (this DSA) GetData() []byte {
 // 获取 parsedData
 func (this DSA) GetParsedData() []byte {
     return this.parsedData
+}
+
+// 获取 hash 类型
+func (this DSA) GetSignHash() HashFunc {
+    return this.signHash
+}
+
+// get Encoding type
+func (this DSA) GetEncoding() EncodingType {
+    return this.encoding
 }
 
 // 获取验证后情况

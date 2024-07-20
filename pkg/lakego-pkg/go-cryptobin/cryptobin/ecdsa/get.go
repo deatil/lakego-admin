@@ -99,6 +99,11 @@ func (this ECDSA) GetParsedData() []byte {
     return this.parsedData
 }
 
+// get Encoding type
+func (this ECDSA) GetEncoding() EncodingType {
+    return this.encoding
+}
+
 // get verify data
 func (this ECDSA) GetVerify() bool {
     return this.verify

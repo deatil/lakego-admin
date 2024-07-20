@@ -9,12 +9,39 @@ import (
     "encoding/asn1"
 )
 
+// 私钥签名
+func (this DSA) Sign() DSA {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.SignASN1()
+        case EncodingBytes:
+            return this.SignBytes()
+    }
+
+    return this.SignASN1()
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this DSA) Verify(data []byte) DSA {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.VerifyASN1(data)
+        case EncodingBytes:
+            return this.VerifyBytes(data)
+    }
+
+    return this.VerifyASN1(data)
+}
+
+// ===============
+
 type dsaSignature struct {
     R, S *big.Int
 }
 
 // 私钥签名
-func (this DSA) Sign() DSA {
+func (this DSA) SignASN1() DSA {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -37,7 +64,7 @@ func (this DSA) Sign() DSA {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this DSA) Verify(data []byte) DSA {
+func (this DSA) VerifyASN1(data []byte) DSA {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -57,19 +84,6 @@ func (this DSA) Verify(data []byte) DSA {
     this.verify = dsa.Verify(this.publicKey, hashed, dsaSign.R, dsaSign.S)
 
     return this
-}
-
-// ===============
-
-// 私钥签名
-func (this DSA) SignASN1() DSA {
-    return this.Sign()
-}
-
-// 公钥验证
-// 使用原始数据[data]对比签名后数据
-func (this DSA) VerifyASN1(data []byte) DSA {
-    return this.Verify(data)
 }
 
 // ===============

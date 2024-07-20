@@ -99,6 +99,11 @@ func (this SM2) GetUID() []byte {
     return this.uid
 }
 
+// get Encoding type
+func (this SM2) GetEncoding() EncodingType {
+    return this.encoding
+}
+
 // get verify data
 func (this SM2) GetVerify() bool {
     return this.verify

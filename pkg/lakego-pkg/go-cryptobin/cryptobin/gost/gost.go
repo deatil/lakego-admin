@@ -12,6 +12,15 @@ type (
     HashFunc = func() hash.Hash
 )
 
+// 数据编码方式
+// marshal data type
+type EncodingType uint
+
+const (
+    EncodingASN1 EncodingType = 1 + iota
+    EncodingBytes
+)
+
 /**
  * Gost
  *
@@ -30,6 +39,9 @@ type Gost struct {
 
     // 签名验证类型
     signHash HashFunc
+
+    // 数据编码方式
+    encoding EncodingType
 
     // [私钥/公钥]数据
     keyData []byte

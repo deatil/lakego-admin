@@ -15,50 +15,6 @@ import (
     cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
 )
 
-// 证书请求
-func (this CA) CreateCSR() CA {
-    if this.privateKey == nil {
-        err := errors.New("privateKey error.")
-        return this.AppendError(err)
-    }
-
-    var csrBytes []byte
-    var err error
-
-    switch privateKey := this.privateKey.(type) {
-        case *sm2.PrivateKey:
-            certRequest, ok := this.certRequest.(*cryptobin_x509.CertificateRequest)
-            if !ok {
-                err := errors.New("sm2 certRequest error.")
-                return this.AppendError(err)
-            }
-
-            csrBytes, err = cryptobin_x509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
-
-        default:
-            certRequest, ok := this.certRequest.(*x509.CertificateRequest)
-            if !ok {
-                err := errors.New("certRequest error.")
-                return this.AppendError(err)
-            }
-
-            csrBytes, err = x509.CreateCertificateRequest(rand.Reader, certRequest, this.privateKey)
-    }
-
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    csrBlock := &pem.Block{
-        Type: "CERTIFICATE REQUEST",
-        Bytes: csrBytes,
-    }
-
-    this.keyData = pem.EncodeToMemory(csrBlock)
-
-    return this
-}
-
 // CA 证书
 func (this CA) CreateCA() CA {
     if this.publicKey == nil || this.privateKey == nil {
@@ -77,9 +33,7 @@ func (this CA) CreateCA() CA {
                 return this.AppendError(err)
             }
 
-            publicKey := &privateKey.PublicKey
-
-            caBytes, err = cryptobin_x509.CreateCertificate(rand.Reader, cert, cert, publicKey, privateKey)
+            caBytes, err = cryptobin_x509.CreateCertificate(rand.Reader, cert, cert, this.publicKey, privateKey)
 
         default:
             cert, ok := this.cert.(*x509.Certificate)
@@ -159,6 +113,50 @@ func (this CA) CreateCert(ca any) CA {
     }
 
     this.keyData = pem.EncodeToMemory(certBlock)
+
+    return this
+}
+
+// 证书请求
+func (this CA) CreateCSR() CA {
+    if this.privateKey == nil {
+        err := errors.New("privateKey error.")
+        return this.AppendError(err)
+    }
+
+    var csrBytes []byte
+    var err error
+
+    switch privateKey := this.privateKey.(type) {
+        case *sm2.PrivateKey:
+            certRequest, ok := this.certRequest.(*cryptobin_x509.CertificateRequest)
+            if !ok {
+                err := errors.New("sm2 certRequest error.")
+                return this.AppendError(err)
+            }
+
+            csrBytes, err = cryptobin_x509.CreateCertificateRequest(rand.Reader, certRequest, privateKey)
+
+        default:
+            certRequest, ok := this.certRequest.(*x509.CertificateRequest)
+            if !ok {
+                err := errors.New("certRequest error.")
+                return this.AppendError(err)
+            }
+
+            csrBytes, err = x509.CreateCertificateRequest(rand.Reader, certRequest, this.privateKey)
+    }
+
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    csrBlock := &pem.Block{
+        Type: "CERTIFICATE REQUEST",
+        Bytes: csrBytes,
+    }
+
+    this.keyData = pem.EncodeToMemory(csrBlock)
 
     return this
 }

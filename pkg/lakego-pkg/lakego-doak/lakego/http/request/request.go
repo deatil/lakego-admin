@@ -9,13 +9,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
 )
 
-// 使用
-func New() *Request {
-    request := &Request{}
-
-    return request
-}
-
 /**
  * 请求
  *
@@ -25,6 +18,13 @@ func New() *Request {
 type Request struct {
     // 上下文
     ctx *router.Context
+}
+
+// 使用
+func New() *Request {
+    request := &Request{}
+
+    return request
 }
 
 // 设置上下文

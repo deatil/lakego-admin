@@ -87,6 +87,23 @@ func (this SM2) SetUID(data string) SM2 {
     return this
 }
 
+// 设置编码方式
+func (this SM2) WithEncoding(encoding EncodingType) SM2 {
+    this.encoding = encoding
+
+    return this
+}
+
+// 设置 ASN1 编码方式
+func (this SM2) WithEncodingASN1() SM2 {
+    return this.WithEncoding(EncodingASN1)
+}
+
+// 设置明文编码方式
+func (this SM2) WithEncodingBytes() SM2 {
+    return this.WithEncoding(EncodingBytes)
+}
+
 // 设置 verify
 func (this SM2) WithVerify(data bool) SM2 {
     this.verify = data

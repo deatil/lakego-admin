@@ -9,62 +9,30 @@ import (
     "crypto/x509/pkix"
 )
 
-// 生成证书请求
-func (this CA) MakeCSR(
-    country []string,
-    organization []string,
-    organizationalUnit []string,
-    locality []string,
-    province []string,
-    streetAddress []string,
-    postalCode []string,
-    commonName string,
-) CA {
-    this.certRequest = &x509.CertificateRequest{
-        Subject: pkix.Name{
-            Country: country,
-            Organization: organization,
-            OrganizationalUnit: organizationalUnit,
-            Locality: locality,
-            Province: province,
-            StreetAddress: streetAddress,
-            PostalCode: postalCode,
-            CommonName: commonName,
-
-            // SerialNumber: string,
-            // Names: []pkix.AttributeTypeAndValue{}
-            // ExtraNames: []pkix.AttributeTypeAndValue{}
-        },
-    }
-
-    return this
-}
-
-
 // 生成 CA 证书
 func (this CA) MakeCA(
-    subject *pkix.Name,
-    expire int,
+    subject     pkix.Name,
+    expire      int,
     signAlgName string,
 ) CA {
     signAlg := getSignatureAlgorithm(signAlgName)
 
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
-        Subject:      *subject,
+        Subject:      subject,
 
         // 生效时间
-        NotBefore:    time.Now(),
+        NotBefore: time.Now(),
         // 过期时间，年为单位
-        NotAfter:     time.Now().AddDate(expire, 0, 0),
+        NotAfter:  time.Now().AddDate(expire, 0, 0),
 
         // openssl 中的 extendedKeyUsage = clientAuth, serverAuth 字段
-        ExtKeyUsage:  []x509.ExtKeyUsage{
+        ExtKeyUsage: []x509.ExtKeyUsage{
             x509.ExtKeyUsageClientAuth,
             x509.ExtKeyUsageServerAuth,
         },
         // openssl 中的 keyUsage 字段
-        KeyUsage:     x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
+        KeyUsage: x509.KeyUsageDigitalSignature | x509.KeyUsageCertSign,
 
         // 表示用于CA
         IsCA:                  true,
@@ -77,19 +45,50 @@ func (this CA) MakeCA(
     return this
 }
 
+// 生成证书请求
+func (this CA) MakeCSR(
+    country            []string,
+    organization       []string,
+    organizationalUnit []string,
+    locality           []string,
+    province           []string,
+    streetAddress      []string,
+    postalCode         []string,
+    commonName         string,
+) CA {
+    this.certRequest = &x509.CertificateRequest{
+        Subject: pkix.Name{
+            Country:            country,
+            Organization:       organization,
+            OrganizationalUnit: organizationalUnit,
+            Locality:           locality,
+            Province:           province,
+            StreetAddress:      streetAddress,
+            PostalCode:         postalCode,
+            CommonName:         commonName,
+
+            // SerialNumber: string,
+            // Names: []pkix.AttributeTypeAndValue{}
+            // ExtraNames: []pkix.AttributeTypeAndValue{}
+        },
+    }
+
+    return this
+}
+
 // 生成自签名证书
 func (this CA) MakeCert(
-    subject *pkix.Name,
-    expire int,
-    dns []string,
-    ip []net.IP,
+    subject     pkix.Name,
+    expire      int,
+    dns         []string,
+    ip          []net.IP,
     signAlgName string,
 ) CA {
     signAlg := getSignatureAlgorithm(signAlgName)
 
     this.cert = &x509.Certificate{
         SerialNumber: big.NewInt(rand.Int63n(time.Now().Unix())),
-        Subject:      *subject,
+        Subject:      subject,
         SubjectKeyId: []byte{1, 2, 3, 4, 6},
 
         IPAddresses:  ip,

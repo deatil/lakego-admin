@@ -54,6 +54,23 @@ func (this DSA) SetSignHash(data string) DSA {
     return this
 }
 
+// 设置编码方式
+func (this DSA) WithEncoding(encoding EncodingType) DSA {
+    this.encoding = encoding
+
+    return this
+}
+
+// 设置 ASN1 编码方式
+func (this DSA) WithEncodingASN1() DSA {
+    return this.WithEncoding(EncodingASN1)
+}
+
+// 设置明文编码方式
+func (this DSA) WithEncodingBytes() DSA {
+    return this.WithEncoding(EncodingBytes)
+}
+
 // 设置 verify
 func (this DSA) WithVerify(data bool) DSA {
     this.verify = data

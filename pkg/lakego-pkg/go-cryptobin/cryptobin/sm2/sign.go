@@ -9,6 +9,33 @@ import (
 
 // 私钥签名
 func (this SM2) Sign() SM2 {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.SignASN1()
+        case EncodingBytes:
+            return this.SignBytes()
+    }
+
+    return this.SignASN1()
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this SM2) Verify(data []byte) SM2 {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.VerifyASN1(data)
+        case EncodingBytes:
+            return this.VerifyBytes(data)
+    }
+
+    return this.VerifyASN1(data)
+}
+
+// ===============
+
+// 私钥签名 ASN1
+func (this SM2) SignASN1() SM2 {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -27,9 +54,9 @@ func (this SM2) Sign() SM2 {
     return this
 }
 
-// 公钥验证
+// 公钥验证 ASN1
 // 使用原始数据[data]对比签名后数据
-func (this SM2) Verify(data []byte) SM2 {
+func (this SM2) VerifyASN1(data []byte) SM2 {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -41,19 +68,6 @@ func (this SM2) Verify(data []byte) SM2 {
     })
 
     return this
-}
-
-// ===============
-
-// 私钥签名 ASN1
-func (this SM2) SignASN1() SM2 {
-    return this.Sign()
-}
-
-// 公钥验证 ASN1
-// 使用原始数据[data]对比签名后数据
-func (this SM2) VerifyASN1(data []byte) SM2 {
-    return this.Verify(data)
 }
 
 // ===============

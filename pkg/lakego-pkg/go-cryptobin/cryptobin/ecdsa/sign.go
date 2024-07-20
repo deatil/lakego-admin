@@ -9,6 +9,33 @@ import (
 
 // 私钥签名
 func (this ECDSA) Sign() ECDSA {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.SignASN1()
+        case EncodingBytes:
+            return this.SignBytes()
+    }
+
+    return this.SignASN1()
+}
+
+// 公钥验证
+// 使用原始数据[data]对比签名后数据
+func (this ECDSA) Verify(data []byte) ECDSA {
+    switch this.encoding {
+        case EncodingASN1:
+            return this.VerifyASN1(data)
+        case EncodingBytes:
+            return this.VerifyBytes(data)
+    }
+
+    return this.VerifyASN1(data)
+}
+
+// ===============
+
+// 私钥签名 ASN1
+func (this ECDSA) SignASN1() ECDSA {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -29,9 +56,10 @@ func (this ECDSA) Sign() ECDSA {
     return this.AppendError(err)
 }
 
-// 公钥验证
+
+// 公钥验证 ASN1
 // 使用原始数据[data]对比签名后数据
-func (this ECDSA) Verify(data []byte) ECDSA {
+func (this ECDSA) VerifyASN1(data []byte) ECDSA {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -47,18 +75,6 @@ func (this ECDSA) Verify(data []byte) ECDSA {
     return this
 }
 
-// ===============
-
-// 私钥签名 ASN1
-func (this ECDSA) SignASN1() ECDSA {
-    return this.Sign()
-}
-
-// 公钥验证 ASN1
-// 使用原始数据[data]对比签名后数据
-func (this ECDSA) VerifyASN1(data []byte) ECDSA {
-    return this.Verify(data)
-}
 
 // ===============
 

@@ -503,3 +503,98 @@ func Test_PublicKeyForGet_Check(t *testing.T) {
     assertEqual(xyUncompressString, xyUncompressStringCheck, "Test_PublicKeyForGet_xyu_Check")
     assertEqual(dString, dStringCheck, "Test_PublicKeyForGet_d_Check")
 }
+
+func Test_EncodingType(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+
+    var ecdsa ECDSA
+
+    ecdsa = NewECDSA().WithEncoding(EncodingASN1)
+    assertEqual(ecdsa.encoding, EncodingASN1, "EncodingASN1 1")
+
+    ecdsa = NewECDSA().WithEncodingASN1()
+    assertEqual(ecdsa.encoding, EncodingASN1, "EncodingASN1")
+
+    ecdsa = NewECDSA().WithEncodingBytes()
+    assertEqual(ecdsa.encoding, EncodingBytes, "EncodingBytes")
+
+    ecdsa = ECDSA{
+        encoding: EncodingASN1,
+    }
+    assertEqual(ecdsa.GetEncoding(), EncodingASN1, "new EncodingASN1")
+
+    ecdsa = ECDSA{
+        encoding: EncodingBytes,
+    }
+    assertEqual(ecdsa.GetEncoding(), EncodingBytes, "new EncodingBytes")
+}
+
+func Test_SignWithEncoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_SignWithEncoding(t, EncodingASN1)
+    })
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_SignWithEncoding(t, EncodingBytes)
+    })
+}
+
+func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    gen := GenerateKey("P256")
+
+    data := "test-pass"
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        WithEncoding(encoding).
+        Sign()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "test_SignWithEncoding-Sign")
+    assertNotEmpty(signed, "test_SignWithEncoding-Sign")
+
+    // 验证
+    objVerify := gen.
+        FromBase64String(signed).
+        WithEncoding(encoding).
+        Verify([]byte(data))
+
+    assertError(objVerify.Error(), "test_SignWithEncoding-Verify")
+    assertBool(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
+}
+
+func Test_SignWithEncoding_Two_Check(t *testing.T) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertNotEqual := cryptobin_test.AssertNotEqualT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+
+    gen := GenerateKey("P256")
+
+    // 签名
+    objSign := gen.
+        FromString(data).
+        WithEncoding(EncodingASN1).
+        Sign()
+    signed := objSign.ToBase64String()
+
+    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
+
+    // 签名
+    objSign2 := gen.
+        FromString(data).
+        WithEncoding(EncodingBytes).
+        Sign()
+    signed2 := objSign2.ToBase64String()
+
+    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
+
+    assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")
+}

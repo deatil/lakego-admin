@@ -10,43 +10,28 @@ import (
 // 私钥签名
 // privateKey Sign
 func (this Gost) Sign() Gost {
-    if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
-        return this.AppendError(err)
+    switch this.encoding {
+        case EncodingASN1:
+            return this.SignASN1()
+        case EncodingBytes:
+            return this.SignBytes()
     }
 
-    hashed, err := this.dataHash(this.data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    parsedData, err := gost.Sign(rand.Reader, this.privateKey, hashed)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.parsedData = parsedData
-
-    return this
+    return this.SignBytes()
 }
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 // publicKey Verify
 func (this Gost) Verify(data []byte) Gost {
-    if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
-        return this.AppendError(err)
+    switch this.encoding {
+        case EncodingASN1:
+            return this.VerifyASN1(data)
+        case EncodingBytes:
+            return this.VerifyBytes(data)
     }
 
-    hashed, err := this.dataHash(data)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.verify, err = gost.Verify(this.publicKey, hashed, this.data)
-
-    return this.AppendError(err)
+    return this.VerifyBytes(data)
 }
 
 // ===============
@@ -98,15 +83,46 @@ func (this Gost) VerifyASN1(data []byte) Gost {
 // 私钥签名
 // privateKey Sign with bytes
 func (this Gost) SignBytes() Gost {
-    return this.Sign()
+    if this.privateKey == nil {
+        err := errors.New("privateKey empty.")
+        return this.AppendError(err)
+    }
+
+    hashed, err := this.dataHash(this.data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    parsedData, err := gost.Sign(rand.Reader, this.privateKey, hashed)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.parsedData = parsedData
+
+    return this
 }
+
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
 // publicKey Verify with bytes
 func (this Gost) VerifyBytes(data []byte) Gost {
-    return this.Verify(data)
+    if this.publicKey == nil {
+        err := errors.New("publicKey empty.")
+        return this.AppendError(err)
+    }
+
+    hashed, err := this.dataHash(data)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.verify, err = gost.Verify(this.publicKey, hashed, this.data)
+
+    return this.AppendError(err)
 }
+
 
 // ===============
 
