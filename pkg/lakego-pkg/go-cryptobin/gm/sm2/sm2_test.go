@@ -16,6 +16,15 @@ import (
     "github.com/deatil/go-cryptobin/hash/sm3"
 )
 
+func decodePEM(pubPEM string) *pem.Block {
+    block, _ := pem.Decode([]byte(pubPEM))
+    if block == nil {
+        panic("failed to parse PEM block containing the key")
+    }
+
+    return block
+}
+
 func Test_Sm2(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader) // 生成密钥对
     if err != nil {
@@ -242,15 +251,6 @@ func Test_Sign(t *testing.T) {
     if !veri {
         t.Error("veri error")
     }
-}
-
-func decodePEM(pubPEM string) *pem.Block {
-    block, _ := pem.Decode([]byte(pubPEM))
-    if block == nil {
-        panic("failed to parse PEM block containing the key")
-    }
-
-    return block
 }
 
 var testPrikey = `
@@ -671,20 +671,76 @@ func test_Encrypt_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
 func Test_Encrypt_Encoding(t *testing.T) {
     t.Run("EncodingASN1", func(t *testing.T) {
         test_Encrypt_Encoding(t, sm2.EncrypterOpts{
-            Mode: sm2.C1C3C2,
-            Hash: sm3.New,
+            Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
             Encoding: sm2.EncodingASN1,
         })
     })
 
     t.Run("EncodingBytes", func(t *testing.T) {
         test_Encrypt_Encoding(t, sm2.EncrypterOpts{
-            Mode: sm2.C1C3C2,
-            Hash: sm3.New,
+            Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
             Encoding: sm2.EncodingBytes,
         })
     })
 
+}
+
+func test_Encrypt_Func_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), opts)
+    if err != nil {
+        t.Fatalf("encrypt failed %v", err)
+    }
+
+    plaintext, err := sm2.Decrypt(pri, ciphertext, opts)
+    if err != nil {
+        t.Fatalf("decrypt failed %v", err)
+    }
+
+    if !reflect.DeepEqual(string(plaintext), plainText) {
+        t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
+func Test_Encrypt_Func_Encoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_Encrypt_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_Encrypt_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
+
+}
+
+// ============
+
+var usedUID = []byte{
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
 }
 
 func test_Sign_Encoding(t *testing.T, opts sm2.SignerOpts) {
@@ -708,24 +764,58 @@ func test_Sign_Encoding(t *testing.T, opts sm2.SignerOpts) {
     }
 }
 
-var usedUID = []byte{
-    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-    0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
-}
-
 func Test_Sign_Encoding(t *testing.T) {
     t.Run("EncodingASN1", func(t *testing.T) {
         test_Sign_Encoding(t, sm2.SignerOpts{
-            Uid:  usedUID,
-            Hash: sm3.New,
+            Uid:      usedUID,
+            Hash:     sm3.New,
             Encoding: sm2.EncodingASN1,
         })
     })
 
     t.Run("EncodingBytes", func(t *testing.T) {
         test_Sign_Encoding(t, sm2.SignerOpts{
-            Uid:  usedUID,
-            Hash: sm3.New,
+            Uid:      usedUID,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
+}
+
+func test_Sign_Func_Encoding(t *testing.T, opts sm2.SignerOpts) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := sm2.Sign(rand.Reader, priv, msg, opts)
+    if err != nil {
+        t.Error(err)
+    }
+
+    err = sm2.Verify(pub, msg, signed, opts)
+    if err != nil {
+        t.Error("veri error")
+    }
+}
+
+func Test_Sign_Func_Encoding(t *testing.T) {
+    t.Run("EncodingASN1", func(t *testing.T) {
+        test_Sign_Func_Encoding(t, sm2.SignerOpts{
+            Uid:      usedUID,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+
+    t.Run("EncodingBytes", func(t *testing.T) {
+        test_Sign_Func_Encoding(t, sm2.SignerOpts{
+            Uid:      usedUID,
+            Hash:     sm3.New,
             Encoding: sm2.EncodingBytes,
         })
     })

@@ -7,10 +7,36 @@ import (
     "crypto/elliptic"
 )
 
+// 拼接编码
+func MarshalSignatureBytes(curve elliptic.Curve, r, s *big.Int) ([]byte, error) {
+    byteLen := (curve.Params().BitSize + 7) / 8
+
+    buf := make([]byte, 2*byteLen)
+
+    r.FillBytes(buf[      0:  byteLen])
+    s.FillBytes(buf[byteLen:2*byteLen])
+
+    return buf, nil
+}
+
+func UnmarshalSignatureBytes(curve elliptic.Curve, sign []byte) (r, s *big.Int, err error) {
+    byteLen := (curve.Params().BitSize + 7) / 8
+    if len(sign) != 2*byteLen {
+        err = errors.New("cryptobin/sm2: incorrect signature")
+        return
+    }
+
+    r = new(big.Int).SetBytes(sign[      0:  byteLen])
+    s = new(big.Int).SetBytes(sign[byteLen:2*byteLen])
+
+    return
+}
+
 type sm2Signature struct {
     R, S *big.Int
 }
 
+// asn.1 编码
 func MarshalSignatureASN1(r, s *big.Int) ([]byte, error) {
     return asn1.Marshal(sm2Signature{r, s})
 }

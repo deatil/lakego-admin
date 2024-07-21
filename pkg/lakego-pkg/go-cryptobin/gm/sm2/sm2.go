@@ -184,32 +184,42 @@ func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
         opt = o
     }
 
+    var r, s *big.Int
+    var err error
+
     switch opt.GetEncoding() {
         case EncodingASN1:
-            if Verify(pub, msg, sign, opts) == nil {
-                return true
-            }
-
-            return false
+            r, s, err = UnmarshalSignatureASN1(sign)
         case EncodingBytes:
-            if VerifyBytes(pub, msg, sign, opts) == nil {
-                return true
-            }
-
-            return false
+            r, s, err = UnmarshalSignatureBytes(pub.Curve, sign)
     }
 
-    return false
+    if err != nil {
+        return false
+    }
+
+    err = VerifyWithRS(pub, msg, r, s, opt)
+    if err != nil {
+        return false
+    }
+
+    return true
 }
 
 // 验证 asn.1 编码的数据 bytes(r + s)
 // Verify Bytes marshal data
 func (pub *PublicKey) VerifyBytes(msg, sign []byte, opts crypto.SignerOpts) bool {
-    if VerifyBytes(pub, msg, sign, opts) == nil {
-        return true
+    r, s, err := UnmarshalSignatureBytes(pub.Curve, sign)
+    if err != nil {
+        return false
     }
 
-    return false
+    err = VerifyWithRS(pub, msg, r, s, opts)
+    if err != nil {
+        return false
+    }
+
+    return true
 }
 
 // Encrypt with bytes
@@ -226,7 +236,10 @@ func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.Decrypt
 
     switch opt.GetEncoding() {
         case EncodingASN1:
-            return marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+            res, err := marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+            if err == nil {
+                return res, nil
+            }
         case EncodingBytes:
             res := marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
             return res, nil
@@ -247,7 +260,12 @@ func (pub *PublicKey) EncryptASN1(random io.Reader, data []byte, opts crypto.Dec
         return nil, err
     }
 
-    return marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+    res, err := marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+    if err == nil {
+        return res, nil
+    }
+
+    return nil, errors.New("cryptobin/sm2: Encrypt fail")
 }
 
 // SM2 PrivateKey
@@ -287,16 +305,12 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
 
     switch opt.GetEncoding() {
         case EncodingASN1:
-            return MarshalSignatureASN1(r, s)
+            res, err := MarshalSignatureASN1(r, s)
+            if err == nil {
+                return res, nil
+            }
         case EncodingBytes:
-            byteLen := (priv.Curve.Params().BitSize + 7) / 8
-
-            buf := make([]byte, 2*byteLen)
-
-            r.FillBytes(buf[      0:  byteLen])
-            s.FillBytes(buf[byteLen:2*byteLen])
-
-            return buf, nil
+            return MarshalSignatureBytes(priv.Curve, r, s)
     }
 
     return nil, errors.New("cryptobin/sm2: Sign fail")
@@ -310,14 +324,7 @@ func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.Sign
         return nil, err
     }
 
-    byteLen := (priv.Curve.Params().BitSize + 7) / 8
-
-    buf := make([]byte, 2*byteLen)
-
-    r.FillBytes(buf[      0:  byteLen])
-    s.FillBytes(buf[byteLen:2*byteLen])
-
-    return buf, nil
+    return MarshalSignatureBytes(priv.Curve, r, s)
 }
 
 // crypto.Decrypter
@@ -591,12 +598,12 @@ func Verify(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) error {
         return errPublicKey
     }
 
-    r, s, err := UnmarshalSignatureASN1(sign)
-    if err != nil {
+    ok := pub.Verify(msg, sign, opts)
+    if !ok {
         return errors.New("cryptobin/sm2: incorrect signature")
     }
 
-    return VerifyWithRS(pub, msg, r, s, opts)
+    return nil
 }
 
 // 签名返回 Bytes 编码数据
@@ -616,15 +623,12 @@ func VerifyBytes(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) error
         return errPublicKey
     }
 
-    byteLen := (pub.Curve.Params().BitSize + 7) / 8
-    if len(sign) != 2*byteLen {
+    ok := pub.VerifyBytes(msg, sign, opts)
+    if !ok {
         return errors.New("cryptobin/sm2: incorrect signature")
     }
 
-    r := new(big.Int).SetBytes(sign[      0:  byteLen])
-    s := new(big.Int).SetBytes(sign[byteLen:2*byteLen])
-
-    return VerifyWithRS(pub, msg, r, s, opts)
+    return nil
 }
 
 // sm2 sign with SignerOpts
