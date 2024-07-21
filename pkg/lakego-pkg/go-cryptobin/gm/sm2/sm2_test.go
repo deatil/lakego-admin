@@ -6,6 +6,7 @@ import (
     "testing"
     "math/big"
     "crypto/rand"
+    "crypto/md5"
     "crypto/sha1"
     "crypto/sha256"
     "encoding/pem"
@@ -209,6 +210,27 @@ func Test_SignBytes(t *testing.T) {
     }
 }
 
+func Test_SignBytes_Func(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    signed, err := sm2.SignBytes(rand.Reader, priv, msg, nil)
+    if err != nil {
+        t.Error(err)
+    }
+
+    err = sm2.VerifyBytes(pub, msg, signed, nil)
+    if err != nil {
+        t.Error("veri error")
+    }
+}
+
 func Test_SignBytes_WithUID(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
@@ -282,7 +304,9 @@ func Test_Encrypt(t *testing.T) {
 
     plainText := "sm2-data"
 
-    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), sm2.C1C3C2)
+    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+    })
     if err != nil {
         t.Fatalf("encrypt failed %v", err)
     }
@@ -314,13 +338,15 @@ func Test_Encrypt_C1C2C3(t *testing.T) {
 
     plainText := "sm2-data"
 
-    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), sm2.C1C2C3)
+    ciphertext, err := sm2.Encrypt(rand.Reader, pub, []byte(plainText), sm2.EncrypterOpts{
+        Mode: sm2.C1C2C3,
+    })
     if err != nil {
         t.Fatalf("encrypt failed %v", err)
     }
 
     plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{
-        Mode: sm2.C1C3C2,
+        Mode: sm2.C1C2C3,
     })
     if err != nil {
         t.Fatalf("decrypt failed %v", err)
@@ -331,7 +357,7 @@ func Test_Encrypt_C1C2C3(t *testing.T) {
     }
 }
 
-func Test_Encrypt_Check(t *testing.T) {
+func Test_EncryptASN1_Check(t *testing.T) {
     blockPri := decodePEM(testPrikey)
     pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
     if err != nil {
@@ -534,6 +560,56 @@ jH2lTEple4quIBsSSl6aaiDmw3HDROEwj9bgO1chYAEWEVyhs1f3jEsdew==
 -----END PUBLIC KEY-----
 `
 
+func Test_EncryptSM3_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BBbcwtq8K+ZxxUnFv2LF3QkUALtMrh+ZFVAMcKm/PQhG1pgvmmlHdxQ/JX3wGuJuzspC5vWZUziNfgS1+kOukU5QkkHJ+ooiwoIw/MubDFBXvHCoAVdlo1EbeYUyeOnd07jSeu45VxjM+dJypJK/"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+        Hash: sm3.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSM3_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptMD5_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BMPd85Lwg8ovJ0QScoD+N1y0TZ65nCqtY7kvCZTDEMa2xv6d6PcjKbN+xS2wcvDKWslXNHm0N5jidvR7puqyqAdhWm1u/xw3OF5A7BWreG/m7mnlDYViXpXcFPWCdP0="
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C3C2,
+        Hash: md5.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptMD5_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
 func Test_EncryptSha1_Check(t *testing.T) {
     blockPri := decodePEM(testPrikey3)
     pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
@@ -581,6 +657,106 @@ func Test_EncryptSha256_Check(t *testing.T) {
 
     if bytes.Compare(msg, dedata) != 0 {
         t.Errorf("Test_EncryptSha256_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptSM3_C1C2C3_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BDyaPy9dvXUL7FNcnos/lsxC6wVES8C3UcHX4ZLQTxq70fRFrHytdCREwvwY7A1Gb7bhJ98GHiLIHh/xasRlkRaAaTnZ/f2mXZwE5E5hcTvYk+0QY69vq3EQ7RPDqEoCKo92ssFs7n/0rySUq3fC"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C2C3,
+        Hash: sm3.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSM3_C1C2C3_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptMD5_C1C2C3_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BILXsGbOu0caMK2MDh8Jp47js3xJcJLbWh+lNTGmaf/8+fslZXY0ZwLkXJrKKpzGlrJdh8+xlFfeTWNYimjq/GETzNvp3TgUcLvy1+l7VYY5Y8NhU21SjRa2gp1llZ8="
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C2C3,
+        Hash: md5.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptMD5_C1C2C3_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptSha1_C1C2C3_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BAkkBNj2s8ajNlBMcLxxdxvyByX+hV8PFv2qFpjcJe2Casw/L/UZG7zZHA4bS43OKmveqvRsyFXgQDKFdqIBGfZEk+Ixy5lqmE/VrNZnOKi81YKQAqXYhhLpA8KrK/9r+yHB"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C2C3,
+        Hash: sha1.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSha1_C1C2C3_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
+    }
+}
+
+func Test_EncryptSha256_C1C2C3_Check(t *testing.T) {
+    blockPri := decodePEM(testPrikey3)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    msg := []byte("testtest123123")
+    endata := "BAT4sgpHYBpBKI/8uwCX3zSLh5YoJxslDoK9V1jzLFMY4wj0ZCfr49vvan+s6LYQRmdmY92bXpHKjGGWAGISitvnm+qHWc0ubnEGpL/+DJhrPt5tQ17Ui25LXdf4EwA68i1GEsTZ4p6RpAGnysmn"
+
+    en, _ := base64.StdEncoding.DecodeString(endata)
+
+    dedata, err := pri.Decrypt(rand.Reader, en, sm2.EncrypterOpts{
+        Mode: sm2.C1C2C3,
+        Hash: sha256.New,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if bytes.Compare(msg, dedata) != 0 {
+        t.Errorf("Test_EncryptSha256_C1C2C3_Check Decrypt error: got %s, want %s", string(dedata), string(msg))
     }
 }
 
@@ -668,10 +844,47 @@ func test_Encrypt_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
     }
 }
 
+func test_EncryptASN1_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    ciphertext, err := pub.EncryptASN1(rand.Reader, []byte(plainText), opts)
+    if err != nil {
+        t.Fatalf("encrypt failed %v", err)
+    }
+
+    plaintext, err := pri.DecryptASN1(ciphertext, opts)
+    if err != nil {
+        t.Fatalf("decrypt failed %v", err)
+    }
+
+    if !reflect.DeepEqual(string(plaintext), plainText) {
+        t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
 func Test_Encrypt_Encoding(t *testing.T) {
     t.Run("EncodingASN1", func(t *testing.T) {
         test_Encrypt_Encoding(t, sm2.EncrypterOpts{
             Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+    t.Run("EncodingASN1 C1C2C3", func(t *testing.T) {
+        test_Encrypt_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C2C3,
             Hash:     sm3.New,
             Encoding: sm2.EncodingASN1,
         })
@@ -682,6 +895,26 @@ func Test_Encrypt_Encoding(t *testing.T) {
             Mode:     sm2.C1C3C2,
             Hash:     sm3.New,
             Encoding: sm2.EncodingBytes,
+        })
+    })
+    t.Run("EncodingBytes C1C2C3", func(t *testing.T) {
+        test_Encrypt_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C2C3,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
+
+    t.Run("EncodingASN1_2", func(t *testing.T) {
+        test_EncryptASN1_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+            Hash: sm3.New,
+        })
+    })
+    t.Run("EncodingASN1_2 C1C2C3", func(t *testing.T) {
+        test_EncryptASN1_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C2C3,
+            Hash: sm3.New,
         })
     })
 
@@ -717,10 +950,47 @@ func test_Encrypt_Func_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
     }
 }
 
+func test_EncryptASN1_Func_Encoding(t *testing.T, opts sm2.EncrypterOpts) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    ciphertext, err := sm2.EncryptASN1(rand.Reader, pub, []byte(plainText), opts)
+    if err != nil {
+        t.Fatalf("encrypt failed %v", err)
+    }
+
+    plaintext, err := sm2.DecryptASN1(pri, ciphertext, opts)
+    if err != nil {
+        t.Fatalf("decrypt failed %v", err)
+    }
+
+    if !reflect.DeepEqual(string(plaintext), plainText) {
+        t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
 func Test_Encrypt_Func_Encoding(t *testing.T) {
     t.Run("EncodingASN1", func(t *testing.T) {
         test_Encrypt_Func_Encoding(t, sm2.EncrypterOpts{
             Mode:     sm2.C1C3C2,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingASN1,
+        })
+    })
+    t.Run("EncodingASN1 C1C2C3", func(t *testing.T) {
+        test_Encrypt_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C2C3,
             Hash:     sm3.New,
             Encoding: sm2.EncodingASN1,
         })
@@ -731,6 +1001,26 @@ func Test_Encrypt_Func_Encoding(t *testing.T) {
             Mode:     sm2.C1C3C2,
             Hash:     sm3.New,
             Encoding: sm2.EncodingBytes,
+        })
+    })
+    t.Run("EncodingBytes C1C2C3", func(t *testing.T) {
+        test_Encrypt_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode:     sm2.C1C2C3,
+            Hash:     sm3.New,
+            Encoding: sm2.EncodingBytes,
+        })
+    })
+
+    t.Run("EncodingASN1_2", func(t *testing.T) {
+        test_EncryptASN1_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+            Hash: sm3.New,
+        })
+    })
+    t.Run("EncodingASN1_2 C1C2C3", func(t *testing.T) {
+        test_EncryptASN1_Func_Encoding(t, sm2.EncrypterOpts{
+            Mode: sm2.C1C2C3,
+            Hash: sm3.New,
         })
     })
 

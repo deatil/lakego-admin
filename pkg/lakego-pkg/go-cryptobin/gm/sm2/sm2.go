@@ -236,12 +236,12 @@ func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.Decrypt
 
     switch opt.GetEncoding() {
         case EncodingASN1:
-            res, err := marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+            res, err := marshalCipherASN1(ct, opt.GetMode())
             if err == nil {
                 return res, nil
             }
         case EncodingBytes:
-            res := marshalCipherBytes(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+            res := marshalCipherBytes(ct, opt.GetMode())
             return res, nil
     }
 
@@ -260,7 +260,7 @@ func (pub *PublicKey) EncryptASN1(random io.Reader, data []byte, opts crypto.Dec
         return nil, err
     }
 
-    res, err := marshalCipherASN1(pub.Curve, ct, opt.GetMode(), opt.GetHash())
+    res, err := marshalCipherASN1(ct, opt.GetMode())
     if err == nil {
         return res, nil
     }
@@ -334,7 +334,7 @@ func (priv *PrivateKey) Decrypt(_ io.Reader, data []byte, opts crypto.DecrypterO
         opt = o
     }
 
-    var res []byte
+    var res encryptedData
 
     switch opt.GetEncoding() {
         case EncodingASN1:
@@ -479,19 +479,25 @@ func DecryptASN1(priv *PrivateKey, data []byte, opts crypto.DecrypterOpts) ([]by
     return priv.DecryptASN1(data, opts)
 }
 
-func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte, error) {
+// encrypted Data
+type encryptedData struct {
+    XCoordinate []byte
+    YCoordinate []byte
+    Hash        []byte
+    CipherText  []byte
+}
+
+func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) (encryptedData, error) {
     length := len(data)
 
     var retryCount int = 0
 
     for {
-        c := []byte{}
-
         curve := pub.Curve
 
         k, err := randFieldElement(random, curve)
         if err != nil {
-            return nil, err
+            return encryptedData{}, err
         }
 
         x1, y1 := curve.ScalarBaseMult(k.Bytes())
@@ -502,17 +508,12 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte,
         x2Buf := bigIntToBytes(pub.Curve, x2)
         y2Buf := bigIntToBytes(pub.Curve, y2)
 
-        c = append(c, x1Buf...) // x分量
-        c = append(c, y1Buf...) // y分量
-
         md := h()
         md.Write(x2Buf)
         md.Write(data)
         md.Write(y2Buf)
 
         hashed := md.Sum(nil)
-
-        c = append(c, hashed...)
 
         // 生成密钥 / make key
         ct := smkdf.Key(h, append(x2Buf, y2Buf...), length)
@@ -521,7 +522,7 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte,
         if alias.ConstantTimeAllZero(ct) {
             retryCount++
             if retryCount > maxRetryLimit {
-                return nil, fmt.Errorf("cryptobin/sm2: failed to retry, tried %d times", retryCount)
+                return encryptedData{}, fmt.Errorf("cryptobin/sm2: failed to retry, tried %d times", retryCount)
             }
 
             continue
@@ -530,50 +531,45 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) ([]byte,
         // 生成密文 / make encrypt data
         subtle.XORBytes(ct, ct, data)
 
-        c = append(c, ct...)
-
-        return c, nil
+        return encryptedData{
+            XCoordinate: x1Buf, // x分量
+            YCoordinate: y1Buf, // y分量
+            Hash:        hashed,
+            CipherText:  ct,
+        }, nil
     }
 }
 
-func decrypt(priv *PrivateKey, data []byte, h hashFunc) ([]byte, error) {
+func decrypt(priv *PrivateKey, data encryptedData, h hashFunc) ([]byte, error) {
     curve := priv.Curve
 
-    byteLen := (curve.Params().BitSize + 7) / 8
-
-    x := new(big.Int).SetBytes(data[:byteLen])
-    data = data[byteLen:]
-    y := new(big.Int).SetBytes(data[:byteLen])
-    data = data[byteLen:]
+    x := bytesToBigInt(data.XCoordinate)
+    y := bytesToBigInt(data.YCoordinate)
 
     x2, y2 := curve.ScalarMult(x, y, priv.D.Bytes())
 
     x2Buf := bigIntToBytes(curve, x2)
     y2Buf := bigIntToBytes(curve, y2)
 
-    md := h()
-
-    hashSize := md.Size()
-    hash := data[:hashSize]
-    data  = data[hashSize:]
-
-    length := len(data)
+    hash := data.Hash
+    cipherText := data.CipherText
 
     // 生成密钥 / make key
-    c := smkdf.Key(h, append(x2Buf, y2Buf...), length)
+    c := smkdf.Key(h, append(x2Buf, y2Buf...), len(cipherText))
 
     if alias.ConstantTimeAllZero(c) {
         return nil, errDecryption
     }
 
-    // 解密密文 / decrypt data
-    subtle.XORBytes(c, c, data)
+    // 解密密文 / decrypt cipherText
+    subtle.XORBytes(c, c, cipherText)
 
+    md := h()
     md.Write(x2Buf)
     md.Write(c)
     md.Write(y2Buf)
-
     hashed := md.Sum(nil)
+
     if bytes.Compare(hashed, hash) != 0 {
         return nil, errDecryption
     }
@@ -850,6 +846,10 @@ func bigIntToBytes(curve elliptic.Curve, value *big.Int) []byte {
     value.FillBytes(buf)
 
     return buf
+}
+
+func bytesToBigInt(value []byte) *big.Int {
+    return new(big.Int).SetBytes(value)
 }
 
 // bigIntEqual reports whether a and b are equal leaking only their bit length
