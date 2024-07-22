@@ -512,7 +512,6 @@ func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) (encrypt
         md.Write(x2Buf)
         md.Write(data)
         md.Write(y2Buf)
-
         hashed := md.Sum(nil)
 
         // 生成密钥 / make key

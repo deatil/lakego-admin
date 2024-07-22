@@ -91,13 +91,13 @@ func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode, h hashFu
         return encryptedData{}, errors.New("cryptobin/sm2: encrypt data is too short.")
     }
 
+    data = data[1:]
+
     switch mode {
         case C1C2C3:
-            data = data[1:]
-
             c1 := data[:2*byteLen]
-            c2 := data[2*byteLen:len(data) - hashSize]
-            c3 := data[len(data) - hashSize:]
+            c2 := data[2*byteLen:len(data)-hashSize]
+            c3 := data[len(data)-hashSize:]
 
             return encryptedData{
                 XCoordinate: c1[:byteLen], // x分量
@@ -108,9 +108,7 @@ func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode, h hashFu
         case C1C3C2:
             fallthrough
         default:
-            data = data[1:]
-
-            c1 := data[0:2*byteLen]
+            c1 := data[:2*byteLen]
             c3 := data[2*byteLen:2*byteLen+hashSize]
             c2 := data[2*byteLen+hashSize:]
 
