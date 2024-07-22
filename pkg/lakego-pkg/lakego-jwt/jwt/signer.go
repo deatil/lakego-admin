@@ -7,15 +7,6 @@ import(
 // 默认
 var defaultSigner = NewSigner()
 
-/**
- * 签名
- */
-func NewSigner() *Signer {
-    return &Signer{
-        signers: make(map[string]SignerMethod),
-    }
-}
-
 type (
     // 签名方法
     SignerMethod = func(IConfig) ISigner
@@ -33,6 +24,15 @@ type Signer struct {
 
     // 已注册数据
     signers map[string]SignerMethod
+}
+
+/**
+ * 签名
+ */
+func NewSigner() *Signer {
+    return &Signer{
+        signers: make(map[string]SignerMethod),
+    }
 }
 
 // 注册

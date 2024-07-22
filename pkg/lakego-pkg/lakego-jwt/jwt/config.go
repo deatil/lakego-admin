@@ -1,20 +1,5 @@
 package jwt
 
-// 构造函数
-func NewConfig(
-    secret string,
-    privateKey []byte,
-    publicKey []byte,
-    privateKeyPassword string,
-) Config {
-    return Config{
-        secret,
-        privateKey,
-        publicKey,
-        privateKeyPassword,
-    }
-}
-
 // 配置信息
 type Config struct {
     // 秘钥
@@ -28,6 +13,21 @@ type Config struct {
 
     // 私钥密码
     privateKeyPassword string
+}
+
+// 构造函数
+func NewConfig(
+    secret     string,
+    privateKey []byte,
+    publicKey  []byte,
+    privateKeyPassword string,
+) Config {
+    return Config{
+        secret,
+        privateKey,
+        publicKey,
+        privateKeyPassword,
+    }
 }
 
 func (this Config) Secret() string {

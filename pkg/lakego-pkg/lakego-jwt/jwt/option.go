@@ -55,17 +55,17 @@ func WithNbf(nbf int64) Option {
     }
 }
 
-// 自定义载荷
-func WithClaim(key string, value any) Option {
-    return func(jwt *JWT) {
-        jwt.Claims[key] = value
-    }
-}
-
 // 自定义 Header
 func WithHeader(key string, value any) Option {
     return func(jwt *JWT) {
         jwt.Headers[key] = value
+    }
+}
+
+// 自定义载荷
+func WithClaim(key string, value any) Option {
+    return func(jwt *JWT) {
+        jwt.Claims[key] = value
     }
 }
 

@@ -39,16 +39,16 @@ func main() {
         WithPrivateKeyPassword(privateKeyPassword).
         WithClaim(k, v)
 
-    token := jwter.MakeToken()
+    token, err := jwter.MakeToken()
     fmt.Println("生成的 Token 为：", token)
 
     // 解析 token
     parsedToken, err := jwter.ParseToken(token)
 
-    // 验证数据
+    // token 过期检测
     ok, err := jwter.Validate(parsedToken)
 
-    // 验证是否过期相关
+    // 验证 token 是否有效
     ok, err := jwter.Verify(parsedToken)
 }
 

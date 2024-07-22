@@ -65,7 +65,7 @@ func (this Hmac) GetSignSecrect() (secret any, err error) {
     // 密码
     hmacSecret := this.Config.Secret()
     if hmacSecret == "" {
-        err = errors.New("Hmac 密码内容不能为空")
+        err = errors.New("Hmac Secret empty")
         return
     }
 
@@ -78,7 +78,7 @@ func (this Hmac) GetVerifySecrect() (secret any, err error) {
     // 密码
     hmacSecret := this.Config.Secret()
     if hmacSecret == "" {
-        err = errors.New("Hmac 密码内容不能为空")
+        err = errors.New("Hmac Secret empty")
         return
     }
 

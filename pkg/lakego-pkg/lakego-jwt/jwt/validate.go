@@ -20,12 +20,14 @@ func (this *JWT) Verify(token *Token) (bool, error) {
         return false, err
     }
 
-    if this.Claims["aud"] == "" || claims.VerifyAudience(this.Claims["aud"].(string), false) == false {
-        return false, errors.New("Audience 验证失败")
+    aud, ok := this.Claims["aud"].(string)
+    if !ok || claims.VerifyAudience(aud, false) == false {
+        return false, errors.New("Audience Verify fail")
     }
 
-    if this.Claims["iss"] == "" || claims.VerifyIssuer(this.Claims["iss"].(string), false) == false {
-        return false, errors.New("Issuer 验证失败")
+    iss, ok := this.Claims["iss"].(string)
+    if !ok || claims.VerifyIssuer(iss, false) == false {
+        return false, errors.New("Issuer Verify fail")
     }
 
     return true, nil

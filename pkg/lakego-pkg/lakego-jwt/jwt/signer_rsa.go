@@ -99,7 +99,7 @@ func (this RSA) GetSignSecrect() (secret any, err error) {
     // 获取秘钥数据
     keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
-        err = errors.New("RSA 私钥内容不能为空")
+        err = errors.New("RSA PrivateKey empty")
         return
     }
 
@@ -119,7 +119,7 @@ func (this RSA) GetVerifySecrect() (secret any, err error) {
     // 公钥
     keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
-        err = errors.New("RSA 公钥内容不能为空")
+        err = errors.New("RSA PublicKey empty")
         return nil, err
     }
 

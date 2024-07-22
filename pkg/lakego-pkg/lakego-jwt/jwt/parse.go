@@ -13,7 +13,7 @@ func (this *JWT) ParseToken(strToken string) (*Token, error) {
 
     signer := GetSigner(this.SigningMethod)
     if signer == nil {
-        return nil, errors.New("签名类型错误")
+        return nil, errors.New("not support signer")
     }
 
     newSigner := signer(NewConfig(

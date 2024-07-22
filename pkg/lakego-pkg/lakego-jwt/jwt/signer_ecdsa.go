@@ -65,7 +65,7 @@ func (this ECDSA) GetSignSecrect() (secret any, err error) {
     // 私钥
     keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
-        err = errors.New("ECDSA 私钥内容不能为空")
+        err = errors.New("ECDSA PrivateKey empty")
         return
     }
 
@@ -78,7 +78,7 @@ func (this ECDSA) GetVerifySecrect() (secret any, err error) {
     // 公钥
     keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
-        err = errors.New("ECDSA 公钥内容不能为空")
+        err = errors.New("ECDSA PublicKey empty")
         return nil, err
     }
 

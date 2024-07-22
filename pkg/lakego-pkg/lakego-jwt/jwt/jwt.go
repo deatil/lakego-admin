@@ -1,21 +1,5 @@
 package jwt
 
-// JWT
-func New(opts ...Option) *JWT {
-    j := &JWT{
-        Secret: "123456",
-        SigningMethod: "HS256",
-        Headers: make(HeaderMap),
-        Claims:  make(ClaimMap),
-    }
-
-    for _, opt := range opts {
-        opt(j)
-    }
-
-    return j
-}
-
 type (
     // jwt 头数据
     HeaderMap = map[string]any
@@ -54,4 +38,20 @@ type JWT struct {
 
     // 私钥密码
     PrivateKeyPassword string
+}
+
+// JWT
+func New(opts ...Option) *JWT {
+    jwt := &JWT{
+        Secret:        "123456",
+        SigningMethod: "HS256",
+        Headers:       make(HeaderMap),
+        Claims:        make(ClaimMap),
+    }
+
+    for _, opt := range opts {
+        opt(jwt)
+    }
+
+    return jwt
 }

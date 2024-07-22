@@ -8,7 +8,7 @@ import (
 func (this *JWT) GetClaimsFromToken(token *Token) (MapClaims, error) {
     claims, ok := token.Claims.(MapClaims)
     if !ok {
-        return nil, errors.New("Token 载荷获取失败")
+        return nil, errors.New("Token claims type error")
     }
 
     return claims, nil
@@ -18,7 +18,7 @@ func (this *JWT) GetClaimsFromToken(token *Token) (MapClaims, error) {
 func (this *JWT) GetHeadersFromToken(token *Token) (ParsedHeaderMap, error) {
     headers := token.Header
     if len(headers) == 0 {
-        return nil, errors.New("Token 的 Header 获取失败")
+        return nil, errors.New("Token Header empty")
     }
 
     return headers, nil

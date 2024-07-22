@@ -46,7 +46,7 @@ func (this GmSM2) GetSignSecrect() (secret any, err error) {
     // 私钥
     keyByte := this.Config.PrivateKey()
     if len(keyByte) == 0 {
-        err = errors.New("GmSM2 私钥内容不能为空")
+        err = errors.New("GmSM2 PrivateKey empty")
         return
     }
 
@@ -66,7 +66,7 @@ func (this GmSM2) GetVerifySecrect() (secret any, err error) {
     // 公钥
     keyByte := this.Config.PublicKey()
     if len(keyByte) == 0 {
-        err = errors.New("GmSM2 公钥内容不能为空")
+        err = errors.New("GmSM2 PublicKey empty")
         return nil, err
     }
 
