@@ -16,12 +16,12 @@ import (
  * @create 2022-11-21
  * @author deatil
  */
-type Index struct {
+type Admin struct {
     provider.ServiceProvider
 }
 
 // 引导
-func (this *Index) Boot() {
+func (this *Admin) Boot() {
     // 路由
     this.loadRoute()
 }
@@ -29,7 +29,7 @@ func (this *Index) Boot() {
 /**
  * 导入路由
  */
-func (this *Index) loadRoute() {
+func (this *Admin) loadRoute() {
     // 后台路由，包括后台使用的所有中间件
     admin_route.AddRoute(func(engine *gin.RouterGroup) {
         route.Route(engine)
