@@ -71,19 +71,15 @@ func (this *digest) Sum(in []byte) []byte {
 }
 
 func (this *digest) checkSum() [Size]byte {
-    var i int32
-
     this.nx &= 0x3f
     this.x[this.nx] = 0x80
 
     zeros := make([]byte, BlockSize)
+    copy(this.x[this.nx + 1:], zeros)
 
-    if this.nx <= BlockSize - 9 {
-        copy(this.x[this.nx + 1:BlockSize - 8], zeros)
-    } else {
-        copy(this.x[this.nx + 1:BlockSize], zeros)
+    if BlockSize - this.nx < 9 {
         this.processBlock(this.x[:])
-        copy(this.x[:BlockSize - 8], zeros)
+        copy(this.x[:], zeros)
     }
 
     bcount := this.len / BlockSize
@@ -94,7 +90,7 @@ func (this *digest) checkSum() [Size]byte {
     this.processBlock(this.x[:])
 
     var digest [Size]byte
-    for i = 0; i < 8; i++ {
+    for i := 0; i < 8; i++ {
         PUTU32(digest[i*4:], this.s[i])
     }
 
