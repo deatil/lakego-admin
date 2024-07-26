@@ -4,10 +4,6 @@ import (
     "strings"
 )
 
-// 默认事件
-// default new events
-var DefaultFilter = NewFilter()
-
 // 接口
 type IFilterSubscribe interface {
     Subscribe(*Filter)

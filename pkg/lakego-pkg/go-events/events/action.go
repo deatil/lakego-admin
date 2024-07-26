@@ -4,10 +4,6 @@ import (
     "strings"
 )
 
-// 默认事件
-// default new events
-var DefaultAction = NewAction()
-
 // 接口
 type IActionSubscribe interface {
     Subscribe(*Action)

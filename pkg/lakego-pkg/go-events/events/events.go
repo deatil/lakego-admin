@@ -3,6 +3,10 @@ package events
 // 默认排序
 const DefaultSort = 1;
 
+// 默认事件
+// default new events
+var Default = New()
+
 /**
  * Events
  *
