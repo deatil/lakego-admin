@@ -21,7 +21,7 @@ func NewPool() *Pool {
 func (this *Pool) CallFunc(fn any, args []any) any {
     fnObject := reflect.ValueOf(fn)
     if !(fnObject.IsValid() && fnObject.Kind() == reflect.Func) {
-        panic("pool: func type error")
+        panic("go-events: call func type error")
     }
 
     return this.Call(fnObject, args)
@@ -32,12 +32,12 @@ func (this *Pool) CallStructMethod(in any, method string, args []any) any {
     typ := reflect.TypeOf(in)
 
     if typ.Kind() != reflect.Pointer && typ.Kind() != reflect.Struct {
-        panic("pool: struct type error")
+        panic("go-events: call struct type error")
     }
 
     newMethod, ok := typ.MethodByName(method)
     if !ok {
-        panic("pool: method not exists")
+        panic("go-events: call method not exists")
     }
 
 	args = append([]any{in}, args...)
@@ -50,7 +50,7 @@ func (this *Pool) Call(fn reflect.Value, args []any) any {
 
     numIn := fnType.NumIn()
     if len(args) != numIn {
-        err := fmt.Sprintf("pool: func params error (args %d, func args %d)", len(args), numIn)
+        err := fmt.Sprintf("go-events: func params error (args %d, func args %d)", len(args), numIn)
         panic(err)
     }
 

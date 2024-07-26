@@ -26,8 +26,8 @@ func AddFilter(event any, listener any, sort int) {
 }
 
 // 触发过滤器
-func ApplyFilters(event any, value any, params ...any) any {
-    return Default.Filter().Trigger(event, value, params...)
+func ApplyFilters(event any, params ...any) any {
+    return Default.Filter().Trigger(event, params...)
 }
 
 // 移除过滤器

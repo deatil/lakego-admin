@@ -40,13 +40,22 @@ func (this *Filter) Subscribe(subscribers ...any) *Filter {
     return this
 }
 
-func (this *Filter) Trigger(event any, value any, params ...any) any {
+func (this *Filter) Trigger(event any, params ...any) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
+
+    var value any
 
     eventName := formatName(event)
     if this.pool.IsStruct(event) {
         value = event
+    } else {
+        if len(params) == 0 {
+            panic("go-events: Filter trigger func need value")
+        }
+
+        value = params[0]
+        params = params[1:]
     }
 
     listeners := this.listener[eventName]

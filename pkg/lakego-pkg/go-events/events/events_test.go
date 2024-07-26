@@ -402,8 +402,25 @@ func Test_EventStructDataFilter(t *testing.T) {
     args := "index data"
     res := filter.Trigger(TestEventStructDataFilter{
         Data: initData,
-    }, nil, args)
+    }, args)
 
     check := "init => index data"
     eq(res, check, "Test_EventStructDataFilter")
+}
+
+func Test_FilterPanic(t *testing.T) {
+    defer func() {
+        if e := recover(); e == nil {
+            t.Error("should panic error")
+        }
+    }()
+
+    filter := NewFilter()
+
+    // 事件注册
+    filter.Listen("panic", func(val string) string {
+        return val
+    }, DefaultSort)
+
+    _ = filter.Trigger("panic")
 }
