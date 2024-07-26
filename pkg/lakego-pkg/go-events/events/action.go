@@ -45,9 +45,6 @@ func (this *Action) Trigger(event any, params ...any) {
     defer this.mu.RUnlock()
 
     eventName := formatName(event)
-    if this.pool.IsStruct(event) {
-        params = append([]any{event}, params...)
-    }
 
     listeners := this.listener[eventName]
 

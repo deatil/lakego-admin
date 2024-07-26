@@ -360,12 +360,10 @@ func Test_EventStar(t *testing.T) {
     eq(test3, check, "Test_EventStar")
 }
 
-type TestEventStructData struct {
-    Data string
-}
+type TestEventStructData struct {}
 
-func DTestEventStruct(data TestEventStructData) {
-	testEventRes["DTestEventStruct"] = data.Data
+func DTestEventStruct(data string) {
+	testEventRes["DTestEventStruct"] = data
 }
 
 func Test_EventStructData(t *testing.T) {
@@ -378,9 +376,7 @@ func Test_EventStructData(t *testing.T) {
 
     // 事件触发
     eventData2 := "index data"
-    action.Trigger(TestEventStructData{
-        Data: eventData2,
-    })
+    action.Trigger(TestEventStructData{}, eventData2)
 
     eq(testEventRes["DTestEventStruct"], eventData2, "Test_EventStructData")
 }
@@ -389,8 +385,8 @@ type TestEventStructDataFilter struct {
     Data string
 }
 
-func DTestEventStructFilter(val string, data TestEventStructDataFilter) string {
-	return val + " => " + data.Data
+func DTestEventStructFilter(data TestEventStructDataFilter, arg string) string {
+	return data.Data + " => " + arg
 }
 
 func Test_EventStructDataFilter(t *testing.T) {
@@ -402,11 +398,11 @@ func Test_EventStructDataFilter(t *testing.T) {
     filter.Listen(TestEventStructDataFilter{}, DTestEventStructFilter, DefaultSort)
 
     // 事件触发
-    eventData2 := "index data"
-    init := "init"
+    initData := "init"
+    args := "index data"
     res := filter.Trigger(TestEventStructDataFilter{
-        Data: eventData2,
-    }, init)
+        Data: initData,
+    }, nil, args)
 
     check := "init => index data"
     eq(res, check, "Test_EventStructDataFilter")

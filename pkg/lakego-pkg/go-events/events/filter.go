@@ -46,7 +46,7 @@ func (this *Filter) Trigger(event any, value any, params ...any) any {
 
     eventName := formatName(event)
     if this.pool.IsStruct(event) {
-        params = append([]any{event}, params...)
+        value = event
     }
 
     listeners := this.listener[eventName]
