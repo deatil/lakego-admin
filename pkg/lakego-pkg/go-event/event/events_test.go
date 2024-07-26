@@ -399,7 +399,7 @@ func Test_RemoveListen(t *testing.T) {
 
 	listener := NewEventListener(func(e *Event) any { return nil })
 
-	ev.AddEventListener("data22222.test111111", listener)
+	ev.AddEventListener("data22222.test111111", listener, false)
 	eq(ev.HasEventListener("data22222.test111111", listener), true, "HasEventListener")
 
 	eventListeners := ev.EventListeners("data22222.test111111")
@@ -494,4 +494,25 @@ func Test_ReturnData(t *testing.T) {
 		eq(res, "index data888888 => good", "Dispatch 2")
 	}
 
+}
+
+func Test_PreListen(t *testing.T) {
+	eq := assertDeepEqualT(t)
+
+	var eventData string
+
+	fn1 := func(data string) {
+		eventData += "append => " + data
+	}
+	fn2 := func(data string) {
+		eventData += "prepend => " + data
+	}
+
+	Listen("data123321", fn1)
+	PreListen("data123321", fn2)
+
+	checkData := "init "
+	Dispatch("data123321", checkData, false)
+
+	eq(eventData, "prepend => init append => init ", "PreListen")
 }

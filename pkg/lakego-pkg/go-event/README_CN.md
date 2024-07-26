@@ -87,7 +87,7 @@ func main() {
     // 事件注册
     event.Listen("data.error", func(data any) any {
         fmt.Println(data)
-		return nil
+        return nil
     })
 
     // 事件触发

@@ -44,7 +44,7 @@ func (this *Events) Listen(name any, handler any) {
 	if newName != "" {
 		listener := this.formatEventHandler(handler)
 
-		this.dispatcher.AddEventListener(newName, listener)
+		this.dispatcher.AddEventListener(newName, listener, false)
 	}
 }
 
@@ -52,6 +52,26 @@ func (this *Events) Listen(name any, handler any) {
 // Listen event
 func Listen(name any, handler any) {
 	defaultEvents.Listen(name, handler)
+}
+
+// 置前监听
+// PreListen event
+func (this *Events) PreListen(name any, handler any) {
+	this.mu.Lock()
+	defer this.mu.Unlock()
+
+	newName := formatName(name)
+	if newName != "" {
+		listener := this.formatEventHandler(handler)
+
+		this.dispatcher.AddEventListener(newName, listener, true)
+	}
+}
+
+// 置前监听
+// PreListen event
+func PreListen(name any, handler any) {
+	defaultEvents.PreListen(name, handler)
 }
 
 // 注册事件订阅者

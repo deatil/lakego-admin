@@ -358,5 +358,56 @@ func Test_EventStar(t *testing.T) {
 
     check := "run test33 => run test5 => run test3 => "
     eq(test3, check, "Test_EventStar")
+}
 
+type TestEventStructData struct {
+    Data string
+}
+
+func DTestEventStruct(data TestEventStructData) {
+	testEventRes["DTestEventStruct"] = data.Data
+}
+
+func Test_EventStructData(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    action := NewAction()
+
+    // 事件注册
+    action.Listen(TestEventStructData{}, DTestEventStruct, DefaultSort)
+
+    // 事件触发
+    eventData2 := "index data"
+    action.Trigger(TestEventStructData{
+        Data: eventData2,
+    })
+
+    eq(testEventRes["DTestEventStruct"], eventData2, "Test_EventStructData")
+}
+
+type TestEventStructDataFilter struct {
+    Data string
+}
+
+func DTestEventStructFilter(val string, data TestEventStructDataFilter) string {
+	return val + " => " + data.Data
+}
+
+func Test_EventStructDataFilter(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    filter := NewFilter()
+
+    // 事件注册
+    filter.Listen(TestEventStructDataFilter{}, DTestEventStructFilter, DefaultSort)
+
+    // 事件触发
+    eventData2 := "index data"
+    init := "init"
+    res := filter.Trigger(TestEventStructDataFilter{
+        Data: eventData2,
+    }, init)
+
+    check := "init => index data"
+    eq(res, check, "Test_EventStructDataFilter")
 }

@@ -4,6 +4,7 @@ import (
     "os"
     "fmt"
 
+    "github.com/deatil/go-events/events"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/router"
@@ -28,6 +29,9 @@ import (
 
     // 脚本
     "github.com/deatil/lakego-doak-admin/admin/cmd"
+
+    // 事件
+    "github.com/deatil/lakego-doak-admin/admin/listener"
 )
 
 // 全局中间件
@@ -91,6 +95,9 @@ func (this *Admin) Boot() {
 
     // 记录 pid 信息
     this.putSock()
+
+    // 注册事件
+    this.loadEvents()
 }
 
 /**
@@ -224,4 +231,14 @@ func (this *Admin) putSock() {
     contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
 
     filesystem.New().Put(file, contents)
+}
+
+/**
+ * 注册事件
+ */
+func (this *Admin) loadEvents() {
+    // 登录相关
+    events.AddAction("admin.passport-login.make-accesstoken-fail", &listener.PassportLoginError{}, events.DefaultSort)
+    events.AddAction("admin.passport-login.make-refreshtoken-fail", &listener.PassportLoginError{}, events.DefaultSort)
+    events.AddAction("admin.passport-refreshtoken.make-accesstoken-fail", &listener.PassportLoginError{}, events.DefaultSort)
 }

@@ -37,7 +37,7 @@ type EventSaver struct {
 // EventDispatcher interface
 type IEventDispatcher interface {
 	// 事件监听
-	AddEventListener(string, *EventListener)
+	AddEventListener(string, *EventListener, bool)
 
 	// 移除事件监听
 	RemoveEvent(string) bool
@@ -120,10 +120,14 @@ func NewEventDispatcher() *EventDispatcher {
 
 // 事件调度器添加事件
 // Add Event Listener
-func (this *EventDispatcher) AddEventListener(eventType string, listener *EventListener) {
+func (this *EventDispatcher) AddEventListener(eventType string, listener *EventListener, prepend bool) {
 	for _, saver := range this.savers {
 		if saver.Type == eventType {
-			saver.Listeners = append(saver.Listeners, listener)
+            if prepend {
+            	saver.Listeners = append([]*EventListener{listener}, saver.Listeners...)
+            } else {
+    			saver.Listeners = append(saver.Listeners, listener)
+            }
 			return
 		}
 	}
@@ -133,7 +137,11 @@ func (this *EventDispatcher) AddEventListener(eventType string, listener *EventL
 		Listeners: []*EventListener{listener},
 	}
 
-	this.savers = append(this.savers, saver)
+    if prepend {
+    	this.savers = append([]*EventSaver{saver}, this.savers...)
+    } else {
+    	this.savers = append(this.savers, saver)
+    }
 }
 
 // 移除事件

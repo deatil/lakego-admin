@@ -68,6 +68,8 @@ func (this *Passport) Login(ctx *router.Context) {
     post := make(map[string]any)
     this.ShouldBindJSON(ctx, &post)
 
+    events.DoAction("admin.passport-login.start", post)
+
     validateErr := passport_validate.Login(post)
     if validateErr != "" {
         this.Error(ctx, validateErr, code.LoginError)
@@ -95,6 +97,8 @@ func (this *Passport) Login(ctx *router.Context) {
         First(&admin).
         Error
     if err != nil {
+        events.DoAction("admin.passport-login.name-error", name)
+
         this.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
@@ -102,6 +106,8 @@ func (this *Passport) Login(ctx *router.Context) {
     // 验证密码
     checkStatus := auth_password.CheckPassword(admin["password"].(string), password, admin["password_salt"].(string))
     if !checkStatus {
+        events.DoAction("admin.passport-login.password-error", name)
+
         this.Error(ctx, "账号或者密码错误", code.LoginError)
         return
     }
@@ -121,9 +127,7 @@ func (this *Passport) Login(ctx *router.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        facade.Logger.Error("[login]" + err.Error())
-
-        events.DoAction("admin.passport.make-access-token-fail", err.Error())
+        events.DoAction("admin.passport-login.make-accesstoken-fail", err.Error())
 
         this.Error(ctx, "授权token生成失败", code.LoginError)
         return
@@ -132,9 +136,7 @@ func (this *Passport) Login(ctx *router.Context) {
     // 刷新 token
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
-        facade.Logger.Error("[login]" + err.Error())
-
-        events.DoAction("admin.passport.make-refresh-token-fail", err.Error())
+        events.DoAction("admin.passport-login.make-refreshtoken-fail", err.Error())
 
         this.Error(ctx, "刷新token生成失败", code.LoginError)
         return
@@ -150,6 +152,8 @@ func (this *Passport) Login(ctx *router.Context) {
             "last_active": int(datebin.NowTimestamp()),
             "last_ip": router.GetRequestIp(ctx),
         })
+
+    events.DoAction("admin.passport-login.end", name)
 
     // 数据输出
     this.SuccessWithData(ctx, "登录成功", router.H{
@@ -173,6 +177,8 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
     this.ShouldBindJSON(ctx, &post)
+
+    events.DoAction("admin.passport-refreshtoken.start", post)
 
     var refreshToken any
     var ok bool
@@ -208,7 +214,7 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
     // 授权 token
     accessToken, err := jwter.MakeAccessToken(tokenData)
     if err != nil {
-        facade.Logger.Error("[login]" + err.Error())
+        events.DoAction("admin.passport-refreshtoken.make-accesstoken-fail", err.Error())
 
         this.Error(ctx, "生成 access_token 失败", code.JwtRefreshTokenFail)
         return
@@ -216,6 +222,8 @@ func (this *Passport) RefreshToken(ctx *router.Context) {
 
     // 授权 token 过期时间
     expiresIn := jwter.GetAccessExpiresIn()
+
+    events.DoAction("admin.passport-refreshtoken.end", adminId)
 
     // 数据输出
     this.SuccessWithData(ctx, "获取成功", router.H{
@@ -240,6 +248,8 @@ func (this *Passport) Logout(ctx *router.Context) {
     // 接收数据
     post := make(map[string]any)
     this.ShouldBindJSON(ctx, &post)
+
+    events.DoAction("admin.passport-logout.start", post)
 
     var refreshToken any
     var ok bool
@@ -289,6 +299,8 @@ func (this *Passport) Logout(ctx *router.Context) {
     // 加入黑名单
     c.Put(utils.MD5(accessToken.(string)), "no", int64(refreshTokenExpiresIn))
     c.Put(utils.MD5(refreshToken.(string)), "no", int64(refreshTokenExpiresIn))
+
+    events.DoAction("admin.passport-logout.end", adminId)
 
     // 数据输出
     this.Success(ctx, "退出成功")

@@ -2,6 +2,7 @@ package controller
 
 import (
     "github.com/deatil/go-goch/goch"
+    "github.com/deatil/go-events/events"
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-filesystem/filesystem"
 
@@ -119,12 +120,15 @@ func (this *Attachment) Index(ctx *router.Context) {
         newList = append(newList, v)
     }
 
+    // 设置过滤器
+    newList2 := events.ApplyFilters("admin.attachment-index.end", newList)
+
     // 数据输出
     this.SuccessWithData(ctx, "获取成功", router.H{
         "start": start,
         "limit": limit,
         "total": total,
-        "list": newList,
+        "list":  newList2,
     })
 }
 
@@ -163,8 +167,11 @@ func (this *Attachment) Detail(ctx *router.Context) {
     // 格式化链接
     result["url"] = url.AttachmentUrl(result["path"].(string), result["disk"].(string))
 
+    // 设置过滤器
+    result2 := events.ApplyFilters("admin.attachment-detail.end", result)
+
     // 数据输出
-    this.SuccessWithData(ctx, "获取成功", result)
+    this.SuccessWithData(ctx, "获取成功", result2)
 }
 
 // 附件删除
