@@ -5,7 +5,7 @@ import (
     "errors"
     "encoding/json"
 
-    "github.com/deatil/go-event/event"
+    "github.com/deatil/go-events/events"
 
     "github.com/deatil/lakego-doak/lakego/str"
     "github.com/deatil/lakego-doak/lakego/router"
@@ -102,7 +102,7 @@ func (this *Manager) Forget(name string) {
 
 // Booting
 func (this *Manager) Booting(callback func()) {
-    event.Listen(this.eventBootingName, callback)
+    events.AddAction(this.eventBootingName, callback, events.DefaultSort)
 }
 
 // Booting
@@ -112,7 +112,7 @@ func Booting(callback func()) {
 
 // Booted
 func (this *Manager) Booted(callback func()) {
-    event.Listen(this.eventBootedName, callback)
+    events.AddAction(this.eventBootedName, callback, events.DefaultSort)
 }
 
 // Booted
@@ -122,12 +122,12 @@ func Booted(callback func()) {
 
 // CallBooting
 func (this *Manager) CallBooting() {
-    event.Dispatch(this.eventBootingName)
+    events.DoAction(this.eventBootingName)
 }
 
 // CallBooted
 func (this *Manager) CallBooted() {
-    event.Dispatch(this.eventBootedName)
+    events.DoAction(this.eventBootedName)
 }
 
 // 设置扩展路由

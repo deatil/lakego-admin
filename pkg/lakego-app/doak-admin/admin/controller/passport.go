@@ -1,6 +1,7 @@
 package controller
 
 import (
+    "github.com/deatil/go-events/events"
     "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak/lakego/router"
@@ -122,6 +123,8 @@ func (this *Passport) Login(ctx *router.Context) {
     if err != nil {
         facade.Logger.Error("[login]" + err.Error())
 
+        events.DoAction("admin.passport.make-access-token-fail", err.Error())
+
         this.Error(ctx, "授权token生成失败", code.LoginError)
         return
     }
@@ -130,6 +133,8 @@ func (this *Passport) Login(ctx *router.Context) {
     refreshToken, err := jwter.MakeRefreshToken(tokenData)
     if err != nil {
         facade.Logger.Error("[login]" + err.Error())
+
+        events.DoAction("admin.passport.make-refresh-token-fail", err.Error())
 
         this.Error(ctx, "刷新token生成失败", code.LoginError)
         return

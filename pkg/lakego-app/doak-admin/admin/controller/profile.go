@@ -1,8 +1,8 @@
 package controller
 
 import (
-    "github.com/deatil/go-event/event"
-    
+    "github.com/deatil/go-events/events"
+
     "github.com/deatil/lakego-doak/lakego/router"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -91,7 +91,7 @@ func (this *Profile) Update(ctx *router.Context) {
     }
 
     // 事件
-    event.Dispatch("profile.update-after", adminid)
+    events.DoAction("admin.profile.update-after", adminid)
 
     this.Success(ctx, "修改信息成功")
 }
@@ -140,7 +140,7 @@ func (this *Profile) UpdateAvatar(ctx *router.Context) {
     }
 
     // 事件
-    event.Dispatch("profile.update-avatar-after", adminid)
+    events.DoAction("admin.profile.update-avatar-after", adminid)
 
     this.Success(ctx, "修改头像成功")
 }
@@ -215,7 +215,7 @@ func (this *Profile) UpdatePasssword(ctx *router.Context) {
     }
 
     // 事件
-    event.Dispatch("profile.update-passsword-after", adminid)
+    events.DoAction("admin.profile.update-passsword-after", adminid)
 
     this.Success(ctx, "密码修改成功")
 }
