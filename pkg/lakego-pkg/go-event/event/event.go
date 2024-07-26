@@ -7,7 +7,7 @@ import (
 
 // 监听器函数
 // EventHandler func
-type EventHandler = func(*Event)
+type EventHandler = func(*Event) any
 
 // 监听器
 // Event Listener
@@ -52,7 +52,7 @@ type IEventDispatcher interface {
 	HasEventListener(string, *EventListener) bool
 
 	// 事件派发
-	DispatchEvent(*Event)
+	DispatchEvent(*Event, bool) any
 }
 
 // =====
@@ -197,16 +197,25 @@ func (this *EventDispatcher) HasEventListener(eventType string, listener *EventL
 
 // 事件调度器派发事件
 // Dispatch Event
-func (this *EventDispatcher) DispatchEvent(event *Event) {
+func (this *EventDispatcher) DispatchEvent(event *Event, once bool) any {
+	data := make([]any, 0)
+
 	for _, saver := range this.savers {
 		if matchTypeName(event.Type, saver.Type) {
 			for _, listener := range saver.Listeners {
 				event.Target = this
 
-				listener.Handler(event)
+				res := listener.Handler(event)
+				if once {
+					return res
+				} else {
+					data = append(data, res)
+				}
 			}
 		}
 	}
+
+	return data
 }
 
 // 事件类型列表

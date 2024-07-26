@@ -16,6 +16,7 @@ replace (
 	github.com/deatil/go-datebin => ./pkg/lakego-pkg/go-datebin
 	github.com/deatil/go-encoding => ./pkg/lakego-pkg/go-encoding
 	github.com/deatil/go-event => ./pkg/lakego-pkg/go-event
+	github.com/deatil/go-events => ./pkg/lakego-pkg/go-events
 	github.com/deatil/go-exception => ./pkg/lakego-pkg/go-exception
 	github.com/deatil/go-filesystem => ./pkg/lakego-pkg/go-filesystem
 	github.com/deatil/go-goch => ./pkg/lakego-pkg/go-goch
@@ -88,6 +89,7 @@ require (
 	github.com/deatil/go-datebin v1.0.1013 // indirect
 	github.com/deatil/go-encoding v1.0.2003 // indirect
 	github.com/deatil/go-event v1.0.1007 // indirect
+	github.com/deatil/go-events v1.0.1007 // indirect
 	github.com/deatil/go-exception v1.0.1002 // indirect
 	github.com/deatil/go-filesystem v1.0.6 // indirect
 	github.com/deatil/go-goch v1.0.1006 // indirect

@@ -20,22 +20,27 @@ func Test_Listen(t *testing.T) {
 	checkData := "index data"
 	var eventData, eventData_2, eventData_3, eventData_33, eventData_5 any
 
-	Listen("data.test", func(data any) {
+	Listen("data.test", func(data any) any {
 		eventData = data
+		return nil
 	})
-	Listen("data.test", func(data any) {
+	Listen("data.test", func(data any) any {
 		eventData_2 = data
+		return nil
 	})
-	Listen("data.test", func(data any, name string) {
+	Listen("data.test", func(data any, name string) any {
 		eventData_3 = name
+		return nil
 	})
-	Listen("data.test", func() {
+	Listen("data.test", func() any {
 		eventData_33 = "eventData_33"
+		return nil
 	})
-	Listen("data.test", func(e *Event) {
+	Listen("data.test", func(e *Event) any {
 		eventData_5 = e.Object
+		return nil
 	})
-	Dispatch("data.test", checkData)
+	Dispatch("data.test", checkData, false)
 
 	eq(eventData, checkData, "Listen")
 	eq(eventData_2, checkData, "Listen eventData_2")
@@ -50,10 +55,11 @@ func Test_Listen(t *testing.T) {
 
 	ev := New()
 
-	ev.Listen("data.test111111", func(data any) {
+	ev.Listen("data.test111111", func(data any) any {
 		eventData2 = data
+		return nil
 	})
-	ev.Dispatch("data.test111111", checkData2)
+	ev.Dispatch("data.test111111", checkData2, false)
 
 	eq(eventData2, checkData2, "Listen2")
 
@@ -62,16 +68,19 @@ func Test_Listen(t *testing.T) {
 	checkData3 := "index data many"
 	var eventData3, eventData3_1, eventData3_2 any
 
-	Listen("many.test1", func(data any) {
+	Listen("many.test1", func(data any) any {
 		eventData3 = data
+		return nil
 	})
-	Listen("many.test2", func(data any) {
+	Listen("many.test2", func(data any) any {
 		eventData3_1 = data
+		return nil
 	})
-	Listen("many.test3", func(data any) {
+	Listen("many.test3", func(data any) any {
 		eventData3_2 = data
+		return nil
 	})
-	Dispatch("many.*", checkData3)
+	Dispatch("many.*", checkData3, false)
 
 	eq(eventData3, checkData3, "Listen eventData3")
 	eq(eventData3_1, checkData3, "Listen eventData3_1")
@@ -84,19 +93,21 @@ func Test_RemoveAndHasEvent(t *testing.T) {
 	checkData := "index data Test_RemoveAndHasEvent"
 	var eventData, eventData_2 any
 
-	Listen("remove.test", func(data any) {
+	Listen("remove.test", func(data any) any {
 		eventData = data
+		return nil
 	})
-	Listen("remove.test2", func(data any) {
+	Listen("remove.test2", func(data any) any {
 		eventData_2 = data
+		return nil
 	})
 
 	eq(HasEvent("remove.test2"), true, "Test_RemoveAndHasEvent HasEvent 0")
 
 	RemoveEvent("remove.test2")
 
-	Dispatch("remove.test", checkData)
-	Dispatch("remove.test2", checkData)
+	Dispatch("remove.test", checkData, false)
+	Dispatch("remove.test2", checkData, false)
 
 	eq(eventData, checkData, "Test_RemoveAndHasEvent")
 	eq(eventData_2, nil, "Test_RemoveAndHasEvent")
@@ -117,19 +128,21 @@ func Test_RemoveAndHasEvent(t *testing.T) {
 
 	ev := New()
 
-	ev.Listen("remove2.test", func(data any) {
+	ev.Listen("remove2.test", func(data any) any {
 		eventData2 = data
+		return nil
 	})
-	ev.Listen("remove2.test2", func(data any) {
+	ev.Listen("remove2.test2", func(data any) any {
 		eventData2_2 = data
+		return nil
 	})
 
 	eq(ev.HasEvent("remove2.test2"), true, "Test_RemoveAndHasEvent2 HasEvent 0")
 
 	ev.RemoveEvent("remove2.test2")
 
-	ev.Dispatch("remove2.test", checkData2)
-	ev.Dispatch("remove2.test2", checkData2)
+	ev.Dispatch("remove2.test", checkData2, false)
+	ev.Dispatch("remove2.test2", checkData2, false)
 
 	eq(eventData2, checkData2, "Test_RemoveAndHasEvent2")
 	eq(eventData2_2, nil, "Test_RemoveAndHasEvent2 nil")
@@ -147,7 +160,7 @@ func Test_ListenFunc(t *testing.T) {
 	Listen("func.test1", func(data int) {
 		eventData66 = data
 	})
-	Dispatch("func.test1", checkData66)
+	Dispatch("func.test1", checkData66, false)
 
 	eq(eventData66, checkData66, "Listen eventData66")
 
@@ -220,11 +233,11 @@ func Test_Subscribe(t *testing.T) {
 	Subscribe()
 
 	Subscribe(&TestEvent{})
-	Dispatch("TestEvent", checkData)
-	Dispatch("TestEventName", checkData)
+	Dispatch("TestEvent", checkData, false)
+	Dispatch("TestEventName", checkData, false)
 
 	// when other type
-	eq(Dispatch(float64(556677)), false, "Dispatch other type")
+	eq(Dispatch(float64(556677), nil, false), nil, "Dispatch other type")
 
 	eq(testEventRes["TestEvent_OnTestEvent"], checkData, "Subscribe 1")
 	eq(testEventRes["TestEvent_OnTestEventName"], checkData, "Subscribe 2")
@@ -237,8 +250,8 @@ func Test_Subscribe(t *testing.T) {
 	checkData2 := "index data Test_Subscribe 2"
 
 	ev.Subscribe(&TestEvent{})
-	ev.Dispatch("TestEvent", checkData2)
-	ev.Dispatch("TestEventName", checkData2)
+	ev.Dispatch("TestEvent", checkData2, false)
+	ev.Dispatch("TestEventName", checkData2, false)
 
 	eq(testEventRes["TestEvent_OnTestEvent"], checkData2, "Subscribe 2-1")
 	eq(testEventRes["TestEvent_OnTestEventName"], checkData2, "Subscribe 2-2")
@@ -251,7 +264,7 @@ func Test_Subscribe_Prefix(t *testing.T) {
 	checkData := "index data Test_Subscribe_Prefix"
 
 	Subscribe(TestEventPrefix{})
-	Dispatch("ABCTestEvent", checkData)
+	Dispatch("ABCTestEvent", checkData, false)
 
 	eq(testEventRes["TestEventPrefix_OnTestEvent"], checkData, "Subscribe 1")
 
@@ -262,7 +275,7 @@ func Test_Subscribe_Prefix(t *testing.T) {
 	checkData2 := "index data Test_Subscribe_Prefix 2"
 
 	ev.Subscribe(TestEventPrefix{})
-	ev.Dispatch("ABCTestEvent", checkData2)
+	ev.Dispatch("ABCTestEvent", checkData2, false)
 
 	eq(testEventRes["TestEventPrefix_OnTestEvent"], checkData2, "Subscribe 2-1")
 
@@ -273,7 +286,7 @@ func Test_Subscribe_Prefix(t *testing.T) {
 	Observe("awefr", "ACS")
 
 	Observe(TestEventPrefix2{}, "ACS")
-	Dispatch("ACSTestEvent", checkData22)
+	Dispatch("ACSTestEvent", checkData22, false)
 
 	eq(testEventRes["TestEventPrefix2_OnTestEvent"], checkData22, "Observe TestEventPrefix2 2-1")
 }
@@ -284,7 +297,7 @@ func Test_EventSubscribe(t *testing.T) {
 	checkData := "index data Test_EventSubscribe"
 
 	Subscribe(&TestEventSubscribe{})
-	Dispatch("TestEventSubscribe", checkData)
+	Dispatch("TestEventSubscribe", checkData, false)
 
 	eq(testEventRes["TestEventSubscribe_OnTestEvent"], checkData, "Subscribe 1")
 
@@ -295,7 +308,7 @@ func Test_EventSubscribe(t *testing.T) {
 	checkData2 := "index data Test_EventSubscribe 2"
 
 	ev.Subscribe(&TestEventSubscribe{})
-	ev.Dispatch("TestEventSubscribe", checkData2)
+	ev.Dispatch("TestEventSubscribe", checkData2, false)
 
 	eq(testEventRes["TestEventSubscribe_OnTestEvent"], checkData2, "Subscribe 2-1")
 }
@@ -308,7 +321,7 @@ func Test_EventStruct(t *testing.T) {
 	Listen(TestEventStructData{}, EventStructTest)
 	Dispatch(TestEventStructData{
 		Data: checkData,
-	})
+	}, nil, false)
 
 	eq(testEventRes["EventStructTest"], checkData, "Subscribe 1")
 	eq(testEventRes["EventStructTest_Name"], "github.com/deatil/go-event/event.TestEventStructData", "Subscribe Name 2-2")
@@ -322,7 +335,7 @@ func Test_EventStruct(t *testing.T) {
 	ev.Listen(TestEventStructData{}, EventStructTest)
 	ev.Dispatch(TestEventStructData{
 		Data: checkData2,
-	})
+	}, nil, false)
 
 	eq(testEventRes["EventStructTest"], checkData2, "Subscribe 2-1")
 	eq(testEventRes["EventStructTest_Name"], "github.com/deatil/go-event/event.TestEventStructData", "Subscribe Name 2-2")
@@ -334,7 +347,7 @@ func Test_EventStructHandle(t *testing.T) {
 	checkData := "index data Test_EventStructHandle"
 
 	Listen("TestEventStructHandle", &TestEventStructHandle{})
-	Dispatch("TestEventStructHandle", checkData)
+	Dispatch("TestEventStructHandle", checkData, false)
 
 	eq(testEventRes["TestEventStructHandle_Handle"], checkData, "Subscribe 1")
 
@@ -345,7 +358,7 @@ func Test_EventStructHandle(t *testing.T) {
 	checkData2 := "index data Test_EventStructHandle 2"
 
 	ev.Listen("TestEventStructHandle", &TestEventStructHandle{})
-	ev.Dispatch("TestEventStructHandle", checkData2)
+	ev.Dispatch("TestEventStructHandle", checkData2, false)
 
 	eq(testEventRes["TestEventStructHandle_Handle"], checkData2, "Subscribe 2-1")
 }
@@ -376,7 +389,7 @@ func Test_RemoveListen(t *testing.T) {
 	eq(HasListen("data22222.test", fn1), false, "RemoveListen")
 	eq(HasListen(int64(123678), fn1), false, "RemoveListen other type")
 
-	Dispatch("data22222.test", checkData)
+	Dispatch("data22222.test", checkData, false)
 
 	eq(eventData, checkData, "RemoveListen")
 
@@ -384,7 +397,7 @@ func Test_RemoveListen(t *testing.T) {
 
 	ev := NewEventDispatcher()
 
-	listener := NewEventListener(func(e *Event) {})
+	listener := NewEventListener(func(e *Event) any { return nil })
 
 	ev.AddEventListener("data22222.test111111", listener)
 	eq(ev.HasEventListener("data22222.test111111", listener), true, "HasEventListener")
@@ -397,7 +410,7 @@ func Test_RemoveListen(t *testing.T) {
 
 	// ==========
 
-	listener2 := NewEventListener(func(e *Event) {})
+	listener2 := NewEventListener(func(e *Event) any { return nil })
 
 	Listen("RemoveListen2.test111111", listener2)
 	eq(HasListen("RemoveListen2.test111111", listener2), true, "HasListen 2")
@@ -422,7 +435,7 @@ func Test_Reset(t *testing.T) {
 		eventData = data
 	})
 	Reset()
-	Dispatch("Reset.test", checkData)
+	Dispatch("Reset.test", checkData, false)
 
 	eq(eventData, nil, "Reset")
 
@@ -437,7 +450,48 @@ func Test_Reset(t *testing.T) {
 		eventData2 = data
 	})
 	ev.Reset()
-	ev.Dispatch("Reset.test111111", checkData2)
+	ev.Dispatch("Reset.test111111", checkData2, false)
 
 	eq(eventData2, nil, "Reset 2")
+}
+
+func Test_ReturnData(t *testing.T) {
+	eq := assertDeepEqualT(t)
+
+	{
+		fn1 := func(data any) any {
+			d := data.(string)
+			return d + " => good"
+		}
+
+		Listen("data77777", fn1)
+
+		checkData := "index data"
+		res := Dispatch("data77777", checkData, false)
+		if _, ok := res.([]any); !ok {
+			t.Error("return not []any")
+		}
+
+		eq(res, []any{"index data => good"}, "Dispatch")
+	}
+
+	// =========
+
+	{
+		fn2 := func(data any) any {
+			d := data.(string)
+			return d + " => good"
+		}
+
+		Listen("data888888", fn2)
+
+		checkData := "index data888888"
+		res := Until("data888888", checkData)
+		if _, ok := res.(string); !ok {
+			t.Error("return not string")
+		}
+
+		eq(res, "index data888888 => good", "Dispatch 2")
+	}
+
 }

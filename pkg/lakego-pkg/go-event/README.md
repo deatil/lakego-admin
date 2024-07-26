@@ -85,8 +85,9 @@ func (this *TestEventStructHandle) Handle(data any) {
 
 func main() {
     // Listen
-    event.Listen("data.error", func(data any) {
+    event.Listen("data.error", func(data any) any {
         fmt.Println(data)
+		return nil
     })
 
     // Dispatch

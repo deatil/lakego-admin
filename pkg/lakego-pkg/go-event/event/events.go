@@ -115,14 +115,9 @@ func Observe(observer any, prefix string) {
 
 // 事件调度
 // Dispatch Event
-func (this *Events) Dispatch(name any, object ...any) bool {
+func (this *Events) Dispatch(name any, object any, once bool) any {
 	this.mu.RLock()
 	defer this.mu.RUnlock()
-
-	var eventObject any
-	if len(object) > 0 {
-		eventObject = object[0]
-	}
 
 	var newName string
 
@@ -134,25 +129,34 @@ func (this *Events) Dispatch(name any, object ...any) bool {
 		nameKind := reflect.TypeOf(name).Kind()
 		if nameKind == reflect.Struct || nameKind == reflect.Pointer {
 			newName = getStructName(name)
-			eventObject = name
+			object = name
 		}
 	}
 
 	if newName == "" {
-		return false
+		return nil
 	}
 
-	newEvent := NewEvent(newName, eventObject)
+	newEvent := NewEvent(newName, object)
+	res := this.dispatcher.DispatchEvent(newEvent, once)
 
-	this.dispatcher.DispatchEvent(newEvent)
-
-	return true
+	return res
 }
 
 // 事件调度
 // Dispatch Event
-func Dispatch(name any, object ...any) bool {
-	return defaultEvents.Dispatch(name, object...)
+func Dispatch(name any, object any, once bool) any {
+	return defaultEvents.Dispatch(name, object, once)
+}
+
+// 触发事件(只获取一个有效返回值)
+func (this *Events) Until(name any, object any) any {
+	return this.Dispatch(name, object, true)
+}
+
+// 触发事件(只获取一个有效返回值)
+func Until(name any, object any) any {
+	return defaultEvents.Until(name, object)
 }
 
 // 移除
@@ -290,7 +294,7 @@ func Reset() {
 
 // 订阅监听
 // subscribe Listen
-func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
+func (this *Events) subscribeListen(es EventSubscribe, e *Event) any {
 	fn := es.Method.Func
 
 	fnType := fn.Type()
@@ -322,17 +326,22 @@ func (this *Events) subscribeListen(es EventSubscribe, e *Event) {
 	}
 
 	if len(params) == numIn {
-		fn.Call(params)
+		res := fn.Call(params)
+		if len(res) > 0 {
+			return res[0].Interface()
+		}
 	}
+
+	return nil
 }
 
 // 函数反射监听
 // listen func
-func (this *Events) funcReflectListen(fn any, e *Event) {
+func (this *Events) funcReflectListen(fn any, e *Event) any {
 	fnObject := reflect.ValueOf(fn)
 
 	if !(fnObject.IsValid() && fnObject.Kind() == reflect.Func) {
-		return
+		return nil
 	}
 
 	valueType := fnObject.Type()
@@ -354,22 +363,27 @@ func (this *Events) funcReflectListen(fn any, e *Event) {
 	}
 
 	if fieldNum == len(newParams) {
-		fnObject.Call(newParams)
+		res := fnObject.Call(newParams)
+		if len(res) > 0 {
+			return res[0].Interface()
+		}
 	}
+
+	return nil
 }
 
 // 结构体方法反射监听
 // listen struct
-func (this *Events) structHandleReflectListen(fn any, e *Event) {
+func (this *Events) structHandleReflectListen(fn any, e *Event) any {
 	method := "Handle"
 
 	// 获取到方法
 	newMethod, ok := reflect.TypeOf(fn).MethodByName(method)
 	if !ok {
-		return
+		return nil
 	}
 
-	this.subscribeListen(EventSubscribe{
+	return this.subscribeListen(EventSubscribe{
 		reflect.ValueOf(fn),
 		newMethod,
 	}, e)
@@ -384,40 +398,40 @@ func (this *Events) formatEventHandler(handler any) *EventListener {
 	case *EventListener:
 		return fn
 
-	// func(*Event)
+	// func(*Event) any
 	case EventHandler:
 		newHandler = fn
 
-	case func():
-		newHandler = func(e *Event) {
-			fn()
+	case func() any:
+		newHandler = func(e *Event) any {
+			return fn()
 		}
 
-	case func(any):
-		newHandler = func(e *Event) {
-			fn(e.Object)
+	case func(any) any:
+		newHandler = func(e *Event) any {
+			return fn(e.Object)
 		}
 
-	case func(any, string):
-		newHandler = func(e *Event) {
-			fn(e.Object, e.Type)
+	case func(any, string) any:
+		newHandler = func(e *Event) any {
+			return fn(e.Object, e.Type)
 		}
 
 	case EventSubscribe:
-		newHandler = func(e *Event) {
-			this.subscribeListen(fn, e)
+		newHandler = func(e *Event) any {
+			return this.subscribeListen(fn, e)
 		}
 
 	default:
 		fnKind := reflect.TypeOf(fn).Kind()
 
 		if fnKind == reflect.Func {
-			newHandler = func(e *Event) {
-				this.funcReflectListen(fn, e)
+			newHandler = func(e *Event) any {
+				return this.funcReflectListen(fn, e)
 			}
 		} else if fnKind == reflect.Struct || fnKind == reflect.Pointer {
-			newHandler = func(e *Event) {
-				this.structHandleReflectListen(fn, e)
+			newHandler = func(e *Event) any {
+				return this.structHandleReflectListen(fn, e)
 			}
 		}
 
