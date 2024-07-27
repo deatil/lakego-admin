@@ -1,5 +1,9 @@
 package pipeline
 
+import (
+    "reflect"
+)
+
 type (
     // 迭代的值
     ArrayItem = any
@@ -29,3 +33,39 @@ func ArrayReverse(s []any) []any {
 
     return s
 }
+
+// 获取类型唯一字符串
+// get TypeKey
+func getTypeKey(p reflect.Type) (key string) {
+    if p.Kind() == reflect.Pointer {
+        p = p.Elem()
+        key = "*"
+    }
+
+    pkgPath := p.PkgPath()
+
+    if pkgPath != "" {
+        key += pkgPath + "."
+    }
+
+    return key + p.Name()
+}
+
+// src convert type to new typ
+func convertTo(typ reflect.Type, src any) reflect.Value {
+    dataKey := getTypeKey(typ)
+
+    fieldType := reflect.TypeOf(src)
+    if !fieldType.ConvertibleTo(typ) {
+        return reflect.New(typ).Elem()
+    }
+
+    fieldValue := reflect.ValueOf(src)
+
+    if dataKey != getTypeKey(fieldType) {
+        fieldValue = fieldValue.Convert(typ)
+    }
+
+    return fieldValue
+}
+

@@ -1,6 +1,7 @@
 package pipeline
 
 import(
+    "fmt"
     "reflect"
 )
 
@@ -33,18 +34,6 @@ type PipeInterface interface {
     Handle(any, NextFunc) any
 }
 
-// 构造函数
-func NewPipeline() *Pipeline {
-    return &Pipeline{
-        Pipes: make([]PipeItem, 0),
-    }
-}
-
-// 构造函数
-func New() *Pipeline {
-    return NewPipeline()
-}
-
 /**
  * 管道
  *
@@ -66,6 +55,19 @@ type Pipeline struct {
 
     // Exception 回调函数
     ExceptionCallback ExceptionCallbackFunc
+}
+
+// 构造函数
+func NewPipeline() *Pipeline {
+    return &Pipeline{
+        Pipes:  make([]PipeItem, 0),
+        Method: "Handle",
+    }
+}
+
+// 构造函数
+func New() *Pipeline {
+    return NewPipeline()
 }
 
 // 设置数据
@@ -229,15 +231,6 @@ func (this *Pipeline) handleException(passable any, pipe any, stack NextFunc) an
 
 // 执行自定义方法
 func (this *Pipeline) pipeCallMethod(pipe any, method string, params []any) (any, bool) {
-    // 添加参数
-    pipeParams := make([]reflect.Value, 0)
-
-    if len(params) > 0 {
-        for _, param := range params {
-            pipeParams = append(pipeParams, reflect.ValueOf(param))
-        }
-    }
-
     // 不是结构体时
     pipeType := reflect.TypeOf(pipe)
     for pipeType.Kind() == reflect.Ptr {
@@ -251,33 +244,24 @@ func (this *Pipeline) pipeCallMethod(pipe any, method string, params []any) (any
                 return nil, false
             }
 
-            pipeObject := reflect.ValueOf(pipe)
-
             // 获取到方法
-            newPipe := pipeObject.MethodByName(method)
-            if !newPipe.IsValid() {
-                return nil, false
-            }
+            newPipe := reflect.ValueOf(pipe).MethodByName(method)
 
             // 执行并获取结果
-            carrys := newPipe.Call(pipeParams)
-            if len(carrys) == 0 {
+            carry, ok := this.call(newPipe, params)
+            if !ok {
                 return nil, false
             }
-
-            carry := carrys[0].Interface()
 
             return carry, true
         case pipeKind == reflect.Func:
             newPipe := reflect.ValueOf(pipe)
 
             // 执行并获取结果
-            carrys := newPipe.Call(pipeParams)
-            if len(carrys) == 0 {
+            carry, ok := this.call(newPipe, params)
+            if !ok {
                 return nil, false
             }
-
-            carry := carrys[0].Interface()
 
             return carry, true
     }
@@ -285,3 +269,31 @@ func (this *Pipeline) pipeCallMethod(pipe any, method string, params []any) (any
     return nil, false
 }
 
+// Call Func
+func (this *Pipeline) call(fn reflect.Value, args []any) (any, bool) {
+    if !fn.IsValid() {
+        panic("go-pipeline: call func type error")
+    }
+
+    fnType := fn.Type()
+
+    numIn := fnType.NumIn()
+    if len(args) != numIn {
+        err := fmt.Sprintf("go-pipeline: func params error (args %d, func args %d)", len(args), numIn)
+        panic(err)
+    }
+
+    // 参数
+    params := make([]reflect.Value, 0)
+    for i := 0; i < numIn; i++ {
+        dataValue := convertTo(fnType.In(i), args[i])
+        params = append(params, dataValue)
+    }
+
+    res := fn.Call(params)
+    if len(res) == 0 {
+        return nil, false
+    }
+
+    return res[0].Interface(), true
+}

@@ -113,14 +113,14 @@ func (this *Events) Observe(observer any, prefix string) *Events {
 	}
 
 	observerObject := reflect.TypeOf(observer)
+    observerVal := reflect.ValueOf(observer)
 	for i := 0; i < observerObject.NumMethod(); i++ {
 		name := observerObject.Method(i).Name
 
 		if strings.HasPrefix(name, "On") {
-			this.Listen(prefix+name[2:], EventSubscribe{
-				reflect.ValueOf(observer),
-				observerObject.Method(i),
-			})
+            method := observerVal.MethodByName(name)
+
+			this.Listen(prefix+name[2:], method)
 		}
 	}
 
@@ -314,34 +314,31 @@ func Reset() {
 
 // 订阅监听
 // subscribe Listen
-func (this *Events) subscribeListen(es EventSubscribe, e *Event) any {
-	fn := es.Method.Func
-
+func (this *Events) subscribeListen(fn reflect.Value, e *Event) any {
 	fnType := fn.Type()
 
 	numIn := fnType.NumIn()
 
 	// 参数
 	params := make([]reflect.Value, 0)
-	params = append(params, es.Struct)
 
 	switch numIn {
-	case 2:
-		if getTypeKey(fnType.In(1)) == getStructName(&Event{}) {
+	case 1:
+		if getTypeKey(fnType.In(0)) == getStructName(&Event{}) {
 			params = append(params, reflect.ValueOf(e))
 		} else {
-			dataValue := this.convertTo(fnType.In(1), e.Object)
+			dataValue := this.convertTo(fnType.In(0), e.Object)
 			params = append(params, dataValue)
 		}
-	case 3:
-		if getTypeKey(fnType.In(1)) == getStructName(&Event{}) {
+	case 2:
+		if getTypeKey(fnType.In(0)) == getStructName(&Event{}) {
 			params = append(params, reflect.ValueOf(e))
 		} else {
-			dataValue := this.convertTo(fnType.In(1), e.Object)
+			dataValue := this.convertTo(fnType.In(0), e.Object)
 			params = append(params, dataValue)
 		}
 
-		nameValue := this.convertTo(fnType.In(2), e.Type)
+		nameValue := this.convertTo(fnType.In(1), e.Type)
 		params = append(params, nameValue)
 	}
 
@@ -398,15 +395,9 @@ func (this *Events) structHandleReflectListen(fn any, e *Event) any {
 	method := "Handle"
 
 	// 获取到方法
-	newMethod, ok := reflect.TypeOf(fn).MethodByName(method)
-	if !ok {
-		return nil
-	}
+	newMethod := reflect.ValueOf(fn).MethodByName(method)
 
-	return this.subscribeListen(EventSubscribe{
-		reflect.ValueOf(fn),
-		newMethod,
-	}, e)
+	return this.subscribeListen(newMethod, e)
 }
 
 // 格式化
@@ -437,7 +428,7 @@ func (this *Events) formatEventHandler(handler any) *EventListener {
 			return fn(e.Object, e.Type)
 		}
 
-	case EventSubscribe:
+	case reflect.Value:
 		newHandler = func(e *Event) any {
 			return this.subscribeListen(fn, e)
 		}

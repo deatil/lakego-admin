@@ -400,7 +400,7 @@ func Test_Pipeline_fail_3(t *testing.T) {
         if e := recover(); e != nil {
             err := fmt.Sprintf("%v", e)
 
-            check := "reflect: Call with too few input arguments"
+            check := "go-pipeline: func params error (args 2, func args 3)"
             eq(err, check, "failed pipeline fail 3")
         }
     }()
@@ -442,7 +442,7 @@ func Test_Pipeline_fail_33(t *testing.T) {
         if e := recover(); e != nil {
             err := fmt.Sprintf("%v", e)
 
-            check := "reflect: Call with too few input arguments"
+            check := "go-pipeline: func params error (args 2, func args 3)"
             eq(err, check, "failed pipeline fail 33")
         }
     }()
@@ -484,7 +484,7 @@ func Test_Pipeline_fail_5(t *testing.T) {
         if e := recover(); e != nil {
             err := fmt.Sprintf("%v", e)
 
-            check := "reflect: Call with too few input arguments"
+            check := "go-pipeline: func params error (args 2, func args 3)"
             eq(err, check, "failed pipeline fail 5")
         }
     }()
@@ -658,4 +658,84 @@ func Test_Hub_3(t *testing.T) {
 
     check2 := "hub 测试2, 第11次数据1, 第11次数据2"
     eq(data2, check2, "failed Hub")
+}
+
+// ===========
+
+// 管道测试
+type PipelineExType struct {}
+
+func (this PipelineExType) Handle(data string, next NextFunc) string {
+    old := data + ", struct 数据1"
+
+    data2 := next(old)
+
+    res2 := data2.(string) + ", struct 数据2"
+
+    return res2
+}
+
+func Test_Pipeline_12(t *testing.T) {
+    eq := assertEqualT(t)
+
+    // 管道测试
+    data := New().
+        Send("开始的数据").
+        Through(
+            func(data string, next NextFunc) string {
+                old := data + ", 第1次数据1"
+
+                res := next(old)
+
+                res2 := res.(string) + ", 第1次数据2"
+
+                return res2
+            },
+            func(data string, next NextFunc) string {
+                old := data + ", 第2次数据1"
+
+                res := next(old)
+
+                res2 := res.(string) + ", 第2次数据2"
+
+                return res2
+            },
+        ).
+        ThenReturn()
+
+    check := "开始的数据, 第1次数据1, 第2次数据1, 第2次数据2, 第1次数据2"
+    eq(data, check, "failed pipeline")
+}
+
+func Test_Pipeline_StructType(t *testing.T) {
+    eq := assertEqualT(t)
+
+    // 管道测试
+    data := New().
+        Send("开始的数据").
+        Through(
+            func(data string, next NextFunc) string {
+                old := data + ", 第1次数据1"
+
+                res := next(old)
+
+                res2 := res.(string) + ", 第1次数据2"
+
+                return res2
+            },
+            func(data string, next NextFunc) string {
+                old := data + ", 第2次数据1"
+
+                res := next(old)
+
+                res2 := res.(string) + ", 第2次数据2"
+
+                return res2
+            },
+            &PipelineExType{},
+        ).
+        ThenReturn()
+
+    check := "开始的数据, 第1次数据1, 第2次数据1, struct 数据1, struct 数据2, 第2次数据2, 第1次数据2"
+    eq(data, check, "failed pipeline")
 }

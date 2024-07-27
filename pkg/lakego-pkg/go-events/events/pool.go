@@ -19,33 +19,32 @@ func NewPool() *Pool {
 
 // Call Func
 func (this *Pool) CallFunc(fn any, args []any) any {
-    fnObject := reflect.ValueOf(fn)
-    if !(fnObject.IsValid() && fnObject.Kind() == reflect.Func) {
+    val := reflect.ValueOf(fn)
+    if val.Kind() != reflect.Func {
         panic("go-events: call func type error")
     }
 
-    return this.Call(fnObject, args)
+    return this.Call(val, args)
 }
 
 // listen struct
 func (this *Pool) CallStructMethod(in any, method string, args []any) any {
-    typ := reflect.TypeOf(in)
+    val := reflect.ValueOf(in)
 
-    if typ.Kind() != reflect.Pointer && typ.Kind() != reflect.Struct {
-        panic("go-events: call struct type error")
+    if val.Kind() != reflect.Pointer && val.Kind() != reflect.Struct {
+        panic("go-events: struct type error")
     }
 
-    newMethod, ok := typ.MethodByName(method)
-    if !ok {
-        panic("go-events: call method not exists")
-    }
-
-	args = append([]any{in}, args...)
-    return this.Call(newMethod.Func, args)
+    newMethod := val.MethodByName(method)
+    return this.Call(newMethod, args)
 }
 
 // Call Func
 func (this *Pool) Call(fn reflect.Value, args []any) any {
+    if !fn.IsValid() {
+        panic("go-events: call func type error")
+    }
+
     fnType := fn.Type()
 
     numIn := fnType.NumIn()

@@ -1,6 +1,7 @@
 package events
 
 import (
+    "reflect"
     "testing"
 )
 
@@ -423,4 +424,20 @@ func Test_FilterPanic(t *testing.T) {
     }, DefaultSort)
 
     _ = filter.Trigger("panic")
+}
+
+func testReflectValueFunc(val string) {
+    testEventRes["testReflectValueFunc"] = val
+}
+
+func Test_ReflectValue(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    action := NewAction()
+    action.Listen("Test_ReflectValue", reflect.ValueOf(testReflectValueFunc), DefaultSort)
+
+    data1 := "init6"
+    action.Trigger("Test_ReflectValue", data1)
+
+    eq(testEventRes["testReflectValueFunc"], "init6", "Test_ReflectValue")
 }

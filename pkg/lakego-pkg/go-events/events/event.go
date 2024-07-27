@@ -17,15 +17,6 @@ type ISubscribeSort interface {
     EventSort() int
 }
 
-// 订阅数据
-type EventSubscribe struct {
-    // 结构体
-    Struct reflect.Value
-
-    // 方法
-    Method reflect.Method
-}
-
 // 监听器数据
 type Listener struct {
     Listener any
@@ -57,14 +48,14 @@ func (this *Event) Observe(observer any, prefix string, sort int) *Event {
     }
 
     observerObject := reflect.TypeOf(observer)
+    observerVal := reflect.ValueOf(observer)
     for i := 0; i < observerObject.NumMethod(); i++ {
         name := observerObject.Method(i).Name
 
         if strings.HasPrefix(name, "On") {
-            this.Listen(prefix + name[2:], EventSubscribe{
-                Struct: reflect.ValueOf(observer),
-                Method: observerObject.Method(i),
-            }, sort)
+            method := observerVal.MethodByName(name)
+
+            this.Listen(prefix + name[2:], method, sort)
         }
     }
 
@@ -189,10 +180,8 @@ func (this *Event) Clear() {
 func (this *Event) dispatch(event any, params []any) any {
     if this.pool.IsFunc(event) {
         return this.pool.CallFunc(event, params)
-    } else if eventMethod, ok := event.(EventSubscribe); ok {
-        params = append([]any{eventMethod.Struct}, params...)
-
-        return this.pool.Call(eventMethod.Method.Func, params)
+    } else if eventMethod, ok := event.(reflect.Value); ok {
+        return this.pool.Call(eventMethod, params)
     } else {
         method := "Handle"
 
