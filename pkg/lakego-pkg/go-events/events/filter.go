@@ -5,10 +5,12 @@ import (
 )
 
 // 接口
+// Filter Subscribe interface
 type IFilterSubscribe interface {
     Subscribe(*Filter)
 }
 
+// Filter
 type Filter struct {
     Event
 }
@@ -23,6 +25,7 @@ func NewFilter() *Filter {
 }
 
 // 注册事件订阅者
+// Subscribe
 func (this *Filter) Subscribe(subscribers ...any) *Filter {
     if len(subscribers) == 0 {
         return this
@@ -40,6 +43,7 @@ func (this *Filter) Subscribe(subscribers ...any) *Filter {
     return this
 }
 
+// Trigger func
 func (this *Filter) Trigger(event any, params ...any) any {
     this.mu.RLock()
     defer this.mu.RUnlock()
@@ -47,6 +51,7 @@ func (this *Filter) Trigger(event any, params ...any) any {
     var value any
 
     eventName := formatName(event)
+
     if this.pool.IsStruct(event) {
         value = event
     } else {
@@ -61,18 +66,22 @@ func (this *Filter) Trigger(event any, params ...any) any {
     listeners := this.listener[eventName]
 
     if _, ok := event.(string); ok {
-        if strings.Contains(eventName, ".") {
+        if strings.Contains(eventName, ".*") {
+            needSort := false
             events := strings.SplitN(eventName, ".", 2)
 
             for e, listener := range this.listener {
                 if events[1] == "*" && strings.HasPrefix(e, events[0] + ".") {
                     listeners = append(listeners, listener...)
+                    needSort = true
                 }
+            }
+
+            if needSort {
+                this.listenerSort(listeners, "desc")
             }
         }
     }
-
-    this.listenerSort(listeners, "desc")
 
     tmp := params
     result := value
