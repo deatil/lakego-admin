@@ -35,3 +35,8 @@ func ArrayGet(source any, key string, defVal ...any) goch.Goch {
 
     return goch.New(data)
 }
+
+// 获取
+func ArrayHas(source any, key string) bool {
+    return array.Exists(source, key)
+}

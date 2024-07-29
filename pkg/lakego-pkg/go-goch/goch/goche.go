@@ -1,14 +1,14 @@
 package goch
 
 import (
-    "encoding/json"
-    "errors"
     "fmt"
-    "html/template"
+    "time"
+    "errors"
     "reflect"
     "strconv"
     "strings"
-    "time"
+    "encoding/json"
+    "html/template"
 )
 
 var errNegativeNotAllowed = errors.New("unable to cast negative value")
@@ -25,6 +25,8 @@ func ToTimeInDefaultLocationE(i any, location *time.Location) (tim time.Time, er
     switch v := i.(type) {
         case time.Time:
             return v, nil
+        case []byte:
+            return StringToDateInDefaultLocation(string(v), location)
         case string:
             return StringToDateInDefaultLocation(v, location)
         case int:
@@ -57,6 +59,8 @@ func ToDurationE(i any) (d time.Duration, err error) {
         case float32, float64:
             d = time.Duration(ToFloat64(s))
             return
+        case []byte:
+            return ToDurationE(string(s))
         case string:
             if strings.ContainsAny(s, "nsuµmh") {
                 d, err = time.ParseDuration(s)
@@ -85,7 +89,9 @@ func ToBoolE(i any) (bool, error) {
             }
             return false, nil
         case string:
-            return strconv.ParseBool(i.(string))
+            return strconv.ParseBool(b)
+        case []byte:
+            return strconv.ParseBool(string(b))
         default:
             return false, fmt.Errorf("unable to cast %#v of type %T to bool", i, i)
     }
@@ -122,6 +128,12 @@ func ToFloat64E(i any) (float64, error) {
             return float64(s), nil
         case string:
             v, err := strconv.ParseFloat(s, 64)
+            if err == nil {
+                return v, nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to float64", i, i)
+        case []byte:
+            v, err := strconv.ParseFloat(string(s), 64)
             if err == nil {
                 return v, nil
             }
@@ -171,6 +183,12 @@ func ToFloat32E(i any) (float32, error) {
                 return float32(v), nil
             }
             return 0, fmt.Errorf("unable to cast %#v of type %T to float32", i, i)
+        case []byte:
+            v, err := strconv.ParseFloat(string(s), 32)
+            if err == nil {
+                return float32(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to float32", i, i)
         case bool:
             if s {
                 return 1, nil
@@ -212,6 +230,12 @@ func ToInt64E(i any) (int64, error) {
             return int64(s), nil
         case string:
             v, err := strconv.ParseInt(s, 0, 0)
+            if err == nil {
+                return v, nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to int64", i, i)
+        case []byte:
+            v, err := strconv.ParseInt(string(s), 0, 0)
             if err == nil {
                 return v, nil
             }
@@ -263,6 +287,12 @@ func ToInt32E(i any) (int32, error) {
                 return int32(v), nil
             }
             return 0, fmt.Errorf("unable to cast %#v of type %T to int32", i, i)
+        case []byte:
+            v, err := strconv.ParseInt(string(s), 0, 0)
+            if err == nil {
+                return int32(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to int32", i, i)
         case bool:
             if s {
                 return 1, nil
@@ -306,6 +336,12 @@ func ToInt16E(i any) (int16, error) {
             return int16(s), nil
         case string:
             v, err := strconv.ParseInt(s, 0, 0)
+            if err == nil {
+                return int16(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to int16", i, i)
+        case []byte:
+            v, err := strconv.ParseInt(string(s), 0, 0)
             if err == nil {
                 return int16(v), nil
             }
@@ -357,6 +393,12 @@ func ToInt8E(i any) (int8, error) {
                 return int8(v), nil
             }
             return 0, fmt.Errorf("unable to cast %#v of type %T to int8", i, i)
+        case []byte:
+            v, err := strconv.ParseInt(string(s), 0, 0)
+            if err == nil {
+                return int8(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to int8", i, i)
         case bool:
             if s {
                 return 1, nil
@@ -404,6 +446,12 @@ func ToIntE(i any) (int, error) {
                 return int(v), nil
             }
             return 0, fmt.Errorf("unable to cast %#v of type %T to int", i, i)
+        case []byte:
+            v, err := strconv.ParseInt(string(s), 0, 0)
+            if err == nil {
+                return int(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v of type %T to int", i, i)
         case bool:
             if s {
                 return 1, nil
@@ -423,6 +471,12 @@ func ToUintE(i any) (uint, error) {
     switch s := i.(type) {
         case string:
             v, err := strconv.ParseUint(s, 0, 0)
+            if err == nil {
+                return uint(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v to uint: %s", i, err)
+        case []byte:
+            v, err := strconv.ParseUint(string(s), 0, 0)
             if err == nil {
                 return uint(v), nil
             }
@@ -495,6 +549,12 @@ func ToUint64E(i any) (uint64, error) {
                 return v, nil
             }
             return 0, fmt.Errorf("unable to cast %#v to uint64: %s", i, err)
+        case []byte:
+            v, err := strconv.ParseUint(string(s), 0, 64)
+            if err == nil {
+                return v, nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v to uint64: %s", i, err)
         case int:
             if s < 0 {
                 return 0, errNegativeNotAllowed
@@ -559,6 +619,12 @@ func ToUint32E(i any) (uint32, error) {
     switch s := i.(type) {
         case string:
             v, err := strconv.ParseUint(s, 0, 32)
+            if err == nil {
+                return uint32(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v to uint32: %s", i, err)
+        case []byte:
+            v, err := strconv.ParseUint(string(s), 0, 32)
             if err == nil {
                 return uint32(v), nil
             }
@@ -631,6 +697,12 @@ func ToUint16E(i any) (uint16, error) {
                 return uint16(v), nil
             }
             return 0, fmt.Errorf("unable to cast %#v to uint16: %s", i, err)
+        case []byte:
+            v, err := strconv.ParseUint(string(s), 0, 16)
+            if err == nil {
+                return uint16(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v to uint16: %s", i, err)
         case int:
             if s < 0 {
                 return 0, errNegativeNotAllowed
@@ -695,6 +767,12 @@ func ToUint8E(i any) (uint8, error) {
     switch s := i.(type) {
         case string:
             v, err := strconv.ParseUint(s, 0, 8)
+            if err == nil {
+                return uint8(v), nil
+            }
+            return 0, fmt.Errorf("unable to cast %#v to uint8: %s", i, err)
+        case []byte:
+            v, err := strconv.ParseUint(string(s), 0, 8)
             if err == nil {
                 return uint8(v), nil
             }
@@ -872,6 +950,9 @@ func ToStringMapStringE(i any) (map[string]string, error) {
         case string:
             err := jsonStringToObject(v, &m)
             return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
+            return m, err
         default:
             return m, fmt.Errorf("unable to cast %#v of type %T to map[string]string", i, i)
     }
@@ -935,6 +1016,9 @@ func ToStringMapStringSliceE(i any) (map[string][]string, error) {
         case string:
             err := jsonStringToObject(v, &m)
             return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
+            return m, err
         default:
             return m, fmt.Errorf("unable to cast %#v of type %T to map[string][]string", i, i)
     }
@@ -962,6 +1046,9 @@ func ToStringMapBoolE(i any) (map[string]bool, error) {
         case string:
             err := jsonStringToObject(v, &m)
             return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
+            return m, err
         default:
             return m, fmt.Errorf("unable to cast %#v of type %T to map[string]bool", i, i)
     }
@@ -981,6 +1068,9 @@ func ToStringMapE(i any) (map[string]any, error) {
             return v, nil
         case string:
             err := jsonStringToObject(v, &m)
+            return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
             return m, err
         default:
             return m, fmt.Errorf("unable to cast %#v of type %T to map[string]any", i, i)
@@ -1009,6 +1099,9 @@ func ToStringMapIntE(i any) (map[string]int, error) {
             return v, nil
         case string:
             err := jsonStringToObject(v, &m)
+            return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
             return m, err
     }
 
@@ -1051,6 +1144,9 @@ func ToStringMapInt64E(i any) (map[string]int64, error) {
             return v, nil
         case string:
             err := jsonStringToObject(v, &m)
+            return m, err
+        case []byte:
+            err := jsonStringToObject(string(v), &m)
             return m, err
     }
 
@@ -1129,6 +1225,11 @@ func ToStringSliceE(i any) ([]string, error) {
             return a, nil
         case []string:
             return v, nil
+        case [][]byte:
+            for _, u := range v {
+                a = append(a, string(u))
+            }
+            return a, nil
         case []int8:
             for _, u := range v {
                 a = append(a, ToString(u))
@@ -1161,6 +1262,8 @@ func ToStringSliceE(i any) ([]string, error) {
             return a, nil
         case string:
             return strings.Fields(v), nil
+        case []byte:
+            return strings.Fields(string(v)), nil
         case []error:
             for _, err := range i.([]error) {
                 a = append(a, err.Error())
@@ -1235,6 +1338,12 @@ func ToDurationSliceE(i any) ([]time.Duration, error) {
     }
 }
 
+// ToJSONE casts an interface to a string.
+func ToJSONE(data any) (string, error) {
+    b, err := json.Marshal(data)
+    return string(b), err
+}
+
 // StringToDate attempts to parse a string into a time.Time type using a
 // predefined list of formats.  If no suitable format is found, an error is
 // returned.
@@ -1300,7 +1409,6 @@ var (
 )
 
 func parseDateWith(s string, location *time.Location, formats []timeFormat) (d time.Time, e error) {
-
     for _, format := range formats {
         if d, e = time.Parse(format.format, s); e == nil {
 

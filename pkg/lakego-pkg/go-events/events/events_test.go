@@ -775,3 +775,30 @@ func Test_Struct_fail_5(t *testing.T) {
     action.Trigger("Test_Struct_fail_5", data1)
 }
 
+type TestEventObserveOn struct{}
+
+func (this TestEventObserveOn) OnTestEvent(data any) {
+    testEventRes["TestEventObserveOn"] = data
+}
+
+func Test_EventObserveOn(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    defer func() {
+        if e := recover(); e != nil {
+            err := fmt.Sprintf("%v", e)
+
+            check := "go-events: observe input type error"
+            eq(err, check, "Struct failed 5")
+        }
+    }()
+
+    action := NewAction()
+    action.Subscribe(TestEventObserveOn{})
+    action.Subscribe("test")
+
+    data1 := "init77889"
+    action.Trigger("TestEvent", data1)
+
+    eq(testEventRes["TestEventObserveOn"], "init77889", "Test_EventObserveOn")
+}

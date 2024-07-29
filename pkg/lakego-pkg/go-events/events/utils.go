@@ -2,27 +2,9 @@ package events
 
 import (
     "reflect"
-    "regexp"
     "runtime"
     "strings"
 )
-
-// 匹配检测
-// match Type Name
-func matchTypeName(typeName string, current string) bool {
-    if strings.Index(typeName, "*") == -1 {
-        return typeName == current
-    }
-
-    typeName = strings.Replace(typeName, "*", `([0-9a-zA-Z-_.:])*`, -1)
-
-    result, _ := regexp.MatchString("^"+typeName, current)
-    if !result {
-        return false
-    }
-
-    return true
-}
 
 // 获取方法名称
 // get Func Name

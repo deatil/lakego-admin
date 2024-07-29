@@ -29,7 +29,17 @@ func (this key) Value(name string, defVal ...any) goch.Goch {
     return goch.New(data)
 }
 
-// 全部
+// 判断是否存在
+func (this key) Has(name string) bool {
+    return array.Exists(this.source, name)
+}
+
+// 输出 JSON
+func (this key) ToJSON() string {
+    return goch.ToJSON(this.source)
+}
+
+// 输出全部
 func (this key) All() goch.Goch {
     return goch.New(this.source)
 }

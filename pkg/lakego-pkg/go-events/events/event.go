@@ -40,7 +40,7 @@ type Event struct {
 func (this *Event) Observe(observer any, prefix string, sort int) *Event {
     observerKind := reflect.TypeOf(observer).Kind()
     if observerKind != reflect.Struct && observerKind != reflect.Pointer {
-        return this
+        panic("go-events: observe input type error")
     }
 
     if ob, ok := observer.(ISubscribePrefix); ok {

@@ -168,3 +168,9 @@ func ToDurationSlice(i any) []time.Duration {
     v, _ := ToDurationSliceE(i)
     return v
 }
+
+// ToJSON casts an interface to []type.
+func ToJSON(i any) string {
+    v, _ := ToJSONE(i)
+    return v
+}

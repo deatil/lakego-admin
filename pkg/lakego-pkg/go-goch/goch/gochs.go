@@ -312,6 +312,16 @@ func (this Goch) ToDurationSliceE() ([]time.Duration, error) {
     return ToDurationSliceE(this.data)
 }
 
+// []byte
+func (this Goch) ToJSON() string {
+    return ToJSON(this.data)
+}
+
+// []byte
+func (this Goch) ToJSONE() (string, error) {
+    return ToJSONE(this.data)
+}
+
 // 字符
 func (this Goch) String() string {
     return this.ToString()

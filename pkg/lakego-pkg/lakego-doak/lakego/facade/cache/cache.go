@@ -51,21 +51,19 @@ func Cache(name string, once ...bool) *cache.Cache {
     conf := config.New("cache")
 
     // 缓存列表
-    caches := conf.GetStringMap("caches")
+    cfg := array.ArrayFrom(conf.GetStringMap("caches"))
 
     // 转为小写
     name = strings.ToLower(name)
 
-    // 获取驱动配置
-    driverConfig, ok := caches[name]
-    if !ok {
+    if !cfg.Has(name) {
         panic("缓存驱动[" + name + "]配置不存在")
     }
 
     // 配置
-    driverConf := driverConfig.(map[string]any)
+    driverConf := cfg.Value(name).ToStringMap()
+    driverType := cfg.Value(name + ".type").ToString()
 
-    driverType := driverConf["type"].(string)
     driver := register.
         NewManagerWithPrefix("cache").
         GetRegister(driverType, driverConf, once...)
