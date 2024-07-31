@@ -37,12 +37,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
     return c, nil
 }
 
-func (this *threewayCipher) expandKey(key []byte) {
-    this.key[0] = binary.BigEndian.Uint32(key[0:])
-    this.key[1] = binary.BigEndian.Uint32(key[4:])
-    this.key[2] = binary.BigEndian.Uint32(key[8:])
-}
-
 func (this *threewayCipher) BlockSize() int {
     return BlockSize
 }
@@ -77,6 +71,12 @@ func (this *threewayCipher) Decrypt(dst, src []byte) {
     }
 
     this.decrypt(dst, src)
+}
+
+func (this *threewayCipher) expandKey(key []byte) {
+    this.key[0] = binary.BigEndian.Uint32(key[0:])
+    this.key[1] = binary.BigEndian.Uint32(key[4:])
+    this.key[2] = binary.BigEndian.Uint32(key[8:])
 }
 
 func (this *threewayCipher) encrypt(dst, src []byte) {
