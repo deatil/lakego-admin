@@ -129,21 +129,13 @@ Gost(sbox any)
 Kuznyechik
 Skipjack
 Serpent
-Loki97
 Saferplus
 Mars
 Mars2
-Wake
 Enigma
 Hight
 Lea
-Panama
-Square
-Magenta
 Kasumi
-E2
-Crypton1
-Clefia
 Safer(typ string, rounds int32)
 Noekeon
 Multi2(rounds int32)
@@ -200,3 +192,56 @@ TBCPadding
 PKCS1Padding(bt ...string)
 ~~~
 
+
+### 支持的懒加载加密类型
+
+支持的加密类型
+~~~go
+Loki97
+Wake
+Panama
+Square
+Magenta
+E2
+Crypton1
+Clefia
+Threeway
+~~~
+
+使用示例
+~~~go
+package main
+
+import (
+    "fmt"
+
+    "github.com/deatil/go-cryptobin/cryptobin/crypto"
+    "github.com/deatil/go-cryptobin/cryptobin/crypto/encrypt/threeway"
+)
+
+func main() {
+    data := "test-pass"
+
+    cypt := crypto.FromString(data).
+        SetKey("dfertf12dfyy").
+        SetIv("dfertf12dfer").
+        WithMultiple(threeway.Threeway).
+        CFB().
+        PKCS7Padding().
+        Encrypt().
+        ToBase64String()
+
+    cyptde := crypto.FromBase64String(cypt).
+        SetKey("dfertf12dfyy").
+        SetIv("dfertf12dfer").
+        WithMultiple(threeway.Threeway).
+        CFB().
+        PKCS7Padding().
+        Decrypt().
+        ToString()
+
+    fmt.Println("加密结果：", cypt)
+    fmt.Println("解密结果：", cyptde)
+}
+
+~~~

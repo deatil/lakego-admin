@@ -122,36 +122,20 @@ func (this Multiple) String() string {
             return "Skipjack"
         case Serpent:
             return "Serpent"
-        case Loki97:
-            return "Loki97"
         case Saferplus:
             return "Saferplus"
         case Mars:
             return "Mars"
         case Mars2:
             return "Mars2"
-        case Wake:
-            return "Wake"
         case Enigma:
             return "Enigma"
         case Hight:
             return "Hight"
         case Lea:
             return "Lea"
-        case Panama:
-            return "Panama"
-        case Square:
-            return "Square"
-        case Magenta:
-            return "Magenta"
         case Kasumi:
             return "Kasumi"
-        case E2:
-            return "E2"
-        case Crypton1:
-            return "Crypton1"
-        case Clefia:
-            return "Clefia"
         case Safer:
             return "Safer"
         case Noekeon:
@@ -219,21 +203,13 @@ const (
     Kuznyechik
     Skipjack
     Serpent
-    Loki97
     Saferplus
     Mars
     Mars2
-    Wake
     Enigma
     Hight
     Lea
-    Panama
-    Square
-    Magenta
     Kasumi
-    E2
-    Crypton1
-    Clefia
     Safer
     Noekeon
     Multi2

@@ -245,14 +245,6 @@ func (this Cryptobin) Serpent() Cryptobin {
     return this
 }
 
-// Loki97
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) Loki97() Cryptobin {
-    this.multiple = Loki97
-
-    return this
-}
-
 // Saferplus
 // The key argument should be 8, 16 bytes.
 func (this Cryptobin) Saferplus() Cryptobin {
@@ -273,14 +265,6 @@ func (this Cryptobin) Mars() Cryptobin {
 // The key argument should be from 128 to 448 bits
 func (this Cryptobin) Mars2() Cryptobin {
     this.multiple = Mars2
-
-    return this
-}
-
-// Wake
-// The key argument should be 16 bytes.
-func (this Cryptobin) Wake() Cryptobin {
-    this.multiple = Wake
 
     return this
 }
@@ -309,58 +293,10 @@ func (this Cryptobin) Lea() Cryptobin {
     return this
 }
 
-// Panama
-// The key argument should be 32 bytes.
-func (this Cryptobin) Panama() Cryptobin {
-    this.multiple = Panama
-
-    return this
-}
-
-// Square
-// The key argument should be 16 bytes.
-func (this Cryptobin) Square() Cryptobin {
-    this.multiple = Square
-
-    return this
-}
-
-// Magenta
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) Magenta() Cryptobin {
-    this.multiple = Magenta
-
-    return this
-}
-
 // Kasumi
 // The key argument should be 16 bytes.
 func (this Cryptobin) Kasumi() Cryptobin {
     this.multiple = Kasumi
-
-    return this
-}
-
-// E2
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) E2() Cryptobin {
-    this.multiple = E2
-
-    return this
-}
-
-// Crypton1
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) Crypton1() Cryptobin {
-    this.multiple = Crypton1
-
-    return this
-}
-
-// Clefia
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) Clefia() Cryptobin {
-    this.multiple = Clefia
 
     return this
 }

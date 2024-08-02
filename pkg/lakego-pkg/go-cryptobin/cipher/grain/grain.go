@@ -1,29 +1,9 @@
-// Package grain implements the Grain128-AEAD cipher.
-//
-// Performance
-//
-// For 1 KiB plaintext, this implementation runs at about 40-50
-// cycles per byte (tested on a 2020 MacBook Air M1 @ 3.2Ghz and
-// a 2019 Macbook Pro i7 @ 2.6Ghz). This is roughly equivalent
-// to the optimized C implementation [m1,x86].
-//
-// This implementation runs at about
-//
-// References:
-//
-//    [grain]: https://grain-128aead.github.io/
-//    [m1]: https://gist.github.com/ericlagergren/645eb97a05efd37152d6f1cfa9cf9d4a
-//    [x86]: https://gist.github.com/elagergren-spideroak/4bd31a59925de3b19227d4ae80b55cf0
-//
 package grain
 
 import (
-    "fmt"
     "errors"
     "runtime"
     "strconv"
-    "strings"
-    "math/bits"
     "crypto/subtle"
     "crypto/cipher"
     "encoding/binary"
@@ -32,83 +12,6 @@ import (
 )
 
 var errOpen = errors.New("cryptobin/grain: message authentication failed")
-
-const (
-    // BlockSize is the size in bytes of an Grain128-AEAD block.
-    BlockSize = 16
-    // KeySize is the size in bytes of an Grain128-AEAD key.
-    KeySize = 16
-    // NonceSize is the size in bytes of an Grain128-AEAD nonce.
-    NonceSize = 12
-    // TagSize is the size in bytes of an Grain128-AEAD
-    // authenticator.
-    TagSize = 8
-)
-
-// NewUnauthenticated creates a Grain128a stream cipher.
-//
-// Grain128a must not be used to encrypt more than 2^80 bits per
-// key, nonce pair.
-func NewUnauthenticated(key, nonce []byte) (cipher.Stream, error) {
-    if len(key) != KeySize {
-        return nil, errors.New("cryptobin/grain: bad key length")
-    }
-
-    var s stream
-    s.s.setKey(key)
-    s.s.init(nonce)
-
-    return &s, nil
-}
-
-// stream implements cipher.Stream.
-type stream struct {
-    s state
-    // ks is a remaining key stream byte, if any.
-    //
-    // There is a remaining key stream byte, its high bits will
-    // be set.
-    ks uint16
-}
-
-var _ cipher.Stream = (*stream)(nil)
-
-func (s *stream) XORKeyStream(dst, src []byte) {
-    if len(src) == 0 {
-        return
-    }
-    if len(dst) < len(src) {
-        panic("cryptobin/grain: output smaller than input")
-    }
-    if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/grain: invalid buffer overlap")
-    }
-
-    dst = dst[:len(src)]
-
-    // Remaining key stream.
-    const mask = 0xff00
-    if s.ks&mask != 0 {
-        dst[0] = src[0] ^ byte(s.ks)
-        src = src[1:]
-        dst = dst[1:]
-    }
-
-    for len(src) >= 2 {
-        v := binary.LittleEndian.Uint16(src)
-        binary.LittleEndian.PutUint16(dst, v^getkb(next(&s.s)))
-        src = src[2:]
-        dst = dst[2:]
-    }
-
-    if len(src) > 0 {
-        w := getkb(next(&s.s))
-        s.ks = mask | w>>8
-        dst[0] = src[0] ^ byte(w)
-    } else {
-        s.ks = 0
-    }
-}
 
 // state is the pure Go "generic" implementation of
 // Grain-128AEAD.
@@ -185,18 +88,18 @@ type state struct {
     reg uint64
 }
 
-var _ cipher.AEAD = (*state)(nil)
-
-// New creates a 128-bit Grain128-AEAD AEAD.
+// NewCipher creates a 128-bit Grain128-AEAD AEAD.
 //
 // Grain128-AEAD must not be used to encrypt more than 2^80 bits
 // per key, nonce pair, including additional authenticated data.
-func New(key []byte) (cipher.AEAD, error) {
+func NewCipher(key []byte) (cipher.AEAD, error) {
     if len(key) != KeySize {
         return nil, errors.New("cryptobin/grain: bad key length")
     }
+
     var s state
     s.setKey(key)
+
     return &s, nil
 }
 
@@ -514,135 +417,4 @@ func (s *state) accumulate8(ms, pt uint8) {
 
     s.reg = reg | uint64(ms)<<56
     s.acc = acc ^ uint64(acctmp)<<56
-}
-
-func getmb(num uint32) uint16 {
-    const (
-        mvo0 = 0x22222222
-        mvo1 = 0x18181818
-        mvo2 = 0x07800780
-        mvo3 = 0x007f8000
-        mvo4 = 0x80000000
-    )
-
-    // 0xAAA... extracts the odd MAC bits, LSB first.
-    x := uint32(num & 0xAAAAAAAA)
-    // Inlining the "t = mvoX" assignments allows the compiler to
-    // inline getmb itself, because as of Go 1.16 the compiler
-    // still judges the complexity of a function based on the
-    // number of *lexical* statements.
-    x = (x ^ (x & mvo0)) | (x&mvo0)>>1
-    x = (x ^ (x & mvo1)) | (x&mvo1)>>2
-    x = (x ^ (x & mvo2)) | (x&mvo2)>>4
-    x = (x ^ (x & mvo3)) | (x&mvo3)>>8
-    x = (x ^ (x & mvo4)) | (x&mvo4)>>16
-    return uint16(x)
-}
-
-func getkb(num uint32) uint16 {
-    const (
-        mve0 = 0x44444444
-        mve1 = 0x30303030
-        mve2 = 0x0f000f00
-        mve3 = 0x00ff0000
-    )
-
-    var t uint32
-    // 0x555... extracts the even key bits, LSB first.
-    x := uint32(num & 0x55555555)
-    t = x & mve0
-    x = (x ^ t) | (t >> 1)
-    t = x & mve1
-    x = (x ^ t) | (t >> 2)
-    t = x & mve2
-    x = (x ^ t) | (t >> 4)
-    t = x & mve3
-    x = (x ^ t) | (t >> 8)
-    return uint16(x)
-}
-
-// shortInt is the largest allowed integer for DER's "short"
-// encoding.
-const shortInt = 127
-
-// der is a DER-encoded integer using the definite form.
-type der [10]byte
-
-// len returns the number of bytes used in d.
-func (d der) len() int {
-    // d[0] encodes the number of following bytes, so add one.
-    return int(d[0]&^0x80) + 1
-}
-
-// encode encodes the length x using DER's definite form for
-// x > shortInt.
-//
-// encode returns an even number of bytes to make the call site
-// easier.
-func encode(x int) (d der) {
-    n := (bits.Len(uint(x)) + 7) / 8
-    d[0] = byte(0x80 | n)
-    for i := n; i > 0; i-- {
-        d[i] = byte(n)
-        n >>= 8
-    }
-    return d
-}
-
-// lfsr is a 128-bit LFSR.
-//
-// New input is added in the high 32 bits, shifting old bits off
-// the front.
-type lfsr struct {
-    lo, hi uint64
-}
-
-type nfsr = lfsr
-
-// shift shifts off 32 low bits and replaces the high bits with
-// x:
-//
-//    u = (u >> 32) | (x << 96)
-//
-func (r lfsr) shift(x uint32) lfsr {
-    const s = 32
-    lo := r.lo>>s | r.hi<<(64-s)
-    hi := r.hi>>s | uint64(x)<<s
-    return lfsr{lo, hi}
-}
-
-// xor XORs the high 32 bits with x.
-func (r lfsr) xor(x uint32) lfsr {
-    const mask = 1<<32 - 1
-    hi32 := uint32(r.hi>>32) ^ x
-    hi := uint64(hi32)<<32 | r.hi&mask
-    return lfsr{r.lo, hi}
-}
-
-// words returns the state of the LFSR as 64-bit words.
-//
-// Each word is offset 32 bits:
-//
-//    u0: [0, 64)
-//    u1: [32, 96)
-//    u2: [64, 128)
-//    u3: [96, 128)
-//
-func (r lfsr) words() (u0, u1, u2, u3 uint64) {
-    u0 = r.lo                // 0,1
-    u1 = r.lo>>32 | r.hi<<32 // 1,2
-    u2 = r.hi                // 2,3
-    u3 = r.hi >> 32          // 3,x
-    return
-}
-
-func (r lfsr) String() string {
-    var b strings.Builder
-    b.WriteByte('[')
-    fmt.Fprintf(&b, "%#x ", uint32(r.lo))
-    fmt.Fprintf(&b, "%#x ", uint32(r.lo>>32))
-    fmt.Fprintf(&b, "%#x ", uint32(r.hi))
-    fmt.Fprintf(&b, "%#x", uint32(r.hi>>32))
-    b.WriteByte(']')
-    return b.String()
 }

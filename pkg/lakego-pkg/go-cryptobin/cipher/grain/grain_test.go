@@ -14,6 +14,50 @@ import (
     "encoding/hex"
 )
 
+func Test_Interface(t *testing.T) {
+    var _ cipher.Stream = (*stream)(nil)
+    var _ cipher.AEAD = (*state)(nil)
+}
+
+func Test_KeyStream(t *testing.T) {
+    random := rand.New(rand.NewSource(99))
+    max := 100
+
+    var encrypted [18]byte
+    var decrypted [18]byte
+
+    for i := 0; i < max; i++ {
+        key := make([]byte, 16)
+        random.Read(key)
+        nonce := make([]byte, 12)
+        random.Read(nonce)
+        value := make([]byte, 18)
+        random.Read(value)
+
+        cipher1, err := NewStreamCipher(key, nonce)
+        if err != nil {
+            t.Fatal(err.Error())
+        }
+
+        cipher1.XORKeyStream(encrypted[:], value)
+
+        if bytes.Equal(encrypted[:], value[:]) {
+            t.Errorf("fail: encrypted equal plaintext \n")
+        }
+
+        cipher2, err := NewStreamCipher(key, nonce)
+        if err != nil {
+            t.Fatal(err.Error())
+        }
+
+        cipher2.XORKeyStream(decrypted[:], encrypted[:])
+
+        if !bytes.Equal(decrypted[:], value[:]) {
+            t.Errorf("encryption/decryption failed: % 02x != % 02x\n", decrypted, value)
+        }
+    }
+}
+
 func TestKeystream(t *testing.T) {
     key := make([]byte, KeySize)
     nonce := make([]byte, NonceSize)
@@ -77,7 +121,7 @@ func TestAuth(t *testing.T) {
 }
 
 func TestVectorsLE(t *testing.T) {
-    testVectors(t, New, filepath.Join("testdata", "little_endian.txt"))
+    testVectors(t, NewCipher, filepath.Join("testdata", "little_endian.txt"))
 }
 
 func testVectors(t *testing.T, fn func([]byte) (cipher.AEAD, error), path string) {
@@ -176,19 +220,19 @@ func benchmarkAuth(b *testing.B, fn func(uint64, uint64, uint16, uint16) (uint64
 }
 
 func BenchmarkSeal1K(b *testing.B) {
-    benchmarkSeal(b, New, make([]byte, 1024))
+    benchmarkSeal(b, NewCipher, make([]byte, 1024))
 }
 
 func BenchmarkOpen1K(b *testing.B) {
-    benchmarkOpen(b, New, make([]byte, 1024))
+    benchmarkOpen(b, NewCipher, make([]byte, 1024))
 }
 
 func BenchmarkSeal8K(b *testing.B) {
-    benchmarkSeal(b, New, make([]byte, 8*1024))
+    benchmarkSeal(b, NewCipher, make([]byte, 8*1024))
 }
 
 func BenchmarkOpen8K(b *testing.B) {
-    benchmarkOpen(b, New, make([]byte, 8*1024))
+    benchmarkOpen(b, NewCipher, make([]byte, 8*1024))
 }
 
 func benchmarkSeal(b *testing.B, fn func([]byte) (cipher.AEAD, error), buf []byte) {
