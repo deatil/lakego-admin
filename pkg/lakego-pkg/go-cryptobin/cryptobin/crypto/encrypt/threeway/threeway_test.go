@@ -20,7 +20,7 @@ func Test_ThreewayPKCS7Padding(t *testing.T) {
     cyptStr := crypto.FromString(data).
         SetKey("dfertf12dfyy").
         SetIv("dfertf12dfer").
-        WithMultiple(Threeway).
+        MultipleBy(Threeway).
         CFB().
         PKCS7Padding().
         Encrypt().
@@ -29,7 +29,7 @@ func Test_ThreewayPKCS7Padding(t *testing.T) {
     cyptdeStr := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfyy").
         SetIv("dfertf12dfer").
-        WithMultiple(Threeway).
+        MultipleBy(Threeway).
         CFB().
         PKCS7Padding().
         Decrypt().

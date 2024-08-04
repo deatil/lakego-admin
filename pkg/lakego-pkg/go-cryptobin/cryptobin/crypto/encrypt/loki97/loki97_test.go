@@ -20,7 +20,7 @@ func Test_Loki97(t *testing.T) {
     cyptStr := crypto.FromString(data).
         SetKey("dfertf12dfertfyy").
         SetIv("dfertf12dfertf12").
-        WithMultiple(Loki97).
+        MultipleBy(Loki97).
         CFB().
         PKCS7Padding().
         Encrypt().
@@ -29,7 +29,7 @@ func Test_Loki97(t *testing.T) {
     cyptdeStr := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertfyy").
         SetIv("dfertf12dfertf12").
-        WithMultiple(Loki97).
+        MultipleBy(Loki97).
         CFB().
         PKCS7Padding().
         Decrypt().

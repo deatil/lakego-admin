@@ -21,7 +21,7 @@ func Test_Square(t *testing.T) {
     cypt := crypto.FromString(data).
         SetKey("dfertf12dfertf12").
         SetIv("dertf1d2fgtyf12d").
-        WithMultiple(Square).
+        MultipleBy(Square).
         CBC().
         PKCS7Padding().
         Encrypt()
@@ -32,7 +32,7 @@ func Test_Square(t *testing.T) {
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
         SetIv("dertf1d2fgtyf12d").
-        WithMultiple(Square).
+        MultipleBy(Square).
         CBC().
         PKCS7Padding().
         Decrypt()

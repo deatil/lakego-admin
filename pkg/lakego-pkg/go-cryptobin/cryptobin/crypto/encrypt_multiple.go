@@ -26,26 +26,18 @@ import (
     "github.com/deatil/go-cryptobin/cipher/idea"
     "github.com/deatil/go-cryptobin/cipher/seed"
     "github.com/deatil/go-cryptobin/cipher/aria"
-    "github.com/deatil/go-cryptobin/cipher/salsa20"
     "github.com/deatil/go-cryptobin/cipher/camellia"
     "github.com/deatil/go-cryptobin/cipher/gost"
     "github.com/deatil/go-cryptobin/cipher/kuznyechik"
-    "github.com/deatil/go-cryptobin/cipher/skipjack"
     "github.com/deatil/go-cryptobin/cipher/serpent"
     "github.com/deatil/go-cryptobin/cipher/saferplus"
-    "github.com/deatil/go-cryptobin/cipher/mars"
-    "github.com/deatil/go-cryptobin/cipher/mars2"
-    "github.com/deatil/go-cryptobin/cipher/enigma"
-    "github.com/deatil/go-cryptobin/cipher/cast256"
     "github.com/deatil/go-cryptobin/cipher/hight"
     "github.com/deatil/go-cryptobin/cipher/lea"
     "github.com/deatil/go-cryptobin/cipher/kasumi"
     "github.com/deatil/go-cryptobin/cipher/safer"
-    "github.com/deatil/go-cryptobin/cipher/noekeon"
     "github.com/deatil/go-cryptobin/cipher/multi2"
     "github.com/deatil/go-cryptobin/cipher/kseed"
     "github.com/deatil/go-cryptobin/cipher/khazad"
-    "github.com/deatil/go-cryptobin/cipher/anubis"
     "github.com/deatil/go-cryptobin/cipher/present"
     "github.com/deatil/go-cryptobin/cipher/trivium"
     "github.com/deatil/go-cryptobin/cipher/rijndael"
@@ -863,42 +855,6 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
-// Salsa20 key is 32 bytes.
-// iv is 16 bytes.
-type EncryptSalsa20 struct {}
-
-// 加密 / Encrypt
-func (this EncryptSalsa20) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    iv := opt.Iv()
-
-    c, err := salsa20.NewCipher(opt.Key(), iv)
-    if err != nil {
-        return nil, err
-    }
-
-    dst := make([]byte, len(data))
-    c.XORKeyStream(dst, data)
-
-    return dst, nil
-}
-
-// 解密 / Decrypt
-func (this EncryptSalsa20) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    iv := opt.Iv()
-
-    c, err := salsa20.NewCipher(opt.Key(), iv)
-    if err != nil {
-        return nil, err
-    }
-
-    dst := make([]byte, len(data))
-    c.XORKeyStream(dst, data)
-
-    return dst, nil
-}
-
-// ===================
-
 // Seed key is 16 bytes.
 type EncryptSeed struct {}
 
@@ -1061,31 +1017,6 @@ func (this EncryptKuznyechik) Decrypt(data []byte, opt IOption) ([]byte, error) 
 
 // ===================
 
-// Skipjack key is 10 bytes.
-type EncryptSkipjack struct {}
-
-// 加密 / Encrypt
-func (this EncryptSkipjack) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := skipjack.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptSkipjack) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := skipjack.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-// ===================
-
 // Serpent key is 16, 24, 32 bytes.
 type EncryptSerpent struct {}
 
@@ -1172,9 +1103,6 @@ func init() {
     UseEncrypt.Add(Xts, func() IEncrypt {
         return EncryptXts{}
     })
-    UseEncrypt.Add(Salsa20, func() IEncrypt {
-        return EncryptSalsa20{}
-    })
     UseEncrypt.Add(Seed, func() IEncrypt {
         return EncryptSeed{}
     })
@@ -1189,9 +1117,6 @@ func init() {
     })
     UseEncrypt.Add(Kuznyechik, func() IEncrypt {
         return EncryptKuznyechik{}
-    })
-    UseEncrypt.Add(Skipjack, func() IEncrypt {
-        return EncryptSkipjack{}
     })
     UseEncrypt.Add(Serpent, func() IEncrypt {
         return EncryptSerpent{}
@@ -1226,138 +1151,6 @@ func (this EncryptSaferplus) Decrypt(data []byte, opt IOption) ([]byte, error) {
 func init() {
     UseEncrypt.Add(Saferplus, func() IEncrypt {
         return EncryptSaferplus{}
-    })
-}
-
-// ===================
-
-// Mars key is 16, 24, 32 bytes.
-type EncryptMars struct {}
-
-// 加密 / Encrypt
-func (this EncryptMars) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := mars.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptMars) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := mars.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-func init() {
-    UseEncrypt.Add(Mars, func() IEncrypt {
-        return EncryptMars{}
-    })
-}
-
-// ===================
-
-// Mars key is 16, 24, 32 bytes.
-type EncryptMars2 struct {}
-
-// 加密 / Encrypt
-func (this EncryptMars2) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := mars2.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptMars2) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := mars2.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-func init() {
-    UseEncrypt.Add(Mars2, func() IEncrypt {
-        return EncryptMars2{}
-    })
-}
-
-// ===================
-
-// Enigma key is 13 bytes.
-type EncryptEnigma struct {}
-
-// 加密 / Encrypt
-func (this EncryptEnigma) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    c, err := enigma.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    dst := make([]byte, len(data))
-
-    c.XORKeyStream(dst, data)
-
-    return dst, nil
-}
-
-// 解密 / Decrypt
-func (this EncryptEnigma) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    c, err := enigma.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    dst := make([]byte, len(data))
-
-    c.XORKeyStream(dst, data)
-
-    return dst, nil
-}
-
-func init() {
-    UseEncrypt.Add(Enigma, func() IEncrypt {
-        return EncryptEnigma{}
-    })
-}
-
-// ===================
-
-// Cast256 key is 32 bytes.
-type EncryptCast256 struct {}
-
-// 加密 / Encrypt
-func (this EncryptCast256) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := cast256.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptCast256) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := cast256.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-func init() {
-    UseEncrypt.Add(Cast256, func() IEncrypt {
-        return EncryptCast256{}
     })
 }
 
@@ -1499,37 +1292,6 @@ func init() {
 
 // ===================
 
-// The key argument should be 16 bytes.
-type EncryptNoekeon struct {}
-
-// 加密 / Encrypt
-func (this EncryptNoekeon) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := noekeon.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptNoekeon) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := noekeon.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-func init() {
-    UseEncrypt.Add(Noekeon, func() IEncrypt {
-        return EncryptNoekeon{}
-    })
-}
-
-// ===================
-
 // The key argument should be 40 bytes.
 type EncryptMulti2 struct {}
 
@@ -1622,37 +1384,6 @@ func (this EncryptKhazad) Decrypt(data []byte, opt IOption) ([]byte, error) {
 func init() {
     UseEncrypt.Add(Khazad, func() IEncrypt {
         return EncryptKhazad{}
-    })
-}
-
-// ===================
-
-// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
-type EncryptAnubis struct {}
-
-// 加密 / Encrypt
-func (this EncryptAnubis) Encrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := anubis.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockEncrypt(block, data, opt)
-}
-
-// 解密 / Decrypt
-func (this EncryptAnubis) Decrypt(data []byte, opt IOption) ([]byte, error) {
-    block, err := anubis.NewCipher(opt.Key())
-    if err != nil {
-        return nil, err
-    }
-
-    return BlockDecrypt(block, data, opt)
-}
-
-func init() {
-    UseEncrypt.Add(Anubis, func() IEncrypt {
-        return EncryptAnubis{}
     })
 }
 

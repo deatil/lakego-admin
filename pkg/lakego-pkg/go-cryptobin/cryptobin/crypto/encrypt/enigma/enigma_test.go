@@ -1,4 +1,4 @@
-package magenta
+package enigma
 
 import (
     "testing"
@@ -10,35 +10,29 @@ import (
 func Test_Name(t *testing.T) {
     eq := test.AssertEqualT(t)
 
-    eq(Magenta.String(), "Magenta", "Test_Name")
+    eq(Enigma.String(), "Enigma", "Test_Name")
 }
 
-func Test_Magenta(t *testing.T) {
+func Test_Enigma(t *testing.T) {
     assert := test.AssertEqualT(t)
     assertError := test.AssertErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
-        CBC().
-        PKCS7Padding().
+        SetKey("dfertf12dfert").
+        MultipleBy(Enigma).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Magenta-Encode")
+    assertError(cypt.Error(), "EnigmaNoPadding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
-        CBC().
-        PKCS7Padding().
+        SetKey("dfertf12dfert").
+        MultipleBy(Enigma).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Magenta-Decode")
+    assertError(cyptde.Error(), "EnigmaNoPadding-Decode")
 
-    assert(cyptdeStr, data, "Magenta-res")
+    assert(data, cyptdeStr, "EnigmaNoPadding-res")
 }

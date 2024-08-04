@@ -20,7 +20,7 @@ func Test_Panama(t *testing.T) {
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
         SetKey("dfertf12dfertf12dfertf12dfertf12").
-        WithMultiple(Panama).
+        MultipleBy(Panama).
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
@@ -28,7 +28,7 @@ func Test_Panama(t *testing.T) {
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12dfertf12dfertf12").
-        WithMultiple(Panama).
+        MultipleBy(Panama).
         Decrypt()
     cyptdeStr := cyptde.ToString()
 

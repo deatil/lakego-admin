@@ -56,10 +56,7 @@ func (this CipherECB) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []
     mode.CryptBlocks(encrypted, plaintext)
 
     // 返回数据
-    paramBytes, err := asn1.Marshal([]byte(""))
-    if err != nil {
-        return nil, nil, err
-    }
+    paramBytes := asn1.NullBytes
 
     return encrypted, paramBytes, nil
 }

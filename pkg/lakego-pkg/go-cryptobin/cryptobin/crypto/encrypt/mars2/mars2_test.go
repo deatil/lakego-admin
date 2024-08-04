@@ -1,4 +1,4 @@
-package magenta
+package mars2
 
 import (
     "testing"
@@ -10,35 +10,35 @@ import (
 func Test_Name(t *testing.T) {
     eq := test.AssertEqualT(t)
 
-    eq(Magenta.String(), "Magenta", "Test_Name")
+    eq(Mars2.String(), "Mars2", "Test_Name")
 }
 
-func Test_Magenta(t *testing.T) {
+func Test_Mars2PKCS7Padding(t *testing.T) {
     assert := test.AssertEqualT(t)
     assertError := test.AssertErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        MultipleBy(Mars2).
         CBC().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Magenta-Encode")
+    assertError(cypt.Error(), "Mars2PKCS7Padding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfertf12").
+        MultipleBy(Mars2).
         CBC().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Magenta-Decode")
+    assertError(cyptde.Error(), "Mars2PKCS7Padding-Decode")
 
-    assert(cyptdeStr, data, "Magenta-res")
+    assert(data, cyptdeStr, "Mars2PKCS7Padding-res")
 }

@@ -1,4 +1,4 @@
-package magenta
+package skipjack
 
 import (
     "testing"
@@ -10,35 +10,35 @@ import (
 func Test_Name(t *testing.T) {
     eq := test.AssertEqualT(t)
 
-    eq(Magenta.String(), "Magenta", "Test_Name")
+    eq(Skipjack.String(), "Skipjack", "Test_Name")
 }
 
-func Test_Magenta(t *testing.T) {
+func Test_SkipjackCFBPKCS7Padding(t *testing.T) {
     assert := test.AssertEqualT(t)
     assertError := test.AssertErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
-        CBC().
+        SetKey("dfertf12df").
+        SetIv("jifu87uj").
+        MultipleBy(Skipjack).
+        CFB().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Magenta-Encode")
+    assertError(cypt.Error(), "SkipjackCFBPKCS7Padding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
-        CBC().
+        SetKey("dfertf12df").
+        SetIv("jifu87uj").
+        MultipleBy(Skipjack).
+        CFB().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Magenta-Decode")
+    assertError(cyptde.Error(), "SkipjackCFBPKCS7Padding-Decode")
 
-    assert(cyptdeStr, data, "Magenta-res")
+    assert(data, cyptdeStr, "SkipjackCFBPKCS7Padding")
 }

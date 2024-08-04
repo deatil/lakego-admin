@@ -21,7 +21,7 @@ func Test_Clefia(t *testing.T) {
     cypt := crypto.FromString(data).
         SetKey("dfertf1d2fgtyf35").
         SetIv("dfertf1d2fgtyfdf").
-        WithMultiple(Clefia).
+        MultipleBy(Clefia).
         CBC().
         PKCS7Padding().
         Encrypt()
@@ -32,7 +32,7 @@ func Test_Clefia(t *testing.T) {
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf1d2fgtyf35").
         SetIv("dfertf1d2fgtyfdf").
-        WithMultiple(Clefia).
+        MultipleBy(Clefia).
         CBC().
         PKCS7Padding().
         Decrypt()

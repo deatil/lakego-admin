@@ -71,14 +71,6 @@ func (this Cryptobin) Cast5() Cryptobin {
     return this
 }
 
-// Cast256
-// The key argument should be 32 bytes.
-func (this Cryptobin) Cast256() Cryptobin {
-    this.multiple = Cast256
-
-    return this
-}
-
 // Idea
 func (this Cryptobin) Idea() Cryptobin {
     this.multiple = Idea
@@ -177,14 +169,6 @@ func (this Cryptobin) Xts(cipher string, sectorNum uint64) Cryptobin {
     return this
 }
 
-// Salsa20
-// key is 32 bytes, iv is 16 bytes.
-func (this Cryptobin) Salsa20() Cryptobin {
-    this.multiple = Salsa20
-
-    return this
-}
-
 // Seed
 // The key argument should be 16 bytes.
 func (this Cryptobin) Seed() Cryptobin {
@@ -229,14 +213,6 @@ func (this Cryptobin) Kuznyechik() Cryptobin {
     return this
 }
 
-// Skipjack
-// The key argument should be 10 bytes.
-func (this Cryptobin) Skipjack() Cryptobin {
-    this.multiple = Skipjack
-
-    return this
-}
-
 // Serpent
 // The key argument should be 16, 24, 32 bytes.
 func (this Cryptobin) Serpent() Cryptobin {
@@ -249,30 +225,6 @@ func (this Cryptobin) Serpent() Cryptobin {
 // The key argument should be 8, 16 bytes.
 func (this Cryptobin) Saferplus() Cryptobin {
     this.multiple = Saferplus
-
-    return this
-}
-
-// Mars
-// The key argument should be 16, 24, 32 bytes.
-func (this Cryptobin) Mars() Cryptobin {
-    this.multiple = Mars
-
-    return this
-}
-
-// Mars2
-// The key argument should be from 128 to 448 bits
-func (this Cryptobin) Mars2() Cryptobin {
-    this.multiple = Mars2
-
-    return this
-}
-
-// Enigma
-// The key argument should be 13 bytes.
-func (this Cryptobin) Enigma() Cryptobin {
-    this.multiple = Enigma
 
     return this
 }
@@ -316,14 +268,6 @@ func (this Cryptobin) Safer(typ string, rounds int32) Cryptobin {
     return this
 }
 
-// Noekeon
-// The key argument should be 16 bytes.
-func (this Cryptobin) Noekeon() Cryptobin {
-    this.multiple = Noekeon
-
-    return this
-}
-
 // Multi2
 // The key argument should be 40 bytes.
 func (this Cryptobin) Multi2(rounds int32) Cryptobin {
@@ -346,14 +290,6 @@ func (this Cryptobin) Kseed() Cryptobin {
 // The key argument should be 16 bytes.
 func (this Cryptobin) Khazad() Cryptobin {
     this.multiple = Khazad
-
-    return this
-}
-
-// Anubis
-// The key argument should be 16, 20, 24, 28, 32, 36, and 40 bytes.
-func (this Cryptobin) Anubis() Cryptobin {
-    this.multiple = Anubis
 
     return this
 }

@@ -20,7 +20,7 @@ func Test_WakeNoPadding(t *testing.T) {
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
         SetKey("dfertf12dfertf12").
-        WithMultiple(Wake).
+        MultipleBy(Wake).
         ECB().
         NoPadding().
         Encrypt()
@@ -30,7 +30,7 @@ func Test_WakeNoPadding(t *testing.T) {
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
-        WithMultiple(Wake).
+        MultipleBy(Wake).
         ECB().
         NoPadding().
         Decrypt()

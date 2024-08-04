@@ -82,8 +82,6 @@ func (this Multiple) String() string {
             return "Xtea"
         case Cast5:
             return "Cast5"
-        case Cast256:
-            return "Cast256"
         case RC2:
             return "RC2"
         case RC4:
@@ -106,8 +104,6 @@ func (this Multiple) String() string {
             return "Chacha20poly1305X"
         case Xts:
             return "Xts"
-        case Salsa20:
-            return "Salsa20"
         case Seed:
             return "Seed"
         case Aria:
@@ -118,18 +114,10 @@ func (this Multiple) String() string {
             return "Gost"
         case Kuznyechik:
             return "Kuznyechik"
-        case Skipjack:
-            return "Skipjack"
         case Serpent:
             return "Serpent"
         case Saferplus:
             return "Saferplus"
-        case Mars:
-            return "Mars"
-        case Mars2:
-            return "Mars2"
-        case Enigma:
-            return "Enigma"
         case Hight:
             return "Hight"
         case Lea:
@@ -138,16 +126,12 @@ func (this Multiple) String() string {
             return "Kasumi"
         case Safer:
             return "Safer"
-        case Noekeon:
-            return "Noekeon"
         case Multi2:
             return "Multi2"
         case Kseed:
             return "Kseed"
         case Khazad:
             return "Khazad"
-        case Anubis:
-            return "Anubis"
         case Present:
             return "Present"
         case Trivium:
@@ -183,7 +167,6 @@ const (
     Tea
     Xtea
     Cast5
-    Cast256
     RC2
     RC4
     RC4MD5
@@ -195,27 +178,20 @@ const (
     Chacha20poly1305
     Chacha20poly1305X
     Xts
-    Salsa20
     Seed
     Aria
     Camellia
     Gost
     Kuznyechik
-    Skipjack
     Serpent
     Saferplus
-    Mars
-    Mars2
-    Enigma
     Hight
     Lea
     Kasumi
     Safer
-    Noekeon
     Multi2
     Kseed
     Khazad
-    Anubis
     Present
     Trivium
     Rijndael

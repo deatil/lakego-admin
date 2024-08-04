@@ -1,4 +1,4 @@
-package magenta
+package anubis
 
 import (
     "testing"
@@ -10,35 +10,35 @@ import (
 func Test_Name(t *testing.T) {
     eq := test.AssertEqualT(t)
 
-    eq(Magenta.String(), "Magenta", "Test_Name")
+    eq(Anubis.String(), "Anubis", "Test_Name")
 }
 
-func Test_Magenta(t *testing.T) {
+func Test_Anubis(t *testing.T) {
     assert := test.AssertEqualT(t)
     assertError := test.AssertErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1dfvb5gtyh").
+        MultipleBy(Anubis).
         CBC().
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Magenta-Encode")
+    assertError(cypt.Error(), "Anubis-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
-        SetKey("dfertf12dfertf12dfertf12dfertf12").
-        SetIv("dfertf1d2fgtyf12").
-        MultipleBy(Magenta).
+        SetKey("dfertf1d2fgtyf35").
+        SetIv("dfertf1dfvb5gtyh").
+        MultipleBy(Anubis).
         CBC().
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Magenta-Decode")
+    assertError(cyptde.Error(), "Anubis-Decode")
 
-    assert(cyptdeStr, data, "Magenta-res")
+    assert(cyptdeStr, data, "Anubis-res")
 }

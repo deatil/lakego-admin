@@ -109,7 +109,6 @@ Blowfish
 Tea(rounds ...int)
 Xtea
 Cast5
-Cast256
 RC2
 RC4
 RC4MD5
@@ -121,27 +120,20 @@ Chacha20(counter ...uint32)
 Chacha20poly1305(additional ...[]byte)
 Chacha20poly1305X(additional ...[]byte)
 Xts(cipher string, sectorNum uint64)
-Salsa20()
 Seed
 Aria
 Camellia
 Gost(sbox any)
 Kuznyechik
-Skipjack
 Serpent
 Saferplus
-Mars
-Mars2
-Enigma
 Hight
 Lea
 Kasumi
 Safer(typ string, rounds int32)
-Noekeon
 Multi2(rounds int32)
 Kseed
 Khazad
-Anubis
 Present
 Trivium
 Rijndael(blockSize int)
@@ -195,8 +187,10 @@ PKCS1Padding(bt ...string)
 
 ### 支持的懒加载加密类型
 
-支持的加密类型
+懒加载加密类型
 ~~~go
+AesECB
+AesCFB
 Loki97
 Wake
 Panama
@@ -206,6 +200,14 @@ E2
 Crypton1
 Clefia
 Threeway
+Cast256
+Skipjack
+Mars
+Mars2
+Enigma
+Noekeon
+Anubis
+Salsa20
 ~~~
 
 使用示例
@@ -225,7 +227,7 @@ func main() {
     cypt := crypto.FromString(data).
         SetKey("dfertf12dfyy").
         SetIv("dfertf12dfer").
-        WithMultiple(threeway.Threeway).
+        MultipleBy(threeway.Threeway).
         CFB().
         PKCS7Padding().
         Encrypt().
@@ -234,7 +236,7 @@ func main() {
     cyptde := crypto.FromBase64String(cypt).
         SetKey("dfertf12dfyy").
         SetIv("dfertf12dfer").
-        WithMultiple(threeway.Threeway).
+        MultipleBy(threeway.Threeway).
         CFB().
         PKCS7Padding().
         Decrypt().
