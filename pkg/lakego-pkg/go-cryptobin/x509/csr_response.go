@@ -95,7 +95,12 @@ func ParseCSRResponse(signPrivateKey *sm2.PrivateKey, der []byte) (CSRResponse, 
 }
 
 // MarshalCSRResponse marshals a CSRResponse to DER format.
-func MarshalCSRResponse(signCerts []*Certificate, encryptPrivateKey *sm2.PrivateKey, encryptCerts []*Certificate) ([]byte, error) {
+func MarshalCSRResponse(
+    signCerts         []*Certificate,
+    encryptPrivateKey *sm2.PrivateKey,
+    encryptCerts      []*Certificate,
+    opts              ...EnvelopedOpts,
+) ([]byte, error) {
     if len(signCerts) == 0 {
         return nil, errors.New("x509: no sign certificate")
     }
@@ -121,12 +126,17 @@ func MarshalCSRResponse(signCerts []*Certificate, encryptPrivateKey *sm2.Private
     }
 
     if encryptPrivateKey != nil && len(encryptCerts) > 0 {
-        privateKeyBytes, err := MarshalSM2EnvelopedPrivateKey(rand.Reader, signPubKey, encryptPrivateKey)
+        privateKeyBytes, err := MarshalSM2EnvelopedPrivateKey(rand.Reader, signPubKey, encryptPrivateKey, opts...)
         if err != nil {
             return nil, err
         }
 
-        resp.EncryptedPrivateKey = asn1.RawValue{Class: asn1.ClassContextSpecific, Tag: 0, IsCompound: true, Bytes: privateKeyBytes}
+        resp.EncryptedPrivateKey = asn1.RawValue{
+            Class: asn1.ClassContextSpecific,
+            Tag: 0,
+            IsCompound: true,
+            Bytes: privateKeyBytes,
+        }
         resp.EncryptCerts = marshalCertificates(encryptCerts)
     }
 
