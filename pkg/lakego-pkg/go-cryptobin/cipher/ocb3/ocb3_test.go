@@ -6,6 +6,7 @@ import (
     "testing"
     "crypto/aes"
     "crypto/rand"
+    "crypto/cipher"
     "encoding/binary"
     "encoding/hex"
     mrand "math/rand"
@@ -45,6 +46,10 @@ func unhex(t *testing.T, s string) []byte {
         t.Fatal(err)
     }
     return p
+}
+
+func Test_Interface(t *testing.T) {
+    var _ cipher.AEAD = (*aead)(nil)
 }
 
 func TestSeal(t *testing.T) {

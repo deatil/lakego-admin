@@ -130,25 +130,6 @@ func (this TBCPaddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, erro
 
 // ===================
 
-type PKCS1Paddinger struct {}
-
-// Padding 补码模式 / padding type
-func (this PKCS1Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    bt := "02"
-    if !opt.Config().Has("pkcs1_padding_bt") {
-        bt = opt.Config().GetString("pkcs1_padding_bt")
-    }
-
-    return tool.NewPadding().PKCS1Padding(plainText, blockSize, bt)
-}
-
-// UnPadding 补码模式 / unpadding type
-func (this PKCS1Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return tool.NewPadding().PKCS1UnPadding(cipherText)
-}
-
-// ===================
-
 type NoPaddinger struct {}
 
 // Padding 补码模式 / padding type
@@ -190,9 +171,6 @@ func init() {
     })
     UsePadding.Add(TBCPadding, func() IPadding {
         return TBCPaddinger{}
-    })
-    UsePadding.Add(PKCS1Padding, func() IPadding {
-        return PKCS1Paddinger{}
     })
     UsePadding.Add(NoPadding, func() IPadding {
         return NoPaddinger{}

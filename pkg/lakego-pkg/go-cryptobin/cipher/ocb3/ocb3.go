@@ -49,6 +49,50 @@ const (
 
 var errOpen = errors.New("ocb3: message authentication failure")
 
+const (
+    // lsize is the size of the key-dependent L buffer. On
+    // a 64-bit system, lsize will be 58 and on a 32-bit system
+    // lsize will be 26.
+    //
+    // On a 64-bit system, the maximum plaintext size is 1<<63-1,
+    // which is 1<<59-1 blocks and a maximum 58 trailing zeros.
+    //
+    // On a 32-bit system, the maximum plaintext size is 1<<31-1,
+    // which is 1<<27-1 blocks and a maximum 26 trailing zeros.
+    lsize = 58 - (64 - uintSize)
+    // uintSize is 64 on a 64-bit system and 32 on a 32-bit
+    // system.
+    uintSize = 32 << (^uint(0) >> 32 & 1)
+)
+
+// aead implements cipher.AEAD.
+type aead struct {
+    // b is the underlying block cipher.
+    b cipher.Block
+    // nonceSize is the size of the nonce.
+    //
+    // Will be in [1, 15].
+    nonceSize int
+    // tagSize is the size of the tag.
+    //
+    // Will be in [12, 16].
+    tagSize int
+    // Lstar is the encrypted zero block.
+    //
+    // Used by setup and updating the offset for partial
+    // plaintext blocks.
+    Lstar uint128
+    // Ldollar is Lstar doubled in GF(2^128).
+    //
+    // Used by setup and updating the offset when computing the
+    // authentication tag.
+    Ldollar uint128
+    // L is the complete L cache, including L_0.
+    L [lsize]uint128
+    // buf is a scratch buffer for encipher and decipher.
+    buf [BlockSize]byte
+}
+
 // New creates an OCB3 AEAD from a secure block cipher.
 //
 // The AEAD uses a 96-bit nonce and 128-bit tag.
@@ -101,52 +145,6 @@ func NewWithNonceAndTagSize(b cipher.Block, nonceSize, tagSize int) (cipher.AEAD
 
     return a, nil
 }
-
-// aead implements cipher.AEAD.
-type aead struct {
-    // b is the underlying block cipher.
-    b cipher.Block
-    // nonceSize is the size of the nonce.
-    //
-    // Will be in [1, 15].
-    nonceSize int
-    // tagSize is the size of the tag.
-    //
-    // Will be in [12, 16].
-    tagSize int
-    // Lstar is the encrypted zero block.
-    //
-    // Used by setup and updating the offset for partial
-    // plaintext blocks.
-    Lstar uint128
-    // Ldollar is Lstar doubled in GF(2^128).
-    //
-    // Used by setup and updating the offset when computing the
-    // authentication tag.
-    Ldollar uint128
-    // L is the complete L cache, including L_0.
-    L [lsize]uint128
-    // buf is a scratch buffer for encipher and decipher.
-    buf [BlockSize]byte
-}
-
-const (
-    // lsize is the size of the key-dependent L buffer. On
-    // a 64-bit system, lsize will be 58 and on a 32-bit system
-    // lsize will be 26.
-    //
-    // On a 64-bit system, the maximum plaintext size is 1<<63-1,
-    // which is 1<<59-1 blocks and a maximum 58 trailing zeros.
-    //
-    // On a 32-bit system, the maximum plaintext size is 1<<31-1,
-    // which is 1<<27-1 blocks and a maximum 26 trailing zeros.
-    lsize = 58 - (64 - uintSize)
-    // uintSize is 64 on a 64-bit system and 32 on a 32-bit
-    // system.
-    uintSize = 32 << (^uint(0) >> 32 & 1)
-)
-
-var _ cipher.AEAD = (*aead)(nil)
 
 func (a *aead) NonceSize() int {
     return a.nonceSize

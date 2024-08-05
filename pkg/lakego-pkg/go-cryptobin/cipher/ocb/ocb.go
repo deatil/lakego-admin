@@ -10,14 +10,6 @@ import (
     "github.com/deatil/go-cryptobin/tool/byteutil"
 )
 
-type ocb struct {
-    block        cipher.Block
-    tagSize      int
-    nonceSize    int
-    mask         mask
-    reusableKtop reusableKtop
-}
-
 type mask struct {
     // L_*, L_$, (L_i)_{i ∈ N}
     lAst []byte
@@ -40,37 +32,37 @@ const (
     dec
 )
 
-func (o *ocb) NonceSize() int {
-    return o.nonceSize
+type ocb struct {
+    block        cipher.Block
+    tagSize      int
+    nonceSize    int
+    mask         mask
+    reusableKtop reusableKtop
 }
 
-func (o *ocb) Overhead() int {
-    return o.tagSize
-}
-
-// NewOCB returns an OCB instance with the given block cipher and default
+// New returns an OCB instance with the given block cipher and default
 // tag and nonce sizes.
-func NewOCB(block cipher.Block) (cipher.AEAD, error) {
-    return NewOCBWithNonceAndTagSize(block, defaultNonceSize, defaultTagSize)
+func New(block cipher.Block) (cipher.AEAD, error) {
+    return NewWithNonceAndTagSize(block, defaultNonceSize, defaultTagSize)
 }
 
-func NewOCBWithNonceSize(block cipher.Block, nonceSize int) (cipher.AEAD, error) {
-    return NewOCBWithNonceAndTagSize(block, nonceSize, defaultTagSize)
+func NewWithNonceSize(block cipher.Block, nonceSize int) (cipher.AEAD, error) {
+    return NewWithNonceAndTagSize(block, nonceSize, defaultTagSize)
 }
 
-func NewOCBWithTagSize(block cipher.Block, tagSize int) (cipher.AEAD, error) {
-    return NewOCBWithNonceAndTagSize(block, defaultNonceSize, tagSize)
+func NewWithTagSize(block cipher.Block, tagSize int) (cipher.AEAD, error) {
+    return NewWithNonceAndTagSize(block, defaultNonceSize, tagSize)
 }
 
-// NewOCBWithNonceAndTagSize returns an OCB instance with the given block
+// NewWithNonceAndTagSize returns an OCB instance with the given block
 // cipher, nonce length, and tag length. Panics on zero nonceSize and
 // exceedingly long tag size.
 //
 // It is recommended to use at least 12 bytes as tag length.
-func NewOCBWithNonceAndTagSize(
-    block cipher.Block,
+func NewWithNonceAndTagSize(
+    block     cipher.Block,
     nonceSize int,
-    tagSize int,
+    tagSize   int,
 ) (cipher.AEAD, error) {
     if block.BlockSize() != 16 {
         return nil, ocbError("Block cipher must have 128-bit blocks")
@@ -95,6 +87,14 @@ func NewOCBWithNonceAndTagSize(
             Ktop:        nil,
         },
     }, nil
+}
+
+func (o *ocb) NonceSize() int {
+    return o.nonceSize
+}
+
+func (o *ocb) Overhead() int {
+    return o.tagSize
 }
 
 func (o *ocb) Seal(dst, nonce, plaintext, adata []byte) []byte {

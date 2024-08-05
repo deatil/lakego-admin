@@ -46,12 +46,12 @@ func TestZeroHash(t *testing.T) {
     }
 }
 
-func TestNewOCBIncorrectNonceLength(t *testing.T) {
+func TestNewIncorrectNonceLength(t *testing.T) {
     aesCipher, err := aes.NewCipher(make([]byte, 16))
     if err != nil {
         t.Fatal(err)
     }
-    e, err := NewOCBWithNonceAndTagSize(aesCipher, 0, 16)
+    e, err := NewWithNonceAndTagSize(aesCipher, 0, 16)
     if err == nil || e != nil {
         t.Errorf("OCB with nonceLength 0 was not rejected")
     }
@@ -62,7 +62,7 @@ func TestSealIncorrectNonceLength(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    o, err := NewOCBWithNonceAndTagSize(aesCipher, 15, 16)
+    o, err := NewWithNonceAndTagSize(aesCipher, 15, 16)
     if err != nil {
         t.Fatal(err)
     }
@@ -80,7 +80,7 @@ func TestOpenIncorrectNonceLength(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    o, err := NewOCBWithNonceAndTagSize(aesCipher, 15, 16)
+    o, err := NewWithNonceAndTagSize(aesCipher, 15, 16)
     if err != nil {
         t.Fatal(err)
     }
@@ -101,7 +101,7 @@ func TestOpenShortCiphertext(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    o, err := NewOCBWithNonceAndTagSize(aesCipher, 15, 16)
+    o, err := NewWithNonceAndTagSize(aesCipher, 15, 16)
     if err != nil {
         t.Fatal(err)
     }
@@ -118,7 +118,7 @@ func TestEncryptDecryptRFC7253TestVectors(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    ocbInstance, errO := NewOCB(aesCipher)
+    ocbInstance, errO := New(aesCipher)
     if errO != nil {
         t.Fatal(err)
     }
@@ -169,7 +169,7 @@ func TestEncryptDecryptRFC7253TagLen96(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    ocbInstance, err := NewOCBWithNonceAndTagSize(aesCipher, len(nonce), 96/8)
+    ocbInstance, err := NewWithNonceAndTagSize(aesCipher, len(nonce), 96/8)
     if err != nil {
         t.Fatal(err)
     }
@@ -208,7 +208,7 @@ func TestEncryptDecryptRFC7253DifferentKeySizes(t *testing.T) {
         if err != nil {
             t.Fatal(err)
         }
-        ocbInstance, err := NewOCBWithNonceAndTagSize(aesCipher, 12, tagLen/8)
+        ocbInstance, err := NewWithNonceAndTagSize(aesCipher, 12, tagLen/8)
         if err != nil {
             t.Fatal(err)
         }
@@ -259,7 +259,7 @@ func TestEncryptDecryptGoTestVectors(t *testing.T) {
         targetPt, _ := hex.DecodeString(test.plaintext)
         targetCt, _ := hex.DecodeString(test.ciphertext)
         tagSize := len(targetCt) - len(targetPt)
-        ocbInstance, err := NewOCBWithNonceAndTagSize(aesCipher, len(nonce), tagSize)
+        ocbInstance, err := NewWithNonceAndTagSize(aesCipher, len(nonce), tagSize)
         if err != nil {
             t.Fatal(err)
         }
@@ -316,7 +316,7 @@ func TestEncryptDecryptVectorsWithPreviousDataRandomizeSlow(t *testing.T) {
         if err != nil {
             t.Fatal(err)
         }
-        ocb, err := NewOCB(aesCipher)
+        ocb, err := New(aesCipher)
         if err != nil {
             t.Fatal(err)
         }
@@ -352,7 +352,7 @@ func TestRejectTamperedCiphertextRandomizeSlow(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    ocb, errO := NewOCB(aesCipher)
+    ocb, errO := New(aesCipher)
     if errO != nil {
         t.Fatal(err)
     }
@@ -381,7 +381,7 @@ func TestParameters(t *testing.T) {
     t.Run("Should return error on too long tagSize", func(st *testing.T) {
         tagSize := blockLength + 1 + mathrand.Intn(12)
         nonceSize := 1 + mathrand.Intn(16)
-        _, err := NewOCBWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
+        _, err := NewWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
         if err == nil {
             st.Errorf("No error was returned")
         }
@@ -389,7 +389,7 @@ func TestParameters(t *testing.T) {
     t.Run("Should return error on too long nonceSize", func(st *testing.T) {
         tagSize := 12
         nonceSize := blockLength + mathrand.Intn(16)
-        _, err := NewOCBWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
+        _, err := NewWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
         if err == nil {
             st.Errorf("No error was returned")
         }
@@ -400,7 +400,7 @@ func TestParameters(t *testing.T) {
             // Shorter values of nonceSize are not recommended.
             nonceSize := 12 + mathrand.Intn(blockLength-12)
             tagSize := 12 + mathrand.Intn(blockLength-11)
-            _, err := NewOCBWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
+            _, err := NewWithNonceAndTagSize(aesCipher, nonceSize, tagSize)
             if err != nil {
                 st.Errorf("An error was returned")
             }
@@ -424,7 +424,7 @@ func BenchmarkEncrypt(b *testing.B) {
     if err != nil {
         b.Fatal(err)
     }
-    ocb, err := NewOCB(aesCipher)
+    ocb, err := New(aesCipher)
     if err != nil {
         b.Fatal(err)
     }
@@ -450,7 +450,7 @@ func BenchmarkDecrypt(b *testing.B) {
     if err != nil {
         b.Fatal(err)
     }
-    ocb, errO := NewOCB(aesCipher)
+    ocb, errO := New(aesCipher)
     if errO != nil {
         b.Fatal(err)
     }

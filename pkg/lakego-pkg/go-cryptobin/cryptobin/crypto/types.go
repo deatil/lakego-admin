@@ -223,12 +223,6 @@ func (this Mode) String() string {
             return "CFB1"
         case CFB8:
             return "CFB8"
-        case CFB16:
-            return "CFB16"
-        case CFB32:
-            return "CFB32"
-        case CFB64:
-            return "CFB64"
         case CFB128:
             return "CFB128"
         case OCFB:
@@ -237,38 +231,16 @@ func (this Mode) String() string {
             return "OFB"
         case OFB8:
             return "OFB8"
-        case NCFB:
-            return "NCFB"
-        case NOFB:
-            return "NOFB"
         case CTR:
             return "CTR"
         case GCM:
             return "GCM"
         case CCM:
             return "CCM"
-        case OCB:
-            return "OCB"
-        case EAX:
-            return "EAX"
         case BC:
             return "BC"
         case HCTR:
             return "HCTR"
-        case MGM:
-            return "MGM"
-        case GOFB:
-            return "GOFB"
-        case G3413CBC:
-            return "G3413CBC"
-        case G3413CFB:
-            return "G3413CFB"
-        case G3413CTR:
-            return "G3413CTR"
-        case G3413OFB:
-            return "G3413OFB"
-        case Wrap:
-            return "Wrap"
         default:
             if TypeMode.Names().Has(this) {
                 return (TypeMode.Names().Get(this))()
@@ -279,35 +251,21 @@ func (this Mode) String() string {
 }
 
 const (
-    ECB  Mode = 1 + iota
+    ECB Mode = 1 + iota
     CBC
     PCBC
     CFB
     CFB1
     CFB8
-    CFB16
-    CFB32
-    CFB64
     CFB128
     OCFB
     OFB
     OFB8
-    NCFB
-    NOFB
     CTR
     GCM
     CCM
-    OCB
-    EAX
     BC
     HCTR
-    MGM
-    GOFB
-    G3413CBC
-    G3413CFB
-    G3413CTR
-    G3413OFB
-    Wrap
     maxMode
 )
 
@@ -339,8 +297,6 @@ func (this Padding) String() string {
             return "PBOC2Padding"
         case TBCPadding:
             return "TBCPadding"
-        case PKCS1Padding:
-            return "PKCS1Padding"
         default:
             if TypePadding.Names().Has(this) {
                 return (TypePadding.Names().Get(this))()
@@ -361,6 +317,5 @@ const (
     ISO97971Padding
     PBOC2Padding
     TBCPadding
-    PKCS1Padding
     maxPadding
 )

@@ -424,30 +424,6 @@ func (this Cryptobin) CFB8() Cryptobin {
     return this
 }
 
-// 密码反馈模式, 16字节
-// CFB16 mode
-func (this Cryptobin) CFB16() Cryptobin {
-    this.mode = CFB16
-
-    return this
-}
-
-// 密码反馈模式, 32字节
-// CFB32 mode
-func (this Cryptobin) CFB32() Cryptobin {
-    this.mode = CFB32
-
-    return this
-}
-
-// 密码反馈模式, 64字节
-// CFB64 mode
-func (this Cryptobin) CFB64() Cryptobin {
-    this.mode = CFB64
-
-    return this
-}
-
 // 密码反馈模式, 标准库 CFB 别名
 // CFB128 mode
 func (this Cryptobin) CFB128() Cryptobin {
@@ -544,44 +520,6 @@ func (this Cryptobin) CCMWithTagSize(tagSize int, additional ...[]byte) Cryptobi
     return this
 }
 
-// OCB
-// OCB iv size, should be in [0, cipher.block.BlockSize]
-func (this Cryptobin) OCB(additional ...[]byte) Cryptobin {
-    this.mode = OCB
-
-    if len(additional) > 0 {
-        this.config.Set("additional", additional[0])
-    }
-
-    return this
-}
-
-// EAX
-// EAX nounce size, should be in > 0
-func (this Cryptobin) EAX(additional ...[]byte) Cryptobin {
-    this.mode = EAX
-
-    if len(additional) > 0 {
-        this.config.Set("additional", additional[0])
-    }
-
-    return this
-}
-
-// NCFB
-func (this Cryptobin) NCFB() Cryptobin {
-    this.mode = NCFB
-
-    return this
-}
-
-// NOFB
-func (this Cryptobin) NOFB() Cryptobin {
-    this.mode = NOFB
-
-    return this
-}
-
 // BC
 func (this Cryptobin) BC() Cryptobin {
     this.mode = BC
@@ -595,68 +533,6 @@ func (this Cryptobin) HCTR(tweak, hkey []byte) Cryptobin {
 
     this.config.Set("tweak", tweak)
     this.config.Set("hkey", hkey)
-
-    return this
-}
-
-// MGM
-// MGM nounce(iv) size, should be 16 bytes
-func (this Cryptobin) MGM(additional ...[]byte) Cryptobin {
-    this.mode = MGM
-
-    if len(additional) > 0 {
-        this.config.Set("additional", additional[0])
-    }
-
-    return this
-}
-
-// GOFB
-func (this Cryptobin) GOFB() Cryptobin {
-    this.mode = GOFB
-
-    return this
-}
-
-// G3413CBC
-func (this Cryptobin) G3413CBC() Cryptobin {
-    this.mode = G3413CBC
-
-    return this
-}
-
-// G3413CFB
-func (this Cryptobin) G3413CFB(bitBlockSize ...int) Cryptobin {
-    this.mode = G3413CFB
-
-    if len(bitBlockSize) > 0 {
-        this.config.Set("bit_block_size", bitBlockSize[0])
-    }
-
-    return this
-}
-
-// G3413CTR
-func (this Cryptobin) G3413CTR(bitBlockSize ...int) Cryptobin {
-    this.mode = G3413CTR
-
-    if len(bitBlockSize) > 0 {
-        this.config.Set("bit_block_size", bitBlockSize[0])
-    }
-
-    return this
-}
-
-// G3413OFB
-func (this Cryptobin) G3413OFB() Cryptobin {
-    this.mode = G3413OFB
-
-    return this
-}
-
-// Wrap
-func (this Cryptobin) Wrap() Cryptobin {
-    this.mode = Wrap
 
     return this
 }
@@ -753,18 +629,6 @@ func (this Cryptobin) PBOC2Padding() Cryptobin {
 // TBCPadding
 func (this Cryptobin) TBCPadding() Cryptobin {
     this.padding = TBCPadding
-
-    return this
-}
-
-// PKCS1 补码
-// PKCS1Padding
-func (this Cryptobin) PKCS1Padding(bt ...string) Cryptobin {
-    this.padding = PKCS1Padding
-
-    if len(bt) > 0 {
-        this.config.Set("pkcs1_padding_bt", bt[0])
-    }
 
     return this
 }
