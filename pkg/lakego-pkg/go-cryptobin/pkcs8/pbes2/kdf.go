@@ -12,7 +12,10 @@ type KDFOpts interface {
     // oid
     OID() asn1.ObjectIdentifier
 
-    // 设置 KeyLength
+    // PBES oid
+    PBESOID() asn1.ObjectIdentifier
+
+    // 设置是否有 KeyLength
     WithHasKeyLength(hasKeyLength bool) KDFOpts
 
     // 生成密钥
@@ -21,6 +24,9 @@ type KDFOpts interface {
 
 // 数据接口
 type KDFParameters interface {
+    // PBES oid
+    PBESOID() asn1.ObjectIdentifier
+
     // 生成密钥
     DeriveKey(password []byte, size int) (key []byte, err error)
 }
@@ -28,6 +34,18 @@ type KDFParameters interface {
 var kdfs = make(map[string]func() KDFParameters)
 
 // 添加 kdf 方式
+// add kdf type
 func AddKDF(oid asn1.ObjectIdentifier, params func() KDFParameters) {
     kdfs[oid.String()] = params
+}
+
+// return true if added kdf, else false
+func CheckKDF(oid asn1.ObjectIdentifier) bool {
+    for _, kdf := range kdfs {
+        if kdf().PBESOID().Equal(oid) {
+            return true
+        }
+    }
+
+    return false
 }

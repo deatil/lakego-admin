@@ -41,14 +41,14 @@ func (this RSA) SetSignHash(name string) RSA {
     return this
 }
 
-// 设置 oaepHash
+// 设置 OAEP Hash
 func (this RSA) WithOAEPHash(h hash.Hash) RSA {
     this.oaepHash = h
 
     return this
 }
 
-// 设置 oaepHash 类型
+// 设置 OAEP Hash 类型
 func (this RSA) SetOAEPHash(name string) RSA {
     newHash, err := tool.GetHash(name)
     if err != nil {
@@ -60,14 +60,14 @@ func (this RSA) SetOAEPHash(name string) RSA {
     return this
 }
 
-// 设置 oaepLabel
+// 设置 OAEP Label
 func (this RSA) WithOAEPLabel(data []byte) RSA {
     this.oaepLabel = data
 
     return this
 }
 
-// 设置 oaepLabel
+// 设置 OAEP Label
 func (this RSA) SetOAEPLabel(data string) RSA {
     this.oaepLabel = []byte(data)
 

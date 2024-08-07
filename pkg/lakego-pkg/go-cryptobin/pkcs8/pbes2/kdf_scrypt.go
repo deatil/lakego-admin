@@ -19,6 +19,10 @@ type scryptParams struct {
     KeyLength                int `asn1:"optional"`
 }
 
+func (this scryptParams) PBESOID() asn1.ObjectIdentifier {
+    return oidPBES2
+}
+
 func (this scryptParams) DeriveKey(password []byte, size int) (key []byte, err error) {
     // 如果有自定义长度，使用自定义长度
     if this.KeyLength > 0 {
@@ -47,6 +51,10 @@ func (this ScryptOpts) GetSaltSize() int {
 
 func (this ScryptOpts) OID() asn1.ObjectIdentifier {
     return oidScrypt
+}
+
+func (this ScryptOpts) PBESOID() asn1.ObjectIdentifier {
+    return oidPBES2
 }
 
 func (this ScryptOpts) WithHasKeyLength(hasKeyLength bool) KDFOpts {

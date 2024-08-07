@@ -10,6 +10,17 @@ import (
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
+func encodePEM(src []byte, typ string) string {
+    keyBlock := &pem.Block{
+        Type:  typ,
+        Bytes: src,
+    }
+
+    keyData := pem.EncodeToMemory(keyBlock)
+
+    return string(keyData)
+}
+
 func Test_EncryptPEMBlock(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertError := cryptobin_test.AssertErrorT(t)
@@ -551,6 +562,27 @@ u/wvi4jm4YU=
 -----END ENCRYPTED PRIVATE KEY-----
 `
 
+var testCheckGmSMOptsKey = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIIC5zBhBgoqgRzPVQYEAQUCMFMwMwYKKoEcz1UGBAEFATAlBBC1/mMaJ3A/KH4G
+I0eQS40gAgInEDANBgkqgRzPVQGDEQIFADAcBggqgRzPVQFoAgQQf0u095QXxHl3
+MZ7IZhnIlwSCAoC6SQRfsMWomPAjM47aafxiw6sN47Q6JVLPS6JGU63mlvxmr1CY
+FpFV0iZ4yF3yO0xwMXN+YASEj0mw+HPGtCoGyAwCDC2GzjgJvnztFh0l7Xs/m5lm
+qjY0psFwhi1YDKwLdbSWsT3WkTj7dDn+BcO43XwJgFFRDtysmIlUQLAnAZORtqFR
+LrSpNJSyilZawZUQj/DVpL2SQmqJEdwm32Vs1TPFqAO+4b3PvsbwxHZgeVs+PiOl
+bWk/gsY1JvaJSiZ26e0ibyIm+Tpn2z0NysgTIXSM/vb0HZdqn9Df0GfHmRfaje4k
+zT6VvjZOnLiijTQ/PgQ3ZZHd4U98makb5vVVgnI+oH17WJZOyn8pHZpBmacBUC1Z
+vuEUyYtbLOQ8GIVYWnU+PbZxxyKuJChkD5ePx7PYbp7dR3FW4qomHOwCK1x5DPAM
+tl5fZ90zO0dUIBy0HQWnwaGbMT5IgygvBsa0u+OI70CBDSI4FuWtMonSYSwZLoka
+b8nWr/ne108RKrMNsrt24WgsKitPdtQP6W8Ju9li8WLjEsaunHgAmpX5J9dZMfVy
+zp0q/qTpgIT/XmIwxbbskw0xn39MRPowDSW8gmaTtM4ARyNrOhJa+BZvL7rNm4gJ
+it4zMEpU59Sf6lqeo7nBu69vJ7saU4mA4HGoyB51vWUgEh8Qe7lUNW6gi5sHvMM4
+L7Hkucw5mkOYKbMgmvNxtLvOT04r38mx9WKgnFzkmLVcreLf/hwgfHY3Z0QQ/6vc
+V8kWnXOHUdiL+/wxwDDbGgSabfETf3I1WXPaEd35VwL4C2JxnNOfprJw8OZx8NAc
+qz8jW35We83dAbkpXBdVfQ4BGHDKbwb1ukP0
+-----END ENCRYPTED PRIVATE KEY-----
+`
+
 func Test_Check_PEMBlock2(t *testing.T) {
     t.Run("SM4GCM", func(t *testing.T) {
         test_KeyEncryptPEMBlock2(t, testKey_SM4GCM)
@@ -575,6 +607,10 @@ func Test_Check_PEMBlock2(t *testing.T) {
     t.Run("GostCipher", func(t *testing.T) {
         test_KeyEncryptPEMBlock2(t, testKey_GostCipher)
     })
+
+    t.Run("GmSMOpts", func(t *testing.T) {
+        test_KeyEncryptPEMBlock2(t, testCheckGmSMOptsKey)
+    })
 }
 
 func test_KeyEncryptPEMBlock2(t *testing.T, key string) {
@@ -597,17 +633,6 @@ func test_KeyEncryptPEMBlock2(t *testing.T, key string) {
     if enblock.Type != "ENCRYPTED PRIVATE KEY" {
         t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
     }
-}
-
-func encodePEM(src []byte, typ string) string {
-    keyBlock := &pem.Block{
-        Type:  typ,
-        Bytes: src,
-    }
-
-    keyData := pem.EncodeToMemory(keyBlock)
-
-    return string(keyData)
 }
 
 var testCheckKey = `
@@ -1066,6 +1091,28 @@ func Test_EncryptPEMBlock_Gost(t *testing.T) {
     }
 
     enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("test-passsss"), GostCipher)
+    if err != nil {
+        t.Error("encrypt: ", err)
+    }
+
+    if len(enblock.Bytes) == 0 {
+        t.Error("EncryptPEMBlock error")
+    }
+
+    if enblock.Type != "ENCRYPTED PRIVATE KEY" {
+        t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+}
+
+func Test_EncryptPEMBlock_GmSMOpts(t *testing.T) {
+    block, _ := pem.Decode([]byte(testKey_des_EDE3_CBC))
+
+    bys, err := DecryptPEMBlock(block, []byte("123"))
+    if err != nil {
+        t.Fatal("PEM data decrypted error: " + err.Error())
+    }
+
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("test-passsss"), DefaultSMOpts)
     if err != nil {
         t.Error("encrypt: ", err)
     }

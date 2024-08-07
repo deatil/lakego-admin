@@ -13,8 +13,9 @@ import (
 
 var (
     // key derivation functions
-    oidRSADSI = asn1.ObjectIdentifier{1, 2, 840, 113549}
-    oidPBES2  = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
+    oidRSADSI  = asn1.ObjectIdentifier{1, 2, 840, 113549}
+    oidPBES2   = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
+    oidSMPBES2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 6, 4, 1, 5, 2}
 )
 
 // 配置
@@ -29,6 +30,13 @@ var DefaultPBKDF2Opts = PBKDF2Opts{
     IterationCount: 10000,
 }
 
+// 默认配置 GmSM PBKDF2
+var DefaultSMPBKDF2Opts = SMPBKDF2Opts{
+    SaltSize:       16,
+    IterationCount: 10000,
+    HMACHash:       DefaultSMHash,
+}
+
 // 默认配置 Scrypt
 var DefaultScryptOpts = ScryptOpts{
     SaltSize:                 16,
@@ -41,6 +49,12 @@ var DefaultScryptOpts = ScryptOpts{
 var DefaultOpts = Opts{
     Cipher:  AES256CBC,
     KDFOpts: DefaultPBKDF2Opts,
+}
+
+// 默认 GmSM 配置
+var DefaultSMOpts = Opts{
+    Cipher:  SM4CBC,
+    KDFOpts: DefaultSMPBKDF2Opts,
 }
 
 // 结构体数据可以查看以下文档
@@ -189,7 +203,7 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
     }
 
     encryptionAlgorithm := pkix.AlgorithmIdentifier{
-        Algorithm:  oidPBES2,
+        Algorithm:  kdfOpts.PBESOID(),
         Parameters: asn1.RawValue{
             FullBytes: marshalledEncryptionAlgorithmParams,
         },
@@ -200,8 +214,8 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
 
 // PBES2 解密
 func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) ([]byte, error) {
-    if !algo.Algorithm.Equal(oidPBES2) {
-        return nil, errors.New("only PBES2 is supported")
+    if !CheckKDF(algo.Algorithm) {
+        return nil, fmt.Errorf("unsupported PBES (OID: %s)", algo.Algorithm)
     }
 
     var params pbes2Params
@@ -238,6 +252,15 @@ func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) (
 // 是否是 PBES2 加密
 func IsPBES2(algo asn1.ObjectIdentifier) bool {
     if algo.Equal(oidPBES2) {
+        return true
+    }
+
+    return false
+}
+
+// 是否是 GmSM PBES2 加密
+func IsSMPBES2(algo asn1.ObjectIdentifier) bool {
+    if algo.Equal(oidSMPBES2) {
         return true
     }
 

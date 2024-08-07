@@ -129,6 +129,10 @@ type pbkdf2Params struct {
     PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
 }
 
+func (this pbkdf2Params) PBESOID() asn1.ObjectIdentifier {
+    return oidPBES2
+}
+
 func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err error) {
     var alg asn1.ObjectIdentifier
     var h func() hash.Hash
@@ -174,6 +178,10 @@ func (this PBKDF2Opts) GetSaltSize() int {
 
 func (this PBKDF2Opts) OID() asn1.ObjectIdentifier {
     return oidPKCS5PBKDF2
+}
+
+func (this PBKDF2Opts) PBESOID() asn1.ObjectIdentifier {
+    return oidPBES2
 }
 
 func (this PBKDF2Opts) WithHasKeyLength(hasKeyLength bool) KDFOpts {
