@@ -214,7 +214,7 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
 
 // PBES2 解密
 func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) ([]byte, error) {
-    if !CheckKDF(algo.Algorithm) {
+    if !CheckPBES2(algo.Algorithm) {
         return nil, fmt.Errorf("unsupported PBES (OID: %s)", algo.Algorithm)
     }
 
@@ -247,6 +247,17 @@ func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) (
     }
 
     return decrypted, nil
+}
+
+// return true if has pbes2, else return false
+func CheckPBES2(oid asn1.ObjectIdentifier) bool {
+    for _, kdf := range kdfs {
+        if kdf().PBESOID().Equal(oid) {
+            return true
+        }
+    }
+
+    return false
 }
 
 // 是否是 PBES2 加密

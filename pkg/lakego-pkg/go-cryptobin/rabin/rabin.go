@@ -37,14 +37,24 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
     return pub.N.Cmp(xx.N) == 0
 }
 
+// Encrypt data
 func (pub *PublicKey) Encrypt(plaintext []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    length := uint32(len(plaintext))
     p := new(big.Int).SetBytes(plaintext)
-    h := sha256.Sum256(p.Bytes())
+
+    hashed := sha256.Sum256(plaintext)
 
     ciphertext := squareAndMultiple(p, two, pub.N)
-    ciphertextBytes := append(ciphertext.Bytes(), h[:]...)
+    ctBytes := ciphertext.Bytes()
 
-    return ciphertextBytes, nil
+    // ct = length + ciphertext + hashed
+    ct := make([]byte, 4 + len(ctBytes) + 32)
+
+    putu32(ct[0:], length)
+    copy(ct[4:], ctBytes)
+    copy(ct[4 + len(ctBytes):], hashed[:])
+
+    return ct, nil
 }
 
 // PrivateKey represents an Rabin private key.
@@ -76,23 +86,26 @@ func (priv *PrivateKey) Decrypt(_ io.Reader, ciphertext []byte, opts crypto.Decr
         return nil, errors.New("cryptobin/rabin: ciphertext data too short.")
     }
 
-    h := ciphertext[len(ciphertext) - 32:]
-    ciphertext = ciphertext[:len(ciphertext) - 32]
+    length := getu32(ciphertext[:4])
 
-    c := new(big.Int).SetBytes(ciphertext)
+    h := ciphertext[len(ciphertext) - 32:]
+    ct := ciphertext[4:len(ciphertext) - 32]
+
+    c := new(big.Int).SetBytes(ct)
 
     // decrypt ciphertext
     m1, m2, m3, m4 := decrypt(priv.P, priv.Q, c, priv.N)
 
-    switch {
-        case hashEqual(m1, h):
-            return m1.Bytes(), nil
-        case hashEqual(m2, h):
-            return m2.Bytes(), nil
-        case hashEqual(m3, h):
-            return m3.Bytes(), nil
-        case hashEqual(m4, h):
-            return m4.Bytes(), nil
+    var ok bool
+    var b []byte
+    if ok, b = hashEqual(m1, h, length); ok {
+        return b, nil
+    } else if ok, b = hashEqual(m2, h, length); ok {
+        return b, nil
+    } else if ok, b = hashEqual(m3, h, length); ok {
+        return b, nil
+    } else if ok, b = hashEqual(m4, h, length); ok {
+        return b, nil
     }
 
     return nil, errors.New("cryptobin/rabin: decrypt data fail.")

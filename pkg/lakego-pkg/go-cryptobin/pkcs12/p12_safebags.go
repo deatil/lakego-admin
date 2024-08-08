@@ -189,8 +189,8 @@ func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, u
                 encryptedContent := encryptedContentInfo.EncryptedContent
                 contentEncryptionAlgorithm := encryptedContentInfo.ContentEncryptionAlgorithm
 
-                // pbes2
-                if pbes2.IsPBES2(contentEncryptionAlgorithm.Algorithm) {
+                // if pbes2
+                if pbes2.CheckPBES2(contentEncryptionAlgorithm.Algorithm) {
                     // change type to utf-8
                     passwordString, err := decodeBMPString(password)
                     if err != nil {

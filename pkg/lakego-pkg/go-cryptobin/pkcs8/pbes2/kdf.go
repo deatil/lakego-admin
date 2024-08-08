@@ -38,14 +38,3 @@ var kdfs = make(map[string]func() KDFParameters)
 func AddKDF(oid asn1.ObjectIdentifier, params func() KDFParameters) {
     kdfs[oid.String()] = params
 }
-
-// return true if added kdf, else false
-func CheckKDF(oid asn1.ObjectIdentifier) bool {
-    for _, kdf := range kdfs {
-        if kdf().PBESOID().Equal(oid) {
-            return true
-        }
-    }
-
-    return false
-}

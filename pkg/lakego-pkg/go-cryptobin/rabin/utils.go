@@ -6,6 +6,7 @@ import (
     "bytes"
     "math/big"
     "crypto/sha256"
+    "encoding/binary"
 )
 
 func generateRabinPrimeNumber(rand io.Reader, bitLength int) *big.Int {
@@ -316,11 +317,25 @@ func decrypt(p *big.Int, q *big.Int, C *big.Int, N *big.Int) (
     return ypPmqPlusyqQmp, NegativeypPmqPlusyqQmp, ypPmqMinusyqQmp, NegativeypPmqMinusyqQmp
 }
 
-func hashEqual(a *big.Int, h []byte) bool {
-    hash := sha256.Sum256(a.Bytes())
-    if bytes.Equal(hash[:], h) {
-        return true
+func hashEqual(p *big.Int, h []byte, length uint32) (bool, []byte) {
+    if p.BitLen() > int(length) * 8 {
+        return false, nil
     }
 
-    return false
+    data := p.FillBytes(make([]byte, int(length)))
+
+    hash := sha256.Sum256(data)
+    if bytes.Equal(hash[:], h) {
+        return true, data
+    }
+
+    return false, nil
+}
+
+func getu32(ptr []byte) uint32 {
+    return binary.BigEndian.Uint32(ptr)
+}
+
+func putu32(ptr []byte, a uint32) {
+    binary.BigEndian.PutUint32(ptr, a)
 }
