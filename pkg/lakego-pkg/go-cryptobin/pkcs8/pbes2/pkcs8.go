@@ -73,11 +73,11 @@ type pbes2Params struct {
 
 // 加密 PKCS8
 func EncryptPKCS8PrivateKey(
-    rand io.Reader,
+    rand      io.Reader,
     blockType string,
-    data []byte,
-    password []byte,
-    opts ...Opts,
+    data      []byte,
+    password  []byte,
+    opts      ...Opts,
 ) (*pem.Block, error) {
     opt := &DefaultOpts
     if len(opts) > 0 {

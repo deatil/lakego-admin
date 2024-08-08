@@ -135,9 +135,10 @@ var (
 
 type (
     // 配置
-    Opts       = pbes2.Opts
-    PBKDF2Opts = pbes2.PBKDF2Opts
-    ScryptOpts = pbes2.ScryptOpts
+    Opts         = pbes2.Opts
+    PBKDF2Opts   = pbes2.PBKDF2Opts
+    SMPBKDF2Opts = pbes2.SMPBKDF2Opts
+    ScryptOpts   = pbes2.ScryptOpts
 )
 
 var (
@@ -147,20 +148,28 @@ var (
     GetHashFromName   = pbes2.GetHashFromName
 )
 
-// 默认配置 PBKDF2
-var DefaultPBKDF2Opts = pbes2.DefaultPBKDF2Opts
+var (
+    // 默认 Hash
+    DefaultHash   = pbes2.DefaultHash
+    DefaultSMHash = pbes2.DefaultSMHash
+)
 
-// 默认配置 GmSM PBKDF2
-var DefaultSMPBKDF2Opts = pbes2.DefaultSMPBKDF2Opts
+var (
+    // 默认配置 PBKDF2
+    DefaultPBKDF2Opts = pbes2.DefaultPBKDF2Opts
 
-// 默认配置 Scrypt
-var DefaultScryptOpts = pbes2.DefaultScryptOpts
+    // 默认配置 GmSM PBKDF2
+    DefaultSMPBKDF2Opts = pbes2.DefaultSMPBKDF2Opts
 
-// 默认配置
-var DefaultOpts = pbes2.DefaultOpts
+    // 默认配置 Scrypt
+    DefaultScryptOpts = pbes2.DefaultScryptOpts
 
-// 默认 GmSM 配置
-var DefaultSMOpts = pbes2.DefaultSMOpts
+    // 默认配置
+    DefaultOpts = pbes2.DefaultOpts
+
+    // 默认 GmSM 配置
+    DefaultSMOpts = pbes2.DefaultSMOpts
+)
 
 // 解析设置
 // opt, err := ParseOpts("AES256CBC", "SHA256")

@@ -1,6 +1,7 @@
 package pkcs8
 
 import (
+    "bytes"
     "testing"
     "crypto/rsa"
     "crypto/rand"
@@ -1105,6 +1106,40 @@ func Test_EncryptPEMBlock_Gost(t *testing.T) {
 }
 
 func Test_EncryptPEMBlock_GmSMOpts(t *testing.T) {
+    t.Run("DefaultSMOpts", func(t *testing.T) {
+        test_EncryptPEMBlock_GmSMOpts(t, DefaultSMOpts)
+    })
+
+    t.Run("DefaultSMPBKDF2Opts SM4CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_GmSMOpts(t, Opts{
+            Cipher:  SM4CFB,
+            KDFOpts: DefaultSMPBKDF2Opts,
+        })
+    })
+
+    t.Run("SMPBKDF2Opts SM4CFB", func(t *testing.T) {
+        test_EncryptPEMBlock_GmSMOpts(t, Opts{
+            Cipher:  SM4CFB,
+            KDFOpts: SMPBKDF2Opts{
+                SaltSize:       8,
+                IterationCount: 5000,
+                HMACHash:       DefaultSMHash,
+            },
+        })
+    })
+
+    t.Run("SMPBKDF2Opts no HMACHash", func(t *testing.T) {
+        test_EncryptPEMBlock_GmSMOpts(t, Opts{
+            Cipher:  SM4CFB,
+            KDFOpts: SMPBKDF2Opts{
+                SaltSize:       8,
+                IterationCount: 6000,
+            },
+        })
+    })
+}
+
+func test_EncryptPEMBlock_GmSMOpts(t *testing.T, opts Opts) {
     block, _ := pem.Decode([]byte(testKey_des_EDE3_CBC))
 
     bys, err := DecryptPEMBlock(block, []byte("123"))
@@ -1112,7 +1147,7 @@ func Test_EncryptPEMBlock_GmSMOpts(t *testing.T) {
         t.Fatal("PEM data decrypted error: " + err.Error())
     }
 
-    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("test-passsss"), DefaultSMOpts)
+    enblock, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", bys, []byte("test-passsss"), opts)
     if err != nil {
         t.Error("encrypt: ", err)
     }
@@ -1123,5 +1158,14 @@ func Test_EncryptPEMBlock_GmSMOpts(t *testing.T) {
 
     if enblock.Type != "ENCRYPTED PRIVATE KEY" {
         t.Errorf("unexpected enblock type; got %q want %q", enblock.Type, "RSA PRIVATE KEY")
+    }
+
+    bys2, err := DecryptPEMBlock(enblock, []byte("test-passsss"))
+    if err != nil {
+        t.Fatal("data decrypted error: " + err.Error())
+    }
+
+    if bytes.Compare(bys2, bys) != 0 {
+        t.Errorf("DecryptPEMBlock error, got %x, want %x", bys2, bys)
     }
 }
