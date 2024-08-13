@@ -50,6 +50,28 @@ func Test_MarshalSM2EnvelopedPrivateKeyWithSM4CBC(t *testing.T) {
     }
 }
 
+func Test_MarshalSM2EnvelopedPrivateKeyWithSM4CBCAndFilled(t *testing.T) {
+    priv, _ := sm2.GenerateKey(rand.Reader)
+    toEnveloped, _ := sm2.GenerateKey(rand.Reader)
+
+    result, err := x509.MarshalSM2EnvelopedPrivateKey(rand.Reader, &priv.PublicKey, toEnveloped, x509.EnvelopedOpts{
+        Cipher: x509.Enveloped_SM4CBC,
+        IsFill: true,
+    })
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    parsedKey, err := x509.ParseSM2EnvelopedPrivateKey(priv, result)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !toEnveloped.Equal(parsedKey) {
+        t.Error("Marshal Enveloped PrivateKey error")
+    }
+}
+
 func Test_ParseEnvelopedPrivateKey(t *testing.T) {
     key, _ := hex.DecodeString("5cbd96822bb1491ec835ae9c09d4d3825e30bd9955e3c7031fbbe0e72d6fddf6")
     sm2Key := new(sm2.PrivateKey)

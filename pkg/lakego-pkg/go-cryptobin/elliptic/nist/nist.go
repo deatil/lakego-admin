@@ -1,6 +1,22 @@
 package nist
 
-import "github.com/deatil/go-cryptobin/elliptic/base_elliptic"
+import (
+    "encoding/asn1"
+
+    "github.com/deatil/go-cryptobin/elliptic/base_elliptic"
+)
+
+var (
+    OIDNamedCurveB233 = asn1.ObjectIdentifier{1, 3, 132, 0, 27} // B-233
+    OIDNamedCurveB283 = asn1.ObjectIdentifier{1, 3, 132, 0, 17} // B-283
+    OIDNamedCurveB409 = asn1.ObjectIdentifier{1, 3, 132, 0, 37} // B-409
+    OIDNamedCurveB571 = asn1.ObjectIdentifier{1, 3, 132, 0, 39} // B-571
+
+    OIDNamedCurveK233 = asn1.ObjectIdentifier{1, 3, 132, 0, 26} // K-233
+    OIDNamedCurveK283 = asn1.ObjectIdentifier{1, 3, 132, 0, 16} // K-283
+    OIDNamedCurveK409 = asn1.ObjectIdentifier{1, 3, 132, 0, 36} // K-409
+    OIDNamedCurveK571 = asn1.ObjectIdentifier{1, 3, 132, 0, 38} // K-571
+)
 
 // K163 returns a Curve which implements NIST K-163
 //

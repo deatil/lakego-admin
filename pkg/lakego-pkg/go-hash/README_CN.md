@@ -10,8 +10,8 @@
 
 ### 项目介绍
 
-*  常用的摘要算法
-*  算法包括: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost)
+*  常用的数据摘要获取算法
+*  算法包括: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost等)
 
 
 ### 下载安装
@@ -49,7 +49,7 @@ func main() {
         ToHexString()        // 输出数据, 返回数据类型
 
     // =============
-    
+
     var pass []byte = []byte("...")
 
     // HmacSHA1 获取摘要

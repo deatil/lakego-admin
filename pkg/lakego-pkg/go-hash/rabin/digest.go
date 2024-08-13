@@ -107,7 +107,7 @@ func (h *digest) Write(p []byte) (n int, err error) {
 // current hash to b and returns the resulting slice.
 func (h *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d0 := *h
+    d0 := h.copy()
     hash := d0.checkSum()
     return append(in, hash[:]...)
 }
@@ -124,4 +124,18 @@ func (h *digest) checkSum() []byte {
 // Sum64 returns the hash of all bytes written to h.
 func (h *digest) Sum64() uint64 {
     return h.hash
+}
+
+func (h *digest) copy() *digest {
+    table := *h.tab
+
+    nd := &digest{
+        tab:  &table,
+        hash: h.hash,
+        msg:  make([]byte, len(h.msg)),
+        pos:  h.pos,
+    }
+    copy(nd.msg, h.msg)
+
+    return nd
 }

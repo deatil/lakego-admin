@@ -82,11 +82,11 @@ func (priv *PrivateKey) Public() crypto.PublicKey {
 
 // crypto.Decrypter
 func (priv *PrivateKey) Decrypt(_ io.Reader, ciphertext []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
-    if len(ciphertext) <= 32 {
+    if len(ciphertext) <= 36 {
         return nil, errors.New("cryptobin/rabin: ciphertext data too short.")
     }
 
-    length := getu32(ciphertext[:4])
+    length := int(getu32(ciphertext[:4]))
 
     h := ciphertext[len(ciphertext) - 32:]
     ct := ciphertext[4:len(ciphertext) - 32]

@@ -317,12 +317,12 @@ func decrypt(p *big.Int, q *big.Int, C *big.Int, N *big.Int) (
     return ypPmqPlusyqQmp, NegativeypPmqPlusyqQmp, ypPmqMinusyqQmp, NegativeypPmqMinusyqQmp
 }
 
-func hashEqual(p *big.Int, h []byte, length uint32) (bool, []byte) {
-    if p.BitLen() > int(length) * 8 {
+func hashEqual(p *big.Int, h []byte, length int) (bool, []byte) {
+    if p.BitLen() > length * 8 {
         return false, nil
     }
 
-    data := p.FillBytes(make([]byte, int(length)))
+    data := p.FillBytes(make([]byte, length))
 
     hash := sha256.Sum256(data)
     if bytes.Equal(hash[:], h) {

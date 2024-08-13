@@ -8,6 +8,11 @@ import (
     "encoding/hex"
 )
 
+func fromHex(s string) []byte {
+    h, _ := hex.DecodeString(s)
+    return h
+}
+
 func TestInvalidKeySize(t *testing.T) {
     for _, k := range []int{0, 1, 15, 31} {
         _, err := NewCipher(make([]byte, k))
@@ -95,11 +100,6 @@ func TestEncryptAndDecrypt(t *testing.T) {
     if !bytes.Equal(input, plain) {
         t.Errorf("input(%x) != decrypted(%x)", input, plain)
     }
-}
-
-func fromHex(s string) []byte {
-    h, _ := hex.DecodeString(s)
-    return h
 }
 
 type testData struct {

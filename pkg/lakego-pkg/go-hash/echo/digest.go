@@ -127,7 +127,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
 func (d *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d0 := *d
+    d0 := d.copy()
     hash := d0.checkSum()
     return append(in, hash...)
 }
@@ -279,4 +279,20 @@ func (d *digest) transform(addedbits bool, addtototal uint64) {
             h[i] = h[i] ^ h[i+16] ^ w[i] ^ w[i+16]
         }
     }
+}
+
+func (d *digest) copy() *digest {
+    nd := &digest{
+        s:   d.s,
+        x:   make([]byte, len(d.x)),
+        nx:  d.nx,
+        len: d.len,
+
+        hs:   d.hs,
+        bs:   d.bs,
+        salt: d.salt,
+    }
+    copy(nd.x, d.x)
+
+    return nd
 }

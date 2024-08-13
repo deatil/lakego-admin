@@ -38,21 +38,26 @@ var (
 
 // Enveloped 配置
 type EnvelopedOpts struct {
+    // encrypt cipher
     Cipher EnvelopedCipher
+
+    // PrivateKey get bytes type
+    IsFill bool
 }
 
 // 默认配置
 var DefaultEnvelopedOpts = EnvelopedOpts{
     Cipher: Enveloped_SM4ECB,
+    IsFill: false,
 }
 
 // GB/T 35276-2017, see Section 7.4
 //
 //  SM2EnvelopedKey ::= SEQUENCE {
-//    symAlgID                AlgorithmIdentifier,
-//    symEncryptedKey         SM2Cipher,
-//    sm2PublicKey            SM2PublicKey,
-//    sm2EncryptedPrivateKey  BIT STRING,
+//    symAlgID               AlgorithmIdentifier,
+//    symEncryptedKey        SM2Cipher,
+//    sm2PublicKey           SM2PublicKey,
+//    sm2EncryptedPrivateKey BIT STRING,
 //  }
 type SM2EnvelopedKey struct {
     Algo                pkix.AlgorithmIdentifier
@@ -91,13 +96,19 @@ func MarshalSM2EnvelopedPrivateKey(
         return nil, err
     }
 
-    // encrypt sm2 private key
-    size := (toEnveloped.Curve.Params().N.BitLen() + 7) / 8
-    if toEnveloped.D.BitLen() > size*8 {
-        return nil, errors.New("x509: invalid private key")
-    }
+    var prikeyBytes []byte
 
-    prikeyBytes := toEnveloped.D.FillBytes(make([]byte, size))
+    // encrypt sm2 private key
+    if opt.IsFill {
+        size := (toEnveloped.Curve.Params().N.BitLen() + 7) / 8
+        if toEnveloped.D.BitLen() > size*8 {
+            return nil, errors.New("x509: invalid private key")
+        }
+
+        prikeyBytes = toEnveloped.D.FillBytes(make([]byte, size))
+    } else {
+        prikeyBytes = toEnveloped.D.Bytes()
+    }
 
     key := make([]byte, cipher.KeySize())
     if _, err := io.ReadFull(rand, key); err != nil {
