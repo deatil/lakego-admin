@@ -51,13 +51,13 @@ func Test_NewPrivateKey(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    priBytes := ToPrivateKey(priv)
+    priBytes := PrivateKeyTo(priv)
     if len(priBytes) == 0 {
-        t.Error("fail ToPrivateKey")
+        t.Error("fail PrivateKeyTo")
     }
-    pubBytes := ToPublicKey(pub)
+    pubBytes := PublicKeyTo(pub)
     if len(pubBytes) == 0 {
-        t.Error("fail ToPublicKey")
+        t.Error("fail PublicKeyTo")
     }
 
     priv2, err := NewPrivateKey(priBytes)

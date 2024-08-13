@@ -410,7 +410,7 @@ func NewPrivateKey(d []byte) (*PrivateKey, error) {
 
 // 输出私钥明文
 // output PrivateKey data
-func ToPrivateKey(key *PrivateKey) []byte {
+func PrivateKeyTo(key *PrivateKey) []byte {
     return key.D.Bytes()
 }
 
@@ -435,7 +435,7 @@ func NewPublicKey(data []byte) (*PublicKey, error) {
 
 // 输出公钥明文
 // output PublicKey data
-func ToPublicKey(key *PublicKey) []byte {
+func PublicKeyTo(key *PublicKey) []byte {
     return sm2curve.Marshal(key.Curve, key.X, key.Y)
 }
 

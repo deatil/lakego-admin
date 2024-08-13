@@ -164,23 +164,23 @@ func Test_MarshalPKCS8(t *testing.T) {
 
     //===============
 
-    pubDer, err := MarshalPKCS8PublicKey(pub)
-    assertError(err, "MarshalPKCS8PublicKey-pub-Error")
-    assertNotEmpty(pubDer, "MarshalPKCS8PublicKey")
+    pubDer, err := MarshalPublicKey(pub)
+    assertError(err, "MarshalPublicKey-pub-Error")
+    assertNotEmpty(pubDer, "MarshalPublicKey")
 
-    parsedPub, err := ParsePKCS8PublicKey(pubDer)
-    assertError(err, "ParsePKCS8PublicKey-pub-Error")
+    parsedPub, err := ParsePublicKey(pubDer)
+    assertError(err, "ParsePublicKey-pub-Error")
     assertEqual(parsedPub, pub, "MarshalPKCS8")
 
     //===============
 
-    priDer, err := MarshalPKCS8PrivateKey(pri)
-    assertError(err, "MarshalPKCS8PrivateKey-pri-Error")
-    assertNotEmpty(priDer, "MarshalPKCS8PrivateKey")
+    priDer, err := MarshalPrivateKey(pri)
+    assertError(err, "MarshalPrivateKey-pri-Error")
+    assertNotEmpty(priDer, "MarshalPrivateKey")
 
-    parsedPri, err := ParsePKCS8PrivateKey(priDer)
-    assertError(err, "ParsePKCS8PrivateKey-pri-Error")
-    assertEqual(parsedPri, pri, "ParsePKCS8PrivateKey")
+    parsedPri, err := ParsePrivateKey(priDer)
+    assertError(err, "ParsePrivateKey-pri-Error")
+    assertEqual(parsedPri, pri, "ParsePrivateKey")
 }
 
 var testPkcs8Prikey_A2048B224SHA224 = `-----BEGIN PRIVATE KEY-----
@@ -264,44 +264,44 @@ cF3lZfYe+sz9GGIipjkjFaUZuAo3BBYCFFDgTDnugC+5OTvXLE99OPgYNFpR
 -----END PRIVATE KEY-----
 `
 
-func Test_PKCS8PrivateKey_Check(t *testing.T) {
+func Test_PrivateKey_Check(t *testing.T) {
     t.Run("A2048B224SHA224", func(t *testing.T) {
-        test_PKCS8PrivateKey_Check(t, testPkcs8Prikey_A2048B224SHA224)
+        test_PrivateKey_Check(t, testPkcs8Prikey_A2048B224SHA224)
     })
     t.Run("A2048B224SHA256", func(t *testing.T) {
-        test_PKCS8PrivateKey_Check(t, testPkcs8Prikey_A2048B224SHA256)
+        test_PrivateKey_Check(t, testPkcs8Prikey_A2048B224SHA256)
     })
     t.Run("A2048B256SHA256", func(t *testing.T) {
-        test_PKCS8PrivateKey_Check(t, testPkcs8Prikey_A2048B256SHA256)
+        test_PrivateKey_Check(t, testPkcs8Prikey_A2048B256SHA256)
     })
     t.Run("A3072B256SHA256", func(t *testing.T) {
-        test_PKCS8PrivateKey_Check(t, testPkcs8Prikey_A3072B256SHA256)
+        test_PrivateKey_Check(t, testPkcs8Prikey_A3072B256SHA256)
     })
     t.Run("A1024B160HAS160", func(t *testing.T) {
-        test_PKCS8PrivateKey_Check(t, testPkcs8Prikey_A1024B160HAS160)
+        test_PrivateKey_Check(t, testPkcs8Prikey_A1024B160HAS160)
     })
 }
 
-func test_PKCS8PrivateKey_Check(t *testing.T, pemStr string) {
+func test_PrivateKey_Check(t *testing.T, pemStr string) {
     assertError := cryptobin_test.AssertErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pri := decodePEM(pemStr)
 
-    priv, err := ParsePKCS8PrivateKey(pri)
+    priv, err := ParsePrivateKey(pri)
     if err != nil {
         t.Fatal(err)
     }
 
-    assertError(err, "PKCS8PrivateKeyCheck")
-    assertNotEmpty(priv, "PKCS8PrivateKeyCheck")
+    assertError(err, "PrivateKeyCheck")
+    assertNotEmpty(priv, "PrivateKeyCheck")
 
-    privDer, err := MarshalPKCS8PrivateKey(priv)
+    privDer, err := MarshalPrivateKey(priv)
     if err != nil {
         t.Fatal(err)
     }
 
-    assertNotEmpty(privDer, "PKCS8PrivateKeyCheck")
+    assertNotEmpty(privDer, "PrivateKeyCheck")
 }
 
 var rnd = bufio.NewReaderSize(rand.Reader, 1<<15)

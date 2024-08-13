@@ -125,7 +125,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
 }
 
 // PKCS8 包装公钥
-func MarshalPKCS8PublicKey(pub *PublicKey) ([]byte, error) {
+func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPublicKey(pub)
 }
 
@@ -187,7 +187,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 }
 
 // PKCS8 解析公钥
-func ParsePKCS8PublicKey(derBytes []byte) (*PublicKey, error) {
+func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
     return defaultPKCS8Key.ParsePublicKey(derBytes)
 }
 
@@ -235,7 +235,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 }
 
 // PKCS8 包装私钥
-func MarshalPKCS8PrivateKey(key *PrivateKey) ([]byte, error) {
+func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPrivateKey(key)
 }
 
@@ -296,6 +296,6 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 }
 
 // PKCS8 解析私钥
-func ParsePKCS8PrivateKey(derBytes []byte) (key *PrivateKey, err error) {
+func ParsePrivateKey(derBytes []byte) (key *PrivateKey, err error) {
     return defaultPKCS8Key.ParsePrivateKey(derBytes)
 }

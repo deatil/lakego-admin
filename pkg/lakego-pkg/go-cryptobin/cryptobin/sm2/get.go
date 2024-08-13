@@ -55,14 +55,14 @@ func (this SM2) GetPublicKeyYString() string {
 
 // get PublicKey X and Y Hex string
 func (this SM2) GetPublicKeyXYString() string {
-    data := sm2.ToPublicKey(this.publicKey)
+    data := sm2.PublicKeyTo(this.publicKey)
 
     return tool.HexEncode(data[1:])
 }
 
 // get PublicKey Uncompress Hex string
 func (this SM2) GetPublicKeyUncompressString() string {
-    data := sm2.ToPublicKey(this.publicKey)
+    data := sm2.PublicKeyTo(this.publicKey)
 
     return tool.HexEncode(data)
 }

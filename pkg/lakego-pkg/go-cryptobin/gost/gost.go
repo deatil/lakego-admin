@@ -170,7 +170,7 @@ func NewPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
 }
 
 // Marshal private key
-func ToPrivateKey(priv *PrivateKey) []byte {
+func PrivateKeyTo(priv *PrivateKey) []byte {
     privateKey := make([]byte, priv.Curve.PointSize())
     priv.D.FillBytes(privateKey)
 
@@ -194,7 +194,7 @@ func NewPublicKey(curve *Curve, data []byte) (*PublicKey, error) {
 }
 
 // Marshal public key
-func ToPublicKey(pub *PublicKey) []byte {
+func PublicKeyTo(pub *PublicKey) []byte {
     return Marshal(pub.Curve, pub.X, pub.Y)
 }
 

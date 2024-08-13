@@ -170,7 +170,7 @@ func NewPrivateKey(raw []byte) (*PrivateKey, error) {
 }
 
 // Marshal private key
-func ToPrivateKey(priv *PrivateKey) []byte {
+func PrivateKeyTo(priv *PrivateKey) []byte {
     prikey, err := asn1.Marshal(privateKeyInfo{
         P: priv.P,
         Q: priv.Q,
@@ -194,6 +194,6 @@ func NewPublicKey(raw []byte) (*PublicKey, error) {
 }
 
 // Marshal public key
-func ToPublicKey(pub *PublicKey) []byte {
+func PublicKeyTo(pub *PublicKey) []byte {
     return pub.N.Bytes()
 }

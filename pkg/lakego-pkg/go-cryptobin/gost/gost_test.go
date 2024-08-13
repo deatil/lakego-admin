@@ -50,13 +50,13 @@ func Test_NewPrivateKey(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    priBytes := ToPrivateKey(priv)
+    priBytes := PrivateKeyTo(priv)
     if len(priBytes) == 0 {
-        t.Error("fail ToPrivateKey")
+        t.Error("fail PrivateKeyTo")
     }
-    pubBytes := ToPublicKey(pub)
+    pubBytes := PublicKeyTo(pub)
     if len(pubBytes) == 0 {
-        t.Error("fail ToPublicKey")
+        t.Error("fail PublicKeyTo")
     }
 
     priv2, err := NewPrivateKey(c, priBytes)
@@ -201,7 +201,7 @@ func Test_MarshalPublicKey(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    pubkey := ToPublicKey(pub)
+    pubkey := PublicKeyTo(pub)
 
     newPub, err := NewPublicKey(pub.Curve, pubkey)
     if err != nil {
@@ -219,7 +219,7 @@ func Test_MarshalPrivateKey(t *testing.T) {
         t.Fatal(err)
     }
 
-    privkey := ToPrivateKey(priv)
+    privkey := PrivateKeyTo(priv)
 
     newPriv, err := NewPrivateKey(priv.Curve, privkey)
     if err != nil {

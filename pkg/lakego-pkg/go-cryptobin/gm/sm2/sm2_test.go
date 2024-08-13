@@ -406,7 +406,7 @@ func Test_NewPrivateKey(t *testing.T) {
         t.Fatal(err)
     }
 
-    privHex := sm2.ToPrivateKey(priv)
+    privHex := sm2.PrivateKeyTo(priv)
     priv2, err := sm2.NewPrivateKey(privHex)
     if err != nil {
         t.Fatal(err)
@@ -420,7 +420,7 @@ func Test_NewPrivateKey(t *testing.T) {
 
     pub := &priv.PublicKey
 
-    pubHex := sm2.ToPublicKey(pub)
+    pubHex := sm2.PublicKeyTo(pub)
     pub2, err := sm2.NewPublicKey(pubHex)
     if err != nil {
         t.Fatal(err)
