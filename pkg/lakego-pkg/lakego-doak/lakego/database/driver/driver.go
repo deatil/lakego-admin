@@ -13,16 +13,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/interfaces"
 )
 
-func New(conf ...map[string]any) *Driver {
-    driver := &Driver{}
-
-    if len(conf) > 0 {
-        driver.Config = conf[0]
-    }
-
-    return driver
-}
-
 /**
  * 基础驱动
  *
@@ -35,6 +25,16 @@ type Driver struct {
 
     // 配置
     Config map[string]any
+}
+
+func New(conf ...map[string]any) *Driver {
+    driver := &Driver{}
+
+    if len(conf) > 0 {
+        driver.Config = conf[0]
+    }
+
+    return driver
 }
 
 // 设置配置
@@ -129,6 +129,14 @@ func (this *Driver) CreateOpenConnection(dia gorm.Dialector) {
     // 连接超时相关
     sqlDB.SetMaxIdleConns(cfg.Value("max-idle-conns").ToInt())
     sqlDB.SetMaxOpenConns(cfg.Value("max-open-conns").ToInt())
+
+    // 查询没有数据, 设置不显示控制台日志
+    db.Callback().
+        Query().
+        Before("gorm:query").
+        Register("disable_raise_record_not_found", func(db *gorm.DB) {
+            db.Statement.RaiseErrorOnNotFound = false
+        })
 
     this.db = db
 }
