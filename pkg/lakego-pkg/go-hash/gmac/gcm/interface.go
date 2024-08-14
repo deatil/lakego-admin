@@ -44,20 +44,6 @@ type Block interface {
     Decrypt8(dst, src []byte)
 }
 
-func WrapCipherC(b cipher.Block) cipher.Block {
-    return &simpleWrap{b}
-}
-
-func NewCipherC(newCipher func([]byte) (cipher.Block, error)) func([]byte) (cipher.Block, error) {
-    return func(key []byte) (cipher.Block, error) {
-        b, err := newCipher(key)
-        if err != nil {
-            return nil, err
-        }
-        return WrapCipherC(b), nil
-    }
-}
-
 func WrapCipher(b cipher.Block) Block {
     if kb, ok := b.(Block); ok {
         return kb
@@ -74,14 +60,6 @@ func NewCipher(newCipher func([]byte) (cipher.Block, error)) func([]byte) (ciphe
         return WrapCipher(b), nil
     }
 }
-
-type simpleWrap struct{ b cipher.Block }
-
-var _ cipher.Block = (*simpleWrap)(nil)
-
-func (bw *simpleWrap) BlockSize() int          { return bw.b.BlockSize() }
-func (bw *simpleWrap) Encrypt(dst, src []byte) { bw.b.Encrypt(dst, src) }
-func (bw *simpleWrap) Decrypt(dst, src []byte) { bw.b.Decrypt(dst, src) }
 
 type blockWrap struct {
     cipher.Block

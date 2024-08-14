@@ -26,7 +26,7 @@ func Test_GMAC_Check(t *testing.T) {
         t.Fatal(err)
     }
 
-    h, err := NewGMAC(c, iv)
+    h, err := New(c, iv)
     if err != nil {
         t.Fatal(err)
     }

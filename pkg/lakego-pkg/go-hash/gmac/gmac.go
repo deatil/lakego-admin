@@ -9,18 +9,29 @@ import (
     "github.com/deatil/go-hash/gmac/gcm"
 )
 
-const (
-    msgRequired128BitBlockCipher = "krypto/gmac: requires 128-bit block cipher"
+var (
+    errBlockSize = errors.New("krypto/gmac: requires 128-bit block cipher")
 )
 
 var defaultIV [gcm.GCMStandardNonceSize]byte
 
+type ghash struct {
+    gcm gcm.GCM
+
+    tagMask [gcm.GCMBlockSize]byte
+
+    y         gcm.GCMFieldElement
+    remains   [gcm.GCMBlockSize]byte
+    remainIdx int
+    written   int
+}
+
 // new MAC using GMAC by only passing additional data(aad data).
-func NewGMAC(b cipher.Block, iv []byte) (hash.Hash, error) {
+func New(b cipher.Block, iv []byte) (hash.Hash, error) {
     kb := gcm.WrapCipher(b)
 
     if kb.BlockSize() != gcm.GCMBlockSize {
-        return nil, errors.New(msgRequired128BitBlockCipher)
+        return nil, errBlockSize
     }
 
     if len(iv) == 0 {
@@ -35,17 +46,6 @@ func NewGMAC(b cipher.Block, iv []byte) (hash.Hash, error) {
     kb.Encrypt(g.tagMask[:], counter[:])
 
     return g, nil
-}
-
-type ghash struct {
-    gcm gcm.GCM
-
-    tagMask [gcm.GCMBlockSize]byte
-
-    y         gcm.GCMFieldElement
-    remains   [gcm.GCMBlockSize]byte
-    remainIdx int
-    written   int
 }
 
 func (g ghash) Size() int {
