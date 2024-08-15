@@ -30,7 +30,7 @@ func Test_GCMAuthAsm(t *testing.T) {
     rand.Read(additionalData)
 
     block, _ := aes.NewCipher(key)
-    kb := WrapKipher(block)
+    kb := WrapCipher(block)
 
     var gcmA GCM
     var gcmG GCM
@@ -61,7 +61,7 @@ func Benchmark_GCMAuthAsm(b *testing.B) {
             var g GCM
 
             block, _ := aes.NewCipher(make([]byte, 16))
-            kb := WrapKipher(block)
+            kb := WrapCipher(block)
 
             gcmInitGo(&g, kb)
 
