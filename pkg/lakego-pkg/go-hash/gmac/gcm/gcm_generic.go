@@ -5,10 +5,15 @@ import (
     "encoding/binary"
 )
 
-func gcmInit(g *GCM, cipher Block) {
+func gcmInitGo(g *GCM, cipher Block) {
     var key [GCMBlockSize]byte
     cipher.Encrypt(key[:], key[:])
 
+    // We precompute 16 multiples of |key|. However, when we do lookups
+    // into this table we'll be using bits from a field element and
+    // therefore the bits will be in the reverse order. So normally one
+    // would expect, say, 4*key to be in index 4 of the table but due to
+    // this bit ordering it will actually be in index 0010 (base 2) = 2.
     x := GCMFieldElement{
         binary.BigEndian.Uint64(key[:8]),
         binary.BigEndian.Uint64(key[8:]),
@@ -38,10 +43,18 @@ func gcmAdd(x, y *GCMFieldElement) GCMFieldElement {
 func gcmDouble(x *GCMFieldElement) (double GCMFieldElement) {
     msbSet := x.High&1 == 1
 
+    // Because of the bit-ordering, doubling is actually a right shift.
     double.High = x.High >> 1
     double.High |= x.Low << 63
     double.Low = x.Low >> 1
 
+    // If the most-significant bit was set before shifting then it,
+    // conceptually, becomes a term of x^128. This is greater than the
+    // irreducible polynomial so the result has to be reduced. The
+    // irreducible polynomial is 1+x+x^2+x^7+x^128. We can subtract that to
+    // eliminate the term at x^128 which also means subtracting the other
+    // four terms. In characteristic 2 fields, subtraction == addition ==
+    // XOR.
     if msbSet {
         double.Low ^= 0xe100000000000000
     }
@@ -100,7 +113,7 @@ func gcmUpdateBlocksGo(g *GCM, y *GCMFieldElement, blocks []byte) {
 
 // update extends y with more polynomial terms from data. If data is not a
 // multiple of gcmBlockSize bytes long then the remainder is zero padded.
-func gcmUpdate(g *GCM, y *GCMFieldElement, data []byte) {
+func gcmUpdateGo(g *GCM, y *GCMFieldElement, data []byte) {
     fullBlocks := (len(data) >> 4) << 4
     gcmUpdateBlocksGo(g, y, data[:fullBlocks])
 
@@ -114,7 +127,7 @@ func gcmUpdate(g *GCM, y *GCMFieldElement, data []byte) {
 // deriveCounter computes the initial GCM counter state from the given nonce.
 // See NIST SP 800-38D, section 7.1. This assumes that counter is filled with
 // zeros on entry.
-func gcmDeriveCounter(g *GCM, counter *[GCMBlockSize]byte, nonce []byte) {
+func gcmDeriveCounterGo(g *GCM, counter *[GCMBlockSize]byte, nonce []byte) {
     // GCM has two modes of operation with respect to the initial counter
     // state: a "fast path" for 96-bit (12-byte) nonces, and a "slow path"
     // for nonces of other lengths. For a 96-bit nonce, the nonce, along
@@ -126,7 +139,7 @@ func gcmDeriveCounter(g *GCM, counter *[GCMBlockSize]byte, nonce []byte) {
         counter[GCMBlockSize-1] = 1
     } else {
         var y GCMFieldElement
-        gcmUpdate(g, &y, nonce)
+        gcmUpdateGo(g, &y, nonce)
         y.High ^= uint64(len(nonce)) * 8
         gcmMul(g, &y)
         binary.BigEndian.PutUint64(counter[:8], y.Low)
@@ -136,15 +149,15 @@ func gcmDeriveCounter(g *GCM, counter *[GCMBlockSize]byte, nonce []byte) {
 
 // auth calculates GHASH(ciphertext, additionalData), masks the result with
 // tagMask and writes the result to out.
-func gcmAuth(g *GCM, out, ciphertext, additionalData []byte, tagMask *[GCMTagSize]byte) {
+func gcmAuthGo(g *GCM, out, ciphertext, additionalData []byte, tagMask *[GCMTagSize]byte) {
     var y GCMFieldElement
-    gcmUpdate(g, &y, additionalData)
-    gcmUpdate(g, &y, ciphertext)
+    gcmUpdateGo(g, &y, additionalData)
+    gcmUpdateGo(g, &y, ciphertext)
 
-    gcmFinish(g, out, &y, len(ciphertext), len(additionalData), tagMask)
+    gcmFinishGo(g, out, &y, len(ciphertext), len(additionalData), tagMask)
 }
 
-func gcmFinish(g *GCM, out []byte, y *GCMFieldElement, ciphertextLen, additionalDataLen int, tagMask *[GCMTagSize]byte) {
+func gcmFinishGo(g *GCM, out []byte, y *GCMFieldElement, ciphertextLen, additionalDataLen int, tagMask *[GCMTagSize]byte) {
     y.Low ^= uint64(additionalDataLen) * 8
     y.High ^= uint64(ciphertextLen) * 8
 

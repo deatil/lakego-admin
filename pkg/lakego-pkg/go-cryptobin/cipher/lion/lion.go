@@ -23,7 +23,6 @@ type lionCipher struct {
 // NewCipher creates and returns a new cipher.Block.
 func NewCipher(hash hash.Hash, cipher Streamer, bs int, key []byte) (cipher.Block, error) {
     c := new(lionCipher)
-
     c.hash = hash
     c.cipher = cipher
     c.bs = mathMax(2 * hash.Size() + 1, bs)
@@ -83,7 +82,10 @@ func (this *lionCipher) encrypt(dst, src []byte) {
     buffer := make([]byte, leftSize)
 
     subtle.XORBytes(buffer, src[:leftSize], this.key1)
-    cip, _ := this.cipher(buffer)
+    cip, err := this.cipher(buffer)
+    if err != nil {
+        panic(err)
+    }
     cip.XORKeyStream(dst[leftSize:], src[leftSize:])
 
     this.hash.Reset()
@@ -92,7 +94,10 @@ func (this *lionCipher) encrypt(dst, src []byte) {
     subtle.XORBytes(dst[:leftSize], src[:leftSize], buffer)
 
     subtle.XORBytes(buffer, dst[:leftSize], this.key2)
-    cip, _ = this.cipher(buffer)
+    cip, err = this.cipher(buffer)
+    if err != nil {
+        panic(err)
+    }
     cip.XORKeyStream(dst[leftSize:], dst[leftSize:])
 }
 
@@ -102,7 +107,10 @@ func (this *lionCipher) decrypt(dst, src []byte) {
     buffer := make([]byte, leftSize)
 
     subtle.XORBytes(buffer, src[:leftSize], this.key2)
-    cip, _ := this.cipher(buffer)
+    cip, err := this.cipher(buffer)
+    if err != nil {
+        panic(err)
+    }
     cip.XORKeyStream(dst[leftSize:], src[leftSize:])
 
     this.hash.Reset()
@@ -111,7 +119,10 @@ func (this *lionCipher) decrypt(dst, src []byte) {
     subtle.XORBytes(dst[:leftSize], src[:leftSize], buffer)
 
     subtle.XORBytes(buffer, dst[:leftSize], this.key1)
-    cip, _ = this.cipher(buffer)
+    cip, err = this.cipher(buffer)
+    if err != nil {
+        panic(err)
+    }
     cip.XORKeyStream(dst[leftSize:], dst[leftSize:])
 }
 

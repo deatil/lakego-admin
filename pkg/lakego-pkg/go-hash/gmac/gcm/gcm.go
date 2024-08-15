@@ -27,6 +27,14 @@ type GCMFieldElement struct {
     Low, High uint64
 }
 
+var (
+    gcmInit          func(g *GCM, cipher Block)
+    gcmDeriveCounter func(g *GCM, counter *[GCMBlockSize]byte, nonce []byte)
+    gcmUpdate        func(g *GCM, y *GCMFieldElement, blocks []byte)
+    gcmAuth          func(g *GCM, out, ciphertext, additionalData []byte, tagMask *[GCMTagSize]byte)
+    gcmFinish        func(g *GCM, out []byte, y *GCMFieldElement, ciphertextLen, additionalDataLen int, tagMask *[GCMTagSize]byte)
+)
+
 // GCM represents a Galois Counter Mode with a specific key. See
 // https://csrc.nist.gov/groups/ST/toolkit/BCM/documents/proposedmodes/GCM/GCM-revised-spec.pdf
 type GCM struct {

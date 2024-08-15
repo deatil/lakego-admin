@@ -4,34 +4,11 @@ import (
     "crypto/cipher"
 )
 
-// cbcEncAble is an interface implemented by ciphers that have a specific
-// optimized implementation of CBC encryption, like crypto/aes.
-// NewCBCEncrypter will check for this interface and return the specific
-// BlockMode if found.
-type CBCEncAble interface {
-    NewCBCEncrypter(iv []byte) cipher.BlockMode
-}
-
-// cbcDecAble is an interface implemented by ciphers that have a specific
-// optimized implementation of CBC decryption, like crypto/aes.
-// NewCBCDecrypter will check for this interface and return the specific
-// BlockMode if found.
-type CBCDecAble interface {
-    NewCBCDecrypter(iv []byte) cipher.BlockMode
-}
-
 // gcmAble is an interface implemented by ciphers that have a specific optimized
 // implementation of GCM, like crypto/aes. NewGCM will check for this interface
 // and return the specific AEAD if found.
 type GCMAble interface {
     NewGCM(nonceSize, tagSize int) (cipher.AEAD, error)
-}
-
-// ctrAble is an interface implemented by ciphers that have a specific optimized
-// implementation of CTR, like crypto/aes. NewCTR will check for this interface
-// and return the specific Stream if found.
-type CTRAble interface {
-    NewCTR(iv []byte) cipher.Stream
 }
 
 type Block interface {

@@ -110,6 +110,20 @@ func (this *Config) Clean() {
     }
 }
 
+func (this *Config) Clone() *Config {
+    this.mu.RLock()
+    defer this.mu.RUnlock()
+
+    cfg := &Config{
+        data: make(map[string]any),
+    }
+    for name, value := range this.data {
+        cfg.data[name] = value
+    }
+
+    return cfg
+}
+
 func (this *Config) String() string {
     data, _ := json.Marshal(this.data)
 

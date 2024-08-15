@@ -73,6 +73,9 @@ func (this *cascadeCipher) encrypt(dst, src []byte) {
     bs1 := this.cipher1.BlockSize()
     bs2 := this.cipher2.BlockSize()
 
+    src = src[:this.bs]
+    dst = dst[:this.bs]
+
     for i := 0; i < len(src); i += bs1 {
         this.cipher1.Encrypt(dst[i:i+bs1], src[i:i+bs1])
     }
