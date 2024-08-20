@@ -16,14 +16,14 @@ import (
 // TTAK.KO-12.0001/R4
 
 var (
-    msgInvalidPublicKey            = "kcdsa: invalid public key"
-    msgInvalidGenerationParameters = "kcdsa: invalid generation parameters"
-    msgInvalidParameterSizes       = "kcdsa: invalid ParameterSizes"
-    msgErrorParametersNotSetUp     = "kcdsa: parameters not set up before generating key"
-    msgErrorShortXKEY              = "kcdsa: XKEY is too small."
-    msgInvalidInteger              = "kcdsa: invalid integer"
-    msgInvalidASN1                 = "kcdsa: invalid ASN.1"
-    msgInvalidSignerOpts           = "kcdsa: opts must be *kcdsa.SignerOpts"
+    msgInvalidPublicKey            = "go-cryptobin/kcdsa: invalid public key"
+    msgInvalidGenerationParameters = "go-cryptobin/kcdsa: invalid generation parameters"
+    msgInvalidParameterSizes       = "go-cryptobin/kcdsa: invalid ParameterSizes"
+    msgErrorParametersNotSetUp     = "go-cryptobin/kcdsa: parameters not set up before generating key"
+    msgErrorShortXKEY              = "go-cryptobin/kcdsa: XKEY is too small."
+    msgInvalidInteger              = "go-cryptobin/kcdsa: invalid integer"
+    msgInvalidASN1                 = "go-cryptobin/kcdsa: invalid ASN.1"
+    msgInvalidSignerOpts           = "go-cryptobin/kcdsa: opts must be *kcdsa.SignerOpts"
 )
 
 const NumMRTests = 64
@@ -136,7 +136,7 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
 func (priv *PrivateKey) Sign(rand io.Reader, digest []byte, opts crypto.SignerOpts) ([]byte, error) {
     opt, ok := opts.(*SignerOpts)
     if !ok {
-        panic(msgInvalidSignerOpts)
+        return nil, errors.New(msgInvalidSignerOpts)
     }
 
     return SignASN1(rand, priv, opt.GetHash(), digest)

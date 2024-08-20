@@ -13,7 +13,7 @@ import (
 
 var (
     // elgamal 公钥 oid
-    oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 1, 1}
+    oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
 )
 
 // elgamal Parameters

@@ -2,7 +2,6 @@ package eckcdsa
 
 import (
     "fmt"
-    "hash"
     "bytes"
     "bufio"
     "math/big"
@@ -76,7 +75,7 @@ var rnd = bufio.NewReaderSize(rand.Reader, 1<<15)
 
 type testCase struct {
     curve elliptic.Curve
-    hash  hash.Hash
+    hash  Hasher
 
     D  *big.Int
     Qx *big.Int
@@ -106,11 +105,11 @@ var (
     sect283r = nist.B283()
     sect283k = nist.K283()
 
-    hashSHA256     = sha256.New()
-    hashSHA256_224 = sha256.New224()
+    hashSHA256     = sha256.New
+    hashSHA256_224 = sha256.New224
 )
 
-func testVerify(t *testing.T, testCases []testCase, curve elliptic.Curve, hash hash.Hash) {
+func testVerify(t *testing.T, testCases []testCase, curve elliptic.Curve, hash Hasher) {
     for idx, tc := range testCases {
         key := PublicKey{
             Curve: curve,
@@ -141,7 +140,7 @@ func testSignVerify(t *testing.T, testCases []testCase) {
             D: tc.D,
         }
 
-        R, S, err = signUsingK(tc.K, &key, tc.hash, tc.M)
+        R, S, err = SignUsingK(tc.K, &key, tc.hash, tc.M)
         if err != nil {
             t.Errorf("%d: error signing: invalid K", idx)
             return
@@ -227,7 +226,7 @@ func Test_Signing_With_DegenerateKeys(t *testing.T) {
         }
 
         data := []byte("testing")
-        if _, err := Sign(rand.Reader, &priv, sha256.New(), data); err == nil {
+        if _, err := Sign(rand.Reader, &priv, sha256.New, data); err == nil {
             t.Errorf("#%d: unexpected success", i)
             return
         }
@@ -236,7 +235,7 @@ func Test_Signing_With_DegenerateKeys(t *testing.T) {
 
 func testKCDSA(
     curve elliptic.Curve,
-    h hash.Hash,
+    h Hasher,
 ) func(t *testing.T) {
     return func(t *testing.T) {
         priv, err := GenerateKey(curve, rand.Reader)
@@ -253,7 +252,7 @@ func testKCDSA(
 func testSignAndVerify(
     t *testing.T,
     priv *PrivateKey,
-    h hash.Hash,
+    h Hasher,
 ) {
     data := []byte("testing")
     r, s, err := SignToRS(rand.Reader, priv, h, data)
@@ -274,7 +273,7 @@ func testSignAndVerify(
     }
 }
 
-func testSignAndVerifyASN1(t *testing.T, priv *PrivateKey, h hash.Hash) {
+func testSignAndVerifyASN1(t *testing.T, priv *PrivateKey, h Hasher) {
     data := []byte("testing")
     sig, err := Sign(rand.Reader, priv, h, data)
     if err != nil {
