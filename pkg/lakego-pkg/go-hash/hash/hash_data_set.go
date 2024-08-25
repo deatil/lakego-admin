@@ -4,13 +4,6 @@ import (
     "sync"
 )
 
-// 构造函数
-func NewDataSet[N DataName, M any]() *DataSet[N, M] {
-    return &DataSet[N, M]{
-        data: make(map[N]func() M),
-    }
-}
-
 type DataName interface {
     ~uint | ~int | ~string
 }
@@ -27,6 +20,13 @@ type DataSet[N DataName, M any] struct {
 
     // 数据
     data map[N]func() M
+}
+
+// 构造函数
+func NewDataSet[N DataName, M any]() *DataSet[N, M] {
+    return &DataSet[N, M]{
+        data: make(map[N]func() M),
+    }
 }
 
 // 设置

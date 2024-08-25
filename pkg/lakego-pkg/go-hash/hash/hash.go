@@ -13,21 +13,6 @@ func init() {
     defaultHash = NewHash()
 }
 
-// 构造函数
-func NewHash() Hash {
-    return Hash{}
-}
-
-// 构造函数
-func New() Hash {
-    return NewHash()
-}
-
-// 构造函数
-func Hashing() Hash {
-    return NewHash()
-}
-
 /**
  * hash
  *
@@ -43,6 +28,21 @@ type Hash struct {
 
     // 错误
     Error error
+}
+
+// 构造函数
+func NewHash() Hash {
+    return Hash{}
+}
+
+// 构造函数
+func New() Hash {
+    return NewHash()
+}
+
+// 构造函数
+func Hashing() Hash {
+    return NewHash()
 }
 
 // Base64 编码
@@ -86,4 +86,9 @@ func (this Hash) FuncHash(f func([]byte) ([]byte, error)) Hash {
     this.data, this.Error = f(this.data)
 
     return this
+}
+
+// GetError
+func (this Hash) GetError() error {
+    return this.Error
 }

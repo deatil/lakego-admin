@@ -26,7 +26,7 @@ var (
 
 type Hasher = func() hash.Hash
 
-// SignerOpts contains options for creating and verifying EC-KCDSA signatures.
+// SignerOpts contains options for creating and verifying EC-GDSA signatures.
 type SignerOpts struct {
     Hash Hasher
 }

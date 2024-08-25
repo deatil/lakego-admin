@@ -10,28 +10,35 @@ import (
 type testHash struct {}
 
 // 编码
-func (this testHash) Sum(data []byte, in []byte, cfg ...map[string]any) ([]byte, error) {
-    h := md5.New()
-    h.Write(data)
-
-    if len(cfg) > 0 {
-        if cfg[0]["ok"] == nil {
-            return nil, fmt.Errorf("cfg key 'ok' not exists.")
-        }
-    } else {
+func (this testHash) Sum(data []byte, cfg ...any) ([]byte, error) {
+    if len(cfg) == 0 {
         return nil, fmt.Errorf("cfg not empty.")
     }
+    if cfg[0].(string) != "ok123" {
+        return nil, fmt.Errorf(`cfg not "ok123".`)
+    }
 
-    return h.Sum(in), nil
+    h := md5.New()
+    h.Write(data)
+    return h.Sum(nil), nil
 }
 
 // 解码
-func (this testHash) New(cfg ...map[string]any) (hash.Hash, error) {
+func (this testHash) New(cfg ...any) (hash.Hash, error) {
+    if len(cfg) == 0 {
+        return nil, fmt.Errorf("cfg not empty.")
+    }
+    if cfg[0].(string) != "ok321" {
+        return nil, fmt.Errorf(`cfg not "ok321".`)
+    }
+
     return md5.New(), nil
 }
 
+var TestHash = TypeMode.Generate()
+
 func init() {
-    UseHash.Add("TestHash", func() IHash {
+    UseHash.Add(TestHash, func() IHash {
         return testHash{}
     })
 }
@@ -50,9 +57,8 @@ func Test_UseHash(t *testing.T) {
     assertError := assertErrorT(t)
 
     for index, test := range useHashTests {
-        e := FromString(test.input).SumBy("TestHash", nil, map[string]any{
-            "ok": "123",
-        })
+        e := FromString(test.input).
+            SumBy(TestHash, "ok123")
 
         t.Run(fmt.Sprintf("UseHash_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "UseHash")
@@ -66,10 +72,19 @@ func Test_NewUseHash(t *testing.T) {
     assertError := assertErrorT(t)
 
     for index, test := range useHashTests {
-        e := Hashing().NewBy("TestHash").Write([]byte(test.input)).Sum(nil)
-
         t.Run(fmt.Sprintf("NewUseHash_test_%d", index), func(t *testing.T) {
-            assertError(e.Error, "NewUseHash")
+            e := Hashing().
+                NewBy(TestHash, "ok321")
+            err := e.Error
+
+            if err != nil {
+                assertError(err, "NewUseHash")
+                return
+            }
+
+            e = e.
+                Write([]byte(test.input)).
+                Sum(nil)
             assert(test.output, e.ToHexString(), "NewUseHash")
         })
     }

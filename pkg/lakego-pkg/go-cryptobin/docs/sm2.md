@@ -89,11 +89,16 @@ func main() {
     // 设置 UID 值
     // set uid data
     var uid []byte = []byte("")
+    
+    // 设置 hash
+    // set hash func
+    var hash = md5.New
 
     obj := sm2.New()
 
     // 私钥签名
     // private key sign data
+    // 比如: SM2withSM3 => ... SetSignHash("SM3").Sign() ...
     var priKeyPem string = ""
     sigBase64String = obj.
         FromString(data).
@@ -104,6 +109,8 @@ func main() {
         // FromPKCS8PrivateKey([]byte(priKeyPem)).
         // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
         // WithUID(uid).
+        // SetSignHash("SM3").
+        // WithSignHash(hash).
         Sign().
         // SignASN1().
         // SignBytes().
@@ -116,6 +123,8 @@ func main() {
         FromBase64String(sigBase64String).
         FromPublicKey([]byte(pubKeyPem)).
         // WithUID(uid).
+        // SetSignHash("SM3").
+        // WithSignHash(hash).
         Verify([]byte(data)).
         // VerifyASN1([]byte(data)).
         // VerifyBytes([]byte(data)).

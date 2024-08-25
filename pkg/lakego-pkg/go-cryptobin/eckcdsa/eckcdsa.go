@@ -264,6 +264,7 @@ func SignUsingK(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (r, s
     h.Reset()
     h.Write(x1Bytes)
     rBytes := h.Sum(nil)
+
     r = new(big.Int).SetBytes(rBytes)
     if Lh > w {
         r = r.Mod(r, two_8w)
@@ -281,14 +282,15 @@ func SignUsingK(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (r, s
     h.Write(cQ)
     h.Write(msg)
     vBytes := h.Sum(nil)
+
     v := new(big.Int).SetBytes(vBytes)
     if Lh > w {
         v = v.Mod(v, two_8w)
     }
 
     // 6: e ← (r ⊕ v) mod n
-    e := new(big.Int)
-    e.Mod(e.Xor(r, v), n)
+    e := new(big.Int).Xor(r, v)
+    e.Mod(e, n)
 
     // 7: t ← x(k - e) mod n
     t := new(big.Int)
@@ -350,15 +352,6 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
 
     t := s
 
-    var two_8w *big.Int
-    if Lh > w {
-        two_8w = big.NewInt(256)
-        two_8w.Exp(two_8w, big.NewInt(int64(w)), nil)
-    }
-
-    if r.Sign() <= 0 {
-        return false
-    }
     if Lh > w {
         if (r.BitLen()+7)/8 > w {
             return false
@@ -368,8 +361,14 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
             return false
         }
     }
-    if t.Sign() <= 0 || t.Cmp(n) >= 0 {
+    if t.Cmp(n) >= 0 {
         return false
+    }
+
+    var two_8w *big.Int
+    if Lh > w {
+        two_8w = big.NewInt(256)
+        two_8w.Exp(two_8w, big.NewInt(int64(w)), nil)
     }
 
     // 2: cQ ← MSB(xQ ‖ yQ, L)
@@ -384,6 +383,7 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
     h.Write(cQ)
     h.Write(data)
     vBytes := h.Sum(nil)
+
     v := new(big.Int).SetBytes(vBytes)
     if Lh > w {
         v.Mod(v, two_8w)
@@ -403,6 +403,7 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
     h.Reset()
     h.Write(x2Bytes)
     rBytes := h.Sum(nil)
+
     r2 := new(big.Int).SetBytes(rBytes)
     if Lh > w {
         r2.Mod(r2, two_8w)
