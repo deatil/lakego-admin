@@ -90,6 +90,7 @@ require (
 	github.com/deatil/go-encoding v1.0.2003 // indirect
 	github.com/deatil/go-event v1.0.1007 // indirect
 	github.com/deatil/go-events v1.0.1007 // indirect
+	github.com/deatil/go-container v1.0.1007 // indirect
 	github.com/deatil/go-exception v1.0.1002 // indirect
 	github.com/deatil/go-filesystem v1.0.6 // indirect
 	github.com/deatil/go-goch v1.0.1006 // indirect

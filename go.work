@@ -24,6 +24,7 @@ use (
 	./pkg/lakego-pkg/go-encoding
 	./pkg/lakego-pkg/go-event
 	./pkg/lakego-pkg/go-events
+	./pkg/lakego-pkg/go-container
 	./pkg/lakego-pkg/go-exception
 	./pkg/lakego-pkg/go-filesystem
 	./pkg/lakego-pkg/go-goch

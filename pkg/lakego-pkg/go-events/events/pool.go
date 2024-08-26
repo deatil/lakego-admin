@@ -68,7 +68,7 @@ func (this *Pool) CallFunc(fn any, args []any) any {
     return this.baseCall(val, args)
 }
 
-// listen struct
+// Call struct method
 func (this *Pool) CallStructMethod(in any, method string, args []any) any {
     var val reflect.Value
     if fnVal, ok := in.(reflect.Value); ok {
