@@ -38,7 +38,7 @@ func NewContainer() *Container {
     }
 }
 
-// Get
+// Get object from bind
 func (this *Container) Get(abstracts any) any {
     abstract := this.getAbstractName(abstracts)
 
@@ -49,7 +49,17 @@ func (this *Container) Get(abstracts any) any {
     panic(fmt.Sprintf("go-container: class not exists: %s", abstract))
 }
 
-// BindWithShared
+// Bind object
+func (this *Container) Bind(abstracts any, concrete any) *Container {
+    return this.BindWithShared(abstracts, concrete, false)
+}
+
+// Singleton object
+func (this *Container) Singleton(abstracts any, concrete any) *Container {
+    return this.BindWithShared(abstracts, concrete, true)
+}
+
+// BindWithShared object
 func (this *Container) BindWithShared(abstracts any, concrete any, shared bool) *Container {
     if isStruct(concrete) {
         abstract := this.getAbstractName(abstracts)
@@ -65,16 +75,6 @@ func (this *Container) BindWithShared(abstracts any, concrete any, shared bool) 
     }
 
     return this
-}
-
-// Bind
-func (this *Container) Bind(abstracts any, concrete any) *Container {
-    return this.BindWithShared(abstracts, concrete, false)
-}
-
-// Singleton
-func (this *Container) Singleton(abstracts any, concrete any) *Container {
-    return this.BindWithShared(abstracts, concrete, true)
 }
 
 // Resolving
@@ -193,6 +193,11 @@ func (this *Container) Make(abstracts any, vars []any) any {
     return object
 }
 
+// Invoke for get dep struct
+func (this *Container) Invoke(fn any) any {
+    return this.Call(fn, nil)
+}
+
 // Delete
 func (this *Container) Delete(abstracts any) {
     abstract := this.GetAlias(abstracts)
@@ -238,17 +243,17 @@ func (this *Container) Call(fn any, args []any) any {
     }
 }
 
-func (this *Container) call(event any, method string, params []any) any {
-    if eventMethod, ok := event.(reflect.Value); ok {
+func (this *Container) call(fn any, method string, params []any) any {
+    if eventMethod, ok := fn.(reflect.Value); ok {
         if eventMethod.Kind() == reflect.Func {
             return this.CallFunc(eventMethod, params)
         }
 
         return this.CallStructMethod(eventMethod, method, params)
-    } else if isFunc(event) {
-        return this.CallFunc(event, params)
+    } else if isFunc(fn) {
+        return this.CallFunc(fn, params)
     } else {
-        return this.CallStructMethod(event, method, params)
+        return this.CallStructMethod(fn, method, params)
     }
 }
 

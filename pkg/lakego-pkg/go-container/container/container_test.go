@@ -10,6 +10,12 @@ func (t *testBind) Data() string {
     return "testBind data"
 }
 
+type testBind22 struct {}
+
+func (t *testBind22) Data() string {
+    return "testBind22 data"
+}
+
 type testBind2 struct {
     data string
 }
@@ -181,6 +187,85 @@ func Test_CallFunc(t *testing.T) {
     res := di.Call(testFunc, []any{"test222"})
 
     eq(res, "in: test222 => bind data: testBind data", "Test_CallFunc")
+}
+
+func testFunc2(in *testBind22, bind *testBind) string {
+    return "in: " + in.Data() + " => bind data: " + bind.Data()
+}
+
+func Test_CallFunc2(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+
+    res := di.Call(testFunc2, []any{
+        &testBind22{},
+    })
+
+    eq(res, "in: testBind22 data => bind data: testBind data", "Test_CallFunc2")
+}
+
+func testFunc3(bind *testBind, in *testBind22) string {
+    return "in1: " + in.Data() + " => bind data: " + bind.Data()
+}
+
+func Test_CallFunc3(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+
+    res := di.Call(testFunc3, []any{
+        &testBind22{},
+    })
+
+    eq(res, "in1: testBind22 data => bind data: testBind data", "Test_CallFunc3")
+}
+
+func testFunc33(in *testBind2, bind *testBind2) string {
+    return "in33: " + in.Get() + " => bind data: " + bind.Get()
+}
+
+func Test_CallFunc33(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind2{}, func() *testBind2 {
+        bb := &testBind2{}
+        bb.Set("Binding")
+
+        return bb
+    })
+
+    bb2 := &testBind2{}
+    bb2.Set("args")
+    res := di.Call(testFunc33, []any{
+        bb2,
+    })
+
+    eq(res, "in33: args => bind data: Binding", "Test_CallFunc3")
+}
+
+func testInvokeFunc(bind *testBind) string {
+    return " => bind data: " + bind.Data()
+}
+
+func Test_Invoke(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+
+    res := di.Invoke(testInvokeFunc)
+
+    eq(res, " => bind data: testBind data", "Test_Invoke")
 }
 
 func Test_ResolvingAndBind(t *testing.T) {
