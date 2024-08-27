@@ -6,6 +6,7 @@ import (
     "reflect"
 )
 
+// Container Bind data
 type ContainerBind struct {
     // bind func
     Concrete any
@@ -31,16 +32,46 @@ type Container struct {
     invokeCallback map[string][]any
 }
 
+// NewContainer creates and returns a new *Container.
 func NewContainer() *Container {
-    return &Container{
+    container := &Container{
         bind:           make(map[string]ContainerBind),
         instances:      make(map[string]any),
         invokeCallback: make(map[string][]any),
     }
+
+    container.Singleton(container, func() *Container {
+        return container
+    })
+
+    return container
 }
 
+// New creates and returns a new *Container.
 func New() *Container {
     return NewContainer()
+}
+
+// Provide
+func (this *Container) Provide(fn any) error {
+    fnValue := reflect.ValueOf(fn)
+    fnType := fnValue.Type()
+
+    numOut := fnType.NumOut()
+    if numOut == 0 {
+        return errors.New("go-container: Provide set fail")
+    }
+
+    abstract := getTypeKey(fnType.Out(0))
+
+    this.Singleton(abstract, fn)
+
+    return nil
+}
+
+// Invoke for get dep struct
+func (this *Container) Invoke(fn any) any {
+    return this.Call(fn, nil)
 }
 
 // Get object from bind
@@ -55,16 +86,16 @@ func (this *Container) Get(abstracts any) any {
 }
 
 // Bind object
-func (this *Container) Bind(abstracts any, concrete any) *Container {
-    return this.BindWithShared(abstracts, concrete, false)
+func (this *Container) Bind(abstract any, concrete any) *Container {
+    return this.BindWithShared(abstract, concrete, false)
 }
 
 // Singleton object
-func (this *Container) Singleton(abstracts any, concrete any) *Container {
-    return this.BindWithShared(abstracts, concrete, true)
+func (this *Container) Singleton(abstract any, concrete any) *Container {
+    return this.BindWithShared(abstract, concrete, true)
 }
 
-// BindWithShared object
+// Bind object With Shared
 func (this *Container) BindWithShared(abstracts any, concrete any, shared bool) *Container {
     if isStruct(concrete) {
         abstract := this.getAbstractName(abstracts)
@@ -78,6 +109,19 @@ func (this *Container) BindWithShared(abstracts any, concrete any, shared bool) 
             Shared:   shared,
         }
     }
+
+    return this
+}
+
+// Instance
+func (this *Container) Instance(abstracts any, instance any) *Container {
+    abstract := this.GetAlias(abstracts)
+
+    this.bind[abstract] = ContainerBind{
+        Shared: true,
+    }
+
+    this.instances[abstract] = instance
 
     return this
 }
@@ -118,17 +162,25 @@ func (this *Container) GetAlias(abstracts any) string {
     return abstract
 }
 
-// Instance
-func (this *Container) Instance(abstracts any, instance any) *Container {
+// Make
+func (this *Container) Make(abstracts any, vars []any) any {
     abstract := this.GetAlias(abstracts)
 
-    this.bind[abstract] = ContainerBind{
-        Shared: true,
+    bind := this.bind[abstract]
+
+    if instance, ok := this.instances[abstract]; ok && bind.Shared {
+        return instance
     }
 
-    this.instances[abstract] = instance
+    object := this.Call(bind.Concrete, vars)
 
-    return this
+    if bind.Shared {
+        this.instances[abstract] = object
+    }
+
+    this.invokeAfter(abstract, object)
+
+    return object
 }
 
 // Bound
@@ -175,49 +227,6 @@ func (this *Container) IsShared(abstracts any) bool {
     }
 
     return false
-}
-
-// Make
-func (this *Container) Make(abstracts any, vars []any) any {
-    abstract := this.GetAlias(abstracts)
-
-    bind := this.bind[abstract]
-
-    if instance, ok := this.instances[abstract]; ok && bind.Shared {
-        return instance
-    }
-
-    object := this.Call(bind.Concrete, vars)
-
-    if bind.Shared {
-        this.instances[abstract] = object
-    }
-
-    this.invokeAfter(abstract, object)
-
-    return object
-}
-
-// Provide
-func (this *Container) Provide(fn any) error {
-    fnValue := reflect.ValueOf(fn)
-    fnType := fnValue.Type()
-
-    numOut := fnType.NumOut()
-    if numOut == 0 {
-        return errors.New("go-container: Provide set fail")
-    }
-
-    abstract := getTypeKey(fnType.Out(0))
-
-    this.Bind(abstract, fn)
-
-    return nil
-}
-
-// Invoke for get dep struct
-func (this *Container) Invoke(fn any) any {
-    return this.Call(fn, nil)
 }
 
 // Delete
@@ -437,8 +446,9 @@ func (this *Container) getImplementsBind(typ reflect.Type) (string, bool) {
 
         if concreteType.NumOut() > 0 {
             value := concreteType.Out(0)
+            valueName := getTypeKey(value)
 
-            if ifImplements(value, typ) {
+            if ifImplements(value, typ) && valueName == name {
                 return name, true
             }
         }

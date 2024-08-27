@@ -20,6 +20,12 @@ func (t *testBind22) Data() string {
     return "testBind22 data"
 }
 
+type testBind33 struct {}
+
+func (t testBind33) Data() string {
+    return "testBind33 data"
+}
+
 type testBind2 struct {
     data string
 }
@@ -64,6 +70,23 @@ func Test_BindStruct(t *testing.T) {
     }
 
     eq(tb2.Data(), "testBind data", "Test_BindStruct")
+}
+
+func Test_BindStruct2(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := DI()
+    di.Bind(testBind33{}, func() testBind33 {
+        return testBind33{}
+    })
+    tb := di.Get(testBind33{})
+
+    tb2, ok := tb.(testBind33)
+    if !ok {
+        t.Error("testBind33 get fail")
+    }
+
+    eq(tb2.Data(), "testBind33 data", "Test_BindStruct2")
 }
 
 func Test_BindStructPtr(t *testing.T) {
@@ -428,6 +451,16 @@ func Test_ifUseInterface(t *testing.T) {
     eq(res, true, "Test_ifUseInterface")
 }
 
+func Test_ifUseInterface2(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    tt := testBind33{}
+
+    res := ifInterface[ItestBind](tt)
+
+    eq(res, true, "Test_ifUseInterface2")
+}
+
 func Test_Provide2(t *testing.T) {
     eq := assertDeepEqualT(t)
 
@@ -451,3 +484,73 @@ func Test_Provide3(t *testing.T) {
         eq(tb.Data(), "testBind data", "Test_Provide3")
     })
 }
+
+func Test_Provide33(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Provide(func() testBind33 {
+        return testBind33{}
+    })
+    di.Invoke(func(tb ItestBind) {
+        eq(tb.Data(), "testBind33 data", "Test_Provide33")
+    })
+}
+
+func Test_UseContainer(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Provide(func() testBind33 {
+        return testBind33{}
+    })
+    di.Bind("testBind", func() *testBind {
+        return &testBind{}
+    })
+    di.Invoke(func(con *Container, tb ItestBind) {
+        tb1 := con.Get("testBind")
+        tb2, ok := tb1.(*testBind)
+        if !ok {
+            t.Error("testBind get fail")
+        }
+
+        eq(tb2.Data(), "testBind data", "Test_UseContainer")
+
+        eq(tb.Data(), "testBind33 data", "Test_UseContainer")
+    })
+}
+
+func Test_CheckLOC(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind2{}, func() *testBind2 {
+        bb := &testBind2{}
+        bb.Set("Struct Binding")
+
+        return bb
+    })
+    di.Bind("testBind2", func() *testBind2 {
+        bb := &testBind2{}
+        bb.Set("UseName")
+
+        return bb
+    })
+    di.Bind("testBind3", func() *testBind2 {
+        bb := &testBind2{}
+        bb.Set("UseName3")
+
+        return bb
+    })
+
+    di.Invoke(func(con *Container, tb *testBind2) {
+        tb1 := con.Get("testBind2")
+        tb2, ok := tb1.(*testBind2)
+        if !ok {
+            t.Error("testBind2 get fail")
+        }
+
+        eq(tb2.Get(), "UseName", "Test_CheckLOC")
+
+        eq(tb.Get(), "Struct Binding", "Test_CheckLOC")
+    })}
