@@ -2,6 +2,7 @@ package container
 
 import (
     "fmt"
+    "errors"
     "reflect"
 )
 
@@ -38,6 +39,10 @@ func NewContainer() *Container {
     }
 }
 
+func New() *Container {
+    return NewContainer()
+}
+
 // Get object from bind
 func (this *Container) Get(abstracts any) any {
     abstract := this.getAbstractName(abstracts)
@@ -46,7 +51,7 @@ func (this *Container) Get(abstracts any) any {
         return this.Make(abstract, nil)
     }
 
-    panic(fmt.Sprintf("go-container: class not exists: %s", abstract))
+    panic(fmt.Sprintf("go-container: bind not exists: %s", abstract))
 }
 
 // Bind object
@@ -193,6 +198,23 @@ func (this *Container) Make(abstracts any, vars []any) any {
     return object
 }
 
+// Provide
+func (this *Container) Provide(fn any) error {
+    fnValue := reflect.ValueOf(fn)
+    fnType := fnValue.Type()
+
+    numOut := fnType.NumOut()
+    if numOut == 0 {
+        return errors.New("go-container: Provide set fail")
+    }
+
+    abstract := getTypeKey(fnType.Out(0))
+
+    this.Bind(abstract, fn)
+
+    return nil
+}
+
 // Invoke for get dep struct
 func (this *Container) Invoke(fn any) any {
     return this.Call(fn, nil)
@@ -335,28 +357,39 @@ func (this *Container) bindParams(fnType reflect.Type, args []any) []reflect.Val
     } else {
         j := 0
         for i := 0; i < numIn; i++ {
-            if isStruct(fnType.In(i)) {
-                fnType := getTypeKey(fnType.In(i))
+            fnTypeIn := fnType.In(i)
+            fnTypeKind := fnTypeIn.Kind()
+            fnTypeName := getTypeKey(fnTypeIn)
 
+            if fnTypeKind == reflect.Pointer || fnTypeKind == reflect.Struct {
                 if j < len(args) {
                     argsType := getStructName(args[j])
 
                     // 传入参数和函数参数类型一致时
-                    if fnType == argsType {
+                    if fnTypeName == argsType {
                         newArgs = append(newArgs, args[j])
 
                         j++
                     } else {
-                        if this.Has(fnType) {
-                            newArgs = append(newArgs, this.Make(fnType, nil))
+                        if this.Has(fnTypeName) {
+                            newArgs = append(newArgs, this.Make(fnTypeName, nil))
                         }
                     }
                 } else {
-                    if this.Has(fnType) {
-                        newArgs = append(newArgs, this.Make(fnType, nil))
+                    if this.Has(fnTypeName) {
+                        newArgs = append(newArgs, this.Make(fnTypeName, nil))
                     }
                 }
 
+            } else if fnTypeKind == reflect.Interface {
+                // when has set interface as key
+                if this.Has(fnTypeName) {
+                    newArgs = append(newArgs, this.Make(fnTypeName, nil))
+                } else {
+                    if name, ok := this.getImplementsBind(fnTypeIn); ok {
+                        newArgs = append(newArgs, this.Make(name, nil))
+                    }
+                }
             } else {
                 newArgs = append(newArgs, args[j])
 
@@ -397,3 +430,20 @@ func (this *Container) convertTo(typ reflect.Type, src any) reflect.Value {
 
     return fieldValue
 }
+
+func (this *Container) getImplementsBind(typ reflect.Type) (string, bool) {
+    for name, bind := range this.bind {
+        concreteType := reflect.ValueOf(bind.Concrete).Type()
+
+        if concreteType.NumOut() > 0 {
+            value := concreteType.Out(0)
+
+            if ifImplements(value, typ) {
+                return name, true
+            }
+        }
+    }
+
+    return "", false
+}
+

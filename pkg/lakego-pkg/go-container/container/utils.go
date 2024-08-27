@@ -25,6 +25,33 @@ func isFunc(in any) bool {
     return false
 }
 
+// is Interface
+func isInterface(in any) bool {
+    val := reflect.ValueOf(in)
+    if val.Kind() == reflect.Interface {
+        return true
+    }
+
+    return false
+}
+
+func ifInterface[T any](in any) bool {
+    typ := reflect.TypeOf(in)
+    if typ.Implements(reflect.TypeOf((*T)(nil)).Elem()) {
+        return true
+    }
+
+    return false
+}
+
+func ifImplements(typ reflect.Type, itype reflect.Type) bool {
+    if typ.Implements(itype) {
+        return true
+    }
+
+    return false
+}
+
 // 获取方法名称
 // get Func Name
 func getFuncName(data any) string {
