@@ -128,6 +128,28 @@ func Test_SignVerify2(t *testing.T) {
 
 }
 
+func Test_SignVerify3(t *testing.T) {
+    priv, err := GenerateKey(rand.Reader, elliptic.P224())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    data := []byte("test-data test-data test-data test-data test-data")
+
+    sig, err := SignBytes(rand.Reader, priv, sha256.New, data)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    res := VerifyBytes(pub, sha256.New, data, sig)
+    if !res {
+        t.Error("Verify fail")
+    }
+
+}
+
 func Test_Marshal(t *testing.T) {
     private, err := GenerateKey(rand.Reader, elliptic.P224())
     if err != nil {

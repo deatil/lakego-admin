@@ -233,12 +233,34 @@ func Test_Signing_With_DegenerateKeys(t *testing.T) {
     }
 }
 
+func Test_SignBytes(t *testing.T) {
+    priv, err := GenerateKey(rand.Reader, p256)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    data := []byte("test-data test-data test-data test-data test-data")
+
+    sig, err := SignBytes(rand.Reader, priv, sha256.New, data)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    res := VerifyBytes(pub, sha256.New, data, sig)
+    if !res {
+        t.Error("Verify fail")
+    }
+
+}
+
 func testKCDSA(
     curve elliptic.Curve,
     h Hasher,
 ) func(t *testing.T) {
     return func(t *testing.T) {
-        priv, err := GenerateKey(curve, rand.Reader)
+        priv, err := GenerateKey(rand.Reader, curve)
         if err != nil {
             t.Errorf("error generating key: %s", err)
             return
@@ -438,7 +460,7 @@ func Test_PKCS8PrivateKey(t *testing.T) {
 
 func test_PKCS8PrivateKey(t *testing.T, curue elliptic.Curve) {
     t.Run(fmt.Sprintf("%s", curue), func(t *testing.T) {
-        priv, err := GenerateKey(curue, rand.Reader)
+        priv, err := GenerateKey(rand.Reader, curue)
         if err != nil {
             t.Fatal(err)
         }
@@ -488,7 +510,7 @@ func Test_PKCS1PrivateKey(t *testing.T) {
 
 func test_PKCS1PrivateKey(t *testing.T, curue elliptic.Curve) {
     t.Run(fmt.Sprintf("%s", curue), func(t *testing.T) {
-        priv, err := GenerateKey(curue, rand.Reader)
+        priv, err := GenerateKey(rand.Reader, curue)
         if err != nil {
             t.Fatal(err)
         }

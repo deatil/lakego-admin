@@ -174,6 +174,43 @@ func parseSignature(sig []byte) (r, s *big.Int, err error) {
     return
 }
 
+// Sign data returns the Bytes encoded signature.
+func SignBytes(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (sig []byte, err error) {
+    r, s, err := SignToRS(rand, priv, h, data)
+    if err != nil {
+        return nil, err
+    }
+
+    byteLen := (priv.Curve.Params().BitSize + 7) / 8
+
+    sig = make([]byte, 2 * byteLen)
+
+    r.FillBytes(sig[:byteLen])
+    s.FillBytes(sig[byteLen:])
+
+    return
+}
+
+// Verify verifies the Bytes encoded signature
+func VerifyBytes(pub *PublicKey, h Hasher, data, sig []byte) bool {
+    byteLen := (pub.Curve.Params().BitSize + 7) / 8
+
+    if len(sig) != 2*byteLen {
+        return false
+    }
+
+    r := new(big.Int).SetBytes(sig[:byteLen])
+    s := new(big.Int).SetBytes(sig[byteLen:])
+
+    return VerifyWithRS(
+        pub,
+        h,
+        data,
+        r,
+        s,
+    )
+}
+
 /**
  *| IUF - EC-GDSA signature
  *|
@@ -274,6 +311,7 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
         !pub.Curve.IsOnCurve(pub.X, pub.Y) {
         return false
     }
+
     if r.Sign() <= 0 || s.Sign() <= 0 {
         return false
     }

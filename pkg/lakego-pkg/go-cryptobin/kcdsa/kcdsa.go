@@ -336,19 +336,19 @@ func Sign(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (r, s *big.In
     return
 }
 
-func Verify(pub *PublicKey, h Hasher, data []byte, R, S *big.Int) bool {
+func Verify(pub *PublicKey, h Hasher, data []byte, r, s *big.Int) bool {
     if pub.P.Sign() <= 0 {
         return false
     }
 
-    if R.Sign() < 1 {
+    if r.Sign() < 1 {
         return false
     }
-    if S.Sign() < 1 || S.Cmp(pub.Q) >= 0 {
+    if s.Sign() < 1 || s.Cmp(pub.Q) >= 0 {
         return false
     }
 
-    return verify(pub, h, data, R, S)
+    return verify(pub, h, data, r, s)
 }
 
 // Sign data returns the ASN.1 encoded signature.

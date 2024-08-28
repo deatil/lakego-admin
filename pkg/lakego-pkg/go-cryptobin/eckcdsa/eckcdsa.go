@@ -103,8 +103,8 @@ func (priv *PrivateKey) Sign(rand io.Reader, digest []byte, opts crypto.SignerOp
 }
 
 // Generate the paramters
-func GenerateKey(c elliptic.Curve, randReader io.Reader) (*PrivateKey, error) {
-    d, err := randFieldElement(randReader, c)
+func GenerateKey(random io.Reader, c elliptic.Curve) (*PrivateKey, error) {
+    d, err := randFieldElement(random, c)
     if err != nil {
         return nil, err
     }
@@ -174,6 +174,47 @@ func parseSignature(sig []byte) (r, s *big.Int, err error) {
     return
 }
 
+// Sign data returns the Bytes encoded signature.
+func SignBytes(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (sig []byte, err error) {
+    r, s, err := SignToRS(rand, priv, h, data)
+    if err != nil {
+        return nil, err
+    }
+
+    hsize := h().Size()
+    bitSize := priv.Curve.Params().BitSize
+    sigRLen := sigRLen(hsize, bitSize)
+
+    sig = make([]byte, sigLen(hsize, bitSize))
+
+    r.FillBytes(sig[:sigRLen])
+    s.FillBytes(sig[sigRLen:])
+
+    return
+}
+
+// Verify verifies the Bytes encoded signature
+func VerifyBytes(pub *PublicKey, h Hasher, data, sig []byte) bool {
+    hsize := h().Size()
+    bitSize := pub.Curve.Params().BitSize
+    sigRLen := sigRLen(hsize, bitSize)
+
+    if len(sig) != sigLen(hsize, bitSize) {
+        return false
+    }
+
+    r := new(big.Int).SetBytes(sig[:sigRLen])
+    s := new(big.Int).SetBytes(sig[sigRLen:])
+
+    return VerifyWithRS(
+        pub,
+        h,
+        data,
+        r,
+        s,
+    )
+}
+
 /**
  *| IUF - EC-KCDSA signature
  *|
@@ -193,11 +234,11 @@ func parseSignature(sig []byte) (r, s *big.Int, err error) {
  *|   F 10. return (r,s)
  *
  */
-func SignToRS(rand io.Reader, priv *PrivateKey, h Hasher, msg []byte) (r, s *big.Int, err error) {
+func SignToRS(random io.Reader, priv *PrivateKey, h Hasher, msg []byte) (r, s *big.Int, err error) {
     var k *big.Int
 
     for {
-        k, err = randFieldElement(rand, priv.Curve)
+        k, err = randFieldElement(random, priv.Curve)
         if err != nil {
             return
         }
@@ -453,4 +494,28 @@ func fermatInverse(a, N *big.Int) *big.Int {
 // through timing side-channels.
 func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
+}
+
+func sigRLen(hsize, n int) int {
+    return mathMin(hsize, byteceil(n))
+}
+
+func sigLLen(n int) int {
+    return byteceil(n)
+}
+
+func sigLen(hsize, n int) int {
+    return sigRLen(hsize, n) + sigLLen(n)
+}
+
+func mathMin(a, b int) int {
+    if a < b {
+        return a
+    }
+
+    return b
+}
+
+func byteceil(size int) int {
+    return (size + 7) / 8
 }
