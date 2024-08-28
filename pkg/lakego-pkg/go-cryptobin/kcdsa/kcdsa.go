@@ -7,7 +7,6 @@ import (
     "crypto"
     "math/big"
     "crypto/subtle"
-    encoding_asn1 "encoding/asn1"
 
     "golang.org/x/crypto/cryptobyte"
     "golang.org/x/crypto/cryptobyte/asn1"
@@ -385,17 +384,9 @@ P-KCDSASignatureValue ::= SEQUENCE {
     s INTEGER }
 */
 func encodeSignature(r, s *big.Int) ([]byte, error) {
-    var rInt cryptobyte.Builder
-    rInt.AddASN1BigInt(r)
-
-    rBytes, err := rInt.Bytes()
-    if err != nil {
-        return nil, err
-    }
-
     var b cryptobyte.Builder
     b.AddASN1(asn1.SEQUENCE, func(b *cryptobyte.Builder) {
-        b.AddASN1BitString(rBytes)
+        b.AddASN1BigInt(r)
         b.AddASN1BigInt(s)
     })
 
@@ -406,26 +397,16 @@ func parseSignature(sig []byte) (r, s *big.Int, err error) {
     var inner cryptobyte.String
     input := cryptobyte.String(sig)
 
-    var rr encoding_asn1.BitString
-    var ss big.Int
+    r = new(big.Int)
+    s = new(big.Int)
 
     if !input.ReadASN1(&inner, asn1.SEQUENCE) ||
         !input.Empty() ||
-        !inner.ReadASN1BitString(&rr) ||
-        !inner.ReadASN1Integer(&ss) ||
+        !inner.ReadASN1Integer(r) ||
+        !inner.ReadASN1Integer(s) ||
         !inner.Empty() {
         return nil, nil, errors.New(msgInvalidASN1)
     }
-
-    rDer := cryptobyte.String(rr.RightAlign())
-
-    r = new(big.Int)
-    if !rDer.ReadASN1Integer(r) {
-        err = errors.New(msgInvalidASN1)
-        return
-    }
-
-    s = &ss
 
     return
 }

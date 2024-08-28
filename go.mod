@@ -8,6 +8,7 @@ replace (
 	github.com/deatil/go-array => ./pkg/lakego-pkg/go-array
 	github.com/deatil/go-cmd => ./pkg/lakego-pkg/go-cmd
 	github.com/deatil/go-collection => ./pkg/lakego-pkg/go-collection
+	github.com/deatil/go-container => ./pkg/lakego-pkg/go-container
 	github.com/deatil/go-crc => ./pkg/lakego-pkg/go-crc
 	github.com/deatil/go-crc16 => ./pkg/lakego-pkg/go-crc16
 	github.com/deatil/go-crc32 => ./pkg/lakego-pkg/go-crc32

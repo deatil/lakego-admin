@@ -147,7 +147,7 @@ func (this *Container) Resolving(abstracts string, callback any) {
     this.invokeCallback[abstract] = append(this.invokeCallback[abstract], callback)
 }
 
-// GetAlias
+// Get Alias
 func (this *Container) GetAlias(abstracts any) string {
     abstract := this.getAbstractName(abstracts)
 
