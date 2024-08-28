@@ -68,6 +68,39 @@ func Test_Interface(t *testing.T) {
     var _ crypto.SignerOpts = (*SignerOpts)(nil)
 }
 
+func Test_NewPrivateKey(t *testing.T) {
+    p224 := elliptic.P224()
+
+    priv, err := GenerateKey(rand.Reader, p224)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    privBytes := PrivateKeyTo(priv)
+    priv2, err := NewPrivateKey(p224, privBytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !priv2.Equal(priv) {
+        t.Error("NewPrivateKey Equal error")
+    }
+
+    // ======
+
+    pub := &priv.PublicKey
+
+    pubBytes := PublicKeyTo(pub)
+    pub2, err := NewPublicKey(p224, pubBytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    if !pub2.Equal(pub) {
+        t.Error("NewPublicKey Equal error")
+    }
+}
+
 func Test_SignerInterface(t *testing.T) {
     priv, err := GenerateKey(rand.Reader, elliptic.P224())
     if err != nil {
@@ -128,8 +161,17 @@ func Test_SignVerify2(t *testing.T) {
 
 }
 
-func Test_SignVerify3(t *testing.T) {
-    priv, err := GenerateKey(rand.Reader, elliptic.P224())
+func Test_SignBytes(t *testing.T) {
+    t.Run("P224 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P224(), sha256.New)
+    })
+    t.Run("P256 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P256(), sha256.New)
+    })
+}
+
+func test_SignBytes(t *testing.T, c elliptic.Curve, h Hasher) {
+    priv, err := GenerateKey(rand.Reader, c)
     if err != nil {
         t.Fatal(err)
     }
@@ -138,12 +180,12 @@ func Test_SignVerify3(t *testing.T) {
 
     data := []byte("test-data test-data test-data test-data test-data")
 
-    sig, err := SignBytes(rand.Reader, priv, sha256.New, data)
+    sig, err := SignBytes(rand.Reader, priv, h, data)
     if err != nil {
         t.Fatal(err)
     }
 
-    res := VerifyBytes(pub, sha256.New, data, sig)
+    res := VerifyBytes(pub, h, data, sig)
     if !res {
         t.Error("Verify fail")
     }

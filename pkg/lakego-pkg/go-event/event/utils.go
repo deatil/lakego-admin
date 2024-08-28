@@ -34,10 +34,10 @@ func getFuncName(data any) string {
 
 // 获取类型唯一字符串
 // get TypeKey
-func getTypeKey(p reflect.Type) (key string) {
-	if p.Kind() == reflect.Pointer {
+func getTypeName(p reflect.Type) (key string) {
+	for p.Kind() == reflect.Pointer {
 		p = p.Elem()
-		key = "*"
+		key += "*"
 	}
 
 	pkgPath := p.PkgPath()
@@ -54,7 +54,7 @@ func getTypeKey(p reflect.Type) (key string) {
 func getStructName(data any) string {
 	p := reflect.TypeOf(data)
 
-	return getTypeKey(p)
+	return getTypeName(p)
 }
 
 // 格式化名称

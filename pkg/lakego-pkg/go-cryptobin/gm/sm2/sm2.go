@@ -410,7 +410,8 @@ func NewPrivateKey(d []byte) (*PrivateKey, error) {
 // 输出私钥明文
 // output PrivateKey data
 func PrivateKeyTo(key *PrivateKey) []byte {
-    return key.D.Bytes()
+    privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
+    return key.D.FillBytes(privateKey)
 }
 
 // 根据公钥明文初始化公钥

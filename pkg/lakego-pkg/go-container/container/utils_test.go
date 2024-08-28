@@ -39,3 +39,22 @@ func Test_ConvertToTypes(t *testing.T) {
 
     eq(newData, checkData, "ConvertToTypes")
 }
+
+func Test_getTypeName(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    t1 := &testBind{}
+
+    res := getStructName(t1)
+    eq(res, "*github.com/deatil/go-container/container.testBind", "Test_getTypeName 1")
+
+    t2 := &t1
+
+    res = getStructName(t2)
+    eq(res, "**github.com/deatil/go-container/container.testBind", "Test_getTypeName 1")
+
+    t3 := &t2
+
+    res = getStructName(t3)
+    eq(res, "***github.com/deatil/go-container/container.testBind", "Test_getTypeName 1")
+}

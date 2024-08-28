@@ -324,14 +324,14 @@ func (this *Events) subscribeListen(fn reflect.Value, e *Event) any {
 
 	switch numIn {
 	case 1:
-		if getTypeKey(fnType.In(0)) == getStructName(&Event{}) {
+		if getTypeName(fnType.In(0)) == getStructName(&Event{}) {
 			params = append(params, reflect.ValueOf(e))
 		} else {
 			dataValue := this.convertTo(fnType.In(0), e.Object)
 			params = append(params, dataValue)
 		}
 	case 2:
-		if getTypeKey(fnType.In(0)) == getStructName(&Event{}) {
+		if getTypeName(fnType.In(0)) == getStructName(&Event{}) {
 			params = append(params, reflect.ValueOf(e))
 		} else {
 			dataValue := this.convertTo(fnType.In(0), e.Object)
@@ -456,7 +456,7 @@ func (this *Events) formatEventHandler(handler any) *EventListener {
 // 转换类型
 // src convert type to new typ
 func (this *Events) convertTo(typ reflect.Type, src any) reflect.Value {
-	dataKey := getTypeKey(typ)
+	dataKey := getTypeName(typ)
 
 	fieldType := reflect.TypeOf(src)
 	if !fieldType.ConvertibleTo(typ) {
@@ -465,7 +465,7 @@ func (this *Events) convertTo(typ reflect.Type, src any) reflect.Value {
 
 	fieldValue := reflect.ValueOf(src)
 
-	if dataKey != getTypeKey(fieldType) {
+	if dataKey != getTypeName(fieldType) {
 		// 转换类型
 		// Convert type
 		fieldValue = fieldValue.Convert(typ)

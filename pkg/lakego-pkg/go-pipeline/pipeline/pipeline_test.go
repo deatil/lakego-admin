@@ -24,6 +24,11 @@ func assertEqualT(t *testing.T) func(any, any, string) {
 
 // ===========
 
+func Test_Interface(t *testing.T) {
+    var _ IPipeline = (*Pipeline)(nil)
+    var _ IHub      = (*Hub)(nil)
+}
+
 // 管道测试
 type PipelineEx struct {}
 

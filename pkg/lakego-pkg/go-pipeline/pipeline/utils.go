@@ -36,10 +36,10 @@ func ArrayReverse(s []any) []any {
 
 // 获取类型唯一字符串
 // get TypeKey
-func getTypeKey(p reflect.Type) (key string) {
-    if p.Kind() == reflect.Pointer {
+func getTypeName(p reflect.Type) (key string) {
+    for p.Kind() == reflect.Pointer {
         p = p.Elem()
-        key = "*"
+        key += "*"
     }
 
     pkgPath := p.PkgPath()
@@ -53,7 +53,7 @@ func getTypeKey(p reflect.Type) (key string) {
 
 // src convert type to new typ
 func convertTo(typ reflect.Type, src any) reflect.Value {
-    dataKey := getTypeKey(typ)
+    dataKey := getTypeName(typ)
 
     fieldType := reflect.TypeOf(src)
     if !fieldType.ConvertibleTo(typ) {
@@ -62,7 +62,7 @@ func convertTo(typ reflect.Type, src any) reflect.Value {
 
     fieldValue := reflect.ValueOf(src)
 
-    if dataKey != getTypeKey(fieldType) {
+    if dataKey != getTypeName(fieldType) {
         fieldValue = fieldValue.Convert(typ)
     }
 

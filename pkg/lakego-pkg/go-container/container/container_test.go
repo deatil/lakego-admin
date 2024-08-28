@@ -554,3 +554,4 @@ func Test_CheckLOC(t *testing.T) {
 
         eq(tb.Get(), "Struct Binding", "Test_CheckLOC")
     })}
+

@@ -234,7 +234,16 @@ func Test_Signing_With_DegenerateKeys(t *testing.T) {
 }
 
 func Test_SignBytes(t *testing.T) {
-    priv, err := GenerateKey(rand.Reader, p256)
+    t.Run("P224 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P224(), sha256.New)
+    })
+    t.Run("P256 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P256(), sha256.New)
+    })
+}
+
+func test_SignBytes(t *testing.T, c elliptic.Curve, h Hasher) {
+    priv, err := GenerateKey(rand.Reader, c)
     if err != nil {
         t.Fatal(err)
     }
@@ -243,12 +252,12 @@ func Test_SignBytes(t *testing.T) {
 
     data := []byte("test-data test-data test-data test-data test-data")
 
-    sig, err := SignBytes(rand.Reader, priv, sha256.New, data)
+    sig, err := SignBytes(rand.Reader, priv, h, data)
     if err != nil {
         t.Fatal(err)
     }
 
-    res := VerifyBytes(pub, sha256.New, data, sig)
+    res := VerifyBytes(pub, h, data, sig)
     if !res {
         t.Error("Verify fail")
     }

@@ -62,7 +62,7 @@ func (this *Container) Provide(fn any) error {
         return errors.New("go-container: Provide set fail")
     }
 
-    abstract := getTypeKey(fnType.Out(0))
+    abstract := getTypeName(fnType.Out(0))
 
     this.Singleton(abstract, fn)
 
@@ -76,7 +76,7 @@ func (this *Container) Invoke(fn any) any {
 
 // Get object from bind
 func (this *Container) Get(abstracts any) any {
-    abstract := this.getAbstractName(abstracts)
+    abstract := formatName(abstracts)
 
     if this.Has(abstract) {
         return this.Make(abstract, nil)
@@ -98,7 +98,7 @@ func (this *Container) Singleton(abstract any, concrete any) *Container {
 // Bind object With Shared
 func (this *Container) BindWithShared(abstracts any, concrete any, shared bool) *Container {
     if isStruct(concrete) {
-        abstract := this.getAbstractName(abstracts)
+        abstract := formatName(abstracts)
 
         this.Instance(abstract, concrete)
     } else {
@@ -128,7 +128,7 @@ func (this *Container) Instance(abstracts any, instance any) *Container {
 
 // Resolving
 func (this *Container) Resolving(abstracts string, callback any) {
-    abstract := this.getAbstractName(abstracts)
+    abstract := formatName(abstracts)
 
     if abstract == "*" {
         if _, ok := this.invokeCallback["*"]; !ok {
@@ -149,7 +149,7 @@ func (this *Container) Resolving(abstracts string, callback any) {
 
 // Get Alias
 func (this *Container) GetAlias(abstracts any) string {
-    abstract := this.getAbstractName(abstracts)
+    abstract := formatName(abstracts)
 
     if _, ok := this.bind[abstract]; ok {
         bind := this.bind[abstract]
@@ -185,7 +185,7 @@ func (this *Container) Make(abstracts any, vars []any) any {
 
 // Bound
 func (this *Container) Bound(abstracts any) bool {
-    abstract := this.getAbstractName(abstracts)
+    abstract := formatName(abstracts)
 
     if _, ok := this.bind[abstract]; ok {
         return true
@@ -216,7 +216,7 @@ func (this *Container) Exists(abstracts any) bool {
 
 // IsShared
 func (this *Container) IsShared(abstracts any) bool {
-    abstract := this.getAbstractName(abstracts)
+    abstract := formatName(abstracts)
 
     if _, ok := this.instances[abstract]; ok {
         return true
@@ -274,17 +274,17 @@ func (this *Container) Call(fn any, args []any) any {
     }
 }
 
-func (this *Container) call(fn any, method string, params []any) any {
-    if eventMethod, ok := fn.(reflect.Value); ok {
+func (this *Container) call(in any, method string, params []any) any {
+    if eventMethod, ok := in.(reflect.Value); ok {
         if eventMethod.Kind() == reflect.Func {
             return this.CallFunc(eventMethod, params)
         }
 
         return this.CallStructMethod(eventMethod, method, params)
-    } else if isFunc(fn) {
-        return this.CallFunc(fn, params)
+    } else if isFunc(in) {
+        return this.CallFunc(in, params)
     } else {
-        return this.CallStructMethod(fn, method, params)
+        return this.CallStructMethod(in, method, params)
     }
 }
 
@@ -305,12 +305,12 @@ func (this *Container) CallFunc(fn any, args []any) any {
 }
 
 // Call struct method
-func (this *Container) CallStructMethod(in any, method string, args []any) any {
+func (this *Container) CallStructMethod(class any, method string, args []any) any {
     var val reflect.Value
-    if fnVal, ok := in.(reflect.Value); ok {
+    if fnVal, ok := class.(reflect.Value); ok {
         val = fnVal
     } else {
-        val = reflect.ValueOf(in)
+        val = reflect.ValueOf(class)
     }
 
     if val.Kind() != reflect.Pointer && val.Kind() != reflect.Struct {
@@ -319,18 +319,6 @@ func (this *Container) CallStructMethod(in any, method string, args []any) any {
 
     newMethod := val.MethodByName(method)
     return this.baseCall(newMethod, args)
-}
-
-func (this *Container) getAbstractName(abstract any) string {
-    if isStruct(abstract) {
-        return getStructName(abstract)
-    }
-
-    if name, ok := abstract.(string); ok {
-        return name
-    }
-
-    return ""
 }
 
 // base Call Func
@@ -368,7 +356,7 @@ func (this *Container) bindParams(fnType reflect.Type, args []any) []reflect.Val
         for i := 0; i < numIn; i++ {
             fnTypeIn := fnType.In(i)
             fnTypeKind := fnTypeIn.Kind()
-            fnTypeName := getTypeKey(fnTypeIn)
+            fnTypeName := getTypeName(fnTypeIn)
 
             if fnTypeKind == reflect.Pointer || fnTypeKind == reflect.Struct {
                 if j < len(args) {
@@ -424,7 +412,7 @@ func (this *Container) bindParams(fnType reflect.Type, args []any) []reflect.Val
 
 // src convert type to new typ
 func (this *Container) convertTo(typ reflect.Type, src any) reflect.Value {
-    dataKey := getTypeKey(typ)
+    dataKey := getTypeName(typ)
 
     fieldType := reflect.TypeOf(src)
     if !fieldType.ConvertibleTo(typ) {
@@ -433,7 +421,7 @@ func (this *Container) convertTo(typ reflect.Type, src any) reflect.Value {
 
     fieldValue := reflect.ValueOf(src)
 
-    if dataKey != getTypeKey(fieldType) {
+    if dataKey != getTypeName(fieldType) {
         fieldValue = fieldValue.Convert(typ)
     }
 
@@ -446,7 +434,7 @@ func (this *Container) getImplementsBind(typ reflect.Type) (string, bool) {
 
         if concreteType.NumOut() > 0 {
             value := concreteType.Out(0)
-            valueName := getTypeKey(value)
+            valueName := getTypeName(value)
 
             if ifImplements(value, typ) && valueName == name {
                 return name, true

@@ -119,6 +119,57 @@ func GenerateKey(random io.Reader, c elliptic.Curve) (*PrivateKey, error) {
     return priv, nil
 }
 
+// New a PrivateKey from privatekey data
+func NewPrivateKey(curve elliptic.Curve, k []byte) (*PrivateKey, error) {
+    d := new(big.Int).SetBytes(k)
+
+    one := new(big.Int).SetInt64(1)
+
+    n := new(big.Int).Sub(curve.Params().N, one)
+    if d.Cmp(n) >= 0 {
+        return nil, errors.New("cryptobin/ecgdsa: privateKey's D is overflow")
+    }
+
+    dInv := fermatInverse(d, curve.Params().N)
+
+    priv := new(PrivateKey)
+    priv.PublicKey.Curve = curve
+    priv.D = d
+    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(dInv.Bytes())
+
+    return priv, nil
+}
+
+// 输出私钥明文
+// output PrivateKey data
+func PrivateKeyTo(key *PrivateKey) []byte {
+    privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
+    return key.D.FillBytes(privateKey)
+}
+
+// 根据公钥明文初始化公钥
+// New a PublicKey from publicKey data
+func NewPublicKey(curve elliptic.Curve, k []byte) (*PublicKey, error) {
+    x, y := elliptic.Unmarshal(curve, k)
+    if x == nil || y == nil {
+        return nil, errors.New("cryptobin/ecgdsa: incorrect public key")
+    }
+
+    pub := &PublicKey{
+        Curve: curve,
+        X: x,
+        Y: y,
+    }
+
+    return pub, nil
+}
+
+// 输出公钥明文
+// output PublicKey data
+func PublicKeyTo(key *PublicKey) []byte {
+    return elliptic.Marshal(key.Curve, key.X, key.Y)
+}
+
 // Sign data returns the ASN.1 encoded signature.
 func Sign(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (sig []byte, err error) {
     r, s, err := SignToRS(rand, priv, h, data)

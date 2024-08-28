@@ -290,8 +290,5 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *P
 }
 
 func BitsToBytes(bits int) int {
-    // 32bit: 0xFFFF_FFF8 / 64bit: 0xFFFF FFFF FFFF FFF8
-    const MAX_UINT_MINUS_7 = ^uint(0) - 7
-
-    return int(((uint(bits) + 7) & MAX_UINT_MINUS_7) / 8)
+    return (bits + 7) / 8
 }

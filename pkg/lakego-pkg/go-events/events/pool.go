@@ -38,17 +38,17 @@ func (this *Pool) Call(fn any, args []any) any {
     }
 }
 
-func (this *Pool) call(event any, method string, params []any) any {
-    if eventMethod, ok := event.(reflect.Value); ok {
+func (this *Pool) call(in any, method string, params []any) any {
+    if eventMethod, ok := in.(reflect.Value); ok {
         if eventMethod.Kind() == reflect.Func {
             return this.CallFunc(eventMethod, params)
         }
 
         return this.CallStructMethod(eventMethod, method, params)
-    } else if this.IsFunc(event) {
-        return this.CallFunc(event, params)
+    } else if this.IsFunc(in) {
+        return this.CallFunc(in, params)
     } else {
-        return this.CallStructMethod(event, method, params)
+        return this.CallStructMethod(in, method, params)
     }
 }
 
@@ -69,12 +69,12 @@ func (this *Pool) CallFunc(fn any, args []any) any {
 }
 
 // Call struct method
-func (this *Pool) CallStructMethod(in any, method string, args []any) any {
+func (this *Pool) CallStructMethod(class any, method string, args []any) any {
     var val reflect.Value
-    if fnVal, ok := in.(reflect.Value); ok {
+    if fnVal, ok := class.(reflect.Value); ok {
         val = fnVal
     } else {
-        val = reflect.ValueOf(in)
+        val = reflect.ValueOf(class)
     }
 
     if val.Kind() != reflect.Pointer && val.Kind() != reflect.Struct {
@@ -148,7 +148,7 @@ func (this *Pool) bindParams(fnType reflect.Type, args []any) []reflect.Value {
 
 // src convert type to new typ
 func (this *Pool) convertTo(typ reflect.Type, src any) reflect.Value {
-    dataKey := getTypeKey(typ)
+    dataKey := getTypeName(typ)
 
     fieldType := reflect.TypeOf(src)
     if !fieldType.ConvertibleTo(typ) {
@@ -157,7 +157,7 @@ func (this *Pool) convertTo(typ reflect.Type, src any) reflect.Value {
 
     fieldValue := reflect.ValueOf(src)
 
-    if dataKey != getTypeKey(fieldType) {
+    if dataKey != getTypeName(fieldType) {
         fieldValue = fieldValue.Convert(typ)
     }
 
