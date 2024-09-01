@@ -304,7 +304,9 @@ func SignToRS(rand io.Reader, priv *PrivateKey, hashFunc Hasher, msg []byte) (r,
     }
 
     e := new(big.Int).SetBytes(eBuf)
-    e.Rsh(e, uint(rshift))
+    if rshift > 0 {
+        e.Rsh(e, uint(rshift))
+    }
 
     // 2: e = q - (h mod q) (except when h is 0).
     e = e.Mod(e, n)
@@ -386,7 +388,9 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
     }
 
     e := new(big.Int).SetBytes(eBuf)
-    e.Rsh(e, uint(rshift))
+    if rshift > 0 {
+        e.Rsh(e, uint(rshift))
+    }
 
     /* 3. Compute e by converting h to an integer and reducing it mod q */
     e = e.Mod(e, n)
@@ -394,9 +398,11 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
     /* 4. Compute u = (r^-1)e mod q */
     rinv := new(big.Int).ModInverse(r, n)
     u := new(big.Int).Mul(rinv, e)
+    u.Mod(u, n)
 
     /* 5. Compute v = (r^-1)s mod q */
     v := new(big.Int).Mul(rinv, s)
+    v.Mod(v, n)
 
     /* 6. Compute W' = uG + vY */
     x21, y21 := curve.ScalarMult(pub.X, pub.Y, v.Bytes())

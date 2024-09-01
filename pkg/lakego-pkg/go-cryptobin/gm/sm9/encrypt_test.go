@@ -64,7 +64,7 @@ func Test_NewEncrypt(t *testing.T) {
         return
     }
 
-    mkStr := ToEncryptMasterPrivateKey(mk)
+    mkStr := EncryptMasterPrivateKeyTo(mk)
     mk2, err := NewEncryptMasterPrivateKey(mkStr)
     if err != nil {
         t.Error("sm9 NewEncryptMasterPrivateKey is invalid:" + err.Error())
@@ -75,7 +75,7 @@ func Test_NewEncrypt(t *testing.T) {
         return
     }
 
-    mpkStr := ToEncryptMasterPublicKey(mpk)
+    mpkStr := EncryptMasterPublicKeyTo(mpk)
     mpk2, err := NewEncryptMasterPublicKey(mpkStr)
     if err != nil {
         t.Error("sm9 NewEncryptMasterPublicKey is invalid " + err.Error())
@@ -86,7 +86,7 @@ func Test_NewEncrypt(t *testing.T) {
         return
     }
 
-    ukStr := ToEncryptPrivateKey(uk)
+    ukStr := EncryptPrivateKeyTo(uk)
     uk2, err := NewEncryptPrivateKey(ukStr)
     if err != nil {
         t.Error("sm9 NewEncryptPrivateKey is invalid")

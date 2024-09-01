@@ -281,7 +281,7 @@ func NewEncryptMasterPublicKey(bytes []byte) (pub *EncryptMasterPublicKey, err e
 }
 
 // 输出加密主公钥明文
-func ToEncryptMasterPublicKey(pub *EncryptMasterPublicKey) []byte {
+func EncryptMasterPublicKeyTo(pub *EncryptMasterPublicKey) []byte {
     return pub.Marshal()
 }
 
@@ -295,7 +295,7 @@ func NewEncryptMasterPrivateKey(bytes []byte) (priv *EncryptMasterPrivateKey, er
 }
 
 // 输出加密私钥明文
-func ToEncryptMasterPrivateKey(priv *EncryptMasterPrivateKey) []byte {
+func EncryptMasterPrivateKeyTo(priv *EncryptMasterPrivateKey) []byte {
     return priv.Marshal()
 }
 
@@ -309,7 +309,7 @@ func NewEncryptPrivateKey(bytes []byte) (priv *EncryptPrivateKey, err error) {
 }
 
 // 输出明文
-func ToEncryptPrivateKey(priv *EncryptPrivateKey) []byte {
+func EncryptPrivateKeyTo(priv *EncryptPrivateKey) []byte {
     return priv.Marshal()
 }
 

@@ -1,6 +1,7 @@
 package ecgdsa
 
 import (
+    "fmt"
     "strings"
     "crypto"
     "testing"
@@ -10,6 +11,7 @@ import (
     "crypto/elliptic"
     "encoding/hex"
     "encoding/pem"
+    "encoding/base64"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -35,6 +37,11 @@ func str(s string) string {
 func fromHex(s string) []byte {
     h, _ := hex.DecodeString(str(s))
     return h
+}
+
+func fromBase64(s string) []byte {
+    res, _ := base64.StdEncoding.DecodeString(s)
+    return res
 }
 
 func toBigint(s string) *big.Int {
@@ -275,5 +282,131 @@ func test_Marshal_Check(t *testing.T, priv, pub string) {
 
     privPemCheck := encodePEM(privkey, "PRIVATE KEY")
     assertEqual(privPemCheck, priv, "test_Marshal_Check privkey")
+}
+
+func Test_PKCS8PrivateKey_Check(t *testing.T) {
+    for i, tc := range ecgdsaTestCases {
+        t.Run(fmt.Sprintf("EC-GDSA index %d", i), func(t *testing.T) {
+            expectedDER := decodePEM(tc.pkcs8PrivateKey)
+
+            prikey, err := ParsePrivateKey(expectedDER)
+            if err != nil {
+                t.Error(err)
+                return
+            }
+
+            pubDER := decodePEM(tc.pkixPublicKey)
+            pubkey, err := ParsePublicKey(pubDER)
+            if err != nil {
+                t.Error(err)
+                return
+            }
+
+            parsePubkey := &prikey.PublicKey
+
+            if !pubkey.Equal(parsePubkey) {
+                t.Errorf("ParsePKCS8PrivateKey fail")
+                return
+            }
+
+            res := Verify(pubkey, sha256.New, []byte(tc.msg), tc.sig)
+            if !res {
+                t.Error("Verify fail")
+                return
+            }
+
+            {
+                sig, err := Sign(rand.Reader, prikey, sha256.New, []byte(tc.msg))
+                if err != nil {
+                    t.Error(err)
+                    return
+                }
+
+                res := Verify(pubkey, sha256.New, []byte(tc.msg), sig)
+                if !res {
+                    t.Error("Verify 2 fail")
+                    return
+                }
+            }
+
+        })
+    }
+
+}
+
+// botan 3.6.0
+var ecgdsaTestCases = []struct {
+    pkcs8PrivateKey string
+    pkixPublicKey   string
+    msg             string
+    sig             []byte
+}{
+    // botan keygen --algo=ECGDSA --params=secp224r1 | tee priv.pem; botan pkcs8 --pub-out priv.pem | tee pub.pem
+    {
+        pkcs8PrivateKey: `-----BEGIN PRIVATE KEY-----
+MHkCAQAwEQYIKyQDAwIFAgEGBSuBBAAhBGEwXwIBAQQchiYDBE//3ic1+4+qz1ft
+0WrUqSLYnLiEbPLTKqE8AzoABO61dVky7ZIuvNzY6BjD6i9RXqbyz79hBpPEHX5Q
+8P3DzmR99WQsTgIj2D3qLvYyshoqgXQlxzxp
+-----END PRIVATE KEY-----`,
+        pkixPublicKey: `-----BEGIN PUBLIC KEY-----
+ME8wEQYIKyQDAwIFAgEGBSuBBAAhAzoABO61dVky7ZIuvNzY6BjD6i9RXqbyz79h
+BpPEHX5Q8P3DzmR99WQsTgIj2D3qLvYyshoqgXQlxzxp
+-----END PUBLIC KEY-----`,
+        msg: `1111111111111111111111111111111122222222222222222222223333333333333333
+`,
+        sig: fromBase64("MD0CHDOpFd+Fa5dliqUE6pwqa2bN1MmsDDdEncSaRh4CHQCovf7MyLUg/xPTtIY45pscV2NHCgSoiVQ2e9F4"),
+    },
+    // botan keygen --algo=ECGDSA --params=secp256r1 | tee priv.pem; botan pkcs8 --pub-out priv.pem | tee pub.pem
+    {
+        pkcs8PrivateKey: `-----BEGIN PRIVATE KEY-----
+MIGIAgEAMBQGCCskAwMCBQIBBggqhkjOPQMBBwRtMGsCAQEEIEOx0qpCDkE7a0iX
+nFecDv2bC0ozzoQS8Ao+SjheegOEoUQDQgAELAxKd0QeboAKI5AKatycaAA7EYPH
+SpyEA9FzZ4dTHLePEBfCkN+qKAa6jSw06PvxNOPgPnMs5iiotGepVE/JYg==
+-----END PRIVATE KEY-----`,
+        pkixPublicKey: `-----BEGIN PUBLIC KEY-----
+MFowFAYIKyQDAwIFAgEGCCqGSM49AwEHA0IABCwMSndEHm6ACiOQCmrcnGgAOxGD
+x0qchAPRc2eHUxy3jxAXwpDfqigGuo0sNOj78TTj4D5zLOYoqLRnqVRPyWI=
+-----END PUBLIC KEY-----`,
+        msg: `1111111111111111111111111111111122222222222222222222223333333333333333
+`,
+        sig: fromBase64("MEUCIQDS2RXiCqWHhOdua+fvaESF6N1mDBjBO8vv05Uxq1ZJsAIges9+59UTWRHWljwmsp2JlaUuD3KSZFo2SI3GCrrIJns="),
+    },
+    // botan keygen --algo=ECGDSA --params=secp384r1 | tee priv.pem; botan pkcs8 --pub-out priv.pem | tee pub.pem
+    {
+        pkcs8PrivateKey: `-----BEGIN PRIVATE KEY-----
+MIG3AgEAMBEGCCskAwMCBQIBBgUrgQQAIgSBnjCBmwIBAQQwbZ6M6oeDCTh5e2lC
+/rR3jVrZ7NkDyZinW3nG0gdm1rlee6piLNNuPIF3i7VQaK1XoWQDYgAEOzfgS1m2
+VAc07wGNEeNuVfZpG7UiMBuF4gPuhde7a0sCWDvp/H8pQuFH1Jd1ijV8youexIAx
+cfE25fu/QkqPgzkC1ocZVQfeTSW+NgotZDwzvYssmXUdjgc33WGcAKxt
+-----END PRIVATE KEY-----`,
+        pkixPublicKey: `-----BEGIN PUBLIC KEY-----
+MHcwEQYIKyQDAwIFAgEGBSuBBAAiA2IABDs34EtZtlQHNO8BjRHjblX2aRu1IjAb
+heID7oXXu2tLAlg76fx/KULhR9SXdYo1fMqLnsSAMXHxNuX7v0JKj4M5AtaHGVUH
+3k0lvjYKLWQ8M72LLJl1HY4HN91hnACsbQ==
+-----END PUBLIC KEY-----`,
+        msg: `1111111111111111111111111111111122222222222222222222223333333333333333
+`,
+        sig: fromBase64("MGUCMQDSVRfqCmyXHO+A/TV+wCvFWRXTBfHl3XilUhtqn9bOWDvfPnk9+l2eykH4xC+ZgdwCMBvtq/jMkuXgJbK1ZEXTQAwlRJ2yHQnzI+hGGqYKSWboNDbp8RqzBP+cCUXb/ZvOBw=="),
+    },
+    // botan keygen --algo=ECGDSA --params=secp521r1 | tee priv.pem; botan pkcs8 --pub-out priv.pem | tee pub.pem
+    {
+        pkcs8PrivateKey: `-----BEGIN PRIVATE KEY-----
+MIHvAgEAMBEGCCskAwMCBQIBBgUrgQQAIwSB1jCB0wIBAQRCAdsCfYyoYQxYm3jh
+3WyN3zapCr1MsCX8ozFTq47kYgeb5U5zBB79B7Ra6iBQfG2V8CInloDsXi+p1n5a
+yIV+Ab5hoYGJA4GGAAQB7QbJQ+GmBV2X0EzUBCShB8HehflvTUPbtJXo5D7bnCmd
+heOzJneOONmHw87d/qxhDGSN17JycXStt586J4B7EBsAXq596806GsmsNE548Hzy
+jzJOZe1rr5hZuw0pEdr/5U8XyDD4OD8xH0DL99O3TXBhHMWCJ7Dis/hU8zYEx101
+WVI=
+-----END PRIVATE KEY-----`,
+        pkixPublicKey: `-----BEGIN PUBLIC KEY-----
+MIGcMBEGCCskAwMCBQIBBgUrgQQAIwOBhgAEAe0GyUPhpgVdl9BM1AQkoQfB3oX5
+b01D27SV6OQ+25wpnYXjsyZ3jjjZh8PO3f6sYQxkjdeycnF0rbefOieAexAbAF6u
+fevNOhrJrDROePB88o8yTmXta6+YWbsNKRHa/+VPF8gw+Dg/MR9Ay/fTt01wYRzF
+giew4rP4VPM2BMddNVlS
+-----END PUBLIC KEY-----`,
+        msg: `1111111111111111111111111111111122222222222222222222223333333333333333
+`,
+        sig: fromBase64("MIGIAkIBEzK2sNXoDe0URlqZs70Lv8yy3pRJUSARXopuq6+ve/ve4EcFxCcKk2o21vp/MBSCHghJfgKimDrUuG5Zn3AQyrYCQgGzfkYkbCwTDGtZGdsSh61x6yAWkXk2wpP8qC3o+w3tlFkPJjUp1iixKyUZvevnmqCB7TMed6bbO3gME+veaVOwzg=="),
+    },
 }
 

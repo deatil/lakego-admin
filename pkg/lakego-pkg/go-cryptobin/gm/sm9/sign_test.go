@@ -60,7 +60,7 @@ func Test_NewSign(t *testing.T) {
         return
     }
 
-    mkStr := ToSignMasterPrivateKey(mk)
+    mkStr := SignMasterPrivateKeyTo(mk)
     mk2, err := NewSignMasterPrivateKey(mkStr)
     if err != nil {
         t.Error("sm9 NewSignMasterPrivateKey is invalid")
@@ -71,7 +71,7 @@ func Test_NewSign(t *testing.T) {
         return
     }
 
-    mpkStr := ToSignMasterPublicKey(mpk)
+    mpkStr := SignMasterPublicKeyTo(mpk)
     mpk2, err := NewSignMasterPublicKey(mpkStr)
     if err != nil {
         t.Error("sm9 NewSignMasterPublicKey is invalid")
@@ -82,7 +82,7 @@ func Test_NewSign(t *testing.T) {
         return
     }
 
-    ukStr := ToSignPrivateKey(uk)
+    ukStr := SignPrivateKeyTo(uk)
     uk2, err := NewSignPrivateKey(ukStr)
     if err != nil {
         t.Error("sm9 NewSignPrivateKey is invalid")

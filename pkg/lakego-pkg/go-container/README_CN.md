@@ -23,6 +23,16 @@ go get -u github.com/deatil/go-container
 
 ### 使用
 
+全局注册使用
+~~~go
+di := container.DI()
+~~~
+
+自定义使用
+~~~go
+di := container.New()
+~~~
+
 ~~~go
 package main
 
@@ -49,6 +59,18 @@ func main() {
     
     fmt.Printf("output: %s", tb2.Data())
     // output: testBind data
+}
+
+func useProvide() {
+    // 使用 Provide
+    di := container.DI()
+    di.Provide(func() *testBind {
+        return &testBind{}
+    })
+    di.Invoke(func(tb *testBind) {
+        fmt.Printf("output: %s", tb.Data())
+        // output: testBind data
+    })
 }
 ~~~
 

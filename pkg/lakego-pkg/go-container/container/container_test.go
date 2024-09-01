@@ -1,7 +1,9 @@
 package container
 
 import (
+    "errors"
     "testing"
+    "reflect"
 )
 
 type ItestBind interface {
@@ -53,6 +55,20 @@ func Test_Bind(t *testing.T) {
     }
 
     eq(tb2.Data(), "testBind data", "Test_Bind")
+}
+
+func Test_GetBad(t *testing.T) {
+    defer func() {
+        if err := recover(); err == nil {
+            t.Error("should throw panic")
+        }
+    }()
+
+    di := DI()
+    di.Bind("testBind", func() *testBind {
+        return &testBind{}
+    })
+    di.Get("testBind22")
 }
 
 func Test_BindStruct(t *testing.T) {
@@ -243,7 +259,7 @@ func Test_CallFunc(t *testing.T) {
 
     res := di.Call(testFunc, []any{"test222"})
 
-    eq(res, "in: test222 => bind data: testBind data", "Test_CallFunc")
+    eq(res[0], "in: test222 => bind data: testBind data", "Test_CallFunc")
 }
 
 func testFunc2(in *testBind22, bind *testBind) string {
@@ -262,7 +278,7 @@ func Test_CallFunc2(t *testing.T) {
         &testBind22{},
     })
 
-    eq(res, "in: testBind22 data => bind data: testBind data", "Test_CallFunc2")
+    eq(res[0], "in: testBind22 data => bind data: testBind data", "Test_CallFunc2")
 }
 
 func testFunc3(bind *testBind, in *testBind22) string {
@@ -281,7 +297,7 @@ func Test_CallFunc3(t *testing.T) {
         &testBind22{},
     })
 
-    eq(res, "in1: testBind22 data => bind data: testBind data", "Test_CallFunc3")
+    eq(res[0], "in1: testBind22 data => bind data: testBind data", "Test_CallFunc3")
 }
 
 func testFunc33(in *testBind2, bind *testBind2) string {
@@ -305,7 +321,35 @@ func Test_CallFunc33(t *testing.T) {
         bb2,
     })
 
-    eq(res, "in33: args => bind data: Binding", "Test_CallFunc3")
+    eq(res[0], "in33: args => bind data: Binding", "Test_CallFunc3")
+}
+
+func testFunc5(in *testBind2, bind *testBind2) (string, string) {
+    res1 := "in5: " + in.Get() + " => bind data: " + bind.Get()
+    res2 := "in55: " + in.Get() + " => bind data: " + bind.Get()
+
+    return res1, res2
+}
+
+func Test_CallFunc5(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind2{}, func() *testBind2 {
+        bb := &testBind2{}
+        bb.Set("Binding")
+
+        return bb
+    })
+
+    bb2 := &testBind2{}
+    bb2.Set("args")
+    res := di.Call(testFunc5, []any{
+        bb2,
+    })
+
+    eq(res[0], "in5: args => bind data: Binding", "Test_CallFunc3")
+    eq(res[1], "in55: args => bind data: Binding", "Test_CallFunc3")
 }
 
 func testInvokeFunc(bind *testBind) string {
@@ -322,13 +366,14 @@ func Test_Invoke(t *testing.T) {
 
     res := di.Invoke(testInvokeFunc)
 
-    eq(res, " => bind data: testBind data", "Test_Invoke")
+    eq(res[0], " => bind data: testBind data", "Test_Invoke")
 }
 
 func Test_ResolvingAndBind(t *testing.T) {
     eq := assertDeepEqualT(t)
 
     var nowdata any
+    var nowdata2 any
 
     di := NewContainer()
     di.Bind("testBind", func() *testBind {
@@ -336,6 +381,9 @@ func Test_ResolvingAndBind(t *testing.T) {
     })
     di.Resolving("testBind", func(data any, con *Container) {
         nowdata = data
+    })
+    di.Resolving("*", func(data any, con *Container) {
+        nowdata2 = data
     })
     tb := di.Get("testBind")
 
@@ -346,6 +394,7 @@ func Test_ResolvingAndBind(t *testing.T) {
 
     eq(tb2.Data(), "testBind data", "Test_ResolvingAndBind")
     eq(getStructName(nowdata), "*github.com/deatil/go-container/container.testBind", "Test_ResolvingAndBind nowdata")
+    eq(getStructName(nowdata2), "*github.com/deatil/go-container/container.testBind", "Test_ResolvingAndBind nowdata")
 }
 
 func Test_Make(t *testing.T) {
@@ -394,19 +443,23 @@ func Test_Instance(t *testing.T) {
 func Test_Has(t *testing.T) {
     eq := assertDeepEqualT(t)
 
-    di := DI()
+    di := New()
     di.Bind("testBind", func() *testBind {
         return &testBind{}
     })
     di.Singleton("testBind2", func() *testBind {
         return &testBind{}
     })
+    di.Singleton("testBind3", &testBind{})
 
     eq(di.Bound("testBind"), true, "Test_Has Bound")
     eq(di.Has("testBind"), true, "Test_Has Has")
     eq(di.Exists("testBind"), false, "Test_Has Exists")
     eq(di.IsShared("testBind"), false, "Test_Has IsShared")
     eq(di.IsShared("testBind2"), true, "Test_Has IsShared 2")
+
+    eq(di.Bound("testBind3"), true, "Test_Has Bound3")
+    eq(di.IsShared("testBind3"), true, "Test_Has IsShared3")
 
     var _ = di.Get("testBind2")
     eq(di.Exists("testBind2"), true, "Test_Has Exists 2")
@@ -441,6 +494,18 @@ func Test_Provide(t *testing.T) {
     })
 }
 
+func Test_ProvideReturnError(t *testing.T) {
+    di := New()
+    err := di.Provide(func() (*testBind, error) {
+        return &testBind{}, errors.New("Provide error")
+    })
+
+    if err.Error() != "Provide error" {
+        t.Error("Provide use fail")
+    }
+
+}
+
 func Test_ifUseInterface(t *testing.T) {
     eq := assertDeepEqualT(t)
 
@@ -468,8 +533,26 @@ func Test_Provide2(t *testing.T) {
     di.Provide(func() *testBind {
         return &testBind{}
     })
+
+    err := di.Provide(func() {})
+    if err.Error() != "go-container: Provide set fail" {
+        t.Error("Provide fail")
+    }
+
     di.Invoke(func(tb ItestBind) {
         eq(tb.Data(), "testBind data", "Test_Provide2")
+    })
+}
+
+func Test_Provide22(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := New()
+    di.Singleton(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+    di.Invoke(func(tb ItestBind) {
+        eq(tb.Data(), "testBind data", "Test_Provide22")
     })
 }
 
@@ -555,3 +638,64 @@ func Test_CheckLOC(t *testing.T) {
         eq(tb.Get(), "Struct Binding", "Test_CheckLOC")
     })}
 
+type testStructFunc struct {}
+
+func (this *testStructFunc) TestFunc(in string, bind *testBind) string {
+    return "in: " + in + " => bind data: " + bind.Data()
+}
+
+func Test_CallStructFunc(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+
+    {
+        res := di.Call([]any{
+            &testStructFunc{},
+            "TestFunc",
+        }, []any{"test222"})
+
+        eq(res[0], "in: test222 => bind data: testBind data", "Test_CallStructFunc")
+    }
+
+    {
+        res := di.Call([]any{
+            reflect.ValueOf(&testStructFunc{}),
+            "TestFunc",
+        }, []any{"test222"})
+
+        eq(res[0], "in: test222 => bind data: testBind data", "Test_CallStructFunc")
+    }
+}
+
+func testFunc222(in string, bind *testBind) string {
+    return "in: " + in + " => bind data: " + bind.Data()
+}
+
+func Test_CallFuncUseCallAny(t *testing.T) {
+    eq := assertDeepEqualT(t)
+
+    di := NewContainer()
+    di.Bind(&testBind{}, func() *testBind {
+        return &testBind{}
+    })
+
+    {
+        res := di.Call([]any{
+            testFunc222,
+        }, []any{"test222"})
+
+        eq(res[0], "in: test222 => bind data: testBind data", "Test_CallFuncUseCallAny")
+    }
+
+    {
+        res := di.Call([]any{
+            reflect.ValueOf(testFunc222),
+        }, []any{"test222"})
+
+        eq(res[0], "in: test222 => bind data: testBind data", "Test_CallFuncUseCallAny")
+    }
+}

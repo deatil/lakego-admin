@@ -351,6 +351,57 @@ func Verify(pub *PublicKey, h Hasher, data []byte, r, s *big.Int) bool {
     return verify(pub, h, data, r, s)
 }
 
+// Sign data returns the Bytes encoded signature.
+func SignBytes(rand io.Reader, priv *PrivateKey, hashFunc Hasher, data []byte) (sig []byte, err error) {
+    r, s, err := Sign(rand, priv, hashFunc, data)
+    if err != nil {
+        return nil, err
+    }
+
+    h := hashFunc()
+    hlen := h.Size()
+
+    qBits := bitsToBytes(priv.Q.BitLen())
+
+    var rlen int
+    if hlen <= qBits {
+        rlen = hlen
+    } else {
+        rlen = qBits
+    }
+
+    sig = make([]byte, rlen + qBits)
+
+    r.FillBytes(sig[:rlen])
+    s.FillBytes(sig[rlen:])
+
+    return
+}
+
+// Verify verifies the Bytes encoded signature
+func VerifyBytes(pub *PublicKey, hashFunc Hasher, data, sig []byte) bool {
+    h := hashFunc()
+    hlen := h.Size()
+
+    qBits := bitsToBytes(pub.Q.BitLen())
+
+    var rlen int
+    if hlen <= qBits {
+        rlen = hlen
+    } else {
+        rlen = qBits
+    }
+
+    if len(sig) != rlen + qBits {
+        return false
+    }
+
+    r := new(big.Int).SetBytes(sig[:rlen])
+    s := new(big.Int).SetBytes(sig[rlen:])
+
+    return Verify(pub, hashFunc, data, r, s)
+}
+
 // Sign data returns the ASN.1 encoded signature.
 func SignASN1(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (sig []byte, err error) {
     r, s, err := Sign(rand, priv, h, data)

@@ -110,6 +110,32 @@ func Test_Sign(t *testing.T) {
     assertBool(veri, "Sign-veri")
 }
 
+func Test_SignBytes(t *testing.T) {
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    var priv PrivateKey
+    err := GenerateParameters(&priv.PublicKey.Parameters, rand.Reader, A2048B224SHA224)
+    assertError(err, "GenerateParameters-Error")
+
+    err = GenerateKey(&priv, rand.Reader)
+    assertError(err, "GenerateKey-Error")
+
+    pub := &priv.PublicKey
+
+    assertError(err, "Sign-Error")
+    assertNotEmpty(priv, "Sign")
+
+    data := "123tesfd!dfsign"
+
+    sig, err := SignBytes(rand.Reader, &priv, sha256.New, []byte(data))
+    assertError(err, "Sign-sig-Error")
+
+    veri := VerifyBytes(pub, sha256.New, []byte(data), sig)
+    assertBool(veri, "Sign-veri-Error")
+}
+
 func Test_Sign2(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)

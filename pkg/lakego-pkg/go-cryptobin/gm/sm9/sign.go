@@ -252,7 +252,7 @@ func NewSignMasterPublicKey(bytes []byte) (pub *SignMasterPublicKey, err error) 
 }
 
 // 输出签名主公钥明文
-func ToSignMasterPublicKey(pub *SignMasterPublicKey) []byte {
+func SignMasterPublicKeyTo(pub *SignMasterPublicKey) []byte {
     return pub.Marshal()
 }
 
@@ -266,7 +266,7 @@ func NewSignMasterPrivateKey(bytes []byte) (priv *SignMasterPrivateKey, err erro
 }
 
 // 输出签名主私钥明文
-func ToSignMasterPrivateKey(priv *SignMasterPrivateKey) []byte {
+func SignMasterPrivateKeyTo(priv *SignMasterPrivateKey) []byte {
     return priv.Marshal()
 }
 
@@ -280,7 +280,7 @@ func NewSignPrivateKey(bytes []byte) (priv *SignPrivateKey, err error) {
 }
 
 // 输出签名私钥明文
-func ToSignPrivateKey(priv *SignPrivateKey) []byte {
+func SignPrivateKeyTo(priv *SignPrivateKey) []byte {
     return priv.Marshal()
 }
 

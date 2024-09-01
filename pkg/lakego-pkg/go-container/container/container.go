@@ -54,23 +54,36 @@ func New() *Container {
 
 // Provide
 func (this *Container) Provide(fn any) error {
-    fnValue := reflect.ValueOf(fn)
-    fnType := fnValue.Type()
+    fnType := reflect.TypeOf(fn)
 
     numOut := fnType.NumOut()
-    if numOut == 0 {
+    if numOut < 1 {
         return errors.New("go-container: Provide set fail")
     }
 
-    abstract := getTypeName(fnType.Out(0))
+    outs := this.Call(fn, nil)
 
-    this.Singleton(abstract, fn)
+    var errPtr *error
+    errType := reflect.TypeOf(errPtr).Elem()
+
+    for i := 0; i < numOut; i++ {
+        outValue := reflect.ValueOf(outs[i])
+        if ifImplements(outValue.Type(), errType) && !outValue.IsNil() {
+            return outs[i].(error)
+        }
+
+        if isStruct(outs[i]) {
+            abstract := getTypeName(fnType.Out(i))
+
+            this.Singleton(abstract, outs[i])
+        }
+    }
 
     return nil
 }
 
 // Invoke for get dep struct
-func (this *Container) Invoke(fn any) any {
+func (this *Container) Invoke(fn any) []any {
     return this.Call(fn, nil)
 }
 
@@ -172,7 +185,12 @@ func (this *Container) Make(abstracts any, vars []any) any {
         return instance
     }
 
-    object := this.Call(bind.Concrete, vars)
+    objects := this.Call(bind.Concrete, vars)
+
+    var object any
+    if len(objects) > 0 {
+        object = objects[0]
+    }
 
     if bind.Shared {
         this.instances[abstract] = object
@@ -254,7 +272,7 @@ func (this *Container) invokeAfter(abstract string, object any) {
 }
 
 // Call
-func (this *Container) Call(fn any, args []any) any {
+func (this *Container) Call(fn any, args []any) []any {
     switch in := fn.(type) {
         case []any:
             if len(in) > 1 {
@@ -274,7 +292,7 @@ func (this *Container) Call(fn any, args []any) any {
     }
 }
 
-func (this *Container) call(in any, method string, params []any) any {
+func (this *Container) call(in any, method string, params []any) []any {
     if eventMethod, ok := in.(reflect.Value); ok {
         if eventMethod.Kind() == reflect.Func {
             return this.CallFunc(eventMethod, params)
@@ -289,7 +307,7 @@ func (this *Container) call(in any, method string, params []any) any {
 }
 
 // Call Func
-func (this *Container) CallFunc(fn any, args []any) any {
+func (this *Container) CallFunc(fn any, args []any) []any {
     var val reflect.Value
     if fnVal, ok := fn.(reflect.Value); ok {
         val = fnVal
@@ -305,7 +323,7 @@ func (this *Container) CallFunc(fn any, args []any) any {
 }
 
 // Call struct method
-func (this *Container) CallStructMethod(class any, method string, args []any) any {
+func (this *Container) CallStructMethod(class any, method string, args []any) []any {
     var val reflect.Value
     if fnVal, ok := class.(reflect.Value); ok {
         val = fnVal
@@ -322,7 +340,7 @@ func (this *Container) CallStructMethod(class any, method string, args []any) an
 }
 
 // base Call Func
-func (this *Container) baseCall(fn reflect.Value, args []any) any {
+func (this *Container) baseCall(fn reflect.Value, args []any) (output []any) {
     if fn.Kind() != reflect.Func {
         panic("go-container: call func type error")
     }
@@ -337,11 +355,14 @@ func (this *Container) baseCall(fn reflect.Value, args []any) any {
     params := this.bindParams(fnType, args)
 
     res := fn.Call(params)
-    if len(res) == 0 {
-        return nil
+
+    // 返回数据
+    output = make([]any, 0)
+    for _, v := range res {
+        output = append(output, v.Interface())
     }
 
-    return res[0].Interface()
+    return
 }
 
 // bind params
@@ -429,8 +450,24 @@ func (this *Container) convertTo(typ reflect.Type, src any) reflect.Value {
 }
 
 func (this *Container) getImplementsBind(typ reflect.Type) (string, bool) {
+    for name2, instance := range this.instances {
+        value := reflect.TypeOf(instance)
+        if value == nil {
+            continue
+        }
+
+        valueName := getTypeName(value)
+
+        if ifImplements(value, typ) && valueName == name2 {
+            return name2, true
+        }
+    }
+
     for name, bind := range this.bind {
-        concreteType := reflect.ValueOf(bind.Concrete).Type()
+        concreteType := reflect.TypeOf(bind.Concrete)
+        if concreteType == nil {
+            continue
+        }
 
         if concreteType.NumOut() > 0 {
             value := concreteType.Out(0)
