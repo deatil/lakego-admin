@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto"
 
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // Gost

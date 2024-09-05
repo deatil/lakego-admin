@@ -6,7 +6,7 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 // CFB8 模式加密参数
@@ -58,7 +58,7 @@ func (this CipherCFB8) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, [
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
 
-    enc := cryptobin_cipher.NewCFB8Encrypter(block, iv)
+    enc := cryptobin_mode.NewCFB8Encrypter(block, iv)
     enc.XORKeyStream(encrypted, plaintext)
 
     // 编码 iv
@@ -89,7 +89,7 @@ func (this CipherCFB8) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
 
     plaintext := make([]byte, len(ciphertext))
 
-    mode := cryptobin_cipher.NewCFB8Decrypter(block, iv)
+    mode := cryptobin_mode.NewCFB8Decrypter(block, iv)
     mode.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil

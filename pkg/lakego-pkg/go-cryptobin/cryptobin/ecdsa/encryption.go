@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/ecc"
+    "github.com/deatil/go-cryptobin/pubkey/ecc"
 )
 
 // 公钥加密

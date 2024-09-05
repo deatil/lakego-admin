@@ -5,9 +5,9 @@ import (
     "crypto/rand"
     "encoding/pem"
 
-    "github.com/deatil/go-cryptobin/dsa"
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pubkey/dsa"
 )
 
 type (

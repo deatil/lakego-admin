@@ -2,7 +2,7 @@ package ed448
 
 import (
     "crypto"
-    "github.com/deatil/go-cryptobin/ed448"
+    "github.com/deatil/go-cryptobin/pubkey/ed448"
 )
 
 // 设置 PrivateKey

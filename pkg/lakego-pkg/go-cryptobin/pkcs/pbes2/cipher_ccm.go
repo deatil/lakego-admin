@@ -6,7 +6,7 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
-    "github.com/deatil/go-cryptobin/cipher/ccm"
+    "github.com/deatil/go-cryptobin/mode/ccm"
 )
 
 // ccm 模式加密参数

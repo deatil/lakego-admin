@@ -4,8 +4,8 @@ import (
     "errors"
     "encoding/pem"
 
-    "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 var (

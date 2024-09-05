@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/elgamal"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 // 私钥签名

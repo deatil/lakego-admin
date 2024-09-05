@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
-    "github.com/deatil/go-cryptobin/elgamal"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 var (

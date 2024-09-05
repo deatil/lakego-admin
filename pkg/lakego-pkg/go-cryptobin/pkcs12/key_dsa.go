@@ -5,7 +5,7 @@ import (
     "crypto"
     "crypto/dsa"
 
-    cryptobin_dsa "github.com/deatil/go-cryptobin/dsa"
+    cryptobin_dsa "github.com/deatil/go-cryptobin/pubkey/dsa"
 )
 
 // DSA

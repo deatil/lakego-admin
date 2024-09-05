@@ -4,7 +4,7 @@ import (
     "errors"
     "math/big"
 
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // KEK

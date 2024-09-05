@@ -4,7 +4,7 @@ import (
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/cryptobin/crypto"
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 type ModeNOFB struct {}
@@ -15,7 +15,7 @@ func (this ModeNOFB) Encrypt(plain []byte, block cipher.Block, opt crypto.IOptio
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewNOFB(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewNOFB(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -26,7 +26,7 @@ func (this ModeNOFB) Decrypt(data []byte, block cipher.Block, opt crypto.IOption
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewNOFB(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewNOFB(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }

@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // 私钥签名

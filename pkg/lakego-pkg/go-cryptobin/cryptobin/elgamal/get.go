@@ -1,7 +1,7 @@
 package elgamal
 
 import (
-    "github.com/deatil/go-cryptobin/elgamal"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 // 获取 PrivateKey

@@ -17,7 +17,7 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
 
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 

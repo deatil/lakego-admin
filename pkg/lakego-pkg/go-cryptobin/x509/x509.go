@@ -24,8 +24,8 @@ import (
     "golang.org/x/crypto/cryptobyte"
     cryptobyte_asn1 "golang.org/x/crypto/cryptobyte/asn1"
 
-    "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 const (

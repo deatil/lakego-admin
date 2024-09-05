@@ -4,8 +4,8 @@ import (
     "io"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // 生成密钥

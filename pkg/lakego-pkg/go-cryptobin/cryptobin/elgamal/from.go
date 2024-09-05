@@ -5,7 +5,7 @@ import (
     "crypto/rand"
 
     "github.com/deatil/go-cryptobin/tool"
-    "github.com/deatil/go-cryptobin/elgamal"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 // 使用数据生成密钥对

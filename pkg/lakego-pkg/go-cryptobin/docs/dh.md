@@ -196,7 +196,7 @@ import (
     "math/big"
 
     "github.com/deatil/lakego-filesystem/filesystem"
-    dh_dh "github.com/deatil/go-cryptobin/dh/dh"
+    dh_dh "github.com/deatil/go-cryptobin/pubkey/dh/dh"
     cryptobin_dh "github.com/deatil/go-cryptobin/cryptobin/dh/dh"
 )
 

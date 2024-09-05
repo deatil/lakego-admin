@@ -1,7 +1,7 @@
 package dh
 
 import (
-    "github.com/deatil/go-cryptobin/dh/dh"
+    "github.com/deatil/go-cryptobin/pubkey/dh/dh"
 )
 
 // 获取 PrivateKey

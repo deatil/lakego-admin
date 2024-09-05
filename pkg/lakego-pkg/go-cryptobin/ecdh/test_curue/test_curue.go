@@ -4,8 +4,8 @@ import (
     "io"
     "errors"
 
-    "github.com/deatil/go-cryptobin/x448"
     "github.com/deatil/go-cryptobin/ecdh"
+    "github.com/deatil/go-cryptobin/pubkey/x448"
 )
 
 var (

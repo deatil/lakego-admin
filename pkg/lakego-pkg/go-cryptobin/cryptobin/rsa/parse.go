@@ -9,7 +9,7 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
+    cryptobin_rsa "github.com/deatil/go-cryptobin/pubkey/rsa"
 )
 
 var (

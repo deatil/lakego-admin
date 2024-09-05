@@ -5,7 +5,8 @@ import (
     "testing"
     "math/rand"
     "encoding/hex"
-    "github.com/deatil/go-cryptobin/cipher"
+
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 func fromHex(s string) []byte {
@@ -148,13 +149,13 @@ func Test_Check(t *testing.T) {
         }
 
         b := make([]byte, len(tt.plain))
-        cipher.NewECBEncrypter(c).
+        cryptobin_mode.NewECBEncrypter(c).
             CryptBlocks(b[:], tt.plain)
         if !bytes.Equal(b[:], tt.cipher) {
             t.Errorf("encrypt failed: got %x, want %x", b, tt.cipher)
         }
 
-        cipher.NewECBDecrypter(c).
+        cryptobin_mode.NewECBDecrypter(c).
             CryptBlocks(b[:], tt.cipher)
         if !bytes.Equal(b[:], tt.plain) {
             t.Errorf("decrypt failed: got %x, want %x", b, tt.plain)

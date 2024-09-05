@@ -6,8 +6,8 @@ import (
     "crypto/ecdsa"
     "crypto/ed25519"
 
-    "github.com/deatil/go-cryptobin/gost"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 func init() {

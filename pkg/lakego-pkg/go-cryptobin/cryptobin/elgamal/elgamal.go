@@ -4,7 +4,7 @@ import (
     "hash"
     "crypto/sha256"
 
-    "github.com/deatil/go-cryptobin/elgamal"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 type (

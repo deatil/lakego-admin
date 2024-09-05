@@ -6,7 +6,7 @@ import (
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs8"
-    "github.com/deatil/go-cryptobin/ed448"
+    "github.com/deatil/go-cryptobin/pubkey/ed448"
 )
 
 var (

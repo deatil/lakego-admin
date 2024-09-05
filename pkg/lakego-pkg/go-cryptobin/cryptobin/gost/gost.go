@@ -3,7 +3,7 @@ package gost
 import (
     "hash"
 
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
 )
 

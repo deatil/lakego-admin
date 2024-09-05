@@ -6,7 +6,7 @@ import (
     "crypto/cipher"
     "encoding/asn1"
 
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 // ecb 模式加密
@@ -52,7 +52,7 @@ func (this CipherECB) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []
     // 需要保存的加密数据
     encrypted := make([]byte, len(plaintext))
 
-    mode := cryptobin_cipher.NewECBEncrypter(block)
+    mode := cryptobin_mode.NewECBEncrypter(block)
     mode.CryptBlocks(encrypted, plaintext)
 
     // 返回数据
@@ -76,7 +76,7 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
 
     plaintext := make([]byte, len(ciphertext))
 
-    mode := cryptobin_cipher.NewECBDecrypter(block)
+    mode := cryptobin_mode.NewECBDecrypter(block)
     mode.CryptBlocks(plaintext, ciphertext)
 
     // 判断数据是否为填充数据

@@ -5,9 +5,9 @@ import (
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/tool"
-    "github.com/deatil/go-cryptobin/cipher/ccm"
-    "github.com/deatil/go-cryptobin/cipher/hctr"
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    "github.com/deatil/go-cryptobin/mode/ccm"
+    "github.com/deatil/go-cryptobin/mode/hctr"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 type ModeECB struct {}
@@ -15,7 +15,7 @@ type ModeECB struct {}
 // 加密 / Encrypt
 func (this ModeECB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewECBEncrypter(block).CryptBlocks(cryptText, plain)
+    cryptobin_mode.NewECBEncrypter(block).CryptBlocks(cryptText, plain)
 
     return cryptText, nil
 }
@@ -23,7 +23,7 @@ func (this ModeECB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
 // 解密 / Decrypt
 func (this ModeECB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte, error) {
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewECBDecrypter(block).CryptBlocks(dst, data)
+    cryptobin_mode.NewECBDecrypter(block).CryptBlocks(dst, data)
 
     return dst, nil
 }
@@ -64,7 +64,7 @@ func (this ModePCBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewPCBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
+    cryptobin_mode.NewPCBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
 
     return cryptText, nil
 }
@@ -75,7 +75,7 @@ func (this ModePCBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewPCBCDecrypter(block, iv).CryptBlocks(dst, data)
+    cryptobin_mode.NewPCBCDecrypter(block, iv).CryptBlocks(dst, data)
 
     return dst, nil
 }
@@ -116,7 +116,7 @@ func (this ModeCFB1) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewCFB1Encrypter(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewCFB1Encrypter(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -127,7 +127,7 @@ func (this ModeCFB1) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewCFB1Decrypter(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewCFB1Decrypter(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }
@@ -142,7 +142,7 @@ func (this ModeCFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewCFB8Encrypter(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewCFB8Encrypter(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -153,7 +153,7 @@ func (this ModeCFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewCFB8Decrypter(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewCFB8Decrypter(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }
@@ -194,7 +194,7 @@ func (this ModeOFB8) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewOFB8(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -205,7 +205,7 @@ func (this ModeOFB8) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewOFB8(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewOFB8(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }
@@ -397,7 +397,7 @@ func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
 
     resync := opt.Config().GetBool("resync")
 
-    mode, prefix := cryptobin_cipher.NewOCFBEncrypter(block, randData, cryptobin_cipher.OCFBResyncOption(resync))
+    mode, prefix := cryptobin_mode.NewOCFBEncrypter(block, randData, cryptobin_mode.OCFBResyncOption(resync))
     if mode == nil {
         return nil, errors.New("cipher: randData length is not eq blockSize.")
     }
@@ -428,7 +428,7 @@ func (this ModeOCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
     resync := opt.Config().GetBool("resync")
 
-    mode := cryptobin_cipher.NewOCFBDecrypter(block, prefix, cryptobin_cipher.OCFBResyncOption(resync))
+    mode := cryptobin_mode.NewOCFBDecrypter(block, prefix, cryptobin_mode.OCFBResyncOption(resync))
     if mode == nil {
         return nil, errors.New("cipher: prefix length is not eq blockSize + 2.")
     }
@@ -455,7 +455,7 @@ func (this ModeBC) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byt
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cryptobin_cipher.NewBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
+    cryptobin_mode.NewBCEncrypter(block, iv).CryptBlocks(cryptText, plain)
 
     return cryptText, nil
 }
@@ -466,7 +466,7 @@ func (this ModeBC) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byte
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cryptobin_cipher.NewBCDecrypter(block, iv).CryptBlocks(dst, data)
+    cryptobin_mode.NewBCDecrypter(block, iv).CryptBlocks(dst, data)
 
     return dst, nil
 }

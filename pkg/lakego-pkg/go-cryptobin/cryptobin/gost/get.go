@@ -1,7 +1,7 @@
 package gost
 
 import (
-    "github.com/deatil/go-cryptobin/gost"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // 获取 PrivateKey

@@ -8,7 +8,7 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
-    cryptobin_dsa "github.com/deatil/go-cryptobin/dsa"
+    cryptobin_dsa "github.com/deatil/go-cryptobin/pubkey/dsa"
 )
 
 var (

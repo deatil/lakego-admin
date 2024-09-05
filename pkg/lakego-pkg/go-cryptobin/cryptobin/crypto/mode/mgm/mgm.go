@@ -3,7 +3,7 @@ package mgm
 import (
     "crypto/cipher"
 
-    "github.com/deatil/go-cryptobin/cipher/mgm"
+    "github.com/deatil/go-cryptobin/mode/mgm"
     "github.com/deatil/go-cryptobin/cryptobin/crypto"
 )
 

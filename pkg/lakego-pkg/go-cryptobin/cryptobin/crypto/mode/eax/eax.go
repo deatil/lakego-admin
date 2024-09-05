@@ -3,7 +3,7 @@ package eax
 import (
     "crypto/cipher"
 
-    "github.com/deatil/go-cryptobin/cipher/eax"
+    "github.com/deatil/go-cryptobin/mode/eax"
     "github.com/deatil/go-cryptobin/cryptobin/crypto"
 )
 

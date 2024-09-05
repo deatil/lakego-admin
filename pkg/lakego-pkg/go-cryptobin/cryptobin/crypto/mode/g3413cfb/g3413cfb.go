@@ -4,7 +4,7 @@ import (
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/cryptobin/crypto"
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 type ModeG3413CFB struct {}
@@ -18,10 +18,10 @@ func (this ModeG3413CFB) Encrypt(plain []byte, block cipher.Block, opt crypto.IO
 
     bitBlockSize := opt.Config().GetInt("bit_block_size")
     if bitBlockSize > 0 {
-        cryptobin_cipher.NewG3413CFBEncrypterWithBitBlockSize(block, iv, bitBlockSize).
+        cryptobin_mode.NewG3413CFBEncrypterWithBitBlockSize(block, iv, bitBlockSize).
             XORKeyStream(cryptText, plain)
     } else {
-        cryptobin_cipher.NewG3413CFBEncrypter(block, iv).
+        cryptobin_mode.NewG3413CFBEncrypter(block, iv).
             XORKeyStream(cryptText, plain)
     }
 
@@ -37,10 +37,10 @@ func (this ModeG3413CFB) Decrypt(data []byte, block cipher.Block, opt crypto.IOp
 
     bitBlockSize := opt.Config().GetInt("bit_block_size")
     if bitBlockSize > 0 {
-        cryptobin_cipher.NewG3413CFBDecrypterWithBitBlockSize(block, iv, bitBlockSize).
+        cryptobin_mode.NewG3413CFBDecrypterWithBitBlockSize(block, iv, bitBlockSize).
             XORKeyStream(dst, data)
     } else {
-        cryptobin_cipher.NewG3413CFBDecrypter(block, iv).
+        cryptobin_mode.NewG3413CFBDecrypter(block, iv).
             XORKeyStream(dst, data)
     }
 

@@ -7,7 +7,7 @@ import (
     "crypto/rsa"
     "crypto/rand"
 
-    cryptobin_rsa "github.com/deatil/go-cryptobin/rsa"
+    cryptobin_rsa "github.com/deatil/go-cryptobin/pubkey/rsa"
 )
 
 type (

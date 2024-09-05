@@ -6,9 +6,9 @@ import (
     "crypto/x509"
     "encoding/pem"
 
-    "github.com/deatil/go-cryptobin/rsa"
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pubkey/rsa"
 )
 
 type (

@@ -2,7 +2,7 @@ package ecdh
 
 import (
     "github.com/deatil/go-cryptobin/tool"
-    "github.com/deatil/go-cryptobin/dh/ecdh"
+    "github.com/deatil/go-cryptobin/pubkey/dh/ecdh"
 )
 
 // 获取 PrivateKey

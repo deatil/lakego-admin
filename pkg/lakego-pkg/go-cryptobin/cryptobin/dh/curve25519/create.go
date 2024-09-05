@@ -6,7 +6,7 @@ import (
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs8"
-    "github.com/deatil/go-cryptobin/dh/curve25519"
+    "github.com/deatil/go-cryptobin/pubkey/dh/curve25519"
 )
 
 type (

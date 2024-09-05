@@ -6,7 +6,7 @@ import (
     "crypto/subtle"
 
     "github.com/deatil/go-cryptobin/cipher/sm4"
-    cryptobin_cipher "github.com/deatil/go-cryptobin/cipher"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
 const(
@@ -163,7 +163,7 @@ func (this *ECBEncrypt) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, 
 
     ciphertext := make([]byte, len(paddedPlainText))
 
-    mode := cryptobin_cipher.NewECBEncrypter(block)
+    mode := cryptobin_mode.NewECBEncrypter(block)
     mode.CryptBlocks(ciphertext, paddedPlainText)
 
     return ciphertext, nil
@@ -181,7 +181,7 @@ func (this *ECBEncrypt) Decrypt(key, ciphertext []byte) ([]byte, error) {
 
     plaintext := make([]byte, len(ciphertext))
 
-    mode := cryptobin_cipher.NewECBDecrypter(block)
+    mode := cryptobin_mode.NewECBDecrypter(block)
     mode.CryptBlocks(plaintext, ciphertext)
 
     plaintext, err = pkcs7UnPadding(plaintext)

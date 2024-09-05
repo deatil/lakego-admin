@@ -5,7 +5,7 @@ import (
     "crypto/rand"
 
     "github.com/deatil/go-cryptobin/tool"
-    "github.com/deatil/go-cryptobin/ed448"
+    "github.com/deatil/go-cryptobin/pubkey/ed448"
 )
 
 // 生成密钥

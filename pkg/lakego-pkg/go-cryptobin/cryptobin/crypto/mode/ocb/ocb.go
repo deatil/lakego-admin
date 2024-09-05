@@ -3,7 +3,7 @@ package ocb
 import (
     "crypto/cipher"
 
-    "github.com/deatil/go-cryptobin/cipher/ocb"
+    "github.com/deatil/go-cryptobin/mode/ocb"
     "github.com/deatil/go-cryptobin/cryptobin/crypto"
 )
 
