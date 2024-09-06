@@ -21,7 +21,7 @@ const MAGIC_PREFIX = "$9$"
 
 const WORKFACTOR_BYTES = 2
 const ALGID_BYTES = 1
-const SALT_BYTES  = 12                  // 96 bits of salt
+const SALT_BYTES  = 12                 // 96 bits of salt
 const PASSHASH9_PBKDF_OUTPUT_LEN = 24  // 192 bits output
 
 const WORK_FACTOR_SCALE = 10000
@@ -46,18 +46,18 @@ func GenerateHash(
         panic("Passhash9: rand Passhash9 salt fail")
     }
 
-    iterations := WORK_FACTOR_SCALE * workFactor
+    iterations := WORK_FACTOR_SCALE * int(workFactor)
 
     blob := make([]byte, 0)
     blob = append(blob, byte(algId))
 
     workFactorBytes := make([]byte, 2)
-    putu32(workFactorBytes, workFactor)
+    putu16(workFactorBytes, workFactor)
 
     blob = append(blob, workFactorBytes...)
     blob = append(blob, salt...)
 
-    deriveKey := pbkdf2.Key([]byte(pass), salt, int(iterations), PASSHASH9_PBKDF_OUTPUT_LEN, prf)
+    deriveKey := pbkdf2.Key([]byte(pass), salt, iterations, PASSHASH9_PBKDF_OUTPUT_LEN, prf)
     blob = append(blob, deriveKey...)
 
     data := base64.StdEncoding.EncodeToString(blob)
@@ -86,7 +86,7 @@ func CompareHash(pass string, hash string) bool {
 
     algId := int(bin[0])
 
-    workFactor := getu32(bin[1:])
+    workFactor := int(getu16(bin[1:]))
 
     if workFactor == 0 {
         return false
@@ -104,7 +104,7 @@ func CompareHash(pass string, hash string) bool {
     }
 
     salt := bin[ALGID_BYTES + WORKFACTOR_BYTES:ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES]
-    cmp := pbkdf2.Key([]byte(pass), salt, int(iterations), PASSHASH9_PBKDF_OUTPUT_LEN, prf)
+    cmp := pbkdf2.Key([]byte(pass), salt, iterations, PASSHASH9_PBKDF_OUTPUT_LEN, prf)
 
     hashbytes := bin[ALGID_BYTES + WORKFACTOR_BYTES + SALT_BYTES:]
 
@@ -153,10 +153,10 @@ func IsAlgSupported(algId int) bool {
    return false
 }
 
-func getu32(ptr []byte) uint16 {
+func getu16(ptr []byte) uint16 {
     return binary.BigEndian.Uint16(ptr)
 }
 
-func putu32(ptr []byte, a uint16) {
+func putu16(ptr []byte, a uint16) {
     binary.BigEndian.PutUint16(ptr, a)
 }

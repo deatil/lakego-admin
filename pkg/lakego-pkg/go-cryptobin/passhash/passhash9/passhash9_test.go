@@ -3,7 +3,13 @@ package passhash9
 import (
     "testing"
     "crypto/rand"
+    "encoding/hex"
 )
+
+func fromHex(s string) string {
+    h, _ := hex.DecodeString(s)
+    return string(h)
+}
 
 func Test_GenerateHash(t *testing.T) {
     t.Run("HMAC(SHA-1)", func(t *testing.T) {
@@ -24,7 +30,7 @@ func Test_GenerateHash(t *testing.T) {
 }
 
 func test_GenerateHash(t *testing.T, pass string, algId int) {
-    hashed := GenerateHash(rand.Reader, pass, 256, algId)
+    hashed := GenerateHash(rand.Reader, pass, 102, algId)
     if hashed == "" {
         t.Fatal("GenerateHash fail")
     }
@@ -44,27 +50,33 @@ func Test_Hash_Check(t *testing.T) {
         {
             "HMAC(SHA-1)",
             "Password",
-            "$9$AAEAG6G1zTZTQTA8Rqo8RQqiV/qXUaSaftN2cGO4/D7sTUI6RQ1M",
+            "$9$AABm8neTVueMIcw/lpRfjcWuBYgxqEET5SwIRvThHB6B5na1eDKg",
         },
         {
             "HMAC(SHA-256)",
             "Password",
-            "$9$AQEAgXbLtftzszam4DtVGL0GDvPvfHPFBlOK8l08aj/HrV6QL+kL",
+            "$9$AQBmQiUUX3+Awvd4CZFHdNR0F+MGs5IUn80L4laPfHuzbcWNio46",
         },
         {
             "CMAC(Blowfish)",
             "Password",
-            "$9$AgEAk3M8caQe09voMoojHMVvP8m2j9/xaifonSZQyBr4Cvjc+Agm",
+            "$9$AgBmYber/Sjp3FtR7rlLGFBPU5h9Z45XjGXsuC7DEfdaJ/SOPz6q",
         },
         {
             "HMAC(SHA-384)",
             "Password",
-            "$9$AwEAvy2fBBQjJXL0kK+iSrA/fFDFnqpRZpBq/cdAq+G9vTNXpcBu",
+            "$9$AwBmCShNC5/K7DB4XzBwbewTt6+2YxAytIijohsrP47xDIDkH5hP",
         },
         {
             "HMAC(SHA-512)",
             "Password",
-            "$9$BAEAbDx63DjGjc2yvwyENRZ1OvW0PnnO+92dzmONbVTzgAyjcZA5",
+            "$9$BABmGBCpRZcVEckaD50QAy/EagypgMDVJ6OXPHquMpiBxT8/Pzj7",
+        },
+
+        {
+            "HMAC(SHA-1) algId 0",
+            fromHex("736563726574"),
+            "$9$AAAKhiHXTIUhNhbegwBXJvk03XXJdzFMy+i3GFMIBYKtthTTmXZA",
         },
     }
 
