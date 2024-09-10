@@ -315,30 +315,44 @@ func VerifyBytes(pub *PublicKey, hashFunc Hasher, data, sig []byte) bool {
 // Sign hash
 func Sign(rand io.Reader, priv *PrivateKey, hashFunc Hasher, data []byte) (r, s *big.Int, err error) {
     n := priv.Q.BitLen()
-    if priv.Q.Sign() <= 0 || priv.P.Sign() <= 0 || priv.G.Sign() <= 0 || priv.X.Sign() <= 0 || n%8 != 0 {
+    if n%8 != 0 {
         err = ErrInvalidPublicKey
         return
     }
     n >>= 3
 
+    k := new(big.Int)
+    buf := make([]byte, n)
+
+    for {
+        _, err = io.ReadFull(rand, buf)
+        if err != nil {
+            return
+        }
+        k.SetBytes(buf)
+
+        if k.Sign() > 0 && k.Cmp(priv.Q) < 0 {
+            break
+        }
+    }
+
+    return SignUsingK(k, priv, hashFunc, data)
+}
+
+// sign with k
+func SignUsingK(k *big.Int, priv *PrivateKey, hashFunc Hasher, data []byte) (r, s *big.Int, err error) {
+    if priv.Q.Sign() <= 0 ||
+        priv.P.Sign() <= 0 ||
+        priv.G.Sign() <= 0 ||
+        priv.X.Sign() <= 0 {
+        err = ErrInvalidPublicKey
+        return
+    }
+
     h := hashFunc()
 
     var attempts int
     for attempts = 10; attempts > 0; attempts-- {
-        k := new(big.Int)
-        buf := make([]byte, n)
-        for {
-            _, err = io.ReadFull(rand, buf)
-            if err != nil {
-                return
-            }
-            k.SetBytes(buf)
-
-            if k.Sign() > 0 && k.Cmp(priv.Q) < 0 {
-                break
-            }
-        }
-
         /* r = h(I2BS(alpha, pi) || M) */
         pi := new(big.Int).Exp(priv.G, k, priv.P)
         piBuf := pi.FillBytes(make([]byte, byteceil(priv.P.BitLen())))

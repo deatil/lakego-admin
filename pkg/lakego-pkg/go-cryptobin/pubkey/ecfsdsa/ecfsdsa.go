@@ -1,8 +1,9 @@
-package ecgdsa
+package ecfsdsa
 
 import (
     "io"
     "hash"
+    "bytes"
     "errors"
     "math/big"
     "crypto"
@@ -11,16 +12,19 @@ import (
 
     "golang.org/x/crypto/cryptobyte"
     "golang.org/x/crypto/cryptobyte/asn1"
+
+    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 var (
-    ErrParametersNotSetUp = errors.New("go-cryptobin/ecgdsa: parameters not set up before generating key")
-    ErrInvalidASN1        = errors.New("go-cryptobin/ecgdsa: invalid ASN.1")
-    ErrInvalidSignerOpts  = errors.New("go-cryptobin/ecgdsa: opts must be *SignerOpts")
+    ErrParametersNotSetUp = errors.New("go-cryptobin/ecfsdsa: parameters not set up before generating key")
+    ErrInvalidASN1        = errors.New("go-cryptobin/ecfsdsa: invalid ASN.1")
+    ErrInvalidSignerOpts  = errors.New("go-cryptobin/ecfsdsa: opts must be *SignerOpts")
 )
 
 var (
     zero = big.NewInt(0)
+    one  = new(big.Int).SetInt64(1)
 )
 
 type Hasher = func() hash.Hash
@@ -109,12 +113,10 @@ func GenerateKey(random io.Reader, c elliptic.Curve) (*PrivateKey, error) {
         return nil, err
     }
 
-    dInv := fermatInverse(d, c.Params().N)
-
     priv := new(PrivateKey)
     priv.PublicKey.Curve = c
     priv.D = d
-    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(dInv.Bytes())
+    priv.PublicKey.X, priv.PublicKey.Y = c.ScalarBaseMult(d.Bytes())
 
     return priv, nil
 }
@@ -123,19 +125,15 @@ func GenerateKey(random io.Reader, c elliptic.Curve) (*PrivateKey, error) {
 func NewPrivateKey(curve elliptic.Curve, k []byte) (*PrivateKey, error) {
     d := new(big.Int).SetBytes(k)
 
-    one := new(big.Int).SetInt64(1)
-
     n := new(big.Int).Sub(curve.Params().N, one)
     if d.Cmp(n) >= 0 {
-        return nil, errors.New("cryptobin/ecgdsa: privateKey's D is overflow")
+        return nil, errors.New("cryptobin/ecfsdsa: privateKey's D is overflow")
     }
-
-    dInv := fermatInverse(d, curve.Params().N)
 
     priv := new(PrivateKey)
     priv.PublicKey.Curve = curve
     priv.D = d
-    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(dInv.Bytes())
+    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(d.Bytes())
 
     return priv, nil
 }
@@ -152,7 +150,7 @@ func PrivateKeyTo(key *PrivateKey) []byte {
 func NewPublicKey(curve elliptic.Curve, k []byte) (*PublicKey, error) {
     x, y := elliptic.Unmarshal(curve, k)
     if x == nil || y == nil {
-        return nil, errors.New("cryptobin/ecgdsa: incorrect public key")
+        return nil, errors.New("cryptobin/ecfsdsa: incorrect public key")
     }
 
     pub := &PublicKey{
@@ -226,44 +224,59 @@ func SignBytes(rand io.Reader, priv *PrivateKey, h Hasher, data []byte) (sig []b
         return nil, err
     }
 
-    byteLen := (priv.Curve.Params().BitSize + 7) / 8
+    curveParams := priv.Curve.Params()
+    p := curveParams.P
 
-    sig = make([]byte, 2 * byteLen)
+    plen := (p.BitLen() + 7) / 8
+    qlen := (curveParams.BitSize + 7) / 8
 
-    r.FillBytes(sig[:byteLen])
-    s.FillBytes(sig[byteLen:])
+    sig = make([]byte, 2 * plen + qlen)
+
+    r.FillBytes(sig[:2 * plen])
+    s.FillBytes(sig[2 * plen:])
 
     return
 }
 
 // Verify verifies the Bytes encoded signature
 func VerifyBytes(pub *PublicKey, h Hasher, data, sig []byte) bool {
-    byteLen := (pub.Curve.Params().BitSize + 7) / 8
+    curveParams := pub.Curve.Params()
+    p := curveParams.P
 
-    if len(sig) != 2*byteLen {
+    plen := (p.BitLen() + 7) / 8
+    qlen := (curveParams.BitSize + 7) / 8
+
+    if len(sig) != 2 * plen + qlen {
         return false
     }
 
-    r := new(big.Int).SetBytes(sig[:byteLen])
-    s := new(big.Int).SetBytes(sig[byteLen:])
+    r := new(big.Int).SetBytes(sig[:2 * plen])
+    s := new(big.Int).SetBytes(sig[2 * plen:])
 
     return VerifyWithRS(pub, h, data, r, s)
 }
 
-/**
- *| IUF - EC-GDSA signature
+/*
+ *| IUF - ECFSDSA signature
  *|
- *|  UF 1. Compute h = H(m). If |h| > bitlen(q), set h to bitlen(q)
- *|	   leftmost (most significant) bits of h
- *|   F 2. Compute e = - OS2I(h) mod q
- *|   F 3. Get a random value k in [0,q]
- *|   F 4. Compute W = (W_x,W_y) = kG
- *|   F 5. Compute r = W_x mod q
- *|   F 6. If r is 0, restart the process at step 4.
- *|   F 7. Compute s = x(kr + e) mod q
- *|   F 8. If s is 0, restart the process at step 4.
+ *| I   1. Get a random value k in ]0,q[
+ *| I   2. Compute W = (W_x,W_y) = kG
+ *| I   3. Compute r = FE2OS(W_x)||FE2OS(W_y)
+ *| I   4. If r is an all zero string, restart the process at step 1.
+ *| IUF 5. Compute h = H(r||m)
+ *|   F 6. Compute e = OS2I(h) mod q
+ *|   F 7. Compute s = (k + ex) mod q
+ *|   F 8. If s is 0, restart the process at step 1 (see c. below)
  *|   F 9. Return (r,s)
  *
+ * Implementation notes:
+ *
+ * a) sig is built as the concatenation of r and s. r is encoded on
+ *    2*ceil(bitlen(p)) bytes and s on ceil(bitlen(q)) bytes.
+ * b) in EC-FSDSA, the public part of the key is not needed per se during
+ *    the signature but - as it is needed in other signature algs implemented
+ *    in the library - the whole key pair is passed instead of just the
+ *    private key.
  */
 func SignToRS(rand io.Reader, priv *PrivateKey, hashFunc Hasher, msg []byte) (r, s *big.Int, err error) {
     if priv == nil || priv.Curve == nil ||
@@ -277,53 +290,48 @@ func SignToRS(rand io.Reader, priv *PrivateKey, hashFunc Hasher, msg []byte) (r,
     curve := priv.Curve
     curveParams := curve.Params()
     n := curveParams.N
+    p := curveParams.P
 
-    w := (n.BitLen() + 7) / 8
-    hsize := h.Size()
-    d := priv.D
-
-    /* 1. Compute h = H(m) */
-    h.Write(msg)
-    eBuf := h.Sum(nil)
-
-    rshift := 0
-    if hsize > w {
-        rshift = (hsize - w) * 8
-    }
-
-    e := new(big.Int).SetBytes(eBuf)
-    if rshift > 0 {
-        e.Rsh(e, uint(rshift))
-    }
-
-    // 2: e = q - (h mod q) (except when h is 0).
-    e = e.Mod(e, n)
-    e.Mod(e.Neg(e), n)
+    plen := (p.BitLen() + 7) / 8
 
 Retry:
+    /*  1. Get a random value k in ]0,q[ */
     k, err := randFieldElement(rand, priv.Curve)
     if err != nil {
         return
     }
 
-    // 4: Compute W = kG = (Wx, Wy) */
-    x1, _ := curve.ScalarBaseMult(k.Bytes())
+    /*  2. Compute W = (W_x,W_y) = kG */
+    x1, y1 := curve.ScalarBaseMult(k.Bytes())
 
-    // 5. Compute r = Wx mod q */
-    r = new(big.Int)
-    r.Mod(x1, n)
+    /*  3. Compute r = FE2OS(W_x)||FE2OS(W_y) */
+    rBytes := make([]byte, 2*plen)
+    x1.FillBytes(rBytes[:plen])
+    y1.FillBytes(rBytes[plen:])
 
-    if r.Cmp(zero) == 0 {
+    /*  4. If r is an all zero string, restart the process at step 1. */
+    if alias.ConstantTimeAllZero(rBytes) {
         goto Retry
     }
 
-    /* 7. Compute s = x(kr + e) mod q */
-    kr := new(big.Int)
-    kr.Mod(kr.Mul(k, r), n)
+    r = new(big.Int)
+    r.SetBytes(rBytes)
+
+    /*  5. Compute h = H(r||m). */
+    h.Write(rBytes)
+    h.Write(msg)
+    eBuf := h.Sum(nil)
+
+    /*  6. Compute e by converting h to an integer and reducing it mod q */
+    e := new(big.Int).SetBytes(eBuf)
+    e.Mod(e, n)
+
+    /*  7. Compute s = (k + ex) mod q */
+    ex := new(big.Int)
+    ex.Mod(ex.Mul(e, priv.D), n)
 
     s = new(big.Int)
-    s.Mod(s.Add(kr, e), n)
-    s.Mod(s.Mul(d, s), n)
+    s.Mod(s.Add(k, ex), n)
 
     if s.Cmp(zero) == 0 {
         goto Retry
@@ -333,17 +341,15 @@ Retry:
 }
 
 /*
- *| IUF - EC-GDSA verification
+ *| IUF - ECFSDSA verification
  *|
- *| I   1. Reject the signature if r or s is 0.
- *|  UF 2. Compute h = H(m). If |h| > bitlen(q), set h to bitlen(q)
- *|	   leftmost (most significant) bits of h
- *|   F 3. Compute e = OS2I(h) mod q
- *|   F 4. Compute u = ((r^-1)e mod q)
- *|   F 5. Compute v = ((r^-1)s mod q)
- *|   F 6. Compute W' = uG + vY
- *|   F 7. Compute r' = W'_x mod q
- *|   F 8. Accept the signature if and only if r equals r'
+ *| I   1. Reject the signature if r is not a valid point on the curve.
+ *| I   2. Reject the signature if s is not in ]0,q[
+ *| IUF 3. Compute h = H(r||m)
+ *|   F 4. Convert h to an integer and then compute e = -h mod q
+ *|   F 5. compute W' = sG + eY, where Y is the public key
+ *|   F 6. Compute r' = FE2OS(W'_x)||FE2OS(W'_y)
+ *|   F 7. Accept the signature if and only if r equals r'
  *
  */
 func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) bool {
@@ -362,50 +368,56 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
     curve := pub.Curve
     curveParams := pub.Curve.Params()
     n := curveParams.N
+    p := curveParams.P
 
-    w := (n.BitLen() + 7) / 8
-    hsize := h.Size()
+    plen := (p.BitLen() + 7) / 8
 
-    /* 1. Compute h = H(m) */
+    /* Check that s is in ]0,q[ */
+    if s.Cmp(n) >= 0 {
+        return false
+    }
+
+    /*  1. Reject the signature if r is not a valid point on the curve. */
+    rBytes := make([]byte, 2*plen)
+    r.FillBytes(rBytes)
+
+    rxBuf := rBytes[:plen]
+    ryBuf := rBytes[plen:]
+
+    rx := new(big.Int).SetBytes(rxBuf)
+    ry := new(big.Int).SetBytes(ryBuf)
+
+    if !pub.Curve.IsOnCurve(rx, ry) {
+        return false
+    }
+
+    /* 3. Compute h = H(r||m) */
+    h.Write(rBytes)
     h.Write(data)
     eBuf := h.Sum(nil)
 
-    rshift := 0
-    if hsize > w {
-        rshift = (hsize - w) * 8
-    }
-
+    /*
+     * 4. Convert h to an integer and then compute e = -h mod q
+     *
+     * Because we only support positive integers, we compute
+     * e = q - (h mod q) (except when h is 0).
+     */
     e := new(big.Int).SetBytes(eBuf)
-    if rshift > 0 {
-        e.Rsh(e, uint(rshift))
-    }
+    e.Mod(e, n)
 
-    /* 3. Compute e by converting h to an integer and reducing it mod q */
-    e = e.Mod(e, n)
+    e.Mod(e.Neg(e), n)
 
-    /* 4. Compute u = (r^-1)e mod q */
-    rinv := new(big.Int).ModInverse(r, n)
-    u := new(big.Int).Mul(rinv, e)
-    u.Mod(u, n)
+    /* 5. compute W' = (W'_x,W'_y) = sG + eY, where Y is the public key */
+    x21, y21 := curve.ScalarMult(pub.X, pub.Y, e.Bytes())
+    x22, y22 := curve.ScalarBaseMult(s.Bytes())
+    x2, y2 := curve.Add(x21, y21, x22, y22)
 
-    /* 5. Compute v = (r^-1)s mod q */
-    v := new(big.Int).Mul(rinv, s)
-    v.Mod(v, n)
+    /* 7. Accept the signature if and only if r equals r' */
+    rPrime := make([]byte, 2*plen)
+    x2.FillBytes(rPrime[:plen])
+    y2.FillBytes(rPrime[plen:])
 
-    /* 6. Compute W' = uG + vY */
-    x21, y21 := curve.ScalarMult(pub.X, pub.Y, v.Bytes())
-    x22, y22 := curve.ScalarBaseMult(u.Bytes())
-    x2, _ := curve.Add(x21, y21, x22, y22)
-
-    /* 7. Compute r' = W'_x mod q */
-    rPrime := x2.Mod(x2, n)
-
-    return r.Cmp(rPrime) == 0
-}
-
-func XY(D *big.Int, c elliptic.Curve) (X, Y *big.Int) {
-    dInv := fermatInverse(D, c.Params().N)
-    return c.ScalarBaseMult(dInv.Bytes())
+    return bytes.Equal(rBytes, rPrime)
 }
 
 // randFieldElement returns a random element of the order of the given
@@ -429,14 +441,9 @@ func randFieldElement(rand io.Reader, c elliptic.Curve) (k *big.Int, err error) 
     }
 }
 
-func fermatInverse(a, N *big.Int) *big.Int {
-    two := big.NewInt(2)
-    nMinus2 := new(big.Int).Sub(N, two)
-    return new(big.Int).Exp(a, nMinus2, N)
-}
-
 // bigIntEqual reports whether a and b are equal leaking only their bit length
 // through timing side-channels.
 func bigIntEqual(a, b *big.Int) bool {
     return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
+

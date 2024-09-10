@@ -3,7 +3,7 @@ package pbkdf2
 // Key derives a key from the password, salt and iteration count, returning a
 // []byte of length keylen that can be used as cryptographic key.
 func Key(password, salt []byte, iter, keyLen int, p PRF) []byte {
-    prf := p.Hash(password)
+    prf := p.NewHash(password)
 
     hashLen := prf.Size()
     numBlocks := (keyLen + hashLen - 1) / hashLen

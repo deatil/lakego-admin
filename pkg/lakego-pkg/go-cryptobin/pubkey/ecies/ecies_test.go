@@ -1,4 +1,4 @@
-package ecc
+package ecies
 
 import (
     "io"

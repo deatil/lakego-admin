@@ -9,22 +9,34 @@ import (
 )
 
 type PRF interface {
-    Hash(key []byte) hash.Hash
+    NewHash(key []byte) hash.Hash
 }
 
 type HmacPRF struct {
-    Hasher func() hash.Hash
+    Hash func() hash.Hash
 }
 
-func (prf HmacPRF) Hash(key []byte) hash.Hash {
-    return hmac.New(prf.Hasher, key)
+func NewHmacPRF(h func() hash.Hash) HmacPRF {
+    return HmacPRF{
+        Hash: h,
+    }
+}
+
+func (prf HmacPRF) NewHash(key []byte) hash.Hash {
+    return hmac.New(prf.Hash, key)
 }
 
 type CmacPRF struct {
     Cipher func(key []byte) (cipher.Block, error)
 }
 
-func (prf CmacPRF) Hash(key []byte) hash.Hash {
+func NewCmacPRF(cip func(key []byte) (cipher.Block, error)) CmacPRF {
+    return CmacPRF{
+        Cipher: cip,
+    }
+}
+
+func (prf CmacPRF) NewHash(key []byte) hash.Hash {
     cip, err := prf.Cipher(key)
     if err != nil {
         panic(err.Error())

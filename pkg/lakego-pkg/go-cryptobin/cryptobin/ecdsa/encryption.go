@@ -4,7 +4,7 @@ import (
     "errors"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/pubkey/ecc"
+    "github.com/deatil/go-cryptobin/pubkey/ecies"
 )
 
 // 公钥加密
@@ -15,9 +15,9 @@ func (this ECDSA) Encrypt() ECDSA {
         return this.AppendError(err)
     }
 
-    publicKey := ecc.ImportECDSAPublicKey(this.publicKey)
+    publicKey := ecies.ImportECDSAPublicKey(this.publicKey)
 
-    parsedData, err := ecc.Encrypt(rand.Reader, publicKey, this.data, nil, nil)
+    parsedData, err := ecies.Encrypt(rand.Reader, publicKey, this.data, nil, nil)
     if err != nil {
         return this.AppendError(err)
     }
@@ -35,9 +35,9 @@ func (this ECDSA) Decrypt() ECDSA {
         return this.AppendError(err)
     }
 
-    privateKey := ecc.ImportECDSAPrivateKey(this.privateKey)
+    privateKey := ecies.ImportECDSAPrivateKey(this.privateKey)
 
-    parsedData, err := ecc.Decrypt(privateKey, this.data, nil, nil)
+    parsedData, err := ecies.Decrypt(privateKey, this.data, nil, nil)
     if err != nil {
         return this.AppendError(err)
     }

@@ -116,12 +116,12 @@ func GetPbkdfPRF(algId int) pbkdf2.PRF {
         case 0:
             // HMAC(SHA-1)
             return pbkdf2.HmacPRF{
-                Hasher: sha1.New,
+                Hash: sha1.New,
             }
         case 1:
             // HMAC(SHA-256)
             return pbkdf2.HmacPRF{
-                Hasher: sha256.New,
+                Hash: sha256.New,
             }
         case 2:
             // CMAC(Blowfish)
@@ -133,12 +133,12 @@ func GetPbkdfPRF(algId int) pbkdf2.PRF {
         case 3:
             // HMAC(SHA-384)
             return pbkdf2.HmacPRF{
-                Hasher: sha512.New384,
+                Hash: sha512.New384,
             }
         case 4:
             // HMAC(SHA-512)
             return pbkdf2.HmacPRF{
-                Hasher: sha512.New,
+                Hash: sha512.New,
             }
     }
 
