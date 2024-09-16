@@ -1,7 +1,6 @@
 package saferplus
 
 import (
-    "sync"
     "strconv"
     "crypto/cipher"
 
@@ -11,16 +10,10 @@ import (
 const BlockSize = 8
 
 const (
-    TAB_LEN = 256;
-    SAFER_BLOCK_LEN = 8;
-    SAFER_MAX_NOF_ROUNDS = 13;
+    TAB_LEN = 256
+    SAFER_BLOCK_LEN = 8
+    SAFER_MAX_NOF_ROUNDS = 13
 )
-
-var once sync.Once
-
-func initAll() {
-    init_tab()
-}
 
 type KeySizeError int
 
@@ -41,8 +34,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
         default:
             return nil, KeySizeError(len(key))
     }
-
-    once.Do(initAll)
 
     c := new(saferplusCipher)
     c.expandKey(key)

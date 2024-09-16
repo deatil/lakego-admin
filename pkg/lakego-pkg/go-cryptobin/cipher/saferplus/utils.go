@@ -42,12 +42,10 @@ func rotr32(x uint32, n uint32) uint32 {
     return rotl32(x, 32 - n);
 }
 
-var (
-    exp_tab [256]uint8
-    log_tab [256]uint8
-)
+func genTab() ([256]byte, [256]byte) {
+    var exp_tab [256]byte
+    var log_tab [256]byte
 
-func init_tab() {
     var exp_val uint = 1;
 
     for i := 0; i < TAB_LEN; i++ {
@@ -56,4 +54,6 @@ func init_tab() {
 
         exp_val = exp_val * 45 % 257;
     }
+
+    return exp_tab, log_tab
 }
