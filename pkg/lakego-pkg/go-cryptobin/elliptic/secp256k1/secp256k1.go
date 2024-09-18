@@ -142,3 +142,74 @@ func (crv *secp256k1) CombinedMult(Px, Py *big.Int, s1, s2 []byte) (x, y *big.In
     ret.FromJacobian(&retj1)
     return ret.ToBig(new(big.Int), new(big.Int))
 }
+
+// polynomial returns x3 + 7.
+func (crv *secp256k1) polynomial(x *big.Int) *big.Int {
+    x3 := new(big.Int).Mul(x, x)
+    x3.Mul(x3, x)
+
+    b := big.NewInt(7)
+
+    x3.Add(x3, b)
+    x3.Mod(x3, crv.Params().P)
+
+    return x3
+}
+
+// Unmarshal implements elliptic.Unmarshal.
+func (crv *secp256k1) Unmarshal(data []byte) (x, y *big.Int) {
+    byteLen := (crv.Params().BitSize + 7) / 8
+    if len(data) != 1+2*byteLen {
+        return nil, nil
+    }
+    if data[0] != 4 { // uncompressed form
+        return nil, nil
+    }
+
+    p := crv.Params().P
+    x = new(big.Int).SetBytes(data[1 : 1+byteLen])
+    y = new(big.Int).SetBytes(data[1+byteLen:])
+
+    if x.Cmp(p) >= 0 || y.Cmp(p) >= 0 {
+        return nil, nil
+    }
+    if !crv.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
+}
+
+// UnmarshalCompressed implements elliptic.UnmarshalCompressed.
+func (crv *secp256k1) UnmarshalCompressed(data []byte) (x, y *big.Int) {
+    byteLen := (crv.Params().BitSize + 7) / 8
+    if len(data) != 1+byteLen {
+        return nil, nil
+    }
+    if data[0] != 2 && data[0] != 3 { // compressed form
+        return nil, nil
+    }
+
+    p := crv.Params().P
+    x = new(big.Int).SetBytes(data[1:])
+    if x.Cmp(p) >= 0 {
+        return nil, nil
+    }
+
+    // y² = x3 + 7
+    y = crv.polynomial(x)
+    y = y.ModSqrt(y, p)
+    if y == nil {
+        return nil, nil
+    }
+
+    if byte(y.Bit(0)) != data[0]&1 {
+        y.Neg(y).Mod(y, p)
+    }
+
+    if !crv.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
+}

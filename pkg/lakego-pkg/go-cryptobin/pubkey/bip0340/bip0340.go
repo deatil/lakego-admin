@@ -37,6 +37,7 @@ func (opts *SignerOpts) GetHash() Hasher {
     return opts.Hash
 }
 
+// Schnorr Signatures for secp256k1
 // bip0340 PublicKey
 type PublicKey struct {
     elliptic.Curve

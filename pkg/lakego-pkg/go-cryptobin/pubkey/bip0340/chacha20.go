@@ -6,6 +6,32 @@ import (
 
 const CHACHA20_MAX_ASKED_LEN = 64
 
+func qround(a, b, c, d *uint32) {
+    (*a) += (*b)
+    (*d) ^= (*a)
+    (*d) = rotl((*d), 16)
+    (*c) += (*d)
+    (*b) ^= (*c)
+    (*b) = rotl((*b), 12)
+    (*a) += (*b)
+    (*d) ^= (*a)
+    (*d) = rotl((*d), 8)
+    (*c) += (*d)
+    (*b) ^= (*c)
+    (*b) = rotl((*b), 7)
+}
+
+func innerBlock(s []uint32) {
+    qround(&s[0], &s[4], &s[ 8], &s[12])
+    qround(&s[1], &s[5], &s[ 9], &s[13])
+    qround(&s[2], &s[6], &s[10], &s[14])
+    qround(&s[3], &s[7], &s[11], &s[15])
+    qround(&s[0], &s[5], &s[10], &s[15])
+    qround(&s[1], &s[6], &s[11], &s[12])
+    qround(&s[2], &s[7], &s[ 8], &s[13])
+    qround(&s[3], &s[4], &s[ 9], &s[14])
+}
+
 func chacha20Block(key [32]byte, nonce [12]byte, blockCounter uint32, stream []byte) error {
     var state [16]uint32
     var initial_state [16]uint32

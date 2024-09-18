@@ -72,6 +72,12 @@ func Test_Hash_Check(t *testing.T) {
                 0x30, 0x6B, 0xFB, 0x0B, 0x17, 0x4A, 0x15, 0x4A,
             },
         },
+
+        {
+            fromHex("b194bac80a08f53b366d008e584a5de48504fa9d1bb6c7ac252e72c202fdce0d5be3d61217b96181fe6786ad716b890b5cb0c0ff33c356b835c405aed8e07f99e12bdc1ae28257ec703fccf095ee8df1c1ab76389fe678caf7c6f860d5bb9c4f"),
+            fromHex("c2fcd359337235d240e6498969ea3f5c73c8967ea4923d8476a62944573b7e87"),
+        },
+
     }
 
     h := New()

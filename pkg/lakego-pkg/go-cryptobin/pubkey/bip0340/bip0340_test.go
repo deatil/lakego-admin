@@ -14,6 +14,8 @@ import (
     "encoding/hex"
     "encoding/pem"
     "encoding/base64"
+
+    "github.com/deatil/go-cryptobin/elliptic/secp256k1"
 )
 
 func str(s string) string {
@@ -237,11 +239,95 @@ func Test_bigintIsodd(t *testing.T) {
     }
 }
 
+func Test_S256_Curve_Add(t *testing.T) {
+    {
+        a1 := toBigint("dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659")
+        b1 := toBigint("2ce19b946c4ee58546f5251d441a065ea50735606985e5b228788bec4e582898")
+        a2 := toBigint("dd308afec5777e13121fa72b9cc1b7cc0139715309b086c960e18fd969774eb8")
+        b2 := toBigint("f594bb5f72b37faae396a4259ea64ed5e6fdeb2a51c6467582b275925fab1394")
+
+        xx, yy := S256().Add(a1, b1, a2, b2)
+
+        xx2 := fmt.Sprintf("%x", xx.Bytes())
+        yy2 := fmt.Sprintf("%x", yy.Bytes())
+
+        xxcheck := "0b4b8b19e1666914c37647bf3eac2acc4348b02ef8b1f2940c8bf10a381df22c"
+        yycheck := "1fbbb6a4be23f0019261e05f4d26114059b001649b998160020c0c4c31000ce5"
+
+        if xx2 != xxcheck {
+            t.Errorf("xx fail, got %s, want %s", xx2, xxcheck)
+        }
+        if yy2 != yycheck {
+            t.Errorf("yy fail, got %s, want %s", yy2, yycheck)
+        }
+    }
+
+    {
+        a1 := toBigint("dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659")
+        b1 := toBigint("2ce19b946c4ee58546f5251d441a065ea50735606985e5b228788bec4e582898")
+
+        xx, yy := S256().Add(a1, b1, a1, b1)
+
+        xx2 := fmt.Sprintf("%x", xx.Bytes())
+        yy2 := fmt.Sprintf("%x", yy.Bytes())
+
+        xxcheck := "768c61d8c3acc2bbbf37dec4e62b9c481802fd817a4dbc7d5542f02375412945"
+        yycheck := "e227f7076346296e92364b75508102d997f66170764bcffb2bce80ff0e77be0a"
+
+        if xx2 != xxcheck {
+            t.Errorf("xx fail, got %s, want %s", xx2, xxcheck)
+        }
+        if yy2 != yycheck {
+            t.Errorf("yy fail, got %s, want %s", yy2, yycheck)
+        }
+    }
+
+    {
+        a1 := toBigint("dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659")
+        b1 := toBigint("2ce19b946c4ee58546f5251d441a065ea50735606985e5b228788bec4e582898")
+
+        xx, yy := S256().Double(a1, b1)
+
+        xx2 := fmt.Sprintf("%x", xx.Bytes())
+        yy2 := fmt.Sprintf("%x", yy.Bytes())
+
+        xxcheck := "768c61d8c3acc2bbbf37dec4e62b9c481802fd817a4dbc7d5542f02375412945"
+        yycheck := "e227f7076346296e92364b75508102d997f66170764bcffb2bce80ff0e77be0a"
+
+        if xx2 != xxcheck {
+            t.Errorf("xx fail, got %s, want %s", xx2, xxcheck)
+        }
+        if yy2 != yycheck {
+            t.Errorf("yy fail, got %s, want %s", yy2, yycheck)
+        }
+    }
+
+    {
+        a1 := toBigint("dff1d77f2a671c5f36183726db2341be58feae1da2deced843240f7b502ba659")
+        b1 := toBigint("2ce19b946c4ee58546f5251d441a065ea50735606985e5b228788bec4e582898")
+
+        xx, yy := secp256k1.S256().Double(a1, b1)
+
+        xx2 := fmt.Sprintf("%x", xx.Bytes())
+        yy2 := fmt.Sprintf("%x", yy.Bytes())
+
+        xxcheck := "768c61d8c3acc2bbbf37dec4e62b9c481802fd817a4dbc7d5542f02375412945"
+        yycheck := "e227f7076346296e92364b75508102d997f66170764bcffb2bce80ff0e77be0a"
+
+        if xx2 != xxcheck {
+            t.Errorf("xx fail, got %s, want %s", xx2, xxcheck)
+        }
+        if yy2 != yycheck {
+            t.Errorf("yy fail, got %s, want %s", yy2, yycheck)
+        }
+    }
+}
+
 func Test_Vec_Check(t *testing.T) {
     for i, td := range testSigVec {
         t.Run(fmt.Sprintf("index %d", i), func(t *testing.T) {
             if len(td.secretKey) > 0 {
-                priv, err := NewPrivateKey(P256(), td.secretKey)
+                priv, err := NewPrivateKey(S256(), td.secretKey)
                 if err != nil {
                     t.Fatal(err)
                 }
@@ -250,6 +336,7 @@ func Test_Vec_Check(t *testing.T) {
 
                 pubBytes := pub.X.Bytes()
 
+                // check publicKey
                 if !bytes.Equal(pubBytes, td.publicKey) {
                     t.Errorf("PublicKey got: %x, want: %x", pubBytes, td.publicKey)
                 }
@@ -262,7 +349,8 @@ func Test_Vec_Check(t *testing.T) {
                     t.Error("SignUsingKToRS fail")
                 }
 
-                curveParams := P256().Params()
+                // check sig
+                curveParams := S256().Params()
                 p := curveParams.P
 
                 plen := (p.BitLen() + 7) / 8
@@ -281,13 +369,13 @@ func Test_Vec_Check(t *testing.T) {
 
             pubBytes := append([]byte{byte(3)}, td.publicKey...)
 
-            x, y := UnmarshalCompressed(P256(), pubBytes)
+            x, y := elliptic.UnmarshalCompressed(S256(), pubBytes)
             if x == nil || y == nil {
                 t.Fatal("publicKey error")
             }
 
             pubkey := &PublicKey{
-                Curve: P256(),
+                Curve: S256(),
                 X: x,
                 Y: y,
             }
@@ -302,20 +390,71 @@ func Test_Vec_Check(t *testing.T) {
 
 }
 
-func Test_Add(t *testing.T) {
-    a1 := new(big.Int).SetBytes(fromHex("1b"))
-    b1 := new(big.Int).SetBytes(fromHex("1a"))
-    a2 := new(big.Int).SetBytes(fromHex("2b"))
-    b2 := new(big.Int).SetBytes(fromHex("2a"))
+func Test_Vec_Check_secp256k1(t *testing.T) {
+    for i, td := range testSigVec {
+        t.Run(fmt.Sprintf("index %d", i), func(t *testing.T) {
+            if len(td.secretKey) > 0 {
+                priv, err := NewPrivateKey(secp256k1.S256(), td.secretKey)
+                if err != nil {
+                    t.Fatal(err)
+                }
 
-    xx, yy := P256().Add(a1, b1, a2, b2)
+                pub := &priv.PublicKey
 
-    if fmt.Sprintf("%x", xx.Bytes()) != "fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffbea" {
-        t.Error("xx fail")
+                pubBytes := pub.X.Bytes()
+
+                // check publicKey
+                if !bytes.Equal(pubBytes, td.publicKey) {
+                    t.Errorf("PublicKey got: %x, want: %x", pubBytes, td.publicKey)
+                }
+
+                // do sig
+                k := new(big.Int).SetBytes(td.auxRand)
+
+                r, s, err := SignUsingKToRS(k, priv, sha256.New, td.message)
+                if err != nil {
+                    t.Error("SignUsingKToRS fail")
+                }
+
+                // check sig
+                curveParams := secp256k1.S256().Params()
+                p := curveParams.P
+
+                plen := (p.BitLen() + 7) / 8
+                qlen := (curveParams.BitSize + 7) / 8
+
+                sig := make([]byte, plen + qlen)
+
+                r.FillBytes(sig[:plen])
+                s.FillBytes(sig[plen:])
+
+                if !bytes.Equal(sig, td.signature) {
+                    t.Errorf("sig fail, got: %x, want: %x", sig, td.signature)
+                }
+
+            }
+
+            pubBytes := append([]byte{byte(3)}, td.publicKey...)
+
+            x, y := elliptic.UnmarshalCompressed(secp256k1.S256(), pubBytes)
+            if x == nil || y == nil {
+                t.Fatal("publicKey error")
+            }
+
+            pubkey := &PublicKey{
+                Curve: secp256k1.S256(),
+                X: x,
+                Y: y,
+            }
+
+            veri := VerifyBytes(pubkey, sha256.New, td.message, td.signature)
+            if veri != td.verification {
+                t.Error("VerifyBytes fail")
+            }
+
+        })
     }
-    if fmt.Sprintf("%x", yy.Bytes()) != "46" {
-        t.Error("yy fail")
-    }
+
 }
 
 // sha256, p256

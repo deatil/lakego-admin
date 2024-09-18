@@ -68,6 +68,9 @@ func (curve *CurveParams) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
         return new(big.Int), new(big.Int)
     }
 
+    panicIfNotOnCurve(curve, x1, y1)
+    panicIfNotOnCurve(curve, x2, y2)
+
     two := big.NewInt(2)
     three := big.NewInt(3)
 
@@ -157,6 +160,67 @@ func (curve *CurveParams) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.
 // ScalarBaseMult implements Curve.ScalarBaseMult.
 func (curve *CurveParams) ScalarBaseMult(k []byte) (*big.Int, *big.Int) {
     return curve.ScalarMult(curve.Gx, curve.Gy, k)
+}
+
+// Unmarshal implements elliptic.Unmarshal.
+func (curve *CurveParams) Unmarshal(data []byte) (x, y *big.Int) {
+    byteLen := (curve.Params().BitSize + 7) / 8
+
+    if len(data) != 1+2*byteLen {
+        return nil, nil
+    }
+    if data[0] != 4 { // uncompressed form
+        return nil, nil
+    }
+
+    p := curve.Params().P
+    x = new(big.Int).SetBytes(data[1 : 1+byteLen])
+    y = new(big.Int).SetBytes(data[1+byteLen:])
+
+    if x.Cmp(p) >= 0 || y.Cmp(p) >= 0 {
+        return nil, nil
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
+}
+
+// UnmarshalCompressed implements elliptic.UnmarshalCompressed.
+func (curve *CurveParams) UnmarshalCompressed(data []byte) (x, y *big.Int) {
+    byteLen := (curve.Params().BitSize + 7) / 8
+
+    if len(data) != 1+byteLen {
+        return nil, nil
+    }
+    if data[0] != 2 && data[0] != 3 { // compressed form
+        return nil, nil
+    }
+
+    p := curve.Params().P
+    x = new(big.Int).SetBytes(data[1:])
+    if x.Cmp(p) >= 0 {
+        return nil, nil
+    }
+
+    // y² = x³ + 7
+    y = curve.polynomial(x)
+    y = y.ModSqrt(y, p)
+    if y == nil {
+        return nil, nil
+    }
+
+    if byte(y.Bit(0)) != data[0]&1 {
+        y.Neg(y).Mod(y, p)
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        return nil, nil
+    }
+
+    return
 }
 
 func panicIfNotOnCurve(curve elliptic.Curve, x, y *big.Int) {
