@@ -4,27 +4,21 @@ import (
     "hash"
 )
 
+// New returns a new hash.Hash computing the echo checksum
+func New(hs int) (hash.Hash, error) {
+    return NewWithSalt(hs, nil)
+}
+
+// NewWithSalt returns a new hash.Hash computing the echo checksum
+func NewWithSalt(hashsize int, salt []byte) (hash.Hash, error) {
+    return newDigest(hashsize, salt)
+}
+
+// ===========
+
 // New224 returns a new hash.Hash computing the ECHO checksum
 func New224() hash.Hash {
     h, _ := New(224)
-    return h
-}
-
-// New256 returns a new hash.Hash computing the ECHO checksum
-func New256() hash.Hash {
-    h, _ := New(256)
-    return h
-}
-
-// New384 returns a new hash.Hash computing the ECHO checksum
-func New384() hash.Hash {
-    h, _ := New(384)
-    return h
-}
-
-// New512 returns a new hash.Hash computing the ECHO checksum
-func New512() hash.Hash {
-    h, _ := New(512)
     return h
 }
 
@@ -38,6 +32,14 @@ func Sum224(data []byte) (sum224 [Size224]byte) {
     return
 }
 
+// ===========
+
+// New256 returns a new hash.Hash computing the ECHO checksum
+func New256() hash.Hash {
+    h, _ := New(256)
+    return h
+}
+
 // Sum256 returns the ECHO-256 checksum of the data.
 func Sum256(data []byte) (sum256 [Size256]byte) {
     h := New256()
@@ -48,6 +50,14 @@ func Sum256(data []byte) (sum256 [Size256]byte) {
     return
 }
 
+// ===========
+
+// New384 returns a new hash.Hash computing the ECHO checksum
+func New384() hash.Hash {
+    h, _ := New(384)
+    return h
+}
+
 // Sum384 returns the ECHO-384 checksum of the data.
 func Sum384(data []byte) (sum384 [Size384]byte) {
     h := New384()
@@ -56,6 +66,14 @@ func Sum384(data []byte) (sum384 [Size384]byte) {
 
     copy(sum384[:], sum[:Size384])
     return
+}
+
+// ===========
+
+// New512 returns a new hash.Hash computing the ECHO checksum
+func New512() hash.Hash {
+    h, _ := New(512)
+    return h
 }
 
 // Sum512 returns the ECHO-512 checksum of the data.

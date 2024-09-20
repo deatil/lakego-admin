@@ -1,9 +1,9 @@
 package hash
 
 import (
-    "strconv"
     "hash"
     "hash/adler32"
+    "strconv"
     "crypto/md5"
     "crypto/sha1"
     "crypto/hmac"
