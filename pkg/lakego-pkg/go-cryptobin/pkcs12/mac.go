@@ -64,41 +64,56 @@ var (
     oidGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 3}
 )
 
-// 返回使用的 Hash 方式
-func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
+// (that is, H has a chaining variable and output of length u bits, and
+// the message input to the compression function of H is v bits).  The
+// values for u and v are as follows:
+//            HASH FUNCTION     VALUE u        VALUE v
+//              MD2, MD5          128            512
+//                SHA-1           160            512
+//               SHA-224          224            512
+//               SHA-256          256            512
+//               SHA-384          384            1024
+//               SHA-512          512            1024
+//             SHA-512/224        224            1024
+//             SHA-512/256        256            1024
+
+// 返回使用的 Hash
+// return hash from oid
+func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, int, error) {
     switch {
         case oid.Equal(oidMD2):
-            return md2.New, nil
+            return md2.New, 64, nil
         case oid.Equal(oidMD4):
-            return md4.New, nil
+            return md4.New, 64, nil
         case oid.Equal(oidMD5):
-            return md5.New, nil
+            return md5.New, 64, nil
         case oid.Equal(oidSHA1):
-            return sha1.New, nil
+            return sha1.New, 64, nil
         case oid.Equal(oidSHA224):
-            return sha256.New224, nil
+            return sha256.New224, 64, nil
         case oid.Equal(oidSHA256):
-            return sha256.New, nil
+            return sha256.New, 64, nil
         case oid.Equal(oidSHA384):
-            return sha512.New384, nil
+            return sha512.New384, 128, nil
         case oid.Equal(oidSHA512):
-            return sha512.New, nil
+            return sha512.New, 128, nil
         case oid.Equal(oidSHA512_224):
-            return sha512.New512_224, nil
+            return sha512.New512_224, 128, nil
         case oid.Equal(oidSHA512_256):
-            return sha512.New512_256, nil
+            return sha512.New512_256, 128, nil
         case oid.Equal(oidSM3):
-            return sm3.New, nil
+            return sm3.New, 64, nil
         case oid.Equal(oidGOST34112012256):
-            return gost34112012256.New, nil
+            return gost34112012256.New, 64, nil
         case oid.Equal(oidGOST34112012512):
-            return gost34112012512.New, nil
+            return gost34112012512.New, 128, nil
     }
 
-    return nil, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
+    return nil, 0, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
 }
 
-// 返回使用的 Hash 对应的 asn1
+// 返回使用的 Hash 对应的 oid
+// return oid from hash type
 func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
     switch h {
         case MD2:
@@ -175,8 +190,12 @@ func (this MacData) Verify(message []byte, password []byte) (err error) {
 func (this MacData) parseMacParam(password []byte) (h func() hash.Hash, key []byte, err error) {
     var alg asn1.ObjectIdentifier
 
-    if this.Mac.Algorithm.Algorithm.String() != "" {
-        h, err = hashByOID(this.Mac.Algorithm.Algorithm)
+    oid := this.Mac.Algorithm.Algorithm
+
+    var v int
+
+    if oid.String() != "" {
+        h, v, err = hashByOID(oid)
         if err != nil {
             return
         }
@@ -186,13 +205,11 @@ func (this MacData) parseMacParam(password []byte) (h func() hash.Hash, key []by
             return
         }
 
-        h, err = hashByOID(alg)
+        h, v, err = hashByOID(alg)
         if err != nil {
             return
         }
     }
-
-    oid := this.Mac.Algorithm.Algorithm
 
     switch {
         case oid.Equal(oidGOST34112012256),
@@ -207,7 +224,7 @@ func (this MacData) parseMacParam(password []byte) (h func() hash.Hash, key []by
         default:
             hashSize := h().Size()
 
-            key = pbkdf.Key(h, hashSize, 64, this.MacSalt, password, this.Iterations, 3, hashSize)
+            key = pbkdf.Key(h, hashSize, v, this.MacSalt, password, this.Iterations, 3, hashSize)
     }
 
     return
@@ -241,7 +258,7 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
         },
     }
 
-    h, err := hashByOID(alg)
+    h, v, err := hashByOID(alg)
     if err != nil {
         return nil, err
     }
@@ -265,7 +282,7 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
         default:
             hashSize := h().Size()
 
-            key = pbkdf.Key(h, hashSize, 64, macSalt, password, this.IterationCount, 3, hashSize)
+            key = pbkdf.Key(h, hashSize, v, macSalt, password, this.IterationCount, 3, hashSize)
     }
 
     mac := hmac.New(h, key)

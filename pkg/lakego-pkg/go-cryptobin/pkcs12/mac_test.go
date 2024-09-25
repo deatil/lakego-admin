@@ -12,7 +12,7 @@ func Test_hashByOID_fail(t *testing.T) {
 
     oidFail := asn1.ObjectIdentifier{1, 222, 643, 777, 12, 13, 5, 1}
 
-    _, err := hashByOID(oidFail)
+    _, _, err := hashByOID(oidFail)
     if err == nil {
         t.Error("should throw panic")
     }

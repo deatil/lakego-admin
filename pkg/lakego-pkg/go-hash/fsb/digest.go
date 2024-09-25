@@ -22,7 +22,7 @@ type digest struct {
     /* current syndrome */
     syndrome []byte
     /* space to store new syndrome */
-    new_syndrome []uint32
+    newSyndrome []uint32
     /* input buffer */
     buffer []byte
     /* number of bits in the buffer */
@@ -95,7 +95,7 @@ func (d *digest) Reset() {
             }
 
             d.syndrome = make([]byte, LUI(d.r) * 4)
-            d.new_syndrome = make([]uint32, LUI(d.r))
+            d.newSyndrome = make([]uint32, LUI(d.r))
             d.buffer = make([]byte, d.inputsize>>3)
             d.count = 0
         }
@@ -120,7 +120,7 @@ func (d *digest) Write(data []byte) (nn int, err error) {
 }
 
 func (d *digest) write(data []byte, databitlen uint32) (err error) {
-    var tmp,i int
+    var tmp, i uint32
     var remaining byte
 
     /* we check if this Update will fill one buffer */
@@ -136,9 +136,9 @@ func (d *digest) write(data []byte, databitlen uint32) (err error) {
             return nil
         } else {
             d.buffer[d.count>>3] ^= d.buffer[d.count>>3] & ((1<<(8-(d.count&7)))-1)
-            for i=0; i<=int(databitlen>>3); i++ {
-                d.buffer[int(d.count>>3)+i] ^= data[i]>>(d.count&7)
-                d.buffer[int(d.count>>3)+i+1] = data[i]<<(8-(d.count&7))
+            for i = 0; i <= databitlen>>3; i++ {
+                d.buffer[d.count>>3+i] ^= data[i]>>(d.count&7)
+                d.buffer[d.count>>3+i+1] = data[i]<<(8-(d.count&7))
             }
 
             d.databitlen += uint64(databitlen)
@@ -148,45 +148,45 @@ func (d *digest) write(data []byte, databitlen uint32) (err error) {
     } else {
         /* we fill up the buffer, perform a hash and recursively call Update */
         if (d.count & 7) == 0 {
-            tmp = int(d.inputsize - d.count)
+            tmp = d.inputsize - d.count
             copy(d.buffer[d.count>>3:], data[:tmp>>3])
 
             d.databitlen += uint64(tmp)
-            d.count += uint32(tmp)
+            d.count += tmp
             d.performHash()
 
-            return d.write(data[tmp>>3:], uint32(int(databitlen)-tmp))
+            return d.write(data[tmp>>3:], databitlen - tmp)
         } else {
             /* tmp contains the number of bits we have to read to fill up the buffer */
-            tmp = int(d.inputsize - d.count)
+            tmp = d.inputsize - d.count
 
             d.buffer[d.count>>3] ^= d.buffer[d.count>>3] & ((1<<(8-(d.count&7)))-1)
             for i=0; i<(tmp>>3); i++ {
-                d.buffer[int(d.count>>3)+i] ^= data[i]>>(d.count&7)
-                d.buffer[int(d.count>>3)+i+1] = data[i]<<(8-(d.count&7))
+                d.buffer[d.count>>3+i] ^= data[i]>>(d.count&7)
+                d.buffer[d.count>>3+i+1] = data[i]<<(8-(d.count&7))
             }
 
             d.buffer[(d.inputsize>>3)-1] ^= data[tmp>>3]>>(d.count&7)
 
             /* perform this round's hash */
             d.databitlen += uint64(tmp)
-            d.count += uint32(tmp)
+            d.count += tmp
             d.performHash()
 
             /* we check if there are still some bits to input */
-            if int(databitlen) > tmp {
+            if databitlen > tmp {
                 /* we check if these bits are stored in more than the end of the byte data[tmp>>3] already read */
-                if int(databitlen) > (((tmp>>3)+1)<<3) {
+                if databitlen > (((tmp>>3)+1)<<3) {
                     /* we first re-input the remaining bits in data[tmp>>3] then perform the recursive call */
                     remaining = byte(uint32(data[tmp>>3]) << (tmp&7))
                     d.write([]byte{remaining}, uint32(8-(tmp&7)))
 
-                    return d.write(data[tmp>>3:], uint32(int(databitlen)-(((tmp>>3)+1)<<3)))
+                    return d.write(data[tmp>>3:], databitlen - (((tmp>>3)+1)<<3))
                 } else {
                     /* we simply input the remaining bits of data[tmp>>3] */
                     remaining = byte(uint32(data[tmp>>3]) << (tmp&7))
 
-                    return d.write([]byte{remaining}, databitlen - uint32(tmp))
+                    return d.write([]byte{remaining}, databitlen - tmp)
                 }
             } else {
                 return nil
@@ -249,8 +249,8 @@ func (d *digest) performHash() {
     var i,j,index,bidx,tmp int
     var temp []uint32
 
-    for i := range d.new_syndrome {
-        d.new_syndrome[i] = 0
+    for i := range d.newSyndrome {
+        d.newSyndrome[i] = 0
     }
 
     for i=0; i<int(d.w); i++ {
@@ -295,12 +295,12 @@ func (d *digest) performHash() {
         /* we have finished computing the vector index and shift, now we XOR it! */
         temp = bytesToUints(d.firstLine[bidx][index&7][int(d.r>>3)-(index>>3):])
         for j = int(d.r)/(4<<3)-1; j >= 0; j-- {
-            d.new_syndrome[j] ^= temp[j]
+            d.newSyndrome[j] ^= temp[j]
         }
     }
 
-    temp = d.new_syndrome;
-    d.new_syndrome = bytesToUints(d.syndrome)
+    temp = d.newSyndrome;
+    d.newSyndrome = bytesToUints(d.syndrome)
     d.syndrome = uintsToBytes(temp)
     d.count = 0
 }

@@ -75,7 +75,8 @@ func P512v1() elliptic.Curve {
 func bigFromHex(s string) *big.Int {
     b, ok := new(big.Int).SetString(s, 16)
     if !ok {
-        panic("go-cryptobin/bign: internal error: invalid encoding")
+        panic("go-cryptobin/bign: invalid encoding")
     }
+
     return b
 }

@@ -10,7 +10,7 @@ import (
 )
 
 var (
-    errBlockSize = errors.New("krypto/gmac: requires 128-bit block cipher")
+    errBlockSize = errors.New("go-hash/gmac: requires 128-bit block cipher")
 )
 
 var defaultIV [gcm.GCMStandardNonceSize]byte

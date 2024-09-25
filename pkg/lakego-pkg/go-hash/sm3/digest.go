@@ -20,83 +20,83 @@ func newDigest() *digest {
     return d
 }
 
-func (this *digest) Reset() {
-    this.s = iv
-    this.x = [BlockSize]byte{}
+func (d *digest) Reset() {
+    d.s = iv
+    d.x = [BlockSize]byte{}
 
-    this.len = 0
-    this.nx = 0
+    d.len = 0
+    d.nx = 0
 }
 
-func (this *digest) Size() int {
+func (d *digest) Size() int {
     return Size
 }
 
-func (this *digest) BlockSize() int {
+func (d *digest) BlockSize() int {
     return BlockSize
 }
 
 // Write is the interface for IO Writer
-func (this *digest) Write(p []byte) (nn int, err error) {
+func (d *digest) Write(p []byte) (nn int, err error) {
     nn = len(p)
 
-    this.len += uint64(nn)
+    d.len += uint64(nn)
 
-    this.nx &= 0x3f
+    d.nx &= 0x3f
 
     plen := len(p)
-    for this.nx + plen >= BlockSize {
-        copy(this.x[this.nx:], p)
+    for d.nx + plen >= BlockSize {
+        copy(d.x[d.nx:], p)
 
-        this.processBlock(this.x[:])
+        d.processBlock(d.x[:])
 
-        xx := BlockSize - this.nx
+        xx := BlockSize - d.nx
         plen -= xx
 
         p = p[xx:]
-        this.nx = 0
+        d.nx = 0
     }
 
-    copy(this.x[this.nx:], p)
-    this.nx += plen
+    copy(d.x[d.nx:], p)
+    d.nx += plen
 
     return
 }
 
-func (this *digest) Sum(in []byte) []byte {
+func (d *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d := *this
-    sum := d.checkSum()
+    d0 := *d
+    sum := d0.checkSum()
     return append(in, sum[:]...)
 }
 
-func (this *digest) checkSum() [Size]byte {
-    this.nx &= 0x3f
-    this.x[this.nx] = 0x80
+func (d *digest) checkSum() [Size]byte {
+    d.nx &= 0x3f
+    d.x[d.nx] = 0x80
 
     zeros := make([]byte, BlockSize)
-    copy(this.x[this.nx + 1:], zeros)
+    copy(d.x[d.nx + 1:], zeros)
 
-    if BlockSize - this.nx < 9 {
-        this.processBlock(this.x[:])
-        copy(this.x[:], zeros)
+    if BlockSize - d.nx < 9 {
+        d.processBlock(d.x[:])
+        copy(d.x[:], zeros)
     }
 
-    bcount := this.len / BlockSize
+    bcount := d.len / BlockSize
 
-    PUTU32(this.x[56:], uint32(bcount >> 23))
-    PUTU32(this.x[60:], uint32((bcount << 9) + (uint64(this.nx) << 3)))
+    PUTU32(d.x[56:], uint32(bcount >> 23))
+    PUTU32(d.x[60:], uint32((bcount << 9) + (uint64(d.nx) << 3)))
 
-    this.processBlock(this.x[:])
+    d.processBlock(d.x[:])
 
     var digest [Size]byte
     for i := 0; i < 8; i++ {
-        PUTU32(digest[i*4:], this.s[i])
+        PUTU32(digest[i*4:], d.s[i])
     }
 
     return digest
 }
 
-func (this *digest) processBlock(data []byte) {
-    compressBlock(this.s[:], data)
+func (d *digest) processBlock(data []byte) {
+    block(d, data)
 }
