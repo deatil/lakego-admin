@@ -1,11 +1,13 @@
 package secp256k1
 
 import (
+    "testing"
     "crypto/ecdsa"
     "crypto/rand"
     "crypto/sha256"
     "encoding/hex"
-    "testing"
+
+    cryptobin_ecdsa "github.com/deatil/go-cryptobin/pubkey/ecdsa"
 )
 
 func decodeHex(s string) []byte {
@@ -373,4 +375,78 @@ func BenchmarkCombinedMultMinus1(b *testing.B) {
     for i := 0; i < b.N; i++ {
         crv.CombinedMult(x, y, k, k)
     }
+}
+
+func Test_ECDSA(t *testing.T) {
+    cryptobin_ecdsa.AddNamedCurve(S256(), OIDNamedCurveSecp256k1)
+
+    t.Run("PKCS8", func(t *testing.T) {
+        curue := S256()
+
+        priv, err := ecdsa.GenerateKey(curue, rand.Reader)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        pub := priv.Public().(*ecdsa.PublicKey)
+
+        pubDer, err := cryptobin_ecdsa.MarshalPublicKey(pub)
+        if err != nil {
+            t.Fatal(err)
+        }
+        privDer, err := cryptobin_ecdsa.MarshalPrivateKey(priv)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        if len(privDer) == 0 {
+            t.Error("expected export key Der error: priv")
+        }
+        if len(pubDer) == 0 {
+            t.Error("expected export key Der error: pub")
+        }
+
+        newPub, err := cryptobin_ecdsa.ParsePublicKey(pubDer)
+        if err != nil {
+            t.Fatal(err)
+        }
+        newPriv, err := cryptobin_ecdsa.ParsePrivateKey(privDer)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        if !newPriv.Equal(priv) {
+            t.Error("Marshal privekey error")
+        }
+        if !newPub.Equal(pub) {
+            t.Error("Marshal public error")
+        }
+    })
+
+    t.Run("PKCS1", func(t *testing.T) {
+        curue := S256()
+
+        priv, err := ecdsa.GenerateKey(curue, rand.Reader)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        privDer, err := cryptobin_ecdsa.MarshalECPrivateKey(priv)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        if len(privDer) == 0 {
+            t.Error("expected export key Der error: EC priv")
+        }
+
+        newPriv, err := cryptobin_ecdsa.ParseECPrivateKey(privDer)
+        if err != nil {
+            t.Fatal(err)
+        }
+
+        if !newPriv.Equal(priv) {
+            t.Error("Marshal EC privekey error")
+        }
+    })
 }

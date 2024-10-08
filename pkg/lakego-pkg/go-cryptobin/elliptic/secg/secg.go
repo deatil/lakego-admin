@@ -1,6 +1,32 @@
 package secg
 
-import "github.com/deatil/go-cryptobin/elliptic/base_elliptic"
+import (
+    "encoding/asn1"
+
+    "github.com/deatil/go-cryptobin/elliptic/base_elliptic"
+)
+
+var (
+    OIDNamedCurveSect113r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 4}
+    OIDNamedCurveSect113r2 = asn1.ObjectIdentifier{1, 3, 132, 0, 5}
+    OIDNamedCurveSect131r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 22}
+    OIDNamedCurveSect131r2 = asn1.ObjectIdentifier{1, 3, 132, 0, 23}
+    OIDNamedCurveSect163k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 1}
+    OIDNamedCurveSect163r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 2}
+    OIDNamedCurveSect163r2 = asn1.ObjectIdentifier{1, 3, 132, 0, 15}
+    OIDNamedCurveSect193r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 24}
+    OIDNamedCurveSect193r2 = asn1.ObjectIdentifier{1, 3, 132, 0, 25}
+
+    OIDNamedCurveSect233k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 26}
+    OIDNamedCurveSect233r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 27}
+    OIDNamedCurveSect239k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 3}
+    OIDNamedCurveSect283k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 16}
+    OIDNamedCurveSect283r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 17}
+    OIDNamedCurveSect409k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 36}
+    OIDNamedCurveSect409r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 37}
+    OIDNamedCurveSect571k1 = asn1.ObjectIdentifier{1, 3, 132, 0, 38}
+    OIDNamedCurveSect571r1 = asn1.ObjectIdentifier{1, 3, 132, 0, 39}
+)
 
 // Sect113r1 returns a Curve which implements SECG sect113r1
 //

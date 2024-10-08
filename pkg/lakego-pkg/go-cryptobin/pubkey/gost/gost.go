@@ -138,18 +138,10 @@ func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
         return nil, errors.New("cryptobin/gost: zero private key")
     }
 
-    k = k.Mod(k, curve.Q)
-
-    x, y, err := curve.Exp(k, curve.X, curve.Y)
-    if err != nil {
-        return nil, err
-    }
-
     priv := new(PrivateKey)
     priv.D = k
     priv.PublicKey.Curve = curve
-    priv.PublicKey.X = x
-    priv.PublicKey.Y = y
+    priv.PublicKey.X, priv.PublicKey.Y = curve.ScalarBaseMult(k.Bytes())
 
     return priv, nil
 }
@@ -269,10 +261,7 @@ Retry:
         goto Retry
     }
 
-    r, _, err = priv.Curve.Exp(k, priv.Curve.X, priv.Curve.Y)
-    if err != nil {
-        return nil, nil, err
-    }
+    r, _ = priv.Curve.ScalarBaseMult(k.Bytes())
 
     r.Mod(r, priv.Curve.Q)
     if r.Cmp(zero) == 0 {
@@ -320,15 +309,8 @@ func VerifyWithRS(pub *PublicKey, digest []byte, r, s *big.Int) (bool, error) {
     z2.Mod(z2, pub.Curve.Q)
     z2.Sub(pub.Curve.Q, z2)
 
-    p1x, p1y, err := pub.Curve.Exp(z1, pub.Curve.X, pub.Curve.Y)
-    if err != nil {
-        return false, err
-    }
-
-    q1x, q1y, err := pub.Curve.Exp(z2, pub.X, pub.Y)
-    if err != nil {
-        return false, err
-    }
+    p1x, p1y := pub.Curve.ScalarBaseMult(z1.Bytes())
+    q1x, q1y := pub.Curve.ScalarMult(pub.X, pub.Y, z2.Bytes())
 
     lm := big.NewInt(0)
     lm.Sub(q1x, p1x)

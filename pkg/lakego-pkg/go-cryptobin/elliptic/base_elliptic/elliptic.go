@@ -1,8 +1,5 @@
-package base_elliptic
-
 // Package `base_elliptic` implements Elliptic curves over binary fields
-
-// from github.com/RyuaNerin/elliptic2
+package base_elliptic
 
 // Create new elliptic curves over binary fields
 // warning: params dose not validated.

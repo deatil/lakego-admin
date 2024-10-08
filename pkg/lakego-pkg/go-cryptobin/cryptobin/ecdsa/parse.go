@@ -2,8 +2,8 @@ package ecdsa
 
 import (
     "errors"
-    "crypto/ecdsa"
     "crypto/x509"
+    "crypto/ecdsa"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs1"

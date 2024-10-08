@@ -208,7 +208,7 @@ func parsePBMAC1Param(param []byte, password []byte) (h func() hash.Hash, key []
 
 // PBMAC1 配置
 type PBMAC1Opts struct {
-    hasKeyLength   bool
+    HasKeyLength   bool
     SaltSize       int
     IterationCount int
     KDFHash        PBMAC1Hash
@@ -318,7 +318,7 @@ func (this PBMAC1Opts) computeKDF(password []byte) (key []byte, kdf []byte, err 
     }
 
     // 设置 KeyLength
-    if this.hasKeyLength {
+    if this.HasKeyLength {
         kdfParams.KeyLength = size
     }
 

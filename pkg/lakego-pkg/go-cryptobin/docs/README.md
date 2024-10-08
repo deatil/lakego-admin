@@ -6,6 +6,7 @@
 * rsa 使用文档: [rsa.md](rsa.md)
 * dsa 使用文档: [dsa.md](dsa.md)
 * ecdsa 使用文档: [ecdsa.md](ecdsa.md)
+* ecgdsa 使用文档: [ecgdsa.md](ecgdsa.md)
 * eddsa 使用文档: [eddsa.md](eddsa.md)
 * ecdh 使用文档: [ecdh.md](ecdh.md)
 * sm2 使用文档: [sm2.md](sm2.md)

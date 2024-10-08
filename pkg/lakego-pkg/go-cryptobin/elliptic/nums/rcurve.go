@@ -25,6 +25,7 @@ var (
 
 func newRcurve(twisted elliptic.Curve, params *elliptic.CurveParams, z *big.Int) *rcurve {
     zinv := new(big.Int).ModInverse(z, params.P)
+
     return &rcurve{
         twisted: twisted,
         params:  params,
@@ -39,19 +40,19 @@ func newRcurve(twisted elliptic.Curve, params *elliptic.CurveParams, z *big.Int)
 
 func (curve *rcurve) toTwisted(x, y *big.Int) (*big.Int, *big.Int) {
     var tx, ty big.Int
-    tx.Mul(x, curve.z2)
-    tx.Mod(&tx, curve.params.P)
-    ty.Mul(y, curve.z3)
-    ty.Mod(&ty, curve.params.P)
+    tx.Mul(x, curve.z2)         // tx = (z^2 mod p) * x
+    tx.Mod(&tx, curve.params.P) // tx = tx mod p
+    ty.Mul(y, curve.z3)         // ty = (z^3 mod p) * y
+    ty.Mod(&ty, curve.params.P) // ty = ty mod p
     return &tx, &ty
 }
 
 func (curve *rcurve) fromTwisted(tx, ty *big.Int) (*big.Int, *big.Int) {
     var x, y big.Int
-    x.Mul(tx, curve.zinv2)
-    x.Mod(&x, curve.params.P)
-    y.Mul(ty, curve.zinv3)
-    y.Mod(&y, curve.params.P)
+    x.Mul(tx, curve.zinv2)    // x = (zinv^2 mod p) * tx
+    x.Mod(&x, curve.params.P) // x = x mod p
+    y.Mul(ty, curve.zinv3)    // y = (zinv^3 mod p) * ty
+    y.Mod(&y, curve.params.P) // y = y mod p
     return &x, &y
 }
 

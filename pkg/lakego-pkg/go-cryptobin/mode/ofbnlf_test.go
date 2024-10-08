@@ -23,7 +23,7 @@ func Test_OFBNLF(t *testing.T) {
     plaintext2 := make([]byte, len(ciphertext))
     mode2.CryptBlocks(plaintext2, ciphertext)
 
-    assertNotEmpty(plaintext2, "NewOFBNLF")
+    assertNotEmpty(plaintext2, "Test_OFBNLF")
 
-    assertEqual(plaintext2, plaintext, "NewOFBNLF-Equal")
+    assertEqual(plaintext2, plaintext, "Test_OFBNLF-Equal")
 }

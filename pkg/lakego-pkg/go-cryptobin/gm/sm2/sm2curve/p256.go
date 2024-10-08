@@ -13,7 +13,7 @@ var p256 = &sm2Curve{
 
 func initP256() {
     p256.params = &elliptic.CurveParams{
-        Name:    "SM2-P-256",
+        Name:    "sm2p256v1",
         BitSize: 256,
         P:       bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000FFFFFFFFFFFFFFFF"),
         N:       bigFromHex("FFFFFFFEFFFFFFFFFFFFFFFFFFFFFFFF7203DF6B21C6052B53BBF40939D54123"),

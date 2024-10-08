@@ -3,6 +3,7 @@ package gost
 import (
     "errors"
     "math/big"
+    "crypto/elliptic"
 )
 
 var (
@@ -69,19 +70,20 @@ func NewCurve(p, q, a, b, x, y, e, d, co *big.Int) (*Curve, error) {
     return &c, nil
 }
 
-// Contains
-func (c *Curve) IsOnCurve(x, y *big.Int) bool {
-    r1 := big.NewInt(0)
-    r2 := big.NewInt(0)
-    r1.Mul(y, y)
-    r1.Mod(r1, c.P)
-    r2.Mul(x, x)
-    r2.Add(r2, c.A)
-    r2.Mul(r2, x)
-    r2.Add(r2, c.B)
-    r2.Mod(r2, c.P)
-    c.pos(r2)
-    return r1.Cmp(r2) == 0
+func (c *Curve) Params() *elliptic.CurveParams {
+    return &elliptic.CurveParams{
+        P: c.P,
+        N: c.Q,
+        B: c.B,
+        Gx: c.X,
+        Gy: c.Y,
+        BitSize: c.P.BitLen(),
+        Name: c.Name,
+    }
+}
+
+func (c *Curve) GostParams() *Curve {
+    return c
 }
 
 // Get the size of the point's coordinate in bytes.
@@ -94,8 +96,29 @@ func (c *Curve) PointSize() int {
     return 32
 }
 
-func (c *Curve) Params() *Curve {
-    return c
+// polynomial returns (x2 + A) * x + B.
+func (c *Curve) polynomial(x *big.Int) *big.Int {
+    // x2 = ((x2 + A) * x + B) mod p
+    // if x2 < 0, x2 = x2 + P
+    x2 := big.NewInt(0)
+    x2.Mul(x, x)
+    x2.Add(x2, c.A)
+    x2.Mul(x2, x)
+    x2.Add(x2, c.B)
+    x2.Mod(x2, c.P)
+    c.pos(x2)
+
+    return x2
+}
+
+// Contains
+func (c *Curve) IsOnCurve(x, y *big.Int) bool {
+    // y2 = y2 mod p
+    y2 := big.NewInt(0)
+    y2.Mul(y, y)
+    y2.Mod(y2, c.P)
+
+    return c.polynomial(x).Cmp(y2) == 0
 }
 
 func (c *Curve) pos(v *big.Int) {
@@ -144,31 +167,29 @@ func (c *Curve) add(p1x, p1y, p2x, p2y *big.Int) {
 }
 
 func (c *Curve) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
-    var px, py big.Int
+    panicIfNotOnCurve(c, x1, y1)
+    panicIfNotOnCurve(c, x2, y2)
 
-    px.Set(x1)
-    py.Set(y1)
+    px := new(big.Int).Set(x1)
+    py := new(big.Int).Set(y1)
 
-    c.add(&px, &py, x2, y2)
+    c.add(px, py, x2, y2)
 
-    return &px, &py
+    return px, py
 }
 
-func (c *Curve) Double(p1x, p1y *big.Int) (x *big.Int, y *big.Int) {
-    var t, tx big.Int
+func (c *Curve) Double(x1, y1 *big.Int) (x *big.Int, y *big.Int) {
+    panicIfNotOnCurve(c, x1, y1)
 
-    t.Mul(p1x, p1x)
-    t.Mul(&t, bigInt3)
-    t.Add(&t, c.A)
-    tx.Mul(bigInt2, p1y)
-    tx.ModInverse(&tx, c.P)
-    t.Mul(&t, &tx)
-    t.Mod(&t, c.P)
+    x2 := new(big.Int).Set(x1)
+    y2 := new(big.Int).Set(y1)
 
-    return &t, &tx
+    return c.Add(x2, y2, x2, y2)
 }
 
 func (c *Curve) ScalarMult(x1, y1 *big.Int, key []byte) (x *big.Int, y *big.Int) {
+    panicIfNotOnCurve(c, x1, y1)
+
     k := bigIntFromBytes(key)
     if k.Cmp(zero) == 0 {
         panic("cryptobin/gost: zero key")
@@ -185,19 +206,7 @@ func (c *Curve) ScalarMult(x1, y1 *big.Int, key []byte) (x *big.Int, y *big.Int)
 }
 
 func (c *Curve) ScalarBaseMult(key []byte) (x, y *big.Int) {
-    k := bigIntFromBytes(key)
-    if k.Cmp(zero) == 0 {
-        panic("cryptobin/gost: zero key")
-    }
-
-    k = k.Mod(k, c.Q)
-
-    x, y, err := c.Exp(k, c.X, c.Y)
-    if err != nil {
-        panic("cryptobin/gost: ScalarBaseMult was called on an invalid point")
-    }
-
-    return
+    return c.ScalarMult(c.X, c.Y, key)
 }
 
 func (c *Curve) Exp(degree, xS, yS *big.Int) (*big.Int, *big.Int, error) {
@@ -237,5 +246,17 @@ func (c *Curve) Equal(x *Curve) bool {
 
 func (c *Curve) String() string {
     return c.Name
+}
+
+func panicIfNotOnCurve(curve *Curve, x, y *big.Int) {
+    // (0, 0) is the point at infinity by convention. It's ok to operate on it,
+    // although IsOnCurve is documented to return false for it. See Issue 37294.
+    if x.Sign() == 0 && y.Sign() == 0 {
+        return
+    }
+
+    if !curve.IsOnCurve(x, y) {
+        panic("cryptobin/gost: attempted operation on invalid point")
+    }
 }
 

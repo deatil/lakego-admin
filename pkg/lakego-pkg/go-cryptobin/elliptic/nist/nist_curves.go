@@ -9,16 +9,11 @@ import (
 var initonce sync.Once
 
 var (
-    k163 base_elliptic.Curve
-    b163 base_elliptic.Curve
-    k233 base_elliptic.Curve
-    b233 base_elliptic.Curve
-    k283 base_elliptic.Curve
-    b283 base_elliptic.Curve
-    k409 base_elliptic.Curve
-    b409 base_elliptic.Curve
-    k571 base_elliptic.Curve
-    b571 base_elliptic.Curve
+    k163, b163 base_elliptic.Curve
+    k233, b233 base_elliptic.Curve
+    k283, b283 base_elliptic.Curve
+    k409, b409 base_elliptic.Curve
+    k571, b571 base_elliptic.Curve
 )
 
 func initAll() {

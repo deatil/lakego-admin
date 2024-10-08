@@ -30,17 +30,11 @@ func (prv *PrivateKey) KEK(pub *PublicKey, ukm *big.Int) ([]byte, error) {
         return nil, fmt.Errorf("cryptobin/gost.KEK: PublicKey not same Curve")
     }
 
-    keyX, keyY, err := prv.Curve.Exp(prv.D, pub.X, pub.Y)
-    if err != nil {
-        return nil, fmt.Errorf("cryptobin/gost.KEK: %w", err)
-    }
+    keyX, keyY := prv.Curve.ScalarMult(pub.X, pub.Y, prv.D.Bytes())
 
     u := new(big.Int).Set(ukm).Mul(ukm, prv.Curve.Co)
     if u.Cmp(bigInt1) != 0 {
-        keyX, keyY, err = prv.Curve.Exp(u, keyX, keyY)
-        if err != nil {
-            return nil, fmt.Errorf("cryptobin/gost.KEK: %w", err)
-        }
+        keyX, keyY = prv.Curve.ScalarMult(keyX, keyY, u.Bytes())
     }
 
     return Marshal(prv.Curve, keyX, keyY), nil

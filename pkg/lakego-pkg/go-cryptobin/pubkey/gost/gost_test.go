@@ -8,6 +8,7 @@ import (
     "crypto/rand"
     "testing"
     "encoding/hex"
+    "crypto/elliptic"
 
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -24,6 +25,12 @@ func decodeHex(s string) []byte {
 func decodeDec(s string) *big.Int {
     res, _ := new(big.Int).SetString(s, 10)
     return res
+}
+
+func Test_CurveInterface(t *testing.T) {
+    c := CurveIdGostR34102001TestParamSet()
+
+    var _ elliptic.Curve = c
 }
 
 func Test_SignerInterface(t *testing.T) {

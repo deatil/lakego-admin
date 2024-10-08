@@ -186,7 +186,7 @@ var LegacyPBMAC1Opts = Opts{
         IterationCount: 2048,
     },
     MacKDFOpts: PBMAC1Opts{
-        hasKeyLength:   true,
+        HasKeyLength:   true,
         SaltSize:       8,
         IterationCount: 2048,
         KDFHash:        PBMAC1_SHA256,

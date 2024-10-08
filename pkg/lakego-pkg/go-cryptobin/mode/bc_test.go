@@ -17,7 +17,7 @@ func Test_BC(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "NewBCEncrypter")
+    assertError(err, "Test_BC")
 
     mode := NewBCEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -27,7 +27,7 @@ func Test_BC(t *testing.T) {
     plaintext2 := make([]byte, len(ciphertext))
     mode2.CryptBlocks(plaintext2, ciphertext)
 
-    assertNotEmpty(plaintext2, "NewBCEncrypter")
+    assertNotEmpty(plaintext2, "Test_BC")
 
-    assertEqual(plaintext2, plaintext, "NewBCEncrypter-Equal")
+    assertEqual(plaintext2, plaintext, "Test_BC-Equal")
 }

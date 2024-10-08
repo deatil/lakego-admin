@@ -28,7 +28,7 @@ func (curve *CurveParams) Params() *elliptic.CurveParams {
     }
 }
 
-// polynomial returns x3 + 7.
+// polynomial returns x^3 + 7.
 func (curve *CurveParams) polynomial(x *big.Int) *big.Int {
     x3 := new(big.Int).Mul(x, x)
     x3.Mul(x3, x)
@@ -48,7 +48,7 @@ func (curve *CurveParams) IsOnCurve(x, y *big.Int) bool {
         return false
     }
 
-    // y² = x3 + 7
+    // y² = x^3 + 7
     y2 := new(big.Int).Mul(y, y)
     y2.Mod(y2, curve.P)
 
@@ -127,9 +127,7 @@ func (curve *CurveParams) Double(x1, y1 *big.Int) (*big.Int, *big.Int) {
     x2 := new(big.Int).Set(x1)
     y2 := new(big.Int).Set(y1)
 
-    x2, y2 = curve.Add(x2, y2, x2, y2)
-
-    return x2, y2
+    return curve.Add(x2, y2, x2, y2)
 }
 
 // ScalarMult implements Curve.ScalarMult.

@@ -17,7 +17,7 @@ func Test_IGE(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "NewIGEEncrypter")
+    assertError(err, "Test_IGE")
 
     mode := NewIGEEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -27,7 +27,7 @@ func Test_IGE(t *testing.T) {
     plaintext2 := make([]byte, len(ciphertext))
     mode2.CryptBlocks(plaintext2, ciphertext)
 
-    assertNotEmpty(plaintext2, "NewIGEEncrypter")
+    assertNotEmpty(plaintext2, "Test_IGE")
 
-    assertEqual(plaintext2, plaintext, "NewIGEEncrypter-Equal")
+    assertEqual(plaintext2, plaintext, "Test_IGE-Equal")
 }

@@ -11,6 +11,7 @@ import (
     "crypto/sha256"
     "crypto/sha512"
     "crypto/x509/pkix"
+    "crypto/cipher"
     "encoding/asn1"
 
     "golang.org/x/crypto/md4"
@@ -19,8 +20,10 @@ import (
     "github.com/deatil/go-cryptobin/kdf/gost_pbkdf2"
     "github.com/deatil/go-cryptobin/hash/md2"
     "github.com/deatil/go-cryptobin/hash/sm3"
+    "github.com/deatil/go-cryptobin/hash/gost/gost341194"
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012256"
     "github.com/deatil/go-cryptobin/hash/gost/gost34112012512"
+    cipher_gost "github.com/deatil/go-cryptobin/cipher/gost"
 )
 
 // 可使用的 hash 方式
@@ -38,6 +41,7 @@ const (
     SHA512_224
     SHA512_256
     SM3
+    GOST341194
     GOST34112012256
     GOST34112012512
 )
@@ -60,6 +64,7 @@ var (
     oidSHA512_256 = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 6}
     oidSM3        = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401}
 
+    oidGOST341194      = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 10}
     oidGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 2}
     oidGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 2, 3}
 )
@@ -103,6 +108,8 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, int, error) {
             return sha512.New512_256, 128, nil
         case oid.Equal(oidSM3):
             return sm3.New, 64, nil
+        case oid.Equal(oidGOST341194):
+            return newGOST341194Hash, 64, nil
         case oid.Equal(oidGOST34112012256):
             return gost34112012256.New, 64, nil
         case oid.Equal(oidGOST34112012512):
@@ -138,6 +145,8 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidSHA512_256, nil
         case SM3:
             return oidSM3, nil
+        case GOST341194:
+            return oidGOST341194, nil
         case GOST34112012256:
             return oidGOST34112012256, nil
         case GOST34112012512:
@@ -212,7 +221,8 @@ func (this MacData) parseMacParam(password []byte) (h func() hash.Hash, key []by
     }
 
     switch {
-        case oid.Equal(oidGOST34112012256),
+        case oid.Equal(oidGOST341194),
+            oid.Equal(oidGOST34112012256),
             oid.Equal(oidGOST34112012512):
             pass, err := decodeBMPString(password)
             if err != nil {
@@ -270,7 +280,8 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
 
     var key []byte
     switch {
-        case alg.Equal(oidGOST34112012256),
+        case alg.Equal(oidGOST341194),
+            alg.Equal(oidGOST34112012256),
             alg.Equal(oidGOST34112012512):
             pass, err := decodeBMPString(password)
             if err != nil {
@@ -299,4 +310,14 @@ func (this MacOpts) Compute(message []byte, password []byte) (data MacKDFParamet
     }
 
     return
+}
+
+func newGOST341194Hash() hash.Hash {
+    h := gost341194.New(func(key []byte) cipher.Block {
+        cip, _ := cipher_gost.NewCipher(key, cipher_gost.SboxGostR341194CryptoProParamSet)
+
+        return cip
+    })
+
+    return h
 }

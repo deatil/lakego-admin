@@ -43,15 +43,3 @@ func Unmarshal(curve *Curve, data []byte) (x, y *big.Int) {
 
     return
 }
-
-func panicIfNotOnCurve(curve *Curve, x, y *big.Int) {
-    // (0, 0) is the point at infinity by convention. It's ok to operate on it,
-    // although IsOnCurve is documented to return false for it. See Issue 37294.
-    if x.Sign() == 0 && y.Sign() == 0 {
-        return
-    }
-
-    if !curve.IsOnCurve(x, y) {
-        panic("cryptobin/gost: attempted operation on invalid point")
-    }
-}
