@@ -6,7 +6,7 @@ type (
 )
 
 // 引出错误信息
-func (this EIGamal) OnError(fn DSAErrorFunc) EIGamal {
+func (this ElGamal) OnError(fn DSAErrorFunc) ElGamal {
     fn(this.Errors)
 
     return this

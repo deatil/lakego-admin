@@ -9,19 +9,19 @@ import (
 
 var (
     prikeyXML = `
-<EIGamalKeyValue>
-    <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
+<ElGamalKeyValue>
     <P>9W35RbKvFgfHndG9wVvFDMDw86BClpDk6kdeGr1ygLc=</P>
+    <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
     <Y>120jHKCdPWjLGrqH3HiCZ2GezWyEjfEIPBMhULymfzM=</Y>
     <X>BjtroR34tS5cvF5YNJaxmOjGDas43wKFunHCYS4P6CQ=</X>
-</EIGamalKeyValue>
+</ElGamalKeyValue>
     `
     pubkeyXML = `
-<EIGamalKeyValue>
-    <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
+<ElGamalKeyValue>
     <P>9W35RbKvFgfHndG9wVvFDMDw86BClpDk6kdeGr1ygLc=</P>
+    <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
     <Y>120jHKCdPWjLGrqH3HiCZ2GezWyEjfEIPBMhULymfzM=</Y>
-</EIGamalKeyValue>
+</ElGamalKeyValue>
     `
 )
 
@@ -137,28 +137,30 @@ func Test_GenerateKeyPKCS8(t *testing.T) {
 
 var (
     pkcs1Prikey = `
------BEGIN EIGamal PRIVATE KEY-----
-MIGMAgEAAiEAz5k+pG+6n9UNyvAcbGLEcTfJ3NN8XWBpc27zqWbRY/cCIDXGstaZ
-qIVrSp3hnXtTmu/8rcbfFmhui7+Ubb37ldUrAiA1ozJHvzXn5m3cMs++nV2oT8Ij
-+c8T6Sq/5txnIQXytgIgLCd+/uxQSB05Y2xWtzz9UTVBC9Sj9uh2k5ZZlqfY8v8=
------END EIGamal PRIVATE KEY-----
+-----BEGIN ElGamal PRIVATE KEY-----
+MIGuAgEAAiEA9cZBJDM0L+NCYt4vlsMg+HdufcNdUF7Z7W2OtGogl9cCIFdwSXyl
+APOj8NYVTmMwSxZMZxoXr25rL884i3vQYOd5AiB64yCSGZoX8aExbxfLYZB8O7c+
+4a6oL2z2tsdaNRBL6wIgQTk/bOUCzJNfknsX+LvmpdQ9GVCd9ZiuR9t9nNi9VFsC
+IFNu9DFgP10mqzkn/fB/bBrV5Xc7UPhgceZneZ5yzCDk
+-----END ElGamal PRIVATE KEY-----
     `
     pkcs1EnPrikey = `
------BEGIN EIGamal PRIVATE KEY-----
+-----BEGIN ElGamal PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
-DEK-Info: DES-EDE3-CBC,a26bd66b277099bd
+DEK-Info: DES-EDE3-CBC,b1e4e15253a2dd4f
 
-YFVfbgFspb0Pr21832B3xwm1LUrf2SDu4K/Wc8MtD5Is4NCzOatQw8kYA5qkIf9p
-6CyR57wtsJCakIw3E0DKSZYNe3tQbfxRK+ZUgYAda/E0UpiLe9j/WJRQ8G9/DAOi
-mXXdz6pq4omiDVh3DcSlQJskJvoM6KE5OgJh81iuP7jbiX109ayEYPNuVODvuMTC
------END EIGamal PRIVATE KEY-----
+mA/dhLT55xsoeCG8uyvRhbHRGA8JXNCTbCn8cy5IUHsJ7FSwf/9x0r09xOq3m8G1
+U4RwuDU6+amtXY+yveQCoSphoA3KkW1px4WRlLnq4CGwaHj9vrc41NiSRthg8W/w
+ub3s3o+E3QRX2SMysKNchTz/jdsWvryliYOUYb+HnkWywOBBcaGsSn08mSDhIwQ/
+paLCOWhDigkGw55hfKARdwZKzcoiZwZNg1C7Qk82kZpTr+fww0Iqlw==
+-----END ElGamal PRIVATE KEY-----
     `
     pkcs1Pubkey = `
------BEGIN EIGamal PUBLIC KEY-----
-MGcCIQDPmT6kb7qf1Q3K8BxsYsRxN8nc03xdYGlzbvOpZtFj9wIgNcay1pmohWtK
-neGde1Oa7/ytxt8WaG6Lv5RtvfuV1SsCIDWjMke/Nefmbdwyz76dXahPwiP5zxPp
-Kr/m3GchBfK2
------END EIGamal PUBLIC KEY-----
+-----BEGIN ElGamal PUBLIC KEY-----
+MIGJAiEA9cZBJDM0L+NCYt4vlsMg+HdufcNdUF7Z7W2OtGogl9cCIFdwSXylAPOj
+8NYVTmMwSxZMZxoXr25rL884i3vQYOd5AiB64yCSGZoX8aExbxfLYZB8O7c+4a6o
+L2z2tsdaNRBL6wIgQTk/bOUCzJNfknsX+LvmpdQ9GVCd9ZiuR9t9nNi9VFs=
+-----END ElGamal PUBLIC KEY-----
     `
 )
 

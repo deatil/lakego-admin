@@ -5,13 +5,13 @@ import (
 )
 
 // 添加错误
-func (this EIGamal) AppendError(err ...error) EIGamal {
+func (this ElGamal) AppendError(err ...error) ElGamal {
     this.Errors = append(this.Errors, err...)
 
     return this
 }
 
 // 获取错误
-func (this EIGamal) Error() error {
+func (this ElGamal) Error() error {
     return tool.NewError(this.Errors...)
 }

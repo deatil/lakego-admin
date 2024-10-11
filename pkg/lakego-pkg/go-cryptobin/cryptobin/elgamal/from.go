@@ -9,7 +9,7 @@ import (
 )
 
 // 使用数据生成密钥对
-func (this EIGamal) GenerateKeyWithSeed(reader io.Reader, bitsize, probability int) EIGamal {
+func (this ElGamal) GenerateKeyWithSeed(reader io.Reader, bitsize, probability int) ElGamal {
     privateKey, err := elgamal.GenerateKey(reader, bitsize, probability)
     if err != nil {
         return this.AppendError(err)
@@ -22,24 +22,24 @@ func (this EIGamal) GenerateKeyWithSeed(reader io.Reader, bitsize, probability i
 }
 
 // 使用数据生成密钥对
-func GenerateKeyWithSeed(reader io.Reader, bitsize, probability int) EIGamal {
-    return defaultEIGamal.GenerateKeyWithSeed(reader, bitsize, probability)
+func GenerateKeyWithSeed(reader io.Reader, bitsize, probability int) ElGamal {
+    return defaultElGamal.GenerateKeyWithSeed(reader, bitsize, probability)
 }
 
 // 生成密钥
-func (this EIGamal) GenerateKey(bitsize, probability int) EIGamal {
+func (this ElGamal) GenerateKey(bitsize, probability int) ElGamal {
     return this.GenerateKeyWithSeed(rand.Reader, bitsize, probability)
 }
 
 // 生成密钥
-func GenerateKey(bitsize, probability int) EIGamal {
-    return defaultEIGamal.GenerateKey(bitsize, probability)
+func GenerateKey(bitsize, probability int) ElGamal {
+    return defaultElGamal.GenerateKey(bitsize, probability)
 }
 
 // ==========
 
 // 私钥
-func (this EIGamal) FromPrivateKey(key []byte) EIGamal {
+func (this ElGamal) FromPrivateKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err == nil {
         this.privateKey = parsedKey
@@ -58,12 +58,12 @@ func (this EIGamal) FromPrivateKey(key []byte) EIGamal {
 }
 
 // 私钥
-func FromPrivateKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPrivateKey(key)
+func FromPrivateKey(key []byte) ElGamal {
+    return defaultElGamal.FromPrivateKey(key)
 }
 
 // 私钥带密码
-func (this EIGamal) FromPrivateKeyWithPassword(key []byte, password string) EIGamal {
+func (this ElGamal) FromPrivateKeyWithPassword(key []byte, password string) ElGamal {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
     if err == nil {
         this.privateKey = parsedKey
@@ -82,12 +82,12 @@ func (this EIGamal) FromPrivateKeyWithPassword(key []byte, password string) EIGa
 }
 
 // 私钥带密码
-func FromPrivateKeyWithPassword(key []byte, password string) EIGamal {
-    return defaultEIGamal.FromPrivateKeyWithPassword(key, password)
+func FromPrivateKeyWithPassword(key []byte, password string) ElGamal {
+    return defaultElGamal.FromPrivateKeyWithPassword(key, password)
 }
 
 // 公钥
-func (this EIGamal) FromPublicKey(key []byte) EIGamal {
+func (this ElGamal) FromPublicKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err == nil {
         this.publicKey = parsedKey
@@ -106,14 +106,14 @@ func (this EIGamal) FromPublicKey(key []byte) EIGamal {
 }
 
 // 公钥
-func FromPublicKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPublicKey(key)
+func FromPublicKey(key []byte) ElGamal {
+    return defaultElGamal.FromPublicKey(key)
 }
 
 // ==========
 
 // PKCS1 私钥
-func (this EIGamal) FromPKCS1PrivateKey(key []byte) EIGamal {
+func (this ElGamal) FromPKCS1PrivateKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -125,12 +125,12 @@ func (this EIGamal) FromPKCS1PrivateKey(key []byte) EIGamal {
 }
 
 // PKCS1 私钥
-func FromPKCS1PrivateKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPKCS1PrivateKey(key)
+func FromPKCS1PrivateKey(key []byte) ElGamal {
+    return defaultElGamal.FromPKCS1PrivateKey(key)
 }
 
 // PKCS1 私钥带密码
-func (this EIGamal) FromPKCS1PrivateKeyWithPassword(key []byte, password string) EIGamal {
+func (this ElGamal) FromPKCS1PrivateKeyWithPassword(key []byte, password string) ElGamal {
     parsedKey, err := this.ParsePKCS1PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
@@ -142,12 +142,12 @@ func (this EIGamal) FromPKCS1PrivateKeyWithPassword(key []byte, password string)
 }
 
 // PKCS1 私钥带密码
-func FromPKCS1PrivateKeyWithPassword(key []byte, password string) EIGamal {
-    return defaultEIGamal.FromPKCS1PrivateKeyWithPassword(key, password)
+func FromPKCS1PrivateKeyWithPassword(key []byte, password string) ElGamal {
+    return defaultElGamal.FromPKCS1PrivateKeyWithPassword(key, password)
 }
 
 // PKCS1 公钥
-func (this EIGamal) FromPKCS1PublicKey(key []byte) EIGamal {
+func (this ElGamal) FromPKCS1PublicKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS1PublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -159,14 +159,14 @@ func (this EIGamal) FromPKCS1PublicKey(key []byte) EIGamal {
 }
 
 // PKCS1 公钥
-func FromPKCS1PublicKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPKCS1PublicKey(key)
+func FromPKCS1PublicKey(key []byte) ElGamal {
+    return defaultElGamal.FromPKCS1PublicKey(key)
 }
 
 // ==========
 
 // PKCS8 私钥
-func (this EIGamal) FromPKCS8PrivateKey(key []byte) EIGamal {
+func (this ElGamal) FromPKCS8PrivateKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -178,12 +178,12 @@ func (this EIGamal) FromPKCS8PrivateKey(key []byte) EIGamal {
 }
 
 // PKCS8 私钥
-func FromPKCS8PrivateKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPKCS8PrivateKey(key)
+func FromPKCS8PrivateKey(key []byte) ElGamal {
+    return defaultElGamal.FromPKCS8PrivateKey(key)
 }
 
 // PKCS8 私钥带密码
-func (this EIGamal) FromPKCS8PrivateKeyWithPassword(key []byte, password string) EIGamal {
+func (this ElGamal) FromPKCS8PrivateKeyWithPassword(key []byte, password string) ElGamal {
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
@@ -195,12 +195,12 @@ func (this EIGamal) FromPKCS8PrivateKeyWithPassword(key []byte, password string)
 }
 
 // PKCS8 私钥带密码
-func FromPKCS8PrivateKeyWithPassword(key []byte, password string) EIGamal {
-    return defaultEIGamal.FromPKCS8PrivateKeyWithPassword(key, password)
+func FromPKCS8PrivateKeyWithPassword(key []byte, password string) ElGamal {
+    return defaultElGamal.FromPKCS8PrivateKeyWithPassword(key, password)
 }
 
 // PKCS8 公钥
-func (this EIGamal) FromPKCS8PublicKey(key []byte) EIGamal {
+func (this ElGamal) FromPKCS8PublicKey(key []byte) ElGamal {
     parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
@@ -212,15 +212,15 @@ func (this EIGamal) FromPKCS8PublicKey(key []byte) EIGamal {
 }
 
 // PKCS8 公钥
-func FromPKCS8PublicKey(key []byte) EIGamal {
-    return defaultEIGamal.FromPKCS8PublicKey(key)
+func FromPKCS8PublicKey(key []byte) ElGamal {
+    return defaultElGamal.FromPKCS8PublicKey(key)
 }
 
 // ==========
 
 // Pkcs1 DER 私钥
-func (this EIGamal) FromPKCS1PrivateKeyDer(der []byte) EIGamal {
-    key := tool.EncodeDerToPem(der, "EIGamal PRIVATE KEY")
+func (this ElGamal) FromPKCS1PrivateKeyDer(der []byte) ElGamal {
+    key := tool.EncodeDerToPem(der, "ElGamal PRIVATE KEY")
 
     parsedKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -233,8 +233,8 @@ func (this EIGamal) FromPKCS1PrivateKeyDer(der []byte) EIGamal {
 }
 
 // PKCS1 DER 公钥
-func (this EIGamal) FromPKCS1PublicKeyDer(der []byte) EIGamal {
-    key := tool.EncodeDerToPem(der, "EIGamal PUBLIC KEY")
+func (this ElGamal) FromPKCS1PublicKeyDer(der []byte) ElGamal {
+    key := tool.EncodeDerToPem(der, "ElGamal PUBLIC KEY")
 
     parsedKey, err := this.ParsePKCS1PublicKeyFromPEM(key)
     if err != nil {
@@ -249,7 +249,7 @@ func (this EIGamal) FromPKCS1PublicKeyDer(der []byte) EIGamal {
 // ==========
 
 // Pkcs8 DER 私钥
-func (this EIGamal) FromPKCS8PrivateKeyDer(der []byte) EIGamal {
+func (this ElGamal) FromPKCS8PrivateKeyDer(der []byte) ElGamal {
     key := tool.EncodeDerToPem(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
@@ -263,7 +263,7 @@ func (this EIGamal) FromPKCS8PrivateKeyDer(der []byte) EIGamal {
 }
 
 // PKCS8 DER 公钥
-func (this EIGamal) FromPKCS8PublicKeyDer(der []byte) EIGamal {
+func (this ElGamal) FromPKCS8PublicKeyDer(der []byte) ElGamal {
     key := tool.EncodeDerToPem(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
@@ -279,7 +279,7 @@ func (this EIGamal) FromPKCS8PublicKeyDer(der []byte) EIGamal {
 // ==========
 
 // XML 私钥
-func (this EIGamal) FromXMLPrivateKey(key []byte) EIGamal {
+func (this ElGamal) FromXMLPrivateKey(key []byte) ElGamal {
     privateKey, err := this.ParsePrivateKeyFromXML(key)
     if err != nil {
         return this.AppendError(err)
@@ -291,12 +291,12 @@ func (this EIGamal) FromXMLPrivateKey(key []byte) EIGamal {
 }
 
 // XML 私钥
-func FromXMLPrivateKey(key []byte) EIGamal {
-    return defaultEIGamal.FromXMLPrivateKey(key)
+func FromXMLPrivateKey(key []byte) ElGamal {
+    return defaultElGamal.FromXMLPrivateKey(key)
 }
 
 // XML 公钥
-func (this EIGamal) FromXMLPublicKey(key []byte) EIGamal {
+func (this ElGamal) FromXMLPublicKey(key []byte) ElGamal {
     publicKey, err := this.ParsePublicKeyFromXML(key)
     if err != nil {
         return this.AppendError(err)
@@ -308,38 +308,38 @@ func (this EIGamal) FromXMLPublicKey(key []byte) EIGamal {
 }
 
 // XML 公钥
-func FromXMLPublicKey(key []byte) EIGamal {
-    return defaultEIGamal.FromXMLPublicKey(key)
+func FromXMLPublicKey(key []byte) ElGamal {
+    return defaultElGamal.FromXMLPublicKey(key)
 }
 
 // ==========
 
 // 字节
-func (this EIGamal) FromBytes(data []byte) EIGamal {
+func (this ElGamal) FromBytes(data []byte) ElGamal {
     this.data = data
 
     return this
 }
 
 // 字节
-func FromBytes(data []byte) EIGamal {
-    return defaultEIGamal.FromBytes(data)
+func FromBytes(data []byte) ElGamal {
+    return defaultElGamal.FromBytes(data)
 }
 
 // 字符
-func (this EIGamal) FromString(data string) EIGamal {
+func (this ElGamal) FromString(data string) ElGamal {
     this.data = []byte(data)
 
     return this
 }
 
 // 字符
-func FromString(data string) EIGamal {
-    return defaultEIGamal.FromString(data)
+func FromString(data string) ElGamal {
+    return defaultElGamal.FromString(data)
 }
 
 // Base64
-func (this EIGamal) FromBase64String(data string) EIGamal {
+func (this ElGamal) FromBase64String(data string) ElGamal {
     newData, err := tool.Base64Decode(data)
 
     this.data = newData
@@ -348,12 +348,12 @@ func (this EIGamal) FromBase64String(data string) EIGamal {
 }
 
 // Base64
-func FromBase64String(data string) EIGamal {
-    return defaultEIGamal.FromBase64String(data)
+func FromBase64String(data string) ElGamal {
+    return defaultElGamal.FromBase64String(data)
 }
 
 // Hex
-func (this EIGamal) FromHexString(data string) EIGamal {
+func (this ElGamal) FromHexString(data string) ElGamal {
     newData, err := tool.HexDecode(data)
 
     this.data = newData
@@ -362,6 +362,6 @@ func (this EIGamal) FromHexString(data string) EIGamal {
 }
 
 // Hex
-func FromHexString(data string) EIGamal {
-    return defaultEIGamal.FromHexString(data)
+func FromHexString(data string) ElGamal {
+    return defaultElGamal.FromHexString(data)
 }

@@ -25,10 +25,10 @@ var (
 
 // elgamal Parameters
 type elgamalAlgorithmParameters struct {
-    // PKCS_3 for DH PARAMETERS
+    // PKCS_3 for DH PARAMETERS (p || g)
     P, G *big.Int
 
-    // ANSI_X9_42 only for X9.42 DH PARAMETERS
+    // ANSI_X9_42 only for X9.42 DH PARAMETERS (p || g || q)
     Q *big.Int `asn1:"optional"`
 }
 
@@ -58,7 +58,7 @@ var (
 )
 
 /**
- * elgamal pkcs8 密钥
+ * elgamal pkcs8
  *
  * @create 2023-6-16
  * @author deatil
@@ -76,10 +76,16 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
     var err error
 
+    // q = (p - 1) / 2
+    q := new(big.Int).Set(key.P)
+    q.Sub(q, one)
+    q.Div(q, two)
+
     // params
     paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
         P: key.P,
         G: key.G,
+        Q: q,
     })
     if err != nil {
         return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())
@@ -172,10 +178,16 @@ func ParsePKCS8PublicKey(derBytes []byte) (*PublicKey, error) {
 func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
+    // q = (p - 1) / 2
+    q := new(big.Int).Set(key.P)
+    q.Sub(q, one)
+    q.Div(q, two)
+
     // params
     paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
         P: key.P,
         G: key.G,
+        Q: q,
     })
     if err != nil {
         return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())

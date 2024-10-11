@@ -9,7 +9,7 @@ import (
 
 // 私钥
 type xmlPrivateKey struct {
-    XMLName xml.Name `xml:"EIGamalKeyValue"`
+    XMLName xml.Name `xml:"ElGamalKeyValue"`
     P       string   `xml:"P"`
     G       string   `xml:"G"`
     Q       string   `xml:"Q,omitempty"`
@@ -19,7 +19,7 @@ type xmlPrivateKey struct {
 
 // 公钥
 type xmlPublicKey struct {
-    XMLName xml.Name `xml:"EIGamalKeyValue"`
+    XMLName xml.Name `xml:"ElGamalKeyValue"`
     P       string   `xml:"P"`
     G       string   `xml:"G"`
     Q       string   `xml:"Q,omitempty"`
@@ -53,9 +53,15 @@ func NewXMLKey() XMLKey {
 
 // 包装公钥
 func (this XMLKey) MarshalPublicKey(key *PublicKey) ([]byte, error) {
+    // q = (p - 1) / 2
+    q := new(big.Int).Set(key.P)
+    q.Sub(q, one)
+    q.Div(q, two)
+
     publicKey := xmlPublicKey{
         P: this.bigintToB64(key.P),
         G: this.bigintToB64(key.G),
+        Q: this.bigintToB64(q),
         Y: this.bigintToB64(key.Y),
     }
 
@@ -110,10 +116,16 @@ func ParseXMLPublicKey(der []byte) (*PublicKey, error) {
 
 // 包装私钥
 func (this XMLKey) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
+    // q = (p - 1) / 2
+    q := new(big.Int).Set(key.P)
+    q.Sub(q, one)
+    q.Div(q, two)
+
     // 构造私钥信息
     priv := xmlPrivateKey{
         P: this.bigintToB64(key.P),
         G: this.bigintToB64(key.G),
+        Q: this.bigintToB64(q),
         Y: this.bigintToB64(key.Y),
         X: this.bigintToB64(key.X),
     }

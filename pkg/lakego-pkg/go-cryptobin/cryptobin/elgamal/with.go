@@ -6,21 +6,21 @@ import (
 )
 
 // 设置 PrivateKey
-func (this EIGamal) WithPrivateKey(data *elgamal.PrivateKey) EIGamal {
+func (this ElGamal) WithPrivateKey(data *elgamal.PrivateKey) ElGamal {
     this.privateKey = data
 
     return this
 }
 
 // 设置 PublicKey
-func (this EIGamal) WithPublicKey(data *elgamal.PublicKey) EIGamal {
+func (this ElGamal) WithPublicKey(data *elgamal.PublicKey) ElGamal {
     this.publicKey = data
 
     return this
 }
 
 // 设置 hash 类型
-func (this EIGamal) WithSignHash(data HashFunc) EIGamal {
+func (this ElGamal) WithSignHash(data HashFunc) ElGamal {
     this.signHash = data
 
     return this
@@ -28,7 +28,7 @@ func (this EIGamal) WithSignHash(data HashFunc) EIGamal {
 
 // 设置 hash 类型
 // 可用参数可查看 Hash 结构体数据
-func (this EIGamal) SetSignHash(data string) EIGamal {
+func (this ElGamal) SetSignHash(data string) ElGamal {
     hash, err := tool.GetHash(data)
     if err != nil {
         return this.AppendError(err)
@@ -40,28 +40,28 @@ func (this EIGamal) SetSignHash(data string) EIGamal {
 }
 
 // 设置 data
-func (this EIGamal) WithData(data []byte) EIGamal {
+func (this ElGamal) WithData(data []byte) ElGamal {
     this.data = data
 
     return this
 }
 
 // 设置 parsedData
-func (this EIGamal) WithParsedData(data []byte) EIGamal {
+func (this ElGamal) WithParsedData(data []byte) ElGamal {
     this.parsedData = data
 
     return this
 }
 
 // 设置 verify
-func (this EIGamal) WithVerify(data bool) EIGamal {
+func (this ElGamal) WithVerify(data bool) ElGamal {
     this.verify = data
 
     return this
 }
 
 // 设置错误
-func (this EIGamal) WithErrors(errs []error) EIGamal {
+func (this ElGamal) WithErrors(errs []error) ElGamal {
     this.Errors = errs
 
     return this

@@ -6,7 +6,7 @@ import (
 )
 
 // 生成公钥
-func (this EIGamal) MakePublicKey() EIGamal {
+func (this ElGamal) MakePublicKey() ElGamal {
     this.publicKey = nil
 
     if this.privateKey == nil {
@@ -21,7 +21,7 @@ func (this EIGamal) MakePublicKey() EIGamal {
 }
 
 // 生成密钥 der 数据
-func (this EIGamal) MakeKeyDer() EIGamal {
+func (this ElGamal) MakeKeyDer() ElGamal {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
         err := errors.New("keyData error.")

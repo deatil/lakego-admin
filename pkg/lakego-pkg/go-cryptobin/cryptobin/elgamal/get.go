@@ -5,41 +5,41 @@ import (
 )
 
 // 获取 PrivateKey
-func (this EIGamal) GetPrivateKey() *elgamal.PrivateKey {
+func (this ElGamal) GetPrivateKey() *elgamal.PrivateKey {
     return this.privateKey
 }
 
 // 获取 PublicKey
-func (this EIGamal) GetPublicKey() *elgamal.PublicKey {
+func (this ElGamal) GetPublicKey() *elgamal.PublicKey {
     return this.publicKey
 }
 
 // 获取 hash 类型
-func (this EIGamal) GetSignHash() HashFunc {
+func (this ElGamal) GetSignHash() HashFunc {
     return this.signHash
 }
 
 // 获取 keyData
-func (this EIGamal) GetKeyData() []byte {
+func (this ElGamal) GetKeyData() []byte {
     return this.keyData
 }
 
 // 获取 data
-func (this EIGamal) GetData() []byte {
+func (this ElGamal) GetData() []byte {
     return this.data
 }
 
 // 获取 parsedData
-func (this EIGamal) GetParsedData() []byte {
+func (this ElGamal) GetParsedData() []byte {
     return this.parsedData
 }
 
 // 获取验证后情况
-func (this EIGamal) GetVerify() bool {
+func (this ElGamal) GetVerify() bool {
     return this.verify
 }
 
 // 获取错误
-func (this EIGamal) GetErrors() []error {
+func (this ElGamal) GetErrors() []error {
     return this.Errors
 }

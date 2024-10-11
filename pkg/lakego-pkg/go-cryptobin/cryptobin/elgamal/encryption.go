@@ -6,7 +6,7 @@ import (
 )
 
 // 公钥加密
-func (this EIGamal) Encrypt() EIGamal {
+func (this ElGamal) Encrypt() ElGamal {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -23,7 +23,7 @@ func (this EIGamal) Encrypt() EIGamal {
 }
 
 // 私钥解密
-func (this EIGamal) Decrypt() EIGamal {
+func (this ElGamal) Decrypt() ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)

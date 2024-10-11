@@ -29,26 +29,26 @@ var (
 // 生成私钥 pem 数据
 // elgamal := New().GenerateKey("L2048N256")
 // priKey := elgamal.CreatePrivateKey().ToKeyString()
-func (this EIGamal) CreatePrivateKey() EIGamal {
+func (this ElGamal) CreatePrivateKey() ElGamal {
     return this.CreatePKCS1PrivateKey()
 }
 
 // 生成私钥带密码 pem 数据
 // CreatePrivateKeyWithPassword("123", "AES256CBC")
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
-func (this EIGamal) CreatePrivateKeyWithPassword(password string, opts ...string) EIGamal {
+func (this ElGamal) CreatePrivateKeyWithPassword(password string, opts ...string) ElGamal {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
 // 生成公钥 pem 数据
-func (this EIGamal) CreatePublicKey() EIGamal {
+func (this ElGamal) CreatePublicKey() ElGamal {
     return this.CreatePKCS1PublicKey()
 }
 
 // ==========
 
 // 生成 pkcs1 私钥 pem 数据
-func (this EIGamal) CreatePKCS1PrivateKey() EIGamal {
+func (this ElGamal) CreatePKCS1PrivateKey() ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -60,7 +60,7 @@ func (this EIGamal) CreatePKCS1PrivateKey() EIGamal {
     }
 
     privateBlock := &pem.Block{
-        Type:  "EIGamal PRIVATE KEY",
+        Type:  "ElGamal PRIVATE KEY",
         Bytes: privateKeyBytes,
     }
 
@@ -72,7 +72,7 @@ func (this EIGamal) CreatePKCS1PrivateKey() EIGamal {
 // 生成 pkcs1 私钥带密码 pem 数据
 // CreatePKCS1PrivateKeyWithPassword("123", "AES256CBC")
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
-func (this EIGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) EIGamal {
+func (this ElGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -99,7 +99,7 @@ func (this EIGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
     // 生成加密数据
     privateBlock, err := pkcs1.EncryptPEMBlock(
         rand.Reader,
-        "EIGamal PRIVATE KEY",
+        "ElGamal PRIVATE KEY",
         privateKeyBytes,
         []byte(password),
         cipher,
@@ -114,7 +114,7 @@ func (this EIGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
 }
 
 // 生成 pkcs1 公钥 pem 数据
-func (this EIGamal) CreatePKCS1PublicKey() EIGamal {
+func (this ElGamal) CreatePKCS1PublicKey() ElGamal {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -126,7 +126,7 @@ func (this EIGamal) CreatePKCS1PublicKey() EIGamal {
     }
 
     publicBlock := &pem.Block{
-        Type:  "EIGamal PUBLIC KEY",
+        Type:  "ElGamal PUBLIC KEY",
         Bytes: publicKeyBytes,
     }
 
@@ -138,7 +138,7 @@ func (this EIGamal) CreatePKCS1PublicKey() EIGamal {
 // ==========
 
 // 生成 pkcs8 私钥 pem 数据
-func (this EIGamal) CreatePKCS8PrivateKey() EIGamal {
+func (this ElGamal) CreatePKCS8PrivateKey() ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -161,7 +161,7 @@ func (this EIGamal) CreatePKCS8PrivateKey() EIGamal {
 
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this EIGamal) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) EIGamal {
+func (this ElGamal) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -196,7 +196,7 @@ func (this EIGamal) CreatePKCS8PrivateKeyWithPassword(password string, opts ...a
 }
 
 // 生成公钥 pem 数据
-func (this EIGamal) CreatePKCS8PublicKey() EIGamal {
+func (this ElGamal) CreatePKCS8PublicKey() ElGamal {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -220,7 +220,7 @@ func (this EIGamal) CreatePKCS8PublicKey() EIGamal {
 // ====================
 
 // 生成私钥 xml 数据
-func (this EIGamal) CreateXMLPrivateKey() EIGamal {
+func (this ElGamal) CreateXMLPrivateKey() ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -237,7 +237,7 @@ func (this EIGamal) CreateXMLPrivateKey() EIGamal {
 }
 
 // 生成公钥 xml 数据
-func (this EIGamal) CreateXMLPublicKey() EIGamal {
+func (this ElGamal) CreateXMLPublicKey() ElGamal {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)

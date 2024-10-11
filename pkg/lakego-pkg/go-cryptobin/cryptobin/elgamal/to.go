@@ -5,46 +5,46 @@ import (
 )
 
 // 私钥/公钥
-func (this EIGamal) ToKeyBytes() []byte {
+func (this ElGamal) ToKeyBytes() []byte {
     return this.keyData
 }
 
 // 私钥/公钥
-func (this EIGamal) ToKeyString() string {
+func (this ElGamal) ToKeyString() string {
     return string(this.keyData)
 }
 
 // ==========
 
 // 输出字节
-func (this EIGamal) ToBytes() []byte {
+func (this ElGamal) ToBytes() []byte {
     return this.parsedData
 }
 
 // 输出字符
-func (this EIGamal) ToString() string {
+func (this ElGamal) ToString() string {
     return string(this.parsedData)
 }
 
 // 输出Base64
-func (this EIGamal) ToBase64String() string {
+func (this ElGamal) ToBase64String() string {
     return tool.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
-func (this EIGamal) ToHexString() string {
+func (this ElGamal) ToHexString() string {
     return tool.HexEncode(this.parsedData)
 }
 
 // ==========
 
 // 验证结果
-func (this EIGamal) ToVerify() bool {
+func (this ElGamal) ToVerify() bool {
     return this.verify
 }
 
 // 验证结果，返回 int 类型
-func (this EIGamal) ToVerifyInt() int {
+func (this ElGamal) ToVerifyInt() int {
     if this.verify {
         return 1
     }

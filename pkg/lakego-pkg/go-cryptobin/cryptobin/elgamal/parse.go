@@ -11,12 +11,12 @@ import (
 
 var (
     ErrKeyMustBePEMEncoded  = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotEIGamalPrivateKey = errors.New("key is not a valid EIGamal private key")
-    ErrNotEIGamalPublicKey  = errors.New("key is not a valid EIGamal public key")
+    ErrNotElGamalPrivateKey = errors.New("key is not a valid ElGamal private key")
+    ErrNotElGamalPublicKey  = errors.New("key is not a valid ElGamal public key")
 )
 
 // 解析私钥
-func (this EIGamal) ParsePKCS1PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey, error) {
+func (this ElGamal) ParsePKCS1PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -34,14 +34,14 @@ func (this EIGamal) ParsePKCS1PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey
     var pkey *elgamal.PrivateKey
     var ok bool
     if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotEIGamalPrivateKey
+        return nil, ErrNotElGamalPrivateKey
     }
 
     return pkey, nil
 }
 
 // 解析私钥带密码
-func (this EIGamal) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*elgamal.PrivateKey, error) {
+func (this ElGamal) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password string) (*elgamal.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -64,14 +64,14 @@ func (this EIGamal) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password
     var pkey *elgamal.PrivateKey
     var ok bool
     if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotEIGamalPrivateKey
+        return nil, ErrNotElGamalPrivateKey
     }
 
     return pkey, nil
 }
 
 // 解析公钥
-func (this EIGamal) ParsePKCS1PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, error) {
+func (this ElGamal) ParsePKCS1PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -90,7 +90,7 @@ func (this EIGamal) ParsePKCS1PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
     var ok bool
 
     if pkey, ok = parsedKey.(*elgamal.PublicKey); !ok {
-        return nil, ErrNotEIGamalPublicKey
+        return nil, ErrNotElGamalPublicKey
     }
 
     return pkey, nil
@@ -100,7 +100,7 @@ func (this EIGamal) ParsePKCS1PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
 
 
 // 解析私钥 PKCS8
-func (this EIGamal) ParsePKCS8PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey, error) {
+func (this ElGamal) ParsePKCS8PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -119,14 +119,14 @@ func (this EIGamal) ParsePKCS8PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey
     var ok bool
 
     if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotEIGamalPrivateKey
+        return nil, ErrNotElGamalPrivateKey
     }
 
     return pkey, nil
 }
 
 // 解析 PKCS8 带密码的私钥
-func (this EIGamal) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*elgamal.PrivateKey, error) {
+func (this ElGamal) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password string) (*elgamal.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -149,14 +149,14 @@ func (this EIGamal) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password
     var ok bool
 
     if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotEIGamalPrivateKey
+        return nil, ErrNotElGamalPrivateKey
     }
 
     return pkey, nil
 }
 
 // 解析公钥 PKCS8
-func (this EIGamal) ParsePKCS8PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, error) {
+func (this ElGamal) ParsePKCS8PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, error) {
     var err error
 
     // Parse PEM block
@@ -175,7 +175,7 @@ func (this EIGamal) ParsePKCS8PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
     var ok bool
 
     if pkey, ok = parsedKey.(*elgamal.PublicKey); !ok {
-        return nil, ErrNotEIGamalPublicKey
+        return nil, ErrNotElGamalPublicKey
     }
 
     return pkey, nil
@@ -184,11 +184,11 @@ func (this EIGamal) ParsePKCS8PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
 // ============
 
 // 解析 xml 私钥
-func (this EIGamal) ParsePrivateKeyFromXML(key []byte) (*elgamal.PrivateKey, error) {
+func (this ElGamal) ParsePrivateKeyFromXML(key []byte) (*elgamal.PrivateKey, error) {
     return elgamal.ParseXMLPrivateKey(key)
 }
 
 // 解析 xml 公钥
-func (this EIGamal) ParsePublicKeyFromXML(key []byte) (*elgamal.PublicKey, error) {
+func (this ElGamal) ParsePublicKeyFromXML(key []byte) (*elgamal.PublicKey, error) {
     return elgamal.ParseXMLPublicKey(key)
 }

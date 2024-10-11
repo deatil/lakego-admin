@@ -13,12 +13,12 @@ type (
 )
 
 /**
- * EIGamal
+ * ElGamal
  *
  * @create 2023-6-22
  * @author deatil
  */
-type EIGamal struct {
+type ElGamal struct {
     // 私钥
     privateKey *elgamal.PrivateKey
 
@@ -45,8 +45,8 @@ type EIGamal struct {
 }
 
 // 构造函数
-func NewEIGamal() EIGamal {
-    return EIGamal{
+func NewElGamal() ElGamal {
+    return ElGamal{
         signHash: sha256.New,
         verify:   false,
         Errors:   make([]error, 0),
@@ -54,11 +54,11 @@ func NewEIGamal() EIGamal {
 }
 
 // 构造函数
-func New() EIGamal {
-    return NewEIGamal()
+func New() ElGamal {
+    return NewElGamal()
 }
 
 var (
     // 默认
-    defaultEIGamal = NewEIGamal()
+    defaultElGamal = NewElGamal()
 )

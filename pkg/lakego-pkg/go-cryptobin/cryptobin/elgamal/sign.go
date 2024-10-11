@@ -8,7 +8,7 @@ import (
 )
 
 // 私钥签名
-func (this EIGamal) Sign() EIGamal {
+func (this ElGamal) Sign() ElGamal {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -31,7 +31,7 @@ func (this EIGamal) Sign() EIGamal {
 
 // 公钥验证
 // 使用原始数据[data]对比签名后数据
-func (this EIGamal) Verify(data []byte) EIGamal {
+func (this ElGamal) Verify(data []byte) ElGamal {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
@@ -53,7 +53,7 @@ func (this EIGamal) Verify(data []byte) EIGamal {
 }
 
 // 签名后数据
-func (this EIGamal) dataHash(data []byte) ([]byte, error) {
+func (this ElGamal) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
         return data, errors.New("sign hash empty.")
     }

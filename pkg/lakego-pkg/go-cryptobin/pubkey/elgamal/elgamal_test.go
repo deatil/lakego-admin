@@ -235,22 +235,22 @@ func Test_MarshalPKCS1(t *testing.T) {
     //===============
 
     pubDer, err := MarshalPKCS1PublicKey(pub)
-    assertError(err, "MarshalPKCS1-pub-Error")
-    assertNotEmpty(pubDer, "MarshalPKCS1")
+    assertError(err, "MarshalPKCS1PublicKey-pub-Error")
+    assertNotEmpty(pubDer, "MarshalPKCS1PublicKey-empty")
 
     parsedPub, err := ParsePKCS1PublicKey(pubDer)
-    assertError(err, "MarshalPKCS1-pub-Error")
-    assertEqual(pub, parsedPub, "MarshalPKCS1")
+    assertError(err, "ParsePKCS1PublicKey-pub-Error")
+    assertEqual(parsedPub, pub, "ParsePKCS1PublicKey-equal")
 
     //===============
 
     priDer, err := MarshalPKCS1PrivateKey(pri)
-    assertError(err, "MarshalPKCS1-pri-Error")
-    assertNotEmpty(priDer, "MarshalPKCS1")
+    assertError(err, "MarshalPKCS1PrivateKey-pri-Error")
+    assertNotEmpty(priDer, "MarshalPKCS1PrivateKey-empty")
 
     parsedPri, err := ParsePKCS1PrivateKey(priDer)
-    assertError(err, "MarshalPKCS1-pri-Error")
-    assertEqual(pri, parsedPri, "MarshalPKCS1")
+    assertError(err, "ParsePKCS1PrivateKey-pri-Error")
+    assertEqual(parsedPri, pri, "ParsePKCS1PrivateKey-equal")
 }
 
 func Test_MarshalPKCS8(t *testing.T) {
@@ -292,19 +292,19 @@ func Test_MarshalPKCS8(t *testing.T) {
 }
 
 var testXMLPrivateKey = `
-<EIGamalKeyValue>
+<ElGamalKeyValue>
     <P>9W35RbKvFgfHndG9wVvFDMDw86BClpDk6kdeGr1ygLc=</P>
     <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
     <Y>120jHKCdPWjLGrqH3HiCZ2GezWyEjfEIPBMhULymfzM=</Y>
     <X>BjtroR34tS5cvF5YNJaxmOjGDas43wKFunHCYS4P6CQ=</X>
-</EIGamalKeyValue>
+</ElGamalKeyValue>
 `;
 var testXMLPublicKey = `
-<EIGamalKeyValue>
+<ElGamalKeyValue>
     <P>9W35RbKvFgfHndG9wVvFDMDw86BClpDk6kdeGr1ygLc=</P>
     <G>vG406oGr5OqG0mMOtq5wWo/aGWWE8EPiPl09/I+ySxs=</G>
     <Y>120jHKCdPWjLGrqH3HiCZ2GezWyEjfEIPBMhULymfzM=</Y>
-</EIGamalKeyValue>
+</ElGamalKeyValue>
 `;
 
 func Test_MarshalXML(t *testing.T) {
@@ -478,7 +478,7 @@ pMSRcHwYUDXv9pNj7FQhS9JmvMdYQH4HGGZkyA/4R/i1lzQfL2lD2WcY1bAv8g==
 `
 
 func Test_MarshalPKCS8_Check(t *testing.T) {
-    test_MarshalPKCS8_Check(t, privPKCS8PEM, pubPKCS8PEM)
+    test_MarshalPKCS8_Check(t, privPKCS8PEM2, pubPKCS8PEM2)
 
     test_MarshalPKCS8_Check2(t, privPKCS8PEM, pubPKCS8PEM)
     test_MarshalPKCS8_Check2(t, privPKCS8PEM2, pubPKCS8PEM2)
@@ -544,5 +544,50 @@ func test_MarshalPKCS8_Check2(t *testing.T, priv, pub string) {
 
     veri, _ := VerifyASN1(parsedPub, hash[:], sig)
     assertBool(veri, "test_MarshalPKCS8_Check2-veri")
+
+}
+
+var privPKCS1PEM = `-----BEGIN ElGamal PRIVATE KEY-----
+MIGuAgEAAiEA/RQxP3a7Nbmv2lAOloxX4QCWfOJcB1SpcseY2MIPNu8CICHAA2re
+ZGvd39Eo+JE3mIbfpjLs0SVxhyGJHe5yyc2PAiB+ihifu12a3NftKAdLRivwgEs+
+cS4DqlS5Y8xsYQebdwIgNUZKx0/tynmHMIjobF2sE425HeQBAqygYy6yvRjZHbAC
+IBM0kK5vzxzVkvRSma2WfHGYoBC+P9AHSQ3pruNgO7S/
+-----END ElGamal PRIVATE KEY-----
+`
+var pubPKCS1PEM = `-----BEGIN ElGamal PUBLIC KEY-----
+MIGJAiEA/RQxP3a7Nbmv2lAOloxX4QCWfOJcB1SpcseY2MIPNu8CICHAA2reZGvd
+39Eo+JE3mIbfpjLs0SVxhyGJHe5yyc2PAiB+ihifu12a3NftKAdLRivwgEs+cS4D
+qlS5Y8xsYQebdwIgNUZKx0/tynmHMIjobF2sE425HeQBAqygYy6yvRjZHbA=
+-----END ElGamal PUBLIC KEY-----
+`
+
+func Test_MarshalPKCS1_Check(t *testing.T) {
+    test_MarshalPKCS1_Check(t, privPKCS1PEM, pubPKCS1PEM)
+}
+
+func test_MarshalPKCS1_Check(t *testing.T, priv, pub string) {
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    parsedPub, err := ParsePKCS1PublicKey(decodePEM(pub))
+    if err != nil {
+        t.Errorf("ParsePKCS1PublicKey 2 error: %s", err)
+        return
+    }
+
+    parsedPriv, err := ParsePKCS1PrivateKey(decodePEM(priv))
+    if err != nil {
+        t.Errorf("ParsePKCS1PrivateKey error: %s", err)
+        return
+    }
+
+    data := "123tesfd!dfsign"
+    hash := sha256.Sum256([]byte(data))
+
+    sig, err := SignASN1(rand.Reader, parsedPriv, hash[:])
+    assertError(err, "test_MarshalPKCS1_Check-sig-Error")
+
+    veri, _ := VerifyASN1(parsedPub, hash[:], sig)
+    assertBool(veri, "test_MarshalPKCS1_Check-veri")
 
 }
