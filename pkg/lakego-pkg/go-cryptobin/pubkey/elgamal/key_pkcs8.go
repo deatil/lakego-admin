@@ -12,15 +12,24 @@ import (
 )
 
 var (
-    // elgamal 公钥 oid
-    oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 1, 1}
-    // for EC-EIGamal
-    // oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
+    // Unsure about this OID
+    // oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 1, 1}
+    // oidMD2WithRSA       = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 3, 1}
+    // oidMD2WithElGamal   = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 3, 2}
+
+    // cryptlib public-key algorithm
+    oidPublicKeyEIGamal     = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
+    oidEIGamalWithSHA1      = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 1}
+    oidEIGamalWithRIPEMD160 = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 2}
 )
 
 // elgamal Parameters
 type elgamalAlgorithmParameters struct {
-    G, P *big.Int
+    // PKCS_3 for DH PARAMETERS
+    P, G *big.Int
+
+    // ANSI_X9_42 only for X9.42 DH PARAMETERS
+    Q *big.Int `asn1:"optional"`
 }
 
 // 私钥 - 包装
@@ -69,11 +78,11 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     // params
     paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
-        G: key.G,
         P: key.P,
+        G: key.G,
     })
     if err != nil {
-        return nil, errors.New("elgamal: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())
     }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyEIGamal
@@ -84,7 +93,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {
-        return nil, errors.New("elgamal: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
     }
 
     pkix := pkixPublicKey{
@@ -117,7 +126,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyEIGamal)
     if !algoEq {
-        return nil, errors.New("elgamal: unknown public key algorithm")
+        return nil, errors.New("cryptobin/elgamal: unknown public key algorithm")
     }
 
     // 解析
@@ -127,7 +136,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
-        return nil, errors.New("elgamal: invalid EIGamal public key")
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal public key")
     }
 
     pub := &PublicKey{
@@ -138,15 +147,15 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
-        !paramsDer.ReadASN1Integer(pub.G) ||
-        !paramsDer.ReadASN1Integer(pub.P) {
-        return nil, errors.New("elgamal: invalid EIGamal public key")
+        !paramsDer.ReadASN1Integer(pub.P) ||
+        !paramsDer.ReadASN1Integer(pub.G) {
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal public key")
     }
 
     if pub.Y.Sign() <= 0 ||
         pub.G.Sign() <= 0 ||
         pub.P.Sign() <= 0 {
-        return nil, errors.New("elgamal: zero or negative EIGamal parameter")
+        return nil, errors.New("cryptobin/elgamal: zero or negative EIGamal parameter")
     }
 
     return pub, nil
@@ -165,11 +174,11 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     // params
     paramBytes, err := asn1.Marshal(elgamalAlgorithmParameters{
-        G: key.G,
         P: key.P,
+        G: key.G,
     })
     if err != nil {
-        return nil, errors.New("elgamal: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -184,7 +193,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privateKeyBytes, err := xInt.Bytes()
     if err != nil {
-        return nil, errors.New("elgamal: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
     }
 
     privKey.PrivateKey = privateKeyBytes
@@ -206,14 +215,14 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     }
 
     if !privKey.Algo.Algorithm.Equal(oidPublicKeyEIGamal) {
-        return nil, fmt.Errorf("elgamal: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
+        return nil, fmt.Errorf("cryptobin/elgamal: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
 
     xDer := cryptobyte.String(string(privKey.PrivateKey))
 
     x := new(big.Int)
     if !xDer.ReadASN1Integer(x) {
-        return nil, errors.New("elgamal: invalid EIGamal public key")
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal public key")
     }
 
     priv := &PrivateKey{
@@ -228,9 +237,9 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     // 找出 g, p 数据
     paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
-        !paramsDer.ReadASN1Integer(priv.G) ||
-        !paramsDer.ReadASN1Integer(priv.P) {
-        return nil, errors.New("elgamal: invalid EIGamal private key")
+        !paramsDer.ReadASN1Integer(priv.P) ||
+        !paramsDer.ReadASN1Integer(priv.G) {
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal private key")
     }
 
     // 算出 Y 值
@@ -238,7 +247,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 
     if priv.Y.Sign() <= 0 || priv.G.Sign() <= 0 ||
         priv.P.Sign() <= 0 || priv.X.Sign() <= 0 {
-        return nil, errors.New("elgamal: zero or negative EIGamal parameter")
+        return nil, errors.New("cryptobin/elgamal: zero or negative EIGamal parameter")
     }
 
     return priv, nil

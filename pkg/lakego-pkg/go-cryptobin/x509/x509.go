@@ -26,6 +26,7 @@ import (
 
     "github.com/deatil/go-cryptobin/gm/sm2"
     "github.com/deatil/go-cryptobin/pubkey/gost"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 const (
@@ -109,6 +110,20 @@ func marshalPublicKey(pub any) (publicKeyBytes []byte, publicKeyAlgorithm pkix.A
             publicKeyAlgorithm.Parameters.FullBytes = paramBytes
         case *gost.PublicKey:
             publicKey, err := gost.MarshalPublicKey(pub)
+            if err != nil {
+                return nil, pkix.AlgorithmIdentifier{}, err
+            }
+
+            var pki publicKeyInfo
+            _, err = asn1.Unmarshal(publicKey, &pki)
+            if err != nil {
+                return nil, pkix.AlgorithmIdentifier{}, err
+            }
+
+            publicKeyBytes = pki.PublicKey.RightAlign()
+            publicKeyAlgorithm = pki.Algorithm
+        case *elgamal.PublicKey:
+            publicKey, err := elgamal.MarshalPKCS8PublicKey(pub)
             if err != nil {
                 return nil, pkix.AlgorithmIdentifier{}, err
             }
@@ -255,6 +270,18 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
             }
 
             return pub, nil
+        case EIGamal:
+            keyBytes, err := asn1.Marshal(*keyData)
+            if err != nil {
+                return nil, errors.New("x509: failed to unmarshal EIGamal publickey")
+            }
+
+            pub, err := elgamal.ParsePKCS8PublicKey(keyBytes)
+            if err != nil {
+                return nil, errors.New("x509: failed to unmarshal EIGamal publickey")
+            }
+
+            return pub, nil
         default:
             return nil, nil
     }
@@ -334,6 +361,8 @@ const (
     GOST3410WithGOST34112001
     GOST3410WithGOST34112012256
     GOST3410WithGOST34112012512
+    EIGamalWithSHA1
+    EIGamalWithRIPEMD160
 )
 
 func (algo SignatureAlgorithm) isRSAPSS() bool {
@@ -369,6 +398,8 @@ var algoName = [...]string{
     GOST3410WithGOST34112001:    "GOST3410-GOST34112001",
     GOST3410WithGOST34112012256: "GOST3410-GOST34112012256",
     GOST3410WithGOST34112012512: "GOST3410-GOST34112012512",
+    EIGamalWithSHA1:      "EIGamal-SHA1",
+    EIGamalWithRIPEMD160: "EIGamal-RIPEMD160",
 }
 
 func (algo SignatureAlgorithm) String() string {
@@ -388,6 +419,7 @@ const (
     Ed25519
     SM2
     GOST3410
+    EIGamal
 )
 
 // OIDs for signature algorithms
@@ -465,6 +497,9 @@ var (
     oidSignatureGOST3410WithGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3, 2}
     oidSignatureGOST3410WithGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3, 3}
 
+    oidSignatureEIGamalWithSHA1      = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 1}
+    oidSignatureEIGamalWithRIPEMD160 = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 2}
+
     oidSM3     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401, 1}
     oidSHA256  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}
     oidSHA384  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 2}
@@ -499,20 +534,28 @@ var signatureAlgorithmDetails = []struct {
     {SHA256WithRSAPSS, oidSignatureRSAPSS, RSA, SHA256},
     {SHA384WithRSAPSS, oidSignatureRSAPSS, RSA, SHA384},
     {SHA512WithRSAPSS, oidSignatureRSAPSS, RSA, SHA512},
+
     {DSAWithSHA1, oidSignatureDSAWithSHA1, DSA, SHA1},
     {DSAWithSHA256, oidSignatureDSAWithSHA256, DSA, SHA256},
+
     {ECDSAWithSHA1, oidSignatureECDSAWithSHA1, ECDSA, SHA1},
     {ECDSAWithSHA256, oidSignatureECDSAWithSHA256, ECDSA, SHA256},
     {ECDSAWithSHA384, oidSignatureECDSAWithSHA384, ECDSA, SHA384},
     {ECDSAWithSHA512, oidSignatureECDSAWithSHA512, ECDSA, SHA512},
+
     {PureEd25519, oidSignatureEd25519, Ed25519, Hash(0)},
+
     {SM2WithSM3, oidSignatureSM2WithSM3, ECDSA, SM3},
     {SM2WithSHA1, oidSignatureSM2WithSHA1, ECDSA, SHA1},
     {SM2WithSHA256, oidSignatureSM2WithSHA256, ECDSA, SHA256},
     {SM3WithRSA, oidSignatureSM3WithRSA, RSA, SM3},
+
     {GOST3410WithGOST34112001, oidSignatureGOST3410WithGOST3411, GOST3410, GOST34112001},
     {GOST3410WithGOST34112012256, oidSignatureGOST3410WithGOST34112012256, GOST3410, GOST34112012256},
     {GOST3410WithGOST34112012512, oidSignatureGOST3410WithGOST34112012512, GOST3410, GOST34112012512},
+
+    {EIGamalWithSHA1, oidSignatureEIGamalWithSHA1, EIGamal, SHA1},
+    {EIGamalWithRIPEMD160, oidSignatureEIGamalWithRIPEMD160, EIGamal, RIPEMD160},
 }
 
 // pssParameters reflects the parameters in an AlgorithmIdentifier that
@@ -650,6 +693,8 @@ var (
     oidGOSTPublicKey         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
     oidGost2012PublicKey256  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
     oidGost2012PublicKey512  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
+
+    oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
 )
 
 func getPublicKeyAlgorithmFromOID(oid asn1.ObjectIdentifier) PublicKeyAlgorithm {
@@ -666,6 +711,8 @@ func getPublicKeyAlgorithmFromOID(oid asn1.ObjectIdentifier) PublicKeyAlgorithm 
             oid.Equal(oidGost2012PublicKey256),
             oid.Equal(oidGost2012PublicKey512):
             return GOST3410
+        case oid.Equal(oidPublicKeyEIGamal):
+            return EIGamal
     }
 
     return UnknownPublicKeyAlgorithm
@@ -1043,7 +1090,7 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
     var hashType Hash
     switch algo {
         case SHA1WithRSA, DSAWithSHA1, ECDSAWithSHA1,
-            SM2WithSHA1:
+            SM2WithSHA1, EIGamalWithSHA1:
             hashType = SHA1
         case SHA256WithRSA, SHA256WithRSAPSS, DSAWithSHA256,
             ECDSAWithSHA256, SM2WithSHA256:
@@ -1064,6 +1111,8 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             hashType = GOST34112012256
         case GOST3410WithGOST34112012512:
             hashType = GOST34112012512
+        case EIGamalWithRIPEMD160:
+            hashType = RIPEMD160
         default:
             return ErrUnsupportedAlgorithm
     }
@@ -1145,6 +1194,13 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             ok, _ := gost.Verify(pub, fnHash(), signature)
             if !ok {
                 return errors.New("x509: GOST verification failure")
+            }
+
+            return
+        case *elgamal.PublicKey:
+            ok, _ := pub.Verify(fnHash(), signature)
+            if !ok {
+                return errors.New("x509: elgamal verification failure")
             }
 
             return
@@ -1954,10 +2010,12 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
                 default:
                     err = errors.New("x509: unknown elliptic curve")
             }
+
         case ed25519.PublicKey:
             pubType = Ed25519
             hashFunc = Hash(0)
             sigAlgo.Algorithm = oidSignatureEd25519
+
         case *sm2.PublicKey:
             pubType = ECDSA
             switch pub.Curve {
@@ -1967,6 +2025,7 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
                 default:
                     err = errors.New("x509: unknown SM2 curve")
             }
+
         case *gost.PublicKey:
             pubType = GOST3410
             hashAlgo, _ := gost.HashOidFromNamedCurve(pub.Curve)
@@ -1984,8 +2043,16 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
                     err = errors.New("x509: unknown GOST3410 curve")
             }
 
+        case *elgamal.PublicKey:
+            pubType = EIGamal
+            hashFunc = SHA1
+            sigAlgo.Algorithm = oidSignatureEIGamalWithSHA1
+            sigAlgo.Parameters = asn1.RawValue{
+                Tag: 5,
+            }
+
         default:
-            err = errors.New("x509: only RSA, SM2, GOST3410 and ECDSA keys supported")
+            err = errors.New("x509: only RSA, SM2, GOST3410, EIGamal and ECDSA keys supported")
     }
 
     if err != nil {
@@ -2467,6 +2534,7 @@ func CreateCertificateRequest(rand io.Reader, template *CertificateRequest, priv
             if err != nil {
                 return nil, err
             }
+
         case *dsa.PrivateKey:
             r, s, err := dsa.Sign(rand, signer, digest)
             if err != nil {

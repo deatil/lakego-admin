@@ -24,8 +24,8 @@ var zero = big.NewInt(0)
 var one = big.NewInt(1)
 var two = big.NewInt(2)
 
-var ErrMessageLarge = errors.New("elgamal: message is larger than public key size")
-var ErrCipherLarge = errors.New("elgamal: cipher is larger than public key size")
+var ErrMessageLarge = errors.New("cryptobin/elgamal: message is larger than public key size")
+var ErrCipherLarge  = errors.New("cryptobin/elgamal: cipher is larger than public key size")
 
 // PublicKey represents a Elgamal public key.
 type PublicKey struct {
@@ -123,7 +123,7 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
 func Encrypt(random io.Reader, pub *PublicKey, msg []byte) (c1, c2 *big.Int, err error) {
     pLen := (pub.P.BitLen() + 7) / 8
     if len(msg) > pLen-11 {
-        err = errors.New("elgamal: message too long")
+        err = errors.New("cryptobin/elgamal: message too long")
         return
     }
 
@@ -160,7 +160,7 @@ func Decrypt(priv *PrivateKey, c1, c2 *big.Int) (msg []byte, err error) {
     }
 
     if firstByteIsTwo != 1 || lookingForIndex != 0 || index < 9 {
-        return nil, errors.New("elgamal: decryption error")
+        return nil, errors.New("cryptobin/elgamal: decryption error")
     }
 
     return em[index+1:], nil
@@ -187,7 +187,7 @@ func EncryptLegacy(random io.Reader, pub *PublicKey, msg []byte) (c1, c2 *big.In
 func DecryptLegacy(priv *PrivateKey, c1, c2 *big.Int) (msg []byte, err error) {
     s := new(big.Int).Exp(c1, priv.X, priv.P)
     if s.ModInverse(s, priv.P) == nil {
-        return nil, errors.New("elgamal: invalid private key")
+        return nil, errors.New("cryptobin/elgamal: invalid private key")
     }
 
     s.Mul(s, c2)
@@ -224,6 +224,40 @@ func DecryptASN1(priv *PrivateKey, cipherData []byte) ([]byte, error) {
     }
 
     return Decrypt(priv, enc.C1, enc.C2)
+}
+
+// Encrypt bytes
+func EncryptBytes(random io.Reader, pub *PublicKey, message []byte) ([]byte, error) {
+    c1, c2, err := Encrypt(random, pub, message)
+    if err != nil {
+        return nil, err
+    }
+
+    byteLen := pub.P.BitLen()
+
+    buf := make([]byte, 2*byteLen)
+
+    c1.FillBytes(buf[      0:  byteLen])
+    c2.FillBytes(buf[byteLen:2*byteLen])
+
+    return buf, nil
+}
+
+// Decrypt bytes
+func DecryptBytes(priv *PrivateKey, cipherData []byte) ([]byte, error) {
+    byteLen := priv.P.BitLen()
+    if len(cipherData) != 2*byteLen {
+        return nil, errors.New("cryptobin/elgamal: Invalid message")
+    }
+
+    c1 := new(big.Int).SetBytes(cipherData[      0:  byteLen])
+    c2 := new(big.Int).SetBytes(cipherData[byteLen:2*byteLen])
+
+    if c1.Cmp(priv.P) >= 0 || c2.Cmp(priv.P) >= 0 {
+        return nil, errors.New("cryptobin/elgamal: Invalid message")
+    }
+
+    return Decrypt(priv, c1, c2)
 }
 
 // HomomorphicEncTwo performs homomorphic operation over two passed chiphers.
@@ -354,16 +388,16 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) (bool, error) {
     // verify that 0 < r < p
     signr := new(big.Int).Set(r)
     if signr.Cmp(zero) == -1 {
-        return false, errors.New("elgamal: r is smaller than zero")
+        return false, errors.New("cryptobin/elgamal: r is smaller than zero")
     } else if signr.Cmp(pub.P) == +1 {
-        return false, errors.New("elgamal: r is larger than public key p")
+        return false, errors.New("cryptobin/elgamal: r is larger than public key p")
     }
 
     signs := new(big.Int).Set(s)
     if signs.Cmp(zero) == -1 {
-        return false, errors.New("elgamal: s is smaller than zero")
+        return false, errors.New("cryptobin/elgamal: s is smaller than zero")
     } else if signs.Cmp(new(big.Int).Sub(pub.P, one)) == +1 {
-        return false, errors.New("elgamal: s is larger than public key p")
+        return false, errors.New("cryptobin/elgamal: s is larger than public key p")
     }
 
     // m as H(m)
@@ -386,7 +420,7 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) (bool, error) {
         return true, nil // signature is verified
     }
 
-    return false, errors.New("elgamal: signature is not verified")
+    return false, errors.New("cryptobin/elgamal: signature is not verified")
 }
 
 // r and s data
@@ -420,6 +454,38 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
     }
 
     return Verify(pub, hash, sign.R, sign.S)
+}
+
+// 签名返回 Bytes 编码数据
+// sign data and return Bytes marshal data
+func SignBytes(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
+    r, s, err := Sign(rand, priv, hash)
+    if err != nil {
+        return nil, err
+    }
+
+    byteLen := priv.P.BitLen()
+
+    buf := make([]byte, 2*byteLen)
+
+    r.FillBytes(buf[      0:  byteLen])
+    s.FillBytes(buf[byteLen:2*byteLen])
+
+    return buf, nil
+}
+
+// 验证 asn.1 编码的数据 bytes(r + s)
+// Verify Bytes marshal data
+func VerifyBytes(pub *PublicKey, hash, sign []byte) (bool, error) {
+    byteLen := pub.P.BitLen()
+    if len(sign) != 2*byteLen {
+        return false, errors.New("cryptobin/elgamal: signature is not verified")
+    }
+
+    r := new(big.Int).SetBytes(sign[      0:  byteLen])
+    s := new(big.Int).SetBytes(sign[byteLen:2*byteLen])
+
+    return Verify(pub, hash, r, s)
 }
 
 // Gen emit <p,q,g>.
@@ -457,7 +523,7 @@ func GeneratePQZp(random io.Reader, n, probability int) (*big.Int, *big.Int, *bi
         }
     }
 
-    return nil, nil, nil, errors.New("elgamal: generate key fail")
+    return nil, nil, nil, errors.New("cryptobin/elgamal: generate key fail")
 }
 
 // bigIntEqual reports whether a and b are equal leaking only their bit length

@@ -19,6 +19,7 @@ var (
 
 // dsa Parameters
 type dsaAlgorithmParameters struct {
+    // ANSI_X9_57 for DSA PARAMETERS
     P, Q, G *big.Int
 }
 

@@ -34,11 +34,11 @@ func (this *digest) MarshalBinary() ([]byte, error) {
 
 func (this *digest) UnmarshalBinary(b []byte) error {
     if len(b) < len(magic) || (string(b[:len(magic)]) != magic) {
-        return errors.New("go-cryptobin/sm3: invalid hash state identifier")
+        return errors.New("go-hash/sm3: invalid hash state identifier")
     }
 
     if len(b) != marshaledSize {
-        return errors.New("go-cryptobin/sm3: invalid hash state size")
+        return errors.New("go-hash/sm3: invalid hash state size")
     }
 
     b = b[len(magic):]

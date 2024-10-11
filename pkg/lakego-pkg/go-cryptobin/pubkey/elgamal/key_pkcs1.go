@@ -2,8 +2,12 @@ package elgamal
 
 import (
     "fmt"
+    "errors"
     "math/big"
     "encoding/asn1"
+
+    "golang.org/x/crypto/cryptobyte"
+    cryptobyte_asn1 "golang.org/x/crypto/cryptobyte/asn1"
 )
 
 // 序列号
@@ -12,16 +16,18 @@ var elgamalPrivKeyVersion = 0
 // 私钥
 type elgamalPrivateKey struct {
     Version int
-    G       *big.Int
     P       *big.Int
+    G       *big.Int
+    Q       *big.Int `asn1:"optional"`
     Y       *big.Int
     X       *big.Int
 }
 
 // 公钥
 type elgamalPublicKey struct {
-    G *big.Int
     P *big.Int
+    G *big.Int
+    Q *big.Int `asn1:"optional"`
     Y *big.Int
 }
 
@@ -53,8 +59,8 @@ func NewPKCS1Key() PKCS1Key {
 // 包装公钥
 func (this PKCS1Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     publicKey := elgamalPublicKey{
-        G: key.G,
         P: key.P,
+        G: key.G,
         Y: key.Y,
     }
 
@@ -68,20 +74,22 @@ func MarshalPKCS1PublicKey(key *PublicKey) ([]byte, error) {
 
 // 解析公钥
 func (this PKCS1Key) ParsePublicKey(der []byte) (*PublicKey, error) {
-    var key elgamalPublicKey
-    rest, err := asn1.Unmarshal(der, &key)
-    if err != nil {
-        return nil, err
-    }
-
-    if len(rest) > 0 {
-        return nil, asn1.SyntaxError{Msg: "trailing data"}
-    }
-
     publicKey := &PublicKey{
-        G: key.G,
-        P: key.P,
-        Y: key.Y,
+        G: new(big.Int),
+        P: new(big.Int),
+        Y: new(big.Int),
+    }
+
+    var q big.Int
+    defaultQ := big.NewInt(0)
+
+    keyDer := cryptobyte.String(der)
+    if !keyDer.ReadASN1(&keyDer, cryptobyte_asn1.SEQUENCE) ||
+        !keyDer.ReadASN1Integer(publicKey.P) ||
+        !keyDer.ReadASN1Integer(publicKey.G) ||
+        !keyDer.ReadOptionalASN1Integer(&q, 0xa0, defaultQ) ||
+        !keyDer.ReadASN1Integer(publicKey.Y) {
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal public key")
     }
 
     return publicKey, nil
@@ -102,8 +110,8 @@ func (this PKCS1Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     // 构造私钥信息
     privateKey := elgamalPrivateKey{
         Version: version,
-        G:       key.G,
         P:       key.P,
+        G:       key.G,
         Y:       key.Y,
         X:       key.X,
     }
@@ -118,27 +126,32 @@ func MarshalPKCS1PrivateKey(key *PrivateKey) ([]byte, error) {
 
 // 解析私钥
 func (this PKCS1Key) ParsePrivateKey(der []byte) (*PrivateKey, error) {
-    var key elgamalPrivateKey
-    rest, err := asn1.Unmarshal(der, &key)
-    if err != nil {
-        return nil, err
-    }
-
-    if len(rest) > 0 {
-        return nil, asn1.SyntaxError{Msg: "trailing data"}
-    }
-
-    if key.Version != elgamalPrivKeyVersion {
-        return nil, fmt.Errorf("EIGamal: unknown EIGamal private key version %d", key.Version)
-    }
-
     privateKey := &PrivateKey{
         PublicKey: PublicKey{
-            G: key.G,
-            P: key.P,
-            Y: key.Y,
+            G: new(big.Int),
+            P: new(big.Int),
+            Y: new(big.Int),
         },
-        X: key.X,
+        X: new(big.Int),
+    }
+
+    var version int
+    var q big.Int
+    defaultQ := big.NewInt(0)
+
+    keyDer := cryptobyte.String(der)
+    if !keyDer.ReadASN1(&keyDer, cryptobyte_asn1.SEQUENCE) ||
+        !keyDer.ReadASN1Integer(&version) ||
+        !keyDer.ReadASN1Integer(privateKey.P) ||
+        !keyDer.ReadASN1Integer(privateKey.G) ||
+        !keyDer.ReadOptionalASN1Integer(&q, 0xa0, defaultQ) ||
+        !keyDer.ReadASN1Integer(privateKey.Y) ||
+        !keyDer.ReadASN1Integer(privateKey.X) {
+        return nil, errors.New("cryptobin/elgamal: invalid EIGamal private key")
+    }
+
+    if version != elgamalPrivKeyVersion {
+        return nil, fmt.Errorf("cryptobin/elgamal: unknown EIGamal private key version %d", version)
     }
 
     return privateKey, nil

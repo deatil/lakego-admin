@@ -102,6 +102,8 @@ func Test_GenerateKeyPKCS1(t *testing.T) {
     priPass2 := obj.CreatePKCS1PrivateKeyWithPassword("123", "DESEDE3CBC").ToKeyString()
     pub2 := obj.CreatePKCS1PublicKey().ToKeyString()
 
+    // t.Errorf("%s, %s, %s \n", pri2, priPass2, pub2)
+
     assertNotEmpty(pri2, "GenerateKey-pri")
     assertNotEmpty(priPass2, "GenerateKey-pri")
     assertNotEmpty(pub2, "GenerateKey-pub")
@@ -126,6 +128,8 @@ func Test_GenerateKeyPKCS8(t *testing.T) {
     priPass2 := obj.CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256").ToKeyString()
     pub2 := obj.CreatePKCS8PublicKey().ToKeyString()
 
+    // t.Errorf("%s, %s, %s \n", pri2, priPass2, pub2)
+
     assertNotEmpty(pri2, "GenerateKey-pri")
     assertNotEmpty(priPass2, "GenerateKey-pri")
     assertNotEmpty(pub2, "GenerateKey-pub")
@@ -134,26 +138,26 @@ func Test_GenerateKeyPKCS8(t *testing.T) {
 var (
     pkcs1Prikey = `
 -----BEGIN EIGamal PRIVATE KEY-----
-MIGMAgEAAiBG2QPQa28N1axYmAXQYhivlso0yY5wVjJaO1TZBkDAyQIhAMJmSRKC
-LPAqJj1PUsYgB7djyNDhq5iadDbk1Hn/wcfvAiA9c0jJy+hHyNMHhVsbV0Dzq3s7
-+dYJtrWfQau+UARvFQIgTafZkEv/oojOjX1IjyYXtG14Fm6dTM31hxGfncpRiys=
+MIGMAgEAAiEAz5k+pG+6n9UNyvAcbGLEcTfJ3NN8XWBpc27zqWbRY/cCIDXGstaZ
+qIVrSp3hnXtTmu/8rcbfFmhui7+Ubb37ldUrAiA1ozJHvzXn5m3cMs++nV2oT8Ij
++c8T6Sq/5txnIQXytgIgLCd+/uxQSB05Y2xWtzz9UTVBC9Sj9uh2k5ZZlqfY8v8=
 -----END EIGamal PRIVATE KEY-----
     `
     pkcs1EnPrikey = `
 -----BEGIN EIGamal PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
-DEK-Info: DES-EDE3-CBC,04cc49efb5b3887a
+DEK-Info: DES-EDE3-CBC,a26bd66b277099bd
 
-sTsQmSlTGC+SFzNng5Ct2kxTSBj0rcOj/2JO2rWkrOLou3q996Rx1LcifvZoQcqW
-Vjmh1KTCPFS3SoMA88f6s0o7EFFiVJz7QYyVPx9bFUSyh939NSlHLRKPCeMteKVd
-ohjhqjlJRNcZ1ohD5e7dYAINenfDRzaf4481HEVof74XAg/guweocvuTFUyINMfK
+YFVfbgFspb0Pr21832B3xwm1LUrf2SDu4K/Wc8MtD5Is4NCzOatQw8kYA5qkIf9p
+6CyR57wtsJCakIw3E0DKSZYNe3tQbfxRK+ZUgYAda/E0UpiLe9j/WJRQ8G9/DAOi
+mXXdz6pq4omiDVh3DcSlQJskJvoM6KE5OgJh81iuP7jbiX109ayEYPNuVODvuMTC
 -----END EIGamal PRIVATE KEY-----
     `
     pkcs1Pubkey = `
 -----BEGIN EIGamal PUBLIC KEY-----
-MGcCIEbZA9Brbw3VrFiYBdBiGK+WyjTJjnBWMlo7VNkGQMDJAiEAwmZJEoIs8Com
-PU9SxiAHt2PI0OGrmJp0NuTUef/Bx+8CID1zSMnL6EfI0weFWxtXQPOrezv51gm2
-tZ9Bq75QBG8V
+MGcCIQDPmT6kb7qf1Q3K8BxsYsRxN8nc03xdYGlzbvOpZtFj9wIgNcay1pmohWtK
+neGde1Oa7/ytxt8WaG6Lv5RtvfuV1SsCIDWjMke/Nefmbdwyz76dXahPwiP5zxPp
+Kr/m3GchBfK2
 -----END EIGamal PUBLIC KEY-----
     `
 )
@@ -161,25 +165,25 @@ tZ9Bq75QBG8V
 var (
     pkcs8Prikey = `
 -----BEGIN PRIVATE KEY-----
-MHkCAQAwUAYGKw4HAgEBMEYCIQCy4rpY7/Z7AEFkeynhVsYJOKNq0D9NtUWf+puN
-qK7zrwIhAOjg+O+HXtVdj3vN72H5a6kL+57ITnNRNB6FcqB+Zz5jBCICIFPOG8D1
-HeUCUbxK7U5ZrjnfS0dvDcRA5ho6b5cpad8q
+MHwCAQAwUwYKKwYBBAGXVQECATBFAiEA+noVToCLuNLk4FZLko7OJXNmOY6BAUNA
+3hLBXv0SZKsCIFwFNqjau/88h79YkB1rL/BceW70eM8B4lCHA3woYPXPBCICIFCs
+CbkGXhmcWHly2/jqgivZf3I2cTT0O4HqOmZ1IVxz
 -----END PRIVATE KEY-----
     `
     pkcs8EnPrikey = `
 -----BEGIN ENCRYPTED PRIVATE KEY-----
-MIHkMF8GCSqGSIb3DQEFDTBSMDEGCSqGSIb3DQEFDDAkBBAHndBcwCbGl/H+ABqb
-GA1NAgInEDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQrAC6gJNgTPM6+tpe
-rexsJgSBgDkbDfoCerEfFxM0spyJiwXuCDEBDwo84GD8wNYviypWsujku7kiaIhY
-ht7LuPsGQ7nlQqO8cZBpnajR/YS1gJYwAY8DVFqxm4yjwuAu7glptnvtylRR6lCV
-esEaQVmbvxLO/VyIT6h5FwCEMahGs5Sz8BkoIU+DtRinq53+BzNx
+MIHkMF8GCSqGSIb3DQEFDTBSMDEGCSqGSIb3DQEFDDAkBBBZny6xpUAS9PJJWXyC
+p8FRAgInEDAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQBKgQQwaYLhmXWTBlNy3JX
+6ig8NwSBgESq+ct3cARhXWjUso5P/yITE1k4zv3YlKg90pd+ugSW6ik8yy3LvVWc
+J1rO1K4MfoA2jbRO0pi74uq5c2vtl4X4zWB3YiQGhw04E4ejwQHVm0GtWDYUwzHS
+wbRE9CWGY1fA6vg2JKTMizxa5KZUutn442HzQ1EWJa+anI9glNEX
 -----END ENCRYPTED PRIVATE KEY-----
     `
     pkcs8Pubkey = `
 -----BEGIN PUBLIC KEY-----
-MHgwUAYGKw4HAgEBMEYCIQCy4rpY7/Z7AEFkeynhVsYJOKNq0D9NtUWf+puNqK7z
-rwIhAOjg+O+HXtVdj3vN72H5a6kL+57ITnNRNB6FcqB+Zz5jAyQAAiEA0jS+mkks
-HAqGE16YbE8QDW1pod+8A/FO09oEMqvPnA0=
+MHswUwYKKwYBBAGXVQECATBFAiEA+noVToCLuNLk4FZLko7OJXNmOY6BAUNA3hLB
+Xv0SZKsCIFwFNqjau/88h79YkB1rL/BceW70eM8B4lCHA3woYPXPAyQAAiEAk2fe
+u2+zYDS2Uob9qmSSFxfxLZkW5v8xExCig3QYhQ0=
 -----END PUBLIC KEY-----
     `
 )
