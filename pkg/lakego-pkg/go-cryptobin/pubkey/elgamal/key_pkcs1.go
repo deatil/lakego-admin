@@ -94,7 +94,7 @@ func (this PKCS1Key) ParsePublicKey(der []byte) (*PublicKey, error) {
         !keyDer.ReadASN1Integer(publicKey.G) ||
         !keyDer.ReadASN1Integer(q) ||
         !keyDer.ReadASN1Integer(publicKey.Y) {
-        return nil, errors.New("cryptobin/elgamal: invalid EIGamal public key")
+        return nil, errors.New("cryptobin/elgamal: invalid ElGamal public key")
     }
 
     return publicKey, nil
@@ -154,11 +154,11 @@ func (this PKCS1Key) ParsePrivateKey(der []byte) (*PrivateKey, error) {
         !keyDer.ReadASN1Integer(q) ||
         !keyDer.ReadASN1Integer(privateKey.Y) ||
         !keyDer.ReadASN1Integer(privateKey.X) {
-        return nil, errors.New("cryptobin/elgamal: invalid EIGamal private key")
+        return nil, errors.New("cryptobin/elgamal: invalid ElGamal private key")
     }
 
     if version != elgamalPrivKeyVersion {
-        return nil, fmt.Errorf("cryptobin/elgamal: unknown EIGamal private key version %d", version)
+        return nil, fmt.Errorf("cryptobin/elgamal: unknown ElGamal private key version %d", version)
     }
 
     return privateKey, nil

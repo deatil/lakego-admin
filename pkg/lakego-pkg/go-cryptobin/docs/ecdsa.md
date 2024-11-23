@@ -66,7 +66,7 @@ Sign() / Verify(data []byte)
 ASN1编码，为默认方法别名:
 SignASN1() / VerifyASN1(data []byte)
 
-字节拼接:
+明文字节拼接:
 SignBytes() / VerifyBytes(data []byte)
 ~~~
 

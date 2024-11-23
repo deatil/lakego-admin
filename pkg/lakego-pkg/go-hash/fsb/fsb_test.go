@@ -12,6 +12,43 @@ func fromHex(s string) []byte {
     return h
 }
 
+type testCopyData struct {
+    d []byte
+    d2 [][][]byte
+}
+
+func Test_Copy(t *testing.T) {
+    data1 := &testCopyData{
+        d: []byte("abcder"),
+        d2: [][][]byte{
+            [][]byte{
+                []byte("1111111111"),
+                []byte("2222222222"),
+            },
+            [][]byte{
+                []byte("1111111112"),
+                []byte("2222222223"),
+            },
+        },
+    }
+
+    data2 := *data1
+    copy(data2.d, []byte("abcde2"))
+
+    if fmt.Sprintf("%s", data2.d) != fmt.Sprintf("%s", data1.d) {
+        t.Errorf("got %s, want %s", data2.d, data1.d)
+    }
+
+    data3 := &testCopyData{
+        d2: make([][][]byte, 2),
+    }
+    copy(data3.d2, data1.d2)
+
+    data3.d2[1][1] = []byte("222222222355")
+
+    // t.Errorf("%s", string(data1.d2[1][1]))
+}
+
 func Test_Hash(t *testing.T) {
     msg := []byte("test-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-datatest-data")
 

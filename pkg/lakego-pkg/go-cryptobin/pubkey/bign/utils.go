@@ -106,12 +106,12 @@ const MAX_DIGEST_SIZE = 64
 
 func determiniticNonce(
     k, q *big.Int,
-    q_bit_len int,
+    qBitLen int,
     x *big.Int,
     adata []byte,
     h []byte,
 ) error {
-    qlen := (q_bit_len + 7) / 8
+    qlen := (qBitLen + 7) / 8
     l := qlen / 2
     hlen := len(h)
 
@@ -200,8 +200,8 @@ func determiniticNonce(
             r_bar_len = qlen
             copy(r_bar[:], r[:r_bar_len])
 
-            if (q_bit_len % 8) != 0 {
-                r_bar[r_bar_len - 1] &= byte((0x1 << (q_bit_len % 8)) - 1)
+            if (qBitLen % 8) != 0 {
+                r_bar[r_bar_len - 1] &= byte((0x1 << (qBitLen % 8)) - 1)
             }
         } else {
             if (n * BELT_BLOCK_LEN) > 0xffff {

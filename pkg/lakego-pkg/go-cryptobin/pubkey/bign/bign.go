@@ -69,7 +69,7 @@ func (opts *SignerOpts) GetAdata() []byte {
     return opts.Adata
 }
 
-// ec-gdsa PublicKey
+// bign PublicKey
 type PublicKey struct {
     elliptic.Curve
 
@@ -98,7 +98,7 @@ func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) (bool, er
     return Verify(pub, opt.GetHash(), msg, opt.GetAdata(), sign), nil
 }
 
-// ec-gdsa PrivateKey
+// bign PrivateKey
 type PrivateKey struct {
     PublicKey
 

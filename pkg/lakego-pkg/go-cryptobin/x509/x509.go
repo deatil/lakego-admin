@@ -270,15 +270,15 @@ func parsePublicKey(algo PublicKeyAlgorithm, keyData *publicKeyInfo) (any, error
             }
 
             return pub, nil
-        case EIGamal:
+        case ElGamal:
             keyBytes, err := asn1.Marshal(*keyData)
             if err != nil {
-                return nil, errors.New("x509: failed to unmarshal EIGamal publickey")
+                return nil, errors.New("x509: failed to unmarshal ElGamal publickey")
             }
 
             pub, err := elgamal.ParsePKCS8PublicKey(keyBytes)
             if err != nil {
-                return nil, errors.New("x509: failed to unmarshal EIGamal publickey")
+                return nil, errors.New("x509: failed to unmarshal ElGamal publickey")
             }
 
             return pub, nil
@@ -361,8 +361,8 @@ const (
     GOST3410WithGOST34112001
     GOST3410WithGOST34112012256
     GOST3410WithGOST34112012512
-    EIGamalWithSHA1
-    EIGamalWithRIPEMD160
+    ElGamalWithSHA1
+    ElGamalWithRIPEMD160
 )
 
 func (algo SignatureAlgorithm) isRSAPSS() bool {
@@ -398,8 +398,8 @@ var algoName = [...]string{
     GOST3410WithGOST34112001:    "GOST3410-GOST34112001",
     GOST3410WithGOST34112012256: "GOST3410-GOST34112012256",
     GOST3410WithGOST34112012512: "GOST3410-GOST34112012512",
-    EIGamalWithSHA1:      "EIGamal-SHA1",
-    EIGamalWithRIPEMD160: "EIGamal-RIPEMD160",
+    ElGamalWithSHA1:      "ElGamal-SHA1",
+    ElGamalWithRIPEMD160: "ElGamal-RIPEMD160",
 }
 
 func (algo SignatureAlgorithm) String() string {
@@ -419,7 +419,7 @@ const (
     Ed25519
     SM2
     GOST3410
-    EIGamal
+    ElGamal
 )
 
 // OIDs for signature algorithms
@@ -497,8 +497,8 @@ var (
     oidSignatureGOST3410WithGOST34112012256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3, 2}
     oidSignatureGOST3410WithGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 3, 3}
 
-    oidSignatureEIGamalWithSHA1      = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 1}
-    oidSignatureEIGamalWithRIPEMD160 = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 2}
+    oidSignatureElGamalWithSHA1      = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 1}
+    oidSignatureElGamalWithRIPEMD160 = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1, 2}
 
     oidSM3     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 401, 1}
     oidSHA256  = asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}
@@ -554,8 +554,8 @@ var signatureAlgorithmDetails = []struct {
     {GOST3410WithGOST34112012256, oidSignatureGOST3410WithGOST34112012256, GOST3410, GOST34112012256},
     {GOST3410WithGOST34112012512, oidSignatureGOST3410WithGOST34112012512, GOST3410, GOST34112012512},
 
-    {EIGamalWithSHA1, oidSignatureEIGamalWithSHA1, EIGamal, SHA1},
-    {EIGamalWithRIPEMD160, oidSignatureEIGamalWithRIPEMD160, EIGamal, RIPEMD160},
+    {ElGamalWithSHA1, oidSignatureElGamalWithSHA1, ElGamal, SHA1},
+    {ElGamalWithRIPEMD160, oidSignatureElGamalWithRIPEMD160, ElGamal, RIPEMD160},
 }
 
 // pssParameters reflects the parameters in an AlgorithmIdentifier that
@@ -694,7 +694,7 @@ var (
     oidGost2012PublicKey256  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
     oidGost2012PublicKey512  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
 
-    oidPublicKeyEIGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
+    oidPublicKeyElGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
 )
 
 func getPublicKeyAlgorithmFromOID(oid asn1.ObjectIdentifier) PublicKeyAlgorithm {
@@ -711,8 +711,8 @@ func getPublicKeyAlgorithmFromOID(oid asn1.ObjectIdentifier) PublicKeyAlgorithm 
             oid.Equal(oidGost2012PublicKey256),
             oid.Equal(oidGost2012PublicKey512):
             return GOST3410
-        case oid.Equal(oidPublicKeyEIGamal):
-            return EIGamal
+        case oid.Equal(oidPublicKeyElGamal):
+            return ElGamal
     }
 
     return UnknownPublicKeyAlgorithm
@@ -1090,7 +1090,7 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
     var hashType Hash
     switch algo {
         case SHA1WithRSA, DSAWithSHA1, ECDSAWithSHA1,
-            SM2WithSHA1, EIGamalWithSHA1:
+            SM2WithSHA1, ElGamalWithSHA1:
             hashType = SHA1
         case SHA256WithRSA, SHA256WithRSAPSS, DSAWithSHA256,
             ECDSAWithSHA256, SM2WithSHA256:
@@ -1111,7 +1111,7 @@ func checkSignature(algo SignatureAlgorithm, signed, signature []byte, publicKey
             hashType = GOST34112012256
         case GOST3410WithGOST34112012512:
             hashType = GOST34112012512
-        case EIGamalWithRIPEMD160:
+        case ElGamalWithRIPEMD160:
             hashType = RIPEMD160
         default:
             return ErrUnsupportedAlgorithm
@@ -2044,15 +2044,15 @@ func signingParamsForPublicKey(pub any, requestedSigAlgo SignatureAlgorithm) (ha
             }
 
         case *elgamal.PublicKey:
-            pubType = EIGamal
+            pubType = ElGamal
             hashFunc = SHA1
-            sigAlgo.Algorithm = oidSignatureEIGamalWithSHA1
+            sigAlgo.Algorithm = oidSignatureElGamalWithSHA1
             sigAlgo.Parameters = asn1.RawValue{
                 Tag: 5,
             }
 
         default:
-            err = errors.New("x509: only RSA, SM2, GOST3410, EIGamal and ECDSA keys supported")
+            err = errors.New("x509: only RSA, SM2, GOST3410, ElGamal and ECDSA keys supported")
     }
 
     if err != nil {

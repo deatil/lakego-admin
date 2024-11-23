@@ -46,7 +46,7 @@ func (this MacData) Verify(message []byte, password []byte) error {
             Algorithm: pkix.AlgorithmIdentifier{
                 Algorithm:  asn1.ObjectIdentifier(this.Mac.Algorithm.Algorithm),
                 Parameters: asn1.RawValue{
-                    Tag: asn1.TagNull,
+                    FullBytes: this.Mac.Algorithm.Parameters.FullBytes,
                 },
             },
             Digest: this.Mac.Digest,

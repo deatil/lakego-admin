@@ -142,6 +142,44 @@ func Test_SignASN1(t *testing.T) {
     }
 }
 
+func Test_SignToRS_Msg_check(t *testing.T) {
+    eq := cryptobin_test.AssertEqualT(t)
+
+    message := make([]byte, 32)
+    _, err := io.ReadFull(rand.Reader, message)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    newMessage := make([]byte, 32)
+    copy(newMessage, message)
+
+    priv, err := GenerateKey(rand.Reader, CurveIdGostR34102001TestParamSet())
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    r, s, err := SignToRS(rand.Reader, priv, message)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    eq(message, newMessage, "Test_SignToRS_Msg_check-SignToRS")
+
+    valid, err := VerifyWithRS(pub, message, r, s)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    eq(message, newMessage, "Test_SignToRS_Msg_check-VerifyWithRS")
+
+    if !valid {
+        t.Error("VerifyWithRS: valid error")
+    }
+}
+
 func Test_Sign_Func(t *testing.T) {
     message := make([]byte, 32)
     _, err := io.ReadFull(rand.Reader, message)

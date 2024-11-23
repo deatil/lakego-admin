@@ -976,7 +976,7 @@ func Test_ELGamal(t *testing.T) {
             CommonName:   "test.example.com",
             Organization: []string{"Test"},
         },
-        SignatureAlgorithm: EIGamalWithSHA1,
+        SignatureAlgorithm: ElGamalWithSHA1,
     }
 
     reqPem, err := CreateCertificateRequest(rand.Reader, &templateReq, privKey)
@@ -1023,7 +1023,7 @@ func Test_ELGamal(t *testing.T) {
         NotBefore: time.Now(),
         NotAfter:  time.Date(2028, time.October, 10, 12, 1, 1, 1, time.UTC),
 
-        SignatureAlgorithm: EIGamalWithSHA1,
+        SignatureAlgorithm: ElGamalWithSHA1,
 
         SubjectKeyId: []byte{1, 2, 3, 4},
         KeyUsage:     KeyUsageCertSign,
@@ -1117,7 +1117,7 @@ func Test_ELGamal2(t *testing.T) {
             CommonName:   "test.example.com",
             Organization: []string{"Test"},
         },
-        SignatureAlgorithm: EIGamalWithRIPEMD160,
+        SignatureAlgorithm: ElGamalWithRIPEMD160,
     }
 
     reqPem, err := CreateCertificateRequest(rand.Reader, &templateReq, privKey)
@@ -1164,7 +1164,7 @@ func Test_ELGamal2(t *testing.T) {
         NotBefore: time.Now(),
         NotAfter:  time.Date(2028, time.October, 10, 12, 1, 1, 1, time.UTC),
 
-        SignatureAlgorithm: EIGamalWithRIPEMD160,
+        SignatureAlgorithm: ElGamalWithRIPEMD160,
 
         SubjectKeyId: []byte{1, 2, 3, 4},
         KeyUsage:     KeyUsageCertSign,

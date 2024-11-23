@@ -451,7 +451,6 @@ func (this EncryptRC5) getBlock(opt IOption) (cipher.Block, error) {
     key := opt.Key()
 
     // RC5 key is 16, 24 or 32 bytes.
-    // iv is 8 with 32, 16 with 64
     return rc5.NewCipher(key, wordSize, rounds)
 }
 

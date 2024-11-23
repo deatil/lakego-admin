@@ -1,7 +1,6 @@
 package fsb
 
 import (
-    "hash"
     "errors"
 
     "github.com/deatil/go-hash/whirlpool"
@@ -31,17 +30,17 @@ type digest struct {
     databitlen uint64
 }
 
-// New returns a new hash.Hash computing the fsb checksum
-func newDigest(hashbitlen int) (hash.Hash, error) {
+// New returns a new *digest computing the fsb checksum
+func newDigest(hashbitlen int) (*digest, error) {
     if hashbitlen == 0 {
         return nil, errors.New("go-hash/fsb: hash size can't be zero")
     }
 
     switch hashbitlen {
-        default:
-            return nil, errors.New("go-hash/fsb: non-byte hash sizes are not supported")
         case 48, 160, 224, 256, 384, 512:
             break
+        default:
+            return nil, errors.New("go-hash/fsb: non-byte hash sizes are not supported")
     }
 
     d := new(digest)
@@ -199,7 +198,7 @@ func (d *digest) write(data []byte, databitlen uint32) (err error) {
 
 func (d *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d0 := *d
+    d0 := d.copy()
     hash := d0.checkSum()
     return append(in, hash...)
 }
@@ -303,4 +302,33 @@ func (d *digest) performHash() {
     d.newSyndrome = bytesToUints(d.syndrome)
     d.syndrome = uintsToBytes(temp)
     d.count = 0
+}
+
+func (d *digest) copy() *digest {
+    d0 := &digest{}
+
+    d0.n, d0.w, d0.r, d0.p = d.n, d.w, d.r, d.p
+    d0.b = d.b
+
+    d0.inputsize = d.inputsize
+    d0.bpc, d0.bfiv, d0.bfm = d.bpc, d.bfiv, d.bfm
+
+    d0.firstLine = make([][][]byte, len(d.firstLine))
+    copy(d0.firstLine, d.firstLine)
+
+    d0.hashbitlen = d.hashbitlen
+
+    d0.syndrome = make([]byte, len(d.syndrome))
+    copy(d0.syndrome, d.syndrome)
+
+    d0.newSyndrome = make([]uint32, len(d.newSyndrome))
+    copy(d0.newSyndrome, d.newSyndrome)
+
+    d0.buffer = make([]byte, len(d.buffer))
+    copy(d0.buffer, d.buffer)
+
+    d0.count = d.count
+    d0.databitlen = d.databitlen
+
+    return d0
 }

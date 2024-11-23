@@ -13,6 +13,7 @@
 * elgamal 使用文档: [elgamal.md](elgamal.md)
 * ed448 使用文档: [ed448.md](ed448.md)
 * gost 使用文档: [gost.md](gost.md)
+* bign 使用文档: [bign.md](bign.md)
 * dh 使用文档: [dh.md](dh.md)
 * ca 使用文档: [ca.md](ca.md)
 * pkcs7 使用文档: [pkcs7.md](pkcs7.md)

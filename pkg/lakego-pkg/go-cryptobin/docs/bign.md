@@ -1,9 +1,9 @@
-### EC-GDSA 使用文档
+### Bign 使用文档
 
 #### 包引入
 ~~~go
 import (
-    "github.com/deatil/go-cryptobin/cryptobin/ecgdsa"
+    "github.com/deatil/go-cryptobin/cryptobin/bign"
 )
 ~~~
 
@@ -36,11 +36,11 @@ func main() {
     var psssword string = ""
 
     // 生成证书
-    // 可选参数 [P521 | P384 | P256 | P224]
-    ec := ecgdsa.GenerateKey("P521")
+    // 可选 [Bign256v1 | Bign384v1 | Bign512v1]
+    gen := bign.GenerateKey("Bign256v1")
 
     // 生成私钥 PEM 证书
-    privateKeyString := ec.
+    privateKeyString := gen.
         CreatePrivateKey().
         // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
         // CreatePKCS1PrivateKey()
@@ -50,7 +50,7 @@ func main() {
         ToKeyString()
 
     // 生成公钥 PEM 证书
-    publicKeyString := ec.
+    publicKeyString := gen.
         CreatePublicKey().
         ToKeyString()
 }
@@ -79,7 +79,7 @@ func main() {
 
     // 私钥签名
     var pri []byte = []byte("...")
-    var base64signedString string = ecgdsa.
+    var base64signedString string = bign.
         FromString("test-pass").
         FromPrivateKey(pri).
         // FromPrivateKeyWithPassword(pri, psssword).
@@ -87,15 +87,21 @@ func main() {
         // FromPKCS1PrivateKeyWithPassword(pri, psssword).
         // FromPKCS8PrivateKey(pri).
         // FromPKCS8PrivateKeyWithPassword(pri, psssword).
+        // WithEncodingASN1().
+        // WithEncodingBytes().
+        WithAdata(adata). // 设置 adata 参数
         Sign().
         ToBase64String()
 
     // 公钥验证
     var pub []byte = []byte("...")
     var base64signedString string = "..."
-    var verify bool = ecgdsa.
+    var verify bool = bign.
         FromBase64String(base64signedString).
         FromPublicKey(pub).
+        // WithEncodingASN1().
+        // WithEncodingBytes().
+        WithAdata(adata). // 设置 adata 参数
         Verify([]byte("test-pass")).
         ToVerify()
 }
@@ -112,7 +118,7 @@ func main() {
     var prikeyPem []byte = []byte("...")
     var pubkeyPem []byte = []byte("...")
 
-    var res bool = ecgdsa.New().
+    var res bool = bign.New().
         FromPrivateKey(pri).
         // FromPrivateKeyWithPassword(pri, psssword).
         // FromPKCS1PrivateKey(pri).

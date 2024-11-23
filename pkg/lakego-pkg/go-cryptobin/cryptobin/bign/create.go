@@ -1,4 +1,4 @@
-package ecgdsa
+package bign
 
 import (
     "errors"
@@ -7,7 +7,7 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
-    "github.com/deatil/go-cryptobin/pubkey/ecgdsa"
+    "github.com/deatil/go-cryptobin/pubkey/bign"
 )
 
 type (
@@ -28,35 +28,35 @@ var (
 
 // 生成私钥 pem 数据, PKCS1 别名
 // 使用:
-// obj := New().WithCurve("P521").GenerateKey()
-// priKey := obj.CreatePrivateKey().ToKeyString()
-func (this ECGDSA) CreatePrivateKey() ECGDSA {
+// gen := GenerateKey("P521")
+// priKey := gen.CreatePrivateKey().ToKeyString()
+func (this Bign) CreatePrivateKey() Bign {
     return this.CreatePKCS1PrivateKey()
 }
 
 // 生成私钥带密码 pem 数据, PKCS1 别名
 // CreatePrivateKeyWithPassword("123", "AES256CBC")
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
-func (this ECGDSA) CreatePrivateKeyWithPassword(password string, opts ...string) ECGDSA {
+func (this Bign) CreatePrivateKeyWithPassword(password string, opts ...string) Bign {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }
 
 // ====================
 
 // 生成私钥 pem 数据
-func (this ECGDSA) CreatePKCS1PrivateKey() ECGDSA {
+func (this Bign) CreatePKCS1PrivateKey() Bign {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := ecgdsa.MarshalECPrivateKey(this.privateKey)
+    publicKeyBytes, err := bign.MarshalECPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
 
     privateBlock := &pem.Block{
-        Type:  "ECGDSA PRIVATE KEY",
+        Type:  "Bign PRIVATE KEY",
         Bytes: publicKeyBytes,
     }
 
@@ -66,7 +66,7 @@ func (this ECGDSA) CreatePKCS1PrivateKey() ECGDSA {
 }
 
 // 生成私钥带密码 pem 数据
-func (this ECGDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) ECGDSA {
+func (this Bign) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Bign {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -85,7 +85,7 @@ func (this ECGDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...st
     }
 
     // 生成私钥
-    publicKeyBytes, err := ecgdsa.MarshalECPrivateKey(this.privateKey)
+    publicKeyBytes, err := bign.MarshalECPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -93,7 +93,7 @@ func (this ECGDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...st
     // 生成加密数据
     privateBlock, err := pkcs1.EncryptPEMBlock(
         rand.Reader,
-        "ECGDSA PRIVATE KEY",
+        "Bign PRIVATE KEY",
         publicKeyBytes,
         []byte(password),
         cipher,
@@ -110,13 +110,13 @@ func (this ECGDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...st
 // ====================
 
 // 生成 PKCS8 私钥 pem 数据
-func (this ECGDSA) CreatePKCS8PrivateKey() ECGDSA {
+func (this Bign) CreatePKCS8PrivateKey() Bign {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := ecgdsa.MarshalPrivateKey(this.privateKey)
+    publicKeyBytes, err := bign.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -133,7 +133,7 @@ func (this ECGDSA) CreatePKCS8PrivateKey() ECGDSA {
 
 // 生成 PKCS8 私钥带密码 pem 数据
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
-func (this ECGDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) ECGDSA {
+func (this Bign) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Bign {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
         return this.AppendError(err)
@@ -145,7 +145,7 @@ func (this ECGDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...an
     }
 
     // 生成私钥
-    publicKeyBytes, err := ecgdsa.MarshalPrivateKey(this.privateKey)
+    publicKeyBytes, err := bign.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -170,13 +170,13 @@ func (this ECGDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...an
 // ====================
 
 // 生成公钥 pem 数据
-func (this ECGDSA) CreatePublicKey() ECGDSA {
+func (this Bign) CreatePublicKey() Bign {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := ecgdsa.MarshalPublicKey(this.publicKey)
+    publicKeyBytes, err := bign.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }
