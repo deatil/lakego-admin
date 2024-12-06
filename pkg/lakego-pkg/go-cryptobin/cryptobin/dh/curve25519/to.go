@@ -1,7 +1,7 @@
 package curve25519
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 私钥/公钥
@@ -28,10 +28,10 @@ func (this Curve25519) ToString() string {
 
 // 输出Base64
 func (this Curve25519) ToBase64String() string {
-    return tool.Base64Encode(this.secretData)
+    return encoding.Base64Encode(this.secretData)
 }
 
 // 输出Hex
 func (this Curve25519) ToHexString() string {
-    return tool.HexEncode(this.secretData)
+    return encoding.HexEncode(this.secretData)
 }

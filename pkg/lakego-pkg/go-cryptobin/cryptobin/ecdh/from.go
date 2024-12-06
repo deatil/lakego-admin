@@ -5,7 +5,7 @@ import (
     "crypto/rand"
     "crypto/ecdh"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
 )
 
 // 生成密钥
@@ -93,7 +93,7 @@ func FromPublicKey(key []byte) ECDH {
 
 // DER 私钥
 func (this ECDH) FromPrivateKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -107,7 +107,7 @@ func (this ECDH) FromPrivateKeyDer(der []byte) ECDH {
 
 // DER 公钥
 func (this ECDH) FromPublicKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -176,7 +176,7 @@ func FromECDHPublicKey(key []byte) ECDH {
 
 // DER 私钥, 库自使用的 asn1 格式
 func (this ECDH) FromECDHPrivateKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParseECDHPrivateKeyFromPEM(key)
     if err != nil {
@@ -190,7 +190,7 @@ func (this ECDH) FromECDHPrivateKeyDer(der []byte) ECDH {
 
 // DER 公钥, 库自使用的 asn1 格式
 func (this ECDH) FromECDHPublicKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParseECDHPublicKeyFromPEM(key)
     if err != nil {

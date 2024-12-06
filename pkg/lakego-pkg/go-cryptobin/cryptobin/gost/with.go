@@ -1,7 +1,7 @@
 package gost
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
@@ -105,7 +105,7 @@ func (this Gost) WithSignHash(data HashFunc) Gost {
 // 设置 hash 类型
 // 可用参数可查看 Hash 结构体数据
 func (this Gost) SetSignHash(data string) Gost {
-    hash, err := tool.GetHash(data)
+    hash, err := hash.GetHash(data)
     if err != nil {
         return this.AppendError(err)
     }

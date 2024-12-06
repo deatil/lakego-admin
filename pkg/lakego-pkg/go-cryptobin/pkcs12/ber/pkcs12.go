@@ -8,7 +8,7 @@ import (
     "crypto/x509"
     "crypto/x509/pkix"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/bmp_string"
     cryptobin_ber "github.com/deatil/go-cryptobin/ber"
     cryptobin_asn1 "github.com/deatil/go-cryptobin/ber/asn1"
     cryptobin_pkcs12 "github.com/deatil/go-cryptobin/pkcs12"
@@ -119,7 +119,7 @@ func Parse(ber []byte, password []byte) ([]byte, error) {
         authenticatedSafes = pfx.AuthSafe.Content.Bytes
     }
 
-    password, err = tool.BmpStringZeroTerminated(string(password))
+    password, err = bmp_string.BmpStringZeroTerminated(string(password))
     if err != nil {
         return nil, err
     }

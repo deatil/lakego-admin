@@ -7,7 +7,7 @@ import (
     "math/rand"
     "encoding/hex"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/binary"
 )
 
 func Test_Key16(t *testing.T) {
@@ -130,9 +130,9 @@ func Test_Check2(t *testing.T) {
     plainBytes, _ := hex.DecodeString(plaintext)
 
     // 小端转大端
-    key2 := tool.LE2BE_32_Bytes(key[:])
+    key2 := binary.LE2BE_32_Bytes(key[:])
 
-    plainBytes = tool.LE2BE_32_Bytes(plainBytes)
+    plainBytes = binary.LE2BE_32_Bytes(plainBytes)
 
     cipher, err := NewCipher(key2)
     if err != nil {
@@ -143,7 +143,7 @@ func Test_Check2(t *testing.T) {
     cipher.Encrypt(encrypted[:], plainBytes)
 
     // 大端转小端
-    encrypted2 := tool.BE2LE_32_Bytes(encrypted[:])
+    encrypted2 := binary.BE2LE_32_Bytes(encrypted[:])
 
     if ciphertext != fmt.Sprintf("%x", encrypted2) {
         t.Errorf("Encrypt error: act=%x, old=%s\n", encrypted2, ciphertext)

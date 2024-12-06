@@ -4,7 +4,8 @@ import (
     "io"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/dh/ecdh"
 )
 
@@ -92,8 +93,8 @@ func FromPublicKey(key []byte) ECDH {
 
 // 根据私钥 x, y 生成
 func (this ECDH) FromKeyXYString(xString string, yString string) ECDH {
-    x, _ := tool.HexDecode(xString)
-    y, _ := tool.HexDecode(yString)
+    x, _ := encoding.HexDecode(xString)
+    y, _ := encoding.HexDecode(yString)
 
     priv := &ecdh.PrivateKey{}
     priv.X = x
@@ -113,7 +114,7 @@ func FromKeyXYString(xString string, yString string) ECDH {
 
 // 根据私钥 x 生成
 func (this ECDH) FromPrivateKeyXString(xString string) ECDH {
-    x, _ := tool.HexDecode(xString)
+    x, _ := encoding.HexDecode(xString)
 
     priv := &ecdh.PrivateKey{}
     priv.X = x
@@ -134,7 +135,7 @@ func FromPrivateKeyXString(xString string) ECDH {
 
 // 根据公钥 y 生成
 func (this ECDH) FromPublicKeyYString(yString string) ECDH {
-    y, _ := tool.HexDecode(yString)
+    y, _ := encoding.HexDecode(yString)
 
     public := &ecdh.PublicKey{}
     public.Y = y
@@ -154,7 +155,7 @@ func FromPublicKeyYString(yString string) ECDH {
 
 // DER 私钥
 func (this ECDH) FromPrivateKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -168,7 +169,7 @@ func (this ECDH) FromPrivateKeyDer(der []byte) ECDH {
 
 // DER 公钥
 func (this ECDH) FromPublicKeyDer(der []byte) ECDH {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {

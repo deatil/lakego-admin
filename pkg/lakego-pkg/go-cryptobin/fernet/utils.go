@@ -6,7 +6,7 @@ import (
     "crypto/sha256"
     "encoding/binary"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/padding"
 )
 
 func getu64(ptr []byte) uint64 {
@@ -17,11 +17,11 @@ func putu64(ptr []byte, a uint64) {
     binary.BigEndian.PutUint64(ptr, a)
 }
 
-var usePadding = tool.NewPadding()
+var usePadding = padding.NewPKCS7()
 
 // Pads p to a multiple of k using PKCS #7 standard block padding.
 func pad(q, p []byte, k int) int {
-    pad := usePadding.PKCS7Padding(p, k)
+    pad := usePadding.Padding(p, k)
     copy(q, pad)
 
     return len(pad)
@@ -29,7 +29,7 @@ func pad(q, p []byte, k int) int {
 
 // Removes PKCS #7 standard block padding from p.
 func unpad(p []byte) []byte {
-    unpad, err := usePadding.PKCS7UnPadding(p)
+    unpad, err := usePadding.UnPadding(p)
     if err != nil {
         return nil
     }

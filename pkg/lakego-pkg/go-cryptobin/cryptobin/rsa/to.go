@@ -1,7 +1,7 @@
 package rsa
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 私钥/公钥
@@ -28,12 +28,12 @@ func (this RSA) ToString() string {
 
 // 输出Base64
 func (this RSA) ToBase64String() string {
-    return tool.Base64Encode(this.parsedData)
+    return encoding.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this RSA) ToHexString() string {
-    return tool.HexEncode(this.parsedData)
+    return encoding.HexEncode(this.parsedData)
 }
 
 // ==========

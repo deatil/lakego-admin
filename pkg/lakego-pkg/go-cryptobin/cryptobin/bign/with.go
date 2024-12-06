@@ -3,7 +3,7 @@ package bign
 import (
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/pubkey/bign"
     ecbign "github.com/deatil/go-cryptobin/elliptic/bign"
 )
@@ -52,8 +52,8 @@ func (this Bign) WithSignHash(hash HashFunc) Bign {
 }
 
 // 设置 hash 类型
-func (this Bign) SetSignHash(hash string) Bign {
-    h, err := tool.GetHash(hash)
+func (this Bign) SetSignHash(name string) Bign {
+    h, err := hash.GetHash(name)
     if err != nil {
         return this.AppendError(err)
     }

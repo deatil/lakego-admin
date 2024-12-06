@@ -3,7 +3,7 @@ package bign
 import (
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/bign"
 )
 
@@ -21,14 +21,14 @@ func (this Bign) GetPrivateKeyCurve() elliptic.Curve {
 func (this Bign) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
-    return tool.HexEncode(data.Bytes())
+    return encoding.HexEncode(data.Bytes())
 }
 
 // get PrivateKey data hex string
 func (this Bign) GetPrivateKeyString() string {
     priv := bign.PrivateKeyTo(this.privateKey)
 
-    return tool.HexEncode(priv)
+    return encoding.HexEncode(priv)
 }
 
 // get PublicKey
@@ -45,35 +45,35 @@ func (this Bign) GetPublicKeyCurve() elliptic.Curve {
 func (this Bign) GetPublicKeyXString() string {
     x := this.publicKey.X
 
-    return tool.HexEncode(x.Bytes())
+    return encoding.HexEncode(x.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this Bign) GetPublicKeyYString() string {
     y := this.publicKey.Y
 
-    return tool.HexEncode(y.Bytes())
+    return encoding.HexEncode(y.Bytes())
 }
 
 // get PublicKey X and Y Hex string
 func (this Bign) GetPublicKeyXYString() string {
     key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key[1:])
+    return encoding.HexEncode(key[1:])
 }
 
 // get PublicKey Uncompress Hex string
 func (this Bign) GetPublicKeyUncompressString() string {
     key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key)
+    return encoding.HexEncode(key)
 }
 
 // get PublicKey Compress Hex string
 func (this Bign) GetPublicKeyCompressString() string {
     key := elliptic.MarshalCompressed(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key)
+    return encoding.HexEncode(key)
 }
 
 // get Curve

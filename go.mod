@@ -86,7 +86,6 @@ require (
 	github.com/deatil/go-collection v0.0.0-00010101000000-000000000000 // indirect
 	github.com/deatil/go-crc16 v1.0.10005 // indirect
 	github.com/deatil/go-crc8 v1.0.10005 // indirect
-	github.com/deatil/go-cryptobin v1.0.2001 // indirect
 	github.com/deatil/go-datebin v1.0.1013 // indirect
 	github.com/deatil/go-encoding v1.0.2003 // indirect
 	github.com/deatil/go-event v1.0.1007 // indirect

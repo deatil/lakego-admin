@@ -68,6 +68,24 @@ func Test_Get(t *testing.T) {
 	eq(d.GetErrors(), errs, "failed Errors")
 }
 
+func Test_Zone(t *testing.T) {
+	eq := assertEqualT(t)
+
+	now := Now(MST)
+
+	zoneName := now.GetTimezone()
+	offset := now.GetOffset()
+	zoneName2, offset2 := now.GetZone()
+
+    zoneNameData := "MST"
+    offsetData := -25200
+
+	eq(zoneName, zoneNameData, "failed zoneName")
+	eq(offset, offsetData, "failed offset")
+	eq(zoneName2, zoneNameData, "failed zoneName2")
+	eq(offset2, offsetData, "failed offset2")
+}
+
 func Test_MarshalBinary(t *testing.T) {
 	eq := assertEqualT(t)
 

@@ -25,22 +25,22 @@ import (
 type PBMAC1Hash uint
 
 const (
-    PBMAC1_MD5 PBMAC1Hash = 1 + iota
-    PBMAC1_SHA1
-    PBMAC1_SHA224
-    PBMAC1_SHA256
-    PBMAC1_SHA384
-    PBMAC1_SHA512
-    PBMAC1_SHA512_224
-    PBMAC1_SHA512_256
-    PBMAC1_SM3
-    PBMAC1_GOST34112012256
-    PBMAC1_GOST34112012512
+    PBMAC1MD5 PBMAC1Hash = 1 + iota
+    PBMAC1SHA1
+    PBMAC1SHA224
+    PBMAC1SHA256
+    PBMAC1SHA384
+    PBMAC1SHA512
+    PBMAC1SHA512_224
+    PBMAC1SHA512_256
+    PBMAC1SM3
+    PBMAC1GOST34112012256
+    PBMAC1GOST34112012512
 )
 
 var (
-    // 默认 PBMAC1 hash
-    DefaultPBMAC1Hash = PBMAC1_SHA1
+    // Default PBMAC1 hash
+    DefaultPBMAC1Hash = PBMAC1SHA1
 )
 
 var (
@@ -51,7 +51,7 @@ var (
     oidPKCS5       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5}
     oidPKCS5PBKDF2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12}
 
-    // hash 方式
+    // HMAC hash oid
     oidDigestAlgorithm    = asn1.ObjectIdentifier{1, 2, 840, 113549, 2}
     oidHMACWithMD5        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 6}
     oidHMACWithSHA1       = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
@@ -67,8 +67,8 @@ var (
     oidHMACWithGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 4, 2}
 )
 
-// 返回使用的 Hash 方式
-func prfByOIDPBMAC1(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
+// get Hash type
+func pbmac1PRFByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
         case oid.Equal(oidHMACWithMD5):
             return md5.New, nil
@@ -97,30 +97,30 @@ func prfByOIDPBMAC1(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     return nil, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
 }
 
-// 返回使用的 Hash 对应的 asn1
-func oidByHashPBMAC1(h PBMAC1Hash) (asn1.ObjectIdentifier, error) {
+// get Hash oid
+func pbmac1OIDByHash(h PBMAC1Hash) (asn1.ObjectIdentifier, error) {
     switch h {
-        case PBMAC1_MD5:
+        case PBMAC1MD5:
             return oidHMACWithMD5, nil
-        case PBMAC1_SHA1:
+        case PBMAC1SHA1:
             return oidHMACWithSHA1, nil
-        case PBMAC1_SHA224:
+        case PBMAC1SHA224:
             return oidHMACWithSHA224, nil
-        case PBMAC1_SHA256:
+        case PBMAC1SHA256:
             return oidHMACWithSHA256, nil
-        case PBMAC1_SHA384:
+        case PBMAC1SHA384:
             return oidHMACWithSHA384, nil
-        case PBMAC1_SHA512:
+        case PBMAC1SHA512:
             return oidHMACWithSHA512, nil
-        case PBMAC1_SHA512_224:
+        case PBMAC1SHA512_224:
             return oidHMACWithSHA512_224, nil
-        case PBMAC1_SHA512_256:
+        case PBMAC1SHA512_256:
             return oidHMACWithSHA512_256, nil
-        case PBMAC1_SM3:
+        case PBMAC1SM3:
             return oidHMACWithSM3, nil
-        case PBMAC1_GOST34112012256:
+        case PBMAC1GOST34112012256:
             return oidHMACWithGOST34112012256, nil
-        case PBMAC1_GOST34112012512:
+        case PBMAC1GOST34112012512:
             return oidHMACWithGOST34112012512, nil
     }
 
@@ -136,30 +136,30 @@ type pbmac1Params struct {
     MessageAuthScheme pkix.AlgorithmIdentifier
 }
 
-// pbkdf2 数据，作为包装
-type pbkdf2Params struct {
+// PBMAC1 pbkdf2 data
+type pbmac1Pbkdf2Params struct {
     Salt           []byte
     IterationCount int
     KeyLength      int `asn1:"optional"`
     PrfParam       pkix.AlgorithmIdentifier `asn1:"optional"`
 }
 
-func (this pbkdf2Params) DeriveKey(password []byte) (key []byte, err error) {
+func (this pbmac1Pbkdf2Params) DeriveKey(password []byte) (key []byte, err error) {
     var alg asn1.ObjectIdentifier
     var h func() hash.Hash
 
     if this.PrfParam.Algorithm.String() != "" {
-        h, err = prfByOIDPBMAC1(this.PrfParam.Algorithm)
+        h, err = pbmac1PRFByOID(this.PrfParam.Algorithm)
         if err != nil {
             return nil, err
         }
     } else {
-        alg, err = oidByHashPBMAC1(DefaultPBMAC1Hash)
+        alg, err = pbmac1OIDByHash(DefaultPBMAC1Hash)
         if err != nil {
             return nil, err
         }
 
-        h, err = prfByOIDPBMAC1(alg)
+        h, err = pbmac1PRFByOID(alg)
         if err != nil {
             return nil, err
         }
@@ -167,7 +167,7 @@ func (this pbkdf2Params) DeriveKey(password []byte) (key []byte, err error) {
 
     size := h().Size()
 
-    // 如果有自定义长度，使用自定义长度
+    // when set KeyLength and use it
     if this.KeyLength > 0 {
         size = this.KeyLength
     }
@@ -183,7 +183,7 @@ func parsePBMAC1Param(param []byte, password []byte) (h func() hash.Hash, key []
         return
     }
 
-    var kdfparams pbkdf2Params
+    var kdfparams pbmac1Pbkdf2Params
     if err = unmarshal(params.Kdf.Parameters.FullBytes, &kdfparams); err != nil {
         return
     }
@@ -193,7 +193,7 @@ func parsePBMAC1Param(param []byte, password []byte) (h func() hash.Hash, key []
         return
     }
 
-    h, err = prfByOIDPBMAC1(params.MessageAuthScheme.Algorithm)
+    h, err = pbmac1PRFByOID(params.MessageAuthScheme.Algorithm)
     if err != nil {
         return
     }
@@ -206,7 +206,7 @@ func parsePBMAC1Param(param []byte, password []byte) (h func() hash.Hash, key []
     return
 }
 
-// PBMAC1 配置
+// PBMAC1 options
 type PBMAC1Opts struct {
     HasKeyLength   bool
     SaltSize       int
@@ -217,12 +217,12 @@ type PBMAC1Opts struct {
 
 func (this PBMAC1Opts) Compute(message []byte, password []byte) (data MacKDFParameters, err error) {
     // hmac hash
-    alg, err := oidByHashPBMAC1(this.HMACHash)
+    alg, err := pbmac1OIDByHash(this.HMACHash)
     if err != nil {
         return nil, err
     }
 
-    h, err := prfByOIDPBMAC1(alg)
+    h, err := pbmac1PRFByOID(alg)
     if err != nil {
         return nil, err
     }
@@ -279,7 +279,7 @@ func (this PBMAC1Opts) computeKDF(password []byte) (key []byte, kdf []byte, err 
     var prfParam pkix.AlgorithmIdentifier
 
     if this.KDFHash != 0 {
-        alg, err = oidByHashPBMAC1(this.KDFHash)
+        alg, err = pbmac1OIDByHash(this.KDFHash)
         if err != nil {
             return nil, nil, err
         }
@@ -291,7 +291,7 @@ func (this PBMAC1Opts) computeKDF(password []byte) (key []byte, kdf []byte, err 
             },
         }
     } else {
-        alg, err = oidByHashPBMAC1(DefaultPBMAC1Hash)
+        alg, err = pbmac1OIDByHash(DefaultPBMAC1Hash)
         if err != nil {
             return nil, nil, err
         }
@@ -299,7 +299,7 @@ func (this PBMAC1Opts) computeKDF(password []byte) (key []byte, kdf []byte, err 
         prfParam = pkix.AlgorithmIdentifier{}
     }
 
-    h, err := prfByOIDPBMAC1(alg)
+    h, err := pbmac1PRFByOID(alg)
     if err != nil {
         return nil, nil, err
     }
@@ -311,13 +311,13 @@ func (this PBMAC1Opts) computeKDF(password []byte) (key []byte, kdf []byte, err 
 
     size := h().Size()
 
-    kdfParams := pbkdf2Params{
+    kdfParams := pbmac1Pbkdf2Params{
         Salt:           salt,
         IterationCount: this.IterationCount,
         PrfParam:       prfParam,
     }
 
-    // 设置 KeyLength
+    // set KeyLength
     if this.HasKeyLength {
         kdfParams.KeyLength = size
     }

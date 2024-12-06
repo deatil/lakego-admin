@@ -1,7 +1,7 @@
 package dsa
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/errors"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this DSA) AppendError(err ...error) DSA {
 
 // 获取错误
 func (this DSA) Error() error {
-    return tool.NewError(this.Errors...)
+    return errors.Join(this.Errors...)
 }

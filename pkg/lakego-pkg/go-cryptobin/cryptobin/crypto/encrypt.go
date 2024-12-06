@@ -3,7 +3,7 @@ package crypto
 import (
     "fmt"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/recover"
 )
 
 // 加密类型
@@ -36,7 +36,7 @@ func getEncrypt(m Multiple) (IEncrypt, error) {
 // 加密
 // Encrypt
 func (this Cryptobin) Encrypt() Cryptobin {
-    err := tool.Recover(func() {
+    err := recover.Recover(func() {
         this = this.encrypt()
     })
 
@@ -68,7 +68,7 @@ func (this Cryptobin) encrypt() Cryptobin {
 // 解密
 // Decrypt
 func (this Cryptobin) Decrypt() Cryptobin {
-    err := tool.Recover(func() {
+    err := recover.Recover(func() {
         this = this.decrypt()
     })
 
@@ -102,7 +102,7 @@ func (this Cryptobin) decrypt() Cryptobin {
 // 方法加密
 // Func Encrypt
 func (this Cryptobin) FuncEncrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
-    err := tool.Recover(func() {
+    err := recover.Recover(func() {
         this = fn(this).triggerError()
     })
 
@@ -116,7 +116,7 @@ func (this Cryptobin) FuncEncrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
 // 方法解密
 // Func Decrypt
 func (this Cryptobin) FuncDecrypt(fn func(Cryptobin) Cryptobin) Cryptobin {
-    err := tool.Recover(func() {
+    err := recover.Recover(func() {
         this = fn(this).triggerError()
     })
 

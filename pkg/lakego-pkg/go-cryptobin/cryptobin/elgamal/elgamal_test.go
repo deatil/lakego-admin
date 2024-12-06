@@ -352,6 +352,225 @@ func Test_EncryptAsn1_2(t *testing.T) {
     assertEqual(data, deData2, "Encrypt-Dedata")
 }
 
+func Test_EncryptAsn1_3(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "123tesfd!df"
+
+    t.Run("EncryptAsn1_3 EncryptBytes", func(t *testing.T) {
+        objEn := New().
+            FromString(data).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            EncryptBytes()
+        enData := objEn.ToBase64String()
+
+        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNotEmpty(enData, "Encrypt-Encrypt")
+
+        objDe := New().
+            FromBase64String(enData).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            DecryptBytes()
+        deData := objDe.ToString()
+
+        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNotEmpty(deData, "Encrypt-Decrypt")
+
+        assertEqual(data, deData, "Encrypt-Dedata")
+    })
+
+    t.Run("EncryptAsn1_3 EncryptASN1", func(t *testing.T) {
+        objEn := New().
+            FromString(data).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            EncryptASN1()
+        enData := objEn.ToBase64String()
+
+        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNotEmpty(enData, "Encrypt-Encrypt")
+
+        objDe := New().
+            FromBase64String(enData).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            DecryptASN1()
+        deData := objDe.ToString()
+
+        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNotEmpty(deData, "Encrypt-Decrypt")
+
+        assertEqual(data, deData, "Encrypt-Dedata")
+    })
+
+    t.Run("EncryptAsn1_3 Encrypt With ASN1", func(t *testing.T) {
+        objEn := New().
+            FromString(data).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            WithEncodingASN1().
+            Encrypt()
+        enData := objEn.ToBase64String()
+
+        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNotEmpty(enData, "Encrypt-Encrypt")
+
+        objDe := New().
+            FromBase64String(enData).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            WithEncodingASN1().
+            Decrypt()
+        deData := objDe.ToString()
+
+        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNotEmpty(deData, "Encrypt-Decrypt")
+
+        assertEqual(data, deData, "Encrypt-Dedata")
+    })
+
+    t.Run("EncryptAsn1_3 Encrypt With Bytes", func(t *testing.T) {
+        objEn := New().
+            FromString(data).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            WithEncodingBytes().
+            Encrypt()
+        enData := objEn.ToBase64String()
+
+        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNotEmpty(enData, "Encrypt-Encrypt")
+
+        objDe := New().
+            FromBase64String(enData).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            WithEncodingBytes().
+            Decrypt()
+        deData := objDe.ToString()
+
+        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNotEmpty(deData, "Encrypt-Decrypt")
+
+        assertEqual(data, deData, "Encrypt-Dedata")
+    })
+
+}
+
+func Test_Sign_2(t *testing.T) {
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+    assertBool := cryptobin_test.AssertBoolT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-pass"
+
+    t.Run("Test_Sign_2 1", func(t *testing.T) {
+        // 签名
+        objSign := New().
+            FromString(data).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            Sign()
+        signed := objSign.ToBase64String()
+
+        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNotEmpty(signed, "Test_Sign_2-Sign")
+
+        // 验证
+        objVerify := New().
+            FromBase64String(signed).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            Verify([]byte(data))
+
+        assertError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+    })
+
+    t.Run("Test_Sign_2 2", func(t *testing.T) {
+        // 签名
+        objSign := New().
+            FromString(data).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            WithEncodingASN1().
+            Sign()
+        signed := objSign.ToBase64String()
+
+        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNotEmpty(signed, "Test_Sign_2-Sign")
+
+        // 验证
+        objVerify := New().
+            FromBase64String(signed).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            WithEncodingASN1().
+            Verify([]byte(data))
+
+        assertError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+    })
+
+    t.Run("Test_Sign_2 3", func(t *testing.T) {
+        // 签名
+        objSign := New().
+            FromString(data).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            WithEncodingBytes().
+            Sign()
+        signed := objSign.ToBase64String()
+
+        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNotEmpty(signed, "Test_Sign_2-Sign")
+
+        // 验证
+        objVerify := New().
+            FromBase64String(signed).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            WithEncodingBytes().
+            Verify([]byte(data))
+
+        assertError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+    })
+
+    t.Run("Test_Sign_2 4", func(t *testing.T) {
+        // 签名
+        objSign := New().
+            FromString(data).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            SignASN1()
+        signed := objSign.ToBase64String()
+
+        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNotEmpty(signed, "Test_Sign_2-Sign")
+
+        // 验证
+        objVerify := New().
+            FromBase64String(signed).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            VerifyASN1([]byte(data))
+
+        assertError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+    })
+
+    t.Run("Test_Sign_2 5", func(t *testing.T) {
+        // 签名
+        objSign := New().
+            FromString(data).
+            FromPrivateKey([]byte(pkcs8Prikey)).
+            SignBytes()
+        signed := objSign.ToBase64String()
+
+        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNotEmpty(signed, "Test_Sign_2-Sign")
+
+        // 验证
+        objVerify := New().
+            FromBase64String(signed).
+            FromPublicKey([]byte(pkcs8Pubkey)).
+            VerifyBytes([]byte(data))
+
+        assertError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+    })
+
+}
+
 var testPEMCiphers = []string{
     "DESCBC",
     "DESEDE3CBC",

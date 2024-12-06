@@ -4,7 +4,7 @@ import (
     "testing"
     "encoding/base64"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/bmp_string"
     cryptobin_asn1 "github.com/deatil/go-cryptobin/ber/asn1"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -67,7 +67,7 @@ func Test_SM2Pkcs12(t *testing.T) {
     }
 
     password := "12345678"
-    newPassword, err := tool.BmpStringZeroTerminated(password)
+    newPassword, err := bmp_string.BmpStringZeroTerminated(password)
     if err != nil {
         t.Errorf("password err: %v", err)
     }

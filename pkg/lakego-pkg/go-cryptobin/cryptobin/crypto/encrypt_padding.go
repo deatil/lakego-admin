@@ -1,21 +1,19 @@
 package crypto
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/padding"
 )
-
-var usePadding = tool.NewPadding()
 
 type ZeroPaddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this ZeroPaddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.ZeroPadding(plainText, blockSize)
+    return padding.NewZero().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this ZeroPaddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.ZeroUnPadding(cipherText)
+    return padding.NewZero().UnPadding(cipherText)
 }
 
 // ===================
@@ -24,12 +22,12 @@ type PKCS5Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this PKCS5Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.PKCS5Padding(plainText)
+    return padding.NewPKCS5().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this PKCS5Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.PKCS5UnPadding(cipherText)
+    return padding.NewPKCS5().UnPadding(cipherText)
 }
 
 // ===================
@@ -38,12 +36,12 @@ type PKCS7Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this PKCS7Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.PKCS7Padding(plainText, blockSize)
+    return padding.NewPKCS7().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this PKCS7Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.PKCS7UnPadding(cipherText)
+    return padding.NewPKCS7().UnPadding(cipherText)
 }
 
 // ===================
@@ -52,12 +50,12 @@ type X923Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this X923Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.X923Padding(plainText, blockSize)
+    return padding.NewX923().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this X923Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.X923UnPadding(cipherText)
+    return padding.NewX923().UnPadding(cipherText)
 }
 
 // ===================
@@ -66,12 +64,12 @@ type ISO10126Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this ISO10126Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.ISO10126Padding(plainText, blockSize)
+    return padding.NewISO10126().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this ISO10126Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.ISO10126UnPadding(cipherText)
+    return padding.NewISO10126().UnPadding(cipherText)
 }
 
 // ===================
@@ -80,12 +78,12 @@ type ISO7816_4Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this ISO7816_4Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.ISO7816_4Padding(plainText, blockSize)
+    return padding.NewISO7816_4().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this ISO7816_4Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.ISO7816_4UnPadding(cipherText)
+    return padding.NewISO7816_4().UnPadding(cipherText)
 }
 
 // ===================
@@ -94,12 +92,12 @@ type ISO97971Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this ISO97971Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.ISO97971Padding(plainText, blockSize)
+    return padding.NewISO97971().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this ISO97971Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.ISO97971UnPadding(cipherText)
+    return padding.NewISO97971().UnPadding(cipherText)
 }
 
 // ===================
@@ -108,12 +106,12 @@ type PBOC2Paddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this PBOC2Paddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.PBOC2Padding(plainText, blockSize)
+    return padding.NewPBOC2().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this PBOC2Paddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.PBOC2UnPadding(cipherText)
+    return padding.NewPBOC2().UnPadding(cipherText)
 }
 
 // ===================
@@ -122,12 +120,12 @@ type TBCPaddinger struct {}
 
 // Padding 补码模式 / padding type
 func (this TBCPaddinger) Padding(plainText []byte, blockSize int, opt IOption) []byte {
-    return usePadding.TBCPadding(plainText, blockSize)
+    return padding.NewTBC().Padding(plainText, blockSize)
 }
 
 // UnPadding 补码模式 / unpadding type
 func (this TBCPaddinger) UnPadding(cipherText []byte, opt IOption) ([]byte, error) {
-    return usePadding.TBCUnPadding(cipherText)
+    return padding.NewTBC().UnPadding(cipherText)
 }
 
 // ===================

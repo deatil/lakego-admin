@@ -318,12 +318,12 @@ func Test_Age(t *testing.T) {
 	}{
 		{
 			index: "index-1",
-			date1: "2026-06-06 21:15:12",
+			date1: "2027-06-06 21:15:12",
 			check: -2,
 		},
 		{
 			index: "index-2",
-			date1: "2012-10-12 21:15:12",
+			date1: "2013-10-12 21:15:12",
 			check: 11,
 		},
 		{

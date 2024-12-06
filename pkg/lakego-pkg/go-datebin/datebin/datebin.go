@@ -219,6 +219,12 @@ func (this Datebin) GetOffset() int {
 	return offset
 }
 
+// 获取时区数据
+// Get Zone data
+func (this Datebin) GetZone() (string, int) {
+	return this.time.Zone()
+}
+
 // 设置 UTC
 // set UTC timezone
 func (this Datebin) UTC() Datebin {

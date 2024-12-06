@@ -4,7 +4,7 @@ import (
     "crypto/ecdsa"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // get PrivateKey
@@ -21,7 +21,7 @@ func (this ECDSA) GetPrivateKeyCurve() elliptic.Curve {
 func (this ECDSA) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
-    return tool.HexEncode(data.Bytes())
+    return encoding.HexEncode(data.Bytes())
 }
 
 // get PrivateKey data hex string
@@ -43,35 +43,35 @@ func (this ECDSA) GetPublicKeyCurve() elliptic.Curve {
 func (this ECDSA) GetPublicKeyXString() string {
     x := this.publicKey.X
 
-    return tool.HexEncode(x.Bytes())
+    return encoding.HexEncode(x.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this ECDSA) GetPublicKeyYString() string {
     y := this.publicKey.Y
 
-    return tool.HexEncode(y.Bytes())
+    return encoding.HexEncode(y.Bytes())
 }
 
 // get PublicKey X and Y Hex string
 func (this ECDSA) GetPublicKeyXYString() string {
     key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key[1:])
+    return encoding.HexEncode(key[1:])
 }
 
 // get PublicKey Uncompress Hex string
 func (this ECDSA) GetPublicKeyUncompressString() string {
     key := elliptic.Marshal(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key)
+    return encoding.HexEncode(key)
 }
 
 // get PublicKey Compress Hex string
 func (this ECDSA) GetPublicKeyCompressString() string {
     key := elliptic.MarshalCompressed(this.publicKey.Curve, this.publicKey.X, this.publicKey.Y)
 
-    return tool.HexEncode(key)
+    return encoding.HexEncode(key)
 }
 
 // get Curve

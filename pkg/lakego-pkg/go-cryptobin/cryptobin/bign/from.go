@@ -7,7 +7,8 @@ import (
     "crypto/rand"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/bign"
 )
 
@@ -186,7 +187,7 @@ func FromPublicKey(key []byte) Bign {
 
 // DER 私钥
 func (this Bign) FromPKCS1PrivateKeyDer(der []byte) Bign {
-    key := tool.EncodeDerToPem(der, "Bign PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "Bign PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -200,7 +201,7 @@ func (this Bign) FromPKCS1PrivateKeyDer(der []byte) Bign {
 
 // DER 私钥
 func (this Bign) FromPKCS8PrivateKeyDer(der []byte) Bign {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -214,7 +215,7 @@ func (this Bign) FromPKCS8PrivateKeyDer(der []byte) Bign {
 
 // DER 公钥
 func (this Bign) FromPublicKeyDer(der []byte) Bign {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -264,7 +265,7 @@ func (this Bign) FromPublicKeyXYBytes(xBytes, yBytes []byte) Bign {
 // 需要设置对应的 curve
 // public-key hex: 047c********.
 func (this Bign) FromPublicKeyUncompressString(key string) Bign {
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     x, y := elliptic.Unmarshal(this.curve, k)
     if x == nil || y == nil {
@@ -286,7 +287,7 @@ func (this Bign) FromPublicKeyUncompressString(key string) Bign {
 // 需要设置对应的 curve
 // public-key hex: 027c******** || 036c********
 func (this Bign) FromPublicKeyCompressString(key string) Bign {
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     x, y := elliptic.UnmarshalCompressed(this.curve, k)
     if x == nil || y == nil {
@@ -308,7 +309,7 @@ func (this Bign) FromPublicKeyCompressString(key string) Bign {
 func (this Bign) FromPublicKeyString(key string) Bign {
     byteLen := (this.curve.Params().BitSize + 7) / 8
 
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     if len(k) == 1+byteLen {
         return this.FromPublicKeyCompressString(key)
@@ -330,7 +331,7 @@ func (this Bign) FromPrivateKeyString(keyString string) Bign {
 // 公钥明文, hex 或者 base64 解码后
 // 需要设置对应的 curve
 func (this Bign) FromPublicKeyBytes(pub []byte) Bign {
-    key := tool.HexEncode(pub)
+    key := encoding.HexEncode(pub)
 
     return this.FromPublicKeyString(key)
 }
@@ -376,7 +377,7 @@ func FromString(data string) Bign {
 
 // Base64
 func (this Bign) FromBase64String(data string) Bign {
-    newData, err := tool.Base64Decode(data)
+    newData, err := encoding.Base64Decode(data)
 
     this.data = newData
 
@@ -390,7 +391,7 @@ func FromBase64String(data string) Bign {
 
 // Hex
 func (this Bign) FromHexString(data string) Bign {
-    newData, err := tool.HexDecode(data)
+    newData, err := encoding.HexDecode(data)
 
     this.data = newData
 

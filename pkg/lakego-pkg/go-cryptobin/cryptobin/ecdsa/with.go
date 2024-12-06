@@ -4,7 +4,7 @@ import (
     "crypto/ecdsa"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/hash"
 )
 
 // 设置 PrivateKey
@@ -53,8 +53,8 @@ func (this ECDSA) WithSignHash(hash HashFunc) ECDSA {
 }
 
 // 设置 hash 类型
-func (this ECDSA) SetSignHash(hash string) ECDSA {
-    h, err := tool.GetHash(hash)
+func (this ECDSA) SetSignHash(name string) ECDSA {
+    h, err := hash.GetHash(name)
     if err != nil {
         return this.AppendError(err)
     }

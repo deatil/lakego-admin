@@ -34,8 +34,6 @@ func (this ElGamal) CreatePrivateKey() ElGamal {
 }
 
 // 生成私钥带密码 pem 数据
-// CreatePrivateKeyWithPassword("123", "AES256CBC")
-// PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this ElGamal) CreatePrivateKeyWithPassword(password string, opts ...string) ElGamal {
     return this.CreatePKCS1PrivateKeyWithPassword(password, opts...)
 }

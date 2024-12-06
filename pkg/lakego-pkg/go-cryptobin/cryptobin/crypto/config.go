@@ -1,7 +1,7 @@
 package crypto
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/config"
 )
 
 /**
@@ -53,6 +53,6 @@ func (this Config) Padding() Padding {
 
 // 获取额外配置
 // get extra Config
-func (this Config) Config() *tool.Config {
+func (this Config) Config() *config.Config {
     return this.crypto.config
 }

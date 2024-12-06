@@ -1,8 +1,8 @@
 package sm2
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/tool/hash"
 )
 
 // 设置 PrivateKey
@@ -63,7 +63,7 @@ func (this SM2) WithSignHash(data HashFunc) SM2 {
 // 设置 hash 类型
 // 可用参数可查看 Hash 结构体数据
 func (this SM2) SetSignHash(data string) SM2 {
-    hash, err := tool.GetHash(data)
+    hash, err := hash.GetHash(data)
     if err != nil {
         return this.AppendError(err)
     }

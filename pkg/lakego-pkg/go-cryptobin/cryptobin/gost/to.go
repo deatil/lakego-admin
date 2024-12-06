@@ -1,7 +1,7 @@
 package gost
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 私钥/公钥
@@ -28,12 +28,12 @@ func (this Gost) ToString() string {
 
 // 输出Base64
 func (this Gost) ToBase64String() string {
-    return tool.Base64Encode(this.parsedData)
+    return encoding.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this Gost) ToHexString() string {
-    return tool.HexEncode(this.parsedData)
+    return encoding.HexEncode(this.parsedData)
 }
 
 // ==========
@@ -66,10 +66,10 @@ func (this Gost) ToSecretString() string {
 
 // 输出密钥 Base64
 func (this Gost) ToSecretBase64String() string {
-    return tool.Base64Encode(this.secretData)
+    return encoding.Base64Encode(this.secretData)
 }
 
 // 输出密钥 Hex
 func (this Gost) ToSecretHexString() string {
-    return tool.HexEncode(this.secretData)
+    return encoding.HexEncode(this.secretData)
 }

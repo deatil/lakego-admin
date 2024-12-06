@@ -91,7 +91,7 @@ func (this *digest) Write(p []byte) (nn int, err error) {
 
 func (this *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d0 := *this
+    d0 := this.copy()
     hash := d0.checkSum()
     return append(in, hash[:]...)
 }
@@ -140,6 +140,26 @@ func (this *digest) ingest(x *[32]uint32, p []byte) {
     for n := 0; n < this.r; n++ {
         round(x)
     }
+}
+
+func (this *digest) copy() *digest {
+    d0 := &digest{}
+
+    d0.s = this.s
+
+    d0.x = make([]byte, len(this.x))
+    copy(d0.x, this.x)
+
+    d0.nx = this.nx
+    d0.len = this.len
+
+    d0.hs = this.hs
+    d0.bs = this.bs
+    d0.r = this.r
+    d0.ir = this.ir
+    d0.fr = this.fr
+
+    return d0
 }
 
 func (this *digest) MarshalBinary() ([]byte, error) {

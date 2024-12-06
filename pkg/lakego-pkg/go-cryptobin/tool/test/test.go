@@ -110,3 +110,19 @@ func isEmpty(x any) bool {
 
     return reflect.DeepEqual(x, reflect.Zero(rt).Interface())
 }
+
+func MustPanic(t *testing.T, msg string, f func()) {
+    t.Helper()
+
+    defer func() {
+        t.Helper()
+
+        err := recover()
+
+        if err == nil {
+            t.Errorf("function did not panic for %q", msg)
+        }
+    }()
+
+    f()
+}

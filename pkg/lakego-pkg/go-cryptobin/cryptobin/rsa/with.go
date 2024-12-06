@@ -5,7 +5,7 @@ import (
     "crypto"
     "crypto/rsa"
 
-    "github.com/deatil/go-cryptobin/tool"
+    tool_hash "github.com/deatil/go-cryptobin/tool/hash"
 )
 
 // 设置 PrivateKey
@@ -31,7 +31,7 @@ func (this RSA) WithSignHash(h crypto.Hash) RSA {
 
 // 设置 hash 类型
 func (this RSA) SetSignHash(name string) RSA {
-    newHash, err := tool.GetCryptoHash(name)
+    newHash, err := tool_hash.GetCryptoHash(name)
     if err != nil {
         return this.AppendError(err)
     }
@@ -50,7 +50,7 @@ func (this RSA) WithOAEPHash(h hash.Hash) RSA {
 
 // 设置 OAEP Hash 类型
 func (this RSA) SetOAEPHash(name string) RSA {
-    newHash, err := tool.GetHash(name)
+    newHash, err := tool_hash.GetHash(name)
     if err != nil {
         return this.AppendError(err)
     }

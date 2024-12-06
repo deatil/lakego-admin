@@ -1,7 +1,7 @@
 package ecgdsa
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/errors"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this ECGDSA) AppendError(err ...error) ECGDSA {
 
 // 获取错误
 func (this ECGDSA) Error() error {
-    return tool.NewError(this.Errors...)
+    return errors.Join(this.Errors...)
 }

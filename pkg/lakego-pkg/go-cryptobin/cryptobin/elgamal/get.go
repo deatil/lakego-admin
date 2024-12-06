@@ -34,6 +34,11 @@ func (this ElGamal) GetParsedData() []byte {
     return this.parsedData
 }
 
+// get Encoding type
+func (this ElGamal) GetEncoding() EncodingType {
+    return this.encoding
+}
+
 // 获取验证后情况
 func (this ElGamal) GetVerify() bool {
     return this.verify

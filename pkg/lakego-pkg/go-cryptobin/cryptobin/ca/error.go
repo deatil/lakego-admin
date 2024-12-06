@@ -1,7 +1,7 @@
 package ca
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/errors"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this CA) AppendError(err ...error) CA {
 
 // 获取错误
 func (this CA) Error() error {
-    return tool.NewError(this.Errors...)
+    return errors.Join(this.Errors...)
 }

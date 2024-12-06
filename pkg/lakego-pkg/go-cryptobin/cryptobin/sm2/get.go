@@ -3,8 +3,8 @@ package sm2
 import (
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // get PrivateKey
@@ -21,7 +21,7 @@ func (this SM2) GetPrivateKeyCurve() elliptic.Curve {
 func (this SM2) GetPrivateKeyDString() string {
     data := this.privateKey.D
 
-    return tool.HexEncode(data.Bytes())
+    return encoding.HexEncode(data.Bytes())
 }
 
 // get PrivateKey data hex string
@@ -43,35 +43,35 @@ func (this SM2) GetPublicKeyCurve() elliptic.Curve {
 func (this SM2) GetPublicKeyXString() string {
     x := this.publicKey.X
 
-    return tool.HexEncode(x.Bytes())
+    return encoding.HexEncode(x.Bytes())
 }
 
 // get PublicKey Y hex string
 func (this SM2) GetPublicKeyYString() string {
     y := this.publicKey.Y
 
-    return tool.HexEncode(y.Bytes())
+    return encoding.HexEncode(y.Bytes())
 }
 
 // get PublicKey X and Y Hex string
 func (this SM2) GetPublicKeyXYString() string {
     data := sm2.PublicKeyTo(this.publicKey)
 
-    return tool.HexEncode(data[1:])
+    return encoding.HexEncode(data[1:])
 }
 
 // get PublicKey Uncompress Hex string
 func (this SM2) GetPublicKeyUncompressString() string {
     data := sm2.PublicKeyTo(this.publicKey)
 
-    return tool.HexEncode(data)
+    return encoding.HexEncode(data)
 }
 
 // get PublicKey Compress Hex string
 func (this SM2) GetPublicKeyCompressString() string {
     data := sm2.Compress(this.publicKey)
 
-    return tool.HexEncode(data)
+    return encoding.HexEncode(data)
 }
 
 // get key Data

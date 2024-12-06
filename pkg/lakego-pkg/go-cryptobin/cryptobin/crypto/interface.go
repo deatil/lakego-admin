@@ -3,7 +3,7 @@ package crypto
 import (
     "crypto/cipher"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/config"
 )
 
 // 配置接口
@@ -31,7 +31,7 @@ type IOption interface {
 
     // 额外配置
     // get extra Config
-    Config() *tool.Config
+    Config() *config.Config
 }
 
 // 加密接口

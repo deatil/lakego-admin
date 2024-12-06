@@ -4,9 +4,9 @@ import (
     "errors"
     "crypto/cipher"
 
-    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/mode/ccm"
     "github.com/deatil/go-cryptobin/mode/hctr"
+    "github.com/deatil/go-cryptobin/tool/utils"
     cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
@@ -393,7 +393,7 @@ type ModeOCFB struct {}
 func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]byte, error) {
     blockSize := block.BlockSize()
 
-    randData, _ := tool.GenRandom(blockSize)
+    randData, _ := utils.GenRandom(blockSize)
 
     resync := opt.Config().GetBool("resync")
 

@@ -3,7 +3,7 @@ package dsa
 import (
     "crypto/dsa"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/hash"
 )
 
 // 设置 PrivateKey
@@ -44,7 +44,7 @@ func (this DSA) WithSignHash(data HashFunc) DSA {
 // 设置 hash 类型
 // 可用参数可查看 Hash 结构体数据
 func (this DSA) SetSignHash(data string) DSA {
-    hash, err := tool.GetHash(data)
+    hash, err := hash.GetHash(data)
     if err != nil {
         return this.AppendError(err)
     }

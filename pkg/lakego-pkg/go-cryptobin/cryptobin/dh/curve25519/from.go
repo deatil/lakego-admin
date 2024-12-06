@@ -4,7 +4,8 @@ import (
     "io"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/dh/curve25519"
 )
 
@@ -90,8 +91,8 @@ func FromPublicKey(key []byte) Curve25519 {
 
 // 根据私钥 x, y 生成
 func (this Curve25519) FromKeyXYString(xString string, yString string) Curve25519 {
-    x, _ := tool.HexDecode(xString)
-    y, _ := tool.HexDecode(yString)
+    x, _ := encoding.HexDecode(xString)
+    y, _ := encoding.HexDecode(yString)
 
     priv := &curve25519.PrivateKey{}
     priv.X = x
@@ -110,7 +111,7 @@ func FromKeyXYString(xString string, yString string) Curve25519 {
 
 // 根据私钥 x 生成
 func (this Curve25519) FromPrivateKeyXString(xString string) Curve25519 {
-    x, _ := tool.HexDecode(xString)
+    x, _ := encoding.HexDecode(xString)
 
     priv := &curve25519.PrivateKey{}
     priv.X = x
@@ -130,7 +131,7 @@ func FromPrivateKeyXString(xString string) Curve25519 {
 
 // 根据公钥 y 生成
 func (this Curve25519) FromPublicKeyYString(yString string) Curve25519 {
-    y, _ := tool.HexDecode(yString)
+    y, _ := encoding.HexDecode(yString)
 
     public := &curve25519.PublicKey{}
     public.Y = y
@@ -149,7 +150,7 @@ func FromPublicKeyYString(yString string) Curve25519 {
 
 // DER 私钥
 func (this Curve25519) FromPrivateKeyDer(der []byte) Curve25519 {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -163,7 +164,7 @@ func (this Curve25519) FromPrivateKeyDer(der []byte) Curve25519 {
 
 // DER 公钥
 func (this Curve25519) FromPublicKeyDer(der []byte) Curve25519 {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {

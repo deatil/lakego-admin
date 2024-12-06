@@ -189,8 +189,8 @@ var LegacyPBMAC1Opts = Opts{
         HasKeyLength:   true,
         SaltSize:       8,
         IterationCount: 2048,
-        KDFHash:        PBMAC1_SHA256,
-        HMACHash:       PBMAC1_SHA256,
+        KDFHash:        PBMAC1SHA256,
+        HMACHash:       PBMAC1SHA256,
     },
 }
 

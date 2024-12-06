@@ -1,7 +1,7 @@
 package eddsa
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 私钥/公钥
@@ -28,12 +28,12 @@ func (this EdDSA) ToString() string {
 
 // 输出Base64
 func (this EdDSA) ToBase64String() string {
-    return tool.Base64Encode(this.parsedData)
+    return encoding.Base64Encode(this.parsedData)
 }
 
 // 输出Hex
 func (this EdDSA) ToHexString() string {
-    return tool.HexEncode(this.parsedData)
+    return encoding.HexEncode(this.parsedData)
 }
 
 // ==========

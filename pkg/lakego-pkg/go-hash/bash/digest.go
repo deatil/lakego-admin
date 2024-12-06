@@ -1,7 +1,6 @@
 package bash
 
 import (
-    "hash"
     "errors"
 )
 
@@ -23,8 +22,8 @@ type digest struct {
     hs, bs int
 }
 
-// New returns a new hash.Hash computing the bash checksum
-func New(hashsize int) (hash.Hash, error) {
+// newDigest returns a new hash.Hash computing the bash checksum
+func newDigest(hashsize int) (*digest, error) {
     if hashsize == 0 {
         return nil, errors.New("go-hash/bash: hash size can't be zero")
     }
@@ -92,7 +91,7 @@ func (d *digest) Write(p []byte) (nn int, err error) {
 
 func (d *digest) Sum(in []byte) []byte {
     // Make a copy of d so that caller can keep writing and summing.
-    d0 := *d
+    d0 := d.copy()
     hash := d0.checkSum()
     return append(in, hash...)
 }
@@ -118,4 +117,21 @@ func (d *digest) processBlock(data []byte) {
     }
 
     BASHF(d.s[:], true)
+}
+
+func (d *digest) copy() *digest {
+    d0 := &digest{}
+
+    d0.s = d.s
+
+    d0.x = make([]byte, len(d.x))
+    copy(d0.x, d.x)
+
+    d0.nx = d.nx
+    d0.len = d.len
+
+    d0.hs = d.hs
+    d0.bs = d.bs
+
+    return d0
 }

@@ -7,7 +7,8 @@ import (
     "crypto/rand"
     "crypto/elliptic"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/ecgdsa"
 )
 
@@ -186,7 +187,7 @@ func FromPublicKey(key []byte) ECGDSA {
 
 // DER 私钥
 func (this ECGDSA) FromPKCS1PrivateKeyDer(der []byte) ECGDSA {
-    key := tool.EncodeDerToPem(der, "EC PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "EC PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS1PrivateKeyFromPEM(key)
     if err != nil {
@@ -200,7 +201,7 @@ func (this ECGDSA) FromPKCS1PrivateKeyDer(der []byte) ECGDSA {
 
 // DER 私钥
 func (this ECGDSA) FromPKCS8PrivateKeyDer(der []byte) ECGDSA {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -214,7 +215,7 @@ func (this ECGDSA) FromPKCS8PrivateKeyDer(der []byte) ECGDSA {
 
 // DER 公钥
 func (this ECGDSA) FromPublicKeyDer(der []byte) ECGDSA {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     publicKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -264,7 +265,7 @@ func (this ECGDSA) FromPublicKeyXYBytes(xBytes, yBytes []byte) ECGDSA {
 // 需要设置对应的 curve
 // public-key hex: 047c********.
 func (this ECGDSA) FromPublicKeyUncompressString(key string) ECGDSA {
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     x, y := elliptic.Unmarshal(this.curve, k)
     if x == nil || y == nil {
@@ -286,7 +287,7 @@ func (this ECGDSA) FromPublicKeyUncompressString(key string) ECGDSA {
 // 需要设置对应的 curve
 // public-key hex: 027c******** || 036c********
 func (this ECGDSA) FromPublicKeyCompressString(key string) ECGDSA {
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     x, y := elliptic.UnmarshalCompressed(this.curve, k)
     if x == nil || y == nil {
@@ -308,7 +309,7 @@ func (this ECGDSA) FromPublicKeyCompressString(key string) ECGDSA {
 func (this ECGDSA) FromPublicKeyString(key string) ECGDSA {
     byteLen := (this.curve.Params().BitSize + 7) / 8
 
-    k, _ := tool.HexDecode(key)
+    k, _ := encoding.HexDecode(key)
 
     if len(k) == 1+byteLen {
         return this.FromPublicKeyCompressString(key)
@@ -330,7 +331,7 @@ func (this ECGDSA) FromPrivateKeyString(keyString string) ECGDSA {
 // 公钥明文, hex 或者 base64 解码后
 // 需要设置对应的 curve
 func (this ECGDSA) FromPublicKeyBytes(pub []byte) ECGDSA {
-    key := tool.HexEncode(pub)
+    key := encoding.HexEncode(pub)
 
     return this.FromPublicKeyString(key)
 }
@@ -376,7 +377,7 @@ func FromString(data string) ECGDSA {
 
 // Base64
 func (this ECGDSA) FromBase64String(data string) ECGDSA {
-    newData, err := tool.Base64Decode(data)
+    newData, err := encoding.Base64Decode(data)
 
     this.data = newData
 
@@ -390,7 +391,7 @@ func FromBase64String(data string) ECGDSA {
 
 // Hex
 func (this ECGDSA) FromHexString(data string) ECGDSA {
-    newData, err := tool.HexDecode(data)
+    newData, err := encoding.HexDecode(data)
 
     this.data = newData
 

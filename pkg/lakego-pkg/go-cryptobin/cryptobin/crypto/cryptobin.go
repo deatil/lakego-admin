@@ -1,7 +1,8 @@
 package crypto
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/config"
+    "github.com/deatil/go-cryptobin/tool/error_event"
 )
 
 /**
@@ -30,13 +31,13 @@ type Cryptobin struct {
     padding Padding
 
     // 额外配置 / extra Config
-    config *tool.Config
+    config *config.Config
 
     // 解析后的数据 / parsed Data
     parsedData []byte
 
     // 事件 / error Event
-    errEvent tool.ErrorEvent
+    errEvent error_event.ErrorEvent
 
     // 错误 / error list
     Errors []error
@@ -48,8 +49,8 @@ func NewCryptobin() Cryptobin {
         multiple: Aes,
         mode:     ECB,
         padding:  NoPadding,
-        config:   tool.NewConfig(),
-        errEvent: tool.NewErrorEvent(),
+        config:   config.New(),
+        errEvent: error_event.New(),
         Errors:   make([]error, 0),
     }
 }

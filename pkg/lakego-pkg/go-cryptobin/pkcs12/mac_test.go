@@ -26,7 +26,7 @@ func Test_prfByOIDPBMAC1_fail(t *testing.T) {
 
     oidFail := asn1.ObjectIdentifier{1, 222, 643, 777, 12, 13, 5, 1}
 
-    _, err := prfByOIDPBMAC1(oidFail)
+    _, err := pbmac1PRFByOID(oidFail)
     if err == nil {
         t.Error("should throw panic")
     }

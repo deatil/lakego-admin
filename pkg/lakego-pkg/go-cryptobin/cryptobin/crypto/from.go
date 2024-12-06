@@ -1,7 +1,7 @@
 package crypto
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 设置数据字节
@@ -35,7 +35,7 @@ func FromString(data string) Cryptobin {
 // 设置数据 Base64
 // set data Base64
 func (this Cryptobin) FromBase64String(data string) Cryptobin {
-    newData, err := tool.Base64Decode(data)
+    newData, err := encoding.Base64Decode(data)
     if err != nil {
         return this.AppendError(err)
     }
@@ -54,7 +54,7 @@ func FromBase64String(data string) Cryptobin {
 // 设置数据 Hex
 // set data Hex
 func (this Cryptobin) FromHexString(data string) Cryptobin {
-    newData, err := tool.HexDecode(data)
+    newData, err := encoding.HexDecode(data)
     if err != nil {
         return this.AppendError(err)
     }

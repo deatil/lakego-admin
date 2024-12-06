@@ -7,7 +7,7 @@ import(
     "encoding/asn1"
     "crypto/x509/pkix"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/padding"
 )
 
 // 加密接口
@@ -130,14 +130,14 @@ func CloneCiphers() *Ciphers {
 
 // ===============
 
-var newPadding = tool.NewPadding()
+var newPadding = padding.NewPKCS7()
 
 // 明文补码算法
 func pkcs7Padding(text []byte, blockSize int) []byte {
-    return newPadding.PKCS7Padding(text, blockSize)
+    return newPadding.Padding(text, blockSize)
 }
 
 // 明文减码算法
 func pkcs7UnPadding(src []byte) ([]byte, error) {
-    return newPadding.PKCS7UnPadding(src)
+    return newPadding.UnPadding(src)
 }

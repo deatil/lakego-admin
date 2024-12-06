@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/dh/ecdh"
 )
 
@@ -14,7 +14,7 @@ func (this ECDH) GetPrivateKey() *ecdh.PrivateKey {
 func (this ECDH) GetPrivateKeyXString() string {
     data := this.privateKey.X
 
-    dataHex := tool.HexEncode(data)
+    dataHex := encoding.HexEncode(data)
 
     return dataHex
 }
@@ -28,7 +28,7 @@ func (this ECDH) GetPublicKey() *ecdh.PublicKey {
 func (this ECDH) GetPublicKeyYString() string {
     data := this.publicKey.Y
 
-    dataHex := tool.HexEncode(data)
+    dataHex := encoding.HexEncode(data)
 
     return dataHex
 }

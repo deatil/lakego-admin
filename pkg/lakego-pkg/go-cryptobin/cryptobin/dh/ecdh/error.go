@@ -1,7 +1,7 @@
 package ecdh
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/errors"
 )
 
 // 添加错误
@@ -13,5 +13,5 @@ func (this ECDH) AppendError(err ...error) ECDH {
 
 // 获取错误
 func (this ECDH) Error() error {
-    return tool.NewError(this.Errors...)
+    return errors.Join(this.Errors...)
 }

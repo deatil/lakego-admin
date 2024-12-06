@@ -1,12 +1,12 @@
 package pbes1
 
 import(
-    "github.com/deatil/go-cryptobin/tool"
     "github.com/deatil/go-cryptobin/pkcs/pbes1"
+    "github.com/deatil/go-cryptobin/tool/bmp_string"
 )
 
 // BmpStringZeroTerminated returns s encoded in UCS-2 with a zero terminator.
-var BmpStringZeroTerminated = tool.BmpStringZeroTerminated
+var BmpStringZeroTerminated = bmp_string.BmpStringZeroTerminated
 
 // 别名
 type (

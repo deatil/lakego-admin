@@ -1,16 +1,16 @@
 package pkcs12
 
 import (
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/bmp_string"
 )
 
 var (
     // BmpStringZeroTerminated returns s encoded in UCS-2 with a zero terminator.
-    bmpStringZeroTerminated = tool.BmpStringZeroTerminated
+    bmpStringZeroTerminated = bmp_string.BmpStringZeroTerminated
 
     // BmpString returns s encoded in UCS-2
-    bmpString = tool.BmpString
+    bmpString = bmp_string.BmpString
 
     // DecodeBMPString return utf-8 string
-    decodeBMPString = tool.DecodeBMPString
+    decodeBMPString = bmp_string.DecodeBMPString
 )

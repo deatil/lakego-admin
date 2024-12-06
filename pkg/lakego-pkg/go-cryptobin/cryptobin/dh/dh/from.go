@@ -5,7 +5,7 @@ import (
     "math/big"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
     "github.com/deatil/go-cryptobin/pubkey/dh/dh"
 )
 
@@ -174,7 +174,7 @@ func FromPublicKeyYString(yString string) DH {
 
 // DER 私钥
 func (this DH) FromPrivateKeyDer(der []byte) DH {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -188,7 +188,7 @@ func (this DH) FromPrivateKeyDer(der []byte) DH {
 
 // DER 公钥
 func (this DH) FromPublicKeyDer(der []byte) DH {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {

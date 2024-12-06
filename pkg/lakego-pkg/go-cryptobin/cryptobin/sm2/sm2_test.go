@@ -9,7 +9,7 @@ import (
     "encoding/hex"
     "encoding/base64"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
@@ -758,7 +758,7 @@ func Test_With(t *testing.T) {
     parsedData := []byte("test-parsedData")
     uid := []byte("N003261207000000")
 
-    hash, _ := tool.GetHash("MD5")
+    hash, _ := hash.GetHash("MD5")
 
     verify := true
     errTest := []error{errors.New("test error")}

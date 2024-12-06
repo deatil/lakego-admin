@@ -232,8 +232,8 @@ func Test_Encode(t *testing.T) {
             HasKeyLength:   true,
             SaltSize:       8,
             IterationCount: 2048,
-            KDFHash:        PBMAC1_SHA512,
-            HMACHash:       PBMAC1_SHA256,
+            KDFHash:        PBMAC1SHA512,
+            HMACHash:       PBMAC1SHA256,
         },
     }
     test_Encode(t, LegacyPBMAC1Opts2, "1234", "LegacyPBMAC1Opts2")
@@ -253,8 +253,8 @@ func Test_Encode(t *testing.T) {
             HasKeyLength:   true,
             SaltSize:       8,
             IterationCount: 2048,
-            KDFHash:        PBMAC1_SHA512,
-            HMACHash:       PBMAC1_SHA384,
+            KDFHash:        PBMAC1SHA512,
+            HMACHash:       PBMAC1SHA384,
         },
     }
     test_Encode(t, LegacyPBMAC1Opts3, "1234", "LegacyPBMAC1Opts3")
@@ -274,8 +274,8 @@ func Test_Encode(t *testing.T) {
             HasKeyLength:   true,
             SaltSize:       8,
             IterationCount: 2048,
-            KDFHash:        PBMAC1_SM3,
-            HMACHash:       PBMAC1_SM3,
+            KDFHash:        PBMAC1SM3,
+            HMACHash:       PBMAC1SM3,
         },
     }
     test_Encode(t, LegacyPBMAC1Opts5, "1234", "LegacyPBMAC1Opts5")

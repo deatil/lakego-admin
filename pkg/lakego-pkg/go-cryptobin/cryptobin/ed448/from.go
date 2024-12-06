@@ -4,7 +4,8 @@ import (
     "io"
     "crypto/rand"
 
-    "github.com/deatil/go-cryptobin/tool"
+    "github.com/deatil/go-cryptobin/tool/pem"
+    "github.com/deatil/go-cryptobin/tool/encoding"
     "github.com/deatil/go-cryptobin/pubkey/ed448"
 )
 
@@ -93,7 +94,7 @@ func FromPublicKey(key []byte) ED448 {
 
 // DER 私钥
 func (this ED448) FromPrivateKeyDer(der []byte) ED448 {
-    key := tool.EncodeDerToPem(der, "PRIVATE KEY")
+    key := pem.EncodeToPEM(der, "PRIVATE KEY")
 
     parsedKey, err := this.ParsePrivateKeyFromPEM(key)
     if err != nil {
@@ -107,7 +108,7 @@ func (this ED448) FromPrivateKeyDer(der []byte) ED448 {
 
 // DER 公钥
 func (this ED448) FromPublicKeyDer(der []byte) ED448 {
-    key := tool.EncodeDerToPem(der, "PUBLIC KEY")
+    key := pem.EncodeToPEM(der, "PUBLIC KEY")
 
     parsedKey, err := this.ParsePublicKeyFromPEM(key)
     if err != nil {
@@ -161,7 +162,7 @@ func FromString(data string) ED448 {
 
 // Base64
 func (this ED448) FromBase64String(data string) ED448 {
-    newData, err := tool.Base64Decode(data)
+    newData, err := encoding.Base64Decode(data)
 
     this.data = newData
 
@@ -175,7 +176,7 @@ func FromBase64String(data string) ED448 {
 
 // Hex
 func (this ED448) FromHexString(data string) ED448 {
-    newData, err := tool.HexDecode(data)
+    newData, err := encoding.HexDecode(data)
 
     this.data = newData
 
