@@ -34,7 +34,7 @@ func (this KeySignWithSM2) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
     var ok bool
 
     if priv, ok = pkey.(*sm2.PrivateKey); !ok {
-        return nil, nil, errors.New("pkcs7: PrivateKey is not sm2 PrivateKey")
+        return nil, nil, errors.New("go-cryptobin/pkcs7: PrivateKey is not sm2 PrivateKey")
     }
 
     signData, err := priv.Sign(rand.Reader, data, nil)
@@ -59,11 +59,11 @@ func (this KeySignWithSM2) Verify(pkey crypto.PublicKey, signed []byte, signatur
                     }
 
                     if !k.IsOnCurve(k.X, k.Y) {
-                        return false, errors.New("pkcs7: error while validating SM2 public key: %v")
+                        return false, errors.New("go-cryptobin/pkcs7: error while validating SM2 public key: %v")
                     }
             }
         default:
-            return false, errors.New("pkcs7: PublicKey is not sm2 PublicKey")
+            return false, errors.New("go-cryptobin/pkcs7: PublicKey is not sm2 PublicKey")
     }
 
     return pub.Verify(signed, signature, nil), nil

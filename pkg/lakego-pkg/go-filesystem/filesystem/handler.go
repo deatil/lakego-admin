@@ -7,8 +7,8 @@ package filesystem
  * @author deatil
  */
 type Handler struct {
-    filesystem *Fllesystem
-    path string
+    filesystem *Filesystem
+    path       string
 }
 
 // 是否为文件夹
@@ -32,14 +32,14 @@ func (this *Handler) GetType() string {
 }
 
 // 设置文件系统
-func (this *Handler) SetFilesystem(filesystem *Fllesystem) any {
+func (this *Handler) SetFilesystem(filesystem *Filesystem) any {
     this.filesystem = filesystem
 
     return this
 }
 
 // 获取文件系统
-func (this *Handler) GetFilesystem() *Fllesystem {
+func (this *Handler) GetFilesystem() *Filesystem {
     return this.filesystem
 }
 

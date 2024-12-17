@@ -15,6 +15,7 @@ import (
     "encoding/pem"
     "encoding/base64"
 
+    "github.com/deatil/go-cryptobin/elliptic/frp256v1"
     "github.com/deatil/go-cryptobin/elliptic/secp256k1"
 )
 
@@ -192,6 +193,13 @@ func Test_SignBytes(t *testing.T) {
     })
     t.Run("P521 sha256", func(t *testing.T) {
         test_SignBytes(t, elliptic.P521(), sha256.New)
+    })
+
+    t.Run("FRP256v1 sha256", func(t *testing.T) {
+        test_SignBytes(t, frp256v1.FRP256v1(), sha256.New)
+    })
+    t.Run("S256 sha256", func(t *testing.T) {
+        test_SignBytes(t, secp256k1.S256(), sha256.New)
     })
 }
 

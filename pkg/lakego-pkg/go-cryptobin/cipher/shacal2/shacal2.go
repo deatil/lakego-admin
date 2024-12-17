@@ -12,7 +12,7 @@ const BlockSize = 32
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/shacal2: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/shacal2: invalid key size %d", int(k))
 }
 
 type shacal2Cipher struct {
@@ -38,15 +38,15 @@ func (this *shacal2Cipher) BlockSize() int {
 
 func (this *shacal2Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/shacal2: input not full block")
+        panic("go-cryptobin/shacal2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/shacal2: output not full block")
+        panic("go-cryptobin/shacal2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/shacal2: invalid buffer overlap")
+        panic("go-cryptobin/shacal2: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -54,15 +54,15 @@ func (this *shacal2Cipher) Encrypt(dst, src []byte) {
 
 func (this *shacal2Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/shacal2: input not full block")
+        panic("go-cryptobin/shacal2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/shacal2: output not full block")
+        panic("go-cryptobin/shacal2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/shacal2: invalid buffer overlap")
+        panic("go-cryptobin/shacal2: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

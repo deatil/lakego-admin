@@ -34,7 +34,7 @@ func ParsePKCS8PrivateKey(pkData []byte) (privateKey crypto.PrivateKey, err erro
         }
     }
 
-    return nil, errors.New("pkcs12: error parsing PKCS#8 private key: " + err.Error())
+    return nil, errors.New("go-cryptobin/pkcs12: error parsing PKCS#8 private key: " + err.Error())
 }
 
 // 从注册的 key 列表编码证书
@@ -43,7 +43,7 @@ func MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
 
     key, err := GetKey(keytype)
     if err != nil {
-        return nil, errors.New("pkcs12: unsupported key type " + keytype)
+        return nil, errors.New("go-cryptobin/pkcs12: unsupported key type " + keytype)
     }
 
     return key().MarshalPKCS8PrivateKey(privateKey)
@@ -55,7 +55,7 @@ func MarshalPrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
 
     key, err := GetKey(keytype)
     if err != nil {
-        return nil, errors.New("pkcs12: unsupported key type " + keytype)
+        return nil, errors.New("go-cryptobin/pkcs12: unsupported key type " + keytype)
     }
 
     return key().MarshalPrivateKey(privateKey)

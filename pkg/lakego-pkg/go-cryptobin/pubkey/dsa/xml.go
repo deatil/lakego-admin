@@ -18,7 +18,7 @@ var (
     }
 )
 
-// 私钥
+// PrivateKey
 type xmlPrivateKey struct {
     XMLName     xml.Name `xml:"DSAKeyValue"`
     P           string   `xml:"P"`
@@ -31,7 +31,7 @@ type xmlPrivateKey struct {
     X           string   `xml:"X"`
 }
 
-// 公钥
+// PublicKey
 type xmlPublicKey struct {
     XMLName     xml.Name `xml:"DSAKeyValue"`
     P           string   `xml:"P"`
@@ -46,19 +46,19 @@ type xmlPublicKey struct {
 var defaultXMLKey = NewXMLKey()
 
 /**
- * dsa xml密钥
+ * dsa xml
  *
  * @create 2023-6-5
  * @author deatil
  */
 type XMLKey struct {}
 
-// 构造函数
+// NewXMLKey
 func NewXMLKey() XMLKey {
     return XMLKey{}
 }
 
-// 包装公钥
+// Marshal XML PublicKey
 func (this XMLKey) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     publicKey := xmlPublicKey{
         P: this.bigintToB64(key.P),
@@ -70,11 +70,12 @@ func (this XMLKey) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     return xml.MarshalIndent(publicKey, "", "    ")
 }
 
+// Marshal XML PublicKey
 func MarshalXMLPublicKey(key *dsa.PublicKey) ([]byte, error) {
     return defaultXMLKey.MarshalPublicKey(key)
 }
 
-// 解析公钥
+// Parse XML PublicKey
 func (this XMLKey) ParsePublicKey(data []byte) (*dsa.PublicKey, error) {
     var pub xmlPublicKey
     err := xml.Unmarshal(data, &pub)
@@ -118,15 +119,14 @@ func (this XMLKey) ParsePublicKey(data []byte) (*dsa.PublicKey, error) {
     return publicKey, nil
 }
 
+// Parse XML PublicKey
 func ParseXMLPublicKey(der []byte) (*dsa.PublicKey, error) {
     return defaultXMLKey.ParsePublicKey(der)
 }
 
-// ====================
-
-// 包装私钥
+// Marshal XML PrivateKey
 func (this XMLKey) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
-    // 构造私钥信息
+    // xml PrivateKey param
     priv := xmlPrivateKey{
         P: this.bigintToB64(key.P),
         Q: this.bigintToB64(key.Q),
@@ -138,11 +138,12 @@ func (this XMLKey) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     return xml.MarshalIndent(priv, "", "    ")
 }
 
+// Marshal XML PrivateKey
 func MarshalXMLPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     return defaultXMLKey.MarshalPrivateKey(key)
 }
 
-// 解析私钥
+// Parse XML PrivateKey
 func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
     var priv xmlPrivateKey
     err := xml.Unmarshal(data, &priv)
@@ -194,11 +195,10 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
     return privateKey, nil
 }
 
+// Parse XML PrivateKey
 func ParseXMLPrivateKey(der []byte) (*dsa.PrivateKey, error) {
     return defaultXMLKey.ParsePrivateKey(der)
 }
-
-// ====================
 
 func (this XMLKey) b64d(str string) ([]byte, error) {
     decoded, err := base64.StdEncoding.DecodeString(str)

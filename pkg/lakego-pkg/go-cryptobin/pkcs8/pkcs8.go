@@ -225,7 +225,7 @@ func EncryptPEMBlock(
             return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
     }
 
-    return nil, errors.New("pkcs8: unsupported cipher")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported cipher")
 }
 
 // 解密
@@ -251,5 +251,5 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         return nil, err
     }
 
-    return nil, errors.New("pkcs8: unsupported encrypted PEM")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported encrypted PEM")
 }

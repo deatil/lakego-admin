@@ -20,7 +20,7 @@ type Cipher struct {
 func NewCipher(key, nonce []byte) (cipher.Stream, error) {
     var fixedSizedKey [32]byte
     if len(key) != 32 {
-        return nil, errors.New("cryptobin/salsa20: key size must be 32")
+        return nil, errors.New("go-cryptobin/salsa20: key size must be 32")
     }
 
     copy(fixedSizedKey[:], key)
@@ -35,7 +35,7 @@ func NewCipher(key, nonce []byte) (cipher.Stream, error) {
 func NewCipherWithCounter(key, nonce []byte, counter uint64) (cipher.Stream, error) {
     var fixedSizedKey [32]byte
     if len(key) != 32 {
-        return nil, errors.New("cryptobin/salsa20: key size must be 32")
+        return nil, errors.New("go-cryptobin/salsa20: key size must be 32")
     }
 
     copy(fixedSizedKey[:], key)
@@ -52,12 +52,12 @@ func (c *Cipher) XORKeyStream(dst, src []byte) {
         return
     }
     if len(dst) < len(src) {
-        panic("cryptobin/salsa20: output smaller than input")
+        panic("go-cryptobin/salsa20: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/salsa20: invalid buffer overlap")
+        panic("go-cryptobin/salsa20: invalid buffer overlap")
     }
-    
+
     paddingLength := int(c.counter % 64)
     buf := make([]byte, len(src)+paddingLength)
 

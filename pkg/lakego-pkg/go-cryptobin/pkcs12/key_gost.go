@@ -14,12 +14,12 @@ type KeyGost struct {}
 func (this KeyGost) MarshalPrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*gost.PrivateKey)
     if !ok {
-        return nil, errors.New("pkcs12: private key is err")
+        return nil, errors.New("go-cryptobin/pkcs12: private key is err")
     }
 
     pkData, err := gost.MarshalPrivateKey(priKey)
     if err != nil {
-        return nil, errors.New("pkcs12: error encoding PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error encoding PKCS#8 private key: " + err.Error())
     }
 
     return pkData, nil
@@ -29,12 +29,12 @@ func (this KeyGost) MarshalPrivateKey(privateKey crypto.PrivateKey) ([]byte, err
 func (this KeyGost) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*gost.PrivateKey)
     if !ok {
-        return nil, errors.New("pkcs12: private key is err")
+        return nil, errors.New("go-cryptobin/pkcs12: private key is err")
     }
 
     pkData, err := gost.MarshalPrivateKey(priKey)
     if err != nil {
-        return nil, errors.New("pkcs12: error encoding PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error encoding PKCS#8 private key: " + err.Error())
     }
 
     return pkData, nil
@@ -44,7 +44,7 @@ func (this KeyGost) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte
 func (this KeyGost) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := gost.ParsePrivateKey(pkData)
     if err != nil {
-        return nil, errors.New("pkcs12: error parsing PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error parsing PKCS#8 private key: " + err.Error())
     }
 
     return privateKey, nil

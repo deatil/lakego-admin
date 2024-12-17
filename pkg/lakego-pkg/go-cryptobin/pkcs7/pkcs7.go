@@ -77,12 +77,12 @@ type contentInfo struct {
 // ErrUnsupportedContentType is returned when a PKCS7 content is not supported.
 // Currently only Data (1.2.840.113549.1.7.1), Signed Data (1.2.840.113549.1.7.2),
 // and Enveloped Data are supported (1.2.840.113549.1.7.3)
-var ErrUnsupportedContentType = errors.New("pkcs7: cannot parse data: unimplemented content type")
+var ErrUnsupportedContentType = errors.New("go-cryptobin/pkcs7: cannot parse data: unimplemented content type")
 
 // Parse decodes a DER encoded PKCS7 package
 func Parse(data []byte) (p7 *PKCS7, err error) {
     if len(data) == 0 {
-        return nil, errors.New("pkcs7: input data is empty")
+        return nil, errors.New("go-cryptobin/pkcs7: input data is empty")
     }
 
     var info contentInfo
@@ -207,7 +207,7 @@ func getSignFromOid(signOid asn1.ObjectIdentifier) (KeySign, error) {
     oid := signOid.String()
     signFunc, ok := keySigns[oid]
     if !ok {
-        return nil, fmt.Errorf("pkcs7: unsupported sign (OID: %s)", oid)
+        return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported sign (OID: %s)", oid)
     }
 
     newSignFunc := signFunc()
@@ -224,14 +224,14 @@ func getSignFromHashOid(pkey any, hashOid asn1.ObjectIdentifier) (KeySign, error
         }
     }
 
-    return nil, fmt.Errorf("pkcs7: unsupported signHash from hash (OID: %s)", hashOid.String())
+    return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported signHash from hash (OID: %s)", hashOid.String())
 }
 
 func getHashFromOid(hashOid asn1.ObjectIdentifier) (SignHash, error) {
     oid := hashOid.String()
     hashFunc, ok := signHashs[oid]
     if !ok {
-        return nil, fmt.Errorf("pkcs7: unsupported signHash (OID: %s)", oid)
+        return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported signHash (OID: %s)", oid)
     }
 
     newHashFunc := hashFunc()
@@ -280,7 +280,7 @@ func getSignatureFunc(digestEncryption, digest asn1.ObjectIdentifier) (KeySign, 
                 case digest.Equal(OidDigestAlgorithmSHA512):
                     return KeySignWithRSASHA512, nil
                 default:
-                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                    return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported digest %q for encryption algorithm %q",
                         digest.String(), digestEncryption.String())
             }
 
@@ -301,7 +301,7 @@ func getSignatureFunc(digestEncryption, digest asn1.ObjectIdentifier) (KeySign, 
                 case digest.Equal(OidDigestAlgorithmSHA256):
                     return KeySignWithDSASHA256, nil
                 default:
-                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                    return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported digest %q for encryption algorithm %q",
                         digest.String(), digestEncryption.String())
             }
 
@@ -320,7 +320,7 @@ func getSignatureFunc(digestEncryption, digest asn1.ObjectIdentifier) (KeySign, 
                 case digest.Equal(OidDigestAlgorithmSHA512):
                     return KeySignWithECDSASHA512, nil
                 default:
-                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                    return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported digest %q for encryption algorithm %q",
                         digest.String(), digestEncryption.String())
             }
 
@@ -333,12 +333,12 @@ func getSignatureFunc(digestEncryption, digest asn1.ObjectIdentifier) (KeySign, 
                 case digest.Equal(OidDigestAlgorithmSM3):
                     return KeySignWithSM2SM3, nil
                 default:
-                    return nil, fmt.Errorf("pkcs7: unsupported digest %q for encryption algorithm %q",
+                    return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported digest %q for encryption algorithm %q",
                         digest.String(), digestEncryption.String())
             }
 
         default:
-            return nil, fmt.Errorf("pkcs7: unsupported algorithm %q",
+            return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported algorithm %q",
                 digestEncryption.String())
     }
 }
@@ -359,5 +359,5 @@ func getDigestOIDForSignatureAlgorithm(digestAlg x509.SignatureAlgorithm) (asn1.
             return OidDigestAlgorithmSM3, nil
     }
 
-    return nil, fmt.Errorf("pkcs7: cannot convert hash to oid, unknown hash algorithm")
+    return nil, fmt.Errorf("go-cryptobin/pkcs7: cannot convert hash to oid, unknown hash algorithm")
 }

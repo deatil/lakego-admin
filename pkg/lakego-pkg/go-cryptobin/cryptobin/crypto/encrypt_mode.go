@@ -247,7 +247,7 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
     } else {
@@ -272,7 +272,7 @@ func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
     } else {
@@ -301,7 +301,7 @@ func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
     } else {
@@ -327,7 +327,7 @@ func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
     } else {

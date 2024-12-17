@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/clefia: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/clefia: invalid key size %d", int(k))
 }
 
 type clefiaCipher struct {
@@ -41,15 +41,15 @@ func (this *clefiaCipher) BlockSize() int {
 
 func (this *clefiaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/clefia: input not full block")
+        panic("go-cryptobin/clefia: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/clefia: output not full block")
+        panic("go-cryptobin/clefia: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/clefia: invalid buffer overlap")
+        panic("go-cryptobin/clefia: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -57,15 +57,15 @@ func (this *clefiaCipher) Encrypt(dst, src []byte) {
 
 func (this *clefiaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/clefia: input not full block")
+        panic("go-cryptobin/clefia: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/clefia: output not full block")
+        panic("go-cryptobin/clefia: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/clefia: invalid buffer overlap")
+        panic("go-cryptobin/clefia: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

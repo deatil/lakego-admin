@@ -19,7 +19,7 @@ const PAN_STATE_SIZE = 17
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/panama: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/panama: invalid key size " + strconv.Itoa(int(k))
 }
 
 type panamaCipher struct {
@@ -52,10 +52,10 @@ func (this *panamaCipher) XORKeyStream(dst, src []byte) {
         return
     }
     if len(dst) < len(src) {
-        panic("cryptobin/panama: output smaller than input")
+        panic("go-cryptobin/panama: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/panama: invalid buffer overlap")
+        panic("go-cryptobin/panama: invalid buffer overlap")
     }
 
     var i int32

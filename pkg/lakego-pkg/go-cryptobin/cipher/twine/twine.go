@@ -19,7 +19,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/twine: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/twine: invalid key size " + strconv.Itoa(int(k))
 }
 
 type twineCipher struct {

@@ -15,7 +15,7 @@ const BlockSize = 1
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/wake: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/wake: invalid key size " + strconv.Itoa(int(k))
 }
 
 type wakeCipher struct {
@@ -49,13 +49,13 @@ func (this *wakeCipher) BlockSize() int {
 
 func (this *wakeCipher) Encrypt(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/wake: output not full block")
+        panic("go-cryptobin/wake: output not full block")
     }
 
     bs := len(src)
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/wake: invalid buffer overlap")
+        panic("go-cryptobin/wake: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -63,13 +63,13 @@ func (this *wakeCipher) Encrypt(dst, src []byte) {
 
 func (this *wakeCipher) Decrypt(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/wake: output not full block")
+        panic("go-cryptobin/wake: output not full block")
     }
 
     bs := len(src)
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/wake: invalid buffer overlap")
+        panic("go-cryptobin/wake: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

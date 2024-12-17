@@ -16,7 +16,7 @@ func (this ModeOCB3) Encrypt(plain []byte, block cipher.Block, opt crypto.IOptio
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = ocb3.NewWithTagSize(block, tagSize)
     } else {
@@ -41,7 +41,7 @@ func (this ModeOCB3) Decrypt(data []byte, block cipher.Block, opt crypto.IOption
 
     iv := opt.Iv()
 
-    tagSize := opt.Config().GetInt("tagSize")
+    tagSize := opt.Config().GetInt("tag_size")
     if tagSize > 0 {
         aead, err = ocb3.NewWithTagSize(block, tagSize)
     } else {

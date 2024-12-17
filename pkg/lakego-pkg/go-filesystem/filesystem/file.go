@@ -5,18 +5,6 @@ import(
     "os"
 )
 
-// new 文件管理器
-func NewFile(filesystem *Fllesystem, path ...string) *File {
-    fs := &File{}
-    fs.filesystem = filesystem
-
-    if len(path) > 0{
-        fs.path = path[0]
-    }
-
-    return fs
-}
-
 /**
  * 文件管理扩展
  *
@@ -27,15 +15,27 @@ type File struct {
     Handler
 }
 
+// new 文件管理器
+func NewFile(filesystem *Filesystem, path ...string) *File {
+    fs := &File{}
+    fs.filesystem = filesystem
+
+    if len(path) > 0{
+        fs.path = path[0]
+    }
+
+    return fs
+}
+
 // 设置管理器
-func (this *File) SetFilesystem(filesystem *Fllesystem) *File {
+func (this *File) WithFilesystem(filesystem *Filesystem) *File {
     this.filesystem = filesystem
 
     return this
 }
 
 // 设置目录
-func (this *File) SetPath(path string) *File {
+func (this *File) WithPath(path string) *File {
     this.path = path
 
     return this
@@ -47,7 +47,7 @@ func (this *File) Exists() bool {
 }
 
 // 读取
-func (this *File) Read() (string, error) {
+func (this *File) Read() ([]byte, error) {
     return this.filesystem.Read(this.path)
 }
 
@@ -56,8 +56,8 @@ func (this *File) ReadStream() (*os.File, error) {
     return this.filesystem.ReadStream(this.path)
 }
 
-// 写入字符
-func (this *File) Write(content string) (bool, error) {
+// 写入字节
+func (this *File) Write(content []byte) (bool, error) {
     return this.filesystem.Write(this.path, content)
 }
 
@@ -66,8 +66,8 @@ func (this *File) WriteStream(resource io.Reader) (bool, error) {
     return this.filesystem.WriteStream(this.path, resource)
 }
 
-// 更新字符
-func (this *File) Update(content string) (bool, error) {
+// 更新字节
+func (this *File) Update(content []byte) (bool, error) {
     return this.filesystem.Update(this.path, content)
 }
 
@@ -76,8 +76,8 @@ func (this *File) UpdateStream(resource io.Reader) (bool, error) {
     return this.filesystem.UpdateStream(this.path, resource)
 }
 
-// 导入字符
-func (this *File) Put(content string) (bool, error) {
+// 导入字节
+func (this *File) Put(content []byte) (bool, error) {
     return this.filesystem.Update(this.path, content)
 }
 
@@ -110,6 +110,11 @@ func (this *File) Copy(newpath string) (*File, error) {
     return nil, err
 }
 
+// 删除
+func (this *File) Delete() (bool, error) {
+    return this.filesystem.Delete(this.path)
+}
+
 // 时间戳
 func (this *File) GetTimestamp() (int64, error) {
     return this.filesystem.GetTimestamp(this.path)
@@ -133,9 +138,4 @@ func (this *File) GetMetadata() (map[string]any, error) {
 // 大小
 func (this *File) GetSize() (int64, error) {
     return this.filesystem.GetSize(this.path)
-}
-
-// 删除
-func (this *File) Delete() (bool, error) {
-    return this.filesystem.Delete(this.path)
 }

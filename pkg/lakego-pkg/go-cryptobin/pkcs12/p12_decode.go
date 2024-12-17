@@ -16,7 +16,7 @@ func (this *PKCS12) formatCert(certsData []byte) (certs []*x509.Certificate, err
     if err != nil {
         gmsmCerts, err := cryptobin_x509.ParseCertificates(certsData)
         if err != nil {
-            err = errors.New("pkcs12: x509 error: " + err.Error())
+            err = errors.New("go-cryptobin/pkcs12: x509 error: " + err.Error())
             return nil, err
         }
 

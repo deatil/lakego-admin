@@ -12,7 +12,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/skipjack: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/skipjack: invalid key size " + strconv.Itoa(int(k))
 }
 
 // References: http://csrc.nist.gov/groups/ST/toolkit/documents/skipjack/skipjack.pdf
@@ -47,15 +47,15 @@ func (c *skipjackCipher) BlockSize() int {
 
 func (c *skipjackCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/skipjack: input not full block")
+        panic("go-cryptobin/skipjack: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/skipjack: output not full block")
+        panic("go-cryptobin/skipjack: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/skipjack: invalid buffer overlap")
+        panic("go-cryptobin/skipjack: invalid buffer overlap")
     }
 
     c.encrypt(dst, src)
@@ -63,15 +63,15 @@ func (c *skipjackCipher) Encrypt(dst, src []byte) {
 
 func (c *skipjackCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/skipjack: input not full block")
+        panic("go-cryptobin/skipjack: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/skipjack: output not full block")
+        panic("go-cryptobin/skipjack: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/skipjack: invalid buffer overlap")
+        panic("go-cryptobin/skipjack: invalid buffer overlap")
     }
 
     c.decrypt(dst, src)

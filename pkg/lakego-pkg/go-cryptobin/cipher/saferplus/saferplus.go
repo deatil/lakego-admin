@@ -18,7 +18,7 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/saferplus: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/saferplus: invalid key size " + strconv.Itoa(int(k))
 }
 
 type saferplusCipher struct {
@@ -47,15 +47,15 @@ func (this *saferplusCipher) BlockSize() int {
 
 func (this *saferplusCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/saferplus: input not full block")
+        panic("go-cryptobin/saferplus: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/saferplus: output not full block")
+        panic("go-cryptobin/saferplus: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/saferplus: invalid buffer overlap")
+        panic("go-cryptobin/saferplus: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -63,15 +63,15 @@ func (this *saferplusCipher) Encrypt(dst, src []byte) {
 
 func (this *saferplusCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/saferplus: input not full block")
+        panic("go-cryptobin/saferplus: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/saferplus: output not full block")
+        panic("go-cryptobin/saferplus: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/saferplus: invalid buffer overlap")
+        panic("go-cryptobin/saferplus: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

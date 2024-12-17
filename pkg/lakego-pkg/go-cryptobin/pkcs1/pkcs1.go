@@ -24,7 +24,7 @@ func IsEncryptedPEMBlock(b *pem.Block) bool {
 }
 
 // IncorrectPasswordError is returned when an incorrect password is detected.
-var IncorrectPasswordError = errors.New("pkcs1: decryption password incorrect")
+var IncorrectPasswordError = errors.New("go-cryptobin/pkcs1: decryption password incorrect")
 
 // DecryptPEMBlock takes a PEM block encrypted according to RFC 1423 and the
 // password used to encrypt it and returns a slice of decrypted DER encoded
@@ -41,17 +41,17 @@ var IncorrectPasswordError = errors.New("pkcs1: decryption password incorrect")
 func DecryptPEMBlock(b *pem.Block, password []byte) ([]byte, error) {
     dek, ok := b.Headers["DEK-Info"]
     if !ok {
-        return nil, errors.New("pkcs1: no DEK-Info header in block")
+        return nil, errors.New("go-cryptobin/pkcs1: no DEK-Info header in block")
     }
 
     mode, hexIV, ok := strings.Cut(dek, ",")
     if !ok {
-        return nil, errors.New("pkcs1: malformed DEK-Info header")
+        return nil, errors.New("go-cryptobin/pkcs1: malformed DEK-Info header")
     }
 
     ciph, err := cipherByName(mode)
     if err != nil {
-        return nil, errors.New("pkcs1: unknown encryption mode")
+        return nil, errors.New("go-cryptobin/pkcs1: unknown encryption mode")
     }
 
     iv, err := hex.DecodeString(hexIV)
@@ -60,7 +60,7 @@ func DecryptPEMBlock(b *pem.Block, password []byte) ([]byte, error) {
     }
 
     if len(iv) != ciph.BlockSize() {
-        return nil, errors.New("pkcs1: incorrect IV size")
+        return nil, errors.New("go-cryptobin/pkcs1: incorrect IV size")
     }
 
     plaintext, err := ciph.Decrypt(password, iv, b.Bytes)
@@ -80,7 +80,7 @@ func DecryptPEMBlock(b *pem.Block, password []byte) ([]byte, error) {
 // padding oracle attacks that can let an attacker recover the plaintext.
 func EncryptPEMBlock(rand io.Reader, blockType string, data, password []byte, cipher Cipher) (*pem.Block, error) {
     if cipher == nil {
-        return nil, errors.New("pkcs1: incorrect cipher")
+        return nil, errors.New("go-cryptobin/pkcs1: incorrect cipher")
     }
 
     // encrypt data

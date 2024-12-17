@@ -25,15 +25,15 @@ func (s *seed128Cipher) BlockSize() int {
 
 func (s *seed128Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/seed: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/seed: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/seed: invalid buffer overlap")
+        panic("go-cryptobin/seed: invalid buffer overlap")
     }
 
     s.encrypt(dst, src)
@@ -41,15 +41,15 @@ func (s *seed128Cipher) Encrypt(dst, src []byte) {
 
 func (s *seed128Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/seed: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/seed: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/seed: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/seed: invalid buffer overlap")
+        panic("go-cryptobin/seed: invalid buffer overlap")
     }
 
     s.decrypt(dst, src)

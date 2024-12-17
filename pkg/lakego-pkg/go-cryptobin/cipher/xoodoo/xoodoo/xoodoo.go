@@ -94,7 +94,7 @@ func (xds *State) XorStateBytes(in []byte) {
 // is stored in the XoodooState
 func (xds *State) XorByte(x byte, offset int) error {
     if offset < 0 || offset >= StateSizeBytes {
-        return fmt.Errorf("cryptobin/xoodoo: xor byte offset out of range:%d", offset)
+        return fmt.Errorf("go-cryptobin/xoodoo: xor byte offset out of range:%d", offset)
     }
 
     xInt := uint32(x) << (8 * (offset % 4))
@@ -107,7 +107,7 @@ func (xds *State) XorByte(x byte, offset int) error {
 func (xd *Xoodoo) XorExtractBytes(x []byte) ([]byte, error) {
     size := len(x)
     if size <= 0 || size > StateSizeBytes {
-        return nil, fmt.Errorf("cryptobin/xoodoo: xor and extract bytes size out of range:%d", size)
+        return nil, fmt.Errorf("go-cryptobin/xoodoo: xor and extract bytes size out of range:%d", size)
     }
     out := make([]byte, size)
     stateBytes := xd.Bytes()
@@ -121,7 +121,7 @@ func (xd *Xoodoo) XorExtractBytes(x []byte) ([]byte, error) {
 // This method allows State to satisfy the encoding.BinaryUnmarshaler interface
 func (xds *State) UnmarshalBinary(data []byte) error {
     if len(data) != StateSizeBytes {
-        return fmt.Errorf("cryptobin/xoodoo: input data (%d bytes) != xoodoo state size (%d bytes)", len(data), StateSizeBytes)
+        return fmt.Errorf("go-cryptobin/xoodoo: input data (%d bytes) != xoodoo state size (%d bytes)", len(data), StateSizeBytes)
     }
 
     xds[0] = (binary.LittleEndian.Uint32(data[0:4]))
@@ -164,12 +164,12 @@ func NewXoodoo(rounds int, state [StateSizeBytes]byte) (*Xoodoo, error) {
     var x Xoodoo
     x.rounds = rounds
     if rounds > len(RoundConstants) {
-        return nil, fmt.Errorf("cryptobin/xoodoo: invalid number of rounds: %d", rounds)
+        return nil, fmt.Errorf("go-cryptobin/xoodoo: invalid number of rounds: %d", rounds)
     }
 
     err := x.State.UnmarshalBinary(state[:])
     if err != nil {
-        return nil, fmt.Errorf("cryptobin/xoodoo: invalid initial state:%s", err)
+        return nil, fmt.Errorf("go-cryptobin/xoodoo: invalid initial state:%s", err)
     }
 
     return &x, nil

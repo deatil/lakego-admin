@@ -86,7 +86,7 @@ func EncryptPKCS8PrivateKey(
 
     encrypted, encryptionAlgorithm, err := PBES2Encrypt(rand, data, password, opt)
     if err != nil {
-        return nil, errors.New("pkcs8: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs8: " + err.Error())
     }
 
     // 生成 ans1 数据
@@ -97,7 +97,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New("pkcs8: error marshaling encrypted key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs8: error marshaling encrypted key: " + err.Error())
     }
 
     return &pem.Block{
@@ -110,7 +110,7 @@ func EncryptPKCS8PrivateKey(
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New("pkcs8: failed to unmarshal private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs8: failed to unmarshal private key: " + err.Error())
     }
 
     algo := pki.EncryptionAlgorithm
@@ -118,7 +118,7 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
 
     decryptedKey, err := PBES2Decrypt(encryptedKey, algo, password)
     if err != nil {
-        return nil, errors.New("pkcs8: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs8: " + err.Error())
     }
 
     return decryptedKey, nil
@@ -135,7 +135,7 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         return DecryptPKCS8PrivateKey(block.Bytes, password)
     }
 
-    return nil, errors.New("pkcs8: unsupported encrypted PEM")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported encrypted PEM")
 }
 
 // PBES2 加密

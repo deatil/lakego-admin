@@ -8,7 +8,44 @@ import (
     "encoding/binary"
 )
 
-func TestE(t * testing.T) {
+func Test_Min(t * testing.T) {
+    a := 123
+    b := 125
+    res := Min(a, b)
+    if res != a {
+        t.Errorf("got %d, want %d", res, a)
+    }
+}
+
+func Test_Max(t * testing.T) {
+    a := 123
+    b := 125
+    res := Max(a, b)
+    if res != b {
+        t.Errorf("got %d, want %d", res, b)
+    }
+}
+
+func Test_Contains(t * testing.T) {
+    a := []int{123, 133, 125}
+    b := 125
+    if res := Contains(a, b); !res {
+        t.Errorf("got %v, want %v", res, true)
+    }
+}
+
+func Test_Sum(t * testing.T) {
+    a := []int{123, 133, 125}
+    check := 381
+
+    res := Sum(a...)
+
+    if res != check {
+        t.Errorf("got %d, want %d", res, check)
+    }
+}
+
+func Test_E(t * testing.T) {
     e_string := "2.7182818284590452353602874713526624977572470936999595749669676277240766303535475945713821785251664274"
     e := E(200)
     e_str := e.FloatString(100)
@@ -17,7 +54,7 @@ func TestE(t * testing.T) {
     }
 }
 
-func TestPhi(t * testing.T) {
+func Test_Phi(t * testing.T) {
     phi_string := "1.61803398874989484820458683436563811772030917980576286213544862270526046281890244970720720418939113748475"
     phi := Phi(2000)
     phi_str := phi.FloatString(104)
@@ -26,7 +63,7 @@ func TestPhi(t * testing.T) {
     }
 }
 
-func TestCeil(t *testing.T) {
+func Test_Ceil(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 500
 
@@ -54,7 +91,7 @@ func TestCeil(t *testing.T) {
     }
 }
 
-func TestFloor(t *testing.T) {
+func Test_Floor(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 500
 
@@ -83,7 +120,7 @@ func TestFloor(t *testing.T) {
     }
 }
 
-func TestOdd(t *testing.T) {
+func Test_Odd(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 500
 
@@ -134,7 +171,7 @@ func rotateRight64(x uint64, r uint) uint64 {
     return (x >> r) | (x << (64 - r))
 }
 
-func TestMask(t *testing.T) {
+func Test_Mask(t *testing.T) {
     if Mask(8).Uint64() != uint64(math.MaxUint8) {
         t.Errorf("mask(8) != MaxUint8: %v != %v", Mask(8), math.MaxUint8)
     }
@@ -152,7 +189,7 @@ func TestMask(t *testing.T) {
 
 var max = 5000
 
-func TestRotateLeft32(t *testing.T) {
+func Test_RotateLeft32(t *testing.T) {
     mask := Mask(32)
     x := new(big.Int)
     for i := 1; i < max; i++ {
@@ -171,7 +208,7 @@ func TestRotateLeft32(t *testing.T) {
 // that way to ensure that there isn't extra precision in x that
 // is disappearing due to conversion to smaller data type like
 // uint64 or uint32.
-func TestRotateRight32(t * testing.T) {
+func Test_RotateRight32(t * testing.T) {
     mask := Mask(32)
     x := new(big.Int)
     for i := 1; i < max; i++ {
@@ -186,7 +223,7 @@ func TestRotateRight32(t * testing.T) {
     }
 }
 
-func TestRotateLeft64(t * testing.T) {
+func Test_RotateLeft64(t * testing.T) {
     mask := Mask(64)
     x := new(big.Int)
     for i := 1; i < max; i++ {
@@ -201,7 +238,7 @@ func TestRotateLeft64(t * testing.T) {
     }
 }
 
-func TestRotateRight64(t * testing.T) {
+func Test_RotateRight64(t * testing.T) {
     mask := Mask(64)
     x := new(big.Int)
     for i := 1; i < max; i++ {
@@ -216,7 +253,7 @@ func TestRotateRight64(t * testing.T) {
     }
 }
 
-func TestRound(t *testing.T) {
+func Test_Round(t *testing.T) {
     random := rand.New(rand.NewSource(99))
     max := 500
 
@@ -256,7 +293,7 @@ func TestRound(t *testing.T) {
     }
 }
 
-func TestSqrt(t *testing.T) {
+func Test_Sqrt(t *testing.T) {
     percent_error := new(big.Rat)
     max := new(big.Rat).SetFloat64(0.00005)
     r := new(big.Rat)

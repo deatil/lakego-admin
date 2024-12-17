@@ -7,7 +7,6 @@ import (
     "crypto/sha1"
 )
 
-// 默认值
 var MD5PRNG = New(md5.New)
 var SHA1PRNG = New(sha1.New)
 

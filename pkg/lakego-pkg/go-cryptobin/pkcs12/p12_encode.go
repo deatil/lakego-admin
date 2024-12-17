@@ -443,7 +443,7 @@ func (this *PKCS12) Marshal(rand io.Reader, password string, opts ...Opts) (pfxD
     }
 
     if pfxData, err = asn1.Marshal(pfx); err != nil {
-        return nil, errors.New("pkcs12: error writing P12 data: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error writing P12 data: " + err.Error())
     }
 
     return

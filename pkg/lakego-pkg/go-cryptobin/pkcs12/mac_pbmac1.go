@@ -94,7 +94,7 @@ func pbmac1PRFByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return gost34112012512.New, nil
     }
 
-    return nil, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
+    return nil, fmt.Errorf("go-cryptobin/pkcs12: unsupported hash (OID: %s)", oid)
 }
 
 // get Hash oid
@@ -124,7 +124,7 @@ func pbmac1OIDByHash(h PBMAC1Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithGOST34112012512, nil
     }
 
-    return nil, errors.New("pkcs12: unsupported hash function")
+    return nil, errors.New("go-cryptobin/pkcs12: unsupported hash function")
 }
 
 //  PBMAC1-params ::= SEQUENCE {

@@ -137,10 +137,10 @@ func (a *xoodyakAEAD) Seal(dst, nonce, plaintext, additionalData []byte) []byte 
 // may be overwritten.
 func (a *xoodyakAEAD) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, error) {
     if len(nonce) != NonceLen {
-        return []byte{}, fmt.Errorf("cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(nonce), NonceLen)
+        return []byte{}, fmt.Errorf("go-cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(nonce), NonceLen)
     }
     if len(ciphertext) < TagLen {
-        return []byte{}, fmt.Errorf("cryptobin/xoodyak/aead: given ciphertext (%d bytes) less than minimum length (%d bytes)", len(ciphertext), TagLen)
+        return []byte{}, fmt.Errorf("go-cryptobin/xoodyak/aead: given ciphertext (%d bytes) less than minimum length (%d bytes)", len(ciphertext), TagLen)
     }
 
     tag := ciphertext[len(ciphertext)-TagLen:]
@@ -169,10 +169,10 @@ type EncryptStream struct {
 // encryption key, nonce(id) and metadata(ad). The input message may be any length (including zero).
 func NewEncryptStream(target io.Writer, key, id, ad []byte) (*EncryptStream, error) {
     if len(key) != KeyLen {
-        return nil, fmt.Errorf("cryptobin/xoodyak/aead: given key length (%d bytes) incorrect (%d bytes)", len(key), KeyLen)
+        return nil, fmt.Errorf("go-cryptobin/xoodyak/aead: given key length (%d bytes) incorrect (%d bytes)", len(key), KeyLen)
     }
     if len(id) != NonceLen {
-        return nil, fmt.Errorf("cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(id), NonceLen)
+        return nil, fmt.Errorf("go-cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(id), NonceLen)
     }
     new := EncryptStream{
         out:     target,
@@ -200,7 +200,7 @@ func (es *EncryptStream) Write(p []byte) (n int, err error) {
             ct, _ := es.xk.CryptBlock(es.x, es.cryptCu, Encrypting)
             _, err = es.out.Write(ct)
             if err != nil {
-                err = fmt.Errorf("cryptobin/xoodyak/aead: encryptstream failed writing: %w", err)
+                err = fmt.Errorf("go-cryptobin/xoodyak/aead: encryptstream failed writing: %w", err)
                 return
             }
             es.nx = 0
@@ -215,7 +215,7 @@ func (es *EncryptStream) Write(p []byte) (n int, err error) {
             _, err = es.out.Write(ct)
             n += xoodyakRkOut
             if err != nil {
-                err = fmt.Errorf("cryptobin/xoodyak/aead: encryptstream failed writing: %w", err)
+                err = fmt.Errorf("go-cryptobin/xoodyak/aead: encryptstream failed writing: %w", err)
                 return
             }
             es.cryptCu = CryptCuMain
@@ -245,7 +245,7 @@ func (es *EncryptStream) Close() error {
         ct, _ := es.xk.CryptBlock(es.x[:es.nx], es.cryptCu, Encrypting)
         _, err := es.out.Write(ct)
         if err != nil {
-            err = fmt.Errorf("cryptobin/xoodyak/aead: encryptstream failed writing end of stream: %w", err)
+            err = fmt.Errorf("go-cryptobin/xoodyak/aead: encryptstream failed writing end of stream: %w", err)
             return err
         }
         es.cryptCu = CryptCuMain
@@ -261,7 +261,7 @@ func (es *EncryptStream) Close() error {
     tag := es.xk.Squeeze(TagLen)
     _, err := es.out.Write(tag)
     if err != nil {
-        err = fmt.Errorf("cryptobin/xoodyak/aead: encryptstream failed writing auth tag: %w", err)
+        err = fmt.Errorf("go-cryptobin/xoodyak/aead: encryptstream failed writing auth tag: %w", err)
     }
 
     return err
@@ -285,10 +285,10 @@ type DecryptStream struct {
 // a given encryption key, nonce(id) and metadata(ad).
 func NewDecryptStream(source io.Reader, key, id, ad []byte) (*DecryptStream, error) {
     if len(key) != KeyLen {
-        return nil, fmt.Errorf("cryptobin/xoodyak/aead: given key length (%d bytes) incorrect (%d bytes)", len(key), KeyLen)
+        return nil, fmt.Errorf("go-cryptobin/xoodyak/aead: given key length (%d bytes) incorrect (%d bytes)", len(key), KeyLen)
     }
     if len(id) != NonceLen {
-        return nil, fmt.Errorf("cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(id), NonceLen)
+        return nil, fmt.Errorf("go-cryptobin/xoodyak/aead: given nonce length (%d bytes) incorrect (%d bytes)", len(id), NonceLen)
     }
     new := DecryptStream{
         in:       source,
@@ -331,7 +331,7 @@ func (ds *DecryptStream) Read(p []byte) (n int, err error) {
                     ds.complete = true
                     break
                 } else if err != nil {
-                    err = fmt.Errorf("cryptobin/xoodyak/aead: decryptstream failed reading: %w", err)
+                    err = fmt.Errorf("go-cryptobin/xoodyak/aead: decryptstream failed reading: %w", err)
                     return n - ptRemain, err
                 }
             }

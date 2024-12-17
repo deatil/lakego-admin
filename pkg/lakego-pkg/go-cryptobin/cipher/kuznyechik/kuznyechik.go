@@ -18,7 +18,7 @@ type kuznyechikCipher struct {
 
 func NewCipher(key []byte) (cipher.Block, error) {
     if len(key) != 32 {
-        return nil, fmt.Errorf("cryptobin/kuznyechik: invalid key size %d", len(key))
+        return nil, fmt.Errorf("go-cryptobin/kuznyechik: invalid key size %d", len(key))
     }
 
     k := new(kuznyechikCipher)
@@ -33,15 +33,15 @@ func (k *kuznyechikCipher) BlockSize() int {
 
 func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kuznyechik: input not full block")
+        panic("go-cryptobin/kuznyechik: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kuznyechik: output not full block")
+        panic("go-cryptobin/kuznyechik: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kuznyechik: invalid buffer overlap")
+        panic("go-cryptobin/kuznyechik: invalid buffer overlap")
     }
 
     k.encrypt(dst, src)
@@ -49,15 +49,15 @@ func (k *kuznyechikCipher) Encrypt(dst, src []byte) {
 
 func (k *kuznyechikCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kuznyechik: input not full block")
+        panic("go-cryptobin/kuznyechik: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kuznyechik: output not full block")
+        panic("go-cryptobin/kuznyechik: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kuznyechik: invalid buffer overlap")
+        panic("go-cryptobin/kuznyechik: invalid buffer overlap")
     }
 
     k.decrypt(dst, src)

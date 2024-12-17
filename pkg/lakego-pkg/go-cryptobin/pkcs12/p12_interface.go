@@ -95,7 +95,7 @@ func (this *Keys) GetKey(name string) (KeyFunc, error) {
 
     key, ok := this.keys[name]
     if !ok {
-        return nil, errors.New("pkcs12: unsupported key type " + name)
+        return nil, errors.New("go-cryptobin/pkcs12: unsupported key type " + name)
     }
 
     return key, nil

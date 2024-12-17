@@ -10,13 +10,13 @@ import (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/trivium: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/trivium: invalid key size " + strconv.Itoa(int(k))
 }
 
 type IVSizeError int
 
 func (k IVSizeError) Error() string {
-    return "cryptobin/trivium: invalid iv size " + strconv.Itoa(int(k))
+    return "go-cryptobin/trivium: invalid iv size " + strconv.Itoa(int(k))
 }
 
 type triviumCipher struct {
@@ -43,12 +43,12 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
 
 func (this *triviumCipher) XORKeyStream(dst []byte, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/trivium: output smaller than input")
+        panic("go-cryptobin/trivium: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/trivium: invalid buffer overlap")
+        panic("go-cryptobin/trivium: invalid buffer overlap")
     }
-    
+
     var i int
     var ks uint8
 

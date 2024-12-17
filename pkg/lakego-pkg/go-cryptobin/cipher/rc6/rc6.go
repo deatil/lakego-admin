@@ -33,7 +33,7 @@ var skeytable = []uint32{
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/rc6: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/rc6: invalid key size " + strconv.Itoa(int(k))
 }
 
 type rc6Cipher struct {
@@ -59,15 +59,15 @@ func (c *rc6Cipher) BlockSize() int {
 
 func (c *rc6Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/rc6: input not full block")
+        panic("go-cryptobin/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/rc6: output not full block")
+        panic("go-cryptobin/rc6: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/rc6: invalid buffer overlap")
+        panic("go-cryptobin/rc6: invalid buffer overlap")
     }
 
     c.encrypt(dst, src)
@@ -75,15 +75,15 @@ func (c *rc6Cipher) Encrypt(dst, src []byte) {
 
 func (c *rc6Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/rc6: input not full block")
+        panic("go-cryptobin/rc6: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/rc6: output not full block")
+        panic("go-cryptobin/rc6: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/rc6: invalid buffer overlap")
+        panic("go-cryptobin/rc6: invalid buffer overlap")
     }
 
     c.decrypt(dst, src)

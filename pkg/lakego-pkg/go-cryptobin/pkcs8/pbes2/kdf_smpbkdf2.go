@@ -29,7 +29,7 @@ func prfSMByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
             return sm3.New, nil
     }
 
-    return nil, fmt.Errorf("pkcs8: unsupported hash (OID: %s)", oid)
+    return nil, fmt.Errorf("go-cryptobin/pkcs8: unsupported hash (OID: %s)", oid)
 }
 
 // 返回使用的 Hash 对应的 asn1
@@ -39,7 +39,7 @@ func oidSMByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithSM3, nil
     }
 
-    return nil, errors.New("pkcs8: unsupported hash function")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported hash function")
 }
 
 // smpbkdf2 数据，作为包装

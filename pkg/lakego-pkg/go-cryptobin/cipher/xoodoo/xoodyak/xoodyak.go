@@ -101,7 +101,7 @@ func (xk *Xoodyak) Absorb(x []byte) {
 // based on the Xoodyak instance provided (key, nonce, counter have already been processed)
 func (xk *Xoodyak) Encrypt(pt []byte) []byte {
     if xk.Mode != Keyed {
-        panic(errors.New("cryptobin/xoodyak: encrypt only available in keyed mode"))
+        panic(errors.New("go-cryptobin/xoodyak: encrypt only available in keyed mode"))
     }
     return xk.Crypt(pt, Encrypting)
 }
@@ -110,7 +110,7 @@ func (xk *Xoodyak) Encrypt(pt []byte) []byte {
 // based on the Xoodyak instance provided (key, nonce, counter have already been processed)
 func (xk *Xoodyak) Decrypt(ct []byte) []byte {
     if xk.Mode != Keyed {
-        panic(errors.New("cryptobin/xoodyak: decrypt only available in keyed mode"))
+        panic(errors.New("go-cryptobin/xoodyak: decrypt only available in keyed mode"))
     }
     return xk.Crypt(ct, Decrypting)
 }
@@ -124,7 +124,7 @@ func (xk *Xoodyak) Squeeze(outLen uint) []byte {
 // SqueezeKey can generate a new encryption key from the existing Xoodyak state
 func (xk *Xoodyak) SqueezeKey(keyLen uint) []byte {
     if xk.Mode != Keyed {
-        panic(errors.New("cryptobin/xoodyak: squeeze key only available in keyed mode"))
+        panic(errors.New("go-cryptobin/xoodyak: squeeze key only available in keyed mode"))
     }
     return xk.SqueezeAny(keyLen, 0x20)
 }
@@ -133,7 +133,7 @@ func (xk *Xoodyak) SqueezeKey(keyLen uint) []byte {
 // recovery
 func (xk *Xoodyak) Ratchet() {
     if xk.Mode != Keyed {
-        panic(errors.New("cryptobin/xoodyak: ratchet only available in keyed mode"))
+        panic(errors.New("go-cryptobin/xoodyak: ratchet only available in keyed mode"))
     }
     ratchetSqueeze := xk.SqueezeAny(xoodyakRatchet, RatchetCu)
     xk.AbsorbAny(ratchetSqueeze, xk.AbsorbSize, AbsorbCdMain)
@@ -177,7 +177,7 @@ func (xk *Xoodyak) AbsorbAny(x []byte, r uint, cd uint8) {
 // into the Xoodoo state enabling the keyed mode of operation typically used for authenticated encryption
 func (xk *Xoodyak) AbsorbKey(key, id, counter []byte) {
     if len(key)+len(id) >= xoodyakRkIn {
-        panic(fmt.Errorf("cryptobin/xoodyak: key and nonce lengths too large - key:%d nonce:%d combined:%d max:%d", len(key), len(id), len(key)+len(id), xoodyakRkIn-1))
+        panic(fmt.Errorf("go-cryptobin/xoodyak: key and nonce lengths too large - key:%d nonce:%d combined:%d max:%d", len(key), len(id), len(key)+len(id), xoodyakRkIn-1))
     }
 
     xk.Mode = Keyed
@@ -220,7 +220,7 @@ func (xk *Xoodyak) SqueezeAny(YLen uint, Cu uint8) []byte {
 // state via xor with the existing state
 func (xk *Xoodyak) Down(Xi []byte, Cd byte) {
     if len(Xi) > xoodoo.StateSizeBytes {
-        panic(fmt.Errorf("cryptobin/xoodyak: input slice size [%d] exceeds Xoodoo state size [%d]", len(Xi), xoodoo.StateSizeBytes))
+        panic(fmt.Errorf("go-cryptobin/xoodyak: input slice size [%d] exceeds Xoodoo state size [%d]", len(Xi), xoodoo.StateSizeBytes))
     }
     cd1 := Cd
     if xk.Mode == Hash {
@@ -238,7 +238,7 @@ func (xk *Xoodyak) Down(Xi []byte, Cd byte) {
 // the requested number of bytes
 func (xk *Xoodyak) Up(Cu byte, Yilen uint) []byte {
     if Yilen > xoodoo.StateSizeBytes {
-        panic(fmt.Errorf("cryptobin/xoodyak: requested number of bytes [%d] larger than Xoodoo state size [%d]", Yilen, xoodoo.StateSizeBytes))
+        panic(fmt.Errorf("go-cryptobin/xoodyak: requested number of bytes [%d] larger than Xoodoo state size [%d]", Yilen, xoodoo.StateSizeBytes))
     }
 
     if xk.Mode != Hash {
@@ -287,7 +287,7 @@ func (xk *Xoodyak) Crypt(msg []byte, cm CryptMode) []byte {
 // Useful for building more granular encryption decryption functions
 func (xk *Xoodyak) CryptBlock(msg []byte, cu uint8, cm CryptMode) ([]byte, error) {
     if len(msg) > xoodyakRkOut {
-        return nil, fmt.Errorf("cryptobin/xoodyak: input size [%d] exceeds Xoodoo max encryption block size [%d]", len(msg), xoodyakRkOut)
+        return nil, fmt.Errorf("go-cryptobin/xoodyak: input size [%d] exceeds Xoodoo max encryption block size [%d]", len(msg), xoodyakRkOut)
     }
     xk.Up(cu, 0)
     xorBytes, _ := xk.Instance.XorExtractBytes(msg)

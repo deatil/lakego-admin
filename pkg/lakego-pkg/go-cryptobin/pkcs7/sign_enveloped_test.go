@@ -184,7 +184,7 @@ func Test_CreateSignedEvnvelopedData(t *testing.T) {
         if err != nil {
             t.Fatal(err)
         }
-        if err = saed.AddRecipient(unsupportRecipient.Certificate); err.Error() != "pkcs7: only supports RSA/SM2 key" {
+        if err = saed.AddRecipient(unsupportRecipient.Certificate); err.Error() != "go-cryptobin/pkcs7: only supports RSA/SM2 key" {
             t.Fatal("not expected error message")
         }
 

@@ -236,7 +236,7 @@ func unmarshal(in []byte, out any) error {
     }
 
     if len(trailing) != 0 {
-        return errors.New("pkcs12: trailing data found")
+        return errors.New("go-cryptobin/pkcs12: trailing data found")
     }
 
     return nil

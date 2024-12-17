@@ -785,9 +785,12 @@ func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
     cipher := opt.Config().GetString("cipher")
     sectorNum := opt.Config().GetUint64("sector_num")
 
-    cipherFunc := tool_cipher.GetFunc(cipher)
+    cip, err := tool_cipher.GetCipher(cipher)
+    if err != nil {
+        return nil, err
+    }
 
-    xc, err := xts.NewCipher(cipherFunc, opt.Key())
+    xc, err := xts.NewCipher(cip, opt.Key())
     if err != nil {
         return nil, err
     }
@@ -826,9 +829,12 @@ func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     cipher := opt.Config().GetString("cipher")
     sectorNum := opt.Config().GetUint64("sector_num")
 
-    cipherFunc := tool_cipher.GetFunc(cipher)
+    cip, err := tool_cipher.GetCipher(cipher)
+    if err != nil {
+        return nil, err
+    }
 
-    xc, err := xts.NewCipher(cipherFunc, opt.Key())
+    xc, err := xts.NewCipher(cip, opt.Key())
     if err != nil {
         return nil, err
     }

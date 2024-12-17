@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/kseed: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/kseed: invalid key size %d", int(k))
 }
 
 type kseedCipher struct {
@@ -41,15 +41,15 @@ func (this *kseedCipher) BlockSize() int {
 
 func (this *kseedCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kseed: input not full block")
+        panic("go-cryptobin/kseed: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kseed: output not full block")
+        panic("go-cryptobin/kseed: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kseed: invalid buffer overlap")
+        panic("go-cryptobin/kseed: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -63,15 +63,15 @@ func (this *kseedCipher) Encrypt(dst, src []byte) {
 
 func (this *kseedCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kseed: input not full block")
+        panic("go-cryptobin/kseed: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kseed: output not full block")
+        panic("go-cryptobin/kseed: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kseed: invalid buffer overlap")
+        panic("go-cryptobin/kseed: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)

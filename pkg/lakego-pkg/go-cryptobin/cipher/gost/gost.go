@@ -10,13 +10,13 @@ import (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/gost: invalid key size: " + strconv.Itoa(int(k))
+    return "go-cryptobin/gost: invalid key size: " + strconv.Itoa(int(k))
 }
 
 type SboxSizeError int
 
 func (k SboxSizeError) Error() string {
-    return "cryptobin/gost: invalid sbox size: " + strconv.Itoa(int(k))
+    return "go-cryptobin/gost: invalid sbox size: " + strconv.Itoa(int(k))
 }
 
 // GOST 28147-89 defines a block size of 64 bits
@@ -60,15 +60,15 @@ func (this *gostCipher) BlockSize() int {
 
 func (this *gostCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/gost: input not full block")
+        panic("go-cryptobin/gost: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/gost: output not full block")
+        panic("go-cryptobin/gost: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/gost: invalid buffer overlap")
+        panic("go-cryptobin/gost: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -82,15 +82,15 @@ func (this *gostCipher) Encrypt(dst, src []byte) {
 
 func (this *gostCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/gost: input not full block")
+        panic("go-cryptobin/gost: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/gost: output not full block")
+        panic("go-cryptobin/gost: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/gost: invalid buffer overlap")
+        panic("go-cryptobin/gost: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)

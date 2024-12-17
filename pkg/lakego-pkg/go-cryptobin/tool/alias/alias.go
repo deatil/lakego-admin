@@ -49,13 +49,3 @@ func ConstantTimeAllZero(bytes []byte) bool {
 
     return b == 0
 }
-
-// Clone returns a copy of b[:len(b)].
-// The result may have additional unused capacity.
-func BytesClone(b []byte) []byte {
-    if b == nil {
-        return nil
-    }
-
-    return append([]byte{}, b...)
-}

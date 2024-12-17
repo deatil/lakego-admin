@@ -31,7 +31,7 @@ func (this KeySignWithECDSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, 
     var ok bool
 
     if priv, ok = pkey.(*ecdsa.PrivateKey); !ok {
-        return nil, nil, errors.New("pkcs7: PrivateKey is not ecdsa PrivateKey")
+        return nil, nil, errors.New("go-cryptobin/pkcs7: PrivateKey is not ecdsa PrivateKey")
     }
 
     hashData := hashSignData(this.hashFunc, data)
@@ -47,7 +47,7 @@ func (this KeySignWithECDSA) Verify(pkey crypto.PublicKey, signed []byte, signat
     var ok bool
 
     if pub, ok = pkey.(*ecdsa.PublicKey); !ok {
-        return false, errors.New("pkcs7: PublicKey is not ecdsa PublicKey")
+        return false, errors.New("go-cryptobin/pkcs7: PublicKey is not ecdsa PublicKey")
     }
 
     hashData := hashSignData(this.hashFunc, signed)

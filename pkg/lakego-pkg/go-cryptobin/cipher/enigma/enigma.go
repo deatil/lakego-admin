@@ -15,7 +15,7 @@ const DefaultSeed int32 = 123
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/enigma: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/enigma: invalid key size " + strconv.Itoa(int(k))
 }
 
 type enigmaCipher struct {
@@ -53,10 +53,10 @@ func NewCipherWithSeed(key []byte, seed int32) (cipher.Stream, error) {
 
 func (this *enigmaCipher) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/enigma: output not full block")
+        panic("go-cryptobin/enigma: output not full block")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/enigma: invalid buffer overlap")
+        panic("go-cryptobin/enigma: invalid buffer overlap")
     }
 
     var i int32

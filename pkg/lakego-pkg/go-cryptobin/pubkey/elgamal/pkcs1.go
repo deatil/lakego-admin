@@ -10,10 +10,10 @@ import (
     cryptobyte_asn1 "golang.org/x/crypto/cryptobyte/asn1"
 )
 
-// 序列号
+// elgamal PrivKey Version
 var elgamalPrivKeyVersion = 0
 
-// 私钥
+// elgamal PrivateKey
 type elgamalPrivateKey struct {
     Version int
     P       *big.Int
@@ -23,7 +23,7 @@ type elgamalPrivateKey struct {
     X       *big.Int
 }
 
-// 公钥
+// elgamal PublicKey
 type elgamalPublicKey struct {
     P *big.Int
     G *big.Int
@@ -32,10 +32,10 @@ type elgamalPublicKey struct {
 }
 
 var (
-    // 默认
+    // default PKCS1Key
     defaultPKCS1Key = NewPKCS1Key()
 
-    // 默认为 pkcs1 模式
+    // default is pkcs1 mode
     MarshalPublicKey  = MarshalPKCS1PublicKey
     ParsePublicKey    = ParsePKCS1PublicKey
 
@@ -51,12 +51,12 @@ var (
  */
 type PKCS1Key struct {}
 
-// 构造函数
+// NewPKCS1Key
 func NewPKCS1Key() PKCS1Key {
     return PKCS1Key{}
 }
 
-// 包装公钥
+// Marshal PKCS1 PublicKey
 func (this PKCS1Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     // q = (p - 1) / 2
     q := new(big.Int).Set(key.P)
@@ -73,12 +73,12 @@ func (this PKCS1Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     return asn1.Marshal(publicKey)
 }
 
-// 包装公钥
+// Marshal PKCS1 PublicKey
 func MarshalPKCS1PublicKey(key *PublicKey) ([]byte, error) {
     return defaultPKCS1Key.MarshalPublicKey(key)
 }
 
-// 解析公钥
+// Parse PKCS1 PublicKey
 func (this PKCS1Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     publicKey := &PublicKey{
         G: new(big.Int),
@@ -100,21 +100,19 @@ func (this PKCS1Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     return publicKey, nil
 }
 
-// 解析公钥
+// Parse PKCS1 PublicKey
 func ParsePKCS1PublicKey(derBytes []byte) (*PublicKey, error) {
     return defaultPKCS1Key.ParsePublicKey(derBytes)
 }
 
-// ====================
-
-// 包装私钥
+// Marshal PKCS1 PrivateKey
 func (this PKCS1Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     // q = (p - 1) / 2
     q := new(big.Int).Set(key.P)
     q.Sub(q, one)
     q.Div(q, two)
 
-    // 构造私钥信息
+    // privateKey data
     privateKey := elgamalPrivateKey{
         Version: elgamalPrivKeyVersion,
         P:       key.P,
@@ -127,12 +125,12 @@ func (this PKCS1Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privateKey)
 }
 
-// 包装私钥
+// Marshal PKCS1 PrivateKey
 func MarshalPKCS1PrivateKey(key *PrivateKey) ([]byte, error) {
     return defaultPKCS1Key.MarshalPrivateKey(key)
 }
 
-// 解析私钥
+// Parse PKCS1 PrivateKey
 func (this PKCS1Key) ParsePrivateKey(der []byte) (*PrivateKey, error) {
     privateKey := &PrivateKey{
         PublicKey: PublicKey{
@@ -164,7 +162,7 @@ func (this PKCS1Key) ParsePrivateKey(der []byte) (*PrivateKey, error) {
     return privateKey, nil
 }
 
-// 解析私钥
+// Parse PKCS1 PrivateKey
 func ParsePKCS1PrivateKey(derBytes []byte) (*PrivateKey, error) {
     return defaultPKCS1Key.ParsePrivateKey(derBytes)
 }

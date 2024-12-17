@@ -13,6 +13,7 @@ import (
     "encoding/pem"
     "encoding/base64"
 
+    "github.com/deatil/go-cryptobin/elliptic/brainpool"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
@@ -174,6 +175,37 @@ func Test_SignBytes(t *testing.T) {
     })
     t.Run("P256 sha256", func(t *testing.T) {
         test_SignBytes(t, elliptic.P256(), sha256.New)
+    })
+    t.Run("P384 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P384(), sha256.New)
+    })
+    t.Run("P521 sha256", func(t *testing.T) {
+        test_SignBytes(t, elliptic.P521(), sha256.New)
+    })
+
+    t.Run("brainpool P256r1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P256r1(), sha256.New)
+    })
+    t.Run("brainpool P256t1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P256t1(), sha256.New)
+    })
+    t.Run("brainpool P320r1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P320r1(), sha256.New)
+    })
+    t.Run("brainpool P320t1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P320t1(), sha256.New)
+    })
+    t.Run("brainpool P384r1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P384r1(), sha256.New)
+    })
+    t.Run("brainpool P384t1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P384t1(), sha256.New)
+    })
+    t.Run("brainpool P512r1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P512r1(), sha256.New)
+    })
+    t.Run("brainpool P512t1 sha256", func(t *testing.T) {
+        test_SignBytes(t, brainpool.P512t1(), sha256.New)
     })
 }
 

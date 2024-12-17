@@ -1,6 +1,8 @@
 package cipher
 
 import (
+    "fmt"
+    "errors"
     "crypto/aes"
     "crypto/des"
     "crypto/cipher"
@@ -12,14 +14,6 @@ import (
     "golang.org/x/crypto/blowfish"
 
     "github.com/deatil/go-cryptobin/cipher/sm4"
-)
-
-type (
-    // CipherFunc
-    CipherFunc = func([]byte) (cipher.Block, error)
-
-    // CipherFunc map 列表
-    CipherFuncMap = map[string]CipherFunc
 )
 
 var (
@@ -37,8 +31,8 @@ var (
     }
 )
 
-// 默认列表
-var defaultCipherFuncs = CipherFuncMap{
+// default ciphers
+var defaultCiphers = CipherMap{
     "Aes":       aes.NewCipher,
     "Des":       des.NewCipher,
     "TripleDes": des.NewTripleDESCipher,
@@ -50,6 +44,14 @@ var defaultCipherFuncs = CipherFuncMap{
     "SM4":       sm4.NewCipher,
 }
 
+type (
+    // CipherFunc
+    CipherFunc = func([]byte) (cipher.Block, error)
+
+    // Cipher map
+    CipherMap = map[string]CipherFunc
+)
+
 var defaultCipher = New()
 
 // return default cipher
@@ -58,56 +60,57 @@ func Default() *Cipher {
 }
 
 /**
- * 加密方式
+ * Cipher
  *
  * @create 2022-7-26
  * @author deatil
  */
 type Cipher struct {
-    // 列表
-    funcs CipherFuncMap
+    // ciphers
+    ciphers CipherMap
 }
 
-// 构造函数
+// New return a *Cipher
 func New() *Cipher {
     cipher := &Cipher{
-        funcs: defaultCipherFuncs,
+        ciphers: defaultCiphers,
     }
 
     return cipher
 }
 
-// 覆盖
-func (this *Cipher) WithFunc(funcs CipherFuncMap) *Cipher {
-    this.funcs = funcs
+// set ciphers
+func (this *Cipher) With(ciphers CipherMap) *Cipher {
+    this.ciphers = ciphers
 
     return this
 }
 
-func WithFunc(funcs CipherFuncMap) *Cipher {
-    return defaultCipher.WithFunc(funcs)
+func WithCiphers(ciphers CipherMap) *Cipher {
+    return defaultCipher.With(ciphers)
 }
 
-// 添加
-func (this *Cipher) AddFunc(name string, block CipherFunc) *Cipher {
-    this.funcs[name] = block
+// add one Cipher
+func (this *Cipher) Add(name string, block CipherFunc) *Cipher {
+    this.ciphers[name] = block
 
     return this
 }
 
-func AddFunc(name string, block CipherFunc) *Cipher {
-    return defaultCipher.AddFunc(name, block)
+func AddCipher(name string, block CipherFunc) *Cipher {
+    return defaultCipher.Add(name, block)
 }
 
-// 类型
-func (this *Cipher) GetFunc(name string) CipherFunc {
-    if fn, ok := this.funcs[name]; ok {
-        return fn
+// get one Cipher
+func (this *Cipher) Get(name string) (CipherFunc, error) {
+    if cip, ok := this.ciphers[name]; ok {
+        return cip, nil
     }
 
-    return this.funcs["Aes"]
+    err := errors.New(fmt.Sprintf("go-cryptobin/tool/cipher: cipher %s not support", name))
+    return nil, err
 }
 
-func GetFunc(name string) CipherFunc {
-    return defaultCipher.GetFunc(name)
+func GetCipher(name string) (CipherFunc, error) {
+    return defaultCipher.Get(name)
 }

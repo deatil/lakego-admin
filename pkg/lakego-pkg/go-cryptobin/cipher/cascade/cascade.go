@@ -37,15 +37,15 @@ func (this *cascadeCipher) Encrypt(dst, src []byte) {
     bs := this.bs
 
     if len(src) < bs {
-        panic("cryptobin/cascade: input not full block")
+        panic("go-cryptobin/cascade: input not full block")
     }
 
     if len(dst) < bs {
-        panic("cryptobin/cascade: output not full block")
+        panic("go-cryptobin/cascade: output not full block")
     }
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/cascade: invalid buffer overlap")
+        panic("go-cryptobin/cascade: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -55,15 +55,15 @@ func (this *cascadeCipher) Decrypt(dst, src []byte) {
     bs := this.bs
 
     if len(src) < bs {
-        panic("cryptobin/cascade: input not full block")
+        panic("go-cryptobin/cascade: input not full block")
     }
 
     if len(dst) < bs {
-        panic("cryptobin/cascade: output not full block")
+        panic("go-cryptobin/cascade: output not full block")
     }
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/cascade: invalid buffer overlap")
+        panic("go-cryptobin/cascade: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

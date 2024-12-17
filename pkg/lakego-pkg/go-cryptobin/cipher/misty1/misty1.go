@@ -23,7 +23,7 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/misty1: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/misty1: invalid key size " + strconv.Itoa(int(k))
 }
 
 type misty1Cipher struct {

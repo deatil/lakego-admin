@@ -27,10 +27,10 @@ var (
     ivZero = make([]byte, blockSize)
 
     // ErrStringNotInRadix is returned if input or intermediate strings cannot be parsed in the given radix
-    ErrStringNotInRadix = errors.New("cryptobin/fpe: string is not within base/radix")
+    ErrStringNotInRadix = errors.New("go-cryptobin/fpe: string is not within base/radix")
 
     // ErrTweakLengthInvalid is returned if the tweak length is not in the given range
-    ErrTweakLengthInvalid = errors.New("cryptobin/fpe: tweak must be between 0 and given maxTLen, inclusive")
+    ErrTweakLengthInvalid = errors.New("go-cryptobin/fpe: tweak must be between 0 and given maxTLen, inclusive")
 )
 
 // Need this for the SetIV function which CBCEncryptor has, but cipher.BlockMode interface doesn't.
@@ -62,13 +62,13 @@ func NewCipher(radix int, maxTLen int, key []byte, tweak []byte) (*Cipher, error
         case 16, 24, 32:
             break
         default:
-            return nil, errors.New("cryptobin/fpe: key length must be 128, 192, or 256 bits")
+            return nil, errors.New("go-cryptobin/fpe: key length must be 128, 192, or 256 bits")
     }
 
     // While FF1 allows radices in [2, 2^16],
     // realistically there's a practical limit based on the alphabet that can be passed in
     if (radix < 2) || (radix > big.MaxBase) {
-        return nil, errors.New("cryptobin/fpe: radix must be between 2 and 36, inclusive")
+        return nil, errors.New("go-cryptobin/fpe: radix must be between 2 and 36, inclusive")
     }
 
     // Make sure the length of given tweak is in range
@@ -82,13 +82,13 @@ func NewCipher(radix int, maxTLen int, key []byte, tweak []byte) (*Cipher, error
 
     // Make sure 2 <= minLength <= maxLength < 2^32 is satisfied
     if (minLen < 2) || (maxLen < minLen) || (maxLen > math.MaxUint32) {
-        return nil, errors.New("cryptobin/fpe: minLen invalid, adjust your radix")
+        return nil, errors.New("go-cryptobin/fpe: minLen invalid, adjust your radix")
     }
 
     // aes.NewCipher automatically returns the correct block based on the length of the key passed in
     aesBlock, err := aes.NewCipher(key)
     if err != nil {
-        return nil, errors.New("cryptobin/fpe: failed to create AES block")
+        return nil, errors.New("go-cryptobin/fpe: failed to create AES block")
     }
 
     cbcEncryptor := cipher.NewCBCEncrypter(aesBlock, ivZero)
@@ -125,7 +125,7 @@ func (c *Cipher) EncryptWithTweak(X string, tweak []byte) (string, error) {
 
     // Check if message length is within minLength and maxLength bounds
     if (n < c.minLen) || (n > c.maxLen) {
-        return ret, errors.New("cryptobin/fpe: message length is not within min and max bounds")
+        return ret, errors.New("go-cryptobin/fpe: message length is not within min and max bounds")
     }
 
     // Make sure the length of given tweak is in range
@@ -356,7 +356,7 @@ func (c *Cipher) DecryptWithTweak(X string, tweak []byte) (string, error) {
 
     // Check if message length is within minLength and maxLength bounds
     if (n < c.minLen) || (n > c.maxLen) {
-        return ret, errors.New("cryptobin/fpe: message length is not within min and max bounds")
+        return ret, errors.New("go-cryptobin/fpe: message length is not within min and max bounds")
     }
 
     // Make sure the length of given tweak is in range
@@ -573,7 +573,7 @@ func (c *Cipher) ciph(input []byte) ([]byte, error) {
     // These are checked here manually because the CryptBlocks function panics rather than returning an error
     // So, catch the potential error earlier
     if len(input)%blockSize != 0 {
-        return nil, errors.New("cryptobin/fpe: length of ciph input must be multiple of 16")
+        return nil, errors.New("go-cryptobin/fpe: length of ciph input must be multiple of 16")
     }
 
     c.cbcEncryptor.CryptBlocks(input, input)

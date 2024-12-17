@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/lea: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/lea: invalid key size %d", int(k))
 }
 
 type leaCipher struct {
@@ -44,15 +44,15 @@ func (this *leaCipher) BlockSize() int {
 
 func (this *leaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/lea: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/lea: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/lea: invalid buffer overlap")
+        panic("go-cryptobin/lea: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -60,15 +60,15 @@ func (this *leaCipher) Encrypt(dst, src []byte) {
 
 func (this *leaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/lea: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < BlockSize {
-        panic(fmt.Sprintf("cryptobin/lea: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/lea: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/lea: invalid buffer overlap")
+        panic("go-cryptobin/lea: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

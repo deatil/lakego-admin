@@ -180,7 +180,7 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
 
     newCipher, err := GetCipher(oid)
     if err != nil {
-        return nil, nil, fmt.Errorf("pkcs8: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("go-cryptobin/pkcs8: unsupported cipher (OID: %s)", oid)
     }
 
     params := encryptionScheme.Parameters.FullBytes

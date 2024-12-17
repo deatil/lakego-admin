@@ -15,7 +15,7 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/hight: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/hight: invalid key size %d", int(k))
 }
 
 type hightCipher struct {
@@ -41,15 +41,15 @@ func (this *hightCipher) BlockSize() int {
 
 func (this *hightCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/hight: input not full block")
+        panic("go-cryptobin/hight: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/hight: output not full block")
+        panic("go-cryptobin/hight: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/hight: invalid buffer overlap")
+        panic("go-cryptobin/hight: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -57,15 +57,15 @@ func (this *hightCipher) Encrypt(dst, src []byte) {
 
 func (this *hightCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/hight: input not full block")
+        panic("go-cryptobin/hight: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/hight: output not full block")
+        panic("go-cryptobin/hight: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/hight: invalid buffer overlap")
+        panic("go-cryptobin/hight: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

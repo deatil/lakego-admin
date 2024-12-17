@@ -14,6 +14,7 @@ import (
     "golang.org/x/crypto/sha3"
     "golang.org/x/crypto/ripemd160"
     "github.com/deatil/go-hash/md2"
+    "github.com/deatil/go-hash/sm3"
 )
 
 var (
@@ -39,9 +40,10 @@ func init() {
     RegisterHmacHash(HmacSHA3_384, sha3.New384)
     RegisterHmacHash(HmacSHA3_512, sha3.New512)
     RegisterHmacHash(HmacRIPEMD160, ripemd160.New)
+    RegisterHmacHash(HmacSM3, sm3.New)
 }
 
-// hmac 用到的 hash
+// hmac hash type
 type HmacHash uint
 
 const (
@@ -61,6 +63,7 @@ const (
     HmacSHA3_384
     HmacSHA3_512
     HmacRIPEMD160
+    HmacSM3
 )
 
 var hmacHashes = make(map[HmacHash]func() hash.Hash)

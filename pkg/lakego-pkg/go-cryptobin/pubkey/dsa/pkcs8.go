@@ -13,7 +13,7 @@ import (
 )
 
 var (
-    // dsa 公钥 oid
+    // dsa PublicKey oid
     oidPublicKeyDSA = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
 )
 
@@ -23,7 +23,7 @@ type dsaAlgorithmParameters struct {
     P, Q, G *big.Int
 }
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -31,13 +31,13 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -49,19 +49,19 @@ var (
 )
 
 /**
- * dsa pkcs8 密钥
+ * dsa pkcs8
  *
  * @create 2022-3-19
  * @author deatil
  */
 type PKCS8Key struct {}
 
-// 构造函数
+// NewPKCS8Key
 func NewPKCS8Key() PKCS8Key {
     return PKCS8Key{}
 }
 
-// PKCS8 包装公钥
+// Marshal PublicKey to der
 func (this PKCS8Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -99,12 +99,12 @@ func (this PKCS8Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// PKCS8 包装公钥
+// Marshal PublicKey to der
 func MarshalPKCS8PublicKey(pub *dsa.PublicKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPublicKey(pub)
 }
 
-// PKCS8 解析公钥
+// Parse PublicKey der
 func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(der, &pki)
@@ -121,10 +121,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
         return nil, errors.New("dsa: unknown public key algorithm")
     }
 
-    // 解析
-    keyData := &pki
-
-    yDer := cryptobyte.String(keyData.PublicKey.RightAlign())
+    yDer := cryptobyte.String(pki.PublicKey.RightAlign())
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
@@ -140,7 +137,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
         },
     }
 
-    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
+    paramsDer := cryptobyte.String(pki.Algorithm.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.Q) ||
@@ -156,14 +153,12 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
     return pub, nil
 }
 
-// PKCS8 解析公钥
+// Parse PublicKey der
 func ParsePKCS8PublicKey(derBytes []byte) (*dsa.PublicKey, error) {
     return defaultPKCS8Key.ParsePublicKey(derBytes)
 }
 
-// ====================
-
-// PKCS8 包装私钥
+// Marshal PrivateKey to der
 func (this PKCS8Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -197,12 +192,12 @@ func (this PKCS8Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// PKCS8 包装私钥
+// Marshal PrivateKey to der
 func MarshalPKCS8PrivateKey(key *dsa.PrivateKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPrivateKey(key)
 }
 
-// PKCS8 解析私钥
+// Parse PrivateKey der
 func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error) {
     var privKey pkcs8
     _, err = asn1.Unmarshal(der, &privKey)
@@ -233,7 +228,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
         X: x,
     }
 
-    // 找出 p,q,g 数据
+    // get p,q,g data
     paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(priv.P) ||
@@ -242,7 +237,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
         return nil, errors.New("dsa: invalid DSA parameters")
     }
 
-    // 算出 Y 值
+    // get Y data
     priv.Y.Exp(priv.G, x, priv.P)
 
     if priv.Y.Sign() <= 0 || priv.P.Sign() <= 0 ||
@@ -253,7 +248,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
     return priv, nil
 }
 
-// PKCS8 解析私钥
+// Parse PrivateKey der
 func ParsePKCS8PrivateKey(derBytes []byte) (key *dsa.PrivateKey, err error) {
     return defaultPKCS8Key.ParsePrivateKey(derBytes)
 }

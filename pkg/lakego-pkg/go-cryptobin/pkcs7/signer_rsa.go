@@ -32,7 +32,7 @@ func (this KeySignWithRSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
     var ok bool
 
     if priv, ok = pkey.(*rsa.PrivateKey); !ok {
-        return nil, nil, errors.New("pkcs7: PrivateKey is not rsa PrivateKey")
+        return nil, nil, errors.New("go-cryptobin/pkcs7: PrivateKey is not rsa PrivateKey")
     }
 
     hashType := this.hashFunc
@@ -56,7 +56,7 @@ func (this KeySignWithRSA) Verify(pkey crypto.PublicKey, data []byte, signature 
     var ok bool
 
     if pub, ok = pkey.(*rsa.PublicKey); !ok {
-        return false, errors.New("pkcs7: PublicKey is not rsa PublicKey")
+        return false, errors.New("go-cryptobin/pkcs7: PublicKey is not rsa PublicKey")
     }
 
     hashType := this.hashFunc

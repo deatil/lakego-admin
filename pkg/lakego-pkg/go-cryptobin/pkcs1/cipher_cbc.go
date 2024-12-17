@@ -36,7 +36,7 @@ func (this CipherCBC) Name() string {
 func (this CipherCBC) Encrypt(rand io.Reader, password, plaintext []byte) ([]byte, []byte, error) {
     iv := make([]byte, this.blockSize)
     if _, err := io.ReadFull(rand, iv); err != nil {
-        return nil, nil, errors.New("pkcs1: cannot generate IV: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs1: cannot generate IV: " + err.Error())
     }
 
     // The salt is the first 8 bytes of the initialization vector,
@@ -46,7 +46,7 @@ func (this CipherCBC) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs1: failed to create cipher: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs1: failed to create cipher: " + err.Error())
     }
 
     // We could save this copy by encrypting all the whole blocks in
@@ -69,7 +69,7 @@ func (this CipherCBC) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 // 解密
 func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     if len(iv) < this.saltSize {
-        return nil, errors.New("pkcs1: iv length is too short")
+        return nil, errors.New("go-cryptobin/pkcs1: iv length is too short")
     }
 
     salt := iv[:this.saltSize]
@@ -83,7 +83,7 @@ func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     blockSize := block.BlockSize()
 
     if len(ciphertext)%blockSize != 0 {
-        return nil, errors.New("pkcs1: encrypted PEM data is not a multiple of the block size")
+        return nil, errors.New("go-cryptobin/pkcs1: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -94,7 +94,7 @@ func (this CipherCBC) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     // 判断数据是否为填充数据
     dlen := len(plaintext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs1: invalid padding")
+        return nil, errors.New("go-cryptobin/pkcs1: invalid padding")
     }
 
     // 解析加密数据

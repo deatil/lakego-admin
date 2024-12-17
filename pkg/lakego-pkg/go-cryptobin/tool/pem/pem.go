@@ -24,11 +24,12 @@ var (
     Decode = pem.Decode
 )
 
-// BlockType 列表
-var PemBlockTypeMap = map[string]string{
-    "pri_key":    "PRIVATE KEY",
-    "en_pri_key": "ENCRYPTED PRIVATE KEY",
-    "pub_key":    "PUBLIC KEY",
+// PEM Type 列表
+// PEM Type list
+var PEMTypeMap = map[string]string{
+    "pri_key":     "PRIVATE KEY",
+    "enc_pri_key": "ENCRYPTED PRIVATE KEY",
+    "pub_key":     "PUBLIC KEY",
 
     "ec_pri_key":  "EC PRIVATE KEY",
     "dsa_pri_key": "DSA PRIVATE KEY",
@@ -36,8 +37,9 @@ var PemBlockTypeMap = map[string]string{
 }
 
 // 获取 PEM 类型
+// get PEM type name
 func GetPEMType(name string) string {
-    if data, ok := PemBlockTypeMap[name]; ok {
+    if data, ok := PEMTypeMap[name]; ok {
         return data
     }
 
@@ -45,6 +47,7 @@ func GetPEMType(name string) string {
 }
 
 // 编码字节数据为 PEM 证书
+// Encode bytes to PEM cert
 func EncodeToPEM(data []byte, blockType string) []byte {
     block := &pem.Block{
         Type:  blockType,
@@ -55,6 +58,7 @@ func EncodeToPEM(data []byte, blockType string) []byte {
 }
 
 // 解析 PEM 证书
+// parse PEM cert
 func ParsePEM(data []byte) ([]byte, error) {
     var block *pem.Block
     if block, _ = pem.Decode(data); block == nil {

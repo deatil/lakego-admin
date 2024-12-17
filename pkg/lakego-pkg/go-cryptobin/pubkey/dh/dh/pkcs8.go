@@ -12,7 +12,7 @@ import (
 )
 
 var (
-    // DH 公钥 oid
+    // DH PublicKey oid
     oidPublicKeyDH = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 3, 1}
 )
 
@@ -21,7 +21,7 @@ type dhAlgorithmParameters struct {
     P, G *big.Int
 }
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -29,20 +29,20 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
     PublicKey asn1.BitString
 }
 
-// 包装公钥
+// Marshal PublicKey to der
 func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -79,7 +79,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey der
 func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -98,10 +98,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         return
     }
 
-    // 解析
-    keyData := &pki
-
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
+    der := cryptobyte.String(pki.PublicKey.RightAlign())
 
     y := new(big.Int)
     if !der.ReadASN1Integer(y) {
@@ -117,7 +114,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         },
     }
 
-    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
+    paramsDer := cryptobyte.String(pki.Algorithm.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.G) {
@@ -135,9 +132,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     return
 }
 
-// ====================
-
-// 包装私钥
+// Marshal PrivateKey to der
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -170,7 +165,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey der
 func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error

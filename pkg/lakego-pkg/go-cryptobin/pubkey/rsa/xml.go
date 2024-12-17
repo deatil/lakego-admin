@@ -8,7 +8,7 @@ import (
     "encoding/base64"
 )
 
-// 私钥
+// xml PrivateKey
 type xmlPrivateKey struct {
     XMLName  xml.Name `xml:"RSAKeyValue"`
     Modulus  string   `xml:"Modulus"`
@@ -21,7 +21,7 @@ type xmlPrivateKey struct {
     InverseQ string   `xml:"InverseQ"`
 }
 
-// 公钥
+// xml PublicKey
 type xmlPublicKey struct {
     XMLName  xml.Name `xml:"RSAKeyValue"`
     Modulus  string   `xml:"Modulus"`
@@ -41,19 +41,19 @@ var (
 var defaultXMLKey = NewXMLKey()
 
 /**
- * rsa xml密钥
+ * rsa xml
  *
  * @create 2023-4-10
  * @author deatil
  */
 type XMLKey struct {}
 
-// 构造函数
+// NewXMLKey
 func NewXMLKey() XMLKey {
     return XMLKey{}
 }
 
-// 包装公钥
+// Marshal XML PublicKey
 func (this XMLKey) MarshalPublicKey(key *rsa.PublicKey) ([]byte, error) {
     publicKey := xmlPublicKey{
         Modulus:  this.bigintToB64(key.N),
@@ -63,11 +63,12 @@ func (this XMLKey) MarshalPublicKey(key *rsa.PublicKey) ([]byte, error) {
     return xml.MarshalIndent(publicKey, "", "    ")
 }
 
+// Marshal XML PublicKey
 func MarshalXMLPublicKey(key *rsa.PublicKey) ([]byte, error) {
     return defaultXMLKey.MarshalPublicKey(key)
 }
 
-// 解析公钥
+// Parse XML PublicKey
 func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
     var pub xmlPublicKey
     err := xml.Unmarshal(der, &pub)
@@ -97,13 +98,12 @@ func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
     return publicKey, nil
 }
 
+// Parse XML PublicKey
 func ParseXMLPublicKey(der []byte) (*rsa.PublicKey, error) {
     return defaultXMLKey.ParsePublicKey(der)
 }
 
-// ====================
-
-// 包装私钥
+// Marshal XML PrivateKey
 func (this XMLKey) MarshalPrivateKey(key *rsa.PrivateKey) ([]byte, error) {
     key.Precompute()
 
@@ -122,11 +122,12 @@ func (this XMLKey) MarshalPrivateKey(key *rsa.PrivateKey) ([]byte, error) {
     return xml.MarshalIndent(priv, "", "    ")
 }
 
+// Marshal XML PrivateKey
 func MarshalXMLPrivateKey(key *rsa.PrivateKey) ([]byte, error) {
     return defaultXMLKey.MarshalPrivateKey(key)
 }
 
-// 解析私钥
+// Parse XML PrivateKey
 func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
     var priv xmlPrivateKey
     err := xml.Unmarshal(der, &priv)
@@ -184,11 +185,10 @@ func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
     return key, nil
 }
 
+// Parse XML PrivateKey
 func ParseXMLPrivateKey(der []byte) (*rsa.PrivateKey, error) {
     return defaultXMLKey.ParsePrivateKey(der)
 }
-
-// ====================
 
 func (this XMLKey) b64d(str string) ([]byte, error) {
     decoded, err := base64.StdEncoding.DecodeString(str)

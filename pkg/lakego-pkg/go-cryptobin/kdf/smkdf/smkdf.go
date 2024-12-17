@@ -13,7 +13,7 @@ func Key(h func() hash.Hash, z []byte, size int) []byte {
 
     limit := (uint64(size) + uint64(mdSize) - 1) / uint64(mdSize)
     if limit >= uint64(1 << 32) - 1 {
-        panic("kdf: key length too long")
+        panic("go-cryptobin/smkdf: key length too long")
     }
 
     var countBytes [4]byte

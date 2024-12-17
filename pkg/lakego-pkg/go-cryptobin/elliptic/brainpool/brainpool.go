@@ -7,7 +7,7 @@ import (
     "crypto/elliptic"
 )
 
-// see https://datatracker.ietf.org/doc/html/rfc5639
+// link https://datatracker.ietf.org/doc/html/rfc5639
 
 var (
     oidBrainpool = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1}
@@ -18,6 +18,7 @@ var (
     OIDBrainpoolP192t1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 4}
     OIDBrainpoolP224r1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 5}
     OIDBrainpoolP224t1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 6}
+
     OIDBrainpoolP256r1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 7}
     OIDBrainpoolP256t1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 8}
     OIDBrainpoolP320r1 = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 1, 1, 9}
@@ -29,7 +30,8 @@ var (
 )
 
 var (
-    once                   sync.Once
+    once sync.Once
+
     p160t1, p192t1, p224t1 *elliptic.CurveParams
     p160r1, p192r1, p224r1 *rcurve
 

@@ -32,15 +32,15 @@ func (this *simonCipher256) BlockSize() int {
 
 func (this *simonCipher256) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/simon: input not full block")
+        panic("go-cryptobin/simon: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/simon: output not full block")
+        panic("go-cryptobin/simon: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/simon: invalid buffer overlap")
+        panic("go-cryptobin/simon: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -48,15 +48,15 @@ func (this *simonCipher256) Encrypt(dst, src []byte) {
 
 func (this *simonCipher256) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/simon: input not full block")
+        panic("go-cryptobin/simon: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/simon: output not full block")
+        panic("go-cryptobin/simon: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/simon: invalid buffer overlap")
+        panic("go-cryptobin/simon: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

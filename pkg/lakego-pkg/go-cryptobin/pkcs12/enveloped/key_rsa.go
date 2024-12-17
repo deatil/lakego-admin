@@ -26,7 +26,7 @@ func (this KeyEncryptWithRsa) Encrypt(plaintext []byte, pkey crypto.PublicKey) (
     var ok bool
 
     if pub, ok = pkey.(*rsa.PublicKey); !ok {
-        return nil, errors.New("pkcs12: PublicKey is not rsa PublicKey")
+        return nil, errors.New("go-cryptobin/pkcs12: PublicKey is not rsa PublicKey")
     }
 
     if this.hashFunc != nil {
@@ -43,7 +43,7 @@ func (this KeyEncryptWithRsa) Decrypt(ciphertext []byte, pkey crypto.PrivateKey)
     var ok bool
 
     if priv, ok = pkey.(*rsa.PrivateKey); !ok {
-        return nil, errors.New("pkcs12: PrivateKey is not rsa PrivateKey")
+        return nil, errors.New("go-cryptobin/pkcs12: PrivateKey is not rsa PrivateKey")
     }
 
     if this.hashFunc != nil {

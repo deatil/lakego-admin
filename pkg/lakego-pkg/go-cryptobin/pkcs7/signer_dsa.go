@@ -36,7 +36,7 @@ func (this KeySignWithDSA) Sign(pkey crypto.PrivateKey, data []byte) ([]byte, []
     var ok bool
 
     if priv, ok = pkey.(*dsa.PrivateKey); !ok {
-        return nil, nil, errors.New("pkcs7: PrivateKey is not dsa PrivateKey")
+        return nil, nil, errors.New("go-cryptobin/pkcs7: PrivateKey is not dsa PrivateKey")
     }
 
     hashData := hashSignData(this.hashFunc, data)
@@ -60,7 +60,7 @@ func (this KeySignWithDSA) Verify(pkey crypto.PublicKey, signed []byte, signatur
     var ok bool
 
     if pub, ok = pkey.(*dsa.PublicKey); !ok {
-        return false, errors.New("pkcs7: PublicKey is not dsa PublicKey")
+        return false, errors.New("go-cryptobin/pkcs7: PublicKey is not dsa PublicKey")
     }
 
     var dsaSign dsaSignature

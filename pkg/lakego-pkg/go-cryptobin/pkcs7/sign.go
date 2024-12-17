@@ -368,12 +368,12 @@ func (this *SignedData) RemoveUnauthenticatedAttributes() {
 // partial, makes sense.
 func verifyPartialChain(cert *x509.Certificate, parents []*x509.Certificate) error {
     if len(parents) == 0 {
-        return fmt.Errorf("pkcs7: zero parents provided to verify the signature of certificate %q", cert.Subject.CommonName)
+        return fmt.Errorf("go-cryptobin/pkcs7: zero parents provided to verify the signature of certificate %q", cert.Subject.CommonName)
     }
 
     err := cert.CheckSignatureFrom(parents[0])
     if err != nil {
-        return fmt.Errorf("pkcs7: certificate signature from parent is invalid: %v", err)
+        return fmt.Errorf("go-cryptobin/pkcs7: certificate signature from parent is invalid: %v", err)
     }
 
     if len(parents) == 1 {

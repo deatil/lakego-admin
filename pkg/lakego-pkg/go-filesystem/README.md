@@ -22,20 +22,28 @@ go get -u github.com/deatil/go-filesystem
 
 ~~~go
 import (
+    "fmt"
+
     "github.com/deatil/go-filesystem/filesystem"
-    localAdapter "github.com/deatil/go-filesystem/filesystem/adapter/local"
+    local_adapter "github.com/deatil/go-filesystem/filesystem/adapter/local"
 )
 
-func goFilesystem() {
+func main() {
     // 根目录
     root := "/storage"
-    adapter := localAdapter.New(root)
+    adapter := local_adapter.New(root)
 
     // 磁盘
     fs := filesystem.New(adapter)
 
-    // 使用
-    fs.Write(path string, contents string) (bool, error)
+    // 写入数据
+    path := "/path.txt"
+    contents := []byte("")
+
+    ok, err := fs.Write(path, contents)
+    if err != nil {
+        fmt.Println(err.Error())
+    }
 }
 ~~~
 

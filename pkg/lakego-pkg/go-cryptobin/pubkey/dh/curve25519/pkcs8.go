@@ -10,11 +10,11 @@ import (
 )
 
 var (
-    // DH 公钥 oid
+    // DH PublicKey oid
     oidPublicKeyDH = asn1.ObjectIdentifier{1, 3, 132, 1, 12}
 )
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -22,20 +22,20 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
     PublicKey asn1.BitString
 }
 
-// 包装公钥
+// Marshal PublicKey to der
 func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -56,7 +56,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey der
 func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -75,10 +75,7 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
         return nil, err
     }
 
-    // 解析
-    keyData := &pki
-
-    y := []byte(keyData.PublicKey.RightAlign())
+    y := []byte(pki.PublicKey.RightAlign())
 
     pub := &PublicKey{}
     pub.Y = y
@@ -86,9 +83,7 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
     return pub, nil
 }
 
-// ====================
-
-// 包装私钥
+// Marshal PrivateKey to der
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -102,7 +97,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey der
 func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error

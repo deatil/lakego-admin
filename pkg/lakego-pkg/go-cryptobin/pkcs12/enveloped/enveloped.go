@@ -86,18 +86,18 @@ func (this Enveloped) Encrypt(rand io.Reader, content []byte, recipients []*x509
 
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("pkcs12: failed to encrypt PEM: unknown opts cipher")
+        return nil, errors.New("go-cryptobin/pkcs12: failed to encrypt PEM: unknown opts cipher")
     }
 
     keyEncrypt := opt.KeyEncrypt
     if keyEncrypt == nil {
-        return nil, errors.New("pkcs12: unknown opts keyEncrypt")
+        return nil, errors.New("go-cryptobin/pkcs12: unknown opts keyEncrypt")
     }
 
     // 生成密钥
     key = make([]byte, cipher.KeySize())
     if _, err := io.ReadFull(rand, key); err != nil {
-        return nil, errors.New("pkcs12: cannot generate key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: cannot generate key: " + err.Error())
     }
 
     encrypted, paramBytes, err := cipher.Encrypt(rand, key, content)
@@ -168,7 +168,7 @@ func (this Enveloped) Decrypt(data []byte, cert *x509.Certificate, pkey crypto.P
     }
 
     if !contentType.Equal(oidEnvelopedData) {
-        return nil, errors.New("pkcs12: contentType error")
+        return nil, errors.New("go-cryptobin/pkcs12: contentType error")
     }
 
     var endata envelopedData
@@ -178,7 +178,7 @@ func (this Enveloped) Decrypt(data []byte, cert *x509.Certificate, pkey crypto.P
 
     recipient := this.selectRecipientForCertificate(endata.RecipientInfos, cert)
     if recipient.EncryptedKey == nil {
-        return nil, errors.New("pkcs12: no enveloped recipient for provided certificate")
+        return nil, errors.New("go-cryptobin/pkcs12: no enveloped recipient for provided certificate")
     }
 
     keyEncrypt, err := this.parseKeyEncrypt(recipient.KeyEncryptionAlgorithm)
@@ -266,7 +266,7 @@ func (this Enveloped) parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdent
     newCipher, err := GetCipher(encryptionScheme)
     if err != nil {
         oid := encryptionScheme.Algorithm.String()
-        return nil, nil, fmt.Errorf("pkcs12: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("go-cryptobin/pkcs12: unsupported cipher (OID: %s)", oid)
     }
 
     params := encryptionScheme.Parameters.FullBytes

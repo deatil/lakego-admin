@@ -20,6 +20,7 @@ var hmacTests = []struct {
     {"SHA512", HmacSHA512, "sdf,gsdgfsdfg123156", "pass123", "aaf38f79d73a28a02c8ae26635e90a5b716f84d3365a1aa4333f86a99d8a85774ec3eb3c1e4d8e05df393ae7c60dd024feacafbd3564395fee52874902e54a93"},
     {"RIPEMD160", HmacRIPEMD160, "sdf,gsdgfsdfg123156", "pass123", "a6fde50583758876022d48f90db93bcfedfe9615"},
     {"SHA3_256", HmacSHA3_256, "sdffgsdgfsdfg123156rt5", "pass123", "6d9504b686faeeac4eb66f96603c55f4033181da671644357b7f40cd838311ac"},
+    {"HmacSM3", HmacSM3, "sdffgsdgfsdfg123156rt5", "pass123", "997f778d1ecbd92845c0061b4d1d658ef84170bb57efbabc7cd4ef5c953f8446"},
 }
 
 func Test_Hmac(t *testing.T) {
@@ -31,7 +32,7 @@ func Test_Hmac(t *testing.T) {
 
         t.Run(fmt.Sprintf("Hmac_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "Hmac-" + test.name)
-            assert(test.output, e.ToHexString(), "Hmac-" + test.name)
+            assert(e.ToHexString(), test.output, "Hmac-" + test.name)
         })
     }
 }
@@ -46,7 +47,7 @@ func Test_NewHmac(t *testing.T) {
 
         t.Run(fmt.Sprintf("NewHmac_test_%d", index), func(t *testing.T) {
             assertError(e.Error, "NewHmac" + test.name)
-            assert(test.output, e.ToHexString(), "NewHmac" + test.name)
+            assert(e.ToHexString(), test.output, "NewHmac" + test.name)
         })
     }
 }

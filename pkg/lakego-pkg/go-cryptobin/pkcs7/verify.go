@@ -29,7 +29,7 @@ func (this *PKCS7) Verify() (err error) {
 // otherwise.
 func (this *PKCS7) VerifyWithChain(truststore *x509.CertPool) (err error) {
     if len(this.Signers) == 0 {
-        return errors.New("pkcs7: Message has no signers")
+        return errors.New("go-cryptobin/pkcs7: Message has no signers")
     }
 
     for _, signer := range this.Signers {
@@ -49,7 +49,7 @@ func (this *PKCS7) VerifyWithChain(truststore *x509.CertPool) (err error) {
 // attribute.
 func (this *PKCS7) VerifyWithChainAtTime(truststore *x509.CertPool, currentTime time.Time) (err error) {
     if len(this.Signers) == 0 {
-        return errors.New("pkcs7: Message has no signers")
+        return errors.New("go-cryptobin/pkcs7: Message has no signers")
     }
 
     for _, signer := range this.Signers {
@@ -65,7 +65,7 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
     signedData := p7.Content
     ee := getCertFromCertsByIssuerAndSerial(p7.Certificates, signer.IssuerAndSerialNumber)
     if ee == nil {
-        return errors.New("pkcs7: No certificate for signer")
+        return errors.New("go-cryptobin/pkcs7: No certificate for signer")
     }
 
     if len(signer.AuthenticatedAttributes) > 0 {
@@ -101,7 +101,7 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
         if err == nil {
             // signing time found, performing validity check
             if signingTime.After(ee.NotAfter) || signingTime.Before(ee.NotBefore) {
-                return fmt.Errorf("pkcs7: signing time %q is outside of certificate validity %q to %q",
+                return fmt.Errorf("go-cryptobin/pkcs7: signing time %q is outside of certificate validity %q to %q",
                     signingTime.Format(time.RFC3339),
                     ee.NotBefore.Format(time.RFC3339),
                     ee.NotAfter.Format(time.RFC3339))
@@ -136,7 +136,7 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
     signedData := p7.Content
     ee := getCertFromCertsByIssuerAndSerial(p7.Certificates, signer.IssuerAndSerialNumber)
     if ee == nil {
-        return errors.New("pkcs7: No certificate for signer")
+        return errors.New("go-cryptobin/pkcs7: No certificate for signer")
     }
 
     signingTime := time.Now().UTC()
@@ -171,7 +171,7 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
         if err == nil {
             // signing time found, performing validity check
             if signingTime.After(ee.NotAfter) || signingTime.Before(ee.NotBefore) {
-                return fmt.Errorf("pkcs7: signing time %q is outside of certificate validity %q to %q",
+                return fmt.Errorf("go-cryptobin/pkcs7: signing time %q is outside of certificate validity %q to %q",
                     signingTime.Format(time.RFC3339),
                     ee.NotBefore.Format(time.RFC3339),
                     ee.NotAfter.Format(time.RFC3339))
@@ -217,11 +217,11 @@ func (this *PKCS7) GetOnlySigner() *x509.Certificate {
 func (this *PKCS7) UnmarshalSignedAttribute(attributeType asn1.ObjectIdentifier, out interface{}) error {
     sd, ok := this.raw.(signedData)
     if !ok {
-        return errors.New("pkcs7: payload is not signedData content")
+        return errors.New("go-cryptobin/pkcs7: payload is not signedData content")
     }
 
     if len(sd.SignerInfos) < 1 {
-        return errors.New("pkcs7: payload has no signers")
+        return errors.New("go-cryptobin/pkcs7: payload has no signers")
     }
 
     attributes := sd.SignerInfos[0].AuthenticatedAttributes
@@ -292,7 +292,7 @@ func verifyCertChain(ee *x509.Certificate, certs []*x509.Certificate, truststore
 
     chains, err = ee.Verify(verifyOptions)
     if err != nil {
-        return chains, fmt.Errorf("pkcs7: failed to verify certificate chain: %v", err)
+        return chains, fmt.Errorf("go-cryptobin/pkcs7: failed to verify certificate chain: %v", err)
     }
 
     return
@@ -306,7 +306,7 @@ type MessageDigestMismatchError struct {
 }
 
 func (err *MessageDigestMismatchError) Error() string {
-    return fmt.Sprintf("pkcs7: Message digest mismatch\n\tExpected: %X\n\tActual  : %X", err.ExpectedDigest, err.ActualDigest)
+    return fmt.Sprintf("go-cryptobin/pkcs7: Message digest mismatch\n\tExpected: %X\n\tActual  : %X", err.ExpectedDigest, err.ActualDigest)
 }
 
 func getCertFromCertsByIssuerAndSerial(certs []*x509.Certificate, ias issuerAndSerial) *x509.Certificate {
@@ -327,7 +327,7 @@ func unmarshalAttribute(attrs []attribute, attributeType asn1.ObjectIdentifier, 
         }
     }
 
-    return errors.New("pkcs7: attribute type not in attributes")
+    return errors.New("go-cryptobin/pkcs7: attribute type not in attributes")
 }
 
 func isCertMatchForIssuerAndSerial(cert *x509.Certificate, ias issuerAndSerial) bool {

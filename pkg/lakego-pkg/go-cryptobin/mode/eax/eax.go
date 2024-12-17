@@ -5,7 +5,8 @@ import (
     "crypto/cipher"
     "crypto/subtle"
 
-    "github.com/deatil/go-cryptobin/tool/byteutil"
+    "github.com/deatil/go-cryptobin/tool/alias"
+    "github.com/deatil/go-cryptobin/tool/bytes"
 )
 
 const (
@@ -79,7 +80,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
         panic("cryptobin/eax: Nonce too long for this instance")
     }
 
-    ret, out := byteutil.SliceForAppend(dst, len(plaintext)+e.tagSize)
+    ret, out := alias.SliceForAppend(dst, len(plaintext)+e.tagSize)
     omacNonce := e.omacT(0, nonce)
     omacAdata := e.omacT(1, adata)
 
@@ -125,7 +126,7 @@ func (e *eax) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     }
 
     // Decrypt ciphertext
-    ret, out := byteutil.SliceForAppend(dst, len(ciphertext))
+    ret, out := alias.SliceForAppend(dst, len(ciphertext))
     ctr := cipher.NewCTR(e.block, omacNonce)
     ctr.XORKeyStream(out, ciphertext[:sep])
 
@@ -147,8 +148,8 @@ func (e *eax) omac(plaintext []byte) []byte {
     // L ← E_K(0^n); B ← 2L; P ← 4L
     L := make([]byte, blockSize)
     e.block.Encrypt(L, L)
-    B := byteutil.GfnDouble(L)
-    P := byteutil.GfnDouble(B)
+    B := bytes.GfnDouble(L)
+    P := bytes.GfnDouble(B)
 
     // CBC with IV = 0
     cbc := cipher.NewCBCEncrypter(e.block, make([]byte, blockSize))
@@ -163,12 +164,12 @@ func (e *eax) pad(plaintext, B, P []byte) []byte {
     // if |M| in {n, 2n, 3n, ...}
     blockSize := e.block.BlockSize()
     if len(plaintext) != 0 && len(plaintext)%blockSize == 0 {
-        return byteutil.RightXor(plaintext, B)
+        return bytes.RightXOR(plaintext, B)
     }
 
     // else return (M || 1 || 0^(n−1−(|M| % n))) xor→ P
     ending := make([]byte, blockSize-len(plaintext)%blockSize)
     ending[0] = 0x80
     padded := append(plaintext, ending...)
-    return byteutil.RightXor(padded, P)
+    return bytes.RightXOR(padded, P)
 }

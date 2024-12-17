@@ -13,7 +13,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/safer: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/safer: invalid key size " + strconv.Itoa(int(k))
 }
 
 type saferCipher struct {
@@ -67,15 +67,15 @@ func (this *saferCipher) BlockSize() int {
 
 func (this *saferCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/safer: input not full block")
+        panic("go-cryptobin/safer: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/safer: output not full block")
+        panic("go-cryptobin/safer: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/safer: invalid buffer overlap")
+        panic("go-cryptobin/safer: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -83,15 +83,15 @@ func (this *saferCipher) Encrypt(dst, src []byte) {
 
 func (this *saferCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/safer: input not full block")
+        panic("go-cryptobin/safer: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/safer: output not full block")
+        panic("go-cryptobin/safer: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/safer: invalid buffer overlap")
+        panic("go-cryptobin/safer: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)
@@ -318,11 +318,11 @@ func (this *saferCipher) decrypt(block_out, block_in []byte) {
 
 func (this *saferCipher) setK64Key(key []uint8, keylen int32, numrounds int32) error {
     if numrounds != 0 && (numrounds < 6 || numrounds > SAFER_MAX_NOF_ROUNDS) {
-        return errors.New("cryptobin/safer: invalid numrounds")
+        return errors.New("go-cryptobin/safer: invalid numrounds")
     }
 
     if (keylen != 8) {
-        return errors.New("cryptobin/safer: invalid keysize")
+        return errors.New("go-cryptobin/safer: invalid keysize")
     }
 
     var rounds int32
@@ -340,11 +340,11 @@ func (this *saferCipher) setK64Key(key []uint8, keylen int32, numrounds int32) e
 
 func (this *saferCipher) setK128Key(key []uint8, keylen int32, numrounds int32) error {
     if numrounds != 0 && (numrounds < 6 || numrounds > SAFER_MAX_NOF_ROUNDS) {
-        return errors.New("cryptobin/safer: invalid numrounds")
+        return errors.New("go-cryptobin/safer: invalid numrounds")
     }
 
     if (keylen != 16) {
-        return errors.New("cryptobin/safer: invalid keysize")
+        return errors.New("go-cryptobin/safer: invalid keysize")
     }
 
     var rounds int32
@@ -362,11 +362,11 @@ func (this *saferCipher) setK128Key(key []uint8, keylen int32, numrounds int32) 
 
 func (this *saferCipher) setSK64Key(key []uint8, keylen int32, numrounds int32) error {
     if numrounds != 0 && (numrounds < 6 || numrounds > SAFER_MAX_NOF_ROUNDS) {
-        return errors.New("cryptobin/safer: invalid numrounds")
+        return errors.New("go-cryptobin/safer: invalid numrounds")
     }
 
     if (keylen != 8) {
-        return errors.New("cryptobin/safer: invalid keysize")
+        return errors.New("go-cryptobin/safer: invalid keysize")
     }
 
     var rounds int32
@@ -384,11 +384,11 @@ func (this *saferCipher) setSK64Key(key []uint8, keylen int32, numrounds int32) 
 
 func (this *saferCipher) setSK128Key(key []uint8, keylen int32, numrounds int32) error {
     if numrounds != 0 && (numrounds < 6 || numrounds > SAFER_MAX_NOF_ROUNDS) {
-        return errors.New("cryptobin/safer: invalid numrounds")
+        return errors.New("go-cryptobin/safer: invalid numrounds")
     }
 
     if (keylen != 16) {
-        return errors.New("cryptobin/safer: invalid keysize")
+        return errors.New("go-cryptobin/safer: invalid keysize")
     }
 
     var rounds int32

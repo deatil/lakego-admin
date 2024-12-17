@@ -40,15 +40,15 @@ func (this *presentCipher) BlockSize() int {
 
 func (this *presentCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/present: input not full block")
+        panic("go-cryptobin/present: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/present: output not full block")
+        panic("go-cryptobin/present: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/present: invalid buffer overlap")
+        panic("go-cryptobin/present: invalid buffer overlap")
     }
 
     this.encryptBlock(dst, src)
@@ -56,15 +56,15 @@ func (this *presentCipher) Encrypt(dst, src []byte) {
 
 func (this *presentCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/present: input not full block")
+        panic("go-cryptobin/present: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/present: output not full block")
+        panic("go-cryptobin/present: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/present: invalid buffer overlap")
+        panic("go-cryptobin/present: invalid buffer overlap")
     }
 
     this.decryptBlock(dst, src)

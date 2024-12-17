@@ -33,9 +33,9 @@ type encryptedContentInfo struct {
     EncryptedContent           asn1.RawValue `asn1:"tag:0,optional"`
 }
 
-var ErrUnsupportedEncryptionAlgorithm = errors.New("pkcs7: cannot encrypt content: only DES-CBC, AES-CBC, and AES-GCM supported")
+var ErrUnsupportedEncryptionAlgorithm = errors.New("go-cryptobin/pkcs7: cannot encrypt content: only DES-CBC, AES-CBC, and AES-GCM supported")
 
-var ErrPSKNotProvided = errors.New("pkcs7: cannot encrypt content: PSK not provided")
+var ErrPSKNotProvided = errors.New("go-cryptobin/pkcs7: cannot encrypt content: PSK not provided")
 
 // 配置
 type Opts struct {
@@ -71,12 +71,12 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
 
     cipher := opt.Cipher
     if cipher == nil {
-        return nil, errors.New("pkcs7: failed to encrypt PEM: unknown opts cipher")
+        return nil, errors.New("go-cryptobin/pkcs7: failed to encrypt PEM: unknown opts cipher")
     }
 
     keyEncrypt := opt.KeyEncrypt
     if keyEncrypt == nil {
-        return nil, errors.New("pkcs7: unknown opts keyEncrypt")
+        return nil, errors.New("go-cryptobin/pkcs7: unknown opts keyEncrypt")
     }
 
     useMode := opt.Mode
@@ -84,7 +84,7 @@ func Encrypt(rand io.Reader, content []byte, recipients []*x509.Certificate, opt
     // 生成密钥
     key = make([]byte, cipher.KeySize())
     if _, err := io.ReadFull(rand, key); err != nil {
-        return nil, errors.New("pkcs7: cannot generate key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs7: cannot generate key: " + err.Error())
     }
 
     encrypted, paramBytes, err := cipher.Encrypt(rand, key, content)

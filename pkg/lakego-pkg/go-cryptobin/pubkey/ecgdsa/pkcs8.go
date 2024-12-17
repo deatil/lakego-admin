@@ -9,6 +9,8 @@ import (
     "crypto/x509/pkix"
 
     "golang.org/x/crypto/cryptobyte"
+
+    "github.com/deatil/go-cryptobin/elliptic/brainpool"
 )
 
 const ecPrivKeyVersion = 1
@@ -27,9 +29,18 @@ func init() {
     AddNamedCurve(elliptic.P256(), oidNamedCurveP256)
     AddNamedCurve(elliptic.P384(), oidNamedCurveP384)
     AddNamedCurve(elliptic.P521(), oidNamedCurveP521)
+
+    AddNamedCurve(brainpool.P256r1(), brainpool.OIDBrainpoolP256r1)
+    AddNamedCurve(brainpool.P256t1(), brainpool.OIDBrainpoolP256t1)
+    AddNamedCurve(brainpool.P320r1(), brainpool.OIDBrainpoolP320r1)
+    AddNamedCurve(brainpool.P320t1(), brainpool.OIDBrainpoolP320t1)
+    AddNamedCurve(brainpool.P384r1(), brainpool.OIDBrainpoolP384r1)
+    AddNamedCurve(brainpool.P384t1(), brainpool.OIDBrainpoolP384t1)
+    AddNamedCurve(brainpool.P512r1(), brainpool.OIDBrainpoolP512r1)
+    AddNamedCurve(brainpool.P512t1(), brainpool.OIDBrainpoolP512t1)
 }
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -37,13 +48,13 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -59,7 +70,7 @@ type ecPrivateKey struct {
     PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-// 包装公钥
+// Marshal PublicKey to der
 func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -96,7 +107,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey der
 func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -112,12 +123,9 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         return
     }
 
-    // 解析
-    keyData := &pki
-
-    oid := keyData.Algorithm.Algorithm
-    params := keyData.Algorithm.Parameters
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
+    oid := pki.Algorithm.Algorithm
+    params := pki.Algorithm.Parameters
+    der := cryptobyte.String(pki.PublicKey.RightAlign())
 
     if !oid.Equal(oidPublicKeyECGDSA) {
         err = errors.New("ecgdsa: unknown public key algorithm")
@@ -151,9 +159,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     return
 }
 
-// ====================
-
-// 包装私钥
+// Marshal PrivateKey to der
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -183,7 +189,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey der
 func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error
@@ -220,7 +226,7 @@ func marshalECPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]b
         return nil, errors.New("ecgdsa: invalid elliptic key public key")
     }
 
-    privateKey := make([]byte, BitsToBytes(key.D.BitLen()))
+    privateKey := make([]byte, bitsToBytes(key.D.BitLen()))
 
     return asn1.Marshal(ecPrivateKey{
         Version:       1,
@@ -286,6 +292,6 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *P
     return priv, nil
 }
 
-func BitsToBytes(bits int) int {
+func bitsToBytes(bits int) int {
     return (bits + 7) / 8
 }

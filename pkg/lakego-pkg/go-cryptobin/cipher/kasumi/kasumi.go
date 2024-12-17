@@ -15,7 +15,7 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/kasumi: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/kasumi: invalid key size %d", int(k))
 }
 
 type kasumiCipher struct {
@@ -43,15 +43,15 @@ func (this *kasumiCipher) BlockSize() int {
 
 func (this *kasumiCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kasumi: input not full block")
+        panic("go-cryptobin/kasumi: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kasumi: output not full block")
+        panic("go-cryptobin/kasumi: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kasumi: invalid buffer overlap")
+        panic("go-cryptobin/kasumi: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -59,15 +59,15 @@ func (this *kasumiCipher) Encrypt(dst, src []byte) {
 
 func (this *kasumiCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/kasumi: input not full block")
+        panic("go-cryptobin/kasumi: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/kasumi: output not full block")
+        panic("go-cryptobin/kasumi: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/kasumi: invalid buffer overlap")
+        panic("go-cryptobin/kasumi: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

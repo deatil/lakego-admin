@@ -25,7 +25,7 @@ func NewANSIRetailMAC(creator BlockCipherFunc, key1, key2 []byte, size int) Bloc
     }
 
     if size <= 0 || size > b1.BlockSize() {
-        panic("mac: invalid size")
+        panic("go-cryptobin/mac: invalid size")
     }
 
     if b2, err = creator(key2); err != nil {

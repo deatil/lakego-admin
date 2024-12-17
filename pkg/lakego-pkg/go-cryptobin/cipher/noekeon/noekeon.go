@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/noekeon: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/noekeon: invalid key size %d", int(k))
 }
 
 type noekeonCipher struct {
@@ -41,15 +41,15 @@ func (this *noekeonCipher) BlockSize() int {
 
 func (this *noekeonCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/noekeon: input not full block")
+        panic("go-cryptobin/noekeon: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/noekeon: output not full block")
+        panic("go-cryptobin/noekeon: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/noekeon: invalid buffer overlap")
+        panic("go-cryptobin/noekeon: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -63,15 +63,15 @@ func (this *noekeonCipher) Encrypt(dst, src []byte) {
 
 func (this *noekeonCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/noekeon: input not full block")
+        panic("go-cryptobin/noekeon: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/noekeon: output not full block")
+        panic("go-cryptobin/noekeon: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/noekeon: invalid buffer overlap")
+        panic("go-cryptobin/noekeon: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)

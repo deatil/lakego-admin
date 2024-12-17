@@ -14,7 +14,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/aria: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/aria: invalid key size %d", int(k))
 }
 
 type ariaCipher struct {
@@ -48,15 +48,15 @@ func (c *ariaCipher) BlockSize() int {
 
 func (c *ariaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/aria: input not full block")
+        panic("go-cryptobin/aria: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/aria: output not full block")
+        panic("go-cryptobin/aria: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/aria: invalid buffer overlap")
+        panic("go-cryptobin/aria: invalid buffer overlap")
     }
 
     c.cryptBlock(dst, src, c.enc)
@@ -64,15 +64,15 @@ func (c *ariaCipher) Encrypt(dst, src []byte) {
 
 func (c *ariaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/aria: input not full block")
+        panic("go-cryptobin/aria: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/aria: output not full block")
+        panic("go-cryptobin/aria: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/aria: invalid buffer overlap")
+        panic("go-cryptobin/aria: invalid buffer overlap")
     }
 
     c.cryptBlock(dst, src, c.dec)

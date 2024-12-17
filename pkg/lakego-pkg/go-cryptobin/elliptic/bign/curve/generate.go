@@ -167,7 +167,7 @@ import (
     "errors"
     "sync"
 
-    "github.com/deatil/gapr/bign/fiat"
+    "github.com/deatil/go-cryptobin/elliptic/bign/curve/fiat"
 )
 
 // {{.p}}ElementLength is the length of an element of the base or scalar field,

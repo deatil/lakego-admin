@@ -12,17 +12,17 @@ import (
 // bcrypt pbkdf
 func Key(password, salt []byte, rounds, keyLen int) ([]byte, error) {
     if rounds < 1 {
-        return nil, errors.New("bcrypt_pbkdf: number of rounds is too small")
+        return nil, errors.New("go-cryptobin/bcrypt_pbkdf: number of rounds is too small")
     }
     if len(password) == 0 {
-        return nil, errors.New("bcrypt_pbkdf: empty password")
+        return nil, errors.New("go-cryptobin/bcrypt_pbkdf: empty password")
     }
     if len(salt) == 0 || len(salt) > 1<<20 {
-        return nil, errors.New("bcrypt_pbkdf: bad salt length")
+        return nil, errors.New("go-cryptobin/bcrypt_pbkdf: bad salt length")
     }
 
     if keyLen > 1024 {
-        return nil, errors.New("bcrypt_pbkdf: keyLen is too large")
+        return nil, errors.New("go-cryptobin/bcrypt_pbkdf: keyLen is too large")
     }
 
     var shapass, shasalt [sha512.Size]byte

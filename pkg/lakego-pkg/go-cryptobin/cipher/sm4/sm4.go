@@ -16,7 +16,7 @@ const KeySchedule = 32
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/sm4: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/sm4: invalid key size " + strconv.Itoa(int(k))
 }
 
 type sm4Cipher struct {
@@ -48,15 +48,15 @@ func (this *sm4Cipher) BlockSize() int {
 
 func (this *sm4Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/sm4: input not full block")
+        panic("go-cryptobin/sm4: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/sm4: output not full block")
+        panic("go-cryptobin/sm4: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/sm4: invalid buffer overlap")
+        panic("go-cryptobin/sm4: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -64,15 +64,15 @@ func (this *sm4Cipher) Encrypt(dst, src []byte) {
 
 func (this *sm4Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/sm4: input not full block")
+        panic("go-cryptobin/sm4: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/sm4: output not full block")
+        panic("go-cryptobin/sm4: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/sm4: invalid buffer overlap")
+        panic("go-cryptobin/sm4: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

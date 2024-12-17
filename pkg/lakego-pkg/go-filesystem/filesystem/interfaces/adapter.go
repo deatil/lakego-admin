@@ -27,13 +27,13 @@ type Adapter interface {
     Has(string) bool
 
     // 上传
-    Write(string, string, Config) (map[string]any, error)
+    Write(string, []byte, Config) (map[string]any, error)
 
     // 上传 Stream 文件类型
     WriteStream(string, io.Reader, Config) (map[string]any, error)
 
     // 更新
-    Update(string, string, Config) (map[string]any, error)
+    Update(string, []byte, Config) (map[string]any, error)
 
     // 更新
     UpdateStream(string, io.Reader, Config) (map[string]any, error)

@@ -37,7 +37,7 @@ var (
 )
 
 var (
-    errUnknownAttributeOID = errors.New("pkcs12: unknown attribute OID")
+    errUnknownAttributeOID = errors.New("go-cryptobin/pkcs12: unknown attribute OID")
 )
 
 // PEM block types

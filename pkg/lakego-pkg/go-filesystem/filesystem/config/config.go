@@ -5,20 +5,6 @@ import(
 )
 
 /**
- * 构造函数
- */
-func New(data DataMap) Config {
-    return Config{
-        Data: data,
-    }
-}
-
-type (
-    // 配置 map
-    DataMap = map[string]any
-)
-
-/**
  * 配置
  *
  * @create 2021-8-1
@@ -26,14 +12,23 @@ type (
  */
 type Config struct {
     // 数据
-    Data DataMap
+    data map[string]any
+}
+
+/**
+ * 构造函数
+ */
+func New(data map[string]any) Config {
+    return Config{
+        data: data,
+    }
 }
 
 /**
  * 覆盖旧数据
  */
-func (this Config) With(data DataMap) interfaces.Config {
-    this.Data = data
+func (this Config) With(data map[string]any) interfaces.Config {
+    this.data = data
 
     return this
 }
@@ -42,7 +37,7 @@ func (this Config) With(data DataMap) interfaces.Config {
  * 设置单个新数据
  */
 func (this Config) Set(key string, value any) interfaces.Config {
-    this.Data[key] = value
+    this.data[key] = value
 
     return this
 }
@@ -51,7 +46,7 @@ func (this Config) Set(key string, value any) interfaces.Config {
  * 是否存在
  */
 func (this Config) Has(key string) bool {
-    if _, ok := this.Data[key]; ok {
+    if _, ok := this.data[key]; ok {
         return true
     }
 
@@ -62,7 +57,7 @@ func (this Config) Has(key string) bool {
  * 获取一个带默认的值
  */
 func (this Config) Get(key string, defaults ...any) any {
-    if data, ok := this.Data[key]; ok {
+    if data, ok := this.data[key]; ok {
         return data
     }
 

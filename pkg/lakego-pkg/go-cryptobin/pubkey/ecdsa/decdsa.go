@@ -142,13 +142,13 @@ func randFieldElement(c elliptic.Curve, rand io.Reader) (k *big.Int, err error) 
  */
 func rfc6979Nonce(
     k, q *big.Int,
-    q_bit_len int,
+    qBitLen int,
     x *big.Int,
     hash []byte,
     hashFunc Hasher,
 ) {
     hsize := hashFunc().Size()
-    q_len := (q_bit_len + 7) / 8
+    q_len := (qBitLen + 7) / 8
 
     /* Steps b. and c.: set V = 0x01 ... 0x01 and K = 0x00 ... 0x00 */
     V := bytes.Repeat([]byte{0x01}, hsize)
@@ -167,8 +167,8 @@ func rfc6979Nonce(
     /* We compute bits2octets(hash) here */
     k.SetBytes(hash)
 
-    if (8 * hsize) > q_bit_len {
-        k.Rsh(k, uint((8 * hsize) - q_bit_len))
+    if (8 * hsize) > qBitLen {
+        k.Rsh(k, uint((8 * hsize) - qBitLen))
     }
     k.Mod(k, q)
 
@@ -218,7 +218,7 @@ func rfc6979Nonce(
 
 Restart:
     t_bit_len := 0
-    for t_bit_len < q_bit_len {
+    for t_bit_len < qBitLen {
         V = hmacHash(K, hashFunc, V)
         copy(T[byteceil(t_bit_len):], V)
         t_bit_len = t_bit_len + (8 * len(V))
@@ -226,8 +226,8 @@ Restart:
 
     k.SetBytes(T)
 
-    if (8 * q_len) > q_bit_len {
-        k.Rsh(k, uint((8 * q_len) - q_bit_len))
+    if (8 * q_len) > qBitLen {
+        k.Rsh(k, uint((8 * q_len) - qBitLen))
     }
     k.Mod(k, q)
 

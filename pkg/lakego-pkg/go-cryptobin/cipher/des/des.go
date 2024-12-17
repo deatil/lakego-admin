@@ -14,7 +14,7 @@ const BlockSize = des.BlockSize
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/twoDes: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/twoDes: invalid key size " + strconv.Itoa(int(k))
 }
 
 type twoDESCipher struct {
@@ -46,15 +46,15 @@ func (this *twoDESCipher) BlockSize() int {
 
 func (this *twoDESCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/twoDes: input not full block")
+        panic("go-cryptobin/twoDes: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/twoDes: output not full block")
+        panic("go-cryptobin/twoDes: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/twoDes: invalid buffer overlap")
+        panic("go-cryptobin/twoDes: invalid buffer overlap")
     }
 
     this.cipher.Encrypt(dst, src)
@@ -62,15 +62,15 @@ func (this *twoDESCipher) Encrypt(dst, src []byte) {
 
 func (this *twoDESCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/twoDes: input not full block")
+        panic("go-cryptobin/twoDes: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/twoDes: output not full block")
+        panic("go-cryptobin/twoDes: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/twoDes: invalid buffer overlap")
+        panic("go-cryptobin/twoDes: invalid buffer overlap")
     }
 
     this.cipher.Decrypt(dst, src)

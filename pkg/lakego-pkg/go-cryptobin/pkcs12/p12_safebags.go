@@ -71,7 +71,7 @@ func (this *PKCS12) makeSafeContents(rand io.Reader, bags []SafeBag, password []
                 opts.CertKDFOpts,
             })
             if err != nil {
-                err = errors.New("pkcs12: " + err.Error())
+                err = errors.New("go-cryptobin/pkcs12: " + err.Error())
                 return
             }
         } else {
@@ -106,7 +106,7 @@ func (this *PKCS12) makeSafeContents(rand io.Reader, bags []SafeBag, password []
 func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, updatedPassword []byte, err error) {
     pfx := new(PfxPdu)
     if err := unmarshal(p12Data, pfx); err != nil {
-        return nil, nil, errors.New("pkcs12: error reading P12 data: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs12: error reading P12 data: " + err.Error())
     }
 
     if pfx.Version != PKCS12Version {
@@ -124,7 +124,7 @@ func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, u
 
     if len(pfx.MacData.Mac.Algorithm.Algorithm) == 0 {
         if !(len(password) == 2 && password[0] == 0 && password[1] == 0) {
-            return nil, nil, errors.New("pkcs12: no MAC in data")
+            return nil, nil, errors.New("go-cryptobin/pkcs12: no MAC in data")
         }
     } else {
         if err := pfx.MacData.Verify(pfx.AuthSafe.Content.Bytes, password); err != nil {
@@ -163,7 +163,7 @@ func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, u
                 }
 
                 if this.envelopedOpts == nil {
-                    return nil, nil, errors.New("pkcs12: enveloped opts is error")
+                    return nil, nil, errors.New("go-cryptobin/pkcs12: enveloped opts is error")
                 }
 
                 envelopedOpts := this.envelopedOpts
@@ -201,7 +201,7 @@ func (this *PKCS12) getSafeContents(p12Data, password []byte) (bags []SafeBag, u
 
                     data, err = pbes2.PBES2Decrypt(encryptedContent, contentEncryptionAlgorithm, password)
                     if err != nil {
-                        return nil, nil, errors.New("pkcs12: " + err.Error())
+                        return nil, nil, errors.New("go-cryptobin/pkcs12: " + err.Error())
                     }
                 } else {
                     newCipher, enParams, err := this.parseContentEncryptionAlgorithm(contentEncryptionAlgorithm)
@@ -271,13 +271,13 @@ func (this *PKCS12) decodePKCS8ShroudedKeyBag(asn1Data, password []byte) (pkData
     if err != nil {
         pkData, err = pbes1.DecryptPKCS8Privatekey(asn1Data, password)
         if err != nil {
-            return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+            return nil, errors.New("go-cryptobin/pkcs12: error decrypting PKCS#8: " + err.Error())
         }
     }
 
     ret := new(asn1.RawValue)
     if err = unmarshal(pkData, ret); err != nil {
-        return nil, errors.New("pkcs12: error unmarshaling decrypted private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error unmarshaling decrypted private key: " + err.Error())
     }
 
     return pkData, nil
@@ -288,7 +288,7 @@ func (this *PKCS12) decodePKCS8ShroudedKeyBag(asn1Data, password []byte) (pkData
 func (this *PKCS12) decodeSecretBag(asn1Data []byte, password []byte) (secretKey []byte, err error) {
     bag := new(secretBag)
     if err := unmarshal(asn1Data, bag); err != nil {
-        return nil, errors.New("pkcs12: error decoding secret bag: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error decoding secret bag: " + err.Error())
     }
 
     data := bag.SecretValue
@@ -300,7 +300,7 @@ func (this *PKCS12) decodeSecretBag(asn1Data []byte, password []byte) (secretKey
         if err != nil {
             decrypted, err = pbes2.DecryptPKCS8PrivateKey(data, password)
             if err != nil {
-                return nil, errors.New("pkcs12: error decrypting PKCS#8: " + err.Error())
+                return nil, errors.New("go-cryptobin/pkcs12: error decrypting PKCS#8: " + err.Error())
             }
         }
     } else if bag.SecretTypeID.Equal(oidKeyBag) {
@@ -311,7 +311,7 @@ func (this *PKCS12) decodeSecretBag(asn1Data []byte, password []byte) (secretKey
 
     s := new(pkcs8)
     if err = unmarshal(decrypted, s); err != nil {
-        return nil, errors.New("pkcs12: error unmarshaling decrypted secret key: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error unmarshaling decrypted secret key: " + err.Error())
     }
 
     if s.Version != 0 {
@@ -334,7 +334,7 @@ func (this *PKCS12) encodeSecretBag(rand io.Reader, secretKey []byte, password [
 
     pkData, err := asn1.Marshal(s)
     if err != nil {
-        return nil, errors.New("pkcs12: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: " + err.Error())
     }
 
     var bag secretBag
@@ -359,7 +359,7 @@ func (this *PKCS12) encodeSecretBag(rand io.Reader, secretKey []byte, password [
         }
 
         if err != nil {
-            return nil, errors.New("pkcs12: " + err.Error())
+            return nil, errors.New("go-cryptobin/pkcs12: " + err.Error())
         }
 
         bag.SecretTypeID = oidPKCS8ShroundedKeyBag
@@ -370,7 +370,7 @@ func (this *PKCS12) encodeSecretBag(rand io.Reader, secretKey []byte, password [
     }
 
     if asn1Data, err = asn1.Marshal(bag); err != nil {
-        return nil, errors.New("pkcs12: error encoding secret bag: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error encoding secret bag: " + err.Error())
     }
 
     return asn1Data, nil
@@ -384,7 +384,7 @@ func (this *PKCS12) parseContentEncryptionAlgorithm(contentEncryptionAlgorithm p
 
     newCipher, err := pbes1.GetCipher(oid)
     if err != nil {
-        return nil, nil, fmt.Errorf("pkcs12: unsupported cipher (OID: %s)", oid)
+        return nil, nil, fmt.Errorf("go-cryptobin/pkcs12: unsupported cipher (OID: %s)", oid)
     }
 
     params := contentEncryptionAlgorithm.Parameters.FullBytes

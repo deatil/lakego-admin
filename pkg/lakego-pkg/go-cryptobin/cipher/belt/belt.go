@@ -16,7 +16,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/belt: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/belt: invalid key size %d", int(k))
 }
 
 type beltCipher struct {
@@ -45,15 +45,15 @@ func (c *beltCipher) BlockSize() int {
 
 func (c *beltCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/belt: input not full block")
+        panic("go-cryptobin/belt: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/belt: output not full block")
+        panic("go-cryptobin/belt: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/belt: invalid buffer overlap")
+        panic("go-cryptobin/belt: invalid buffer overlap")
     }
 
     c.encrypt(dst, src)
@@ -61,15 +61,15 @@ func (c *beltCipher) Encrypt(dst, src []byte) {
 
 func (c *beltCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/belt: input not full block")
+        panic("go-cryptobin/belt: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/belt: output not full block")
+        panic("go-cryptobin/belt: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/belt: invalid buffer overlap")
+        panic("go-cryptobin/belt: invalid buffer overlap")
     }
 
     c.decrypt(dst, src)

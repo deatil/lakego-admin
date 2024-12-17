@@ -20,10 +20,10 @@ const (
 
 var (
     // ErrStringNotInRadix is returned if input or intermediate strings cannot be parsed in the given radix
-    ErrStringNotInRadix = errors.New("cryptobin/fpe: string is not within base/radix")
+    ErrStringNotInRadix = errors.New("go-cryptobin/fpe: string is not within base/radix")
 
     // ErrTweakLengthInvalid is returned if the tweak length is not 8 bytes
-    ErrTweakLengthInvalid = errors.New("cryptobin/fpe: tweak must be 8 bytes, or 64 bits")
+    ErrTweakLengthInvalid = errors.New("go-cryptobin/fpe: tweak must be 8 bytes, or 64 bits")
 )
 
 // A Cipher is an instance of the FF3 mode of format preserving encryption
@@ -47,12 +47,12 @@ func NewCipher(radix int, key []byte, tweak []byte) (*Cipher, error) {
         case 16, 24, 32:
             break
         default:
-            return nil, errors.New("cryptobin/fpe: key length must be 128, 192, or 256 bits")
+            return nil, errors.New("go-cryptobin/fpe: key length must be 128, 192, or 256 bits")
     }
 
     // While FF3 allows radices in [2, 2^16], there is a practical limit to 36 (alphanumeric) because the Go math/big library only supports up to base 36.
     if (radix < 2) || (radix > big.MaxBase) {
-        return nil, errors.New("cryptobin/fpe: radix must be between 2 and 36, inclusive")
+        return nil, errors.New("go-cryptobin/fpe: radix must be between 2 and 36, inclusive")
     }
 
     // Make sure the given the length of tweak in bits is 64
@@ -66,14 +66,14 @@ func NewCipher(radix int, key []byte, tweak []byte) (*Cipher, error) {
 
     // Make sure 2 <= minLength <= maxLength < 2*floor(log base radix of 2^96) is satisfied
     if (minLen < 2) || (maxLen < minLen) || (float64(maxLen) > (192 / math.Log2(float64(radix)))) {
-        return nil, errors.New("cryptobin/fpe: minLen or maxLen invalid, adjust your radix")
+        return nil, errors.New("go-cryptobin/fpe: minLen or maxLen invalid, adjust your radix")
     }
 
     // aes.NewCipher automatically returns the correct block based on the length of the key passed in
     // Always use the reversed key since Encrypt and Decrypt call ciph expecting that
     aesBlock, err := aes.NewCipher(revB(key))
     if err != nil {
-        return nil, errors.New("cryptobin/fpe: failed to create AES block")
+        return nil, errors.New("go-cryptobin/fpe: failed to create AES block")
     }
 
     newCipher := &Cipher{}
@@ -105,7 +105,7 @@ func (c *Cipher) EncryptWithTweak(X string, tweak []byte) (string, error) {
 
     // Check if message length is within minLength and maxLength bounds
     if (n < c.minLen) || (n >= c.maxLen) {
-        return ret, errors.New("cryptobin/fpe: message length is not within min and max bounds")
+        return ret, errors.New("go-cryptobin/fpe: message length is not within min and max bounds")
     }
 
     // Make sure the given the length of tweak in bits is 64
@@ -251,7 +251,7 @@ func (c *Cipher) DecryptWithTweak(X string, tweak []byte) (string, error) {
 
     // Check if message length is within minLength and maxLength bounds
     if (n < c.minLen) || (n >= c.maxLen) {
-        return ret, errors.New("cryptobin/fpe: message length is not within min and max bounds")
+        return ret, errors.New("go-cryptobin/fpe: message length is not within min and max bounds")
     }
 
     // Make sure the given the length of tweak in bits is 64

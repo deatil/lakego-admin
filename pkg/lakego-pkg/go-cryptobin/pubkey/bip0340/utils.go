@@ -8,10 +8,6 @@ import (
     "encoding/binary"
 )
 
-const BIP0340_AUX       = "BIP0340/aux"
-const BIP0340_NONCE	    = "BIP0340/nonce"
-const BIP0340_CHALLENGE = "BIP0340/challenge"
-
 var (
     zero = big.NewInt(0)
     one  = big.NewInt(1)
@@ -28,6 +24,10 @@ func putu32(ptr []byte, a uint32) {
 
 func rotl(x, n uint32) uint32 {
     return bits.RotateLeft32(x, int(n))
+}
+
+func bitsToBytes(bits int) int {
+    return (bits + 7) / 8
 }
 
 func bigFromHex(s string) *big.Int {

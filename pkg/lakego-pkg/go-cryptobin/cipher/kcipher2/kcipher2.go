@@ -28,13 +28,13 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/kcipher2: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/kcipher2: invalid key size " + strconv.Itoa(int(k))
 }
 
 type IVSizeError int
 
 func (iv IVSizeError) Error() string {
-    return "cryptobin/kcipher2: invalid iv size " + strconv.Itoa(int(iv))
+    return "go-cryptobin/kcipher2: invalid iv size " + strconv.Itoa(int(iv))
 }
 
 type kcipher2Cipher struct {
@@ -66,10 +66,10 @@ func NewCipher(key []byte, iv []byte) (cipher.Stream, error) {
 
 func (k *kcipher2Cipher) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/kcipher2: output smaller than input")
+        panic("go-cryptobin/kcipher2: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/kcipher2: invalid buffer overlap")
+        panic("go-cryptobin/kcipher2: invalid buffer overlap")
     }
 
     for i := range src {

@@ -13,7 +13,7 @@ const BlockSize = 12
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/threeway: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/threeway: invalid key size " + strconv.Itoa(int(k))
 }
 
 type threewayCipher struct {
@@ -43,15 +43,15 @@ func (this *threewayCipher) BlockSize() int {
 
 func (this *threewayCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/threeway: input not full block")
+        panic("go-cryptobin/threeway: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/threeway: output not full block")
+        panic("go-cryptobin/threeway: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/threeway: invalid buffer overlap")
+        panic("go-cryptobin/threeway: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -59,15 +59,15 @@ func (this *threewayCipher) Encrypt(dst, src []byte) {
 
 func (this *threewayCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/threeway: input not full block")
+        panic("go-cryptobin/threeway: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/threeway: output not full block")
+        panic("go-cryptobin/threeway: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/threeway: invalid buffer overlap")
+        panic("go-cryptobin/threeway: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

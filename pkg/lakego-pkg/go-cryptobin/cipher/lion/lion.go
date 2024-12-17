@@ -44,15 +44,15 @@ func (this *lionCipher) Encrypt(dst, src []byte) {
     bs := this.bs
 
     if len(src) < bs {
-        panic(fmt.Sprintf("cryptobin/lion: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/lion: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < bs {
-        panic(fmt.Sprintf("cryptobin/lion: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/lion: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/lion: invalid buffer overlap")
+        panic("go-cryptobin/lion: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -62,15 +62,15 @@ func (this *lionCipher) Decrypt(dst, src []byte) {
     bs := this.bs
 
     if len(src) < bs {
-        panic(fmt.Sprintf("cryptobin/lion: invalid block size %d (src)", len(src)))
+        panic(fmt.Sprintf("go-cryptobin/lion: invalid block size %d (src)", len(src)))
     }
 
     if len(dst) < bs {
-        panic(fmt.Sprintf("cryptobin/lion: invalid block size %d (dst)", len(dst)))
+        panic(fmt.Sprintf("go-cryptobin/lion: invalid block size %d (dst)", len(dst)))
     }
 
     if alias.InexactOverlap(dst[:bs], src[:bs]) {
-        panic("cryptobin/lion: invalid buffer overlap")
+        panic("go-cryptobin/lion: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

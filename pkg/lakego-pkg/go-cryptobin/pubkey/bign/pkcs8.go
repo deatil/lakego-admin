@@ -38,7 +38,7 @@ func init() {
     AddNamedCurve(bign.P512v1(), oidNamedCurveBign512v1)
 }
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -46,13 +46,13 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -68,7 +68,7 @@ type ecPrivateKey struct {
     PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-// 包装公钥
+// Marshal PublicKey to der
 func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -105,7 +105,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey der
 func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -121,12 +121,9 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
         return
     }
 
-    // 解析
-    keyData := &pki
-
-    oid := keyData.Algorithm.Algorithm
-    params := keyData.Algorithm.Parameters
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
+    oid := pki.Algorithm.Algorithm
+    params := pki.Algorithm.Parameters
+    der := cryptobyte.String(pki.PublicKey.RightAlign())
 
     if !oid.Equal(oidPublicKeyBign) {
         err = errors.New("bign: unknown public key algorithm")
@@ -160,9 +157,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     return
 }
 
-// ====================
-
-// 包装私钥
+// Marshal PrivateKey to der
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -171,7 +166,6 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
         return nil, errors.New("bign: unsupported bign curve")
     }
 
-    // 创建数据
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
         return nil, errors.New("bign: failed to marshal algo param: " + err.Error())
@@ -192,7 +186,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey der
 func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     var privKey pkcs8
     var err error

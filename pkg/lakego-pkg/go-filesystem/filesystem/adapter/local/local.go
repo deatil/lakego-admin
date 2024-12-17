@@ -9,34 +9,24 @@ import (
     "net/http"
     "path/filepath"
 
-    "github.com/deatil/go-filesystem/filesystem/interfaces"
     "github.com/deatil/go-filesystem/filesystem/adapter"
+    "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
-
-// 本地文件适配器
-func New(root string) *Local {
-    local := &Local{}
-
-    local.EnsureDirectory(root)
-    local.SetPathPrefix(root)
-
-    return local
-}
 
 // 权限列表
 var permissionMap map[string]map[string]uint32 = map[string]map[string]uint32{
     "file": {
-        "public": 0644,
+        "public":  0644,
         "private": 0600,
     },
     "dir": {
-        "public": 0755,
+        "public":  0755,
         "private": 0700,
     },
 }
 
 /**
- * 本地文件适配器
+ * 本地文件适配器 / Local adapter
  *
  * @create 2021-8-1
  * @author deatil
@@ -49,25 +39,31 @@ type Local struct {
     visibility string
 }
 
-/**
- * 确认文件夹
- */
+// 本地文件适配器
+func New(root string) *Local {
+    local := &Local{}
+
+    local.EnsureDirectory(root)
+    local.SetPathPrefix(root)
+
+    return local
+}
+
+// 确认文件夹
 func (this *Local) EnsureDirectory(root string) error {
     err := os.MkdirAll(root, this.FormatPerm(permissionMap["dir"]["public"]))
     if err != nil {
-        return errors.New("执行函数 os.MkdirAll() 失败, 错误为:" + err.Error())
+        return errors.New("go-filesystem: exec os.MkdirAll() fail, error: " + err.Error())
     }
 
     if !this.IsFile(root) {
-        return errors.New("创建一个根目录文件夹失败" )
+        return errors.New("go-filesystem: create dir fail" )
     }
 
     return nil
 }
 
-/**
- * 判断是否存在
- */
+// 判断是否存在
 func (this *Local) Has(path string) bool {
     location := this.ApplyPathPrefix(path)
 
@@ -76,31 +72,31 @@ func (this *Local) Has(path string) bool {
 }
 
 // 上传
-func (this *Local) Write(path string, contents string, conf interfaces.Config) (map[string]any, error) {
+func (this *Local) Write(path string, contents []byte, conf interfaces.Config) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
     this.EnsureDirectory(filepath.Dir(location))
 
     out, createErr := os.Create(location)
     if createErr != nil {
-        return nil, errors.New("执行函数 os.Create() 失败, 错误为:" + createErr.Error())
+        return nil, errors.New("go-filesystem: exec os.Create() fail, error: " + createErr.Error())
     }
 
     defer out.Close()
 
-    _, writeErr := out.WriteString(contents)
+    _, writeErr := out.Write(contents)
     if writeErr != nil {
-        return nil, errors.New("执行函数 os.WriteString() 失败, 错误为:" + writeErr.Error())
+        return nil, errors.New("go-filesystem: exec os.Write() fail, error: " + writeErr.Error())
     }
 
     size, sizeErr := this.FileSize(location)
     if sizeErr != nil {
-        return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
+        return nil, errors.New("go-filesystem: get file size fail, error: " + writeErr.Error())
     }
 
     result := map[string]any{
-        "type": "file",
-        "size": size,
-        "path": path,
+        "type":     "file",
+        "size":     size,
+        "path":     path,
         "contents": contents,
     }
 
@@ -119,14 +115,14 @@ func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Co
 
     newFile, createErr := os.Create(location)
     if createErr != nil {
-        return nil, errors.New("执行函数 os.Create() 失败, 错误为:" + createErr.Error())
+        return nil, errors.New("go-filesystem: exec os.Create() fail, error: " + createErr.Error())
     }
 
     defer newFile.Close()
 
     _, copyErr := io.Copy(newFile, stream)
     if copyErr != nil {
-        return nil, errors.New("写入文件流失败, 错误为:" + copyErr.Error())
+        return nil, errors.New("go-filesystem: write stream fail, error: " + copyErr.Error())
     }
 
     result := map[string]any{
@@ -143,30 +139,30 @@ func (this *Local) WriteStream(path string, stream io.Reader, conf interfaces.Co
 }
 
 // 更新
-func (this *Local) Update(path string, contents string, conf interfaces.Config) (map[string]any, error) {
+func (this *Local) Update(path string, contents []byte, conf interfaces.Config) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
     out, createErr := os.Create(location)
     if createErr != nil {
-        return nil, errors.New("执行函数 os.Create() 失败, 错误为:" + createErr.Error())
+        return nil, errors.New("go-filesystem: exec os.Create() fail, error: " + createErr.Error())
     }
 
     defer out.Close()
 
-    _, writeErr := out.WriteString(contents)
+    _, writeErr := out.Write(contents)
     if writeErr != nil {
-        return nil, errors.New("执行函数 os.WriteString() 失败, 错误为:" + writeErr.Error())
+        return nil, errors.New("go-filesystem: exec os.Write() fail, error: " + writeErr.Error())
     }
 
     size, sizeErr := this.FileSize(location)
     if sizeErr != nil {
-        return nil, errors.New("获取文件大小失败, 错误为:" + writeErr.Error())
+        return nil, errors.New("go-filesystem: get file size fail, error: " + writeErr.Error())
     }
 
     result := map[string]any{
-        "type": "file",
-        "size": size,
-        "path": path,
+        "type":     "file",
+        "size":     size,
+        "path":     path,
         "contents": contents,
     }
 
@@ -187,22 +183,20 @@ func (this *Local) UpdateStream(path string, stream io.Reader, config interfaces
 func (this *Local) Read(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
-    file, openErr := os.Open(location)
-    if openErr != nil {
-        return nil, errors.New("执行函数 os.Open() 失败, 错误为:" + openErr.Error())
+    file, err := os.Open(location)
+    if err != nil {
+        return nil, errors.New("go-filesystem: exec os.Open() fail, error: " + err.Error())
     }
     defer file.Close()
 
-    data, readAllErr := io.ReadAll(file)
-    if readAllErr != nil {
-        return nil, errors.New("执行函数 io.ReadAll() 失败, 错误为:" + readAllErr.Error())
+    contents, err := io.ReadAll(file)
+    if err != nil {
+        return nil, errors.New("go-filesystem: exec io.ReadAll() fail, error: " + err.Error())
     }
 
-    contents := fmt.Sprintf("%s", data)
-
     return map[string]any{
-        "type": "file",
-        "path": path,
+        "type":     "file",
+        "path":     path,
         "contents": contents,
     }, nil
 }
@@ -214,14 +208,14 @@ func (this *Local) ReadStream(path string) (map[string]any, error) {
 
     stream, err := os.Open(location)
     if err != nil {
-        return nil, errors.New("执行函数 os.Open() 失败, 错误为:" + err.Error())
+        return nil, errors.New("go-filesystem: exec os.Open() fail, error: " + err.Error())
     }
 
     // defer stream.Close()
 
     return map[string]any{
-        "type": "file",
-        "path": path,
+        "type":   "file",
+        "path":   path,
         "stream": stream,
     }, nil
 }
@@ -231,11 +225,12 @@ func (this *Local) Rename(path string, newpath string) error {
     location := this.ApplyPathPrefix(path)
     destination := this.ApplyPathPrefix(newpath)
     parentDirectory := this.ApplyPathPrefix(filepath.Dir(newpath))
+
     this.EnsureDirectory(parentDirectory)
 
     err := os.Rename(location, destination)
     if err != nil {
-        return errors.New("执行函数 os.Rename() 失败, 错误为:" + err.Error())
+        return errors.New("go-filesystem: exec os.Rename() fail, error: " + err.Error())
     }
 
     return nil
@@ -245,6 +240,7 @@ func (this *Local) Rename(path string, newpath string) error {
 func (this *Local) Copy(path string, newpath string) error {
     location := this.ApplyPathPrefix(path)
     destination := this.ApplyPathPrefix(newpath)
+
     this.EnsureDirectory(filepath.Dir(destination))
 
     locationStat, e := os.Stat(location)
@@ -253,24 +249,24 @@ func (this *Local) Copy(path string, newpath string) error {
     }
 
     if !locationStat.Mode().IsRegular() {
-        return fmt.Errorf("%s 不是一个正常的文件", path)
+        return fmt.Errorf("go-filesystem: %s not right file", path)
     }
 
-    src, openErr := os.Open(location)
-    if openErr != nil {
-        return openErr
+    src, err := os.Open(location)
+    if err != nil {
+        return err
     }
     defer src.Close()
 
-    dsc, createErr := os.Create(destination)
-    if createErr != nil {
-        return createErr
+    dst, err := os.Create(destination)
+    if err != nil {
+        return err
     }
-    defer dsc.Close()
+    defer dst.Close()
 
-    _, copyErr := io.Copy(dsc, src)
-    if copyErr != nil {
-        return errors.New("复制失败, 错误为:" + copyErr.Error())
+    _, err = io.Copy(dst, src)
+    if err != nil {
+        return errors.New("go-filesystem: copy fail, error: " + err.Error())
     }
 
     return nil
@@ -281,11 +277,11 @@ func (this *Local) Delete(path string) error {
     location := this.ApplyPathPrefix(path)
 
     if !this.IsFile(location) {
-        return errors.New("文件删除失败, 当前文件不是文件类型")
+        return errors.New("go-filesystem: file delete fail, not file type")
     }
 
     if err := os.Remove(location); err != nil {
-        return errors.New("文件删除失败, 错误为:" + err.Error())
+        return errors.New("go-filesystem: file delete fail, error: " + err.Error())
     }
 
     return nil
@@ -296,11 +292,11 @@ func (this *Local) DeleteDir(dirname string) error {
     location := this.ApplyPathPrefix(dirname)
 
     if !this.IsDir(location) {
-        return errors.New("文件夹删除失败, 当前文件不是文件夹类型")
+        return errors.New("go-filesystem: file delete fail, not file type")
     }
 
     if err := os.RemoveAll(location); err != nil {
-        return errors.New("文件夹删除失败, 错误为:" + err.Error())
+        return errors.New("go-filesystem: file delete fail, error: " + err.Error())
     }
 
     return nil
@@ -314,11 +310,11 @@ func (this *Local) CreateDir(dirname string, config interfaces.Config) (map[stri
 
     err := os.MkdirAll(location, this.FormatPerm(permissionMap["dir"][visibility]))
     if err != nil {
-        return nil, errors.New("执行函数 os.MkdirAll() 失败, 错误为:" + err.Error())
+        return nil, errors.New("go-filesystem: exec os.MkdirAll() fail, error: " + err.Error())
     }
 
     if !this.IsDir(location) {
-        return nil, errors.New("文件夹创建失败")
+        return nil, errors.New("go-filesystem: make dir fail")
     }
 
     data := map[string]string{
@@ -384,8 +380,8 @@ func (this *Local) GetMimetype(path string) (map[string]any, error) {
     mimetype := http.DetectContentType(buffer)
 
     return map[string]any{
-        "path": path,
-        "type": "file",
+        "path":     path,
+        "type":     "file",
         "mimetype": mimetype,
     }, nil
 }
@@ -408,7 +404,7 @@ func (this *Local) GetVisibility(path string) (map[string]string, error) {
     for visibility, visibilityPermissions := range permissionMap[pathType] {
         if visibilityPermissions == permissions {
             return map[string]string{
-                "path": path,
+                "path":       path,
                 "visibility": visibility,
             }, nil
         }
@@ -417,7 +413,7 @@ func (this *Local) GetVisibility(path string) (map[string]string, error) {
     permission := fmt.Sprintf("%o", permissions)
 
     data := map[string]string{
-        "path": path,
+        "path":       path,
         "visibility": permission,
     }
 
@@ -439,11 +435,11 @@ func (this *Local) SetVisibility(path string, visibility string) (map[string]str
 
     e := os.Chmod(location, this.FormatPerm(permissionMap[pathType][visibility]))
     if e != nil {
-        return nil, errors.New("设置文件权限失败")
+        return nil, errors.New("go-filesystem: set permission fail")
     }
 
     data := map[string]string{
-        "path": path,
+        "path":       path,
         "visibility": visibility,
     }
 
@@ -477,24 +473,25 @@ func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]any,
         }
 
         files = append(files, map[string]any{
-            "type": fileType,
-            "path": path,
-            "filename": info.Name(),
-            "pathname": path + "/" + info.Name(),
+            "type":      fileType,
+            "path":      path,
+            "filename":  info.Name(),
+            "pathname":  path + "/" + info.Name(),
             "timestamp": info.ModTime().Unix(),
-            "info": info,
+            "info":      info,
         })
         return nil
     })
 
     if err != nil {
-        return nil, errors.New("获取文件夹列表失败")
+        return nil, errors.New("go-filesystem: get dir list fail")
     }
 
     return files, nil
 }
 
 // 一级目录索引
+// dir index
 func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
     fs, err := os.ReadDir(path)
     if err != nil {
@@ -509,9 +506,12 @@ func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
     ret := make([]map[string]any, 0, sz)
     for i := 0; i < sz; i++ {
         info := fs[i]
+
         name := info.Name()
+
         // type := info.Type()
         stat, _ := info.Info()
+
         if name != "." && name != ".." {
             var fileType string
             if info.IsDir() {
@@ -521,12 +521,12 @@ func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
             }
 
             ret = append(ret, map[string]any{
-                "type": fileType,
-                "path": path,
-                "filename": name,
-                "pathname": path + "/" + name,
+                "type":      fileType,
+                "path":      path,
+                "filename":  name,
+                "pathname":  path + "/" + name,
                 "timestamp": stat.ModTime().Unix(),
-                "info": info,
+                "info":      info,
             })
         }
     }
@@ -548,12 +548,12 @@ func (this *Local) FileInfo(path string) map[string]any {
     }
 
     return map[string]any{
-        "type": fileType,
-        "path": filepath.Dir(path),
-        "filename": info.Name(),
-        "pathname": path,
+        "type":      fileType,
+        "path":      filepath.Dir(path),
+        "filename":  info.Name(),
+        "pathname":  path,
         "timestamp": info.ModTime().Unix(),
-        "info": info,
+        "info":      info,
     }
 }
 
@@ -564,15 +564,26 @@ func (this *Local) GetFilePath(file map[string]any) string {
 }
 
 // 获取全部文件
+// get all file
 func (this *Local) MapFileInfo(data map[string]any) (map[string]any, error) {
     normalized := map[string]any{
-        "type": data["type"],
-        "path": this.GetFilePath(data),
+        "type":      data["type"],
+        "path":      this.GetFilePath(data),
         "timestamp": data["timestamp"],
     }
 
     if data["type"] == "file" {
-        normalized["size"] = data["info"].(os.FileInfo).Size()
+        switch infoType := data["info"].(type) {
+            case os.DirEntry:
+                info, err := infoType.Info()
+                if err == nil {
+                    normalized["size"] = info.Size()
+                } else {
+                    normalized["size"] = 0
+                }
+            case os.FileInfo:
+                normalized["size"] = infoType.Size()
+        }
     }
 
     return normalized, nil
@@ -600,6 +611,7 @@ func (this *Local) FileSize(fp string) (int64, error) {
 }
 
 // 文件权限
+// return File Mode
 func (this *Local) FileMode(fp string) (uint32, error) {
     f, e := os.Stat(fp)
     if e != nil {
@@ -611,26 +623,28 @@ func (this *Local) FileMode(fp string) (uint32, error) {
     return uint32(perm), nil
 }
 
-/**
- * 权限格式化
- */
-func (this *Local) FormatPerm(i uint32) os.FileMode {
-    // 八进制转成十进制
-    // p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
-    return os.FileMode(i)
-}
-
 // 软链接
+// Symlink
 func (this *Local) Symlink(target, link string) error {
     return os.Symlink(target, link)
 }
 
 // 读取链接
+// Readlink
 func (this *Local) Readlink(link string) (string, error) {
     return os.Readlink(link)
 }
 
 // 是否为软链接
+// IsSymlink
 func (this *Local) IsSymlink(m os.FileMode) bool {
     return m&os.ModeSymlink != 0
+}
+
+// 权限格式化
+// Format Perm
+func (this *Local) FormatPerm(i uint32) os.FileMode {
+    // 八进制转成十进制
+    // p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
+    return os.FileMode(i)
 }

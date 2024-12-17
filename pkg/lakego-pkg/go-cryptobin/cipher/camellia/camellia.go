@@ -18,7 +18,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/camellia: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/camellia: invalid key size " + strconv.Itoa(int(k))
 }
 
 type camelliaCipher struct {
@@ -51,15 +51,15 @@ func (this *camelliaCipher) BlockSize() int {
 
 func (this *camelliaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/camellia: input not full block")
+        panic("go-cryptobin/camellia: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/camellia: output not full block")
+        panic("go-cryptobin/camellia: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/camellia: invalid buffer overlap")
+        panic("go-cryptobin/camellia: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -67,15 +67,15 @@ func (this *camelliaCipher) Encrypt(dst, src []byte) {
 
 func (this *camelliaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/camellia: input not full block")
+        panic("go-cryptobin/camellia: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/camellia: output not full block")
+        panic("go-cryptobin/camellia: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/camellia: invalid buffer overlap")
+        panic("go-cryptobin/camellia: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

@@ -19,7 +19,7 @@ func NewCRLBagEntry() *CRLBagEntry {
 func (this *CRLBagEntry) DecodeCertBag(asn1Data []byte) (cert []byte, err error) {
     bag := new(CRLBagData)
     if err := unmarshal(asn1Data, bag); err != nil {
-        return nil, errors.New("pkcs12: error decoding crl bag: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error decoding crl bag: " + err.Error())
     }
 
     if !bag.Id.Equal(oidCertTypeX509CRL) {
@@ -36,7 +36,7 @@ func (this *CRLBagEntry) EncodeCertBag(cert []byte) (asn1Data []byte, err error)
     bag.Data = cert
 
     if asn1Data, err = asn1.Marshal(bag); err != nil {
-        return nil, errors.New("pkcs12: error encoding crl bag: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error encoding crl bag: " + err.Error())
     }
 
     return asn1Data, nil

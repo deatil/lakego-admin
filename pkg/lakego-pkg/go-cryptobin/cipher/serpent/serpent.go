@@ -16,7 +16,7 @@ const phi = 0x9e3779b9
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/serpent: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/serpent: invalid key size %d", int(k))
 }
 
 // The 132 32 bit subkeys of serpent
@@ -47,15 +47,15 @@ func (this *serpentCipher) BlockSize() int {
 
 func (this *serpentCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/serpent: input not full block")
+        panic("go-cryptobin/serpent: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/serpent: output not full block")
+        panic("go-cryptobin/serpent: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/serpent: invalid buffer overlap")
+        panic("go-cryptobin/serpent: invalid buffer overlap")
     }
 
     encryptBlock(dst, src, this.rk)
@@ -63,15 +63,15 @@ func (this *serpentCipher) Encrypt(dst, src []byte) {
 
 func (this *serpentCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/serpent: input not full block")
+        panic("go-cryptobin/serpent: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/serpent: output not full block")
+        panic("go-cryptobin/serpent: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/serpent: invalid buffer overlap")
+        panic("go-cryptobin/serpent: invalid buffer overlap")
     }
 
     decryptBlock(dst, src, this.rk)

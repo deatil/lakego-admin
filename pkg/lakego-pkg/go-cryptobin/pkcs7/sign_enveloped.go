@@ -13,7 +13,7 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
-var ErrUnsupportedAlgorithm = errors.New("pkcs7: cannot decrypt data")
+var ErrUnsupportedAlgorithm = errors.New("go-cryptobin/pkcs7: cannot decrypt data")
 
 // It is recommended to use a sequential combination of the signed-data and the enveloped-data content types instead of using the signed-and-enveloped-data content type,
 // since the signed-and-enveloped-data content type does not have authenticated or unauthenticated attributes,
@@ -67,11 +67,11 @@ type VerifyFunc func() error
 func (p7 *PKCS7) DecryptOnlyOne(pkey crypto.PrivateKey) (err error) {
     sed, ok := p7.raw.(signedEnvelopedData)
     if !ok {
-        return errors.New("pkcs7: it's not SignedAndEvelopedData")
+        return errors.New("go-cryptobin/pkcs7: it's not SignedAndEvelopedData")
     }
 
     if len(sed.RecipientInfos) != 1 {
-        return errors.New("pkcs7: more than one recipients or no receipient")
+        return errors.New("go-cryptobin/pkcs7: more than one recipients or no receipient")
     }
 
     defer func() {
@@ -95,12 +95,12 @@ func (p7 *PKCS7) DecryptOnlyOne(pkey crypto.PrivateKey) (err error) {
 func (p7 *PKCS7) Decrypt(cert *x509.Certificate, pkey crypto.PrivateKey) (err error) {
     sed, ok := p7.raw.(signedEnvelopedData)
     if !ok {
-        return errors.New("pkcs7: it's NOT SignedAndEvelopedData")
+        return errors.New("go-cryptobin/pkcs7: it's NOT SignedAndEvelopedData")
     }
 
     recipient := sed.GetRecipient(cert)
     if recipient == nil {
-        return errors.New("pkcs7: no enveloped recipient for provided certificate")
+        return errors.New("go-cryptobin/pkcs7: no enveloped recipient for provided certificate")
     }
 
     defer func() {
@@ -343,5 +343,5 @@ func encryptKey(key []byte, recipient *x509.Certificate) ([]byte, error) {
         return sm2.EncryptASN1(rand.Reader, pub, key, nil)
     }
 
-    return nil, errors.New("pkcs7: only supports RSA/SM2 key")
+    return nil, errors.New("go-cryptobin/pkcs7: only supports RSA/SM2 key")
 }

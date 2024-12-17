@@ -32,15 +32,15 @@ func (this *kalynaCipher512_512) BlockSize() int {
 
 func (this *kalynaCipher512_512) Encrypt(dst, src []byte) {
     if len(src) < BlockSize512_512 {
-        panic("cryptobin/kalyna: input not full block")
+        panic("go-cryptobin/kalyna: input not full block")
     }
 
     if len(dst) < BlockSize512_512 {
-        panic("cryptobin/kalyna: output not full block")
+        panic("go-cryptobin/kalyna: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize512_512], src[:BlockSize512_512]) {
-        panic("cryptobin/kalyna: invalid buffer overlap")
+        panic("go-cryptobin/kalyna: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -48,15 +48,15 @@ func (this *kalynaCipher512_512) Encrypt(dst, src []byte) {
 
 func (this *kalynaCipher512_512) Decrypt(dst, src []byte) {
     if len(src) < BlockSize512_512 {
-        panic("cryptobin/kalyna: input not full block")
+        panic("go-cryptobin/kalyna: input not full block")
     }
 
     if len(dst) < BlockSize512_512 {
-        panic("cryptobin/kalyna: output not full block")
+        panic("go-cryptobin/kalyna: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize512_512], src[:BlockSize512_512]) {
-        panic("cryptobin/kalyna: invalid buffer overlap")
+        panic("go-cryptobin/kalyna: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

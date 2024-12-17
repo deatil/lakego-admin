@@ -22,7 +22,7 @@ func Decrypt(data []byte, cert *x509.Certificate, pkey crypto.PrivateKey) ([]byt
     if !DefaultMode.IsEnvelopedData(contentType) &&
         !SM2Mode.IsEnvelopedData(contentType) &&
         !SM9Mode.IsEnvelopedData(contentType) {
-        return nil, errors.New("pkcs7: contentType error")
+        return nil, errors.New("go-cryptobin/pkcs7: contentType error")
     }
 
     var endata envelopedData
@@ -32,7 +32,7 @@ func Decrypt(data []byte, cert *x509.Certificate, pkey crypto.PrivateKey) ([]byt
 
     recipient := selectRecipientForCertificate(endata.RecipientInfos, cert)
     if recipient.EncryptedKey == nil {
-        return nil, errors.New("pkcs7: no enveloped recipient for provided certificate")
+        return nil, errors.New("go-cryptobin/pkcs7: no enveloped recipient for provided certificate")
     }
 
     keyEncrypt, err := parseKeyEncrypt(recipient.KeyEncryptionAlgorithm)
@@ -59,7 +59,7 @@ func DecryptUsingPSK(data []byte, key []byte) ([]byte, error) {
     if !DefaultMode.IsEncryptedData(contentType) &&
         !SM2Mode.IsEncryptedData(contentType) &&
         !SM9Mode.IsEncryptedData(contentType) {
-        return nil, errors.New("pkcs7: contentType error")
+        return nil, errors.New("go-cryptobin/pkcs7: contentType error")
     }
 
     var endata encryptedData
@@ -110,7 +110,7 @@ func parseKeyEncrypt(keyEncrypt pkix.AlgorithmIdentifier) (KeyEncrypt, error) {
 
     fn, ok := keyens[oid]
     if !ok {
-        return nil, fmt.Errorf("pkcs7: unsupported KDF (OID: %s)", oid)
+        return nil, fmt.Errorf("go-cryptobin/pkcs7: unsupported KDF (OID: %s)", oid)
     }
 
     newFunc := fn()
@@ -134,7 +134,7 @@ func parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdentifier) (Cipher, [
 // Parse decodes a DER encoded PKCS7 package
 func parseData(data []byte) ([]byte, asn1.ObjectIdentifier, error) {
     if len(data) == 0 {
-        return nil, asn1.ObjectIdentifier{}, errors.New("pkcs7: input data is empty")
+        return nil, asn1.ObjectIdentifier{}, errors.New("go-cryptobin/pkcs7: input data is empty")
     }
 
     der, err := ber.Ber2der(data)

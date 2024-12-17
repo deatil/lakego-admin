@@ -34,7 +34,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/square: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/square: invalid key size %d", int(k))
 }
 
 /*
@@ -69,15 +69,15 @@ func (this *squareCipher) BlockSize() int {
 
 func (this *squareCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/square: input not full block")
+        panic("go-cryptobin/square: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/square: output not full block")
+        panic("go-cryptobin/square: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/square: invalid buffer overlap")
+        panic("go-cryptobin/square: invalid buffer overlap")
     }
 
     var a [4]uint32
@@ -92,15 +92,15 @@ func (this *squareCipher) Encrypt(dst, src []byte) {
 
 func (this *squareCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/square: input not full block")
+        panic("go-cryptobin/square: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/square: output not full block")
+        panic("go-cryptobin/square: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/square: invalid buffer overlap")
+        panic("go-cryptobin/square: invalid buffer overlap")
     }
 
     var a [4]uint32

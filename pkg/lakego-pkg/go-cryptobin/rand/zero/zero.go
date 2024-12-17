@@ -4,6 +4,7 @@ import (
     "io"
 )
 
+// zero Reader
 type zeroReader struct {
     io.Reader
 }

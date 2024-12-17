@@ -34,7 +34,7 @@ func AddCipher(name string, cipher func() Cipher) {
 func GetCipher(name string) (Cipher, error) {
     cipher, ok := ciphers[name]
     if !ok {
-        return nil, fmt.Errorf("pkcs1: unsupported cipher %s", name)
+        return nil, fmt.Errorf("go-cryptobin/pkcs1: unsupported cipher %s", name)
     }
 
     newCipher := cipher()

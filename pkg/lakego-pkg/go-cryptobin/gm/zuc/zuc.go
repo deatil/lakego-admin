@@ -1,7 +1,7 @@
 package zuc
 
 import (
-    "github.com/deatil/go-cryptobin/tool/byteutil"
+    "crypto/subtle"
 )
 
 type ZucState struct {
@@ -103,7 +103,7 @@ func (this *ZucState) Encrypt(out []byte, in []byte) {
 
         PUTU32(block[:], Z)
 
-        byteutil.XorBytes(out[:len(block)], in[:len(block)], block[:])
+        subtle.XORBytes(out[:len(block)], in[:len(block)], block[:])
 
         in = in[len(block):]
         out = out[len(block):]
@@ -116,7 +116,7 @@ func (this *ZucState) Encrypt(out []byte, in []byte) {
 
         PUTU32(block[:], Z)
 
-        byteutil.XorBytes(out[:inlen % 4], in[:inlen % 4], block[:inlen % 4])
+        subtle.XORBytes(out[:inlen % 4], in[:inlen % 4], block[:inlen % 4])
     }
 
     this.R1 = R1

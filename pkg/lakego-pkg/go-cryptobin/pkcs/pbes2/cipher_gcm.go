@@ -8,6 +8,7 @@ import (
 )
 
 // gcm 模式加密参数
+// GCM mode cipher Parameters
 // http://javadoc.iaik.tugraz.at/iaik_jce/current/index.html?iaik/security/cipher/GCMParameters.html
 // GCMParameters ::= SEQUENCE {
 // 	aes-nonce        OCTET STRING, -- recommended size is 12 octets

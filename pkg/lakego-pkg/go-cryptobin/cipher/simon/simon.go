@@ -10,7 +10,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/simon: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/simon: invalid key size %d", int(k))
 }
 
 // NewCipher creates and returns a new cipher.Block.

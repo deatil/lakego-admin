@@ -3,6 +3,7 @@ package filesystem
 import(
     "io"
     "os"
+    "bytes"
     "errors"
 
     "github.com/deatil/go-filesystem/filesystem/util"
@@ -10,10 +11,26 @@ import(
     "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
 
-// new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]any) *Fllesystem {
-    fs := &Fllesystem{
-        adapter: adapters,
+/**
+ * 文件管理器
+ * Filesystem struct
+ *
+ * @create 2021-8-1
+ * @author deatil
+ */
+type Filesystem struct {
+    // 适配器 / Adapter
+    adapter interfaces.Adapter
+
+    // 配置 / Config
+    config interfaces.Config
+}
+
+// 文件管理器
+// return a *Filesystem
+func New(adapter interfaces.Adapter, conf ...map[string]any) *Filesystem {
+    fs := &Filesystem{
+        adapter: adapter,
     }
 
     if len(conf) > 0{
@@ -23,55 +40,42 @@ func New(adapters interfaces.Adapter, conf ...map[string]any) *Fllesystem {
     return fs
 }
 
-/**
- * 文件管理器
- *
- * @create 2021-8-1
- * @author deatil
- */
-type Fllesystem struct {
-    // 适配器
-    adapter interfaces.Adapter
-
-    // 配置
-    config interfaces.Config
-}
-
 // 设置配置
-func (this *Fllesystem) SetConfig(conf interfaces.Config) {
+// With Config
+func (this *Filesystem) WithConfig(conf interfaces.Config) {
     this.config = conf
 }
 
 // 获取配置
-func (this *Fllesystem) GetConfig() interfaces.Config {
+// Get Config
+func (this *Filesystem) GetConfig() interfaces.Config {
     return this.config
 }
 
 // 提前设置配置
-func (this *Fllesystem) PrepareConfig(settings map[string]any) interfaces.Config {
+// Prepare Config
+func (this *Filesystem) PrepareConfig(settings map[string]any) interfaces.Config {
     conf := config.New(settings)
 
     return conf
 }
 
 // 设置适配器
-func (this *Fllesystem) WithAdapter(adapters interfaces.Adapter) *Fllesystem {
+// With Adapter
+func (this *Filesystem) WithAdapter(adapters interfaces.Adapter) *Filesystem {
     this.adapter = adapters
     return this
 }
 
 // 获取适配器
-func (this *Fllesystem) GetAdapter() interfaces.Adapter {
+// Get Adapter
+func (this *Filesystem) GetAdapter() interfaces.Adapter {
     return this.adapter
 }
 
-// 获取文件系统
-func (this *Fllesystem) GetFllesystem() *Fllesystem {
-    return this
-}
-
 // 判断
-func (this *Fllesystem) Has(path string) bool {
+// return true if path exists, else false
+func (this *Filesystem) Has(path string) bool {
     path = util.NormalizePath(path)
 
     if len(path) == 0 {
@@ -82,7 +86,8 @@ func (this *Fllesystem) Has(path string) bool {
 }
 
 // 写入文件
-func (this *Fllesystem) Write(path string, contents string, conf ...map[string]any) (bool, error) {
+// Write contents to path
+func (this *Filesystem) Write(path string, contents []byte, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -100,7 +105,8 @@ func (this *Fllesystem) Write(path string, contents string, conf ...map[string]a
 }
 
 // 写入数据流
-func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
+// Write stream resource to path
+func (this *Filesystem) WriteStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -118,7 +124,8 @@ func (this *Fllesystem) WriteStream(path string, resource io.Reader, conf ...map
 }
 
 // 更新
-func (this *Fllesystem) Put(path string, contents string, conf ...map[string]any) (bool, error) {
+// Put contents to path
+func (this *Filesystem) Put(path string, contents []byte, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -144,7 +151,8 @@ func (this *Fllesystem) Put(path string, contents string, conf ...map[string]any
 }
 
 // 更新数据流
-func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
+// Put stream resource to path
+func (this *Filesystem) PutStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -170,7 +178,8 @@ func (this *Fllesystem) PutStream(path string, resource io.Reader, conf ...map[s
 }
 
 // 读取并删除
-func (this *Fllesystem) ReadAndDelete(path string) (any, error) {
+// read and delete
+func (this *Filesystem) ReadAndDelete(path string) (any, error) {
     path = util.NormalizePath(path)
 
     contents, err := this.Read(path)
@@ -184,7 +193,8 @@ func (this *Fllesystem) ReadAndDelete(path string) (any, error) {
 }
 
 // 更新字符
-func (this *Fllesystem) Update(path string, contents string, conf ...map[string]any) (bool, error) {
+// Update
+func (this *Filesystem) Update(path string, contents []byte, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -202,7 +212,8 @@ func (this *Fllesystem) Update(path string, contents string, conf ...map[string]
 }
 
 // 更新数据流
-func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
+// Update Stream
+func (this *Filesystem) UpdateStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
     path = util.NormalizePath(path)
 
     var newConf map[string]any
@@ -219,20 +230,99 @@ func (this *Fllesystem) UpdateStream(path string, resource io.Reader, conf ...ma
     return true, nil
 }
 
+// 文件头添加
+// Prepend contents
+func (this *Filesystem) Prepend(path string, contents []byte, conf ...map[string]any) (bool, error) {
+    if this.Has(path) {
+        data, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        return this.Put(path, append(contents, data...), conf...)
+    }
+
+    return this.Put(path, contents, conf...)
+}
+
+// 文件头添加数据流
+// Prepend resource Stream
+func (this *Filesystem) PrependStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
+    if this.Has(path) {
+        data, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        buf := &bytes.Buffer{}
+
+        _, err = io.Copy(buf, resource)
+        if err != nil {
+            return false, errors.New("go-filesystem: read resource fail, error: " + err.Error())
+        }
+
+        buf.Write(data)
+
+        return this.PutStream(path, buf, conf...)
+    }
+
+    return this.PutStream(path, resource, conf...)
+}
+
+// 尾部添加
+// Append contents
+func (this *Filesystem) Append(path string, contents []byte, conf ...map[string]any) (bool, error) {
+    if this.Has(path) {
+        data, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        return this.Put(path, append(data, contents...), conf...)
+    }
+
+    return this.Put(path, contents, conf...)
+}
+
+// 尾部添加数据流
+// Append resource Stream
+func (this *Filesystem) AppendStream(path string, resource io.Reader, conf ...map[string]any) (bool, error) {
+    if this.Has(path) {
+        data, err := this.Read(path)
+        if err != nil {
+            return false, err
+        }
+
+        buf := &bytes.Buffer{}
+        buf.Write(data)
+
+        _, err = io.Copy(buf, resource)
+        if err != nil {
+            return false, errors.New("go-filesystem: read resource fail, error: " + err.Error())
+        }
+
+        return this.PutStream(path, buf, conf...)
+    }
+
+    return this.PutStream(path, resource, conf...)
+}
+
 // 文件到字符
-func (this *Fllesystem) Read(path string) (string, error) {
+// Read bytes
+func (this *Filesystem) Read(path string) ([]byte, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.Read(path)
 
     if err != nil {
-        return "", err
+        return nil, err
     }
 
-    return object["contents"].(string), nil
+    return object["contents"].([]byte), nil
 }
 
 // 读取成数据流
-func (this *Fllesystem) ReadStream(path string) (*os.File, error) {
+// Read and return Stream
+func (this *Filesystem) ReadStream(path string) (*os.File, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.ReadStream(path)
 
@@ -244,7 +334,8 @@ func (this *Fllesystem) ReadStream(path string) (*os.File, error) {
 }
 
 // 重命名
-func (this *Fllesystem) Rename(path string, newpath string) (bool, error) {
+// Rename path
+func (this *Filesystem) Rename(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
@@ -256,7 +347,8 @@ func (this *Fllesystem) Rename(path string, newpath string) (bool, error) {
 }
 
 // 复制
-func (this *Fllesystem) Copy(path string, newpath string) (bool, error) {
+// Copy path
+func (this *Filesystem) Copy(path string, newpath string) (bool, error) {
     path = util.NormalizePath(path)
     newpath = util.NormalizePath(newpath)
 
@@ -268,7 +360,8 @@ func (this *Fllesystem) Copy(path string, newpath string) (bool, error) {
 }
 
 // 删除
-func (this *Fllesystem) Delete(path string) (bool, error) {
+// Delete path
+func (this *Filesystem) Delete(path string) (bool, error) {
     path = util.NormalizePath(path)
 
     if err := this.adapter.Delete(path); err != nil {
@@ -279,7 +372,8 @@ func (this *Fllesystem) Delete(path string) (bool, error) {
 }
 
 // 删除文件夹
-func (this *Fllesystem) DeleteDir(dirname string) (bool, error) {
+// Delete Dir
+func (this *Filesystem) DeleteDir(dirname string) (bool, error) {
     dirname = util.NormalizePath(dirname)
     if dirname == "" {
         return false, errors.New("文件夹路径错误")
@@ -293,7 +387,8 @@ func (this *Fllesystem) DeleteDir(dirname string) (bool, error) {
 }
 
 // 创建文件夹
-func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]any) (bool, error) {
+// Create Dir
+func (this *Filesystem) CreateDir(dirname string, conf ...map[string]any) (bool, error) {
     dirname = util.NormalizePath(dirname)
 
     var newConf map[string]any
@@ -311,7 +406,8 @@ func (this *Fllesystem) CreateDir(dirname string, conf ...map[string]any) (bool,
 }
 
 // 列表
-func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[string]any, error) {
+// ListContents
+func (this *Filesystem) ListContents(dirname string, recursive ...bool) ([]map[string]any, error) {
     dirname = util.NormalizePath(dirname)
 
     result, err := this.adapter.ListContents(dirname, recursive...)
@@ -323,7 +419,8 @@ func (this *Fllesystem) ListContents(dirname string, recursive ...bool) ([]map[s
 }
 
 // 类型
-func (this *Fllesystem) GetMimetype(path string) (string, error) {
+// GetMimetype
+func (this *Filesystem) GetMimetype(path string) (string, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.GetMimetype(path)
 
@@ -335,7 +432,8 @@ func (this *Fllesystem) GetMimetype(path string) (string, error) {
 }
 
 // 时间戳
-func (this *Fllesystem) GetTimestamp(path string) (int64, error) {
+// GetTimestamp
+func (this *Filesystem) GetTimestamp(path string) (int64, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.GetTimestamp(path)
 
@@ -347,7 +445,8 @@ func (this *Fllesystem) GetTimestamp(path string) (int64, error) {
 }
 
 // 权限
-func (this *Fllesystem) GetVisibility(path string) (string, error) {
+// GetVisibility string
+func (this *Filesystem) GetVisibility(path string) (string, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.GetVisibility(path)
 
@@ -359,7 +458,8 @@ func (this *Fllesystem) GetVisibility(path string) (string, error) {
 }
 
 // 大小
-func (this *Fllesystem) GetSize(path string) (int64, error) {
+// GetSize
+func (this *Filesystem) GetSize(path string) (int64, error) {
     path = util.NormalizePath(path)
     object, err := this.adapter.GetSize(path)
 
@@ -371,7 +471,8 @@ func (this *Fllesystem) GetSize(path string) (int64, error) {
 }
 
 // 设置权限
-func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, error) {
+// SetVisibility
+func (this *Filesystem) SetVisibility(path string, visibility string) (bool, error) {
     path = util.NormalizePath(path)
 
     if _, err := this.adapter.SetVisibility(path, visibility); err != nil {
@@ -382,7 +483,8 @@ func (this *Fllesystem) SetVisibility(path string, visibility string) (bool, err
 }
 
 // 信息数据
-func (this *Fllesystem) GetMetadata(path string) (map[string]any, error) {
+// Get Metadata
+func (this *Filesystem) GetMetadata(path string) (map[string]any, error) {
     path = util.NormalizePath(path)
 
     if info, err := this.adapter.GetMetadata(path); err != nil {
@@ -393,9 +495,10 @@ func (this *Fllesystem) GetMetadata(path string) (map[string]any, error) {
 }
 
 // 获取
-// Get("file.txt").(*fllesystem.File).Read()
-// Get("/file").(*fllesystem.Directory).Read()
-func (this *Fllesystem) Get(path string, handler ...func(*Fllesystem, string) any) any {
+// Get
+// file := Get("/file.txt").(*File)
+// dir := Get("/dir").(*Directory)
+func (this *Filesystem) Get(path string, handler ...func(*Filesystem, string) any) any {
     path = util.NormalizePath(path)
 
     if len(handler) > 0 {

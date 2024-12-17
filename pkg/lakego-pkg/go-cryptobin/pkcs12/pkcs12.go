@@ -56,7 +56,7 @@ func Decode(pfxData []byte, password string) (
 
     privateKey, certificate, caCerts, err = DecodeChain(pfxData, password)
     if len(caCerts) != 0 {
-        err = errors.New("pkcs12: expected exactly two safe bags in the PFX PDU")
+        err = errors.New("go-cryptobin/pkcs12: expected exactly two safe bags in the PFX PDU")
     }
 
     return
@@ -77,12 +77,12 @@ func DecodeChain(pfxData []byte, password string) (
 
     privateKey, _, err = p12.GetPrivateKey()
     if err != nil {
-        return nil, nil, nil, errors.New("pkcs12: private key missing")
+        return nil, nil, nil, errors.New("go-cryptobin/pkcs12: private key missing")
     }
 
     certificate, _, err = p12.GetCert()
     if err != nil {
-        return nil, nil, nil, errors.New("pkcs12: certificate missing")
+        return nil, nil, nil, errors.New("go-cryptobin/pkcs12: certificate missing")
     }
 
     caCerts, _ = p12.GetCaCerts()

@@ -31,7 +31,7 @@ func initAll() {
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/loki97: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/loki97: invalid key size " + strconv.Itoa(int(k))
 }
 
 type loki97Cipher struct {
@@ -66,15 +66,15 @@ func (this *loki97Cipher) BlockSize() int {
 
 func (this *loki97Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/loki97: input not full block")
+        panic("go-cryptobin/loki97: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/loki97: output not full block")
+        panic("go-cryptobin/loki97: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/loki97: invalid buffer overlap")
+        panic("go-cryptobin/loki97: invalid buffer overlap")
     }
 
     encBlock := blockEncrypt(src, this.key)
@@ -83,15 +83,15 @@ func (this *loki97Cipher) Encrypt(dst, src []byte) {
 
 func (this *loki97Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/loki97: input not full block")
+        panic("go-cryptobin/loki97: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/loki97: output not full block")
+        panic("go-cryptobin/loki97: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/loki97: invalid buffer overlap")
+        panic("go-cryptobin/loki97: invalid buffer overlap")
     }
 
     decBlock := blockDecrypt(src, this.key);

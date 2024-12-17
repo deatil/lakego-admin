@@ -187,5 +187,6 @@ func X448(scalar, point []byte) ([]byte, error) {
     if zero.Equal(&ret) == 1 {
         return nil, errors.New("x448 bad input point: low order point")
     }
+
     return ret.Bytes(), nil
 }

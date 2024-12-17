@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/cast: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/cast: invalid key size " + strconv.Itoa(int(k))
 }
 
 type castCipher struct {
@@ -42,15 +42,15 @@ func (this *castCipher) BlockSize() int {
 
 func (this *castCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/cast: input not full block")
+        panic("go-cryptobin/cast: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/cast: output not full block")
+        panic("go-cryptobin/cast: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/cast: invalid buffer overlap")
+        panic("go-cryptobin/cast: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -58,15 +58,15 @@ func (this *castCipher) Encrypt(dst, src []byte) {
 
 func (this *castCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/cast: input not full block")
+        panic("go-cryptobin/cast: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/cast: output not full block")
+        panic("go-cryptobin/cast: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/cast: invalid buffer overlap")
+        panic("go-cryptobin/cast: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

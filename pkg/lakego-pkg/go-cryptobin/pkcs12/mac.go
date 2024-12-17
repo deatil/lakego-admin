@@ -116,7 +116,7 @@ func hashByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, int, error) {
             return gost34112012512.New, 128, nil
     }
 
-    return nil, 0, fmt.Errorf("pkcs12: unsupported hash (OID: %s)", oid)
+    return nil, 0, fmt.Errorf("go-cryptobin/pkcs12: unsupported hash (OID: %s)", oid)
 }
 
 // 返回使用的 Hash 对应的 oid
@@ -153,7 +153,7 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidGOST34112012512, nil
     }
 
-    return nil, errors.New("pkcs12: unsupported hash function")
+    return nil, errors.New("go-cryptobin/pkcs12: unsupported hash function")
 }
 
 // from PKCS#7:

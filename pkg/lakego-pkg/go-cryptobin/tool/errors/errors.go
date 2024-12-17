@@ -12,7 +12,7 @@ type Errors struct {
 }
 
 // 构造函数
-func NewErrors(errs []error) *Errors {
+func New(errs []error) *Errors {
     e := &Errors{
         errs: make([]error, 0),
     }

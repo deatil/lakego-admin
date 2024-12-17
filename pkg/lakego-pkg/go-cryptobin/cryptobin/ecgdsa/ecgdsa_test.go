@@ -388,3 +388,47 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
 
     assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")
 }
+
+func Test_GenKey(t *testing.T) {
+    cases := []string{
+        "P521",
+        "P384",
+        "P256",
+        "P224",
+
+        "BrainpoolP256r1",
+        "BrainpoolP256t1",
+        "BrainpoolP320r1",
+        "BrainpoolP320t1",
+        "BrainpoolP384r1",
+        "BrainpoolP384t1",
+        "BrainpoolP512r1",
+        "BrainpoolP512t1",
+    }
+
+    for _, c := range cases {
+        t.Run(c, func(t *testing.T) {
+            test_GenKey(t, c)
+        })
+    }
+}
+
+func test_GenKey(t *testing.T, curve string) {
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    obj := GenerateKey(curve)
+
+    assertError(obj.Error(), "PrivateKeyD")
+
+    d := obj.GetPrivateKeyString()
+
+    assertNotEmpty(d, "PrivateKeyD")
+
+    xk := New().SetCurve(curve).FromPrivateKeyString(d)
+
+    assertError(xk.Error(), "PrivateKeyD-xk")
+
+    assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey-xk")
+}

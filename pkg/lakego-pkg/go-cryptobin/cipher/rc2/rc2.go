@@ -27,15 +27,15 @@ func (c *rc2Cipher) BlockSize() int {
 
 func (c *rc2Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/rc2: input not full block")
+        panic("go-cryptobin/rc2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/rc2: output not full block")
+        panic("go-cryptobin/rc2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/rc2: invalid buffer overlap")
+        panic("go-cryptobin/rc2: invalid buffer overlap")
     }
 
     c.encrypt(dst, src)
@@ -43,15 +43,15 @@ func (c *rc2Cipher) Encrypt(dst, src []byte) {
 
 func (c *rc2Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/rc2: input not full block")
+        panic("go-cryptobin/rc2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/rc2: output not full block")
+        panic("go-cryptobin/rc2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/rc2: invalid buffer overlap")
+        panic("go-cryptobin/rc2: invalid buffer overlap")
     }
 
     c.decrypt(dst, src)

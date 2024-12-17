@@ -52,15 +52,15 @@ func (c *cipher16) BlockSize() int {
 
 func (c *cipher16) Encrypt(dst, src []byte) {
     if len(src) < BlockSize16 {
-        panic("cryptobin/rc5-16: input not full block")
+        panic("go-cryptobin/rc5-16: input not full block")
     }
 
     if len(dst) < BlockSize16 {
-        panic("cryptobin/rc5-16: output not full block")
+        panic("go-cryptobin/rc5-16: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize16], src[:BlockSize16]) {
-        panic("cryptobin/rc5-16: invalid buffer overlap")
+        panic("go-cryptobin/rc5-16: invalid buffer overlap")
     }
 
     A, B := get16(src)
@@ -76,15 +76,15 @@ func (c *cipher16) Encrypt(dst, src []byte) {
 
 func (c *cipher16) Decrypt(dst, src []byte) {
     if len(src) < BlockSize16 {
-        panic("cryptobin/rc5-16: input not full block")
+        panic("go-cryptobin/rc5-16: input not full block")
     }
 
     if len(dst) < BlockSize16 {
-        panic("cryptobin/rc5-16: output not full block")
+        panic("go-cryptobin/rc5-16: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize16], src[:BlockSize16]) {
-        panic("cryptobin/rc5-16: invalid buffer overlap")
+        panic("go-cryptobin/rc5-16: invalid buffer overlap")
     }
 
     A, B := get16(src)

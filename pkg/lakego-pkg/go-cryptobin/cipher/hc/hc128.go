@@ -37,10 +37,10 @@ func (this *hcCipher128) XORKeyStream(dst, src []byte) {
     }
 
     if len(dst) < len(src) {
-        panic("cryptobin/hc: output smaller than input")
+        panic("go-cryptobin/hc: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/hc: invalid buffer overlap")
+        panic("go-cryptobin/hc: invalid buffer overlap")
     }
 
     this.crypt(dst, src)

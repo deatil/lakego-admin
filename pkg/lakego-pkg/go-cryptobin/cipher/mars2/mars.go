@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/mars: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/mars: invalid key size " + strconv.Itoa(int(k))
 }
 
 type marsCipher struct {
@@ -42,15 +42,15 @@ func (this *marsCipher) BlockSize() int {
 
 func (this *marsCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/mars: input not full block")
+        panic("go-cryptobin/mars: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/mars: output not full block")
+        panic("go-cryptobin/mars: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/mars: invalid buffer overlap")
+        panic("go-cryptobin/mars: invalid buffer overlap")
     }
 
     in_blk := bytesToUint32s(src)
@@ -64,15 +64,15 @@ func (this *marsCipher) Encrypt(dst, src []byte) {
 
 func (this *marsCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/mars: input not full block")
+        panic("go-cryptobin/mars: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/mars: output not full block")
+        panic("go-cryptobin/mars: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/mars: invalid buffer overlap")
+        panic("go-cryptobin/mars: invalid buffer overlap")
     }
 
     in_blk := bytesToUint32s(src)

@@ -7,7 +7,8 @@ import (
     "crypto/cipher"
     "crypto/subtle"
 
-    "github.com/deatil/go-cryptobin/tool/byteutil"
+    "github.com/deatil/go-cryptobin/tool/alias"
+    byteutil "github.com/deatil/go-cryptobin/tool/bytes"
 )
 
 type mask struct {
@@ -102,7 +103,7 @@ func (o *ocb) Seal(dst, nonce, plaintext, adata []byte) []byte {
         panic("crypto/ocb: Incorrect nonce length given to OCB")
     }
 
-    ret, out := byteutil.SliceForAppend(dst, len(plaintext)+o.tagSize)
+    ret, out := alias.SliceForAppend(dst, len(plaintext)+o.tagSize)
     o.crypt(enc, out, nonce, adata, plaintext)
 
     return ret
@@ -117,7 +118,7 @@ func (o *ocb) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     }
 
     sep := len(ciphertext) - o.tagSize
-    ret, out := byteutil.SliceForAppend(dst, len(ciphertext))
+    ret, out := alias.SliceForAppend(dst, len(ciphertext))
 
     ciphertextData := ciphertext[:sep]
     tag := ciphertext[sep:]
@@ -179,13 +180,13 @@ func (o *ocb) crypt(instruction int, Y, nonce, adata, X []byte) []byte {
 
     // Stretch = Ktop || ((lower half of Ktop) XOR (lower half of Ktop << 8))
     xorHalves := make([]byte, blockSize/2)
-    byteutil.XorBytes(xorHalves, Ktop[:blockSize/2], Ktop[1:1+blockSize/2])
+    byteutil.XORBytes(xorHalves, Ktop[:blockSize/2], Ktop[1:1+blockSize/2])
 
     stretch := append(Ktop, xorHalves...)
     bottom := int(nonce[len(nonce)-1] & 63)
     offset := make([]byte, len(stretch))
 
-    byteutil.ShiftNBytesLeft(offset, stretch, bottom)
+    byteutil.ShiftLeftN(offset, stretch, bottom)
     offset = offset[:blockSize]
 
     //
@@ -201,20 +202,20 @@ func (o *ocb) crypt(instruction int, Y, nonce, adata, X []byte) []byte {
             o.mask.extendTable(index)
         }
 
-        byteutil.XorBytesMut(offset, o.mask.L[bits.TrailingZeros(uint(i+1))])
+        byteutil.XORBytesMut(offset, o.mask.L[bits.TrailingZeros(uint(i+1))])
         blockX := X[i*blockSize : (i+1)*blockSize]
         blockY := Y[i*blockSize : (i+1)*blockSize]
-        byteutil.XorBytes(blockY, blockX, offset)
+        byteutil.XORBytes(blockY, blockX, offset)
 
         switch instruction {
             case enc:
                 o.block.Encrypt(blockY, blockY)
-                byteutil.XorBytesMut(blockY, offset)
-                byteutil.XorBytesMut(checksum, blockX)
+                byteutil.XORBytesMut(blockY, offset)
+                byteutil.XORBytesMut(checksum, blockX)
             case dec:
                 o.block.Decrypt(blockY, blockY)
-                byteutil.XorBytesMut(blockY, offset)
-                byteutil.XorBytesMut(checksum, blockY)
+                byteutil.XORBytesMut(blockY, offset)
+                byteutil.XORBytesMut(checksum, blockY)
         }
     }
 
@@ -223,41 +224,41 @@ func (o *ocb) crypt(instruction int, Y, nonce, adata, X []byte) []byte {
     //
     tag := make([]byte, blockSize)
     if len(X)%blockSize != 0 {
-        byteutil.XorBytesMut(offset, o.mask.lAst)
+        byteutil.XORBytesMut(offset, o.mask.lAst)
         pad := make([]byte, blockSize)
         o.block.Encrypt(pad, offset)
 
         chunkX := X[blockSize*m:]
         chunkY := Y[blockSize*m : len(X)]
-        byteutil.XorBytes(chunkY, chunkX, pad[:len(chunkX)])
+        byteutil.XORBytes(chunkY, chunkX, pad[:len(chunkX)])
 
         // P_* || bit(1) || zeroes(127) - len(P_*)
         switch instruction {
             case enc:
                 paddedY := append(chunkX, byte(128))
                 paddedY = append(paddedY, make([]byte, blockSize-len(chunkX)-1)...)
-                byteutil.XorBytesMut(checksum, paddedY)
+                byteutil.XORBytesMut(checksum, paddedY)
             case dec:
                 paddedX := append(chunkY, byte(128))
                 paddedX = append(paddedX, make([]byte, blockSize-len(chunkY)-1)...)
-                byteutil.XorBytesMut(checksum, paddedX)
+                byteutil.XORBytesMut(checksum, paddedX)
         }
 
-        byteutil.XorBytes(tag, checksum, offset)
-        byteutil.XorBytesMut(tag, o.mask.lDol)
+        byteutil.XORBytes(tag, checksum, offset)
+        byteutil.XORBytesMut(tag, o.mask.lDol)
 
         o.block.Encrypt(tag, tag)
 
-        byteutil.XorBytesMut(tag, o.hash(adata))
+        byteutil.XORBytesMut(tag, o.hash(adata))
 
         copy(Y[blockSize*m+len(chunkY):], tag[:o.tagSize])
     } else {
-        byteutil.XorBytes(tag, checksum, offset)
-        byteutil.XorBytesMut(tag, o.mask.lDol)
+        byteutil.XORBytes(tag, checksum, offset)
+        byteutil.XORBytesMut(tag, o.mask.lDol)
 
         o.block.Encrypt(tag, tag)
 
-        byteutil.XorBytesMut(tag, o.hash(adata))
+        byteutil.XORBytesMut(tag, o.hash(adata))
 
         copy(Y[blockSize*m:], tag[:o.tagSize])
     }
@@ -290,28 +291,28 @@ func (o *ocb) hash(adata []byte) []byte {
             o.mask.extendTable(index)
         }
 
-        byteutil.XorBytesMut(offset, o.mask.L[index])
-        byteutil.XorBytesMut(chunk, offset)
+        byteutil.XORBytesMut(offset, o.mask.L[index])
+        byteutil.XORBytesMut(chunk, offset)
 
         o.block.Encrypt(chunk, chunk)
 
-        byteutil.XorBytesMut(sum, chunk)
+        byteutil.XORBytesMut(sum, chunk)
     }
 
     //
     // Process any final partial block; compute final hash value
     //
     if len(A)%blockSize != 0 {
-        byteutil.XorBytesMut(offset, o.mask.lAst)
+        byteutil.XORBytesMut(offset, o.mask.lAst)
         // Pad block with 1 || 0 ^ 127 - bitlength(a)
         ending := make([]byte, blockSize-len(A)%blockSize)
         ending[0] = 0x80
         encrypted := append(A[blockSize*m:], ending...)
-        byteutil.XorBytesMut(encrypted, offset)
+        byteutil.XORBytesMut(encrypted, offset)
 
         o.block.Encrypt(encrypted, encrypted)
 
-        byteutil.XorBytesMut(sum, encrypted)
+        byteutil.XORBytesMut(sum, encrypted)
     }
 
     return sum

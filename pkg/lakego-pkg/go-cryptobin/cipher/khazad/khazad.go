@@ -12,7 +12,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/khazad: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/khazad: invalid key size %d", int(k))
 }
 
 type khazadCipher struct {
@@ -42,15 +42,15 @@ func (this *khazadCipher) BlockSize() int {
 
 func (this *khazadCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/khazad: input not full block")
+        panic("go-cryptobin/khazad: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/khazad: output not full block")
+        panic("go-cryptobin/khazad: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/khazad: invalid buffer overlap")
+        panic("go-cryptobin/khazad: invalid buffer overlap")
     }
 
     this.crypt(dst, src, this.roundKeyEnc[:]);
@@ -58,15 +58,15 @@ func (this *khazadCipher) Encrypt(dst, src []byte) {
 
 func (this *khazadCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/khazad: input not full block")
+        panic("go-cryptobin/khazad: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/khazad: output not full block")
+        panic("go-cryptobin/khazad: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/khazad: invalid buffer overlap")
+        panic("go-cryptobin/khazad: invalid buffer overlap")
     }
 
     this.crypt(dst, src, this.roundKeyDec[:]);

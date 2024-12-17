@@ -2,7 +2,6 @@ package magenta
 
 import (
     "fmt"
-    "sync"
     "crypto/cipher"
 
     "github.com/deatil/go-cryptobin/tool/alias"
@@ -13,18 +12,12 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/magenta: invalid key size %d", int(k))
-}
-
-var once sync.Once
-
-func initAll() {
-    init_tab()
+    return fmt.Sprintf("go-cryptobin/magenta: invalid key size %d", int(k))
 }
 
 type magentaCipher struct {
-    l_key [16]uint32
-    k_len uint32
+    lkey [16]uint32
+    klen uint32
 }
 
 // NewCipher creates and returns a new cipher.Block.
@@ -36,8 +29,6 @@ func NewCipher(key []byte) (cipher.Block, error) {
         default:
             return nil, KeySizeError(k)
     }
-
-    once.Do(initAll)
 
     c := new(magentaCipher)
     c.expandKey(key)
@@ -51,15 +42,15 @@ func (this *magentaCipher) BlockSize() int {
 
 func (this *magentaCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/magenta: input not full block")
+        panic("go-cryptobin/magenta: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/magenta: output not full block")
+        panic("go-cryptobin/magenta: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/magenta: invalid buffer overlap")
+        panic("go-cryptobin/magenta: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -73,15 +64,15 @@ func (this *magentaCipher) Encrypt(dst, src []byte) {
 
 func (this *magentaCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/magenta: input not full block")
+        panic("go-cryptobin/magenta: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/magenta: output not full block")
+        panic("go-cryptobin/magenta: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/magenta: invalid buffer overlap")
+        panic("go-cryptobin/magenta: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -93,119 +84,119 @@ func (this *magentaCipher) Decrypt(dst, src []byte) {
     copy(dst, resBytes)
 }
 
+func (this *magentaCipher) encrypt(out []uint32, in []uint32) {
+    var blk, tt [4]uint32
+
+    lkey := this.lkey
+
+    blk[0] = in[0]
+    blk[1] = in[1]
+    blk[2] = in[2]
+    blk[3] = in[3]
+
+    r(&tt, blk[0:], blk[2:], lkey[0:])
+    r(&tt, blk[2:], blk[0:], lkey[2:])
+
+    r(&tt, blk[0:], blk[2:], lkey[4:])
+    r(&tt, blk[2:], blk[0:], lkey[6:])
+
+    r(&tt, blk[0:], blk[2:], lkey[8:])
+    r(&tt, blk[2:], blk[0:], lkey[10:])
+
+    if this.klen == 4 {
+        r(&tt, blk[0:], blk[2:], lkey[12:])
+        r(&tt, blk[2:], blk[0:], lkey[14:])
+    }
+
+    out[0] = blk[0]
+    out[1] = blk[1]
+    out[2] = blk[2]
+    out[3] = blk[3]
+}
+
+func (this *magentaCipher) decrypt(out []uint32, in []uint32) {
+    var blk, tt [4]uint32
+
+    lkey := this.lkey
+
+    blk[2] = in[0]
+    blk[3] = in[1]
+    blk[0] = in[2]
+    blk[1] = in[3]
+
+    r(&tt, blk[0:], blk[2:], lkey[0:])
+    r(&tt, blk[2:], blk[0:], lkey[2:])
+
+    r(&tt, blk[0:], blk[2:], lkey[4:])
+    r(&tt, blk[2:], blk[0:], lkey[6:])
+
+    r(&tt, blk[0:], blk[2:], lkey[8:])
+    r(&tt, blk[2:], blk[0:], lkey[10:])
+
+    if this.klen == 4 {
+        r(&tt, blk[0:], blk[2:], lkey[12:])
+        r(&tt, blk[2:], blk[0:], lkey[14:])
+    }
+
+    out[2] = blk[0]
+    out[3] = blk[1]
+    out[0] = blk[2]
+    out[1] = blk[3]
+}
+
 func (this *magentaCipher) expandKey(key []byte) {
-    in_key := bytesToUint32s(key)
-    key_len := uint32(len(key)) * 8
+    inKey := bytesToUint32s(key)
+    keyLen := uint32(len(key)) * 8
 
-    this.k_len = (key_len + 63) / 64;
+    this.klen = (keyLen + 63) / 64;
 
-    var l_key [16]uint32
+    var lkey [16]uint32
 
-    switch this.k_len {
+    switch this.klen {
         case 2:
-            l_key[ 0] = in_key[0]
-            l_key[ 1] = in_key[1]
-            l_key[ 2] = in_key[0]
-            l_key[ 3] = in_key[1]
-            l_key[ 4] = in_key[2]
-            l_key[ 5] = in_key[3]
-            l_key[ 6] = in_key[2]
-            l_key[ 7] = in_key[3]
-            l_key[ 8] = in_key[0]
-            l_key[ 9] = in_key[1]
-            l_key[10] = in_key[0]
-            l_key[11] = in_key[1]
+            lkey[ 0] = inKey[0]
+            lkey[ 1] = inKey[1]
+            lkey[ 2] = inKey[0]
+            lkey[ 3] = inKey[1]
+            lkey[ 4] = inKey[2]
+            lkey[ 5] = inKey[3]
+            lkey[ 6] = inKey[2]
+            lkey[ 7] = inKey[3]
+            lkey[ 8] = inKey[0]
+            lkey[ 9] = inKey[1]
+            lkey[10] = inKey[0]
+            lkey[11] = inKey[1]
         case 3:
-            l_key[ 0] = in_key[0]
-            l_key[ 1] = in_key[1]
-            l_key[ 2] = in_key[2]
-            l_key[ 3] = in_key[3]
-            l_key[ 4] = in_key[4]
-            l_key[ 5] = in_key[5]
-            l_key[ 6] = in_key[4]
-            l_key[ 7] = in_key[5]
-            l_key[ 8] = in_key[2]
-            l_key[ 9] = in_key[3]
-            l_key[10] = in_key[0]
-            l_key[11] = in_key[1]
+            lkey[ 0] = inKey[0]
+            lkey[ 1] = inKey[1]
+            lkey[ 2] = inKey[2]
+            lkey[ 3] = inKey[3]
+            lkey[ 4] = inKey[4]
+            lkey[ 5] = inKey[5]
+            lkey[ 6] = inKey[4]
+            lkey[ 7] = inKey[5]
+            lkey[ 8] = inKey[2]
+            lkey[ 9] = inKey[3]
+            lkey[10] = inKey[0]
+            lkey[11] = inKey[1]
         case 4:
-            l_key[ 0] = in_key[0]
-            l_key[ 1] = in_key[1]
-            l_key[ 2] = in_key[2]
-            l_key[ 3] = in_key[3]
-            l_key[ 4] = in_key[4]
-            l_key[ 5] = in_key[5]
-            l_key[ 6] = in_key[6]
-            l_key[ 7] = in_key[7]
-            l_key[ 8] = in_key[6]
-            l_key[ 9] = in_key[7]
-            l_key[10] = in_key[4]
-            l_key[11] = in_key[5]
-            l_key[12] = in_key[2]
-            l_key[13] = in_key[3]
-            l_key[14] = in_key[0]
-            l_key[15] = in_key[1]
+            lkey[ 0] = inKey[0]
+            lkey[ 1] = inKey[1]
+            lkey[ 2] = inKey[2]
+            lkey[ 3] = inKey[3]
+            lkey[ 4] = inKey[4]
+            lkey[ 5] = inKey[5]
+            lkey[ 6] = inKey[6]
+            lkey[ 7] = inKey[7]
+            lkey[ 8] = inKey[6]
+            lkey[ 9] = inKey[7]
+            lkey[10] = inKey[4]
+            lkey[11] = inKey[5]
+            lkey[12] = inKey[2]
+            lkey[13] = inKey[3]
+            lkey[14] = inKey[0]
+            lkey[15] = inKey[1]
     }
 
-    this.l_key = l_key
-}
-
-func (this *magentaCipher) encrypt(out_blk []uint32, in_blk []uint32) {
-    var blk, tt [4]uint32
-
-    l_key := this.l_key
-
-    blk[0] = in_blk[0]
-    blk[1] = in_blk[1]
-    blk[2] = in_blk[2]
-    blk[3] = in_blk[3]
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[0:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[2:])
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[4:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[6:])
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[8:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[10:])
-
-    if this.k_len == 4 {
-        r_fun(&tt, blk[0:], blk[2:], l_key[12:])
-        r_fun(&tt, blk[2:], blk[0:], l_key[14:])
-    }
-
-    out_blk[0] = blk[0]
-    out_blk[1] = blk[1]
-    out_blk[2] = blk[2]
-    out_blk[3] = blk[3]
-}
-
-func (this *magentaCipher) decrypt(out_blk []uint32, in_blk []uint32) {
-    var blk, tt [4]uint32
-
-    l_key := this.l_key
-
-    blk[2] = in_blk[0]
-    blk[3] = in_blk[1]
-    blk[0] = in_blk[2]
-    blk[1] = in_blk[3]
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[0:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[2:])
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[4:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[6:])
-
-    r_fun(&tt, blk[0:], blk[2:], l_key[8:])
-    r_fun(&tt, blk[2:], blk[0:], l_key[10:])
-
-    if this.k_len == 4 {
-        r_fun(&tt, blk[0:], blk[2:], l_key[12:])
-        r_fun(&tt, blk[2:], blk[0:], l_key[14:])
-    }
-
-    out_blk[2] = blk[0]
-    out_blk[3] = blk[1]
-    out_blk[0] = blk[2]
-    out_blk[1] = blk[3]
+    this.lkey = lkey
 }

@@ -49,7 +49,7 @@ func (this *CertBagEntry) GetType() CertType {
 func (this *CertBagEntry) DecodeCertBag(asn1Data []byte) (cert []byte, err error) {
     checkBag := new(CertBagCheckData)
     if err := unmarshal(asn1Data, checkBag); err != nil {
-        return nil, errors.New("pkcs12: error decoding cert bag: " + err.Error())
+        return nil, errors.New("go-cryptobin/pkcs12: error decoding cert bag: " + err.Error())
     }
 
     switch {
@@ -58,7 +58,7 @@ func (this *CertBagEntry) DecodeCertBag(asn1Data []byte) (cert []byte, err error
 
             bag := new(CertX509BagData)
             if err := unmarshal(asn1Data, bag); err != nil {
-                return nil, errors.New("pkcs12: error decoding cert bag: " + err.Error())
+                return nil, errors.New("go-cryptobin/pkcs12: error decoding cert bag: " + err.Error())
             }
 
             return bag.Data, nil
@@ -68,12 +68,12 @@ func (this *CertBagEntry) DecodeCertBag(asn1Data []byte) (cert []byte, err error
 
             bag := new(CertSdsiBagData)
             if err := unmarshal(asn1Data, bag); err != nil {
-                return nil, errors.New("pkcs12: error decoding cert bag: " + err.Error())
+                return nil, errors.New("go-cryptobin/pkcs12: error decoding cert bag: " + err.Error())
             }
 
             cert, err := base64.StdEncoding.DecodeString(bag.Data)
             if err != nil {
-                return nil, errors.New("pkcs12: " + err.Error())
+                return nil, errors.New("go-cryptobin/pkcs12: " + err.Error())
             }
 
             return cert, nil
@@ -89,7 +89,7 @@ func (this *CertBagEntry) EncodeCertBag(cert []byte) (asn1Data []byte, err error
         bag.Data = base64.StdEncoding.EncodeToString(cert)
 
         if asn1Data, err = asn1.Marshal(bag); err != nil {
-            return nil, errors.New("pkcs12: error encoding cert bag: " + err.Error())
+            return nil, errors.New("go-cryptobin/pkcs12: error encoding cert bag: " + err.Error())
         }
     } else {
         var bag CertX509BagData
@@ -97,7 +97,7 @@ func (this *CertBagEntry) EncodeCertBag(cert []byte) (asn1Data []byte, err error
         bag.Data = cert
 
         if asn1Data, err = asn1.Marshal(bag); err != nil {
-            return nil, errors.New("pkcs12: error encoding cert bag: " + err.Error())
+            return nil, errors.New("go-cryptobin/pkcs12: error encoding cert bag: " + err.Error())
         }
     }
 

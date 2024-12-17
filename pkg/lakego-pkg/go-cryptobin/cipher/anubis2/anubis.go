@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/anubis: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/anubis: invalid key size %d", int(k))
 }
 
 type anubisCipher struct {
@@ -42,15 +42,15 @@ func (this *anubisCipher) BlockSize() int {
 
 func (this *anubisCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/anubis: input not full block")
+        panic("go-cryptobin/anubis: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/anubis: output not full block")
+        panic("go-cryptobin/anubis: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/anubis: invalid buffer overlap")
+        panic("go-cryptobin/anubis: invalid buffer overlap")
     }
 
     this.crypt(dst, src, this.roundKeyEnc)
@@ -58,15 +58,15 @@ func (this *anubisCipher) Encrypt(dst, src []byte) {
 
 func (this *anubisCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/anubis: input not full block")
+        panic("go-cryptobin/anubis: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/anubis: output not full block")
+        panic("go-cryptobin/anubis: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/anubis: invalid buffer overlap")
+        panic("go-cryptobin/anubis: invalid buffer overlap")
     }
 
     this.crypt(dst, src, this.roundKeyDec)

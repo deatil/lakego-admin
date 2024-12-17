@@ -1,0 +1,22 @@
+name: 建议和改进
+description: 提出你的建议和想法以帮助我们优化更新项目
+title: "[Feature]: "
+labels: [feature]
+assignees:
+  - deatil
+body:
+  - type: textarea
+    id: desc
+    attributes:
+      label: 功能描述以及必要性描述
+      description: 您觉得此新功能会为项目带来什么作用？
+      placeholder: |
+        1. 首先...
+        2. 然后...
+    validations:
+      required: true
+  - type: textarea
+    id: advise
+    attributes:
+      label: 建议和方案
+      description: 您有好的建议或者修改方案可以提供给我们？

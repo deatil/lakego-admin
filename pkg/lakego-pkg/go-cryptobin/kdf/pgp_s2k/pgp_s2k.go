@@ -4,6 +4,8 @@ import (
     "time"
     "hash"
     "bytes"
+
+    "github.com/deatil/go-cryptobin/tool/math"
 )
 
 /**
@@ -38,7 +40,7 @@ func Key(h func() hash.Hash, password, salt []byte, iterations, keylen int) []by
     var generated int = 0
 
     for generated < keylen {
-        outputThisPass := mathMin(newHash.Size(), keylen - generated)
+        outputThisPass := math.Min(newHash.Size(), keylen - generated)
 
         newHash.Reset()
 
@@ -48,9 +50,9 @@ func Key(h func() hash.Hash, password, salt []byte, iterations, keylen int) []by
 
         // The input is always fully processed even if iterations is very small
         if len(inputBuf) > 0 {
-            left := mathMax(iterations, len(inputBuf))
+            left := math.Max(iterations, len(inputBuf))
             for left > 0 {
-                input2Take := mathMin(left, len(inputBuf))
+                input2Take := math.Min(left, len(inputBuf))
                 newHash.Write(inputBuf[:input2Take])
                 left -= input2Take
             }
@@ -73,20 +75,4 @@ func KeyWithTune(h func() hash.Hash, password, salt []byte, iterations, keylen i
     }
 
     return Key(h, password, salt, iterations, keylen)
-}
-
-func mathMin(a, b int) int {
-    if a < b {
-        return a
-    }
-
-    return b
-}
-
-func mathMax(a, b int) int {
-    if a > b {
-        return a
-    }
-
-    return b
 }

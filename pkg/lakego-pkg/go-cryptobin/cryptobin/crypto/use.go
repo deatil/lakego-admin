@@ -470,7 +470,7 @@ func (this Cryptobin) CTR() Cryptobin {
 func (this Cryptobin) GCM(additional ...[]byte) Cryptobin {
     this.mode = GCM
 
-    this.config.Set("tagSize", 0)
+    this.config.Set("tag_size", 0)
 
     if len(additional) > 0 {
         this.config.Set("additional", additional[0])
@@ -483,7 +483,7 @@ func (this Cryptobin) GCM(additional ...[]byte) Cryptobin {
 func (this Cryptobin) GCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = GCM
 
-    this.config.Set("tagSize", tagSize)
+    this.config.Set("tag_size", tagSize)
 
     if len(additional) > 0 {
         this.config.Set("additional", additional[0])
@@ -497,7 +497,7 @@ func (this Cryptobin) GCMWithTagSize(tagSize int, additional ...[]byte) Cryptobi
 func (this Cryptobin) CCM(additional ...[]byte) Cryptobin {
     this.mode = CCM
 
-    this.config.Set("tagSize", 0)
+    this.config.Set("tag_size", 0)
 
     if len(additional) > 0 {
         this.config.Set("additional", additional[0])
@@ -511,7 +511,7 @@ func (this Cryptobin) CCM(additional ...[]byte) Cryptobin {
 func (this Cryptobin) CCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = CCM
 
-    this.config.Set("tagSize", tagSize)
+    this.config.Set("tag_size", tagSize)
 
     if len(additional) > 0 {
         this.config.Set("additional", additional[0])

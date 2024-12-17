@@ -36,7 +36,7 @@ func (this CipherCTR) Name() string {
 func (this CipherCTR) Encrypt(rand io.Reader, password, plaintext []byte) ([]byte, []byte, error) {
     iv := make([]byte, this.blockSize)
     if _, err := io.ReadFull(rand, iv); err != nil {
-        return nil, nil, errors.New("pkcs1: cannot generate IV: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs1: cannot generate IV: " + err.Error())
     }
 
     salt := iv[:this.saltSize]
@@ -44,7 +44,7 @@ func (this CipherCTR) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs1: failed to create cipher: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs1: failed to create cipher: " + err.Error())
     }
 
     // 需要保存的加密数据
@@ -59,7 +59,7 @@ func (this CipherCTR) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 // 解密
 func (this CipherCTR) Decrypt(password, iv, ciphertext []byte) ([]byte, error) {
     if len(iv) < this.saltSize {
-        return nil, errors.New("pkcs1: iv length is too short")
+        return nil, errors.New("go-cryptobin/pkcs1: iv length is too short")
     }
 
     salt := iv[:this.saltSize]

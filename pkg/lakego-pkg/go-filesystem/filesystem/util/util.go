@@ -39,7 +39,7 @@ func NormalizeRelativePath(path string) string {
     for _, part := range paths {
         if part == ".." && len(parts) > 0 {
             parts = parts[1:]
-        } else if part != "" || part != "."{
+        } else if part != "" && part != "." {
             parts = append(parts, part)
         }
     }

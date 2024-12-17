@@ -12,7 +12,7 @@ const BlockSize = 12
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/curupira1: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/curupira1: invalid key size %d", int(k))
 }
 
 type BlockCipher interface {
@@ -50,15 +50,15 @@ func (this *curupira1Cipher) BlockSize() int {
 
 func (this *curupira1Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/curupira1: input not full block")
+        panic("go-cryptobin/curupira1: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/curupira1: output not full block")
+        panic("go-cryptobin/curupira1: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/curupira1: invalid buffer overlap")
+        panic("go-cryptobin/curupira1: invalid buffer overlap")
     }
 
     this.processBlock(dst, src, this.encryptionRoundKeys)
@@ -66,15 +66,15 @@ func (this *curupira1Cipher) Encrypt(dst, src []byte) {
 
 func (this *curupira1Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/curupira1: input not full block")
+        panic("go-cryptobin/curupira1: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/curupira1: output not full block")
+        panic("go-cryptobin/curupira1: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/curupira1: invalid buffer overlap")
+        panic("go-cryptobin/curupira1: invalid buffer overlap")
     }
 
     this.processBlock(dst, src, this.decryptionRoundKeys)

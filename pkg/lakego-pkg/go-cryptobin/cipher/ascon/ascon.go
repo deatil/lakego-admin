@@ -36,7 +36,7 @@ const (
     TagSize = 16
 )
 
-var errOpen = errors.New("cryptobin/ascon: message authentication failed")
+var errOpen = errors.New("go-cryptobin/ascon: message authentication failed")
 
 type ascon struct {
     k0, k1 uint64
@@ -52,7 +52,7 @@ type ascon struct {
 // NewCipher creates a 128-bit ASCON-128 AEAD.
 func NewCipher(key []byte) (cipher.AEAD, error) {
     if len(key) != KeySize {
-        return nil, errors.New("cryptobin/ascon: bad key length")
+        return nil, errors.New("go-cryptobin/ascon: bad key length")
     }
 
     return &ascon{
@@ -65,7 +65,7 @@ func NewCipher(key []byte) (cipher.AEAD, error) {
 // NewCiphera creates a 128-bit ASCON-128a AEAD.
 func NewCiphera(key []byte) (cipher.AEAD, error) {
     if len(key) != KeySize {
-        return nil, errors.New("cryptobin/ascon: bad key length")
+        return nil, errors.New("go-cryptobin/ascon: bad key length")
     }
 
     return &ascon{
@@ -85,7 +85,7 @@ func (a *ascon) Overhead() int {
 
 func (a *ascon) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
     if len(nonce) != NonceSize {
-        panic("cryptobin/ascon: incorrect nonce length: " + strconv.Itoa(len(nonce)))
+        panic("go-cryptobin/ascon: incorrect nonce length: " + strconv.Itoa(len(nonce)))
     }
 
     n0 := getu64(nonce[0:])
@@ -102,7 +102,7 @@ func (a *ascon) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
 
     ret, out := alias.SliceForAppend(dst, len(plaintext)+TagSize)
     if alias.InexactOverlap(out, plaintext) {
-        panic("cryptobin/ascon: invalid buffer overlap")
+        panic("go-cryptobin/ascon: invalid buffer overlap")
     }
 
     if a.iv == iv128a {
@@ -124,7 +124,7 @@ func (a *ascon) Seal(dst, nonce, plaintext, additionalData []byte) []byte {
 
 func (a *ascon) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, error) {
     if len(nonce) != NonceSize {
-        panic("cryptobin/ascon: incorrect nonce length: " + strconv.Itoa(len(nonce)))
+        panic("go-cryptobin/ascon: incorrect nonce length: " + strconv.Itoa(len(nonce)))
     }
 
     if len(ciphertext) < TagSize {
@@ -148,7 +148,7 @@ func (a *ascon) Open(dst, nonce, ciphertext, additionalData []byte) ([]byte, err
 
     ret, out := alias.SliceForAppend(dst, len(ciphertext))
     if alias.InexactOverlap(out, ciphertext) {
-        panic("cryptobin/ascon: invalid buffer overlap")
+        panic("go-cryptobin/ascon: invalid buffer overlap")
     }
 
     if a.iv == iv128a {

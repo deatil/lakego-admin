@@ -37,11 +37,11 @@ func (this KeyEncryptWithSM2) Encrypt(plaintext []byte, pkey crypto.PublicKey) (
                     }
 
                     if !k.IsOnCurve(k.X, k.Y) {
-                        return nil, errors.New("pkcs7: error while validating SM2 public key: %v")
+                        return nil, errors.New("go-cryptobin/pkcs7: error while validating SM2 public key: %v")
                     }
             }
         default:
-            return nil, errors.New("pkcs7: PublicKey is not sm2 PublicKey")
+            return nil, errors.New("go-cryptobin/pkcs7: PublicKey is not sm2 PublicKey")
     }
 
     return sm2.EncryptASN1(rand.Reader, pub, plaintext, sm2.C1C3C2)
@@ -53,7 +53,7 @@ func (this KeyEncryptWithSM2) Decrypt(ciphertext []byte, pkey crypto.PrivateKey)
     var ok bool
 
     if priv, ok = pkey.(*sm2.PrivateKey); !ok {
-        return nil, errors.New("pkcs7: PrivateKey is not sm2 PrivateKey")
+        return nil, errors.New("go-cryptobin/pkcs7: PrivateKey is not sm2 PrivateKey")
     }
 
     return sm2.DecryptASN1(priv, ciphertext, sm2.C1C3C2)

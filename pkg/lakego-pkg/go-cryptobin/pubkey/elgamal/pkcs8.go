@@ -32,7 +32,7 @@ type elgamalAlgorithmParameters struct {
     Q *big.Int `asn1:"optional"`
 }
 
-// 私钥 - 包装
+// Marshal privateKey struct
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -40,13 +40,13 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// Marshal publicKey struct
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// Parse publicKey struct
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -65,12 +65,12 @@ var (
  */
 type PKCS8Key struct {}
 
-// 构造函数
+// NewPKCS8Key
 func NewPKCS8Key() PKCS8Key {
     return PKCS8Key{}
 }
 
-// PKCS8 包装公钥
+// Marshal PKCS8 PublicKey
 func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -113,12 +113,12 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// PKCS8 包装公钥
+// Marshal PKCS8 PublicKey
 func MarshalPKCS8PublicKey(pub *PublicKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPublicKey(pub)
 }
 
-// PKCS8 解析公钥
+// Parse PKCS8 PublicKey
 func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(der, &pki)
@@ -135,10 +135,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
         return nil, errors.New("cryptobin/elgamal: unknown public key algorithm")
     }
 
-    // 解析
-    keyData := &pki
-
-    yDer := cryptobyte.String(keyData.PublicKey.RightAlign())
+    yDer := cryptobyte.String(pki.PublicKey.RightAlign())
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
@@ -151,7 +148,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
         Y: y,
     }
 
-    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
+    paramsDer := cryptobyte.String(pki.Algorithm.Parameters.FullBytes)
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.G) {
@@ -167,14 +164,12 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     return pub, nil
 }
 
-// PKCS8 解析公钥
+// Parse PKCS8 PublicKey
 func ParsePKCS8PublicKey(derBytes []byte) (*PublicKey, error) {
     return defaultPKCS8Key.ParsePublicKey(derBytes)
 }
 
-// ====================
-
-// PKCS8 包装私钥
+// Marshal PKCS8 PrivateKey
 func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -213,12 +208,12 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// PKCS8 包装私钥
+// Marshal PKCS8 PrivateKey
 func MarshalPKCS8PrivateKey(key *PrivateKey) ([]byte, error) {
     return defaultPKCS8Key.MarshalPrivateKey(key)
 }
 
-// PKCS8 解析私钥
+// Parse PKCS8 PrivateKey
 func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     var privKey pkcs8
     _, err = asn1.Unmarshal(der, &privKey)
@@ -265,7 +260,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     return priv, nil
 }
 
-// PKCS8 解析私钥
+// Parse PKCS8 PrivateKey
 func ParsePKCS8PrivateKey(derBytes []byte) (key *PrivateKey, err error) {
     return defaultPKCS8Key.ParsePrivateKey(derBytes)
 }

@@ -12,7 +12,7 @@ const BlockSize = 16
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/speck: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/speck: invalid key size %d", int(k))
 }
 
 type speckCipher struct {
@@ -43,15 +43,15 @@ func (this *speckCipher) BlockSize() int {
 
 func (this *speckCipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/speck: input not full block")
+        panic("go-cryptobin/speck: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/speck: output not full block")
+        panic("go-cryptobin/speck: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/speck: invalid buffer overlap")
+        panic("go-cryptobin/speck: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -59,15 +59,15 @@ func (this *speckCipher) Encrypt(dst, src []byte) {
 
 func (this *speckCipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/speck: input not full block")
+        panic("go-cryptobin/speck: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/speck: output not full block")
+        panic("go-cryptobin/speck: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/speck: invalid buffer overlap")
+        panic("go-cryptobin/speck: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

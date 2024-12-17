@@ -40,6 +40,22 @@ func Test_All(t *testing.T) {
         testCurve(t, P192r1())
     })
 
+    t.Run("P160r1", func(t *testing.T) {
+        testCurve(t, P160r1())
+    })
+    t.Run("P160r2", func(t *testing.T) {
+        testCurve(t, P160r2())
+    })
+
+    t.Run("P128r1", func(t *testing.T) {
+        testCurve(t, P128r1())
+    })
+    /*
+    t.Run("P128r2", func(t *testing.T) {
+        testCurve(t, P128r2())
+    })
+    */
+
     /*
     t.Run("P112r1", func(t *testing.T) {
         testCurve(t, P112r1())
@@ -48,23 +64,6 @@ func Test_All(t *testing.T) {
         testCurve(t, P112r2())
     })
     */
-
-    t.Run("P128r1", func(t *testing.T) {
-        testCurve(t, P128r1())
-    })
-
-    /*
-    t.Run("P128r2", func(t *testing.T) {
-        testCurve(t, P128r2())
-    })
-    */
-
-    t.Run("P160r1", func(t *testing.T) {
-        testCurve(t, P160r1())
-    })
-    t.Run("P160r2", func(t *testing.T) {
-        testCurve(t, P160r2())
-    })
 }
 
 func Test_Add(t *testing.T) {

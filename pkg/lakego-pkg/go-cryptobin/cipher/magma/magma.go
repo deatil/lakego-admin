@@ -17,7 +17,7 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/magma: invalid key size: " + strconv.Itoa(int(k))
+    return "go-cryptobin/magma: invalid key size: " + strconv.Itoa(int(k))
 }
 
 type magmaCipher struct {

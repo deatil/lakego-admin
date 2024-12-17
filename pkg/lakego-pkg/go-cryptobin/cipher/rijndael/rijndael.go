@@ -18,13 +18,13 @@ const (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/rijndael: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/rijndael: invalid key size " + strconv.Itoa(int(k))
 }
 
 type BlockSizeError int
 
 func (k BlockSizeError) Error() string {
-    return "cryptobin/rijndael: invalid block size " + strconv.Itoa(int(k))
+    return "go-cryptobin/rijndael: invalid block size " + strconv.Itoa(int(k))
 }
 
 type rijndaelCipher struct {
@@ -90,15 +90,15 @@ func (this *rijndaelCipher) BlockSize() int {
 
 func (this *rijndaelCipher) Encrypt(dst, src []byte) {
     if len(src) < this.blockSize {
-        panic("cryptobin/rijndael: input not full block")
+        panic("go-cryptobin/rijndael: input not full block")
     }
 
     if len(dst) < this.blockSize {
-        panic("cryptobin/rijndael: output not full block")
+        panic("go-cryptobin/rijndael: output not full block")
     }
 
     if alias.InexactOverlap(dst[:this.blockSize], src[:this.blockSize]) {
-        panic("cryptobin/rijndael: invalid buffer overlap")
+        panic("go-cryptobin/rijndael: invalid buffer overlap")
     }
 
     this.encrypt(dst, src)
@@ -106,15 +106,15 @@ func (this *rijndaelCipher) Encrypt(dst, src []byte) {
 
 func (this *rijndaelCipher) Decrypt(dst, src []byte) {
     if len(src) < this.blockSize {
-        panic("cryptobin/rijndael: input not full block")
+        panic("go-cryptobin/rijndael: input not full block")
     }
 
     if len(dst) < this.blockSize {
-        panic("cryptobin/rijndael: output not full block")
+        panic("go-cryptobin/rijndael: output not full block")
     }
 
     if alias.InexactOverlap(dst[:this.blockSize], src[:this.blockSize]) {
-        panic("cryptobin/rijndael: invalid buffer overlap")
+        panic("go-cryptobin/rijndael: invalid buffer overlap")
     }
 
     this.decrypt(dst, src)

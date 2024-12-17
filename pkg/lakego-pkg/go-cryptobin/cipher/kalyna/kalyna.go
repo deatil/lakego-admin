@@ -8,7 +8,7 @@ import (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/kalyna: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/kalyna: invalid key size %d", int(k))
 }
 
 // NewCipher creates and returns a new cipher.Block.

@@ -37,6 +37,6 @@ func Test_prfByOID_fail(t *testing.T) {
         t.Error("should throw panic")
     }
 
-    check := "pkcs8: unsupported hash (OID: 1.222.643.777.12.13.5.1)"
+    check := "go-cryptobin/pkcs8: unsupported hash (OID: 1.222.643.777.12.13.5.1)"
     assertEqual(err.Error(), check, "Test_prfByOID_fail")
 }

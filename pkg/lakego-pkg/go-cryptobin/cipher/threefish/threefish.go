@@ -35,7 +35,7 @@ type KeySizeError int
 
 // Error describes a KeySizeError.
 func (e KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/threefish: key size must be %d bytes", e)
+    return fmt.Sprintf("go-cryptobin/threefish: key size must be %d bytes", e)
 }
 
 // A TweakSizeError is returned when the provided tweak isn't the correct size.
@@ -43,7 +43,7 @@ type TweakSizeError struct{}
 
 // Error describes a TweakSizeError.
 func (e TweakSizeError) Error() string {
-    return fmt.Sprintf("cryptobin/threefish: tweak size must be %d bytes", tweakSize)
+    return fmt.Sprintf("go-cryptobin/threefish: tweak size must be %d bytes", tweakSize)
 }
 
 // NewCipher creates and returns a new cipher.Block.

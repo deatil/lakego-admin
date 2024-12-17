@@ -21,7 +21,7 @@ const BlockSize = 1
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/spritz: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/spritz: invalid key size " + strconv.Itoa(int(k))
 }
 
 const N = 256
@@ -65,7 +65,7 @@ func (c *spritzCipher) BlockSize() int {
 
 func (c *spritzCipher) Encrypt(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/rc6: output not full block")
+        panic("go-cryptobin/spritz: output not full block")
     }
 
     if c.iv != nil {
@@ -79,7 +79,7 @@ func (c *spritzCipher) Encrypt(dst, src []byte) {
 
 func (c *spritzCipher) Decrypt(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/rc6: output not full block")
+        panic("go-cryptobin/spritz: output not full block")
     }
 
     if c.iv != nil {

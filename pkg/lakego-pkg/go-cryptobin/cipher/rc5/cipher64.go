@@ -33,15 +33,15 @@ func (c *rc5Cipher64) BlockSize() int {
 
 func (c *rc5Cipher64) Encrypt(dst, src []byte) {
     if len(src) < BlockSize64 {
-        panic("cryptobin/rc5-64: input not full block")
+        panic("go-cryptobin/rc5-64: input not full block")
     }
 
     if len(dst) < BlockSize64 {
-        panic("cryptobin/rc5-64: output not full block")
+        panic("go-cryptobin/rc5-64: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize64], src[:BlockSize64]) {
-        panic("cryptobin/rc5-64: invalid buffer overlap")
+        panic("go-cryptobin/rc5-64: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint64(src[:8]) + c.rk[0]
@@ -62,11 +62,11 @@ func (c *rc5Cipher64) Decrypt(dst, src []byte) {
     }
 
     if len(dst) < BlockSize64 {
-        panic("cryptobin/rc5-64: output not full block")
+        panic("go-cryptobin/rc5-64: output not full block")
     }
 
     if inexactOverlap(dst[:BlockSize64], src[:BlockSize64]) {
-        panic("cryptobin/rc5-64: invalid buffer overlap")
+        panic("go-cryptobin/rc5-64: invalid buffer overlap")
     }
 
     A := binary.LittleEndian.Uint64(src[:8])

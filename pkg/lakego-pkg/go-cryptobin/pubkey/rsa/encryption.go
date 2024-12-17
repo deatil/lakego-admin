@@ -17,7 +17,7 @@ var (
     ErrDecryption      = errors.New("decryption error")
 )
 
-// 公钥加密或解密byte
+// PublicKey Encrypt or Decrypt Bytes
 func PublicKeyBytes(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, error) {
     k := (pub.N.BitLen() + 7) / 8
     if isEncrytp {
@@ -40,7 +40,7 @@ func PublicKeyBytes(pub *rsa.PublicKey, in []byte, isEncrytp bool) ([]byte, erro
     }
 }
 
-// 私钥加密或解密byte
+// PrivateKey Encrypt or Decrypt Bytes
 func PrivateKeyBytes(pri *rsa.PrivateKey, in []byte, isEncrytp bool) ([]byte, error) {
     k := (pri.N.BitLen() + 7) / 8
     if isEncrytp {
@@ -62,7 +62,7 @@ func PrivateKeyBytes(pri *rsa.PrivateKey, in []byte, isEncrytp bool) ([]byte, er
     }
 }
 
-// 公钥加密或解密Reader
+// PublicKey Encrypt or Decrypt stream
 func pubKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrytp bool) (err error) {
     k := (pub.N.BitLen() + 7) / 8
     if isEncrytp {
@@ -99,7 +99,7 @@ func pubKeyIO(pub *rsa.PublicKey, in io.Reader, out io.Writer, isEncrytp bool) (
     return nil
 }
 
-// 私钥加密或解密Reader
+// PrivateKey Encrypt or Decrypt stream
 func priKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrytp bool) (err error) {
     k := (pri.N.BitLen() + 7) / 8
     if isEncrytp {
@@ -136,7 +136,7 @@ func priKeyIO(pri *rsa.PrivateKey, r io.Reader, w io.Writer, isEncrytp bool) (er
     return nil
 }
 
-// 公钥解密
+// PublicKey ecrypt
 func pubKeyDecrypt(pub *rsa.PublicKey, data []byte) ([]byte, error) {
     k := (pub.N.BitLen() + 7) / 8
     if k != len(data) {
@@ -167,7 +167,7 @@ func pubKeyDecrypt(pub *rsa.PublicKey, data []byte) ([]byte, error) {
     return d[i:], nil
 }
 
-// 私钥加密
+// PrivateKey Encrypt
 func priKeyEncrypt(rand io.Reader, priv *rsa.PrivateKey, hashed []byte) ([]byte, error) {
     tLen := len(hashed)
     k := (priv.N.BitLen() + 7) / 8
@@ -189,8 +189,6 @@ func priKeyEncrypt(rand io.Reader, priv *rsa.PrivateKey, hashed []byte) ([]byte,
     return em, nil
 }
 
-// =====================
-
 // 从crypto/rsa复制
 var bigZero = big.NewInt(0)
 var bigOne = big.NewInt(1)
@@ -202,7 +200,7 @@ func encrypt(c *big.Int, pub *rsa.PublicKey, m *big.Int) *big.Int {
     return c
 }
 
-// 从crypto/rsa复制
+// from crypto/rsa
 func decrypt(random io.Reader, priv *rsa.PrivateKey, c *big.Int) (m *big.Int, err error) {
     if c.Cmp(priv.N) > 0 {
         err = ErrDecryption
@@ -268,7 +266,7 @@ func decrypt(random io.Reader, priv *rsa.PrivateKey, c *big.Int) (m *big.Int, er
     return
 }
 
-// 从crypto/rsa复制
+// from crypto/rsa
 func copyWithLeftPad(dest, src []byte) {
     numPaddingBytes := len(dest) - len(src)
     for i := 0; i < numPaddingBytes; i++ {
@@ -277,7 +275,7 @@ func copyWithLeftPad(dest, src []byte) {
     copy(dest[numPaddingBytes:], src)
 }
 
-// 从crypto/rsa复制
+// from crypto/rsa
 func nonZeroRandomBytes(s []byte, rand io.Reader) (err error) {
     _, err = io.ReadFull(rand, s)
     if err != nil {
@@ -295,18 +293,19 @@ func nonZeroRandomBytes(s []byte, rand io.Reader) (err error) {
     return
 }
 
-// 从crypto/rsa复制
+// from crypto/rsa
 func leftPad(input []byte, size int) (out []byte) {
     n := len(input)
     if n > size {
         n = size
     }
+
     out = make([]byte, size)
     copy(out[len(out)-n:], input)
     return
 }
 
-// 从crypto/rsa复制
+// from crypto/rsa
 func modInverse(a, n *big.Int) (ia *big.Int, ok bool) {
     g := new(big.Int)
     x := new(big.Int)

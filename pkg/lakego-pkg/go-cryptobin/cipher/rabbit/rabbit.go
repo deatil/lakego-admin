@@ -9,8 +9,8 @@ import (
 )
 
 var (
-    errInvalidKeyLen = errors.New("cryptobin/rabbit: key must be 16 byte len, not more not less")
-    errInvalidIVLen  = errors.New("cryptobin/rabbit: iv must be 8 byte len or nothing (zero) at all")
+    errInvalidKeyLen = errors.New("go-cryptobin/rabbit: key must be 16 byte len, not more not less")
+    errInvalidIVLen  = errors.New("go-cryptobin/rabbit: iv must be 8 byte len or nothing (zero) at all")
 )
 
 type rabbitCipher struct {
@@ -45,10 +45,10 @@ func (r *rabbitCipher) XORKeyStream(dst, src []byte) {
         return
     }
     if len(dst) < len(src) {
-        panic("cryptobin/rabbit: output smaller than input")
+        panic("go-cryptobin/rabbit: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/rabbit: invalid buffer overlap")
+        panic("go-cryptobin/rabbit: invalid buffer overlap")
     }
 
     for i := range src {

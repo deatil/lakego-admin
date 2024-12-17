@@ -12,7 +12,7 @@ const BlockSize = 8
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return fmt.Sprintf("cryptobin/multi2: invalid key size %d", int(k))
+    return fmt.Sprintf("go-cryptobin/multi2: invalid key size %d", int(k))
 }
 
 type multi2Cipher struct {
@@ -42,15 +42,15 @@ func (this *multi2Cipher) BlockSize() int {
 
 func (this *multi2Cipher) Encrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/multi2: input not full block")
+        panic("go-cryptobin/multi2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/multi2: output not full block")
+        panic("go-cryptobin/multi2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/multi2: invalid buffer overlap")
+        panic("go-cryptobin/multi2: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)
@@ -64,15 +64,15 @@ func (this *multi2Cipher) Encrypt(dst, src []byte) {
 
 func (this *multi2Cipher) Decrypt(dst, src []byte) {
     if len(src) < BlockSize {
-        panic("cryptobin/multi2: input not full block")
+        panic("go-cryptobin/multi2: input not full block")
     }
 
     if len(dst) < BlockSize {
-        panic("cryptobin/multi2: output not full block")
+        panic("go-cryptobin/multi2: output not full block")
     }
 
     if alias.InexactOverlap(dst[:BlockSize], src[:BlockSize]) {
-        panic("cryptobin/multi2: invalid buffer overlap")
+        panic("go-cryptobin/multi2: invalid buffer overlap")
     }
 
     encSrc := bytesToUint32s(src)

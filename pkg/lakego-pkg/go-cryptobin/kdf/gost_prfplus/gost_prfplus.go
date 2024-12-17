@@ -9,10 +9,10 @@ import (
 // prf+ function as defined in RFC 7296 (IKEv2)
 func Key(h func() hash.Hash, password, salt []byte, keyLen int) (dst []byte, err error) {
     if len(password) == 0 {
-        return nil, errors.New("gost_prfplus: empty password")
+        return nil, errors.New("go-cryptobin/gost_prfplus: empty password")
     }
     if len(salt) == 0 {
-        return nil, errors.New("gost_prfplus: bad salt length")
+        return nil, errors.New("go-cryptobin/gost_prfplus: bad salt length")
     }
 
     mac := hmac.New(h, password)

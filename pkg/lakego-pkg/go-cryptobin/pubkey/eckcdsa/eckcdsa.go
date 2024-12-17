@@ -11,6 +11,8 @@ import (
 
     "golang.org/x/crypto/cryptobyte"
     "golang.org/x/crypto/cryptobyte/asn1"
+
+    "github.com/deatil/go-cryptobin/tool/math"
 )
 
 // see TTAK.KO-12.0015/R3
@@ -536,7 +538,7 @@ func bigIntEqual(a, b *big.Int) bool {
 }
 
 func sigRLen(hsize, n int) int {
-    return mathMin(hsize, byteceil(n))
+    return math.Min(hsize, byteceil(n))
 }
 
 func sigLLen(n int) int {
@@ -545,14 +547,6 @@ func sigLLen(n int) int {
 
 func sigLen(hsize, n int) int {
     return sigRLen(hsize, n) + sigLLen(n)
-}
-
-func mathMin(a, b int) int {
-    if a < b {
-        return a
-    }
-
-    return b
 }
 
 func byteceil(size int) int {
