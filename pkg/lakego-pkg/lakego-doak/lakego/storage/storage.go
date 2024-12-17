@@ -8,24 +8,6 @@ import(
     "github.com/deatil/go-filesystem/filesystem/interfaces"
 )
 
-// new 文件管理器
-func New(adapters interfaces.Adapter, conf ...map[string]any) *Storage {
-    fs := &filesystem.Fllesystem{}
-
-    fs.WithAdapter(adapters)
-
-    if len(conf) > 0{
-        fs.SetConfig(fs.PrepareConfig(conf[0]))
-    }
-
-    return NewWithFllesystem(fs)
-}
-
-// new 文件管理器
-func NewWithFllesystem(fs *filesystem.Fllesystem) *Storage {
-    return &Storage{fs}
-}
-
 /**
  * 文件管理器
  *
@@ -33,7 +15,25 @@ func NewWithFllesystem(fs *filesystem.Fllesystem) *Storage {
  * @author deatil
  */
 type Storage struct {
-    *filesystem.Fllesystem
+    *filesystem.Filesystem
+}
+
+// new 文件管理器
+func New(adapters interfaces.Adapter, conf ...map[string]any) *Storage {
+    fs := &filesystem.Filesystem{}
+
+    fs.WithAdapter(adapters)
+
+    if len(conf) > 0{
+        fs.WithConfig(fs.PrepareConfig(conf[0]))
+    }
+
+    return NewWithFilesystem(fs)
+}
+
+// new 文件管理器
+func NewWithFilesystem(fs *filesystem.Filesystem) *Storage {
+    return &Storage{fs}
 }
 
 // 判断
@@ -43,7 +43,7 @@ func (this *Storage) Exists(path string) bool {
 
 // 判断
 func (this *Storage) Missing(path string) bool {
-    return ! this.Exists(path)
+    return !this.Exists(path)
 }
 
 // 路径
@@ -73,7 +73,7 @@ func (this *Storage) PutContentsAs(path string, contents string, name string, co
     path = strings.TrimPrefix(path, "/")
     path = strings.TrimSuffix(path, "/")
 
-    result, err := this.Put(path, contents, config...)
+    result, err := this.Put(path, []byte(contents), config...)
 
     if result {
         return path, nil
@@ -90,10 +90,10 @@ func (this *Storage) Prepend(path string, data string, separator string) (bool, 
             return false, err
         }
 
-        return this.Put(path, data + separator + readData)
+        return this.Put(path, append([]byte(data + separator), readData...))
     }
 
-    return this.Put(path, data)
+    return this.Put(path, []byte(data))
 }
 
 // 尾部添加
@@ -104,10 +104,10 @@ func (this *Storage) Append(path string, data string, separator string) (bool, e
             return false, err
         }
 
-        return this.Put(path, readData + separator + data)
+        return this.Put(path, append(readData, []byte(separator + data)...))
     }
 
-    return this.Put(path, data)
+    return this.Put(path, []byte(data))
 }
 
 // 时间戳

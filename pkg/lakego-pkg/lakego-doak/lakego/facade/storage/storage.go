@@ -71,7 +71,7 @@ func Disk(name string, once ...bool) *storage.Storage {
     disk := filesystem.New(driver.(interfaces.Adapter), diskConf)
 
     // 使用自定义文件管理器
-    disk2 := storage.NewWithFllesystem(disk)
+    disk2 := storage.NewWithFilesystem(disk)
 
     return disk2
 }
