@@ -468,3 +468,49 @@ func Test_CreateDir(t *testing.T) {
     res33 := fs.Has("/testdir")
     assertEqual(res33, false, "Test_CreateDir Delete after Has")
 }
+
+func Test_HasDir(t *testing.T) {
+    assertEqual := assertEqualT(t)
+
+    // 根目录
+    root := "./testdata"
+    adapter := local_adapter.New(root)
+
+    fs := filesystem.New(adapter)
+
+    res := fs.Has("/testdir222")
+    assertEqual(res, true, "Test_HasDir")
+
+    res2 := fs.Has("/testdir333")
+    assertEqual(res2, false, "Test_HasDir 2")
+}
+
+func Test_ReadAndDelete(t *testing.T) {
+    assertEqual := assertEqualT(t)
+
+    // 根目录
+    root := "./testdata"
+    adapter := local_adapter.New(root)
+
+    fs := filesystem.New(adapter)
+
+    res, err := fs.Copy("/testcopy.txt", "/testReadAndDelete.txt")
+    if err != nil {
+        t.Fatal(err.Error())
+    }
+
+    assertEqual(res, true, "Test_ReadAndDelete")
+
+    res2 := fs.Has("/testReadAndDelete.txt")
+    assertEqual(res2, true, "Test_ReadAndDelete Has")
+
+    res3, err := fs.ReadAndDelete("/testReadAndDelete.txt")
+    if err != nil {
+        t.Fatal(err.Error())
+    }
+
+    assertEqual(string(res3), "testdata", "Test_ReadAndDelete ReadAndDelete")
+
+    res33 := fs.Has("/testReadAndDelete.txt")
+    assertEqual(res33, false, "Test_ReadAndDelete ReadAndDelete after Has")
+}

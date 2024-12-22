@@ -38,19 +38,19 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 生成私钥
     // create private key
     var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "DESEDE3CBC").
+        // CreatePrivateKeyWithPassword(password, "DESEDE3CBC").
         ToKeyString()
 
     // 自定义私钥加密类型
     // use custom encrypt options
     var PriKeyPem string = obj.
-        CreatePrivateKeyWithPassword(psssword, sm2.Opts{
+        CreatePrivateKeyWithPassword(password, sm2.Opts{
             Cipher:  sm2.GetCipherFromName("AES256CBC"),
             KDFOpts: sm2.ScryptOpts{
                 CostParameter:            1 << 15,
@@ -72,27 +72,27 @@ func main() {
 #### 生成对称加密密钥
 ~~~go
 func main() {
-    var prikeyPem1 string = "..."
-    var pubkeyPem1 string = "..."
+    var prikeyPem1 []byte = []byte("...")
+    var pubkeyPem1 []byte = []byte("...")
 
-    var prikeyPem2 string = "..."
-    var pubkeyPem2 string = "..."
+    var prikeyPem2 []byte = []byte("...")
+    var pubkeyPem2 []byte = []byte("...")
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var secret1 string = obj.
-        FromPrivateKey([]byte(prikeyPem1)).
-        // FromPrivateKeyWithPassword([]byte(prikeyPem1), psssword).
-        FromPublicKey([]byte(pubkeyPem2)).
+        FromPrivateKey(prikeyPem1).
+        // FromPrivateKeyWithPassword(prikeyPem1, password).
+        FromPublicKey(pubkeyPem2).
         CreateSecretKey().
         ToHexString()
 
     var secret2 string = obj.
-        FromPrivateKey([]byte(prikeyPem2)).
-        // FromPrivateKeyWithPassword([]byte(prikeyPem2), psssword).
-        FromPublicKey([]byte(pubkeyPem1)).
+        FromPrivateKey(prikeyPem2).
+        // FromPrivateKeyWithPassword(prikeyPem2, password).
+        FromPublicKey(pubkeyPem1).
         CreateSecretKey().
         ToHexString()
 

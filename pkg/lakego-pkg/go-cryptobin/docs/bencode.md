@@ -38,7 +38,8 @@ var data map[string]any
 
 // 数据结果
 var torrentData []byte
+var err error
 
 // 生成操作
-torrentData, err := bencode.Marshal(data)
+torrentData, err = bencode.Marshal(data)
 ~~~

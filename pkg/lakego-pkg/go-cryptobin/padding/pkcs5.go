@@ -24,7 +24,7 @@ func (this PKCS5) Padding(text []byte, _ int) []byte {
     blockSize := 8
 
     n := len(text)
-    if n == 0 || blockSize < 1 {
+    if blockSize < 1 {
         return text
     }
 
@@ -39,13 +39,13 @@ func (this PKCS5) Padding(text []byte, _ int) []byte {
 func (this PKCS5) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     unpadding := int(src[n-1])
 
     num := n - unpadding
-    if num < 0 {
+    if num < 0 || unpadding > 8 {
         return nil, errors.New("invalid padding")
     }
 

@@ -37,7 +37,7 @@ Error()
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // bits = 512 | 1024 | 2048 | 4096
     obj := rsa.New().
@@ -48,18 +48,18 @@ func main() {
     // create private key
     var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePrivateKeyWithPassword(password, "AES256CBC").
         // CreatePKCS1PrivateKey().
-        // CreatePKCS1PrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePKCS1PrivateKeyWithPassword(password, "AES256CBC").
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(password, "AES256CBC", "SHA256").
         // CreateXMLPrivateKey().
         ToKeyString()
 
     // 自定义私钥加密类型
     // use custom encrypt options
     var PriKeyPem string = obj.
-        CreatePKCS8PrivateKeyWithPassword(psssword, rsa.Opts{
+        CreatePKCS8PrivateKeyWithPassword(password, rsa.Opts{
             Cipher:  rsa.GetCipherFromName("AES256CBC"),
             KDFOpts: rsa.ScryptOpts{
                 CostParameter:            1 << 15,
@@ -95,20 +95,21 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 私钥签名
     // private key sign data
-    var priKeyPem string = ""
+    var priKeyPem []byte = []byte("...")
+    var priKeyXML []byte = []byte("...")
     sigBase64String = obj.
         FromString(data).
-        FromPrivateKey([]byte(priKeyPem)).
-        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS1PrivateKey([]byte(priKeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS8PrivateKey([]byte(priKeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromXMLPrivateKey([]byte(priKeyXML)).
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, password).
+        // FromXMLPrivateKey(priKeyXML).
         SetSignHash("SHA256").
         Sign().
         // SignPSS().
@@ -116,13 +117,14 @@ func main() {
 
     // 公钥验证
     // public key verify signed data
-    var pubKeyPem string = ""
+    var pubKeyPem []byte = []byte("...")
+    var pubKeyXML []byte = []byte("...")
     var res bool = obj.
         FromBase64String(sigBase64String).
-        FromPublicKey([]byte(pubKeyPem)).
-        // FromPKCS1PublicKey([]byte(pubKeyPem)).
-        // FromPKCS8PublicKey([]byte(pubKeyPem)).
-        // FromXMLPublicKey([]byte(pubKeyXML)).
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
         SetSignHash("SHA256").
         Verify([]byte(data)).
         // VerifyPSS([]byte(data)).
@@ -141,17 +143,18 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 公钥加密
     // public key Encrypt data
-    var pubKeyPem string = ""
+    var pubKeyPem []byte = []byte("...")
+    var pubKeyXML []byte = []byte("...")
     var enData string = obj.
         FromString(data).
-        FromPublicKey([]byte(pubKeyPem)).
-        // FromPKCS1PublicKey([]byte(pubKeyPem)).
-        // FromPKCS8PublicKey([]byte(pubKeyPem)).
-        // FromXMLPublicKey([]byte(pubKeyXML)).
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
         Encrypt().
         // SetOAEPHash("SHA256"). // OAEP 可选
         // SetOAEPLabel("test-label"). // OAEP 可选
@@ -160,16 +163,17 @@ func main() {
 
     // 私钥解密
     // private key Decrypt data
-    var priKeyPem string = ""
+    var priKeyPem []byte = []byte("...")
+    var priKeyXML []byte = []byte("...")
     var deData string = obj.
         FromBase64String(enData).
-        FromPrivateKey([]byte(priKeyPem)).
-        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS1PrivateKey([]byte(priKeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS8PrivateKey([]byte(priKeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromXMLPrivateKey([]byte(priKeyXML)).
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, password).
+        // FromXMLPrivateKey(priKeyXML).
         Decrypt().
         // SetOAEPHash("SHA256"). // OAEP 可选
         // SetOAEPLabel("test-label"). // OAEP 可选
@@ -189,32 +193,34 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 私钥加密
     // private key Decrypt data
-    var priKeyPem string = ""
+    var priKeyPem []byte = []byte("...")
+    var priKeyXML []byte = []byte("...")
     var enData string = obj.
         FromString(data).
-        FromPrivateKey([]byte(priKeyPem)).
-        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS1PrivateKey([]byte(priKeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromPKCS8PrivateKey([]byte(priKeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), psssword).
-        // FromXMLPrivateKey([]byte(priKeyXML)).
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, password).
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, password).
+        // FromXMLPrivateKey(priKeyXML).
         PrivateKeyEncrypt().
         ToBase64String()
 
     // 公钥解密
     // public key Encrypt data
-    var pubKeyPem string = ""
+    var pubKeyPem []byte = []byte("...")
+    var pubKeyXML []byte = []byte("...")
     var deData string = obj.
         FromBase64String(enData).
-        FromPublicKey([]byte(pubKeyPem)).
-        // FromPKCS1PublicKey([]byte(pubKeyPem)).
-        // FromPKCS8PublicKey([]byte(pubKeyPem)).
-        // FromXMLPublicKey([]byte(pubKeyXML)).
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
         PublicKeyDecrypt().
         ToString()
 }
@@ -223,23 +229,28 @@ func main() {
 #### 检测私钥公钥是否匹配 / Check KeyPair
 ~~~go
 func main() {
-    var prikeyPem string = "..."
-    var pubkeyPem string = "..."
+    var prikeyPem []byte = []byte("...")
+    var pubkeyPem []byte = []byte("...")
+
+    var priKeyXML []byte = []byte("...")
+    var pubKeyXML []byte = []byte("...")
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var res bool = rsa.New().
-        // FromPrivateKey([]byte(prikeyPem)).
-        // FromPrivateKeyWithPassword([]byte(prikeyPem), psssword).
-        // FromPKCS1PrivateKey([]byte(prikeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(prikeyPem), psssword).
-        FromPKCS8PrivateKey([]byte(prikeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(prikeyPem), psssword).
-        // FromPublicKey([]byte(pubkeyPem)).
-        // FromPKCS1PublicKey([]byte(pubkeyPem)).
-        FromPKCS8PublicKey([]byte(pubkeyPem)).
+        // FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS1PrivateKey(prikeyPem).
+        // FromPKCS1PrivateKeyWithPassword(prikeyPem, password).
+        FromPKCS8PrivateKey(prikeyPem).
+        // FromPKCS8PrivateKeyWithPassword(prikeyPem, password).
+        // FromXMLPrivateKey(priKeyXML).
+        // FromPublicKey(pubkeyPem).
+        // FromPKCS1PublicKey(pubkeyPem).
+        FromPKCS8PublicKey(pubkeyPem).
+        // FromXMLPublicKey(pubKeyXML).
         CheckKeyPair()
 }
 ~~~
@@ -258,15 +269,15 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var parsedPrivateKey *go_rsa.PrivateKey = rsa.New().
         FromPrivateKey(priKeyPem).
-        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPrivateKeyWithPassword(priKeyPem, password).
         // FromPKCS1PrivateKey(priKeyPem).
-        // FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, password).
         // FromPKCS8PrivateKey(priKeyPem).
-        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, password).
         // FromXMLPrivateKey(priKeyXML).
         GetPrivateKey()
 
@@ -294,22 +305,22 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var newPrivateKey string = rsa.New().
         // FromPrivateKey(priKeyPem).
-        // FromPrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPrivateKeyWithPassword(priKeyPem, password).
         // FromPKCS1PrivateKey(priKeyPem).
-        FromPKCS1PrivateKeyWithPassword(priKeyPem, psssword).
+        FromPKCS1PrivateKeyWithPassword(priKeyPem, password).
         // FromPKCS8PrivateKey(priKeyPem).
-        // FromPKCS8PrivateKeyWithPassword(priKeyPem, psssword).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, password).
         // FromXMLPrivateKey(priKeyXML).
         // CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePrivateKeyWithPassword(password, "AES256CBC").
         // CreatePKCS1PrivateKey().
-        // CreatePKCS1PrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePKCS1PrivateKeyWithPassword(password, "AES256CBC").
         CreatePKCS8PrivateKey(). // 转为 PKCS8 编码
-        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(password, "AES256CBC", "SHA256").
         // CreateXMLPrivateKey().
         ToKeyString()
 

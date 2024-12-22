@@ -33,24 +33,24 @@ Error()
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 生成证书
     // 可选参数 [P521 | P384 | P256 | P224]
     ec := ecdsa.GenerateKey("P521")
 
     // 生成私钥 PEM 证书
-    privateKeyString := ec.
+    privateKeyPEM := ec.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePrivateKeyWithPassword(password, "AES256CBC").
         // CreatePKCS1PrivateKey()
-        // CreatePKCS1PrivateKeyWithPassword(password string, opts ...string)
+        // CreatePKCS1PrivateKeyWithPassword(password, "AES256CBC")
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(password, "AES256CBC", "SHA256").
         ToKeyString()
 
     // 生成公钥 PEM 证书
-    publicKeyString := ec.
+    publicKeyPEM := ec.
         CreatePublicKey().
         ToKeyString()
 }
@@ -75,28 +75,30 @@ SignBytes() / VerifyBytes(data []byte)
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
+
+    var data string = "test-pass"
 
     // 私钥签名
-    var pri []byte = []byte("...")
+    var priPEM []byte = []byte("...")
     var base64signedString string = ecdsa.
-        FromString("test-pass").
-        FromPrivateKey(pri).
-        // FromPrivateKeyWithPassword(pri, psssword).
-        // FromPKCS1PrivateKey(pri).
-        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
-        // FromPKCS8PrivateKey(pri).
-        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
+        FromString(data).
+        FromPrivateKey(priPEM).
+        // FromPrivateKeyWithPassword(priPEM, password).
+        // FromPKCS1PrivateKey(priPEM).
+        // FromPKCS1PrivateKeyWithPassword(priPEM, password).
+        // FromPKCS8PrivateKey(priPEM).
+        // FromPKCS8PrivateKeyWithPassword(priPEM, password).
         Sign().
         ToBase64String()
 
     // 公钥验证
-    var pub []byte = []byte("...")
+    var pubEM []byte = []byte("...")
     var base64signedString string = "..."
     var verify bool = ecdsa.
         FromBase64String(base64signedString).
-        FromPublicKey(pub).
-        Verify([]byte("test-pass")).
+        FromPublicKey(pubEM).
+        Verify([]byte(data)).
         ToVerify()
 }
 ~~~
@@ -146,19 +148,19 @@ Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var prikeyPem []byte = []byte("...")
     var pubkeyPem []byte = []byte("...")
 
     var res bool = ecdsa.New().
-        FromPrivateKey(pri).
-        // FromPrivateKeyWithPassword(pri, psssword).
-        // FromPKCS1PrivateKey(pri).
-        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
-        // FromPKCS8PrivateKey(pri).
-        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
-        FromPublicKey(pubkey).
+        FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS1PrivateKey(prikeyPem).
+        // FromPKCS1PrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS8PrivateKey(prikeyPem).
+        // FromPKCS8PrivateKeyWithPassword(prikeyPem, password).
+        FromPublicKey(pubkeyPem).
         CheckKeyPair()
 }
 ~~~

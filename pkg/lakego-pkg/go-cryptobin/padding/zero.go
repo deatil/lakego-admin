@@ -20,7 +20,7 @@ func NewZero() Zero {
 // 数据长度不对齐时使用0填充，否则不填充
 func (this Zero) Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 1 {
+    if blockSize < 1 {
         return text
     }
 

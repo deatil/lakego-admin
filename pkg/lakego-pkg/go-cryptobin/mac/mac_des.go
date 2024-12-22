@@ -70,6 +70,7 @@ func (m *macDES) MAC(src []byte) []byte {
     for len(src) > 0 {
         subtle.XORBytes(tag, tag, src[:blockSize])
         m.b1.Encrypt(tag, tag)
+
         src = src[blockSize:]
     }
 

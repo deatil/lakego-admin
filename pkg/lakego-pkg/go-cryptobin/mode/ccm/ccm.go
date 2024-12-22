@@ -76,7 +76,11 @@ func NewCCMWithNonceAndTagSize(cipher go_cipher.Block, nonceSize, tagSize int) (
         return nil, errors.New("cipher: NewCCM requires 128-bit block cipher")
     }
 
-    c := &ccm{cipher: cipher, nonceSize: nonceSize, tagSize: tagSize}
+    c := &ccm{
+        cipher:    cipher,
+        nonceSize: nonceSize,
+        tagSize:   tagSize,
+    }
 
     return c, nil
 }

@@ -3,8 +3,6 @@ package padding
 import (
     "bytes"
     "errors"
-
-    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 /**
@@ -23,21 +21,24 @@ func NewISO97971() ISO97971 {
 // ISO/IEC 9797-1 Padding Method 2
 // 填充至符合块大小的整数倍，填充值第一个字节为0x80，其他字节填0x00。
 func (this ISO97971) Padding(text []byte, blockSize int) []byte {
-    overhead := blockSize - len(text)%blockSize
-    ret, out := alias.SliceForAppend(text, overhead)
-
-    out[0] = 0x80
-    for i := 1; i < overhead; i++ {
-        out[i] = 0
+    num := len(text)
+    if blockSize < 1 {
+        return text
     }
 
-    return ret
+    overhead := blockSize - num%blockSize
+    paddingText := bytes.Repeat([]byte{0}, overhead)
+
+    text = append(text, paddingText...)
+    text[num] = 0x80
+
+    return text
 }
 
 func (this ISO97971) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     num := bytes.LastIndexByte(src, 0x80)

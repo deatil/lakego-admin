@@ -179,7 +179,7 @@ func (this *Filesystem) PutStream(path string, resource io.Reader, conf ...map[s
 
 // 读取并删除
 // read and delete
-func (this *Filesystem) ReadAndDelete(path string) (any, error) {
+func (this *Filesystem) ReadAndDelete(path string) ([]byte, error) {
     path = util.NormalizePath(path)
 
     contents, err := this.Read(path)

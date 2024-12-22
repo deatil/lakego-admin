@@ -245,19 +245,22 @@ func (this ModeGCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     var aead cipher.AEAD
     var err error
 
-    iv := opt.Iv()
-
+    nonceSize := opt.Config().GetInt("nonce_size")
     tagSize := opt.Config().GetInt("tag_size")
+
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
+    } else if nonceSize > 0 {
+        aead, err = cipher.NewGCMWithNonceSize(block, nonceSize)
     } else {
-        aead, err = cipher.NewGCMWithNonceSize(block, len(iv))
+        aead, err = cipher.NewGCM(block)
     }
 
     if err != nil {
         return nil, err
     }
 
+    iv := opt.Iv()
     additional := opt.Config().GetBytes("additional")
 
     cryptText := aead.Seal(nil, iv, plain, additional)
@@ -270,19 +273,22 @@ func (this ModeGCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     var aead cipher.AEAD
     var err error
 
-    iv := opt.Iv()
-
+    nonceSize := opt.Config().GetInt("nonce_size")
     tagSize := opt.Config().GetInt("tag_size")
+
     if tagSize > 0 {
         aead, err = cipher.NewGCMWithTagSize(block, tagSize)
+    } else if nonceSize > 0 {
+        aead, err = cipher.NewGCMWithNonceSize(block, nonceSize)
     } else {
-        aead, err = cipher.NewGCMWithNonceSize(block, len(iv))
+        aead, err = cipher.NewGCM(block)
     }
 
     if err != nil {
         return nil, err
     }
 
+    iv := opt.Iv()
     additional := opt.Config().GetBytes("additional")
 
     dst, err := aead.Open(nil, iv, data, additional)
@@ -299,19 +305,24 @@ func (this ModeCCM) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     var aead cipher.AEAD
     var err error
 
-    iv := opt.Iv()
-
+    nonceSize := opt.Config().GetInt("nonce_size")
     tagSize := opt.Config().GetInt("tag_size")
-    if tagSize > 0 {
+
+    if nonceSize > 0 && tagSize > 0 {
+        aead, err = ccm.NewCCMWithNonceAndTagSize(block, nonceSize, tagSize)
+    } else if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
+    } else if nonceSize > 0 {
+        aead, err = ccm.NewCCMWithNonceSize(block, nonceSize)
     } else {
-        aead, err = ccm.NewCCMWithNonceSize(block, len(iv))
+        aead, err = ccm.NewCCM(block)
     }
 
     if err != nil {
         return nil, err
     }
 
+    iv := opt.Iv()
     additional := opt.Config().GetBytes("additional")
 
     cryptText := aead.Seal(nil, iv, plain, additional)
@@ -325,15 +336,20 @@ func (this ModeCCM) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     var aead cipher.AEAD
     var err error
 
-    iv := opt.Iv()
-
+    nonceSize := opt.Config().GetInt("nonce_size")
     tagSize := opt.Config().GetInt("tag_size")
-    if tagSize > 0 {
+
+    if nonceSize > 0 && tagSize > 0 {
+        aead, err = ccm.NewCCMWithNonceAndTagSize(block, nonceSize, tagSize)
+    } else if tagSize > 0 {
         aead, err = ccm.NewCCMWithTagSize(block, tagSize)
+    } else if nonceSize > 0 {
+        aead, err = ccm.NewCCMWithNonceSize(block, nonceSize)
     } else {
-        aead, err = ccm.NewCCMWithNonceSize(block, len(iv))
+        aead, err = ccm.NewCCM(block)
     }
 
+    iv := opt.Iv()
     additional := opt.Config().GetBytes("additional")
 
     dst, err := aead.Open(nil, iv, data, additional)

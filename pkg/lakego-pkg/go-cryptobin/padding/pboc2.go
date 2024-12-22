@@ -3,8 +3,6 @@ package padding
 import (
     "bytes"
     "errors"
-
-    "github.com/deatil/go-cryptobin/tool/alias"
 )
 
 /**
@@ -22,23 +20,26 @@ func NewPBOC2() PBOC2 {
 
 // PBOC2.0的MAC运算数据填充规范
 // 若原加密数据的最末字节可能是0x80，则不推荐使用该模式
-// 与 ISO97971Padding(text, blockSize) 一致
+// 与 ISO97971Padding 一致
 func (this PBOC2) Padding(text []byte, blockSize int) []byte {
-    overhead := blockSize - len(text)%blockSize
-    ret, out := alias.SliceForAppend(text, overhead)
-
-    out[0] = 0x80
-    for i := 1; i < overhead; i++ {
-        out[i] = 0
+    num := len(text)
+    if blockSize < 1 {
+        return text
     }
 
-    return ret
+    overhead := blockSize - num%blockSize
+    paddingText := bytes.Repeat([]byte{0}, overhead)
+
+    text = append(text, paddingText...)
+    text[num] = 0x80
+
+    return text
 }
 
 func (this PBOC2) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     num := bytes.LastIndexByte(src, 0x80)

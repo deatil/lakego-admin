@@ -38,7 +38,7 @@ func main() {
 
     // 写入数据
     path := "/path.txt"
-    contents := []byte("")
+    contents := []byte("testdata")
 
     ok, err := fs.Write(path, contents)
     if err != nil {
@@ -52,49 +52,49 @@ func main() {
 
 ~~~go
 // 写入
-fs.Write(path, contents string) (bool, error)
+Write(path, contents []byte) (bool, error)
 
 // 写入数据流
-fs.WriteStream(path string, resource io.Reader) (bool, error)
+WriteStream(path string, resource io.Reader) (bool, error)
 
 // 添加数据
-fs.Put(path, contents string) (bool, error)
+Put(path, contents []byte) (bool, error)
 
 // 添加数据流
-fs.PutStream(path string, resource io.Reader) (bool, error)
+PutStream(path string, resource io.Reader) (bool, error)
 
 // 读取后删除
-fs.ReadAndDelete(path string) (any, error)
+ReadAndDelete(path string) (any, error)
 
 // 更新
-fs.Update(path, contents string) (bool, error)
+Update(path, contents []byte) (bool, error)
 
 // 读取
-fs.Read(path string) (string, error)
+Read(path string) ([]byte, error)
 
 // 重命名
-fs.Rename(path, newpath string) (bool, error)
+Rename(path, newpath string) (bool, error)
 
 // 复制
-fs.Copy(path, newpath string) (bool, error)
+Copy(path, newpath string) (bool, error)
 
 // 删除
-fs.Delete(path string) (bool, error)
+Delete(path string) (bool, error)
 
 // 删除文件夹
-fs.DeleteDir(dirname string) (bool, error)
+DeleteDir(dirname string) (bool, error)
 
 // 创建文件夹
-fs.CreateDir(dirname string) (bool, error)
+CreateDir(dirname string) (bool, error)
 
 // 列出内容
-fs.ListContents(dirname string) ([]map[string]any, error)
+ListContents(dirname string) ([]map[string]any, error)
 ~~~
 
 
 ### 开源协议
 
-*  `go-filesystem` 文件管理器 遵循 `Apache2` 开源协议发布，在保留本软件版权的情况下提供个人及商业免费使用。
+*  `go-filesystem` 遵循 `Apache2` 开源协议发布，在保留本软件版权的情况下提供个人及商业免费使用。
 
 
 ### 版权

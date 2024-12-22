@@ -22,18 +22,22 @@ func NewTBC() TBC {
 // 填充至符合块大小的整数倍，原文最后一位为1时填充0x00，最后一位为0时填充0xFF。
 func (this TBC) Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 1 {
+    if blockSize < 1 {
         return text
     }
 
     // 补位 blockSize 值
     paddingSize := blockSize - n%blockSize
 
-    lastBit := text[n - 1] & 0x1
-
     var paddingByte byte
-    if lastBit != 0 {
-        paddingByte = 0x00
+    if n > 0 {
+        lastBit := text[n - 1] & 0x1
+
+        if lastBit != 0 {
+            paddingByte = 0x00
+        } else {
+            paddingByte = 0xFF
+        }
     } else {
         paddingByte = 0xFF
     }
@@ -47,25 +51,47 @@ func (this TBC) Padding(text []byte, blockSize int) []byte {
 func (this TBC) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
+
+    res := []byte{}
 
     lastByte := src[n-1]
 
-    switch {
-        case lastByte == 0x00:
+    switch lastByte {
+        case 0x00:
             for i := n - 2; i >= 0; i-- {
                 if src[i] != 0x00 {
-                    return src[:i+1], nil
+                    res = src[:i+1]
+                    break
                 }
             }
-        case lastByte == 0xFF:
+
+            if len(res) > 0 {
+                lastBit := res[len(res) - 1] & 0x1
+                if lastBit == 0 {
+                    return nil, errors.New("invalid padding")
+                }
+            } else {
+                return nil, errors.New("invalid padding")
+            }
+        case 0xFF:
             for i := n - 2; i >= 0; i-- {
                 if src[i] != 0xFF {
-                    return src[:i+1], nil
+                    res = src[:i+1]
+                    break
                 }
             }
+
+            if len(res) > 0 {
+                lastBit := res[len(res) - 1] & 0x1
+                if lastBit != 0 {
+                    return nil, errors.New("invalid padding")
+                }
+            }
+        default:
+            return nil, errors.New("invalid padding")
     }
 
-    return nil, errors.New("invalid padding")
+    return res, nil
 }

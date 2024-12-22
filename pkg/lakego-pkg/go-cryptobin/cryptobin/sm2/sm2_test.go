@@ -413,7 +413,11 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
     })
 }
 
-// 招商银行签名会因为业务不同用的签名方法也会不同，签名方法默认有 SignBytes 和 SignASN1 两种，可根据招商银行给的 demo 选择对应的方法使用
+// 招商银行签名会因为业务不同用的签名方法也会不同，
+// 签名方法默认有 SignBytes 和 SignASN1 两种，
+// 可根据招商银行给的 demo 选择对应的方法使用
+// SignBytes 为签名数据明文拼接
+// SignASN1 为签名数据做 ASN.1 编码
 func Test_ZhaoshangBank_Check(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
 
@@ -490,7 +494,7 @@ func Test_ZhaoshangBank_Sign2(t *testing.T) {
 func Test_ZhaoshangBank_Verify(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
 
-    // 未压缩公钥明文,16进制
+    // 未压缩公钥明文, 16进制
     sm2pubkey := "046374f8947b208b3f28a2dfaec78510f858bc1bad37f038b95903975c9636beb859653fb145727d02d65cd68f202abc2ff93eecea477b1dc81f4f650621b89e9d"
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
@@ -507,13 +511,13 @@ func Test_ZhaoshangBank_Verify(t *testing.T) {
         // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
-    assertBool(sm2Verify, "ZhaoshangBank_Verify")
+    assertBool(sm2Verify, "Test_ZhaoshangBank_Verify")
 }
 
 func Test_ZhaoshangBank_Verify2(t *testing.T) {
     assertBool := cryptobin_test.AssertBoolT(t)
 
-    // 压缩公钥明文,16进制
+    // 压缩公钥明文, 16进制
     sm2pubkey := "036374f8947b208b3f28a2dfaec78510f858bc1bad37f038b95903975c9636beb8"
     sm2data := `{"request":{"body":{"TEST":"中文","TEST2":"!@#$%^&*()","TEST3":12345,"TEST4":[{"arrItem1":"qaz","arrItem2":123,"arrItem3":true,"arrItem4":"中文"}],"buscod":"N02030"},"head":{"funcode":"DCLISMOD","userid":"N003261207"}},"signature":{"sigdat":"__signature_sigdat__"}}`
     sm2userid := "N0032612070000000000000000"
@@ -530,7 +534,7 @@ func Test_ZhaoshangBank_Verify2(t *testing.T) {
         // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
-    assertBool(sm2Verify, "ZhaoshangBank_Verify")
+    assertBool(sm2Verify, "Test_ZhaoshangBank_Verify2")
 }
 
 func Test_PKCS1SignWithHash(t *testing.T) {

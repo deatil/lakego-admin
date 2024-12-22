@@ -35,19 +35,19 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 生成私钥
     // create private key
     var PriKeyPem string = obj.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "DESEDE3CBC").
+        // CreatePrivateKeyWithPassword(password, "AES256CBC").
         ToKeyString()
 
     // 自定义私钥加密类型
     // use custom encrypt options
     var PriKeyPem string = obj.
-        CreatePrivateKeyWithPassword(psssword, sm2.Opts{
+        CreatePrivateKeyWithPassword(password, sm2.Opts{
             Cipher:  sm2.GetCipherFromName("AES256CBC"),
             KDFOpts: sm2.ScryptOpts{
                 CostParameter:            1 << 15,
@@ -79,7 +79,7 @@ func main() {
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // ctx 数据
     var ctx string = ""
@@ -92,11 +92,11 @@ func main() {
     sigBase64String = obj.
         FromString(data).
         FromPrivateKey([]byte(priKeyPem)).
-        // FromPrivateKeyWithPassword([]byte(priKeyPem), psssword).
+        // FromPrivateKeyWithPassword([]byte(priKeyPem), password).
         // 其他设置, 默认为 Ed25519 模式
+        // SetOptions("Ed25519").
         // SetOptions("Ed25519ph", ctx).
         // SetOptions("Ed25519ctx", ctx).
-        // SetOptions("Ed25519").
         Sign().
         ToBase64String()
 
@@ -107,9 +107,9 @@ func main() {
         FromBase64String(sigBase64String).
         FromPublicKey([]byte(pubKeyPem)).
         // 其他设置, 默认为 Ed25519 模式
+        // SetOptions("Ed25519").
         // SetOptions("Ed25519ph", ctx).
         // SetOptions("Ed25519ctx", ctx).
-        // SetOptions("Ed25519").
         Verify([]byte(data)).
         ToVerify()
 }
@@ -118,17 +118,17 @@ func main() {
 #### 检测私钥公钥是否匹配 / Check KeyPair
 ~~~go
 func main() {
-    var prikeyPem string = "..."
-    var pubkeyPem string = "..."
+    var prikeyPem []byte = []byte("...")
+    var pubkeyPem []byte = []byte("...")
 
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     var res bool = eddsa.New().
-        FromPrivateKey([]byte(prikeyPem)).
-        // FromPrivateKeyWithPassword([]byte(prikeyPem), psssword).
-        FromPublicKey([]byte(pubkeyPem)).
+        FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, password).
+        FromPublicKey(pubkeyPem).
         CheckKeyPair()
 }
 ~~~

@@ -21,18 +21,17 @@ func NewISO7816_4() ISO7816_4 {
 // ISO7816_4Padding
 // 填充至符合块大小的整数倍，填充值第一个字节为0x80，其他字节填0x00。
 func (this ISO7816_4) Padding(text []byte, blockSize int) []byte {
-    n := len(text)
-    if n == 0 || blockSize < 1 {
+    num := len(text)
+    if blockSize < 1 {
         return text
     }
 
     // 补位 blockSize 值
-    paddingSize := blockSize - n%blockSize
+    overhead := blockSize - num%blockSize
+    paddingText := bytes.Repeat([]byte{0}, overhead)
 
-    text = append(text, 0x80)
-
-    paddingText := bytes.Repeat([]byte{0x00}, paddingSize - 1)
     text = append(text, paddingText...)
+    text[num] = 0x80
 
     return text
 }
@@ -40,7 +39,7 @@ func (this ISO7816_4) Padding(text []byte, blockSize int) []byte {
 func (this ISO7816_4) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     num := bytes.LastIndexByte(src, 0x80)

@@ -48,6 +48,7 @@ func (c *cbcrMAC) MAC(src []byte) []byte {
     for len(src) > blockSize {
         subtle.XORBytes(tag, tag, src[:blockSize])
         c.b.Encrypt(tag, tag)
+
         src = src[blockSize:]
     }
 

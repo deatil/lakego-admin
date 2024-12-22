@@ -615,7 +615,7 @@ func Test_AesCCMPKCS7Padding(t *testing.T) {
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfe").
         Aes().
-        CCM().
+        CCMWithNonceSize(11).
         PKCS7Padding().
         Encrypt()
     cyptStr := cypt.ToBase64String()
@@ -626,7 +626,7 @@ func Test_AesCCMPKCS7Padding(t *testing.T) {
         SetKey("dfertf12dfertf12").
         SetIv("dfertf12dfe").
         Aes().
-        CCM().
+        CCMWithNonceSize(11).
         PKCS7Padding().
         Decrypt()
     cyptdeStr := cyptde.ToString()
@@ -1493,7 +1493,8 @@ func Test_Weapp_AES256_GCM_Check(t *testing.T) {
     authtag := "5qeM/2vZv+6KtScN94IpMg=="
     real_authTag, _ := base64.StdEncoding.DecodeString(authtag)
 
-    cypt := FromString(real_plaintext).
+    cypt := New().
+        FromString(real_plaintext).
         WithKey(real_key).
         WithIv(real_iv).
         Aes().
@@ -1762,4 +1763,214 @@ func Test_Chacha20poly1305(t *testing.T) {
     assertError(cyptde.Error(), "Test_Chacha20poly1305-Decode")
 
     assert(data, cyptdeStr, "Test_Chacha20poly1305")
+}
+
+func Test_Aes_CCM_PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        CCM().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_CCM_PKCS7Padding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        CCM().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_CCM_PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_CCM_PKCS7Padding")
+}
+
+func Test_Aes_CCMWithNonceSize_PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        CCMWithNonceSize(13).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_CCMWithNonceSize_PKCS7Padding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        CCMWithNonceSize(13).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_CCMWithNonceSize_PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_CCMWithNonceSize_PKCS7Padding")
+}
+
+func Test_Aes_CCMWithTagSize_NoPadding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        CCMWithTagSize(12).
+        NoPadding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_CCMWithTagSize_NoPadding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        CCMWithTagSize(12).
+        NoPadding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_CCMWithTagSize_NoPadding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_CCMWithTagSize_NoPadding")
+}
+
+func Test_Aes_CCMWithNonceAndTagSize_PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        CCMWithNonceAndTagSize(13, 16).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_CCMWithNonceAndTagSize_PKCS7Padding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        CCMWithNonceAndTagSize(13, 16).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_CCMWithNonceAndTagSize_PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_CCMWithNonceAndTagSize_PKCS7Padding")
+}
+
+func Test_Aes_GCM_PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        GCM().
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_GCM_PKCS7Padding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        GCM().
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_GCM_PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_GCM_PKCS7Padding")
+}
+
+func Test_Aes_GCMWithNonceSize_PKCS7Padding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        GCMWithNonceSize(13).
+        PKCS7Padding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_GCMWithNonceSize_PKCS7Padding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe12").
+        Aes().
+        GCMWithNonceSize(13).
+        PKCS7Padding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_GCMWithNonceSize_PKCS7Padding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_GCMWithNonceSize_PKCS7Padding")
+}
+
+func Test_Aes_GCMWithTagSize_NoPadding(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := New().FromString(data).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        GCMWithTagSize(15).
+        NoPadding().
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertError(cypt.Error(), "Test_Aes_GCMWithTagSize_NoPadding-Encode")
+
+    cyptde := New().FromBase64String(cyptStr).
+        SetKey("dfertf12dfertf12").
+        SetIv("dfertf12dfe1").
+        Aes().
+        GCMWithTagSize(15).
+        NoPadding().
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertError(cyptde.Error(), "Test_Aes_GCMWithTagSize_NoPadding-Decode")
+
+    assert(data, cyptdeStr, "Test_Aes_GCMWithTagSize_NoPadding")
 }

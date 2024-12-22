@@ -1,6 +1,6 @@
-### ssh 使用文档
+### SSH 使用文档
 
-#### ssh rsa生成使用
+#### SSH RSA 生成使用
 ~~~go
 package main
 
@@ -19,8 +19,8 @@ func main() {
 
     rsa := cryptobin_rsa.NewRsa().GenerateKey(2048)
 
-    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(obj.GetPrivateKey(), "comment")
-    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(obj.GetPrivateKey(), "comment", []byte("123"))
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKey(rsa.GetPrivateKey(), "comment")
+    // block, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(rsa.GetPrivateKey(), "comment", []byte("123"))
     rsaBlock, _ := cryptobin_ssh.MarshalOpenSSHPrivateKeyWithPassword(
         rsa.GetPrivateKey(),
         "comment",
@@ -36,14 +36,14 @@ func main() {
     )
     rsaBlockkeyData := pem.EncodeToMemory(rsaBlock)
 
-    fs.Put("./runtime/key/ssh/rsa-en", string(rsaBlockkeyData))
+    fs.Put("./ssh-key/rsa-en", string(rsaBlockkeyData))
 
     fmt.Println("生成成功")
 }
 
 ~~~
 
-#### ssh rsa解析使用
+#### SSH RSA 解析使用
 ~~~go
 package main
 
@@ -62,8 +62,9 @@ func main() {
     fs := filesystem.New()
 
     // ssh
-    sshRsaEn, _ := fs.Get("./runtime/key/ssh/rsa-en")
+    sshRsaEn, _ := fs.Get("./ssh-key/rsa-en")
     sshRsaEnBlock, _ := pem.Decode([]byte(sshRsaEn))
+
     // sshRsaKey, comment, err := cryptobin_ssh.ParseOpenSSHPrivateKey(sshRsaEnBlock.Bytes)
     sshRsaKey, comment, err := cryptobin_ssh.ParseOpenSSHPrivateKeyWithPassword(sshRsaEnBlock.Bytes, []byte("123"))
 
@@ -73,18 +74,18 @@ func main() {
             CreatePKCS8PrivateKey().
             ToKeyString()
 
-        fs.Put("./runtime/key/ssh/rsa-key-pkcs8", sshRsaPriKey)
-    } else {
-        fs.Put("./runtime/key/ssh/rsa-key-pkcs8", err.Error())
-    }
+        fs.Put("./ssh-key/rsa-key-pkcs8", sshRsaPriKey)
 
-    fmt.Println("解析 key 成功")
-    fmt.Println("证书 comment 为: " + comment)
+        fmt.Println("解析 key 成功")
+        fmt.Println("证书 comment 为: " + comment)
+    } else {
+        fmt.Println("解析 key 失败，错误信息为: " + err.Error())
+    }
 }
 
 ~~~
 
-#### ssh 生成公钥
+#### SSH 生成公钥
 ~~~go
 package main
 
@@ -103,16 +104,17 @@ func main() {
     sshRsaPubKey := cryptobin_rsa.New().
         GenerateKey().
         GetPublicKey()
+
     sshPubKey, _ := ssh.NewPublicKey(sshRsaPubKey)
     sshAuthorizedKey := ssh.MarshalAuthorizedKeyWithComment(sshPubKey, "abc@email.com")
 
-    fs.Put("./runtime/key/ssh/pub/rsa.pub", string(sshAuthorizedKey))
+    fs.Put("./ssh-key/pub/rsa.pub", string(sshAuthorizedKey))
 
 	fmt.Println("生成公钥成功")
 }
 ~~~
 
-#### ssh 解析
+#### SSH 解析
 ~~~go
 package main
 
@@ -128,18 +130,19 @@ import (
 func main() {
     fs := filesystem.New()
 
-    sshPri1, _ := fs.Get("./runtime/key/ssh/pub/dsa.pub")
-    sshPubKey, sshcomment, sshoptions, sshrest, ssherr := ssh.ParseAuthorizedKey([]byte(sshPri1))
+    sshPri1, _ := fs.Get("./ssh-key/pub/dsa.pub")
+
+    sshPubKey, sshcomment, sshoptions, sshrest, err := ssh.ParseAuthorizedKey([]byte(sshPri1))
 
     var sshAuthorizedKey []byte
 
-    if ssherr == nil {
+    if err == nil {
         sshAuthorizedKey = ssh.MarshalAuthorizedKeyWithComment(sshPubKey, "abc@qq.com")
 
-        fs.Put("./runtime/key/ssh/pub/dsa_2.pub", string(sshAuthorizedKey))
+        fs.Put("./ssh-key/pub/dsa_2.pub", string(sshAuthorizedKey))
     }
 
-	fmt.Println("解析公钥成功")
+    fmt.Println("解析公钥成功")
 }
 ~~~
 

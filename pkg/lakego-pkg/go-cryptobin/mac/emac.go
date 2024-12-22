@@ -53,6 +53,7 @@ func (e *emac) MAC(src []byte) []byte {
     for len(src) > 0 {
         subtle.XORBytes(tag, tag, src[:blockSize])
         e.b1.Encrypt(tag, tag)
+
         src = src[blockSize:]
     }
 

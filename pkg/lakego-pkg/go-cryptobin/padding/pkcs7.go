@@ -22,7 +22,7 @@ func NewPKCS7() PKCS7 {
 // 填充至符合块大小的整数倍，填充值为填充数量数
 func (this PKCS7) Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 1 {
+    if blockSize < 1 {
         return text
     }
 
@@ -37,7 +37,7 @@ func (this PKCS7) Padding(text []byte, blockSize int) []byte {
 func (this PKCS7) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     unpadding := int(src[n-1])

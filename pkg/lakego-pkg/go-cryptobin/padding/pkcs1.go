@@ -33,7 +33,7 @@ func NewPKCS1(bt string) PKCS1 {
 // BT = 02时，随机填充，但不能为00。
 func (this PKCS1) Padding(text []byte, blockSize int) []byte {
     n := len(text)
-    if n == 0 || blockSize < 1 {
+    if blockSize < 1 {
         return text
     }
 
@@ -79,7 +79,7 @@ func (this PKCS1) Padding(text []byte, blockSize int) []byte {
 func (this PKCS1) UnPadding(src []byte) ([]byte, error) {
     n := len(src)
     if n == 0 {
-        return nil, errors.New("invalid data len")
+        return nil, errors.New("invalid data length")
     }
 
     count := int(src[n-1])

@@ -73,8 +73,6 @@ func main() {
 #### 签名验证 / sign data
 ~~~go
 func main() {
-    obj := dsa.New()
-
     // 待签名数据
     // no sign data
     var data string = "..."
@@ -83,18 +81,25 @@ func main() {
     // sign data
     var sigBase64String string = "..."
 
+    var priKeyPem []byte = []byte("...")
+    var pubKeyPem []byte = []byte("...")
+
+    var priKeyXML []byte = []byte("...")
+    var pubKeyXML []byte = []byte("...")
+
+    obj := dsa.New()
+
     // 私钥签名
     // private key sign data
-    var priKeyPem string = ""
     sigBase64String = obj.
         FromString(data).
-        FromPrivateKey([]byte(priKeyPem)).
-        // FromPrivateKeyWithPassword([]byte(priKeyPem), "123").
-        // FromPKCS1PrivateKey([]byte(priKeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(priKeyPem), "123").
-        // FromPKCS8PrivateKey([]byte(priKeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(priKeyPem), "123").
-        // FromXMLPrivateKey([]byte(priKeyXML)).
+        FromPrivateKey(priKeyPem).
+        // FromPrivateKeyWithPassword(priKeyPem, "123").
+        // FromPKCS1PrivateKey(priKeyPem).
+        // FromPKCS1PrivateKeyWithPassword(priKeyPem, "123").
+        // FromPKCS8PrivateKey(priKeyPem).
+        // FromPKCS8PrivateKeyWithPassword(priKeyPem, "123").
+        // FromXMLPrivateKey(priKeyXML).
         SetSignHash("SHA256").
         Sign().
         // SignASN1().
@@ -104,13 +109,12 @@ func main() {
 
     // 公钥验证
     // public key verify signed data
-    var pubKeyPem string = ""
     var res bool = obj.
         FromBase64String(sigBase64String).
-        FromPublicKey([]byte(pubKeyPem)).
-        // FromPKCS1PublicKey([]byte(pubKeyPem)).
-        // FromPKCS8PublicKey([]byte(pubKeyPem)).
-        // FromXMLPublicKey([]byte(pubKeyXML)).
+        FromPublicKey(pubKeyPem).
+        // FromPKCS1PublicKey(pubKeyPem).
+        // FromPKCS8PublicKey(pubKeyPem).
+        // FromXMLPublicKey(pubKeyXML).
         SetSignHash("SHA256").
         Verify([]byte(data)).
         // VerifyASN1([]byte(data)).
@@ -123,19 +127,19 @@ func main() {
 #### 检测私钥公钥是否匹配 / Check KeyPair
 ~~~go
 func main() {
-    var prikeyPem string = "..."
-    var pubkeyPem string = "..."
+    var prikeyPem []byte = []byte("...")
+    var pubkeyPem []byte = []byte("...")
 
     var res bool = dsa.New().
-        // FromPrivateKey([]byte(prikeyPem)).
-        // FromPrivateKeyWithPassword([]byte(prikeyPem), "123").
-        // FromPKCS1PrivateKey([]byte(prikeyPem)).
-        // FromPKCS1PrivateKeyWithPassword([]byte(prikeyPem), "123").
-        FromPKCS8PrivateKey([]byte(prikeyPem)).
-        // FromPKCS8PrivateKeyWithPassword([]byte(prikeyPem), "123").
-        // FromPublicKey([]byte(pubkeyPem)).
-        // FromPKCS1PublicKey([]byte(pubkeyPem)).
-        FromPKCS8PublicKey([]byte(pubkeyPem)).
+        // FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, "123").
+        // FromPKCS1PrivateKey(prikeyPem).
+        // FromPKCS1PrivateKeyWithPassword(prikeyPem, "123").
+        FromPKCS8PrivateKey(prikeyPem).
+        // FromPKCS8PrivateKeyWithPassword(prikeyPem, "123").
+        // FromPublicKey(pubkeyPem).
+        // FromPKCS1PublicKey(pubkeyPem).
+        FromPKCS8PublicKey(pubkeyPem).
         CheckKeyPair()
 }
 ~~~

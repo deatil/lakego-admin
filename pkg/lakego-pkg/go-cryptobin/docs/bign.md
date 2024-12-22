@@ -33,24 +33,24 @@ Error()
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 生成证书
     // 可选 [Bign256v1 | Bign384v1 | Bign512v1]
     gen := bign.GenerateKey("Bign256v1")
 
     // 生成私钥 PEM 证书
-    privateKeyString := gen.
+    privateKeyPEM := gen.
         CreatePrivateKey().
-        // CreatePrivateKeyWithPassword(psssword, "AES256CBC").
+        // CreatePrivateKeyWithPassword(password, "AES256CBC").
         // CreatePKCS1PrivateKey()
-        // CreatePKCS1PrivateKeyWithPassword(password string, opts ...string)
+        // CreatePKCS1PrivateKeyWithPassword(password, "AES256CBC")
         // CreatePKCS8PrivateKey().
-        // CreatePKCS8PrivateKeyWithPassword(psssword, "AES256CBC", "SHA256").
+        // CreatePKCS8PrivateKeyWithPassword(password, "AES256CBC", "SHA256").
         ToKeyString()
 
     // 生成公钥 PEM 证书
-    publicKeyString := gen.
+    publicKeyPEM := gen.
         CreatePublicKey().
         ToKeyString()
 }
@@ -75,18 +75,18 @@ SignBytes() / VerifyBytes(data []byte)
 func main() {
     // 私钥密码
     // privatekey password
-    var psssword string = ""
+    var password string = ""
 
     // 私钥签名
-    var pri []byte = []byte("...")
+    var prikeyPem []byte = []byte("...")
     var base64signedString string = bign.
         FromString("test-pass").
-        FromPrivateKey(pri).
-        // FromPrivateKeyWithPassword(pri, psssword).
-        // FromPKCS1PrivateKey(pri).
-        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
-        // FromPKCS8PrivateKey(pri).
-        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
+        FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS1PrivateKey(prikeyPem).
+        // FromPKCS1PrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS8PrivateKey(prikeyPem).
+        // FromPKCS8PrivateKeyWithPassword(prikeyPem, password).
         // WithEncodingASN1().
         // WithEncodingBytes().
         WithAdata(adata). // 设置 adata 参数
@@ -94,11 +94,11 @@ func main() {
         ToBase64String()
 
     // 公钥验证
-    var pub []byte = []byte("...")
+    var pubkeyPem []byte = []byte("...")
     var base64signedString string = "..."
     var verify bool = bign.
         FromBase64String(base64signedString).
-        FromPublicKey(pub).
+        FromPublicKey(pubkeyPem).
         // WithEncodingASN1().
         // WithEncodingBytes().
         WithAdata(adata). // 设置 adata 参数
@@ -111,21 +111,21 @@ func main() {
 #### 检测私钥公钥是否匹配
 ~~~go
 func main() {
-    // 私钥密码
-    // privatekey password
-    var psssword string = ""
-
     var prikeyPem []byte = []byte("...")
     var pubkeyPem []byte = []byte("...")
 
+    // 私钥密码
+    // privatekey password
+    var password string = ""
+
     var res bool = bign.New().
-        FromPrivateKey(pri).
-        // FromPrivateKeyWithPassword(pri, psssword).
-        // FromPKCS1PrivateKey(pri).
-        // FromPKCS1PrivateKeyWithPassword(pri, psssword).
-        // FromPKCS8PrivateKey(pri).
-        // FromPKCS8PrivateKeyWithPassword(pri, psssword).
-        FromPublicKey(pubkey).
+        FromPrivateKey(prikeyPem).
+        // FromPrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS1PrivateKey(prikeyPem).
+        // FromPKCS1PrivateKeyWithPassword(prikeyPem, password).
+        // FromPKCS8PrivateKey(prikeyPem).
+        // FromPKCS8PrivateKeyWithPassword(prikeyPem, password).
+        FromPublicKey(pubkeyPem).
         CheckKeyPair()
 }
 ~~~

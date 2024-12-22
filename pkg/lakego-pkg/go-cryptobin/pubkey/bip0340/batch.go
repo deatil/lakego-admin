@@ -12,7 +12,7 @@ func BatchVerify(pub []*PublicKey, m, sig [][]byte, hashFunc Hasher) bool {
 
     pub0 := pub[0]
 
-    for i := 0; i < u; i++ {
+    for i := 1; i < u; i++ {
         if pub[i].Curve != pub0.Curve {
             return false
         }

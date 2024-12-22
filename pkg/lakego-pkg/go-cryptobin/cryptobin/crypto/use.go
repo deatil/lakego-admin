@@ -470,6 +470,21 @@ func (this Cryptobin) CTR() Cryptobin {
 func (this Cryptobin) GCM(additional ...[]byte) Cryptobin {
     this.mode = GCM
 
+    this.config.Set("nonce_size", 0)
+    this.config.Set("tag_size", 0)
+
+    if len(additional) > 0 {
+        this.config.Set("additional", additional[0])
+    }
+
+    return this
+}
+
+// GCMWithNonceSize
+func (this Cryptobin) GCMWithNonceSize(nonceSize int, additional ...[]byte) Cryptobin {
+    this.mode = GCM
+
+    this.config.Set("nonce_size", nonceSize)
     this.config.Set("tag_size", 0)
 
     if len(additional) > 0 {
@@ -483,6 +498,7 @@ func (this Cryptobin) GCM(additional ...[]byte) Cryptobin {
 func (this Cryptobin) GCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = GCM
 
+    this.config.Set("nonce_size", 0)
     this.config.Set("tag_size", tagSize)
 
     if len(additional) > 0 {
@@ -493,10 +509,25 @@ func (this Cryptobin) GCMWithTagSize(tagSize int, additional ...[]byte) Cryptobi
 }
 
 // CCM
-// ccm nounce size, should be in [7,13]
 func (this Cryptobin) CCM(additional ...[]byte) Cryptobin {
     this.mode = CCM
 
+    this.config.Set("nonce_size", 0)
+    this.config.Set("tag_size", 0)
+
+    if len(additional) > 0 {
+        this.config.Set("additional", additional[0])
+    }
+
+    return this
+}
+
+// CCMWithNonceSize
+// ccm nonce size, should be in [7,13]
+func (this Cryptobin) CCMWithNonceSize(nonceSize int, additional ...[]byte) Cryptobin {
+    this.mode = CCM
+
+    this.config.Set("nonce_size", nonceSize)
     this.config.Set("tag_size", 0)
 
     if len(additional) > 0 {
@@ -507,10 +538,25 @@ func (this Cryptobin) CCM(additional ...[]byte) Cryptobin {
 }
 
 // CCMWithTagSize
-// ccm nounce size, should be in [7,13]
+// Tag sizes between 8 and 16 bytes are allowed.
 func (this Cryptobin) CCMWithTagSize(tagSize int, additional ...[]byte) Cryptobin {
     this.mode = CCM
 
+    this.config.Set("nonce_size", 0)
+    this.config.Set("tag_size", tagSize)
+
+    if len(additional) > 0 {
+        this.config.Set("additional", additional[0])
+    }
+
+    return this
+}
+
+// CCMWithNonceSize
+func (this Cryptobin) CCMWithNonceAndTagSize(nonceSize, tagSize int, additional ...[]byte) Cryptobin {
+    this.mode = CCM
+
+    this.config.Set("nonce_size", nonceSize)
     this.config.Set("tag_size", tagSize)
 
     if len(additional) > 0 {
