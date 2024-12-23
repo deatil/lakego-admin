@@ -54,7 +54,7 @@ func Stop() {
             return
         }
 
-        pids := strings.Split(contents, ",")
+        pids := strings.Split(string(contents), ",")
         if len(pids) == 0 {
             color.Redln("pid 数据为空")
 

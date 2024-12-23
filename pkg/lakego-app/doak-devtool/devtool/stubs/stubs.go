@@ -78,7 +78,7 @@ func (this Stubs) CopyFile(srcData string, dst string, data map[string]string, f
         srcData = strings.ReplaceAll(srcData, "{" + k + "}", v)
     }
 
-    err = filesystem.Put(dst, srcData, true)
+    err = filesystem.Put(dst, []byte(srcData), true)
     if err != nil {
         return errors.New("复制文件失败 !")
     }

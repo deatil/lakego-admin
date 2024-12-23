@@ -51,12 +51,12 @@ func New(root string) *Local {
 
 // 确认文件夹
 func (this *Local) EnsureDirectory(root string) error {
-    err := os.MkdirAll(root, this.FormatPerm(permissionMap["dir"]["public"]))
+    err := os.MkdirAll(root, this.formatPerm(permissionMap["dir"]["public"]))
     if err != nil {
         return errors.New("go-filesystem: exec os.MkdirAll() fail, error: " + err.Error())
     }
 
-    if !this.IsFile(root) {
+    if !this.isFile(root) {
         return errors.New("go-filesystem: create dir fail" )
     }
 
@@ -88,7 +88,7 @@ func (this *Local) Write(path string, contents []byte, conf interfaces.Config) (
         return nil, errors.New("go-filesystem: exec os.Write() fail, error: " + writeErr.Error())
     }
 
-    size, sizeErr := this.FileSize(location)
+    size, sizeErr := this.fileSize(location)
     if sizeErr != nil {
         return nil, errors.New("go-filesystem: get file size fail, error: " + writeErr.Error())
     }
@@ -154,7 +154,7 @@ func (this *Local) Update(path string, contents []byte, conf interfaces.Config) 
         return nil, errors.New("go-filesystem: exec os.Write() fail, error: " + writeErr.Error())
     }
 
-    size, sizeErr := this.FileSize(location)
+    size, sizeErr := this.fileSize(location)
     if sizeErr != nil {
         return nil, errors.New("go-filesystem: get file size fail, error: " + writeErr.Error())
     }
@@ -276,7 +276,7 @@ func (this *Local) Copy(path string, newpath string) error {
 func (this *Local) Delete(path string) error {
     location := this.ApplyPathPrefix(path)
 
-    if !this.IsFile(location) {
+    if !this.isFile(location) {
         return errors.New("go-filesystem: file delete fail, not file type")
     }
 
@@ -291,7 +291,7 @@ func (this *Local) Delete(path string) error {
 func (this *Local) DeleteDir(dirname string) error {
     location := this.ApplyPathPrefix(dirname)
 
-    if !this.IsDir(location) {
+    if !this.isDir(location) {
         return errors.New("go-filesystem: file delete fail, not file type")
     }
 
@@ -308,12 +308,12 @@ func (this *Local) CreateDir(dirname string, config interfaces.Config) (map[stri
 
     visibility := config.Get("visibility", "public").(string)
 
-    err := os.MkdirAll(location, this.FormatPerm(permissionMap["dir"][visibility]))
+    err := os.MkdirAll(location, this.formatPerm(permissionMap["dir"][visibility]))
     if err != nil {
         return nil, errors.New("go-filesystem: exec os.MkdirAll() fail, error: " + err.Error())
     }
 
-    if !this.IsDir(location) {
+    if !this.isDir(location) {
         return nil, errors.New("go-filesystem: make dir fail")
     }
 
@@ -329,20 +329,20 @@ func (this *Local) CreateDir(dirname string, config interfaces.Config) (map[stri
 func (this *Local) ListContents(directory string, recursive ...bool) ([]map[string]any, error) {
     location := this.ApplyPathPrefix(directory)
 
-    if !this.IsDir(location) {
+    if !this.isDir(location) {
         return []map[string]any{}, nil
     }
 
     var iterator []map[string]any
     if len(recursive) > 0 && recursive[0] {
-        iterator, _ = this.GetRecursiveDirectoryIterator(location)
+        iterator, _ = this.getRecursiveDirectoryIterator(location)
     } else {
-        iterator, _ = this.GetDirectoryIterator(location)
+        iterator, _ = this.getDirectoryIterator(location)
     }
 
     var result []map[string]any
     for _, file := range iterator {
-        path, _ := this.NormalizeFileInfo(file)
+        path, _ := this.normalizeFileInfo(file)
 
         result = append(result, path)
     }
@@ -353,9 +353,9 @@ func (this *Local) ListContents(directory string, recursive ...bool) ([]map[stri
 func (this *Local) GetMetadata(path string) (map[string]any, error) {
     location := this.ApplyPathPrefix(path)
 
-    info := this.FileInfo(location)
+    info := this.fileInfo(location)
 
-    return this.NormalizeFileInfo(info)
+    return this.normalizeFileInfo(info)
 }
 
 func (this *Local) GetSize(path string) (map[string]any, error) {
@@ -395,11 +395,11 @@ func (this *Local) GetVisibility(path string) (map[string]string, error) {
     location := this.ApplyPathPrefix(path)
 
     pathType := "file"
-    if !this.IsFile(location) {
+    if !this.isFile(location) {
         pathType = "dir"
     }
 
-    permissions, _ := this.FileMode(location)
+    permissions, _ := this.fileMode(location)
 
     for visibility, visibilityPermissions := range permissionMap[pathType] {
         if visibilityPermissions == permissions {
@@ -425,7 +425,7 @@ func (this *Local) SetVisibility(path string, visibility string) (map[string]str
     location := this.ApplyPathPrefix(path)
 
     pathType := "file"
-    if !this.IsFile(location) {
+    if !this.isFile(location) {
         pathType = "dir"
     }
 
@@ -433,7 +433,7 @@ func (this *Local) SetVisibility(path string, visibility string) (map[string]str
         visibility = "public"
     }
 
-    e := os.Chmod(location, this.FormatPerm(permissionMap[pathType][visibility]))
+    e := os.Chmod(location, this.formatPerm(permissionMap[pathType][visibility]))
     if e != nil {
         return nil, errors.New("go-filesystem: set permission fail")
     }
@@ -446,23 +446,13 @@ func (this *Local) SetVisibility(path string, visibility string) (map[string]str
     return data, nil
 }
 
-// NormalizeFileInfo
-func (this *Local) NormalizeFileInfo(file map[string]any) (map[string]any, error) {
-    return this.MapFileInfo(file)
-}
-
-// 是否可读
-func (this *Local) GuardAgainstUnreadableFileInfo(fp string) error {
-    _, err := os.ReadFile(fp)
-    if err != nil {
-        return err
-    }
-
-    return nil
+// normalizeFileInfo
+func (this *Local) normalizeFileInfo(file map[string]any) (map[string]any, error) {
+    return this.mapFileInfo(file)
 }
 
 // 获取全部文件
-func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]any, error) {
+func (this *Local) getRecursiveDirectoryIterator(path string) ([]map[string]any, error) {
     var files []map[string]any
     err := filepath.Walk(path, func(wpath string, info os.FileInfo, err error) error {
         var fileType string
@@ -492,7 +482,7 @@ func (this *Local) GetRecursiveDirectoryIterator(path string) ([]map[string]any,
 
 // 一级目录索引
 // dir index
-func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
+func (this *Local) getDirectoryIterator(path string) ([]map[string]any, error) {
     fs, err := os.ReadDir(path)
     if err != nil {
         return []map[string]any{}, err
@@ -534,7 +524,7 @@ func (this *Local) GetDirectoryIterator(path string) ([]map[string]any, error) {
     return ret, nil
 }
 
-func (this *Local) FileInfo(path string) map[string]any {
+func (this *Local) fileInfo(path string) map[string]any {
     info, e := os.Stat(path)
     if e != nil {
         return nil
@@ -557,7 +547,7 @@ func (this *Local) FileInfo(path string) map[string]any {
     }
 }
 
-func (this *Local) GetFilePath(file map[string]any) string {
+func (this *Local) getFilePath(file map[string]any) string {
     location := file["pathname"].(string)
     path := this.RemovePathPrefix(location)
     return strings.Trim(strings.Replace(path, "\\", "/", -1), "/")
@@ -565,10 +555,10 @@ func (this *Local) GetFilePath(file map[string]any) string {
 
 // 获取全部文件
 // get all file
-func (this *Local) MapFileInfo(data map[string]any) (map[string]any, error) {
+func (this *Local) mapFileInfo(data map[string]any) (map[string]any, error) {
     normalized := map[string]any{
         "type":      data["type"],
-        "path":      this.GetFilePath(data),
+        "path":      this.getFilePath(data),
         "timestamp": data["timestamp"],
     }
 
@@ -589,11 +579,11 @@ func (this *Local) MapFileInfo(data map[string]any) (map[string]any, error) {
     return normalized, nil
 }
 
-func (this *Local) IsFile(fp string) bool {
-    return !this.IsDir(fp)
+func (this *Local) isFile(fp string) bool {
+    return !this.isDir(fp)
 }
 
-func (this *Local) IsDir(fp string) bool {
+func (this *Local) isDir(fp string) bool {
     f, e := os.Stat(fp)
     if e != nil {
         return false
@@ -602,17 +592,18 @@ func (this *Local) IsDir(fp string) bool {
     return f.IsDir()
 }
 
-func (this *Local) FileSize(fp string) (int64, error) {
+func (this *Local) fileSize(fp string) (int64, error) {
     f, e := os.Stat(fp)
     if e != nil {
         return 0, e
     }
+
     return f.Size(), nil
 }
 
 // 文件权限
 // return File Mode
-func (this *Local) FileMode(fp string) (uint32, error) {
+func (this *Local) fileMode(fp string) (uint32, error) {
     f, e := os.Stat(fp)
     if e != nil {
         return 0, e
@@ -623,27 +614,9 @@ func (this *Local) FileMode(fp string) (uint32, error) {
     return uint32(perm), nil
 }
 
-// 软链接
-// Symlink
-func (this *Local) Symlink(target, link string) error {
-    return os.Symlink(target, link)
-}
-
-// 读取链接
-// Readlink
-func (this *Local) Readlink(link string) (string, error) {
-    return os.Readlink(link)
-}
-
-// 是否为软链接
-// IsSymlink
-func (this *Local) IsSymlink(m os.FileMode) bool {
-    return m&os.ModeSymlink != 0
-}
-
 // 权限格式化
 // Format Perm
-func (this *Local) FormatPerm(i uint32) os.FileMode {
+func (this *Local) formatPerm(i uint32) os.FileMode {
     // 八进制转成十进制
     // p, _ := strconv.ParseInt(strconv.Itoa(i), 8, 0)
     return os.FileMode(i)

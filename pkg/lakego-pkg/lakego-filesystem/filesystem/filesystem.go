@@ -6,6 +6,7 @@ import (
     "fmt"
     "time"
     "bufio"
+    "bytes"
     "errors"
     "strings"
     "net/http"
@@ -46,35 +47,25 @@ const (
 // Flags 列表
 const (
     // 只读模式
-    O_RDONLY int = os.O_RDONLY
+    O_RDONLY = os.O_RDONLY
     // 只写模式
-    O_WRONLY int = os.O_WRONLY
+    O_WRONLY = os.O_WRONLY
     // 可读可写
-    O_RDWR   int = os.O_RDWR
+    O_RDWR   = os.O_RDWR
     // 追加内容
-    O_APPEND int = os.O_APPEND
+    O_APPEND = os.O_APPEND
     // 创建文件，如果文件不存在
-    O_CREATE int = os.O_CREATE
+    O_CREATE = os.O_CREATE
     // 与创建文件一同使用，文件必须存在
-    O_EXCL   int = os.O_EXCL
+    O_EXCL   = os.O_EXCL
     // 打开一个同步的文件流
-    O_SYNC   int = os.O_SYNC
+    O_SYNC   = os.O_SYNC
     // 如果可能，打开时缩短文件
-    O_TRUNC  int = os.O_TRUNC
+    O_TRUNC  = os.O_TRUNC
 )
 
 // 默认
-var defaultFilesystem *Filesystem
-
-// 初始化
-func init() {
-    defaultFilesystem = New()
-}
-
-// 构造函数
-func New() *Filesystem {
-    return &Filesystem{}
-}
+var defaultFilesystem = New()
 
 /**
  * 本地文件管理器
@@ -83,6 +74,11 @@ func New() *Filesystem {
  * @author deatil
  */
 type Filesystem struct{}
+
+// 构造函数
+func New() *Filesystem {
+    return &Filesystem{}
+}
 
 // 创建
 func (this *Filesystem) Create(name string) (*os.File, error) {
@@ -127,77 +123,77 @@ func Missing(path string) bool {
 }
 
 // 获取数据
-func (this *Filesystem) Get(path string, lock ...bool) (string, error) {
+func (this *Filesystem) Get(path string, lock ...bool) ([]byte, error) {
     if len(lock) > 0 && lock[0] {
         file, err := os.Open(path)
         if err != nil {
-            return "", err
+            return nil, err
         }
         defer file.Close()
 
         data, err2 := io.ReadAll(file)
         if err2 != nil {
-            return "", err2
+            return nil, err2
         }
 
-        return string(data), nil
+        return data, nil
     } else {
         return this.SharedGet(path)
     }
 }
 
 // 获取数据
-func Get(path string, lock ...bool) (string, error) {
+func Get(path string, lock ...bool) ([]byte, error) {
     return defaultFilesystem.Get(path, lock...)
 }
 
 // 获取数据
-func (this *Filesystem) SharedGet(path string) (string, error) {
+func (this *Filesystem) SharedGet(path string) ([]byte, error) {
     file, err := os.Open(path)
     if err != nil {
-        return "", err
+        return nil, err
     }
     defer file.Close()
 
     data, err2 := io.ReadAll(file)
     if err2 != nil {
-        return "", err2
+        return nil, err2
     }
 
-    return string(data), nil
+    return data, nil
 }
 
 // 获取数据
-func SharedGet(path string) (string, error) {
+func SharedGet(path string) ([]byte, error) {
     return defaultFilesystem.SharedGet(path)
 }
 
 // 行读取
-func (this *Filesystem) Lines(path string) ([]string, error) {
+func (this *Filesystem) Lines(path string) ([][]byte, error) {
     f, err := os.Open(path)
     if err != nil {
-        return []string{}, err
+        return nil, err
     }
 
     defer f.Close()
 
     buf := bufio.NewReader(f)
 
-    data := make([]string, 0)
+    data := make([][]byte, 0)
     for {
         line, _, err := buf.ReadLine()
         if err == io.EOF {
             break
         }
 
-        data = append(data, string(line))
+        data = append(data, line)
     }
 
     return data, err
 }
 
 // 行读取
-func Lines(path string) ([]string, error) {
+func Lines(path string) ([][]byte, error) {
     return defaultFilesystem.Lines(path)
 }
 
@@ -240,7 +236,7 @@ func Hash(path string) (string, error) {
 }
 
 // 添加数据
-func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
+func (this *Filesystem) Put(path string, contents []byte, lock ...bool) error {
     out, err := os.Create(path)
     if err != nil {
         return err
@@ -248,7 +244,7 @@ func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
 
     defer out.Close()
 
-    _, err = out.WriteString(contents)
+    _, err = out.Write(contents)
     if err != nil {
         return err
     }
@@ -257,18 +253,18 @@ func (this *Filesystem) Put(path string, contents string, lock ...bool) error {
 }
 
 // 添加数据
-func Put(path string, contents string, lock ...bool) error {
+func Put(path string, contents []byte, lock ...bool) error {
     return defaultFilesystem.Put(path, contents, lock...)
 }
 
 // 替换
-func (this *Filesystem) Replace(path string, contents string) error {
+func (this *Filesystem) Replace(path string, contents []byte) error {
     f, err := os.CreateTemp("", "ReplaceTemp")
     if err != nil {
         return err
     }
 
-    if _, err := f.Write([]byte(contents)); err != nil {
+    if _, err := f.Write(contents); err != nil {
         f.Close()
         return err
     }
@@ -299,52 +295,58 @@ func (this *Filesystem) Replace(path string, contents string) error {
 }
 
 // 替换
-func Replace(path string, contents string) error {
+func Replace(path string, contents []byte) error {
     return defaultFilesystem.Replace(path, contents)
 }
 
 // 替换
-func (this *Filesystem) ReplaceInFile(search string, replace string, path string) error {
+func (this *Filesystem) ReplaceInFile(search, replace []byte, path string) error {
     data, _ := this.SharedGet(path)
-    newData := strings.Replace(data, search, replace, -1)
+    newData := bytes.Replace(data, search, replace, -1)
 
     return this.Put(path, newData, false)
 }
 
 // 替换
-func ReplaceInFile(search string, replace string, path string) error {
+func ReplaceInFile(search, replace []byte, path string) error {
     return defaultFilesystem.ReplaceInFile(search, replace, path)
 }
 
 // 文件头添加
-func (this *Filesystem) Prepend(path string, data string) error {
+func (this *Filesystem) Prepend(path string, data []byte) error {
     if this.Exists(path) {
-        newData, _ := this.Get(path, false)
+        newData, err := this.Get(path, false)
+        if err != nil {
+            return err
+        }
 
-        return this.Put(path, data + newData, false)
+        return this.Put(path, append(data, newData...), false)
     }
 
     return this.Put(path, data, false)
 }
 
 // 文件头添加
-func Prepend(path string, data string) error {
+func Prepend(path string, data []byte) error {
     return defaultFilesystem.Prepend(path, data)
 }
 
 // 尾部添加
-func (this *Filesystem) Append(path string, data string) error {
+func (this *Filesystem) Append(path string, data []byte) error {
     if this.Exists(path) {
-        newData, _ := this.Get(path, false)
+        newData, err := this.Get(path, false)
+        if err != nil {
+            return err
+        }
 
-        return this.Put(path, newData + data, false)
+        return this.Put(path, append(newData, data...), false)
     }
 
     return this.Put(path, data, false)
 }
 
 // 尾部添加
-func Append(path string, data string) error {
+func Append(path string, data []byte) error {
     return defaultFilesystem.Append(path, data)
 }
 
@@ -966,7 +968,7 @@ func Directories(directory string) ([]string, error) {
 // 创建文件夹
 func (this *Filesystem) EnsureDirectoryExists(
     directory string,
-    mode uint32,
+    mode      uint32,
     recursive ...bool,
 ) error {
     newRecursive := true
@@ -1004,7 +1006,7 @@ func (this *Filesystem) EnsureDirectoryExists(
 // 创建文件夹
 func EnsureDirectoryExists(
     directory string,
-    mode uint32,
+    mode      uint32,
     recursive ...bool,
 ) error {
     return defaultFilesystem.EnsureDirectoryExists(directory, mode, recursive...)
@@ -1013,7 +1015,7 @@ func EnsureDirectoryExists(
 // 创建文件夹
 func (this *Filesystem) MakeDirectory(
     directory string,
-    mode uint32,
+    mode      uint32,
     recursive ...bool,
 ) error {
     if len(recursive) > 0 && recursive[0] {
@@ -1026,7 +1028,7 @@ func (this *Filesystem) MakeDirectory(
 // 创建文件夹
 func MakeDirectory(
     directory string,
-    mode uint32,
+    mode      uint32,
     recursive ...bool,
 ) error {
     return defaultFilesystem.MakeDirectory(directory, mode, recursive...)
@@ -1034,8 +1036,8 @@ func MakeDirectory(
 
 // 移动文件夹
 func (this *Filesystem) MoveDirectory(
-    from string,
-    to string,
+    from      string,
+    to        string,
     overwrite ...bool,
 ) error {
     if len(overwrite) > 0 && overwrite[0] && this.IsDirectory(to) {
@@ -1050,8 +1052,8 @@ func (this *Filesystem) MoveDirectory(
 
 // 移动文件夹
 func MoveDirectory(
-    from string,
-    to string,
+    from      string,
+    to        string,
     overwrite ...bool,
 ) error {
     return defaultFilesystem.MoveDirectory(from, to, overwrite...)

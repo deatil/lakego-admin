@@ -54,7 +54,7 @@ func ImportApiRoute() {
     var routes map[string]any
 
     // 转换为 map
-    err = encoding.FromString(swaggerInfo).
+    err = encoding.FromBytes(swaggerInfo).
         JSONIteratorDecode(&routes).Error
     if err != nil {
         fmt.Println("api 信息错误")

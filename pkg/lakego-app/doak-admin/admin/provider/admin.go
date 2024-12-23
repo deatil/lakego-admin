@@ -10,7 +10,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
     "github.com/deatil/lakego-doak/lakego/facade/config"
-    pathTool "github.com/deatil/lakego-doak/lakego/path"
+    path_tool "github.com/deatil/lakego-doak/lakego/path"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
     "github.com/deatil/lakego-doak-admin/admin/support/time"
@@ -25,7 +25,7 @@ import (
     "github.com/deatil/lakego-doak-admin/admin/middleware/admincheck"
 
     // 路由
-    adminRoute "github.com/deatil/lakego-doak-admin/admin/route"
+    admin_route "github.com/deatil/lakego-doak-admin/admin/route"
 
     // 脚本
     "github.com/deatil/lakego-doak-admin/admin/cmd"
@@ -174,12 +174,12 @@ func (this *Admin) loadRoute() {
         admin := router.Groups(engine, conf.GetString("route.prefix"), conf.GetString("route.middleware"))
         {
             // 常规路由
-            adminRoute.Route(admin)
+            admin_route.Route(admin)
 
             // 需要管理员权限
             router.Use(admin, conf.GetString("route.admin-middleware"))
             {
-                adminRoute.AdminRoute(admin)
+                admin_route.AdminRoute(admin)
             }
         }
 
@@ -210,11 +210,11 @@ func (this *Admin) loadMiddleware() {
  */
 func (this *Admin) publishConfig() {
     // 配置
-    path := pathTool.FormatPath("{root}/pkg/lakego-app/doak-admin/resources/config/admin.yml")
+    path := path_tool.FormatPath("{root}/pkg/lakego-app/doak-admin/resources/config/admin.yml")
 
     // 推送文件
     // > go run main.go lakego:publish --tag=admin-config --force
-    toPath := pathTool.ConfigPath("/admin-dev.yml")
+    toPath := path_tool.ConfigPath("/admin-dev.yml")
     this.Publishes(this, map[string]string{
         path: toPath,
     }, "admin-config")
@@ -226,11 +226,11 @@ func (this *Admin) publishConfig() {
 func (this *Admin) putSock() {
     pidPath := config.New("admin").GetString("pid-path")
 
-    file := pathTool.FormatPath(pidPath)
+    file := path_tool.FormatPath(pidPath)
 
     contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
 
-    filesystem.New().Put(file, contents)
+    filesystem.New().Put(file, []byte(contents))
 }
 
 /**
