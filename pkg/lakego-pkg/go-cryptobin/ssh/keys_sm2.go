@@ -19,16 +19,19 @@ import (
 )
 
 // 解析方式
+// PubKey Parser
 type PubKeyParser = func([]byte) (ssh.PublicKey, []byte, error)
 
 var pubKeyParsers = make(map[string]PubKeyParser)
 
 // 添加解析方式方式
+// Add PubKey Parser
 func AddPubKeyParser(name string, parser PubKeyParser) {
     pubKeyParsers[name] = parser
 }
 
 // 获取解析方式方式
+// Get PubKey Parser
 func GetPubKeyParser(name string) PubKeyParser {
     if parser, ok := pubKeyParsers[name]; ok {
         return parser

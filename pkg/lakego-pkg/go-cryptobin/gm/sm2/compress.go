@@ -13,7 +13,7 @@ func Decompress(data []byte) (*PublicKey, error) {
 
     x, y := sm2curve.UnmarshalCompressed(c, data)
     if x == nil || y == nil {
-        return nil, errors.New("cryptobin/sm2: compress publicKey is incorrect.")
+        return nil, errors.New("go-cryptobin/sm2: compress publicKey is incorrect.")
     }
 
     pub := &PublicKey{

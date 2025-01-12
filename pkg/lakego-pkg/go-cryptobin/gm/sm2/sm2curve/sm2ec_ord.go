@@ -18,7 +18,7 @@ import (
 //
 func P256OrdInverse(k []byte) ([]byte, error) {
     if len(k) != 32 {
-        return nil, errors.New("cryptobin/sm2: invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     x := new(field.OrderElement)
     _1 := new(field.OrderElement)

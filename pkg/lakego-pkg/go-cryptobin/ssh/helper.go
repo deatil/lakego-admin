@@ -5,8 +5,8 @@ import (
     "encoding/pem"
 )
 
-// Cipher 列表
-var CipherMap = map[string]Cipher{
+// Cipher map
+var cipherMap = map[string]Cipher{
     "DESEDE3CBC":       DESEDE3CBC,
     "BlowfishCBC":      BlowfishCBC,
     "Chacha20poly1305": Chacha20poly1305,
@@ -32,30 +32,28 @@ var CipherMap = map[string]Cipher{
     "SM4CTR": SM4CTR,
 }
 
-// 获取 Cipher 类型
+// get Cipher from name
 func GetCipherFromName(name string) Cipher {
-    if data, ok := CipherMap[name]; ok {
+    if data, ok := cipherMap[name]; ok {
         return data
     }
 
-    return CipherMap["AES256CTR"]
+    return cipherMap["AES256CTR"]
 }
 
-// 编码到 pem
+// Encode SSHKey to pem
 func EncodeSSHKeyToPem(keyBlock *pem.Block) []byte {
     keyData := pem.EncodeToMemory(keyBlock)
 
     return keyData
 }
 
-// 解析 pem 数据
+// Parse SSHKey Pem data
 func ParseSSHKeyPem(data []byte) ([]byte, error) {
     var block *pem.Block
     if block, _ = pem.Decode(data); block == nil {
         return nil, errors.New("ssh: data is not pem")
     }
 
-    keyData := block.Bytes
-
-    return keyData, nil
+    return block.Bytes, nil
 }

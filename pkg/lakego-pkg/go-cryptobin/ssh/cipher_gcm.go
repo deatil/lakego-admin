@@ -4,7 +4,7 @@ import (
     "crypto/cipher"
 )
 
-// gcm 模式加密
+// gcm mode
 type CipherGCM struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
@@ -12,22 +12,22 @@ type CipherGCM struct {
     identifier string
 }
 
-// 值大小
+// KeySize
 func (this CipherGCM) KeySize() int {
     return this.keySize
 }
 
-// 块大小
+// BlockSize
 func (this CipherGCM) BlockSize() int {
     return this.nonceSize
 }
 
-// 名称
+// oid name
 func (this CipherGCM) Name() string {
     return this.identifier
 }
 
-// 加密
+// Encrypt
 func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, error) {
     nonce := key[this.keySize : this.keySize+this.nonceSize]
 
@@ -41,13 +41,13 @@ func (this CipherGCM) Encrypt(key, plaintext []byte) ([]byte, error) {
         return nil, err
     }
 
-    // 加密数据
+    // Encrypt data
     ciphertext := aead.Seal(nil, nonce, plaintext, nil)
 
     return ciphertext, nil
 }
 
-// 解密
+// Decrypt
 func (this CipherGCM) Decrypt(key, ciphertext []byte) ([]byte, error) {
     nonce := key[this.keySize : this.keySize+this.nonceSize]
 

@@ -69,7 +69,7 @@ type SM2EnvelopedKey struct {
 type SM2EncryptedKey struct {
     XCoordinate *big.Int
     YCoordinate *big.Int
-    HASH        []byte
+    Hash        []byte
     CipherText  []byte
 }
 

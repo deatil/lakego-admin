@@ -130,6 +130,6 @@ func panicIfNotOnCurve(curve elliptic.Curve, x, y *big.Int) {
     }
 
     if !curve.IsOnCurve(x, y) {
-        panic("cryptobin/sm2: attempted operation on invalid point")
+        panic("go-cryptobin/sm2: attempted operation on invalid point")
     }
 }

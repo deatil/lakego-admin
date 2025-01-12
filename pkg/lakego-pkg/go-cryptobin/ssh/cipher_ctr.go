@@ -5,7 +5,7 @@ import (
     "crypto/cipher"
 )
 
-// CTR 模式加密
+// CTR mode
 type CipherCTR struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
@@ -13,22 +13,22 @@ type CipherCTR struct {
     identifier string
 }
 
-// 值大小
+// KeySize
 func (this CipherCTR) KeySize() int {
     return this.keySize
 }
 
-// 块大小
+// BlockSize
 func (this CipherCTR) BlockSize() int {
     return this.blockSize
 }
 
-// 名称
+// oid name
 func (this CipherCTR) Name() string {
     return this.identifier
 }
 
-// 加密
+// Encrypt
 func (this CipherCTR) Encrypt(key, plaintext []byte) ([]byte, error) {
     // Add padding until the private key block matches the block size,
     // 16 with AES encryption, 8 without.
@@ -51,7 +51,7 @@ func (this CipherCTR) Encrypt(key, plaintext []byte) ([]byte, error) {
     return dst, nil
 }
 
-// 解密
+// Decrypt
 func (this CipherCTR) Decrypt(key, ciphertext []byte) ([]byte, error) {
     dst := make([]byte, len(ciphertext))
 

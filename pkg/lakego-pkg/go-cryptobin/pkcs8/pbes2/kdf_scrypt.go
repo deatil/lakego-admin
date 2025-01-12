@@ -10,7 +10,7 @@ var (
     oidScrypt = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 11591, 4, 11}
 )
 
-// scrypt 数据
+// scrypt params
 type scryptParams struct {
     Salt                     []byte
     CostParameter            int
@@ -36,7 +36,7 @@ func (this scryptParams) DeriveKey(password []byte, size int) (key []byte, err e
     )
 }
 
-// ScryptOpts 设置
+// Scrypt options
 type ScryptOpts struct {
     hasKeyLength             bool
     SaltSize                 int

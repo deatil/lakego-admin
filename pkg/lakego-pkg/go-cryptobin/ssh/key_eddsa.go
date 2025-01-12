@@ -9,11 +9,11 @@ import (
     "golang.org/x/crypto/ssh"
 )
 
-// EdDsa
-type KeyEdDsa struct {}
+// EdDSA key
+type KeyEdDSA struct {}
 
-// 包装
-func (this KeyEdDsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
+// Marshal key
+func (this KeyEdDSA) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(ed25519.PrivateKey)
     if !ok {
         return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
@@ -50,8 +50,8 @@ func (this KeyEdDsa) Marshal(key crypto.PrivateKey, comment string) (string, []b
     return keyType, pubkey, rest, nil
 }
 
-// 解析
-func (this KeyEdDsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
+// Parse key
+func (this KeyEdDSA) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte
         Priv    []byte

@@ -10,11 +10,11 @@ import (
     "golang.org/x/crypto/ssh"
 )
 
-// rsa
-type KeyRsa struct {}
+// RSA key
+type KeyRSA struct {}
 
-// 包装
-func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
+// Marshal key
+func (this KeyRSA) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(*rsa.PrivateKey)
     if !ok {
         return "", nil, nil, errors.New(fmt.Sprintf("unsupported key type %T", key))
@@ -46,7 +46,8 @@ func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byt
         Comment string
     }{
         k.PublicKey.N, E,
-        k.D, k.Precomputed.Qinv, k.Primes[0], k.Primes[1],
+        k.D, k.Precomputed.Qinv,
+        k.Primes[0], k.Primes[1],
         comment,
     }
     rest := ssh.Marshal(prikey)
@@ -54,8 +55,8 @@ func (this KeyRsa) Marshal(key crypto.PrivateKey, comment string) (string, []byt
     return keyType, pubkey, rest, nil
 }
 
-// 解析
-func (this KeyRsa) Parse(rest []byte) (crypto.PrivateKey, string, error) {
+// Parse key
+func (this KeyRSA) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     // https://github.com/openssh/openssh-portable/blob/master/sshkey.c
     key := struct {
         N       *big.Int

@@ -13,7 +13,7 @@ import (
 )
 
 var (
-    // 默认 hash
+    // default hash
     DefaultSMHash = SM3
 )
 
@@ -22,7 +22,7 @@ var (
     oidSMPBKDF2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 6, 4, 1, 5, 1}
 )
 
-// 返回使用的 Hash 方式
+// get Hash func
 func prfSMByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
         case oid.Equal(oidHMACWithSM3):
@@ -32,17 +32,17 @@ func prfSMByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     return nil, fmt.Errorf("go-cryptobin/pkcs8: unsupported hash (OID: %s)", oid)
 }
 
-// 返回使用的 Hash 对应的 asn1
+// get hash oid
 func oidSMByHash(h Hash) (asn1.ObjectIdentifier, error) {
     switch h {
         case SM3:
             return oidHMACWithSM3, nil
     }
 
-    return nil, errors.New("go-cryptobin/pkcs8: unsupported hash function")
+    return nil, errors.New("unsupported hash function")
 }
 
-// smpbkdf2 数据，作为包装
+// smpbkdf2 params
 type smpbkdf2Params struct {
     Salt           []byte
     IterationCount int
@@ -85,7 +85,7 @@ func (this smpbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err
     return
 }
 
-// GmSM PBKDF2 配置
+// GmSM PBKDF2 options
 type SMPBKDF2Opts struct {
     hasKeyLength   bool
     SaltSize       int
@@ -147,7 +147,7 @@ func (this SMPBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte,
         PrfParam:       prfParam,
     }
 
-    // 设置 KeyLength
+    // set KeyLength
     if this.hasKeyLength {
         parameters.KeyLength = size
     }

@@ -4,36 +4,29 @@ import (
     "crypto/rc4"
 )
 
-// CipherRC4 加密/解密
+// CipherRC4 Encrypt/Decrypt
 type CipherRC4 struct {
     keySize    int
     blockSize  int
     identifier string
 }
 
-// 设置值大小
-func (this CipherRC4) WithKeySize(keySize int) CipherRC4 {
-    this.keySize = keySize
-
-    return this
-}
-
-// 值大小
+// KeySize
 func (this CipherRC4) KeySize() int {
     return this.keySize
 }
 
-// 块大小
+// BlockSize
 func (this CipherRC4) BlockSize() int {
     return this.blockSize
 }
 
-// 名称
+// oid name
 func (this CipherRC4) Name() string {
     return this.identifier
 }
 
-// 加密
+// Encrypt
 func (this CipherRC4) Encrypt(key, plaintext []byte) ([]byte, error) {
     cipher, err := rc4.NewCipher(key)
     if err != nil {
@@ -46,7 +39,7 @@ func (this CipherRC4) Encrypt(key, plaintext []byte) ([]byte, error) {
     return ciphertext, nil
 }
 
-// 解密
+// Decrypt
 func (this CipherRC4) Decrypt(key, ciphertext []byte) ([]byte, error) {
     cipher, err := rc4.NewCipher(key)
     if err != nil {
@@ -57,4 +50,11 @@ func (this CipherRC4) Decrypt(key, ciphertext []byte) ([]byte, error) {
     cipher.XORKeyStream(plaintext, ciphertext)
 
     return plaintext, nil
+}
+
+// With KeySize
+func (this CipherRC4) WithKeySize(keySize int) CipherRC4 {
+    this.keySize = keySize
+
+    return this
 }

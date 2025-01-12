@@ -1,7 +1,7 @@
 package pbes2
 
 // Cipher 列表
-var CipherMap = map[string]Cipher{
+var cipherMap = map[string]Cipher{
     "DESCBC":      DESCBC,
     "DESEDE3CBC":  DESEDE3CBC,
 
@@ -111,16 +111,16 @@ var CipherMap = map[string]Cipher{
 
 // 获取 Cipher 类型
 func GetCipherFromName(name string) Cipher {
-    if data, ok := CipherMap[name]; ok {
+    if data, ok := cipherMap[name]; ok {
         return data
     }
 
-    return CipherMap["AES256CBC"]
+    return cipherMap["AES256CBC"]
 }
 
 // 检测 Cipher 类型
 func CheckCipherFromName(name string) bool {
-    if _, ok := CipherMap[name]; ok {
+    if _, ok := cipherMap[name]; ok {
         return true
     }
 
@@ -129,7 +129,7 @@ func CheckCipherFromName(name string) bool {
 
 // 获取 Cipher 类型名称
 func GetCipherName(c Cipher) string {
-    for name, cipher := range CipherMap {
+    for name, cipher := range cipherMap {
         if cipher.OID().Equal(c.OID()) {
             return name
         }
@@ -140,7 +140,7 @@ func GetCipherName(c Cipher) string {
 
 // 检测 Cipher
 func CheckCipher(c Cipher) bool {
-    for _, cipher := range CipherMap {
+    for _, cipher := range cipherMap {
         if cipher.OID().Equal(c.OID()) {
             return true
         }

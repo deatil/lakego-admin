@@ -1,6 +1,8 @@
 package ssh
 
 import (
+    "io"
+
     "golang.org/x/crypto/ssh"
 
     "github.com/deatil/go-cryptobin/kdf/bcrypt_pbkdf"
@@ -10,13 +12,13 @@ var (
     bcryptName = "bcrypt"
 )
 
-// 设置
+// bcrypt options struct
 type bcryptOpts struct {
     Salt   string
     Rounds uint32
 }
 
-// bcrypt 数据
+// bcrypt params
 type bcryptParams struct {}
 
 func (this bcryptParams) DeriveKey(password []byte, kdfOpts string, size int) ([]byte, error) {
@@ -31,14 +33,15 @@ func (this bcryptParams) DeriveKey(password []byte, kdfOpts string, size int) ([
     )
 }
 
-// BcryptOpts 设置
+// BcryptOpts options
 type BcryptOpts struct {
     SaltSize int
     Rounds   int
 }
 
-func (this BcryptOpts) DeriveKey(password []byte, size int) ([]byte, string, error) {
-    salt, err := genRandom(this.SaltSize)
+func (this BcryptOpts) DeriveKey(random io.Reader, password []byte, size int) ([]byte, string, error) {
+    salt := make([]byte, this.SaltSize)
+    _, err := io.ReadFull(random, salt)
     if err != nil {
         return nil, "", err
     }
@@ -52,7 +55,7 @@ func (this BcryptOpts) DeriveKey(password []byte, size int) ([]byte, string, err
     }
 
     params := ssh.Marshal(bcryptOpts{
-        Salt: string(salt),
+        Salt:   string(salt),
         Rounds: uint32(this.Rounds),
     })
 

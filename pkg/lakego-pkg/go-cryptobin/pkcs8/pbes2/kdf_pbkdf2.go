@@ -36,7 +36,7 @@ const (
 )
 
 var (
-    // 默认 hash
+    // default hash
     DefaultHash = SHA1
 )
 
@@ -45,7 +45,7 @@ var (
     oidPKCS5       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5}
     oidPKCS5PBKDF2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 12}
 
-    // hash 方式
+    // hash oid
     oidDigestAlgorithm    = asn1.ObjectIdentifier{1, 2, 840, 113549, 2}
     oidHMACWithMD5        = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 6}
     oidHMACWithSHA1       = asn1.ObjectIdentifier{1, 2, 840, 113549, 2, 7}
@@ -61,7 +61,7 @@ var (
     oidHMACWithGOST34112012512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 4, 2}
 )
 
-// 返回使用的 Hash 方式
+// get Hash func
 func prfByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     switch {
         case oid.Equal(oidHMACWithMD5):
@@ -91,7 +91,7 @@ func prfByOID(oid asn1.ObjectIdentifier) (func() hash.Hash, error) {
     return nil, fmt.Errorf("go-cryptobin/pkcs8: unsupported hash (OID: %s)", oid)
 }
 
-// 返回使用的 Hash 对应的 asn1
+// get hash oid
 func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
     switch h {
         case MD5:
@@ -118,10 +118,10 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithGOST34112012512, nil
     }
 
-    return nil, errors.New("go-cryptobin/pkcs8: unsupported hash function")
+    return nil, errors.New("unsupported hash function")
 }
 
-// pbkdf2 数据，作为包装
+// pbkdf2 params
 type pbkdf2Params struct {
     Salt           []byte
     IterationCount int
@@ -137,7 +137,7 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     var alg asn1.ObjectIdentifier
     var h func() hash.Hash
 
-    // 如果有自定义长度，使用自定义长度
+    // size use it if KeyLength > 0
     if this.KeyLength > 0 {
         size = this.KeyLength
     }
@@ -164,7 +164,7 @@ func (this pbkdf2Params) DeriveKey(password []byte, size int) (key []byte, err e
     return
 }
 
-// PBKDF2 配置
+// PBKDF2 options
 type PBKDF2Opts struct {
     hasKeyLength   bool
     SaltSize       int
@@ -226,7 +226,7 @@ func (this PBKDF2Opts) DeriveKey(password, salt []byte, size int) (key []byte, p
         PrfParam:       prfParam,
     }
 
-    // 设置 KeyLength
+    // set KeyLength
     if this.hasKeyLength {
         parameters.KeyLength = size
     }

@@ -82,7 +82,7 @@ func (p *Point) SetBytes(b []byte) (*Point, error) {
             // y² = x³ - 3x + b
             y := p256Polynomial(new(field.Element), x)
             if !p256Sqrt(y, y) {
-                return nil, errors.New("cryptobin/sm2: invalid compressed point encoding")
+                return nil, errors.New("go-cryptobin/sm2: invalid compressed point encoding")
             }
             // Select the positive or negative root, as indicated by the least
             // significant bit, based on the encoding type byte.
@@ -95,7 +95,7 @@ func (p *Point) SetBytes(b []byte) (*Point, error) {
             p.z.One()
             return p, nil
         default:
-            return nil, errors.New("cryptobin/sm2: invalid point encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid point encoding")
     }
 }
 
@@ -127,7 +127,7 @@ func p256CheckOnCurve(x, y *field.Element) error {
     rhs := p256Polynomial(new(field.Element), x)
     lhs := new(field.Element).Square(y)
     if rhs.Equal(lhs) != 1 {
-        return errors.New("cryptobin/sm2: point not on curve")
+        return errors.New("go-cryptobin/sm2: point not on curve")
     }
     return nil
 }
@@ -166,7 +166,7 @@ func (p *Point) BytesX() ([]byte, error) {
 
 func (p *Point) bytesX(out *[p256ElementLength]byte) ([]byte, error) {
     if p.z.IsZero() == 1 {
-        return nil, errors.New("cryptobin/sm2: point is the point at infinity")
+        return nil, errors.New("go-cryptobin/sm2: point is the point at infinity")
     }
     zinv := new(field.Element).Invert(p.z)
     x := new(field.Element).Mul(p.x, zinv)
@@ -314,7 +314,7 @@ type lookupTable [15]*Point
 // constant time by iterating over every entry of the table. n must be in [0, 15].
 func (table *lookupTable) Select(p *Point, n uint8) {
     if n >= 16 {
-        panic("cryptobin/sm2: lookupTable called with out-of-bounds value")
+        panic("go-cryptobin/sm2: lookupTable called with out-of-bounds value")
     }
     p.Set(NewPoint())
     for i, f := range table {
@@ -398,7 +398,7 @@ func (p *Point) generatorTable() *[p256ElementLength * 2]lookupTable {
 // returns p.
 func (p *Point) ScalarBaseMult(scalar []byte) (*Point, error) {
     if len(scalar) != p256ElementLength {
-        return nil, errors.New("cryptobin/sm2: invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     tables := p.generatorTable()
 

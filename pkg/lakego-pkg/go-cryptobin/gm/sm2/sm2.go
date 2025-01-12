@@ -24,13 +24,14 @@ var (
 )
 
 var (
-    errZeroParam  = errors.New("cryptobin/sm2: zero parameter")
-    errDecryption = errors.New("cryptobin/sm2: failed to decrypt")
+    errZeroParam  = errors.New("go-cryptobin/sm2: zero parameter")
+    errDecryption = errors.New("go-cryptobin/sm2: failed to decrypt")
+    errInvalidK   = errors.New("go-cryptobin/sm2: use another K")
 
-    errPrivateKey = errors.New("cryptobin/sm2: incorrect private key")
-    errPublicKey  = errors.New("cryptobin/sm2: incorrect public key")
+    errPrivateKey = errors.New("go-cryptobin/sm2: incorrect private key")
+    errPublicKey  = errors.New("go-cryptobin/sm2: incorrect public key")
 
-    errSignature  = errors.New("cryptobin/sm2: signature contained zero or negative values")
+    errSignature  = errors.New("go-cryptobin/sm2: signature contained zero or negative values")
 )
 
 const maxRetryLimit = 100
@@ -154,6 +155,7 @@ var (
 // SM2 PublicKey
 type PublicKey struct {
     elliptic.Curve
+
     X, Y *big.Int
 }
 
@@ -176,7 +178,7 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 }
 
 // 验证 asn.1 编码的数据 ans1(r, s)
-// Verify asn.1 marshal data
+// Verify asn.1 marshal data ans1(r, s)
 func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
     opt := DefaultSignerOpts
     if o, ok := opts.(SignerOpts); ok {
@@ -201,7 +203,7 @@ func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
 }
 
 // 验证 asn.1 编码的数据 bytes(r + s)
-// Verify Bytes marshal data
+// Verify Bytes marshal data bytes(r + s)
 func (pub *PublicKey) VerifyBytes(msg, sign []byte, opts crypto.SignerOpts) bool {
     r, s, err := UnmarshalSignatureBytes(pub.Curve, sign)
     if err != nil {
@@ -211,7 +213,7 @@ func (pub *PublicKey) VerifyBytes(msg, sign []byte, opts crypto.SignerOpts) bool
     return VerifyWithRS(pub, msg, r, s, opts)
 }
 
-// Encrypt with bytes
+// Encrypt data
 func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
     opt := DefaultEncrypterOpts
     if o, ok := opts.(EncrypterOpts); ok {
@@ -234,7 +236,33 @@ func (pub *PublicKey) Encrypt(random io.Reader, data []byte, opts crypto.Decrypt
             return res, nil
     }
 
-    return nil, errors.New("cryptobin/sm2: Encrypt fail")
+    return nil, errors.New("go-cryptobin/sm2: Encrypt fail")
+}
+
+// Encrypt data use k
+func (pub *PublicKey) EncryptUsingK(k *big.Int, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    ct, err := encryptUsingK(k, pub, data, opt.GetHash())
+    if err != nil {
+        return nil, err
+    }
+
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            res, err := marshalCipherASN1(ct, opt.GetMode())
+            if err == nil {
+                return res, nil
+            }
+        case EncodingBytes:
+            res := marshalCipherBytes(ct, opt.GetMode())
+            return res, nil
+    }
+
+    return nil, errors.New("go-cryptobin/sm2: Encrypt fail")
 }
 
 // Encrypt with ASN1
@@ -254,12 +282,33 @@ func (pub *PublicKey) EncryptASN1(random io.Reader, data []byte, opts crypto.Dec
         return res, nil
     }
 
-    return nil, errors.New("cryptobin/sm2: Encrypt fail")
+    return nil, errors.New("go-cryptobin/sm2: Encrypt fail")
+}
+
+// Encrypt with ASN1
+func (pub *PublicKey) EncryptASN1UsingK(k *big.Int, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    opt := DefaultEncrypterOpts
+    if o, ok := opts.(EncrypterOpts); ok {
+        opt = o
+    }
+
+    ct, err := encryptUsingK(k, pub, data, opt.GetHash())
+    if err != nil {
+        return nil, err
+    }
+
+    res, err := marshalCipherASN1(ct, opt.GetMode())
+    if err == nil {
+        return res, nil
+    }
+
+    return nil, errors.New("go-cryptobin/sm2: Encrypt fail")
 }
 
 // SM2 PrivateKey
 type PrivateKey struct {
     PublicKey
+
     D *big.Int
 }
 
@@ -279,8 +328,7 @@ func (priv *PrivateKey) Equal(x crypto.PrivateKey) bool {
         bigIntEqual(priv.D, xx.D)
 }
 
-// 签名返回 asn.1 编码数据
-// sign data and return asn.1 marshal data
+// sign data and return asn.1 or bytes marshal data, default asn.1
 func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
     opt := DefaultSignerOpts
     if o, ok := opts.(SignerOpts); ok {
@@ -302,13 +350,49 @@ func (priv *PrivateKey) Sign(random io.Reader, msg []byte, opts crypto.SignerOpt
             return MarshalSignatureBytes(priv.Curve, r, s)
     }
 
-    return nil, errors.New("cryptobin/sm2: Sign fail")
+    return nil, errors.New("go-cryptobin/sm2: Sign fail")
 }
 
-// 签名返回 Bytes 编码数据
-// sign data and return Bytes marshal data
+// sign data use k and return asn.1 or bytes marshal data, default asn.1
+func (priv *PrivateKey) SignUsingK(k *big.Int, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    opt := DefaultSignerOpts
+    if o, ok := opts.(SignerOpts); ok {
+        opt = o
+    }
+
+    r, s, err := SignUsingKToRS(k, priv, msg, opts)
+    if err != nil {
+        return nil, err
+    }
+
+    switch opt.GetEncoding() {
+        case EncodingASN1:
+            res, err := MarshalSignatureASN1(r, s)
+            if err == nil {
+                return res, nil
+            }
+        case EncodingBytes:
+            return MarshalSignatureBytes(priv.Curve, r, s)
+    }
+
+    return nil, errors.New("go-cryptobin/sm2: Sign fail")
+}
+
+// 签名返回 Bytes 编码数据 bytes(r + s)
+// sign data and return Bytes marshal data bytes(r + s)
 func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
     r, s, err := SignToRS(random, priv, msg, opts)
+    if err != nil {
+        return nil, err
+    }
+
+    return MarshalSignatureBytes(priv.Curve, r, s)
+}
+
+// 签名返回 Bytes 编码数据 bytes(r + s)
+// sign data and return Bytes marshal data bytes(r + s)
+func (priv *PrivateKey) SignBytesUsingK(k *big.Int, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    r, s, err := SignUsingKToRS(k, priv, msg, opts)
     if err != nil {
         return nil, err
     }
@@ -386,7 +470,7 @@ func NewPrivateKey(d []byte) (*PrivateKey, error) {
 
     n := new(big.Int).Sub(curve.Params().N, one)
     if k.Cmp(n) >= 0 {
-        return nil, errors.New("cryptobin/sm2: privateKey's D is overflow")
+        return nil, errors.New("go-cryptobin/sm2: privateKey's D is overflow")
     }
 
     priv := new(PrivateKey)
@@ -411,7 +495,7 @@ func NewPublicKey(data []byte) (*PublicKey, error) {
 
     x, y := sm2curve.Unmarshal(curve, data)
     if x == nil || y == nil {
-        return nil, errors.New("cryptobin/sm2: incorrect public key")
+        return nil, errors.New("go-cryptobin/sm2: incorrect public key")
     }
 
     pub := &PublicKey{
@@ -439,6 +523,15 @@ func Encrypt(random io.Reader, pub *PublicKey, data []byte, opts crypto.Decrypte
     return pub.Encrypt(random, data, opts)
 }
 
+// Encrypted use k and return bytes data
+func EncryptUsingK(k *big.Int, pub *PublicKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    if pub == nil {
+        return nil, errPublicKey
+    }
+
+    return pub.EncryptUsingK(k, data, opts)
+}
+
 // sm2 解密，解析字节拼接格式的密文内容
 // Decrypt bytes marshal data
 func Decrypt(priv *PrivateKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
@@ -457,6 +550,15 @@ func EncryptASN1(random io.Reader, pub *PublicKey, data []byte, opts crypto.Decr
     }
 
     return pub.EncryptASN1(random, data, opts)
+}
+
+// Encrypted use k and return asn.1 data
+func EncryptASN1UsingK(k *big.Int, pub *PublicKey, data []byte, opts crypto.DecrypterOpts) ([]byte, error) {
+    if pub == nil {
+        return nil, errPublicKey
+    }
+
+    return pub.EncryptASN1UsingK(k, data, opts)
 }
 
 // sm2 解密，解析 asn.1 编码格式的密文内容
@@ -478,55 +580,66 @@ type encryptedData struct {
 }
 
 func encrypt(random io.Reader, pub *PublicKey, data []byte, h hashFunc) (encryptedData, error) {
-    length := len(data)
+    curve := pub.Curve
 
     var retryCount int = 0
 
     for {
-        curve := pub.Curve
-
         k, err := randFieldElement(random, curve)
         if err != nil {
             return encryptedData{}, err
         }
 
-        x1, y1 := curve.ScalarBaseMult(k.Bytes())
-        x2, y2 := curve.ScalarMult(pub.X, pub.Y, k.Bytes())
-
-        x1Buf := bigIntToBytes(pub.Curve, x1)
-        y1Buf := bigIntToBytes(pub.Curve, y1)
-        x2Buf := bigIntToBytes(pub.Curve, x2)
-        y2Buf := bigIntToBytes(pub.Curve, y2)
-
-        md := h()
-        md.Write(x2Buf)
-        md.Write(data)
-        md.Write(y2Buf)
-        hashed := md.Sum(nil)
-
-        // 生成密钥 / make key
-        ct := smkdf.Key(h, append(x2Buf, y2Buf...), length)
-
-        // 检测生成数据 / check ct data
-        if alias.ConstantTimeAllZero(ct) {
+        encData, err := encryptUsingK(k, pub, data, h)
+        if err == errInvalidK {
             retryCount++
             if retryCount > maxRetryLimit {
-                return encryptedData{}, fmt.Errorf("cryptobin/sm2: failed to retry, tried %d times", retryCount)
+                return encryptedData{}, fmt.Errorf("go-cryptobin/sm2: failed to retry, tried %d times", retryCount)
             }
 
             continue
         }
 
-        // 生成密文 / make encrypt data
-        subtle.XORBytes(ct, ct, data)
-
-        return encryptedData{
-            XCoordinate: x1Buf, // x分量
-            YCoordinate: y1Buf, // y分量
-            Hash:        hashed,
-            CipherText:  ct,
-        }, nil
+        return encData, nil
     }
+}
+
+func encryptUsingK(k *big.Int, pub *PublicKey, data []byte, h hashFunc) (encryptedData, error) {
+    curve := pub.Curve
+
+    x1, y1 := curve.ScalarBaseMult(k.Bytes())
+    x2, y2 := curve.ScalarMult(pub.X, pub.Y, k.Bytes())
+
+    x1Buf := bigIntToBytes(pub.Curve, x1)
+    y1Buf := bigIntToBytes(pub.Curve, y1)
+    x2Buf := bigIntToBytes(pub.Curve, x2)
+    y2Buf := bigIntToBytes(pub.Curve, y2)
+
+    md := h()
+    md.Write(x2Buf)
+    md.Write(data)
+    md.Write(y2Buf)
+    hashed := md.Sum(nil)
+
+    // 生成密钥 / make key
+    ct := smkdf.Key(h, append(x2Buf, y2Buf...), len(data))
+
+    // 检测生成数据 / check ct data
+    if alias.ConstantTimeAllZero(ct) {
+        return encryptedData{}, errInvalidK
+    }
+
+    // 生成密文 / make encrypt data
+    subtle.XORBytes(ct, ct, data)
+
+    encData := encryptedData{
+        XCoordinate: x1Buf, // x分量
+        YCoordinate: y1Buf, // y分量
+        Hash:        hashed,
+        CipherText:  ct,
+    }
+
+    return encData, nil
 }
 
 func decrypt(priv *PrivateKey, data encryptedData, h hashFunc) ([]byte, error) {
@@ -576,6 +689,15 @@ func Sign(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.SignerOpts
     return priv.Sign(random, msg, opts)
 }
 
+// sign data use k and return asn.1 marshal data
+func SignUsingK(k *big.Int, priv *PrivateKey, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    if priv == nil {
+        return nil, errPrivateKey
+    }
+
+    return priv.SignUsingK(k, msg, opts)
+}
+
 // 验证 asn.1 编码的数据 ans1(r, s)
 // Verify asn.1 marshal data
 func Verify(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) bool {
@@ -598,6 +720,15 @@ func SignBytes(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.Signe
     }
 
     return priv.SignBytes(random, msg, opts)
+}
+
+// sign data use k and return Bytes marshal data
+func SignBytesUsingK(k *big.Int, priv *PrivateKey, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
+    if priv == nil {
+        return nil, errPrivateKey
+    }
+
+    return priv.SignBytesUsingK(k, msg, opts)
 }
 
 // 验证 asn.1 编码的数据 bytes(r + s)
@@ -629,6 +760,21 @@ func SignToRS(random io.Reader, priv *PrivateKey, msg []byte, opts crypto.Signer
     return sign(random, priv, hashed)
 }
 
+// sm2 sign use k with SignerOpts
+func SignUsingKToRS(k *big.Int, priv *PrivateKey, msg []byte, opts crypto.SignerOpts) (r, s *big.Int, err error) {
+    opt := DefaultSignerOpts
+    if o, ok := opts.(SignerOpts); ok {
+        opt = o
+    }
+
+    hashed, err := calculateHash(&priv.PublicKey, opt.GetHash(), msg, opt.GetUid())
+    if err != nil {
+        return nil, nil, err
+    }
+
+    return signUsingK(k, priv, hashed)
+}
+
 // sm2 verify with SignerOpts
 func VerifyWithRS(pub *PublicKey, msg []byte, r, s *big.Int, opts crypto.SignerOpts) bool {
     opt := DefaultSignerOpts
@@ -654,6 +800,11 @@ func SignLegacy(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int,
     return sign(random, priv, hash)
 }
 
+// sm2 sign legacy use k
+func SignLegacyUsingK(k *big.Int, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
+    return signUsingK(k, priv, hash)
+}
+
 // sm2 verify legacy
 func VerifyLegacy(pub *PublicKey, hash []byte, r, s *big.Int) bool {
     err := verify(pub, hash, r, s)
@@ -666,6 +817,31 @@ func VerifyLegacy(pub *PublicKey, hash []byte, r, s *big.Int) bool {
 
 // sm2 sign
 func sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
+    curve := priv.PublicKey.Curve
+
+    var k *big.Int
+
+    for {
+        k, err = randFieldElement(random, curve)
+        if err != nil {
+            return
+        }
+
+        r, s, err = signUsingK(k, priv, hash)
+        if err != nil {
+            if err == errInvalidK {
+                continue
+            }
+
+            return
+        }
+
+        return
+    }
+}
+
+// sm2 sign use k
+func signUsingK(k *big.Int, priv *PrivateKey, hash []byte) (r, s *big.Int, err error) {
     e := new(big.Int).SetBytes(hash)
     curve := priv.PublicKey.Curve
 
@@ -674,39 +850,27 @@ func sign(random io.Reader, priv *PrivateKey, hash []byte) (r, s *big.Int, err e
         return nil, nil, errZeroParam
     }
 
-    var k *big.Int
+    r, _ = curve.ScalarBaseMult(k.Bytes())
+    r.Add(r, e)
+    r.Mod(r, N)
 
-    for {
-        for {
-            k, err = randFieldElement(random, curve)
-            if err != nil {
-                r = nil
-                return
-            }
-
-            r, _ = curve.ScalarBaseMult(k.Bytes())
-            r.Add(r, e)
-            r.Mod(r, N)
-
-            if r.Sign() != 0 {
-                if t := new(big.Int).Add(r, k); t.Cmp(N) != 0 {
-                    break
-                }
-            }
+    if r.Sign() != 0 {
+        if t := new(big.Int).Add(r, k); t.Cmp(N) == 0 {
+            return nil, nil, errInvalidK
         }
+    }
 
-        rD := new(big.Int).Mul(priv.D, r)
-        s = new(big.Int).Sub(k, rD)
+    rD := new(big.Int).Mul(priv.D, r)
+    s = new(big.Int).Sub(k, rD)
 
-        d1 := new(big.Int).Add(priv.D, one)
-        d1Inv := new(big.Int).ModInverse(d1, N)
+    d1 := new(big.Int).Add(priv.D, one)
+    d1Inv := new(big.Int).ModInverse(d1, N)
 
-        s.Mul(s, d1Inv)
-        s.Mod(s, N)
+    s.Mul(s, d1Inv)
+    s.Mod(s, N)
 
-        if s.Sign() != 0 {
-            break
-        }
+    if s.Sign() == 0 {
+        return nil, nil, errInvalidK
     }
 
     return
@@ -741,10 +905,15 @@ func verify(pub *PublicKey, hash []byte, r, s *big.Int) error {
     x.Mod(x, N)
 
     if x.Cmp(r) != 0 {
-        return errors.New("cryptobin/sm2: verification failure")
+        return errors.New("go-cryptobin/sm2: verification failure")
     }
 
     return nil
+}
+
+// Calculate Hash
+func CalculateHash(pub *PublicKey, h hashFunc, msg, uid []byte) ([]byte, error) {
+    return calculateHash(pub, h, msg, uid)
 }
 
 func calculateHash(pub *PublicKey, h hashFunc, msg, uid []byte) ([]byte, error) {
@@ -778,7 +947,7 @@ func CalculateZALegacy(pub *PublicKey, h hashFunc, uid []byte) ([]byte, error) {
 func calculateZA(pub *PublicKey, h hashFunc, uid []byte) ([]byte, error) {
     uidLen := len(uid)
     if uidLen >= 8192 {
-        return []byte{}, errors.New("cryptobin/sm2: uid too large")
+        return []byte{}, errors.New("go-cryptobin/sm2: uid too large")
     }
 
     entla := uint16(8 * uidLen)

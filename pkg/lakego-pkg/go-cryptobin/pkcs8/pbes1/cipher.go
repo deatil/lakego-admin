@@ -8,7 +8,6 @@ import(
 // BmpStringZeroTerminated returns s encoded in UCS-2 with a zero terminator.
 var BmpStringZeroTerminated = bmp_string.BmpStringZeroTerminated
 
-// 别名
 type (
     Cipher = pbes1.Cipher
 )
@@ -17,14 +16,13 @@ var (
     AddCipher = pbes1.AddCipher
     GetCipher = pbes1.GetCipher
 
-    // 帮助函数
+    // helper funcions
     GetCipherFromName   = pbes1.GetCipherFromName
     CheckCipherFromName = pbes1.CheckCipherFromName
     GetCipherName       = pbes1.GetCipherName
     CheckCipher         = pbes1.CheckCipher
 )
 
-// 加密方式
 var (
     // pkcs12
     SHA1AndRC4_128 = pbes1.SHA1AndRC4_128
@@ -37,7 +35,7 @@ var (
     MD5AndCAST5   = pbes1.MD5AndCAST5
     SHAAndTwofish = pbes1.SHAAndTwofish
 
-    // PBES1
+    // pkcs8 - PBES1
     MD2AndDES     = pbes1.MD2AndDES
     MD2AndRC2_64  = pbes1.MD2AndRC2_64
     MD5AndDES     = pbes1.MD5AndDES

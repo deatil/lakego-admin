@@ -5,7 +5,7 @@ import (
     "crypto/cipher"
 )
 
-// cbc 模式加密
+// cbc mode
 type CipherCBC struct {
     cipherFunc func(key []byte) (cipher.Block, error)
     keySize    int
@@ -13,22 +13,22 @@ type CipherCBC struct {
     identifier string
 }
 
-// 值大小
+// KeySize
 func (this CipherCBC) KeySize() int {
     return this.keySize
 }
 
-// 块大小
+// BlockSize
 func (this CipherCBC) BlockSize() int {
     return this.blockSize
 }
 
-// oid
+// oid name
 func (this CipherCBC) Name() string {
     return this.identifier
 }
 
-// 加密
+// Encrypt
 func (this CipherCBC) Encrypt(key, plaintext []byte) ([]byte, error) {
     // Add padding until the private key block matches the block size,
     // 16 with AES encryption, 8 without.
@@ -52,7 +52,7 @@ func (this CipherCBC) Encrypt(key, plaintext []byte) ([]byte, error) {
     return encrypted, nil
 }
 
-// 解密
+// Decrypt
 func (this CipherCBC) Decrypt(key, ciphertext []byte) ([]byte, error) {
     iv := key[this.keySize : this.keySize+this.blockSize]
 

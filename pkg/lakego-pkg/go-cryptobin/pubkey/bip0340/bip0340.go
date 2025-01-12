@@ -13,13 +13,16 @@ import (
     "golang.org/x/crypto/cryptobyte/asn1"
 )
 
-const BIP0340_AUX       = "BIP0340/aux"
-const BIP0340_NONCE     = "BIP0340/nonce"
-const BIP0340_CHALLENGE = "BIP0340/challenge"
+const (
+    BIP0340_AUX       = "BIP0340/aux"
+    BIP0340_NONCE     = "BIP0340/nonce"
+    BIP0340_CHALLENGE = "BIP0340/challenge"
+)
 
 var (
     ErrPrivateKey         = errors.New("go-cryptobin/bip0340: invalid PrivateKey")
     ErrParametersNotSetUp = errors.New("go-cryptobin/bip0340: parameters not set up before generating key")
+    ErrInvalidK           = errors.New("go-cryptobin/bip0340: use another K")
     ErrInvalidASN1        = errors.New("go-cryptobin/bip0340: invalid ASN.1")
     ErrInvalidSignerOpts  = errors.New("go-cryptobin/bip0340: opts must be *SignerOpts")
 )
@@ -268,12 +271,18 @@ func SignToRS(random io.Reader, priv *PrivateKey, hashFunc Hasher, msg []byte) (
     e := new(big.Int).Set(one)
     e.Lsh(e, 8 * uint(qlen))
 
+Retry:
     k, err := rand.Int(random, e)
     if err != nil {
         return
     }
 
-    return SignUsingKToRS(k, priv, hashFunc, msg)
+    r, s, err = SignUsingKToRS(k, priv, hashFunc, msg)
+    if err == ErrInvalidK {
+        goto Retry
+    }
+
+    return
 }
 
 // sign with k
@@ -307,7 +316,6 @@ func SignUsingKToRS(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (
     /* Adjust d depending on public key y */
     bip0340SetScalar(d, n, py)
 
-Retry:
     sig := make([]byte, qlen)
     k.FillBytes(sig)
 
@@ -342,7 +350,7 @@ Retry:
     k.Mod(k, n)
 
     if k.Cmp(zero) == 0 {
-        goto Retry
+        return nil, nil, ErrInvalidK
     }
 
     kGx, kGy := curve.ScalarBaseMult(k.Bytes())

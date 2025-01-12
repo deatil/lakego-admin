@@ -19,17 +19,17 @@ import (
 )
 
 var (
-    ErrInvalidCurve               = fmt.Errorf("ecies: invalid elliptic curve")
-    ErrInvalidParams              = fmt.Errorf("ecies: invalid ECIES parameters")
-    ErrInvalidPublicKey           = fmt.Errorf("ecies: invalid public key")
-    ErrInvalidPrivateKey          = fmt.Errorf("ecies: invalid private key")
-    ErrSharedKeyIsPointAtInfinity = fmt.Errorf("ecies: shared key is point at infinity")
-    ErrSharedKeyTooBig            = fmt.Errorf("ecies: shared key params are too big")
-    ErrUnsupportedECIESParameters = fmt.Errorf("ecies: unsupported ECIES parameters")
+    ErrInvalidCurve               = fmt.Errorf("go-cryptobin/ecies: invalid elliptic curve")
+    ErrInvalidParams              = fmt.Errorf("go-cryptobin/ecies: invalid ECIES parameters")
+    ErrInvalidPublicKey           = fmt.Errorf("go-cryptobin/ecies: invalid public key")
+    ErrInvalidPrivateKey          = fmt.Errorf("go-cryptobin/ecies: invalid private key")
+    ErrSharedKeyIsPointAtInfinity = fmt.Errorf("go-cryptobin/ecies: shared key is point at infinity")
+    ErrSharedKeyTooBig            = fmt.Errorf("go-cryptobin/ecies: shared key params are too big")
+    ErrUnsupportedECIESParameters = fmt.Errorf("go-cryptobin/ecies: unsupported ECIES parameters")
 
-    ErrKeyDataTooLong = fmt.Errorf("ecies: can't supply requested key data")
-    ErrSharedTooLong  = fmt.Errorf("ecies: shared secret is too long")
-    ErrInvalidMessage = fmt.Errorf("ecies: invalid message")
+    ErrKeyDataTooLong = fmt.Errorf("go-cryptobin/ecies: can't supply requested key data")
+    ErrSharedTooLong  = fmt.Errorf("go-cryptobin/ecies: shared secret is too long")
+    ErrInvalidMessage = fmt.Errorf("go-cryptobin/ecies: invalid message")
 )
 
 type ECIESParams struct {
@@ -90,9 +90,9 @@ func AddParamsFromCurve(curve elliptic.Curve, ecie *ECIESParams) {
 
 // PublicKey is a representation of an elliptic curve public key.
 type PublicKey struct {
-    X *big.Int
-    Y *big.Int
     elliptic.Curve
+
+    X, Y *big.Int
     Params *ECIESParams
 }
 
@@ -118,6 +118,7 @@ func ImportECDSAPublicKey(pub *ecdsa.PublicKey) *PublicKey {
 // PrivateKey is a representation of an elliptic curve private key.
 type PrivateKey struct {
     PublicKey
+
     D *big.Int
 }
 
@@ -297,8 +298,6 @@ func (priv *PrivateKey) Decrypt(c, s1, s2 []byte) (m []byte, err error) {
 
     return
 }
-
-// =================================
 
 // Encrypt encrypts a message using ECIES as specified in SEC 1, 5.1.
 //

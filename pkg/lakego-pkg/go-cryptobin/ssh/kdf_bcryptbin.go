@@ -1,6 +1,7 @@
 package ssh
 
 import (
+    "io"
     "bytes"
     "errors"
     "encoding/binary"
@@ -9,11 +10,23 @@ import (
 )
 
 var (
-    pcryptName = "pcrypt"
+    bcryptbinName = "bcryptbin"
 )
 
-// pcrypt 数据
-type pcryptParams struct {}
+// bcryptbin Params
+type bcryptbinParams struct {}
+
+func (this bcryptbinParams) DeriveKey(password []byte, kdfOpts string, size int) (key []byte, err error) {
+    salt, rounds, err := parseBcryptKdfOpts(kdfOpts)
+    if err != nil {
+        return nil, err
+    }
+
+    return bcrypt_pbkdf.Key(
+        password, salt,
+        int(rounds), size,
+    )
+}
 
 func parseBcryptKdfOpts(kdfOpts string) ([]byte, uint32, error) {
     // Read kdf options.
@@ -37,26 +50,15 @@ func parseBcryptKdfOpts(kdfOpts string) ([]byte, uint32, error) {
     return salt, rounds, nil
 }
 
-func (this pcryptParams) DeriveKey(password []byte, kdfOpts string, size int) (key []byte, err error) {
-    salt, rounds, err := parseBcryptKdfOpts(kdfOpts)
-    if err != nil {
-        return nil, err
-    }
-
-    return bcrypt_pbkdf.Key(
-        password, salt,
-        int(rounds), size,
-    )
-}
-
-// PcryptOpts 设置
-type PcryptOpts struct {
+// BcryptbinOpts options
+type BcryptbinOpts struct {
     SaltSize int
     Rounds   int
 }
 
-func (this PcryptOpts) DeriveKey(password []byte, size int) (key []byte, params string, err error) {
-    salt, err := genRandom(this.SaltSize)
+func (this BcryptbinOpts) DeriveKey(random io.Reader, password []byte, size int) (key []byte, params string, err error) {
+    salt := make([]byte, this.SaltSize)
+    _, err = io.ReadFull(random, salt)
     if err != nil {
         return nil, "", err
     }
@@ -78,16 +80,16 @@ func (this PcryptOpts) DeriveKey(password []byte, size int) (key []byte, params 
     return key, params, nil
 }
 
-func (this PcryptOpts) GetSaltSize() int {
+func (this BcryptbinOpts) GetSaltSize() int {
     return this.SaltSize
 }
 
-func (this PcryptOpts) Name() string {
-    return pcryptName
+func (this BcryptbinOpts) Name() string {
+    return bcryptbinName
 }
 
 func init() {
-    AddKDF(pcryptName, func() KDFParameters {
-        return new(pcryptParams)
+    AddKDF(bcryptbinName, func() KDFParameters {
+        return new(bcryptbinParams)
     })
 }

@@ -6,6 +6,7 @@ import (
 )
 
 // 反射获取结构体名称
+// Get Struct Name by reflect
 func GetStructName(s any) (name string) {
     p := reflect.TypeOf(s)
 
@@ -23,7 +24,7 @@ func GetStructName(s any) (name string) {
     return name + p.Name()
 }
 
-// 检测 padding
+// check padding
 func checkOpenSSHKeyPadding(pad []byte) error {
     for i, b := range pad {
         if int(b) != i+1 {

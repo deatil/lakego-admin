@@ -4,9 +4,9 @@ import (
     "encoding/asn1"
 )
 
-// KDF 设置接口
+// KDF options interface
 type KDFOpts interface {
-    // 随机数大小
+    // Salt Size
     GetSaltSize() int
 
     // oid
@@ -15,25 +15,24 @@ type KDFOpts interface {
     // PBES oid
     PBESOID() asn1.ObjectIdentifier
 
-    // 设置是否有 KeyLength
+    // with HasKeyLength option
     WithHasKeyLength(hasKeyLength bool) KDFOpts
 
-    // 生成密钥
+    // DeriveKey
     DeriveKey(password, salt []byte, size int) (key []byte, params KDFParameters, err error)
 }
 
-// 数据接口
+// KDFParameters
 type KDFParameters interface {
     // PBES oid
     PBESOID() asn1.ObjectIdentifier
 
-    // 生成密钥
+    // DeriveKey
     DeriveKey(password []byte, size int) (key []byte, err error)
 }
 
 var kdfs = make(map[string]func() KDFParameters)
 
-// 添加 kdf 方式
 // add kdf type
 func AddKDF(oid asn1.ObjectIdentifier, params func() KDFParameters) {
     kdfs[oid.String()] = params

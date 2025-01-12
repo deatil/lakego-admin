@@ -65,7 +65,7 @@ func (e *Element) bytes(out *[p256ElementLen]byte) []byte {
 // SetBytes returns nil and an error, and e is unchanged.
 func (e *Element) SetBytes(v []byte) (*Element, error) {
     if len(v) != p256ElementLen {
-        return nil, errors.New("cryptobin/sm2: invalid Element encoding")
+        return nil, errors.New("go-cryptobin/sm2: invalid Element encoding")
     }
 
     // Check for non-canonical encodings (p + k, 2p + k, etc.) by comparing to
@@ -77,7 +77,7 @@ func (e *Element) SetBytes(v []byte) (*Element, error) {
             break
         }
         if v[i] > minusOneEncoding[i] {
-            return nil, errors.New("cryptobin/sm2: invalid Element encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid Element encoding")
         }
     }
 

@@ -45,17 +45,18 @@ func Test_Sm2(t *testing.T) {
 func BenchmarkSM2(t *testing.B) {
     t.ReportAllocs()
     msg := []byte("test")
-    priv, err := sm2.GenerateKey(nil) // 生成密钥对
+    priv, err := sm2.GenerateKey(rand.Reader) // 生成密钥对
     if err != nil {
         t.Fatal(err)
     }
 
     t.ResetTimer()
     for i := 0; i < t.N; i++ {
-        sign, err := priv.Sign(nil, msg, nil) // 签名
+        sign, err := priv.Sign(rand.Reader, msg, nil) // 签名
         if err != nil {
             t.Fatal(err)
         }
+
         priv.Verify(msg, sign, nil) // 密钥验证
     }
 }
@@ -259,6 +260,43 @@ func Test_SignBytes_WithUID(t *testing.T) {
     }
 }
 
+func Test_SignBytesUsingK(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    k, _ := new(big.Int).SetString("68000c65190ac7437f0d13023b335f940faafa20091eeb83be3d008c82dcb79c", 16)
+
+    {
+        signed, err := priv.SignBytesUsingK(k, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        veri := pub.VerifyBytes(msg, signed, nil)
+        if !veri {
+            t.Error("veri error")
+        }
+    }
+
+    {
+        signed, err := sm2.SignBytesUsingK(k, priv, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        veri := sm2.VerifyBytes(pub, msg, signed, nil)
+        if !veri {
+            t.Error("veri error 2")
+        }
+    }
+}
+
 func Test_Sign(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
@@ -277,6 +315,43 @@ func Test_Sign(t *testing.T) {
     veri := pub.Verify(msg, signed, nil)
     if !veri {
         t.Error("veri error")
+    }
+}
+
+func Test_SignUsingK(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    k, _ := new(big.Int).SetString("68000c65190ac7437f0d13023b335f940faafa20091eeb83be3d008c82dcb79c", 16)
+
+    {
+        signed, err := priv.SignUsingK(k, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        veri := pub.Verify(msg, signed, nil)
+        if !veri {
+            t.Error("veri error")
+        }
+    }
+
+    {
+        signed, err := sm2.SignUsingK(k, priv, msg, nil)
+        if err != nil {
+            t.Error(err)
+        }
+
+        veri := sm2.Verify(pub, msg, signed, nil)
+        if !veri {
+            t.Error("veri error")
+        }
     }
 }
 
@@ -325,6 +400,122 @@ func Test_Encrypt(t *testing.T) {
 
     if !reflect.DeepEqual(string(plaintext), plainText) {
         t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+    }
+}
+
+func Test_EncryptUsingK(t *testing.T) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    k, _ := new(big.Int).SetString("3bcea41e869a3341abdaed93dc1f288f93c50b7f1b2d76079338b88a4357c15a", 16)
+
+    {
+        ciphertext, err := pub.EncryptUsingK(k, []byte(plainText), sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("encrypt failed %v", err)
+        }
+
+        plaintext, err := pri.Decrypt(rand.Reader, ciphertext, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("decrypt failed %v", err)
+        }
+
+        if !reflect.DeepEqual(string(plaintext), plainText) {
+            t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+        }
+    }
+
+    {
+        ciphertext, err := sm2.EncryptUsingK(k, pub, []byte(plainText), sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("encrypt failed %v", err)
+        }
+
+        plaintext, err := sm2.Decrypt(pri, ciphertext, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("decrypt failed %v", err)
+        }
+
+        if !reflect.DeepEqual(string(plaintext), plainText) {
+            t.Errorf("Decrypt() = %v, want %v", string(plaintext), plainText)
+        }
+    }
+}
+
+func Test_EncryptASN1UsingK(t *testing.T) {
+    blockPri := decodePEM(testPrikey)
+    pri, err := sm2.ParsePrivateKey(blockPri.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    blockPub := decodePEM(testPubkey)
+    pub, err := sm2.ParsePublicKey(blockPub.Bytes)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    plainText := "sm2-data"
+
+    k, _ := new(big.Int).SetString("3bcea41e869a3341abdaed93dc1f288f93c50b7f1b2d76079338b88a4357c15a", 16)
+
+    {
+        ciphertext, err := pub.EncryptASN1UsingK(k, []byte(plainText), sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("encrypt failed %v", err)
+        }
+
+        plaintext, err := pri.DecryptASN1(ciphertext, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("decrypt failed %v", err)
+        }
+
+        if !reflect.DeepEqual(string(plaintext), plainText) {
+            t.Errorf("DecryptASN1() = %v, want %v", string(plaintext), plainText)
+        }
+    }
+
+    {
+        ciphertext, err := sm2.EncryptASN1UsingK(k, pub, []byte(plainText), sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("encrypt failed %v", err)
+        }
+
+        plaintext, err := sm2.DecryptASN1(pri, ciphertext, sm2.EncrypterOpts{
+            Mode: sm2.C1C3C2,
+        })
+        if err != nil {
+            t.Fatalf("decrypt failed %v", err)
+        }
+
+        if !reflect.DeepEqual(string(plaintext), plainText) {
+            t.Errorf("DecryptASN1() = %v, want %v", string(plaintext), plainText)
+        }
     }
 }
 
@@ -466,7 +657,7 @@ func Test_Encrypt_Check2(t *testing.T) {
     }
 }
 
-func Test_SignSha256WithSM2(t *testing.T) {
+func Test_Sign_Sha256WithSM2(t *testing.T) {
     priv, err := sm2.GenerateKey(rand.Reader)
     if err != nil {
         t.Fatal(err)
@@ -498,7 +689,41 @@ func Test_SignSha256WithSM2(t *testing.T) {
     }
 }
 
-func Test_SignSM3Digest_Check(t *testing.T) {
+func Test_SignUsingK_Sha256WithSM2(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    var defaultUID = []byte{
+        0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+        0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38,
+    }
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+
+    k, _ := new(big.Int).SetString("abd4d449b07a8a6157804223badb7bad799b5d489bc7aa35f4a06a93cf823087", 16)
+
+    r, s, err := sm2.SignUsingKToRS(k, priv, msg, sm2.SignerOpts{
+        Uid:  defaultUID,
+        Hash: sha256.New,
+    })
+    if err != nil {
+        t.Error(err)
+    }
+
+    ok := sm2.VerifyWithRS(pub, msg, r, s, sm2.SignerOpts{
+        Uid:  defaultUID,
+        Hash: sha256.New,
+    })
+    if !ok {
+        t.Error("veri error")
+    }
+}
+
+func Test_Sign_SM3Digest_Check(t *testing.T) {
     uid := "sm2test@example.com"
     msg := "hi chappy"
     x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
@@ -524,7 +749,7 @@ func Test_SignSM3Digest_Check(t *testing.T) {
 
 }
 
-func Test_SignSHA256Digest_Check(t *testing.T) {
+func Test_Sign_SHA256Digest_Check(t *testing.T) {
     uid := "sm2test@example.com"
     msg := "hi chappy"
     x := "110E7973206F68C19EE5F7328C036F26911C8C73B4E4F36AE3291097F8984FFC"
@@ -810,6 +1035,29 @@ func Test_SignLegacy(t *testing.T) {
     hash := sha1.Sum(msg)
 
     r, s, err := sm2.SignLegacy(rand.Reader, priv, hash[:])
+    if err != nil {
+        t.Error(err)
+    }
+
+    if !sm2.VerifyLegacy(pub, hash[:], r, s) {
+        t.Error("veri error")
+    }
+}
+
+func Test_SignLegacyUsingK(t *testing.T) {
+    priv, err := sm2.GenerateKey(rand.Reader)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    msg := []byte("test-passstest-passstest-passstest-passstest-passstest-passstest-passstest-passs")
+    hash := sha1.Sum(msg)
+
+    k, _ := new(big.Int).SetString("85141b5874d058257d90d397bb65c3775098db2116829793c9e161ba1f1104ef", 16)
+
+    r, s, err := sm2.SignLegacyUsingK(k, priv, hash[:])
     if err != nil {
         t.Error(err)
     }

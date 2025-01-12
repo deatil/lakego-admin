@@ -42,7 +42,7 @@ func (opts *SignerOpts) GetHash() Hasher {
     return opts.Hash
 }
 
-// ec-gdsa PublicKey
+// EC-SDSA PublicKey
 type PublicKey struct {
     elliptic.Curve
 
@@ -71,7 +71,7 @@ func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) (bool, er
     return Verify(pub, opt.GetHash(), msg, sign), nil
 }
 
-// ec-gdsa PrivateKey
+// EC-SDSA PrivateKey
 type PrivateKey struct {
     PublicKey
 
@@ -136,14 +136,12 @@ func NewPrivateKey(curve elliptic.Curve, k []byte) (*PrivateKey, error) {
     return priv, nil
 }
 
-// 输出私钥明文
 // output PrivateKey data
 func PrivateKeyTo(key *PrivateKey) []byte {
     privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
     return key.D.FillBytes(privateKey)
 }
 
-// 根据公钥明文初始化公钥
 // New a PublicKey from publicKey data
 func NewPublicKey(curve elliptic.Curve, k []byte) (*PublicKey, error) {
     x, y := elliptic.Unmarshal(curve, k)
@@ -160,7 +158,6 @@ func NewPublicKey(curve elliptic.Curve, k []byte) (*PublicKey, error) {
     return pub, nil
 }
 
-// 输出公钥明文
 // output PublicKey data
 func PublicKeyTo(key *PublicKey) []byte {
     return elliptic.Marshal(key.Curve, key.X, key.Y)

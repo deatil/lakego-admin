@@ -32,7 +32,7 @@ var (
 )
 
 // default ciphers
-var defaultCiphers = CipherMap{
+var defaultCiphers = map[string]CipherFunc{
     "Aes":       aes.NewCipher,
     "Des":       des.NewCipher,
     "TripleDes": des.NewTripleDESCipher,
@@ -47,9 +47,6 @@ var defaultCiphers = CipherMap{
 type (
     // CipherFunc
     CipherFunc = func([]byte) (cipher.Block, error)
-
-    // Cipher map
-    CipherMap = map[string]CipherFunc
 )
 
 var defaultCipher = New()
@@ -67,7 +64,7 @@ func Default() *Cipher {
  */
 type Cipher struct {
     // ciphers
-    ciphers CipherMap
+    ciphers map[string]CipherFunc
 }
 
 // New return a *Cipher
@@ -80,13 +77,13 @@ func New() *Cipher {
 }
 
 // set ciphers
-func (this *Cipher) With(ciphers CipherMap) *Cipher {
+func (this *Cipher) With(ciphers map[string]CipherFunc) *Cipher {
     this.ciphers = ciphers
 
     return this
 }
 
-func WithCiphers(ciphers CipherMap) *Cipher {
+func WithCiphers(ciphers map[string]CipherFunc) *Cipher {
     return defaultCipher.With(ciphers)
 }
 

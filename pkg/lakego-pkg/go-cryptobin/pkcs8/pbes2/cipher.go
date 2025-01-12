@@ -4,7 +4,6 @@ import(
     "github.com/deatil/go-cryptobin/pkcs/pbes2"
 )
 
-// 别名
 type (
     Cipher = pbes2.Cipher
 )
@@ -13,14 +12,13 @@ var (
     AddCipher = pbes2.AddCipher
     GetCipher = pbes2.GetCipher
 
-    // 帮助函数
+    // helper funcions
     GetCipherFromName   = pbes2.GetCipherFromName
     CheckCipherFromName = pbes2.CheckCipherFromName
     GetCipherName       = pbes2.GetCipherName
     CheckCipher         = pbes2.CheckCipher
 )
 
-// 加密方式
 var (
     DESCBC     = pbes2.DESCBC
     DESEDE3CBC = pbes2.DESEDE3CBC

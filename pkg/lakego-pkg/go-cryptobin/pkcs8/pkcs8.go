@@ -10,7 +10,7 @@ import (
     "github.com/deatil/go-cryptobin/pkcs8/pbes2"
 )
 
-// 加密方式
+// encrypt cipher list
 var (
     // pkcs12
     SHA1And3DES    = pbes1.SHA1And3DES
@@ -134,7 +134,7 @@ var (
 )
 
 type (
-    // 配置
+    // options struct
     Opts         = pbes2.Opts
     PBKDF2Opts   = pbes2.PBKDF2Opts
     SMPBKDF2Opts = pbes2.SMPBKDF2Opts
@@ -142,39 +142,39 @@ type (
 )
 
 var (
-    // 获取 Cipher 类型
+    // get cipher from name
     GetCipherFromName = pbes2.GetCipherFromName
-    // 获取 hash 类型
+    // get hash from name
     GetHashFromName   = pbes2.GetHashFromName
 )
 
 var (
-    // 默认 Hash
+    // default Hash
     DefaultHash   = pbes2.DefaultHash
     DefaultSMHash = pbes2.DefaultSMHash
 )
 
 var (
-    // 默认配置 PBKDF2
+    // default PBKDF2 options
     DefaultPBKDF2Opts = pbes2.DefaultPBKDF2Opts
 
-    // 默认配置 GmSM PBKDF2
+    // default GmSM PBKDF2 options
     DefaultSMPBKDF2Opts = pbes2.DefaultSMPBKDF2Opts
 
-    // 默认配置 Scrypt
+    // default Scrypt options
     DefaultScryptOpts = pbes2.DefaultScryptOpts
 
-    // 默认配置
+    // default options
     DefaultOpts = pbes2.DefaultOpts
 
-    // 默认 GmSM 配置
+    // default GmSM options
     DefaultSMOpts = pbes2.DefaultSMOpts
 )
 
-// 解析设置
-// opt, err := ParseOpts("AES256CBC", "SHA256")
+// make options
+// opt, err := MakeOpts("AES256CBC", "SHA256")
 // block, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", data, password, opt)
-func ParseOpts(opts ...any) (any, error) {
+func MakeOpts(opts ...any) (any, error) {
     var opt any
     var err error
 
@@ -187,7 +187,7 @@ func ParseOpts(opts ...any) (any, error) {
     }
 
     if opt == nil {
-        opt, err = pbes2.ParseOpts(opts...)
+        opt, err = pbes2.MakeOpts(opts...)
         if err != nil {
             return nil, err
         }
@@ -196,40 +196,42 @@ func ParseOpts(opts ...any) (any, error) {
     return opt, nil
 }
 
-// 加密
-// block, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", data, password, DESCBC)
-// block, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", data, password, DefaultOpts)
+// parse and make options
+func ParseOpts(opts ...any) (any, error) {
+    return MakeOpts(opts...)
+}
+
+// Encrypt PEM Block
 func EncryptPEMBlock(
     rand      io.Reader,
     blockType string,
     data      []byte,
     password  []byte,
-    cipher    any,
+    opts      any,
 ) (*pem.Block, error) {
-    switch c := cipher.(type) {
+    switch o := opts.(type) {
         case pbes2.Cipher:
-            if _, err := pbes2.GetCipher(c.OID().String()); err == nil {
-                opts := DefaultOpts
-                opts.Cipher = c
+            if _, err := pbes2.GetCipher(o.OID().String()); err == nil {
+                encOpts := DefaultOpts
+                encOpts.Cipher = o
 
-                return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, opts)
+                return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, encOpts)
             }
 
-            return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
+            return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, o)
 
         case pbes2.Opts:
-            if _, err := pbes1.GetCipher(c.Cipher.OID().String()); err == nil {
-                return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, c.Cipher)
+            if _, err := pbes1.GetCipher(o.Cipher.OID().String()); err == nil {
+                return pbes1.EncryptPKCS8PrivateKey(rand, blockType, data, password, o.Cipher)
             }
 
-            return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, c)
+            return pbes2.EncryptPKCS8PrivateKey(rand, blockType, data, password, o)
     }
 
     return nil, errors.New("go-cryptobin/pkcs8: unsupported cipher")
 }
 
-// 解密
-// de, err := DecryptPEMBlock(block, password)
+// Decrypt PEM Block
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
         return pkcs1.DecryptPEMBlock(block, password)

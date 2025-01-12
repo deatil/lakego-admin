@@ -14,13 +14,13 @@ const (
     sshMagic = "openssh-key-v1\x00"
 )
 
-// 配置
+// options
 type Opts struct {
     Cipher  Cipher
     KDFOpts KDFOpts
 }
 
-// 默认配置
+// Default options
 var DefaultOpts = Opts{
     Cipher:  AES256CTR,
     KDFOpts: BcryptOpts{
@@ -45,12 +45,12 @@ type openSSHPrivateKeyBlock struct {
     Rest    []byte `ssh:"rest"`
 }
 
-// 解析
+// Parse OpenSSH PrivateKey
 func ParseOpenSSHPrivateKey(key []byte) (crypto.PrivateKey, string, error) {
     return ParseOpenSSHPrivateKeyWithPassword(key, nil)
 }
 
-// 解析带密码
+// Parse OpenSSH PrivateKey With Password
 func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.PrivateKey, string, error) {
     if len(key) < len(sshMagic) || string(key[:len(sshMagic)]) != sshMagic {
         return nil, "", errors.New("invalid openssh private key format")
@@ -69,7 +69,7 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
             return nil, "", err
         }
 
-        newKdf, err := ParsePbkdf(w.KdfName)
+        newKdf, err := ParsePBKDF(w.KdfName)
         if err != nil {
             return nil, "", err
         }
@@ -106,7 +106,7 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
         return nil, "", errors.New("error decoding key: check mismatch")
     }
 
-    newKey, err := ParseKeytype(pk1.Keytype)
+    newKey, err := ParseKeyType(pk1.Keytype)
     if err != nil {
         return nil, "", err
     }
@@ -119,12 +119,12 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
     return parsedKey, comment, nil
 }
 
-// 编码
+// Marshal OpenSSH PrivateKey
 func MarshalOpenSSHPrivateKey(rand io.Reader, key crypto.PrivateKey, comment string) (*pem.Block, error) {
     return MarshalOpenSSHPrivateKeyWithPassword(rand, key, comment, nil)
 }
 
-// 编码
+// Marshal OpenSSH PrivateKey With Password
 func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey, comment string, password []byte, opts ...Opts) (*pem.Block, error) {
     var check uint32
     if err := binary.Read(rand, binary.BigEndian, &check); err != nil {
@@ -159,7 +159,7 @@ func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey,
         w.KdfName = opt.KDFOpts.Name()
     }
 
-    parsedKey, err := ParseKeytype(GetStructName(key))
+    parsedKey, err := ParseKeyType(GetStructName(key))
     if err != nil {
         return nil, err
     }
@@ -182,7 +182,7 @@ func MarshalOpenSSHPrivateKeyWithPassword(rand io.Reader, key crypto.PrivateKey,
 
         size := newCipher.KeySize() + newCipher.BlockSize()
 
-        k, kdfOpts, err := newKdf.DeriveKey(password, size)
+        k, kdfOpts, err := newKdf.DeriveKey(rand, password, size)
         if err != nil {
             return nil, errors.New("error deriving decryption key." + err.Error())
         }

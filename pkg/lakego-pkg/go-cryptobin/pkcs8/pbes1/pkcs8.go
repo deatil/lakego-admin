@@ -11,7 +11,7 @@ import (
     "github.com/deatil/go-cryptobin/pkcs1"
 )
 
-// 结构体数据可以查看以下文档
+// struct info see:
 // RFC5208 at https://tools.ietf.org/html/rfc5208
 // RFC5958 at https://tools.ietf.org/html/rfc5958
 type encryptedPrivateKeyInfo struct {
@@ -19,13 +19,13 @@ type encryptedPrivateKeyInfo struct {
     EncryptedData       []byte
 }
 
-// 加密 PKCS8 私钥
+// Encrypt PKCS8 Private Key
 func EncryptPKCS8PrivateKey(
-    rand io.Reader,
+    rand      io.Reader,
     blockType string,
-    data []byte,
-    password []byte,
-    cipher Cipher,
+    data      []byte,
+    password  []byte,
+    cipher    Cipher,
 ) (*pem.Block, error) {
     if cipher == nil {
         return nil, errors.New("failed to encrypt PEM: unknown cipher")
@@ -59,7 +59,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New(err.Error() + " error marshaling encrypted key")
+        return nil, errors.New("error marshaling encrypted key")
     }
 
     return &pem.Block{
@@ -68,11 +68,11 @@ func EncryptPKCS8PrivateKey(
     }, nil
 }
 
-// 解出 PKCS8 私钥
+// Decrypt PKCS8 Private Key
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New(err.Error() + " failed to unmarshal private key")
+        return nil, errors.New("failed to unmarshal private key")
     }
 
     cipher, cipherParams, err := parseEncryptionScheme(pki.EncryptionAlgorithm)
@@ -98,13 +98,13 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     return decryptedKey, nil
 }
 
-// 加密 PKCS8 私钥，不处理密码
+// Encrypt PKCS8 Private Key and not format password
 func EncryptPKCS8Privatekey(
-    rand io.Reader,
+    rand      io.Reader,
     blockType string,
-    data []byte,
-    password []byte,
-    cipher Cipher,
+    data      []byte,
+    password  []byte,
+    cipher    Cipher,
 ) (*pem.Block, error) {
     if cipher == nil {
         return nil, errors.New("failed to encrypt PEM: unknown cipher")
@@ -130,7 +130,7 @@ func EncryptPKCS8Privatekey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New(err.Error() + " error marshaling encrypted key")
+        return nil, errors.New("error marshaling encrypted key")
     }
 
     return &pem.Block{
@@ -139,11 +139,11 @@ func EncryptPKCS8Privatekey(
     }, nil
 }
 
-// 解出 PKCS8 私钥，不处理密码
+// Decrypt PKCS8 Private Key and not format password
 func DecryptPKCS8Privatekey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New(err.Error() + " failed to unmarshal private key")
+        return nil, errors.New("failed to unmarshal private key")
     }
 
     cipher, cipherParams, err := parseEncryptionScheme(pki.EncryptionAlgorithm)
@@ -161,7 +161,7 @@ func DecryptPKCS8Privatekey(data, password []byte) ([]byte, error) {
     return decryptedKey, nil
 }
 
-// 解出 PEM 块
+// Decrypt PEM Block
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
         return pkcs1.DecryptPEMBlock(block, password)

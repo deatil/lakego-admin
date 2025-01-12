@@ -22,7 +22,7 @@ func MarshalSignatureBytes(curve elliptic.Curve, r, s *big.Int) ([]byte, error) 
 func UnmarshalSignatureBytes(curve elliptic.Curve, sign []byte) (r, s *big.Int, err error) {
     byteLen := (curve.Params().BitSize + 7) / 8
     if len(sign) != 2*byteLen {
-        err = errors.New("cryptobin/sm2: incorrect signature")
+        err = errors.New("go-cryptobin/sm2: incorrect signature")
         return
     }
 
@@ -81,14 +81,14 @@ func marshalCipherBytes(c encryptedData, mode Mode) []byte {
 func unmarshalCipherBytes(curve elliptic.Curve, data []byte, mode Mode, h hashFunc) (encryptedData, error) {
     typ := data[0]
     if typ != byte(0x04) {
-        return encryptedData{}, errors.New("cryptobin/sm2: encrypted data is error and miss prefix '4'.")
+        return encryptedData{}, errors.New("go-cryptobin/sm2: encrypted data is error and miss prefix '4'.")
     }
 
     hashSize := h().Size()
 
     byteLen := (curve.Params().BitSize + 7) / 8
     if len(data) < 2*byteLen + hashSize {
-        return encryptedData{}, errors.New("cryptobin/sm2: encrypt data is too short.")
+        return encryptedData{}, errors.New("go-cryptobin/sm2: encrypt data is too short.")
     }
 
     data = data[1:]
@@ -142,7 +142,7 @@ func unmarshalCipherASN1(curve elliptic.Curve, data []byte, mode Mode) (encrypte
 type cipherASN1New struct {
     XCoordinate *big.Int
     YCoordinate *big.Int
-    HASH        []byte
+    Hash        []byte
     CipherText  []byte
 }
 
@@ -152,7 +152,7 @@ func marshalCipherASN1New(data encryptedData) ([]byte, error) {
     return asn1.Marshal(cipherASN1New{
         XCoordinate: bytesToBigInt(data.XCoordinate),
         YCoordinate: bytesToBigInt(data.YCoordinate),
-        HASH:        data.Hash,
+        Hash:        data.Hash,
         CipherText:  data.CipherText,
     })
 }
@@ -171,7 +171,7 @@ func unmarshalCipherASN1New(curve elliptic.Curve, b []byte) (encryptedData, erro
     return encryptedData{
         XCoordinate: x, // x分量
         YCoordinate: y, // y分量
-        Hash:        data.HASH,       // hash
+        Hash:        data.Hash,       // hash
         CipherText:  data.CipherText, // cipherText
     }, nil
 }
@@ -181,7 +181,7 @@ type cipherASN1Old struct {
     XCoordinate *big.Int
     YCoordinate *big.Int
     CipherText  []byte
-    HASH        []byte
+    Hash        []byte
 }
 
 // sm2 密文转 asn.1 编码格式
@@ -191,7 +191,7 @@ func marshalCipherASN1Old(data encryptedData) ([]byte, error) {
         XCoordinate: bytesToBigInt(data.XCoordinate),
         YCoordinate: bytesToBigInt(data.YCoordinate),
         CipherText:  data.CipherText,
-        HASH:        data.Hash,
+        Hash:        data.Hash,
     })
 }
 
@@ -210,7 +210,7 @@ func unmarshalCipherASN1Old(curve elliptic.Curve, b []byte) (encryptedData, erro
         XCoordinate: x, // x分量
         YCoordinate: y, // y分量
         CipherText:  data.CipherText, // cipherText
-        Hash:        data.HASH,       // hash
+        Hash:        data.Hash,       // hash
     }, nil
 }
 

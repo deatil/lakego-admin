@@ -18,26 +18,26 @@ var (
     oidSMPBES2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 6, 4, 1, 5, 2}
 )
 
-// 配置
+// encrypt options
 type Opts struct {
     Cipher  Cipher
     KDFOpts KDFOpts
 }
 
-// 默认配置 PBKDF2
+// default PBKDF2 options
 var DefaultPBKDF2Opts = PBKDF2Opts{
     SaltSize:       16,
     IterationCount: 10000,
 }
 
-// 默认配置 GmSM PBKDF2
+// default GmSM PBKDF2 options
 var DefaultSMPBKDF2Opts = SMPBKDF2Opts{
     SaltSize:       16,
     IterationCount: 10000,
     HMACHash:       DefaultSMHash,
 }
 
-// 默认配置 Scrypt
+// default Scrypt options
 var DefaultScryptOpts = ScryptOpts{
     SaltSize:                 16,
     CostParameter:            1 << 2,
@@ -45,19 +45,19 @@ var DefaultScryptOpts = ScryptOpts{
     ParallelizationParameter: 1,
 }
 
-// 默认配置
+// default options
 var DefaultOpts = Opts{
     Cipher:  AES256CBC,
     KDFOpts: DefaultPBKDF2Opts,
 }
 
-// 默认 GmSM 配置
+// default GmSM options
 var DefaultSMOpts = Opts{
     Cipher:  SM4CBC,
     KDFOpts: DefaultSMPBKDF2Opts,
 }
 
-// 结构体数据可以查看以下文档
+// struct info see:
 // RFC5208 at https://tools.ietf.org/html/rfc5208
 // RFC5958 at https://tools.ietf.org/html/rfc5958
 type encryptedPrivateKeyInfo struct {
@@ -65,13 +65,13 @@ type encryptedPrivateKeyInfo struct {
     EncryptedData       []byte
 }
 
-// pbes2 数据
+// pbes2 params
 type pbes2Params struct {
     KeyDerivationFunc pkix.AlgorithmIdentifier
     EncryptionScheme  pkix.AlgorithmIdentifier
 }
 
-// 加密 PKCS8
+// Encrypt PKCS8 Private Key
 func EncryptPKCS8PrivateKey(
     rand      io.Reader,
     blockType string,
@@ -79,17 +79,16 @@ func EncryptPKCS8PrivateKey(
     password  []byte,
     opts      ...Opts,
 ) (*pem.Block, error) {
-    opt := &DefaultOpts
+    useOpts := &DefaultOpts
     if len(opts) > 0 {
-        opt = &opts[0]
+        useOpts = &opts[0]
     }
 
-    encrypted, encryptionAlgorithm, err := PBES2Encrypt(rand, data, password, opt)
+    encrypted, encryptionAlgorithm, err := PBES2Encrypt(rand, data, password, useOpts)
     if err != nil {
-        return nil, errors.New("go-cryptobin/pkcs8: " + err.Error())
+        return nil, err
     }
 
-    // 生成 ans1 数据
     pki := encryptedPrivateKeyInfo{
         EncryptionAlgorithm: encryptionAlgorithm,
         EncryptedData:       encrypted,
@@ -97,7 +96,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New("go-cryptobin/pkcs8: error marshaling encrypted key: " + err.Error())
+        return nil, errors.New("error marshaling encrypted key")
     }
 
     return &pem.Block{
@@ -106,11 +105,11 @@ func EncryptPKCS8PrivateKey(
     }, nil
 }
 
-// 解密 PKCS8
+// Decrypt PKCS8 Private Key
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New("go-cryptobin/pkcs8: failed to unmarshal private key: " + err.Error())
+        return nil, errors.New("failed to unmarshal private key")
     }
 
     algo := pki.EncryptionAlgorithm
@@ -118,13 +117,13 @@ func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
 
     decryptedKey, err := PBES2Decrypt(encryptedKey, algo, password)
     if err != nil {
-        return nil, errors.New("go-cryptobin/pkcs8: " + err.Error())
+        return nil, err
     }
 
     return decryptedKey, nil
 }
 
-// 解出 PEM 块
+// Decrypt PEM Block
 func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
     if block.Headers["Proc-Type"] == "4,ENCRYPTED" {
         return pkcs1.DecryptPEMBlock(block, password)
@@ -135,26 +134,26 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         return DecryptPKCS8PrivateKey(block.Bytes, password)
     }
 
-    return nil, errors.New("go-cryptobin/pkcs8: unsupported encrypted PEM")
+    return nil, errors.New("unsupported encrypted PEM")
 }
 
-// PBES2 加密
-func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encrypted []byte, algo pkix.AlgorithmIdentifier, err error) {
-    cipher := opt.Cipher
+// PBES2 Encrypt data
+func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opts *Opts) (encrypted []byte, algo pkix.AlgorithmIdentifier, err error) {
+    cipher := opts.Cipher
     if cipher == nil {
         err = errors.New("unknown opts cipher")
         return
     }
 
-    kdfOpts := opt.KDFOpts
+    kdfOpts := opts.KDFOpts
     if kdfOpts == nil {
         err = errors.New("unknown opts kdfOpts")
         return
     }
 
     salt := make([]byte, kdfOpts.GetSaltSize())
-    if _, saltErr := io.ReadFull(rand, salt); saltErr != nil {
-        err = errors.New("failed to generate salt: " + err.Error())
+    if _, err = io.ReadFull(rand, salt); err != nil {
+        err = errors.New("failed to generate salt")
         return
     }
 
@@ -212,7 +211,7 @@ func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opt *Opts) (encr
     return encrypted, encryptionAlgorithm, nil
 }
 
-// PBES2 解密
+// PBES2 Decrypt data
 func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) ([]byte, error) {
     if !CheckPBES2(algo.Algorithm) {
         return nil, fmt.Errorf("unsupported PBES (OID: %s)", algo.Algorithm)
@@ -260,7 +259,7 @@ func CheckPBES2(oid asn1.ObjectIdentifier) bool {
     return false
 }
 
-// 是否是 PBES2 加密
+// return true if PBES2 OID, else return false
 func IsPBES2(algo asn1.ObjectIdentifier) bool {
     if algo.Equal(oidPBES2) {
         return true
@@ -269,7 +268,7 @@ func IsPBES2(algo asn1.ObjectIdentifier) bool {
     return false
 }
 
-// 是否是 GmSM PBES2 加密
+// return true if GmSM PBES2 OID, else return false
 func IsSMPBES2(algo asn1.ObjectIdentifier) bool {
     if algo.Equal(oidSMPBES2) {
         return true

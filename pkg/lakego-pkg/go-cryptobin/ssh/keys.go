@@ -9,16 +9,18 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
+// Parse KnownHosts
 func ParseKnownHosts(in []byte) (marker string, hosts []string, pubKey ssh.PublicKey, comment string, rest []byte, err error) {
     return ssh.ParseKnownHosts(in)
 }
 
-// 创建 key
+// Marshal AuthorizedKey
 func MarshalAuthorizedKey(key ssh.PublicKey) []byte {
     return ssh.MarshalAuthorizedKey(key)
 }
 
 // 创建带信息的 key
+// Marshal AuthorizedKey With Comment
 func MarshalAuthorizedKeyWithComment(key ssh.PublicKey, comment string) []byte {
     b := &bytes.Buffer{}
 

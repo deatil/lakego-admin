@@ -6,10 +6,14 @@ import (
     "crypto"
     "testing"
     "encoding/pem"
+    "crypto/rsa"
+    "crypto/dsa"
     "crypto/rand"
     "crypto/ecdsa"
+    "crypto/ed25519"
     "crypto/elliptic"
 
+    "github.com/deatil/go-cryptobin/gm/sm2"
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
@@ -189,4 +193,166 @@ func Test_ParseSSHKey_Ecdsa(t *testing.T) {
     assertNotEmpty(sshComment, "ParseSSHKey_EcdsaEn")
 
     assertEqual(sshComment, "test-ssh", "ParseSSHKey_Ecdsa")
+}
+
+func Test_ParseSSHKey_Ecdsa_With_Pass(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+    assertError(err, "Test_ParseSSHKey_Ecdsa_With_Pass-privateKey")
+
+    password := []byte("pass-data")
+
+    block, err := MarshalOpenSSHPrivateKeyWithPassword(rand.Reader, privateKey, "test-ssh123", password)
+    assertError(err, "Test_ParseSSHKey_Ecdsa_With_Pass-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), string(password))
+    assertError(err, "Test_ParseSSHKey_Ecdsa_With_Pass")
+    assertNotEmpty(sshkeyName, "Test_ParseSSHKey_Ecdsa_With_Pass-sshkeyName")
+    assertNotEmpty(sshComment, "Test_ParseSSHKey_Ecdsa_With_Pass-commit")
+
+    assertEqual(sshComment, "test-ssh123", "Test_ParseSSHKey_Ecdsa_With_Pass")
+}
+
+func test_ParseSSHKey_Ecdsa_With_Pass_And_Opts(t *testing.T, opts Opts) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+    assertError(err, "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts-privateKey")
+
+    password := []byte("pass-data")
+
+    block, err := MarshalOpenSSHPrivateKeyWithPassword(rand.Reader, privateKey, "test-ssh123", password, opts)
+    assertError(err, "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), string(password))
+    assertError(err, "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts")
+    assertNotEmpty(sshkeyName, "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts-sshkeyName")
+    assertNotEmpty(sshComment, "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts-commit")
+
+    assertEqual(sshComment, "test-ssh123", "test_ParseSSHKey_Ecdsa_With_Pass_And_Opts")
+}
+
+func Test_ParseSSHKey_Ecdsa_With_Pass_And_Opts(t *testing.T) {
+    newOpts := func(cip Cipher) Opts {
+        return Opts{
+            Cipher:  cip,
+            KDFOpts: BcryptOpts{
+                SaltSize: 16,
+                Rounds:   16,
+            },
+        }
+    }
+    newOpts2 := func(cip Cipher) Opts {
+        return Opts{
+            Cipher:  cip,
+            KDFOpts: BcryptbinOpts{
+                SaltSize: 16,
+                Rounds:   16,
+            },
+        }
+    }
+
+    for name, cip := range cipherMap {
+        t.Run(name + " BcryptOpts", func(t *testing.T) {
+            test_ParseSSHKey_Ecdsa_With_Pass_And_Opts(t, newOpts(cip))
+        })
+
+        t.Run(name + " BcryptbinOpts", func(t *testing.T) {
+            test_ParseSSHKey_Ecdsa_With_Pass_And_Opts(t, newOpts2(cip))
+        })
+    }
+}
+
+func Test_ParseSSHKey_EdDSA(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    _, privateKey, err := ed25519.GenerateKey(rand.Reader)
+    assertError(err, "Test_ParseSSHKey_EdDSA-privateKey")
+
+    block, err := MarshalOpenSSHPrivateKey(rand.Reader, privateKey, "test-ssh")
+    assertError(err, "Test_ParseSSHKey_EdDSA-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), "")
+    assertError(err, "Test_ParseSSHKey_EdDSA")
+    assertNotEmpty(sshkeyName, "Test_ParseSSHKey_EdDSA-sshkeyName")
+    assertNotEmpty(sshComment, "Test_ParseSSHKey_EdDSA-sshComment")
+
+    assertEqual(sshComment, "test-ssh", "Test_ParseSSHKey_EdDSA")
+}
+
+func Test_ParseSSHKey_RSA(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
+    assertError(err, "Test_ParseSSHKey_RSA-privateKey")
+
+    block, err := MarshalOpenSSHPrivateKey(rand.Reader, privateKey, "test-ssh")
+    assertError(err, "Test_ParseSSHKey_RSA-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), "")
+    assertError(err, "Test_ParseSSHKey_RSA")
+    assertNotEmpty(sshkeyName, "Test_ParseSSHKey_RSA-sshkeyName")
+    assertNotEmpty(sshComment, "Test_ParseSSHKey_RSA-sshComment")
+
+    assertEqual(sshComment, "test-ssh", "Test_ParseSSHKey_RSA")
+}
+
+func Test_ParseSSHKey_SM2(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey, err := sm2.GenerateKey(rand.Reader)
+    assertError(err, "Test_ParseSSHKey_SM2-privateKey")
+
+    block, err := MarshalOpenSSHPrivateKey(rand.Reader, privateKey, "test-ssh")
+    assertError(err, "Test_ParseSSHKey_SM2-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), "")
+    assertError(err, "Test_ParseSSHKey_SM2")
+    assertNotEmpty(sshkeyName, "Test_ParseSSHKey_SM2-sshkeyName")
+    assertNotEmpty(sshComment, "Test_ParseSSHKey_SM2-sshComment")
+
+    assertEqual(sshComment, "test-ssh", "Test_ParseSSHKey_SM2")
+}
+
+func Test_ParseSSHKey_DSA(t *testing.T) {
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertError := cryptobin_test.AssertErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    privateKey := &dsa.PrivateKey{}
+    dsa.GenerateParameters(&privateKey.Parameters, rand.Reader, dsa.L2048N224)
+    dsa.GenerateKey(privateKey, rand.Reader)
+
+    block, err := MarshalOpenSSHPrivateKey(rand.Reader, privateKey, "test-ssh")
+    assertError(err, "Test_ParseSSHKey_DSA-Marshal")
+
+    blockkeyData := pem.EncodeToMemory(block)
+
+    sshkeyName, sshComment, err := testParseSSHKey(string(blockkeyData), "")
+    assertError(err, "Test_ParseSSHKey_DSA")
+    assertNotEmpty(sshkeyName, "Test_ParseSSHKey_DSA-sshkeyName")
+    assertNotEmpty(sshComment, "Test_ParseSSHKey_DSA-sshComment")
+
+    assertEqual(sshComment, "test-ssh", "Test_ParseSSHKey_DSA")
 }

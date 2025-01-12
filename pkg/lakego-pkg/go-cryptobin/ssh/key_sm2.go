@@ -15,10 +15,10 @@ var (
     KeyAlgoSM2 = "ssh-sm2"
 )
 
-// SM2
+// SM2 key
 type KeySM2 struct {}
 
-// 包装
+// Marshal key
 func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byte, []byte, error) {
     k, ok := key.(*sm2.PrivateKey)
     if !ok {
@@ -52,7 +52,7 @@ func (this KeySM2) Marshal(key crypto.PrivateKey, comment string) (string, []byt
     return keyType, pubkey, rest, nil
 }
 
-// 解析
+// Parse key
 func (this KeySM2) Parse(rest []byte) (crypto.PrivateKey, string, error) {
     key := struct {
         Pub     []byte

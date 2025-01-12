@@ -80,7 +80,7 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
     k = smkdf.Key(sm3.New, kk, klen)
 
     if alias.ConstantTimeAllZero(k) {
-        err = errors.New("cryptobin/sm2: zero key")
+        err = errors.New("go-cryptobin/sm2: zero key")
         return
     }
 

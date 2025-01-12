@@ -13,8 +13,7 @@ type (
     HashFunc = func() hash.Hash
 )
 
-// 数据编码方式
-// marshal data type
+// encoding data type
 type EncodingType uint
 
 const (
