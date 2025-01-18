@@ -1,40 +1,49 @@
-package ecgdsa
+package ssh
 
 import (
+    "errors"
     "crypto"
     "crypto/dsa"
     "crypto/elliptic"
 
     "golang.org/x/crypto/ssh"
+
+    cryptobin_ssh "github.com/deatil/go-cryptobin/ssh"
 )
 
-// 设置 PrivateKey
+// With PrivateKey
 func (this SSH) WithPrivateKey(key crypto.PrivateKey) SSH {
     this.privateKey = key
 
     return this
 }
 
-// 设置 PublicKey
+// With PublicKey
 func (this SSH) WithPublicKey(key crypto.PublicKey) SSH {
     this.publicKey = key
 
     return this
 }
 
-// 设置 openssh PublicKey
-func (this SSH) SetOpensshPublicKey(key ssh.PublicKey) SSH {
-    publicKey, err := ssh.NewPublicKey(key)
+// With openssh PublicKey
+func (this SSH) SetOpenSSHPublicKey(key ssh.PublicKey) SSH {
+    publicKey, err := cryptobin_ssh.NewPublicKey(key)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.publicKey = publicKey
+    pkey, ok := publicKey.(ssh.CryptoPublicKey)
+    if !ok {
+        err := errors.New("ssh PublicKey error.")
+        return this.AppendError(err)
+    }
+
+    this.publicKey = pkey.CryptoPublicKey()
 
     return this
 }
 
-// 设置配置
+// With options
 func (this SSH) WithOptions(options Options) SSH {
     this.options = options
 
@@ -48,8 +57,8 @@ func (this SSH) WithPublicKeyType(keyType PublicKeyType) SSH {
     return this
 }
 
-// public key type
-// 可选参数:
+// set public key type
+// params:
 // [ RSA | DSA | ECDSA | EdDSA | SM2 ]
 func (this SSH) SetPublicKeyType(keyType string) SSH {
     switch keyType {
@@ -68,22 +77,43 @@ func (this SSH) SetPublicKeyType(keyType string) SSH {
     return this
 }
 
-// 设置注释
+// set Generate public key type
+// params:
+// [ RSA | DSA | ECDSA | EdDSA | SM2 ]
+func (this SSH) SetGenerateType(typ string) SSH {
+    return this.SetPublicKeyType(typ)
+}
+
+// With CipherName
+func (this SSH) WithCipherName(cipherName string) SSH {
+    this.options.CipherName = cipherName
+
+    return this
+}
+
+// Set Cipher
+func (this SSH) SetCipher(cip cryptobin_ssh.Cipher) SSH {
+    this.options.CipherName = cip.Name()
+
+    return this
+}
+
+// With Comment
 func (this SSH) WithComment(comment string) SSH {
     this.options.Comment = comment
 
     return this
 }
 
-// 设置 DSA ParameterSizes
+// With DSA ParameterSizes
 func (this SSH) WithParameterSizes(sizes dsa.ParameterSizes) SSH {
     this.options.ParameterSizes = sizes
 
     return this
 }
 
-// 设置 DSA ParameterSizes
-// 可选参数:
+// With DSA ParameterSizes
+// params:
 // [ L1024N160 | L2048N224 | L2048N256 | L3072N256 ]
 func (this SSH) SetParameterSizes(ln string) SSH {
     switch ln {
@@ -100,15 +130,15 @@ func (this SSH) SetParameterSizes(ln string) SSH {
     return this
 }
 
-// 设置曲线类型
+// With Curve type
 func (this SSH) WithCurve(curve elliptic.Curve) SSH {
     this.options.Curve = curve
 
     return this
 }
 
-// 设置曲线类型
-// 可选参数: [ P521 | P384 | P256 ]
+// set Curve type
+// params: [ P521 | P384 | P256 ]
 func (this SSH) SetCurve(curve string) SSH {
     switch curve {
         case "P256":
@@ -129,35 +159,35 @@ func (this SSH) WithBits(bits int) SSH {
     return this
 }
 
-// 设置 keyData
+// With keyData
 func (this SSH) WithKeyData(data []byte) SSH {
     this.keyData = data
 
     return this
 }
 
-// 设置 data
+// With data
 func (this SSH) WithData(data []byte) SSH {
     this.data = data
 
     return this
 }
 
-// 设置 parsedData
+// With parsedData
 func (this SSH) WithParsedData(data []byte) SSH {
     this.parsedData = data
 
     return this
 }
 
-// 设置验证结果
+// With Verify
 func (this SSH) WithVerify(data bool) SSH {
     this.verify = data
 
     return this
 }
 
-// 设置错误
+// With Errors
 func (this SSH) WithErrors(errs []error) SSH {
     this.Errors = errs
 

@@ -1,4 +1,4 @@
-package ssh
+package ca
 
 import (
     "errors"
@@ -8,9 +8,6 @@ import (
     "encoding/pem"
     "encoding/asn1"
 
-    crypto_ssh "golang.org/x/crypto/ssh"
-
-    "github.com/deatil/go-cryptobin/ssh"
     "github.com/deatil/go-cryptobin/pkcs8"
     "github.com/deatil/go-cryptobin/gm/sm2"
     pubkey_dsa "github.com/deatil/go-cryptobin/pubkey/dsa"
@@ -18,7 +15,6 @@ import (
 
 var (
     ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded OpenSSH key")
-    ErrNotOpenSSHPublicKey = errors.New("key is not a valid SSH public key")
 
     ErrPrivateKeyError = errors.New("key is not a valid private key")
     ErrPublicKeyError  = errors.New("key is not a valid public key")
@@ -31,95 +27,6 @@ var (
     oidPublicKeyECDSA   = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
     oidPublicKeyEd25519 = asn1.ObjectIdentifier{1, 3, 101, 112}
 )
-
-// Parse OpenSSH PrivateKey From PEM
-func (this SSH) ParseOpenSSHPrivateKeyFromPEM(key []byte) (crypto.PrivateKey, string, string, error) {
-    // Parse PEM block
-    var block *pem.Block
-    if block, _ = pem.Decode(key); block == nil {
-        return nil, "", "", ErrKeyMustBePEMEncoded
-    }
-
-    privateKey, comment, err := ssh.ParseOpenSSHPrivateKey(block.Bytes)
-    if err != nil {
-        return nil, "", "", err
-    }
-
-    info, err := ssh.ParseOpenSSHPrivateKeyToInfo(block.Bytes)
-    if err != nil {
-        return nil, "", "", err
-    }
-
-    return privateKey, comment, info.CipherName, nil
-}
-
-// Parse OpenSSH PrivateKey From PEM With Password
-func (this SSH) ParseOpenSSHPrivateKeyFromPEMWithPassword(key []byte, password []byte) (crypto.PrivateKey, string, string, error) {
-    var block *pem.Block
-    if block, _ = pem.Decode(key); block == nil {
-        return nil, "", "", ErrKeyMustBePEMEncoded
-    }
-
-    privateKey, comment, err := ssh.ParseOpenSSHPrivateKeyWithPassword(block.Bytes, password)
-    if err != nil {
-        return nil, "", "", err
-    }
-
-    info, err := ssh.ParseOpenSSHPrivateKeyToInfo(block.Bytes)
-    if err != nil {
-        return nil, "", "", err
-    }
-
-    return privateKey, comment, info.CipherName, nil
-}
-
-type openSSHPrivateKey struct {
-    CipherName   string
-    KdfName      string
-    KdfOpts      string
-    NumKeys      uint32
-    PubKey       []byte
-    PrivKeyBlock []byte
-}
-
-// Parse OpenSSH PrivateKey To Info From PEM
-func (this SSH) ParseOpenSSHPrivateKeyToInfoFromPEM(key []byte) (openSSHPrivateKey, error) {
-    // Parse PEM block
-    var block *pem.Block
-    if block, _ = pem.Decode(key); block == nil {
-        return openSSHPrivateKey{}, ErrKeyMustBePEMEncoded
-    }
-
-    info, err := ssh.ParseOpenSSHPrivateKeyToInfo(block.Bytes)
-    if err != nil {
-        return openSSHPrivateKey{}, err
-    }
-
-    return openSSHPrivateKey(info), nil
-}
-
-// Parse OpenSSH PublicKey From PEM
-func (this SSH) ParseOpenSSHPublicKeyFromPEM(key []byte) (crypto.PublicKey, string, error) {
-    var err error
-
-    // Parse the key
-    var parsedKey crypto_ssh.PublicKey
-    var comment string
-    if parsedKey, comment, _, _, err = ssh.ParseAuthorizedKey(key); err != nil {
-        return nil, "", err
-    }
-
-    var pkey crypto_ssh.CryptoPublicKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(crypto_ssh.CryptoPublicKey); !ok {
-        return nil, "", ErrNotOpenSSHPublicKey
-    }
-
-    return pkey.CryptoPublicKey(), comment, nil
-}
-
-// ====================
 
 type pkcs8Info struct {
     Version    int
@@ -134,7 +41,7 @@ type pkixPublicKey struct {
 }
 
 // Parse PKCS8 PrivateKey From PEM
-func (this SSH) ParsePKCS8PrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
+func (this CA) ParsePKCS8PrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -184,7 +91,7 @@ func (this SSH) ParsePKCS8PrivateKeyFromPEM(key []byte) (crypto.PrivateKey, erro
 }
 
 // Parse PKCS8 PrivateKey From PEM With Password
-func (this SSH) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password []byte) (crypto.PrivateKey, error) {
+func (this CA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password []byte) (crypto.PrivateKey, error) {
     var err error
 
     // Parse PEM block
@@ -239,7 +146,7 @@ func (this SSH) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password []b
 }
 
 // Parse PKCS8 PublicKey From PEM
-func (this SSH) ParsePKCS8PublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
+func (this CA) ParsePKCS8PublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     var err error
 
     // Parse PEM block

@@ -6,7 +6,7 @@ import (
     "hash"
     "crypto/aes"
 
-    "github.com/deatil/go-cryptobin/hash/pmac"
+    "github.com/deatil/go-hash/pmac"
 )
 
 // Sum computes the AES-PMAC checksum with the given tagsize of msg using the cipher.Block.

@@ -1,4 +1,4 @@
-package ecgdsa
+package ssh
 
 import (
     "testing"
@@ -36,7 +36,7 @@ func Test_Sign(t *testing.T) {
     // 签名
     objSign := New().
         FromString(data).
-        FromOpensshPrivateKey([]byte(prikey)).
+        FromOpenSSHPrivateKey([]byte(prikey)).
         Sign()
     signed := objSign.ToString()
 
@@ -46,7 +46,7 @@ func Test_Sign(t *testing.T) {
     // 验证
     objVerify := New().
         FromString(signed).
-        FromOpensshPublicKey([]byte(pubkey)).
+        FromOpenSSHPublicKey([]byte(pubkey)).
         Verify([]byte(data))
 
     assertError(objVerify.Error(), "Sign-Verify")
@@ -71,7 +71,7 @@ c5pto6ZM6K74kS1PDb04CQ==
     // 验证
     objVerify := New().
         FromString(signed).
-        FromOpensshPublicKey([]byte(pubkey)).
+        FromOpenSSHPublicKey([]byte(pubkey)).
         Verify([]byte(data))
 
     assertError(objVerify.Error(), "Sign-Verify")
@@ -84,8 +84,8 @@ func Test_CheckKeyPair(t *testing.T) {
 
     {
         obj := New().
-            FromOpensshPrivateKey([]byte(prikey)).
-            FromOpensshPublicKey([]byte(pubkey))
+            FromOpenSSHPrivateKey([]byte(prikey)).
+            FromOpenSSHPublicKey([]byte(pubkey))
 
         assertError(obj.Error(), "CheckKeyPair")
         assertBool(obj.CheckKeyPair(), "CheckKeyPair")
@@ -93,8 +93,8 @@ func Test_CheckKeyPair(t *testing.T) {
 
     {
         obj := New().
-            FromOpensshPrivateKey([]byte(prikey)).
-            FromOpensshPublicKey([]byte(pubkey2))
+            FromOpenSSHPrivateKey([]byte(prikey)).
+            FromOpenSSHPublicKey([]byte(pubkey2))
 
         assertError(obj.Error(), "CheckKeyPair 2")
         assertBool(!obj.CheckKeyPair(), "CheckKeyPair 2")
@@ -126,15 +126,15 @@ func test_CheckKeyPair2(t *testing.T, keyType string) {
     obj0 := New().SetPublicKeyType(keyType).GenerateKey()
     assertError(obj0.Error(), "test_CheckKeyPair2")
 
-    prikey := obj0.CreateOpensshPrivateKey().ToKeyBytes()
+    prikey := obj0.CreateOpenSSHPrivateKey().ToKeyBytes()
     assertNotEmpty(prikey, "test_CheckKeyPair2-PrivateKey")
 
-    pubkey := obj0.CreateOpensshPublicKey().ToKeyBytes()
+    pubkey := obj0.CreateOpenSSHPublicKey().ToKeyBytes()
     assertNotEmpty(pubkey, "test_CheckKeyPair2-PublicKey")
 
     obj := New().
-        FromOpensshPrivateKey(prikey).
-        FromOpensshPublicKey(pubkey)
+        FromOpenSSHPrivateKey(prikey).
+        FromOpenSSHPublicKey(pubkey)
 
     assertError(obj.Error(), "test_CheckKeyPair2")
     assertBool(obj.CheckKeyPair(), "test_CheckKeyPair2")
@@ -166,16 +166,16 @@ func test_Sign2(t *testing.T, keyType string) {
     obj0 := New().SetPublicKeyType(keyType).GenerateKey()
     assertError(obj0.Error(), "test_Sign2")
 
-    prikey := obj0.CreateOpensshPrivateKey().ToKeyBytes()
+    prikey := obj0.CreateOpenSSHPrivateKey().ToKeyBytes()
     assertNotEmpty(prikey, "test_Sign2-PrivateKey")
 
-    pubkey := obj0.CreateOpensshPublicKey().ToKeyBytes()
+    pubkey := obj0.CreateOpenSSHPublicKey().ToKeyBytes()
     assertNotEmpty(pubkey, "test_Sign2-PublicKey")
 
     // 签名
     objSign := New().
         FromString(data).
-        FromOpensshPrivateKey(prikey).
+        FromOpenSSHPrivateKey(prikey).
         Sign()
     signed := objSign.ToString()
 
@@ -185,7 +185,7 @@ func test_Sign2(t *testing.T, keyType string) {
     // 验证
     objVerify := New().
         FromString(signed).
-        FromOpensshPublicKey(pubkey).
+        FromOpenSSHPublicKey(pubkey).
         Verify([]byte(data))
 
     assertError(objVerify.Error(), "test_Sign2-Verify")

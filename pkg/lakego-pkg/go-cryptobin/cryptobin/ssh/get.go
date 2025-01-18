@@ -1,11 +1,17 @@
-package ecgdsa
+package ssh
 
 import (
     "crypto"
+    "crypto/rsa"
     "crypto/dsa"
+    "crypto/ecdsa"
+    "crypto/ed25519"
     "crypto/elliptic"
 
     "golang.org/x/crypto/ssh"
+
+    "github.com/deatil/go-cryptobin/gm/sm2"
+    cryptobin_ssh "github.com/deatil/go-cryptobin/ssh"
 )
 
 // get PrivateKey
@@ -13,19 +19,65 @@ func (this SSH) GetPrivateKey() crypto.PrivateKey {
     return this.privateKey
 }
 
+// get PrivateKey Type
+func (this SSH) GetPrivateKeyType() PublicKeyType {
+    switch this.privateKey.(type) {
+        case *rsa.PrivateKey:
+            return KeyTypeRSA
+        case *dsa.PrivateKey:
+            return KeyTypeDSA
+        case *ecdsa.PrivateKey:
+            return KeyTypeECDSA
+        case ed25519.PrivateKey:
+            return KeyTypeEdDSA
+        case *sm2.PrivateKey:
+            return KeyTypeSM2
+    }
+
+    return KeyTypeUnknown
+}
+
+// get openssh Signer
+func (this SSH) GetOpenSSHSigner() (ssh.Signer, error) {
+    return cryptobin_ssh.NewSignerFromKey(this.privateKey)
+}
+
 // get PublicKey
 func (this SSH) GetPublicKey() crypto.PublicKey {
     return this.publicKey
 }
 
+// get PublicKey Type
+func (this SSH) GetPublicKeyType() PublicKeyType {
+    switch this.publicKey.(type) {
+        case *rsa.PublicKey:
+            return KeyTypeRSA
+        case *dsa.PublicKey:
+            return KeyTypeDSA
+        case *ecdsa.PublicKey:
+            return KeyTypeECDSA
+        case ed25519.PublicKey:
+            return KeyTypeEdDSA
+        case *sm2.PublicKey:
+            return KeyTypeSM2
+    }
+
+    return KeyTypeUnknown
+}
+
 // get openssh PublicKey
-func (this SSH) GetOpensshPublicKey() (ssh.PublicKey, error) {
-    return ssh.NewPublicKey(this.publicKey)
+func (this SSH) GetOpenSSHPublicKey() (ssh.PublicKey, error) {
+    return cryptobin_ssh.NewPublicKey(this.publicKey)
 }
 
 // get Options
 func (this SSH) GetOptions() Options {
     return this.options
+}
+
+// get Options CipherName
+func (this SSH) GetCipherName() string {
+    return this.options.CipherName
 }
 
 // get Options Comment

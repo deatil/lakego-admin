@@ -119,6 +119,21 @@ func ParseOpenSSHPrivateKeyWithPassword(key []byte, password []byte) (crypto.Pri
     return parsedKey, comment, nil
 }
 
+func ParseOpenSSHPrivateKeyToInfo(key []byte) (openSSHPrivateKey, error) {
+    if len(key) < len(sshMagic) || string(key[:len(sshMagic)]) != sshMagic {
+        return openSSHPrivateKey{}, errors.New("invalid openssh private key format")
+    }
+
+    remaining := key[len(sshMagic):]
+
+    var w openSSHPrivateKey
+    if err := ssh.Unmarshal(remaining, &w); err != nil {
+        return openSSHPrivateKey{}, err
+    }
+
+    return w, nil
+}
+
 // Marshal OpenSSH PrivateKey
 func MarshalOpenSSHPrivateKey(rand io.Reader, key crypto.PrivateKey, comment string) (*pem.Block, error) {
     return MarshalOpenSSHPrivateKeyWithPassword(rand, key, comment, nil)

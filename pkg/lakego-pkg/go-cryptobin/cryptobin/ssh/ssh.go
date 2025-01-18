@@ -1,4 +1,4 @@
-package ecgdsa
+package ssh
 
 import (
     "strconv"
@@ -12,6 +12,8 @@ type PublicKeyType uint
 
 func (typ PublicKeyType) String() string {
     switch typ {
+        case KeyTypeUnknown:
+            return "Unknown"
         case KeyTypeRSA:
             return "RSA"
         case KeyTypeDSA:
@@ -28,7 +30,8 @@ func (typ PublicKeyType) String() string {
 }
 
 const (
-    KeyTypeRSA PublicKeyType = 1 + iota
+    KeyTypeUnknown PublicKeyType = iota
+    KeyTypeRSA
     KeyTypeDSA
     KeyTypeECDSA
     KeyTypeEdDSA
@@ -39,6 +42,9 @@ const (
 type Options struct {
     // public key type
     PublicKeyType PublicKeyType
+
+    // Cipher Name
+    CipherName string
 
     // comment data
     Comment string
@@ -69,23 +75,23 @@ type SSH struct {
     // options
     options Options
 
-    // [私钥/公钥]数据
+    // PrivateKey and PublicKey data
     keyData []byte
 
-    // 传入数据
+    // input data
     data []byte
 
-    // 解析后的数据
+    // parsed Data
     parsedData []byte
 
-    // 验证结果
+    // verify data
     verify bool
 
-    // 错误
+    // error list
     Errors []error
 }
 
-// 构造函数
+// NewSSH return a new SSH
 func NewSSH() SSH {
     return SSH{
         options: Options{
@@ -94,17 +100,17 @@ func NewSSH() SSH {
             Curve:          elliptic.P256(),
             Bits:           2048,
         },
-        verify:   false,
-        Errors:   make([]error, 0),
+        verify: false,
+        Errors: make([]error, 0),
     }
 }
 
-// 构造函数
+// New return a new SSH
 func New() SSH {
     return NewSSH()
 }
 
 var (
-    // 默认
+    // default New SSH
     defaultSSH = NewSSH()
 )

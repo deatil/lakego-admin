@@ -1,49 +1,49 @@
-package ecgdsa
+package ssh
 
 import (
     "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
-// 私钥/公钥
+// output Key Bytes
 func (this SSH) ToKeyBytes() []byte {
     return this.keyData
 }
 
-// 私钥/公钥
+// output Key string
 func (this SSH) ToKeyString() string {
     return string(this.keyData)
 }
 
 // ==========
 
-// 输出字节
+// output Bytes
 func (this SSH) ToBytes() []byte {
     return this.parsedData
 }
 
-// 输出字符
+// output string
 func (this SSH) ToString() string {
     return string(this.parsedData)
 }
 
-// 输出Base64
+// output Base64
 func (this SSH) ToBase64String() string {
     return encoding.Base64Encode(this.parsedData)
 }
 
-// 输出Hex
+// output Hex
 func (this SSH) ToHexString() string {
     return encoding.HexEncode(this.parsedData)
 }
 
 // ==========
 
-// 验证结果
+// output verify
 func (this SSH) ToVerify() bool {
     return this.verify
 }
 
-// 验证结果，返回 int 类型
+// output verify int
 func (this SSH) ToVerifyInt() int {
     if this.verify {
         return 1

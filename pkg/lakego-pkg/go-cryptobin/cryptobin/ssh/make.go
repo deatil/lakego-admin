@@ -1,4 +1,4 @@
-package ecgdsa
+package ssh
 
 import(
     "errors"
@@ -10,7 +10,7 @@ import(
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
-// 生成公钥
+// Make PublicKey
 func (this SSH) MakePublicKey() SSH {
     this.publicKey = nil
 

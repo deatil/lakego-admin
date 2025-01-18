@@ -1,4 +1,4 @@
-package ecgdsa
+package ssh
 
 import (
     "errors"
@@ -10,7 +10,7 @@ import (
     "github.com/deatil/go-cryptobin/ssh"
 )
 
-// 私钥签名 ASN1
+// privateKey Sign
 func (this SSH) Sign() SSH {
     if this.privateKey == nil {
         err := errors.New("privateKey empty.")
@@ -40,8 +40,8 @@ func (this SSH) Sign() SSH {
     return this.AppendError(err)
 }
 
-// 公钥验证 ASN1
-// 使用原始数据[data]对比签名后数据
+// publicKey Verify
+// use data to Verify signed data
 func (this SSH) Verify(data []byte) SSH {
     if this.publicKey == nil {
         err := errors.New("publicKey empty.")

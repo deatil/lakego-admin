@@ -1,4 +1,4 @@
-package ecgdsa
+package ssh
 
 import (
     "io"
@@ -12,7 +12,7 @@ import (
     "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
-// 生成密钥
+// Generate Key with Reader
 func (this SSH) GenerateKeyWithSeed(reader io.Reader) SSH {
     switch this.options.PublicKeyType {
         case KeyTypeRSA:
@@ -59,98 +59,129 @@ func (this SSH) GenerateKeyWithSeed(reader io.Reader) SSH {
     return this
 }
 
-// 使用自定义数据生成密钥对
-func GenerateKeyWithSeed(reader io.Reader, options Options) SSH {
-    return defaultSSH.
-        WithOptions(options).
-        GenerateKeyWithSeed(reader)
+// Generate Key with Reader
+func GenerateKeyWithSeed(reader io.Reader, options ...Options) SSH {
+    if len(options) > 0 {
+        return defaultSSH.
+            WithOptions(options[0]).
+            GenerateKeyWithSeed(reader)
+    }
+
+    return defaultSSH.GenerateKeyWithSeed(reader)
 }
 
-// 生成密钥
+// Generate Key
 func (this SSH) GenerateKey() SSH {
     return this.GenerateKeyWithSeed(rand.Reader)
 }
 
-// 生成密钥对
-func GenerateKey(options Options) SSH {
-    return defaultSSH.
-        WithOptions(options).
-        GenerateKey()
+// Generate Key
+func GenerateKey(options ...Options) SSH {
+    if len(options) > 0 {
+        return defaultSSH.
+            WithOptions(options[0]).
+            GenerateKey()
+    }
+
+    return defaultSSH.GenerateKey()
 }
 
 // ==========
 
-// 私钥
+// From PrivateKey
 func (this SSH) FromPrivateKey(key []byte) SSH {
-    return this.FromOpensshPrivateKey(key)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
 }
 
-// 私钥
+// From PrivateKey
 func FromPrivateKey(key []byte) SSH {
     return defaultSSH.FromPrivateKey(key)
 }
 
-// 私钥带密码
+// From PrivateKey With Password
 func (this SSH) FromPrivateKeyWithPassword(key []byte, password []byte) SSH {
-    return this.FromOpensshPrivateKeyWithPassword(key, password)
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
+
+    return this
 }
 
-// 私钥带密码
+// From PrivateKey With Password
 func FromPrivateKeyWithPassword(key []byte, password []byte) SSH {
     return defaultSSH.FromPrivateKeyWithPassword(key, password)
 }
 
-// 公钥
+// From PublicKey
 func (this SSH) FromPublicKey(key []byte) SSH {
-    return defaultSSH.FromOpensshPublicKey(key)
+    publicKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
+
+    return this
 }
 
-// 公钥
+// From PublicKey
 func FromPublicKey(key []byte) SSH {
     return defaultSSH.FromPublicKey(key)
 }
 
 // ==========
 
-// 私钥
-func (this SSH) FromOpensshPrivateKey(key []byte) SSH {
-    privateKey, comment, err := this.ParseOpensshPrivateKeyFromPEM(key)
+// from OpenSSH PrivateKey
+func (this SSH) FromOpenSSHPrivateKey(key []byte) SSH {
+    privateKey, comment, cipherName, err := this.ParseOpenSSHPrivateKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
 
     this.privateKey = privateKey
     this.options.Comment = comment
+    this.options.CipherName = cipherName
 
     return this
 }
 
-// 私钥
-func FromOpensshPrivateKey(key []byte) SSH {
-    return defaultSSH.FromOpensshPrivateKey(key)
+// from OpenSSH PrivateKey
+func FromOpenSSHPrivateKey(key []byte) SSH {
+    return defaultSSH.FromOpenSSHPrivateKey(key)
 }
 
-// 私钥带密码
-func (this SSH) FromOpensshPrivateKeyWithPassword(key []byte, password []byte) SSH {
-    privateKey, comment, err := this.ParseOpensshPrivateKeyFromPEMWithPassword(key, password)
+// from OpenSSH PrivateKey with password
+func (this SSH) FromOpenSSHPrivateKeyWithPassword(key []byte, password []byte) SSH {
+    privateKey, comment, cipherName, err := this.ParseOpenSSHPrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
         return this.AppendError(err)
     }
 
     this.privateKey = privateKey
     this.options.Comment = comment
+    this.options.CipherName = cipherName
 
     return this
 }
 
-// 私钥
-func FromOpensshPrivateKeyWithPassword(key []byte, password []byte) SSH {
-    return defaultSSH.FromOpensshPrivateKeyWithPassword(key, password)
+// from OpenSSH PrivateKey with password
+func FromOpenSSHPrivateKeyWithPassword(key []byte, password []byte) SSH {
+    return defaultSSH.FromOpenSSHPrivateKeyWithPassword(key, password)
 }
 
-// 公钥
-func (this SSH) FromOpensshPublicKey(key []byte) SSH {
-    publicKey, comment, err := this.ParseOpensshPublicKeyFromPEM(key)
+// from OpenSSH PublicKey
+func (this SSH) FromOpenSSHPublicKey(key []byte) SSH {
+    publicKey, comment, err := this.ParseOpenSSHPublicKeyFromPEM(key)
     if err != nil {
         return this.AppendError(err)
     }
@@ -161,38 +192,38 @@ func (this SSH) FromOpensshPublicKey(key []byte) SSH {
     return this
 }
 
-// 公钥
-func FromOpensshPublicKey(key []byte) SSH {
-    return defaultSSH.FromOpensshPublicKey(key)
+// from OpenSSH PublicKey
+func FromOpenSSHPublicKey(key []byte) SSH {
+    return defaultSSH.FromOpenSSHPublicKey(key)
 }
 
 // ==========
 
-// 字节
+// from bytes
 func (this SSH) FromBytes(data []byte) SSH {
     this.data = data
 
     return this
 }
 
-// 字节
+// from bytes
 func FromBytes(data []byte) SSH {
     return defaultSSH.FromBytes(data)
 }
 
-// 字符
+// from string
 func (this SSH) FromString(data string) SSH {
     this.data = []byte(data)
 
     return this
 }
 
-// 字符
+// from string
 func FromString(data string) SSH {
     return defaultSSH.FromString(data)
 }
 
-// Base64
+// from Base64 string
 func (this SSH) FromBase64String(data string) SSH {
     newData, err := encoding.Base64Decode(data)
 
@@ -201,12 +232,12 @@ func (this SSH) FromBase64String(data string) SSH {
     return this.AppendError(err)
 }
 
-// Base64
+// from Base64 string
 func FromBase64String(data string) SSH {
     return defaultSSH.FromBase64String(data)
 }
 
-// Hex
+// from Hex string
 func (this SSH) FromHexString(data string) SSH {
     newData, err := encoding.HexDecode(data)
 
@@ -215,7 +246,7 @@ func (this SSH) FromHexString(data string) SSH {
     return this.AppendError(err)
 }
 
-// Hex
+// from Hex string
 func FromHexString(data string) SSH {
     return defaultSSH.FromHexString(data)
 }

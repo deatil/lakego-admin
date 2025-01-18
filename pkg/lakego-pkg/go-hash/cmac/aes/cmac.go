@@ -6,7 +6,7 @@ import (
     "hash"
     "crypto/aes"
 
-    "github.com/deatil/go-cryptobin/hash/cmac"
+    "github.com/deatil/go-hash/cmac"
 )
 
 // Sum computes the AES-CMAC checksum with the given tagsize of msg using the cipher.Block.

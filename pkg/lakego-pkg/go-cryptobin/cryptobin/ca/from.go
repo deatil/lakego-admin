@@ -1,27 +1,97 @@
 package ca
 
 import (
+    "io"
     "errors"
-    "crypto/rsa"
     "crypto/rand"
+    "crypto/rsa"
+    "crypto/dsa"
     "crypto/x509"
     "crypto/ecdsa"
     "crypto/ed25519"
-    "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/gm/sm2"
     "github.com/deatil/go-cryptobin/pkcs12"
 )
 
-// 证书
-func (this CA) FromCert(cert *x509.Certificate) CA {
-    this.cert = cert
+// Generate Key with Reader
+func (this CA) GenerateKeyWithSeed(reader io.Reader) CA {
+    switch this.options.PublicKeyType {
+        case KeyTypeRSA:
+            privateKey, err := rsa.GenerateKey(reader, this.options.Bits)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey  = &privateKey.PublicKey
+        case KeyTypeDSA:
+            privateKey := &dsa.PrivateKey{}
+            dsa.GenerateParameters(&privateKey.Parameters, reader, this.options.ParameterSizes)
+            dsa.GenerateKey(privateKey, reader)
+
+            this.privateKey = privateKey
+            this.publicKey  = &privateKey.PublicKey
+        case KeyTypeECDSA:
+            privateKey, err := ecdsa.GenerateKey(this.options.Curve, reader)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey = &privateKey.PublicKey
+        case KeyTypeEdDSA:
+            publicKey, privateKey, err := ed25519.GenerateKey(reader)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey  = publicKey
+        case KeyTypeSM2:
+            privateKey, err := sm2.GenerateKey(reader)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey  = &privateKey.PublicKey
+    }
 
     return this
 }
 
-// 解析证书导入
-func (this CA) FromCertificateDer(der []byte) CA {
+// Generate Key with Reader
+func GenerateKeyWithSeed(reader io.Reader, options ...Options) CA {
+    if len(options) > 0 {
+        return defaultCA.
+            WithOptions(options[0]).
+            GenerateKeyWithSeed(reader)
+    }
+
+    return defaultCA.GenerateKeyWithSeed(reader)
+}
+
+// Generate Key
+func (this CA) GenerateKey() CA {
+    return this.GenerateKeyWithSeed(rand.Reader)
+}
+
+// Generate Key
+func GenerateKey(options ...Options) CA {
+    if len(options) > 0 {
+        return defaultCA.
+            WithOptions(options[0]).
+            GenerateKey()
+    }
+
+    return defaultCA.GenerateKey()
+}
+
+// ==========
+
+// From Certificate
+func (this CA) FromCertificate(der []byte) CA {
     cert, err := x509.ParseCertificate(der)
     if err != nil {
         return this.AppendError(err)
@@ -32,15 +102,13 @@ func (this CA) FromCertificateDer(der []byte) CA {
     return this
 }
 
-// 证书请求
-func (this CA) FromCertRequest(cert *x509.CertificateRequest) CA {
-    this.certRequest = cert
-
-    return this
+// From Certificate
+func FromCertificate(der []byte) CA {
+    return defaultCA.FromCertificate(der)
 }
 
-// 解析证书导入
-func (this CA) FromCertificateRequestDer(asn1Data []byte) CA {
+// From Certificate Request
+func (this CA) FromCertificateRequest(asn1Data []byte) CA {
     certRequest, err := x509.ParseCertificateRequest(asn1Data)
     if err != nil {
         return this.AppendError(err)
@@ -51,23 +119,63 @@ func (this CA) FromCertificateRequestDer(asn1Data []byte) CA {
     return this
 }
 
-// 私钥
-// 可用 [*rsa.PrivateKey | *ecdsa.PrivateKey | ed25519.PrivateKey | *sm2.PrivateKey]
-func (this CA) FromPrivateKey(key any) CA {
-    this.privateKey = key
+// From Certificate Request
+func FromCertificateRequest(asn1Data []byte) CA {
+    return defaultCA.FromCertificateRequest(asn1Data)
+}
+
+// From PrivateKey
+func (this CA) FromPrivateKey(key []byte) CA {
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
-// 公钥
-// 可用 [*rsa.PublicKey | *ecdsa.PublicKey | ed25519.PublicKey | *sm2.PublicKey]
-func (this CA) FromPublicKey(key any) CA {
-    this.publicKey = key
+// From PrivateKey
+func FromPrivateKey(key []byte) CA {
+    return defaultCA.FromPrivateKey(key)
+}
+
+// From PrivateKey With Password
+func (this CA) FromPrivateKeyWithPassword(key []byte, password []byte) CA {
+    privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.privateKey = privateKey
 
     return this
 }
 
-// =======================
+// From PrivateKey With Password
+func FromPrivateKeyWithPassword(key []byte, password []byte) CA {
+    return defaultCA.FromPrivateKeyWithPassword(key, password)
+}
+
+// From PublicKey
+func (this CA) FromPublicKey(key []byte) CA {
+    publicKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
+    if err != nil {
+        return this.AppendError(err)
+    }
+
+    this.publicKey = publicKey
+
+    return this
+}
+
+// From PublicKey
+func FromPublicKey(key []byte) CA {
+    return defaultCA.FromPublicKey(key)
+}
+
+// ==========
 
 // pkcs12
 func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
@@ -82,7 +190,12 @@ func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
     return this
 }
 
-// pkcs12
+// From PKCS12 Cert
+func FromPKCS12Cert(pfxData []byte, password string) CA {
+    return defaultCA.FromPKCS12Cert(pfxData, password)
+}
+
+// From SM2 PKCS12 Cert
 func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
     pv, cert, err := pkcs12.Decode(pfxData, password)
     if err != nil {
@@ -125,76 +238,77 @@ func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
     return this.AppendError(err)
 }
 
+// From SM2 PKCS12 Cert
+func FromSM2PKCS12Cert(pfxData []byte, password string) CA {
+    return defaultCA.FromSM2PKCS12Cert(pfxData, password)
+}
+
 // =======================
 
-// 生成密钥 RSA
-// 可选 [512 | 1024 | 2048 | 4096]
+// Generate RSA key
+// params:
+// [512 | 1024 | 2048 | 4096]
 func (this CA) GenerateRSAKey(bits int) CA {
-    // 生成私钥
-    privateKey, err := rsa.GenerateKey(rand.Reader, bits)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-    this.publicKey  = &privateKey.PublicKey
-
-    return this
+    return this.SetPublicKeyType("RSA").
+            WithBits(bits).
+            GenerateKey()
 }
 
-// 生成密钥 Ecdsa
-// 可选 [P521 | P384 | P256 | P224]
+// Generate RSA Key
+func GenerateRSAKey(bits int) CA {
+    return defaultCA.GenerateRSAKey(bits)
+}
+
+// Generate DSA key
+// params:
+// [ L1024N160 | L2048N224 | L2048N256 | L3072N256 ]
+func (this CA) GenerateDSAKey(ln string) CA {
+    return this.SetPublicKeyType("DSA").
+            SetCurve(ln).
+            GenerateKey()
+
+}
+
+// Generate DSA Key
+func GenerateDSAKey(ln string) CA {
+    return defaultCA.GenerateDSAKey(ln)
+}
+
+// Generate ECDSA key
+// params:
+// [P521 | P384 | P256 | P224]
 func (this CA) GenerateECDSAKey(curve string) CA {
-    var useCurve elliptic.Curve
+    return this.SetPublicKeyType("ECDSA").
+            SetCurve(curve).
+            GenerateKey()
 
-    switch {
-        case curve == "P521":
-            useCurve = elliptic.P521()
-        case curve == "P384":
-            useCurve = elliptic.P384()
-        case curve == "P256":
-            useCurve = elliptic.P256()
-        case curve == "P224":
-            useCurve = elliptic.P224()
-        default:
-            useCurve = elliptic.P256()
-    }
-
-    // 生成私钥
-    privateKey, err := ecdsa.GenerateKey(useCurve, rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    this.privateKey = privateKey
-    this.publicKey  = &privateKey.PublicKey
-
-    return this
 }
 
-// 生成密钥 EdDSA
+// Generate ECDSA Key
+func GenerateECDSAKey(curve string) CA {
+    return defaultCA.GenerateECDSAKey(curve)
+}
+
+// Generate EdDSA key
 func (this CA) GenerateEdDSAKey() CA {
-    publicKey, privateKey, err := ed25519.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    return this.SetPublicKeyType("EdDSA").
+            GenerateKey()
 
-    this.privateKey = privateKey
-    this.publicKey  = publicKey
-
-    return this
 }
 
-// 生成密钥 SM2
+// Generate EdDSA Key
+func GenerateEdDSAKey() CA {
+    return defaultCA.GenerateEdDSAKey()
+}
+
+// Generate SM2 key
 func (this CA) GenerateSM2Key() CA {
-    // 生成私钥
-    privateKey, err := sm2.GenerateKey(rand.Reader)
-    if err != nil {
-        return this.AppendError(err)
-    }
+    return this.SetPublicKeyType("SM2").
+            GenerateKey()
 
-    this.privateKey = privateKey
-    this.publicKey  = &privateKey.PublicKey
+}
 
-    return this
+// Generate SM2 Key
+func GenerateSM2Key() CA {
+    return defaultCA.GenerateSM2Key()
 }

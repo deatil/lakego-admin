@@ -216,6 +216,13 @@ func Test_ParseSSHKey_Ecdsa_With_Pass(t *testing.T) {
     assertNotEmpty(sshComment, "Test_ParseSSHKey_Ecdsa_With_Pass-commit")
 
     assertEqual(sshComment, "test-ssh123", "Test_ParseSSHKey_Ecdsa_With_Pass")
+
+    block2, _ := pem.Decode(blockkeyData)
+
+    w, err := ParseOpenSSHPrivateKeyToInfo(block2.Bytes)
+    assertError(err, "Test_ParseSSHKey_DSA-ParseOpenSSHPrivateKeyToInfo")
+    assertEqual(w.CipherName, "aes256-ctr", "Test_ParseSSHKey_DSA-CipherName")
+    assertEqual(w.KdfName, "bcrypt", "Test_ParseSSHKey_DSA-KdfName")
 }
 
 func test_ParseSSHKey_Ecdsa_With_Pass_And_Opts(t *testing.T, opts Opts) {
