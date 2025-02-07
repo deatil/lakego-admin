@@ -13,7 +13,7 @@ func Test_HSS_SignerInterface(t *testing.T) {
 }
 
 func test_HSS_SignVerify(t *testing.T, opts []HSSOpts) {
-    assertBool := test.AssertBoolT(t)
+    assertTrue := test.AssertTrueT(t)
 
     priv, err := GenerateHSSKey(rand.Reader, opts)
     if err != nil {
@@ -28,7 +28,7 @@ func test_HSS_SignVerify(t *testing.T, opts []HSSOpts) {
     }
 
     result := pub.Verify([]byte("example"), sig)
-    assertBool(result, "HSSSignVerify")
+    assertTrue(result, "HSSSignVerify")
 }
 
 func Test_HSS_SignVerify(t *testing.T) {
@@ -175,8 +175,8 @@ func Test_HSS_PrivateKey_ToBytes(t *testing.T) {
 }
 
 func Test_HSS_Equal(t *testing.T) {
-    assertBool := test.AssertBoolT(t)
-    assertNotBool := test.AssertNotBoolT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertFalse := test.AssertFalseT(t)
 
     t.Run("good", func(t *testing.T) {
         priv, err := GenerateHSSKey(rand.Reader, DefaultOpts)
@@ -189,8 +189,8 @@ func Test_HSS_Equal(t *testing.T) {
         priv2 := priv
         pub2 := pub
 
-        assertBool(priv2.Equal(priv), "HSSPrivateKey")
-        assertBool(pub2.Equal(&pub), "HSSPublicKey")
+        assertTrue(priv2.Equal(priv), "HSSPrivateKey")
+        assertTrue(pub2.Equal(&pub), "HSSPublicKey")
 
         // =========
 
@@ -200,8 +200,8 @@ func Test_HSS_Equal(t *testing.T) {
         priv3, _ := NewHSSPrivateKeyFromBytes(privBytes)
         pub3, _ := NewHSSPublicKeyFromBytes(pubBytes)
 
-        assertBool(priv3.Equal(priv), "PrivateKey Bytes")
-        assertBool(pub3.Equal(&pub), "PublicKey Bytes")
+        assertTrue(priv3.Equal(priv), "PrivateKey Bytes")
+        assertTrue(pub3.Equal(&pub), "PublicKey Bytes")
     })
 
     t.Run("bad", func(t *testing.T) {
@@ -221,7 +221,7 @@ func Test_HSS_Equal(t *testing.T) {
 
         pub2 := priv2.HSSPublicKey
 
-        assertNotBool(priv2.Equal(priv), "HSSPrivateKey")
-        assertNotBool(pub2.Equal(&pub), "HSSPublicKey")
+        assertFalse(priv2.Equal(priv), "HSSPrivateKey")
+        assertFalse(pub2.Equal(&pub), "HSSPublicKey")
     })
 }

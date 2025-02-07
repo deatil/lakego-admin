@@ -30,12 +30,12 @@ func Test_GenKey(t *testing.T) {
 }
 
 func test_GenKey(t *testing.T, keyType string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := New().SetPublicKeyType(keyType).GenerateKey()
-    assertError(obj.Error(), "Test_GenKey")
+    assertNoError(obj.Error(), "Test_GenKey")
 
     {
         prikey := obj.CreateOpenSSHPrivateKey().ToKeyBytes()
@@ -47,12 +47,12 @@ func test_GenKey(t *testing.T, keyType string) {
         // t.Errorf("%s, %s \n", string(prikey), string(pubkey))
 
         newSSH := New().FromOpenSSHPrivateKey(prikey)
-        assertError(newSSH.Error(), "Test_GenKey-newSSH")
+        assertNoError(newSSH.Error(), "Test_GenKey-newSSH")
 
         assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey-newSSH")
 
         newSSH2 := New().FromOpenSSHPublicKey(pubkey)
-        assertError(newSSH2.Error(), "Test_GenKey-newSSH2")
+        assertNoError(newSSH2.Error(), "Test_GenKey-newSSH2")
 
         assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey-newSSH2")
     }
@@ -64,7 +64,7 @@ func test_GenKey(t *testing.T, keyType string) {
         assertNotEmpty(prikey3, "Test_GenKey-PrivateKey 3")
 
         newSSH3 := New().FromOpenSSHPrivateKeyWithPassword(prikey3, password)
-        assertError(newSSH3.Error(), "Test_GenKey-newSSH3")
+        assertNoError(newSSH3.Error(), "Test_GenKey-newSSH3")
 
         assertEqual(newSSH3.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey-newSSH3")
     }
@@ -87,12 +87,12 @@ func Test_GenKey2(t *testing.T) {
 }
 
 func test_GenKey2(t *testing.T, keyType string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := New().SetPublicKeyType(keyType).GenerateKey()
-    assertError(obj.Error(), "Test_GenKey")
+    assertNoError(obj.Error(), "Test_GenKey")
 
     {
         assertEqual(obj.GetPrivateKeyType().String(), keyType, "Test_GenKey-GetPrivateKeyType")
@@ -109,12 +109,12 @@ func test_GenKey2(t *testing.T, keyType string) {
         // t.Errorf("%s, %s \n", string(prikey), string(pubkey))
 
         newSSH := New().FromPrivateKey(prikey)
-        assertError(newSSH.Error(), "Test_GenKey-newSSH")
+        assertNoError(newSSH.Error(), "Test_GenKey-newSSH")
 
         assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey-newSSH")
 
         newSSH2 := New().FromPublicKey(pubkey)
-        assertError(newSSH2.Error(), "Test_GenKey-newSSH2")
+        assertNoError(newSSH2.Error(), "Test_GenKey-newSSH2")
 
         assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey-newSSH2")
     }
@@ -126,7 +126,7 @@ func test_GenKey2(t *testing.T, keyType string) {
         assertNotEmpty(prikey3, "Test_GenKey-PrivateKey 3")
 
         newSSH3 := New().FromPrivateKeyWithPassword(prikey3, password)
-        assertError(newSSH3.Error(), "Test_GenKey-newSSH3")
+        assertNoError(newSSH3.Error(), "Test_GenKey-newSSH3")
 
         assertEqual(newSSH3.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey-newSSH3")
     }
@@ -149,7 +149,7 @@ func Test_GenKey3(t *testing.T) {
 }
 
 func test_GenKey3(t *testing.T, keyType PublicKeyType) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -165,7 +165,7 @@ func test_GenKey3(t *testing.T, keyType PublicKeyType) {
     }
 
     obj := GenerateKey(newOpts(keyType))
-    assertError(obj.Error(), "Test_GenKey3")
+    assertNoError(obj.Error(), "Test_GenKey3")
 
     {
         prikey := obj.CreatePrivateKey().ToKeyBytes()
@@ -177,12 +177,12 @@ func test_GenKey3(t *testing.T, keyType PublicKeyType) {
         // t.Errorf("%s, %s \n", string(prikey), string(pubkey))
 
         newSSH := New().FromPrivateKey(prikey)
-        assertError(newSSH.Error(), "Test_GenKey3-newSSH")
+        assertNoError(newSSH.Error(), "Test_GenKey3-newSSH")
 
         assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey3-newSSH")
 
         newSSH2 := New().FromPublicKey(pubkey)
-        assertError(newSSH2.Error(), "Test_GenKey3-newSSH2")
+        assertNoError(newSSH2.Error(), "Test_GenKey3-newSSH2")
 
         assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey3-newSSH2")
     }
@@ -194,19 +194,19 @@ func test_GenKey3(t *testing.T, keyType PublicKeyType) {
         assertNotEmpty(prikey3, "Test_GenKey3-PrivateKey 3")
 
         newSSH3 := New().FromPrivateKeyWithPassword(prikey3, password)
-        assertError(newSSH3.Error(), "Test_GenKey3-newSSH3")
+        assertNoError(newSSH3.Error(), "Test_GenKey3-newSSH3")
 
         assertEqual(newSSH3.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey3-newSSH3")
     }
 }
 
 func Test_GenKey5(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey()
-    assertError(obj.Error(), "Test_GenKey5")
+    assertNoError(obj.Error(), "Test_GenKey5")
 
     {
         prikey := obj.CreatePrivateKey().ToKeyBytes()
@@ -216,12 +216,12 @@ func Test_GenKey5(t *testing.T) {
         assertNotEmpty(pubkey, "Test_GenKey5-PublicKey")
 
         newSSH := New().FromPrivateKey(prikey)
-        assertError(newSSH.Error(), "Test_GenKey5-newSSH")
+        assertNoError(newSSH.Error(), "Test_GenKey5-newSSH")
 
         assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey3-newSSH")
 
         newSSH2 := New().FromPublicKey(pubkey)
-        assertError(newSSH2.Error(), "Test_GenKey5-newSSH2")
+        assertNoError(newSSH2.Error(), "Test_GenKey5-newSSH2")
 
         assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey5-newSSH2")
     }
@@ -233,7 +233,7 @@ func Test_GenKey5(t *testing.T) {
         assertNotEmpty(prikey3, "Test_GenKey5-PrivateKey 3")
 
         newSSH3 := New().FromPrivateKeyWithPassword(prikey3, password)
-        assertError(newSSH3.Error(), "Test_GenKey5-newSSH3")
+        assertNoError(newSSH3.Error(), "Test_GenKey5-newSSH3")
 
         assertEqual(newSSH3.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey5-newSSH3")
     }
@@ -254,7 +254,7 @@ func Test_GenKey_ECDSA(t *testing.T) {
 }
 
 func test_GenKey_ECDSA(t *testing.T, curve string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -262,7 +262,7 @@ func test_GenKey_ECDSA(t *testing.T, curve string) {
         SetPublicKeyType("ECDSA").
         SetCurve(curve).
         GenerateKey()
-    assertError(obj.Error(), "Test_GenKey_ECDSA")
+    assertNoError(obj.Error(), "Test_GenKey_ECDSA")
 
     prikey := obj.CreateOpenSSHPrivateKey().ToKeyBytes()
     assertNotEmpty(prikey, "Test_GenKey_ECDSA-PrivateKey")
@@ -271,18 +271,18 @@ func test_GenKey_ECDSA(t *testing.T, curve string) {
     assertNotEmpty(pubkey, "Test_GenKey_ECDSA-PublicKey")
 
     newSSH := New().FromOpenSSHPrivateKey(prikey)
-    assertError(newSSH.Error(), "Test_GenKey_ECDSA-newSSH")
+    assertNoError(newSSH.Error(), "Test_GenKey_ECDSA-newSSH")
 
     assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey_ECDSA-newSSH")
 
     newSSH2 := New().FromOpenSSHPublicKey(pubkey)
-    assertError(newSSH2.Error(), "Test_GenKey_ECDSA-newSSH2")
+    assertNoError(newSSH2.Error(), "Test_GenKey_ECDSA-newSSH2")
 
     assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey_ECDSA-newSSH2")
 }
 
 func Test_GenKey_ECDSA_With_Comment(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -291,7 +291,7 @@ func Test_GenKey_ECDSA_With_Comment(t *testing.T) {
     obj := New().
         SetPublicKeyType("ECDSA").
         GenerateKey()
-    assertError(obj.Error(), "Test_GenKey_ECDSA_With_Comment")
+    assertNoError(obj.Error(), "Test_GenKey_ECDSA_With_Comment")
 
     prikey := obj.WithComment(comment).
         CreateOpenSSHPrivateKey().
@@ -304,13 +304,13 @@ func Test_GenKey_ECDSA_With_Comment(t *testing.T) {
     assertNotEmpty(pubkey, "Test_GenKey_ECDSA_With_Comment-PublicKey")
 
     newSSH := New().FromOpenSSHPrivateKey(prikey)
-    assertError(newSSH.Error(), "Test_GenKey_ECDSA_With_Comment-newSSH")
+    assertNoError(newSSH.Error(), "Test_GenKey_ECDSA_With_Comment-newSSH")
 
     assertEqual(newSSH.GetPrivateKey(), obj.GetPrivateKey(), "Test_GenKey_ECDSA_With_Comment-newSSH")
     assertEqual(newSSH.GetComment(), comment, "Test_GenKey_ECDSA_With_Comment-newSSH-comment")
 
     newSSH2 := New().FromOpenSSHPublicKey(pubkey)
-    assertError(newSSH2.Error(), "Test_GenKey_ECDSA_With_Comment-newSSH2")
+    assertNoError(newSSH2.Error(), "Test_GenKey_ECDSA_With_Comment-newSSH2")
 
     assertEqual(newSSH2.GetPublicKey(), obj.GetPublicKey(), "Test_GenKey_ECDSA_With_Comment-newSSH2")
     assertEqual(newSSH2.GetComment(), comment, "Test_GenKey_ECDSA_With_Comment-newSSH2-comment")
@@ -334,7 +334,7 @@ func Test_OnError(t *testing.T) {
 
 func Test_Get(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     privateKey, _ := rsa.GenerateKey(rand.Reader, 2048)
@@ -365,14 +365,14 @@ func Test_Get(t *testing.T) {
     assertEqual(newSSH2.GetPrivateKeyType().String(), "RSA", "Test_Get-GetPrivateKeyType")
 
     openSSHSigner, err := newSSH2.GetOpenSSHSigner()
-    assertError(err, "Test_Get-GetOpenSSHSigner")
+    assertNoError(err, "Test_Get-GetOpenSSHSigner")
     assertNotEmpty(openSSHSigner, "Test_Get-GetOpenSSHSigner")
 
     assertEqual(newSSH2.GetPublicKey(), publicKey, "Test_Get-GetPublicKey")
     assertEqual(newSSH2.GetPublicKeyType().String(), "RSA", "Test_Get-GetPublicKeyType")
 
     openSSHPublicKey, err := newSSH2.GetOpenSSHPublicKey()
-    assertError(err, "Test_Get-GetOpenSSHPublicKey")
+    assertNoError(err, "Test_Get-GetOpenSSHPublicKey")
     assertNotEmpty(openSSHPublicKey, "Test_Get-GetOpenSSHPublicKey")
 
     assertEqual(newSSH2.GetOptions(), opts, "Test_Get-GetOptions")
@@ -568,12 +568,12 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDsUGub8db33AsanqRw4wmwFiu+J6aDp4RBpDR5nRDL
 
 func Test_ParseOpenSSHPrivateKeyToInfoFromPEM(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     newSSH := New()
 
     info, err := newSSH.ParseOpenSSHPrivateKeyToInfoFromPEM([]byte(opensshprikey))
-    assertError(err, "ParseOpenSSHPrivateKeyToInfoFromPEM")
+    assertNoError(err, "ParseOpenSSHPrivateKeyToInfoFromPEM")
     assertEqual(info.CipherName, "none", "CipherName")
     assertEqual(info.KdfName, "none", "KdfName")
     assertEqual(info.NumKeys, uint32(1), "NumKeys")
@@ -581,12 +581,12 @@ func Test_ParseOpenSSHPrivateKeyToInfoFromPEM(t *testing.T) {
 
 func Test_ParseOpenSSHPrivateKeyToInfoFromPEM_And_En(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     newSSH := New()
 
     info, err := newSSH.ParseOpenSSHPrivateKeyToInfoFromPEM([]byte(opensshprikeyEn))
-    assertError(err, "ParseOpenSSHPrivateKeyToInfoFromPEM")
+    assertNoError(err, "ParseOpenSSHPrivateKeyToInfoFromPEM")
     assertEqual(info.CipherName, "aes256-cbc", "CipherName")
     assertEqual(info.KdfName, "bcrypt", "KdfName")
     assertEqual(

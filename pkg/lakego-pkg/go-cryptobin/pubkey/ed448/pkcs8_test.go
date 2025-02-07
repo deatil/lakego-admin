@@ -63,25 +63,25 @@ m0bHBhvWeD3x5Q9s0foavq/oJWGA
 `
 
 func Test_Marshal_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pubkey := decodePEM(testPkcs8PubKey)
     parsedPub, err := ParsePublicKey(pubkey)
 
-    assertError(err, "ParsePublicKey")
+    assertNoError(err, "ParsePublicKey")
     assertNotEmpty(parsedPub, "ParsePublicKey")
 
     prikey := decodePEM(testPkcs8PriKey)
     parsedPri, err := ParsePrivateKey(prikey)
 
-    assertError(err, "ParsePrivateKey")
+    assertNoError(err, "ParsePrivateKey")
     assertNotEmpty(parsedPri, "ParsePrivateKey")
 }
 
 func Test_Sign_Check(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     pubkey := decodePEM(testPkcs8PubKey)
     parsedPub, _ := ParsePublicKey(pubkey)
@@ -95,5 +95,5 @@ func Test_Sign_Check(t *testing.T) {
     assertNotEmpty(sig, "Sign")
 
     v := Verify(parsedPub, message, sig)
-    assertBool(v, "Sign")
+    assertTrue(v, "Sign")
 }

@@ -8,18 +8,18 @@ import (
 
 func Test_Bytes(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := []byte("123123")
 
     var buf Bytes
     err := buf.UnmarshalBencode(data)
 
-    assertError(err, "Bytes-UnmarshalBencode")
+    assertNoError(err, "Bytes-UnmarshalBencode")
 
     res, err := buf.MarshalBencode()
 
-    assertError(err, "Bytes-MarshalBencode")
+    assertNoError(err, "Bytes-MarshalBencode")
     assertEqual(res, data, "Bytes-MarshalBencode")
 
     res2 := buf.GoString()

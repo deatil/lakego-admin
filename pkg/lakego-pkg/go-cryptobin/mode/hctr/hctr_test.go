@@ -9,7 +9,7 @@ import (
 
 func Test_HCTR(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
     assertNotEmpty := test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -19,7 +19,7 @@ func Test_HCTR(t *testing.T) {
     hkey := []byte("11injkijkol22plo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "NewHCTR")
+    assertNoError(err, "NewHCTR")
 
     mode := NewHCTR(c, tweak, hkey)
     ciphertext := make([]byte, len(plaintext))

@@ -10,7 +10,7 @@ import (
 
 func Test_G3413OFB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -18,7 +18,7 @@ func Test_G3413OFB(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413OFB-NewCipher")
+    assertNoError(err, "Test_G3413OFB-NewCipher")
 
     ofb := NewG3413OFB(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -35,7 +35,7 @@ func Test_G3413OFB(t *testing.T) {
 
 func Test_G3413OFB_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
@@ -43,7 +43,7 @@ func Test_G3413OFB_Check(t *testing.T) {
     plaintext, _ := hex.DecodeString("1122334455667700ffeeddccbbaa998800112233445566778899aabbcceeff0a112233445566778899aabbcceeff0a002233445566778899aabbcceeff0a0011")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413OFB_Check-NewCipher")
+    assertNoError(err, "Test_G3413OFB_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("81800a59b1842b24ff1f795e897abd95ed5b47a7048cfab48fb521369d9326bf66a257ac3ca0b8b1c80fe7fc10288a13203ebbc066138660a0292243f6903150")
 

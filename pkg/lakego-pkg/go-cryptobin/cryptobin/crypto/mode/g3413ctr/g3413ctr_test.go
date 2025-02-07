@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_KuznyechikG3413CTRPKCS7Padding(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_KuznyechikG3413CTRPKCS7Padding(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Encode")
+    assertNoError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12dfertf12dfertf12").
@@ -38,14 +38,14 @@ func Test_KuznyechikG3413CTRPKCS7Padding(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Decode")
+    assertNoError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "Test_KuznyechikG3413CTRPKCS7Padding-res")
 }
 
 func Test_KuznyechikG3413CTRPKCS7Padding_2(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -59,7 +59,7 @@ func Test_KuznyechikG3413CTRPKCS7Padding_2(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Encode")
+    assertNoError(cypt.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12dfertf12dfertf12").
@@ -72,7 +72,7 @@ func Test_KuznyechikG3413CTRPKCS7Padding_2(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Decode")
+    assertNoError(cyptde.Error(), "Test_KuznyechikG3413CTRPKCS7Padding_2-Decode")
 
     assert(data, cyptdeStr, "Test_KuznyechikG3413CTRPKCS7Padding_2-res")
 }

@@ -10,7 +10,7 @@ import (
 
 func Test_NOFB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -18,7 +18,7 @@ func Test_NOFB(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_NOFB-NewCipher")
+    assertNoError(err, "Test_NOFB-NewCipher")
 
     ofb := NewNOFB(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -35,7 +35,7 @@ func Test_NOFB(t *testing.T) {
 
 func Test_NOFB_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("fmY@T~st~Key_0123456789abcefghij")
@@ -43,7 +43,7 @@ func Test_NOFB_Check(t *testing.T) {
     plaintext := []byte("This is secret message.")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_NOFB_Check-NewCipher")
+    assertNoError(err, "Test_NOFB_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("835ba2d052242fb185965b8ca8e2e45fe3ad474275537e")
 
@@ -58,7 +58,7 @@ func Test_NOFB_Check(t *testing.T) {
 
 func Test_NOFB_Check2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("fmY@T~st~Key_0123456789abcefghij")
@@ -66,7 +66,7 @@ func Test_NOFB_Check2(t *testing.T) {
     plaintext := []byte("This is secret message.")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_NOFB_Check2-NewCipher")
+    assertNoError(err, "Test_NOFB_Check2-NewCipher")
 
     ciphertext, _ := hex.DecodeString("efe7e86770916421fdc56a4393bf422ceb9b7371fccfdd")
 

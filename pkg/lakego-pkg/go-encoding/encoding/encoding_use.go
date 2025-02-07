@@ -4,34 +4,33 @@ import (
     "fmt"
 )
 
-// 编码解码接口
+// EncodeDecode接口
 type IEncoding interface {
-    // 编码
+    // Encode
     Encode([]byte, ...map[string]any) ([]byte, error)
 
-    // 解码
+    // Decode
     Decode([]byte, ...map[string]any) ([]byte, error)
 }
 
-// 编码解码
+// EncodeDecode
 var UseEncoding = NewDataSet[string, IEncoding]()
 
-// 获取编码解码方式
+// get Encoding
 func getEncoding(name string) (IEncoding, error) {
     if !UseEncoding.Has(name) {
         err := fmt.Errorf("Encoding: Encoding type [%s] is error.", name)
         return nil, err
     }
 
-    // 编码解码
+    // EncodeDecode
     newEncoding := UseEncoding.Get(name)
 
     return newEncoding(), nil
 }
 
-// 编码
+// Encode
 func (this Encoding) EncodeBy(name string, cfg ...map[string]any) Encoding {
-    // 编码解码
     newEncoding, err := getEncoding(name)
     if err != nil {
         this.Error = err
@@ -43,9 +42,8 @@ func (this Encoding) EncodeBy(name string, cfg ...map[string]any) Encoding {
     return this
 }
 
-// 解码
+// Decode
 func (this Encoding) DecodeBy(name string, cfg ...map[string]any) Encoding {
-    // 编码解码
     newEncoding, err := getEncoding(name)
     if err != nil {
         this.Error = err

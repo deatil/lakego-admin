@@ -5,7 +5,7 @@ import (
     "encoding/ascii85"
 )
 
-// Base85
+// Base85 Decode
 func (this Encoding) Base85Decode() Encoding {
     src := this.data
 
@@ -23,7 +23,7 @@ func (this Encoding) Base85Decode() Encoding {
     return this
 }
 
-// 编码 Base85
+// Base85 Encode
 func (this Encoding) Base85Encode() Encoding {
     text := this.data
 

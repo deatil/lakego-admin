@@ -28,7 +28,7 @@ func Test_EncryptPKCS8PrivateKey(t *testing.T) {
 
 func test_EncryptPKCS8PrivateKey(t *testing.T, name string, cipher Cipher) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-data"
@@ -36,11 +36,11 @@ func test_EncryptPKCS8PrivateKey(t *testing.T, name string, cipher Cipher) {
 
     t.Run(name, func(t *testing.T) {
         block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass), cipher)
-        assertError(err, "EncryptPKCS8PrivateKey-EN")
+        assertNoError(err, "EncryptPKCS8PrivateKey-EN")
         assertNotEmpty(block.Bytes, "EncryptPKCS8PrivateKey-EN")
 
         deData, err := DecryptPKCS8PrivateKey(block.Bytes, []byte(pass))
-        assertError(err, "EncryptPKCS8PrivateKey-DE")
+        assertNoError(err, "EncryptPKCS8PrivateKey-DE")
         assertNotEmpty(deData, "EncryptPKCS8PrivateKey-DE")
 
         assertEqual(string(deData), data, "EncryptPKCS8PrivateKey")
@@ -70,7 +70,7 @@ func Test_EncryptPKCS8Privatekey(t *testing.T) {
 
 func test_EncryptPKCS8Privatekey(t *testing.T, name string, cipher Cipher) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-data"
@@ -78,11 +78,11 @@ func test_EncryptPKCS8Privatekey(t *testing.T, name string, cipher Cipher) {
 
     t.Run(name, func(t *testing.T) {
         block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass), cipher)
-        assertError(err, "EncryptPKCS8PrivateKey-EN")
+        assertNoError(err, "EncryptPKCS8PrivateKey-EN")
         assertNotEmpty(block.Bytes, "EncryptPKCS8PrivateKey-EN")
 
         deData, err := DecryptPKCS8PrivateKey(block.Bytes, []byte(pass))
-        assertError(err, "EncryptPKCS8PrivateKey-DE")
+        assertNoError(err, "EncryptPKCS8PrivateKey-DE")
         assertNotEmpty(deData, "EncryptPKCS8PrivateKey-DE")
 
         assertEqual(string(deData), data, "EncryptPKCS8PrivateKey")

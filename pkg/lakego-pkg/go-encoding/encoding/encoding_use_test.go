@@ -7,14 +7,14 @@ import (
 
 type testEncoding struct {}
 
-// 编码
+// Encode
 func (this testEncoding) Encode(data []byte, cfg ...map[string]any) ([]byte, error) {
     newData := base64.StdEncoding.EncodeToString(data)
 
     return []byte(newData), nil
 }
 
-// 解码
+// Decode
 func (this testEncoding) Decode(data []byte, cfg ...map[string]any) ([]byte, error) {
     return base64.StdEncoding.DecodeString(string(data))
 }

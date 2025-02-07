@@ -32,8 +32,8 @@ M2Nie29mugemzh6T00lM1bDeD1PqBs8weCpFFv20s62c3CQ=
 
 func Test_SignASN1_And_VerifyASN1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     data := "test-pass"
     adata := []byte{
@@ -48,7 +48,7 @@ func Test_SignASN1_And_VerifyASN1(t *testing.T) {
             WithAdata(adata).
             SignASN1()
 
-        assertError(objSign.Error(), "SignASN1")
+        assertNoError(objSign.Error(), "SignASN1")
         assertNotEmpty(objSign.ToBase64String(), "SignASN1")
     }
 
@@ -60,15 +60,15 @@ func Test_SignASN1_And_VerifyASN1(t *testing.T) {
             WithAdata(adata).
             VerifyASN1([]byte(data))
 
-        assertError(objVerify.Error(), "VerifyASN1")
-        assertBool(objVerify.ToVerify(), "VerifyASN1")
+        assertNoError(objVerify.Error(), "VerifyASN1")
+        assertTrue(objVerify.ToVerify(), "VerifyASN1")
     }
 }
 
 func Test_Sign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
     adata := []byte{
@@ -84,7 +84,7 @@ func Test_Sign(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Sign-Sign")
+    assertNoError(objSign.Error(), "Sign-Sign")
     assertNotEmpty(signed, "Sign-Sign")
 
     // 验证
@@ -94,14 +94,14 @@ func Test_Sign(t *testing.T) {
         WithAdata(adata).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "Sign-Verify")
-    assertBool(objVerify.ToVerify(), "Sign-Verify")
+    assertNoError(objVerify.Error(), "Sign-Verify")
+    assertTrue(objVerify.ToVerify(), "Sign-Verify")
 }
 
 func Test_SignASN1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
     adata := []byte{
@@ -117,7 +117,7 @@ func Test_SignASN1(t *testing.T) {
         SignASN1()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignASN12-Sign")
+    assertNoError(objSign.Error(), "SignASN12-Sign")
     assertNotEmpty(signed, "SignASN12-Sign")
 
     // 验证
@@ -127,14 +127,14 @@ func Test_SignASN1(t *testing.T) {
         WithAdata(adata).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "SignASN12-Verify")
-    assertBool(objVerify.ToVerify(), "SignASN12-Verify")
+    assertNoError(objVerify.Error(), "SignASN12-Verify")
+    assertTrue(objVerify.ToVerify(), "SignASN12-Verify")
 }
 
 func Test_SignBytes(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
     adata := []byte{
@@ -150,7 +150,7 @@ func Test_SignBytes(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNoError(objSign.Error(), "SignBytes-Sign")
     assertNotEmpty(signed, "SignBytes-Sign")
 
     // 验证
@@ -160,21 +160,21 @@ func Test_SignBytes(t *testing.T) {
         WithAdata(adata).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "SignBytes-Verify")
-    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
+    assertNoError(objVerify.Error(), "SignBytes-Verify")
+    assertTrue(objVerify.ToVerify(), "SignBytes-Verify")
 }
 
 func Test_CheckKeyPair(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     {
         obj := New().
             FromPrivateKey([]byte(prikey)).
             FromPublicKey([]byte(pubkey))
 
-        assertError(obj.Error(), "CheckKeyPair")
-        assertBool(obj.CheckKeyPair(), "CheckKeyPair")
+        assertNoError(obj.Error(), "CheckKeyPair")
+        assertTrue(obj.CheckKeyPair(), "CheckKeyPair")
     }
 
     {
@@ -182,8 +182,8 @@ func Test_CheckKeyPair(t *testing.T) {
             FromPrivateKey([]byte(prikey)).
             FromPublicKey([]byte(pubkey2))
 
-        assertError(obj.Error(), "CheckKeyPair 2")
-        assertBool(!obj.CheckKeyPair(), "CheckKeyPair 2")
+        assertNoError(obj.Error(), "CheckKeyPair 2")
+        assertTrue(!obj.CheckKeyPair(), "CheckKeyPair 2")
     }
 
 }

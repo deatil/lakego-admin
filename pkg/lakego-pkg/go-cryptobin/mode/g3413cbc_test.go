@@ -10,7 +10,7 @@ import (
 
 func Test_G3413CBC(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -18,7 +18,7 @@ func Test_G3413CBC(t *testing.T) {
     plaintext := []byte("y7u9jkijkolkdp123456fthnjukolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplobbbbkijkolkdpaaaaaaaaaaaaaaaadplokjinjkijkyyyyyyjinjkijkolkdplokjinjkijkolkdplokjinjkijkolk5555lokjinjki33333333lokjinjkijkolk")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CBC-NewCipher")
+    assertNoError(err, "Test_G3413CBC-NewCipher")
 
     cbc := NewG3413CBCEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -35,7 +35,7 @@ func Test_G3413CBC(t *testing.T) {
 
 func Test_G3413CBC_1(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -43,7 +43,7 @@ func Test_G3413CBC_1(t *testing.T) {
     plaintext := []byte("y7u9jkijkolkdp12")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CBC_1-NewCipher")
+    assertNoError(err, "Test_G3413CBC_1-NewCipher")
 
     cbc := NewG3413CBCEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -60,7 +60,7 @@ func Test_G3413CBC_1(t *testing.T) {
 
 func Test_G3413CBC_2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -68,7 +68,7 @@ func Test_G3413CBC_2(t *testing.T) {
     plaintext := []byte("y7u9jkijkolkdp12y7i9j33jkogkdp12")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CBC_1-NewCipher")
+    assertNoError(err, "Test_G3413CBC_1-NewCipher")
 
     cbc := NewG3413CBCEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -85,7 +85,7 @@ func Test_G3413CBC_2(t *testing.T) {
 
 func Test_G3413CBC_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
@@ -93,7 +93,7 @@ func Test_G3413CBC_Check(t *testing.T) {
     plaintext, _ := hex.DecodeString("1122334455667700ffeeddccbbaa998800112233445566778899aabbcceeff0a112233445566778899aabbcceeff0a002233445566778899aabbcceeff0a0011")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CBC_Check-NewCipher")
+    assertNoError(err, "Test_G3413CBC_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("689972d4a085fa4d90e52e3d6d7dcc272826e661b478eca6af1e8e448d5ea5acfe7babf1e91999e85640e8b0f49d90d0167688065a895c631a2d9a1560b63970")
 
@@ -108,7 +108,7 @@ func Test_G3413CBC_Check(t *testing.T) {
 
 func Test_G3413CBC_Check_2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
@@ -116,7 +116,7 @@ func Test_G3413CBC_Check_2(t *testing.T) {
     plaintext, _ := hex.DecodeString("689972d4a085fa4d90e52e3d6d7dcc272826e661b478eca6af1e8e448d5ea5acfe7babf1e91999e85640e8b0f49d90d0167688065a895c631a2d9a1560b63970")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CBC_Check_2-NewCipher")
+    assertNoError(err, "Test_G3413CBC_Check_2-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("1122334455667700ffeeddccbbaa998800112233445566778899aabbcceeff0a112233445566778899aabbcceeff0a002233445566778899aabbcceeff0a0011")
 

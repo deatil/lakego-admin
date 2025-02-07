@@ -8,7 +8,7 @@ import (
     "encoding/csv"
 )
 
-// Csv
+// Csv Encode
 func (this Encoding) CsvEncode(data [][]string) Encoding {
     buf := bytes.NewBuffer(nil)
 
@@ -25,7 +25,7 @@ func (this Encoding) CsvEncode(data [][]string) Encoding {
     return this
 }
 
-// Csv 编码输出
+// Csv Decode
 func (this Encoding) CsvDecode(dst any, opts ...rune) Encoding {
     buf := strings.NewReader(string(this.data))
     r := csv.NewReader(buf)

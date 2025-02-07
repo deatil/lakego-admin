@@ -9,14 +9,14 @@ import (
 
 func Test_ECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_ECB")
+    assertNoError(err, "Test_ECB")
 
     mode := NewECBEncrypter(c)
     ciphertext := make([]byte, len(plaintext))
@@ -33,7 +33,7 @@ func Test_ECB(t *testing.T) {
 
 func Test_ECB_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     for _, td := range testECBDatas {
@@ -43,7 +43,7 @@ func Test_ECB_Check(t *testing.T) {
             ciphertext := td.ct
 
             c, err := aes.NewCipher(key)
-            assertError(err, "Test_ECB_Check")
+            assertNoError(err, "Test_ECB_Check")
 
             mode := NewECBEncrypter(c)
             ciphertext2 := make([]byte, len(plaintext))

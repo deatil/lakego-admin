@@ -5,10 +5,11 @@ import (
     "math"
 )
 
-// An Encoding is a base 91 encoding/decoding scheme defined by a 91-character alphabet.
-type Encoding struct {
-    encode    [91]byte
-    decodeMap [256]byte
+// A CorruptInputError is returned if invalid base91 data is encountered during decoding.
+type CorruptInputError int64
+
+func (e CorruptInputError) Error() string {
+    return fmt.Sprintf("go-encoding/base91: illegal base91 data at input byte %d", int64(e))
 }
 
 // encodeStd is the standard base91 encoding alphabet (that is, the one specified
@@ -17,15 +18,32 @@ type Encoding struct {
 // and backslash (0x5c).
 const encodeStd = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,./:;<=>?@[]^_`{|}~\""
 
+// StdEncoding is the standard base91 encoding (that is, the one specified
+// at http://base91.sourceforge.net). Of the 95 printable ASCII characters,
+// the following four are omitted: space (0x20), apostrophe (0x27),
+// hyphen (0x2d), and backslash (0x5c).
+var StdEncoding = NewEncoding(encodeStd)
+
+/*
+ * Encodings
+ */
+
+// An Encoding is a base 91 encoding/decoding scheme defined by a 91-character alphabet.
+type Encoding struct {
+    encode    [91]byte
+    decodeMap [256]byte
+}
+
 // NewEncoding returns a new Encoding defined by the given alphabet, which must
 // be a 91-byte string that does not contain CR or LF ('\r', '\n').
 func NewEncoding(encoder string) *Encoding {
     if len(encoder) != 91 {
-        panic("encoding alphabet is not 91 bytes long")
+        panic("go-encoding/base91: encoding alphabet is not 91 bytes long")
     }
+
     for i := 0; i < len(encoder); i++ {
         if encoder[i] == '\n' || encoder[i] == '\r' {
-            panic("encoding alphabet contains newline character")
+            panic("go-encoding/base91: encoding alphabet contains newline character")
         }
     }
 
@@ -36,17 +54,13 @@ func NewEncoding(encoder string) *Encoding {
         // 0xff indicates that this entry in the decode map is not in the encoding alphabet.
         e.decodeMap[i] = 0xff
     }
+
     for i := 0; i < len(encoder); i++ {
         e.decodeMap[encoder[i]] = byte(i)
     }
+
     return e
 }
-
-// StdEncoding is the standard base91 encoding (that is, the one specified
-// at http://base91.sourceforge.net). Of the 95 printable ASCII characters,
-// the following four are omitted: space (0x20), apostrophe (0x27),
-// hyphen (0x2d), and backslash (0x5c).
-var StdEncoding = NewEncoding(encodeStd)
 
 /*
  * Encoder
@@ -114,13 +128,6 @@ func (enc *Encoding) EncodedLen(n int) int {
 /*
  * Decoder
  */
-
-// A CorruptInputError is returned if invalid base91 data is encountered during decoding.
-type CorruptInputError int64
-
-func (e CorruptInputError) Error() string {
-    return fmt.Sprintf("illegal base91 data at input byte %d", int64(e))
-}
 
 // Decode decodes src using the encoding enc. It writes at most DecodedLen(len(src))
 // bytes to dst and returns the number of bytes written. If src contains invalid base91

@@ -4,16 +4,17 @@ import (
     "github.com/deatil/go-encoding/base58"
 )
 
-// Base58
+// Base58 Decode
 func (this Encoding) Base58Decode() Encoding {
-    this.data = base58.Decode(string(this.data))
+    data := string(this.data)
+    this.data, this.Error = base58.StdEncoding.DecodeString(data)
 
     return this
 }
 
-// 编码 Base58
+// Base58 Encode
 func (this Encoding) Base58Encode() Encoding {
-    data := base58.Encode(this.data)
+    data := base58.StdEncoding.EncodeToString(this.data)
     this.data = []byte(data)
 
     return this

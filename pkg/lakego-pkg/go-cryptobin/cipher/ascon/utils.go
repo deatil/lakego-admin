@@ -5,23 +5,12 @@ import (
     "encoding/binary"
 )
 
-// Endianness option
-const littleEndian bool = false
-
 func getu64(ptr []byte) uint64 {
-    if littleEndian {
-        return binary.LittleEndian.Uint64(ptr)
-    } else {
-        return binary.BigEndian.Uint64(ptr)
-    }
+    return binary.BigEndian.Uint64(ptr)
 }
 
 func putu64(ptr []byte, a uint64) {
-    if littleEndian {
-        binary.LittleEndian.PutUint64(ptr, a)
-    } else {
-        binary.BigEndian.PutUint64(ptr, a)
-    }
+    binary.BigEndian.PutUint64(ptr, a)
 }
 
 func pad(n int) uint64 {
@@ -37,6 +26,7 @@ func be64n(b []byte) uint64 {
     for i := len(b) - 1; i >= 0; i-- {
         x |= uint64(b[i]) << (56 - i*8)
     }
+
     return x
 }
 

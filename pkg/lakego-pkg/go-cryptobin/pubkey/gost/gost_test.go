@@ -278,7 +278,7 @@ func Test_MarshalPrivateKey(t *testing.T) {
 
 func Test_341001(t *testing.T) {
     eq := cryptobin_test.AssertEqualT(t)
-    ifbool := cryptobin_test.AssertBoolT(t)
+    ifbool := cryptobin_test.AssertTrueT(t)
 
     prv := []byte{
         0x7A, 0x92, 0x9A, 0xDE, 0x78, 0x9B, 0xB9, 0xBE,

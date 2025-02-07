@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_AesECB(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-pass"
     cypt := crypto.FromString(data).
@@ -24,7 +24,7 @@ func Test_AesECB(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "AesECB-Encode")
+    assertNoError(cypt.Error(), "AesECB-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12rtgthytr").
@@ -32,7 +32,7 @@ func Test_AesECB(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "AesECB-Decode")
+    assertNoError(cyptde.Error(), "AesECB-Decode")
 
     assert(data, cyptdeStr, "AesECB")
 }

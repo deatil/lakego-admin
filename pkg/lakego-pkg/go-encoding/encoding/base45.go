@@ -4,20 +4,19 @@ import (
     "github.com/deatil/go-encoding/base45"
 )
 
-// Base45
+// Base45 Decode
 func (this Encoding) Base45Decode() Encoding {
-    data := string(this.data)
-    decoded, err := base45.Decode(data)
+    decoded, err := base45.StdEncoding.DecodeString(string(this.data))
 
-    this.data = []byte(decoded)
+    this.data = decoded
     this.Error = err
 
     return this
 }
 
-// 编码 Base45
+// Base45 Encode
 func (this Encoding) Base45Encode() Encoding {
-    data := base45.Encode(string(this.data))
+    data := base45.StdEncoding.EncodeToString(this.data)
     this.data = []byte(data)
 
     return this

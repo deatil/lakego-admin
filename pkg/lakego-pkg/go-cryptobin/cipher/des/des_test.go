@@ -8,7 +8,7 @@ import (
 
 func Test_Encrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := "ujikioinsdujfic8"
@@ -17,7 +17,7 @@ func Test_Encrypt(t *testing.T) {
     dst := make([]byte, len(data))
 
     cip, err := NewTwoDESCipher([]byte(key))
-    assertError(err, "Encrypt")
+    assertNoError(err, "Encrypt")
 
     cip.Encrypt(dst, []byte(data))
     assertNotEmpty(dst, "Encrypt-Encrypt")

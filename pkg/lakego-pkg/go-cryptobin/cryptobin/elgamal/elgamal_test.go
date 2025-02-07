@@ -27,8 +27,8 @@ var (
 
 func Test_XMLSign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -39,7 +39,7 @@ func Test_XMLSign(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "XMLSign2-Sign")
+    assertNoError(objSign.Error(), "XMLSign2-Sign")
     assertNotEmpty(signed, "XMLSign2-Sign")
 
     // 验证
@@ -48,14 +48,14 @@ func Test_XMLSign(t *testing.T) {
         FromXMLPublicKey([]byte(pubkeyXML)).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "XMLSign2-Verify")
-    assertBool(objVerify.ToVerify(), "XMLSign2-Verify")
+    assertNoError(objVerify.Error(), "XMLSign2-Verify")
+    assertTrue(objVerify.ToVerify(), "XMLSign2-Verify")
 }
 
 func Test_Encrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -65,7 +65,7 @@ func Test_Encrypt(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     objDe := New().
@@ -74,7 +74,7 @@ func Test_Encrypt(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
@@ -85,10 +85,10 @@ var testProbability = 64
 
 func Test_GenerateKeyPKCS1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().GenerateKey(testBitsize, testProbability)
-    assertError(obj.Error(), "GenerateKey-Error")
+    assertNoError(obj.Error(), "GenerateKey-Error")
 
     pri := obj.CreatePKCS1PrivateKey().ToKeyString()
     priPass := obj.CreatePKCS1PrivateKeyWithPassword("123").ToKeyString()
@@ -111,10 +111,10 @@ func Test_GenerateKeyPKCS1(t *testing.T) {
 
 func Test_GenerateKeyPKCS8(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().GenerateKey(testBitsize, testProbability)
-    assertError(obj.Error(), "GenerateKey-Error")
+    assertNoError(obj.Error(), "GenerateKey-Error")
 
     pri := obj.CreatePKCS8PrivateKey().ToKeyString()
     priPass := obj.CreatePKCS8PrivateKeyWithPassword("123").ToKeyString()
@@ -193,7 +193,7 @@ u2+zYDS2Uob9qmSSFxfxLZkW5v8xExCig3QYhQ0=
 func Test_EncryptAsn1PKCS1(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -203,7 +203,7 @@ func Test_EncryptAsn1PKCS1(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     objDe := New().
@@ -212,7 +212,7 @@ func Test_EncryptAsn1PKCS1(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
@@ -221,7 +221,7 @@ func Test_EncryptAsn1PKCS1(t *testing.T) {
 func Test_EncryptAsn1PKCS8(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -231,7 +231,7 @@ func Test_EncryptAsn1PKCS8(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     objDe := New().
@@ -240,44 +240,44 @@ func Test_EncryptAsn1PKCS8(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
 }
 
 func Test_CheckKeyPair(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     objCheck1 := New().
         FromPKCS1PrivateKey([]byte(pkcs1Prikey)).
         FromPKCS1PublicKey([]byte(pkcs1Pubkey)).
         CheckKeyPair()
-    assertBool(objCheck1, "CheckKeyPair1")
+    assertTrue(objCheck1, "CheckKeyPair1")
 
     objCheck12 := New().
         FromPKCS1PrivateKeyWithPassword([]byte(pkcs1EnPrikey), "123").
         FromPKCS1PublicKey([]byte(pkcs1Pubkey)).
         CheckKeyPair()
-    assertBool(objCheck12, "CheckKeyPair12")
+    assertTrue(objCheck12, "CheckKeyPair12")
 
     objCheck2 := New().
         FromPKCS8PrivateKey([]byte(pkcs8Prikey)).
         FromPKCS8PublicKey([]byte(pkcs8Pubkey)).
         CheckKeyPair()
-    assertBool(objCheck2, "CheckKeyPair2")
+    assertTrue(objCheck2, "CheckKeyPair2")
 
     objCheck22 := New().
         FromPKCS8PrivateKeyWithPassword([]byte(pkcs8EnPrikey), "123").
         FromPKCS8PublicKey([]byte(pkcs8Pubkey)).
         CheckKeyPair()
-    assertBool(objCheck22, "CheckKeyPair22")
+    assertTrue(objCheck22, "CheckKeyPair22")
 }
 
 func Test_EncryptAsn1_1(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -287,7 +287,7 @@ func Test_EncryptAsn1_1(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     objDe := New().
@@ -296,7 +296,7 @@ func Test_EncryptAsn1_1(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
@@ -307,7 +307,7 @@ func Test_EncryptAsn1_1(t *testing.T) {
         Decrypt()
     deData2 := objDe2.ToString()
 
-    assertError(objDe2.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe2.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData2, "Encrypt-Decrypt")
 
     assertEqual(data, deData2, "Encrypt-Dedata")
@@ -316,7 +316,7 @@ func Test_EncryptAsn1_1(t *testing.T) {
 func Test_EncryptAsn1_2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -326,7 +326,7 @@ func Test_EncryptAsn1_2(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     objDe := New().
@@ -335,7 +335,7 @@ func Test_EncryptAsn1_2(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
@@ -346,7 +346,7 @@ func Test_EncryptAsn1_2(t *testing.T) {
         Decrypt()
     deData2 := objDe2.ToString()
 
-    assertError(objDe2.Error(), "Encrypt-Decrypt")
+    assertNoError(objDe2.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData2, "Encrypt-Decrypt")
 
     assertEqual(data, deData2, "Encrypt-Dedata")
@@ -355,7 +355,7 @@ func Test_EncryptAsn1_2(t *testing.T) {
 func Test_EncryptAsn1_3(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "123tesfd!df"
 
@@ -366,7 +366,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             EncryptBytes()
         enData := objEn.ToBase64String()
 
-        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNoError(objEn.Error(), "Encrypt-Encrypt")
         assertNotEmpty(enData, "Encrypt-Encrypt")
 
         objDe := New().
@@ -375,7 +375,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             DecryptBytes()
         deData := objDe.ToString()
 
-        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNoError(objDe.Error(), "Encrypt-Decrypt")
         assertNotEmpty(deData, "Encrypt-Decrypt")
 
         assertEqual(data, deData, "Encrypt-Dedata")
@@ -388,7 +388,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             EncryptASN1()
         enData := objEn.ToBase64String()
 
-        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNoError(objEn.Error(), "Encrypt-Encrypt")
         assertNotEmpty(enData, "Encrypt-Encrypt")
 
         objDe := New().
@@ -397,7 +397,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             DecryptASN1()
         deData := objDe.ToString()
 
-        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNoError(objDe.Error(), "Encrypt-Decrypt")
         assertNotEmpty(deData, "Encrypt-Decrypt")
 
         assertEqual(data, deData, "Encrypt-Dedata")
@@ -411,7 +411,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             Encrypt()
         enData := objEn.ToBase64String()
 
-        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNoError(objEn.Error(), "Encrypt-Encrypt")
         assertNotEmpty(enData, "Encrypt-Encrypt")
 
         objDe := New().
@@ -421,7 +421,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             Decrypt()
         deData := objDe.ToString()
 
-        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNoError(objDe.Error(), "Encrypt-Decrypt")
         assertNotEmpty(deData, "Encrypt-Decrypt")
 
         assertEqual(data, deData, "Encrypt-Dedata")
@@ -435,7 +435,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             Encrypt()
         enData := objEn.ToBase64String()
 
-        assertError(objEn.Error(), "Encrypt-Encrypt")
+        assertNoError(objEn.Error(), "Encrypt-Encrypt")
         assertNotEmpty(enData, "Encrypt-Encrypt")
 
         objDe := New().
@@ -445,7 +445,7 @@ func Test_EncryptAsn1_3(t *testing.T) {
             Decrypt()
         deData := objDe.ToString()
 
-        assertError(objDe.Error(), "Encrypt-Decrypt")
+        assertNoError(objDe.Error(), "Encrypt-Decrypt")
         assertNotEmpty(deData, "Encrypt-Decrypt")
 
         assertEqual(data, deData, "Encrypt-Dedata")
@@ -455,8 +455,8 @@ func Test_EncryptAsn1_3(t *testing.T) {
 
 func Test_Sign_2(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -468,7 +468,7 @@ func Test_Sign_2(t *testing.T) {
             Sign()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNoError(objSign.Error(), "Test_Sign_2-Sign")
         assertNotEmpty(signed, "Test_Sign_2-Sign")
 
         // 验证
@@ -477,8 +477,8 @@ func Test_Sign_2(t *testing.T) {
             FromPublicKey([]byte(pkcs8Pubkey)).
             Verify([]byte(data))
 
-        assertError(objVerify.Error(), "Test_Sign_2-Verify")
-        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+        assertNoError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertTrue(objVerify.ToVerify(), "Test_Sign_2-Verify")
     })
 
     t.Run("Test_Sign_2 2", func(t *testing.T) {
@@ -490,7 +490,7 @@ func Test_Sign_2(t *testing.T) {
             Sign()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNoError(objSign.Error(), "Test_Sign_2-Sign")
         assertNotEmpty(signed, "Test_Sign_2-Sign")
 
         // 验证
@@ -500,8 +500,8 @@ func Test_Sign_2(t *testing.T) {
             WithEncodingASN1().
             Verify([]byte(data))
 
-        assertError(objVerify.Error(), "Test_Sign_2-Verify")
-        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+        assertNoError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertTrue(objVerify.ToVerify(), "Test_Sign_2-Verify")
     })
 
     t.Run("Test_Sign_2 3", func(t *testing.T) {
@@ -513,7 +513,7 @@ func Test_Sign_2(t *testing.T) {
             Sign()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNoError(objSign.Error(), "Test_Sign_2-Sign")
         assertNotEmpty(signed, "Test_Sign_2-Sign")
 
         // 验证
@@ -523,8 +523,8 @@ func Test_Sign_2(t *testing.T) {
             WithEncodingBytes().
             Verify([]byte(data))
 
-        assertError(objVerify.Error(), "Test_Sign_2-Verify")
-        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+        assertNoError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertTrue(objVerify.ToVerify(), "Test_Sign_2-Verify")
     })
 
     t.Run("Test_Sign_2 4", func(t *testing.T) {
@@ -535,7 +535,7 @@ func Test_Sign_2(t *testing.T) {
             SignASN1()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNoError(objSign.Error(), "Test_Sign_2-Sign")
         assertNotEmpty(signed, "Test_Sign_2-Sign")
 
         // 验证
@@ -544,8 +544,8 @@ func Test_Sign_2(t *testing.T) {
             FromPublicKey([]byte(pkcs8Pubkey)).
             VerifyASN1([]byte(data))
 
-        assertError(objVerify.Error(), "Test_Sign_2-Verify")
-        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+        assertNoError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertTrue(objVerify.ToVerify(), "Test_Sign_2-Verify")
     })
 
     t.Run("Test_Sign_2 5", func(t *testing.T) {
@@ -556,7 +556,7 @@ func Test_Sign_2(t *testing.T) {
             SignBytes()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "Test_Sign_2-Sign")
+        assertNoError(objSign.Error(), "Test_Sign_2-Sign")
         assertNotEmpty(signed, "Test_Sign_2-Sign")
 
         // 验证
@@ -565,8 +565,8 @@ func Test_Sign_2(t *testing.T) {
             FromPublicKey([]byte(pkcs8Pubkey)).
             VerifyBytes([]byte(data))
 
-        assertError(objVerify.Error(), "Test_Sign_2-Verify")
-        assertBool(objVerify.ToVerify(), "Test_Sign_2-Verify")
+        assertNoError(objVerify.Error(), "Test_Sign_2-Verify")
+        assertTrue(objVerify.ToVerify(), "Test_Sign_2-Verify")
     })
 
 }
@@ -605,7 +605,7 @@ func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -623,7 +623,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
             CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
 
         newPrikey := New().

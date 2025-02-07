@@ -13,7 +13,7 @@ import (
 // Test_PrimeKeyGeneration
 func Test_PrimeKeyGeneration(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     size := 768
     if testing.Short() {
@@ -24,12 +24,12 @@ func Test_PrimeKeyGeneration(t *testing.T) {
 
     objPriKey := obj.CreatePKCS1PrivateKey()
 
-    assertError(objPriKey.Error(), "objPriKey")
+    assertNoError(objPriKey.Error(), "objPriKey")
     assertNotEmpty(objPriKey.ToKeyString(), "objPriKey")
 
     objPubKey := obj.CreatePKCS1PublicKey()
 
-    assertError(objPubKey.Error(), "objPubKey")
+    assertNoError(objPubKey.Error(), "objPubKey")
     assertNotEmpty(objPubKey.ToKeyString(), "objPubKey")
 }
 
@@ -88,7 +88,7 @@ tGjMoEruLNj7fkPcNQIDAQAB
 
 func Test_RSAPkcs1Sign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertTrue := cryptobin_test.AssertTrueT(t)
 
     data := "test-pass"
@@ -102,7 +102,7 @@ func Test_RSAPkcs1Sign(t *testing.T) {
         Sign()
     signData := sign.ToBase64String()
 
-    assertError(sign.Error(), "RSAPkcs1Sign-sign")
+    assertNoError(sign.Error(), "RSAPkcs1Sign-sign")
     assertNotEmpty(signData, "RSAPkcs1Sign-sign")
 
     verify := obj.
@@ -112,13 +112,13 @@ func Test_RSAPkcs1Sign(t *testing.T) {
         Verify([]byte(data))
     verifyData := verify.ToVerify()
 
-    assertError(verify.Error(), "RSAPkcs1Sign-verify")
+    assertNoError(verify.Error(), "RSAPkcs1Sign-verify")
     assertTrue(verifyData, "RSAPkcs1Sign-verify")
 }
 
 func Test_RSAPkcs8Sign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertTrue := cryptobin_test.AssertTrueT(t)
 
     data := "test-pass22222"
@@ -132,7 +132,7 @@ func Test_RSAPkcs8Sign(t *testing.T) {
         Sign()
     signData := sign.ToBase64String()
 
-    assertError(sign.Error(), "RSAPkcs1Sign-sign")
+    assertNoError(sign.Error(), "RSAPkcs1Sign-sign")
     assertNotEmpty(signData, "RSAPkcs1Sign-sign")
 
     verify := obj.
@@ -142,7 +142,7 @@ func Test_RSAPkcs8Sign(t *testing.T) {
         Verify([]byte(data))
     verifyData := verify.ToVerify()
 
-    assertError(verify.Error(), "RSAPkcs1Sign-verify")
+    assertNoError(verify.Error(), "RSAPkcs1Sign-verify")
     assertTrue(verifyData, "RSAPkcs1Sign-verify")
 }
 
@@ -160,7 +160,7 @@ MLk4PHD/ToU63V0h1QIDAQAB
 
 func Test_PubNE(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
     en := NewRSA().
@@ -168,7 +168,7 @@ func Test_PubNE(t *testing.T) {
         CreatePKCS8PublicKey()
     enData := en.ToKeyString()
 
-    assertError(en.Error(), "PubNE-make")
+    assertNoError(en.Error(), "PubNE-make")
     assertNotEmpty(enData, "PubNE-make")
 
     assertEqual(enData, testPubEnd, "PubNE-make")
@@ -208,7 +208,7 @@ func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -226,7 +226,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
             CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
 
         newPrikey := New().
@@ -325,7 +325,7 @@ CQIDAQAB
 // https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/getting_started/api_signature.html
 // 微信小程序 api RSAwithSHA256 验证测试
 func Test_Weapp_RSA_Verify(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertTrue := cryptobin_test.AssertTrueT(t)
 
     req_data := `{"iv":"r2WDQt56rEAmMuoR","data":"HExs66Ik3el+iM4IpeQ7SMEN934FRLFYOd3EmeaIrpP4EPTHckoco6O+PaoRZRa3lqaPRZT7r52f7LUok6gLxc6cdR8C4vpIIfh4xfLC4L7FNy9GbuMK1hcoi8b7gkWJcwZMkuCFNEDmqn3T49oWzAQOrY4LZnnnykv6oUJotdAsnKvmoJkLK7hRh7M2B1d2UnTnRuoIyarXc5Iojwoghx4BOvnV","authtag":"z2BFD8QctKXTuBlhICGOjQ=="}`
@@ -341,6 +341,6 @@ func Test_Weapp_RSA_Verify(t *testing.T) {
         VerifyPSS([]byte(data))
     verifyData := verify.ToVerify()
 
-    assertError(verify.Error(), "Test_Weapp_RSA_Verify-verify")
+    assertNoError(verify.Error(), "Test_Weapp_RSA_Verify-verify")
     assertTrue(verifyData, "Test_Weapp_RSA_Verify-verify")
 }

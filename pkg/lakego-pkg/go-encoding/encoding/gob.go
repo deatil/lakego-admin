@@ -5,7 +5,7 @@ import (
     "encoding/gob"
 )
 
-// Gob
+// Gob Encode
 func (this Encoding) GobEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
 
@@ -21,7 +21,7 @@ func (this Encoding) GobEncode(data any) Encoding {
     return this
 }
 
-// Gob 编码输出
+// Gob Decode
 func (this Encoding) GobDecode(dst any) Encoding {
     buf := bytes.NewBuffer(this.data)
     dec := gob.NewDecoder(buf)

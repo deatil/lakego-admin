@@ -128,13 +128,13 @@ func Uint32ToBCD(BinaryValue uint32) (uint32, error) {
 
         return ValueToReturn, nil
     } else {
-        return BinaryValue, errors.New("bad")
+        return BinaryValue, errors.New("go-encoding/bcd: bad")
     }
 }
 
 func BCDtoUint32(CurrentBCDvalue uint32) (uint32, error) {
     if !CheckBCD(CurrentBCDvalue) {
-        return CurrentBCDvalue, errors.New("bad")
+        return CurrentBCDvalue, errors.New("go-encoding/bcd: bad")
     }
 
     var ValueToReturn uint32 = 0

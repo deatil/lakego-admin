@@ -1,8 +1,8 @@
 package bcd8421
 
 import (
-    "bytes"
     "fmt"
+    "bytes"
     "strconv"
 )
 
@@ -11,7 +11,7 @@ func EncodeFromString(number string, bytesLength int) ([]byte, error) {
     var numberLength = len(number)
 
     if bytesLength*2 < numberLength {
-        return numberBytes, fmt.Errorf("invalid bytesLength")
+        return numberBytes, fmt.Errorf("go-encoding/bcd8421: invalid bytesLength")
     }
 
     nb, err := stringNumberToBytes(number)
@@ -50,7 +50,7 @@ func DecodeToString(src []byte, skipzero bool) (string, error) {
         n2 := mask<<4 | mask>>4
 
         if n1 > 9 || n2 > 9 {
-            return s, fmt.Errorf("invalid BCD 8421 bytes")
+            return s, fmt.Errorf("go-encoding/bcd8421: invalid BCD 8421 bytes")
         }
 
         if !skipzero {

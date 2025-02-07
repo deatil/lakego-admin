@@ -11,18 +11,6 @@ const (
     forth = 0x80
 )
 
-// Encode tranforms bytes into base100 utf-8 encoded string
-func Encode(data []byte) string {
-    result := make([]byte, len(data)*4)
-    for i, b := range data {
-        result[i*4+0] = first
-        result[i*4+1] = second
-        result[i*4+2] = byte((uint16(b)+shift)/divisor + third)
-        result[i*4+3] = (b+shift)%divisor + forth
-    }
-    return string(result)
-}
-
 // InvalidInputError is returned when Decode fails
 type InvalidInputError struct {
     message string
@@ -34,10 +22,23 @@ func (e InvalidInputError) Error() string {
 
 // ErrInvalidLength is returned when length of string being decoded is
 // not divisible by four
-var ErrInvalidLength = InvalidInputError{"len(data) should be divisible by 4"}
+var ErrInvalidLength = InvalidInputError{"go-encoding/base100: len(data) should be divisible by 4"}
 
 // ErrInvalidData is returned if data is not a valid base100 string
-var ErrInvalidData = InvalidInputError{"data is invalid"}
+var ErrInvalidData = InvalidInputError{"go-encoding/base100: data is invalid"}
+
+// Encode tranforms bytes into base100 utf-8 encoded string
+func Encode(data []byte) string {
+    result := make([]byte, len(data)*4)
+    for i, b := range data {
+        result[i*4+0] = first
+        result[i*4+1] = second
+        result[i*4+2] = byte((uint16(b)+shift)/divisor + third)
+        result[i*4+3] = (b+shift)%divisor + forth
+    }
+
+    return string(result)
+}
 
 // Decode transforms base100 utf-8 encoded string into bytes
 func Decode(data string) ([]byte, error) {
@@ -54,5 +55,6 @@ func Decode(data string) ([]byte, error) {
         result[i/4] = (data[i+2]-third)*divisor +
             data[i+3] - forth - shift
     }
+
     return result, nil
 }

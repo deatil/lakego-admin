@@ -101,7 +101,7 @@ glcRgT6QCEtz2wIhANSyqaFtosIkHKqrDUGfz/bb5tqMYTAnBruVPaf/WEOBAiEA
 9xORWeRG1tRpso4+dYy4KdDkuLPIO01KY6neYGm3BCM=`,
     },
     {
-        kind:     Cipher3DESCBC,
+        kind:     CipherDESEDE3CBC,
         password: []byte("asdf"),
         pemData: []byte(testingKey(`
 -----BEGIN RSA TESTING KEY-----
@@ -357,7 +357,7 @@ q3/+myMrI9ODCgqWMbxi2/IRUEgOK1mCbWpR/UH+WZC0e8E2PZ6L0w==
 -----END RSA PRIVATE KEY-----
 `
 
-var testKey_3DES_CFB = `
+var testKey_DESEDE3_CFB = `
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-CFB,D2C6635FFF7A4DE8
@@ -377,7 +377,7 @@ o15yE9naANp/ml1ZmFybky8cGpTYA7WTiu16PuApj9sMpfZLJjITBvvkAqccYiBt
 mcOQ5xdAyTvovTQR4mxbe/SwsBtseICI7OnS4nHRcdEWcg==
 -----END RSA PRIVATE KEY-----
 `
-var testKey_3DES_OFB = `
+var testKey_DESEDE3_OFB = `
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-OFB,A0D9A77A7948C56E
@@ -397,7 +397,7 @@ awEw/CQpPQ7E2rF0YmWVOXZkWcnRXcY6TBcTjKvZqsjcvJAIOFw0NQy6V69Mgu53
 nMXfIRLAvuBgtv2zcwdbgsvhAHOeV1d7l1EuISNRkBRx
 -----END RSA PRIVATE KEY-----
 `
-var testKey_3DES_CTR = `
+var testKey_DESEDE3_CTR = `
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-CTR,140F4C905495A783
@@ -417,7 +417,7 @@ mSHYIoYDhxtZTPdfVo7JywEtujkgeFPG/6vpomarWRy8dAcUnLUct3BZb8lD55et
 OmYAMAJyodew+6ZbTG3LRiyIH66NYGCU2Yhspd4ZeCc=
 -----END RSA PRIVATE KEY-----
 `
-var testKey_3DES_CBC = `
+var testKey_DESEDE3_CBC = `
 -----BEGIN RSA PRIVATE KEY-----
 Proc-Type: 4,ENCRYPTED
 DEK-Info: DES-EDE3-CBC,9AD0BC30D5D31806
@@ -883,17 +883,17 @@ func Test_Check_PEMBlock(t *testing.T) {
         testKeyEncryptPEMBlock(t, testKey_DES_CBC)
     })
 
-    t.Run("3DES_CFB", func(t *testing.T) {
-        testKeyEncryptPEMBlock(t, testKey_3DES_CFB)
+    t.Run("DESEDE3_CFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_DESEDE3_CFB)
     })
-    t.Run("3DES_OFB", func(t *testing.T) {
-        testKeyEncryptPEMBlock(t, testKey_3DES_OFB)
+    t.Run("DESEDE3_OFB", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_DESEDE3_OFB)
     })
-    t.Run("3DES_CTR", func(t *testing.T) {
-        testKeyEncryptPEMBlock(t, testKey_3DES_CTR)
+    t.Run("DESEDE3_CTR", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_DESEDE3_CTR)
     })
-    t.Run("3DES_CBC", func(t *testing.T) {
-        testKeyEncryptPEMBlock(t, testKey_3DES_CBC)
+    t.Run("DESEDE3_CBC", func(t *testing.T) {
+        testKeyEncryptPEMBlock(t, testKey_DESEDE3_CBC)
     })
 
     t.Run("AES_256_CTR", func(t *testing.T) {
@@ -965,7 +965,7 @@ func TestEncryptPEMBlock(t *testing.T) {
         t.Fatal("PEM data decrypted error: " + err.Error())
     }
 
-    enblock, err := EncryptPEMBlock(rand.Reader, "RSA PRIVATE KEY", bys, []byte("123"), Cipher3DESCBC)
+    enblock, err := EncryptPEMBlock(rand.Reader, "RSA PRIVATE KEY", bys, []byte("123"), CipherDESEDE3CBC)
     if err != nil {
         t.Error("encrypt: ", err)
     }
@@ -1011,7 +1011,7 @@ func Test_EncryptMake(t *testing.T) {
 func test_EncryptMake(t *testing.T, cip Cipher) {
     password := []byte("123")
 
-    block1, _ := pem.Decode([]byte(testKey_3DES_CFB))
+    block1, _ := pem.Decode([]byte(testKey_DESEDE3_CFB))
 
     bys, err := DecryptPEMBlock(block1, password)
     if err != nil {

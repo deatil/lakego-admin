@@ -6,11 +6,13 @@ import (
 )
 
 // 十进制转二进制
+// dec to bin
 func Decbin(number int64) string {
     return strconv.FormatInt(number, 2)
 }
 
 // 二进制转十进制
+// bin to dec
 func Bindec(str string) int64 {
     data, _ := strconv.ParseInt(str, 2, 0)
 
@@ -18,11 +20,13 @@ func Bindec(str string) int64 {
 }
 
 // 十进制转八进制
+// dec to oct
 func Decoct(number int64) string {
     return strconv.FormatInt(number, 8)
 }
 
 // 八进制转十进制
+// oct to dec
 func Octdec(str string) int64 {
     data, _ := strconv.ParseInt(str, 8, 0)
 
@@ -30,11 +34,13 @@ func Octdec(str string) int64 {
 }
 
 // 十进制转十六进制
+// dec to hex
 func Dechex(number int64) string {
     return strconv.FormatInt(number, 16)
 }
 
 // 十六进制转十进制
+// hex to dec
 func Hexdec(str string) int64 {
     data, _ := strconv.ParseInt(str, 16, 0)
 
@@ -43,6 +49,7 @@ func Hexdec(str string) int64 {
 
 // 各种进制互转
 // 十进制转十六进制
+// Base Convert
 // BaseConvert("12312", 10, 16)
 // [2- 36] 进制
 func BaseConvert(number string, frombase, tobase int) string {
@@ -56,6 +63,7 @@ func BaseConvert(number string, frombase, tobase int) string {
 
 // ====================
 
+// ConvertDecode
 // 给定类型数据格式化为string类型数据
 // bitSize 限制长度
 // ParseBool()、ParseFloat()、ParseInt()、ParseUint()。
@@ -100,33 +108,39 @@ func (this Encoding) ConvertDecode(input any, base int, bitSize ...int) Encoding
 }
 
 // 二进制
+// ConvertBinDecode
 func (this Encoding) ConvertBinDecode(data string) Encoding {
     return this.ConvertDecode(data, 2)
 }
 
 // 八进制
+// ConvertOctDecode
 func (this Encoding) ConvertOctDecode(data string) Encoding {
     return this.ConvertDecode(data, 8)
 }
 
 // 十进制
+// ConvertDecDecode
 func (this Encoding) ConvertDecDecode(data int64) Encoding {
     return this.ConvertDecode(data, 10)
 }
 
 // 十进制字符
+// ConvertDecStringDecode
 func (this Encoding) ConvertDecStringDecode(data string) Encoding {
     return this.ConvertDecode(data, 10)
 }
 
 // 十六进制
+// ConvertHexDecode
 func (this Encoding) ConvertHexDecode(data string) Encoding {
     return this.ConvertDecode(data, 16)
 }
 
 // ====================
 
-// 输出进制编码
+// 输出进制Encode
+// ConvertEncode
 func (this Encoding) ConvertEncode(base int) string {
     number, err := strconv.ParseInt(string(this.data), 10, 0)
     if err != nil {
@@ -137,16 +151,19 @@ func (this Encoding) ConvertEncode(base int) string {
 }
 
 // 输出 二进制
+// ConvertBinEncode
 func (this Encoding) ConvertBinEncode() string {
     return this.ConvertEncode(2)
 }
 
 // 输出 八进制
+// ConvertOctEncode
 func (this Encoding) ConvertOctEncode() string {
     return this.ConvertEncode(8)
 }
 
 // 输出 十进制
+// ConvertDecEncode
 func (this Encoding) ConvertDecEncode() int64 {
     number, err := strconv.ParseInt(string(this.data), 10, 0)
     if err != nil {
@@ -157,11 +174,13 @@ func (this Encoding) ConvertDecEncode() int64 {
 }
 
 // 输出 十进制
+// ConvertDecStringEncode
 func (this Encoding) ConvertDecStringEncode() string {
     return this.ConvertEncode(10)
 }
 
 // 输出 十六进制
+// ConvertHexEncode
 func (this Encoding) ConvertHexEncode() string {
     return this.ConvertEncode(16)
 }

@@ -242,7 +242,7 @@ func signAndDetach(content []byte, cert *cryptobin_x509.Certificate, privkey *rs
 
 func Test_SignAndDetach(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     cert := decodeCert(testEncryptedTestCertificate)
     parsedKey := decodePrivateKey(testEncryptedTestPrivateKey)
@@ -250,7 +250,7 @@ func Test_SignAndDetach(t *testing.T) {
 
     pkcs7Sign, pkcs7err := signAndDetach([]byte("hello world"), cert, privateKey)
 
-    assertError(pkcs7err, "SignAndDetach-Decode")
+    assertNoError(pkcs7err, "SignAndDetach-Decode")
 
     assertNotEmpty(pkcs7Sign, "SignAndDetach")
 }
@@ -314,7 +314,7 @@ func signAndDetach2(content []byte, cert *cryptobin_x509.Certificate, privkey *r
 
 func Test_SignAndDetach2(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     cert := decodeCert(testEncryptedTestCertificate)
     parsedKey := decodePrivateKey(testEncryptedTestPrivateKey)
@@ -322,7 +322,7 @@ func Test_SignAndDetach2(t *testing.T) {
 
     pkcs7Sign, pkcs7err := signAndDetach2([]byte("hello world"), cert, privateKey)
 
-    assertError(pkcs7err, "SignAndDetach2-Decode")
+    assertNoError(pkcs7err, "SignAndDetach2-Decode")
 
     assertNotEmpty(pkcs7Sign, "SignAndDetach2")
 }
@@ -385,7 +385,7 @@ func signWithAlgorithm(
 
 func Test_SignWithAlgorithm(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     cert := decodeCert(testEncryptedTestCertificate)
     privateKey := decodePrivateKey(testEncryptedTestPrivateKey)
@@ -444,7 +444,7 @@ func Test_SignWithAlgorithm(t *testing.T) {
                 test.eOid,
             )
 
-            assertError(pkcs7err, "Test_SignWithAlgorithm")
+            assertNoError(pkcs7err, "Test_SignWithAlgorithm")
             assertNotEmpty(pkcs7Sign, "Test_SignWithAlgorithm")
         })
     }
@@ -507,7 +507,7 @@ func signWithAlgorithmWithSM2(
 
 func Test_SignWithAlgorithmWithSM2(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     certSM := decodeCert(signCert)
     privateKeySM := decodeSM2PrivateKey(signKey)
@@ -538,7 +538,7 @@ func Test_SignWithAlgorithmWithSM2(t *testing.T) {
                 test.eOid,
             )
 
-            assertError(pkcs7err, "Test_SignWithAlgorithmWithSM2")
+            assertNoError(pkcs7err, "Test_SignWithAlgorithmWithSM2")
             assertNotEmpty(pkcs7Sign, "Test_SignWithAlgorithmWithSM2")
         })
     }

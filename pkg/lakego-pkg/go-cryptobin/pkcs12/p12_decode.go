@@ -200,6 +200,67 @@ func (this *PKCS12) GetPrivateKeyBytes() (prikey []byte, attrs PKCS12Attributes,
     return privateKeys[0].Data(), privateKeys[0].Attrs(), nil
 }
 
+type allPrivateKeyData struct {
+    Attrs PKCS12Attributes
+    Data  crypto.PrivateKey
+}
+
+func (this *PKCS12) GetAllPrivateKey() (prikeys []allPrivateKeyData, err error) {
+    privateKeys, ok := this.parsedData["privateKey"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(privateKeys) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    prikeys = make([]allPrivateKeyData, 0)
+
+    for _, key := range privateKeys {
+        parsedKey, err := ParsePKCS8PrivateKey(key.Data())
+        if err == nil {
+            prikeys = append(prikeys, allPrivateKeyData{
+                Attrs: key.Attrs(),
+                Data:  parsedKey,
+            })
+        }
+    }
+
+    return prikeys, nil
+}
+
+type allPrivateKeyDataBytes struct {
+    Attrs PKCS12Attributes
+    Data  []byte
+}
+
+func (this *PKCS12) GetAllPrivateKeyBytes() (prikeys []allPrivateKeyDataBytes, err error) {
+    privateKeys, ok := this.parsedData["privateKey"]
+    if !ok {
+        err = errors.New("no data")
+        return
+    }
+
+    if len(privateKeys) == 0 {
+        err = errors.New("no data")
+        return
+    }
+
+    prikeys = make([]allPrivateKeyDataBytes, 0)
+
+    for _, key := range privateKeys {
+        prikeys = append(prikeys, allPrivateKeyDataBytes{
+            Attrs: key.Attrs(),
+            Data:  key.Data(),
+        })
+    }
+
+    return prikeys, nil
+}
+
 func (this *PKCS12) GetCert() (cert *x509.Certificate, attrs PKCS12Attributes, err error) {
     certs, ok := this.parsedData["cert"]
     if !ok {

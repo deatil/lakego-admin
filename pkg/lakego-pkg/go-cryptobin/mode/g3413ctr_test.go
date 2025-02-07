@@ -10,7 +10,7 @@ import (
 
 func Test_G3413CTR(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -18,7 +18,7 @@ func Test_G3413CTR(t *testing.T) {
     plaintext := []byte("y7u9jkijkolkdp123456fthnjukolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplobbbbkijkolkdpaaaaaaaaaaaaaaaadplokjinjkijkyyyyyyjinjkijkolkdplokjinjkijkolkdplokjinjkijkolk5555lokjinjki33333333lokjinjkijkolk")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CTR-NewCipher")
+    assertNoError(err, "Test_G3413CTR-NewCipher")
 
     cbc := NewG3413CTR(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -35,7 +35,7 @@ func Test_G3413CTR(t *testing.T) {
 
 func Test_G3413CTR_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
@@ -43,7 +43,7 @@ func Test_G3413CTR_Check(t *testing.T) {
     plaintext, _ := hex.DecodeString("1122334455667700ffeeddccbbaa998800112233445566778899aabbcceeff0a112233445566778899aabbcceeff0a002233445566778899aabbcceeff0a0011")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CTR_Check-NewCipher")
+    assertNoError(err, "Test_G3413CTR_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("f195d8bec10ed1dbd57b5fa240bda1b885eee733f6a13e5df33ce4b33c45dee4a5eae88be6356ed3d5e877f13564a3a5cb91fab1f20cbab6d1c6d15820bdba73")
 
@@ -58,7 +58,7 @@ func Test_G3413CTR_Check(t *testing.T) {
 
 func Test_G3413CTR_Check_2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("8899aabbccddeeff0011223344556677fedcba98765432100123456789abcdef")
@@ -66,7 +66,7 @@ func Test_G3413CTR_Check_2(t *testing.T) {
     plaintext, _ := hex.DecodeString("1122334455667700ffeeddccbbaa998800112233445566778899aabbcceeff0a112233445566778899aabbcceeff0a002233445566778899aabbcceeff0a0011")
 
     c, err := kuznyechik.NewCipher(key)
-    assertError(err, "Test_G3413CTR_Check_2-NewCipher")
+    assertNoError(err, "Test_G3413CTR_Check_2-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("f1a787ad3a88f9a0bc735293f98c12c3eb31621b9b2e6461c7ef73a2e6a6b1793ddf722f7b1d22a722ec4d3edbc313bcd356b313d37af9e5ef934fa223c13fe2")
 

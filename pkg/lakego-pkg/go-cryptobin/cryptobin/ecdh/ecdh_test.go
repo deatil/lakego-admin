@@ -36,7 +36,7 @@ YbGHpDUucpRlNYh0l0cn/cION4/lW64kO/QRYGW+HjmpuMap8Db6DWc=
 
 func Test_CreateECDHKey(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().
         SetCurve("P256").
@@ -45,15 +45,15 @@ func Test_CreateECDHKey(t *testing.T) {
     objPriKey := obj.CreateECDHPrivateKey()
     objPubKey := obj.CreateECDHPublicKey()
 
-    assertError(objPriKey.Error(), "ecdhPriKey")
+    assertNoError(objPriKey.Error(), "ecdhPriKey")
     assertNotEmpty(objPriKey.ToKeyString(), "ecdhPriKey")
 
-    assertError(objPubKey.Error(), "ecdhPubKey")
+    assertNoError(objPubKey.Error(), "ecdhPubKey")
     assertNotEmpty(objPubKey.ToKeyString(), "ecdhPubKey")
 }
 
 func Test_CreateECDHSecretKey(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
@@ -61,14 +61,14 @@ func Test_CreateECDHSecretKey(t *testing.T) {
         FromECDHPrivateKey([]byte(prikey1)).
         FromECDHPublicKey([]byte(pubkey2)).
         CreateSecretKey()
-    assertError(objSecret1.Error(), "ecdhCreateSecretKey1")
+    assertNoError(objSecret1.Error(), "ecdhCreateSecretKey1")
     assertNotEmpty(objSecret1.ToHexString(), "ecdhCreateSecretKey1")
 
     objSecret2 := New().
         FromECDHPrivateKey([]byte(prikey2)).
         FromECDHPublicKey([]byte(pubkey1)).
         CreateSecretKey()
-    assertError(objSecret2.Error(), "ecdhCreateSecretKey2")
+    assertNoError(objSecret2.Error(), "ecdhCreateSecretKey2")
     assertNotEmpty(objSecret2.ToHexString(), "ecdhCreateSecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "ecdhCreateSecretKey")
@@ -76,7 +76,7 @@ func Test_CreateECDHSecretKey(t *testing.T) {
 
 func Test_CreateKey(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().
         SetCurve("P256").
@@ -86,13 +86,13 @@ func Test_CreateKey(t *testing.T) {
     objEnPriKey := obj.CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
     objPubKey := obj.CreatePublicKey()
 
-    assertError(objPriKey.Error(), "CreateKey-ecdhPriKey")
+    assertNoError(objPriKey.Error(), "CreateKey-ecdhPriKey")
     assertNotEmpty(objPriKey.ToKeyString(), "CreateKey-ecdhPriKey")
 
-    assertError(objEnPriKey.Error(), "CreateKey-ecdhEnPriKey")
+    assertNoError(objEnPriKey.Error(), "CreateKey-ecdhEnPriKey")
     assertNotEmpty(objEnPriKey.ToKeyString(), "CreateKey-ecdhEnPriKey")
 
-    assertError(objPubKey.Error(), "CreateKey-ecdhPubKey")
+    assertNoError(objPubKey.Error(), "CreateKey-ecdhPubKey")
     assertNotEmpty(objPubKey.ToKeyString(), "CreateKey-ecdhPubKey")
 }
 
@@ -108,7 +108,7 @@ func Test_CreateSecretKey(t *testing.T) {
 }
 
 func test_CreateSecretKey(t *testing.T, name string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
@@ -130,21 +130,21 @@ func test_CreateSecretKey(t *testing.T, name string) {
         FromPrivateKey([]byte(objPriKey1)).
         FromPublicKey([]byte(objPubKey2)).
         CreateSecretKey()
-    assertError(objSecret1.Error(), "CreateSecretKey-SecretKey")
+    assertNoError(objSecret1.Error(), "CreateSecretKey-SecretKey")
     assertNotEmpty(objSecret1.ToHexString(), "CreateSecretKey-SecretKey")
 
     objSecret2 := New().
         FromPrivateKey([]byte(objPriKey2)).
         FromPublicKey([]byte(objPubKey1)).
         CreateSecretKey()
-    assertError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
+    assertNoError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
     assertNotEmpty(objSecret2.ToHexString(), "CreateSecretKey-SecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "CreateSecretKey-Equal")
 }
 
 func test_CreateSecretKeyWithPassword(t *testing.T, name string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
@@ -166,14 +166,14 @@ func test_CreateSecretKeyWithPassword(t *testing.T, name string) {
         FromPrivateKeyWithPassword([]byte(objPriKey1), "123").
         FromPublicKey([]byte(objPubKey2)).
         CreateSecretKey()
-    assertError(objSecret1.Error(), "CreateSecretKey-SecretKey")
+    assertNoError(objSecret1.Error(), "CreateSecretKey-SecretKey")
     assertNotEmpty(objSecret1.ToHexString(), "CreateSecretKey-SecretKey")
 
     objSecret2 := New().
         FromPrivateKey([]byte(objPriKey2)).
         FromPublicKey([]byte(objPubKey1)).
         CreateSecretKey()
-    assertError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
+    assertNoError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
     assertNotEmpty(objSecret2.ToHexString(), "CreateSecretKey-SecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "CreateSecretKey-Equal")

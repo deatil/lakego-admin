@@ -16,7 +16,7 @@ func Test_Name(t *testing.T) {
 // 输入数据需手动处理长度，不使用补码方式
 func Test_AesWrap(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_AesWrap(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Test_AesWrap-Encode")
+    assertNoError(cypt.Error(), "Test_AesWrap-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("kkinjkijeel22plo").
@@ -37,14 +37,14 @@ func Test_AesWrap(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Test_AesWrap-Decode")
+    assertNoError(cyptde.Error(), "Test_AesWrap-Decode")
 
     assert(data, cyptdeStr, "Test_AesWrap")
 }
 
 func Test_AesWrapWithNoIV(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo"
     cypt := crypto.FromString(data).
@@ -55,7 +55,7 @@ func Test_AesWrapWithNoIV(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Test_AesWrapWithNoIV-Encode")
+    assertNoError(cypt.Error(), "Test_AesWrapWithNoIV-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("kkinjkijeel22plo").
@@ -65,14 +65,14 @@ func Test_AesWrapWithNoIV(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Test_AesWrapWithNoIV-Decode")
+    assertNoError(cyptde.Error(), "Test_AesWrapWithNoIV-Decode")
 
     assert(data, cyptdeStr, "Test_AesWrapWithNoIV")
 }
 
 func Test_AesWrap_Check(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     /* aes key */
     var test_wrap_key = []byte{
@@ -109,6 +109,6 @@ func Test_AesWrap_Check(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBytes()
 
-    assertError(cypt.Error(), "Test_AesWrap_Check-Encode")
+    assertNoError(cypt.Error(), "Test_AesWrap_Check-Encode")
     assert(cyptStr, test_wrap_ct, "Test_AesWrap_Check")
 }

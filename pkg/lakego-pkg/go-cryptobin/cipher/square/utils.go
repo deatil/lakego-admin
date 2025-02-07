@@ -5,9 +5,6 @@ import (
     "encoding/binary"
 )
 
-// Endianness option
-const littleEndian bool = false
-
 func bytesToUint32s(b []byte) []uint32 {
     size := len(b) / 4
     dst := make([]uint32, size)
@@ -15,11 +12,7 @@ func bytesToUint32s(b []byte) []uint32 {
     for i := 0; i < size; i++ {
         j := i * 4
 
-        if littleEndian {
-            dst[i] = binary.LittleEndian.Uint32(b[j:])
-        } else {
-            dst[i] = binary.BigEndian.Uint32(b[j:])
-        }
+        dst[i] = binary.BigEndian.Uint32(b[j:])
     }
 
     return dst
@@ -32,22 +25,14 @@ func uint32sToBytes(w []uint32) []byte {
     for i := 0; i < len(w); i++ {
         j := i * 4
 
-        if littleEndian {
-            binary.LittleEndian.PutUint32(dst[j:], w[i])
-        } else {
-            binary.BigEndian.PutUint32(dst[j:], w[i])
-        }
+        binary.BigEndian.PutUint32(dst[j:], w[i])
     }
 
     return dst
 }
 
 func bytesToUint32(inp []byte) (blk uint32) {
-    if littleEndian {
-        blk = binary.LittleEndian.Uint32(inp[0:])
-    } else {
-        blk = binary.BigEndian.Uint32(inp[0:])
-    }
+    blk = binary.BigEndian.Uint32(inp[0:])
 
     return
 }
@@ -55,11 +40,7 @@ func bytesToUint32(inp []byte) (blk uint32) {
 func uint32ToBytes(blk uint32) [4]byte {
     var sav [4]byte
 
-    if littleEndian {
-        binary.LittleEndian.PutUint32(sav[0:], blk)
-    } else {
-        binary.BigEndian.PutUint32(sav[0:], blk)
-    }
+    binary.BigEndian.PutUint32(sav[0:], blk)
 
     return sav
 }

@@ -120,17 +120,17 @@ i3iRrMnLQscEpZzE4P+guWM=
 
 func Test_JksEncode(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     caCerts, err := x509.ParseCertificates(decodePEM(caCert))
-    assertError(err, "JksEncode-caCerts")
+    assertNoError(err, "JksEncode-caCerts")
 
     cert, err := x509.ParseCertificate(decodePEM(certificate))
-    assertError(err, "JksEncode-cert")
+    assertNoError(err, "JksEncode-cert")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "JksEncode-privateKey")
+    assertNoError(err, "JksEncode-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -142,13 +142,13 @@ func Test_JksEncode(t *testing.T) {
     en.AddTrustedCert("cert-test", cert) // 证书
     pfxData, err := en.Marshal("test-pwd")
 
-    assertError(err, "JksEncode Marshal Error")
+    assertNoError(err, "JksEncode Marshal Error")
     assertNotEmpty(pfxData, "JksEncode-pfxData")
 
     // ========
 
     ks, err := LoadJksFromBytes(pfxData, "test-pwd")
-    assertError(err, "JksEncode-DE")
+    assertNoError(err, "JksEncode-DE")
 
     priAliases := ks.ListPrivateKeys()
     assertNotEmpty(priAliases, "JksEncode-ListPrivateKeys")
@@ -157,17 +157,17 @@ func Test_JksEncode(t *testing.T) {
     assertNotEmpty(certsAliases, "JksEncode-ListCerts")
 
     key, err := ks.GetPrivateKey("priv-test", "test")
-    assertError(err, "JksEncode-GetPrivateKey")
+    assertNoError(err, "JksEncode-GetPrivateKey")
     assertNotEmpty(key, "JksEncode-GetPrivateKey")
     assertEqual(key, privateKey, "JksEncode-GetPrivateKey")
 
     certs, err := ks.GetCertChain("priv-test")
-    assertError(err, "JksEncode-GetCertChain")
+    assertNoError(err, "JksEncode-GetCertChain")
     assertNotEmpty(certs, "JksEncode-GetCertChain")
     assertEqual(certs, caCerts, "JksEncode-GetCertChain")
 
     cert2, err := ks.GetCert("cert-test")
-    assertError(err, "JksEncode-GetCert")
+    assertNoError(err, "JksEncode-GetCert")
     assertNotEmpty(cert2, "JksEncode-GetCert")
     assertEqual(cert2, cert, "JksEncode-GetCert")
 
@@ -175,17 +175,17 @@ func Test_JksEncode(t *testing.T) {
 
 func Test_JceksEncode(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     caCerts, err := x509.ParseCertificates(decodePEM(caCert))
-    assertError(err, "JceksEncode-caCerts")
+    assertNoError(err, "JceksEncode-caCerts")
 
     cert, err := x509.ParseCertificate(decodePEM(certificate))
-    assertError(err, "JceksEncode-cert")
+    assertNoError(err, "JceksEncode-cert")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "JceksEncode-privateKey")
+    assertNoError(err, "JceksEncode-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -200,13 +200,13 @@ func Test_JceksEncode(t *testing.T) {
     en.AddSecretKey("secret-test", secretKey, "test-pass") // 密钥
     pfxData, err := en.Marshal("test-pwd")
 
-    assertError(err, "JceksEncode Marshal Error")
+    assertNoError(err, "JceksEncode Marshal Error")
     assertNotEmpty(pfxData, "JceksEncode-pfxData")
 
     // ========
 
     ks, err := LoadFromBytes(pfxData, "test-pwd")
-    assertError(err, "JceksEncode-DE")
+    assertNoError(err, "JceksEncode-DE")
 
     priAliases := ks.ListPrivateKeys()
     assertNotEmpty(priAliases, "JceksEncode-ListPrivateKeys")
@@ -218,7 +218,7 @@ func Test_JceksEncode(t *testing.T) {
     assertNotEmpty(secretsAliases, "JceksEncode-ListSecretKeys")
 
     key, certs, err := ks.GetPrivateKeyAndCerts("priv-test", "test")
-    assertError(err, "JceksEncode-GetPrivateKeyAndCerts")
+    assertNoError(err, "JceksEncode-GetPrivateKeyAndCerts")
 
     assertNotEmpty(key, "JceksEncode-GetPrivateKeyAndCerts")
     assertEqual(key, privateKey, "JceksEncode-GetPrivateKeyAndCerts")
@@ -227,12 +227,12 @@ func Test_JceksEncode(t *testing.T) {
     assertEqual(certs, caCerts, "JceksEncode-GetPrivateKeyAndCerts")
 
     cert2, err := ks.GetCert("cert-test")
-    assertError(err, "JceksEncode-GetCert")
+    assertNoError(err, "JceksEncode-GetCert")
     assertNotEmpty(cert2, "JceksEncode-GetCert")
     assertEqual(cert2, cert, "JceksEncode-GetCert")
 
     secret, err := ks.GetSecretKey("secret-test", "test-pass")
-    assertError(err, "JceksEncode-GetSecretKey")
+    assertNoError(err, "JceksEncode-GetSecretKey")
     assertNotEmpty(secret, "JceksEncode-GetSecretKey")
     assertEqual(secret, secretKey, "JceksEncode-GetSecretKey")
 

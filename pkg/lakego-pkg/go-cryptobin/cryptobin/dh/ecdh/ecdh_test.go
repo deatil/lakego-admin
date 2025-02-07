@@ -8,7 +8,7 @@ import (
 
 func Test_CreateKey(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().GenerateKey()
 
@@ -16,13 +16,13 @@ func Test_CreateKey(t *testing.T) {
     objEnPriKey := obj.CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
     objPubKey := obj.CreatePublicKey()
 
-    assertError(objPriKey.Error(), "CreateKey-objPriKey")
+    assertNoError(objPriKey.Error(), "CreateKey-objPriKey")
     assertNotEmpty(objPriKey.ToKeyString(), "CreateKey-objPriKey")
 
-    assertError(objEnPriKey.Error(), "CreateKey-objEnPriKey")
+    assertNoError(objEnPriKey.Error(), "CreateKey-objEnPriKey")
     assertNotEmpty(objEnPriKey.ToKeyString(), "CreateKey-objEnPriKey")
 
-    assertError(objPubKey.Error(), "CreateKey-objPubKey")
+    assertNoError(objPubKey.Error(), "CreateKey-objPubKey")
     assertNotEmpty(objPubKey.ToKeyString(), "CreateKey-objPubKey")
 }
 
@@ -32,7 +32,7 @@ func Test_CreateSecretKey(t *testing.T) {
 }
 
 func test_CreateSecretKey(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
@@ -50,21 +50,21 @@ func test_CreateSecretKey(t *testing.T) {
         FromPrivateKey([]byte(objPriKey1)).
         FromPublicKey([]byte(objPubKey2)).
         CreateSecretKey()
-    assertError(objSecret1.Error(), "CreateSecretKey-SecretKey")
+    assertNoError(objSecret1.Error(), "CreateSecretKey-SecretKey")
     assertNotEmpty(objSecret1.ToHexString(), "CreateSecretKey-SecretKey")
 
     objSecret2 := New().
         FromPrivateKey([]byte(objPriKey2)).
         FromPublicKey([]byte(objPubKey1)).
         CreateSecretKey()
-    assertError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
+    assertNoError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
     assertNotEmpty(objSecret2.ToHexString(), "CreateSecretKey-SecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "CreateSecretKey-Equal")
 }
 
 func test_CreateSecretKeyWithPassword(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assert := cryptobin_test.AssertEqualT(t)
 
@@ -82,14 +82,14 @@ func test_CreateSecretKeyWithPassword(t *testing.T) {
         FromPrivateKeyWithPassword([]byte(objPriKey1), "123").
         FromPublicKey([]byte(objPubKey2)).
         CreateSecretKey()
-    assertError(objSecret1.Error(), "CreateSecretKey-SecretKey")
+    assertNoError(objSecret1.Error(), "CreateSecretKey-SecretKey")
     assertNotEmpty(objSecret1.ToHexString(), "CreateSecretKey-SecretKey")
 
     objSecret2 := New().
         FromPrivateKey([]byte(objPriKey2)).
         FromPublicKey([]byte(objPubKey1)).
         CreateSecretKey()
-    assertError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
+    assertNoError(objSecret2.Error(), "CreateSecretKey-SecretKey2")
     assertNotEmpty(objSecret2.ToHexString(), "CreateSecretKey-SecretKey2")
 
     assert(objSecret1.ToHexString(), objSecret2.ToHexString(), "CreateSecretKey-Equal")

@@ -30,8 +30,8 @@ var (
 
 func Test_XMLSign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -42,7 +42,7 @@ func Test_XMLSign(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "XMLSign-Sign")
+    assertNoError(objSign.Error(), "XMLSign-Sign")
     assertNotEmpty(signed, "XMLSign-Sign")
 
     // 验证
@@ -51,14 +51,14 @@ func Test_XMLSign(t *testing.T) {
         FromXMLPublicKey([]byte(pubkeyXML)).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "XMLSign-Verify")
-    assertBool(objVerify.ToVerify(), "XMLSign-Verify")
+    assertNoError(objVerify.Error(), "XMLSign-Verify")
+    assertTrue(objVerify.ToVerify(), "XMLSign-Verify")
 }
 
 func Test_XMLSignASN1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -69,7 +69,7 @@ func Test_XMLSignASN1(t *testing.T) {
         SignASN1()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "XMLSignASN1-Sign")
+    assertNoError(objSign.Error(), "XMLSignASN1-Sign")
     assertNotEmpty(signed, "XMLSignASN1-Sign")
 
     // 验证
@@ -78,14 +78,14 @@ func Test_XMLSignASN1(t *testing.T) {
         FromXMLPublicKey([]byte(pubkeyXML)).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "XMLSignASN1-Verify")
-    assertBool(objVerify.ToVerify(), "XMLSignASN1-Verify")
+    assertNoError(objVerify.Error(), "XMLSignASN1-Verify")
+    assertTrue(objVerify.ToVerify(), "XMLSignASN1-Verify")
 }
 
 func Test_XMLSignBytes(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -96,7 +96,7 @@ func Test_XMLSignBytes(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "XMLSignBytes-Sign")
+    assertNoError(objSign.Error(), "XMLSignBytes-Sign")
     assertNotEmpty(signed, "XMLSignBytes-Sign")
 
     // 验证
@@ -105,14 +105,14 @@ func Test_XMLSignBytes(t *testing.T) {
         FromXMLPublicKey([]byte(pubkeyXML)).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "XMLSignBytes-Verify")
-    assertBool(objVerify.ToVerify(), "XMLSignBytes-Verify")
+    assertNoError(objVerify.Error(), "XMLSignBytes-Verify")
+    assertTrue(objVerify.ToVerify(), "XMLSignBytes-Verify")
 }
 
 func Test_XMLSignWithSeparator(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -123,7 +123,7 @@ func Test_XMLSignWithSeparator(t *testing.T) {
         SignWithSeparator()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignWithSeparator-Sign")
+    assertNoError(objSign.Error(), "SignWithSeparator-Sign")
     assertNotEmpty(signed, "SignWithSeparator-Sign")
 
     // 验证
@@ -132,8 +132,8 @@ func Test_XMLSignWithSeparator(t *testing.T) {
         FromXMLPublicKey([]byte(pubkeyXML)).
         VerifyWithSeparator([]byte(data))
 
-    assertError(objVerify.Error(), "SignWithSeparator-Verify")
-    assertBool(objVerify.ToVerify(), "SignWithSeparator-Verify")
+    assertNoError(objVerify.Error(), "SignWithSeparator-Verify")
+    assertTrue(objVerify.ToVerify(), "SignWithSeparator-Verify")
 }
 
 var testPEMCiphers = []string{
@@ -172,7 +172,7 @@ func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, gen DSA, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -188,7 +188,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, gen DSA, cipher string
             CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
 
         newPrikey := New().
@@ -219,8 +219,8 @@ func Test_SignBytes(t *testing.T) {
 
 func test_SignBytes(t *testing.T, gen DSA) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -230,7 +230,7 @@ func test_SignBytes(t *testing.T, gen DSA) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNoError(objSign.Error(), "SignBytes-Sign")
     assertNotEmpty(signed, "SignBytes-Sign")
 
     // 验证
@@ -238,8 +238,8 @@ func test_SignBytes(t *testing.T, gen DSA) {
         FromBase64String(signed).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "SignBytes-Verify")
-    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
+    assertNoError(objVerify.Error(), "SignBytes-Verify")
+    assertTrue(objVerify.ToVerify(), "SignBytes-Verify")
 }
 
 func Test_EncodingType(t *testing.T) {
@@ -278,8 +278,8 @@ func Test_SignWithEncoding(t *testing.T) {
 
 func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     gen := GenerateKey("L1024N160")
 
@@ -292,7 +292,7 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "test_SignWithEncoding-Sign")
+    assertNoError(objSign.Error(), "test_SignWithEncoding-Sign")
     assertNotEmpty(signed, "test_SignWithEncoding-Sign")
 
     // 验证
@@ -301,12 +301,12 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         WithEncoding(encoding).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "test_SignWithEncoding-Verify")
-    assertBool(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
+    assertNoError(objVerify.Error(), "test_SignWithEncoding-Verify")
+    assertTrue(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
 }
 
 func Test_SignWithEncoding_Two_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertNotEqual := cryptobin_test.AssertNotEqualT(t)
 
@@ -321,7 +321,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
 
     // 签名
@@ -331,7 +331,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed2 := objSign2.ToBase64String()
 
-    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
 
     assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")

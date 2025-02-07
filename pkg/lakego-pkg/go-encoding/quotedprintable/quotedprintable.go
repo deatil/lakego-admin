@@ -8,30 +8,36 @@ import (
     "reflect"
 )
 
-const (
-    stdEncoder  = "0123456789ABCDEF"
-    encoderSize = len(stdEncoder)
-)
+// encodeStd is the standard quotedprintable encoding alphabet
+const encodeStd = "0123456789ABCDEF"
 
-var invalidEncoderSize = fmt.Errorf("quotedprintable: reflect str lenght must be %d.", encoderSize)
+// StdEncoding is the standard quotedprintable encoding
+var StdEncoding = NewEncoding(encodeStd)
 
-var StdEncoding, _ = NewEncoding(stdEncoder)
+/*
+ * Encodings
+ */
 
+// An Encoding is a quotedprintable encoding/decoding scheme defined by a 16-character alphabet.
 type Encoding struct {
-    encoder string
+    encode string
 }
 
-func NewEncoding(encoder string) (*Encoding, error) {
-    if len(encoder) != encoderSize {
-        return nil, invalidEncoderSize
+// NewEncoding returns a new Encoding defined by the given alphabet
+func NewEncoding(encoder string) *Encoding {
+    if len(encoder) != 16 {
+        panic("go-encoding/quotedprintable: encoding alphabet is not 16 bytes long")
     }
 
-    return &Encoding{encoder: encoder}, nil
+    enc := new(Encoding)
+    enc.encode = encoder
+
+    return enc
 }
 
-func (e *Encoding) EncodedLen(n int) int {
-    return 3 * n
-}
+/*
+ * Encoder
+ */
 
 func (e *Encoding) Encode(src []byte) ([]byte, error) {
     dst := make([]byte, e.EncodedLen(len(src)))
@@ -65,9 +71,13 @@ func (e *Encoding) EncodeToString(src []byte) (string, error) {
     return string(buf), err
 }
 
-func (e *Encoding) DecodedLen(n int) int {
-    return n
+func (e *Encoding) EncodedLen(n int) int {
+    return 3 * n
 }
+
+/*
+ * Decoder
+ */
 
 func (e *Encoding) Decode(src []byte) ([]byte, error) {
     dst := make([]byte, e.DecodedLen(len(src)))
@@ -153,8 +163,12 @@ func (e *Encoding) DecodeString(s string) ([]byte, error) {
     return e.Decode(*(*[]byte)(unsafe.Pointer(&bh)))
 }
 
+func (e *Encoding) DecodedLen(n int) int {
+    return n
+}
+
 func (e *Encoding) encodeByte(dst []byte, b byte) {
     dst[0] = '='
-    dst[1] = e.encoder[b>>4]
-    dst[2] = e.encoder[b&0x0f]
+    dst[1] = e.encode[b>>4]
+    dst[2] = e.encode[b&0x0f]
 }

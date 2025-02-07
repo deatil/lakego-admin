@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_WakeNoPadding(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -26,7 +26,7 @@ func Test_WakeNoPadding(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "WakeNoPadding-Encode")
+    assertNoError(cypt.Error(), "WakeNoPadding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
@@ -36,7 +36,7 @@ func Test_WakeNoPadding(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "WakeNoPadding-Decode")
+    assertNoError(cyptde.Error(), "WakeNoPadding-Decode")
 
     assert(data, cyptdeStr, "WakeNoPadding-res")
 }

@@ -15,7 +15,7 @@ func Test_Interface(t *testing.T) {
 }
 
 func Test_PKTreeKAT1(t *testing.T) {
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
     assertEqual := test.AssertEqualT(t)
 
     seed, err := hex.DecodeString("558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439")
@@ -37,7 +37,7 @@ func Test_PKTreeKAT1(t *testing.T) {
     otstc := LMOTS_SHA256_N32_W4
 
     lms_priv, err := GenerateKeyFromSeed(tc, otstc, ID(id), seed)
-    assertError(err, "GenerateKeyFromSeed")
+    assertNoError(err, "GenerateKeyFromSeed")
 
     lms_pub := lms_priv.PublicKey
 
@@ -46,7 +46,7 @@ func Test_PKTreeKAT1(t *testing.T) {
 }
 
 func Test_BadPrivateKeyPanics(t *testing.T) {
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
+    assertError := test.AssertErrorT(t)
 
     priv_bytes, err := hex.DecodeString(
         "000000060000000300000005" +
@@ -60,11 +60,11 @@ func Test_BadPrivateKeyPanics(t *testing.T) {
     // This should panic
     priv_bytes[6] = 0xff
     _, err = NewPrivateKeyFromBytes(priv_bytes)
-    assertNotErrorNil(err, "NewPrivateKeyFromBytes")
+    assertError(err, "NewPrivateKeyFromBytes")
 }
 
 func Test_ShortPrivateKeyReturnsError(t *testing.T) {
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
+    assertError := test.AssertErrorT(t)
 
     priv_bytes, err := hex.DecodeString("000000060000000300000005d08fabd4a2091ff0a8cb4ed834e74534")
     if err != nil {
@@ -72,14 +72,14 @@ func Test_ShortPrivateKeyReturnsError(t *testing.T) {
     }
 
     _, err = NewPrivateKeyFromBytes(priv_bytes)
-    assertNotErrorNil(err, "NewPrivateKeyFromBytes")
+    assertError(err, "NewPrivateKeyFromBytes")
 }
 
 func Test_SignKAT1(t *testing.T) {
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
     assertEqual := test.AssertEqualT(t)
-    assertBool := test.AssertBoolT(t)
-    assertNotBool := test.AssertNotBoolT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertFalse := test.AssertFalseT(t)
 
     lms_priv_bytes, err := hex.DecodeString(
         "000000060000000300000005" +
@@ -120,7 +120,7 @@ func Test_SignKAT1(t *testing.T) {
 
     // Generate a signature
     sig, err := lms_priv.SignToSignature(rand.Reader, msg, nil)
-    assertError(err, "SignToSignature")
+    assertNoError(err, "SignToSignature")
 
     // Assert incremented
     assertEqual(lms_priv.Q(), uint32(6), "priv.Q")
@@ -140,7 +140,7 @@ func Test_SignKAT1(t *testing.T) {
 
     // VerifyWithSignature the signature is true
     result := lms_public.VerifyWithSignature(msg, sig)
-    assertBool(result, "public.VerifyWithSignature")
+    assertTrue(result, "public.VerifyWithSignature")
 
     // Is the signature as long as we expect?
     sigbytes, err := sig.ToBytes()
@@ -160,12 +160,12 @@ func Test_SignKAT1(t *testing.T) {
 
     // Flipping a bit in the signature should yield a false
     result = lms_public.VerifyWithSignature(msg, sig2)
-    assertNotBool(result, "public.VerifyWithSignature bad")
+    assertFalse(result, "public.VerifyWithSignature bad")
 }
 
 func Test_Verify(t *testing.T) {
-    assertBool := test.AssertBoolT(t)
-    assertNotBool := test.AssertNotBoolT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertFalse := test.AssertFalseT(t)
 
     // Decode from hex
     pubkeybytes, err := hex.DecodeString(
@@ -203,7 +203,7 @@ func Test_Verify(t *testing.T) {
     }
 
     result := publickey.VerifyWithSignature(msg, sig)
-    assertBool(result, "VerifyWithSignature")
+    assertTrue(result, "VerifyWithSignature")
 
     // If we change the signature, it should fail
     sigbytes[3]++
@@ -213,11 +213,11 @@ func Test_Verify(t *testing.T) {
     }
 
     result = publickey.VerifyWithSignature(msg, sig)
-    assertNotBool(result, "VerifyWithSignature bad")
+    assertFalse(result, "VerifyWithSignature bad")
 }
 
 func Test_ShortPublicKeyReturnsError(t *testing.T) {
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
+    assertError := test.AssertErrorT(t)
 
     // Less than 8 bytes
     pub_bytes, err := hex.DecodeString("01020304050607")
@@ -226,13 +226,13 @@ func Test_ShortPublicKeyReturnsError(t *testing.T) {
     }
 
     _, err = NewPublicKeyFromBytes(pub_bytes)
-    assertNotErrorNil(err, "NewPublicKeyFromBytes")
+    assertError(err, "NewPublicKeyFromBytes")
 }
 
 func Test_Encode(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
+    assertNoError := test.AssertNoErrorT(t)
     assertError := test.AssertErrorT(t)
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
 
     // Decode from hex
     pubkeybytes, err := hex.DecodeString(
@@ -246,18 +246,18 @@ func Test_Encode(t *testing.T) {
     }
 
     pubkey, err := NewPublicKeyFromBytes(pubkeybytes)
-    assertError(err, "NewPublicKeyFromBytes")
+    assertNoError(err, "NewPublicKeyFromBytes")
 
     bytes2 := pubkey.ToBytes()
     assertEqual(pubkeybytes, bytes2, "pubkey.ToBytes")
 
     bytes2[0] = 0xff
     _, err = NewPublicKeyFromBytes(bytes2)
-    assertNotErrorNil(err, "NewPublicKeyFromBytes")
+    assertError(err, "NewPublicKeyFromBytes")
 }
 
 func Test_Rfc8554KAT2(t *testing.T) {
-    assertBool := test.AssertBoolT(t)
+    assertTrue := test.AssertTrueT(t)
 
     var lms_public_key_bytes []byte = []byte{
         0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x04,
@@ -790,22 +790,22 @@ func Test_Rfc8554KAT2(t *testing.T) {
     }
 
     result := pk.VerifyWithSignature(message_bytes, sig)
-    assertBool(result, "VerifyWithSignature")
+    assertTrue(result, "VerifyWithSignature")
 }
 
 func Test_SignatureFromBytes(t *testing.T) {
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
+    assertError := test.AssertErrorT(t)
 
     for i := 0; i < 1000; i++ {
         bytes := make([]byte, i)
         _, err := NewSignatureFromBytes(bytes)
-        assertNotErrorNil(err, "NewSignatureFromBytes")
+        assertError(err, "NewSignatureFromBytes")
     }
 }
 
 func test_SignVerify(t *testing.T, tc ILmsParam, otstc ILmotsParam) {
-    assertBool := test.AssertBoolT(t)
-    assertError := test.AssertErrorT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     seed, err := hex.DecodeString("558b8966c48ae9cb898b423c83443aae014a72f1b1ab5cc85cf1d892903b5439")
     if err != nil {
@@ -818,15 +818,15 @@ func test_SignVerify(t *testing.T, tc ILmsParam, otstc ILmotsParam) {
     }
 
     lms_priv, err := GenerateKeyFromSeed(tc, otstc, ID(id), seed)
-    assertError(err, "GenerateKeyFromSeed")
+    assertNoError(err, "GenerateKeyFromSeed")
 
     lms_pub := lms_priv.PublicKey
 
     lms_sig, err := lms_priv.Sign(rand.Reader, []byte("example"), nil)
-    assertError(err, "priv.SignToSignature()")
+    assertNoError(err, "priv.SignToSignature()")
 
     result := lms_pub.Verify([]byte("example"), lms_sig)
-    assertBool(result, "SignVerify")
+    assertTrue(result, "SignVerify")
 }
 
 func Test_SignVerify(t *testing.T) {
@@ -855,24 +855,24 @@ func Test_ParamName(t *testing.T) {
 }
 
 func Test_Equal(t *testing.T) {
-    assertBool := test.AssertBoolT(t)
-    assertNotBool := test.AssertNotBoolT(t)
-    assertError := test.AssertErrorT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertFalse := test.AssertFalseT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     t.Run("good", func(t *testing.T) {
         tc := LMS_SHA256_M32_H10
         otstc := LMOTS_SHA256_N32_W4
 
         lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
-        assertError(err, "GenerateKey")
+        assertNoError(err, "GenerateKey")
 
         lms_pub := lms_priv.PublicKey
 
         lms_priv2 := lms_priv
         lms_pub2 := lms_pub
 
-        assertBool(lms_priv2.Equal(lms_priv), "PrivateKey")
-        assertBool(lms_pub2.Equal(&lms_pub), "PublicKey")
+        assertTrue(lms_priv2.Equal(lms_priv), "PrivateKey")
+        assertTrue(lms_pub2.Equal(&lms_pub), "PublicKey")
 
         // =========
 
@@ -882,8 +882,8 @@ func Test_Equal(t *testing.T) {
         lms_priv3, _ := NewPrivateKeyFromBytes(privBytes)
         lms_pub3, _ := NewPublicKeyFromBytes(pubBytes)
 
-        assertBool(lms_priv3.Equal(lms_priv), "PrivateKey Bytes")
-        assertBool(lms_pub3.Equal(&lms_pub), "PublicKey Bytes")
+        assertTrue(lms_priv3.Equal(lms_priv), "PrivateKey Bytes")
+        assertTrue(lms_pub3.Equal(&lms_pub), "PublicKey Bytes")
     })
 
     t.Run("bad", func(t *testing.T) {
@@ -891,7 +891,7 @@ func Test_Equal(t *testing.T) {
         otstc := LMOTS_SHA256_N32_W4
 
         lms_priv, err := GenerateKey(rand.Reader, tc, otstc)
-        assertError(err, "GenerateKey")
+        assertNoError(err, "GenerateKey")
 
         lms_pub := lms_priv.PublicKey
 
@@ -901,11 +901,11 @@ func Test_Equal(t *testing.T) {
         otstc2 := LMOTS_SHA256_N32_W4
 
         lms_priv2, err := GenerateKey(rand.Reader, tc2, otstc2)
-        assertError(err, "GenerateKey2")
+        assertNoError(err, "GenerateKey2")
 
         lms_pub2 := lms_priv2.PublicKey
 
-        assertNotBool(lms_priv2.Equal(lms_priv), "PrivateKey")
-        assertNotBool(lms_pub2.Equal(&lms_pub), "PublicKey")
+        assertFalse(lms_priv2.Equal(lms_priv), "PrivateKey")
+        assertFalse(lms_pub2.Equal(&lms_pub), "PublicKey")
     })
 }

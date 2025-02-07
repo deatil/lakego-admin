@@ -8,11 +8,11 @@ import (
 )
 
 func Test_Gen_PKCS1PrivateKey(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     gen := GenerateKey("Bign256v1")
-    assertError(gen.Error(), "Test_Gen_PKCS1PrivateKey")
+    assertNoError(gen.Error(), "Test_Gen_PKCS1PrivateKey")
 
     priv := gen.
         CreatePKCS8PrivateKey().
@@ -26,11 +26,11 @@ func Test_Gen_PKCS1PrivateKey(t *testing.T) {
 }
 
 func Test_Gen_PKCS8PrivateKey(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     gen := GenerateKey("Bign256v1")
-    assertError(gen.Error(), "Test_Gen_PKCS8PrivateKey")
+    assertNoError(gen.Error(), "Test_Gen_PKCS8PrivateKey")
 
     priv := gen.
         CreatePKCS8PrivateKey().
@@ -44,13 +44,13 @@ func Test_Gen_PKCS8PrivateKey(t *testing.T) {
 }
 
 func Test_PublickeyXY(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PublickeyXY")
+    assertNoError(obj.Error(), "PublickeyXY")
 
     x := obj.GetPublicKeyUncompressString()
     xx := obj.GetPublicKeyCompressString()
@@ -61,8 +61,8 @@ func Test_PublickeyXY(t *testing.T) {
     xk := New().SetCurve("Bign256v1").FromPublicKeyUncompressString(x)
     xxk := New().SetCurve("Bign256v1").FromPublicKeyCompressString(xx)
 
-    assertError(xk.Error(), "PublickeyXY-xk")
-    assertError(xxk.Error(), "PublickeyXY-xxk")
+    assertNoError(xk.Error(), "PublickeyXY-xk")
+    assertNoError(xxk.Error(), "PublickeyXY-xxk")
 
     assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xk")
     assertEqual(xxk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xxk")
@@ -70,13 +70,13 @@ func Test_PublickeyXY(t *testing.T) {
 }
 
 func Test_PublickeyXY_2(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PublickeyXY")
+    assertNoError(obj.Error(), "PublickeyXY")
 
     x := obj.GetPublicKeyUncompressString()
     xx := obj.GetPublicKeyCompressString()
@@ -87,8 +87,8 @@ func Test_PublickeyXY_2(t *testing.T) {
     xk := New().SetCurve("Bign256v1").FromPublicKeyString(x)
     xxk := New().SetCurve("Bign256v1").FromPublicKeyString(xx)
 
-    assertError(xk.Error(), "PublickeyXY-xk")
-    assertError(xxk.Error(), "PublickeyXY-xxk")
+    assertNoError(xk.Error(), "PublickeyXY-xk")
+    assertNoError(xxk.Error(), "PublickeyXY-xxk")
 
     assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xk")
     assertEqual(xxk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY-xxk")
@@ -96,13 +96,13 @@ func Test_PublickeyXY_2(t *testing.T) {
 }
 
 func Test_PublickeyXY_String(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PublickeyXY_3")
+    assertNoError(obj.Error(), "PublickeyXY_3")
 
     x := obj.GetPublicKeyXString()
     y := obj.GetPublicKeyYString()
@@ -112,18 +112,18 @@ func Test_PublickeyXY_String(t *testing.T) {
 
     xk := New().SetCurve("Bign256v1").FromPublicKeyXYString(x, y)
 
-    assertError(xk.Error(), "PublickeyXY_3-xk")
+    assertNoError(xk.Error(), "PublickeyXY_3-xk")
     assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY_3-xk")
 }
 
 func Test_PublickeyXY_Bytes(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PublickeyXY_Bytes")
+    assertNoError(obj.Error(), "PublickeyXY_Bytes")
 
     pub := obj.GetPublicKey()
 
@@ -135,18 +135,18 @@ func Test_PublickeyXY_Bytes(t *testing.T) {
 
     xk := New().SetCurve("Bign256v1").FromPublicKeyXYBytes(x, y)
 
-    assertError(xk.Error(), "PublickeyXY_Bytes-xk")
+    assertNoError(xk.Error(), "PublickeyXY_Bytes-xk")
     assertEqual(xk.GetPublicKey(), obj.GetPublicKey(), "PublickeyXY_Bytes-xk")
 }
 
 func Test_PrivateKeyD(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PrivateKeyD")
+    assertNoError(obj.Error(), "PrivateKeyD")
 
     d := obj.GetPrivateKeyString()
 
@@ -154,19 +154,19 @@ func Test_PrivateKeyD(t *testing.T) {
 
     xk := New().SetCurve("Bign256v1").FromPrivateKeyString(d)
 
-    assertError(xk.Error(), "PrivateKeyD-xk")
+    assertNoError(xk.Error(), "PrivateKeyD-xk")
 
     assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "PrivateKeyD-xk")
 }
 
 func Test_PrivateKey_Bytes(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
 
-    assertError(obj.Error(), "PrivateKeyD")
+    assertNoError(obj.Error(), "PrivateKeyD")
 
     priv := obj.GetPrivateKey()
 
@@ -176,25 +176,25 @@ func Test_PrivateKey_Bytes(t *testing.T) {
 
     xk := New().SetCurve("Bign256v1").FromPrivateKeyBytes(d)
 
-    assertError(xk.Error(), "PrivateKey_Bytes-xk")
+    assertNoError(xk.Error(), "PrivateKey_Bytes-xk")
 
     assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "PrivateKey_Bytes-xk")
 }
 
 func Test_GetPrivateKeyString(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
-    assertError(obj.Error(), "GetPrivateKeyString")
+    assertNoError(obj.Error(), "GetPrivateKeyString")
 
     priv := obj.GetPrivateKeyString()
     assertNotEmpty(priv, "GetPrivateKeyString")
 
     xk := New().SetCurve("Bign256v1").FromPrivateKeyString(priv)
 
-    assertError(xk.Error(), "GetPrivateKeyString-xk")
+    assertNoError(xk.Error(), "GetPrivateKeyString-xk")
     assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "GetPrivateKeyString-xk")
 }
 
@@ -232,7 +232,7 @@ func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -250,7 +250,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
             CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
 
         newPrikey := New().
@@ -264,12 +264,12 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
 }
 
 func Test_PKCS8PrivateKey_Der(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
-    assertError(obj.Error(), "PKCS8PrivateKey_Der")
+    assertNoError(obj.Error(), "PKCS8PrivateKey_Der")
 
     privDer := obj.
         CreatePKCS8PrivateKey().
@@ -280,18 +280,18 @@ func Test_PKCS8PrivateKey_Der(t *testing.T) {
     res := New().
         SetCurve("Bign256v1").
         FromPKCS8PrivateKeyDer(privDer)
-    assertError(res.Error(), "PKCS8PrivateKey_Der-res")
+    assertNoError(res.Error(), "PKCS8PrivateKey_Der-res")
 
     assertEqual(res.GetPrivateKey(), obj.GetPrivateKey(), "PKCS8PrivateKey_Der-res")
 }
 
 func Test_PKCS1PrivateKey_Der(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
-    assertError(obj.Error(), "PKCS1PrivateKey_Der")
+    assertNoError(obj.Error(), "PKCS1PrivateKey_Der")
 
     privDer := obj.
         CreatePKCS1PrivateKey().
@@ -302,18 +302,18 @@ func Test_PKCS1PrivateKey_Der(t *testing.T) {
     res := New().
         SetCurve("Bign256v1").
         FromPKCS1PrivateKeyDer(privDer)
-    assertError(res.Error(), "PKCS1PrivateKey_Der-res")
+    assertNoError(res.Error(), "PKCS1PrivateKey_Der-res")
 
     assertEqual(res.GetPrivateKey(), obj.GetPrivateKey(), "PKCS1PrivateKey_Der-res")
 }
 
 func Test_PublicKey_Der(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     obj := GenerateKey("Bign256v1")
-    assertError(obj.Error(), "PublicKey_Der")
+    assertNoError(obj.Error(), "PublicKey_Der")
 
     privDer := obj.
         CreatePublicKey().
@@ -324,7 +324,7 @@ func Test_PublicKey_Der(t *testing.T) {
     res := New().
         SetCurve("Bign256v1").
         FromPublicKeyDer(privDer)
-    assertError(res.Error(), "PublicKey_Der-res")
+    assertNoError(res.Error(), "PublicKey_Der-res")
 
     assertEqual(res.GetPublicKey(), obj.GetPublicKey(), "PublicKey_Der-res")
 }
@@ -366,8 +366,8 @@ func Test_SignWithEncoding(t *testing.T) {
 
 func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     gen := GenerateKey("Bign256v1")
 
@@ -385,7 +385,7 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "test_SignWithEncoding-Sign")
+    assertNoError(objSign.Error(), "test_SignWithEncoding-Sign")
     assertNotEmpty(signed, "test_SignWithEncoding-Sign")
 
     // 验证
@@ -395,12 +395,12 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         WithEncoding(encoding).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "test_SignWithEncoding-Verify")
-    assertBool(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
+    assertNoError(objVerify.Error(), "test_SignWithEncoding-Verify")
+    assertTrue(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
 }
 
 func Test_SignWithEncoding_Two_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertNotEqual := cryptobin_test.AssertNotEqualT(t)
 
@@ -420,7 +420,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
 
     // 签名
@@ -431,7 +431,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed2 := objSign2.ToBase64String()
 
-    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
 
     assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")

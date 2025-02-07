@@ -15,8 +15,8 @@ import (
 )
 
 func Test_SignBytesWithHashFunc(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -32,7 +32,7 @@ func Test_SignBytesWithHashFunc(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignBytesWithHashFunc-Sign")
+    assertNoError(objSign.Error(), "SignBytesWithHashFunc-Sign")
     assertNotEmpty(signed, "SignBytesWithHashFunc-Sign")
 
     // 验证
@@ -42,12 +42,12 @@ func Test_SignBytesWithHashFunc(t *testing.T) {
         WithUID(uid).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "SignBytesWithHashFunc-Verify")
-    assertBool(objVerify.ToVerify(), "SignBytesWithHashFunc-Verify")
+    assertNoError(objVerify.Error(), "SignBytesWithHashFunc-Verify")
+    assertTrue(objVerify.ToVerify(), "SignBytesWithHashFunc-Verify")
 }
 
 func Test_SM2_SignBytes(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     uid := "N002462434000000"
@@ -55,7 +55,7 @@ func Test_SM2_SignBytes(t *testing.T) {
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "sm2keyDecode")
+    assertNoError(err2, "sm2keyDecode")
 
     data := "123123"
 
@@ -70,15 +70,15 @@ func Test_SM2_SignBytes(t *testing.T) {
 }
 
 func Test_SM2_VerifyBytes(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     uid := "N002462434000000"
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "sm2keyDecode")
+    assertNoError(err2, "sm2keyDecode")
 
     data := "123123"
     signedData := "S4vhrJoHXn98ByNw73CSOCqguYeuc4LrhsIHqkv/xA8Waw7YOLsfQzOKzxAjF0vyPKKSEQpq4zEgj9Mb/VL1pQ=="
@@ -90,19 +90,19 @@ func Test_SM2_VerifyBytes(t *testing.T) {
         WithUID([]byte(uid)).
         VerifyBytes([]byte(data))
 
-    assertError(verify.Error(), "sm2VerifyError")
-    assertBool(verify.ToVerify(), "sm2-VerifyBytes")
+    assertNoError(verify.Error(), "sm2VerifyError")
+    assertTrue(verify.ToVerify(), "sm2-VerifyBytes")
 }
 
 func Test_SM2_Encrypt_C1C2C3(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "Encrypt_C1C2C3-sm2keyDecode")
+    assertNoError(err2, "Encrypt_C1C2C3-sm2keyDecode")
 
     data := "test-pass"
 
@@ -116,7 +116,7 @@ func Test_SM2_Encrypt_C1C2C3(t *testing.T) {
         Encrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Encrypt_C1C2C3-Encrypt")
+    assertNoError(en.Error(), "Encrypt_C1C2C3-Encrypt")
     assertNotEmpty(enData, "Encrypt_C1C2C3-Encrypt")
 
     de := sm2.
@@ -126,7 +126,7 @@ func Test_SM2_Encrypt_C1C2C3(t *testing.T) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "Encrypt_C1C2C3-Decrypt")
+    assertNoError(de.Error(), "Encrypt_C1C2C3-Decrypt")
     assertNotEmpty(deData, "Encrypt_C1C2C3-Decrypt")
 
     assertEqual(data, deData, "Encrypt_C1C2C3-Dedata")
@@ -134,13 +134,13 @@ func Test_SM2_Encrypt_C1C2C3(t *testing.T) {
 
 func Test_SM2_Encrypt_C1C3C2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "Encrypt_C1C3C2-sm2keyDecode")
+    assertNoError(err2, "Encrypt_C1C3C2-sm2keyDecode")
 
     data := "test-pass"
 
@@ -154,7 +154,7 @@ func Test_SM2_Encrypt_C1C3C2(t *testing.T) {
         Encrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Encrypt_C1C3C2-Encrypt")
+    assertNoError(en.Error(), "Encrypt_C1C3C2-Encrypt")
     assertNotEmpty(enData, "Encrypt_C1C3C2-Encrypt")
 
     de := sm2.
@@ -164,7 +164,7 @@ func Test_SM2_Encrypt_C1C3C2(t *testing.T) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "Encrypt_C1C3C2-Decrypt")
+    assertNoError(de.Error(), "Encrypt_C1C3C2-Decrypt")
     assertNotEmpty(deData, "Encrypt_C1C3C2-Decrypt")
 
     assertEqual(data, deData, "Encrypt_C1C3C2-Dedata")
@@ -172,13 +172,13 @@ func Test_SM2_Encrypt_C1C3C2(t *testing.T) {
 
 func Test_SM2_EncryptASN1_C1C2C3(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "DecryptASN1_C1C2C3-sm2keyDecode")
+    assertNoError(err2, "DecryptASN1_C1C2C3-sm2keyDecode")
 
     data := "test-pass"
 
@@ -192,7 +192,7 @@ func Test_SM2_EncryptASN1_C1C2C3(t *testing.T) {
         EncryptASN1()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "DecryptASN1_C1C2C3-Encrypt")
+    assertNoError(en.Error(), "DecryptASN1_C1C2C3-Encrypt")
     assertNotEmpty(enData, "DecryptASN1_C1C2C3-Encrypt")
 
     de := sm2.
@@ -202,7 +202,7 @@ func Test_SM2_EncryptASN1_C1C2C3(t *testing.T) {
         DecryptASN1()
     deData := de.ToString()
 
-    assertError(de.Error(), "DecryptASN1_C1C2C3-Decrypt")
+    assertNoError(de.Error(), "DecryptASN1_C1C2C3-Decrypt")
     assertNotEmpty(deData, "DecryptASN1_C1C2C3-Decrypt")
 
     assertEqual(data, deData, "DecryptASN1_C1C2C3-Dedata")
@@ -210,13 +210,13 @@ func Test_SM2_EncryptASN1_C1C2C3(t *testing.T) {
 
 func Test_SM2_EncryptASN1_C1C3C2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "DecryptASN1_C1C3C2-sm2keyDecode")
+    assertNoError(err2, "DecryptASN1_C1C3C2-sm2keyDecode")
 
     data := "test-pass"
 
@@ -230,7 +230,7 @@ func Test_SM2_EncryptASN1_C1C3C2(t *testing.T) {
         EncryptASN1()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "DecryptASN1_C1C3C2-Encrypt")
+    assertNoError(en.Error(), "DecryptASN1_C1C3C2-Encrypt")
     assertNotEmpty(enData, "DecryptASN1_C1C3C2-Encrypt")
 
     de := sm2.
@@ -240,7 +240,7 @@ func Test_SM2_EncryptASN1_C1C3C2(t *testing.T) {
         DecryptASN1()
     deData := de.ToString()
 
-    assertError(de.Error(), "DecryptASN1_C1C3C2-Decrypt")
+    assertNoError(de.Error(), "DecryptASN1_C1C3C2-Decrypt")
     assertNotEmpty(deData, "DecryptASN1_C1C3C2-Decrypt")
 
     assertEqual(data, deData, "DecryptASN1_C1C3C2-Dedata")
@@ -265,8 +265,8 @@ WxQFjrpxv5Ae3/PgH9vewt4AoEvRqcwOBWtAXNDP6E74e5ocagfMUbq4hQ==
 )
 
 func Test_PKCS1Sign(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -278,7 +278,7 @@ func Test_PKCS1Sign(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1Sign-Sign")
+    assertNoError(objSign.Error(), "PKCS1Sign-Sign")
     assertNotEmpty(signed, "PKCS1Sign-Sign")
 
     // 验证
@@ -287,13 +287,13 @@ func Test_PKCS1Sign(t *testing.T) {
         FromPublicKey([]byte(pubkeyPKCS1)).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1Sign-Verify")
-    assertBool(objVerify.ToVerify(), "PKCS1Sign-Verify")
+    assertNoError(objVerify.Error(), "PKCS1Sign-Verify")
+    assertTrue(objVerify.ToVerify(), "PKCS1Sign-Verify")
 }
 
 func Test_PKCS1Encrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "123tesfd!df"
@@ -304,7 +304,7 @@ func Test_PKCS1Encrypt(t *testing.T) {
         Encrypt()
     enData := objEn.ToBase64String()
 
-    assertError(objEn.Error(), "PKCS1Encrypt-Encrypt")
+    assertNoError(objEn.Error(), "PKCS1Encrypt-Encrypt")
     assertNotEmpty(enData, "PKCS1Encrypt-Encrypt")
 
     objDe := New().
@@ -313,7 +313,7 @@ func Test_PKCS1Encrypt(t *testing.T) {
         Decrypt()
     deData := objDe.ToString()
 
-    assertError(objDe.Error(), "PKCS1Encrypt-Decrypt")
+    assertNoError(objDe.Error(), "PKCS1Encrypt-Decrypt")
     assertNotEmpty(deData, "PKCS1Encrypt-Decrypt")
 
     assertEqual(data, deData, "PKCS1Encrypt-Dedata")
@@ -326,7 +326,7 @@ var (
 )
 
 func Test_CreateKey(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pub := New().
@@ -334,7 +334,7 @@ func Test_CreateKey(t *testing.T) {
         CreatePublicKey()
     pubData := pub.ToKeyString()
 
-    assertError(pub.Error(), "CreateKey-pub")
+    assertNoError(pub.Error(), "CreateKey-pub")
     assertNotEmpty(pubData, "CreateKey-pub")
 
     // ======
@@ -344,7 +344,7 @@ func Test_CreateKey(t *testing.T) {
         CreatePrivateKey()
     priData := pri.ToKeyString()
 
-    assertError(pri.Error(), "CreateKey-pri")
+    assertNoError(pri.Error(), "CreateKey-pri")
     assertNotEmpty(priData, "CreateKey-pri")
 }
 
@@ -382,7 +382,7 @@ func Test_CreatePKCS1PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -400,7 +400,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
             CreatePKCS1PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS1PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS1PrivateKeyWithPassword-pri")
 
         newPrikey := New().
@@ -419,7 +419,7 @@ func test_CreatePKCS1PrivateKeyWithPassword(t *testing.T, cipher string) {
 // SignBytes 为签名数据明文拼接
 // SignASN1 为签名数据做 ASN.1 编码
 func Test_ZhaoshangBank_Check(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     // sm2 签名【招商银行】，
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
@@ -445,7 +445,7 @@ func Test_ZhaoshangBank_Check(t *testing.T) {
         // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
-    assertBool(sm2Verify, "ZhaoshangBank_Check")
+    assertTrue(sm2Verify, "ZhaoshangBank_Check")
 }
 
 func Test_ZhaoshangBank_Sign(t *testing.T) {
@@ -492,7 +492,7 @@ func Test_ZhaoshangBank_Sign2(t *testing.T) {
 }
 
 func Test_ZhaoshangBank_Verify(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     // 未压缩公钥明文, 16进制
     sm2pubkey := "046374f8947b208b3f28a2dfaec78510f858bc1bad37f038b95903975c9636beb859653fb145727d02d65cd68f202abc2ff93eecea477b1dc81f4f650621b89e9d"
@@ -511,11 +511,11 @@ func Test_ZhaoshangBank_Verify(t *testing.T) {
         // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
-    assertBool(sm2Verify, "Test_ZhaoshangBank_Verify")
+    assertTrue(sm2Verify, "Test_ZhaoshangBank_Verify")
 }
 
 func Test_ZhaoshangBank_Verify2(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     // 压缩公钥明文, 16进制
     sm2pubkey := "036374f8947b208b3f28a2dfaec78510f858bc1bad37f038b95903975c9636beb8"
@@ -534,7 +534,7 @@ func Test_ZhaoshangBank_Verify2(t *testing.T) {
         // VerifyASN1([]byte(sm2data)).
         ToVerify()
 
-    assertBool(sm2Verify, "Test_ZhaoshangBank_Verify2")
+    assertTrue(sm2Verify, "Test_ZhaoshangBank_Verify2")
 }
 
 func Test_PKCS1SignWithHash(t *testing.T) {
@@ -561,8 +561,8 @@ func Test_PKCS1SignWithHash(t *testing.T) {
 }
 
 func test_PKCS1SignWithHash(t *testing.T, hash string) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -576,7 +576,7 @@ func test_PKCS1SignWithHash(t *testing.T, hash string) {
             Sign()
         signed := objSign.ToBase64String()
 
-        assertError(objSign.Error(), "PKCS1SignWithHash-Sign")
+        assertNoError(objSign.Error(), "PKCS1SignWithHash-Sign")
         assertNotEmpty(signed, "PKCS1SignWithHash-Sign")
 
         // 验证
@@ -586,14 +586,14 @@ func test_PKCS1SignWithHash(t *testing.T, hash string) {
             SetSignHash(hash).
             Verify([]byte(data))
 
-        assertError(objVerify.Error(), "PKCS1SignWithHash-Verify")
-        assertBool(objVerify.ToVerify(), "PKCS1SignWithHash-Verify")
+        assertNoError(objVerify.Error(), "PKCS1SignWithHash-Verify")
+        assertTrue(objVerify.ToVerify(), "PKCS1SignWithHash-Verify")
     })
 }
 
 func Test_PKCS1SignWithHashFunc(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -606,7 +606,7 @@ func Test_PKCS1SignWithHashFunc(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
+    assertNoError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
     assertNotEmpty(signed, "PKCS1SignWithHashFunc-Sign")
 
     // 验证
@@ -616,13 +616,13 @@ func Test_PKCS1SignWithHashFunc(t *testing.T) {
         WithSignHash(md5.New).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
-    assertBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
+    assertNoError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
+    assertTrue(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
 }
 
 func Test_PKCS1SignASN1WithHashFunc(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -637,7 +637,7 @@ func Test_PKCS1SignASN1WithHashFunc(t *testing.T) {
         SignASN1()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
+    assertNoError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
     assertNotEmpty(signed, "PKCS1SignWithHashFunc-Sign")
 
     // 验证
@@ -648,13 +648,13 @@ func Test_PKCS1SignASN1WithHashFunc(t *testing.T) {
         WithUID(uid).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
-    assertBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
+    assertNoError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
+    assertTrue(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
 }
 
 func Test_PKCS1SignBytesWithHashFunc(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -669,7 +669,7 @@ func Test_PKCS1SignBytesWithHashFunc(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
+    assertNoError(objSign.Error(), "PKCS1SignWithHashFunc-Sign")
     assertNotEmpty(signed, "PKCS1SignWithHashFunc-Sign")
 
     // 验证
@@ -680,13 +680,13 @@ func Test_PKCS1SignBytesWithHashFunc(t *testing.T) {
         WithUID(uid).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
-    assertBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
+    assertNoError(objVerify.Error(), "PKCS1SignWithHashFunc-Verify")
+    assertTrue(objVerify.ToVerify(), "PKCS1SignWithHashFunc-Verify")
 }
 
 func Test_PKCS1SignBytesWithHashFunc_Fail(t *testing.T) {
-    assertNotBool := cryptobin_test.AssertNotBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertFalse := cryptobin_test.AssertFalseT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -701,7 +701,7 @@ func Test_PKCS1SignBytesWithHashFunc_Fail(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1SignWithHashFunc_Fail-Sign")
+    assertNoError(objSign.Error(), "PKCS1SignWithHashFunc_Fail-Sign")
     assertNotEmpty(signed, "PKCS1SignWithHashFunc_Fail-Sign")
 
     sm2signdata := "123Ycxm312365XKtFNii0tKrTmEbfNdR/Q/BtuQFzm5+luEf2nAhkjYTS2ygPjodpuAkarsNqjIhCZ6+xD4WKA=="
@@ -714,14 +714,14 @@ func Test_PKCS1SignBytesWithHashFunc_Fail(t *testing.T) {
         WithUID(uid).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1SignWithHashFunc_Fail-Verify")
-    assertNotBool(objVerify.ToVerify(), "PKCS1SignWithHashFunc_Fail-Verify")
+    assertNoError(objVerify.Error(), "PKCS1SignWithHashFunc_Fail-Verify")
+    assertFalse(objVerify.ToVerify(), "PKCS1SignWithHashFunc_Fail-Verify")
 }
 
 // 测试 bc-java 库加密的数据解密
 func Test_DecryptWithBCJavaEndata(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     // 明文： AH04DAEB01 对应16进制字串 41483034444145423031
@@ -740,7 +740,7 @@ func Test_DecryptWithBCJavaEndata(t *testing.T) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "DecryptWithBCJavaEndata-Decrypt")
+    assertNoError(de.Error(), "DecryptWithBCJavaEndata-Decrypt")
     assertNotEmpty(deData, "DecryptWithBCJavaEndata-Decrypt")
 
     assertEqual(deData, check, "DecryptWithBCJavaEndata-Dedata")
@@ -845,7 +845,7 @@ func Test_Get(t *testing.T) {
 
 func Test_SignSM3Digest_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     uid := "sm2test@example.com"
     msg := "hi chappy"
@@ -863,13 +863,13 @@ func Test_SignSM3Digest_Check(t *testing.T) {
         VerifyBytes([]byte(msg))
     veri := obj.ToVerify()
 
-    assertError(obj.Error(), "Test_SignSM3Digest_Check")
+    assertNoError(obj.Error(), "Test_SignSM3Digest_Check")
     assertEqual(veri, true, "Test_SignSM3Digest_Check")
 }
 
 func Test_SignSHA256Digest_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     uid := "sm2test@example.com"
     msg := "hi chappy"
@@ -888,7 +888,7 @@ func Test_SignSHA256Digest_Check(t *testing.T) {
         VerifyBytes([]byte(msg))
     veri := obj.ToVerify()
 
-    assertError(obj.Error(), "Test_SignSHA256Digest_Check")
+    assertNoError(obj.Error(), "Test_SignSHA256Digest_Check")
     assertEqual(veri, true, "Test_SignSHA256Digest_Check")
 }
 
@@ -902,7 +902,7 @@ ccNE4TCP1uA7VyFgARYRXKGzV/eMSx17
 
 func Test_EncryptHash_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     check := "testtest123123"
 
@@ -952,7 +952,7 @@ func Test_EncryptHash_Check(t *testing.T) {
             Decrypt()
         deData := de.ToString()
 
-        assertError(de.Error(), "Test_EncryptHash_Check-Decrypt-"+td.hash)
+        assertNoError(de.Error(), "Test_EncryptHash_Check-Decrypt-"+td.hash)
         assertEqual(deData, td.check, "Test_EncryptHash_Check-deData-"+td.hash)
     }
 
@@ -961,7 +961,7 @@ func Test_EncryptHash_Check(t *testing.T) {
 // 测试 bc-java 库加密的数据解密
 func Test_DecryptWithBCJavaEndata2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     java_prikey := "MIGTAgEAMBMGByqGSM49AgEGCCqBHM9VAYItBHkwdwIBAQQg6rgCft6jHsmv5YnpZaWrk7fQQY9R2VoWyJ9d87XSfv6gCgYIKoEcz1UBgi2hRANCAAQRvBC+7ApOlK7fKzDb/XBCw7CrWZkC8orgyKbBbGxZRwVbCYmjygAUF6no4c1/g2lsxc+LiDUGXcAv1gr7+fGq"
@@ -995,7 +995,7 @@ func Test_DecryptWithBCJavaEndata2(t *testing.T) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "Test_DecryptWithBCJavaEndata2-Decrypt")
+    assertNoError(de.Error(), "Test_DecryptWithBCJavaEndata2-Decrypt")
     assertNotEmpty(deData, "Test_DecryptWithBCJavaEndata2-Decrypt")
 
     assertEqual(deData, oldData, "Test_DecryptWithBCJavaEndata2-Dedata")
@@ -1007,7 +1007,7 @@ func Test_DecryptWithBCJavaEndata2(t *testing.T) {
         VerifyASN1(java_enDataBytes)
     veri := obj.ToVerify()
 
-    assertError(obj.Error(), "Test_DecryptWithBCJavaEndata2")
+    assertNoError(obj.Error(), "Test_DecryptWithBCJavaEndata2")
     assertEqual(veri, true, "Test_DecryptWithBCJavaEndata2")
 }
 
@@ -1025,7 +1025,7 @@ iFskXEzc2/gYrHvQQMcg5imja570cQ7y7bx1ezNA4bjHEPFtbhj8h/RKig==
 // 微信小程序 SM2withSM3 验证
 func Test_SignSM3Digest_Weapp_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     uid := "8a98f6bba1415c0c4f6879bda6807861"
 
@@ -1040,7 +1040,7 @@ func Test_SignSM3Digest_Weapp_Check(t *testing.T) {
         VerifyASN1([]byte(data))
     veri := obj.ToVerify()
 
-    assertError(obj.Error(), "Test_SignSM3Digest_Weapp_Check")
+    assertNoError(obj.Error(), "Test_SignSM3Digest_Weapp_Check")
     assertEqual(veri, true, "Test_SignSM3Digest_Weapp_Check")
 }
 
@@ -1060,7 +1060,7 @@ OX+xNwdI1XHHkIGl3W0VBmGRBK3VxkBSvp8tsGkZsxEmA7ngXyECzrDiuA==
 
 func Test_SignAndDecrypt_Check22(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     encrypted := `MH8CIQC5vLQm7+4JYg5MD39ViKgeuHnAN3BZpzD36pHYOada9QIgLiKsD1GLVRW5bW7sanplYCi+
 +e6wuarVffKZDnTTWCkEIMcgRSAXgDLhEJDtmed4LCPdRitNjd3ywVpfi12b5rchBBaObgYaK/8s
@@ -1077,7 +1077,7 @@ jGAJaWDORkhDVOkYH2Rt`
         VerifyASN1([]byte(encrypted))
     veri := obj.ToVerify()
 
-    assertError(obj.Error(), "Test_SignAndDecrypt_Check22")
+    assertNoError(obj.Error(), "Test_SignAndDecrypt_Check22")
     assertEqual(veri, true, "Test_SignAndDecrypt_Check22")
 
     // ===========
@@ -1093,19 +1093,19 @@ jGAJaWDORkhDVOkYH2Rt`
 
     check := `["{\"data\":\"qwe\"}"]`
 
-    assertError(de.Error(), "Test_SignAndDecrypt_Check22-DecryptASN1")
+    assertNoError(de.Error(), "Test_SignAndDecrypt_Check22-DecryptASN1")
     assertEqual(deData, check, "Test_SignAndDecrypt_Check22-DecryptASN1")
 }
 
 func Test_SM2_EncryptECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "Test_SM2_EncryptECB-sm2keyDecode")
+    assertNoError(err2, "Test_SM2_EncryptECB-sm2keyDecode")
 
     data := strings.Repeat("test-pass", 1 << 12)
 
@@ -1118,7 +1118,7 @@ func Test_SM2_EncryptECB(t *testing.T) {
         EncryptECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Test_SM2_EncryptECB-Encrypt")
+    assertNoError(en.Error(), "Test_SM2_EncryptECB-Encrypt")
     assertNotEmpty(enData, "Test_SM2_EncryptECB-Encrypt")
 
     de := sm2.
@@ -1127,7 +1127,7 @@ func Test_SM2_EncryptECB(t *testing.T) {
         DecryptECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "Test_SM2_EncryptECB-Decrypt")
+    assertNoError(de.Error(), "Test_SM2_EncryptECB-Decrypt")
     assertNotEmpty(deData, "Test_SM2_EncryptECB-Decrypt")
 
     assertEqual(deData, data, "Test_SM2_EncryptECB-Dedata")
@@ -1135,13 +1135,13 @@ func Test_SM2_EncryptECB(t *testing.T) {
 
 func Test_SM2_EncryptASN1ECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "Test_SM2_EncryptASN1ECB-sm2keyDecode")
+    assertNoError(err2, "Test_SM2_EncryptASN1ECB-sm2keyDecode")
 
     data := strings.Repeat("test-pass", 1 << 12)
 
@@ -1154,7 +1154,7 @@ func Test_SM2_EncryptASN1ECB(t *testing.T) {
         EncryptASN1ECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Test_SM2_EncryptASN1ECB-Encrypt")
+    assertNoError(en.Error(), "Test_SM2_EncryptASN1ECB-Encrypt")
     assertNotEmpty(enData, "Test_SM2_EncryptASN1ECB-Encrypt")
 
     de := sm2.
@@ -1163,7 +1163,7 @@ func Test_SM2_EncryptASN1ECB(t *testing.T) {
         DecryptASN1ECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "Test_SM2_EncryptASN1ECB-Decrypt")
+    assertNoError(de.Error(), "Test_SM2_EncryptASN1ECB-Decrypt")
     assertNotEmpty(deData, "Test_SM2_EncryptASN1ECB-Decrypt")
 
     assertEqual(deData, data, "Test_SM2_EncryptASN1ECB-Dedata")
@@ -1254,8 +1254,8 @@ func Test_PKCS1SignWithEncoding(t *testing.T) {
 }
 
 func test_PKCS1SignWithEncoding(t *testing.T, encoding EncodingType) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -1268,7 +1268,7 @@ func test_PKCS1SignWithEncoding(t *testing.T, encoding EncodingType) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "PKCS1SignWithEncoding-Sign")
+    assertNoError(objSign.Error(), "PKCS1SignWithEncoding-Sign")
     assertNotEmpty(signed, "PKCS1SignWithEncoding-Sign")
 
     // 验证
@@ -1278,8 +1278,8 @@ func test_PKCS1SignWithEncoding(t *testing.T, encoding EncodingType) {
         WithEncoding(encoding).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "PKCS1SignWithEncoding-Verify")
-    assertBool(objVerify.ToVerify(), "PKCS1SignWithEncoding-Verify")
+    assertNoError(objVerify.Error(), "PKCS1SignWithEncoding-Verify")
+    assertTrue(objVerify.ToVerify(), "PKCS1SignWithEncoding-Verify")
 }
 
 func Test_SM2_EncryptWithEncoding(t *testing.T) {
@@ -1293,13 +1293,13 @@ func Test_SM2_EncryptWithEncoding(t *testing.T) {
 
 func test_SM2_EncryptWithEncoding(t *testing.T, encoding EncodingType) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "test_SM2_EncryptWithEncoding-sm2keyDecode")
+    assertNoError(err2, "test_SM2_EncryptWithEncoding-sm2keyDecode")
 
     data := "test-pass"
 
@@ -1313,7 +1313,7 @@ func test_SM2_EncryptWithEncoding(t *testing.T, encoding EncodingType) {
         Encrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "test_SM2_EncryptWithEncoding-Encrypt")
+    assertNoError(en.Error(), "test_SM2_EncryptWithEncoding-Encrypt")
     assertNotEmpty(enData, "test_SM2_EncryptWithEncoding-Encrypt")
 
     de := sm2.
@@ -1323,7 +1323,7 @@ func test_SM2_EncryptWithEncoding(t *testing.T, encoding EncodingType) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "test_SM2_EncryptWithEncoding-Decrypt")
+    assertNoError(de.Error(), "test_SM2_EncryptWithEncoding-Decrypt")
     assertNotEmpty(deData, "test_SM2_EncryptWithEncoding-Decrypt")
 
     assertEqual(deData, data, "test_SM2_EncryptWithEncoding-Dedata")
@@ -1340,13 +1340,13 @@ func Test_SM2_EncryptECBWithEncoding(t *testing.T) {
 
 func test_SM2_EncryptECBWithEncoding(t *testing.T, encoding EncodingType) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     sm2key := "NBtl7WnuUtA2v5FaebEkU0/Jj1IodLGT6lQqwkzmd2E="
     sm2keyBytes, err2 := base64.StdEncoding.DecodeString(sm2key)
 
-    assertError(err2, "test_SM2_EncryptECBWithEncoding-sm2keyDecode")
+    assertNoError(err2, "test_SM2_EncryptECBWithEncoding-sm2keyDecode")
 
     data := "test-pass"
 
@@ -1360,7 +1360,7 @@ func test_SM2_EncryptECBWithEncoding(t *testing.T, encoding EncodingType) {
         EncryptECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "test_SM2_EncryptECBWithEncoding-Encrypt")
+    assertNoError(en.Error(), "test_SM2_EncryptECBWithEncoding-Encrypt")
     assertNotEmpty(enData, "test_SM2_EncryptECBWithEncoding-Encrypt")
 
     de := sm2.
@@ -1370,14 +1370,14 @@ func test_SM2_EncryptECBWithEncoding(t *testing.T, encoding EncodingType) {
         DecryptECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "test_SM2_EncryptECBWithEncoding-Decrypt")
+    assertNoError(de.Error(), "test_SM2_EncryptECBWithEncoding-Decrypt")
     assertNotEmpty(deData, "test_SM2_EncryptECBWithEncoding-Decrypt")
 
     assertEqual(deData, data, "test_SM2_EncryptECBWithEncoding-Dedata")
 }
 
 func Test_PKCS1SignWithEncoding_Two_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertNotEqual := cryptobin_test.AssertNotEqualT(t)
 
@@ -1391,7 +1391,7 @@ func Test_PKCS1SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
 
     // 签名
@@ -1402,7 +1402,7 @@ func Test_PKCS1SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed2 := objSign2.ToBase64String()
 
-    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
 
     assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")

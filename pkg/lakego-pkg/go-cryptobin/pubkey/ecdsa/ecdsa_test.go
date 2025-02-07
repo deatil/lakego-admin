@@ -146,7 +146,7 @@ hqHtft9D9JGEHcJ0XvmRTptdYmjc/gM4syIrdaIXrbl6zfoxRhvNQOPu
 `
 
 func Test_PKCS1PrivateKeyCheck(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -157,7 +157,7 @@ func Test_PKCS1PrivateKeyCheck(t *testing.T) {
         t.Fatal(err)
     }
 
-    assertError(err, "PKCS1PrivateKeyCheck")
+    assertNoError(err, "PKCS1PrivateKeyCheck")
     assertNotEmpty(priv, "PKCS1PrivateKeyCheck")
 
     privDer, err := cryptobin_ecdsa.MarshalECPrivateKey(priv)
@@ -171,7 +171,7 @@ func Test_PKCS1PrivateKeyCheck(t *testing.T) {
 }
 
 func Test_PKCS8PrivateKeyCheck(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pri := decodePEM(testPkcs8Prikey)
@@ -181,7 +181,7 @@ func Test_PKCS8PrivateKeyCheck(t *testing.T) {
         t.Fatal(err)
     }
 
-    assertError(err, "PKCS8PrivateKeyCheck")
+    assertNoError(err, "PKCS8PrivateKeyCheck")
     assertNotEmpty(priv, "PKCS8PrivateKeyCheck")
 
     privDer, err := cryptobin_ecdsa.MarshalPrivateKey(priv)

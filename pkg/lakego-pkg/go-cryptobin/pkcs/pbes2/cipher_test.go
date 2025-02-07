@@ -9,18 +9,18 @@ import (
 
 func test_cipher(t *testing.T, cipher Cipher, name string, key []byte) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     plaintext := []byte("test data")
 
     endata, parm, err := cipher.Encrypt(rand.Reader, key, plaintext)
-    assertError(err, name + "-Encrypt")
+    assertNoError(err, name + "-Encrypt")
     assertNotEmpty(endata, name + "-endata")
     assertNotEmpty(parm, name + "-parm")
 
     dedata, err := cipher.Decrypt(key, parm, endata)
-    assertError(err, name + "-Decrypt")
+    assertNoError(err, name + "-Decrypt")
     assertNotEmpty(dedata, name + "-dedata")
 
     assertEqual(dedata, plaintext, name + "-Equal")

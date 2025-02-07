@@ -25,7 +25,7 @@ Vu0zCh5hkl/0r9vPzPeqGpHJv3eJw/zF+gZWxn2LvLcKkQTcGutSwVdVRQ==
 
 func Test_SignASN1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
     objSign := NewECDSA().
@@ -33,13 +33,13 @@ func Test_SignASN1(t *testing.T) {
         FromPrivateKey([]byte(prikey)).
         SignASN1()
 
-    assertError(objSign.Error(), "SignASN1")
+    assertNoError(objSign.Error(), "SignASN1")
     assertNotEmpty(objSign.ToBase64String(), "SignASN1")
 }
 
 func Test_VerifyASN1(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
 
     data := "test-pass"
     sig := "MEUCIBhAZzrS6jM4MfwibzA+j0vBkTEQGvkiDWhx7E6/ePUmAiEAt1uTZXUPGNU9nY8ZS3UxcJCRqwh/G8eeyrAVwM3qen4="
@@ -48,14 +48,14 @@ func Test_VerifyASN1(t *testing.T) {
         FromPublicKey([]byte(pubkey)).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "VerifyASN1")
-    assertBool(objVerify.ToVerify(), "VerifyASN1")
+    assertNoError(objVerify.Error(), "VerifyASN1")
+    assertTrue(objVerify.ToVerify(), "VerifyASN1")
 }
 
 func Test_Sign(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -66,7 +66,7 @@ func Test_Sign(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Sign-Sign")
+    assertNoError(objSign.Error(), "Sign-Sign")
     assertNotEmpty(signed, "Sign-Sign")
 
     // 验证
@@ -75,14 +75,14 @@ func Test_Sign(t *testing.T) {
         FromPublicKey([]byte(pubkey)).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "Sign-Verify")
-    assertBool(objVerify.ToVerify(), "Sign-Verify")
+    assertNoError(objVerify.Error(), "Sign-Verify")
+    assertTrue(objVerify.ToVerify(), "Sign-Verify")
 }
 
 func Test_SignASN12(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -93,7 +93,7 @@ func Test_SignASN12(t *testing.T) {
         SignASN1()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignASN12-Sign")
+    assertNoError(objSign.Error(), "SignASN12-Sign")
     assertNotEmpty(signed, "SignASN12-Sign")
 
     // 验证
@@ -102,14 +102,14 @@ func Test_SignASN12(t *testing.T) {
         FromPublicKey([]byte(pubkey)).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "SignASN12-Verify")
-    assertBool(objVerify.ToVerify(), "SignASN12-Verify")
+    assertNoError(objVerify.Error(), "SignASN12-Verify")
+    assertTrue(objVerify.ToVerify(), "SignASN12-Verify")
 }
 
 func Test_SignBytes(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -120,7 +120,7 @@ func Test_SignBytes(t *testing.T) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNoError(objSign.Error(), "SignBytes-Sign")
     assertNotEmpty(signed, "SignBytes-Sign")
 
     // 验证
@@ -129,6 +129,6 @@ func Test_SignBytes(t *testing.T) {
         FromPublicKey([]byte(pubkey)).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "SignBytes-Verify")
-    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
+    assertNoError(objVerify.Error(), "SignBytes-Verify")
+    assertTrue(objVerify.ToVerify(), "SignBytes-Verify")
 }

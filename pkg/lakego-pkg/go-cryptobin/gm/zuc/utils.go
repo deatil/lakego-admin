@@ -28,9 +28,6 @@ func MemsetByte(a []byte, v byte) {
     }
 }
 
-// Endianness option
-const littleEndian bool = false
-
 func bytesToUint32s(b []byte) []uint32 {
     size := len(b) / 4
     dst := make([]uint32, size)
@@ -38,11 +35,7 @@ func bytesToUint32s(b []byte) []uint32 {
     for i := 0; i < size; i++ {
         j := i * 4
 
-        if littleEndian {
-            dst[i] = binary.LittleEndian.Uint32(b[j:])
-        } else {
-            dst[i] = binary.BigEndian.Uint32(b[j:])
-        }
+        dst[i] = binary.BigEndian.Uint32(b[j:])
     }
 
     return dst
@@ -55,33 +48,18 @@ func uint32sToBytes(w []uint32) []byte {
     for i := 0; i < len(w); i++ {
         j := i * 4
 
-        if littleEndian {
-            binary.LittleEndian.PutUint32(dst[j:], w[i])
-        } else {
-            binary.BigEndian.PutUint32(dst[j:], w[i])
-        }
+        binary.BigEndian.PutUint32(dst[j:], w[i])
     }
 
     return dst
 }
 
 func GETU32(ptr []byte) uint32 {
-    return uint32(ptr[0]) << 24 |
-           uint32(ptr[1]) << 16 |
-           uint32(ptr[2]) <<  8 |
-           uint32(ptr[3])
+    return binary.BigEndian.Uint32(ptr)
 }
 
 func PUTU32(ptr []byte, a uint32) {
-    ptr[0] = byte(a >> 24)
-    ptr[1] = byte(a >> 16)
-    ptr[2] = byte(a >>  8)
-    ptr[3] = byte(a)
-}
-
-func ADD31(a *uint32, b uint32) {
-    (*a) += b
-    (*a) = ((*a) & 0x7fffffff) + ((*a) >> 31)
+    binary.BigEndian.PutUint32(ptr, a)
 }
 
 func ROT31(a, k uint32) uint32 {
@@ -90,6 +68,11 @@ func ROT31(a, k uint32) uint32 {
 
 func ROT32(a, k uint32) uint32 {
     return (a << k) | (a >> (32 - k))
+}
+
+func ADD31(a *uint32, b uint32) {
+    (*a) += b
+    (*a) = ((*a) & 0x7fffffff) + ((*a) >> 31)
 }
 
 func L1(X uint32) uint32 {

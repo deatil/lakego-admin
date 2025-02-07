@@ -5,35 +5,34 @@ import (
     "bytes"
 )
 
-// 字节
+// From Bytes
 func (this Encoding) FromBytes(data []byte) Encoding {
     this.data = data
 
     return this
 }
 
-// 字节
+// FromBytes
 func FromBytes(data []byte) Encoding {
-    return defaultEncode.FromBytes(data)
+    return defaultEncoding.FromBytes(data)
 }
 
-// 字符
+// FromString
 func (this Encoding) FromString(data string) Encoding {
     this.data = []byte(data)
 
     return this
 }
 
-// 字符
+// FromString
 func FromString(data string) Encoding {
-    return defaultEncode.FromString(data)
+    return defaultEncoding.FromString(data)
 }
 
 // FromReader
 func (this Encoding) FromReader(reader io.Reader) Encoding {
     buf := bytes.NewBuffer(nil)
 
-    // 保存
     if _, err := io.Copy(buf, reader); err != nil {
         this.Error = err
 
@@ -47,5 +46,5 @@ func (this Encoding) FromReader(reader io.Reader) Encoding {
 
 // FromReader
 func FromReader(reader io.Reader) Encoding {
-    return defaultEncode.FromReader(reader)
+    return defaultEncoding.FromReader(reader)
 }

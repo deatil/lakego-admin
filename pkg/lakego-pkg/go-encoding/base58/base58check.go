@@ -15,7 +15,7 @@ func checksum(input []byte) (cksum [4]byte) {
     return
 }
 
-// 检测编码
+// Check Encode
 func CheckEncode(input []byte, version byte) string {
     b := make([]byte, 0, 1+len(input)+4)
     b = append(b, version)
@@ -25,12 +25,12 @@ func CheckEncode(input []byte, version byte) string {
 
     b = append(b, cksum[:]...)
 
-    return Encode(b)
+    return StdEncoding.EncodeToString(b)
 }
 
-// 检测解码
+// Check Decode
 func CheckDecode(input string) (result []byte, version byte, err error) {
-    decoded := Decode(input)
+    decoded, _ := StdEncoding.DecodeString(input)
     if len(decoded) < 5 {
         return nil, 0, ErrInvalidFormat
     }

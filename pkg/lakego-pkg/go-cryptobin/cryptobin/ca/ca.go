@@ -5,6 +5,9 @@ import (
     "crypto"
     "crypto/dsa"
     "crypto/elliptic"
+
+    "github.com/deatil/go-cryptobin/x509"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
 )
 
 // public key type
@@ -24,6 +27,10 @@ func (typ PublicKeyType) String() string {
             return "EdDSA"
         case KeyTypeSM2:
             return "SM2"
+        case KeyTypeGost:
+            return "Gost"
+        case KeyTypeElGamal:
+            return "ElGamal"
         default:
             return "unknown KeyType value " + strconv.Itoa(int(typ))
     }
@@ -36,6 +43,8 @@ const (
     KeyTypeECDSA
     KeyTypeEdDSA
     KeyTypeSM2
+    KeyTypeGost
+    KeyTypeElGamal
 )
 
 // Options
@@ -43,14 +52,20 @@ type Options struct {
     // public key type
     PublicKeyType PublicKeyType
 
-    // DSA ParameterSizes
+    // generates DSA ParameterSizes
     ParameterSizes dsa.ParameterSizes
 
-    // ecc curve
+    // generates ECC curve
     Curve elliptic.Curve
+
+    // generates Gost curve
+    GostCurve *gost.Curve
 
     // generates RSA private key bit size
     Bits int
+
+    // generates ElGamal private key bit size and probability
+    Bitsize, Probability int
 }
 
 /**
@@ -61,12 +76,10 @@ type Options struct {
  */
 type CA struct {
     // 证书数据
-    // 可用 [*x509.Certificate | *sm2X509.Certificate]
-    cert any
+    cert *x509.Certificate
 
-    // 证书请求
-    // 可用 [*x509.CertificateRequest | *sm2X509.CertificateRequest]
-    certRequest any
+    // 请求证书
+    certRequest *x509.CertificateRequest
 
     // 私钥
     // 可用 [*rsa.PrivateKey | *ecdsa.PrivateKey | ed25519.PrivateKey | *sm2.PrivateKey]
@@ -93,7 +106,10 @@ func NewCA() CA {
             PublicKeyType:  KeyTypeRSA,
             ParameterSizes: dsa.L1024N160,
             Curve:          elliptic.P256(),
+            GostCurve:      gost.CurveDefault(),
             Bits:           2048,
+            Bitsize:        256,
+            Probability:    64,
         },
         Errors: make([]error, 0),
     }

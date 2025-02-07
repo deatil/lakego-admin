@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_Salsa20(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-pass"
     cypt := crypto.FromString(data).
@@ -25,7 +25,7 @@ func Test_Salsa20(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Salsa20-Encode")
+    assertNoError(cypt.Error(), "Salsa20-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("1234567890abcdef1234567890abcdef").
@@ -34,7 +34,7 @@ func Test_Salsa20(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Salsa20-Decode")
+    assertNoError(cyptde.Error(), "Salsa20-Decode")
 
     assert(data, cyptdeStr, "Salsa20")
 }

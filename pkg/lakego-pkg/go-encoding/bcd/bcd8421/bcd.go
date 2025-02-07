@@ -2,7 +2,7 @@ package bcd8421
 
 import "errors"
 
-var ErrNotBCD = errors.New("Byte is Not BCD Encoded")
+var ErrNotBCD = errors.New("go-encoding/bcd8421: Byte is Not BCD Encoded")
 
 // uint8 to Packed BCD 8-4-2-1 One digit per nibble
 func Uint8toBCD(u uint8) byte {

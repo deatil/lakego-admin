@@ -6,7 +6,7 @@
 <img src="https://goreportcard.com/badge/github.com/deatil/go-hash" />
 </p>
 
-[中文](README_CN.md) | English
+中文 | [English](README.md)
 
 ### 项目介绍
 

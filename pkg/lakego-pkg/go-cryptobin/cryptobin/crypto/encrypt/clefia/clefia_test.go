@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_Clefia(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_Clefia(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Clefia-Encode")
+    assertNoError(cypt.Error(), "Clefia-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf1d2fgtyf35").
@@ -38,7 +38,7 @@ func Test_Clefia(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Clefia-Decode")
+    assertNoError(cyptde.Error(), "Clefia-Decode")
 
     assert(cyptdeStr, data, "Clefia-res")
 }

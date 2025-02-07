@@ -2,16 +2,17 @@ package ca
 
 import (
     "io"
-    "errors"
     "crypto/rand"
     "crypto/rsa"
     "crypto/dsa"
-    "crypto/x509"
     "crypto/ecdsa"
     "crypto/ed25519"
 
-    "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/x509"
     "github.com/deatil/go-cryptobin/pkcs12"
+    "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 // Generate Key with Reader
@@ -56,6 +57,22 @@ func (this CA) GenerateKeyWithSeed(reader io.Reader) CA {
 
             this.privateKey = privateKey
             this.publicKey  = &privateKey.PublicKey
+        case KeyTypeGost:
+            privateKey, err := gost.GenerateKey(reader, this.options.GostCurve)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey  = &privateKey.PublicKey
+        case KeyTypeElGamal:
+            privateKey, err := elgamal.GenerateKey(reader, this.options.Bitsize, this.options.Probability)
+            if err != nil {
+                return this.AppendError(err)
+            }
+
+            this.privateKey = privateKey
+            this.publicKey  = &privateKey.PublicKey
     }
 
     return this
@@ -90,41 +107,43 @@ func GenerateKey(options ...Options) CA {
 
 // ==========
 
-// From Certificate
-func (this CA) FromCertificate(der []byte) CA {
-    cert, err := x509.ParseCertificate(der)
+// From Certificate PEM
+func (this CA) FromCertificate(cert []byte) CA {
+    newCert, err := this.ParseCertificateFromPEM(cert)
     if err != nil {
         return this.AppendError(err)
     }
 
-    this.cert = cert
+    this.cert = newCert
+    this.publicKey = newCert.PublicKey
 
     return this
 }
 
-// From Certificate
-func FromCertificate(der []byte) CA {
-    return defaultCA.FromCertificate(der)
+// From Certificate PEM
+func FromCertificate(cert []byte) CA {
+    return defaultCA.FromCertificate(cert)
 }
 
-// From Certificate Request
-func (this CA) FromCertificateRequest(asn1Data []byte) CA {
-    certRequest, err := x509.ParseCertificateRequest(asn1Data)
+// From Certificate Request PEM
+func (this CA) FromCertificateRequest(cert []byte) CA {
+    certRequest, err := this.ParseCertificateRequestFromPEM(cert)
     if err != nil {
         return this.AppendError(err)
     }
 
     this.certRequest = certRequest
+    this.publicKey = certRequest.PublicKey
 
     return this
 }
 
-// From Certificate Request
-func FromCertificateRequest(asn1Data []byte) CA {
-    return defaultCA.FromCertificateRequest(asn1Data)
+// From Certificate Request PEM
+func FromCertificateRequest(cert []byte) CA {
+    return defaultCA.FromCertificateRequest(cert)
 }
 
-// From PrivateKey
+// From PrivateKey PEM
 func (this CA) FromPrivateKey(key []byte) CA {
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEM(key)
     if err != nil {
@@ -136,12 +155,12 @@ func (this CA) FromPrivateKey(key []byte) CA {
     return this
 }
 
-// From PrivateKey
+// From PrivateKey PEM
 func FromPrivateKey(key []byte) CA {
     return defaultCA.FromPrivateKey(key)
 }
 
-// From PrivateKey With Password
+// From PrivateKey PEM With Password
 func (this CA) FromPrivateKeyWithPassword(key []byte, password []byte) CA {
     privateKey, err := this.ParsePKCS8PrivateKeyFromPEMWithPassword(key, password)
     if err != nil {
@@ -153,12 +172,12 @@ func (this CA) FromPrivateKeyWithPassword(key []byte, password []byte) CA {
     return this
 }
 
-// From PrivateKey With Password
+// From PrivateKey PEM With Password
 func FromPrivateKeyWithPassword(key []byte, password []byte) CA {
     return defaultCA.FromPrivateKeyWithPassword(key, password)
 }
 
-// From PublicKey
+// From PublicKey PEM
 func (this CA) FromPublicKey(key []byte) CA {
     publicKey, err := this.ParsePKCS8PublicKeyFromPEM(key)
     if err != nil {
@@ -170,7 +189,7 @@ func (this CA) FromPublicKey(key []byte) CA {
     return this
 }
 
-// From PublicKey
+// From PublicKey PEM
 func FromPublicKey(key []byte) CA {
     return defaultCA.FromPublicKey(key)
 }
@@ -179,13 +198,15 @@ func FromPublicKey(key []byte) CA {
 
 // pkcs12
 func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
-    privateKey, cert, err := pkcs12.Decode(pfxData, password)
+    privateKey, cert, _, err := pkcs12.DecodeChain(pfxData, password)
     if err != nil {
         return this.AppendError(err)
     }
 
+    this.cert = &x509.Certificate{}
+    this.cert.FromX509Certificate(cert)
+
     this.privateKey = privateKey
-    this.cert = cert
 
     return this
 }
@@ -193,54 +214,6 @@ func (this CA) FromPKCS12Cert(pfxData []byte, password string) CA {
 // From PKCS12 Cert
 func FromPKCS12Cert(pfxData []byte, password string) CA {
     return defaultCA.FromPKCS12Cert(pfxData, password)
-}
-
-// From SM2 PKCS12 Cert
-func (this CA) FromSM2PKCS12Cert(pfxData []byte, password string) CA {
-    pv, cert, err := pkcs12.Decode(pfxData, password)
-    if err != nil {
-        return this.AppendError(err)
-    }
-
-    switch k := pv.(type) {
-        case *ecdsa.PrivateKey:
-            switch k.Curve {
-                case sm2.P256():
-                    sm2pub := &sm2.PublicKey{
-                        Curve: k.Curve,
-                        X:     k.X,
-                        Y:     k.Y,
-                    }
-
-                    sm2Pri := &sm2.PrivateKey{
-                        PublicKey: *sm2pub,
-                        D:         k.D,
-                    }
-
-                    if !k.IsOnCurve(k.X, k.Y) {
-                        err := errors.New("error while validating SM2 private key: %v")
-                        return this.AppendError(err)
-                    }
-
-                    this.privateKey = sm2Pri
-                    this.cert = cert
-
-                    return this
-                default:
-                    // other
-            }
-        default:
-            // other
-    }
-
-    err = errors.New("unexpected type for p12 private key")
-
-    return this.AppendError(err)
-}
-
-// From SM2 PKCS12 Cert
-func FromSM2PKCS12Cert(pfxData []byte, password string) CA {
-    return defaultCA.FromSM2PKCS12Cert(pfxData, password)
 }
 
 // =======================
@@ -305,10 +278,34 @@ func GenerateEdDSAKey() CA {
 func (this CA) GenerateSM2Key() CA {
     return this.SetPublicKeyType("SM2").
             GenerateKey()
-
 }
 
 // Generate SM2 Key
 func GenerateSM2Key() CA {
     return defaultCA.GenerateSM2Key()
+}
+
+// Generate Gost key
+func (this CA) GenerateGostKey(curve string) CA {
+    return this.SetPublicKeyType("Gost").
+            SetGostCurve(curve).
+            GenerateKey()
+}
+
+// Generate Gost Key
+func GenerateGostKey(curve string) CA {
+    return defaultCA.GenerateGostKey(curve)
+}
+
+// Generate ElGamal key
+func (this CA) GenerateElGamalKey(bitsize, probability int) CA {
+    return this.SetPublicKeyType("ElGamal").
+            WithBitsize(bitsize).
+            WithProbability(probability).
+            GenerateKey()
+}
+
+// Generate ElGamal Key
+func GenerateElGamalKey(bitsize, probability int) CA {
+    return defaultCA.GenerateElGamalKey(bitsize, probability)
 }

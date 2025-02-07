@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_AesCFB16PKCS7Padding(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_AesCFB16PKCS7Padding(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "AesCFB16PKCS7Padding-Encode")
+    assertNoError(cypt.Error(), "AesCFB16PKCS7Padding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
@@ -38,7 +38,7 @@ func Test_AesCFB16PKCS7Padding(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "AesCFB16PKCS7Padding-Decode")
+    assertNoError(cyptde.Error(), "AesCFB16PKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "AesCFB16PKCS7Padding")
 }

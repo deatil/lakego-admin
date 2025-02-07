@@ -262,3 +262,39 @@ func Test_Directories(t *testing.T) {
         "testdir222",
     }, "Test_Directories")
 }
+
+func Test_Lines(t *testing.T) {
+    assertEqual := assertEqualT(t)
+
+    fs := filesystem.New()
+
+    res, err := fs.Lines("./testdata/lines.txt")
+    if err != nil {
+        t.Fatal(err.Error())
+    }
+
+    check := [][]byte{
+        []byte("a"),
+        []byte("bb"),
+        []byte("ccc"),
+        []byte("dddd"),
+        []byte("eeeee"),
+        []byte("111111"),
+        []byte("2222222"),
+    }
+
+    assertEqual(res, check, "Test_Lines")
+}
+
+func Test_Hash(t *testing.T) {
+    assertEqual := assertEqualT(t)
+
+    fs := filesystem.New()
+
+    res, err := fs.Hash("./testdata/testcopy.txt")
+    if err != nil {
+        t.Fatal(err.Error())
+    }
+
+    assertEqual(res, "ef654c40ab4f1747fc699915d4f70902", "Test_Hash")
+}

@@ -9,7 +9,7 @@ import (
 
 func Test_BC(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -17,7 +17,7 @@ func Test_BC(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_BC")
+    assertNoError(err, "Test_BC")
 
     mode := NewBCEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))

@@ -71,24 +71,25 @@ func testEqual(t *testing.T, msg string, args ...interface{}) bool {
 
 func TestEncode(t *testing.T) {
     for _, p := range pairs {
-        got := Encode(p.decoded)
+        got := StdEncoding.EncodeToString([]byte(p.decoded))
         testEqual(t, "Encode(%q) = %q, want %q", p.decoded, got, p.encoded)
     }
 }
 
 func TestDecode(t *testing.T) {
     for _, p := range pairs {
-        got, err := Decode(p.encoded)
+        got, err := StdEncoding.DecodeString(p.encoded)
         if err != nil {
             t.Failed()
         }
-        testEqual(t, "Decode(%q) = %q, want %q", p.encoded, got, p.decoded)
+
+        testEqual(t, "Decode(%q) = %q, want %q", p.encoded, string(got), p.decoded)
     }
 }
 
 func TestDecodeMalformed(t *testing.T) {
     for _, p := range malformedPairs {
-        _, err := Decode(p.encoded)
+        _, err := StdEncoding.DecodeString(p.encoded)
         if err == nil {
             t.Failed()
         }

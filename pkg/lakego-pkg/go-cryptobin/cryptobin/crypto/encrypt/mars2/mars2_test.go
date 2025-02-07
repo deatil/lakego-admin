@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_Mars2PKCS7Padding(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_Mars2PKCS7Padding(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Mars2PKCS7Padding-Encode")
+    assertNoError(cypt.Error(), "Mars2PKCS7Padding-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
@@ -38,7 +38,7 @@ func Test_Mars2PKCS7Padding(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Mars2PKCS7Padding-Decode")
+    assertNoError(cyptde.Error(), "Mars2PKCS7Padding-Decode")
 
     assert(data, cyptdeStr, "Mars2PKCS7Padding-res")
 }

@@ -17,7 +17,7 @@ var CipherDESCBC = CipherCBC{
     blockSize:      des.BlockSize,
     name:           "DES-CBC",
 }
-var Cipher3DESCBC = CipherCBC{
+var CipherDESEDE3CBC = CipherCBC{
     cipherFunc:     des.NewTripleDESCipher,
     derivedKeyFunc: DeriveKey,
     saltSize:       8,
@@ -76,8 +76,8 @@ func init() {
     AddCipher(CipherDESCBC.Name(), func() Cipher {
         return CipherDESCBC
     })
-    AddCipher(Cipher3DESCBC.Name(), func() Cipher {
-        return Cipher3DESCBC
+    AddCipher(CipherDESEDE3CBC.Name(), func() Cipher {
+        return CipherDESEDE3CBC
     })
 
     AddCipher(CipherAES128CBC.Name(), func() Cipher {
@@ -110,7 +110,7 @@ var CipherDESCFB = CipherCFB{
     blockSize:      des.BlockSize,
     name:           "DES-CFB",
 }
-var Cipher3DESCFB = CipherCFB{
+var CipherDESEDE3CFB = CipherCFB{
     cipherFunc:     des.NewTripleDESCipher,
     derivedKeyFunc: DeriveKey,
     saltSize:       8,
@@ -169,8 +169,8 @@ func init() {
     AddCipher(CipherDESCFB.Name(), func() Cipher {
         return CipherDESCFB
     })
-    AddCipher(Cipher3DESCFB.Name(), func() Cipher {
-        return Cipher3DESCFB
+    AddCipher(CipherDESEDE3CFB.Name(), func() Cipher {
+        return CipherDESEDE3CFB
     })
 
     AddCipher(CipherAES128CFB.Name(), func() Cipher {
@@ -203,7 +203,7 @@ var CipherDESOFB = CipherOFB{
     blockSize:      des.BlockSize,
     name:           "DES-OFB",
 }
-var Cipher3DESOFB = CipherOFB{
+var CipherDESEDE3OFB = CipherOFB{
     cipherFunc:     des.NewTripleDESCipher,
     derivedKeyFunc: DeriveKey,
     saltSize:       8,
@@ -262,8 +262,8 @@ func init() {
     AddCipher(CipherDESOFB.Name(), func() Cipher {
         return CipherDESOFB
     })
-    AddCipher(Cipher3DESOFB.Name(), func() Cipher {
-        return Cipher3DESOFB
+    AddCipher(CipherDESEDE3OFB.Name(), func() Cipher {
+        return CipherDESEDE3OFB
     })
 
     AddCipher(CipherAES128OFB.Name(), func() Cipher {
@@ -296,7 +296,7 @@ var CipherDESCTR = CipherCTR{
     blockSize:      des.BlockSize,
     name:           "DES-CTR",
 }
-var Cipher3DESCTR = CipherCTR{
+var CipherDESEDE3CTR = CipherCTR{
     cipherFunc:     des.NewTripleDESCipher,
     derivedKeyFunc: DeriveKey,
     saltSize:       8,
@@ -355,8 +355,8 @@ func init() {
     AddCipher(CipherDESCTR.Name(), func() Cipher {
         return CipherDESCTR
     })
-    AddCipher(Cipher3DESCTR.Name(), func() Cipher {
-        return Cipher3DESCTR
+    AddCipher(CipherDESEDE3CTR.Name(), func() Cipher {
+        return CipherDESEDE3CTR
     })
 
     AddCipher(CipherAES128CTR.Name(), func() Cipher {

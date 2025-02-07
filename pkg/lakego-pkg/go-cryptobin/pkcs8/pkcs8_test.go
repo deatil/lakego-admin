@@ -24,18 +24,18 @@ func encodePEM(src []byte, typ string) string {
 
 func Test_EncryptPEMBlock(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-data"
     pass := "test-pass"
 
     block, err := EncryptPEMBlock(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass), DefaultOpts)
-    assertError(err, "EncryptPEMBlock-EN")
+    assertNoError(err, "EncryptPEMBlock-EN")
     assertNotEmpty(block.Bytes, "EncryptPEMBlock-EN")
 
     deData, err := DecryptPEMBlock(block, []byte(pass))
-    assertError(err, "EncryptPEMBlock-DE")
+    assertNoError(err, "EncryptPEMBlock-DE")
     assertNotEmpty(deData, "EncryptPEMBlock-DE")
 
     assertEqual(string(deData), data, "EncryptPEMBlock")

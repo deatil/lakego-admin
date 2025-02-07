@@ -21,8 +21,8 @@ MCowBQYDK2VwAyEA1NkD+0884Ol0mqyreYT+I6AA2y/rKDS+eIueB/vxMVc=
 )
 
 func useEdDSASign(t *testing.T, opts *Options) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := []byte("test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passt-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass")
@@ -33,7 +33,7 @@ func useEdDSASign(t *testing.T, opts *Options) {
         Sign()
     hashedData := hashed.ToBase64String()
 
-    assertError(hashed.Error(), "EdDSASign-Sign")
+    assertNoError(hashed.Error(), "EdDSASign-Sign")
     assertNotEmpty(hashedData, "EdDSASign-Sign")
 
     // ===
@@ -44,8 +44,8 @@ func useEdDSASign(t *testing.T, opts *Options) {
         Verify(data)
     dehashedVerify := dehashed.ToVerify()
 
-    assertError(dehashed.Error(), "EdDSASign-Verify")
-    assertBool(dehashedVerify, "EdDSASign-Verify")
+    assertNoError(dehashed.Error(), "EdDSASign-Verify")
+    assertTrue(dehashedVerify, "EdDSASign-Verify")
 }
 
 func Test_EdDSASign(t *testing.T) {

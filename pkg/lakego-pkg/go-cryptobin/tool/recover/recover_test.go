@@ -9,12 +9,12 @@ import (
 
 func Test_Recover(t *testing.T) {
     assertEqual := test.AssertEqualT(t)
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
+    assertError := test.AssertErrorT(t)
 
     err := Recover(func() {
         panic("test panic")
     })
 
-    assertNotErrorNil(err, "Test_Recover-assertNotErrorNil")
+    assertError(err, "Test_Recover-assertError")
     assertEqual(err, errors.New("test panic"), "Test_Recover-assertEqual")
 }

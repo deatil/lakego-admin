@@ -10,18 +10,18 @@ import (
 
 func Test_EncryptPKCS8PrivateKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-data"
     pass := "test-pass"
 
     block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass))
-    assertError(err, "EncryptPKCS8PrivateKey-EN")
+    assertNoError(err, "EncryptPKCS8PrivateKey-EN")
     assertNotEmpty(block.Bytes, "EncryptPKCS8PrivateKey-EN")
 
     deData, err := DecryptPKCS8PrivateKey(block.Bytes, []byte(pass))
-    assertError(err, "EncryptPKCS8PrivateKey-DE")
+    assertNoError(err, "EncryptPKCS8PrivateKey-DE")
     assertNotEmpty(deData, "EncryptPKCS8PrivateKey-DE")
 
     assertEqual(string(deData), data, "EncryptPKCS8PrivateKey")
@@ -106,7 +106,7 @@ func Test_EncryptPKCS8PrivateKey2(t *testing.T) {
 
 func test_EncryptPKCS8PrivateKey2(t *testing.T, name string, opts Opts) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(name, func(t *testing.T) {
@@ -114,11 +114,11 @@ func test_EncryptPKCS8PrivateKey2(t *testing.T, name string, opts Opts) {
         pass := "test-pass"
 
         block, err := EncryptPKCS8PrivateKey(rand.Reader, "ENCRYPTED PRIVATE KEY", []byte(data), []byte(pass), opts)
-        assertError(err, "test_EncryptPKCS8PrivateKey2-EN")
+        assertNoError(err, "test_EncryptPKCS8PrivateKey2-EN")
         assertNotEmpty(block.Bytes, "test_EncryptPKCS8PrivateKey2-EN")
 
         deData, err := DecryptPKCS8PrivateKey(block.Bytes, []byte(pass))
-        assertError(err, "test_EncryptPKCS8PrivateKey2-DE")
+        assertNoError(err, "test_EncryptPKCS8PrivateKey2-DE")
         assertNotEmpty(deData, "test_EncryptPKCS8PrivateKey2-DE")
 
         assertEqual(string(deData), data, "test_EncryptPKCS8PrivateKey2")

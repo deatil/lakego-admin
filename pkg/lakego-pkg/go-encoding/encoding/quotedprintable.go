@@ -4,14 +4,14 @@ import (
     "github.com/deatil/go-encoding/quotedprintable"
 )
 
-// 解码 quotedprintable
+// quotedprintable Decode
 func (this Encoding) QuotedprintableDecode() Encoding {
     this.data, this.Error = quotedprintable.StdEncoding.Decode(this.data)
 
     return this
 }
 
-// 编码 quotedprintable
+// quotedprintable Encode
 func (this Encoding) QuotedprintableEncode() Encoding {
     this.data, this.Error = quotedprintable.StdEncoding.Encode(this.data)
 

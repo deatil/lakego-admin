@@ -29,7 +29,7 @@ func test_GenerateKey() *dsa.PrivateKey {
 
 func Test_MarshalPKCS1(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
     pri := test_GenerateKey()
@@ -40,27 +40,27 @@ func Test_MarshalPKCS1(t *testing.T) {
     //===============
 
     pubDer, err := MarshalPKCS1PublicKey(pub)
-    assertError(err, "MarshalPKCS1-pub-Error")
+    assertNoError(err, "MarshalPKCS1-pub-Error")
     assertNotEmpty(pubDer, "MarshalPKCS1")
 
     parsedPub, err := ParsePKCS1PublicKey(pubDer)
-    assertError(err, "MarshalPKCS1-pub-Error")
+    assertNoError(err, "MarshalPKCS1-pub-Error")
     assertEqual(pub, parsedPub, "MarshalPKCS1")
 
     //===============
 
     priDer, err := MarshalPKCS1PrivateKey(pri)
-    assertError(err, "MarshalPKCS1-pri-Error")
+    assertNoError(err, "MarshalPKCS1-pri-Error")
     assertNotEmpty(priDer, "MarshalPKCS1")
 
     parsedPri, err := ParsePKCS1PrivateKey(priDer)
-    assertError(err, "MarshalPKCS1-pri-Error")
+    assertNoError(err, "MarshalPKCS1-pri-Error")
     assertEqual(pri, parsedPri, "MarshalPKCS1")
 }
 
 func Test_MarshalPKCS8(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
     pri := test_GenerateKey()
@@ -71,21 +71,21 @@ func Test_MarshalPKCS8(t *testing.T) {
     //===============
 
     pubDer, err := MarshalPKCS8PublicKey(pub)
-    assertError(err, "MarshalPKCS8PublicKey-pub-Error")
+    assertNoError(err, "MarshalPKCS8PublicKey-pub-Error")
     assertNotEmpty(pubDer, "MarshalPKCS8PublicKey")
 
     parsedPub, err := ParsePKCS8PublicKey(pubDer)
-    assertError(err, "ParsePKCS8PublicKey-pub-Error")
+    assertNoError(err, "ParsePKCS8PublicKey-pub-Error")
     assertEqual(parsedPub, pub, "MarshalPKCS8")
 
     //===============
 
     priDer, err := MarshalPKCS8PrivateKey(pri)
-    assertError(err, "MarshalPKCS8PrivateKey-pri-Error")
+    assertNoError(err, "MarshalPKCS8PrivateKey-pri-Error")
     assertNotEmpty(priDer, "MarshalPKCS8PrivateKey")
 
     parsedPri, err := ParsePKCS8PrivateKey(priDer)
-    assertError(err, "ParsePKCS8PrivateKey-pri-Error")
+    assertNoError(err, "ParsePKCS8PrivateKey-pri-Error")
     assertEqual(parsedPri, pri, "ParsePKCS8PrivateKey")
 }
 
@@ -133,8 +133,8 @@ func Test_MarshalPKCS8_Check(t *testing.T) {
 }
 
 func test_MarshalPKCS8_Check(t *testing.T, priv, pub string) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     parsedPub, err := ParsePKCS8PublicKey(decodePEM(pub))
     if err != nil {
@@ -152,9 +152,9 @@ func test_MarshalPKCS8_Check(t *testing.T, priv, pub string) {
     hash := sha256.Sum256([]byte(data))
 
     r, s, err := dsa.Sign(rand.Reader, parsedPriv, hash[:])
-    assertError(err, "test_MarshalPKCS8_Check-sig-Error")
+    assertNoError(err, "test_MarshalPKCS8_Check-sig-Error")
 
     veri := dsa.Verify(parsedPub, hash[:], r, s)
-    assertBool(veri, "test_MarshalPKCS8_Check-veri")
+    assertTrue(veri, "test_MarshalPKCS8_Check-veri")
 
 }

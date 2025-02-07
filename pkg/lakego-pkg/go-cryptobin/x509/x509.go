@@ -690,9 +690,9 @@ var (
     oidPublicKeyECDSA   = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
     oidPublicKeyEd25519 = asn1.ObjectIdentifier{1, 3, 101, 112}
 
-    oidGOSTPublicKey         = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
-    oidGost2012PublicKey256  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
-    oidGost2012PublicKey512  = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
+    oidGOSTPublicKey        = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
+    oidGost2012PublicKey256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
+    oidGost2012PublicKey512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
 
     oidPublicKeyElGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
 )

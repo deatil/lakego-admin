@@ -15,7 +15,7 @@ func fromHex(s string) []byte {
 
 func Test_CFB1(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -23,7 +23,7 @@ func Test_CFB1(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_CFB1")
+    assertNoError(err, "Test_CFB1")
 
     mode := NewCFB1Encrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -40,7 +40,7 @@ func Test_CFB1(t *testing.T) {
 
 func Test_CFB8(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -48,7 +48,7 @@ func Test_CFB8(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_CFB8")
+    assertNoError(err, "Test_CFB8")
 
     mode := NewCFB8Encrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -65,7 +65,7 @@ func Test_CFB8(t *testing.T) {
 
 func Test_CFB16(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -73,7 +73,7 @@ func Test_CFB16(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_CFB16")
+    assertNoError(err, "Test_CFB16")
 
     mode := NewCFB16Encrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -90,7 +90,7 @@ func Test_CFB16(t *testing.T) {
 
 func Test_CFB32(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -98,7 +98,7 @@ func Test_CFB32(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_CFB32")
+    assertNoError(err, "Test_CFB32")
 
     mode := NewCFB32Encrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -115,7 +115,7 @@ func Test_CFB32(t *testing.T) {
 
 func Test_CFB64(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -123,7 +123,7 @@ func Test_CFB64(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_CFB64")
+    assertNoError(err, "Test_CFB64")
 
     mode := NewCFB64Encrypter(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -140,7 +140,7 @@ func Test_CFB64(t *testing.T) {
 
 func Test_CFB1_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     for _, td := range testCFBDataCFB1s {
@@ -151,7 +151,7 @@ func Test_CFB1_Check(t *testing.T) {
             ciphertext := td.ct
 
             c, err := aes.NewCipher(key)
-            assertError(err, "Test_CFB1_Check")
+            assertNoError(err, "Test_CFB1_Check")
 
             mode := NewCFB1Encrypter(c, iv)
             ciphertext2 := make([]byte, len(plaintext))
@@ -172,7 +172,7 @@ func Test_CFB1_Check(t *testing.T) {
 
 func Test_CFB8_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     for _, td := range testCFBDataCFB8s {
@@ -183,7 +183,7 @@ func Test_CFB8_Check(t *testing.T) {
             ciphertext := td.ct
 
             c, err := aes.NewCipher(key)
-            assertError(err, "Test_CFB8_Check")
+            assertNoError(err, "Test_CFB8_Check")
 
             mode := NewCFB8Encrypter(c, iv)
             ciphertext2 := make([]byte, len(plaintext))

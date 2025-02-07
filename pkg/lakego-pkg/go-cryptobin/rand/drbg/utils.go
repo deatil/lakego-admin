@@ -11,15 +11,8 @@ const MAX_BYTES_PER_GENERATE = 1 << 11
 
 var ErrReseedRequired = errors.New("the DRGB must be reseeded")
 
-// Endianness option
-const littleEndian bool = false
-
 func bytesToUint32(in []byte) (out uint32) {
-    if littleEndian {
-        out = binary.LittleEndian.Uint32(in[0:])
-    } else {
-        out = binary.BigEndian.Uint32(in[0:])
-    }
+    out = binary.BigEndian.Uint32(in[0:])
 
     return
 }
@@ -27,21 +20,13 @@ func bytesToUint32(in []byte) (out uint32) {
 func uint32ToBytes(in uint32) []byte {
     var out [4]byte
 
-    if littleEndian {
-        binary.LittleEndian.PutUint32(out[0:], in)
-    } else {
-        binary.BigEndian.PutUint32(out[0:], in)
-    }
+    binary.BigEndian.PutUint32(out[0:], in)
 
     return out[:]
 }
 
 func putu64(p []byte, V uint64) {
-    if littleEndian {
-        binary.LittleEndian.PutUint64(p[0:], V)
-    } else {
-        binary.BigEndian.PutUint64(p[0:], V)
-    }
+    binary.BigEndian.PutUint64(p[0:], V)
 }
 
 func hashDF(digest hash.Hash, in []byte, out []byte) {

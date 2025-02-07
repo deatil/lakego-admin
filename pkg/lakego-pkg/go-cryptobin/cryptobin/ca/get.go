@@ -8,16 +8,19 @@ import (
     "crypto/ed25519"
     "crypto/elliptic"
 
+    "github.com/deatil/go-cryptobin/x509"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
 )
 
 // 获取 cert
-func (this CA) GetCert() any {
+func (this CA) GetCert() *x509.Certificate {
     return this.cert
 }
 
 // 获取 certRequest
-func (this CA) GetCertRequest() any {
+func (this CA) GetCertRequest() *x509.CertificateRequest {
     return this.certRequest
 }
 
@@ -39,6 +42,10 @@ func (this CA) GetPrivateKeyType() PublicKeyType {
             return KeyTypeEdDSA
         case *sm2.PrivateKey:
             return KeyTypeSM2
+        case *gost.PrivateKey:
+            return KeyTypeGost
+        case *elgamal.PrivateKey:
+            return KeyTypeElGamal
     }
 
     return KeyTypeUnknown
@@ -62,6 +69,10 @@ func (this CA) GetPublicKeyType() PublicKeyType {
             return KeyTypeEdDSA
         case *sm2.PublicKey:
             return KeyTypeSM2
+        case *gost.PublicKey:
+            return KeyTypeGost
+        case *elgamal.PublicKey:
+            return KeyTypeElGamal
     }
 
     return KeyTypeUnknown
@@ -82,9 +93,24 @@ func (this CA) GetCurve() elliptic.Curve {
     return this.options.Curve
 }
 
+// 获取 Curve
+func (this CA) GetGostCurve() *gost.Curve {
+    return this.options.GostCurve
+}
+
 // get Options Bits
 func (this CA) GetBits() int {
     return this.options.Bits
+}
+
+// get Options Bitsize
+func (this CA) GetBitsize() int {
+    return this.options.Bitsize
+}
+
+// get Options Probability
+func (this CA) GetProbability() int {
+    return this.options.Probability
 }
 
 // 获取 keyData

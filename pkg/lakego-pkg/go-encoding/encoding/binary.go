@@ -5,7 +5,7 @@ import (
     "encoding/binary"
 )
 
-// Binary 小端编码
+// Binary Little Endian Encode
 func (this Encoding) BinaryLittleEndianEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
 
@@ -20,7 +20,7 @@ func (this Encoding) BinaryLittleEndianEncode(data any) Encoding {
     return this
 }
 
-// Binary 小端解码
+// Binary Little Endian Decode
 func (this Encoding) BinaryLittleEndianDecode(dst any) Encoding {
     buf := bytes.NewBuffer(this.data)
 
@@ -31,7 +31,7 @@ func (this Encoding) BinaryLittleEndianDecode(dst any) Encoding {
 
 // ====================
 
-// Binary 大端编码
+// Binary Big Endian Encode
 func (this Encoding) BinaryBigEndianEncode(data any) Encoding {
     buf := bytes.NewBuffer(nil)
 
@@ -46,7 +46,7 @@ func (this Encoding) BinaryBigEndianEncode(data any) Encoding {
     return this
 }
 
-// Binary 大端加码
+// Binary Big Endian Decode
 func (this Encoding) BinaryBigEndianDecode(dst any) Encoding {
     buf := bytes.NewBuffer(this.data)
 

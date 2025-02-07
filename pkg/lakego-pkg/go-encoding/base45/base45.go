@@ -2,6 +2,8 @@ package base45
 
 import (
     "fmt"
+    "unsafe"
+    "reflect"
     "strings"
     "encoding/binary"
 )
@@ -18,7 +20,7 @@ type InvalidLengthError struct {
 }
 
 func (e InvalidLengthError) Error() string {
-    return fmt.Sprintf("invalid length n=%d. It should be n mod 3 = [0, 2] NOT n mod 3 = %d", e.length, e.mod)
+    return fmt.Sprintf("go-encoding/base45: invalid length n=%d. It should be n mod 3 = [0, 2] NOT n mod 3 = %d", e.length, e.mod)
 }
 
 type InvalidCharacterError struct {
@@ -27,7 +29,7 @@ type InvalidCharacterError struct {
 }
 
 func (e InvalidCharacterError) Error() string {
-    return fmt.Sprintf("invalid character %s at position: %d\n", string(e.char), e.position)
+    return fmt.Sprintf("go-encoding/base45: invalid character %s at position: %d\n", string(e.char), e.position)
 }
 
 type IllegalBase45ByteError struct {
@@ -35,7 +37,7 @@ type IllegalBase45ByteError struct {
 }
 
 func (e IllegalBase45ByteError) Error() string {
-    return fmt.Sprintf("illegal base45 data at byte position %d\n", e.position)
+    return fmt.Sprintf("go-encoding/base45: illegal base45 data at byte position %d\n", e.position)
 }
 
 // encodingMap
@@ -59,101 +61,52 @@ func (e IllegalBase45ByteError) Error() string {
 //      09 9            21 L            33 X
 //      10 A            22 M            34 Y
 //      11 B            23 N            35 Z
-var encodingMap = map[byte]rune {
-    byte(0): '0',
-    byte(1): '1',
-    byte(2): '2',
-    byte(3): '3',
-    byte(4): '4',
-    byte(5): '5',
-    byte(6): '6',
-    byte(7): '7',
-    byte(8): '8',
-    byte(9): '9',
-    byte(10): 'A',
-    byte(11): 'B',
-    byte(12): 'C',
-    byte(13): 'D',
-    byte(14): 'E',
-    byte(15): 'F',
-    byte(16): 'G',
-    byte(17): 'H',
-    byte(18): 'I',
-    byte(19): 'J',
-    byte(20): 'K',
-    byte(21): 'L',
-    byte(22): 'M',
-    byte(23): 'N',
-    byte(24): 'O',
-    byte(25): 'P',
-    byte(26): 'Q',
-    byte(27): 'R',
-    byte(28): 'S',
-    byte(29): 'T',
-    byte(30): 'U',
-    byte(31): 'V',
-    byte(32): 'W',
-    byte(33): 'X',
-    byte(34): 'Y',
-    byte(35): 'Z',
-    byte(36): ' ',
-    byte(37): '$',
-    byte(38): '%',
-    byte(39): '*',
-    byte(40): '+',
-    byte(41): '-',
-    byte(42): '.',
-    byte(43): '/',
-    byte(44): ':',
+const encodeStd = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:"
+
+// StdEncoding is the standard base62 encoding.
+var StdEncoding = NewEncoding(encodeStd)
+
+/*
+ * Encodings
+ */
+
+// An Encoding is a radix 45 encoding/decoding scheme, defined by a 45-character alphabet.
+type Encoding struct {
+    encode    [45]byte
+    decodeMap [256]byte
 }
 
-var decodingMap = map[rune]byte{
-    '0': byte(0),
-    '1': byte(1),
-    '2': byte(2),
-    '3': byte(3),
-    '4': byte(4),
-    '5': byte(5),
-    '6': byte(6),
-    '7': byte(7),
-    '8': byte(8),
-    '9': byte(9),
-    'A': byte(10),
-    'B': byte(11),
-    'C': byte(12),
-    'D': byte(13),
-    'E': byte(14),
-    'F': byte(15),
-    'G': byte(16),
-    'H': byte(17),
-    'I': byte(18),
-    'J': byte(19),
-    'K': byte(20),
-    'L': byte(21),
-    'M': byte(22),
-    'N': byte(23),
-    'O': byte(24),
-    'P': byte(25),
-    'Q': byte(26),
-    'R': byte(27),
-    'S': byte(28),
-    'T': byte(29),
-    'U': byte(30),
-    'V': byte(31),
-    'W': byte(32),
-    'X': byte(33),
-    'Y': byte(34),
-    'Z': byte(35),
-    ' ': byte(36),
-    '$': byte(37),
-    '%': byte(38),
-    '*': byte(39),
-    '+': byte(40),
-    '-': byte(41),
-    '.': byte(42),
-    '/': byte(43),
-    ':': byte(44),
+// NewEncoding returns a new padded Encoding defined by the given alphabet,
+// which must be a 45-byte string that does not contain the padding character
+// or CR / LF ('\r', '\n').
+func NewEncoding(encoder string) *Encoding {
+    if len(encoder) != 45 {
+        panic("go-encoding/base45: encoding alphabet is not 45-bytes long")
+    }
+
+    for i := 0; i < len(encoder); i++ {
+        if encoder[i] == '\n' || encoder[i] == '\r' {
+            panic("go-encoding/base45: encoding alphabet contains newline character")
+        }
+    }
+
+    e := new(Encoding)
+    copy(e.encode[:], encoder)
+
+    for i := 0; i < len(e.decodeMap); i++ {
+        e.decodeMap[i] = 0xFF
+    }
+
+    for i := 0; i < len(encoder); i++ {
+        e.decodeMap[encoder[i]] = byte(i)
+    }
+
+    return e
 }
+
+/*
+ * Encoder
+ */
 
 // Encode
 //   4.  The Base45 Encoding
@@ -188,28 +141,39 @@ var decodingMap = map[rune]byte{
 //
 //   For decoding a Base45 encoded string the inverse operations are
 //   performed.
-func Encode(in string) string {
-    bytes := []byte(in)
+func (enc *Encoding) Encode(bytes []byte) []byte {
     pairs := encodePairs(bytes)
+
     var builder strings.Builder
     for i, pair := range pairs {
         res := encodeBase45(pair)
         if i + 1 == len(pairs) && res[2] == 0 {
             for _, b := range res[:2] {
-                if c, ok := encodingMap[b]; ok {
-                    builder.WriteRune(c)
+                if len(enc.encode) > int(b) {
+                    builder.WriteByte(enc.encode[b])
                 }
             }
         } else {
             for _, b := range res {
-                if c, ok := encodingMap[b]; ok {
-                    builder.WriteRune(c)
+                if len(enc.encode) > int(b) {
+                    builder.WriteByte(enc.encode[b])
                 }
             }
         }
     }
-    return builder.String()
+
+    return []byte(builder.String())
 }
+
+// EncodeToString returns the base62 encoding of src.
+func (enc *Encoding) EncodeToString(src []byte) string {
+    buf := enc.Encode(src)
+    return string(buf)
+}
+
+/*
+ * Decoder
+ */
 
 // Decode
 //   Decoding example 1: The string "QED8WEX0" represents, when looked up
@@ -218,38 +182,48 @@ func Encode(in string) string {
 //   and get [[26 14 13] [8 32 14] [33 0]].  In base 45 we get [26981
 //   29798 33] where the bytes are [[105 101] [116 102] [33]].  If we look
 //   at the ASCII values we get the string "ietf!".
-func Decode(in string) (string, error) {
+func (enc *Encoding) Decode(in []byte) ([]byte, error) {
     size := len(in)
+
     mod := size % 3
     if mod != 0 && mod != 2 {
-        return "", InvalidLengthError{
+        return nil, InvalidLengthError{
             length: size,
             mod:    mod,
         }
     }
+
     bytes := make([]byte, 0, size)
     for pos, char := range in {
-        v, ok := decodingMap[char]
-        if !ok {
-            return "", InvalidCharacterError{
-                char:     char,
-                position: pos,
+        if len(enc.decodeMap) > int(char) {
+            v := enc.decodeMap[char]
+
+            if int(v) == 255 {
+                return nil, InvalidCharacterError{
+                    char:     rune(char),
+                    position: pos,
+                }
             }
+
+            bytes = append(bytes, v)
         }
-        bytes = append(bytes, v)
     }
+
     chunks := decodeChunks(bytes)
     triplets, err := decodeTriplets(chunks)
     if err != nil {
-        return "", err
+        return nil, err
     }
+
     tripletsLength := len(triplets)
     decoded := make([]byte, 0, tripletsLength * 2)
+
     for i := 0; i < tripletsLength - 1; i++ {
         bytes := uint16ToBytes(triplets[i])
         decoded = append(decoded, bytes[0])
         decoded = append(decoded, bytes[1])
     }
+
     if mod == 2 {
         bytes := uint16ToBytes(triplets[tripletsLength - 1])
         decoded = append(decoded, bytes[1])
@@ -258,7 +232,15 @@ func Decode(in string) (string, error) {
         decoded = append(decoded, bytes[0])
         decoded = append(decoded, bytes[1])
     }
-    return string(decoded), nil
+
+    return decoded, nil
+}
+
+// DecodeString returns the bytes represented by the base62 string s.
+func (enc *Encoding) DecodeString(s string) ([]byte, error) {
+    sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+    bh := reflect.SliceHeader{Data: sh.Data, Len: sh.Len, Cap: sh.Len}
+    return enc.Decode(*(*[]byte)(unsafe.Pointer(&bh)))
 }
 
 func uint16ToBytes(in uint16) []byte {
@@ -297,8 +279,10 @@ func encodePairs(in []byte) [][]byte {
         } else {
             low = in[i]
         }
+
         ret = append(ret, []byte{high, low})
     }
+
     return ret
 }
 
@@ -313,6 +297,7 @@ func encodeBase45(in []byte) []byte {
 func decodeTriplets(in [][]byte) ([]uint16, error) {
     size := len(in)
     ret := make([]uint16, 0, size)
+
     for pos, chunk := range in {
         if len(chunk) == 3 {
             // n = c + (d*45) + (e*45*45)
@@ -320,11 +305,14 @@ func decodeTriplets(in [][]byte) ([]uint16, error) {
             d := int(chunk[1])
             e := int(chunk[2])
             n := c + (d * base) + (e * baseSquare)
+
             if n > maxUint16 {
                 return nil, IllegalBase45ByteError{position: pos}
             }
+
             ret = append(ret, uint16(n))
         }
+
         if len(chunk) == 2 {
             // n = c + (d*45)
             c := uint16(chunk[0])
@@ -333,5 +321,6 @@ func decodeTriplets(in [][]byte) ([]uint16, error) {
             ret = append(ret, n)
         }
     }
+
     return ret, nil
 }

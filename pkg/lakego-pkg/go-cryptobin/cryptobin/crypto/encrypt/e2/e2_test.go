@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_E2(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -27,7 +27,7 @@ func Test_E2(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "E2-Encode")
+    assertNoError(cypt.Error(), "E2-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf1d2fgtyf35").
@@ -38,7 +38,7 @@ func Test_E2(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "E2-Decode")
+    assertNoError(cyptde.Error(), "E2-Decode")
 
     assert(cyptdeStr, data, "E2-res")
 }

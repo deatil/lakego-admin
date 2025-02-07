@@ -18,25 +18,14 @@ func ror(x uint32, n uint) uint32 {
     return rol(x, 32 - n)
 }
 
-// Endianness option
-const littleEndian bool = true
-
 func ba2w(inp [4]byte) uint32 {
-    if littleEndian {
-        return binary.LittleEndian.Uint32(inp[0:])
-    } else {
-        return binary.BigEndian.Uint32(inp[0:])
-    }
+    return binary.LittleEndian.Uint32(inp[0:])
 }
 
 func w2ba(inp uint32) [4]byte {
     var sav [4]byte
 
-    if littleEndian {
-        binary.LittleEndian.PutUint32(sav[0:], inp)
-    } else {
-        binary.BigEndian.PutUint32(sav[0:], inp)
-    }
+    binary.LittleEndian.PutUint32(sav[0:], inp)
 
     return sav
 }

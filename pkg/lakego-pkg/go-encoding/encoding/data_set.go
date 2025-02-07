@@ -4,19 +4,12 @@ import (
     "sync"
 )
 
-// 构造函数
-func NewDataSet[N DataName, M any]() *DataSet[N, M] {
-    return &DataSet[N, M]{
-        data: make(map[N]func() M),
-    }
-}
-
 type DataName interface {
     ~uint | ~int | ~string
 }
 
 /**
- * 数据设置
+ * Data Set
  *
  * @create 2023-3-31
  * @author deatil
@@ -29,7 +22,14 @@ type DataSet[N DataName, M any] struct {
     data map[N]func() M
 }
 
-// 设置
+// NewDataSet
+func NewDataSet[N DataName, M any]() *DataSet[N, M] {
+    return &DataSet[N, M]{
+        data: make(map[N]func() M),
+    }
+}
+
+// Add
 func (this *DataSet[N, M]) Add(name N, data func() M) *DataSet[N, M] {
     this.mu.Lock()
     defer this.mu.Unlock()
@@ -39,6 +39,7 @@ func (this *DataSet[N, M]) Add(name N, data func() M) *DataSet[N, M] {
     return this
 }
 
+// Has
 func (this *DataSet[N, M]) Has(name N) bool {
     this.mu.RLock()
     defer this.mu.RUnlock()
@@ -50,6 +51,7 @@ func (this *DataSet[N, M]) Has(name N) bool {
     return false
 }
 
+// Get
 func (this *DataSet[N, M]) Get(name N) func() M {
     this.mu.RLock()
     defer this.mu.RUnlock()
@@ -61,7 +63,7 @@ func (this *DataSet[N, M]) Get(name N) func() M {
     return nil
 }
 
-// 删除
+// Remove
 func (this *DataSet[N, M]) Remove(name N) *DataSet[N, M] {
     this.mu.Lock()
     defer this.mu.Unlock()
@@ -71,6 +73,7 @@ func (this *DataSet[N, M]) Remove(name N) *DataSet[N, M] {
     return this
 }
 
+// Names
 func (this *DataSet[N, M]) Names() []N {
     names := make([]N, 0)
     for name, _ := range this.data {
@@ -80,10 +83,12 @@ func (this *DataSet[N, M]) Names() []N {
     return names
 }
 
+// All
 func (this *DataSet[N, M]) All() map[N]func() M {
     return this.data
 }
 
+// Clean
 func (this *DataSet[N, M]) Clean() {
     this.mu.Lock()
     defer this.mu.Unlock()
@@ -93,6 +98,7 @@ func (this *DataSet[N, M]) Clean() {
     }
 }
 
+// Len
 func (this *DataSet[N, M]) Len() int {
     return len(this.data)
 }

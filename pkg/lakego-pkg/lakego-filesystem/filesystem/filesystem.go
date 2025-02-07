@@ -186,7 +186,7 @@ func (this *Filesystem) Lines(path string) ([][]byte, error) {
             break
         }
 
-        data = append(data, line)
+        data = append(data, []byte(string(line)))
     }
 
     return data, err
@@ -202,7 +202,7 @@ func (this *Filesystem) Hash(path string) (string, error) {
     if info, err := os.Stat(path); err != nil {
         return "", err
     } else if info.IsDir() {
-        return "", errors.New("不是文件无法计算")
+        return "", errors.New("not file")
     }
 
     openfile, err := os.Open(path)

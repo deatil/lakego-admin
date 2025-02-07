@@ -4,7 +4,7 @@ import (
     "encoding/hex"
 )
 
-// Hex
+// Hex Decode
 func (this Encoding) HexDecode() Encoding {
     data := string(this.data)
     this.data, this.Error = hex.DecodeString(data)
@@ -12,7 +12,7 @@ func (this Encoding) HexDecode() Encoding {
     return this
 }
 
-// 输出 Hex
+// Hex Encode
 func (this Encoding) HexEncode() Encoding {
     data := hex.EncodeToString(this.data)
     this.data = []byte(data)

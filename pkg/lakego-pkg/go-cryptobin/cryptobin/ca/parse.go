@@ -10,6 +10,9 @@ import (
 
     "github.com/deatil/go-cryptobin/pkcs8"
     "github.com/deatil/go-cryptobin/gm/sm2"
+    "github.com/deatil/go-cryptobin/pubkey/gost"
+    "github.com/deatil/go-cryptobin/pubkey/elgamal"
+    cryptobin_x509 "github.com/deatil/go-cryptobin/x509"
     pubkey_dsa "github.com/deatil/go-cryptobin/pubkey/dsa"
 )
 
@@ -21,11 +24,17 @@ var (
 )
 
 var (
-    oidPublicKeySM2     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
     oidPublicKeyRSA     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
     oidPublicKeyDSA     = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
     oidPublicKeyECDSA   = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
     oidPublicKeyEd25519 = asn1.ObjectIdentifier{1, 3, 101, 112}
+    oidPublicKeySM2     = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
+
+    oidGOSTPublicKey        = asn1.ObjectIdentifier{1, 2, 643, 2, 2, 19}
+    oidGost2012PublicKey256 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 1}
+    oidGost2012PublicKey512 = asn1.ObjectIdentifier{1, 2, 643, 7, 1, 1, 1, 2}
+
+    oidPublicKeyElGamal = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 3029, 1, 2, 1}
 )
 
 type pkcs8Info struct {
@@ -79,6 +88,12 @@ func (this CA) ParsePKCS8PrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error
             }
         case privKey.Algo.Algorithm.Equal(oidPublicKeyEd25519):
             parsedKey, err = x509.ParsePKCS8PrivateKey(block.Bytes)
+        case privKey.Algo.Algorithm.Equal(oidGOSTPublicKey),
+            privKey.Algo.Algorithm.Equal(oidGost2012PublicKey256),
+            privKey.Algo.Algorithm.Equal(oidGost2012PublicKey512):
+            parsedKey, err = gost.ParsePrivateKey(block.Bytes)
+        case privKey.Algo.Algorithm.Equal(oidPublicKeyElGamal):
+            parsedKey, err = elgamal.ParsePKCS8PrivateKey(block.Bytes)
         default:
             return nil, ErrPrivateKeyError
     }
@@ -134,6 +149,12 @@ func (this CA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password []by
             }
         case privKey.Algo.Algorithm.Equal(oidPublicKeyEd25519):
             parsedKey, err = x509.ParsePKCS8PrivateKey(blockDecrypted)
+        case privKey.Algo.Algorithm.Equal(oidGOSTPublicKey),
+            privKey.Algo.Algorithm.Equal(oidGost2012PublicKey256),
+            privKey.Algo.Algorithm.Equal(oidGost2012PublicKey512):
+            parsedKey, err = gost.ParsePrivateKey(blockDecrypted)
+        case privKey.Algo.Algorithm.Equal(oidPublicKeyElGamal):
+            parsedKey, err = elgamal.ParsePKCS8PrivateKey(blockDecrypted)
         default:
             return nil, ErrPrivateKeyError
     }
@@ -184,6 +205,12 @@ func (this CA) ParsePKCS8PublicKeyFromPEM(key []byte) (crypto.PublicKey, error) 
             }
         case pubkey.Algo.Algorithm.Equal(oidPublicKeyEd25519):
             parsedKey, err = x509.ParsePKIXPublicKey(block.Bytes)
+        case pubkey.Algo.Algorithm.Equal(oidGOSTPublicKey),
+            pubkey.Algo.Algorithm.Equal(oidGost2012PublicKey256),
+            pubkey.Algo.Algorithm.Equal(oidGost2012PublicKey512):
+            parsedKey, err = gost.ParsePublicKey(block.Bytes)
+        case pubkey.Algo.Algorithm.Equal(oidPublicKeyElGamal):
+            parsedKey, err = elgamal.ParsePKCS8PublicKey(block.Bytes)
         default:
             return nil, ErrPublicKeyError
     }
@@ -193,4 +220,26 @@ func (this CA) ParsePKCS8PublicKeyFromPEM(key []byte) (crypto.PublicKey, error) 
     }
 
     return parsedKey, nil
+}
+
+// Parse Certificate From PEM
+func (this CA) ParseCertificateFromPEM(cert []byte) (*cryptobin_x509.Certificate, error) {
+    // Parse PEM block
+    block, _ := pem.Decode(cert)
+    if block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    return cryptobin_x509.ParseCertificate(block.Bytes)
+}
+
+// Parse Certificate Request From PEM
+func (this CA) ParseCertificateRequestFromPEM(cert []byte) (*cryptobin_x509.CertificateRequest, error) {
+    // Parse PEM block
+    block, _ := pem.Decode(cert)
+    if block == nil {
+        return nil, ErrKeyMustBePEMEncoded
+    }
+
+    return cryptobin_x509.ParseCertificateRequest(block.Bytes)
 }

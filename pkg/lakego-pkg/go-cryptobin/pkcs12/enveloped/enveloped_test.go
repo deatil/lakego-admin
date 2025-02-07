@@ -61,7 +61,7 @@ func init() {
 
 func Test_Encrypt(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
     data := []byte("test-data")
@@ -71,12 +71,12 @@ func Test_Encrypt(t *testing.T) {
 
     // 加密
     enData, err := NewEnveloped().Encrypt(rand.Reader, data, []*x509.Certificate{cert})
-    assertError(err, "Encrypt-enData")
+    assertNoError(err, "Encrypt-enData")
     assertNotEmpty(enData, "Encrypt-enData")
 
     // 解密
     deData, err := NewEnveloped().Decrypt(enData, cert, privkey)
-    assertError(err, "Encrypt-deData")
+    assertNoError(err, "Encrypt-deData")
     assertNotEmpty(deData, "Encrypt-deData")
 
     assertEqual(deData, data, "Encrypt-deData")

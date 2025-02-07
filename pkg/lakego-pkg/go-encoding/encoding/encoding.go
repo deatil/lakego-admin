@@ -1,32 +1,28 @@
 package encoding
 
 /**
- * 编码
+ * Encode
  *
  * @create 2022-4-3
  * @author deatil
  */
 type Encoding struct {
-    // 数据
+    // data bytes
     data []byte
 
-    // 错误
+    // Error
     Error error
 }
 
-var defaultEncode Encoding
-
-// 初始化
-func init() {
-    defaultEncode = NewEncoding()
-}
-
-// 构造函数
+// NewEncoding
 func NewEncoding() Encoding {
     return Encoding{}
 }
 
-// 构造函数
+// New
 func New() Encoding {
     return NewEncoding()
 }
+
+// default Encoding
+var defaultEncoding = NewEncoding()

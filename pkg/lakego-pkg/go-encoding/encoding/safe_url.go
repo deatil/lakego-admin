@@ -4,7 +4,7 @@ import (
     "net/url"
 )
 
-// 对 URL 进行转义解码
+// SafeURL Decode
 func (this Encoding) SafeURLDecode() Encoding {
     data := string(this.data)
     dst, err := url.QueryUnescape(data)
@@ -15,7 +15,7 @@ func (this Encoding) SafeURLDecode() Encoding {
     return this
 }
 
-// 对 URL 进行转义编码
+// SafeURL Encode
 func (this Encoding) SafeURLEncode() Encoding {
     data := url.QueryEscape(string(this.data))
     this.data = []byte(data)

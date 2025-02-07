@@ -117,15 +117,15 @@ bRgKMxvTafNkawskxq36sp6dvalgueJh4QIDAQAB
 
 func Test_BigDataEncrypt(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := []byte("test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass")
 
     encoded, err := rsaBigDataEncrypt(data, []byte(testPubkey))
-    assertError(err, "BigDataEncrypt-Encrypt")
+    assertNoError(err, "BigDataEncrypt-Encrypt")
 
     decoded, err2 := rsaBigDataDecrypt(encoded, []byte(testPrikey))
-    assertError(err2, "BigDataEncrypt-Decrypt")
+    assertNoError(err2, "BigDataEncrypt-Decrypt")
 
     assert(data, decoded, "BigDataEncrypt")
 }
@@ -134,7 +134,7 @@ func Test_BigDataEncrypt(t *testing.T) {
 
 func Test_Encrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -147,7 +147,7 @@ func Test_Encrypt(t *testing.T) {
         Encrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Encrypt-Encrypt")
+    assertNoError(en.Error(), "Encrypt-Encrypt")
     assertNotEmpty(enData, "Encrypt-Encrypt")
 
     de := rsa.
@@ -156,7 +156,7 @@ func Test_Encrypt(t *testing.T) {
         Decrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "Encrypt-Decrypt")
+    assertNoError(de.Error(), "Encrypt-Decrypt")
     assertNotEmpty(deData, "Encrypt-Decrypt")
 
     assertEqual(data, deData, "Encrypt-Dedata")
@@ -169,7 +169,7 @@ func Test_Encrypt(t *testing.T) {
         DecryptWithOpts(&go_rsa.PKCS1v15DecryptOptions{})
     deData = de.ToString()
 
-    assertError(de.Error(), "Encrypt-DecryptWithOpts")
+    assertNoError(de.Error(), "Encrypt-DecryptWithOpts")
     assertNotEmpty(deData, "Encrypt-DecryptWithOpts")
 
     assertEqual(data, deData, "Encrypt-DecryptWithOpts-Dedata")
@@ -177,7 +177,7 @@ func Test_Encrypt(t *testing.T) {
 
 func Test_EncryptOAEP(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -190,7 +190,7 @@ func Test_EncryptOAEP(t *testing.T) {
         EncryptOAEP()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "EncryptOAEP-Encrypt")
+    assertNoError(en.Error(), "EncryptOAEP-Encrypt")
     assertNotEmpty(enData, "EncryptOAEP-Encrypt")
 
     de := rsa.
@@ -199,7 +199,7 @@ func Test_EncryptOAEP(t *testing.T) {
         DecryptOAEP()
     deData := de.ToString()
 
-    assertError(de.Error(), "EncryptOAEP-Decrypt")
+    assertNoError(de.Error(), "EncryptOAEP-Decrypt")
     assertNotEmpty(deData, "EncryptOAEP-Decrypt")
 
     assertEqual(data, deData, "EncryptOAEP-Dedata")
@@ -207,7 +207,7 @@ func Test_EncryptOAEP(t *testing.T) {
 
 func Test_EncryptOAEP_WithLabel(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -222,7 +222,7 @@ func Test_EncryptOAEP_WithLabel(t *testing.T) {
         EncryptOAEP()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Test_EncryptOAEP_WithLabel-Encrypt")
+    assertNoError(en.Error(), "Test_EncryptOAEP_WithLabel-Encrypt")
     assertNotEmpty(enData, "Test_EncryptOAEP_WithLabel-Encrypt")
 
     de := rsa.
@@ -233,7 +233,7 @@ func Test_EncryptOAEP_WithLabel(t *testing.T) {
         DecryptOAEP()
     deData := de.ToString()
 
-    assertError(de.Error(), "Test_EncryptOAEP_WithLabel-Decrypt")
+    assertNoError(de.Error(), "Test_EncryptOAEP_WithLabel-Decrypt")
     assertNotEmpty(deData, "Test_EncryptOAEP_WithLabel-Decrypt")
 
     assertEqual(data, deData, "Test_EncryptOAEP_WithLabel-Dedata")
@@ -241,7 +241,7 @@ func Test_EncryptOAEP_WithLabel(t *testing.T) {
 
 func Test_PrivateKeyEncrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-pass"
@@ -254,7 +254,7 @@ func Test_PrivateKeyEncrypt(t *testing.T) {
         PrivateKeyEncrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "PrivateKeyEncrypt-Encrypt")
+    assertNoError(en.Error(), "PrivateKeyEncrypt-Encrypt")
     assertNotEmpty(enData, "PrivateKeyEncrypt-Encrypt")
 
     de := rsa.
@@ -263,7 +263,7 @@ func Test_PrivateKeyEncrypt(t *testing.T) {
         PublicKeyDecrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "PrivateKeyEncrypt-Decrypt")
+    assertNoError(de.Error(), "PrivateKeyEncrypt-Decrypt")
     assertNotEmpty(deData, "PrivateKeyEncrypt-Decrypt")
 
     assertEqual(data, deData, "PrivateKeyEncrypt-Dedata")
@@ -271,7 +271,7 @@ func Test_PrivateKeyEncrypt(t *testing.T) {
 
 func Test_LowerSafeEncrypt(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-pass1111111111112222222222222222222222333333333333"
@@ -284,7 +284,7 @@ func Test_LowerSafeEncrypt(t *testing.T) {
         LowerSafeEncrypt()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "LowerSafeEncrypt-Encrypt")
+    assertNoError(en.Error(), "LowerSafeEncrypt-Encrypt")
     assertNotEmpty(enData, "LowerSafeEncrypt-Encrypt")
 
     de := rsa.
@@ -293,7 +293,7 @@ func Test_LowerSafeEncrypt(t *testing.T) {
         LowerSafeDecrypt()
     deData := de.ToString()
 
-    assertError(de.Error(), "LowerSafeEncrypt-Decrypt")
+    assertNoError(de.Error(), "LowerSafeEncrypt-Decrypt")
     assertNotEmpty(deData, "LowerSafeEncrypt-Decrypt")
 
     assertEqual(data, deData, "LowerSafeEncrypt-Dedata")
@@ -303,7 +303,7 @@ func Test_LowerSafeEncrypt(t *testing.T) {
 
 func Test_EncryptECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -316,7 +316,7 @@ func Test_EncryptECB(t *testing.T) {
         EncryptECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "EncryptECB-Encrypt")
+    assertNoError(en.Error(), "EncryptECB-Encrypt")
     assertNotEmpty(enData, "EncryptECB-Encrypt")
 
     de := rsa.
@@ -325,7 +325,7 @@ func Test_EncryptECB(t *testing.T) {
         DecryptECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "EncryptECB-Decrypt")
+    assertNoError(de.Error(), "EncryptECB-Decrypt")
     assertNotEmpty(deData, "EncryptECB-Decrypt")
 
     assertEqual(data, deData, "EncryptECB-Dedata")
@@ -338,7 +338,7 @@ func Test_EncryptECB(t *testing.T) {
         DecryptECBWithOpts(&go_rsa.PKCS1v15DecryptOptions{})
     deData = de.ToString()
 
-    assertError(de.Error(), "EncryptECB-Decrypt")
+    assertNoError(de.Error(), "EncryptECB-Decrypt")
     assertNotEmpty(deData, "EncryptECB-Decrypt")
 
     assertEqual(data, deData, "EncryptECB-Dedata")
@@ -346,7 +346,7 @@ func Test_EncryptECB(t *testing.T) {
 
 func Test_EncryptOAEPECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -359,7 +359,7 @@ func Test_EncryptOAEPECB(t *testing.T) {
         EncryptOAEPECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "EncryptOAEPECB-Encrypt")
+    assertNoError(en.Error(), "EncryptOAEPECB-Encrypt")
     assertNotEmpty(enData, "EncryptOAEPECB-Encrypt")
 
     de := rsa.
@@ -368,7 +368,7 @@ func Test_EncryptOAEPECB(t *testing.T) {
         DecryptOAEPECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "EncryptOAEPECB-Decrypt")
+    assertNoError(de.Error(), "EncryptOAEPECB-Decrypt")
     assertNotEmpty(deData, "EncryptOAEPECB-Decrypt")
 
     assertEqual(data, deData, "EncryptOAEPECB-Dedata")
@@ -376,7 +376,7 @@ func Test_EncryptOAEPECB(t *testing.T) {
 
 func Test_EncryptOAEPECB_WithLabel(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -391,7 +391,7 @@ func Test_EncryptOAEPECB_WithLabel(t *testing.T) {
         EncryptOAEPECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "Test_EncryptOAEPECB_WithLabel-Encrypt")
+    assertNoError(en.Error(), "Test_EncryptOAEPECB_WithLabel-Encrypt")
     assertNotEmpty(enData, "Test_EncryptOAEPECB_WithLabel-Encrypt")
 
     de := rsa.
@@ -402,7 +402,7 @@ func Test_EncryptOAEPECB_WithLabel(t *testing.T) {
         DecryptOAEPECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "Test_EncryptOAEPECB_WithLabel-Decrypt")
+    assertNoError(de.Error(), "Test_EncryptOAEPECB_WithLabel-Decrypt")
     assertNotEmpty(deData, "Test_EncryptOAEPECB_WithLabel-Decrypt")
 
     assertEqual(deData, data, "Test_EncryptOAEPECB_WithLabel-Dedata")
@@ -410,7 +410,7 @@ func Test_EncryptOAEPECB_WithLabel(t *testing.T) {
 
 func Test_PrivateKeyEncryptECB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
@@ -423,7 +423,7 @@ func Test_PrivateKeyEncryptECB(t *testing.T) {
         PrivateKeyEncryptECB()
     enData := en.ToBase64String()
 
-    assertError(en.Error(), "PrivateKeyEncryptECB-Encrypt")
+    assertNoError(en.Error(), "PrivateKeyEncryptECB-Encrypt")
     assertNotEmpty(enData, "PrivateKeyEncryptECB-Encrypt")
 
     de := rsa.
@@ -432,7 +432,7 @@ func Test_PrivateKeyEncryptECB(t *testing.T) {
         PublicKeyDecryptECB()
     deData := de.ToString()
 
-    assertError(de.Error(), "PrivateKeyEncryptECB-Decrypt")
+    assertNoError(de.Error(), "PrivateKeyEncryptECB-Decrypt")
     assertNotEmpty(deData, "PrivateKeyEncryptECB-Decrypt")
 
     assertEqual(data, deData, "PrivateKeyEncryptECB-Dedata")

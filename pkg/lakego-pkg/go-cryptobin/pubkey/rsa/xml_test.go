@@ -23,60 +23,60 @@ var testPublicKeyCheck = `<RSAKeyValue>
 
 func Test_ParseAndMarshalPublicKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     testPub := []byte(testPublicKeyCheck)
     pub, err1 := ParseXMLPublicKey(testPub)
 
-    assertError(err1, "ParseAndMarshalPublicKey-Error")
+    assertNoError(err1, "ParseAndMarshalPublicKey-Error")
 
     xmlPub, err2 := MarshalXMLPublicKey(pub)
-    assertError(err2, "ParseAndMarshalPublicKey-Error2")
+    assertNoError(err2, "ParseAndMarshalPublicKey-Error2")
 
     assertEqual(testPublicKeyCheck, string(xmlPub), "ParseAndMarshalPublicKey")
 }
 
 func Test_ParseAndMarshalPublicKey2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     testPub := []byte(testPublicKeyCheck)
     pub, err1 := ParseXMLPublicKey(testPub)
 
-    assertError(err1, "ParseAndMarshalPublicKey2-Error")
+    assertNoError(err1, "ParseAndMarshalPublicKey2-Error")
 
     xmlPub, err2 := MarshalXMLPublicKey(pub)
-    assertError(err2, "ParseAndMarshalPublicKey2-Error2")
+    assertNoError(err2, "ParseAndMarshalPublicKey2-Error2")
 
     assertEqual(testPublicKeyCheck, string(xmlPub), "ParseAndMarshalPublicKey2")
 }
 
 func Test_ParseAndMarshalPrivateKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     testPri := []byte(testPrivateKeyCheck)
     pri, err1 := ParseXMLPrivateKey(testPri)
 
-    assertError(err1, "ParseAndMarshalPrivateKey-Error")
+    assertNoError(err1, "ParseAndMarshalPrivateKey-Error")
 
     xmlPri, err2 := MarshalXMLPrivateKey(pri)
-    assertError(err2, "ParseAndMarshalPrivateKey-Error2")
+    assertNoError(err2, "ParseAndMarshalPrivateKey-Error2")
 
     assertEqual(testPrivateKeyCheck, string(xmlPri), "ParseAndMarshalPrivateKey")
 }
 
 func Test_ParseAndMarshalPrivateKey2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     testPri := []byte(testPrivateKeyCheck)
     pri, err1 := ParseXMLPrivateKey(testPri)
 
-    assertError(err1, "ParseAndMarshalPrivateKey2-Error")
+    assertNoError(err1, "ParseAndMarshalPrivateKey2-Error")
 
     xmlPri, err2 := MarshalXMLPrivateKey(pri)
-    assertError(err2, "ParseAndMarshalPrivateKey2-Error2")
+    assertNoError(err2, "ParseAndMarshalPrivateKey2-Error2")
 
     assertEqual(testPrivateKeyCheck, string(xmlPri), "ParseAndMarshalPrivateKey2")
 }

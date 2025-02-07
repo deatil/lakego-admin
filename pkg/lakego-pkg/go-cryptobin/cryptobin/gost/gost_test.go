@@ -28,7 +28,7 @@ func Test_CreatePKCS8PrivateKeyWithPassword(t *testing.T) {
 
 func test_CreatePKCS8PrivateKeyWithPassword(t *testing.T, gen Gost, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -44,7 +44,7 @@ func test_CreatePKCS8PrivateKeyWithPassword(t *testing.T, gen Gost, cipher strin
             CreatePKCS8PrivateKeyWithPassword(string(pass), cipher).
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePKCS8PrivateKeyWithPassword")
+        assertNoError(gen.Error(), "Test_CreatePKCS8PrivateKeyWithPassword")
         assertNotEmpty(pri, "Test_CreatePKCS8PrivateKeyWithPassword-pri")
 
         newPrikey := New().
@@ -67,7 +67,7 @@ func Test_CreatePublicKey(t *testing.T) {
 
 func test_CreatePublicKey(t *testing.T, gen Gost, cipher string) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run(cipher, func(t *testing.T) {
@@ -83,7 +83,7 @@ func test_CreatePublicKey(t *testing.T, gen Gost, cipher string) {
             CreatePublicKey().
             ToKeyString()
 
-        assertError(gen.Error(), "Test_CreatePublicKey")
+        assertNoError(gen.Error(), "Test_CreatePublicKey")
         assertNotEmpty(pub, "Test_CreatePublicKey-pub")
 
         newPubkey := New().
@@ -112,8 +112,8 @@ func Test_Sign(t *testing.T) {
 
 func test_Sign(t *testing.T, gen Gost) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -123,7 +123,7 @@ func test_Sign(t *testing.T, gen Gost) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Sign-Sign")
+    assertNoError(objSign.Error(), "Sign-Sign")
     assertNotEmpty(signed, "Sign-Sign")
 
     // 验证
@@ -131,8 +131,8 @@ func test_Sign(t *testing.T, gen Gost) {
         FromBase64String(signed).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "Sign-Verify")
-    assertBool(objVerify.ToVerify(), "Sign-Verify")
+    assertNoError(objVerify.Error(), "Sign-Verify")
+    assertTrue(objVerify.ToVerify(), "Sign-Verify")
 }
 
 func Test_SignASN1(t *testing.T) {
@@ -151,8 +151,8 @@ func Test_SignASN1(t *testing.T) {
 
 func test_SignASN1(t *testing.T, gen Gost) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -162,7 +162,7 @@ func test_SignASN1(t *testing.T, gen Gost) {
         SignASN1()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignASN1-Sign")
+    assertNoError(objSign.Error(), "SignASN1-Sign")
     assertNotEmpty(signed, "SignASN1-Sign")
 
     // 验证
@@ -170,8 +170,8 @@ func test_SignASN1(t *testing.T, gen Gost) {
         FromBase64String(signed).
         VerifyASN1([]byte(data))
 
-    assertError(objVerify.Error(), "SignASN1-Verify")
-    assertBool(objVerify.ToVerify(), "SignASN1-Verify")
+    assertNoError(objVerify.Error(), "SignASN1-Verify")
+    assertTrue(objVerify.ToVerify(), "SignASN1-Verify")
 }
 
 func Test_SignBytes(t *testing.T) {
@@ -190,8 +190,8 @@ func Test_SignBytes(t *testing.T) {
 
 func test_SignBytes(t *testing.T, gen Gost) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     data := "test-pass"
 
@@ -201,7 +201,7 @@ func test_SignBytes(t *testing.T, gen Gost) {
         SignBytes()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "SignBytes-Sign")
+    assertNoError(objSign.Error(), "SignBytes-Sign")
     assertNotEmpty(signed, "SignBytes-Sign")
 
     // 验证
@@ -209,8 +209,8 @@ func test_SignBytes(t *testing.T, gen Gost) {
         FromBase64String(signed).
         VerifyBytes([]byte(data))
 
-    assertError(objVerify.Error(), "SignBytes-Verify")
-    assertBool(objVerify.ToVerify(), "SignBytes-Verify")
+    assertNoError(objVerify.Error(), "SignBytes-Verify")
+    assertTrue(objVerify.ToVerify(), "SignBytes-Verify")
 }
 
 func Test_MakeKey(t *testing.T) {
@@ -486,8 +486,8 @@ func Test_SignWithEncoding(t *testing.T) {
 
 func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     gen := GenerateKey("IdGostR34102001CryptoProAParamSet")
 
@@ -500,7 +500,7 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "test_SignWithEncoding-Sign")
+    assertNoError(objSign.Error(), "test_SignWithEncoding-Sign")
     assertNotEmpty(signed, "test_SignWithEncoding-Sign")
 
     // 验证
@@ -509,12 +509,12 @@ func test_SignWithEncoding(t *testing.T, encoding EncodingType) {
         WithEncoding(encoding).
         Verify([]byte(data))
 
-    assertError(objVerify.Error(), "test_SignWithEncoding-Verify")
-    assertBool(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
+    assertNoError(objVerify.Error(), "test_SignWithEncoding-Verify")
+    assertTrue(objVerify.ToVerify(), "test_SignWithEncoding-Verify")
 }
 
 func Test_SignWithEncoding_Two_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
     assertNotEqual := cryptobin_test.AssertNotEqualT(t)
 
@@ -529,7 +529,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed := objSign.ToBase64String()
 
-    assertError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed, "Test_SignWithEncoding_Two_Check-Sign")
 
     // 签名
@@ -539,7 +539,7 @@ func Test_SignWithEncoding_Two_Check(t *testing.T) {
         Sign()
     signed2 := objSign2.ToBase64String()
 
-    assertError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
+    assertNoError(objSign2.Error(), "Test_SignWithEncoding_Two_Check-Sign")
     assertNotEmpty(signed2, "Test_SignWithEncoding_Two_Check-Sign")
 
     assertNotEqual(signed2, signed, "Test_SignWithEncoding_Two_Check")

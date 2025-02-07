@@ -207,7 +207,7 @@ func Test_NewDecoder(t *testing.T) {
 }
 
 func Test_Marshal(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     buf := map[string]any{
@@ -217,7 +217,7 @@ func Test_Marshal(t *testing.T) {
 
     res, err := Marshal(buf)
 
-    assertError(err, "Marshal")
+    assertNoError(err, "Marshal")
     assertNotEmpty(res, "Marshal")
 }
 
@@ -235,7 +235,7 @@ func Test_MustMarshal(t *testing.T) {
 }
 
 func Test_SingleTorrent_Check(t *testing.T) {
-    errChek := cryptobin_test.AssertErrorT(t)
+    noErr := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -303,19 +303,19 @@ func Test_SingleTorrent_Check(t *testing.T) {
     assertEqual(st.GetCreationDateTime().Format(tlayout), now2.Format(tlayout), "Test_SingleTorrent_Check-GetCreationDateTime-now2")
 
     hh, err := st.GetInfoHash()
-    errChek(err, "Test_SingleTorrent_Check-GetInfoHash")
+    noErr(err, "Test_SingleTorrent_Check-GetInfoHash")
     assertNotEmpty(hh[:], "Test_SingleTorrent_Check-GetInfoHash")
 
     assertNotEmpty(st.GetInfoHashString(), "Test_SingleTorrent_Check-GetInfoHashString")
 
     pha, err := st.Info.GetPieceHashes()
-    errChek(err, "Test_SingleTorrent_Check-GetPieceHashes")
+    noErr(err, "Test_SingleTorrent_Check-GetPieceHashes")
     assertNotEmpty(pha, "Test_SingleTorrent_Check-GetPieceHashes")
 
 }
 
 func Test_MultipleTorrent_Check(t *testing.T) {
-    errChek := cryptobin_test.AssertErrorT(t)
+    noErr := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
@@ -384,13 +384,13 @@ func Test_MultipleTorrent_Check(t *testing.T) {
     assertEqual(st.GetCreationDateTime().Format(tlayout), now2.Format(tlayout), "Test_MultipleTorrent_Check-GetCreationDateTime-now2")
 
     hh, err := st.GetInfoHash()
-    errChek(err, "Test_MultipleTorrent_Check-GetInfoHash")
+    noErr(err, "Test_MultipleTorrent_Check-GetInfoHash")
     assertNotEmpty(hh[:], "Test_MultipleTorrent_Check-GetInfoHash")
 
     assertNotEmpty(st.GetInfoHashString(), "Test_MultipleTorrent_Check-GetInfoHashString")
 
     pha, err := st.Info.GetPieceHashes()
-    errChek(err, "Test_MultipleTorrent_Check-GetPieceHashes")
+    noErr(err, "Test_MultipleTorrent_Check-GetPieceHashes")
     assertNotEmpty(pha, "Test_MultipleTorrent_Check-GetPieceHashes")
 
     assertNotEmpty(st.Info.GetFileList(), "Test_MultipleTorrent_Check-GetFileList")

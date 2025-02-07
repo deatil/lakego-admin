@@ -36,7 +36,7 @@ func Test_Check_Gost_PrikeyWithAttrs(t *testing.T) {
 }
 
 func Test_Update_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertEqual := cryptobin_test.AssertEqualT(t)
 
     pri := decodePEM(Gost_PrikeyWithAttrs)
@@ -50,7 +50,7 @@ func Test_Update_Check(t *testing.T) {
     }
 
     newprikey, err := prikey.Marshal()
-    assertError(err, "Test_Update_Check-Marshal")
+    assertNoError(err, "Test_Update_Check-Marshal")
     assertEqual(newprikey, pri, "Test_Update_Check-Marshal-Equal")
 
     var testOID = asn1.ObjectIdentifier{1, 3, 66, 77, 88, 99}
@@ -107,7 +107,7 @@ func Test_Update_Check(t *testing.T) {
         Attributes: make([]asn1.RawValue, 0),
     }
     err = p8.AddAttr(testOID, []asn1.RawValue{testAttr2})
-    assertError(err, "Test_Update_Check-AddAttr")
+    assertNoError(err, "Test_Update_Check-AddAttr")
 
     newAttr, _ := asn1.Marshal(pkcs8Attribute{
         Id: testOID,
@@ -122,7 +122,7 @@ func Test_Update_Check(t *testing.T) {
     assertEqual(p8.HasAttr(testOID), true, "Test_Update_Check-HasAttr-Equal")
 
     err = p8.UpdateAttr(testOID, []asn1.RawValue{testAttr3})
-    assertError(err, "Test_Update_Check-UpdateAttr")
+    assertNoError(err, "Test_Update_Check-UpdateAttr")
 
     attrss3 := p8.GetAttributes()
     assertEqual(len(attrss3), 1, "Test_Update_Check-UpdateAttr-GetAttributes-Equal")

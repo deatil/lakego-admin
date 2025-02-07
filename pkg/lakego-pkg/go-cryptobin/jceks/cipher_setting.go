@@ -11,8 +11,8 @@ import (
 )
 
 var (
-    oidPbeWithMD5And3DES     = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 42, 2, 19, 1}
-    oidPbeWithSHA1And3DES    = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 3}
+    oidPbeWithMD5And3DES  = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 42, 2, 19, 1}
+    oidPbeWithSHA1And3DES = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 1, 3}
 )
 
 var (

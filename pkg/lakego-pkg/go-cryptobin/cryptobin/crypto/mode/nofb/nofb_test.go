@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_AesNOFB(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-pass"
     cypt := crypto.FromString(data).
@@ -26,7 +26,7 @@ func Test_AesNOFB(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "AesNOFB-Encode")
+    assertNoError(cypt.Error(), "AesNOFB-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12").
@@ -36,7 +36,7 @@ func Test_AesNOFB(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "AesNOFB-Decode")
+    assertNoError(cyptde.Error(), "AesNOFB-Decode")
 
     assert(data, cyptdeStr, "AesNOFB")
 }

@@ -35,32 +35,32 @@ func encodePEM(src []byte, typ string) string {
 
 func Test_EncodeSecret(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     secretKey := []byte("test-password")
     password := "passpass word"
 
     pfxData, err := EncodeSecret(rand.Reader, secretKey, password, DefaultOpts)
-    assertError(err, "EncodeSecret")
+    assertNoError(err, "EncodeSecret")
 
     secretKey2, err := DecodeSecret(pfxData, password)
-    assertError(err, "DecodeSecret")
+    assertNoError(err, "DecodeSecret")
 
     assertEqual(secretKey2, secretKey, "EncodeSecret")
 }
 
 func Test_EncodeSecret_Passwordless(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     secretKey := []byte("test-password")
     password := ""
 
     pfxData, err := EncodeSecret(rand.Reader, secretKey, password, PasswordlessOpts)
-    assertError(err, "EncodeSecret-Passwordless")
+    assertNoError(err, "EncodeSecret-Passwordless")
 
     secretKey2, err := DecodeSecret(pfxData, password)
-    assertError(err, "DecodeSecret-Passwordless")
+    assertNoError(err, "DecodeSecret-Passwordless")
 
     assertEqual(secretKey2, secretKey, "EncodeSecret-Passwordless")
 }
@@ -284,14 +284,14 @@ func Test_Encode(t *testing.T) {
 func test_Encode(t *testing.T, opts Opts, password string, name string) {
     t.Run(name, func(t *testing.T) {
         assertEqual := cryptobin_test.AssertEqualT(t)
-        assertError := cryptobin_test.AssertErrorT(t)
+        assertNoError := cryptobin_test.AssertNoErrorT(t)
         assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
         certificates, err := x509.ParseCertificates(decodePEM(certificate))
-        assertError(err, "Encode-certificates")
+        assertNoError(err, "Encode-certificates")
 
         parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-        assertError(err, "Encode-privateKey")
+        assertNoError(err, "Encode-privateKey")
 
         privateKey, ok := parsedKey.(*rsa.PrivateKey)
         if !ok {
@@ -299,14 +299,14 @@ func test_Encode(t *testing.T, opts Opts, password string, name string) {
         }
 
         pfxData, err := Encode(rand.Reader, privateKey, certificates[0], password, opts)
-        assertError(err, "Encode-pfxData")
+        assertNoError(err, "Encode-pfxData")
 
         assertNotEmpty(pfxData, "Encode-pfxData")
 
         // t.Error(string(encodePEM(pfxData, "Data")))
 
         privateKey2, certificate2, err := Decode(pfxData, password)
-        assertError(err, "Decode-pfxData")
+        assertNoError(err, "Decode-pfxData")
 
         assertEqual(privateKey2, privateKey, "Decode-privateKey2")
         assertEqual(certificate2, certificates[0], "Decode-certificate2")
@@ -315,14 +315,14 @@ func test_Encode(t *testing.T, opts Opts, password string, name string) {
 
 func Test_Encode_Passwordless(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "Encode-certificates")
+    assertNoError(err, "Encode-certificates")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "Encode-privateKey")
+    assertNoError(err, "Encode-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -332,12 +332,12 @@ func Test_Encode_Passwordless(t *testing.T) {
     password := ""
 
     pfxData, err := Encode(rand.Reader, privateKey, certificates[0], password, PasswordlessOpts)
-    assertError(err, "Encode-pfxData")
+    assertNoError(err, "Encode-pfxData")
 
     assertNotEmpty(pfxData, "Encode-pfxData")
 
     privateKey2, certificate2, err := Decode(pfxData, password)
-    assertError(err, "Decode-pfxData")
+    assertNoError(err, "Decode-pfxData")
 
     assertEqual(privateKey2, privateKey, "Decode-privateKey2")
     assertEqual(certificate2, certificates[0], "Decode-certificate2")
@@ -345,17 +345,17 @@ func Test_Encode_Passwordless(t *testing.T) {
 
 func Test_EncodeChain(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     caCerts, err := x509.ParseCertificates(decodePEM(caCert))
-    assertError(err, "EncodeChain-caCerts")
+    assertNoError(err, "EncodeChain-caCerts")
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeChain-certificates")
+    assertNoError(err, "EncodeChain-certificates")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "EncodeChain-privateKey")
+    assertNoError(err, "EncodeChain-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -373,12 +373,12 @@ func Test_EncodeChain(t *testing.T) {
             HMACHash: SHA1,
         },
     })
-    assertError(err, "EncodeChain-pfxData")
+    assertNoError(err, "EncodeChain-pfxData")
 
     assertNotEmpty(pfxData, "EncodeChain-pfxData")
 
     privateKey2, certificate2, caCerts2, err := DecodeChain(pfxData, password)
-    assertError(err, "DecodeChain-pfxData")
+    assertNoError(err, "DecodeChain-pfxData")
 
     assertEqual(privateKey2, privateKey, "EncodeChain-privateKey2")
     assertEqual(certificate2, certificates[0], "EncodeChain-certificate2")
@@ -387,17 +387,17 @@ func Test_EncodeChain(t *testing.T) {
 
 func Test_EncodeChain_Passwordless(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     caCerts, err := x509.ParseCertificates(decodePEM(caCert))
-    assertError(err, "EncodeChain-caCerts")
+    assertNoError(err, "EncodeChain-caCerts")
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeChain-certificates")
+    assertNoError(err, "EncodeChain-certificates")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "EncodeChain-privateKey")
+    assertNoError(err, "EncodeChain-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -407,12 +407,12 @@ func Test_EncodeChain_Passwordless(t *testing.T) {
     password := ""
 
     pfxData, err := EncodeChain(rand.Reader, privateKey, certificates[0], caCerts, password, PasswordlessOpts)
-    assertError(err, "EncodeChain-pfxData")
+    assertNoError(err, "EncodeChain-pfxData")
 
     assertNotEmpty(pfxData, "EncodeChain-pfxData")
 
     privateKey2, certificate2, caCerts2, err := DecodeChain(pfxData, password)
-    assertError(err, "DecodeChain-pfxData")
+    assertNoError(err, "DecodeChain-pfxData")
 
     assertEqual(privateKey2, privateKey, "EncodeChain-privateKey2")
     assertEqual(certificate2, certificates[0], "EncodeChain-certificate2")
@@ -421,11 +421,11 @@ func Test_EncodeChain_Passwordless(t *testing.T) {
 
 func Test_EncodeTrustStore(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeTrustStore-certificates")
+    assertNoError(err, "EncodeTrustStore-certificates")
 
     password := "password-testkjjj"
 
@@ -438,44 +438,44 @@ func Test_EncodeTrustStore(t *testing.T) {
             HMACHash: SHA1,
         },
     })
-    assertError(err, "EncodeTrustStore-pfxData")
+    assertNoError(err, "EncodeTrustStore-pfxData")
 
     assertNotEmpty(pfxData, "EncodeTrustStore-pfxData")
 
     certs, err := DecodeTrustStore(pfxData, password)
-    assertError(err, "DecodeTrustStore-pfxData")
+    assertNoError(err, "DecodeTrustStore-pfxData")
 
     assertEqual(certs, certificates, "DecodeTrustStore-privateKey2")
 }
 
 func Test_EncodeTrustStore_Passwordless(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeTrustStore-certificates")
+    assertNoError(err, "EncodeTrustStore-certificates")
 
     password := ""
 
     pfxData, err := EncodeTrustStore(rand.Reader, certificates, password, PasswordlessOpts)
-    assertError(err, "EncodeTrustStore-pfxData")
+    assertNoError(err, "EncodeTrustStore-pfxData")
 
     assertNotEmpty(pfxData, "EncodeTrustStore-pfxData")
 
     certs, err := DecodeTrustStore(pfxData, password)
-    assertError(err, "DecodeTrustStore-pfxData")
+    assertNoError(err, "DecodeTrustStore-pfxData")
 
     assertEqual(certs, certificates, "DecodeTrustStore-privateKey2")
 }
 
 func Test_EncodeTrustStoreEntries(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeTrustStoreEntries-certificates")
+    assertNoError(err, "EncodeTrustStoreEntries-certificates")
 
     password := "password-testkjjj"
 
@@ -494,12 +494,12 @@ func Test_EncodeTrustStoreEntries(t *testing.T) {
             HMACHash: SHA1,
         },
     })
-    assertError(err, "EncodeTrustStoreEntries-pfxData")
+    assertNoError(err, "EncodeTrustStoreEntries-pfxData")
 
     assertNotEmpty(pfxData, "EncodeTrustStoreEntries-pfxData")
 
     certificate2, err := DecodeTrustStoreEntries(pfxData, password)
-    assertError(err, "EncodeTrustStoreEntries-pfxData2")
+    assertNoError(err, "EncodeTrustStoreEntries-pfxData2")
 
     attrs := certificate2[0].Attributes()
 
@@ -511,11 +511,11 @@ func Test_EncodeTrustStoreEntries(t *testing.T) {
 
 func Test_EncodeTrustStoreEntries_Passwordless(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeTrustStoreEntries-certificates")
+    assertNoError(err, "EncodeTrustStoreEntries-certificates")
 
     password := ""
 
@@ -526,12 +526,12 @@ func Test_EncodeTrustStoreEntries_Passwordless(t *testing.T) {
     })
 
     pfxData, err := EncodeTrustStoreEntries(rand.Reader, entries, password, PasswordlessOpts)
-    assertError(err, "EncodeTrustStoreEntries-pfxData")
+    assertNoError(err, "EncodeTrustStoreEntries-pfxData")
 
     assertNotEmpty(pfxData, "EncodeTrustStoreEntries-pfxData")
 
     certificate2, err := DecodeTrustStoreEntries(pfxData, password)
-    assertError(err, "EncodeTrustStoreEntries-pfxData2")
+    assertNoError(err, "EncodeTrustStoreEntries-pfxData2")
 
     attrs := certificate2[0].Attributes()
 
@@ -955,13 +955,13 @@ iAH7zhVd1pukTlqlpc25x9qDfElwbwZjBWaHMSUwIwYJKoZIhvcNAQkVMRYEFFsH
 func Test_Encode_Check(t *testing.T) {
     t.Run("Encode_Check", func(t *testing.T) {
         assertEqual := cryptobin_test.AssertEqualT(t)
-        assertError := cryptobin_test.AssertErrorT(t)
+        assertNoError := cryptobin_test.AssertNoErrorT(t)
 
         certificates, err := x509.ParseCertificates(decodePEM(certificate))
-        assertError(err, "Encode_Check-certificates")
+        assertNoError(err, "Encode_Check-certificates")
 
         parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-        assertError(err, "Encode_Check-privateKey")
+        assertNoError(err, "Encode_Check-privateKey")
 
         privateKey, ok := parsedKey.(*rsa.PrivateKey)
         if !ok {
@@ -973,7 +973,7 @@ func Test_Encode_Check(t *testing.T) {
         password := "pass"
 
         privateKey2, certificate2, err := Decode(pfxData, password)
-        assertError(err, "Encode_Check-pfxData")
+        assertNoError(err, "Encode_Check-pfxData")
 
         assertEqual(privateKey2, privateKey, "Encode_Check-privateKey2")
         assertEqual(certificate2, certificates[0], "Encode_Check-certificate2")
@@ -982,17 +982,17 @@ func Test_Encode_Check(t *testing.T) {
 
 func Test_EncodeTrustStore_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeTrustStore_Check-certificates")
+    assertNoError(err, "EncodeTrustStore_Check-certificates")
 
     pfxData := decodePEM(testNewPfx_EncodeTrustStore)
 
     password := "pass"
 
     certs, err := DecodeTrustStore(pfxData, password)
-    assertError(err, "EncodeTrustStore_Check-pfxData")
+    assertNoError(err, "EncodeTrustStore_Check-pfxData")
 
     assertEqual(certs, certificates, "EncodeTrustStore_Check-privateKey2")
 }
@@ -1000,13 +1000,13 @@ func Test_EncodeTrustStore_Check(t *testing.T) {
 func Test_EncodeDes_Check(t *testing.T) {
     t.Run("EncodeDes_Check", func(t *testing.T) {
         assertEqual := cryptobin_test.AssertEqualT(t)
-        assertError := cryptobin_test.AssertErrorT(t)
+        assertNoError := cryptobin_test.AssertNoErrorT(t)
 
         certificates, err := x509.ParseCertificates(decodePEM(certificate))
-        assertError(err, "EncodeDes_Check-certificates")
+        assertNoError(err, "EncodeDes_Check-certificates")
 
         parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-        assertError(err, "EncodeDes_Check-privateKey")
+        assertNoError(err, "EncodeDes_Check-privateKey")
 
         privateKey, ok := parsedKey.(*rsa.PrivateKey)
         if !ok {
@@ -1018,7 +1018,7 @@ func Test_EncodeDes_Check(t *testing.T) {
         password := "pass"
 
         privateKey2, certificate2, err := Decode(pfxData, password)
-        assertError(err, "EncodeDes_Check-pfxData")
+        assertNoError(err, "EncodeDes_Check-pfxData")
 
         assertEqual(privateKey2, privateKey, "EncodeDes_Check-privateKey2")
         assertEqual(certificate2, certificates[0], "EncodeDes_Check-certificate2")
@@ -1028,13 +1028,13 @@ func Test_EncodeDes_Check(t *testing.T) {
 func Test_EncodePbes2_Check(t *testing.T) {
     t.Run("EncodePbes2_Check", func(t *testing.T) {
         assertEqual := cryptobin_test.AssertEqualT(t)
-        assertError := cryptobin_test.AssertErrorT(t)
+        assertNoError := cryptobin_test.AssertNoErrorT(t)
 
         certificates, err := x509.ParseCertificates(decodePEM(certificate))
-        assertError(err, "EncodePbes2_Check-certificates")
+        assertNoError(err, "EncodePbes2_Check-certificates")
 
         parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-        assertError(err, "EncodePbes2_Check-privateKey")
+        assertNoError(err, "EncodePbes2_Check-privateKey")
 
         privateKey, ok := parsedKey.(*rsa.PrivateKey)
         if !ok {
@@ -1046,7 +1046,7 @@ func Test_EncodePbes2_Check(t *testing.T) {
         password := "pass"
 
         privateKey2, certificate2, err := Decode(pfxData, password)
-        assertError(err, "EncodePbes2_Check-pfxData")
+        assertNoError(err, "EncodePbes2_Check-pfxData")
 
         assertEqual(privateKey2, privateKey, "EncodePbes2_Check-privateKey2")
         assertEqual(certificate2, certificates[0], "EncodePbes2_Check-certificate2")
@@ -1055,16 +1055,16 @@ func Test_EncodePbes2_Check(t *testing.T) {
 
 func Test_EncodeChain_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     caCerts, err := x509.ParseCertificates(decodePEM(caCert))
-    assertError(err, "EncodeChain_Check-caCerts")
+    assertNoError(err, "EncodeChain_Check-caCerts")
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "EncodeChain_Check-certificates")
+    assertNoError(err, "EncodeChain_Check-certificates")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "EncodeChain_Check-privateKey")
+    assertNoError(err, "EncodeChain_Check-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -1076,7 +1076,7 @@ func Test_EncodeChain_Check(t *testing.T) {
     password := "pass"
 
     privateKey2, certificate2, caCerts2, err := DecodeChain(pfxData, password)
-    assertError(err, "EncodeChain_Check-pfxData")
+    assertNoError(err, "EncodeChain_Check-pfxData")
 
     assertEqual(privateKey2, privateKey, "EncodeChain_Check-privateKey2")
     assertEqual(certificate2, certificates[0], "EncodeChain_Check-certificate2")
@@ -1084,7 +1084,7 @@ func Test_EncodeChain_Check(t *testing.T) {
 }
 
 func Test_ToPem(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pfxData := decodePEM(testNewPfx_Encode)
@@ -1092,7 +1092,7 @@ func Test_ToPem(t *testing.T) {
     password := "pass"
 
     blocks, err := ToPEM(pfxData, password)
-    assertError(err, "Test_ToPem-ToPEM")
+    assertNoError(err, "Test_ToPem-ToPEM")
     assertNotEmpty(blocks, "Test_ToPem-ToPEM")
 
     var pemData [][]byte
@@ -1106,14 +1106,14 @@ func Test_ToPem(t *testing.T) {
 }
 
 func Test_Encode_Passwordless_ToPem(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     certificates, err := x509.ParseCertificates(decodePEM(certificate))
-    assertError(err, "Test_Encode_Passwordless_ToPem-certificates")
+    assertNoError(err, "Test_Encode_Passwordless_ToPem-certificates")
 
     parsedKey, err := x509.ParsePKCS8PrivateKey(decodePEM(privateKey))
-    assertError(err, "Test_Encode_Passwordless_ToPem-privateKey")
+    assertNoError(err, "Test_Encode_Passwordless_ToPem-privateKey")
 
     privateKey, ok := parsedKey.(*rsa.PrivateKey)
     if !ok {
@@ -1123,11 +1123,11 @@ func Test_Encode_Passwordless_ToPem(t *testing.T) {
     password := ""
 
     pfxData, err := Encode(rand.Reader, privateKey, certificates[0], password, PasswordlessOpts)
-    assertError(err, "Test_Encode_Passwordless_ToPem-pfxData")
+    assertNoError(err, "Test_Encode_Passwordless_ToPem-pfxData")
 
     // 检测
     blocks, err := ToPEM(pfxData, password)
-    assertError(err, "Test_Encode_Passwordless_ToPem-ToPEM")
+    assertNoError(err, "Test_Encode_Passwordless_ToPem-ToPEM")
     assertNotEmpty(blocks, "Test_Encode_Passwordless_ToPem-ToPEM")
 
     var pemData [][]byte
@@ -1383,7 +1383,7 @@ F6OmQIRDc68SdkZJ6024l4nWlnhTE7a4lb2Tru4k3NOTa1oECE5PVCBVU0VEAgEB
 `
 
 func Test_PBMAC1Pfx_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     t.Run("PBMAC1Pfx 1", func(t *testing.T) {
@@ -1394,7 +1394,7 @@ func Test_PBMAC1Pfx_Check(t *testing.T) {
         privateKey, certificate, err := Decode(pfxData, password)
         assertNotEmpty(privateKey, "Test_PBMAC1Pfx_Check-pfxData")
         assertNotEmpty(certificate, "Test_PBMAC1Pfx_Check-pfxData")
-        assertError(err, "Test_PBMAC1Pfx_Check-pfxData")
+        assertNoError(err, "Test_PBMAC1Pfx_Check-pfxData")
     })
 
     t.Run("PBMAC1Pfx 2", func(t *testing.T) {
@@ -1405,7 +1405,7 @@ func Test_PBMAC1Pfx_Check(t *testing.T) {
         privateKey, certificate, err := Decode(pfxData, password)
         assertNotEmpty(privateKey, "Test_PBMAC1Pfx_Check-pfxData")
         assertNotEmpty(certificate, "Test_PBMAC1Pfx_Check-pfxData")
-        assertError(err, "Test_PBMAC1Pfx_Check-pfxData")
+        assertNoError(err, "Test_PBMAC1Pfx_Check-pfxData")
     })
 
     t.Run("PBMAC1Pfx 3", func(t *testing.T) {
@@ -1416,7 +1416,7 @@ func Test_PBMAC1Pfx_Check(t *testing.T) {
         privateKey, certificate, err := Decode(pfxData, password)
         assertNotEmpty(privateKey, "Test_PBMAC1Pfx_Check-pfxData")
         assertNotEmpty(certificate, "Test_PBMAC1Pfx_Check-pfxData")
-        assertError(err, "Test_PBMAC1Pfx_Check-pfxData")
+        assertNoError(err, "Test_PBMAC1Pfx_Check-pfxData")
     })
 }
 
@@ -1997,7 +1997,7 @@ func Test_NewPfx_Check(t *testing.T) {
 }
 
 func test_NewPfx_Check(t *testing.T, pfx string) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     pfxData := decodePEM(pfx)
@@ -2007,5 +2007,100 @@ func test_NewPfx_Check(t *testing.T, pfx string) {
     privateKey, certificate, err := Decode(pfxData, password)
     assertNotEmpty(privateKey, "Test_NewPfx_Check-pfxData")
     assertNotEmpty(certificate, "Test_NewPfx_Check-pfxData")
-    assertError(err, "Test_NewPfx_Check-pfxData")
+    assertNoError(err, "Test_NewPfx_Check-pfxData")
+}
+
+var testJKS_PKCS12 = `
+-----BEGIN Data-----
+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
+-----END Data-----
+`
+
+func Test_JKS_PKCS12_Check(t *testing.T) {
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testJKS_PKCS12)
+
+    password := "123456"
+
+    privateKey, cert, err := Decode(pfxData, password)
+
+    assertNoError(err, "Test_JKS_PKCS12_Check-pfxData")
+    assertNotEmpty(privateKey, "Test_JKS_PKCS12_Check-pfxData")
+    assertNotEmpty(cert, "Test_JKS_PKCS12_Check-pfxData")
+}
+
+func Test_JKS_PKCS12_Check2(t *testing.T) {
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    pfxData := decodePEM(testJKS_PKCS12)
+
+    password := "123456"
+
+    p12, err := LoadFromBytes(pfxData, password)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    privateKey, attrs, err := p12.GetPrivateKey()
+
+    // t.Errorf("%v \n", attrs.Names())
+    // t.Errorf("%v \n", attrs.String())
+
+    assertNoError(err, "Test_JKS_PKCS12_Check2-pfxData")
+    assertNotEmpty(privateKey, "Test_JKS_PKCS12_Check2-pfxData")
+    assertNotEmpty(attrs, "Test_JKS_PKCS12_Check2-pfxData")
+
+    privateKeys, err := p12.GetAllPrivateKey()
+
+    assertNoError(err, "Test_JKS_PKCS12_Check2-GetAllPrivateKey")
+    assertNotEmpty(privateKeys, "Test_JKS_PKCS12_Check2-GetAllPrivateKey")
+
+    privateKeyBytes, err := p12.GetAllPrivateKeyBytes()
+
+    assertNoError(err, "Test_JKS_PKCS12_Check2-GetAllPrivateKeyBytes")
+    assertNotEmpty(privateKeyBytes, "Test_JKS_PKCS12_Check2-GetAllPrivateKeyBytes")
 }

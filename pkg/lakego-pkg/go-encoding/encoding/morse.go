@@ -4,20 +4,19 @@ import (
     "github.com/deatil/go-encoding/morse"
 )
 
-// MorseITU
+// MorseITU Decode
 func (this Encoding) MorseITUDecode() Encoding {
-    data := string(this.data)
-    data, err := morse.DecodeITU(data)
+    data, err := morse.ITUEncoding.DecodeString(string(this.data))
 
-    this.data = []byte(data)
+    this.data = data
     this.Error = err
 
     return this
 }
 
-// 编码 MorseITU
+// MorseITU Encode
 func (this Encoding) MorseITUEncode() Encoding {
-    data := morse.EncodeITU(string(this.data))
+    data := morse.ITUEncoding.EncodeToString(this.data)
     this.data = []byte(data)
 
     return this

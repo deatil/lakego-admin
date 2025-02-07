@@ -9,7 +9,7 @@ import (
 
 func Test_Wrap(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -17,7 +17,7 @@ func Test_Wrap(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_Wrap")
+    assertNoError(err, "Test_Wrap")
 
     mode := NewWrapEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -34,14 +34,14 @@ func Test_Wrap(t *testing.T) {
 
 func Test_WrapWithNoIV(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
     plaintext := []byte("kjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_WrapWithNoIV")
+    assertNoError(err, "Test_WrapWithNoIV")
 
     mode := NewWrapEncrypter(c, nil)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -58,7 +58,7 @@ func Test_WrapWithNoIV(t *testing.T) {
 
 func Test_WrapLong(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -66,7 +66,7 @@ func Test_WrapLong(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_WrapLong")
+    assertNoError(err, "Test_WrapLong")
 
     mode := NewWrapEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -83,7 +83,7 @@ func Test_WrapLong(t *testing.T) {
 
 func Test_WrapPad(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -91,7 +91,7 @@ func Test_WrapPad(t *testing.T) {
     plaintext := []byte("srftyf57")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_WrapPad")
+    assertNoError(err, "Test_WrapPad")
 
     mode := NewWrapPadEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -108,14 +108,14 @@ func Test_WrapPad(t *testing.T) {
 
 func Test_WrapPadWithNoIV(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
     plaintext := []byte("srftyf57")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_WrapPadWithNoIV")
+    assertNoError(err, "Test_WrapPadWithNoIV")
 
     mode := NewWrapPadEncrypter(c, nil)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -132,7 +132,7 @@ func Test_WrapPadWithNoIV(t *testing.T) {
 
 func Test_WrapPadLong(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plo")
@@ -140,7 +140,7 @@ func Test_WrapPadLong(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_WrapPadLong")
+    assertNoError(err, "Test_WrapPadLong")
 
     mode := NewWrapPadEncrypter(c, iv)
     ciphertext := make([]byte, len(plaintext)+8)
@@ -184,7 +184,7 @@ var test_wrap_ct = []byte{
 
 func Test_Wrap_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     key := test_wrap_key
     iv := test_wrap_iv
@@ -192,7 +192,7 @@ func Test_Wrap_Check(t *testing.T) {
     ciphertext1 := test_wrap_ct
 
     c, err := aes.NewCipher(key)
-    assertError(err, "Test_Wrap_Check")
+    assertNoError(err, "Test_Wrap_Check")
 
     t.Run("NewWrapEncrypter", func(t *testing.T) {
         mode := NewWrapEncrypter(c, iv)

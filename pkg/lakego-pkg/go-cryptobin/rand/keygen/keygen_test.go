@@ -9,7 +9,7 @@ import (
 
 func Test_Gen(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := bytes.NewBufferString("dfgtryertdfgdr345343rtyedfgtryertdfgdr345343rtye")
@@ -17,7 +17,7 @@ func Test_Gen(t *testing.T) {
 
     check := []byte("dfgtryertdfgdr34")
 
-    assertError(err, "Gen")
+    assertNoError(err, "Gen")
     assertNotEmpty(res, "Gen")
 
     assertEqual(string(res), string(check), "Gen")

@@ -15,7 +15,7 @@ func Test_Ots_Interface(t *testing.T) {
 }
 
 func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
-    assertBool := test.AssertBoolT(t)
+    assertTrue := test.AssertTrueT(t)
 
     var err error
 
@@ -37,7 +37,7 @@ func test_OtsSignVerify(t *testing.T, otstc ILmotsParam) {
     }
 
     result := ots_pub.Verify([]byte("example"), ots_sig)
-    assertBool(result, "OtsSignVerify")
+    assertTrue(result, "OtsSignVerify")
 }
 
 func Test_OtsSignVerify(t *testing.T) {
@@ -69,7 +69,7 @@ func Test_OtsSignVerify(t *testing.T) {
 }
 
 func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
-    assertNotBool := test.AssertNotBoolT(t)
+    assertFalse := test.AssertFalseT(t)
 
     var err error
 
@@ -99,7 +99,7 @@ func test_OtsSignVerifyFail(t *testing.T, otstc ILmotsParam) {
     }
 
     result := ots_pub2.Verify([]byte("example"), ots_sig)
-    assertNotBool(result, "OtsSignVerifyFail")
+    assertFalse(result, "OtsSignVerifyFail")
 }
 
 func Test_OtsSignVerifyFail(t *testing.T) {
@@ -118,22 +118,22 @@ func Test_OtsSignVerifyFail(t *testing.T) {
 }
 
 func Test_DoubleSign(t *testing.T) {
+    assertNoError := test.AssertNoErrorT(t)
     assertError := test.AssertErrorT(t)
-    assertNotErrorNil := test.AssertNotErrorNilT(t)
 
     var err error
 
     id, err := hex.DecodeString("d08fabd4a2091ff0a8cb4ed834e74534")
-    assertError(err, "hex.DecodeString")
+    assertNoError(err, "hex.DecodeString")
 
     ots_priv, err := NewLmotsPrivateKey(LMOTS_SHA256_N32_W1, 0, ID(id))
-    assertError(err, "NewLmotsPrivateKey")
+    assertNoError(err, "NewLmotsPrivateKey")
 
     _, err = ots_priv.Sign(rand.Reader, []byte("example"), nil)
-    assertError(err, "priv.Sign")
+    assertNoError(err, "priv.Sign")
 
     _, err = ots_priv.Sign(rand.Reader, []byte("example2"), nil)
-    assertNotErrorNil(err, "priv.Sign 2")
+    assertError(err, "priv.Sign 2")
 }
 
 func Test_OTS_ParamName(t *testing.T) {
@@ -151,8 +151,8 @@ func Test_OTS_ParamName(t *testing.T) {
 }
 
 func Test_Ots_Equal(t *testing.T) {
-    assertBool := test.AssertBoolT(t)
-    assertNotBool := test.AssertNotBoolT(t)
+    assertTrue := test.AssertTrueT(t)
+    assertFalse := test.AssertFalseT(t)
 
     t.Run("good", func(t *testing.T) {
         id, err := hex.DecodeString("d08fabd4a2091ff0a8cb4ed834e74534")
@@ -170,8 +170,8 @@ func Test_Ots_Equal(t *testing.T) {
         ots_priv2 := ots_priv
         ots_pub2 := ots_pub
 
-        assertBool(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
-        assertBool(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
+        assertTrue(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
+        assertTrue(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
     })
 
     t.Run("bad", func(t *testing.T) {
@@ -201,7 +201,7 @@ func Test_Ots_Equal(t *testing.T) {
 
         ots_pub2 := ots_priv2.LmotsPublicKey
 
-        assertNotBool(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
-        assertNotBool(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
+        assertFalse(ots_priv2.Equal(ots_priv), "LmotsPrivateKey")
+        assertFalse(ots_pub2.Equal(&ots_pub), "LmotsPublicKey")
     })
 }

@@ -15,7 +15,7 @@ func Test_Name(t *testing.T) {
 
 func Test_Panama(t *testing.T) {
     assert := test.AssertEqualT(t)
-    assertError := test.AssertErrorT(t)
+    assertNoError := test.AssertNoErrorT(t)
 
     data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
     cypt := crypto.FromString(data).
@@ -24,7 +24,7 @@ func Test_Panama(t *testing.T) {
         Encrypt()
     cyptStr := cypt.ToBase64String()
 
-    assertError(cypt.Error(), "Panama-Encode")
+    assertNoError(cypt.Error(), "Panama-Encode")
 
     cyptde := crypto.FromBase64String(cyptStr).
         SetKey("dfertf12dfertf12dfertf12dfertf12").
@@ -32,7 +32,7 @@ func Test_Panama(t *testing.T) {
         Decrypt()
     cyptdeStr := cyptde.ToString()
 
-    assertError(cyptde.Error(), "Panama-Decode")
+    assertNoError(cyptde.Error(), "Panama-Decode")
 
     assert(data, cyptdeStr, "Panama-res")
 }

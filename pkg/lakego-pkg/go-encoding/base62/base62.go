@@ -7,16 +7,16 @@ import (
     "strconv"
 )
 
+type CorruptInputError int64
+
+func (e CorruptInputError) Error() string {
+    return "go-encoding/base62: illegal base62 data at input byte " + strconv.FormatInt(int64(e), 10)
+}
+
 const encodeStd = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 
 // StdEncoding is the standard base62 encoding.
 var StdEncoding = NewEncoding(encodeStd)
-
-type CorruptInputError int64
-
-func (e CorruptInputError) Error() string {
-    return "illegal base62 data at input byte " + strconv.FormatInt(int64(e), 10)
-}
 
 /*
  * Encodings
@@ -33,11 +33,12 @@ type Encoding struct {
 // or CR / LF ('\r', '\n').
 func NewEncoding(encoder string) *Encoding {
     if len(encoder) != 62 {
-        panic("encoding alphabet is not 62-bytes long")
+        panic("go-encoding/base62: encoding alphabet is not 62-bytes long")
     }
+
     for i := 0; i < len(encoder); i++ {
         if encoder[i] == '\n' || encoder[i] == '\r' {
-            panic("encoding alphabet contains newline character")
+            panic("go-encoding/base62: encoding alphabet contains newline character")
         }
     }
 
@@ -47,9 +48,11 @@ func NewEncoding(encoder string) *Encoding {
     for i := 0; i < len(e.decodeMap); i++ {
         e.decodeMap[i] = 0xFF
     }
+
     for i := 0; i < len(encoder); i++ {
         e.decodeMap[encoder[i]] = byte(i)
     }
+
     return e
 }
 
@@ -71,23 +74,29 @@ func (enc *Encoding) Encode(src []byte) []byte {
     rs := 0
     cs := int(math.Ceil(math.Log(256) / math.Log(62) * float64(len(src))))
     dst := make([]byte, cs)
+
     for i := range src {
         c := 0
         v := int(src[i])
+
         for j := cs - 1; j >= 0 && (v != 0 || c < rs); j-- {
             v += 256 * int(dst[j])
             dst[j] = byte(v % 62)
             v /= 62
             c++
         }
+
         rs = c
     }
+
     for i := range dst {
         dst[i] = enc.encode[dst[i]]
     }
+
     if cs > rs {
         return dst[cs-rs:]
     }
+
     return dst
 }
 
@@ -122,22 +131,27 @@ func (enc *Encoding) Decode(src []byte) ([]byte, error) {
         if src[i] == '\n' || src[i] == '\r' {
             continue
         }
+
         c := 0
         v := int(enc.decodeMap[src[i]])
         if v == 255 {
             return nil, CorruptInputError(src[i])
         }
+
         for j := cs - 1; j >= 0 && (v != 0 || c < rs); j-- {
             v += 62 * int(dst[j])
             dst[j] = byte(v % 256)
             v /= 256
             c++
         }
+
         rs = c
     }
+
     if cs > rs {
         return dst[cs-rs:], nil
     }
+
     return dst, nil
 }
 

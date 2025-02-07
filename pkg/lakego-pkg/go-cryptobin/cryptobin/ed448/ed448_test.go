@@ -38,8 +38,8 @@ MEMwBQYDK2VxAzoAYRO+ws1nXb89sYPEeSmxFIU8Qwz04ZM8tNRVfvDuiCMWWILR
 )
 
 func testED448Sign(t *testing.T, opts *Options) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     data := []byte("test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass3333333333333333333333333333333333333333333333333333test-pa2222222222222222222222222222222222222222222sstest-passt111111111111111111111111111111111est-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passt-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass")
@@ -50,7 +50,7 @@ func testED448Sign(t *testing.T, opts *Options) {
         Sign()
     hashedData := hashed.ToBase64String()
 
-    assertError(hashed.Error(), "ED448Sign-Sign")
+    assertNoError(hashed.Error(), "ED448Sign-Sign")
     assertNotEmpty(hashedData, "ED448Sign-Sign")
 
     // ===
@@ -61,8 +61,8 @@ func testED448Sign(t *testing.T, opts *Options) {
         Verify(data)
     dehashedVerify := dehashed.ToVerify()
 
-    assertError(dehashed.Error(), "ED448Sign-Verify")
-    assertBool(dehashedVerify, "ED448Sign-Verify")
+    assertNoError(dehashed.Error(), "ED448Sign-Verify")
+    assertTrue(dehashedVerify, "ED448Sign-Verify")
 }
 
 func Test_ED448Sign(t *testing.T) {
@@ -103,40 +103,40 @@ func Test_ED448Sign(t *testing.T) {
 
 func Test_CreateKey(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     obj := New().GenerateKey()
 
     objPriKey := obj.CreatePrivateKey()
     priKey := objPriKey.ToKeyString()
 
-    assertError(objPriKey.Error(), "CreateKey-priKey")
+    assertNoError(objPriKey.Error(), "CreateKey-priKey")
     assertNotEmpty(priKey, "CreateKey-priKey")
 
     objPriKeyEn := obj.CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
     priKeyEn := objPriKeyEn.ToKeyString()
 
-    assertError(objPriKeyEn.Error(), "CreateKey-priKeyEn")
+    assertNoError(objPriKeyEn.Error(), "CreateKey-priKeyEn")
     assertNotEmpty(priKeyEn, "CreateKey-priKeyEn")
 
     objPubKey := obj.CreatePublicKey()
     pubKey := objPubKey.ToKeyString()
 
-    assertError(objPubKey.Error(), "CreateKey-pubKey")
+    assertNoError(objPubKey.Error(), "CreateKey-pubKey")
     assertNotEmpty(pubKey, "CreateKey-pubKey")
 }
 
 func Test_CheckKeyPair(t *testing.T) {
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     check := New().
         FromPublicKey([]byte(testPubkey)).
         FromPrivateKey([]byte(testPrikey))
     checkData := check.CheckKeyPair()
 
-    assertError(check.Error(), "CheckKeyPair")
-    assertBool(checkData, "CheckKeyPair")
+    assertNoError(check.Error(), "CheckKeyPair")
+    assertTrue(checkData, "CheckKeyPair")
 
     // ==========
 
@@ -145,19 +145,19 @@ func Test_CheckKeyPair(t *testing.T) {
         FromPrivateKeyWithPassword([]byte(testPrikeyEn), "123")
     checkDataEn := checkEn.CheckKeyPair()
 
-    assertError(checkEn.Error(), "CheckKeyPair-EnPri")
-    assertBool(checkDataEn, "CheckKeyPair-EnPri")
+    assertNoError(checkEn.Error(), "CheckKeyPair-EnPri")
+    assertTrue(checkDataEn, "CheckKeyPair-EnPri")
 }
 
 func Test_MakePublicKey(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
 
     ed := New().FromPrivateKey([]byte(testPrikey))
     newPubkey := ed.MakePublicKey().
         CreatePublicKey().
         ToKeyString()
 
-    assertError(ed.Error(), "MakePublicKey")
+    assertNoError(ed.Error(), "MakePublicKey")
     assertEqual(newPubkey, testPubkey, "MakePublicKey")
 }

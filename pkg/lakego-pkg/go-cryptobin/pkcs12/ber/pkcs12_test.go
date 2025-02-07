@@ -110,8 +110,8 @@ func Test_SM2Pkcs12_Decode(t *testing.T) {
 
 func Test_P12_SM2Pkcs12_Decode(t *testing.T) {
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-    assertBool := cryptobin_test.AssertBoolT(t)
-    assertNotBool := cryptobin_test.AssertNotBoolT(t)
+    assertTrue := cryptobin_test.AssertTrueT(t)
+    assertFalse := cryptobin_test.AssertFalseT(t)
 
     ber, err := base64.StdEncoding.DecodeString(sm2Pkcs12)
     if err != nil {
@@ -131,11 +131,11 @@ func Test_P12_SM2Pkcs12_Decode(t *testing.T) {
     assertNotEmpty(privateKey, "P12_SM2Pkcs12_Decode")
     assertNotEmpty(cert, "P12_SM2Pkcs12_Decode")
 
-    assertBool(p12.HasPrivateKey(), "P12_SM2Pkcs12_Decode-HasPrivateKey")
-    assertBool(p12.HasCert(), "P12_SM2Pkcs12_Decode-HasCert")
+    assertTrue(p12.HasPrivateKey(), "P12_SM2Pkcs12_Decode-HasPrivateKey")
+    assertTrue(p12.HasCert(), "P12_SM2Pkcs12_Decode-HasCert")
 
-    assertNotBool(p12.HasCaCert(), "P12_SM2Pkcs12_Decode-HasCaCert")
-    assertNotBool(p12.HasTrustStore(), "P12_SM2Pkcs12_Decode-HasTrustStore")
-    assertNotBool(p12.HasSecretKey(), "P12_SM2Pkcs12_Decode-HasSecretKey")
+    assertFalse(p12.HasCaCert(), "P12_SM2Pkcs12_Decode-HasCaCert")
+    assertFalse(p12.HasTrustStore(), "P12_SM2Pkcs12_Decode-HasTrustStore")
+    assertFalse(p12.HasSecretKey(), "P12_SM2Pkcs12_Decode-HasSecretKey")
 
 }

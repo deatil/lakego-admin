@@ -10,7 +10,7 @@ import (
 
 func Test_GOFB(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key := []byte("kkinjkijeel22plokkinjkijeel22plo")
@@ -18,7 +18,7 @@ func Test_GOFB(t *testing.T) {
     plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplokjinjkijkolkdplo")
 
     c, err := gost.NewCipher(key, gost.SboxGost2814789TestParamSet)
-    assertError(err, "Test_GOFB-NewCipher")
+    assertNoError(err, "Test_GOFB-NewCipher")
 
     ofb := NewGOFB(c, iv)
     ciphertext := make([]byte, len(plaintext))
@@ -46,7 +46,7 @@ var testGOFBSBox_1 = [][]byte{
 
 func Test_GOFB_Check(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("0A43145BA8B9E9FF0AEA67D3F26AD87854CED8D9017B3D33ED81301F90FDF993")
@@ -54,7 +54,7 @@ func Test_GOFB_Check(t *testing.T) {
     plaintext, _ := hex.DecodeString("094C912C5EFDD703D42118971694580B")
 
     c, err := gost.NewCipher(key, testGOFBSBox_1)
-    assertError(err, "Test_GOFB_Check-NewCipher")
+    assertNoError(err, "Test_GOFB_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("2707B58DF039D1A64460735FFE76D55F")
 
@@ -69,7 +69,7 @@ func Test_GOFB_Check(t *testing.T) {
 
 func Test_GOFB_Check_2(t *testing.T) {
     assertEqual := cryptobin_test.AssertEqualT(t)
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     key, _ := hex.DecodeString("0A43145BA8B9E9FF0AEA67D3F26AD87854CED8D9017B3D33ED81301F90FDF993")
@@ -77,7 +77,7 @@ func Test_GOFB_Check_2(t *testing.T) {
     plaintext, _ := hex.DecodeString("FE780800E0690083F20C010CF00C0329")
 
     c, err := gost.NewCipher(key, testGOFBSBox_1)
-    assertError(err, "Test_GOFB_Check-NewCipher")
+    assertNoError(err, "Test_GOFB_Check-NewCipher")
 
     ciphertext1, _ := hex.DecodeString("9AF623DFF948B413B53171E8D546188D")
 

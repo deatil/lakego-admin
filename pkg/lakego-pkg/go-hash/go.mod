@@ -1,6 +1,6 @@
 module github.com/deatil/go-hash
 
-go 1.18
+go 1.20
 
 require golang.org/x/crypto v0.24.0
 

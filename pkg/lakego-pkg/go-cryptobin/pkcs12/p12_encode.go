@@ -110,9 +110,37 @@ func (this *PKCS12) AddSecretKey(secretKey []byte) {
     this.secretKey = secretKey
 }
 
-//===============
+// ===============
 
-// 获取证书签名
+func (this *PKCS12) makeFriendlyNameAttr(friendlyName string) (PKCS12Attribute, error) {
+    bmpFriendlyName, err := bmpString(friendlyName)
+    if err != nil {
+        return PKCS12Attribute{}, err
+    }
+
+    encodedFriendlyName, err := asn1.Marshal(asn1.RawValue{
+        Class:      0,
+        Tag:        30,
+        IsCompound: false,
+        Bytes:      bmpFriendlyName,
+    })
+    if err != nil {
+        return PKCS12Attribute{}, err
+    }
+
+    friendlyNameAttr := PKCS12Attribute{
+        Id: oidFriendlyName,
+        Value: asn1.RawValue{
+            Class:      0,
+            Tag:        17,
+            IsCompound: true,
+            Bytes:      encodedFriendlyName,
+        },
+    }
+
+    return friendlyNameAttr, nil
+}
+
 func (this *PKCS12) makeLocalKeyIdAttr(data []byte) (PKCS12Attribute, error) {
     var fingerprint []byte
 
@@ -233,32 +261,10 @@ func (this *PKCS12) marshalTrustStoreEntries(rand io.Reader, password []byte, op
 
     var certBags []SafeBag
     for _, entry := range entries {
-
-        bmpFriendlyName, err1 := bmpString(entry.FriendlyName)
+        friendlyName, err1 := this.makeFriendlyNameAttr(entry.FriendlyName)
         if err1 != nil {
             err = err1
             return
-        }
-
-        encodedFriendlyName, err1 := asn1.Marshal(asn1.RawValue{
-            Class:      0,
-            Tag:        30,
-            IsCompound: false,
-            Bytes:      bmpFriendlyName,
-        })
-        if err1 != nil {
-            err = err1
-            return
-        }
-
-        friendlyName := PKCS12Attribute{
-            Id: oidFriendlyName,
-            Value: asn1.RawValue{
-                Class:      0,
-                Tag:        17,
-                IsCompound: true,
-                Bytes:      encodedFriendlyName,
-            },
         }
 
         certBag, err1 := NewCertBagEntry().MakeCertBag(entry.Cert, append(certAttributes, friendlyName))

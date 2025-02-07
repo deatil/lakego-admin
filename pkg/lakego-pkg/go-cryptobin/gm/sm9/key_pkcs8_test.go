@@ -406,22 +406,22 @@ JkOPT5wBW/Lu55cAytiN/0pe0g==
 `
 
 func Test_SignKey_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     mprikeyDer := decodePEM(testSignMPriv)
     mprikey, err := ParsePrivateKey(mprikeyDer.Bytes)
-    assertError(err, "testSignMPriv")
+    assertNoError(err, "testSignMPriv")
     assertNotEmpty(mprikey, "testSignMPriv")
 
     prikeyDer := decodePEM(testSignPriv)
     prikey, err := ParsePrivateKey(prikeyDer.Bytes)
-    assertError(err, "testSignPriv")
+    assertNoError(err, "testSignPriv")
     assertNotEmpty(prikey, "testSignPriv")
 
     pubDer := decodePEM(testSignPub)
     mpubkey, err := ParsePublicKey(pubDer.Bytes)
-    assertError(err, "testSignPub")
+    assertNoError(err, "testSignPub")
     assertNotEmpty(mpubkey, "testSignPub")
 }
 
@@ -479,22 +479,22 @@ g3c2uOkAJBT7usXXIKsTU2Exj+iq8P2vvZD4ZvRs4VugzIITJ35MuVkj4D+r8lj4
 `
 
 func Test_EncryptKey_Check(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     mprikeyDer := decodePEM(testEncryptMPriv)
     mprikey, err := ParsePrivateKey(mprikeyDer.Bytes)
-    assertError(err, "testEncryptMPriv")
+    assertNoError(err, "testEncryptMPriv")
     assertNotEmpty(mprikey, "testEncryptMPriv")
 
     prikeyDer := decodePEM(testEncryptPriv)
     prikey, err := ParsePrivateKey(prikeyDer.Bytes)
-    assertError(err, "testEncryptPriv")
+    assertNoError(err, "testEncryptPriv")
     assertNotEmpty(prikey, "testEncryptPriv")
 
     pubDer := decodePEM(testEncryptPub)
     mpubkey, err := ParsePublicKey(pubDer.Bytes)
-    assertError(err, "testEncryptPub")
+    assertNoError(err, "testEncryptPub")
     assertNotEmpty(mpubkey, "testEncryptPub")
 }
 
@@ -577,24 +577,24 @@ func testParsePub(der []byte) []byte {
 }
 
 func Test_SignKey_Check2(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     mprikeyDer := decodePEM(testSignMPriv2)
     mprikey, err := ParsePrivateKey(mprikeyDer.Bytes)
-    assertError(err, "testSignMPriv2")
+    assertNoError(err, "testSignMPriv2")
     assertNotEmpty(mprikey, "testSignMPriv2")
 
     prikeyDer := decodePEM(testSignPriv2)
     prikey, err := ParsePrivateKey(prikeyDer.Bytes)
-    assertError(err, "testSignPriv2")
+    assertNoError(err, "testSignPriv2")
     assertNotEmpty(prikey, "testSignPriv2")
 
     pubkeyDer := decodePEM(testSignPub2)
     pubkeyBytes := testParsePub(pubkeyDer.Bytes)
 
     pubkey, err := NewSignMasterPublicKey(pubkeyBytes)
-    assertError(err, "testSignPub2")
+    assertNoError(err, "testSignPub2")
     assertNotEmpty(pubkey, "testSignPub2")
 }
 
@@ -730,17 +730,17 @@ MEQDQgAEBKYwj40Eb6ig0GmLLCM0mOkTm+JvWp4EeQIjwxMO2BFnAGHTY4qDKmZM
 `
 
 func Test_EncryptKey_Check2(t *testing.T) {
-    assertError := cryptobin_test.AssertErrorT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
     assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
 
     mprikeyDer := decodePEM(testEncryptMPriv2)
     mprikey, err := ParsePrivateKey(mprikeyDer.Bytes)
-    assertError(err, "testEncryptMPriv2")
+    assertNoError(err, "testEncryptMPriv2")
     assertNotEmpty(mprikey, "testEncryptMPriv2")
 
     prikeyDer := decodePEM(testEncryptPriv2)
     prikey, err := ParsePrivateKey(prikeyDer.Bytes)
-    assertError(err, "testEncryptPriv2")
+    assertNoError(err, "testEncryptPriv2")
     assertNotEmpty(prikey, "testEncryptPriv2")
 
     pubkeyDer := decodePEM(testEncryptPub2)

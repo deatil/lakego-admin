@@ -59,6 +59,7 @@ func (pub *PublicKey) Encrypt(random io.Reader, message []byte) ([]byte, error) 
 // PrivateKey represents Elgamal private key.
 type PrivateKey struct {
     PublicKey
+
     X *big.Int
 }
 
