@@ -57,9 +57,9 @@ func Disk(name string, once ...bool) *storage.Storage {
 
     // 配置
     diskConf := diskConfig.(map[string]any)
+    diskType := diskConf["type"].(string)
 
     // 获取驱动磁盘
-    diskType := diskConf["type"].(string)
     driver := register.
         NewManagerWithPrefix("database").
         GetRegister(diskType, diskConf, once...)

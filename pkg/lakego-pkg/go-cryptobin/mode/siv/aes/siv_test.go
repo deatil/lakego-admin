@@ -151,7 +151,7 @@ func init() {
 
 // Load test vectors
 func loadAESSIVExamples(filename string) []aesSIVExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := testData[filename]
 

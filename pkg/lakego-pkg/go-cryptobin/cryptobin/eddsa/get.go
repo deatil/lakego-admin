@@ -2,6 +2,8 @@ package eddsa
 
 import (
     "crypto/ed25519"
+
+    "github.com/deatil/go-cryptobin/tool/encoding"
 )
 
 // 获取 PrivateKey
@@ -14,9 +16,23 @@ func (this EdDSA) GetPrivateKeySeed() []byte {
     return this.privateKey.Seed()
 }
 
+// get PrivateKey data hex string
+func (this EdDSA) GetPrivateKeyString() string {
+    data := this.privateKey
+
+    return encoding.HexEncode([]byte(data))
+}
+
 // 获取 PublicKey
 func (this EdDSA) GetPublicKey() ed25519.PublicKey {
     return this.publicKey
+}
+
+// get PublicKey data hex string
+func (this EdDSA) GetPublicKeyString() string {
+    data := this.publicKey
+
+    return encoding.HexEncode([]byte(data))
 }
 
 // 获取 Options

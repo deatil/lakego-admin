@@ -62,7 +62,7 @@ var testData = `
 
 // Load test vectors
 func loadCMACAESExamples() []cmacAESExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := []byte(testData)
 

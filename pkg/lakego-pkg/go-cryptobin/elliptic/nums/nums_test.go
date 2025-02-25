@@ -30,7 +30,7 @@ type testData struct {
     curve elliptic.Curve
 }
 
-func Test_Brainpool(t *testing.T) {
+func Test_Curve(t *testing.T) {
     tests := []testData{
         {"P256d1", P256d1()},
         {"P384d1", P384d1()},

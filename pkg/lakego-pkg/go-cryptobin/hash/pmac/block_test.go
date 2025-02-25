@@ -49,7 +49,7 @@ var testData = `
 
 // Load test vectors
 func loadDblExamples() []dblExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := []byte(testData)
 

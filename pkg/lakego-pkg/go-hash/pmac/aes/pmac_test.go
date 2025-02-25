@@ -106,7 +106,7 @@ var testPmacData = `
 
 // Load test vectors
 func loadPMACAESExamples() []pmacAESExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := []byte(testPmacData)
 
@@ -114,7 +114,7 @@ func loadPMACAESExamples() []pmacAESExample {
         panic(err)
     }
 
-    examplesArray := examplesJSON["list"].([]interface{})
+    examplesArray := examplesJSON["list"].([]any)
 
     if examplesArray == nil {
         panic("no toplevel 'list' key in aes_pmac.tjson")
@@ -123,7 +123,7 @@ func loadPMACAESExamples() []pmacAESExample {
     result := make([]pmacAESExample, len(examplesArray))
 
     for i, exampleJSON := range examplesArray {
-        example := exampleJSON.(map[string]interface{})
+        example := exampleJSON.(map[string]any)
 
         keyHex := example["key:d16"].(string)
         key := make([]byte, hex.DecodedLen(len(keyHex)))

@@ -21,7 +21,7 @@ const (
 
 func TestOCBImplementsAEADInterface(t *testing.T) {
     var ocbInstance ocb
-    var aux interface{} = &ocbInstance
+    var aux any = &ocbInstance
     _, ok := aux.(cipher.AEAD)
     if !ok {
         t.Errorf("Error: OCB can't implement AEAD interface")

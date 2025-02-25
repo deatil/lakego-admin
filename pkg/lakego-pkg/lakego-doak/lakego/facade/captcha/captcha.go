@@ -61,8 +61,8 @@ func Captcha(driverName string, storeName string, once ...bool) *captcha.Captcha
 
     // 配置
     storeConf := storeConfig.(map[string]any)
-
     storeType := storeConf["type"].(string)
+
     store := register.
         NewManagerWithPrefix("captcha-store").
         GetRegister(storeType, storeConf, once...)
@@ -84,8 +84,8 @@ func Captcha(driverName string, storeName string, once ...bool) *captcha.Captcha
 
     // 驱动配置
     driverConf := driverConfig.(map[string]any)
-
     driverType := driverConf["type"].(string)
+
     driver := register.
         NewManagerWithPrefix("captcha-driver").
         GetRegister(driverType, driverConf, once...)

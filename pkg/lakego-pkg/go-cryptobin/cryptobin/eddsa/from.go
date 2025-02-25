@@ -136,6 +136,27 @@ func FromPrivateKeySeed(seed []byte) EdDSA {
 
 // ==========
 
+// PublicKey hex string
+func (this EdDSA) FromPublicKeyString(keyString string) EdDSA {
+    k, _ := encoding.HexDecode(keyString)
+
+    this.publicKey = ed25519.PublicKey(k)
+
+    return this
+}
+
+// PrivateKey hex string
+// private-key: 07e4********;
+func (this EdDSA) FromPrivateKeyString(keyString string) EdDSA {
+    k, _ := encoding.HexDecode(keyString)
+
+    this.privateKey = ed25519.PrivateKey(k)
+
+    return this
+}
+
+// ==========
+
 // 字节
 func (this EdDSA) FromBytes(data []byte) EdDSA {
     this.data = data

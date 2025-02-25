@@ -1,7 +1,6 @@
 package nums
 
 import (
-    "sync"
     "math/big"
     "crypto/elliptic"
 )
@@ -9,8 +8,6 @@ import (
 // see http://www.watersprings.org/pub/id/draft-black-numscurves-01.html
 
 var (
-    once sync.Once
-
     p256d1, p384d1, p512d1 *elliptic.CurveParams
     p256t1, p384t1, p512t1 *rcurve
 )

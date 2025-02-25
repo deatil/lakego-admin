@@ -4,63 +4,87 @@ import (
     "bytes"
     "strings"
     "encoding/hex"
+    "encoding/base32"
     "encoding/base64"
 )
 
-var (
-    defaultEncoding = New()
-)
+// StdEncoding
+var StdEncoding = New()
 
 /**
- * 编码
+ * Encoding
  *
  * @create 2022-4-17
  * @author deatil
  */
 type Encoding struct{}
 
-// 构造函数
+// New Encoding
 func New() *Encoding {
     return &Encoding{}
 }
 
-// Base64 编码
+// Base32 Encode
+func (this *Encoding) Base32Encode(src []byte) string {
+    return base32.StdEncoding.EncodeToString(src)
+}
+
+// Base32 Encode
+func Base32Encode(src []byte) string {
+    return StdEncoding.Base32Encode(src)
+}
+
+// Base32 Decode
+func (this *Encoding) Base32Decode(s string) ([]byte, error) {
+    return base32.StdEncoding.DecodeString(s)
+}
+
+// Base32 Decode
+func Base32Decode(s string) ([]byte, error) {
+    return StdEncoding.Base32Decode(s)
+}
+
+// Base64 Encode
 func (this *Encoding) Base64Encode(src []byte) string {
     return base64.StdEncoding.EncodeToString(src)
 }
 
+// Base64 Encode
 func Base64Encode(src []byte) string {
-    return defaultEncoding.Base64Encode(src)
+    return StdEncoding.Base64Encode(src)
 }
 
-// Base64 解码
+// Base64 Decode
 func (this *Encoding) Base64Decode(s string) ([]byte, error) {
     return base64.StdEncoding.DecodeString(s)
 }
 
+// Base64 Decode
 func Base64Decode(s string) ([]byte, error) {
-    return defaultEncoding.Base64Decode(s)
+    return StdEncoding.Base64Decode(s)
 }
 
-// Hex 编码
+// Hex Encode
 func (this *Encoding) HexEncode(src []byte) string {
     return hex.EncodeToString(src)
 }
 
+// Hex Encode
 func HexEncode(src []byte) string {
-    return defaultEncoding.HexEncode(src)
+    return StdEncoding.HexEncode(src)
 }
 
-// Hex 解码
+// Hex Decode
 func (this *Encoding) HexDecode(s string) ([]byte, error) {
     return hex.DecodeString(s)
 }
 
+// Hex Decode
 func HexDecode(s string) ([]byte, error) {
-    return defaultEncoding.HexDecode(s)
+    return StdEncoding.HexDecode(s)
 }
 
-// 补码
+// Hex Padding
 func (this *Encoding) HexPadding(text string, size int) string {
     if size < 1 {
         return text
@@ -79,11 +103,12 @@ func (this *Encoding) HexPadding(text string, size int) string {
     return text[n-size:]
 }
 
+// Hex Padding
 func HexPadding(text string, size int) string {
-    return defaultEncoding.HexPadding(text, size)
+    return StdEncoding.HexPadding(text, size)
 }
 
-// BytesPadding
+// Bytes Padding
 func (this *Encoding) BytesPadding(text []byte, size int) []byte {
     if size < 1 {
         return text
@@ -103,6 +128,7 @@ func (this *Encoding) BytesPadding(text []byte, size int) []byte {
     return text[n-size:]
 }
 
+// Bytes Padding
 func BytesPadding(text []byte, size int) []byte {
-    return defaultEncoding.BytesPadding(text, size)
+    return StdEncoding.BytesPadding(text, size)
 }

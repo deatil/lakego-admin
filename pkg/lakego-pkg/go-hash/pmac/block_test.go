@@ -49,7 +49,7 @@ var testData = `
 
 // Load test vectors
 func loadDblExamples() []dblExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := []byte(testData)
 
@@ -57,7 +57,7 @@ func loadDblExamples() []dblExample {
         panic(err)
     }
 
-    examplesArray := examplesJSON["list"].([]interface{})
+    examplesArray := examplesJSON["list"].([]any)
 
     if examplesArray == nil {
         panic("no toplevel 'list' key in dbl.tjson")
@@ -66,7 +66,7 @@ func loadDblExamples() []dblExample {
     result := make([]dblExample, len(examplesArray))
 
     for i, exampleJSON := range examplesArray {
-        example := exampleJSON.(map[string]interface{})
+        example := exampleJSON.(map[string]any)
 
         inputHex := example["input:d16"].(string)
         input := make([]byte, hex.DecodedLen(len(inputHex)))

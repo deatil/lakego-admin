@@ -161,3 +161,23 @@ func Test_MakePublicKey(t *testing.T) {
     assertNoError(ed.Error(), "MakePublicKey")
     assertEqual(newPubkey, testPubkey, "MakePublicKey")
 }
+
+func Test_CheckKeyString(t *testing.T) {
+    ed := New().GenerateKey()
+
+    priString := ed.GetPrivateKeyString()
+    pubString := ed.GetPublicKeyString()
+
+    cryptobin_test.NotEmpty(t, priString)
+    cryptobin_test.NotEmpty(t, pubString)
+
+    pri := New().
+            FromPrivateKeyString(priString).
+            GetPrivateKey()
+    pub := New().
+            FromPublicKeyString(pubString).
+            GetPublicKey()
+
+    cryptobin_test.Equal(t, ed.GetPrivateKey(), pri)
+    cryptobin_test.Equal(t, ed.GetPublicKey(), pub)
+}

@@ -16,7 +16,7 @@ import (
 )
 
 var (
-    i     interface{}
+    i     any
     zeros = []interface{}{
         false,
         byte(0),
@@ -95,8 +95,8 @@ type AssertionTesterNonConformingObject struct {
 
 func Test_ObjectsAreEqual(t *testing.T) {
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         // cases that are expected to be equal
@@ -133,8 +133,8 @@ func Test_ObjectsAreEqualValues(t *testing.T) {
     now := time.Now()
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         {uint32(10), int32(10), true},
@@ -166,19 +166,19 @@ func Test_ObjectsAreEqualValues(t *testing.T) {
 }
 
 type Nested struct {
-    Exported    interface{}
-    notExported interface{}
+    Exported    any
+    notExported any
 }
 
 type S struct {
-    Exported1    interface{}
+    Exported1    any
     Exported2    Nested
-    notExported1 interface{}
+    notExported1 any
     notExported2 Nested
 }
 
 type S2 struct {
-    foo interface{}
+    foo any
 }
 
 type S3 struct {
@@ -204,8 +204,8 @@ func Test_ObjectsExportedFieldsAreEqual(t *testing.T) {
     intValue := 1
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         {S{1, Nested{2, 3}, 4, Nested{5, 6}}, S{1, Nested{2, 3}, 4, Nested{5, 6}}, true},
@@ -278,8 +278,8 @@ func Test_CopyExportedFields(t *testing.T) {
     intValue := 1
 
     cases := []struct {
-        input    interface{}
-        expected interface{}
+        input    any
+        expected any
     }{
         {
             input:    Nested{"a", "b"},
@@ -378,8 +378,8 @@ func Test_Exactly(t *testing.T) {
     c := float32(1)
     d := float32(2)
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         {a, b, false},
@@ -404,11 +404,11 @@ func Test_Equal(t *testing.T) {
     type myType string
 
     mockT := new(testing.T)
-    var m map[string]interface{}
+    var m map[string]any
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
         remark   string
     }{
@@ -446,8 +446,8 @@ func Test_NotEqual(t *testing.T) {
     mockT := new(testing.T)
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         // cases that are expected not to match
@@ -485,8 +485,8 @@ func Test_NotEqualValues(t *testing.T) {
     mockT := new(testing.T)
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         // cases that are expected not to match
@@ -568,8 +568,8 @@ func Test_samePointers(t *testing.T) {
     p := ptr(2)
 
     type args struct {
-        first  interface{}
-        second interface{}
+        first  any
+        second any
     }
     tests := []struct {
         name string
@@ -676,7 +676,7 @@ func Test_Len(t *testing.T) {
     ch <- 3
 
     cases := []struct {
-        v               interface{}
+        v               any
         l               int
         expected1234567 string // message when expecting 1234567 items
     }{
@@ -1050,7 +1050,7 @@ func Test_NotPanics(t *testing.T) {
 
 type mockTestingT struct {
     errorFmt string
-    args     []interface{}
+    args     []any
 }
 
 func (m *mockTestingT) errorString() string {
@@ -1161,11 +1161,11 @@ func Test_ContainsNotContains(t *testing.T) {
         {"j", "k"},
     }
     simpleMap := map[interface{}]interface{}{"Foo": "Bar"}
-    var zeroMap map[interface{}]interface{}
+    var zeroMap map[interface{}]any
 
     cases := []struct {
-        expected interface{}
-        actual   interface{}
+        expected any
+        actual   any
         result   bool
     }{
         {"Hello World", "Hello", true},
@@ -1220,8 +1220,8 @@ func Test_ContainsNotContainsFailMessage(t *testing.T) {
 
     cases := []struct {
         assertion func(t TestingT, s, contains interface{}, msgAndArgs ...interface{}) bool
-        container interface{}
-        instance  interface{}
+        container any
+        instance  any
         expected  string
     }{
         {
@@ -1286,8 +1286,8 @@ func Test_ContainsNotContainsOnNilValue(t *testing.T) {
 
 func Test_SubsetNotSubset(t *testing.T) {
     cases := []struct {
-        list    interface{}
-        subset  interface{}
+        list    any
+        subset  any
         result  bool
         message string
     }{
@@ -1693,8 +1693,8 @@ func Test_ComparisonAssertionFunc(t *testing.T) {
 
     tests := []struct {
         name      string
-        expect    interface{}
-        got       interface{}
+        expect    any
+        got       any
         assertion ComparisonAssertionFunc
     }{
         {"isType", (*testing.T)(nil), t, IsType},
@@ -1718,7 +1718,7 @@ func Test_ComparisonAssertionFunc(t *testing.T) {
 func Test_ValueAssertionFunc(t *testing.T) {
     tests := []struct {
         name      string
-        value     interface{}
+        value     any
         assertion ValueAssertionFunc
     }{
         {"notNil", true, NotNil},

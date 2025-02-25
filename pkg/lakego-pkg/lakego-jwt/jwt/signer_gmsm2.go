@@ -4,7 +4,7 @@ import (
     "errors"
     "github.com/golang-jwt/jwt/v4"
 
-    "github.com/deatil/lakego-jwt/jwt/sm2"
+    "github.com/deatil/lakego-jwt/signer/sm2"
 )
 
 // SignerGmSM2

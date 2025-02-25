@@ -194,7 +194,7 @@ func EqualError(t TestingT, theError error, errString string, msgAndArgs ...any)
 // EqualValues asserts that two objects are equal or convertible to the larger
 // type and equal.
 //
-//	assert.EqualValues(t, uint32(123), int32(123))
+//	test.EqualValues(t, uint32(123), int32(123))
 func EqualValues(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -218,8 +218,8 @@ func EqualValues(t TestingT, expected, actual interface{}, msgAndArgs ...interfa
 //		Exported     	int
 //		notExported   	int
 //	 }
-//	 assert.EqualExportedValues(t, S{1, 2}, S{1, 3}) => true
-//	 assert.EqualExportedValues(t, S{1, 2}, S{2, 3}) => false
+//	 test.EqualExportedValues(t, S{1, 2}, S{1, 3}) => true
+//	 test.EqualExportedValues(t, S{1, 2}, S{2, 3}) => false
 func EqualExportedValues(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -247,7 +247,7 @@ func EqualExportedValues(t TestingT, expected, actual interface{}, msgAndArgs ..
 
 // NotEqual asserts that the specified values are NOT equal.
 //
-//	assert.NotEqual(t, obj1, obj2)
+//	test.NotEqual(t, obj1, obj2)
 func NotEqual(t TestingT, expected, actual any, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -268,7 +268,7 @@ func NotEqual(t TestingT, expected, actual any, msgAndArgs ...any) bool {
 
 // NotEqualValues asserts that two objects are not equal even when converted to the same type
 //
-//	assert.NotEqualValues(t, obj1, obj2)
+//	test.NotEqualValues(t, obj1, obj2)
 func NotEqualValues(t TestingT, expected, actual any, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -323,7 +323,7 @@ func NotSame(t TestingT, expected, actual any, msgAndArgs ...any) bool {
 
 // Exactly asserts that two objects are equal in value and type.
 //
-//	assert.Exactly(t, int32(123), int64(123))
+//	test.Exactly(t, int32(123), int64(123))
 func Exactly(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -342,7 +342,7 @@ func Exactly(t TestingT, expected, actual interface{}, msgAndArgs ...interface{}
 
 // Nil asserts that the specified object is nil.
 //
-// assert.Nil(t, err)
+// test.Nil(t, err)
 func Nil(t TestingT, object any, msgAndArgs ...any) bool {
     if isNil(object) {
         return true
@@ -373,7 +373,7 @@ func NotNil(t TestingT, object any, msgAndArgs ...any) bool {
 // Empty asserts that the specified object is empty.  I.e. nil, "", false, 0 or either
 // a slice or a channel with len == 0.
 //
-//	assert.Empty(t, obj)
+//	test.Empty(t, obj)
 func Empty(t TestingT, object any, msgAndArgs ...any) bool {
     pass := isEmpty(object)
     if !pass {
@@ -391,8 +391,8 @@ func Empty(t TestingT, object any, msgAndArgs ...any) bool {
 // NotEmpty asserts that the specified object is NOT empty.  I.e. not nil, "", false, 0 or either
 // a slice or a channel with len == 0.
 //
-//	if assert.NotEmpty(t, obj) {
-//	  assert.Equal(t, "two", obj[1])
+//	if test.NotEmpty(t, obj) {
+//	  test.Equal(t, "two", obj[1])
 //	}
 func NotEmpty(t TestingT, object any, msgAndArgs ...any) bool {
     pass := !isEmpty(object)
@@ -422,7 +422,7 @@ func getLen(x interface{}) (length int, ok bool) {
 // Len asserts that the specified object has specific length.
 // Len also fails if the object has a type that len() not accept.
 //
-//	assert.Len(t, mySlice, 3)
+//	test.Len(t, mySlice, 3)
 func Len(t TestingT, object interface{}, length int, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -442,7 +442,7 @@ func Len(t TestingT, object interface{}, length int, msgAndArgs ...interface{}) 
 
 // True asserts that the specified value is true.
 //
-//	assert.True(t, myBool)
+//	test.True(t, myBool)
 func True(t TestingT, value bool, msgAndArgs ...any) bool {
     if !value {
         if h, ok := t.(tHelper); ok {
@@ -458,7 +458,7 @@ func True(t TestingT, value bool, msgAndArgs ...any) bool {
 
 // False asserts that the specified value is false.
 //
-//	assert.False(t, myBool)
+//	test.False(t, myBool)
 func False(t TestingT, value bool, msgAndArgs ...any) bool {
     if value {
         if h, ok := t.(tHelper); ok {
@@ -517,9 +517,9 @@ func containsElement(list interface{}, element interface{}) (ok, found bool) {
 // Contains asserts that the specified string, list(array, slice...) or map contains the
 // specified substring or element.
 //
-//	assert.Contains(t, "Hello World", "World")
-//	assert.Contains(t, ["Hello", "World"], "World")
-//	assert.Contains(t, {"Hello": "World"}, "Hello")
+//	test.Contains(t, "Hello World", "World")
+//	test.Contains(t, ["Hello", "World"], "World")
+//	test.Contains(t, {"Hello": "World"}, "Hello")
 func Contains(t TestingT, s, contains any, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -541,9 +541,9 @@ func Contains(t TestingT, s, contains any, msgAndArgs ...any) bool {
 // NotContains asserts that the specified string, list(array, slice...) or map does NOT contain the
 // specified substring or element.
 //
-//	assert.NotContains(t, "Hello World", "Earth")
-//	assert.NotContains(t, ["Hello", "World"], "Earth")
-//	assert.NotContains(t, {"Hello": "World"}, "Earth")
+//	test.NotContains(t, "Hello World", "Earth")
+//	test.NotContains(t, ["Hello", "World"], "Earth")
+//	test.NotContains(t, {"Hello": "World"}, "Earth")
 func NotContains(t TestingT, s, contains any, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -565,8 +565,8 @@ func NotContains(t TestingT, s, contains any, msgAndArgs ...any) bool {
 // Subset asserts that the specified list(array, slice...) or map contains all
 // elements given in the specified subset list(array, slice...) or map.
 //
-//	assert.Subset(t, [1, 2, 3], [1, 2])
-//	assert.Subset(t, {"x": 1, "y": 2}, {"x": 1})
+//	test.Subset(t, [1, 2, 3], [1, 2])
+//	test.Subset(t, {"x": 1, "y": 2}, {"x": 1})
 func Subset(t TestingT, list, subset any, msgAndArgs ...any) (ok bool) {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -625,8 +625,8 @@ func Subset(t TestingT, list, subset any, msgAndArgs ...any) (ok bool) {
 // contain all elements given in the specified subset list(array, slice...) or
 // map.
 //
-//	assert.NotSubset(t, [1, 3, 4], [1, 2])
-//	assert.NotSubset(t, {"x": 1, "y": 2}, {"z": 3})
+//	test.NotSubset(t, [1, 3, 4], [1, 2])
+//	test.NotSubset(t, {"x": 1, "y": 2}, {"z": 3})
 func NotSubset(t TestingT, list, subset any, msgAndArgs ...any) (ok bool) {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -853,7 +853,7 @@ func Condition(t TestingT, comp Comparison, msgAndArgs ...interface{}) bool {
 
 // WithinDuration asserts that the two times are within duration delta of each other.
 //
-//	assert.WithinDuration(t, time.Now(), time.Now(), 10*time.Second)
+//	test.WithinDuration(t, time.Now(), time.Now(), 10*time.Second)
 func WithinDuration(t TestingT, expected, actual time.Time, delta time.Duration, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -869,7 +869,7 @@ func WithinDuration(t TestingT, expected, actual time.Time, delta time.Duration,
 
 // WithinRange asserts that a time is within a time range (inclusive).
 //
-//	assert.WithinRange(t, time.Now(), time.Now().Add(-time.Second), time.Now().Add(time.Second))
+//	test.WithinRange(t, time.Now(), time.Now().Add(-time.Second), time.Now().Add(time.Second))
 func WithinRange(t TestingT, actual, start, end time.Time, msgAndArgs ...interface{}) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -908,7 +908,7 @@ func didPanic(f PanicTestFunc) (didPanic bool, message any, stack string) {
 
 // Panics asserts that the code inside the specified PanicTestFunc panics.
 //
-//	assert.Panics(t, func(){ GoCrazy() })
+//	test.Panics(t, func(){ GoCrazy() })
 func Panics(t TestingT, f PanicTestFunc, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -924,7 +924,7 @@ func Panics(t TestingT, f PanicTestFunc, msgAndArgs ...any) bool {
 // PanicsWithValue asserts that the code inside the specified PanicTestFunc panics, and that
 // the recovered panic value equals the expected panic value.
 //
-//	assert.PanicsWithValue(t, "crazy error", func(){ GoCrazy() })
+//	test.PanicsWithValue(t, "crazy error", func(){ GoCrazy() })
 func PanicsWithValue(t TestingT, expected any, f PanicTestFunc, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -946,7 +946,7 @@ func PanicsWithValue(t TestingT, expected any, f PanicTestFunc, msgAndArgs ...an
 // panics, and that the recovered panic value is an error that satisfies the
 // EqualError comparison.
 //
-//	assert.PanicsWithError(t, "crazy error", func(){ GoCrazy() })
+//	test.PanicsWithError(t, "crazy error", func(){ GoCrazy() })
 func PanicsWithError(t TestingT, errString string, f PanicTestFunc, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()
@@ -967,7 +967,7 @@ func PanicsWithError(t TestingT, errString string, f PanicTestFunc, msgAndArgs .
 
 // NotPanics asserts that the code inside the specified PanicTestFunc does NOT panic.
 //
-//	assert.NotPanics(t, func(){ RemainCalm() })
+//	test.NotPanics(t, func(){ RemainCalm() })
 func NotPanics(t TestingT, f PanicTestFunc, msgAndArgs ...any) bool {
     if h, ok := t.(tHelper); ok {
         h.Helper()

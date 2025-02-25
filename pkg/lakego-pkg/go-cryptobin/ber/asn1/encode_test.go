@@ -129,7 +129,7 @@ type sequence2Test struct {
 }
 
 type marshalTest struct {
-    in  interface{}
+    in  any
     out string
 }
 
@@ -293,7 +293,7 @@ func TestMarshal2(t *testing.T) {
 }
 
 type marshalWithOptionsTest struct {
-    in      interface{}
+    in      any
     out     string
     options string
 }

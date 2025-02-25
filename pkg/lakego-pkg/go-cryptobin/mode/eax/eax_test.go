@@ -17,7 +17,7 @@ const (
 
 func TestEAXImplementsAEADInterface(t *testing.T) {
     var eaxInstance eax
-    var aux interface{} = &eaxInstance
+    var aux any = &eaxInstance
     _, ok := aux.(cipher.AEAD)
     if !ok {
         t.Errorf("Error: EAX does not implement AEAD interface")

@@ -10,14 +10,28 @@ import (
 var (
     testPrikey = `
 -----BEGIN PRIVATE KEY-----
-MC4CAQAwBQYDK2VwBCIEIOXADd7nzUp08BdkP9n9h/sFrjsi0xcK3gm8tHKBHCvK
+MC4CAQAwBQYDK2VwBCIEIFEs/Su+yy7RjO04AIsq7x+Bg9NRq1FFykJe7gPJXqWY
 -----END PRIVATE KEY-----
     `
-    testPubkey = `
+    testPubkey = `-----BEGIN PUBLIC KEY-----
+MCowBQYDK2VwAyEAvJgQNRwfWO53Hy2vSaBlz4wytmobPga00sRKaYenmgQ=
+-----END PUBLIC KEY-----
+`
+
+    testPrikeyEn = `
+-----BEGIN ENCRYPTED PRIVATE KEY-----
+MIGjMF8GCSqGSIb3DQEFDTBSMDEGCSqGSIb3DQEFDDAkBBA4MT4RO/TanOhtYFlU
+5YeVAgInEDAMBggqhkiG9w0CBwUAMB0GCWCGSAFlAwQBAgQQvSN7URYWp8xlhIaL
+t6K47wRALJ6ATPXrLQ8DGCAax2llMsB9TFJPAqnZX+lkdtzEELCaDpmkd/O9EYc3
+Fv7U+2E59pDpj3Vmen2xaKZ30xdpTQ==
+-----END ENCRYPTED PRIVATE KEY-----
+    `
+    testPubkeyEn = `
 -----BEGIN PUBLIC KEY-----
-MCowBQYDK2VwAyEA1NkD+0884Ol0mqyreYT+I6AA2y/rKDS+eIueB/vxMVc=
+MCowBQYDK2VwAyEAPZhFbGV49GRe/V0OHRimYBNT9EyL+fNYYKRXblB5VMw=
 -----END PUBLIC KEY-----
     `
+
 )
 
 func useEdDSASign(t *testing.T, opts *Options) {

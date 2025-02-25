@@ -66,7 +66,7 @@ type PKCS7 struct {
     Certificates []*x509.Certificate
     CRLs         []pkix.CertificateList
     Signers      []signerInfo
-    raw          interface{}
+    raw          any
 }
 
 type contentInfo struct {
@@ -131,12 +131,12 @@ func (raw rawCertificates) Parse() ([]*x509.Certificate, error) {
 // `encoding/asn1`
 type Attribute struct {
     Type  asn1.ObjectIdentifier
-    Value interface{}
+    Value any
 }
 
 type attributes struct {
     types  []asn1.ObjectIdentifier
-    values []interface{}
+    values []any
 }
 
 // Add adds the attribute, maintaining insertion order

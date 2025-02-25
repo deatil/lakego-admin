@@ -2,7 +2,9 @@ package jwt
 
 import (
     "errors"
+
     "github.com/golang-jwt/jwt/v4"
+    jwt_ecdsa "github.com/deatil/lakego-jwt/signer/ecdsa"
 )
 
 // SignerES256
@@ -29,6 +31,14 @@ func SignerES512(conf IConfig) ECDSA {
     }
 }
 
+// SignerES256K
+func SignerES256K(conf IConfig) ECDSA {
+    return ECDSA{
+        Config: conf,
+        SigningMethod: jwt_ecdsa.SigningMethodES256K,
+    }
+}
+
 func init() {
     AddSigner("ES256", func(conf IConfig) ISigner {
         return SignerES256(conf)
@@ -38,6 +48,9 @@ func init() {
     })
     AddSigner("ES512", func(conf IConfig) ISigner {
         return SignerES512(conf)
+    })
+    AddSigner("ES256K", func(conf IConfig) ISigner {
+        return SignerES256K(conf)
     })
 }
 
@@ -69,7 +82,17 @@ func (this ECDSA) GetSignSecrect() (secret any, err error) {
         return
     }
 
-    secret, err = jwt.ParseECPrivateKeyFromPEM(keyByte)
+    password := this.Config.PrivateKeyPassword()
+
+    if password != "" {
+        secret, err = jwt_ecdsa.ParsePrivateKeyFromPEMWithPassword(keyByte, password)
+    } else {
+        secret, err = jwt.ParseECPrivateKeyFromPEM(keyByte)
+        if err != nil {
+            secret, err = jwt_ecdsa.ParsePrivateKeyFromPEM(keyByte)
+        }
+    }
+
     return
 }
 
@@ -83,5 +106,8 @@ func (this ECDSA) GetVerifySecrect() (secret any, err error) {
     }
 
     secret, err = jwt.ParseECPublicKeyFromPEM(keyByte)
+    if err != nil {
+        secret, err = jwt_ecdsa.ParsePublicKeyFromPEM(keyByte)
+    }
     return
 }

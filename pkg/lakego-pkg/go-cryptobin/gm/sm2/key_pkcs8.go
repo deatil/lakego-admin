@@ -36,15 +36,14 @@ type pkixPublicKey struct {
 
 func ParsePrivateKey(der []byte) (*PrivateKey, error) {
     var privKey pkcs8
-
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
         return nil, err
     }
 
+    // check PrivateKey OID
     if !privKey.Algo.Algorithm.Equal(oidSM2) &&
         !privKey.Algo.Algorithm.Equal(oidPublicKeySM2) {
-        err := errors.New("sm2: unknown private key algorithm")
-        return nil, err
+        return nil, errors.New("sm2: unknown private key algorithm")
     }
 
     bytes := privKey.Algo.Parameters.FullBytes
@@ -61,13 +60,14 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var r pkcs8
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve != P256() {
+    oid, ok := oidFromNamedCurve(key.Curve)
+    if !ok {
         return nil, errors.New("sm2: unsupported SM2 curve")
     }
 
-    oidBytes, err := asn1.Marshal(oidPublicKeySM2)
+    oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("sm2: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("sm2: failed to marshal algo param")
     }
 
     algo.Algorithm = oidSM2
@@ -76,14 +76,9 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     algo.Parameters.IsCompound = false
     algo.Parameters.FullBytes = oidBytes
 
-    oid, ok := oidFromNamedCurve(key.Curve)
-    if !ok {
-        return nil, errors.New("sm2: unknown curve")
-    }
-
     r.Version = 0
     r.Algo = algo
-    r.PrivateKey, err = marshalSM2PrivateKeyWithOID(key, oid)
+    r.PrivateKey, err = marshalSM2PrivateKeyWithOID(key, nil)
     if err != nil {
         return nil, err
     }
@@ -98,12 +93,24 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
         return nil, err
     }
 
+    // check PublicKey OID
     if !pubkey.Algo.Algorithm.Equal(oidSM2) &&
         !pubkey.Algo.Algorithm.Equal(oidPublicKeySM2) {
-        return nil, errors.New("sm2: not sm2 curve")
+        return nil, errors.New("sm2: unknown publicKey key algorithm")
     }
 
-    c := P256()
+    bytes := pubkey.Algo.Parameters.FullBytes
+
+    namedCurveOID := new(asn1.ObjectIdentifier)
+    if _, err := asn1.Unmarshal(bytes, namedCurveOID); err != nil {
+        namedCurveOID = nil
+    }
+
+    // get curve from oid
+    c := namedCurveFromOID(*namedCurveOID)
+    if c == nil {
+        return nil, errors.New("sm2: unknown curve")
+    }
 
     x, y := sm2curve.Unmarshal(c, pubkey.BitString.Bytes)
 
@@ -120,13 +127,14 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     var r pkixPublicKey
     var algo pkix.AlgorithmIdentifier
 
-    if key.Curve != P256() {
+    oid, ok := oidFromNamedCurve(key.Curve)
+    if !ok {
         return nil, errors.New("sm2: unsupported SM2 curve")
     }
 
-    oidBytes, err := asn1.Marshal(oidPublicKeySM2)
+    oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("sm2: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("sm2: failed to marshal algo param")
     }
 
     algo.Algorithm = oidSM2

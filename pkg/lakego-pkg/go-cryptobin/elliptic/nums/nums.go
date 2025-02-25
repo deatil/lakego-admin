@@ -1,6 +1,7 @@
 package nums
 
 import (
+    "sync"
     "encoding/asn1"
     "crypto/elliptic"
 )
@@ -17,6 +18,9 @@ var (
     OIDNumsp512d1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 5}
     OIDNumsp512t1 = asn1.ObjectIdentifier{1, 3, 6, 1, 5, 5, 7, 0, 6}
 )
+
+// sync.Once variable to ensure initialization occurs only once
+var once sync.Once
 
 // P256d1() returns a Curve which implements p256d1 of Microsoft's Nothing Up My Sleeve (NUMS)
 func P256d1() elliptic.Curve {

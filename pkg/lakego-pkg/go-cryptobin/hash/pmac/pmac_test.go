@@ -124,7 +124,7 @@ var testPmacData = `
 
 // Load test vectors
 func loadPMACAESExamples() []pmacAESExample {
-    var examplesJSON map[string]interface{}
+    var examplesJSON map[string]any
 
     exampleData := []byte(testPmacData)
 

@@ -44,7 +44,7 @@ type boringCertificate struct {
     parentOrg string
     der       []byte
     cert      *Certificate
-    key       interface{}
+    key       any
     fipsOK    bool
 }
 
@@ -95,7 +95,7 @@ func testBoringCert(t *testing.T, name string, key interface{}, parent *boringCe
     }
 
     var pcert *Certificate
-    var pkey interface{}
+    var pkey any
     if parent != nil {
         pcert = parent.cert
         pkey = parent.key
@@ -104,7 +104,7 @@ func testBoringCert(t *testing.T, name string, key interface{}, parent *boringCe
         pkey = key
     }
 
-    var pub interface{}
+    var pub any
     var desc string
     switch k := key.(type) {
     case *rsa.PrivateKey:

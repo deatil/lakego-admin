@@ -136,6 +136,27 @@ func FromPrivateKeySeed(seed []byte) ED448 {
 
 // ==========
 
+// PublicKey hex string
+func (this ED448) FromPublicKeyString(keyString string) ED448 {
+    k, _ := encoding.HexDecode(keyString)
+
+    this.publicKey = ed448.PublicKey(k)
+
+    return this
+}
+
+// PrivateKey hex string
+// private-key: 07e4********;
+func (this ED448) FromPrivateKeyString(keyString string) ED448 {
+    k, _ := encoding.HexDecode(keyString)
+
+    this.privateKey = ed448.PrivateKey(k)
+
+    return this
+}
+
+// ==========
+
 // 字节
 func (this ED448) FromBytes(data []byte) ED448 {
     this.data = data
