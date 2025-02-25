@@ -141,7 +141,7 @@ func Test_MakeToken_2(t *testing.T) {
     jti := "jti-uuid"
     nbf := int64(0)
     sub := "sub title"
-    signingMethod := "ES512K"
+    signingMethod := "ES256K"
     secret := ""
     privateKeyData := []byte(priPem)
     publicKeyData := []byte(pubPem)
