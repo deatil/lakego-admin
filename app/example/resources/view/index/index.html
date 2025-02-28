@@ -1,4 +1,4 @@
-{% extends "common/base.html" %}
+{% extends "example::common.base" %}
 
 {% block content %}
 
@@ -7,6 +7,10 @@ lakego-admin 继承测试
 <br /><br />
 
 当前数据为：{{ msg }}
+
+<br /><br />
+
+函数结果为：{{ formatData("lakego-admin") }}
 
 {% endblock %}
 

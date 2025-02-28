@@ -41,20 +41,19 @@ func Html(name string, once ...bool) *html.Html {
     // 连接列表
     adapters := config.New("view").GetStringMap("adapters")
 
+    cfg := array.ArrayFrom(adapters)
+
     // 转为小写
     name = strings.ToLower(name)
 
     // 获取适配器配置
-    adapterConfig, ok := adapters[name]
-    if !ok {
+    if !cfg.Has(name) {
         panic("视图适配器[" + name + "]配置不存在")
     }
 
     // 配置
-    adapterConf := array.ArrayFrom(adapterConfig)
-
-    adapterType := adapterConf.Value("type").ToString()
-    adapterCfg := adapterConf.All().ToStringMap()
+    adapterCfg := cfg.Value(name).ToStringMap()
+    adapterType := cfg.Value(name + ".type").ToString()
 
     adapter := register.
         NewManagerWithPrefix("view").

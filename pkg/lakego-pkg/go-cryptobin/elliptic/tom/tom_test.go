@@ -31,8 +31,9 @@ type testData struct {
 
 func Test_Curve(t *testing.T) {
     tests := []testData{
-        {"P256d1", P256()},
-        {"P384d1", P384()},
+        {"P256", P256()},
+        {"P384", P384()},
+        // {"P521", P521()},
     }
 
     for _, c := range tests {

@@ -11,6 +11,7 @@ var (
 
     OIDNamedCurveTom256 = asn1.ObjectIdentifier{1, 2, 999, 1, 1, 1, 1}
     OIDNamedCurveTom384 = asn1.ObjectIdentifier{1, 2, 999, 1, 1, 1, 2}
+    OIDNamedCurveTom521 = asn1.ObjectIdentifier{1, 2, 999, 1, 1, 1, 3}
 )
 
 // sync.Once variable to ensure initialization occurs only once
@@ -24,4 +25,9 @@ func P256() elliptic.Curve {
 func P384() elliptic.Curve {
     once.Do(initAll)
     return p384
+}
+
+func P521() elliptic.Curve {
+    once.Do(initAll)
+    return p521
 }

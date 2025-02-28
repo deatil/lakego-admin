@@ -4,6 +4,7 @@ import(
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/path"
+    "github.com/deatil/lakego-doak/lakego/array"
     "github.com/deatil/lakego-doak/lakego/storage"
     "github.com/deatil/lakego-doak/lakego/register"
     "github.com/deatil/lakego-doak/lakego/facade/config"
@@ -46,18 +47,19 @@ func Disk(name string, once ...bool) *storage.Storage {
     // 磁盘列表
     disks := config.New("filesystem").GetStringMap("disks")
 
+    cfg := array.ArrayFrom(disks)
+
     // 转为小写
     name = strings.ToLower(name)
 
     // 获取驱动配置
-    diskConfig, ok := disks[name]
-    if !ok {
+    if !cfg.Has(name) {
         panic("文件管理器[" + name + "]配置不存在")
     }
 
     // 配置
-    diskConf := diskConfig.(map[string]any)
-    diskType := diskConf["type"].(string)
+    diskConf := cfg.Value(name).ToStringMap()
+    diskType := cfg.Value(name + ".type").ToString()
 
     // 获取驱动磁盘
     driver := register.

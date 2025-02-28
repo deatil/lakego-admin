@@ -70,22 +70,23 @@ func Check(name string) *sign.Check {
 }
 
 func GetDriver(name string) (interfaces.Driver, map[string]any) {
-    // 驱动列表
     crypts := config.New("sign").GetStringMap("crypts")
+
+    // 驱动列表
+    cfg := array.ArrayFrom(crypts)
 
     // 转为小写
     name = strings.ToLower(name)
 
     // 获取驱动配置
-    driverConfig, ok := crypts[name]
-    if !ok {
+    if !cfg.Has(name) {
         panic("签名驱动[" + name + "]配置不存在")
     }
 
     // 配置
-    driverConf := driverConfig.(map[string]any)
+    driverConf := cfg.Value(name).ToStringMap()
+    driverType := cfg.Value(name + ".type").ToString()
 
-    driverType := driverConf["type"].(string)
     driver := register.
         NewManagerWithPrefix("sign").
         GetRegister(driverType, driverConf)
