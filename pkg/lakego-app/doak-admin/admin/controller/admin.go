@@ -12,13 +12,14 @@ import (
     "github.com/deatil/lakego-doak/lakego/collection"
     "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade/permission"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
     "github.com/deatil/lakego-doak-admin/admin/model/scope"
-    "github.com/deatil/lakego-doak-admin/admin/permission"
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/support/utils"
+    admin_perm "github.com/deatil/lakego-doak-admin/admin/permission"
     auth_password "github.com/deatil/lakego-doak-admin/admin/password"
     admin_validate "github.com/deatil/lakego-doak-admin/admin/validate/admin"
     admin_repository "github.com/deatil/lakego-doak-admin/admin/repository/admin"
@@ -918,12 +919,18 @@ func (this *Admin) Access(ctx *router.Context) {
         return
     }
 
+    // 旧数据
+    accessResult := make([]map[string]any, 0)
+    model.NewAuthGroupAccess().
+        Where("admin_id = ?", id).
+        Find(&accessResult)
+
     // 模型
-    err2 := model.NewAuthGroupAccess().
+    err = model.NewAuthGroupAccess().
         Where("admin_id = ?", id).
         Delete(&model.AuthGroupAccess{}).
         Error
-    if err2 != nil {
+    if err != nil {
         this.Error(ctx, "账号授权分组失败")
         return
     }
@@ -932,12 +939,10 @@ func (this *Admin) Access(ctx *router.Context) {
     post := make(map[string]any)
     this.ShouldBindJSON(ctx, &post)
 
-    access := post["access"].(string)
-    if access != "" {
+    var getAdminIds = func(access string) []string {
         adminInfo, _ := ctx.Get("admin")
         adminData := adminInfo.(*admin.Admin)
 
-        groupIds := adminData.GetGroupChildrenIds()
         accessIds := strings.Split(access, ",")
 
         newAccessIds := collection.
@@ -947,6 +952,8 @@ func (this *Admin) Access(ctx *router.Context) {
 
         intersectAccess := make([]string, 0)
         if !adminData.IsSuperAdministrator() {
+            groupIds := adminData.GetGroupChildrenIds()
+
             intersectAccess = collection.
                 Collect(groupIds).
                 Intersect(accessIds).
@@ -954,6 +961,13 @@ func (this *Admin) Access(ctx *router.Context) {
         } else {
             intersectAccess = newAccessIds
         }
+
+        return intersectAccess
+    }
+
+    access := post["access"].(string)
+    if access != "" {
+        intersectAccess := getAdminIds(access)
 
         insertData := make([]model.AuthGroupAccess, 0)
         for _, value := range intersectAccess {
@@ -968,6 +982,31 @@ func (this *Admin) Access(ctx *router.Context) {
         }
 
         model.NewDB().Create(&insertData)
+    }
+
+    // ========
+
+    var oldAccessIds []string
+    if len(accessResult) > 0 {
+        oldAccessIds = collection.
+            Collect(accessResult).
+            Pluck("group_id").
+            ToStringArray()
+    }
+
+    var intersectAccess []string
+    if access != "" {
+        intersectAccess = getAdminIds(access)
+    }
+    adds, deletes := utils.FormatAccess(oldAccessIds, intersectAccess)
+
+    perm := permission.New()
+    if len(deletes) > 0 {
+        perm.RemoveRolesForUser(id, deletes)
+    }
+
+    if len(adds) > 0 {
+        perm.AddRolesForUser(id, adds)
     }
 
     this.Success(ctx, "账号授权分组成功")
@@ -985,7 +1024,7 @@ func (this *Admin) Access(ctx *router.Context) {
 // @x-lakego {"slug": "lakego-admin.admin.reset-permission", "sort": "200"}
 func (this *Admin) ResetPermission(ctx *router.Context) {
     // 重设权限
-    res := permission.ResetPermission()
+    res := admin_perm.ResetPermission()
     if res == false {
         this.Error(ctx, "权限同步失败")
         return

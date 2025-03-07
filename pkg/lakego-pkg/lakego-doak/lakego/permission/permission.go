@@ -6,18 +6,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/permission/interfaces"
 )
 
-// 构造函数
-func New(adapter interfaces.Adapter, modelConf string) *Permission {
-    perm := &Permission{}
-
-    perm.WithModelConf(modelConf)
-    perm.WithAdapter(adapter)
-
-    perm.GetEnforcer()
-
-    return perm
-}
-
 /**
  * 权限
  *
@@ -39,6 +27,18 @@ type Permission struct {
 
     // 决策器
     Enforcer *casbin.Enforcer
+}
+
+// 构造函数
+func New(adapter interfaces.Adapter, modelConf string) *Permission {
+    perm := &Permission{}
+
+    perm.WithModelConf(modelConf)
+    perm.WithAdapter(adapter)
+
+    perm.GetEnforcer()
+
+    return perm
 }
 
 /**
@@ -147,6 +147,21 @@ func (this *Permission) DeleteRoleForUser(user string, role string) (bool, error
 }
 
 /**
+ * 批量删除用户角色
+ */
+func (this *Permission) RemoveRolesForUser(user string, roles []string, domain ...string) (bool, error) {
+    var rules [][]string
+
+    for _, role := range roles {
+        rule := []string{user, role}
+        rule = append(rule, domain...)
+        rules = append(rules, rule)
+    }
+
+    return this.GetEnforcer().RemoveGroupingPolicies(rules)
+}
+
+/**
  * 删除用户所有角色
  */
 func (this *Permission) DeleteRolesForUser(user string) (bool, error) {
@@ -168,10 +183,25 @@ func (this *Permission) AddPolicy(user string, ptype string, rule string) (bool,
 }
 
 /**
+ * 批量添加权限
+ */
+func (this *Permission) AddPolicies(rules [][]string) (bool, error) {
+    return this.GetEnforcer().AddPolicies(rules)
+}
+
+/**
  * 删除权限
  */
 func (this *Permission) DeletePolicy(user string, ptype string, rule string) (bool, error) {
     return this.GetEnforcer().DeletePermissionForUser(user, ptype, rule)
+}
+
+/**
+ * 批量删除权限
+ * rules = [[user, ptype, rule]]
+ */
+func (this *Permission) RemovePolicies(rules [][]string) (bool, error) {
+    return this.GetEnforcer().RemovePolicies(rules)
 }
 
 /**

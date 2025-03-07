@@ -90,7 +90,7 @@ func (this ModeCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cipher.NewCFBEncrypter(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewCFBEncrypter(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -101,7 +101,7 @@ func (this ModeCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cipher.NewCFBDecrypter(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewCFBDecrypter(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }
@@ -168,7 +168,7 @@ func (this ModeOFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]by
     iv := opt.Iv()
 
     cryptText := make([]byte, len(plain))
-    cipher.NewOFB(block, iv).XORKeyStream(cryptText, plain)
+    cryptobin_mode.NewOFB(block, iv).XORKeyStream(cryptText, plain)
 
     return cryptText, nil
 }
@@ -179,7 +179,7 @@ func (this ModeOFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]byt
     iv := opt.Iv()
 
     dst := make([]byte, len(data))
-    cipher.NewOFB(block, iv).XORKeyStream(dst, data)
+    cryptobin_mode.NewOFB(block, iv).XORKeyStream(dst, data)
 
     return dst, nil
 }

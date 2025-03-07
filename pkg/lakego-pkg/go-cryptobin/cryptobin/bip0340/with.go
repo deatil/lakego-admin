@@ -1,12 +1,24 @@
 package bip0340
 
 import (
+    "encoding/asn1"
     "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/pubkey/bip0340"
     "github.com/deatil/go-cryptobin/elliptic/secp256k1"
 )
+
+// Add Named Curve
+func (this BIP0340) AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) BIP0340 {
+    bip0340.AddNamedCurve(curve, oid)
+    return this
+}
+
+// Add Named Curve
+func AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) BIP0340 {
+    return defaultBIP0340.AddNamedCurve(curve, oid)
+}
 
 // 设置 PrivateKey
 func (this BIP0340) WithPrivateKey(data *bip0340.PrivateKey) BIP0340 {

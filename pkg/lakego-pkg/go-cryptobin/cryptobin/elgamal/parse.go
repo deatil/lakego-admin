@@ -2,6 +2,7 @@ package elgamal
 
 import (
     "errors"
+    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs1"
@@ -26,15 +27,9 @@ func (this ElGamal) ParsePKCS1PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = elgamal.ParsePKCS1PrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *elgamal.PrivateKey
-    var ok bool
-    if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotElGamalPrivateKey
+    if pkey, err = elgamal.ParsePKCS1PrivateKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -56,15 +51,9 @@ func (this ElGamal) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = elgamal.ParsePKCS1PrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey *elgamal.PrivateKey
-    var ok bool
-    if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotElGamalPrivateKey
+    if pkey, err = elgamal.ParsePKCS1PrivateKey(blockDecrypted); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -81,16 +70,9 @@ func (this ElGamal) ParsePKCS1PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = elgamal.ParsePKCS1PublicKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *elgamal.PublicKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*elgamal.PublicKey); !ok {
-        return nil, ErrNotElGamalPublicKey
+    if pkey, err = elgamal.ParsePKCS1PublicKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -110,16 +92,9 @@ func (this ElGamal) ParsePKCS8PrivateKeyFromPEM(key []byte) (*elgamal.PrivateKey
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = elgamal.ParsePKCS8PrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *elgamal.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotElGamalPrivateKey
+    if pkey, err = elgamal.ParsePKCS8PrivateKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -140,16 +115,9 @@ func (this ElGamal) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password
         return nil, err
     }
 
-    var parsedKey any
-    if parsedKey, err = elgamal.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey *elgamal.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*elgamal.PrivateKey); !ok {
-        return nil, ErrNotElGamalPrivateKey
+    if pkey, err = elgamal.ParsePKCS8PrivateKey(blockDecrypted); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -168,7 +136,11 @@ func (this ElGamal) ParsePKCS8PublicKeyFromPEM(key []byte) (*elgamal.PublicKey, 
     // Parse the key
     var parsedKey any
     if parsedKey, err = elgamal.ParsePKCS8PublicKey(block.Bytes); err != nil {
-        return nil, err
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
     }
 
     var pkey *elgamal.PublicKey

@@ -1,35 +1,48 @@
 package ecdsa
 
 import (
+    "encoding/asn1"
     "crypto/ecdsa"
     "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/tool/hash"
+    pubkey_ecdsa "github.com/deatil/go-cryptobin/pubkey/ecdsa"
 )
 
-// 设置 PrivateKey
+// Add Named Curve
+func (this ECDSA) AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) ECDSA {
+    pubkey_ecdsa.AddNamedCurve(curve, oid)
+    return this
+}
+
+// Add Named Curve
+func AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) ECDSA {
+    return defaultECDSA.AddNamedCurve(curve, oid)
+}
+
+// With PrivateKey
 func (this ECDSA) WithPrivateKey(data *ecdsa.PrivateKey) ECDSA {
     this.privateKey = data
 
     return this
 }
 
-// 设置 PublicKey
+// With PublicKey
 func (this ECDSA) WithPublicKey(data *ecdsa.PublicKey) ECDSA {
     this.publicKey = data
 
     return this
 }
 
-// 设置曲线类型
+// With curve
 func (this ECDSA) WithCurve(curve elliptic.Curve) ECDSA {
     this.curve = curve
 
     return this
 }
 
-// 设置曲线类型
-// 可选参数 [P521 | P384 | P256 | P224]
+// set curve
+// params [P521 | P384 | P256 | P224]
 func (this ECDSA) SetCurve(curve string) ECDSA {
     switch curve {
         case "P521":
@@ -45,14 +58,14 @@ func (this ECDSA) SetCurve(curve string) ECDSA {
     return this
 }
 
-// 设置 hash 类型
+// With hash type
 func (this ECDSA) WithSignHash(hash HashFunc) ECDSA {
     this.signHash = hash
 
     return this
 }
 
-// 设置 hash 类型
+// With hash type
 func (this ECDSA) SetSignHash(name string) ECDSA {
     h, err := hash.GetHash(name)
     if err != nil {
@@ -64,45 +77,45 @@ func (this ECDSA) SetSignHash(name string) ECDSA {
     return this
 }
 
-// 设置 data
+// With data
 func (this ECDSA) WithData(data []byte) ECDSA {
     this.data = data
 
     return this
 }
 
-// 设置 parsedData
+// With parsedData
 func (this ECDSA) WithParsedData(data []byte) ECDSA {
     this.parsedData = data
 
     return this
 }
 
-// 设置编码方式
+// With encoding
 func (this ECDSA) WithEncoding(encoding EncodingType) ECDSA {
     this.encoding = encoding
 
     return this
 }
 
-// 设置 ASN1 编码方式
+// encoding ASN1 encoding type
 func (this ECDSA) WithEncodingASN1() ECDSA {
     return this.WithEncoding(EncodingASN1)
 }
 
-// 设置明文编码方式
+// encoding Bytes encoding type
 func (this ECDSA) WithEncodingBytes() ECDSA {
     return this.WithEncoding(EncodingBytes)
 }
 
-// 设置验证结果
+// WithVerify
 func (this ECDSA) WithVerify(data bool) ECDSA {
     this.verify = data
 
     return this
 }
 
-// 设置错误
+// WithErrors
 func (this ECDSA) WithErrors(errs []error) ECDSA {
     this.Errors = errs
 

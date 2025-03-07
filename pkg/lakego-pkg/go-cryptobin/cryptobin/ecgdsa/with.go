@@ -1,12 +1,24 @@
 package ecgdsa
 
 import (
+    "encoding/asn1"
     "crypto/elliptic"
 
     "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/pubkey/ecgdsa"
     "github.com/deatil/go-cryptobin/elliptic/brainpool"
 )
+
+// Add Named Curve
+func (this ECGDSA) AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) ECGDSA {
+    ecgdsa.AddNamedCurve(curve, oid)
+    return this
+}
+
+// Add Named Curve
+func AddNamedCurve(curve elliptic.Curve, oid asn1.ObjectIdentifier) ECGDSA {
+    return defaultECGDSA.AddNamedCurve(curve, oid)
+}
 
 // 设置 PrivateKey
 func (this ECGDSA) WithPrivateKey(data *ecgdsa.PrivateKey) ECGDSA {

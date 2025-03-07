@@ -6,6 +6,8 @@ import (
     "time"
     "bytes"
     "reflect"
+
+    "github.com/deatil/lakego-doak/lakego/constraints"
 )
 
 // ArrayFill
@@ -259,4 +261,21 @@ func InArray(needle any, haystack any) bool {
     }
 
     return false
+}
+
+func ArrayDiff[T constraints.Ordered](listA []T, listB []T) []T {
+    tmp := make(map[T]struct{}, len(listA))
+    var diffs []T
+
+    for _, ka := range listA {
+        tmp[ka] = struct{}{}
+    }
+
+    for _, kb := range listB {
+        if _, ok := tmp[kb]; !ok {
+            diffs = append(diffs, kb)
+        }
+    }
+
+    return diffs
 }

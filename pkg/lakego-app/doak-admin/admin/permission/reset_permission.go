@@ -40,19 +40,21 @@ func ResetPermission() bool {
 
     groupListMap := model.FormatStructToArrayMap(groupList)
 
+    perm := permission.New()
+
     // 添加权限
     if len(ruleListMap) > 0 {
         for _, rv := range ruleListMap {
             rule := rv["Rule"].(map[string]any)
 
-            permission.New().AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
+            perm.AddPolicy(rv["group_id"].(string), rule["url"].(string), rule["method"].(string))
         }
     }
 
     // 添加权限
     if len(groupListMap) > 0 {
         for _, gv := range groupListMap {
-            permission.New().AddRoleForUser(gv["admin_id"].(string), gv["group_id"].(string))
+            perm.AddRoleForUser(gv["admin_id"].(string), gv["group_id"].(string))
         }
     }
 

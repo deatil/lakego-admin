@@ -2,6 +2,7 @@ package gost
 
 import (
     "errors"
+    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs8"
@@ -53,14 +54,28 @@ func (this Gost) ParsePrivateKeyFromPEMWithPassword(key []byte, password string)
 
 // 解析公钥
 func (this Gost) ParsePublicKeyFromPEM(key []byte) (*gost.PublicKey, error) {
+    var err error
+
     // Parse PEM block
     var block *pem.Block
     if block, _ = pem.Decode(key); block == nil {
         return nil, ErrKeyMustBePEMEncoded
     }
 
-    pkey, err := gost.ParsePublicKey(block.Bytes)
-    if err != nil {
+    // Parse the key
+    var parsedKey any
+    if parsedKey, err = gost.ParsePublicKey(block.Bytes); err != nil {
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
+    }
+
+    var pkey *gost.PublicKey
+    var ok bool
+
+    if pkey, ok = parsedKey.(*gost.PublicKey); !ok {
         return nil, ErrNotGostPublicKey
     }
 

@@ -3,6 +3,7 @@ package ed448
 import (
     "errors"
     "crypto"
+    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs8"
@@ -26,14 +27,8 @@ func (this ED448) ParsePrivateKeyFromPEM(key []byte) (crypto.PrivateKey, error) 
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = ed448.ParsePrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey ed448.PrivateKey
-    var ok bool
-    if pkey, ok = parsedKey.(ed448.PrivateKey); !ok {
+    if pkey, err = ed448.ParsePrivateKey(block.Bytes); err != nil {
         return nil, ErrNotEdPrivateKey
     }
 
@@ -55,14 +50,8 @@ func (this ED448) ParsePrivateKeyFromPEMWithPassword(key []byte, password string
         return nil, err
     }
 
-    var parsedKey any
-    if parsedKey, err = ed448.ParsePrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey ed448.PrivateKey
-    var ok bool
-    if pkey, ok = parsedKey.(ed448.PrivateKey); !ok {
+    if pkey, err = ed448.ParsePrivateKey(blockDecrypted); err != nil {
         return nil, ErrNotEdPrivateKey
     }
 
@@ -82,11 +71,16 @@ func (this ED448) ParsePublicKeyFromPEM(key []byte) (crypto.PublicKey, error) {
     // Parse the key
     var parsedKey any
     if parsedKey, err = ed448.ParsePublicKey(block.Bytes); err != nil {
-        return nil, err
+        if cert, err := x509.ParseCertificate(block.Bytes); err == nil {
+            parsedKey = cert.PublicKey
+        } else {
+            return nil, err
+        }
     }
 
     var pkey ed448.PublicKey
     var ok bool
+
     if pkey, ok = parsedKey.(ed448.PublicKey); !ok {
         return nil, ErrNotEdPublicKey
     }

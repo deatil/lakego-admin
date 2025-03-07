@@ -4,6 +4,8 @@ import (
     "testing"
     "crypto/rand"
 
+    "github.com/deatil/go-cryptobin/elliptic/secp256k1"
+
     cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
 )
 
@@ -317,6 +319,30 @@ func Test_PrivateKey_Bytes(t *testing.T) {
     assertNotEmpty(d, "PrivateKey_Bytes")
 
     xk := New().SetCurve("P256").FromPrivateKeyBytes(d)
+
+    assertNoError(xk.Error(), "PrivateKey_Bytes-xk")
+
+    assertEqual(xk.GetPrivateKey(), obj.GetPrivateKey(), "PrivateKey_Bytes-xk")
+}
+
+func Test_PrivateKey_Bytes_2(t *testing.T) {
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+    assertEqual := cryptobin_test.AssertEqualT(t)
+    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+
+    AddNamedCurve(secp256k1.S256(), secp256k1.OIDNamedCurveSecp256k1)
+
+    obj := New().WithCurve(secp256k1.S256()).GenerateKey()
+
+    assertNoError(obj.Error(), "PrivateKeyD")
+
+    priv := obj.GetPrivateKey()
+
+    d := priv.D.Bytes()
+
+    assertNotEmpty(d, "PrivateKey_Bytes")
+
+    xk := New().WithCurve(secp256k1.S256()).FromPrivateKeyBytes(d)
 
     assertNoError(xk.Error(), "PrivateKey_Bytes-xk")
 

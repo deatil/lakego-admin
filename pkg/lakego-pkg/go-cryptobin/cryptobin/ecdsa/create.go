@@ -3,11 +3,11 @@ package ecdsa
 import (
     "errors"
     "crypto/rand"
-    "crypto/x509"
     "encoding/pem"
 
     "github.com/deatil/go-cryptobin/pkcs1"
     "github.com/deatil/go-cryptobin/pkcs8"
+    "github.com/deatil/go-cryptobin/pubkey/ecdsa"
 )
 
 type (
@@ -50,7 +50,7 @@ func (this ECDSA) CreatePKCS1PrivateKey() ECDSA {
         return this.AppendError(err)
     }
 
-    privateKeyBytes, err := x509.MarshalECPrivateKey(this.privateKey)
+    privateKeyBytes, err := ecdsa.MarshalECPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -85,7 +85,7 @@ func (this ECDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...str
     }
 
     // 生成私钥
-    privateKeyBytes, err := x509.MarshalECPrivateKey(this.privateKey)
+    privateKeyBytes, err := ecdsa.MarshalECPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -116,7 +116,7 @@ func (this ECDSA) CreatePKCS8PrivateKey() ECDSA {
         return this.AppendError(err)
     }
 
-    privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := ecdsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -145,7 +145,7 @@ func (this ECDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any
     }
 
     // 生成私钥
-    privateKeyBytes, err := x509.MarshalPKCS8PrivateKey(this.privateKey)
+    privateKeyBytes, err := ecdsa.MarshalPrivateKey(this.privateKey)
     if err != nil {
         return this.AppendError(err)
     }
@@ -176,7 +176,7 @@ func (this ECDSA) CreatePublicKey() ECDSA {
         return this.AppendError(err)
     }
 
-    publicKeyBytes, err := x509.MarshalPKIXPublicKey(this.publicKey)
+    publicKeyBytes, err := ecdsa.MarshalPublicKey(this.publicKey)
     if err != nil {
         return this.AppendError(err)
     }

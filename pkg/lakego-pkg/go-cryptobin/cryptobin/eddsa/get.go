@@ -16,6 +16,13 @@ func (this EdDSA) GetPrivateKeySeed() []byte {
     return this.privateKey.Seed()
 }
 
+// 获取 PrivateKeySeed
+func (this EdDSA) GetPrivateKeySeedString() string {
+    data := this.privateKey.Seed()
+
+    return encoding.HexEncode(data)
+}
+
 // get PrivateKey data hex string
 func (this EdDSA) GetPrivateKeyString() string {
     data := this.privateKey

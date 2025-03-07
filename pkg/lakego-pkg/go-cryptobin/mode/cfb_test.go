@@ -1,267 +1,110 @@
-package cipher
+package mode_test
 
 import (
+    "bytes"
     "testing"
     "crypto/aes"
+    "crypto/rand"
     "encoding/hex"
 
-    cryptobin_test "github.com/deatil/go-cryptobin/tool/test"
+    cryptobin_mode "github.com/deatil/go-cryptobin/mode"
 )
 
-func fromHex(s string) []byte {
-    h, _ := hex.DecodeString(s)
-    return h
+// cfbTests contains the test vectors from
+// https://csrc.nist.gov/publications/nistpubs/800-38a/sp800-38a.pdf, section
+// F.3.13.
+var cfbTests = []struct {
+    key, iv, plaintext, ciphertext string
+}{
+    {
+        "2b7e151628aed2a6abf7158809cf4f3c",
+        "000102030405060708090a0b0c0d0e0f",
+        "6bc1bee22e409f96e93d7e117393172a",
+        "3b3fd92eb72dad20333449f8e83cfb4a",
+    },
+    {
+        "2b7e151628aed2a6abf7158809cf4f3c",
+        "3B3FD92EB72DAD20333449F8E83CFB4A",
+        "ae2d8a571e03ac9c9eb76fac45af8e51",
+        "c8a64537a0b3a93fcde3cdad9f1ce58b",
+    },
+    {
+        "2b7e151628aed2a6abf7158809cf4f3c",
+        "C8A64537A0B3A93FCDE3CDAD9F1CE58B",
+        "30c81c46a35ce411e5fbc1191a0a52ef",
+        "26751f67a3cbb140b1808cf187a4f4df",
+    },
+    {
+        "2b7e151628aed2a6abf7158809cf4f3c",
+        "26751F67A3CBB140B1808CF187A4F4DF",
+        "f69f2445df4f9b17ad2b417be66c3710",
+        "c04b05357c5d1c0eeac4c66f9ff7f2e6",
+    },
 }
 
-func Test_CFB1(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
+func Test_CFBVectors(t *testing.T) {
+    for i, test := range cfbTests {
+        key, err := hex.DecodeString(test.key)
+        if err != nil {
+            t.Fatal(err)
+        }
+        iv, err := hex.DecodeString(test.iv)
+        if err != nil {
+            t.Fatal(err)
+        }
+        plaintext, err := hex.DecodeString(test.plaintext)
+        if err != nil {
+            t.Fatal(err)
+        }
+        expected, err := hex.DecodeString(test.ciphertext)
+        if err != nil {
+            t.Fatal(err)
+        }
 
-    key := []byte("kkinjkijeel22plo")
-    iv := []byte("11injkijkol22plo")
-    plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
+        block, err := aes.NewCipher(key)
+        if err != nil {
+            t.Fatal(err)
+        }
 
-    c, err := aes.NewCipher(key)
-    assertNoError(err, "Test_CFB1")
+        ciphertext := make([]byte, len(plaintext))
+        cfb := cryptobin_mode.NewCFBEncrypter(block, iv)
+        cfb.XORKeyStream(ciphertext, plaintext)
 
-    mode := NewCFB1Encrypter(c, iv)
-    ciphertext := make([]byte, len(plaintext))
-    mode.XORKeyStream(ciphertext, plaintext)
+        if !bytes.Equal(ciphertext, expected) {
+            t.Errorf("#%d: wrong output: got %x, expected %x", i, ciphertext, expected)
+        }
 
-    mode2 := NewCFB1Decrypter(c, iv)
-    plaintext2 := make([]byte, len(ciphertext))
-    mode2.XORKeyStream(plaintext2, ciphertext)
+        cfbdec := cryptobin_mode.NewCFBDecrypter(block, iv)
+        plaintextCopy := make([]byte, len(ciphertext))
+        cfbdec.XORKeyStream(plaintextCopy, ciphertext)
 
-    assertNotEmpty(plaintext2, "Test_CFB1")
-
-    assertEqual(plaintext2, plaintext, "Test_CFB1-Equal")
-}
-
-func Test_CFB8(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    key := []byte("kkinjkijeel22plo")
-    iv := []byte("11injkijkol22plo")
-    plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
-
-    c, err := aes.NewCipher(key)
-    assertNoError(err, "Test_CFB8")
-
-    mode := NewCFB8Encrypter(c, iv)
-    ciphertext := make([]byte, len(plaintext))
-    mode.XORKeyStream(ciphertext, plaintext)
-
-    mode2 := NewCFB8Decrypter(c, iv)
-    plaintext2 := make([]byte, len(ciphertext))
-    mode2.XORKeyStream(plaintext2, ciphertext)
-
-    assertNotEmpty(plaintext2, "Test_CFB8")
-
-    assertEqual(plaintext2, plaintext, "Test_CFB8-Equal")
-}
-
-func Test_CFB16(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    key := []byte("kkinjkijeel22plo")
-    iv := []byte("11injkijkol22plo")
-    plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
-
-    c, err := aes.NewCipher(key)
-    assertNoError(err, "Test_CFB16")
-
-    mode := NewCFB16Encrypter(c, iv)
-    ciphertext := make([]byte, len(plaintext))
-    mode.XORKeyStream(ciphertext, plaintext)
-
-    mode2 := NewCFB16Decrypter(c, iv)
-    plaintext2 := make([]byte, len(ciphertext))
-    mode2.XORKeyStream(plaintext2, ciphertext)
-
-    assertNotEmpty(plaintext2, "Test_CFB16")
-
-    assertEqual(plaintext2, plaintext, "Test_CFB16-Equal")
-}
-
-func Test_CFB32(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    key := []byte("kkinjkijeel22plo")
-    iv := []byte("11injkijkol22plo")
-    plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
-
-    c, err := aes.NewCipher(key)
-    assertNoError(err, "Test_CFB32")
-
-    mode := NewCFB32Encrypter(c, iv)
-    ciphertext := make([]byte, len(plaintext))
-    mode.XORKeyStream(ciphertext, plaintext)
-
-    mode2 := NewCFB32Decrypter(c, iv)
-    plaintext2 := make([]byte, len(ciphertext))
-    mode2.XORKeyStream(plaintext2, ciphertext)
-
-    assertNotEmpty(plaintext2, "Test_CFB32")
-
-    assertEqual(plaintext2, plaintext, "Test_CFB32-Equal")
-}
-
-func Test_CFB64(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    key := []byte("kkinjkijeel22plo")
-    iv := []byte("11injkijkol22plo")
-    plaintext := []byte("kjinjkijkolkdplokjinjkijkolkdplo")
-
-    c, err := aes.NewCipher(key)
-    assertNoError(err, "Test_CFB64")
-
-    mode := NewCFB64Encrypter(c, iv)
-    ciphertext := make([]byte, len(plaintext))
-    mode.XORKeyStream(ciphertext, plaintext)
-
-    mode2 := NewCFB64Decrypter(c, iv)
-    plaintext2 := make([]byte, len(ciphertext))
-    mode2.XORKeyStream(plaintext2, ciphertext)
-
-    assertNotEmpty(plaintext2, "Test_CFB64")
-
-    assertEqual(plaintext2, plaintext, "Test_CFB64-Equal")
-}
-
-func Test_CFB1_Check(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    for _, td := range testCFBDataCFB1s {
-        t.Run(td.name, func(t *testing.T) {
-            key := td.key
-            iv := td.iv
-            plaintext := td.pt
-            ciphertext := td.ct
-
-            c, err := aes.NewCipher(key)
-            assertNoError(err, "Test_CFB1_Check")
-
-            mode := NewCFB1Encrypter(c, iv)
-            ciphertext2 := make([]byte, len(plaintext))
-            mode.XORKeyStream(ciphertext2, plaintext)
-
-            assertNotEmpty(ciphertext2, "Test_CFB1_Check-en")
-            assertEqual(ciphertext2, ciphertext, "Test_CFB1_Check-En-Equal")
-
-            mode2 := NewCFB1Decrypter(c, iv)
-            plaintext2 := make([]byte, len(ciphertext))
-            mode2.XORKeyStream(plaintext2, ciphertext)
-
-            assertNotEmpty(plaintext2, "Test_CFB1_Check-de")
-            assertEqual(plaintext2, plaintext, "Test_CFB1_Check-de-Equal")
-        })
+        if !bytes.Equal(plaintextCopy, plaintext) {
+            t.Errorf("#%d: wrong plaintext: got %x, expected %x", i, plaintextCopy, plaintext)
+        }
     }
 }
 
-func Test_CFB8_Check(t *testing.T) {
-    assertEqual := cryptobin_test.AssertEqualT(t)
-    assertNoError := cryptobin_test.AssertNoErrorT(t)
-    assertNotEmpty := cryptobin_test.AssertNotEmptyT(t)
-
-    for _, td := range testCFBDataCFB8s {
-        t.Run(td.name, func(t *testing.T) {
-            key := td.key
-            iv := td.iv
-            plaintext := td.pt
-            ciphertext := td.ct
-
-            c, err := aes.NewCipher(key)
-            assertNoError(err, "Test_CFB8_Check")
-
-            mode := NewCFB8Encrypter(c, iv)
-            ciphertext2 := make([]byte, len(plaintext))
-            mode.XORKeyStream(ciphertext2, plaintext)
-
-            assertNotEmpty(ciphertext2, "Test_CFB8_Check-en")
-            assertEqual(ciphertext2, ciphertext, "Test_CFB8_Check-En-Equal")
-
-            mode2 := NewCFB8Decrypter(c, iv)
-            plaintext2 := make([]byte, len(ciphertext))
-            mode2.XORKeyStream(plaintext2, ciphertext)
-
-            assertNotEmpty(plaintext2, "Test_CFB8_Check-de")
-            assertEqual(plaintext2, plaintext, "Test_CFB8_Check-de-Equal")
-        })
+func Test_CFBInverse(t *testing.T) {
+    block, err := aes.NewCipher(commonKey128)
+    if err != nil {
+        t.Error(err)
+        return
     }
-}
 
-type testCFBData struct {
-    name string
-    key []byte
-    iv []byte
-    pt []byte
-    ct []byte
-}
+    plaintext := []byte("this is the plaintext. this is the plaintext.")
+    iv := make([]byte, block.BlockSize())
+    rand.Reader.Read(iv)
+    cfb := cryptobin_mode.NewCFBEncrypter(block, iv)
+    ciphertext := make([]byte, len(plaintext))
+    copy(ciphertext, plaintext)
+    cfb.XORKeyStream(ciphertext, ciphertext)
 
-var testCFBDataCFB1s = []testCFBData{
-    // aes-128-cfb1
-    // openssl_encrypt($ciphertext, 'aes-128-cfb1', $key, OPENSSL_RAW_DATA, $iv)
-    {
-        name: "aes-128-cfb1",
-        key: []byte("1234567890123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("30e3dc321759cf32de8e61f8d8ec1f06815579015709cf431d90d1cca05d325a"),
-    },
-    // aes-192-cfb1
-    {
-        name: "aes-192-cfb1",
-        key: []byte("123456789012345678123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("44720dd655b839000c450d559352f9c28387a548aacb381558085dc58a22131c"),
-    },
-    // aes-256-cfb1
-    {
-        name: "aes-256-cfb1",
-        key: []byte("12345678901234561234567890123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("b29d0ced46b5748ca45f46b256df26599168563ddc5107fc2200a6e91c43faa5"),
-    },
-}
+    cfbdec := cryptobin_mode.NewCFBDecrypter(block, iv)
+    plaintextCopy := make([]byte, len(plaintext))
+    copy(plaintextCopy, ciphertext)
+    cfbdec.XORKeyStream(plaintextCopy, plaintextCopy)
 
-var testCFBDataCFB8s = []testCFBData{
-    // aes-128-cfb8
-    // openssl_encrypt($ciphertext, 'aes-128-cfb8', $key, OPENSSL_RAW_DATA, $iv)
-    {
-        name: "aes-128-cfb8",
-        key: []byte("1234567890123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("44c879d38fe1213291b16d4646aed6c29dd8446053b1b717b88e1a57264cbdd9"),
-    },
-    // aes-192-cfb8
-    {
-        name: "aes-192-cfb8",
-        key: []byte("123456789012345678123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("79cfca16c01c3bc03c363d6a2dafe4bac54cc1f38df5c9b7822faa83742bdf76"),
-    },
-    // aes-256-cfb8
-    {
-        name: "aes-256-cfb8",
-        key: []byte("12345678901234561234567890123456"),
-        iv: []byte("1234567890123456"),
-        pt: []byte("1234567890123456kjinjkijkolkdplo"),
-        ct: fromHex("c224e5020f80b79bff4da58e747fef1d240f315430af0863d3aceb488c4d3df7"),
-    },
+    if !bytes.Equal(plaintextCopy, plaintext) {
+        t.Errorf("got: %x, want: %x", plaintextCopy, plaintext)
+    }
 }

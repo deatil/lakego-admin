@@ -27,16 +27,9 @@ func (this ECGDSA) ParsePKCS1PrivateKeyFromPEM(key []byte) (*ecgdsa.PrivateKey, 
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = ecgdsa.ParseECPrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *ecgdsa.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*ecgdsa.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = ecgdsa.ParseECPrivateKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -58,16 +51,9 @@ func (this ECGDSA) ParsePKCS1PrivateKeyFromPEMWithPassword(key []byte, password 
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = ecgdsa.ParseECPrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey *ecgdsa.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*ecgdsa.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = ecgdsa.ParseECPrivateKey(blockDecrypted); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -86,16 +72,9 @@ func (this ECGDSA) ParsePKCS8PrivateKeyFromPEM(key []byte) (*ecgdsa.PrivateKey, 
     }
 
     // Parse the key
-    var parsedKey any
-    if parsedKey, err = ecgdsa.ParsePrivateKey(block.Bytes); err != nil {
-        return nil, err
-    }
-
     var pkey *ecgdsa.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*ecgdsa.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = ecgdsa.ParsePrivateKey(block.Bytes); err != nil {
+        return nil, err
     }
 
     return pkey, nil
@@ -116,16 +95,9 @@ func (this ECGDSA) ParsePKCS8PrivateKeyFromPEMWithPassword(key []byte, password 
         return nil, err
     }
 
-    var parsedKey any
-    if parsedKey, err = ecgdsa.ParsePrivateKey(blockDecrypted); err != nil {
-        return nil, err
-    }
-
     var pkey *ecgdsa.PrivateKey
-    var ok bool
-
-    if pkey, ok = parsedKey.(*ecgdsa.PrivateKey); !ok {
-        return nil, ErrNotECPrivateKey
+    if pkey, err = ecgdsa.ParsePrivateKey(blockDecrypted); err != nil {
+        return nil, err
     }
 
     return pkey, nil

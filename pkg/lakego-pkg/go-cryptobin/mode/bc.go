@@ -1,4 +1,4 @@
-package cipher
+package mode
 
 import (
     "crypto/cipher"
@@ -33,7 +33,7 @@ type bcEncAble interface {
 
 func NewBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cryptobin/bc: IV length must equal block size")
+        panic("go-cryptobin/bc: IV length must equal block size")
     }
 
     if bc, ok := b.(bcEncAble); ok {

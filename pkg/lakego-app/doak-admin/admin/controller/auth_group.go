@@ -9,8 +9,10 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/collection"
+    "github.com/deatil/lakego-doak/lakego/facade/permission"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
+    "github.com/deatil/lakego-doak-admin/admin/support/utils"
     authGroupValidate "github.com/deatil/lakego-doak-admin/admin/validate/authgroup"
     authGroupRepository "github.com/deatil/lakego-doak-admin/admin/repository/authgroup"
 )
@@ -614,22 +616,25 @@ func (this *AuthGroup) Access(ctx *router.Context) {
     }
 
     // 查询
-    result := map[string]any{}
+    groupInfo := new(model.AuthGroup)
     err := model.NewAuthGroup().
         Where("id = ?", id).
-        First(&result).
+        Preload("Rules").
+        First(&groupInfo).
         Error
-    if err != nil || len(result) < 1 {
+    if err != nil {
         this.Error(ctx, "信息不存在")
         return
     }
 
+    result := model.FormatStructToMap(groupInfo)
+
     // 模型
-    err2 := model.NewAuthRuleAccess().
+    err = model.NewAuthRuleAccess().
         Where("group_id = ?", id).
         Delete(&model.AuthRuleAccess{}).
         Error
-    if err2 != nil {
+    if err != nil {
         this.Error(ctx, "授权失败")
         return
     }
@@ -642,7 +647,6 @@ func (this *AuthGroup) Access(ctx *router.Context) {
     access := post["access"].(string)
     if access != "" {
         accessIds := strings.Split(access, ",")
-
         newAccessIds := collection.
             Collect(accessIds).
             Unique().
@@ -661,6 +665,63 @@ func (this *AuthGroup) Access(ctx *router.Context) {
         }
 
         model.NewDB().Create(&insertData)
+    }
+
+    // ========
+
+    var newAccessIds []string
+    if access != "" {
+        newAccessIds = collection.
+            Collect(strings.Split(access, ",")).
+            Unique().
+            ToStringArray()
+    }
+
+    var rulesResult []any
+    if rs, ok := result["Rules"].([]any); ok {
+        rulesResult = rs
+    }
+
+    var oldAccessIds []string
+    if len(rulesResult) > 0 {
+        oldAccessIds = collection.
+            Collect(rulesResult).
+            Pluck("id").
+            ToStringArray()
+    }
+
+    adds, deletes := utils.FormatAccess(oldAccessIds, newAccessIds)
+
+    perm := permission.New()
+    if len(deletes) > 0 {
+        var rules [][]string
+        for _, rv := range rulesResult {
+            rule := rv.(map[string]any)
+            for _, delrule := range deletes {
+                if rule["id"].(string) == delrule {
+                    rules = append(rules, []string{id, rule["url"].(string), rule["method"].(string)})
+                }
+            }
+        }
+
+        perm.RemovePolicies(rules)
+    }
+
+    addResult := make([]map[string]any, 0)
+    model.NewAuthRule().
+        Where("id in ?", adds).
+        Find(&addResult)
+
+    if len(adds) > 0 {
+        var rules [][]string
+        for _, rv := range addResult {
+            url := rv["url"].(string)
+            if url != "#" {
+                rules = append(rules, []string{id, url, rv["method"].(string)})
+            }
+        }
+
+        perm.AddPolicies(rules)
     }
 
     this.Success(ctx, "授权成功")

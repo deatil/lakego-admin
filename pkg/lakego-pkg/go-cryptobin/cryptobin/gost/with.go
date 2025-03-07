@@ -1,9 +1,22 @@
 package gost
 
 import (
+    "encoding/asn1"
+
     "github.com/deatil/go-cryptobin/tool/hash"
     "github.com/deatil/go-cryptobin/pubkey/gost"
 )
+
+// Add Named Curve
+func (this Gost) AddNamedCurve(curve *gost.Curve, oid asn1.ObjectIdentifier) Gost {
+    gost.AddNamedCurve(curve, oid)
+    return this
+}
+
+// Add Named Curve
+func AddNamedCurve(curve *gost.Curve, oid asn1.ObjectIdentifier) Gost {
+    return defaultGost.AddNamedCurve(curve, oid)
+}
 
 // 设置 PrivateKey
 func (this Gost) WithPrivateKey(data *gost.PrivateKey) Gost {
