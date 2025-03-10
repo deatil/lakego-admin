@@ -6,18 +6,12 @@ import(
     iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
-// 添加服务提供者
-func AppendProvider(f func() iprovider.ServiceProvider) {
-    defaultRegister.Append(f)
-}
-
-// 获取全部添加的服务提供者
-func GetAllProvider() []func() iprovider.ServiceProvider {
-    return defaultRegister.GetAll()
-}
-
 // 默认
 var defaultRegister = NewRegister()
+
+func DefaultRegister() *Register {
+    return defaultRegister
+}
 
 /**
  * 注册器
@@ -49,8 +43,18 @@ func (this *Register) Append(f func() iprovider.ServiceProvider) {
     this.providers = append(this.providers, f)
 }
 
+// 添加服务提供者
+func AppendProvider(f func() iprovider.ServiceProvider) {
+    defaultRegister.Append(f)
+}
+
 // 获取全部
 func (this *Register) GetAll() []func() iprovider.ServiceProvider {
     return this.providers
+}
+
+// 获取全部添加的服务提供者
+func GetAllProvider() []func() iprovider.ServiceProvider {
+    return defaultRegister.GetAll()
 }
 
