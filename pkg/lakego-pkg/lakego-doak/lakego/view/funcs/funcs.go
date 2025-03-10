@@ -5,19 +5,7 @@ import(
 )
 
 // 默认
-var defaultFns *Funcs
-
-// 初始化
-func init() {
-    defaultFns = New()
-}
-
-// 构造函数
-func New() *Funcs {
-    return &Funcs{
-        fns: make(FuncMap),
-    }
-}
+var defaultFns = New()
 
 type (
     // 方法列表
@@ -36,6 +24,13 @@ type Funcs struct {
 
     // 已注册函数
     fns FuncMap
+}
+
+// 构造函数
+func New() *Funcs {
+    return &Funcs{
+        fns: make(FuncMap),
+    }
 }
 
 // 添加函数

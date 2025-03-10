@@ -5,19 +5,12 @@ import (
     "io"
     "strings"
     "mime/multipart"
-    
+
     "github.com/deatil/go-validator/validator"
     "github.com/deatil/lakego-filesystem/filesystem"
-    
+
     "github.com/deatil/lakego-doak/lakego/storage"
 )
-
-// 上传
-func New() *Upload {
-    return &Upload{
-        storagePermission: "",
-    }
-}
 
 /**
  * 上传
@@ -43,6 +36,13 @@ type Upload struct {
 
     // 权限，'private' or 'public'
     storagePermission string
+}
+
+// 上传
+func New() *Upload {
+    return &Upload{
+        storagePermission: "",
+    }
 }
 
 // 设置文件信息

@@ -19,11 +19,7 @@ type (
 )
 
 // 默认
-var defaultRegister *Register
-
-func init() {
-    defaultRegister = New()
-}
+var defaultRegister = New()
 
 /**
  * 注册器

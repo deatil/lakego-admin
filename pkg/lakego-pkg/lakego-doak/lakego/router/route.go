@@ -1,11 +1,10 @@
 package router
 
-import (
-    "sync"
-)
+var defaultRoute = NewRoute()
 
-var instanceRoute *Route
-var onceRoute sync.Once
+func DefaultRoute() *Route {
+    return defaultRoute
+}
 
 /**
  * 缓存路由信息
@@ -19,11 +18,7 @@ type Route struct {
 }
 
 func NewRoute() *Route {
-    onceRoute.Do(func() {
-        instanceRoute = &Route{}
-    })
-
-    return instanceRoute
+    return &Route{}
 }
 
 // 设置

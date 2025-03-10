@@ -5,21 +5,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/database/interfaces"
 )
 
-/**
- * 使用
- */
-func New(driver interfaces.Driver, conf ...ConfigMap) *Database {
-    d := &Database{
-        driver: driver,
-    }
-
-    if len(conf) > 0{
-        d.config = conf[0]
-    }
-
-    return d
-}
-
 type (
     // 配置 map
     ConfigMap = map[string]any
@@ -37,6 +22,21 @@ type Database struct {
 
     // 驱动
     driver interfaces.Driver
+}
+
+/**
+ * 使用
+ */
+func New(driver interfaces.Driver, conf ...ConfigMap) *Database {
+    d := &Database{
+        driver: driver,
+    }
+
+    if len(conf) > 0{
+        d.config = conf[0]
+    }
+
+    return d
 }
 
 // 设置配置

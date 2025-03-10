@@ -18,25 +18,6 @@ const (
     SATURDAY  = "6";
 )
 
-// 构造函数
-func New() *Schedule {
-    logger := PrintfLogger(NewLogger())
-
-    cron := NewCron(
-        WithSeconds(),
-        WithChain(Recover(logger)),
-    )
-
-    schedule := &Schedule{
-        Cron:    cron,
-        entries: make([]*Entry, 0),
-        cronIDs: make(map[string]CronEntryID),
-        stoped:  make(map[string]CronEntry),
-    }
-
-    return schedule
-}
-
 /**
  * 计划任务
  *
@@ -58,6 +39,25 @@ type Schedule struct {
 
     // 已停止的计划任务
     stoped map[string]CronEntry
+}
+
+// 构造函数
+func New() *Schedule {
+    logger := PrintfLogger(NewLogger())
+
+    cron := NewCron(
+        WithSeconds(),
+        WithChain(Recover(logger)),
+    )
+
+    schedule := &Schedule{
+        Cron:    cron,
+        entries: make([]*Entry, 0),
+        cronIDs: make(map[string]CronEntryID),
+        stoped:  make(map[string]CronEntry),
+    }
+
+    return schedule
 }
 
 // 添加计划任务

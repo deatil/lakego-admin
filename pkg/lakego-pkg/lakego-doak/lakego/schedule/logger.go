@@ -4,11 +4,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/facade"
 )
 
-// 构造函数
-func NewLogger() Logger {
-    return Logger{}
-}
-
 /**
  * 日志
  *
@@ -16,6 +11,11 @@ func NewLogger() Logger {
  * @author deatil
  */
 type Logger struct {}
+
+// 构造函数
+func NewLogger() Logger {
+    return Logger{}
+}
 
 // 实现接口
 func (this Logger) Printf(msg string, v ...any) {

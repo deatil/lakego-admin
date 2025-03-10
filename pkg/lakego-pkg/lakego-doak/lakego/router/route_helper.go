@@ -4,28 +4,28 @@ package router
  * 中间件别名
  */
 func AliasMiddleware(name string, middleware any) {
-    InstanceMiddleware().AliasMiddleware(name, middleware)
+    DefaultMiddleware().AliasMiddleware(name, middleware)
 }
 
 /**
  * 中间件分组
  */
 func MiddlewareGroup(name string, middlewares []any) {
-    InstanceMiddleware().MiddlewareGroup(name, middlewares)
+    DefaultMiddleware().MiddlewareGroup(name, middlewares)
 }
 
 /**
  * 添加全局中间件
  */
 func PushMiddleware(middleware any) {
-    InstanceMiddleware().PushMiddleware(middleware)
+    DefaultMiddleware().PushMiddleware(middleware)
 }
 
 /**
  * 获取中间件列表
  */
 func GetMiddlewares(name string) (handlerFuncs []HandlerFunc) {
-    m := InstanceMiddleware()
+    m := DefaultMiddleware()
 
     middlewares := m.GetMiddlewareList(name)
 
@@ -45,7 +45,7 @@ func GetMiddlewares(name string) (handlerFuncs []HandlerFunc) {
  * 获取全局中间件列表
  */
 func GetGlobalMiddlewares() (handlerFuncs []HandlerFunc) {
-    m := InstanceMiddleware()
+    m := DefaultMiddleware()
 
     middlewares := m.GetGlobalMiddlewareList()
 

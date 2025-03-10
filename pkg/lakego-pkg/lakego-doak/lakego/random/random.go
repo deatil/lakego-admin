@@ -6,6 +6,11 @@ import (
     "math/rand"
 )
 
+// 随机数字符
+func String(length uint8, charsets ...string) string {
+    return New().String(length, charsets...)
+}
+
 // Charsets
 const (
     Uppercase    = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -17,16 +22,6 @@ const (
     Hex          = Numeric + "abcdef"
 )
 
-// 随机数字符
-func String(length uint8, charsets ...string) string {
-    return New().String(length, charsets...)
-}
-
-func New() *Random {
-    rand.Seed(time.Now().UnixNano())
-    return new(Random)
-}
-
 /**
  * 随机数
  *
@@ -34,6 +29,11 @@ func New() *Random {
  * @author deatil
  */
 type Random struct {}
+
+func New() *Random {
+    rand.Seed(time.Now().UnixNano())
+    return new(Random)
+}
 
 func (*Random) String(length uint8, charsets ...string) string {
     charset := strings.Join(charsets, "")

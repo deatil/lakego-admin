@@ -5,13 +5,6 @@ import(
     "reflect"
 )
 
-// 构造函数
-func NewCallable(fn any) Callable {
-    callable := Callable{}
-
-    return callable.Parse(fn)
-}
-
 /**
  * 调用容器
  *
@@ -25,6 +18,13 @@ type Callable struct {
     arguments []reflect.Type
     returns   []reflect.Type
     Error     error
+}
+
+// 构造函数
+func NewCallable(fn any) Callable {
+    callable := Callable{}
+
+    return callable.Parse(fn)
 }
 
 // 调用

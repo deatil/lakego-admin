@@ -10,19 +10,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/cache/interfaces"
 )
 
-// 创建
-func New(driver interfaces.Driver, conf ...Config) *Cache {
-    cache := &Cache{
-        driver: driver,
-    }
-
-    if len(conf) > 0{
-        cache.config = conf[0]
-    }
-
-    return cache
-}
-
 type (
     // 配置
     Config = map[string]any
@@ -43,6 +30,19 @@ type Cache struct {
 
     // 驱动
     driver interfaces.Driver
+}
+
+// 创建
+func New(driver interfaces.Driver, conf ...Config) *Cache {
+    cache := &Cache{
+        driver: driver,
+    }
+
+    if len(conf) > 0{
+        cache.config = conf[0]
+    }
+
+    return cache
 }
 
 // 设置驱动

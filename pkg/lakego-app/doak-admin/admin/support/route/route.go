@@ -8,7 +8,7 @@ import (
 // 路由
 func AddRoute(f func(rg *router.RouterGroup)) {
     // 路由
-    engine := router.NewRoute().Get()
+    engine := router.DefaultRoute().Get()
 
     // 配置
     conf := config.New("admin")

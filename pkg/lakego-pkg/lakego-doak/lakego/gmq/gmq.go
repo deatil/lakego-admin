@@ -31,6 +31,20 @@ type GMQ struct {
     running bool
 }
 
+// 新建GMQ
+func NewGMQ() *GMQ {
+    return &GMQ{
+        payload: make(chan Payload),
+        quit:    make(chan bool),
+        handles: make(map[string][]Handler),
+    }
+}
+
+// 构造函数
+func New() *GMQ {
+    return NewGMQ()
+}
+
 // 发布
 func (this *GMQ) Publish(topic string, data any) error {
     if !this.running {
@@ -90,13 +104,4 @@ func (this *GMQ) Run() {
 // 关闭
 func (this *GMQ) Close()  {
     this.quit <- true
-}
-
-// 新建GMQ
-func NewGMQ() *GMQ {
-    return &GMQ{
-        payload: make(chan Payload),
-        quit:    make(chan bool),
-        handles: make(map[string][]Handler),
-    }
 }

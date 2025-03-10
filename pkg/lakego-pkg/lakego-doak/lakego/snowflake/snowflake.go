@@ -33,19 +33,6 @@ func Make(workerid int64) (int64, error) {
     return id, nil
 }
 
-// 构造函数
-func New(workerid int64) (*Snowflake, error) {
-    if workerid < 0 || workerid > workeridMax {
-        return nil, errors.New("工作ID(workerid)必须在 0 和 1023 之间")
-    }
-
-    return &Snowflake{
-        timestamp: 0,
-        workerid:  workerid,
-        sequence:  0,
-    }, nil
-}
-
 const (
     twepoch        = int64(1483228800000)             // 开始时间截 (2017-01-01)
 
@@ -71,6 +58,19 @@ type Snowflake struct {
     workerid  int64
     sequence  int64
     timestamp int64
+}
+
+// 构造函数
+func New(workerid int64) (*Snowflake, error) {
+    if workerid < 0 || workerid > workeridMax {
+        return nil, errors.New("工作ID(workerid)必须在 0 和 1023 之间")
+    }
+
+    return &Snowflake{
+        timestamp: 0,
+        workerid:  workerid,
+        sequence:  0,
+    }, nil
 }
 
 // 生产雪花 ID

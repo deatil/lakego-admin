@@ -23,12 +23,17 @@ type DI struct {
 // 单例模式
 func New() *DI {
     once.Do(func() {
-        instance = &DI{
-            container: dig.New(),
-        }
+        instance = NewDI()
     })
 
     return instance
+}
+
+// 构造函数
+func NewDI() *DI {
+    return &DI{
+        container: dig.New(),
+    }
 }
 
 // 设置容器

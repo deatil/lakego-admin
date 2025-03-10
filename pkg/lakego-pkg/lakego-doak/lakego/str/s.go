@@ -7,10 +7,6 @@ import (
     "encoding/json"
 )
 
-func NewS(b []byte) S {
-    return *(*S)(unsafe.Pointer(&b))
-}
-
 /**
  * 字符串类型转换
  *
@@ -18,6 +14,10 @@ func NewS(b []byte) S {
  * @author deatil
  */
 type S string
+
+func NewS(b []byte) S {
+    return *(*S)(unsafe.Pointer(&b))
+}
 
 func (this S) String() string {
     return string(this)

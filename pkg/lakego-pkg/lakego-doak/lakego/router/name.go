@@ -4,12 +4,15 @@ import (
     "sync"
 )
 
-var instanceName *RouteName
-var onceName sync.Once
+var defaultName = NewName()
 
 // 单例
 func Name(name string) *RouteName {
-    return NewName().SetName(name)
+    return defaultName.SetName(name)
+}
+
+func DefaultName() *RouteName {
+    return defaultName
 }
 
 // 别名信息
@@ -51,13 +54,9 @@ type RouteName struct {
 
 // 单例
 func NewName() *RouteName {
-    onceName.Do(func() {
-        instanceName = &RouteName{
-            routes: make(RouterInfoMap),
-        }
-    })
-
-    return instanceName
+    return &RouteName{
+        routes: make(RouterInfoMap),
+    }
 }
 
 // 设置
@@ -75,7 +74,7 @@ func (this *RouteName) SetName(name string) *RouteName {
     this.mu.Lock()
     defer this.mu.Unlock()
 
-    route := NewRoute().GetLastRoute()
+    route := DefaultRoute().GetLastRoute()
 
     this.routes[name] = RouterInfo{
         route,

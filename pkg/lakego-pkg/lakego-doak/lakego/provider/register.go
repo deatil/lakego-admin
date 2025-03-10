@@ -3,39 +3,21 @@ package provider
 import(
     "sync"
 
-    providerInterface "github.com/deatil/lakego-doak/lakego/provider/interfaces"
+    iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
 
-// 锁
-var lock = new(sync.RWMutex)
-
-var instance *Register
-var once sync.Once
-
 // 添加服务提供者
-func AppendProvider(f func() providerInterface.ServiceProvider) {
-    NewRegister().Append(f)
+func AppendProvider(f func() iprovider.ServiceProvider) {
+    defaultRegister.Append(f)
 }
 
 // 获取全部添加的服务提供者
-func GetAllProvider() []func() providerInterface.ServiceProvider {
-    return NewRegister().GetAll()
+func GetAllProvider() []func() iprovider.ServiceProvider {
+    return defaultRegister.GetAll()
 }
 
-/**
- * 单例模式
- */
-func NewRegister() *Register {
-    once.Do(func() {
-        providers := make([]func() providerInterface.ServiceProvider, 0)
-
-        instance = &Register{
-            providers: providers,
-        }
-    })
-
-    return instance
-}
+// 默认
+var defaultRegister = NewRegister()
 
 /**
  * 注册器
@@ -44,21 +26,31 @@ func NewRegister() *Register {
  * @author deatil
  */
 type Register struct {
-    providers []func() providerInterface.ServiceProvider
+    // 读写锁
+    mu sync.RWMutex
+
+    // 服务提供者
+    providers []func() iprovider.ServiceProvider
+}
+
+// 构造函数
+func NewRegister() *Register {
+    reg := new(Register)
+    reg.providers = make([]func() iprovider.ServiceProvider, 0)
+
+    return reg
 }
 
 // 注册
-func (this *Register) Append(f func() providerInterface.ServiceProvider) {
-    lock.Lock()
-    defer lock.Unlock()
+func (this *Register) Append(f func() iprovider.ServiceProvider) {
+    this.mu.Lock()
+    defer this.mu.Unlock()
 
     this.providers = append(this.providers, f)
 }
 
-/**
- * 获取全部
- */
-func (this *Register) GetAll() []func() providerInterface.ServiceProvider {
+// 获取全部
+func (this *Register) GetAll() []func() iprovider.ServiceProvider {
     return this.providers
 }
 

@@ -12,21 +12,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/permission/adapter"
 )
 
-// 自定义模型
-func New(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
-    adapter := &Adapter{}
-
-    if len(rule) > 0 {
-        adapter.WithModel(rule[0])
-    }
-
-    model := adapter.getDefaultModel()
-    adapter.db = db.Scopes(adapter.ruleTable(model)).
-        Session(&gorm.Session{Context: db.Statement.Context})
-
-    return adapter, nil
-}
-
 // 规则模型
 type Rules struct {
     ID    string `gorm:"primaryKey;autoIncrement:false;size:36"`
@@ -75,6 +60,21 @@ type Adapter struct {
 
     db         *gorm.DB
     isFiltered bool
+}
+
+// 自定义模型
+func New(db *gorm.DB, rule ...*Rules) (*Adapter, error) {
+    adapter := &Adapter{}
+
+    if len(rule) > 0 {
+        adapter.WithModel(rule[0])
+    }
+
+    model := adapter.getDefaultModel()
+    adapter.db = db.Scopes(adapter.ruleTable(model)).
+        Session(&gorm.Session{Context: db.Statement.Context})
+
+    return adapter, nil
 }
 
 // 默认模型

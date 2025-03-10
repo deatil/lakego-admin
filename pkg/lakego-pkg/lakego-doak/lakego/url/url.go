@@ -4,6 +4,11 @@ import (
     "net/url"
 )
 
+type URL struct {
+    url   *url.URL
+    query url.Values
+}
+
 // 解析链接
 func ParseURL(rawURL string) *URL {
     u := &URL{}
@@ -11,11 +16,6 @@ func ParseURL(rawURL string) *URL {
     u.query = u.url.Query()
 
     return u
-}
-
-type URL struct {
-    url   *url.URL
-    query url.Values
 }
 
 func (this *URL) AddQuery(name, value string) *URL {

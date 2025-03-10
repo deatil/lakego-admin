@@ -10,9 +10,7 @@ import (
  * @create 2021-9-9
  * @author deatil
  */
-type Adapter struct {
-    //
-}
+type Adapter struct {}
 
 func (this *Adapter) LoadPolicy(model model.Model) error {
     panic("接口没有被实现")

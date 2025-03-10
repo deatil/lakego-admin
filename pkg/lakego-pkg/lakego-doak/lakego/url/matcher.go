@@ -7,16 +7,16 @@ import (
 // 默认分隔符
 const DefaultPathSeparator = "/"
 
+// 匹配
+type Matcher struct {
+    PathSeparator string
+}
+
 // 构造函数
 func NewMatcher() *Matcher {
     return &Matcher{
         PathSeparator: DefaultPathSeparator,
     }
-}
-
-// 匹配
-type Matcher struct {
-    PathSeparator string
 }
 
 func (this *Matcher) Match(pattern string, path string) bool {

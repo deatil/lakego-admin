@@ -4,13 +4,6 @@ import (
     "strings"
 )
 
-// 构造函数
-func NewEntry() *Entry {
-    return &Entry{
-        Spec: "* * * * * *",
-    }
-}
-
 /**
  * 计划任务内容，任务时间用的最低秒
  *
@@ -29,6 +22,13 @@ type Entry struct {
 
     // 当前任务名称
     Name string
+}
+
+// 构造函数
+func NewEntry() *Entry {
+    return &Entry{
+        Spec: "* * * * * *",
+    }
 }
 
 // 设置计划时间

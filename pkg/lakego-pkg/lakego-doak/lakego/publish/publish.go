@@ -1,29 +1,21 @@
 package publish
 
 import (
-    "sync"
     "reflect"
 )
 
-var instance *Publish
-var once sync.Once
-
 // 单例
 func Instance() *Publish {
-    once.Do(func() {
-        instance = New()
-    })
-
-    return instance
+    return defaultPublish
 }
 
-// 构造函数
-func New() *Publish {
-    return &Publish{
-        Publishes: make(PublishesMap),
-        PublishGroups: make(PublishGroupsMap),
-    }
+// 默认
+func Default() *Publish {
+    return defaultPublish
 }
+
+// 默认
+var defaultPublish = New()
 
 type (
     // 要推送的目录
@@ -45,6 +37,14 @@ type Publish struct {
 
     // 分组
     PublishGroups PublishGroupsMap
+}
+
+// 构造函数
+func New() *Publish {
+    return &Publish{
+        Publishes: make(PublishesMap),
+        PublishGroups: make(PublishGroupsMap),
+    }
 }
 
 // 添加推送

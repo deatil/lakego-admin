@@ -37,7 +37,7 @@ var ImportRouteCmd = &command.Command{
 
 // 导入路由信息
 func ImportRoute() {
-    routes := router.NewRoute().GetRoutes()
+    routes := router.DefaultRoute().GetRoutes()
 
     // 路由前缀
     group := config.New("admin").GetString("Route.Prefix")

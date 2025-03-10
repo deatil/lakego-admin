@@ -398,7 +398,7 @@ func (this *App) runApp() {
     r.Use(recovery.Handler())
 
     // 缓存路由信息
-    router.NewRoute().With(r)
+    router.DefaultRoute().With(r)
 
     // 绑定路由
     this.route = r

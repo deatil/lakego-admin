@@ -12,11 +12,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/logger/driver/logrus/formatter"
 )
 
-// 构造方法
-func New() *Logrus {
-    return &Logrus{}
-}
-
 type (
     // 日志额外数据
     Fields = logrus.Fields
@@ -37,6 +32,11 @@ type (
 type Logrus struct {
     // 配置
     Config map[string]any
+}
+
+// 构造方法
+func New() *Logrus {
+    return &Logrus{}
 }
 
 // 设置配置

@@ -1,25 +1,19 @@
 package container
 
 import (
-    "sync"
     "strings"
 )
 
-var instance *Container
-var once sync.Once
+var defaultContainer = New()
 
 // 单例
 func Instance() *Container {
-    once.Do(func() {
-        instance = New()
-    })
-
-    return instance
+    return defaultContainer
 }
 
-// 构造函数
-func New() *Container {
-    return &Container{}
+// 默认
+func Default() *Container {
+    return defaultContainer
 }
 
 /**
@@ -31,6 +25,11 @@ func New() *Container {
 type Container struct {
     // sync 数据
     SyncMap sync.Map
+}
+
+// 构造函数
+func New() *Container {
+    return &Container{}
 }
 
 // 键值对的形式将代码注册到容器
