@@ -15,6 +15,7 @@ func ValidateInt(data any, key string, min, max int, def ...int) (int, error) {
     if ldef > 0 {
         defVal = def[0]
     }
+
     val, err := checkExist(data, key, defVal)
     if err != nil {
         return 0, err

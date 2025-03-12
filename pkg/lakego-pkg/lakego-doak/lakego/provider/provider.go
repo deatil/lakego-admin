@@ -8,7 +8,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/publish"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/config/adapter"
     path_tool "github.com/deatil/lakego-doak/lakego/path"
     iapp "github.com/deatil/lakego-doak/lakego/app/interfaces"
@@ -146,7 +146,7 @@ func (this *ServiceProvider) MergeConfigFrom(path string, key string) {
 func (this *ServiceProvider) LoadViewsFrom(path string, namespace string) {
     viewFinder := view_finder.Finder
 
-    paths := config.New("view").GetStringSlice("paths")
+    paths := facade.Config("view").GetStringSlice("paths")
     if len(paths) > 0 {
         for _, viewPath := range paths {
             appPath := path_tool.FormatPath(viewPath) + "/pkg/" + namespace

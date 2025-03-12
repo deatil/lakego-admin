@@ -1,15 +1,9 @@
 package facade
 
 import (
-    "gorm.io/gorm"
-    "github.com/deatil/lakego-doak/lakego/cache"
-    "github.com/deatil/lakego-doak/lakego/config"
-    "github.com/deatil/lakego-doak/lakego/logger"
-    "github.com/deatil/lakego-doak/lakego/upload"
-    "github.com/deatil/lakego-doak/lakego/storage"
-    "github.com/deatil/lakego-doak/lakego/captcha"
-    "github.com/deatil/lakego-doak/lakego/permission"
+    "github.com/deatil/lakego-doak/lakego/router"
 
+    facade_view "github.com/deatil/lakego-doak/lakego/facade/view"
     facade_cache "github.com/deatil/lakego-doak/lakego/facade/cache"
     facade_logger "github.com/deatil/lakego-doak/lakego/facade/logger"
     facade_upload "github.com/deatil/lakego-doak/lakego/facade/upload"
@@ -21,52 +15,44 @@ import (
 )
 
 // 数据库
-var DB *gorm.DB
+var DB = facade_database.Default
 
 // 缓存
-var Cache *cache.Cache
+var Cache = facade_cache.Default
+
+var (
+    // 路由
+    Route = router.DefaultRoute()
+
+    // 中间件
+    Middleware = router.DefaultMiddleware()
+
+    // 别名信息
+    RouteName = router.DefaultName()
+)
 
 // 日志
-var Logger *logger.Logger
+var Logger = facade_logger.Default
+
+// 模板渲染
+var ViewHtml = facade_view.New()
 
 // 上传
-var Upload *upload.Upload
+var Upload = facade_upload.Default
 
-// 文件操作
-var Storage *storage.Storage
-
-// 配置
-var Config func(string) *config.Config
-
-// 验证码
-var Captcha *captcha.Captcha
-
-// 权限
-var Permission *permission.Permission
-
-// 初始化
-func init() {
-    // 数据库
-    DB = facade_database.Default
-
-    // 缓存
-    Cache = facade_cache.Default
-
-    // 日志
-    Logger = facade_logger.Default
-
-    // 上传
-    Upload = facade_upload.Default
-
+var (
     // 文件操作
     Storage = facade_storage.Default
 
-    // 配置
-    Config = facade_config.New
+    // 文件操作
+    NewStorageWithDisk = facade_storage.NewWithDisk
+)
 
-    // 验证码
-    Captcha = facade_captcha.Default
+// 配置
+var Config = facade_config.New
 
-    // 权限
-    Permission = facade_permission.Default
-}
+// 验证码
+var Captcha = facade_captcha.Default
+
+// 权限
+var Permission = facade_permission.Default

@@ -1,7 +1,7 @@
 package permission
 
 import (
-    "github.com/deatil/lakego-doak/lakego/facade/permission"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
@@ -40,7 +40,7 @@ func ResetPermission() bool {
 
     groupListMap := model.FormatStructToArrayMap(groupList)
 
-    perm := permission.New()
+    perm := facade.Permission
 
     // 添加权限
     if len(ruleListMap) > 0 {

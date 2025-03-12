@@ -18,9 +18,10 @@ import (
     "github.com/deatil/lakego-doak/lakego/env"
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/router"
+    "github.com/deatil/lakego-doak/lakego/config"
     "github.com/deatil/lakego-doak/lakego/command"
     "github.com/deatil/lakego-doak/lakego/schedule"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/middleware/recovery"
     iprovider "github.com/deatil/lakego-doak/lakego/provider/interfaces"
 )
@@ -31,7 +32,7 @@ type ServiceProviderSchedule interface {
 }
 
 /**
- * App结构体
+ * App
  *
  * @create 2021-6-19
  * @author deatil
@@ -79,7 +80,7 @@ type App struct {
 
 // App 结构体
 func New() *App {
-    cfg := config.New("server")
+    cfg := facade.Config("server")
 
     // 开发者模式
     var dev bool

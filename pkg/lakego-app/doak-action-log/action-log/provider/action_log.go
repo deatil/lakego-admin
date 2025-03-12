@@ -50,17 +50,15 @@ func (this *ActionLog) Boot() {
  * 导入中间件
  */
 func (this *ActionLog) loadMiddleware() {
-    m := router.InstanceMiddleware()
-
     // 导入中间件
     for name, value := range routeMiddlewares {
-        m.AliasMiddleware(name, value)
+        router.AliasMiddleware(name, value)
     }
 
     // 导入中间件分组
     for groupName, middlewares := range middlewareGroups {
         for _, middleware := range middlewares {
-            m.PushMiddlewareToGroup(groupName, middleware)
+            router.PushMiddlewareToGroup(groupName, middleware)
         }
     }
 }

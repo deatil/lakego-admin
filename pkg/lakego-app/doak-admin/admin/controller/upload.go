@@ -5,7 +5,7 @@ import (
 
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/upload"
     "github.com/deatil/lakego-doak/lakego/facade/storage"
 
@@ -40,7 +40,7 @@ func (this *Upload) File(ctx *router.Context) {
     adminInfo, _ := ctx.Get("admin")
     adminId := adminInfo.(*admin.Admin).GetId()
 
-    conf := config.New("admin")
+    conf := facade.Config("admin")
 
     // 上传目录
     uploadDir := conf.GetString("Upload.Directory.File")

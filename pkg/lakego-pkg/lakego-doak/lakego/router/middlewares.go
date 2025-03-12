@@ -1,7 +1,7 @@
 package router
 
 /**
- * 中间件切片
+ * 中间件数据
  *
  * @create 2021-10-16
  * @author deatil
@@ -11,9 +11,7 @@ type Middlewares struct {
     middlewares []any
 }
 
-/**
- * New
- */
+// NewMiddlewares
 func NewMiddlewares() *Middlewares {
     middlewares:= make([]any, 0)
 
@@ -22,36 +20,28 @@ func NewMiddlewares() *Middlewares {
     }
 }
 
-/**
- * 覆写
- */
+// 覆写
 func (this *Middlewares) With(middlewares []any) *Middlewares {
     this.middlewares = middlewares
 
     return this
 }
 
-/**
- * 前置添加
- */
+// 前置添加
 func (this *Middlewares) Prepend(middlewares ...any) *Middlewares {
     this.middlewares = append(middlewares, this.middlewares...)
 
     return this
 }
 
-/**
- * 后置添加
- */
+// 后置添加
 func (this *Middlewares) Push(middlewares ...any) *Middlewares {
     this.middlewares = append(this.middlewares, middlewares...)
 
     return this
 }
 
-/**
- * 移除
- */
+// 移除
 func (this *Middlewares) Remove(middleware any) bool {
     for i, item := range this.middlewares {
         if middleware == item {
@@ -64,9 +54,7 @@ func (this *Middlewares) Remove(middleware any) bool {
     return false
 }
 
-/**
- * 全部
- */
+// 全部
 func (this *Middlewares) All() []any {
     return this.middlewares
 }

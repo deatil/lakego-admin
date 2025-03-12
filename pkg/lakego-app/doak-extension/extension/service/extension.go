@@ -8,7 +8,7 @@ import (
     "github.com/deatil/go-datebin/datebin"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     admin_model "github.com/deatil/lakego-doak-admin/admin/model"
 
@@ -99,7 +99,7 @@ func (this *Extension) Inatll(name string) error {
         return errors.New("扩展信息不完整")
     }
 
-    adminVersion := config.New("version").GetString("version")
+    adminVersion := facade.Config("version").GetString("version")
 
     err := version.VersionCheck(adminVersion, info.Adaptation)
     if err != nil {
@@ -203,7 +203,7 @@ func (this *Extension) Upgrade(name string) error {
         return errors.New("扩展信息不完整")
     }
 
-    adminVersion := config.New("version").GetString("version")
+    adminVersion := facade.Config("version").GetString("version")
 
     // 检测适配版本
     err := version.VersionCheck(adminVersion, info.Adaptation)

@@ -5,7 +5,7 @@ import (
     "net/http"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 /**
@@ -20,7 +20,7 @@ func Handler() router.HandlerFunc {
         origin := ctx.GetHeader("Origin")
 
         if len(origin) > 0 && isTrueRequest(ctx) {
-            conf := config.New("cors")
+            conf := facade.Config("cors")
             open := conf.GetBool("open-allow-origin")
 
             if (open) {
@@ -57,7 +57,7 @@ func Handler() router.HandlerFunc {
 // 系统请求检测
 func isTrueRequest(ctx *router.Context) bool {
     // 前缀匹配
-    path := "/" + config.New("admin").GetString("Route.Prefix")
+    path := "/" + facade.Config("admin").GetString("Route.Prefix")
 
     url := ctx.Request.URL.String()
 

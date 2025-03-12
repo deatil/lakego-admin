@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-filesystem/filesystem"
     "github.com/deatil/lakego-doak/lakego/router"
     "github.com/deatil/lakego-doak/lakego/provider"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     path_tool "github.com/deatil/lakego-doak/lakego/path"
 
     "github.com/deatil/lakego-doak-admin/admin/support/url"
@@ -100,11 +100,9 @@ func (this *Admin) Boot() {
     this.loadEvents()
 }
 
-/**
- * 设置时区
- */
+// 设置时区
 func (this *Admin) initTimezone() {
-    tz := config.New("admin").GetString("timezone")
+    tz := facade.Config("admin").GetString("timezone")
 
     time.SetTimezone(tz)
 
@@ -112,9 +110,7 @@ func (this *Admin) initTimezone() {
     datebin.SetTimezone(tz)
 }
 
-/**
- * 导入脚本
- */
+// 导入脚本
 func (this *Admin) loadCommand() {
     // 安装
     this.AddCommand(cmd.InstallCmd)
@@ -141,15 +137,13 @@ func (this *Admin) loadCommand() {
     this.AddCommand(cmd.StopCmd)
 }
 
-/**
- * 导入路由
- */
+// 导入路由
 func (this *Admin) loadRoute() {
     this.AddRoute(func(engine *router.Engine) {
         // 中间件
         this.loadMiddleware()
 
-        conf := config.New("admin")
+        conf := facade.Config("admin")
 
         prefix := "/" + conf.GetString("route.prefix") + "/*"
 
@@ -171,7 +165,7 @@ func (this *Admin) loadRoute() {
         engine.Use(globalMiddlewares...)
 
         // 路由
-        admin := router.Groups(engine, conf.GetString("route.prefix"), conf.GetString("route.middleware"))
+        admin := router.Group(engine, conf.GetString("route.prefix"), conf.GetString("route.middleware"))
         {
             // 常规路由
             admin_route.Route(admin)
@@ -186,28 +180,22 @@ func (this *Admin) loadRoute() {
     })
 }
 
-/**
- * 导入中间件
- */
+// 导入中间件
 func (this *Admin) loadMiddleware() {
-    m := router.InstanceMiddleware()
-
     // 导入中间件
     for name, value := range routeMiddlewares {
-        m.AliasMiddleware(name, value)
+        router.AliasMiddleware(name, value)
     }
 
     // 导入中间件分组
     for groupName, middlewares := range middlewareGroups {
         for _, middleware := range middlewares {
-            m.PushMiddlewareToGroup(groupName, middleware)
+            router.PushMiddlewareToGroup(groupName, middleware)
         }
     }
 }
 
-/**
- * 推送配置
- */
+// 推送配置
 func (this *Admin) publishConfig() {
     // 配置
     path := path_tool.FormatPath("{root}/pkg/lakego-app/doak-admin/resources/config/admin.yml")
@@ -220,22 +208,16 @@ func (this *Admin) publishConfig() {
     }, "admin-config")
 }
 
-/**
- * 记录 pid 信息
- */
+// 记录 pid 信息
 func (this *Admin) putSock() {
-    pidPath := config.New("admin").GetString("pid-path")
-
+    pidPath := facade.Config("admin").GetString("pid-path")
     file := path_tool.FormatPath(pidPath)
 
     contents := fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())
-
     filesystem.New().Put(file, []byte(contents))
 }
 
-/**
- * 注册事件
- */
+// 注册事件
 func (this *Admin) loadEvents() {
     // 登录相关
     events.AddAction("admin.passport-login.make-accesstoken-fail", &listener.PassportLoginError{}, events.DefaultSort)

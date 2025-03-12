@@ -2,7 +2,7 @@ package password
 
 import (
     "github.com/deatil/lakego-doak/lakego/random"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/support/utils"
 )
@@ -32,5 +32,5 @@ func EncryptPasswordWithEncrypt(password string, encrypt string) string {
 
 // 密码通用盐
 func GetPasswordSalt() string {
-    return config.New("auth").GetString("passport.password-salt")
+    return facade.Config("auth").GetString("passport.password-salt")
 }

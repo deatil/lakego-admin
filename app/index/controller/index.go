@@ -4,8 +4,8 @@ import (
     "runtime"
     "github.com/gin-gonic/gin"
 
+    "github.com/deatil/lakego-doak/lakego/facade"
     // "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/lakego-doak-admin/admin/support/controller"
 )
@@ -30,7 +30,7 @@ type Index struct {
 // @Router / [get]
 // @x-lakego {"slug": "lakego-admin.index.index"}
 func (this *Index) Index(ctx *gin.Context) {
-    conf := config.New("version")
+    conf := facade.Config("version")
 
     name := conf.GetString("name")
     nameMini := conf.GetString("name-mini")

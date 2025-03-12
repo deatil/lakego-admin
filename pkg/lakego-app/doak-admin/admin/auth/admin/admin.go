@@ -2,7 +2,7 @@ package admin
 
 import (
     "github.com/deatil/lakego-doak/lakego/collection"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/facade/permission"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
@@ -99,7 +99,7 @@ func (this *Admin) IsSuperAdministrator() bool {
         return false
     }
 
-    adminId := config.New("auth").GetString("auth.admin-id")
+    adminId := facade.Config("auth").GetString("auth.admin-id")
 
     return this.Id == adminId
 }

@@ -5,8 +5,7 @@ import (
     gourl "net/url"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
-    "github.com/deatil/lakego-doak/lakego/facade/permission"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
     "github.com/deatil/lakego-doak-admin/admin/support/url"
@@ -57,14 +56,13 @@ func permissionCheck(ctx *router.Context) bool {
     newRequestPath = u.Path
 
     // 先匹配分组
-    group := config.New("admin").GetString("route.prefix")
+    group := facade.Config("admin").GetString("route.prefix")
     if requestPaths[1] != group {
         response.Error(ctx, "你没有访问权限", code.AuthError)
         return false
     }
 
-    c := permission.New()
-    ok2, err2 := c.Enforce(adminId.(string), newRequestPath, method)
+    ok2, err2 := facade.Permission.Enforce(adminId.(string), newRequestPath, method)
 
     if err2 != nil {
         response.Error(ctx, "你没有访问权限", code.AuthError)
@@ -105,7 +103,7 @@ func shouldPassThrough(ctx *router.Context) bool {
     }
 
     // 自定义
-    configExcepts := config.New("auth").GetStringSlice("auth.permission-excepts")
+    configExcepts := facade.Config("auth").GetStringSlice("auth.permission-excepts")
 
     // 额外定义
     setExcepts := except.GetPermissionExcepts()

@@ -9,24 +9,6 @@ import (
     "github.com/deatil/lakego-doak/lakego/array"
 )
 
-// 使用设置的中间件
-func Use(engine IRoutes, middlewareName string) IRoutes {
-    middlewares := GetMiddlewares(middlewareName)
-    engine.Use(middlewares...)
-
-    return engine
-}
-
-// 使用设置的中间件设置分组
-func Groups(engine IRouter, relativePath string, middlewareName string) IRouter {
-    middlewares := GetMiddlewares(middlewareName)
-    routerGroup := engine.Group(relativePath, middlewares...)
-
-    return routerGroup
-}
-
-// =========
-
 // 请求 IP
 func GetRequestIp(ctx *Context) string {
     ip := ctx.ClientIP()

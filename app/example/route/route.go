@@ -3,7 +3,7 @@ package route
 import (
     "github.com/gin-gonic/gin"
 
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "app/example/controller"
 )
@@ -14,8 +14,8 @@ import (
 func GinRoute(engine gin.IRouter) {
     engine.GET("/example", func(ctx *gin.Context) {
         // 测试自定义配置数据
-        exampleData := config.New("example").GetString("Default")
-        exampleData2 := config.New("example").GetString("Default2")
+        exampleData := facade.Config("example").GetString("Default")
+        exampleData2 := facade.Config("example").GetString("Default2")
 
         ctx.JSON(200, gin.H{
             "data": "例子显示信息",

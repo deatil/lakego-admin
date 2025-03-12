@@ -10,7 +10,7 @@ import (
     scheduleCmd "github.com/deatil/lakego-doak/lakego/console/schedule"
 
     // 视图
-    "github.com/deatil/lakego-doak/lakego/facade/view"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 /**
@@ -58,5 +58,5 @@ func (this *Lakego) Schedule(s *schedule.Schedule) {
  * 导入模板渲染
  */
 func (this *Lakego) loadHtmlRender() {
-    this.GetRoute().HTMLRender = view.New().GetRender()
+    this.GetRoute().HTMLRender = facade.ViewHtml.GetRender()
 }

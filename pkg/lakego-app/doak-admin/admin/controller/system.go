@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/go-datebin/datebin"
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
 )
@@ -36,7 +36,7 @@ func (this *System) Info(ctx *router.Context) {
     // netInfo, _ := net.Interfaces()
 
     // 系统信息
-    conf := config.New("version")
+    conf := facade.Config("version")
 
     name := conf.GetString("Name")
     nameMini := conf.GetString("NameMini")

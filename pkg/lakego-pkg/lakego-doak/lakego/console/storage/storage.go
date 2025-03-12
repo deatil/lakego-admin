@@ -9,7 +9,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 /**
@@ -44,7 +44,7 @@ func init() {
 
 // 创建公共资源软连接
 func StorageLink() {
-    links := config.New("filesystem").GetStringSlice("links")
+    links := facade.Config("filesystem").GetStringSlice("links")
 
     if len(links) > 0 {
         for _, link := range links {

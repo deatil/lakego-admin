@@ -15,10 +15,8 @@ type Alias struct {
  * New
  */
 func NewAlias() *Alias {
-    item := make(map[string]any)
-
     return &Alias{
-        item: item,
+        item: make(map[string]any),
     }
 }
 

@@ -4,7 +4,7 @@ import (
     "strings"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/auth/auth"
     "github.com/deatil/lakego-doak-admin/admin/auth/admin"
@@ -105,12 +105,13 @@ func shouldPassThrough(ctx *router.Context) bool {
     defaultExcepts := []string{
         "GET:passport/captcha",
         "POST:passport/login",
+        "DELETE:passport/logout",
         "PUT:passport/refresh-token",
         "GET:attachment/download/*",
     }
 
     // 自定义
-    configExcepts := config.New("auth").GetStringSlice("auth.authenticate-excepts")
+    configExcepts := facade.Config("auth").GetStringSlice("auth.authenticate-excepts")
 
     // 额外定义
     setExcepts := except.GetPermissionExcepts()

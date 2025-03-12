@@ -4,7 +4,7 @@ import (
     "github.com/deatil/lakego-jwt/jwt"
 
     "github.com/deatil/lakego-doak/lakego/router"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 
     "github.com/deatil/lakego-doak-admin/admin/support/token"
     "github.com/deatil/lakego-doak-admin/admin/support/utils"
@@ -18,9 +18,11 @@ import (
  */
 func New() *token.Token {
     newAuth := token.New(jwt.New())
+    
+    conf := facade.Config("auth")
 
-    jwtConf := config.New("auth").GetStringMap("jwt")
-    passportConf := config.New("auth").GetStringMap("passport")
+    jwtConf := conf.GetStringMap("jwt")
+    passportConf := conf.GetStringMap("passport")
 
     return newAuth.
         SetConfig("passport", passportConf).

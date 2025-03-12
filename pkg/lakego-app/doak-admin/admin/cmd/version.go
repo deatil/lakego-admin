@@ -6,7 +6,7 @@ import (
 
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 /**
@@ -34,7 +34,7 @@ var VersionCmd = &command.Command{
 
 // 显示系统详情
 func ShowVersion() {
-    conf := config.New("version")
+    conf := facade.Config("version")
 
     name := conf.GetString("name")
     nameMini := conf.GetString("name-mini")
@@ -44,7 +44,7 @@ func ShowVersion() {
 
     goVersion := runtime.Version()
 
-    serverUrl := config.New("server").GetString("server-url")
+    serverUrl := facade.Config("server").GetString("server-url")
 
     color.Magenta("\n===========================\n")
 

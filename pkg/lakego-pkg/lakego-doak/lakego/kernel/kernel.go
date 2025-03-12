@@ -11,7 +11,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/provider/interfaces"
     "github.com/deatil/lakego-doak/lakego/service_provider"
 
-    _ "github.com/deatil/lakego-doak/lakego/facade/database"
+    _ "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 // 脚本

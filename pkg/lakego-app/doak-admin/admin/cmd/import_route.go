@@ -5,9 +5,8 @@ import (
     "strings"
 
     "github.com/deatil/go-datebin/datebin"
-    "github.com/deatil/lakego-doak/lakego/router"
+    "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
 
     "github.com/deatil/lakego-doak-admin/admin/model"
 )
@@ -37,10 +36,10 @@ var ImportRouteCmd = &command.Command{
 
 // 导入路由信息
 func ImportRoute() {
-    routes := router.DefaultRoute().GetRoutes()
+    routes := facade.Route.GetRoutes()
 
     // 路由前缀
-    group := config.New("admin").GetString("Route.Prefix")
+    group := facade.Config("admin").GetString("Route.Prefix")
 
     for _, v := range routes {
         if !strings.HasPrefix(v.Path, "/" + group + "/") {

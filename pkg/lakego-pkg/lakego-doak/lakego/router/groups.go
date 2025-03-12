@@ -6,7 +6,7 @@ package router
  * @create 2021-10-16
  * @author deatil
  */
-type Group struct {
+type Groups struct {
     // 中间件分组
     groups map[string]*Middlewares
 }
@@ -14,18 +14,16 @@ type Group struct {
 /**
  * New
  */
-func NewGroup() *Group {
-    groups := make(map[string]*Middlewares)
-
-    return &Group{
-        groups: groups,
+func NewGroups() *Groups {
+    return &Groups{
+        groups: make(map[string]*Middlewares),
     }
 }
 
 /**
  * 添加分组 - 覆盖
  */
-func (this *Group) With(name string, middlewares []any) *Group {
+func (this *Groups) With(name string, middlewares []any) *Groups {
     newGroup := NewMiddlewares()
 
     // 添加数据
@@ -44,7 +42,7 @@ func (this *Group) With(name string, middlewares []any) *Group {
 /**
  * 添加分组 - 前置
  */
-func (this *Group) Prepend(name string, middleware any) *Group {
+func (this *Groups) Prepend(name string, middleware any) *Groups {
     var newGroup *Middlewares
 
     if exists := this.Exists(name); exists {
@@ -64,7 +62,7 @@ func (this *Group) Prepend(name string, middleware any) *Group {
 /**
  * 添加分组 - 后置
  */
-func (this *Group) Push(name string, middleware any) *Group {
+func (this *Groups) Push(name string, middleware any) *Groups {
     var newGroup *Middlewares
 
     if exists := this.Exists(name); exists {
@@ -84,7 +82,7 @@ func (this *Group) Push(name string, middleware any) *Group {
 /**
  * 判断
  */
-func (this *Group) Exists(name string) bool {
+func (this *Groups) Exists(name string) bool {
     if _, ok := this.groups[name]; ok {
         return true
     }
@@ -95,14 +93,14 @@ func (this *Group) Exists(name string) bool {
 /**
  * 删除
  */
-func (this *Group) Remove(name string) {
+func (this *Groups) Remove(name string) {
     delete(this.groups, name)
 }
 
 /**
  * 获取分组
  */
-func (this *Group) Get(name string) *Middlewares {
+func (this *Groups) Get(name string) *Middlewares {
     if data, ok := this.groups[name]; ok {
         return data
     }

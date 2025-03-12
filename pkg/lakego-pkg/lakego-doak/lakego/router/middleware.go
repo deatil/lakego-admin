@@ -7,10 +7,8 @@ func DefaultMiddleware() *Middleware {
     return defaultMiddleware
 }
 
-// 单例
-func InstanceMiddleware() *Middleware {
-    return defaultMiddleware
-}
+// 全局名称
+const globalName = "lakego::router-group"
 
 /**
  * 中间件
@@ -29,22 +27,16 @@ type Middleware struct {
     middlewares *Middlewares
 
     // 中间件分组
-    group *Group
+    group *Groups
 }
 
 // NewMiddleware
 func NewMiddleware() *Middleware {
-    globalName := "lakego::router-group"
-
-    alias := NewAlias()
-    middlewares := NewMiddlewares()
-    group := NewGroup()
-
     return &Middleware{
         globalName:  globalName,
-        alias:       alias,
-        middlewares: middlewares,
-        group:       group,
+        alias:       NewAlias(),
+        middlewares: NewMiddlewares(),
+        group:       NewGroups(),
     }
 }
 
@@ -85,14 +77,14 @@ func (this *Middleware) GetMiddlewares() *Middlewares {
 }
 
 // 中间件分组
-func (this *Middleware) WithGroup(group *Group) *Middleware {
+func (this *Middleware) WithGroup(group *Groups) *Middleware {
     this.group = group
 
     return this
 }
 
 // 中间件分组
-func (this *Middleware) GetGroup() *Group {
+func (this *Middleware) GetGroup() *Groups {
     return this.group
 }
 
@@ -124,14 +116,14 @@ func (this *Middleware) PushMiddlewareToGroup(name string, middleware any) *Midd
     return this
 }
 
-// 全局中间前置
+// 全局中间 - 前置
 func (this *Middleware) PrependMiddleware(middleware any) *Middleware {
     this.group.Prepend(this.globalName, middleware)
 
     return this
 }
 
-// 全局中间后置
+// 全局中间 - 后置
 func (this *Middleware) PushMiddleware(middleware any) *Middleware {
     this.group.Push(this.globalName, middleware)
 

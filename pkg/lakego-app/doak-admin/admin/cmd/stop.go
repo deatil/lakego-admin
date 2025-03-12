@@ -10,7 +10,7 @@ import (
     "github.com/deatil/lakego-doak/lakego/path"
     "github.com/deatil/lakego-doak/lakego/color"
     "github.com/deatil/lakego-doak/lakego/command"
-    "github.com/deatil/lakego-doak/lakego/facade/config"
+    "github.com/deatil/lakego-doak/lakego/facade"
 )
 
 /**
@@ -44,7 +44,7 @@ func Stop() {
     color.Greenln("系统服务正在停止...")
 
     if stopPid == "" {
-        pidPath := config.New("admin").GetString("pid-path")
+        pidPath := facade.Config("admin").GetString("pid-path")
         location := path.FormatPath(pidPath)
 
         contents, err := filesystem.New().Get(location)
