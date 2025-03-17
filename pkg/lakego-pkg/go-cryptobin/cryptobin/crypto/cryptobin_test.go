@@ -1765,6 +1765,32 @@ func Test_Chacha20poly1305(t *testing.T) {
     assert(data, cyptdeStr, "Test_Chacha20poly1305")
 }
 
+func Test_Chacha20poly1305X(t *testing.T) {
+    assert := cryptobin_test.AssertEqualT(t)
+    assertNoError := cryptobin_test.AssertNoErrorT(t)
+
+    data := "test-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-passtest-pass"
+    cypt := FromString(data).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasefjifu87ujasef").
+        Chacha20poly1305X([]byte("test123")).
+        Encrypt()
+    cyptStr := cypt.ToBase64String()
+
+    assertNoError(cypt.Error(), "Test_Chacha20poly1305X-Encode")
+
+    cyptde := FromBase64String(cyptStr).
+        SetKey("dfertf12dfdfertf12dfdfertf12df12").
+        SetIv("jifu87ujasefjifu87ujasef").
+        Chacha20poly1305X([]byte("test123")).
+        Decrypt()
+    cyptdeStr := cyptde.ToString()
+
+    assertNoError(cyptde.Error(), "Test_Chacha20poly1305X-Decode")
+
+    assert(data, cyptdeStr, "Test_Chacha20poly1305X")
+}
+
 func Test_Aes_CCM_PKCS7Padding(t *testing.T) {
     assert := cryptobin_test.AssertEqualT(t)
     assertNoError := cryptobin_test.AssertNoErrorT(t)

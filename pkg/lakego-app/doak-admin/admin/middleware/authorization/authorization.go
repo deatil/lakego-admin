@@ -105,7 +105,6 @@ func shouldPassThrough(ctx *router.Context) bool {
     defaultExcepts := []string{
         "GET:passport/captcha",
         "POST:passport/login",
-        "DELETE:passport/logout",
         "PUT:passport/refresh-token",
         "GET:attachment/download/*",
     }

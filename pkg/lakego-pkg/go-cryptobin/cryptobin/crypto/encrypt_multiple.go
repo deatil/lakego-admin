@@ -606,7 +606,7 @@ func (this EncryptChacha20) Decrypt(data []byte, opt IOption) ([]byte, error) {
 
 // ===================
 
-// 32 bytes key
+// 32 bytes key and 12 bytes nonce
 type EncryptChacha20poly1305 struct {}
 
 // 加密 / Encrypt
@@ -616,16 +616,15 @@ func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, e
         return nil, err
     }
 
-    iv := opt.Iv()
-    if len(iv) == 0 {
-        err := fmt.Errorf("iv empty.")
+    nonce := opt.Iv()
+    if len(nonce) != chacha20poly1305.NonceSize {
+        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
         return nil, err
     }
 
     additional := opt.Config().GetBytes("additional")
 
-    dst := aead.Seal(nil, iv, data, additional)
-
+    dst := aead.Seal(nil, nonce, data, additional)
     return dst, nil
 }
 
@@ -636,20 +635,20 @@ func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, e
         return nil, err
     }
 
-    iv := opt.Iv()
-    if len(iv) == 0 {
-        err := fmt.Errorf("iv empty.")
+    nonce := opt.Iv()
+    if len(nonce) != chacha20poly1305.NonceSize {
+        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
         return nil, err
     }
 
     additional := opt.Config().GetBytes("additional")
 
-    return chacha.Open(nil, iv, data, additional)
+    return chacha.Open(nil, nonce, data, additional)
 }
 
 // ===================
 
-// 32 bytes key
+// 32 bytes key and 24 bytes nonce
 type EncryptChacha20poly1305X struct {}
 
 // 加密 / Encrypt
@@ -659,16 +658,15 @@ func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, 
         return nil, err
     }
 
-    iv := opt.Iv()
-    if len(iv) == 0 {
-        err := fmt.Errorf("iv empty.")
+    nonce := opt.Iv()
+    if len(nonce) != chacha20poly1305.NonceSizeX {
+        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
         return nil, err
     }
 
     additional := opt.Config().GetBytes("additional")
 
-    dst := aead.Seal(nil, iv, data, additional)
-
+    dst := aead.Seal(nil, nonce, data, additional)
     return dst, nil
 }
 
@@ -679,15 +677,15 @@ func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, 
         return nil, err
     }
 
-    iv := opt.Iv()
-    if len(iv) == 0 {
-        err := fmt.Errorf("iv empty.")
+    nonce := opt.Iv()
+    if len(nonce) != chacha20poly1305.NonceSizeX {
+        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
         return nil, err
     }
 
     additional := opt.Config().GetBytes("additional")
 
-    return chacha.Open(nil, iv, data, additional)
+    return chacha.Open(nil, nonce, data, additional)
 }
 
 // ===================
