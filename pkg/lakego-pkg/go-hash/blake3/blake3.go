@@ -10,7 +10,7 @@ func New() hash.Hash {
     return NewWithSize(Size)
 }
 
-// New returns a new hash.Hash computing the blake3 checksum.
+// NewWithSize returns a new hash.Hash computing the blake3 checksum.
 func NewWithSize(size int) hash.Hash {
     return newDigest(iv, 0, size)
 }

@@ -33,7 +33,7 @@ func (this *PKCS7) VerifyWithChain(truststore *x509.CertPool) (err error) {
     }
 
     for _, signer := range this.Signers {
-        if err := verifySignature(this, signer, truststore); err != nil {
+        if err := this.verifySignature(signer, truststore); err != nil {
             return err
         }
     }
@@ -53,7 +53,7 @@ func (this *PKCS7) VerifyWithChainAtTime(truststore *x509.CertPool, currentTime 
     }
 
     for _, signer := range this.Signers {
-        if err := verifySignatureAtTime(this, signer, truststore, currentTime); err != nil {
+        if err := this.verifySignatureAtTime(signer, truststore, currentTime); err != nil {
             return err
         }
     }
@@ -61,7 +61,7 @@ func (this *PKCS7) VerifyWithChainAtTime(truststore *x509.CertPool, currentTime 
     return nil
 }
 
-func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool, currentTime time.Time) (err error) {
+func (p7 *PKCS7) verifySignatureAtTime(signer signerInfo, truststore *x509.CertPool, currentTime time.Time) (err error) {
     signedData := p7.Content
     ee := getCertFromCertsByIssuerAndSerial(p7.Certificates, signer.IssuerAndSerialNumber)
     if ee == nil {
@@ -116,7 +116,7 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
         }
     }
 
-    // sign
+    // get sign func
     signFunc, err := getSignatureFunc(signer.DigestEncryptionAlgorithm.Algorithm, signer.DigestAlgorithm.Algorithm)
     if err != nil {
         return err
@@ -126,13 +126,17 @@ func verifySignatureAtTime(p7 *PKCS7, signer signerInfo, truststore *x509.CertPo
 
     checkStatus, err := signFunc.Verify(pkey, signedData, signer.EncryptedDigest)
     if !checkStatus {
+        if err == nil {
+            return errors.New("go-cryptobin/pkcs7: Verify fail")
+        }
+
         return err
     }
 
     return nil
 }
 
-func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (err error) {
+func (p7 *PKCS7) verifySignature(signer signerInfo, truststore *x509.CertPool) (err error) {
     signedData := p7.Content
     ee := getCertFromCertsByIssuerAndSerial(p7.Certificates, signer.IssuerAndSerialNumber)
     if ee == nil {
@@ -186,7 +190,7 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
         }
     }
 
-    // sign
+    // get sign func
     signFunc, err := getSignatureFunc(signer.DigestEncryptionAlgorithm.Algorithm, signer.DigestAlgorithm.Algorithm)
     if err != nil {
         return err
@@ -196,6 +200,10 @@ func verifySignature(p7 *PKCS7, signer signerInfo, truststore *x509.CertPool) (e
 
     checkStatus, err := signFunc.Verify(pkey, signedData, signer.EncryptedDigest)
     if !checkStatus {
+        if err == nil {
+            return errors.New("go-cryptobin/pkcs7: Verify fail")
+        }
+
         return err
     }
 

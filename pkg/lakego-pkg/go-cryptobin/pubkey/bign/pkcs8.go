@@ -1,9 +1,7 @@
 package bign
 
 import (
-    "fmt"
     "errors"
-    "math/big"
     "encoding/asn1"
     "crypto/elliptic"
     "crypto/x509/pkix"
@@ -11,8 +9,6 @@ import (
     "golang.org/x/crypto/cryptobyte"
     "github.com/deatil/go-cryptobin/elliptic/bign"
 )
-
-const ecPrivKeyVersion = 1
 
 var (
     oidPublicKeyBign = asn1.ObjectIdentifier{1, 2, 112, 0, 2, 0, 34, 101, 45, 2, 1}
@@ -57,15 +53,6 @@ type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
     PublicKey asn1.BitString
-}
-
-// Per RFC 5915 the NamedCurveOID is marked as ASN.1 OPTIONAL, however in
-// most cases it is not.
-type ecPrivateKey struct {
-    Version       int
-    PrivateKey    []byte
-    NamedCurveOID asn1.ObjectIdentifier `asn1:"optional,explicit,tag:0"`
-    PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
 // Marshal PublicKey to der
@@ -216,77 +203,3 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     return key, nil
 }
 
-// marshalECPrivateKeyWithOID marshals an SM2 private key into ASN.1, DER format and
-// sets the curve ID to the given OID, or omits it if OID is nil.
-func marshalECPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
-    if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("bign: invalid elliptic key public key")
-    }
-
-    privateKey := make([]byte, BitsToBytes(key.D.BitLen()))
-
-    return asn1.Marshal(ecPrivateKey{
-        Version:       1,
-        PrivateKey:    key.D.FillBytes(privateKey),
-        NamedCurveOID: oid,
-        PublicKey:     asn1.BitString{
-            Bytes: elliptic.Marshal(key.Curve, key.X, key.Y),
-        },
-    })
-}
-
-// parseECPrivateKey parses an ASN.1 Elliptic Curve Private Key Structure.
-// The OID for the named curve may be provided from another source (such as
-// the PKCS8 container) - if it is provided then use this instead of the OID
-// that may exist in the EC private key structure.
-func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
-    var privKey ecPrivateKey
-    if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-        return nil, errors.New("bign: failed to parse EC private key: " + err.Error())
-    }
-
-    if privKey.Version != ecPrivKeyVersion {
-        return nil, fmt.Errorf("bign: unknown EC private key version %d", privKey.Version)
-    }
-
-    var curve elliptic.Curve
-    if namedCurveOID != nil {
-        curve = NamedCurveFromOid(*namedCurveOID)
-    } else {
-        curve = NamedCurveFromOid(privKey.NamedCurveOID)
-    }
-
-    if curve == nil {
-        return nil, errors.New("bign: unknown elliptic curve")
-    }
-
-    k := new(big.Int).SetBytes(privKey.PrivateKey)
-
-    curveOrder := curve.Params().N
-    if k.Cmp(curveOrder) >= 0 {
-        return nil, errors.New("bign: invalid elliptic curve private key value")
-    }
-
-    priv := new(PrivateKey)
-    priv.Curve = curve
-    priv.D = k
-
-    privateKey := make([]byte, (curveOrder.BitLen()+7)/8)
-
-    for len(privKey.PrivateKey) > len(privateKey) {
-        if privKey.PrivateKey[0] != 0 {
-            return nil, errors.New("bign: invalid private key length")
-        }
-
-        privKey.PrivateKey = privKey.PrivateKey[1:]
-    }
-
-    copy(privateKey[len(privateKey)-len(privKey.PrivateKey):], privKey.PrivateKey)
-    priv.X, priv.Y = curve.ScalarBaseMult(privateKey)
-
-    return priv, nil
-}
-
-func BitsToBytes(bits int) int {
-    return (bits + 7) / 8
-}

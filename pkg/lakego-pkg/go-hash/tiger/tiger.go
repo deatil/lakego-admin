@@ -9,7 +9,7 @@ func New() hash.Hash {
     return newDigest(Size192, 1)
 }
 
-// New returns a new hash.Hash computing the Tiger2 hash value
+// New2 returns a new hash.Hash computing the Tiger2 hash value
 func New2() hash.Hash {
     return newDigest(Size192, 2)
 }

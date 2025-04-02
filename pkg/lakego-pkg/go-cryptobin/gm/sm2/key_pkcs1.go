@@ -121,25 +121,3 @@ func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *
 
     return priv, nil
 }
-
-var (
-    oidNamedCurveP256SM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
-)
-
-func namedCurveFromOID(oid asn1.ObjectIdentifier) elliptic.Curve {
-    switch {
-        case oid.Equal(oidNamedCurveP256SM2):
-            return P256()
-    }
-
-    return nil
-}
-
-func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
-    switch curve {
-        case P256():
-            return oidNamedCurveP256SM2, true
-    }
-
-    return nil, false
-}

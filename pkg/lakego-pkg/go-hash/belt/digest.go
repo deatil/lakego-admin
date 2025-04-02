@@ -1,9 +1,5 @@
 package belt
 
-import (
-    "hash"
-)
-
 const (
     // hash size
     Size = 32
@@ -22,8 +18,8 @@ type digest struct {
     h [32]byte
 }
 
-// New returns a new hash.Hash computing the belt checksum
-func newDigest() hash.Hash {
+// newDigest returns a new digest computing the belt checksum
+func newDigest() *digest {
     d := new(digest)
     d.Reset()
 

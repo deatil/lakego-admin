@@ -10,6 +10,11 @@ import (
  * An english version of the specifications exist here: https://eprint.iacr.org/2016/587.pdf
  */
 
+// New returns a new hash.Hash computing the bash checksum
+func New(hashsize int) (hash.Hash, error) {
+    return newDigest(hashsize)
+}
+
 // New224 returns a new hash.Hash computing the Bash checksum
 func New224() hash.Hash {
     h, _ := New(224)

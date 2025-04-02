@@ -10,7 +10,7 @@ type digest struct {
     pos  int
 }
 
-// New returns a new Rabin hash using the polynomial and window size
+// newDigest returns a new digest using the polynomial and window size
 // represented by table.
 func newDigest(table *Table) *digest {
     d := new(digest)

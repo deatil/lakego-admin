@@ -30,7 +30,7 @@ type digest struct {
     databitlen uint64
 }
 
-// New returns a new *digest computing the fsb checksum
+// newDigest returns a new *digest computing the fsb checksum
 func newDigest(hashbitlen int) (*digest, error) {
     if hashbitlen == 0 {
         return nil, errors.New("go-hash/fsb: hash size can't be zero")

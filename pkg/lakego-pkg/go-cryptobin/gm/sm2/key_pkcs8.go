@@ -3,6 +3,7 @@ package sm2
 import (
     "errors"
     "encoding/asn1"
+    "crypto/elliptic"
     "crypto/x509/pkix"
 
     "github.com/deatil/go-cryptobin/gm/sm2/sm2curve"
@@ -149,4 +150,26 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
     }
 
     return asn1.Marshal(r)
+}
+
+var (
+    oidNamedCurveP256SM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
+)
+
+func namedCurveFromOID(oid asn1.ObjectIdentifier) elliptic.Curve {
+    switch {
+        case oid.Equal(oidNamedCurveP256SM2):
+            return P256()
+    }
+
+    return nil
+}
+
+func oidFromNamedCurve(curve elliptic.Curve) (asn1.ObjectIdentifier, bool) {
+    switch curve {
+        case P256():
+            return oidNamedCurveP256SM2, true
+    }
+
+    return nil, false
 }

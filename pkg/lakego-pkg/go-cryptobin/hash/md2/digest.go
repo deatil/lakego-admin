@@ -20,6 +20,7 @@ type digest struct {
     digest [Size]byte // the digest, Size
 }
 
+// newDigest returns a new digest computing the md2 checksum
 func newDigest() *digest {
     d := new(digest)
     d.Reset()

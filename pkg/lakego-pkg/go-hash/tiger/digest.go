@@ -18,7 +18,7 @@ type digest struct {
     ver int
 }
 
-// newDigest returns a new hash.Hash computing the Tiger hash value
+// newDigest returns a new digest computing the Tiger hash value
 func newDigest(hs int, ver int) *digest {
     d := new(digest)
     d.hs = hs
