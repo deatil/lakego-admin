@@ -77,7 +77,7 @@ func NewEAXWithNonceAndTagSize(
 
 func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
     if len(nonce) > e.nonceSize {
-        panic("cryptobin/eax: Nonce too long for this instance")
+        panic("go-cryptobin/eax: Nonce too long for this instance")
     }
 
     ret, out := alias.SliceForAppend(dst, len(plaintext)+e.tagSize)
@@ -101,7 +101,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
 
 func (e *eax) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     if len(nonce) > e.nonceSize {
-        panic("cryptobin/eax: Nonce too long for this instance")
+        panic("go-cryptobin/eax: Nonce too long for this instance")
     }
 
     if len(ciphertext) < e.tagSize {

@@ -30,11 +30,11 @@ func (this *ecbEncrypter) BlockSize() int {
 
 func (this *ecbEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%this.blockSize != 0 {
-        panic("cryptobin/ecb: input not full blocks")
+        panic("go-cryptobin/ecb: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("cryptobin/ecb: output smaller than input")
+        panic("go-cryptobin/ecb: output smaller than input")
     }
 
     for len(src) > 0 {
@@ -58,11 +58,11 @@ func (this *ecbDecrypter) BlockSize() int {
 
 func (this *ecbDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%this.blockSize != 0 {
-        panic("cryptobin/ecb: input not full blocks")
+        panic("go-cryptobin/ecb: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("cryptobin/ecb: output smaller than input")
+        panic("go-cryptobin/ecb: output smaller than input")
     }
 
     for len(src) > 0 {

@@ -144,7 +144,7 @@ func MarshalPublicKeyWithOpts(pub *PublicKey, opts ParamOpts) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(pub.Curve)
     if !ok {
-        return nil, errors.New("cryptobin/gost: unsupported gost curve")
+        return nil, errors.New("go-cryptobin/gost: unsupported gost curve")
     }
 
     keyAlgo := keyAlgoParam{
@@ -174,7 +174,7 @@ func MarshalPublicKeyWithOpts(pub *PublicKey, opts ParamOpts) ([]byte, error) {
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     if !pub.Curve.IsOnCurve(pub.X, pub.Y) {
-        return nil, errors.New("cryptobin/gost: invalid gost curve public key")
+        return nil, errors.New("go-cryptobin/gost: invalid gost curve public key")
     }
 
     publicKey = Marshal(pub.Curve, pub.X, pub.Y)
@@ -206,7 +206,7 @@ func ParsePublicKey(publicKey []byte) (pub *PublicKey, err error) {
     if err != nil {
         return
     } else if len(rest) != 0 {
-        err = errors.New("cryptobin/gost: trailing data after ASN.1 of public-key")
+        err = errors.New("go-cryptobin/gost: trailing data after ASN.1 of public-key")
         return
     }
 
@@ -222,19 +222,19 @@ func ParsePublicKey(publicKey []byte) (pub *PublicKey, err error) {
     if !algo.Equal(oidGOSTPublicKey) &&
         !algo.Equal(oidGost2012PublicKey256) &&
         !algo.Equal(oidGost2012PublicKey512) {
-        err = errors.New("cryptobin/gost: unknown public key algorithm")
+        err = errors.New("go-cryptobin/gost: unknown public key algorithm")
         return
     }
 
     var param keyAlgoParam
     if _, err := asn1.Unmarshal(params.FullBytes, &param); err != nil {
-        err = errors.New("cryptobin/gost: unknown public key algorithm curve")
+        err = errors.New("go-cryptobin/gost: unknown public key algorithm curve")
         return nil, err
     }
 
     namedCurve := NamedCurveFromOid(param.Curve)
     if namedCurve == nil {
-        err = errors.New("cryptobin/gost: unsupported gost curve")
+        err = errors.New("go-cryptobin/gost: unsupported gost curve")
         return
     }
 
@@ -245,13 +245,13 @@ func ParsePublicKey(publicKey []byte) (pub *PublicKey, err error) {
         if err != nil {
             return
         } else if len(rest) != 0 {
-            err = errors.New("cryptobin/gost: trailing data after ASN.1 of public-key der")
+            err = errors.New("go-cryptobin/gost: trailing data after ASN.1 of public-key der")
             return
         }
 
         x, y = Unmarshal(namedCurve, derBytes)
         if x == nil || y == nil {
-            err = errors.New("cryptobin/gost: failed to unmarshal gost curve point")
+            err = errors.New("go-cryptobin/gost: failed to unmarshal gost curve point")
             return
         }
     }
@@ -274,7 +274,7 @@ func MarshalPrivateKey(priv *PrivateKey) ([]byte, error) {
 func MarshalPrivateKeyWithOpts(priv *PrivateKey, opts ParamOpts) ([]byte, error) {
     oid, ok := OidFromNamedCurve(priv.Curve)
     if !ok {
-        return nil, errors.New("cryptobin/gost: unsupported gost curve")
+        return nil, errors.New("go-cryptobin/gost: unsupported gost curve")
     }
 
     keyAlgo := keyAlgoParam{
@@ -293,7 +293,7 @@ func MarshalPrivateKeyWithOpts(priv *PrivateKey, opts ParamOpts) ([]byte, error)
     // Marshal oid
     oidBytes, err := asn1.Marshal(keyAlgo)
     if err != nil {
-        return nil, errors.New("cryptobin/gost: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/gost: failed to marshal algo param: " + err.Error())
     }
 
     var publicKeyOid asn1.ObjectIdentifier
@@ -313,7 +313,7 @@ func MarshalPrivateKeyWithOpts(priv *PrivateKey, opts ParamOpts) ([]byte, error)
 
     privKey.PrivateKey, err = marshalGostPrivateKey(priv, opts)
     if err != nil {
-        return nil, errors.New("cryptobin/gost: failed to marshal private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/gost: failed to marshal private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -333,7 +333,7 @@ func ParsePrivateKey(privateKey []byte) (*PrivateKey, error) {
     if !algo.Equal(oidGOSTPublicKey) &&
         !algo.Equal(oidGost2012PublicKey256) &&
         !algo.Equal(oidGost2012PublicKey512) {
-        err = errors.New("cryptobin/gost: unknown private key algorithm")
+        err = errors.New("go-cryptobin/gost: unknown private key algorithm")
         return nil, err
     }
 
@@ -341,13 +341,13 @@ func ParsePrivateKey(privateKey []byte) (*PrivateKey, error) {
 
     var param keyAlgoParam
     if _, err := asn1.Unmarshal(bytes, &param); err != nil {
-        err = errors.New("cryptobin/gost: unknown private key algorithm curve")
+        err = errors.New("go-cryptobin/gost: unknown private key algorithm curve")
         return nil, err
     }
 
     key, err := parseGostPrivateKey(param.Curve, privKey.PrivateKey)
     if err != nil {
-        return nil, errors.New("cryptobin/gost: failed to parse private key embedded in PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/gost: failed to parse private key embedded in PKCS#8: " + err.Error())
     }
 
     return key, nil

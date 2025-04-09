@@ -36,7 +36,7 @@ type stream struct {
 // key, nonce pair.
 func NewStreamCipher(key, nonce []byte) (cipher.Stream, error) {
     if len(key) != KeySize {
-        return nil, errors.New("cryptobin/grain: bad key length")
+        return nil, errors.New("go-cryptobin/grain: bad key length")
     }
 
     var s stream
@@ -51,10 +51,10 @@ func (s *stream) XORKeyStream(dst, src []byte) {
         return
     }
     if len(dst) < len(src) {
-        panic("cryptobin/grain: output smaller than input")
+        panic("go-cryptobin/grain: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/grain: invalid buffer overlap")
+        panic("go-cryptobin/grain: invalid buffer overlap")
     }
 
     dst = dst[:len(src)]

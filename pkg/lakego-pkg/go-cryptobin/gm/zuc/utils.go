@@ -8,13 +8,13 @@ import (
 type KeySizeError int
 
 func (k KeySizeError) Error() string {
-    return "cryptobin/zuc: invalid key size " + strconv.Itoa(int(k))
+    return "go-cryptobin/zuc: invalid key size " + strconv.Itoa(int(k))
 }
 
 type IVSizeError int
 
 func (k IVSizeError) Error() string {
-    return "cryptobin/zuc: invalid iv size " + strconv.Itoa(int(k))
+    return "go-cryptobin/zuc: invalid iv size " + strconv.Itoa(int(k))
 }
 
 func MemsetByte(a []byte, v byte) {

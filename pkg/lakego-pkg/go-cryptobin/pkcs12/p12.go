@@ -111,11 +111,11 @@ func (bag *SafeBag) hasAttribute(id asn1.ObjectIdentifier) bool {
     return false
 }
 
-// DefaultPassword is the string "cryptobin", a commonly-used password for
+// DefaultPassword is the string "go-cryptobin", a commonly-used password for
 // PKCS#12 files. Due to the weak encryption used by PKCS#12, it is
 // RECOMMENDED that you use DefaultPassword when encoding PKCS#12 files,
 // and protect the PKCS#12 files using other means.
-const DefaultPassword = "cryptobin"
+const DefaultPassword = "go-cryptobin"
 
 // PKCS12 结构
 type PKCS12 struct {

@@ -53,7 +53,7 @@ func NewCurve(p, q, a, b, x, y, e, d, co *big.Int) (*Curve, error) {
         Y:    y,
     }
     if !c.IsOnCurve(c.X, c.Y) {
-        return nil, errors.New("cryptobin/gost: invalid curve parameters")
+        return nil, errors.New("go-cryptobin/gost: invalid curve parameters")
     }
 
     if e != nil && d != nil {
@@ -192,14 +192,14 @@ func (c *Curve) ScalarMult(x1, y1 *big.Int, key []byte) (x *big.Int, y *big.Int)
 
     k := bigIntFromBytes(key)
     if k.Cmp(zero) == 0 {
-        panic("cryptobin/gost: zero key")
+        panic("go-cryptobin/gost: zero key")
     }
 
     k = k.Mod(k, c.Q)
 
     x, y, err := c.Exp(k, x1, y1)
     if err != nil {
-        panic("cryptobin/gost: ScalarMult was called on an invalid point")
+        panic("go-cryptobin/gost: ScalarMult was called on an invalid point")
     }
 
     return
@@ -211,7 +211,7 @@ func (c *Curve) ScalarBaseMult(key []byte) (x, y *big.Int) {
 
 func (c *Curve) Exp(degree, xS, yS *big.Int) (*big.Int, *big.Int, error) {
     if degree.Cmp(zero) == 0 {
-        return nil, nil, errors.New("cryptobin/gost: zero degree value")
+        return nil, nil, errors.New("go-cryptobin/gost: zero degree value")
     }
 
     dg := big.NewInt(0).Sub(degree, bigInt1)
@@ -256,7 +256,7 @@ func panicIfNotOnCurve(curve *Curve, x, y *big.Int) {
     }
 
     if !curve.IsOnCurve(x, y) {
-        panic("cryptobin/gost: attempted operation on invalid point")
+        panic("go-cryptobin/gost: attempted operation on invalid point")
     }
 }
 

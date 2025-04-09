@@ -18,7 +18,7 @@ type ofb8 struct {
 func NewOFB8(b cipher.Block, iv []byte) cipher.Stream {
     blockSize := b.BlockSize()
     if len(iv) != blockSize {
-        panic("cryptobin/ofb8: IV length must equal block size")
+        panic("go-cryptobin/ofb8: IV length must equal block size")
     }
 
     bufSize := streamBufferSize
@@ -67,10 +67,10 @@ func (x *ofb8) refill() {
 
 func (x *ofb8) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/ofb8: output smaller than input")
+        panic("go-cryptobin/ofb8: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/ofb8: invalid buffer overlap")
+        panic("go-cryptobin/ofb8: invalid buffer overlap")
     }
     
     for len(src) > 0 {

@@ -31,10 +31,10 @@ type gcfb struct {
 
 func (x *gcfb) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/gcfb: output smaller than input")
+        panic("go-cryptobin/gcfb: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/gcfb: invalid buffer overlap")
+        panic("go-cryptobin/gcfb: invalid buffer overlap")
     }
 
     for len(src) > 0 {
@@ -98,13 +98,13 @@ func NewGCFBDecrypter(block GCFBCipherFunc, key, iv []byte) cipher.Stream {
 func newGCFB(block GCFBCipherFunc, key, iv []byte, decrypt bool) cipher.Stream {
     cip, err := block(key)
     if err != nil {
-        panic("cryptobin/gcfb.newGCFB: invalid block")
+        panic("go-cryptobin/gcfb.newGCFB: invalid block")
     }
 
     blockSize := cip.BlockSize()
     if len(iv) != blockSize {
         // stack trace will indicate whether it was de or encryption
-        panic("cryptobin/gcfb.newGCFB: IV length must equal block size")
+        panic("go-cryptobin/gcfb.newGCFB: IV length must equal block size")
     }
 
     x := &gcfb{

@@ -33,7 +33,7 @@ type spritzCipher struct {
     iv      []byte
 }
 
-// New returns a cipher.Block implementing RC6.
+// NewCipher returns a cipher.Block implementing spritz.
 func NewCipher(key []byte) (cipher.Block, error) {
     l := len(key)
     if l == 0 {

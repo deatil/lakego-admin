@@ -20,7 +20,7 @@ type g3413cbc struct {
 func newG3413CBC(b cipher.Block, iv []byte) *g3413cbc {
     blockSize := b.BlockSize()
     if len(iv) != 2*blockSize {
-        panic("cryptobin/g3413cbc.newG3413CBC: IV length must equal two block size")
+        panic("go-cryptobin/g3413cbc.newG3413CBC: IV length must equal two block size")
     }
 
     x := &g3413cbc{
@@ -49,7 +49,7 @@ type g3413cbcEncAble interface {
 // Block's block size.
 func NewG3413CBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != 2*b.BlockSize() {
-        panic("cryptobin/g3413cbc.NewG3413CBCEncrypter: IV length must equal two block size")
+        panic("go-cryptobin/g3413cbc.NewG3413CBCEncrypter: IV length must equal two block size")
     }
     if cbc, ok := b.(g3413cbcEncAble); ok {
         return cbc.NewG3413CBCEncrypter(iv)
@@ -63,7 +63,7 @@ func NewG3413CBCEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
 // in fuzz testing.
 func newG3413CBCGenericEncrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != 2*b.BlockSize() {
-        panic("cryptobin/g3413cbc.NewG3413CBCEncrypter: IV length must equal two block size")
+        panic("go-cryptobin/g3413cbc.NewG3413CBCEncrypter: IV length must equal two block size")
     }
     return (*g3413cbcEncrypter)(newG3413CBC(b, iv))
 }
@@ -72,13 +72,13 @@ func (x *g3413cbcEncrypter) BlockSize() int { return x.blockSize }
 
 func (x *g3413cbcEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("cryptobin/g3413cbc: input not full blocks")
+        panic("go-cryptobin/g3413cbc: input not full blocks")
     }
     if len(dst) < len(src) {
-        panic("cryptobin/g3413cbc: output smaller than input")
+        panic("go-cryptobin/g3413cbc: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/g3413cbc: invalid buffer overlap")
+        panic("go-cryptobin/g3413cbc: invalid buffer overlap")
     }
 
     iv := x.iv
@@ -102,7 +102,7 @@ func (x *g3413cbcEncrypter) CryptBlocks(dst, src []byte) {
 
 func (x *g3413cbcEncrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/g3413cbc: incorrect length IV")
+        panic("go-cryptobin/g3413cbc: incorrect length IV")
     }
     copy(x.iv, iv)
 }
@@ -122,7 +122,7 @@ type g3413cbcDecAble interface {
 // Block's block size and must match the iv used to encrypt the data.
 func NewG3413CBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != 2*b.BlockSize() {
-        panic("cryptobin/g3413cbc.NewG3413CBCDecrypter: IV length must equal two block size")
+        panic("go-cryptobin/g3413cbc.NewG3413CBCDecrypter: IV length must equal two block size")
     }
     if cbc, ok := b.(g3413cbcDecAble); ok {
         return cbc.NewG3413CBCDecrypter(iv)
@@ -136,7 +136,7 @@ func NewG3413CBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
 // fuzz testing.
 func newG3413CBCGenericDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != 2*b.BlockSize() {
-        panic("cryptobin/g3413cbc.NewG3413CBCDecrypter: IV length must equal two block size")
+        panic("go-cryptobin/g3413cbc.NewG3413CBCDecrypter: IV length must equal two block size")
     }
     return (*g3413cbcDecrypter)(newG3413CBC(b, iv))
 }
@@ -145,13 +145,13 @@ func (x *g3413cbcDecrypter) BlockSize() int { return x.blockSize }
 
 func (x *g3413cbcDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("cryptobin/g3413cbc: input not full blocks")
+        panic("go-cryptobin/g3413cbc: input not full blocks")
     }
     if len(dst) < len(src) {
-        panic("cryptobin/g3413cbc: output smaller than input")
+        panic("go-cryptobin/g3413cbc: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/g3413cbc: invalid buffer overlap")
+        panic("go-cryptobin/g3413cbc: invalid buffer overlap")
     }
     if len(src) == 0 {
         return
@@ -197,7 +197,7 @@ func (x *g3413cbcDecrypter) CryptBlocks(dst, src []byte) {
 
 func (x *g3413cbcDecrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/g3413cbc: incorrect length IV")
+        panic("go-cryptobin/g3413cbc: incorrect length IV")
     }
     copy(x.iv, iv)
 }

@@ -186,16 +186,16 @@ func (c *ccm) auth(nonce, plaintext, additionalData []byte, tagMask *[ccmBlockSi
 
 func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
     if len(nonce) != c.nonceSize {
-        panic("cryptobin/ccm: incorrect nonce length given to CCM")
+        panic("go-cryptobin/ccm: incorrect nonce length given to CCM")
     }
 
     if uint64(len(plaintext)) > uint64(c.MaxLength()) {
-        panic("cryptobin/ccm: message too large for CCM")
+        panic("go-cryptobin/ccm: message too large for CCM")
     }
 
     ret, out := alias.SliceForAppend(dst, len(plaintext)+c.tagSize)
     if alias.InexactOverlap(out, plaintext) {
-        panic("cryptobin/ccm: invalid buffer overlap")
+        panic("go-cryptobin/ccm: invalid buffer overlap")
     }
 
     var counter, tagMask [ccmBlockSize]byte
@@ -214,13 +214,13 @@ func (c *ccm) Seal(dst, nonce, plaintext, data []byte) []byte {
 
 func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     if len(nonce) != c.nonceSize {
-        panic("cryptobin/ccm: incorrect nonce length given to CCM")
+        panic("go-cryptobin/ccm: incorrect nonce length given to CCM")
     }
 
     // Sanity check to prevent the authentication from always succeeding if an implementation
     // leaves tagSize uninitialized, for example.
     if c.tagSize < ccmMinimumTagSize {
-        panic("cryptobin/ccm: incorrect CCM tag size")
+        panic("go-cryptobin/ccm: incorrect CCM tag size")
     }
 
     if len(ciphertext) < c.tagSize {
@@ -240,7 +240,7 @@ func (c *ccm) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
 
     ret, out := alias.SliceForAppend(dst, len(ciphertext))
     if alias.InexactOverlap(out, ciphertext) {
-        panic("cryptobin/ccm: invalid buffer overlap")
+        panic("go-cryptobin/ccm: invalid buffer overlap")
     }
 
     counter[len(counter)-1] |= 1

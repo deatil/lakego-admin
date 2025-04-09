@@ -43,7 +43,7 @@ func NewG3413CTRWithBitBlockSize(block cipher.Block, iv []byte, bitBlockSize int
     bs := block.BlockSize()
 
     if len(iv) != (bs / 2) {
-        panic("cryptobin/g3413ctr.NewG3413CTRWithBitBlockSize: Parameter IV length must be == blockSize/2")
+        panic("go-cryptobin/g3413ctr.NewG3413CTRWithBitBlockSize: Parameter IV length must be == blockSize/2")
     }
 
     bufSize := g3413StreamBufferSize
@@ -96,10 +96,10 @@ func (x *g3413ctr) refill() {
 
 func (x *g3413ctr) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/g3413ctr: output smaller than input")
+        panic("go-cryptobin/g3413ctr: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/g3413ctr: invalid buffer overlap")
+        panic("go-cryptobin/g3413ctr: invalid buffer overlap")
     }
 
     for len(src) > 0 {

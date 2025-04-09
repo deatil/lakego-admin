@@ -59,7 +59,7 @@ func NewEncoding(encoder string) *Encoding {
  * Encoder
  */
 
-// EncodeToString encodes binary bytes into a Base92 string.
+// Encode encodes binary bytes.
 func (enc *Encoding) Encode(bin []byte) []byte {
     size := len(bin)
 

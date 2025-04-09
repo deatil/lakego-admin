@@ -83,7 +83,7 @@ func (priv *PrivateKey) Public() crypto.PublicKey {
 // crypto.Decrypter
 func (priv *PrivateKey) Decrypt(_ io.Reader, ciphertext []byte, opts crypto.DecrypterOpts) (plaintext []byte, err error) {
     if len(ciphertext) <= 36 {
-        return nil, errors.New("cryptobin/rabin: ciphertext data too short.")
+        return nil, errors.New("go-cryptobin/rabin: ciphertext data too short.")
     }
 
     length := int(getu32(ciphertext[:4]))
@@ -108,12 +108,12 @@ func (priv *PrivateKey) Decrypt(_ io.Reader, ciphertext []byte, opts crypto.Decr
         return b, nil
     }
 
-    return nil, errors.New("cryptobin/rabin: decrypt data fail.")
+    return nil, errors.New("go-cryptobin/rabin: decrypt data fail.")
 }
 
 func Encrypt(pub *PublicKey, plaintext []byte, opts crypto.DecrypterOpts) ([]byte, error) {
     if pub == nil {
-        return nil, errors.New("cryptobin/rabin: Public Key is error")
+        return nil, errors.New("go-cryptobin/rabin: Public Key is error")
     }
 
     return pub.Encrypt(plaintext, opts)
@@ -121,7 +121,7 @@ func Encrypt(pub *PublicKey, plaintext []byte, opts crypto.DecrypterOpts) ([]byt
 
 func Decrypt(priv *PrivateKey, ciphertext []byte, opts crypto.DecrypterOpts) ([]byte, error) {
     if priv == nil {
-        return nil, errors.New("cryptobin/rabin: Private Key is error")
+        return nil, errors.New("go-cryptobin/rabin: Private Key is error")
     }
 
     return priv.Decrypt(nil, ciphertext, opts)

@@ -63,7 +63,7 @@ func (a *aead) Overhead() int  {
 
 func (a *aead) Seal(dst, nonce, plaintext, data []byte) (out []byte) {
     if len(nonce) != a.nonceSize && a.nonceSize >= 0 {
-        panic("cryptobin/siv: incorrect nonce length")
+        panic("go-cryptobin/siv: incorrect nonce length")
     }
 
     var err error
@@ -74,7 +74,7 @@ func (a *aead) Seal(dst, nonce, plaintext, data []byte) (out []byte) {
     }
 
     if err != nil {
-        panic("cryptobin/siv: " + err.Error())
+        panic("go-cryptobin/siv: " + err.Error())
     }
 
     return out
@@ -82,7 +82,7 @@ func (a *aead) Seal(dst, nonce, plaintext, data []byte) (out []byte) {
 
 func (a *aead) Open(dst, nonce, ciphertext, data []byte) ([]byte, error) {
     if len(nonce) != a.nonceSize && a.nonceSize >= 0 {
-        panic("cryptobin/siv: incorrect nonce length")
+        panic("go-cryptobin/siv: incorrect nonce length")
     }
 
     if data == nil {

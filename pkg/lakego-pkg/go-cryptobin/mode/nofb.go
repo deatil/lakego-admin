@@ -26,7 +26,7 @@ type nofb struct {
 func NewNOFB(b cipher.Block, iv []byte) cipher.Stream {
     blockSize := b.BlockSize()
     if len(iv) != blockSize {
-        panic("cryptobin/nofb: IV length must equal block size")
+        panic("go-cryptobin/nofb: IV length must equal block size")
     }
 
     bufSize := streamBufferSize
@@ -69,10 +69,10 @@ func (x *nofb) refill() {
 
 func (x *nofb) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/nofb: output smaller than input")
+        panic("go-cryptobin/nofb: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/nofb: invalid buffer overlap")
+        panic("go-cryptobin/nofb: invalid buffer overlap")
     }
 
     bs := x.b.BlockSize()

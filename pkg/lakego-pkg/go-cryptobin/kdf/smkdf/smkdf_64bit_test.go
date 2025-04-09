@@ -16,5 +16,5 @@ func Test_64bit_Fail(t *testing.T) {
         }
     }()
 
-    _ = Key(sm3.New, []byte("cryptobin-test"), 1 << 38)
+    _ = Key(sm3.New, []byte("go-cryptobin-test"), 1 << 38)
 }

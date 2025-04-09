@@ -88,7 +88,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
         Q: q,
     })
     if err != nil {
-        return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamal: failed to marshal algo param: " + err.Error())
     }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyElGamal
@@ -99,7 +99,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {
-        return nil, errors.New("cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
     }
 
     pkix := pkixPublicKey{
@@ -132,14 +132,14 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyElGamal)
     if !algoEq {
-        return nil, errors.New("cryptobin/elgamal: unknown public key algorithm")
+        return nil, errors.New("go-cryptobin/elgamal: unknown public key algorithm")
     }
 
     yDer := cryptobyte.String(pki.PublicKey.RightAlign())
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
-        return nil, errors.New("cryptobin/elgamal: invalid ElGamal public key")
+        return nil, errors.New("go-cryptobin/elgamal: invalid ElGamal public key")
     }
 
     pub := &PublicKey{
@@ -152,13 +152,13 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.G) {
-        return nil, errors.New("cryptobin/elgamal: invalid ElGamal public key")
+        return nil, errors.New("go-cryptobin/elgamal: invalid ElGamal public key")
     }
 
     if pub.Y.Sign() <= 0 ||
         pub.G.Sign() <= 0 ||
         pub.P.Sign() <= 0 {
-        return nil, errors.New("cryptobin/elgamal: zero or negative ElGamal parameter")
+        return nil, errors.New("go-cryptobin/elgamal: zero or negative ElGamal parameter")
     }
 
     return pub, nil
@@ -185,7 +185,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
         Q: q,
     })
     if err != nil {
-        return nil, errors.New("cryptobin/elgamal: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamal: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -200,7 +200,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privateKeyBytes, err := xInt.Bytes()
     if err != nil {
-        return nil, errors.New("cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamal: failed to builder PrivateKey: " + err.Error())
     }
 
     privKey.PrivateKey = privateKeyBytes
@@ -222,14 +222,14 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     }
 
     if !privKey.Algo.Algorithm.Equal(oidPublicKeyElGamal) {
-        return nil, fmt.Errorf("cryptobin/elgamal: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
+        return nil, fmt.Errorf("go-cryptobin/elgamal: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
 
     xDer := cryptobyte.String(string(privKey.PrivateKey))
 
     x := new(big.Int)
     if !xDer.ReadASN1Integer(x) {
-        return nil, errors.New("cryptobin/elgamal: invalid ElGamal public key")
+        return nil, errors.New("go-cryptobin/elgamal: invalid ElGamal public key")
     }
 
     priv := &PrivateKey{
@@ -246,7 +246,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(priv.P) ||
         !paramsDer.ReadASN1Integer(priv.G) {
-        return nil, errors.New("cryptobin/elgamal: invalid ElGamal private key")
+        return nil, errors.New("go-cryptobin/elgamal: invalid ElGamal private key")
     }
 
     // 算出 Y 值
@@ -254,7 +254,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 
     if priv.Y.Sign() <= 0 || priv.G.Sign() <= 0 ||
         priv.P.Sign() <= 0 || priv.X.Sign() <= 0 {
-        return nil, errors.New("cryptobin/elgamal: zero or negative ElGamal parameter")
+        return nil, errors.New("go-cryptobin/elgamal: zero or negative ElGamal parameter")
     }
 
     return priv, nil

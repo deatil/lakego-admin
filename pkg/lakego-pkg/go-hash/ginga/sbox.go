@@ -1,0 +1,6 @@
+package ginga
+
+var iv = [8]uint32{
+    0xDEADBEEF, 0xCAFEBABE, 0xFEEDFACE, 0xBAADF00D,
+    0x8BADF00D, 0x1337C0DE, 0x0BADC0DE, 0xFACEB00C,
+}

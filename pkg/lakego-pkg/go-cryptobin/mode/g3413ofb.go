@@ -25,7 +25,7 @@ type g3413ofb struct {
 func NewG3413OFB(b cipher.Block, iv []byte) cipher.Stream {
     blockSize := b.BlockSize()
     if len(iv) != 2*blockSize {
-        panic("cryptobin/g3413ofb.NewG3413OFB: IV length must equal two block size")
+        panic("go-cryptobin/g3413ofb.NewG3413OFB: IV length must equal two block size")
     }
 
     bufSize := streamBufferSize
@@ -72,10 +72,10 @@ func (x *g3413ofb) refill() {
 
 func (x *g3413ofb) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/g3413ofb: output smaller than input")
+        panic("go-cryptobin/g3413ofb: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/g3413ofb: invalid buffer overlap")
+        panic("go-cryptobin/g3413ofb: invalid buffer overlap")
     }
 
     for len(src) > 0 {

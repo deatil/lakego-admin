@@ -31,7 +31,7 @@ const (
 func NewOCFBEncrypter(block cipher.Block, randData []byte, resync OCFBResyncOption) (cipher.Stream, []byte) {
     blockSize := block.BlockSize()
     if len(randData) != blockSize {
-        panic("cryptobin/ocfb.NewOCFBEncrypter: randData length must equal block size")
+        panic("go-cryptobin/ocfb.NewOCFBEncrypter: randData length must equal block size")
     }
 
     x := &ocfbEncrypter{
@@ -63,10 +63,10 @@ func NewOCFBEncrypter(block cipher.Block, randData []byte, resync OCFBResyncOpti
 
 func (x *ocfbEncrypter) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/ocfb: output smaller than input")
+        panic("go-cryptobin/ocfb: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/ocfb: invalid buffer overlap")
+        panic("go-cryptobin/ocfb: invalid buffer overlap")
     }
 
     for i := 0; i < len(src); i++ {
@@ -97,7 +97,7 @@ type ocfbDecrypter struct {
 func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption) cipher.Stream {
     blockSize := block.BlockSize()
     if len(prefix) != blockSize+2 {
-        panic("cryptobin/ocfb.NewOCFBDecrypter: prefix length must equal block size add two")
+        panic("go-cryptobin/ocfb.NewOCFBDecrypter: prefix length must equal block size add two")
     }
 
     x := &ocfbDecrypter{
@@ -119,7 +119,7 @@ func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption
 
     if prefixCopy[blockSize-2] != prefixCopy[blockSize] ||
         prefixCopy[blockSize-1] != prefixCopy[blockSize+1] {
-        panic("cryptobin/ocfb: invalid prefix overlap")
+        panic("go-cryptobin/ocfb: invalid prefix overlap")
     }
 
     if resync {
@@ -135,10 +135,10 @@ func NewOCFBDecrypter(block cipher.Block, prefix []byte, resync OCFBResyncOption
 
 func (x *ocfbDecrypter) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/ocfb: output smaller than input")
+        panic("go-cryptobin/ocfb: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/ocfb: invalid buffer overlap")
+        panic("go-cryptobin/ocfb: invalid buffer overlap")
     }
 
     for i := 0; i < len(src); i++ {

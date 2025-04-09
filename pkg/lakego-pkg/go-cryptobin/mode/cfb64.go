@@ -23,10 +23,10 @@ type cfb64 struct {
 // 每个块都进行异或
 func (x *cfb64) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/cfb64: output smaller than input")
+        panic("go-cryptobin/cfb64: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/cfb64: invalid buffer overlap")
+        panic("go-cryptobin/cfb64: invalid buffer overlap")
     }
 
     bs := 8
@@ -59,7 +59,7 @@ func (x *cfb64) XORKeyStream(dst, src []byte) {
 func NewCFB64(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
     blockSize := block.BlockSize()
     if len(iv) != blockSize {
-        panic("cryptobin/cfb64: iv length must equal block size")
+        panic("go-cryptobin/cfb64: iv length must equal block size")
     }
 
     x := &cfb64{

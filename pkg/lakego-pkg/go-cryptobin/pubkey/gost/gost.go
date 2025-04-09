@@ -42,7 +42,7 @@ func (pub *PublicKey) Equal(x crypto.PublicKey) bool {
 func (pub *PublicKey) Verify(digest, signature []byte) (bool, error) {
     pointSize := pub.Curve.PointSize()
     if len(signature) != 2*pointSize {
-        return false, fmt.Errorf("cryptobin/gost: len(signature)=%d != %d", len(signature), 2*pointSize)
+        return false, fmt.Errorf("go-cryptobin/gost: len(signature)=%d != %d", len(signature), 2*pointSize)
     }
 
     s := bigIntFromBytes(signature[:pointSize])
@@ -50,7 +50,7 @@ func (pub *PublicKey) Verify(digest, signature []byte) (bool, error) {
 
     verify, err := VerifyWithRS(pub, digest, r, s)
     if err != nil {
-        return false, errors.New("cryptobin/gost: " + err.Error())
+        return false, errors.New("go-cryptobin/gost: " + err.Error())
     }
 
     return verify, nil
@@ -66,7 +66,7 @@ func (pub *PublicKey) VerifyASN1(digest, signature []byte) (bool, error) {
 
     verify, err := VerifyWithRS(pub, digest, sign.R, sign.S)
     if err != nil {
-        return false, errors.New("cryptobin/gost: " + err.Error())
+        return false, errors.New("go-cryptobin/gost: " + err.Error())
     }
 
     return verify, nil
@@ -135,7 +135,7 @@ func (priv *PrivateKey) SignASN1(rand io.Reader, digest []byte, opts crypto.Sign
 func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
     k := bigIntFromBytes(raw)
     if k.Cmp(zero) == 0 {
-        return nil, errors.New("cryptobin/gost: zero private key")
+        return nil, errors.New("go-cryptobin/gost: zero private key")
     }
 
     priv := new(PrivateKey)
@@ -150,7 +150,7 @@ func newPrivateKey(curve *Curve, raw []byte) (*PrivateKey, error) {
 func GenerateKey(rand io.Reader, curve *Curve) (*PrivateKey, error) {
     private := make([]byte, curve.PointSize())
     if _, err := io.ReadFull(rand, private); err != nil {
-        return nil, fmt.Errorf("cryptobin/gost: %w", err)
+        return nil, fmt.Errorf("go-cryptobin/gost: %w", err)
     }
 
     return newPrivateKey(curve, private)
@@ -173,7 +173,7 @@ func PrivateKeyTo(priv *PrivateKey) []byte {
 func NewPublicKey(curve *Curve, data []byte) (*PublicKey, error) {
     x, y := Unmarshal(curve, data)
     if x == nil || y == nil {
-        return nil, errors.New("cryptobin/gost: publicKey is incorrect.")
+        return nil, errors.New("go-cryptobin/gost: publicKey is incorrect.")
     }
 
     pub := &PublicKey{
@@ -193,7 +193,7 @@ func PublicKeyTo(pub *PublicKey) []byte {
 // Sign hash
 func Sign(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
     if priv == nil {
-        return nil, errors.New("cryptobin/gost: Private Key is error")
+        return nil, errors.New("go-cryptobin/gost: Private Key is error")
     }
 
     return priv.Sign(rand, hash, nil)
@@ -202,7 +202,7 @@ func Sign(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
 // Verify hash
 func Verify(pub *PublicKey, hash, sig []byte) (bool, error) {
     if pub == nil {
-        return false, errors.New("cryptobin/gost: Public Key is error")
+        return false, errors.New("go-cryptobin/gost: Public Key is error")
     }
 
     return pub.Verify(hash, sig)
@@ -214,7 +214,7 @@ func Verify(pub *PublicKey, hash, sig []byte) (bool, error) {
 // returns the ASN.1 encoded signature.
 func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
     if priv == nil {
-        return nil, errors.New("cryptobin/gost: Private Key is error")
+        return nil, errors.New("go-cryptobin/gost: Private Key is error")
     }
 
     return priv.SignASN1(rand, hash, nil)
@@ -224,7 +224,7 @@ func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
 // public key, pub. Its return value records whether the signature is valid.
 func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
     if pub == nil {
-        return false, errors.New("cryptobin/gost: Public Key is error")
+        return false, errors.New("go-cryptobin/gost: Public Key is error")
     }
 
     return pub.VerifyASN1(hash, sig)
@@ -252,7 +252,7 @@ func SignToRS(rand io.Reader, priv *PrivateKey, digest []byte) (*big.Int, *big.I
 
 Retry:
     if _, err = io.ReadFull(rand, kRaw); err != nil {
-        return nil, nil, fmt.Errorf("cryptobin/gost: %w", err)
+        return nil, nil, fmt.Errorf("go-cryptobin/gost: %w", err)
     }
 
     k = bigIntFromBytes(kRaw)

@@ -23,7 +23,7 @@ func newWrapPad(b cipher.Block, iv []byte) *wrapPad {
     }
 
     if len(iv) < 4 {
-        panic("cryptobin/wrapPad: IV length must gt or equal 4 bytes")
+        panic("go-cryptobin/wrapPad: IV length must gt or equal 4 bytes")
     }
 
     copy(c.iv, iv)
@@ -59,11 +59,11 @@ func (x *wrapPadEncrypter) BlockSize() int {
  */
 func (x *wrapPadEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%8 != 0 {
-        panic("cryptobin/wrapPad: input not full blocks")
+        panic("go-cryptobin/wrapPad: input not full blocks")
     }
 
     if len(dst) < len(src)+8 {
-        panic("cryptobin/wrapPad: output smaller than input")
+        panic("go-cryptobin/wrapPad: output smaller than input")
     }
 
     icv := x.iv
@@ -96,7 +96,7 @@ func (x *wrapPadEncrypter) CryptBlocks(dst, src []byte) {
     aiv[7] = byte(inlen & 0xFF)
 
     if len(dst) < (padded_len + len(aiv)) {
-        panic("cryptobin/wrapPad: output too small")
+        panic("go-cryptobin/wrapPad: output too small")
     }
 
     if padded_len == 8 {
@@ -118,7 +118,7 @@ func (x *wrapPadEncrypter) CryptBlocks(dst, src []byte) {
 
 func (x *wrapPadEncrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/wrapPad: incorrect length IV")
+        panic("go-cryptobin/wrapPad: incorrect length IV")
     }
 
     copy(x.iv, iv)
@@ -152,11 +152,11 @@ func (x *wrapPadDecrypter) BlockSize() int {
  */
 func (x *wrapPadDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%8 != 0 {
-        panic("cryptobin/wrapPad: input not full blocks")
+        panic("go-cryptobin/wrapPad: input not full blocks")
     }
 
     if len(dst) < len(src)-8 {
-        panic("cryptobin/wrapPad: output smaller than input")
+        panic("go-cryptobin/wrapPad: output smaller than input")
     }
 
     if len(src) == 0 {
@@ -251,7 +251,7 @@ func (x *wrapPadDecrypter) CryptBlocks(dst, src []byte) {
 
 func (x *wrapPadDecrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/wrapPad: incorrect length IV")
+        panic("go-cryptobin/wrapPad: incorrect length IV")
     }
 
     copy(x.iv, iv)

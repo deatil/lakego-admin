@@ -9,7 +9,7 @@ import (
 // rsa no padding encrypt
 func LowerSafeEncrypt(pub *rsa.PublicKey, msg []byte) ([]byte, error) {
     if pub == nil {
-        return nil, errors.New("cryptobin/rsa: incorrect public key")
+        return nil, errors.New("go-cryptobin/rsa: incorrect public key")
     }
 
     m := new(big.Int).SetBytes(msg)
@@ -22,7 +22,7 @@ func LowerSafeEncrypt(pub *rsa.PublicKey, msg []byte) ([]byte, error) {
 // rsa no padding decrypt
 func LowerSafeDecrypt(priv *rsa.PrivateKey, msg []byte) ([]byte, error) {
     if priv == nil {
-        return nil, errors.New("cryptobin/rsa: incorrect private key")
+        return nil, errors.New("go-cryptobin/rsa: incorrect private key")
     }
 
     c := new(big.Int).SetBytes(msg)

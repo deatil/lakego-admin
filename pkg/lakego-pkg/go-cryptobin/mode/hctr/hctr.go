@@ -31,7 +31,7 @@ type hctr struct {
 
 func NewHCTR(cipher cipher.Block, tweak, hkey []byte) *hctr {
     if len(tweak) != blockSize || len(hkey) != blockSize {
-        panic("cryptobin/hctr: invalid tweak and/or hash key length")
+        panic("go-cryptobin/hctr: invalid tweak and/or hash key length")
     }
 
     c := new(hctr)
@@ -60,15 +60,15 @@ func (h *hctr) BlockSize() int {
 
 func (h *hctr) Encrypt(ciphertext, plaintext []byte) {
     if len(ciphertext) < len(plaintext) {
-        panic("cryptobin/hctr: ciphertext is smaller than plaintext")
+        panic("go-cryptobin/hctr: ciphertext is smaller than plaintext")
     }
 
     if len(plaintext) < blockSize {
-        panic("cryptobin/hctr: plaintext length is smaller than the block size")
+        panic("go-cryptobin/hctr: plaintext length is smaller than the block size")
     }
 
     if alias.InexactOverlap(ciphertext[:len(plaintext)], plaintext) {
-        panic("cryptobin/hctr: invalid buffer overlap")
+        panic("go-cryptobin/hctr: invalid buffer overlap")
     }
 
     var z1, z2 [blockSize]byte
@@ -87,15 +87,15 @@ func (h *hctr) Encrypt(ciphertext, plaintext []byte) {
 
 func (h *hctr) Decrypt(plaintext, ciphertext []byte) {
     if len(plaintext) < len(ciphertext) {
-        panic("cryptobin/hctr: plaintext is smaller than cihpertext")
+        panic("go-cryptobin/hctr: plaintext is smaller than cihpertext")
     }
 
     if len(ciphertext) < blockSize {
-        panic("cryptobin/hctr: ciphertext length is smaller than the block size")
+        panic("go-cryptobin/hctr: ciphertext length is smaller than the block size")
     }
 
     if alias.InexactOverlap(plaintext[:len(ciphertext)], ciphertext) {
-        panic("cryptobin/hctr: invalid buffer overlap")
+        panic("go-cryptobin/hctr: invalid buffer overlap")
     }
 
     var z1, z2 [blockSize]byte

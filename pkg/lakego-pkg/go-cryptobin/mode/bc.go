@@ -49,15 +49,15 @@ func (x *bcEncrypter) BlockSize() int {
 
 func (x *bcEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("cryptobin/bc: input not full blocks")
+        panic("go-cryptobin/bc: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("cryptobin/bc: output smaller than input")
+        panic("go-cryptobin/bc: output smaller than input")
     }
 
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/bc: invalid buffer overlap")
+        panic("go-cryptobin/bc: invalid buffer overlap")
     }
 
     iv := x.iv
@@ -76,7 +76,7 @@ func (x *bcEncrypter) CryptBlocks(dst, src []byte) {
 
 func (x *bcEncrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/bc: incorrect length IV")
+        panic("go-cryptobin/bc: incorrect length IV")
     }
 
     copy(x.iv, iv)
@@ -90,7 +90,7 @@ type bcDecAble interface {
 
 func NewBCDecrypter(b cipher.Block, iv []byte) cipher.BlockMode {
     if len(iv) != b.BlockSize() {
-        panic("cryptobin/bc: IV length must equal block size")
+        panic("go-cryptobin/bc: IV length must equal block size")
     }
 
     if bc, ok := b.(bcDecAble); ok {
@@ -106,15 +106,15 @@ func (x *bcDecrypter) BlockSize() int {
 
 func (x *bcDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%x.blockSize != 0 {
-        panic("cryptobin/bc: input not full blocks")
+        panic("go-cryptobin/bc: input not full blocks")
     }
 
     if len(dst) < len(src) {
-        panic("cryptobin/bc: output smaller than input")
+        panic("go-cryptobin/bc: output smaller than input")
     }
 
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/bc: invalid buffer overlap")
+        panic("go-cryptobin/bc: invalid buffer overlap")
     }
 
     if len(src) == 0 {
@@ -139,7 +139,7 @@ func (x *bcDecrypter) CryptBlocks(dst, src []byte) {
 
 func (x *bcDecrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/bc: incorrect length IV")
+        panic("go-cryptobin/bc: incorrect length IV")
     }
 
     copy(x.iv, iv)

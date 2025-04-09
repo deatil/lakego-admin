@@ -19,10 +19,10 @@ type cfb8 struct {
 
 func (x *cfb8) XORKeyStream(dst, src []byte) {
     if len(dst) < len(src) {
-        panic("cryptobin/cfb8: output smaller than input")
+        panic("go-cryptobin/cfb8: output smaller than input")
     }
     if alias.InexactOverlap(dst[:len(src)], src) {
-        panic("cryptobin/cfb8: invalid buffer overlap")
+        panic("go-cryptobin/cfb8: invalid buffer overlap")
     }
 
     for i := range src {
@@ -44,7 +44,7 @@ func NewCFB8(block cipher.Block, iv []byte, decrypt bool) cipher.Stream {
     blockSize := block.BlockSize()
     if len(iv) != blockSize {
         // stack trace will indicate whether it was de or encryption
-        panic("cryptobin/cfb8: IV length must equal block size")
+        panic("go-cryptobin/cfb8: IV length must equal block size")
     }
 
     x := &cfb8{

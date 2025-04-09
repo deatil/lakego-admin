@@ -38,7 +38,7 @@ func newWrap(b cipher.Block, iv []byte) *wrap {
     }
 
     if len(iv) < 8 {
-        panic("cryptobin/wrap: IV length must gt or equal 8 bytes")
+        panic("go-cryptobin/wrap: IV length must gt or equal 8 bytes")
     }
 
     copy(c.iv, iv)
@@ -74,11 +74,11 @@ func (x *wrapEncrypter) BlockSize() int {
  */
 func (x *wrapEncrypter) CryptBlocks(dst, src []byte) {
     if len(src)%8 != 0 {
-        panic("cryptobin/wrap: input not full blocks")
+        panic("go-cryptobin/wrap: input not full blocks")
     }
 
     if len(dst) < len(src)+8 {
-        panic("cryptobin/wrap: output smaller than input")
+        panic("go-cryptobin/wrap: output smaller than input")
     }
 
     iv := x.iv
@@ -91,7 +91,7 @@ func (x *wrapEncrypter) CryptBlocks(dst, src []byte) {
     A = make([]byte, 16)
 
     if (((inlen & 0x7) != 0) || (inlen < 16) || (uint64(inlen) > WRAP_MAX)) {
-        panic("cryptobin/wrap: invalid src")
+        panic("go-cryptobin/wrap: invalid src")
     }
 
     t = 1
@@ -123,7 +123,7 @@ func (x *wrapEncrypter) CryptBlocks(dst, src []byte) {
 
 func (x *wrapEncrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/wrap: incorrect length IV")
+        panic("go-cryptobin/wrap: incorrect length IV")
     }
 
     copy(x.iv, iv)
@@ -161,11 +161,11 @@ func (x *wrapDecrypter) BlockSize() int {
  */
 func (x *wrapDecrypter) CryptBlocks(dst, src []byte) {
     if len(src)%8 != 0 {
-        panic("cryptobin/wrap: input not full blocks")
+        panic("go-cryptobin/wrap: input not full blocks")
     }
 
     if len(dst) < len(src)-8 {
-        panic("cryptobin/wrap: output smaller than input")
+        panic("go-cryptobin/wrap: output smaller than input")
     }
 
     if len(src) == 0 {
@@ -234,7 +234,7 @@ func (x *wrapDecrypter) cryptBlocks(out, in []byte) (iv []byte, err error) {
 
 func (x *wrapDecrypter) SetIV(iv []byte) {
     if len(iv) != len(x.iv) {
-        panic("cryptobin/wrap: incorrect length IV")
+        panic("go-cryptobin/wrap: incorrect length IV")
     }
 
     copy(x.iv, iv)
