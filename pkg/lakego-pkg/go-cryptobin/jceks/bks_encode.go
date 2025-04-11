@@ -532,7 +532,7 @@ func (this *BKS) Marshal(password string, opts ...BKSOpts) ([]byte, error) {
 
     salt, err := genRandom(opt.SaltSize)
     if err != nil {
-        return nil, errors.New("failed to generate salt")
+        return nil, errors.New("go-cryptobin/jceks: failed to generate salt")
     }
 
     err = writeBytes(buf, salt)

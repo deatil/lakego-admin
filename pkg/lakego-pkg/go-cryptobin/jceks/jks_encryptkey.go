@@ -41,7 +41,7 @@ func jksDecryptKey(encryptedPKI []byte, passwd []byte) ([]byte, error) {
     sha.Write(key)
 
     if subtle.ConstantTimeCompare(check, sha.Sum(nil)) != 1 {
-        return nil, errors.New("keystore was tampered with or password was incorrect")
+        return nil, errors.New("go-cryptobin/jceks: keystore was tampered with or password was incorrect")
     }
 
     return key, nil

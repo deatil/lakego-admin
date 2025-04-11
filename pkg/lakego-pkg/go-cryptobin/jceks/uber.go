@@ -19,7 +19,7 @@ type UBER struct {
     BKS
 }
 
-// 构造函数
+// New UBER
 func NewUBER() *UBER {
     uber := &UBER{
         BKS{
@@ -58,6 +58,6 @@ func LoadUberFromBytes(data []byte, password string) (*UBER, error) {
     return uber, err
 }
 
-// 别名
+// alias functions
 var LoadUber      = LoadUberFromBytes
 var NewUberEncode = NewUBER

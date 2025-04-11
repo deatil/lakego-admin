@@ -3,16 +3,15 @@ package jceks
 import (
     "bytes"
     "crypto/sha1"
-    "encoding/asn1"
 )
 
-// 配置
+// UBER Options
 type UBEROpts struct {
     SaltSize       int
     IterationCount int
 }
 
-// 默认配置
+// UBER Default Options
 var UBERDefaultOpts = UBEROpts{
     SaltSize:       20,
     IterationCount: 10000,
@@ -30,7 +29,7 @@ func (this *UBER) Marshal(password string, opts ...UBEROpts) ([]byte, error) {
     saltSize := opt.SaltSize
     iterationCount := opt.IterationCount
 
-    // 原始数据
+    // entryBuf
     entryBuf := bytes.NewBuffer(nil)
 
     this.marshalEntries(entryBuf)
@@ -41,7 +40,7 @@ func (this *UBER) Marshal(password string, opts ...UBEROpts) ([]byte, error) {
     h.Write(entryData)
     computed := h.Sum([]byte{})
 
-    // 需要加密的数据
+    // plaintext for encrypt
     plainBuf := bytes.NewBuffer(nil)
 
     err = writeOnly(plainBuf, entryData)
@@ -56,24 +55,17 @@ func (this *UBER) Marshal(password string, opts ...UBEROpts) ([]byte, error) {
 
     plaintext := plainBuf.Bytes()
 
-    // 加密数据
+    // encrypt data
     cipher := CipherSHA1AndTwofishForUBER
     cipher.saltSize = saltSize
     cipher.iterationCount = iterationCount
 
-    encrypted, params, err := cipher.Encrypt([]byte(password), plaintext)
+    encrypted, salt, _, err := cipher.encrypt([]byte(password), plaintext)
     if err != nil {
         return nil, err
     }
 
-    var param pbeParam
-    if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, err
-    }
-
-    salt := param.Salt
-
-    // 最后数据
+    // last data
     buf := bytes.NewBuffer(nil)
 
     err = writeUint32(buf, uint32(version))

@@ -6,10 +6,9 @@ import (
     "errors"
     "crypto/sha1"
     "crypto/subtle"
-    "encoding/asn1"
 )
 
-// 解析
+// Parse data
 func (this *UBER) Parse(data []byte, password string) error {
     r := bytes.NewReader(data)
 
@@ -38,20 +37,12 @@ func (this *UBER) Parse(data []byte, password string) error {
     encryptedLen := len(salt) + 12
 
     if len(data) < encryptedLen {
-        return errors.New("Uber: data not right length")
+        return errors.New("go-cryptobin/jceks: data not right length")
     }
 
     encryptedBlob := data[encryptedLen:]
 
-    params, err := asn1.Marshal(pbeParam{
-        Salt:           salt,
-        IterationCount: int(iterationCount),
-    })
-    if err != nil {
-        return err
-    }
-
-    decrypted, err := CipherSHA1AndTwofishForUBER.Decrypt([]byte(password), params, encryptedBlob)
+    decrypted, err := CipherSHA1AndTwofishForUBER.decrypt([]byte(password), salt, int(iterationCount), encryptedBlob)
     if err != nil {
         return err
     }
@@ -62,7 +53,7 @@ func (this *UBER) Parse(data []byte, password string) error {
     dataLen := len(decrypted) - hashDigestSize
 
     if len(decrypted) < dataLen {
-        return errors.New("Uber: decrypted not right length")
+        return errors.New("go-cryptobin/jceks: decrypted not right length")
     }
 
     uberStore := decrypted[:dataLen]

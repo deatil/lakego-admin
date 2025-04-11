@@ -6,7 +6,6 @@ import (
     "bytes"
     "errors"
     "crypto"
-    "encoding/asn1"
 )
 
 type BksDataEntry interface {
@@ -219,15 +218,7 @@ func (this *bksSealedKeyEntry) Decrypt(password string) error {
         return errors.New("decrypt EOF")
     }
 
-    params, err := asn1.Marshal(pbeParam{
-        Salt:           salt,
-        IterationCount: int(iterationCount),
-    })
-    if err != nil {
-        return errors.New("decrypt marshal error")
-    }
-
-    decrypted, err := CipherSHA1And3DESForBKS.Decrypt([]byte(password), params, encryptedBlob)
+    decrypted, err := CipherSHA1And3DESForBKS.decrypt([]byte(password), salt, int(iterationCount), encryptedBlob)
     if err != nil {
         return errors.New("decrypt EOF")
     }
@@ -262,24 +253,19 @@ func (this *bksSealedKeyEntry) Encrypt() ([]byte, error) {
 
     plaintext := bksBuf.Bytes()
 
-    encrypted, params, err := CipherSHA1And3DESForBKS.Encrypt([]byte(this.password), plaintext)
+    encrypted, salt, iterationCount, err := CipherSHA1And3DESForBKS.encrypt([]byte(this.password), plaintext)
     if err != nil {
-        return nil, err
-    }
-
-    var param pbeParam
-    if _, err := asn1.Unmarshal(params, &param); err != nil {
         return nil, err
     }
 
     buf := bytes.NewBuffer(nil)
 
-    err = writeBytes(buf, param.Salt)
+    err = writeBytes(buf, salt)
     if err != nil {
         return nil, err
     }
 
-    err = writeInt32(buf, int32(param.IterationCount))
+    err = writeInt32(buf, int32(iterationCount))
     if err != nil {
         return nil, err
     }

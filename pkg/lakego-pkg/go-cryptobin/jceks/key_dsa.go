@@ -15,12 +15,12 @@ type KeyDSA struct {}
 func (this KeyDSA) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*dsa.PrivateKey)
     if !ok {
-        return nil, errors.New("jceks: private key is err")
+        return nil, errors.New("go-cryptobin/jceks: private key is err")
     }
 
     pkData, err := cryptobin_dsa.MarshalPKCS8PrivateKey(priKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 private key: " + err.Error())
     }
 
     return pkData, nil
@@ -30,7 +30,7 @@ func (this KeyDSA) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
 func (this KeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := cryptobin_dsa.ParsePKCS8PrivateKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 private key: " + err.Error())
     }
 
     return privateKey, nil
@@ -42,12 +42,12 @@ func (this KeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
 func (this KeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
     pubKey, ok := publicKey.(*dsa.PublicKey)
     if !ok {
-        return nil, errors.New("jceks: public key is err")
+        return nil, errors.New("go-cryptobin/jceks: public key is err")
     }
 
     pkData, err := cryptobin_dsa.MarshalPKCS8PublicKey(pubKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 public key: " + err.Error())
     }
 
     return pkData, nil
@@ -57,7 +57,7 @@ func (this KeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
 func (this KeyDSA) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
     publicKey, err := cryptobin_dsa.ParsePKCS8PublicKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 public key: " + err.Error())
     }
 
     return publicKey, nil

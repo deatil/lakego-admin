@@ -14,12 +14,12 @@ type KeySM2 struct {}
 func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*sm2.PrivateKey)
     if !ok {
-        return nil, errors.New("jceks: private key is err")
+        return nil, errors.New("go-cryptobin/jceks: private key is err")
     }
 
     pkData, err := sm2.MarshalPrivateKey(priKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 private key: " + err.Error())
     }
 
     return pkData, nil
@@ -29,7 +29,7 @@ func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
 func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := sm2.ParsePrivateKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 private key: " + err.Error())
     }
 
     return privateKey, nil
@@ -41,12 +41,12 @@ func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
 func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
     pubKey, ok := publicKey.(*sm2.PublicKey)
     if !ok {
-        return nil, errors.New("jceks: public key is err")
+        return nil, errors.New("go-cryptobin/jceks: public key is err")
     }
 
     pkData, err := sm2.MarshalPublicKey(pubKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 public key: " + err.Error())
     }
 
     return pkData, nil
@@ -56,7 +56,7 @@ func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
 func (this KeySM2) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
     publicKey, err := sm2.ParsePublicKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 public key: " + err.Error())
     }
 
     return publicKey, nil

@@ -42,7 +42,7 @@ var CipherSHA1And3DES = CipherBlockCBC{
     oid:            oidPbeWithSHA1And3DES,
 }
 
-// bks 使用
+// for BKS and UBER
 var CipherSHA1And3DESForBKS = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
     hashFunc:       sha1.New,

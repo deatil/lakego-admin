@@ -107,10 +107,8 @@ func (d *digest) processBlock(block []byte) {
         m[i] = getu32(block[i*4 : (i+1)*4])
     }
 
-    // salva estado anterior
     prev := d.s
 
-    // faz a compressão com os rounds
     for r := 0; r < internalRounds; r++ {
         for i := 0; i < 8; i++ {
             k := subKey32(m, r, i&3)

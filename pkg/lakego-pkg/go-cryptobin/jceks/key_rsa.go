@@ -13,7 +13,7 @@ type KeyRsa struct {}
 func (this KeyRsa) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     pkData, err := x509.MarshalPKCS8PrivateKey(privateKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 private key: " + err.Error())
     }
 
     return pkData, nil
@@ -23,7 +23,7 @@ func (this KeyRsa) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
 func (this KeyRsa) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := x509.ParsePKCS8PrivateKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 private key: " + err.Error())
     }
 
     return privateKey, nil
@@ -35,7 +35,7 @@ func (this KeyRsa) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
 func (this KeyRsa) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
     pkData, err := x509.MarshalPKIXPublicKey(publicKey)
     if err != nil {
-        return nil, errors.New("jceks: error encoding PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error encoding PKCS#8 public key: " + err.Error())
     }
 
     return pkData, nil
@@ -45,7 +45,7 @@ func (this KeyRsa) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
 func (this KeyRsa) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
     publicKey, err := x509.ParsePKIXPublicKey(pkData)
     if err != nil {
-        return nil, errors.New("jceks: error parsing PKCS#8 public key: " + err.Error())
+        return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 public key: " + err.Error())
     }
 
     return publicKey, nil
