@@ -12,7 +12,7 @@
 ### Desc
 
 *  A Go package that get data digest hash
-*  hashs has some MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost etc
+*  go-hash have digest MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost etc
 
 
 ### Download
@@ -53,14 +53,14 @@ func main() {
 
     var pass []byte = []byte("...")
 
-    // HmacSHA1 获取摘要
-    var hmacMD5String string = hash.
+    // HmacSHA1
+    var hmacSHA1String string = hash.
         FromString(data).              // input data
         Hmac(hash.HmacSHA1.New, pass). // hash type
         ToHexString()                  // output data
 
-    // HmacSHA1 获取摘要
-    var hmacMD5String string = hash.
+    // HmacSHA1
+    var hmacSHA1String string = hash.
         Hashing().                        // input data
         NewHmac(hash.HmacSHA1.New, pass). // hash type
         Write([]byte(data)).              // write data

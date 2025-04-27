@@ -332,15 +332,12 @@ func TestOpenIncorrectNonceLength(t *testing.T) {
     if err != nil {
         t.Fatal(err)
     }
-    defer func() {
-        if r := recover(); r == nil {
-            t.Errorf("Eax.Open didn't panic on exceedingly long nonce")
-        }
-    }()
+
     longNonce := make([]byte, e.NonceSize()+1)
     _, err = e.Open(nil, longNonce, nil, nil)
     // Let the Open procedure panic
-    if err != nil {
+    if err == nil {
+        t.Errorf("Eax.Open need return error on exceedingly long nonce")
     }
 }
 

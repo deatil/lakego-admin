@@ -15,21 +15,13 @@ const (
 )
 
 var eaxError = func(err string) error {
-    return errors.New("crypto/eax: " + err)
+    return errors.New("go-cryptobin/eax: " + err)
 }
 
 type eax struct {
     block     cipher.Block // Only AES-{128, 192, 256} supported
     tagSize   int          // At least 12 bytes recommended
     nonceSize int
-}
-
-func (e *eax) NonceSize() int {
-    return e.nonceSize
-}
-
-func (e *eax) Overhead() int {
-    return e.tagSize
 }
 
 // NewEAX returns an EAX instance with AES-{KEYLENGTH} and default nonce and
@@ -75,6 +67,14 @@ func NewEAXWithNonceAndTagSize(
     }, nil
 }
 
+func (e *eax) NonceSize() int {
+    return e.nonceSize
+}
+
+func (e *eax) Overhead() int {
+    return e.tagSize
+}
+
 func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
     if len(nonce) > e.nonceSize {
         panic("go-cryptobin/eax: Nonce too long for this instance")
@@ -101,7 +101,7 @@ func (e *eax) Seal(dst, nonce, plaintext, adata []byte) []byte {
 
 func (e *eax) Open(dst, nonce, ciphertext, adata []byte) ([]byte, error) {
     if len(nonce) > e.nonceSize {
-        panic("go-cryptobin/eax: Nonce too long for this instance")
+        return nil, eaxError("Nonce too long for this instance")
     }
 
     if len(ciphertext) < e.tagSize {

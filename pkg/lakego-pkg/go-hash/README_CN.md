@@ -10,8 +10,8 @@
 
 ### 项目介绍
 
-*  常用的数据摘要获取算法
-*  算法包括: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost等)
+*  常用的数据摘要算法
+*  摘要算法包括: (MD2/MD4/MD5/Hmac/Ripemd160/SHA1/SHA3/SHA256/SM3/Xxhash/Gost等)
 
 
 ### 下载安装
@@ -53,13 +53,13 @@ func main() {
     var pass []byte = []byte("...")
 
     // HmacSHA1 获取摘要
-    var hmacMD5String string = hash.
+    var hmacSHA1String string = hash.
         FromString(data).              // 输入数据, 需要获取摘要的数据
         Hmac(hash.HmacSHA1.New, pass). // 摘要方式
         ToHexString()                  // 输出数据, 返回数据类型
 
     // HmacSHA1 获取摘要
-    var hmacMD5String string = hash.
+    var hmacSHA1String string = hash.
         Hashing().                        // 输入数据, 为空
         NewHmac(hash.HmacSHA1.New, pass). // 摘要方式
         Write([]byte(data)).              // 需要获取摘要的数据
