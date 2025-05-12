@@ -3,7 +3,7 @@ package bootstrap
 import (
     "github.com/deatil/lakego-doak/lakego/kernel"
 
-    "extension/lakego/demo/demo/provider"
+    "extension/lakego/demo/provider"
 )
 
 // 添加服务提供者

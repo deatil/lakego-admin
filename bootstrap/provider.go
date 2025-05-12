@@ -36,7 +36,7 @@ import (
     app_example "app/example/bootstrap"
 
     // 扩展例子
-    extension_demo "extension/lakego/demo/demo/bootstrap"
+    extension_demo "extension/lakego/demo/bootstrap"
 )
 
 // 引入模块

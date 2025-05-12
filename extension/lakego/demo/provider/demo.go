@@ -3,11 +3,17 @@ package provider
 import (
     "fmt"
 
+    "github.com/gin-gonic/gin"
+
     "github.com/deatil/lakego-doak/lakego/facade"
     "github.com/deatil/lakego-doak/lakego/provider"
 
+    admin_route "github.com/deatil/lakego-doak-admin/admin/support/route"
+
     iapp "github.com/deatil/lakego-doak/lakego/app/interfaces"
     "github.com/deatil/lakego-doak-extension/extension/extension"
+
+    demo_route "extension/lakego/demo/route"
 )
 
 /**
@@ -31,14 +37,27 @@ func (this *Demo) Boot() {
     // Boot
 }
 
+// 导入路由
+func (this *Demo) loadRoute() {
+    // 后台路由，包括后台使用的所有中间件
+    admin_route.AddRoute(func(engine *gin.RouterGroup) {
+        demo_route.AdminRoute(engine)
+    })
+
+    // 常规 gin 路由，除 gin 自带外没有任何中间件
+    this.AddRoute(func(engine *gin.Engine) {
+        demo_route.GinRoute(engine)
+    })
+}
+
 // 导入扩展
 func (this *Demo) loadExtInfo() {
-    // 加载后
+    // 加载前
     extension.Booting(func() {
         facade.Logger.Error("demo Booting")
     })
 
-    // 加载前
+    // 加载后
     extension.Booted(func() {
         facade.Logger.Error("demo Booted")
     })
@@ -96,10 +115,14 @@ func (this *Demo) loadExtInfo() {
 
             return nil
         },
-        Start: func(i iapp.App) error {
-            fmt.Println("demo starting")
+        // 扩展启用后
+        Start: func(app iapp.App) error {
+            fmt.Println("demo Start")
 
-            facade.Logger.Error("demo starting")
+            facade.Logger.Error("demo Start")
+
+            // 导入路由
+            this.loadRoute()
 
             return nil
         },
