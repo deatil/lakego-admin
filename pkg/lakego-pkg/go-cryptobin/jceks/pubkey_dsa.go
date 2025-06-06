@@ -8,11 +8,16 @@ import (
     cryptobin_dsa "github.com/deatil/go-cryptobin/pubkey/dsa"
 )
 
-// DSA
-type KeyDSA struct {}
+// DSA PublicKey
+type PublicKeyDSA struct {}
 
-// 包装
-func (this KeyDSA) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
+// algorithm name
+func (this PublicKeyDSA) Algorithm() string {
+    return "DSA"
+}
+
+// MarshalPKCS8PrivateKey
+func (this PublicKeyDSA) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*dsa.PrivateKey)
     if !ok {
         return nil, errors.New("go-cryptobin/jceks: private key is err")
@@ -26,8 +31,8 @@ func (this KeyDSA) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
     return pkData, nil
 }
 
-// 解析
-func (this KeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
+// ParsePKCS8PrivateKey
+func (this PublicKeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := cryptobin_dsa.ParsePKCS8PrivateKey(pkData)
     if err != nil {
         return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 private key: " + err.Error())
@@ -36,10 +41,8 @@ func (this KeyDSA) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
     return privateKey, nil
 }
 
-// ============
-
-// 包装公钥
-func (this KeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
+// MarshalPKCS8PublicKey
+func (this PublicKeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
     pubKey, ok := publicKey.(*dsa.PublicKey)
     if !ok {
         return nil, errors.New("go-cryptobin/jceks: public key is err")
@@ -53,17 +56,12 @@ func (this KeyDSA) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
     return pkData, nil
 }
 
-// 解析公钥
-func (this KeyDSA) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
+// ParsePKCS8PublicKey
+func (this PublicKeyDSA) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
     publicKey, err := cryptobin_dsa.ParsePKCS8PublicKey(pkData)
     if err != nil {
         return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 public key: " + err.Error())
     }
 
     return publicKey, nil
-}
-
-// 名称
-func (this KeyDSA) Algorithm() string {
-    return "DSA"
 }

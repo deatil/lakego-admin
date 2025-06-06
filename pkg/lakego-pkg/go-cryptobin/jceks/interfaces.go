@@ -51,8 +51,3 @@ var ciphers = make(map[string]func() Cipher)
 func AddCipher(oid asn1.ObjectIdentifier, cipher func() Cipher) {
     ciphers[oid.String()] = cipher
 }
-
-// ===============
-
-// 默认配置
-var DefaultCipher = CipherMD5And3DES

@@ -1,4 +1,4 @@
-package salsa20
+package xsalsa20
 
 import (
     "bytes"
@@ -18,7 +18,7 @@ func Test_NewCipher(t *testing.T) {
         random.Read(key)
         value := make([]byte, 12)
         random.Read(value)
-        nonce := make([]byte, 8)
+        nonce := make([]byte, 24)
         random.Read(nonce)
 
         cipher1, err := NewCipher(key, nonce)
@@ -57,10 +57,10 @@ func Test_NewCipherWithCounter(t *testing.T) {
         random.Read(key)
         value := make([]byte, 12)
         random.Read(value)
-        nonce := make([]byte, 8)
+        nonce := make([]byte, 24)
         random.Read(nonce)
 
-        cipher1, err := NewCipherWithCounter(key, nonce, 1)
+        cipher1, err := NewCipherWithCounter(key, nonce, 2)
         if err != nil {
             t.Fatal(err.Error())
         }
@@ -71,7 +71,7 @@ func Test_NewCipherWithCounter(t *testing.T) {
             t.Errorf("fail: encrypted equal value\n")
         }
 
-        cipher2, err := NewCipherWithCounter(key, nonce, 1)
+        cipher2, err := NewCipherWithCounter(key, nonce, 2)
         if err != nil {
             t.Fatal(err.Error())
         }

@@ -41,11 +41,11 @@ func formatSalt(salt []byte) ([]byte, error) {
 // ivLen = 8
 func derivedKey(
     password string,
-    salt string,
-    iter int,
-    keyLen int,
-    ivLen int,
-    h func() hash.Hash,
+    salt     string,
+    iter     int,
+    keyLen   int,
+    ivLen    int,
+    h        func() hash.Hash,
 ) ([]byte, []byte) {
     passwdBytes := formatPassword([]byte(password))
 
@@ -88,13 +88,13 @@ func bksFormatPassword(password []byte) []byte {
 }
 
 // 生成密钥
-func derivedKeyWithPbkdf(
+func derivedKeyUsingPBKDF(
     password string,
-    salt string,
-    iter int,
-    keyLen int,
-    ivLen int,
-    h func() hash.Hash,
+    salt     string,
+    iter     int,
+    keyLen   int,
+    ivLen    int,
+    h        func() hash.Hash,
 ) ([]byte, []byte) {
     passwdBytes := bksFormatPassword([]byte(password))
     saltBytes := []byte(salt)
@@ -108,10 +108,10 @@ func derivedKeyWithPbkdf(
 // 生成密钥
 func derivedHmacKey(
     password string,
-    salt string,
-    iter int,
-    keyLen int,
-    h func() hash.Hash,
+    salt     string,
+    iter     int,
+    keyLen   int,
+    h        func() hash.Hash,
 ) []byte {
     passwdBytes := bksFormatPassword([]byte(password))
     saltBytes := []byte(salt)

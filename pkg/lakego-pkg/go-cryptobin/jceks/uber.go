@@ -34,7 +34,7 @@ func NewUBER() *UBER {
 func LoadUberFromReader(reader io.Reader, password string) (*UBER, error) {
     buf := bytes.NewBuffer(nil)
 
-    // 保存
+    // copy data
     if _, err := io.Copy(buf, reader); err != nil {
         return nil, err
     }

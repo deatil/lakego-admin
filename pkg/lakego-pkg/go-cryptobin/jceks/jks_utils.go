@@ -5,6 +5,8 @@ import (
     "crypto/sha1"
     "crypto/x509/pkix"
     "encoding/asn1"
+
+    "github.com/deatil/go-cryptobin/tool/constraints"
 )
 
 func getJksPreKeyedHash(password []byte) hash.Hash {
@@ -76,9 +78,9 @@ func isInArray[T any](item string, items map[string]T) bool {
     return false
 }
 
-func isInSlice(item string, items []string) bool {
-    for _, name := range items {
-        if name == item {
+func isInSlice[T constraints.Ordered](item T, items []T) bool {
+    for _, value := range items {
+        if value == item {
             return true
         }
     }

@@ -87,9 +87,9 @@ func (this *bksKeyEntry) TypeString() string {
 
 func (this *bksKeyEntry) Recover() (
     private crypto.PrivateKey,
-    public crypto.PublicKey,
-    secret []byte,
-    err error,
+    public  crypto.PublicKey,
+    secret  []byte,
+    err     error,
 ) {
     keyType := this.keyType
 

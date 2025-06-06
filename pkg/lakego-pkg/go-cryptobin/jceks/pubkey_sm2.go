@@ -7,11 +7,16 @@ import (
     "github.com/deatil/go-cryptobin/gm/sm2"
 )
 
-// SM2
-type KeySM2 struct {}
+// SM2 PublicKey
+type PublicKeySM2 struct {}
 
-// 包装
-func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
+// algorithm name
+func (this PublicKeySM2) Algorithm() string {
+    return "SM2"
+}
+
+// MarshalPKCS8PrivateKey
+func (this PublicKeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte, error) {
     priKey, ok := privateKey.(*sm2.PrivateKey)
     if !ok {
         return nil, errors.New("go-cryptobin/jceks: private key is err")
@@ -25,8 +30,8 @@ func (this KeySM2) MarshalPKCS8PrivateKey(privateKey crypto.PrivateKey) ([]byte,
     return pkData, nil
 }
 
-// 解析
-func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
+// ParsePKCS8PrivateKey
+func (this PublicKeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error) {
     privateKey, err := sm2.ParsePrivateKey(pkData)
     if err != nil {
         return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 private key: " + err.Error())
@@ -35,10 +40,8 @@ func (this KeySM2) ParsePKCS8PrivateKey(pkData []byte) (crypto.PrivateKey, error
     return privateKey, nil
 }
 
-// ============
-
-// 包装公钥
-func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
+// MarshalPKCS8PublicKey
+func (this PublicKeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, error) {
     pubKey, ok := publicKey.(*sm2.PublicKey)
     if !ok {
         return nil, errors.New("go-cryptobin/jceks: public key is err")
@@ -52,17 +55,12 @@ func (this KeySM2) MarshalPKCS8PublicKey(publicKey crypto.PublicKey) ([]byte, er
     return pkData, nil
 }
 
-// 解析公钥
-func (this KeySM2) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
+// ParsePKCS8PublicKey
+func (this PublicKeySM2) ParsePKCS8PublicKey(pkData []byte) (crypto.PublicKey, error) {
     publicKey, err := sm2.ParsePublicKey(pkData)
     if err != nil {
         return nil, errors.New("go-cryptobin/jceks: error parsing PKCS#8 public key: " + err.Error())
     }
 
     return publicKey, nil
-}
-
-// 名称
-func (this KeySM2) Algorithm() string {
-    return "SM2"
 }

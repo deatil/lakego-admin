@@ -46,7 +46,7 @@ var CipherSHA1And3DES = CipherBlockCBC{
 var CipherSHA1And3DESForBKS = CipherBlockCBC{
     cipherFunc:     des.NewTripleDESCipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: derivedKeyUsingPBKDF,
     saltSize:       des.BlockSize,
     keySize:        24,
     blockSize:      8,
@@ -55,7 +55,7 @@ var CipherSHA1And3DESForBKS = CipherBlockCBC{
 var CipherSHA1AndTwofishForUBER = CipherBlockCBC{
     cipherFunc:     newTwofishCipher,
     hashFunc:       sha1.New,
-    derivedKeyFunc: derivedKeyWithPbkdf,
+    derivedKeyFunc: derivedKeyUsingPBKDF,
     saltSize:       16,
     keySize:        32,
     blockSize:      twofish.BlockSize,
@@ -70,3 +70,7 @@ func init() {
         return CipherSHA1And3DES
     })
 }
+
+// 默认配置
+// Default Cipher
+var DefaultCipher = CipherMD5And3DES

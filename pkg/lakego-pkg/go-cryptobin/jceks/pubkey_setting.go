@@ -10,35 +10,37 @@ import (
 )
 
 func init() {
+    // add PrivateKey
     AddKey(GetStructName(&dsa.PrivateKey{}), func() Key {
-        return new(KeyDSA)
+        return new(PublicKeyDSA)
     })
     AddKey(GetStructName(&rsa.PrivateKey{}), func() Key {
-        return new(KeyRsa)
+        return new(PublicKeyRSA)
     })
     AddKey(GetStructName(&ecdsa.PrivateKey{}), func() Key {
-        return new(KeyEcdsa)
+        return new(PublicKeyECDSA)
     })
     AddKey(GetStructName(ed25519.PrivateKey{}), func() Key {
-        return new(KeyEdDSA)
+        return new(PublicKeyEdDSA)
     })
     AddKey(GetStructName(&sm2.PrivateKey{}), func() Key {
-        return new(KeySM2)
+        return new(PublicKeySM2)
     })
 
+    // add PublicKey
     AddKey(GetStructName(&dsa.PublicKey{}), func() Key {
-        return new(KeyDSA)
+        return new(PublicKeyDSA)
     })
     AddKey(GetStructName(&rsa.PublicKey{}), func() Key {
-        return new(KeyRsa)
+        return new(PublicKeyRSA)
     })
     AddKey(GetStructName(&ecdsa.PublicKey{}), func() Key {
-        return new(KeyEcdsa)
+        return new(PublicKeyECDSA)
     })
     AddKey(GetStructName(ed25519.PublicKey{}), func() Key {
-        return new(KeyEdDSA)
+        return new(PublicKeyEdDSA)
     })
     AddKey(GetStructName(&sm2.PublicKey{}), func() Key {
-        return new(KeySM2)
+        return new(PublicKeySM2)
     })
 }
