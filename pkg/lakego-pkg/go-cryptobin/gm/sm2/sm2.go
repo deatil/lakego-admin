@@ -202,7 +202,7 @@ func (pub *PublicKey) Verify(msg, sign []byte, opts crypto.SignerOpts) bool {
     return VerifyWithRS(pub, msg, r, s, opt)
 }
 
-// 验证 asn.1 编码的数据 bytes(r + s)
+// 验证明文拼接的数据 bytes(r + s)
 // Verify Bytes marshal data bytes(r + s)
 func (pub *PublicKey) VerifyBytes(msg, sign []byte, opts crypto.SignerOpts) bool {
     r, s, err := UnmarshalSignatureBytes(pub.Curve, sign)
@@ -378,7 +378,7 @@ func (priv *PrivateKey) SignUsingK(k *big.Int, msg []byte, opts crypto.SignerOpt
     return nil, errors.New("go-cryptobin/sm2: Sign fail")
 }
 
-// 签名返回 Bytes 编码数据 bytes(r + s)
+// 签名返回明文拼接数据 bytes(r + s)
 // sign data and return Bytes marshal data bytes(r + s)
 func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
     r, s, err := SignToRS(random, priv, msg, opts)
@@ -389,7 +389,7 @@ func (priv *PrivateKey) SignBytes(random io.Reader, msg []byte, opts crypto.Sign
     return MarshalSignatureBytes(priv.Curve, r, s)
 }
 
-// 签名返回 Bytes 编码数据 bytes(r + s)
+// 签名返回明文拼接数据 bytes(r + s)
 // sign data and return Bytes marshal data bytes(r + s)
 func (priv *PrivateKey) SignBytesUsingK(k *big.Int, msg []byte, opts crypto.SignerOpts) ([]byte, error) {
     r, s, err := SignUsingKToRS(k, priv, msg, opts)
@@ -731,7 +731,7 @@ func SignBytesUsingK(k *big.Int, priv *PrivateKey, msg []byte, opts crypto.Signe
     return priv.SignBytesUsingK(k, msg, opts)
 }
 
-// 验证 asn.1 编码的数据 bytes(r + s)
+// 验证明文拼接的数据 bytes(r + s)
 // Verify Bytes marshal data
 func VerifyBytes(pub *PublicKey, msg, sign []byte, opts crypto.SignerOpts) bool {
     if pub == nil {

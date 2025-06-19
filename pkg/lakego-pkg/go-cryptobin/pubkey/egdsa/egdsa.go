@@ -95,7 +95,7 @@ func GenerateKey(random io.Reader, bitsize, probability int) (*PrivateKey, error
 }
 
 // r and s data
-type elgamalSignature struct {
+type egdsaSignature struct {
     R, S *big.Int
 }
 
@@ -109,7 +109,7 @@ func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
         return nil, err
     }
 
-    return asn1.Marshal(elgamalSignature{
+    return asn1.Marshal(egdsaSignature{
         R: r,
         S: s,
     })
@@ -118,7 +118,7 @@ func SignASN1(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
 // VerifyASN1 verifies the ASN.1 encoded signature, sig, of hash using the
 // public key, pub. Its return value records whether the signature is valid.
 func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
-    var sign elgamalSignature
+    var sign egdsaSignature
     _, err := asn1.Unmarshal(sig, &sign)
     if err != nil {
         return false, err

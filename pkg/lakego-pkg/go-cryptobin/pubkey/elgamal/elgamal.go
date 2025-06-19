@@ -457,7 +457,7 @@ func VerifyASN1(pub *PublicKey, hash, sig []byte) (bool, error) {
     return Verify(pub, hash, sign.R, sign.S)
 }
 
-// 签名返回 Bytes 编码数据
+// 签名返回明文拼接数据
 // sign data and return Bytes marshal data
 func SignBytes(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
     r, s, err := Sign(rand, priv, hash)
@@ -475,7 +475,7 @@ func SignBytes(rand io.Reader, priv *PrivateKey, hash []byte) ([]byte, error) {
     return buf, nil
 }
 
-// 验证 asn.1 编码的数据 bytes(r + s)
+// 验证明文拼接的数据 bytes(r + s)
 // Verify Bytes marshal data
 func VerifyBytes(pub *PublicKey, hash, sign []byte) (bool, error) {
     byteLen := pub.P.BitLen()

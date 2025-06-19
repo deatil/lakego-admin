@@ -1,4 +1,4 @@
-package ecgdsa
+package elgamalecc
 
 import (
     "errors"
@@ -8,11 +8,12 @@ import (
 
     "golang.org/x/crypto/cryptobyte"
 
-    "github.com/deatil/go-cryptobin/elliptic/brainpool"
+    "github.com/deatil/go-cryptobin/elliptic/secp256k1"
 )
 
 var (
-    oidPublicKeyECGDSA = asn1.ObjectIdentifier{1, 3, 36, 3, 3, 2, 5, 2, 1}
+    // public-key algorithm
+    oidPublicKeyElGamal = asn1.ObjectIdentifier{1, 3, 14, 7, 2, 1, 1}
 
     oidNamedCurveP224 = asn1.ObjectIdentifier{1, 3, 132, 0, 33}
     oidNamedCurveP256 = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}
@@ -26,14 +27,7 @@ func init() {
     AddNamedCurve(elliptic.P384(), oidNamedCurveP384)
     AddNamedCurve(elliptic.P521(), oidNamedCurveP521)
 
-    AddNamedCurve(brainpool.P256r1(), brainpool.OIDBrainpoolP256r1)
-    AddNamedCurve(brainpool.P256t1(), brainpool.OIDBrainpoolP256t1)
-    AddNamedCurve(brainpool.P320r1(), brainpool.OIDBrainpoolP320r1)
-    AddNamedCurve(brainpool.P320t1(), brainpool.OIDBrainpoolP320t1)
-    AddNamedCurve(brainpool.P384r1(), brainpool.OIDBrainpoolP384r1)
-    AddNamedCurve(brainpool.P384t1(), brainpool.OIDBrainpoolP384t1)
-    AddNamedCurve(brainpool.P512r1(), brainpool.OIDBrainpoolP512r1)
-    AddNamedCurve(brainpool.P512t1(), brainpool.OIDBrainpoolP512t1)
+    AddNamedCurve(secp256k1.S256(), secp256k1.OIDNamedCurveSecp256k1)
 }
 
 // Marshal privateKey struct
@@ -65,7 +59,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(pub.Curve)
     if !ok {
-        return nil, errors.New("go-cryptobin/ecgdsa: unsupported ecgdsa curve")
+        return nil, errors.New("go-cryptobin/elgamalecc: unsupported ecgdsa curve")
     }
 
     var paramBytes []byte
@@ -74,11 +68,11 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
         return nil, err
     }
 
-    publicKeyAlgorithm.Algorithm = oidPublicKeyECGDSA
+    publicKeyAlgorithm.Algorithm = oidPublicKeyElGamal
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     if !pub.Curve.IsOnCurve(pub.X, pub.Y) {
-        return nil, errors.New("go-cryptobin/ecgdsa: invalid elliptic curve public key")
+        return nil, errors.New("go-cryptobin/elgamalecc: invalid elliptic curve public key")
     }
 
     publicKeyBytes = elliptic.Marshal(pub.Curve, pub.X, pub.Y)
@@ -101,7 +95,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     if err != nil {
         return
     } else if len(rest) != 0 {
-        err = errors.New("go-cryptobin/ecgdsa: trailing data after ASN.1 of public-key")
+        err = errors.New("go-cryptobin/elgamalecc: trailing data after ASN.1 of public-key")
         return
     }
 
@@ -114,26 +108,26 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     params := pki.Algorithm.Parameters
     der := cryptobyte.String(pki.PublicKey.RightAlign())
 
-    if !oid.Equal(oidPublicKeyECGDSA) {
-        err = errors.New("go-cryptobin/ecgdsa: unknown public key algorithm")
+    if !oid.Equal(oidPublicKeyElGamal) {
+        err = errors.New("go-cryptobin/elgamalecc: unknown public key algorithm")
         return
     }
 
     paramsDer := cryptobyte.String(params.FullBytes)
     namedCurveOID := new(asn1.ObjectIdentifier)
     if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("go-cryptobin/ecgdsa: invalid parameters")
+        return nil, errors.New("go-cryptobin/elgamalecc: invalid parameters")
     }
 
     namedCurve := NamedCurveFromOid(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("go-cryptobin/ecgdsa: unsupported ecgdsa curve")
+        err = errors.New("go-cryptobin/elgamalecc: unsupported ecgdsa curve")
         return
     }
 
     x, y := elliptic.Unmarshal(namedCurve, der)
     if x == nil {
-        err = errors.New("go-cryptobin/ecgdsa: failed to unmarshal elliptic curve point")
+        err = errors.New("go-cryptobin/elgamalecc: failed to unmarshal elliptic curve point")
         return
     }
 
@@ -152,17 +146,17 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("go-cryptobin/ecgdsa: unsupported ecgdsa curve")
+        return nil, errors.New("go-cryptobin/elgamalecc: unsupported ecgdsa curve")
     }
 
     // 创建数据
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("go-cryptobin/ecgdsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamalecc: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
-        Algorithm:  oidPublicKeyECGDSA,
+        Algorithm:  oidPublicKeyElGamal,
         Parameters: asn1.RawValue{
             FullBytes: oidBytes,
         },
@@ -170,7 +164,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privKey.PrivateKey, err = marshalECPrivateKeyWithOID(key, nil)
     if err != nil {
-        return nil, errors.New("go-cryptobin/ecgdsa: failed to marshal EC private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamalecc: failed to marshal EC private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -186,8 +180,8 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
         return nil, err
     }
 
-    if !privKey.Algo.Algorithm.Equal(oidPublicKeyECGDSA) {
-        err = errors.New("ecgdsa: unknown private key algorithm")
+    if !privKey.Algo.Algorithm.Equal(oidPublicKeyElGamal) {
+        err = errors.New("go-cryptobin/elgamalecc: unknown private key algorithm")
         return nil, err
     }
 
@@ -200,7 +194,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
 
     key, err := parseECPrivateKey(namedCurveOID, privKey.PrivateKey)
     if err != nil {
-        return nil, errors.New("ecgdsa: failed to parse EC private key embedded in PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamalecc: failed to parse EC private key embedded in PKCS#8: " + err.Error())
     }
 
     return key, nil

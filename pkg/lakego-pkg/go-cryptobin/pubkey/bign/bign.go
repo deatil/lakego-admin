@@ -530,4 +530,3 @@ func randFieldElement(rand io.Reader, c elliptic.Curve) (k *big.Int, err error) 
         }
     }
 }
-

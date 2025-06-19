@@ -1,4 +1,4 @@
-package ecgdsa
+package elgamalecc
 
 import (
     "fmt"
@@ -34,7 +34,7 @@ func ParseECPrivateKey(der []byte) (*PrivateKey, error) {
 func MarshalECPrivateKey(key *PrivateKey) ([]byte, error) {
     oid, ok := OidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("go-cryptobin/ecgdsa: unknown elliptic curve")
+        return nil, errors.New("go-cryptobin/elgamalecc: unknown elliptic curve")
     }
 
     return marshalECPrivateKeyWithOID(key, oid)
@@ -44,7 +44,7 @@ func MarshalECPrivateKey(key *PrivateKey) ([]byte, error) {
 // sets the curve ID to the given OID, or omits it if OID is nil.
 func marshalECPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("go-cryptobin/ecgdsa: invalid elliptic key public key")
+        return nil, errors.New("go-cryptobin/elgamalecc: invalid elliptic key public key")
     }
 
     privateKey := make([]byte, bitsToBytes(key.D.BitLen()))
@@ -66,11 +66,11 @@ func marshalECPrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]b
 func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
     var privKey ecPrivateKey
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-        return nil, errors.New("go-cryptobin/ecgdsa: failed to parse EC private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/elgamalecc: failed to parse EC private key: " + err.Error())
     }
 
     if privKey.Version != ecPrivKeyVersion {
-        return nil, fmt.Errorf("go-cryptobin/ecgdsa: unknown EC private key version %d", privKey.Version)
+        return nil, fmt.Errorf("go-cryptobin/elgamalecc: unknown EC private key version %d", privKey.Version)
     }
 
     var curve elliptic.Curve
@@ -81,14 +81,14 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *P
     }
 
     if curve == nil {
-        return nil, errors.New("go-cryptobin/ecgdsa: unknown elliptic curve")
+        return nil, errors.New("go-cryptobin/elgamalecc: unknown elliptic curve")
     }
 
     k := new(big.Int).SetBytes(privKey.PrivateKey)
 
     curveOrder := curve.Params().N
     if k.Cmp(curveOrder) >= 0 {
-        return nil, errors.New("go-cryptobin/ecgdsa: invalid elliptic curve private key value")
+        return nil, errors.New("go-cryptobin/elgamalecc: invalid elliptic curve private key value")
     }
 
     priv := new(PrivateKey)
@@ -99,16 +99,14 @@ func parseECPrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *P
 
     for len(privKey.PrivateKey) > len(privateKey) {
         if privKey.PrivateKey[0] != 0 {
-            return nil, errors.New("go-cryptobin/ecgdsa: invalid private key length")
+            return nil, errors.New("go-cryptobin/elgamalecc: invalid private key length")
         }
 
         privKey.PrivateKey = privKey.PrivateKey[1:]
     }
 
     copy(privateKey[len(privateKey)-len(privKey.PrivateKey):], privKey.PrivateKey)
-
-    d := new(big.Int).SetBytes(privateKey)
-    priv.X, priv.Y = XY(d, curve)
+    priv.X, priv.Y = curve.ScalarBaseMult(privateKey)
 
     return priv, nil
 }

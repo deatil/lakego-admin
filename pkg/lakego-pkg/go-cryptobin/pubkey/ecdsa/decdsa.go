@@ -14,7 +14,7 @@ import (
 
 type Hasher = func() hash.Hash
 
-type dSignature struct {
+type decdsaSignature struct {
     R, S *big.Int
 }
 
@@ -24,7 +24,7 @@ func DSignASN1(priv *ecdsa.PrivateKey, csprng io.Reader, data []byte, hashFunc H
         return nil, err
     }
 
-    return asn1.Marshal(dSignature{r, s})
+    return asn1.Marshal(decdsaSignature{r, s})
 }
 
 func DSignBytes(priv *ecdsa.PrivateKey, csprng io.Reader, data []byte, hashFunc Hasher) ([]byte, error) {
