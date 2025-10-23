@@ -148,7 +148,7 @@ func (e *GT) Unmarshal(m []byte) ([]byte, error) {
     const numBytes = 256 / 8
 
     if len(m) < 12*numBytes {
-        return nil, errors.New("sm9.GT: not enough data")
+        return nil, errors.New("go-cryptobin/sm9: not enough data")
     }
 
     if e.p == nil {
@@ -218,7 +218,7 @@ type GTFieldTable [15]*GT
 // constant time by iterating over every entry of the table. n must be in [0, 15].
 func (table *GTFieldTable) Select(p *GT, n uint8) {
     if n >= 16 {
-        panic("sm9: internal error: GTFieldTable called with out-of-bounds value")
+        panic("go-cryptobin/sm9: internal error: GTFieldTable called with out-of-bounds value")
     }
     p.p.SetOne()
     for i, f := range table {
@@ -258,7 +258,7 @@ func GenerateGTFieldTable(basePoint *GT) *[32 * 2]GTFieldTable {
 // ScalarBaseMultGT compute basepoint^r with precomputed table
 func ScalarBaseMultGT(tables *[32 * 2]GTFieldTable, scalar []byte) (*GT, error) {
     if len(scalar) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm9: invalid scalar length")
     }
 
     // This is also a scalar multiplication with a four-bit window like in

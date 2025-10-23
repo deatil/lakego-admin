@@ -36,7 +36,7 @@ func fromBigInt(x *big.Int) (out *gfP) {
 
     bytes := a.Bytes()
     if len(bytes) > 32 {
-        panic("sm9: invalid byte length")
+        panic("go-cryptobin/sm9: invalid byte length")
     } else if len(bytes) < 32 {
         fixedBytes := make([]byte, 32)
         copy(fixedBytes[32-len(bytes):], bytes)
@@ -150,11 +150,11 @@ func (e *gfP) Unmarshal(in []byte) error {
             return nil
         }
         if e[i] > p2[i] {
-            return errors.New("sm9: coordinate exceeds modulus")
+            return errors.New("go-cryptobin/sm9: coordinate exceeds modulus")
         }
     }
 
-    return errors.New("sm9: coordinate equals modulus")
+    return errors.New("go-cryptobin/sm9: coordinate equals modulus")
 }
 
 func montEncode(c, a *gfP) { gfpMul(c, a, r2) }

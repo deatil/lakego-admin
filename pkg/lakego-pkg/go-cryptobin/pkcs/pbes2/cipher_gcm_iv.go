@@ -49,7 +49,7 @@ func (this CipherGCMIv) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, 
 
     nonce := make([]byte, this.nonceSize)
     if _, err := io.ReadFull(rand, nonce); err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to generate nonce: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to generate nonce: " + err.Error())
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, this.nonceSize)
@@ -83,7 +83,7 @@ func (this CipherGCMIv) Decrypt(key, param, ciphertext []byte) ([]byte, error) {
     var nonce gcmIvParams
     _, err = asn1.Unmarshal(param, &nonce)
     if err != nil {
-        return nil, errors.New("pkcs/cipher: invalid param type")
+        return nil, errors.New("go-cryptobin/pkcs: invalid param type")
     }
 
     aead, err := cipher.NewGCMWithNonceSize(block, len(nonce))

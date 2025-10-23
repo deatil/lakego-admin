@@ -275,7 +275,7 @@ type curvePointTable [15]*curvePoint
 // constant time by iterating over every entry of the table. n must be in [0, 15].
 func (table *curvePointTable) Select(p *curvePoint, n uint8) {
     if n >= 16 {
-        panic("sm9: internal error: curvePointTable called with out-of-bounds value")
+        panic("go-cryptobin/sm9: internal error: curvePointTable called with out-of-bounds value")
     }
     p.SetInfinity()
     for i, f := range table {

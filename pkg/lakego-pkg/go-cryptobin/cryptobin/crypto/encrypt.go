@@ -22,7 +22,7 @@ var UsePadding = NewDataSet[Padding, IPadding]()
 // get Encrypt type
 func getEncrypt(m Multiple) (IEncrypt, error) {
     if !UseEncrypt.Has(m) {
-        err := fmt.Errorf("Multiple [%s] is error.", m)
+        err := fmt.Errorf("go-cryptobin/crypto: Multiple [%s] is error.", m)
         return nil, err
     }
 

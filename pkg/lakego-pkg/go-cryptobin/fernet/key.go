@@ -9,9 +9,9 @@ import (
 )
 
 var (
-    errKeyLen   = errors.New("fernet: key decodes to wrong size")
-    errNoKeys   = errors.New("fernet: no keys provided")
-    errKeyShort = errors.New("fernet: key too short")
+    errKeyLen   = errors.New("go-cryptobin/fernet: key decodes to wrong size")
+    errNoKeys   = errors.New("go-cryptobin/fernet: no keys provided")
+    errKeyShort = errors.New("go-cryptobin/fernet: key too short")
 )
 
 // Key represents a key.
@@ -63,7 +63,7 @@ func DecodeKey(s string) (*Key, error) {
     var b []byte
     var err error
     if s == "" {
-        return nil, errors.New("empty key")
+        return nil, errors.New("go-cryptobin/fernet: empty key")
     }
 
     if len(s) == hex.EncodedLen(32) {

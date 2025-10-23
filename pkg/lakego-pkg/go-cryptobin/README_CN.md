@@ -2,6 +2,12 @@
 
 go-cryptobin 是一个简单易用并且兼容性高的 go 语言加密解密库
 
+<p align="left">
+<a href="https://pkg.go.dev/github.com/deatil/go-cryptobin" ><img src="https://pkg.go.dev/badge/deatil/go-cryptobin.svg" alt="Go Reference"></a>
+<a href="https://codecov.io/gh/deatil/go-cryptobin" ><img src="https://codecov.io/gh/deatil/go-cryptobin/graph/badge.svg?token=SS2Z1IY0XL"/></a>
+<a href="https://goreportcard.com/report/github.com/deatil/go-cryptobin" ><img src="https://goreportcard.com/badge/github.com/deatil/go-cryptobin" /></a>
+</p>
+
 [English](README.md) | 中文
 
 

@@ -32,7 +32,7 @@ type PublicKey struct {
 func (this *PublicKey) Check() (err error) {
     x, y := unmarshal(this.Curve, this.Y)
     if !this.Curve.IsOnCurve(x, y) {
-        err = errors.New("peer's public key is not on curve")
+        err = errors.New("go-cryptobin/ecdh: peer's public key is not on curve")
     }
 
     return
@@ -83,7 +83,7 @@ func GeneratePublicKey(private *PrivateKey) (*PublicKey, error) {
     N := curve.Params().N
 
     if new(big.Int).SetBytes(private.X).Cmp(N) >= 0 {
-        err := errors.New("ecdh: private key cannot used with given curve")
+        err := errors.New("go-cryptobin/ecdh: private key cannot used with given curve")
         return nil, err
     }
 

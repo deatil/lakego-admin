@@ -99,7 +99,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
     // Marshal params
     paramBytes, err := asn1.Marshal(params)
     if err != nil {
-        return nil, errors.New("kcdsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/kcdsa: failed to marshal algo param: " + err.Error())
     }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyKCDSA
@@ -110,7 +110,7 @@ func (this PKCS8Key) MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {
-        return nil, errors.New("kcdsa: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/kcdsa: failed to builder PrivateKey: " + err.Error())
     }
 
     pkix := pkixPublicKey{
@@ -143,7 +143,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     if !pki.Algorithm.Algorithm.Equal(oidPublicKeyKCDSA) &&
         !pki.Algorithm.Algorithm.Equal(oidPublicKeyKCDSAAlteGOV) {
-        return nil, errors.New("kcdsa: unknown public key algorithm")
+        return nil, errors.New("go-cryptobin/kcdsa: unknown public key algorithm")
     }
 
     // 解析
@@ -153,14 +153,14 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
-        return nil, errors.New("kcdsa: invalid KCDSA public key")
+        return nil, errors.New("go-cryptobin/kcdsa: invalid KCDSA public key")
     }
 
     // Parse parameters
     bytes := keyData.Algorithm.Parameters.FullBytes
     var params kcdsaAlgorithmParameters
     if _, err = asn1.Unmarshal(bytes, &params); err != nil {
-        return nil, errors.New("kcdsa: invalid KCDSA parameter")
+        return nil, errors.New("go-cryptobin/kcdsa: invalid KCDSA parameter")
     }
 
     pub := &PublicKey{
@@ -180,7 +180,7 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*PublicKey, error) {
 
     if pub.Y.Sign() <= 0 || pub.P.Sign() <= 0 ||
         pub.Q.Sign() <= 0 || pub.G.Sign() <= 0 {
-        return nil, errors.New("kcdsa: zero or negative KCDSA parameter")
+        return nil, errors.New("go-cryptobin/kcdsa: zero or negative KCDSA parameter")
     }
 
     return pub, nil
@@ -211,7 +211,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     // Marshal params
     paramBytes, err := asn1.Marshal(params)
     if err != nil {
-        return nil, errors.New("kcdsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/kcdsa: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -226,7 +226,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privateKeyBytes, err := xInt.Bytes()
     if err != nil {
-        return nil, errors.New("kcdsa: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/kcdsa: failed to builder PrivateKey: " + err.Error())
     }
 
     privKey.PrivateKey = privateKeyBytes
@@ -256,14 +256,14 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 
     x := new(big.Int)
     if !xDer.ReadASN1Integer(x) {
-        return nil, errors.New("kcdsa: invalid KCDSA public key")
+        return nil, errors.New("go-cryptobin/kcdsa: invalid KCDSA public key")
     }
 
     // Parse parameters
     bytes := privKey.Algo.Parameters.FullBytes
     var params kcdsaAlgorithmParameters
     if _, err = asn1.Unmarshal(bytes, &params); err != nil {
-        return nil, errors.New("kcdsa: invalid KCDSA parameter")
+        return nil, errors.New("go-cryptobin/kcdsa: invalid KCDSA parameter")
     }
 
     priv := &PrivateKey{
@@ -289,7 +289,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *PrivateKey, err error) {
 
     if priv.Y.Sign() <= 0 || priv.P.Sign() <= 0 ||
         priv.Q.Sign() <= 0 || priv.G.Sign() <= 0 {
-        return nil, errors.New("kcdsa: zero or negative KCDSA parameter")
+        return nil, errors.New("go-cryptobin/kcdsa: zero or negative KCDSA parameter")
     }
 
     return priv, nil

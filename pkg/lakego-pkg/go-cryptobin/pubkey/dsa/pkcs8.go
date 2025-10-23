@@ -74,7 +74,7 @@ func (this PKCS8Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
         G: key.G,
     })
     if err != nil {
-        return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/dsa: failed to marshal algo param: " + err.Error())
     }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyDSA
@@ -85,7 +85,7 @@ func (this PKCS8Key) MarshalPublicKey(key *dsa.PublicKey) ([]byte, error) {
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {
-        return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/dsa: failed to builder PrivateKey: " + err.Error())
     }
 
     pkix := pkixPublicKey{
@@ -118,14 +118,14 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyDSA)
     if !algoEq {
-        return nil, errors.New("dsa: unknown public key algorithm")
+        return nil, errors.New("go-cryptobin/dsa: unknown public key algorithm")
     }
 
     yDer := cryptobyte.String(pki.PublicKey.RightAlign())
 
     y := new(big.Int)
     if !yDer.ReadASN1Integer(y) {
-        return nil, errors.New("dsa: invalid DSA public key")
+        return nil, errors.New("go-cryptobin/dsa: invalid DSA public key")
     }
 
     pub := &dsa.PublicKey{
@@ -142,12 +142,12 @@ func (this PKCS8Key) ParsePublicKey(der []byte) (*dsa.PublicKey, error) {
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.Q) ||
         !paramsDer.ReadASN1Integer(pub.G) {
-        return nil, errors.New("dsa: invalid DSA parameters")
+        return nil, errors.New("go-cryptobin/dsa: invalid DSA parameters")
     }
 
     if pub.Y.Sign() <= 0 || pub.P.Sign() <= 0 ||
         pub.Q.Sign() <= 0 || pub.G.Sign() <= 0 {
-        return nil, errors.New("dsa: zero or negative DSA parameter")
+        return nil, errors.New("go-cryptobin/dsa: zero or negative DSA parameter")
     }
 
     return pub, nil
@@ -169,7 +169,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
         G: key.G,
     })
     if err != nil {
-        return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/dsa: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -184,7 +184,7 @@ func (this PKCS8Key) MarshalPrivateKey(key *dsa.PrivateKey) ([]byte, error) {
 
     privateKeyBytes, err := xInt.Bytes()
     if err != nil {
-        return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/dsa: failed to builder PrivateKey: " + err.Error())
     }
 
     privKey.PrivateKey = privateKeyBytes
@@ -206,14 +206,14 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
     }
 
     if !privKey.Algo.Algorithm.Equal(oidPublicKeyDSA) {
-        return nil, fmt.Errorf("dsa: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
+        return nil, fmt.Errorf("go-cryptobin/dsa: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
 
     xDer := cryptobyte.String(string(privKey.PrivateKey))
 
     x := new(big.Int)
     if !xDer.ReadASN1Integer(x) {
-        return nil, errors.New("dsa: invalid DSA public key")
+        return nil, errors.New("go-cryptobin/dsa: invalid DSA public key")
     }
 
     priv := &dsa.PrivateKey{
@@ -234,7 +234,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
         !paramsDer.ReadASN1Integer(priv.P) ||
         !paramsDer.ReadASN1Integer(priv.Q) ||
         !paramsDer.ReadASN1Integer(priv.G) {
-        return nil, errors.New("dsa: invalid DSA parameters")
+        return nil, errors.New("go-cryptobin/dsa: invalid DSA parameters")
     }
 
     // get Y data
@@ -242,7 +242,7 @@ func (this PKCS8Key) ParsePrivateKey(der []byte) (key *dsa.PrivateKey, err error
 
     if priv.Y.Sign() <= 0 || priv.P.Sign() <= 0 ||
         priv.Q.Sign() <= 0 || priv.G.Sign() <= 0 {
-        return nil, errors.New("dsa: zero or negative DSA parameter")
+        return nil, errors.New("go-cryptobin/dsa: zero or negative DSA parameter")
     }
 
     return priv, nil

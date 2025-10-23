@@ -83,7 +83,7 @@ func GetOidByName(name string) (uint32, error) {
         }
     }
 
-    return 0, errors.New("no support name")
+    return 0, errors.New("go-cryptobin/xmssmt: no support name")
 }
 
 func GetNameByOid(oid uint32) (string, error) {
@@ -93,7 +93,7 @@ func GetNameByOid(oid uint32) (string, error) {
         }
     }
 
-    return "", errors.New("no support oid")
+    return "", errors.New("go-cryptobin/xmssmt: no support oid")
 }
 
 func NewParamsWithOid(oid uint32) (*xmss.Params, error) {
@@ -166,7 +166,7 @@ func NewParamsWithOid(oid uint32) (*xmss.Params, error) {
             hasher = newShake256
 
         default:
-            return nil, errors.New("xmssmt: oid unsported")
+            return nil, errors.New("go-cryptobin/xmssmt: oid unsported")
     }
 
     switch (oid) {
@@ -240,7 +240,7 @@ func NewParamsWithOid(oid uint32) (*xmss.Params, error) {
             paddingLen = 64
 
         default:
-            return nil, errors.New("xmss: oid unsported")
+            return nil, errors.New("go-cryptobin/xmssmt: oid unsported")
     }
 
     switch (oid) {
@@ -325,7 +325,7 @@ func NewParamsWithOid(oid uint32) (*xmss.Params, error) {
             h = 60
 
         default:
-            return nil, errors.New("xmssmt: oid unsported")
+            return nil, errors.New("go-cryptobin/xmssmt: oid unsported")
     }
 
     switch (oid) {
@@ -398,7 +398,7 @@ func NewParamsWithOid(oid uint32) (*xmss.Params, error) {
             d = 12
 
         default:
-            return nil, errors.New("xmssmt: oid unsported")
+            return nil, errors.New("go-cryptobin/xmssmt: oid unsported")
     }
 
     w = 16

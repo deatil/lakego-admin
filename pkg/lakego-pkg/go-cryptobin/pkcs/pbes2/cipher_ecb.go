@@ -43,7 +43,7 @@ func (this CipherECB) NeedBmpPassword() bool {
 func (this CipherECB) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to create cipher: " + err.Error())
     }
 
     // 加密数据补码
@@ -71,7 +71,7 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     blockSize := block.BlockSize()
 
     if len(ciphertext)%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
+        return nil, errors.New("go-cryptobin/pkcs: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -82,7 +82,7 @@ func (this CipherECB) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     // 判断数据是否为填充数据
     dlen := len(plaintext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+        return nil, errors.New("go-cryptobin/pkcs: invalid padding")
     }
 
     // 解析加密数据

@@ -28,11 +28,11 @@ type xmlPublicKey struct {
 
 var (
     errPublicKeyXMLValue = func(name string) error {
-        return errors.New("elgamal xml: public key [" + name + "] value is error")
+        return errors.New("go-cryptobin/elgamal: public key [" + name + "] value is error")
     }
 
     errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("elgamal xml: private key [" + name + "] value is error")
+        return errors.New("go-cryptobin/elgamal: private key [" + name + "] value is error")
     }
 )
 
@@ -96,7 +96,7 @@ func (this XMLKey) ParsePublicKey(data []byte) (*PublicKey, error) {
     }
 
     if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 {
-        return nil, errors.New("elgamal xml: public key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/elgamal: public key contains zero or negative value")
     }
 
     publicKey := &PublicKey{
@@ -166,7 +166,7 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*PrivateKey, error) {
     }
 
     if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 || x.Sign() <= 0 {
-        return nil, errors.New("elgamal xml: private key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/elgamal: private key contains zero or negative value")
     }
 
     privateKey := &PrivateKey{

@@ -17,7 +17,7 @@ type PublicKey struct {
 // 检测
 func (this *PublicKey) Check() (err error) {
     if len(this.Y) != 32 {
-        err = errors.New("peers public key is not 32 byte")
+        err = errors.New("go-cryptobin/curve25519: peers public key is not 32 byte")
     }
 
     return

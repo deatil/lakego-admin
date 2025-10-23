@@ -754,7 +754,7 @@ func (e *OrderElement) Square(t *OrderElement) *OrderElement {
 // SetBytes returns nil and an error, and e is unchanged.
 func (e *OrderElement) SetBytes(v []byte) (*OrderElement, error) {
     if len(v) != p256ElementLen {
-        return nil, errors.New("invalid OrderElement encoding")
+        return nil, errors.New("go-cryptobin/sm2: invalid OrderElement encoding")
     }
 /*
     // Check for non-canonical encodings (p + k, 2p + k, etc.) by comparing to
@@ -766,7 +766,7 @@ func (e *OrderElement) SetBytes(v []byte) (*OrderElement, error) {
             break
         }
         if v[i] > minusOneEncoding[i] {
-            return nil, errors.New("invalid OrderElement encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid OrderElement encoding")
         }
     }
 */

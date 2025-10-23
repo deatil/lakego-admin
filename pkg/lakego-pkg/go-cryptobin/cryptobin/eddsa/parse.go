@@ -11,9 +11,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotEdPrivateKey     = errors.New("key is not a valid Ed25519 private key")
-    ErrNotEdPublicKey      = errors.New("key is not a valid Ed25519 public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/eddsa: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotEdPrivateKey     = errors.New("go-cryptobin/eddsa: key is not a valid Ed25519 private key")
+    ErrNotEdPublicKey      = errors.New("go-cryptobin/eddsa: key is not a valid Ed25519 public key")
 )
 
 // 解析私钥

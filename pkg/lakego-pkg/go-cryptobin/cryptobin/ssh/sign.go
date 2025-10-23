@@ -13,7 +13,7 @@ import (
 // privateKey Sign
 func (this SSH) Sign() SSH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -44,19 +44,19 @@ func (this SSH) Sign() SSH {
 // use data to Verify signed data
 func (this SSH) Verify(data []byte) SSH {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ssh: publicKey empty.")
         return this.AppendError(err)
     }
 
     block, _ := pem.Decode(this.data)
     if block == nil {
-        err := errors.New("Signature error.")
+        err := errors.New("go-cryptobin/ssh: Signature error.")
         return this.AppendError(err)
     }
 
     format, ok := block.Headers["Format"]
     if !ok {
-        err := errors.New("Signature Format error.")
+        err := errors.New("go-cryptobin/ssh: Signature Format error.")
         return this.AppendError(err)
     }
 

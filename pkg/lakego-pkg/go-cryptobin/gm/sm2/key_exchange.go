@@ -40,7 +40,7 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
     tb := new(big.Int).Mod(tbt, N)
 
     if !curve.IsOnCurve(rpub.X, rpub.Y) {
-        err = errors.New("Ra not on curve")
+        err = errors.New("go-cryptobin/sm2: Ra not on curve")
         return
     }
 
@@ -61,7 +61,7 @@ func keyExchange(klen int, ida, idb []byte, pri *PrivateKey, pub *PublicKey, rpr
 
     zero := new(big.Int)
     if vx.Cmp(zero) == 0 || vy.Cmp(zero) == 0 {
-        err = errors.New("V is infinite")
+        err = errors.New("go-cryptobin/sm2: V is infinite")
     }
 
     pzb := pub

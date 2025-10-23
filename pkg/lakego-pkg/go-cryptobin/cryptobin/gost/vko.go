@@ -10,12 +10,12 @@ import (
 // KEK
 func (this Gost) KEK(ukm any) Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -43,12 +43,12 @@ func (this Gost) KEK(ukm any) Gost {
 // KEK2001
 func (this Gost) KEK2001(ukm any) Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -76,12 +76,12 @@ func (this Gost) KEK2001(ukm any) Gost {
 // KEK2012256
 func (this Gost) KEK2012256(ukm any) Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -109,12 +109,12 @@ func (this Gost) KEK2012256(ukm any) Gost {
 // KEK2012512
 func (this Gost) KEK2012512(ukm any) Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 

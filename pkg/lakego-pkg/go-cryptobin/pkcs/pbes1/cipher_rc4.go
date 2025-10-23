@@ -67,7 +67,7 @@ func (this CipherRC4) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 
     rc, err := rc4.NewCipher(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("go-cryptobin/pkcs:" + err.Error() + " failed to create cipher")
     }
 
     // 需要保存的加密数据
@@ -91,7 +91,7 @@ func (this CipherRC4) Encrypt(rand io.Reader, password, plaintext []byte) ([]byt
 func (this CipherRC4) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
     var param pbeRC4Params
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs/cipher: invalid PBE parameters")
+        return nil, errors.New("go-cryptobin/pkcs: invalid PBE parameters")
     }
 
     key, _ := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)

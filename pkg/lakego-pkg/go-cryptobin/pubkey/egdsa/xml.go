@@ -28,11 +28,11 @@ type xmlPublicKey struct {
 
 var (
     errPublicKeyXMLValue = func(name string) error {
-        return errors.New("egdsa xml: public key [" + name + "] value is error")
+        return errors.New("go-cryptobin/egdsa: public key [" + name + "] value is error")
     }
 
     errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("egdsa xml: private key [" + name + "] value is error")
+        return errors.New("go-cryptobin/egdsa: private key [" + name + "] value is error")
     }
 )
 
@@ -91,7 +91,7 @@ func (this XMLKey) ParsePublicKey(data []byte) (*PublicKey, error) {
     }
 
     if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 {
-        return nil, errors.New("egdsa xml: public key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/egdsa: public key contains zero or negative value")
     }
 
     publicKey := &PublicKey{
@@ -155,7 +155,7 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*PrivateKey, error) {
     }
 
     if g.Sign() <= 0 || p.Sign() <= 0 || y.Sign() <= 0 || x.Sign() <= 0 {
-        return nil, errors.New("egdsa xml: private key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/egdsa: private key contains zero or negative value")
     }
 
     privateKey := &PrivateKey{

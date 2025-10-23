@@ -11,8 +11,8 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotECPrivateKey     = errors.New("key is not a valid SM2 private key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/sm2: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotECPrivateKey     = errors.New("go-cryptobin/sm2: key is not a valid SM2 private key")
 )
 
 // 解析私钥，默认为 PKCS8

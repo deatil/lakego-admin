@@ -10,7 +10,8 @@ import (
     "github.com/deatil/go-cryptobin/ecdh"
 )
 
-// 私钥和公钥生成， OID 包含 ECDH 的 OID 和 EC 曲线的 OID，
+// Marshal and Parse ECDH key
+// 私钥和公钥生成，OID 包含 ECDH 的 OID 和 EC 曲线的 OID，
 // 非 EC 曲线单独证书
 
 var (
@@ -43,7 +44,6 @@ func init() {
     AddNamedCurve(ecdh.GmSM2(), oidNamedCurveGmSM2)
 }
 
-// 私钥 - 包装
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -51,20 +51,18 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
     PublicKey asn1.BitString
 }
 
-// 包装公钥
+// Marshal PublicKey
 func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
     var publicKeyBytes []byte
     var publicKeyAlgorithm pkix.AlgorithmIdentifier
@@ -72,7 +70,7 @@ func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(key.Curve())
     if !ok {
-        return nil, errors.New("x509: unsupported ecdh curve")
+        return nil, errors.New("go-cryptobin/ecdh: unsupported ecdh curve")
     }
 
     var paramBytes []byte
@@ -97,7 +95,7 @@ func MarshalPublicKey(key *ecdh.PublicKey) ([]byte, error) {
     return asn1.Marshal(pkix)
 }
 
-// 解析公钥
+// Parse PublicKey
 func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
     var pki publicKeyInfo
     rest, err := asn1.Unmarshal(derBytes, &pki)
@@ -112,26 +110,23 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyECDH)
     if !algoEq {
-        err = errors.New("ecdh: unknown public key algorithm")
+        err = errors.New("go-cryptobin/ecdh: unknown public key algorithm")
         return
     }
 
-    // 解析
-    keyData := &pki
-
-    paramsDer := cryptobyte.String(keyData.Algorithm.Parameters.FullBytes)
+    paramsDer := cryptobyte.String(pki.Algorithm.Parameters.FullBytes)
     namedCurveOID := new(asn1.ObjectIdentifier)
     if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("ecdh: invalid ECDH parameters")
+        return nil, errors.New("go-cryptobin/ecdh: invalid ECDH parameters")
     }
 
     namedCurve := NamedCurveFromOid(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("ecdh: unsupported ecdh curve")
+        err = errors.New("go-cryptobin/ecdh: unsupported ecdh curve")
         return
     }
 
-    publicKeyBytes := []byte(keyData.PublicKey.RightAlign())
+    publicKeyBytes := []byte(pki.PublicKey.RightAlign())
 
     pub, err = namedCurve.NewPublicKey(publicKeyBytes)
     if err != nil {
@@ -143,19 +138,19 @@ func ParsePublicKey(derBytes []byte) (pub *ecdh.PublicKey, err error) {
 
 // ====================
 
-// 包装私钥
+// Marshal PrivateKey
 func MarshalPrivateKey(key *ecdh.PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
     oid, ok := OidFromNamedCurve(key.Curve())
     if !ok {
-        return nil, errors.New("x509: unsupported ecdh curve")
+        return nil, errors.New("go-cryptobin/ecdh: unsupported ecdh curve")
     }
 
     // 创建数据
     paramBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("ecdh: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/ecdh: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -170,7 +165,7 @@ func MarshalPrivateKey(key *ecdh.PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey
 func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
     var privKey pkcs8
     var err error
@@ -182,19 +177,19 @@ func ParsePrivateKey(derBytes []byte) (*ecdh.PrivateKey, error) {
 
     algoEq := privKey.Algo.Algorithm.Equal(oidPublicKeyECDH)
     if !algoEq {
-        err = errors.New("ecdh: unknown private key algorithm")
+        err = errors.New("go-cryptobin/ecdh: unknown private key algorithm")
         return nil, err
     }
 
     paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
     namedCurveOID := new(asn1.ObjectIdentifier)
     if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("ecdh: invalid ECDH parameters")
+        return nil, errors.New("go-cryptobin/ecdh: invalid ECDH parameters")
     }
 
     namedCurve := NamedCurveFromOid(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("ecdh: unsupported ecdh curve")
+        err = errors.New("go-cryptobin/ecdh: unsupported ecdh curve")
         return nil, err
     }
 

@@ -34,7 +34,7 @@ func (this SSH) SetOpenSSHPublicKey(key ssh.PublicKey) SSH {
 
     pkey, ok := publicKey.(ssh.CryptoPublicKey)
     if !ok {
-        err := errors.New("ssh PublicKey error.")
+        err := errors.New("go-cryptobin/ssh: PublicKey error.")
         return this.AppendError(err)
     }
 

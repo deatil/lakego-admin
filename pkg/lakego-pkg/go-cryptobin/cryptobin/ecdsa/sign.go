@@ -37,7 +37,7 @@ func (this ECDSA) Verify(data []byte) ECDSA {
 // 私钥签名 ASN1
 func (this ECDSA) SignASN1() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -61,7 +61,7 @@ func (this ECDSA) SignASN1() ECDSA {
 // 使用原始数据[data]对比签名后数据
 func (this ECDSA) VerifyASN1(data []byte) ECDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecdsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -81,7 +81,7 @@ func (this ECDSA) VerifyASN1(data []byte) ECDSA {
 // 私钥签名 Bytes
 func (this ECDSA) SignBytes() ECDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -111,7 +111,7 @@ func (this ECDSA) SignBytes() ECDSA {
 // 使用原始数据[data]对比签名后数据
 func (this ECDSA) VerifyBytes(data []byte) ECDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecdsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -122,7 +122,7 @@ func (this ECDSA) VerifyBytes(data []byte) ECDSA {
 
     byteLen := (this.publicKey.Curve.Params().BitSize + 7) / 8
     if len(this.data) != 2*byteLen {
-        err := errors.New("sig data too large or short.")
+        err := errors.New("go-cryptobin/ecdsa: sig data too large or short.")
         return this.AppendError(err)
     }
 
@@ -141,7 +141,7 @@ func (this ECDSA) VerifyBytes(data []byte) ECDSA {
 // 签名后数据
 func (this ECDSA) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return nil, errors.New("Hash func not set.")
+        return nil, errors.New("go-cryptobin/ecdsa: Hash func not set.")
     }
 
     h := this.signHash()

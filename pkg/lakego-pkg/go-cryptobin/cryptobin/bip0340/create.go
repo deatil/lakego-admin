@@ -46,7 +46,7 @@ func (this BIP0340) CreatePrivateKeyWithPassword(password string, opts ...string
 // 生成私钥 pem 数据
 func (this BIP0340) CreatePKCS1PrivateKey() BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this BIP0340) CreatePKCS1PrivateKey() BIP0340 {
 // 生成私钥带密码 pem 数据
 func (this BIP0340) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -80,7 +80,7 @@ func (this BIP0340) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
     // 加密方式
     cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("PEMCipher not exists.")
+        err := errors.New("go-cryptobin/bip0340: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this BIP0340) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
 // 生成 PKCS8 私钥 pem 数据
 func (this BIP0340) CreatePKCS8PrivateKey() BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -135,7 +135,7 @@ func (this BIP0340) CreatePKCS8PrivateKey() BIP0340 {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this BIP0340) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -172,7 +172,7 @@ func (this BIP0340) CreatePKCS8PrivateKeyWithPassword(password string, opts ...a
 // 生成公钥 pem 数据
 func (this BIP0340) CreatePublicKey() BIP0340 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bip0340: publicKey empty.")
         return this.AppendError(err)
     }
 

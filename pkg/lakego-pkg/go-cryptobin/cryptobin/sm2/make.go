@@ -10,7 +10,7 @@ func (this SM2) MakePublicKey() SM2 {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -23,7 +23,7 @@ func (this SM2) MakePublicKey() SM2 {
 func (this SM2) MakeKeyDer() SM2 {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/sm2: keyData error.")
         return this.AppendError(err)
     }
 

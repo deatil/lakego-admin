@@ -44,7 +44,7 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
     // check PrivateKey OID
     if !privKey.Algo.Algorithm.Equal(oidSM2) &&
         !privKey.Algo.Algorithm.Equal(oidPublicKeySM2) {
-        return nil, errors.New("sm2: unknown private key algorithm")
+        return nil, errors.New("go-cryptobin/sm2: unknown private key algorithm")
     }
 
     bytes := privKey.Algo.Parameters.FullBytes
@@ -63,12 +63,12 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("sm2: unsupported SM2 curve")
+        return nil, errors.New("go-cryptobin/sm2: unsupported SM2 curve")
     }
 
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("sm2: failed to marshal algo param")
+        return nil, errors.New("go-cryptobin/sm2: failed to marshal algo param")
     }
 
     algo.Algorithm = oidSM2
@@ -97,7 +97,7 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
     // check PublicKey OID
     if !pubkey.Algo.Algorithm.Equal(oidSM2) &&
         !pubkey.Algo.Algorithm.Equal(oidPublicKeySM2) {
-        return nil, errors.New("sm2: unknown publicKey key algorithm")
+        return nil, errors.New("go-cryptobin/sm2: unknown publicKey key algorithm")
     }
 
     bytes := pubkey.Algo.Parameters.FullBytes
@@ -110,7 +110,7 @@ func ParsePublicKey(der []byte) (*PublicKey, error) {
     // get curve from oid
     c := namedCurveFromOID(*namedCurveOID)
     if c == nil {
-        return nil, errors.New("sm2: unknown curve")
+        return nil, errors.New("go-cryptobin/sm2: unknown curve")
     }
 
     x, y := sm2curve.Unmarshal(c, pubkey.BitString.Bytes)
@@ -130,12 +130,12 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("sm2: unsupported SM2 curve")
+        return nil, errors.New("go-cryptobin/sm2: unsupported SM2 curve")
     }
 
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("sm2: failed to marshal algo param")
+        return nil, errors.New("go-cryptobin/sm2: failed to marshal algo param")
     }
 
     algo.Algorithm = oidSM2

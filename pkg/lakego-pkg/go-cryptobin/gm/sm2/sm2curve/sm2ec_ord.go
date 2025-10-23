@@ -107,7 +107,7 @@ func P256OrdInverse(k []byte) ([]byte, error) {
 // P256OrdMul multiplication modulo org(G).
 func P256OrdMul(in1, in2 []byte) ([]byte, error) {
     if len(in1) != 32 || len(in2) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     ax := new(field.OrderElement)
     ay := new(field.OrderElement)

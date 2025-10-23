@@ -187,16 +187,16 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) (bool, error) {
     // verify that 0 < r < p
     signr := new(big.Int).Set(r)
     if signr.Cmp(zero) == -1 {
-        return false, errors.New("egdsa: r is smaller than zero")
+        return false, errors.New("go-cryptobin/egdsa: r is smaller than zero")
     } else if signr.Cmp(pub.P) == +1 {
-        return false, errors.New("egdsa: r is larger than public key p")
+        return false, errors.New("go-cryptobin/egdsa: r is larger than public key p")
     }
 
     signs := new(big.Int).Set(s)
     if signs.Cmp(zero) == -1 {
-        return false, errors.New("egdsa: s is smaller than zero")
+        return false, errors.New("go-cryptobin/egdsa: s is smaller than zero")
     } else if signs.Cmp(new(big.Int).Sub(pub.P, one)) == +1 {
-        return false, errors.New("egdsa: s is larger than public key p")
+        return false, errors.New("go-cryptobin/egdsa: s is larger than public key p")
     }
 
     // m = m % (p - THREE) + TWO
@@ -221,7 +221,7 @@ func Verify(pub *PublicKey, hash []byte, r, s *big.Int) (bool, error) {
         return true, nil // signature is verified
     }
 
-    return false, errors.New("egdsa: signature is not verified")
+    return false, errors.New("go-cryptobin/egdsa: signature is not verified")
 }
 
 // Gen emit <p,q,g>.
@@ -254,7 +254,7 @@ func generatePQZp(random io.Reader, n, probability int) (*big.Int, *big.Int, *bi
         }
     }
 
-    return nil, nil, nil, errors.New("egdsa: generate key fail")
+    return nil, nil, nil, errors.New("go-cryptobin/egdsa: generate key fail")
 }
 
 // bigIntEqual reports whether a and b are equal leaking only their bit length

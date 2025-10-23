@@ -11,9 +11,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotECPublicKey      = errors.New("key is not a valid BIP0340 public key")
-    ErrNotECPrivateKey     = errors.New("key is not a valid BIP0340 private key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/bip0340: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotECPublicKey      = errors.New("go-cryptobin/bip0340: key is not a valid BIP0340 public key")
+    ErrNotECPrivateKey     = errors.New("go-cryptobin/bip0340: key is not a valid BIP0340 private key")
 )
 
 // 解析私钥

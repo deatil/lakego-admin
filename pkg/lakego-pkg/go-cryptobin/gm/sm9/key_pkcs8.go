@@ -50,7 +50,7 @@ func ParsePublicKey(der []byte) (key any, err error) {
     }
 
     if !reflect.DeepEqual(pubkey.Algo.Algorithm, oidSM9) {
-        return nil, errors.New("x509: not sm2 elliptic curve")
+        return nil, errors.New("go-cryptobin/sm9: not sm2 elliptic curve")
     }
 
     params := pubkey.Algo.Parameters.FullBytes
@@ -67,7 +67,7 @@ func ParsePublicKey(der []byte) (key any, err error) {
         case oidSM9Sign.Equal(*pubOID):
             input := cryptobyte.String(pubkey.BitString.Bytes)
             if !input.ReadASN1BitStringAsBytes(&bytes) || !input.Empty() {
-                return nil, errors.New("sm9: invalid sign user public key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid sign user public key asn1 data")
             }
 
             key, err = NewSignMasterPublicKey(bytes)
@@ -75,14 +75,14 @@ func ParsePublicKey(der []byte) (key any, err error) {
         case oidSM9Enc.Equal(*pubOID):
             input := cryptobyte.String(pubkey.BitString.Bytes)
             if !input.ReadASN1BitStringAsBytes(&bytes) || !input.Empty() {
-                return nil, errors.New("sm9: invalid encrypt user public key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid encrypt user public key asn1 data")
             }
 
             key, err = NewEncryptMasterPublicKey(bytes)
             return
     }
 
-    return nil, errors.New("not support yet")
+    return nil, errors.New("go-cryptobin/sm9: not support yet")
 }
 
 func MarshalPublicKey(key any) ([]byte, error) {
@@ -101,11 +101,11 @@ func MarshalPublicKey(key any) ([]byte, error) {
             pubBytes = k.Mpk.MarshalUncompressed()
             oidBytes, err = asn1.Marshal(oidSM9Enc)
         default:
-            return nil, errors.New("sm9: no support key algo")
+            return nil, errors.New("go-cryptobin/sm9: no support key algo")
     }
 
     if err != nil {
-        return nil, errors.New("sm9: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal algo param: " + err.Error())
     }
 
     algo.Algorithm = oidSM9
@@ -143,7 +143,7 @@ func ParsePrivateKey(der []byte) (any, error) {
         return parsePrivateKey(privKey)
     }
 
-    return nil, errors.New("sm9: unknown private key algorithm")
+    return nil, errors.New("go-cryptobin/sm9: unknown private key algorithm")
 }
 
 func MarshalPrivateKey(key any) ([]byte, error) {
@@ -158,7 +158,7 @@ func MarshalPrivateKey(key any) ([]byte, error) {
             return marshalEncMasterPrivateKey(k)
     }
 
-    return nil, errors.New("key error")
+    return nil, errors.New("go-cryptobin/sm9: key error")
 }
 
 // =============
@@ -175,10 +175,10 @@ func parsePrivateKey(privKey pkcs8) (key any, err error) {
             if !input.ReadASN1(&inner, cryptobyte_asn1.SEQUENCE) ||
                 !input.Empty() ||
                 !inner.ReadASN1BitStringAsBytes(&bytes) {
-                return nil, errors.New("sm9: invalid sign user private key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid sign user private key asn1 data")
             }
             if !inner.Empty() && (!inner.ReadASN1BitStringAsBytes(&pubBytes) || !inner.Empty()) {
-                return nil, errors.New("sm9: invalid sign user private key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid sign user private key asn1 data")
             }
 
             priBytes := append(bytes, pubBytes...)
@@ -191,10 +191,10 @@ func parsePrivateKey(privKey pkcs8) (key any, err error) {
             if !input.ReadASN1(&inner, cryptobyte_asn1.SEQUENCE) ||
                 !input.Empty() ||
                 !inner.ReadASN1BitStringAsBytes(&bytes) {
-                return nil, errors.New("sm9: invalid encrypt user private key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid encrypt user private key asn1 data")
             }
             if !inner.Empty() && (!inner.ReadASN1BitStringAsBytes(&pubBytes) || !inner.Empty()) {
-                return nil, errors.New("sm9: invalid encrypt user private key asn1 data")
+                return nil, errors.New("go-cryptobin/sm9: invalid encrypt user private key asn1 data")
             }
 
             priBytes := append(bytes, pubBytes...)
@@ -219,10 +219,10 @@ func parsePrivateKey(privKey pkcs8) (key any, err error) {
                     if !input.ReadASN1(&inner, cryptobyte_asn1.SEQUENCE) ||
                         !input.Empty() ||
                         !inner.ReadASN1Integer(d) {
-                        return nil, errors.New("sm9: invalid sign master private key asn1 data")
+                        return nil, errors.New("go-cryptobin/sm9: invalid sign master private key asn1 data")
                     }
                     if !inner.Empty() && (!inner.ReadASN1BitStringAsBytes(&pubBytes) || !inner.Empty()) {
-                        return nil, errors.New("sm9: invalid sign master private key asn1 data")
+                        return nil, errors.New("go-cryptobin/sm9: invalid sign master private key asn1 data")
                     }
 
                     key, err = NewSignMasterPrivateKey(d.Bytes())
@@ -233,10 +233,10 @@ func parsePrivateKey(privKey pkcs8) (key any, err error) {
                     if !input.ReadASN1(&inner, cryptobyte_asn1.SEQUENCE) ||
                         !input.Empty() ||
                         !inner.ReadASN1Integer(d) {
-                        return nil, errors.New("sm9: invalid encrypt master private key asn1 data")
+                        return nil, errors.New("go-cryptobin/sm9: invalid encrypt master private key asn1 data")
                     }
                     if !inner.Empty() && (!inner.ReadASN1BitStringAsBytes(&pubBytes) || !inner.Empty()) {
-                        return nil, errors.New("sm9: invalid encrypt master private key asn1 data")
+                        return nil, errors.New("go-cryptobin/sm9: invalid encrypt master private key asn1 data")
                     }
 
                     key, err = NewEncryptMasterPrivateKey(d.Bytes())
@@ -244,7 +244,7 @@ func parsePrivateKey(privKey pkcs8) (key any, err error) {
             }
     }
 
-    return nil, errors.New("not support yet")
+    return nil, errors.New("go-cryptobin/sm9: not support yet")
 }
 
 // =============
@@ -275,7 +275,7 @@ func marshalSignPrivateKey(k *SignPrivateKey) ([]byte, error) {
     key.PublicKey.FullBytes = pubasn1
 
     if privKey.PrivateKey, err = asn1.Marshal(key); err != nil {
-        return nil, errors.New("sm9: failed to marshal sm9 sign private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal sm9 sign private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -307,7 +307,7 @@ func marshalEncPrivateKey(k *EncryptPrivateKey) ([]byte, error) {
     key.PublicKey.FullBytes = pubasn1
 
     if privKey.PrivateKey, err = asn1.Marshal(key); err != nil {
-        return nil, errors.New("sm9: failed to marshal sm9 encrypt private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal sm9 encrypt private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -317,7 +317,7 @@ func marshalSignMasterPrivateKey(k *SignMasterPrivateKey) ([]byte, error) {
     var privKey pkcs8
     oidBytes, err := asn1.Marshal(oidSM9Sign)
     if err != nil {
-        return nil, errors.New("sm9: failed to marshal SM9 OID: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal SM9 OID: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -346,7 +346,7 @@ func marshalSignMasterPrivateKey(k *SignMasterPrivateKey) ([]byte, error) {
     key.PublicKey.FullBytes = pubasn1
 
     if privKey.PrivateKey, err = asn1.Marshal(key); err != nil {
-        return nil, errors.New("sm9: failed to marshal sm9 sign master private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal sm9 sign master private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -356,7 +356,7 @@ func marshalEncMasterPrivateKey(k *EncryptMasterPrivateKey) ([]byte, error) {
     var privKey pkcs8
     oidBytes, err := asn1.Marshal(oidSM9Enc)
     if err != nil {
-        return nil, errors.New("sm9: failed to marshal SM9 OID: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal SM9 OID: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -385,7 +385,7 @@ func marshalEncMasterPrivateKey(k *EncryptMasterPrivateKey) ([]byte, error) {
     key.PublicKey.FullBytes = pubasn1
 
     if privKey.PrivateKey, err = asn1.Marshal(key); err != nil {
-        return nil, errors.New("sm9: failed to marshal sm9 encrypt master private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: failed to marshal sm9 encrypt master private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)

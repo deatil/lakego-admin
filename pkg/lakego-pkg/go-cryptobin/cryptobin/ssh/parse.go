@@ -17,11 +17,11 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded OpenSSH key")
-    ErrNotOpenSSHPublicKey = errors.New("key is not a valid SSH public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/ssh: invalid key: Key must be a PEM encoded OpenSSH key")
+    ErrNotOpenSSHPublicKey = errors.New("go-cryptobin/ssh: key is not a valid SSH public key")
 
-    ErrPrivateKeyError = errors.New("key is not a valid private key")
-    ErrPublicKeyError  = errors.New("key is not a valid public key")
+    ErrPrivateKeyError = errors.New("go-cryptobin/ssh: key is not a valid private key")
+    ErrPublicKeyError  = errors.New("go-cryptobin/ssh: key is not a valid public key")
 )
 
 var (

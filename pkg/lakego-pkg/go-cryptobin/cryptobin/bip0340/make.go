@@ -10,7 +10,7 @@ func (this BIP0340) MakePublicKey() BIP0340 {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -23,7 +23,7 @@ func (this BIP0340) MakePublicKey() BIP0340 {
 func (this BIP0340) MakeKeyDer() BIP0340 {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/bip0340: keyData error.")
         return this.AppendError(err)
     }
 

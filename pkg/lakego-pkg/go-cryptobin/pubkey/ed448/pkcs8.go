@@ -68,7 +68,7 @@ func ParsePublicKey(derBytes []byte) (pub PublicKey, err error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyEd448)
     if !algoEq {
-        err = errors.New("ed448: unknown public key algorithm")
+        err = errors.New("go-cryptobin/ed448: unknown public key algorithm")
         return
     }
 
@@ -87,7 +87,7 @@ func MarshalPrivateKey(key PrivateKey) ([]byte, error) {
 
     curvePrivateKey, err := asn1.Marshal(key.Seed())
     if err != nil {
-        return nil, fmt.Errorf("ed448: failed to marshal private key: %v", err)
+        return nil, fmt.Errorf("go-cryptobin/ed448: failed to marshal private key: %v", err)
     }
 
     privKey.PrivateKey = curvePrivateKey
@@ -107,17 +107,17 @@ func ParsePrivateKey(derBytes []byte) (PrivateKey, error) {
 
     algoEq := privKey.Algo.Algorithm.Equal(oidPublicKeyEd448)
     if !algoEq {
-        err = errors.New("ed448: unknown private key algorithm")
+        err = errors.New("go-cryptobin/ed448: unknown private key algorithm")
         return nil, err
     }
 
     var curvePrivateKey []byte
     if _, err := asn1.Unmarshal(privKey.PrivateKey, &curvePrivateKey); err != nil {
-        return nil, fmt.Errorf("ed448: invalid ED448 private key: %v", err)
+        return nil, fmt.Errorf("go-cryptobin/ed448: invalid ED448 private key: %v", err)
     }
 
     if l := len(curvePrivateKey); l != SeedSize {
-        return nil, fmt.Errorf("ed448: invalid ED448 private key length: %d", l)
+        return nil, fmt.Errorf("go-cryptobin/ed448: invalid ED448 private key length: %d", l)
     }
 
     return NewKeyFromSeed(curvePrivateKey), nil

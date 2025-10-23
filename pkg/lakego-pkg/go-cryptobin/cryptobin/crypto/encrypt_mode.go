@@ -415,7 +415,7 @@ func (this ModeOCFB) Encrypt(plain []byte, block cipher.Block, opt IOption) ([]b
 
     mode, prefix := cryptobin_mode.NewOCFBEncrypter(block, randData, cryptobin_mode.OCFBResyncOption(resync))
     if mode == nil {
-        return nil, errors.New("cipher: randData length is not eq blockSize.")
+        return nil, errors.New("go-cryptobin/crypto: randData length is not eq blockSize.")
     }
 
     // prefix 长度
@@ -437,7 +437,7 @@ func (this ModeOCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
     prefixLen := blockSize+2
 
     if len(data) < prefixLen {
-        return nil, errors.New("cipher: data is too short.")
+        return nil, errors.New("go-cryptobin/crypto: data is too short.")
     }
 
     prefix := data[:prefixLen]
@@ -446,7 +446,7 @@ func (this ModeOCFB) Decrypt(data []byte, block cipher.Block, opt IOption) ([]by
 
     mode := cryptobin_mode.NewOCFBDecrypter(block, prefix, cryptobin_mode.OCFBResyncOption(resync))
     if mode == nil {
-        return nil, errors.New("cipher: prefix length is not eq blockSize + 2.")
+        return nil, errors.New("go-cryptobin/crypto: prefix length is not eq blockSize + 2.")
     }
 
     dst := make([]byte, len(data) - prefixLen)

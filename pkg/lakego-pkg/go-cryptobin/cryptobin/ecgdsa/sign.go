@@ -37,12 +37,12 @@ func (this ECGDSA) Verify(data []byte) ECGDSA {
 // 私钥签名 ASN1
 func (this ECGDSA) SignASN1() ECGDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecgdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/ecgdsa: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -61,12 +61,12 @@ func (this ECGDSA) SignASN1() ECGDSA {
 // 使用原始数据[data]对比签名后数据
 func (this ECGDSA) VerifyASN1(data []byte) ECGDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecgdsa: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/ecgdsa: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -81,12 +81,12 @@ func (this ECGDSA) VerifyASN1(data []byte) ECGDSA {
 // 私钥签名 Bytes
 func (this ECGDSA) SignBytes() ECGDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecgdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/ecgdsa: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -104,12 +104,12 @@ func (this ECGDSA) SignBytes() ECGDSA {
 // 使用原始数据[data]对比签名后数据
 func (this ECGDSA) VerifyBytes(data []byte) ECGDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecgdsa: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/ecgdsa: Hash func not set.")
         return this.AppendError(err)
     }
 

@@ -43,12 +43,12 @@ func (c *nistCurve) NewPrivateKey(key []byte) (*PrivateKey, error) {
 
 func (c *nistCurve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
     if key.NamedCurve != c {
-        panic("crypto/ecdh: internal error: converting the wrong key type")
+        panic("go-cryptobin/ecdh: internal error: converting the wrong key type")
     }
 
     x, err := c.curve.NewPrivateKey(key.Bytes())
     if err != nil {
-        panic("crypto/ecdh: internal error: " + err.Error())
+        panic("go-cryptobin/ecdh: internal error: " + err.Error())
     }
 
     xx := x.PublicKey().Bytes()

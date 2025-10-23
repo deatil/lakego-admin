@@ -51,7 +51,7 @@ func (this *Sym[T]) OID() asn1.ObjectIdentifier {
 // 加密
 func (this *Sym[T]) Encrypt(rand io.Reader, key, plaintext []byte) (encrypted []byte, params T, err error) {
     if this.cipher == nil {
-        err = errors.New("pkcs: invalid cipher")
+        err = errors.New("go-cryptobin/pkcs: invalid cipher")
         return
     }
 
@@ -73,7 +73,7 @@ func (this *Sym[T]) Encrypt(rand io.Reader, key, plaintext []byte) (encrypted []
 // 解密
 func (this *Sym[T]) Decrypt(key []byte, params T, ciphertext []byte) ([]byte, error) {
     if this.cipher == nil {
-        return nil, errors.New("pkcs: invalid cipher")
+        return nil, errors.New("go-cryptobin/pkcs: invalid cipher")
     }
 
     paramBytes, err := asn1.Marshal(params)

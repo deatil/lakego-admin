@@ -50,7 +50,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("x509: unsupported elliptic curve")
+        return nil, errors.New("go-cryptobin/ecdh: unsupported elliptic curve")
     }
 
     var paramBytes []byte
@@ -90,20 +90,20 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyDH)
     if !algoEq {
-        err = errors.New("ecdh: unknown public key algorithm")
+        err = errors.New("go-cryptobin/ecdh: unknown public key algorithm")
         return
     }
 
     paramsDer := cryptobyte.String(pki.Algorithm.Parameters.FullBytes)
     namedCurveOID := new(asn1.ObjectIdentifier)
     if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        err = errors.New("ecdh: invalid ECDSA parameters")
+        err = errors.New("go-cryptobin/ecdh: invalid ECDSA parameters")
         return
     }
 
     namedCurve := namedCurveFromOID(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("ecdh: unsupported elliptic curve")
+        err = errors.New("go-cryptobin/ecdh: unsupported elliptic curve")
         return
     }
 
@@ -122,13 +122,13 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("x509: unsupported elliptic curve")
+        return nil, errors.New("go-cryptobin/ecdh: unsupported elliptic curve")
     }
 
     // 创建数据
     paramBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("ecdh: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/ecdh: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -163,20 +163,20 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
             paramsDer := cryptobyte.String(privKey.Algo.Parameters.FullBytes)
             namedCurveOID := new(asn1.ObjectIdentifier)
             if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-                err = errors.New("ecdh: invalid ECDSA parameters")
+                err = errors.New("go-cryptobin/ecdh: invalid ECDSA parameters")
                 return nil, err
             }
 
             namedCurve := namedCurveFromOID(*namedCurveOID)
             if namedCurve == nil {
-                err = errors.New("ecdh: unsupported elliptic curve")
+                err = errors.New("go-cryptobin/ecdh: unsupported elliptic curve")
                 return nil, err
             }
 
             N := namedCurve.Params().N
 
             if new(big.Int).SetBytes(x).Cmp(N) >= 0 {
-                err = errors.New("ecdh: private key cannot used with given curve")
+                err = errors.New("go-cryptobin/ecdh: private key cannot used with given curve")
                 return nil, err
             }
 

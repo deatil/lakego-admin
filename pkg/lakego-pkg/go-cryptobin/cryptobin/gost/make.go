@@ -10,7 +10,7 @@ func (this Gost) MakePublicKey() Gost {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this Gost) MakePublicKey() Gost {
 func (this Gost) MakeKeyDer() Gost {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/gost: keyData error.")
         return this.AppendError(err)
     }
 

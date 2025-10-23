@@ -10,7 +10,7 @@ import (
 // 常用为: PS256[SHA256] | PS384[SHA384] | PS512[SHA512]
 func (this RSA) SignPSS(opts ...rsa.PSSOptions) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("go-cryptobin/rsa: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -37,7 +37,7 @@ func (this RSA) SignPSS(opts ...rsa.PSSOptions) RSA {
 // 使用原始数据[data]对比签名后数据
 func (this RSA) VerifyPSS(data []byte, opts ...rsa.PSSOptions) RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey error.")
+        err := errors.New("go-cryptobin/rsa: publicKey error.")
         return this.AppendError(err)
     }
 

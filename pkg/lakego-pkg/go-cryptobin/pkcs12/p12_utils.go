@@ -33,11 +33,11 @@ func (this envelopedCipher) NeedBmpPassword() bool {
 }
 
 func (this envelopedCipher) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
-    return nil, nil, errors.New("error")
+    return nil, nil, errors.New("go-cryptobin/pkcs12: error")
 }
 
 func (this envelopedCipher) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
-    return nil, errors.New("error")
+    return nil, errors.New("go-cryptobin/pkcs12: error")
 }
 
 // https://tools.ietf.org/html/rfc7292#section-4.2.5

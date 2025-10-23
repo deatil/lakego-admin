@@ -10,7 +10,7 @@ func (this DSA) MakePublicKey() DSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/dsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this DSA) MakePublicKey() DSA {
 func (this DSA) MakeKeyDer() DSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/dsa: keyData error.")
         return this.AppendError(err)
     }
 

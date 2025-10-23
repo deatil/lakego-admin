@@ -54,7 +54,7 @@ var (
 // Create PrivateKey PEM
 func (this SSH) CreatePrivateKey() SSH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -74,7 +74,7 @@ func (this SSH) CreatePrivateKey() SSH {
         case *sm2.PrivateKey:
             privateKeyBytes, err = sm2.MarshalPrivateKey(prikey)
         default:
-            err = errors.New("privateKey error.")
+            err = errors.New("go-cryptobin/ssh: privateKey error.")
     }
 
     if err != nil {
@@ -94,7 +94,7 @@ func (this SSH) CreatePrivateKey() SSH {
 // Create PrivateKey PEM With Password
 func (this SSH) CreatePrivateKeyWithPassword(password []byte, opts ...any) SSH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -118,7 +118,7 @@ func (this SSH) CreatePrivateKeyWithPassword(password []byte, opts ...any) SSH {
         case *sm2.PrivateKey:
             privateKeyBytes, err = sm2.MarshalPrivateKey(prikey)
         default:
-            err = errors.New("privateKey error.")
+            err = errors.New("go-cryptobin/ssh: privateKey error.")
     }
 
     if err != nil {
@@ -145,7 +145,7 @@ func (this SSH) CreatePrivateKeyWithPassword(password []byte, opts ...any) SSH {
 // Create PublicKey PEM
 func (this SSH) CreatePublicKey() SSH {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ssh: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -164,7 +164,7 @@ func (this SSH) CreatePublicKey() SSH {
         case *sm2.PublicKey:
             publicKeyBytes, err = sm2.MarshalPublicKey(pubkey)
         default:
-            err = errors.New("privateKey error.")
+            err = errors.New("go-cryptobin/ssh: privateKey error.")
     }
 
     if err != nil {
@@ -186,7 +186,7 @@ func (this SSH) CreatePublicKey() SSH {
 // Create OpenSSH PrivateKey PEM
 func (this SSH) CreateOpenSSHPrivateKey() SSH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -207,7 +207,7 @@ func (this SSH) CreateOpenSSHPrivateKey() SSH {
 // Create OpenSSH PrivateKey PEM With Password
 func (this SSH) CreateOpenSSHPrivateKeyWithPassword(password []byte, opts ...OpenSSHOpts) SSH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -245,7 +245,7 @@ func (this SSH) CreateOpenSSHPrivateKeyWithPassword(password []byte, opts ...Ope
 // Create OpenSSH PublicKey PEM
 func (this SSH) CreateOpenSSHPublicKey() SSH {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ssh: publicKey empty.")
         return this.AppendError(err)
     }
 

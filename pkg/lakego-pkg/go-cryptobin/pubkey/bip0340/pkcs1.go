@@ -34,7 +34,7 @@ func ParseECPrivateKey(der []byte) (*PrivateKey, error) {
 func MarshalECPrivateKey(key *PrivateKey) ([]byte, error) {
     oid, ok := OidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("ecgdsa: unknown elliptic curve")
+        return nil, errors.New("go-cryptobin/bip0340: unknown elliptic curve")
     }
 
     return marshalECPrivateKeyWithOID(key, oid)

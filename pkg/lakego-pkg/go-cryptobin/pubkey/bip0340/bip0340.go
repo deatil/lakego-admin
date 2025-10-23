@@ -321,22 +321,22 @@ func SignUsingKToRS(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (
 
     bip0340Hash([]byte(BIP0340_AUX), sig, h)
 
-    buff := h.Sum(nil)
+    buf := h.Sum(nil)
 
     d.FillBytes(sig)
 
     if qlen > hsize {
         for i := 0; i < hsize; i++ {
-            sig[i] ^= buff[i]
+            sig[i] ^= buf[i]
         }
 
         bip0340Hash([]byte(BIP0340_NONCE), sig, h)
     } else {
         for i := 0; i < qlen; i++ {
-            buff[i] ^= sig[i]
+            buf[i] ^= sig[i]
         }
 
-        bip0340Hash([]byte(BIP0340_NONCE), buff, h)
+        bip0340Hash([]byte(BIP0340_NONCE), buf, h)
     }
 
     sig = make([]byte, plen)
@@ -344,9 +344,9 @@ func SignUsingKToRS(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (
 
     h.Write(sig)
     h.Write(msg)
-    buff = h.Sum(nil)
+    buf = h.Sum(nil)
 
-    k = new(big.Int).SetBytes(buff)
+    k = new(big.Int).SetBytes(buf)
     k.Mod(k, n)
 
     if k.Cmp(zero) == 0 {
@@ -369,9 +369,9 @@ func SignUsingKToRS(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (
 
     h.Write(sig)
     h.Write(msg)
-    buff = h.Sum(nil)
+    buf = h.Sum(nil)
 
-    e := new(big.Int).SetBytes(buff)
+    e := new(big.Int).SetBytes(buf)
     e.Mod(e, n)
 
     /* Export our r in the signature */

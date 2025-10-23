@@ -168,7 +168,7 @@ func (this *PKCS12) makeLocalKeyIdAttr(data []byte) (PKCS12Attribute, error) {
 
 func (this *PKCS12) marshalPrivateKey(rand io.Reader, password []byte, opt Opts) (ci ContentInfo, err error) {
     if this.cert == nil {
-        err = errors.New("PKCS12: cert error")
+        err = errors.New("go-cryptobin/pkcs12: cert error")
         return
     }
 
@@ -194,7 +194,7 @@ func (this *PKCS12) marshalPrivateKey(rand io.Reader, password []byte, opt Opts)
     // 额外数据
     localKeyIdAttr, err := this.makeLocalKeyIdAttr(this.cert)
     if err != nil {
-        err = errors.New("PKCS12: " + err.Error())
+        err = errors.New("go-cryptobin/pkcs12: " + err.Error())
         return
     }
 
@@ -210,7 +210,7 @@ func (this *PKCS12) marshalCert(rand io.Reader, password []byte, opt Opts) (ci C
     // 额外数据
     localKeyIdAttr, err := this.makeLocalKeyIdAttr(certificate)
     if err != nil {
-        err = errors.New("PKCS12: " + err.Error())
+        err = errors.New("go-cryptobin/pkcs12: " + err.Error())
         return
     }
 
@@ -285,7 +285,7 @@ func (this *PKCS12) marshalSdsiCert(rand io.Reader, password []byte, opt Opts) (
     // ID
     localKeyIdAttr, err := this.makeLocalKeyIdAttr(sdsiCert)
     if err != nil {
-        err = errors.New("PKCS12: " + err.Error())
+        err = errors.New("go-cryptobin/pkcs12: " + err.Error())
         return
     }
 
@@ -308,7 +308,7 @@ func (this *PKCS12) marshalCRL(rand io.Reader, password []byte, opt Opts) (ci Co
     // ID
     localKeyIdAttr, err := this.makeLocalKeyIdAttr(crl)
     if err != nil {
-        err = errors.New("PKCS12: " + err.Error())
+        err = errors.New("go-cryptobin/pkcs12: " + err.Error())
         return
     }
 
@@ -331,7 +331,7 @@ func (this *PKCS12) marshalSecretKey(rand io.Reader, password []byte, opt Opts) 
     // 额外数据
     localKeyIdAttr, err := this.makeLocalKeyIdAttr(secretKey)
     if err != nil {
-        err = errors.New("PKCS12: " + err.Error())
+        err = errors.New("go-cryptobin/pkcs12: " + err.Error())
         return
     }
 

@@ -10,7 +10,7 @@ func (this RSA) MakePublicKey() RSA {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -23,7 +23,7 @@ func (this RSA) MakePublicKey() RSA {
 func (this RSA) MakeKeyDer() RSA {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/rsa: keyData error.")
         return this.AppendError(err)
     }
 

@@ -43,7 +43,7 @@ type dsaSignature struct {
 // 私钥签名
 func (this DSA) SignASN1() DSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/dsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -66,7 +66,7 @@ func (this DSA) SignASN1() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyASN1(data []byte) DSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/dsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -96,7 +96,7 @@ const (
 // 私钥签名
 func (this DSA) SignBytes() DSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/dsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -111,7 +111,7 @@ func (this DSA) SignBytes() DSA {
     }
 
     if (r.BitLen() / 8) > dsaByteLen || (s.BitLen() / 8) > dsaByteLen {
-        err := errors.New("signature too large.")
+        err := errors.New("go-cryptobin/dsa: signature too large.")
         return this.AppendError(err)
     }
 
@@ -129,7 +129,7 @@ func (this DSA) SignBytes() DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyBytes(data []byte) DSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/dsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -137,7 +137,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
     sig := this.data
 
     if len(sig) != 2*dsaByteLen {
-        err := errors.New("sig data error.")
+        err := errors.New("go-cryptobin/dsa: sig data error.")
         return this.AppendError(err)
     }
 
@@ -159,7 +159,7 @@ func (this DSA) VerifyBytes(data []byte) DSA {
 // 私钥签名
 func (this DSA) SignWithSeparator(separator ...string) DSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/dsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -199,7 +199,7 @@ func (this DSA) SignWithSeparator(separator ...string) DSA {
 // 使用原始数据[data]对比签名后数据
 func (this DSA) VerifyWithSeparator(data []byte, separator ...string) DSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/dsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -215,7 +215,7 @@ func (this DSA) VerifyWithSeparator(data []byte, separator ...string) DSA {
 
     split := strings.Split(string(this.data), sep)
     if len(split) != 2 {
-        err := errors.New("sign data is error.")
+        err := errors.New("go-cryptobin/dsa: sign data is error.")
         return this.AppendError(err)
     }
 
@@ -242,7 +242,7 @@ func (this DSA) VerifyWithSeparator(data []byte, separator ...string) DSA {
 // 签名后数据
 func (this DSA) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return nil, errors.New("hash func empty.")
+        return nil, errors.New("go-cryptobin/dsa: hash func empty.")
     }
 
     h := this.signHash()

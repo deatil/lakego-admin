@@ -128,7 +128,7 @@ func (priv *SignMasterPrivateKey) GenerateUserKey(id []byte, hid byte) (uk *Sign
 
     // if t1 = 0, we need to regenerate the master key.
     if t1.BitLen() == 0 || t1.Cmp(n) == 0 {
-        return nil, errors.New("need to regen MasterPrivateKey!")
+        return nil, errors.New("go-cryptobin/sm9: need to regen MasterPrivateKey!")
     }
 
     t1.ModInverse(t1, n)
@@ -207,7 +207,7 @@ func (priv *SignPrivateKey) Unmarshal(bytes []byte) (err error) {
     }
 
     if len(pub) == 0 {
-        return errors.New("private key need publickey bytes")
+        return errors.New("go-cryptobin/sm9: private key need publickey bytes")
     }
 
     priv.Sk = g1
@@ -227,7 +227,7 @@ func (priv *SignPrivateKey) Unmarshal(bytes []byte) (err error) {
 func GenerateSignMasterKey(rand io.Reader) (mk *SignMasterPrivateKey, err error) {
     s, err := randFieldElement(rand, sm9curve.Order)
     if err != nil {
-        return nil, errors.New(fmt.Sprintf("gen rand num err: %s", err))
+        return nil, errors.New(fmt.Sprintf("go-cryptobin/sm9: gen rand num err: %s", err))
     }
 
     mk = new(SignMasterPrivateKey)
@@ -298,7 +298,7 @@ func Sign(rand io.Reader, pri *SignPrivateKey, msg []byte) (h *big.Int, s *sm9cu
 Regen:
     r, err := randFieldElement(rand, n)
     if err != nil {
-        return nil, nil, errors.New(fmt.Sprintf("gen rand num failed: %s", err))
+        return nil, nil, errors.New(fmt.Sprintf("go-cryptobin/sm9: gen rand num failed: %s", err))
     }
 
     w := new(sm9curve.GT).ScalarMult(g, r)

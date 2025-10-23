@@ -48,7 +48,7 @@ func (this ElGamal) CreatePublicKey() ElGamal {
 // 生成 pkcs1 私钥 pem 数据
 func (this ElGamal) CreatePKCS1PrivateKey() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -72,7 +72,7 @@ func (this ElGamal) CreatePKCS1PrivateKey() ElGamal {
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this ElGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -84,7 +84,7 @@ func (this ElGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
     // 加密方式
     cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("PEMCipher not exists.")
+        err := errors.New("go-cryptobin/elgamal: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -114,7 +114,7 @@ func (this ElGamal) CreatePKCS1PrivateKeyWithPassword(password string, opts ...s
 // 生成 pkcs1 公钥 pem 数据
 func (this ElGamal) CreatePKCS1PublicKey() ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -138,7 +138,7 @@ func (this ElGamal) CreatePKCS1PublicKey() ElGamal {
 // 生成 pkcs8 私钥 pem 数据
 func (this ElGamal) CreatePKCS8PrivateKey() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -161,7 +161,7 @@ func (this ElGamal) CreatePKCS8PrivateKey() ElGamal {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ElGamal) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -196,7 +196,7 @@ func (this ElGamal) CreatePKCS8PrivateKeyWithPassword(password string, opts ...a
 // 生成公钥 pem 数据
 func (this ElGamal) CreatePKCS8PublicKey() ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -220,7 +220,7 @@ func (this ElGamal) CreatePKCS8PublicKey() ElGamal {
 // 生成私钥 xml 数据
 func (this ElGamal) CreateXMLPrivateKey() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -237,7 +237,7 @@ func (this ElGamal) CreateXMLPrivateKey() ElGamal {
 // 生成公钥 xml 数据
 func (this ElGamal) CreateXMLPublicKey() ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 

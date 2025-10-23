@@ -45,7 +45,7 @@ func (this Gost) CreatePublicKey() Gost {
 // 生成 pkcs8 私钥 pem 数据
 func (this Gost) CreatePKCS8PrivateKey() Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -67,7 +67,7 @@ func (this Gost) CreatePKCS8PrivateKey() Gost {
 // 生成 PKCS8 私钥带密码 pem 数据
 func (this Gost) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -102,7 +102,7 @@ func (this Gost) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any)
 // 生成公钥 pem 数据
 func (this Gost) CreatePKCS8PublicKey() Gost {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 

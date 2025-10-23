@@ -51,7 +51,7 @@ import (
 func getMode(opt IOption) (IMode, error) {
     mode := opt.Mode()
     if !UseMode.Has(mode) {
-        err := errors.New(fmt.Sprintf("the mode %s is not exists.", mode))
+        err := errors.New(fmt.Sprintf("go-cryptobin/crypto: the mode %s is not exists.", mode))
         return nil, err
     }
 
@@ -66,7 +66,7 @@ func getMode(opt IOption) (IMode, error) {
 func getPadding(opt IOption) (IPadding, error) {
     padding := opt.Padding()
     if !UsePadding.Has(padding) {
-        err := errors.New(fmt.Sprintf("the padding %s is not exists.", padding))
+        err := errors.New(fmt.Sprintf("go-cryptobin/crypto: the padding %s is not exists.", padding))
         return nil, err
     }
 
@@ -92,7 +92,7 @@ func BlockEncrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
     // 补码后需要验证 / check padding
     if opt.Padding() != NoPadding {
         if len(plainPadding)%bs != 0 {
-            err := errors.New(fmt.Sprintf("the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
+            err := errors.New(fmt.Sprintf("go-cryptobin/crypto: the length of the completed data must be an integer multiple of the block, the completed data size is %d, block size is %d", len(plainPadding), bs))
             return nil, err
         }
     }
@@ -114,7 +114,7 @@ func BlockDecrypt(block cipher.Block, data []byte, opt IOption) ([]byte, error) 
     // 补码后需要验证 / check padding
     if opt.Padding() != NoPadding {
         if len(data)%bs != 0 {
-            err := errors.New(fmt.Sprintf("improper decrypt type, block size is %d", bs))
+            err := errors.New(fmt.Sprintf("go-cryptobin/crypto: improper decrypt type, block size is %d", bs))
             return nil, err
         }
     }
@@ -618,7 +618,7 @@ func (this EncryptChacha20poly1305) Encrypt(data []byte, opt IOption) ([]byte, e
 
     nonce := opt.Iv()
     if len(nonce) != chacha20poly1305.NonceSize {
-        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
+        err := fmt.Errorf("go-cryptobin/crypto: bad nonce length passed to Open")
         return nil, err
     }
 
@@ -637,7 +637,7 @@ func (this EncryptChacha20poly1305) Decrypt(data []byte, opt IOption) ([]byte, e
 
     nonce := opt.Iv()
     if len(nonce) != chacha20poly1305.NonceSize {
-        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
+        err := fmt.Errorf("go-cryptobin/crypto: bad nonce length passed to Open")
         return nil, err
     }
 
@@ -660,7 +660,7 @@ func (this EncryptChacha20poly1305X) Encrypt(data []byte, opt IOption) ([]byte, 
 
     nonce := opt.Iv()
     if len(nonce) != chacha20poly1305.NonceSizeX {
-        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
+        err := fmt.Errorf("go-cryptobin/crypto: bad nonce length passed to Open")
         return nil, err
     }
 
@@ -679,7 +679,7 @@ func (this EncryptChacha20poly1305X) Decrypt(data []byte, opt IOption) ([]byte, 
 
     nonce := opt.Iv()
     if len(nonce) != chacha20poly1305.NonceSizeX {
-        err := fmt.Errorf("chacha20poly1305: bad nonce length passed to Open")
+        err := fmt.Errorf("go-cryptobin/crypto: bad nonce length passed to Open")
         return nil, err
     }
 
@@ -771,12 +771,12 @@ type EncryptXts struct {}
 // 加密 / Encrypt
 func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
-        err := fmt.Errorf("cipher is empty.")
+        err := fmt.Errorf("go-cryptobin/crypto: cipher is empty.")
         return nil, err
     }
 
     if !opt.Config().Has("sector_num") {
-        err := fmt.Errorf("sector_num is empty.")
+        err := fmt.Errorf("go-cryptobin/crypto: sector_num is empty.")
         return nil, err
     }
 
@@ -815,12 +815,12 @@ func (this EncryptXts) Encrypt(data []byte, opt IOption) ([]byte, error) {
 // 解密 / Decrypt
 func (this EncryptXts) Decrypt(data []byte, opt IOption) ([]byte, error) {
     if !opt.Config().Has("cipher") {
-        err := fmt.Errorf("cipher is empty.")
+        err := fmt.Errorf("go-cryptobin/crypto: cipher is empty.")
         return nil, err
     }
 
     if !opt.Config().Has("sector_num") {
-        err := fmt.Errorf("sector_num is empty.")
+        err := fmt.Errorf("go-cryptobin/crypto: sector_num is empty.")
         return nil, err
     }
 
@@ -961,7 +961,7 @@ func (this EncryptGost) getCipher(opt IOption) (cipher.Block, error) {
     }
 
     if sbox == nil {
-        err := fmt.Errorf("sbox is error")
+        err := fmt.Errorf("go-cryptobin/crypto: sbox is error")
         return nil, err
     }
 

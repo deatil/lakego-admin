@@ -38,7 +38,7 @@ func (c *x448Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
 
 func (c *x448Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
     if len(key) != x448PrivateKeySize {
-        return nil, errors.New("crypto/ecdh: invalid private key size")
+        return nil, errors.New("go-cryptobin/ecdh: invalid private key size")
     }
 
     return &PrivateKey{
@@ -49,7 +49,7 @@ func (c *x448Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
 
 func (c *x448Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
     if key.NamedCurve != c {
-        panic("crypto/ecdh: internal error: converting the wrong key type")
+        panic("go-cryptobin/ecdh: internal error: converting the wrong key type")
     }
 
     x := x448.NewKeyFromSeed(key.Bytes()).Public()
@@ -66,7 +66,7 @@ func (c *x448Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
 
 func (c *x448Curve) NewPublicKey(key []byte) (*PublicKey, error) {
     if len(key) != x448PublicKeySize {
-        return nil, errors.New("crypto/ecdh: invalid public key")
+        return nil, errors.New("go-cryptobin/ecdh: invalid public key")
     }
 
     return &PublicKey{
@@ -78,11 +78,11 @@ func (c *x448Curve) NewPublicKey(key []byte) (*PublicKey, error) {
 func (c *x448Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) {
     out, err := x448.X448(local.KeyBytes, remote.KeyBytes)
     if err != nil {
-        return nil, errors.New("crypto/ecdh: bad X448 remote ECDH input: " + err.Error())
+        return nil, errors.New("go-cryptobin/ecdh: bad X448 remote ECDH input: " + err.Error())
     }
 
     if len(out) != x448SharedSecretSize {
-        return nil, errors.New("crypto/ecdh: bad X448 remote ECDH input: low order point")
+        return nil, errors.New("go-cryptobin/ecdh: bad X448 remote ECDH input: low order point")
     }
 
     return out, nil

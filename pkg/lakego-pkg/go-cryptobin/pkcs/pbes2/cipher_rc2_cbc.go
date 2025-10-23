@@ -48,13 +48,13 @@ func (this CipherRC2CBC) NeedBmpPassword() bool {
 func (this CipherRC2CBC) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to create cipher: " + err.Error())
     }
 
     // 随机生成 iv
     iv := make([]byte, this.blockSize)
     if _, err := io.ReadFull(rand, iv); err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to generate IV: " + err.Error())
     }
 
     // 加密数据补码
@@ -86,11 +86,11 @@ func (this CipherRC2CBC) Decrypt(key, params, ciphertext []byte) ([]byte, error)
     // 解析参数
     var param rc2CBCParams
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs/cipher: invalid parameters")
+        return nil, errors.New("go-cryptobin/pkcs: invalid parameters")
     }
 
     if param.RC2Version > 1024 || param.RC2Version < 1 {
-        return nil, errors.New("pkcs/cipher: invalid RC2Version parameters")
+        return nil, errors.New("go-cryptobin/pkcs: invalid RC2Version parameters")
     }
 
     block, err := this.cipherFunc(key)
@@ -101,11 +101,11 @@ func (this CipherRC2CBC) Decrypt(key, params, ciphertext []byte) ([]byte, error)
     blockSize := block.BlockSize()
 
     if len(param.IV) != blockSize {
-        return nil, errors.New("pkcs/cipher: incorrect IV size")
+        return nil, errors.New("go-cryptobin/pkcs: incorrect IV size")
     }
 
     if len(ciphertext)%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
+        return nil, errors.New("go-cryptobin/pkcs: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -116,7 +116,7 @@ func (this CipherRC2CBC) Decrypt(key, params, ciphertext []byte) ([]byte, error)
     // 判断数据是否为填充数据
     dlen := len(plaintext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+        return nil, errors.New("go-cryptobin/pkcs: invalid padding")
     }
 
     // 解析加密数据

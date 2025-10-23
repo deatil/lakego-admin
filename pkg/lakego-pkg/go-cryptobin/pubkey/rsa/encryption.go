@@ -10,11 +10,11 @@ import (
 )
 
 var (
-    ErrDataToLarge     = errors.New("message too long for RSA public key size")
-    ErrDataLen         = errors.New("data length error")
-    ErrDataBroken      = errors.New("data broken, first byte is not zero")
-    ErrKeyPairDismatch = errors.New("data is not encrypted by the private key")
-    ErrDecryption      = errors.New("decryption error")
+    ErrDataToLarge     = errors.New("go-cryptobin/rsa: message too long for RSA public key size")
+    ErrDataLen         = errors.New("go-cryptobin/rsa: data length error")
+    ErrDataBroken      = errors.New("go-cryptobin/rsa: data broken, first byte is not zero")
+    ErrKeyPairDismatch = errors.New("go-cryptobin/rsa: data is not encrypted by the private key")
+    ErrDecryption      = errors.New("go-cryptobin/rsa: decryption error")
 )
 
 // PublicKey Encrypt or Decrypt Bytes

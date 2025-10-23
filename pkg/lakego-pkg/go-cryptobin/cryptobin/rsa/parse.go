@@ -13,9 +13,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotRSAPrivateKey    = errors.New("key is not a valid RSA private key")
-    ErrNotRSAPublicKey     = errors.New("key is not a valid RSA public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/rsa: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotRSAPrivateKey    = errors.New("go-cryptobin/rsa: key is not a valid RSA private key")
+    ErrNotRSAPublicKey     = errors.New("go-cryptobin/rsa: key is not a valid RSA public key")
 )
 
 // 解析 PKCS1 私钥

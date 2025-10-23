@@ -463,12 +463,12 @@ func (this *PKCS12) GetSdsiCertBytes() (cert []byte, attrs PKCS12Attributes, err
 func (this *PKCS12) GetCRL() (crl *pkix.CertificateList, attrs PKCS12Attributes, err error) {
     crls, ok := this.parsedData["crl"]
     if !ok {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
     if len(crls) == 0 {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
@@ -485,12 +485,12 @@ func (this *PKCS12) GetCRL() (crl *pkix.CertificateList, attrs PKCS12Attributes,
 func (this *PKCS12) GetCRLBytes() (crl []byte, attrs PKCS12Attributes, err error) {
     crls, ok := this.parsedData["crl"]
     if !ok {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
     if len(crls) == 0 {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
@@ -500,12 +500,12 @@ func (this *PKCS12) GetCRLBytes() (crl []byte, attrs PKCS12Attributes, err error
 func (this *PKCS12) GetSecretKey() (secretKey []byte, attrs PKCS12Attributes, err error) {
     keys, ok := this.parsedData["secretKey"]
     if !ok {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
     if len(keys) == 0 {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
@@ -520,12 +520,12 @@ type unknowDataBytes struct {
 func (this *PKCS12) GetUnknowsBytes() (unknowDatas []unknowDataBytes, err error) {
     unknows, ok := this.parsedData["unknow"]
     if !ok {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
     if len(unknows) == 0 {
-        err = errors.New("no data")
+        err = errors.New("go-cryptobin/pkcs12: no data")
         return
     }
 
@@ -609,7 +609,7 @@ func (this *PKCS12) ToPEM() ([]*pem.Block, error) {
     if err == nil {
         priBytes, err := MarshalPrivateKey(prikey)
         if err != nil {
-            return nil, errors.New("found unknown private key type in PKCS#8 wrapping: " + err.Error())
+            return nil, errors.New("go-cryptobin/pkcs12: found unknown private key type in PKCS#8 wrapping: " + err.Error())
         }
 
         priBlock := this.makeBlock(PrivateKeyType, priBytes, attrs)
