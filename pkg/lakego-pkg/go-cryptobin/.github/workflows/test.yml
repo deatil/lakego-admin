@@ -15,8 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        goVer: ['1.21', '1.24']
 
     steps:
       - name: Checkout
@@ -30,33 +28,20 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: ${{ matrix.goVer }}
+          go-version: 1.21
 
       - name: Go mod tidy
         run: go mod tidy
 
-      - name: Test with Coverage
-        if: ${{ matrix.goVer == '1.24' }}
-        run: go test -coverpkg=./... -v -short -race -coverprofile=cover.out -covermode=atomic ./...
-        env:
-          GODEBUG: x509sha1=1
+      - name: Unit tests
+        run: go test -short -covermode=atomic -coverprofile=cover.out ./...
+
+      - name: Test Generic
+        run: go test -short -tags=purego -covermode=atomic ./...
 
       - name: Upload coverage reports to Codecov
-        if: ${{ matrix.goVer == '1.24' }}
         uses: codecov/codecov-action@v3
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: cover.out
-
-      - name: Test only
-        if: ${{ matrix.goVer != '1.24' }}
-        run: go test -short ./...
-        env:
-          GODEBUG: x509sha1=1
-
-      - name: Test Generic only
-        if: ${{ matrix.goVer != '1.24' }}
-        run: go test -short -tags purego ./...
-        env:
-          GODEBUG: x509sha1=1

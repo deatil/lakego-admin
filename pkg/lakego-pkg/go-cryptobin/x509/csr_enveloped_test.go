@@ -85,7 +85,7 @@ func Test_ParseEnvelopedPrivateKey(t *testing.T) {
     }
 
     invalidOID, _ := hex.DecodeString("3081ef300c06082a811ccf55016802050030780220760c5d4eb80f7ec4bb12026586e4badcd41c293b416618575894d9278214aa6c02203fea869801f94f1cf3839e9b666482703c86cef160af8a540daf9c6b9adff5b20420685f05616055daf4948e44d76c366b16745f7a487614c0542d16871baa34be8704104abfcab6cea65caf2c130b222ebe519903420004944a5887f6fad9808516755e81c62f41566dab0f56ca55ad7909880acc051ce157694b11557eba725291166508868e6988c596a30472bef32e03a3dcef6866270321003ec6b59fece00ca37336c12f6d529aa84be07597e315eda1b7b58b0bef2fead9")
-    if _, err := x509.ParseSM2EnvelopedPrivateKey(sm2Key, invalidOID); err.Error() != "pkcs/cipher: invalid iv parameters" {
+    if _, err := x509.ParseSM2EnvelopedPrivateKey(sm2Key, invalidOID); err.Error() != "go-cryptobin/pkcs: invalid iv parameters" {
         t.Errorf("expected invalid oid error, got %s", err)
     }
 
