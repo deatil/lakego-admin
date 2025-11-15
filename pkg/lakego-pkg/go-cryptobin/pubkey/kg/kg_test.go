@@ -59,15 +59,15 @@ func Test_SignerInterface(t *testing.T) {
 }
 
 func Test_NewPrivateKey(t *testing.T) {
-    p224 := kg.KG256r1()
+    p256 := kg.KG256r1()
 
-    priv, err := GenerateKey(rand.Reader, p224)
+    priv, err := GenerateKey(rand.Reader, p256)
     if err != nil {
         t.Fatal(err)
     }
 
     privBytes := PrivateKeyTo(priv)
-    priv2, err := NewPrivateKey(p224, privBytes)
+    priv2, err := NewPrivateKey(p256, privBytes)
     if err != nil {
         t.Fatal(err)
     }
@@ -81,7 +81,7 @@ func Test_NewPrivateKey(t *testing.T) {
     pub := &priv.PublicKey
 
     pubBytes := PublicKeyTo(pub)
-    pub2, err := NewPublicKey(p224, pubBytes)
+    pub2, err := NewPublicKey(p256, pubBytes)
     if err != nil {
         t.Fatal(err)
     }
@@ -251,6 +251,44 @@ func Test_Marshal(t *testing.T) {
     pubBytes2 := kg.MarshalCompressed(pub.Curve, pub.X, pub.Y)
 
     // t.Errorf("\n k: %x, \n p: %x \n", priv.D, pubBytes2)
+    // t.Errorf("\n x: %x, \n y: %x \n", pub.X, pub.Y)
+
+    cryptobin_test.NotEmpty(t, pubBytes)
+    cryptobin_test.NotEmpty(t, pubBytes2)
+
+    x, y := elliptic.Unmarshal(curve, pubBytes)
+    pub2 := &PublicKey{
+        Curve: curve,
+        X: x,
+        Y: y,
+    }
+
+    x2, y2 := elliptic.UnmarshalCompressed(curve, pubBytes2)
+    pub3 := &PublicKey{
+        Curve: curve,
+        X: x2,
+        Y: y2,
+    }
+
+    cryptobin_test.Equal(t, pub, pub2)
+    cryptobin_test.Equal(t, pub, pub3)
+}
+
+func Test_Marshal2(t *testing.T) {
+    curve := kg.KG384r1()
+
+    priv, err := GenerateKey(rand.Reader, curve)
+    if err != nil {
+        t.Fatal(err)
+    }
+
+    pub := &priv.PublicKey
+
+    pubBytes := kg.Marshal(pub.Curve, pub.X, pub.Y)
+    pubBytes2 := kg.MarshalCompressed(pub.Curve, pub.X, pub.Y)
+
+    // t.Errorf("\n k: %x, \n p: %x \n", priv.D, pubBytes2)
+    // t.Errorf("\n x: %x, \n y: %x \n", pub.X, pub.Y)
 
     cryptobin_test.NotEmpty(t, pubBytes)
     cryptobin_test.NotEmpty(t, pubBytes2)
@@ -356,7 +394,7 @@ var testSigVec = []testVec{
         verification: true,
     },
 
-    // fali
+    // fail
     {
         secretKey: fromHex("47A50FB8BB7E77CD4EA275196DAEBFF3C104B34668B950EE6D1E2A569A473940"),
         publicKey: fromHex("6FD88E06683F486F67E13A62B7C6E4848042B465100F9C916CD42B85DD8AEFA5"),

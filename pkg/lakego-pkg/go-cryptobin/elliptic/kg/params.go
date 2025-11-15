@@ -11,7 +11,7 @@ type KGCurve struct {
     P       *big.Int // the order of the underlying field
     N       *big.Int // the order of the base point
     B       *big.Int // the constant of the BitCurve equation
-    A       *big.Int // KG Curve A data
+    A       *big.Int // KG Curve A data for Double
     Gx, Gy  *big.Int // (x,y) of the base point
     BitSize int      // the size of the underlying field
 }
@@ -29,14 +29,12 @@ func (curve *KGCurve) Params() *elliptic.CurveParams {
 
 // polynomial returns x³ + ax + b.
 func (curve *KGCurve) polynomial(x *big.Int) *big.Int {
-    // x³
     x3 := new(big.Int).Mul(x, x)
     x3.Mul(x3, x)
 
-    // ax
     ax := new(big.Int).Mul(curve.A, x)
 
-    // x³ + ax + b
+    // y² = x³ + ax + b
     r := new(big.Int).Add(x3, ax)
     r.Add(r, curve.B)
     r.Mod(r, curve.P)
@@ -72,78 +70,91 @@ func (curve *KGCurve) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
         return nil, nil
     }
 
-    y2MinusY1 := new(big.Int).Sub(y2, y1)
-    x2MinusX1 := new(big.Int).Sub(x2, x1)
-    x2MinusX1Inv := new(big.Int).ModInverse(x2MinusX1, curve.P)
-    lambda := new(big.Int).Mul(y2MinusY1, x2MinusX1Inv)
-    lambda.Mod(lambda, curve.P)
+    panicIfNotOnCurve(curve, x1, y1)
+    panicIfNotOnCurve(curve, x2, y2)
 
-    x3 := new(big.Int).Mul(lambda, lambda)
+    // lam = (y1 - y2) / (x1 - x2)
+    u := new(big.Int).Sub(y1, y2)
+
+    v := new(big.Int).Sub(x1, x2)
+    invV := new(big.Int).ModInverse(v, curve.P)
+
+    lam := new(big.Int).Mul(u, invV)
+    lam.Mod(lam, curve.P)
+
+    // x3 = lam^2 - x1 - x2
+    x3 := new(big.Int).Mul(lam, lam)
     x3.Sub(x3, x1)
     x3.Sub(x3, x2)
     x3.Mod(x3, curve.P)
 
+    // y3 = lam * (x1 - x3) - y1
     y3 := new(big.Int).Sub(x1, x3)
-    y3.Mul(lambda, y3)
+    y3.Mul(y3, lam)
     y3.Sub(y3, y1)
     y3.Mod(y3, curve.P)
 
     return x3, y3
 }
 
-func (curve *KGCurve) Double(x, y *big.Int) (*big.Int, *big.Int) {
-    // 3 * x³ + a
-    x2 := new(big.Int).Mul(x, x)
-    threeX2 := new(big.Int).Mul(big.NewInt(3), x2)
-    numerator := new(big.Int).Add(threeX2, curve.A)
+// Double returns 2*(x,y)
+func (curve *KGCurve) Double(x1, y1 *big.Int) (*big.Int, *big.Int) {
+    panicIfNotOnCurve(curve, x1, y1)
 
-    // 2 * y
-    twoY := new(big.Int).Mul(big.NewInt(2), y)
-    denomInv := new(big.Int).ModInverse(twoY, curve.P)
+    // u = 3 * x1^2 + a
+    x2 := new(big.Int).Mul(x1, x1)
+    x2.Mul(x2, big.NewInt(3))
+    u := new(big.Int).Add(x2, curve.A)
 
-    // (3 * x³ + a) * (2 * y)
-    lambda := new(big.Int).Mul(numerator, denomInv)
-    lambda.Mod(lambda, curve.P)
+    // v = 1 / (2 * y1)
+    twoY := new(big.Int).Mul(y1, big.NewInt(2))
+    v := new(big.Int).ModInverse(twoY, curve.P)
 
-    x3 := new(big.Int).Mul(lambda, lambda)
-    x3.Sub(x3, new(big.Int).Mul(big.NewInt(2), x))
-    x3.Mod(x3, curve.P)
+    // lam = (3 * x1^2 + a) / (2 * y1)
+    lam := new(big.Int).Mul(u, v)
+    lam.Mod(lam, curve.P)
 
-    y3 := new(big.Int).Sub(x, x3)
-    y3.Mul(lambda, y3)
-    y3.Sub(y3, y)
-    y3.Mod(y3, curve.P)
+    // x = lam^2 - 2 * x1
+    x := new(big.Int).Mul(lam, lam)
+    twoX := new(big.Int).Mul(x1, big.NewInt(2))
+    x.Sub(x, twoX)
+    x.Mod(x, curve.P)
 
-    return x3, y3
+    // y = lam * (x1 - x) - y1
+    y := new(big.Int).Sub(x1, x)
+    y.Mul(y, lam)
+    y.Sub(y, y1)
+    y.Mod(y, curve.P)
+
+    return x, y
 }
 
-func (curve *KGCurve) ScalarMult(x1, y1 *big.Int, k []byte) (*big.Int, *big.Int) {
-    if x1.Sign() == 0 && y1.Sign() == 0 {
-        return new(big.Int), new(big.Int)
+func (curve *KGCurve) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.Int) {
+    if Bx.Sign() == 0 && By.Sign() == 0 {
+        return nil, nil
     }
 
-    kInt := new(big.Int).SetBytes(k)
+    x, y := new(big.Int), new(big.Int)
 
-    resultX := new(big.Int)
-    resultY := new(big.Int)
+    Bx2 := new(big.Int).Set(Bx)
+    By2 := new(big.Int).Set(By)
 
-    tempX := new(big.Int).Set(x1)
-    tempY := new(big.Int).Set(y1)
+    kk := new(big.Int).SetBytes(k)
 
-    for i := 0; i < kInt.BitLen(); i++ {
-        if kInt.Bit(i) == 1 {
-            if resultX.Sign() == 0 && resultY.Sign() == 0 {
-                resultX.Set(tempX)
-                resultY.Set(tempY)
+    for i := 0; i < kk.BitLen(); i++ {
+        if kk.Bit(i) == 1 {
+            if x.Sign() == 0 && y.Sign() == 0 {
+                x.Set(Bx2)
+                y.Set(By2)
             } else {
-                resultX, resultY = curve.Add(resultX, resultY, tempX, tempY)
+                x, y = curve.Add(x, y, Bx2, By2)
             }
         }
 
-        tempX, tempY = curve.Double(tempX, tempY)
+        Bx2, By2 = curve.Double(Bx2, By2)
     }
 
-    return resultX, resultY
+    return x, y
 }
 
 func (curve *KGCurve) ScalarBaseMult(k []byte) (*big.Int, *big.Int) {

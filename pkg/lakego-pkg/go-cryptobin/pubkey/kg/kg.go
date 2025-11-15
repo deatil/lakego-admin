@@ -13,8 +13,8 @@ import (
     "golang.org/x/crypto/cryptobyte/asn1"
 )
 
-// Computation of Trusted Short Weierstrass Elliptic Curves for Cryptography
-// (https://eprint.iacr.org/2023/1656)
+// see doc
+// https://eprint.iacr.org/2023/1656
 
 var (
     ErrInvalidCurve       = errors.New("go-cryptobin/kg: invalid curve")
@@ -292,31 +292,31 @@ func SignUsingKToRS(k *big.Int, priv *PrivateKey, hashFunc Hasher, msg []byte) (
     digest := h.Sum(nil)
 
     // Hash message
-    hash := hashMessage(digest, (N.BitLen()+7)/8)
-    hashInt := new(big.Int).SetBytes(hash)
-    hashInt.Mod(hashInt, N)
+    hash := formatMessage(digest, (N.BitLen()+7)/8)
+    e := new(big.Int).SetBytes(hash)
+    e.Mod(e, N)
 
     // Compute r = (k * G).x mod N
-    rX, _ := curve.ScalarBaseMult(k.Bytes())
-    r = new(big.Int).Mod(rX, N)
+    rx, _ := curve.ScalarBaseMult(k.Bytes())
+    r = new(big.Int).Mod(rx, N)
 
     if r.Sign() == 0 {
         return nil, nil, ErrInvalidK
     }
 
     // Compute s = k⁻¹ * (hash + r * privKey) mod N
-    kInv := new(big.Int).ModInverse(k, N)
+    invK := new(big.Int).ModInverse(k, N)
 
     // rp = r * privKey
     rp := new(big.Int).Mul(r, priv.D)
     rp.Mod(rp, N)
 
-    // rp = rp + hash
-    rp.Add(rp, hashInt)
+    // rp = rp + e
+    rp.Add(rp, e)
     rp.Mod(rp, N)
 
-    // s = k⁻¹ * (hash + r * privKey)
-    s = new(big.Int).Mul(kInv, rp)
+    // s = k⁻¹ * (e + r * privKey)
+    s = new(big.Int).Mul(invK, rp)
     s.Mod(s, N)
 
     if s.Sign() == 0 {
@@ -353,9 +353,9 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, msg []byte, r, s *big.Int) (b
     h.Write(msg)
     digest := h.Sum(nil)
 
-    hash := hashMessage(digest, (N.BitLen()+7)/8)
-    hashInt := new(big.Int).SetBytes(hash)
-    hashInt.Mod(hashInt, N)
+    hash := formatMessage(digest, (N.BitLen()+7)/8)
+    e := new(big.Int).SetBytes(hash)
+    e.Mod(e, N)
 
     // Compute w = s⁻¹ mod N
     w := new(big.Int).ModInverse(s, N)
@@ -363,8 +363,8 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, msg []byte, r, s *big.Int) (b
         return false, ErrInvalidSignature
     }
 
-    // Compute u1 = hash * w mod N
-    u1 := new(big.Int).Mul(hashInt, w)
+    // Compute u1 = e * w mod N
+    u1 := new(big.Int).Mul(e, w)
     u1.Mod(u1, N)
 
     // Compute u2 = r * w mod N
@@ -389,21 +389,23 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, msg []byte, r, s *big.Int) (b
     return true, nil
 }
 
-// use message to hash
-func hashMessage(message []byte, size int) []byte {
-    hash := new(big.Int)
+// format message
+func formatMessage(message []byte, size int) []byte {
+    mb := new(big.Int)
     for _, b := range message {
-        hash.Lsh(hash, 8)
-        hash.Add(hash, big.NewInt(int64(b)))
+        mb.Lsh(mb, 8)
+        mb.Add(mb, big.NewInt(int64(b)))
     }
 
-    hashBytes := hash.Bytes()
-    if len(hashBytes) > size {
-        hashBytes = hashBytes[:size]
-    }
+    mbBytes := mb.Bytes()
 
     result := make([]byte, size)
-    copy(result[size-len(hashBytes):], hashBytes)
+    if len(mbBytes) > size {
+        copy(result, mbBytes[:size])
+    } else {
+        copy(result[size-len(mbBytes):], mbBytes)
+    }
+
     return result
 }
 

@@ -14,13 +14,13 @@ import (
 var (
     oidPublicKeyKG = asn1.ObjectIdentifier{2, 16, 100, 1, 1, 1}
 
-    oidKG256r1 = asn1.ObjectIdentifier{2, 16, 100, 1, 1, 1, 1}
-    oidKG384r1 = asn1.ObjectIdentifier{2, 16, 100, 1, 1, 1, 2}
+    oidNamedCurveKG256r1 = asn1.ObjectIdentifier{2, 16, 100, 1, 1, 1, 1}
+    oidNamedCurveKG384r1 = asn1.ObjectIdentifier{2, 16, 100, 1, 1, 1, 2}
 )
 
 func init() {
-    AddNamedCurve(kg.KG256r1(), oidKG256r1)
-    AddNamedCurve(kg.KG384r1(), oidKG384r1)
+    AddNamedCurve(kg.KG256r1(), oidNamedCurveKG256r1)
+    AddNamedCurve(kg.KG384r1(), oidNamedCurveKG384r1)
 }
 
 // Marshal privateKey struct

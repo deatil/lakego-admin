@@ -1,13 +1,18 @@
-package bip0340
+package s256
 
 import (
     "math/big"
+    "crypto/subtle"
     "crypto/elliptic"
 )
 
-// CurveParams contains the parameters of an elliptic curve and also provides
+var (
+    one = big.NewInt(1)
+)
+
+// S256Curve contains the parameters of an elliptic curve and also provides
 // a generic, non-constant time implementation of Curve.
-type CurveParams struct {
+type S256Curve struct {
     P       *big.Int // the order of the underlying field
     N       *big.Int // the order of the base point
     B       *big.Int // the constant of the curve equation
@@ -16,7 +21,7 @@ type CurveParams struct {
     Name    string   // the canonical name of the curve
 }
 
-func (curve *CurveParams) Params() *elliptic.CurveParams {
+func (curve *S256Curve) Params() *elliptic.CurveParams {
     return &elliptic.CurveParams{
         P: curve.P,
         N: curve.N,
@@ -29,7 +34,7 @@ func (curve *CurveParams) Params() *elliptic.CurveParams {
 }
 
 // polynomial returns x^3 + 7.
-func (curve *CurveParams) polynomial(x *big.Int) *big.Int {
+func (curve *S256Curve) polynomial(x *big.Int) *big.Int {
     x3 := new(big.Int).Mul(x, x)
     x3.Mul(x3, x)
 
@@ -42,7 +47,7 @@ func (curve *CurveParams) polynomial(x *big.Int) *big.Int {
 }
 
 // IsOnCurve implements Curve.IsOnCurve.
-func (curve *CurveParams) IsOnCurve(x, y *big.Int) bool {
+func (curve *S256Curve) IsOnCurve(x, y *big.Int) bool {
     if x.Sign() < 0 || x.Cmp(curve.P) >= 0 ||
         y.Sign() < 0 || y.Cmp(curve.P) >= 0 {
         return false
@@ -56,7 +61,7 @@ func (curve *CurveParams) IsOnCurve(x, y *big.Int) bool {
 }
 
 // Add implements Curve.Add.
-func (curve *CurveParams) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
+func (curve *S256Curve) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
     if x1.Sign() == 0 || y1.Sign() == 0 {
         return x2, y2
     }
@@ -121,7 +126,7 @@ func (curve *CurveParams) Add(x1, y1, x2, y2 *big.Int) (*big.Int, *big.Int) {
 }
 
 // Double implements Curve.Double.
-func (curve *CurveParams) Double(x1, y1 *big.Int) (*big.Int, *big.Int) {
+func (curve *S256Curve) Double(x1, y1 *big.Int) (*big.Int, *big.Int) {
     panicIfNotOnCurve(curve, x1, y1)
 
     x2 := new(big.Int).Set(x1)
@@ -131,7 +136,7 @@ func (curve *CurveParams) Double(x1, y1 *big.Int) (*big.Int, *big.Int) {
 }
 
 // ScalarMult implements Curve.ScalarMult.
-func (curve *CurveParams) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.Int) {
+func (curve *S256Curve) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.Int) {
     panicIfNotOnCurve(curve, Bx, By)
 
     x, y := new(big.Int), new(big.Int)
@@ -156,12 +161,12 @@ func (curve *CurveParams) ScalarMult(Bx, By *big.Int, k []byte) (*big.Int, *big.
 }
 
 // ScalarBaseMult implements Curve.ScalarBaseMult.
-func (curve *CurveParams) ScalarBaseMult(k []byte) (*big.Int, *big.Int) {
+func (curve *S256Curve) ScalarBaseMult(k []byte) (*big.Int, *big.Int) {
     return curve.ScalarMult(curve.Gx, curve.Gy, k)
 }
 
 // Unmarshal implements elliptic.Unmarshal.
-func (curve *CurveParams) Unmarshal(data []byte) (x, y *big.Int) {
+func (curve *S256Curve) Unmarshal(data []byte) (x, y *big.Int) {
     byteLen := (curve.Params().BitSize + 7) / 8
 
     if len(data) != 1+2*byteLen {
@@ -187,7 +192,7 @@ func (curve *CurveParams) Unmarshal(data []byte) (x, y *big.Int) {
 }
 
 // UnmarshalCompressed implements elliptic.UnmarshalCompressed.
-func (curve *CurveParams) UnmarshalCompressed(data []byte) (x, y *big.Int) {
+func (curve *S256Curve) UnmarshalCompressed(data []byte) (x, y *big.Int) {
     byteLen := (curve.Params().BitSize + 7) / 8
 
     if len(data) != 1+byteLen {
@@ -231,4 +236,10 @@ func panicIfNotOnCurve(curve elliptic.Curve, x, y *big.Int) {
     if !curve.IsOnCurve(x, y) {
         panic("crypto/elliptic: attempted operation on invalid point")
     }
+}
+
+// bigIntEqual reports whether a and b are equal leaking only their bit length
+// through timing side-channels.
+func bigIntEqual(a, b *big.Int) bool {
+    return subtle.ConstantTimeCompare(a.Bytes(), b.Bytes()) == 1
 }
