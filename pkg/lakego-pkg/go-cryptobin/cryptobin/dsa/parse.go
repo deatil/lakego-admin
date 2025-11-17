@@ -12,9 +12,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotDSAPrivateKey    = errors.New("key is not a valid DSA private key")
-    ErrNotDSAPublicKey     = errors.New("key is not a valid DSA public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/dsa: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotDSAPrivateKey    = errors.New("go-cryptobin/dsa: key is not a valid DSA private key")
+    ErrNotDSAPublicKey     = errors.New("go-cryptobin/dsa: key is not a valid DSA public key")
 )
 
 // 解析私钥

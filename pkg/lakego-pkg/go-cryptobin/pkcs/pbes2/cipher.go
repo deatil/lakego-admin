@@ -92,7 +92,7 @@ func (this *Ciphers) GetCipher(alg any) (Cipher, error) {
 
     newCipher, ok := this.ciphers[oid]
     if !ok {
-        return nil, fmt.Errorf("pkcs/cipher: unsupported cipher (OID: %s)", oid)
+        return nil, fmt.Errorf("go-cryptobin/pkcs: unsupported cipher (OID: %s)", oid)
     }
 
     return newCipher(), nil

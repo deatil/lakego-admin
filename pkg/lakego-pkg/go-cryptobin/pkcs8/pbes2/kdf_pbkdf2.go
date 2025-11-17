@@ -118,7 +118,7 @@ func oidByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithGOST34112012512, nil
     }
 
-    return nil, errors.New("unsupported hash function")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported hash function")
 }
 
 // pbkdf2 params

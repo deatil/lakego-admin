@@ -46,7 +46,7 @@ type PublicKey struct {
 // public key is < 0 or > g.P.
 func (this *PublicKey) Check() (err error) {
     if !((*this.Y).Cmp(zero) >= 0 && (*this.Y).Cmp(this.P) == -1) {
-        err = errors.New("peer's public is not a possible group element")
+        err = errors.New("go-cryptobin/dh: peer's public is not a possible group element")
     }
 
     return
@@ -82,11 +82,11 @@ func GenerateKey(groupID GroupID, rand io.Reader) (*PrivateKey, *PublicKey, erro
 // 生成证书
 func GenerateKeyWithGroup(param *Group, rand io.Reader) (*PrivateKey, *PublicKey, error) {
     if param.P == nil {
-        err := errors.New("crypto/dh: prime is nil")
+        err := errors.New("go-cryptobin/dh: prime is nil")
         return nil, nil, err
     }
     if param.G == nil {
-        err := errors.New("crypto/dh: generator is nil")
+        err := errors.New("go-cryptobin/dh: generator is nil")
         return nil, nil, err
     }
 
@@ -103,7 +103,7 @@ func GenerateKeyWithGroup(param *Group, rand io.Reader) (*PrivateKey, *PublicKey
         _, err := io.ReadFull(rand, bytes)
         if err != nil {
             private.X = nil
-            return nil, nil, errors.New("private x is nil")
+            return nil, nil, errors.New("go-cryptobin/dh: private x is nil")
         }
 
         // Clear bits in the first byte to increase

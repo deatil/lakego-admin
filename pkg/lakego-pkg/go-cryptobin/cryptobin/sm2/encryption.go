@@ -38,7 +38,7 @@ func (this SM2) Decrypt() SM2 {
 // 公钥加密
 func (this SM2) EncryptBytes() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -58,7 +58,7 @@ func (this SM2) EncryptBytes() SM2 {
 // 私钥解密
 func (this SM2) DecryptBytes() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -80,7 +80,7 @@ func (this SM2) DecryptBytes() SM2 {
 // 公钥加密，返回 asn.1 编码格式的密文内容
 func (this SM2) EncryptASN1() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -100,7 +100,7 @@ func (this SM2) EncryptASN1() SM2 {
 // 私钥解密，解析 asn.1 编码格式的密文内容
 func (this SM2) DecryptASN1() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -150,7 +150,7 @@ const ecbSize = 256
 // 公钥加密, ECB 模式
 func (this SM2) EncryptBytesECB() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -187,7 +187,7 @@ func (this SM2) EncryptBytesECB() SM2 {
 // 私钥解密, ECB 模式
 func (this SM2) DecryptBytesECB() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -235,7 +235,7 @@ func (this SM2) DecryptBytesECB() SM2 {
 // 公钥加密，返回 asn.1 编码格式的密文内容, ECB 模式
 func (this SM2) EncryptASN1ECB() SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -272,7 +272,7 @@ func (this SM2) EncryptASN1ECB() SM2 {
 // 私钥解密，返回 asn.1 编码格式的密文内容, ECB 模式
 func (this SM2) DecryptASN1ECB() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 

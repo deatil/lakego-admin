@@ -14,9 +14,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotPrivateKey       = errors.New("key is not a valid ecdh private key")
-    ErrNotPublicKey        = errors.New("key is not a valid ecdh public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/ecdh: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotPrivateKey       = errors.New("go-cryptobin/ecdh: key is not a valid ecdh private key")
+    ErrNotPublicKey        = errors.New("go-cryptobin/ecdh: key is not a valid ecdh public key")
 )
 
 // 解析私钥

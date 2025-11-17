@@ -98,7 +98,7 @@ func (p *Point) SetBytes(b []byte) (*Point, error) {
         p256BigToLittle(&r.x, toElementArray(b[1:33]))
         p256BigToLittle(&r.y, toElementArray(b[33:65]))
         if p256LessThanP(&r.x) == 0 || p256LessThanP(&r.y) == 0 {
-            return nil, errors.New("invalid P256 element encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid P256 element encoding")
         }
         p256Mul(&r.x, &r.x, &rr)
         p256Mul(&r.y, &r.y, &rr)
@@ -113,14 +113,14 @@ func (p *Point) SetBytes(b []byte) (*Point, error) {
         var r Point
         p256BigToLittle(&r.x, toElementArray(b[1:33]))
         if p256LessThanP(&r.x) == 0 {
-            return nil, errors.New("invalid P256 element encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid P256 element encoding")
         }
         p256Mul(&r.x, &r.x, &rr)
 
         // y² = x³ - 3x + b
         p256Polynomial(&r.y, &r.x)
         if !p256Sqrt(&r.y, &r.y) {
-            return nil, errors.New("invalid P256 compressed point encoding")
+            return nil, errors.New("go-cryptobin/sm2: invalid P256 compressed point encoding")
         }
 
         // Select the positive or negative root, as indicated by the least
@@ -134,7 +134,7 @@ func (p *Point) SetBytes(b []byte) (*Point, error) {
         return p.Set(&r), nil
 
     default:
-        return nil, errors.New("invalid P256 point encoding")
+        return nil, errors.New("go-cryptobin/sm2: invalid P256 point encoding")
     }
 }
 
@@ -167,7 +167,7 @@ func p256CheckOnCurve(x, y *p256Element) error {
     lhs := new(p256Element)
     p256Sqr(lhs, y, 1)
     if p256Equal(lhs, rhs) != 1 {
-        return errors.New("point not on SM2 P256 curve")
+        return errors.New("go-cryptobin/sm2: point not on SM2 P256 curve")
     }
     return nil
 }
@@ -424,7 +424,7 @@ func (q *Point) Double(p *Point) *Point {
 // returns an error and the receiver is unchanged.
 func (r *Point) ScalarBaseMult(scalar []byte) (*Point, error) {
     if len(scalar) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     scalarReversed := new(p256OrdElement)
     p256OrdBigToLittle(scalarReversed, toElementArray(scalar))
@@ -438,7 +438,7 @@ func (r *Point) ScalarBaseMult(scalar []byte) (*Point, error) {
 // error and the receiver is unchanged.
 func (r *Point) ScalarMult(q *Point, scalar []byte) (*Point, error) {
     if len(scalar) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     scalarReversed := new(p256OrdElement)
     p256OrdBigToLittle(scalarReversed, toElementArray(scalar))
@@ -524,7 +524,7 @@ func (p *Point) BytesX() ([]byte, error) {
 
 func (p *Point) bytesX(out *[p256ElementLength]byte) ([]byte, error) {
     if p.isInfinity() == 1 {
-        return nil, errors.New("SM2 point is the point at infinity")
+        return nil, errors.New("go-cryptobin/sm2: SM2 point is the point at infinity")
     }
 
     x := new(p256Element)

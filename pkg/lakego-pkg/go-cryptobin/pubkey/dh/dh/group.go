@@ -73,7 +73,7 @@ func GetMODGroup(groupID GroupID) (group *Group, err error) {
             }
         default:
             group = nil
-            err = errors.New("DH: Unknown group")
+            err = errors.New("go-cryptobin/dh: Unknown group")
     }
 
     return

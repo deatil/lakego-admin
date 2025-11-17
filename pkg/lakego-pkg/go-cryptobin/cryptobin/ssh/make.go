@@ -15,7 +15,7 @@ func (this SSH) MakePublicKey() SSH {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ssh: privateKey empty.")
         return this.AppendError(err)
     }
 

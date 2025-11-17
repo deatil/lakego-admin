@@ -30,11 +30,11 @@ type xmlPublicKey struct {
 
 var (
     errPublicKeyXMLValue = func(name string) error {
-        return errors.New("rsa xml: public key [" + name + "] value is error")
+        return errors.New("go-cryptobin/rsa: public key [" + name + "] value is error")
     }
 
     errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("rsa xml: private key [" + name + "] value is error")
+        return errors.New("go-cryptobin/rsa: private key [" + name + "] value is error")
     }
 )
 
@@ -87,7 +87,7 @@ func (this XMLKey) ParsePublicKey(der []byte) (*rsa.PublicKey, error) {
     }
 
     if n.Sign() <= 0 {
-        return nil, errors.New("rsa xml: public key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/rsa: public key contains zero or negative value")
     }
 
     publicKey := &rsa.PublicKey{
@@ -161,7 +161,7 @@ func (this XMLKey) ParsePrivateKey(der []byte) (*rsa.PrivateKey, error) {
     }
 
     if n.Sign() <= 0 || d.Sign() <= 0 || p.Sign() <= 0 || q.Sign() <= 0 {
-        return nil, errors.New("rsa xml: private key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/rsa: private key contains zero or negative value")
     }
 
     key := new(rsa.PrivateKey)

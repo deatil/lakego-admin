@@ -24,6 +24,7 @@ func (crv *secp256k1) IsOnCurve(x, y *big.Int) bool {
     if _, err := p.NewPoint(x, y); err != nil {
         return false
     }
+
     return curve256k1.IsOnCurve(&p)
 }
 

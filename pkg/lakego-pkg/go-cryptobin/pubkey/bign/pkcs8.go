@@ -63,7 +63,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(pub.Curve)
     if !ok {
-        return nil, errors.New("bign: unsupported bign curve")
+        return nil, errors.New("go-cryptobin/bign: unsupported bign curve")
     }
 
     var paramBytes []byte
@@ -76,7 +76,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     publicKeyAlgorithm.Parameters.FullBytes = paramBytes
 
     if !pub.Curve.IsOnCurve(pub.X, pub.Y) {
-        return nil, errors.New("bign: invalid elliptic curve public key")
+        return nil, errors.New("go-cryptobin/bign: invalid elliptic curve public key")
     }
 
     publicKeyBytes = elliptic.Marshal(pub.Curve, pub.X, pub.Y)
@@ -99,7 +99,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     if err != nil {
         return
     } else if len(rest) != 0 {
-        err = errors.New("bign: trailing data after ASN.1 of public-key")
+        err = errors.New("go-cryptobin/bign: trailing data after ASN.1 of public-key")
         return
     }
 
@@ -113,25 +113,25 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     der := cryptobyte.String(pki.PublicKey.RightAlign())
 
     if !oid.Equal(oidPublicKeyBign) {
-        err = errors.New("bign: unknown public key algorithm")
+        err = errors.New("go-cryptobin/bign: unknown public key algorithm")
         return
     }
 
     paramsDer := cryptobyte.String(params.FullBytes)
     namedCurveOID := new(asn1.ObjectIdentifier)
     if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-        return nil, errors.New("bign: invalid parameters")
+        return nil, errors.New("go-cryptobin/bign: invalid parameters")
     }
 
     namedCurve := NamedCurveFromOid(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("bign: unsupported bign curve")
+        err = errors.New("go-cryptobin/bign: unsupported bign curve")
         return
     }
 
     x, y := elliptic.Unmarshal(namedCurve, der)
     if x == nil {
-        err = errors.New("bign: failed to unmarshal elliptic curve point")
+        err = errors.New("go-cryptobin/bign: failed to unmarshal elliptic curve point")
         return
     }
 
@@ -150,12 +150,12 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("bign: unsupported bign curve")
+        return nil, errors.New("go-cryptobin/bign: unsupported bign curve")
     }
 
     oidBytes, err := asn1.Marshal(oid)
     if err != nil {
-        return nil, errors.New("bign: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/bign: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -167,7 +167,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privKey.PrivateKey, err = marshalECPrivateKeyWithOID(key, nil)
     if err != nil {
-        return nil, errors.New("bign: failed to marshal EC private key while building PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/bign: failed to marshal EC private key while building PKCS#8: " + err.Error())
     }
 
     return asn1.Marshal(privKey)
@@ -184,7 +184,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     }
 
     if !privKey.Algo.Algorithm.Equal(oidPublicKeyBign) {
-        err = errors.New("bign: unknown private key algorithm")
+        err = errors.New("go-cryptobin/bign: unknown private key algorithm")
         return nil, err
     }
 
@@ -197,7 +197,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
 
     key, err := parseECPrivateKey(namedCurveOID, privKey.PrivateKey)
     if err != nil {
-        return nil, errors.New("bign: failed to parse EC private key embedded in PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/bign: failed to parse EC private key embedded in PKCS#8: " + err.Error())
     }
 
     return key, nil

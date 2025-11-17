@@ -54,7 +54,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
         G: key.G,
     })
     if err != nil {
-        return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/dh: failed to marshal algo param: " + err.Error())
     }
 
     publicKeyAlgorithm.Algorithm = oidPublicKeyDH
@@ -65,7 +65,7 @@ func MarshalPublicKey(key *PublicKey) ([]byte, error) {
 
     publicKeyBytes, err = yInt.Bytes()
     if err != nil {
-        return nil, errors.New("DH: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/dh: failed to builder PrivateKey: " + err.Error())
     }
 
     pkix := pkixPublicKey{
@@ -94,7 +94,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyDH)
     if !algoEq {
-        err = errors.New("DH: unknown public key algorithm")
+        err = errors.New("go-cryptobin/dh: unknown public key algorithm")
         return
     }
 
@@ -102,7 +102,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
 
     y := new(big.Int)
     if !der.ReadASN1Integer(y) {
-        err = errors.New("DH: invalid DSA public key")
+        err = errors.New("go-cryptobin/dh: invalid DSA public key")
         return
     }
 
@@ -118,14 +118,14 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
     if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
         !paramsDer.ReadASN1Integer(pub.P) ||
         !paramsDer.ReadASN1Integer(pub.G) {
-        err = errors.New("DH: invalid DSA parameters")
+        err = errors.New("go-cryptobin/dh: invalid DSA parameters")
         return
     }
 
     if pub.Y.Sign() <= 0 ||
         pub.P.Sign() <= 0 ||
         pub.G.Sign() <= 0 {
-        err = errors.New("DH: zero or negative DSA parameter")
+        err = errors.New("go-cryptobin/dh: zero or negative DSA parameter")
         return
     }
 
@@ -142,7 +142,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
         G: key.G,
     })
     if err != nil {
-        return nil, errors.New("dsa: failed to marshal algo param: " + err.Error())
+        return nil, errors.New("go-cryptobin/dh: failed to marshal algo param: " + err.Error())
     }
 
     privKey.Algo = pkix.AlgorithmIdentifier{
@@ -157,7 +157,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     privateKeyBytes, err := xInt.Bytes()
     if err != nil {
-        return nil, errors.New("dsa: failed to builder PrivateKey: " + err.Error())
+        return nil, errors.New("go-cryptobin/dh: failed to builder PrivateKey: " + err.Error())
     }
 
     privKey.PrivateKey = privateKeyBytes
@@ -172,7 +172,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
 
     _, err = asn1.Unmarshal(derBytes, &privKey)
     if err != nil {
-        return nil, errors.New("DH: " + err.Error())
+        return nil, errors.New("go-cryptobin/dh: " + err.Error())
     }
 
     switch {
@@ -181,7 +181,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
 
             x := new(big.Int)
             if !der.ReadASN1Integer(x) {
-                err = errors.New("DH: invalid DH public key")
+                err = errors.New("go-cryptobin/dh: invalid DH public key")
                 return nil, err
             }
 
@@ -201,7 +201,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
             if !paramsDer.ReadASN1(&paramsDer, cryptobyte_asn1.SEQUENCE) ||
                 !paramsDer.ReadASN1Integer(priv.P) ||
                 !paramsDer.ReadASN1Integer(priv.G) {
-                err = errors.New("DH: invalid DSA parameters")
+                err = errors.New("go-cryptobin/dh: invalid DSA parameters")
                 return nil, err
             }
 
@@ -211,7 +211,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
             if priv.Y.Sign() <= 0 ||
                 priv.P.Sign() <= 0 ||
                 priv.G.Sign() <= 0 {
-                err = errors.New("DH: zero or negative DSA parameter")
+                err = errors.New("go-cryptobin/dh: zero or negative DSA parameter")
                 return nil, err
             }
 

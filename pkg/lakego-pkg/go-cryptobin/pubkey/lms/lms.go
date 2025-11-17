@@ -110,7 +110,7 @@ func (priv *PrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.S
     height := int(params.H)
     var leaves uint32 = 1 << height
     if priv.q >= leaves {
-        return nil, errors.New("lms: invalid private key")
+        return nil, errors.New("go-cryptobin/lms: invalid private key")
     }
 
     ots_priv, err := NewLmotsPrivateKeyFromSeed(priv.otsType, priv.q, priv.id, priv.seed)
@@ -204,7 +204,7 @@ func (priv *PrivateKey) ToBytes() []byte {
 // This is the inverse of the ToBytes() method on the PrivateKey object.
 func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
     if len(b) < 8 {
-        return nil, errors.New("lms: Private Key bytes is too short")
+        return nil, errors.New("go-cryptobin/lms: Private Key bytes is too short")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
@@ -225,7 +225,7 @@ func NewPrivateKeyFromBytes(b []byte) (*PrivateKey, error) {
     lmsparams := typecode.Params()
 
     if len(b) < int(lmsparams.M+28) {
-        return nil, errors.New("lms: invalid key length")
+        return nil, errors.New("go-cryptobin/lms: invalid key length")
     }
 
     // Internal counter is bytes 8-11 (4 bytes)
@@ -312,7 +312,7 @@ type PublicKey struct {
 func NewPublicKey(typ ILmsParam, otsType ILmotsParam, id ID, k []byte) (*PublicKey, error) {
     // Explicit check from Algorithm 6, Step 1 of RFC 8554
     if len(k) < 8 {
-        return nil, errors.New("lms: invalid public key")
+        return nil, errors.New("go-cryptobin/lms: invalid public key")
     }
 
     return &PublicKey{
@@ -445,7 +445,7 @@ func (pub *PublicKey) ID() ID {
 // This is the inverse of the ToBytes() method on the PublicKey object.
 func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
     if len(b) < 8 {
-        return nil, errors.New("lms: key must be more than 8 bytes long")
+        return nil, errors.New("go-cryptobin/lms: key must be more than 8 bytes long")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
@@ -467,7 +467,7 @@ func NewPublicKeyFromBytes(b []byte) (*PublicKey, error) {
     lmsparams := typecode.Params()
 
     if uint64(len(b)) != lmsparams.M+24 {
-        return nil, errors.New("lms: invalid key length")
+        return nil, errors.New("go-cryptobin/lms: invalid key length")
     }
 
     // The ID is bytes 8-23 (16 bytes)
@@ -501,12 +501,12 @@ func NewSignature(typ ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) 
 
     // From step 2i of Algorithm 6a in RFC 8554
     if q >= tmp {
-        return nil, errors.New("lms: Invalid signature")
+        return nil, errors.New("go-cryptobin/lms: Invalid signature")
     }
 
     // There should be H elements in the authpath
     if uint64(len(path)) != params.H {
-        return nil, errors.New("lms: Invalid signature authentication path")
+        return nil, errors.New("go-cryptobin/lms: Invalid signature authentication path")
     }
 
     return &Signature{
@@ -521,7 +521,7 @@ func NewSignature(typ ILmsParam, q uint32, otsig LmotsSignature, path [][]byte) 
 // This is the inverse of the ToBytes() on Signature.
 func NewSignatureFromBytes(b []byte) (*Signature, error) {
     if len(b) < 8 {
-        return nil, errors.New("lms: Signature is too short")
+        return nil, errors.New("go-cryptobin/lms: Signature is too short")
     }
 
     var err error
@@ -543,7 +543,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     otsigmax := 4 + otsSiglen
     if uint64(4+len(b)) <= otsigmax {
         // We are only ensuring that we can read the LMS typecode
-        return nil, errors.New("lms: Signature is too short for LM-OTS typecode")
+        return nil, errors.New("go-cryptobin/lms: Signature is too short for LM-OTS typecode")
     }
 
     // Now that we know we have enough bytes for LMS, look at the typecode
@@ -558,7 +558,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
     siglen := typecode.SigLength(otsType)
 
     if siglen != uint64(len(b)) {
-        return nil, errors.New("lms: Invalid LMS signature length")
+        return nil, errors.New("go-cryptobin/lms: Invalid LMS signature length")
     }
 
     // currenly undefined func
@@ -576,7 +576,7 @@ func NewSignatureFromBytes(b []byte) (*Signature, error) {
 
     // Explicitly check that q < 2^H
     if q >= (1 << height) {
-        return nil, errors.New("lms: Internal counter is too high")
+        return nil, errors.New("go-cryptobin/lms: Internal counter is too high")
     }
 
     // Read the authentication path

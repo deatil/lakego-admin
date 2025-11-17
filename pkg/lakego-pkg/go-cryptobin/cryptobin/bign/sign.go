@@ -37,12 +37,12 @@ func (this Bign) Verify(data []byte) Bign {
 // 私钥签名 ASN1
 func (this Bign) SignASN1() Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bign: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -61,12 +61,12 @@ func (this Bign) SignASN1() Bign {
 // 使用原始数据[data]对比签名后数据
 func (this Bign) VerifyASN1(data []byte) Bign {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bign: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bign: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -81,12 +81,12 @@ func (this Bign) VerifyASN1(data []byte) Bign {
 // 私钥签名 Bytes
 func (this Bign) SignBytes() Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bign: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -104,12 +104,12 @@ func (this Bign) SignBytes() Bign {
 // 使用原始数据[data]对比签名后数据
 func (this Bign) VerifyBytes(data []byte) Bign {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bign: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bign: Hash func not set.")
         return this.AppendError(err)
     }
 

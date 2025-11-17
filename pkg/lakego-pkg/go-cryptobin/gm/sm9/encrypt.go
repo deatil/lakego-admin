@@ -18,9 +18,9 @@ import (
 const DefaultEncryptHid byte = 0x03
 
 var (
-    ErrDecryption = errors.New("sm9: decryption error")
+    ErrDecryption = errors.New("go-cryptobin/sm9: decryption error")
 
-    ErrEmptyPlaintext = errors.New("sm9: empty plaintext")
+    ErrEmptyPlaintext = errors.New("go-cryptobin/sm9: empty plaintext")
 )
 
 // IEncrypt
@@ -158,7 +158,7 @@ func (priv *EncryptMasterPrivateKey) GenerateUserKey(id []byte, hid byte) (uk *E
 
     // if t1 = 0, we need to regenerate the master key.
     if t1.BitLen() == 0 || t1.Cmp(n) == 0 {
-        return nil, errors.New("need to regen MasterPrivateKey!")
+        return nil, errors.New("go-cryptobin/sm9: need to regen MasterPrivateKey!")
     }
 
     t1.ModInverse(t1, n)
@@ -253,7 +253,7 @@ func (priv *EncryptPrivateKey) Unmarshal(bytes []byte) (err error) {
 func GenerateEncryptMasterKey(rand io.Reader) (mk *EncryptMasterPrivateKey, err error) {
     k, err := randFieldElement(rand, sm9curve.Order)
     if err != nil {
-        return nil, errors.New("gen rand num err:" + err.Error())
+        return nil, errors.New("go-cryptobin/sm9: gen rand num err:" + err.Error())
     }
 
     mk = new(EncryptMasterPrivateKey)
@@ -373,7 +373,7 @@ func UnwrapKey(priv *EncryptPrivateKey, uid []byte, cipher *sm9curve.G1, kLen in
 
     key := smkdf.Key(sm3.New, buffer, kLen)
     if alias.ConstantTimeAllZero(key) {
-        return nil, errors.New("sm9: decryption error")
+        return nil, errors.New("go-cryptobin/sm9: decryption error")
     }
 
     return key, nil
@@ -520,7 +520,7 @@ func DecryptASN1(priv *EncryptPrivateKey, uid, ciphertext []byte, opts *Opts) ([
 
     opts.Encrypt = GetEncryptType(data.EncType)
     if opts.Encrypt == nil {
-        return nil, errors.New("sm9: not support enc type")
+        return nil, errors.New("go-cryptobin/sm9: not support enc type")
     }
 
     ct := append(data.C1.Bytes, data.C3...)

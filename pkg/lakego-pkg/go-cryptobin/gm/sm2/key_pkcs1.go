@@ -42,7 +42,7 @@ func ParseSM2PrivateKey(der []byte) (*PrivateKey, error) {
 func MarshalSM2PrivateKey(key *PrivateKey) ([]byte, error) {
     oid, ok := oidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("sm2: unknown curve")
+        return nil, errors.New("go-cryptobin/sm2: unknown curve")
     }
 
     return marshalSM2PrivateKeyWithOID(key, oid)
@@ -52,7 +52,7 @@ func MarshalSM2PrivateKey(key *PrivateKey) ([]byte, error) {
 // sets the curve ID to the given OID, or omits it if OID is nil.
 func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]byte, error) {
     if !key.Curve.IsOnCurve(key.X, key.Y) {
-        return nil, errors.New("sm2: invalid key public key")
+        return nil, errors.New("go-cryptobin/sm2: invalid key public key")
     }
 
     privateKey := make([]byte, (key.Curve.Params().N.BitLen()+7)/8)
@@ -74,11 +74,11 @@ func marshalSM2PrivateKeyWithOID(key *PrivateKey, oid asn1.ObjectIdentifier) ([]
 func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *PrivateKey, err error) {
     var privKey sm2PrivateKey
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
-        return nil, errors.New("sm2: failed to parse SM2 private key: " + err.Error())
+        return nil, errors.New("go-cryptobin/sm2: failed to parse SM2 private key: " + err.Error())
     }
 
     if privKey.Version != sm2PrivKeyVersion {
-        return nil, fmt.Errorf("sm2: unknown SM2 private key version %d", privKey.Version)
+        return nil, fmt.Errorf("go-cryptobin/sm2: unknown SM2 private key version %d", privKey.Version)
     }
 
     var curve elliptic.Curve
@@ -89,13 +89,13 @@ func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *
     }
 
     if curve == nil {
-        return nil, errors.New("sm2: unknown curve")
+        return nil, errors.New("go-cryptobin/sm2: unknown curve")
     }
 
     k := new(big.Int).SetBytes(privKey.PrivateKey)
     curveOrder := curve.Params().N
     if k.Cmp(curveOrder) >= 0 {
-        return nil, errors.New("sm2: invalid curve private key value")
+        return nil, errors.New("go-cryptobin/sm2: invalid curve private key value")
     }
 
     priv := new(PrivateKey)
@@ -108,7 +108,7 @@ func parseSM2PrivateKey(namedCurveOID *asn1.ObjectIdentifier, der []byte) (key *
     // according to [SEC1], but this code will ignore it.
     for len(privKey.PrivateKey) > len(privateKey) {
         if privKey.PrivateKey[0] != 0 {
-            return nil, errors.New("sm2: invalid private key length")
+            return nil, errors.New("go-cryptobin/sm2: invalid private key length")
         }
         privKey.PrivateKey = privKey.PrivateKey[1:]
     }

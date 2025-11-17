@@ -6,6 +6,8 @@ import (
     "math/big"
     "crypto/sha256"
     "crypto/elliptic"
+
+    "github.com/deatil/go-cryptobin/elliptic/secp256k1"
 )
 
 func Test_Batch_Check(t *testing.T) {
@@ -16,13 +18,13 @@ func Test_Batch_Check(t *testing.T) {
         t.Run(fmt.Sprintf("index %d", i), func(t *testing.T) {
             pubBytes := append([]byte{byte(3)}, td.publicKey...)
 
-            x, y := elliptic.UnmarshalCompressed(S256(), pubBytes)
+            x, y := elliptic.UnmarshalCompressed(secp256k1.S256(), pubBytes)
             if x == nil || y == nil {
                 t.Fatal("publicKey error")
             }
 
             pubkey := &PublicKey{
-                Curve: S256(),
+                Curve: secp256k1.S256(),
                 X: x,
                 Y: y,
             }

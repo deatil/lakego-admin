@@ -78,7 +78,7 @@ func (p7 *PKCS7) DecryptOnlyOne(pkey crypto.PrivateKey) (err error) {
         if e := recover(); e != nil {
             p7.Content = nil
 
-            err = errors.New(fmt.Sprintf("%v", e))
+            err = errors.New(fmt.Sprintf("go-cryptobin/pkcs7: %v", e))
         }
     }()
 
@@ -107,7 +107,7 @@ func (p7 *PKCS7) Decrypt(cert *x509.Certificate, pkey crypto.PrivateKey) (err er
         if e := recover(); e != nil {
             p7.Content = nil
 
-            err = errors.New(fmt.Sprintf("%v", e))
+            err = errors.New(fmt.Sprintf("go-cryptobin/pkcs7: %v", e))
         }
     }()
 

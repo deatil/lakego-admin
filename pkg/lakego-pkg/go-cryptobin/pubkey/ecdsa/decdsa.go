@@ -45,7 +45,7 @@ func DSignBytes(priv *ecdsa.PrivateKey, csprng io.Reader, data []byte, hashFunc 
     return buf, nil
 }
 
-var errZeroParam = errors.New("zero parameter")
+var errZeroParam = errors.New("go-cryptobin/ecdsa: zero parameter")
 
 func DSign(priv *ecdsa.PrivateKey, csprng io.Reader, hash []byte, hashFunc Hasher) (r, s *big.Int, err error) {
     c := priv.Curve

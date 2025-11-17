@@ -45,7 +45,7 @@ func (this CA) CreateCA() CA {
 // Create CA PEM With Issuer
 func (this CA) CreateCAWithIssuer(issuer *cryptobin_x509.Certificate, issuerKey crypto.PrivateKey) CA {
     if this.publicKey == nil || this.privateKey == nil {
-        err := errors.New("publicKey or privateKey error.")
+        err := errors.New("go-cryptobin/ca: publicKey or privateKey error.")
         return this.AppendError(err)
     }
 
@@ -73,7 +73,7 @@ func (this CA) CreateCAWithIssuer(issuer *cryptobin_x509.Certificate, issuerKey 
 // Create Cert PEM
 func (this CA) CreateCert(issuer *cryptobin_x509.Certificate, issuerKey crypto.PrivateKey) CA {
     if this.publicKey == nil || this.privateKey == nil {
-        err := errors.New("publicKey or privateKey error.")
+        err := errors.New("go-cryptobin/ca: publicKey or privateKey error.")
         return this.AppendError(err)
     }
 
@@ -95,7 +95,7 @@ func (this CA) CreateCert(issuer *cryptobin_x509.Certificate, issuerKey crypto.P
 // Create CSR PEM
 func (this CA) CreateCSR() CA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("go-cryptobin/ca: privateKey error.")
         return this.AppendError(err)
     }
 
@@ -117,7 +117,7 @@ func (this CA) CreateCSR() CA {
 // Create PrivateKey PEM
 func (this CA) CreatePrivateKey() CA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ca: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -160,7 +160,7 @@ func (this CA) CreatePrivateKey() CA {
 // Create PrivateKey PEM With Password
 func (this CA) CreatePrivateKeyWithPassword(password []byte, opts ...any) CA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ca: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -188,7 +188,7 @@ func (this CA) CreatePrivateKeyWithPassword(password []byte, opts ...any) CA {
         case *elgamal.PrivateKey:
             privateKeyBytes, err = elgamal.MarshalPKCS8PrivateKey(prikey)
         default:
-            err = errors.New("privateKey error.")
+            err = errors.New("go-cryptobin/ca: privateKey error.")
     }
 
     if err != nil {
@@ -215,7 +215,7 @@ func (this CA) CreatePrivateKeyWithPassword(password []byte, opts ...any) CA {
 // Create PublicKey PEM
 func (this CA) CreatePublicKey() CA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ca: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -238,7 +238,7 @@ func (this CA) CreatePublicKey() CA {
         case *elgamal.PublicKey:
             publicKeyBytes, err = elgamal.MarshalPKCS8PublicKey(pubkey)
         default:
-            err = errors.New("privateKey error.")
+            err = errors.New("go-cryptobin/ca: privateKey error.")
     }
 
     if err != nil {
@@ -259,7 +259,7 @@ func (this CA) CreatePublicKey() CA {
 // caCerts 通常保留为空
 func (this CA) CreatePKCS12Cert(caCerts []*x509.Certificate, password string) CA {
     if this.privateKey == nil {
-        err := errors.New("privateKey error.")
+        err := errors.New("go-cryptobin/ca: privateKey error.")
         return this.AppendError(err)
     }
 

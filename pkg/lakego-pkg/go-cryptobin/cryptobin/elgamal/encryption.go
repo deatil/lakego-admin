@@ -36,7 +36,7 @@ func (this ElGamal) Decrypt() ElGamal {
 // 公钥加密
 func (this ElGamal) EncryptBytes() ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -53,7 +53,7 @@ func (this ElGamal) EncryptBytes() ElGamal {
 // 私钥解密
 func (this ElGamal) DecryptBytes() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -72,7 +72,7 @@ func (this ElGamal) DecryptBytes() ElGamal {
 // 公钥加密
 func (this ElGamal) EncryptASN1() ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -89,7 +89,7 @@ func (this ElGamal) EncryptASN1() ElGamal {
 // 私钥解密
 func (this ElGamal) DecryptASN1() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 

@@ -23,7 +23,7 @@ type (
 // 公钥加密
 func (this RSA) Encrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -40,7 +40,7 @@ func (this RSA) Encrypt() RSA {
 // 私钥解密
 func (this RSA) Decrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -57,7 +57,7 @@ func (this RSA) Decrypt() RSA {
 // 私钥解密带设置
 func (this RSA) DecryptWithOpts(opts crypto.DecrypterOpts) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -76,7 +76,7 @@ func (this RSA) DecryptWithOpts(opts crypto.DecrypterOpts) RSA {
 // 私钥加密
 func (this RSA) PrivateKeyEncrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -93,7 +93,7 @@ func (this RSA) PrivateKeyEncrypt() RSA {
 // 公钥解密
 func (this RSA) PublicKeyDecrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this RSA) PublicKeyDecrypt() RSA {
 // OAEP公钥加密
 func (this RSA) EncryptOAEP() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -129,7 +129,7 @@ func (this RSA) EncryptOAEP() RSA {
 // OAEP私钥解密
 func (this RSA) DecryptOAEP() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -149,7 +149,7 @@ func (this RSA) DecryptOAEP() RSA {
 // rsa no padding encrypt
 func (this RSA) LowerSafeEncrypt() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -167,7 +167,7 @@ func (this RSA) LowerSafeEncrypt() RSA {
 // rsa no padding decrypt
 func (this RSA) LowerSafeDecrypt() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -186,7 +186,7 @@ func (this RSA) LowerSafeDecrypt() RSA {
 // 公钥加密, ECB 模式
 func (this RSA) EncryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -225,7 +225,7 @@ func (this RSA) EncryptECB() RSA {
 // 私钥解密, ECB 模式
 func (this RSA) DecryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -264,7 +264,7 @@ func (this RSA) DecryptECB() RSA {
 // 私钥解密, ECB 模式
 func (this RSA) DecryptECBWithOpts(opts crypto.DecrypterOpts) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -306,7 +306,7 @@ func (this RSA) DecryptECBWithOpts(opts crypto.DecrypterOpts) RSA {
 // 私钥加密, ECB 模式
 func (this RSA) PrivateKeyEncryptECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -344,7 +344,7 @@ func (this RSA) PrivateKeyEncryptECB() RSA {
 // 公钥解密, ECB 模式
 func (this RSA) PublicKeyDecryptECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -385,7 +385,7 @@ func (this RSA) PublicKeyDecryptECB() RSA {
 // OAEP公钥加密, ECB 模式
 func (this RSA) EncryptOAEPECB() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -424,7 +424,7 @@ func (this RSA) EncryptOAEPECB() RSA {
 // OAEP私钥解密, ECB 模式
 func (this RSA) DecryptOAEPECB() RSA {
     if this.privateKey == nil {
-        err := errors.New("teKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 

@@ -37,7 +37,7 @@ func (e *G2) String() string {
 // returns out.
 func (e *G2) ScalarBaseMult(scalar []byte) (*G2, error) {
     if len(scalar) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm9: invalid scalar length")
     }
 
     if e.p == nil {
@@ -239,7 +239,7 @@ func (e *G2) Unmarshal(m []byte) ([]byte, error) {
     const numBytes = 256 / 8
 
     if len(m) < 4*numBytes {
-        return nil, errors.New("sm9.G2: not enough data")
+        return nil, errors.New("go-cryptobin/sm9: not enough data")
     }
 
     // Unmarshal the points and check their caps
@@ -277,7 +277,7 @@ func (e *G2) Unmarshal(m []byte) ([]byte, error) {
         e.p.t.SetOne()
 
         if !e.p.IsOnCurve() {
-            return nil, errors.New("sm9.G2: malformed point")
+            return nil, errors.New("go-cryptobin/sm9: malformed point")
         }
     }
 
@@ -300,11 +300,11 @@ func (e *G2) MarshalUncompressed() []byte {
 func (e *G2) UnmarshalUncompressed(data []byte) ([]byte, error) {
     const numBytes = 256 / 8
     if len(data) < 4*numBytes+1 {
-        return nil, errors.New("sm9.G2: uncompress not enough data")
+        return nil, errors.New("go-cryptobin/sm9: uncompress not enough data")
     }
 
     if data[0] != 4 {
-        return nil, errors.New("sm9.G2: invalid point uncompress byte")
+        return nil, errors.New("go-cryptobin/sm9: invalid point uncompress byte")
     }
 
     return e.Unmarshal(data[1:])
@@ -339,11 +339,11 @@ func (e *G2) UnmarshalCompressed(data []byte) ([]byte, error) {
     const numBytes = 256 / 8
 
     if len(data) < 1+2*numBytes {
-        return nil, errors.New("sm9.G2: not enough data")
+        return nil, errors.New("go-cryptobin/sm9: not enough data")
     }
 
     if data[0] != 2 && data[0] != 3 { // compressed form
-        return nil, errors.New("sm9.G2: invalid point compress byte")
+        return nil, errors.New("go-cryptobin/sm9: invalid point compress byte")
     }
 
     var err error
@@ -383,7 +383,7 @@ func (e *G2) UnmarshalCompressed(data []byte) ([]byte, error) {
         e.p.t.SetOne()
 
         if !e.p.IsOnCurve() {
-            return nil, errors.New("sm9.G2: malformed point")
+            return nil, errors.New("go-cryptobin/sm9: malformed point")
         }
     }
 

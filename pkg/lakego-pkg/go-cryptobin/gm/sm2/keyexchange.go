@@ -103,11 +103,11 @@ func (ke *KeyExchange) SetPeerParameters(peerPub *PublicKey, peerUID []byte) err
     }
 
     if ke.peerPub != nil {
-        return errors.New("sm2: 'peerPub' already exists, please do not set it")
+        return errors.New("go-cryptobin/sm2: 'peerPub' already exists, please do not set it")
     }
 
     if peerPub.Curve != ke.privateKey.Curve {
-        return errors.New("sm2: peer public key is not expected/supported")
+        return errors.New("go-cryptobin/sm2: peer public key is not expected/supported")
     }
 
     var err error
@@ -213,10 +213,10 @@ func (ke *KeyExchange) Repond(random io.Reader, rA *PublicKey) (*PublicKey, []by
 
 func (ke *KeyExchange) respond(rA *PublicKey, r *big.Int) (*PublicKey, []byte, error) {
     if ke.peerPub == nil {
-        return nil, nil, errors.New("sm2: no peer public key given")
+        return nil, nil, errors.New("go-cryptobin/sm2: no peer public key given")
     }
     if !ke.privateKey.IsOnCurve(rA.X, rA.Y) {
-        return nil, nil, errors.New("sm2: invalid initiator's ephemeral public key")
+        return nil, nil, errors.New("go-cryptobin/sm2: invalid initiator's ephemeral public key")
     }
 
     ke.peerSecret = rA
@@ -226,7 +226,7 @@ func (ke *KeyExchange) respond(rA *PublicKey, r *big.Int) (*PublicKey, []byte, e
 
     ke.mqv()
     if ke.v.X.Sign() == 0 && ke.v.Y.Sign() == 0 {
-        return nil, nil, errors.New("sm2: key exchange failed, V is infinity point")
+        return nil, nil, errors.New("go-cryptobin/sm2: key exchange failed, V is infinity point")
     }
 
     if !ke.genSignature {
@@ -244,23 +244,23 @@ func (ke *KeyExchange) respond(rA *PublicKey, r *big.Int) (*PublicKey, []byte, e
 // signature and return generated signature depends on KeyExchange.genSignature value.
 func (ke *KeyExchange) ConfirmResponder(rB *PublicKey, sB []byte) ([]byte, []byte, error) {
     if ke.peerPub == nil {
-        return nil, nil, errors.New("sm2: no peer public key given")
+        return nil, nil, errors.New("go-cryptobin/sm2: no peer public key given")
     }
     if !ke.privateKey.IsOnCurve(rB.X, rB.Y) {
-        return nil, nil, errors.New("sm2: invalid responder's ephemeral public key")
+        return nil, nil, errors.New("go-cryptobin/sm2: invalid responder's ephemeral public key")
     }
 
     ke.peerSecret = rB
 
     ke.mqv()
     if ke.v.X.Sign() == 0 && ke.v.Y.Sign() == 0 {
-        return nil, nil, errors.New("sm2: key exchange failed, U is infinity point")
+        return nil, nil, errors.New("go-cryptobin/sm2: key exchange failed, U is infinity point")
     }
 
     if len(sB) > 0 {
         buffer := ke.sign(false, 0x02)
         if subtle.ConstantTimeCompare(buffer, sB) != 1 {
-            return nil, nil, errors.New("sm2: invalid responder's signature")
+            return nil, nil, errors.New("go-cryptobin/sm2: invalid responder's signature")
         }
     }
 
@@ -281,7 +281,7 @@ func (ke *KeyExchange) ConfirmInitiator(s1 []byte) ([]byte, error) {
     if s1 != nil {
         buffer := ke.sign(true, 0x03)
         if subtle.ConstantTimeCompare(buffer, s1) != 1 {
-            return nil, errors.New("sm2: invalid initiator's signature")
+            return nil, errors.New("go-cryptobin/sm2: invalid initiator's signature")
         }
     }
 

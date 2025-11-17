@@ -46,13 +46,13 @@ func (this CipherCFB1) NeedBmpPassword() bool {
 func (this CipherCFB1) Encrypt(rand io.Reader, key, plaintext []byte) ([]byte, []byte, error) {
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to create cipher: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to create cipher: " + err.Error())
     }
 
     // 随机生成 iv
     iv := make(cfb1Params, this.blockSize)
     if _, err := io.ReadFull(rand, iv); err != nil {
-        return nil, nil, errors.New("pkcs/cipher: failed to generate IV: " + err.Error())
+        return nil, nil, errors.New("go-cryptobin/pkcs: failed to generate IV: " + err.Error())
     }
 
     // 需要保存的加密数据
@@ -75,7 +75,7 @@ func (this CipherCFB1) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     // 解析出 iv
     var iv cfb1Params
     if _, err := asn1.Unmarshal(params, &iv); err != nil {
-        return nil, errors.New("pkcs/cipher: invalid iv parameters")
+        return nil, errors.New("go-cryptobin/pkcs: invalid iv parameters")
     }
 
     block, err := this.cipherFunc(key)
@@ -84,7 +84,7 @@ func (this CipherCFB1) Decrypt(key, params, ciphertext []byte) ([]byte, error) {
     }
 
     if len(iv) != block.BlockSize() {
-        return nil, errors.New("pkcs/cipher: incorrect IV size")
+        return nil, errors.New("go-cryptobin/pkcs: incorrect IV size")
     }
 
     plaintext := make([]byte, len(ciphertext))

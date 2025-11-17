@@ -50,7 +50,7 @@ func (this RSA) CreatePublicKey() RSA {
 // 生成 PKCS1 私钥
 func (this RSA) CreatePKCS1PrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -71,7 +71,7 @@ func (this RSA) CreatePKCS1PrivateKey() RSA {
 // PEMCipher: DESCBC | DESEDE3CBC | AES128CBC | AES192CBC | AES256CBC
 func (this RSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -83,7 +83,7 @@ func (this RSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
     // 加密方式
     cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("PEMCipher not exists.")
+        err := errors.New("go-cryptobin/rsa: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -110,7 +110,7 @@ func (this RSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...strin
 // 生成 pcks1 公钥 pem 数据
 func (this RSA) CreatePKCS1PublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -131,7 +131,7 @@ func (this RSA) CreatePKCS1PublicKey() RSA {
 // 生成 PKCS8 私钥 pem 数据
 func (this RSA) CreatePKCS8PrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -154,7 +154,7 @@ func (this RSA) CreatePKCS8PrivateKey() RSA {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this RSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -189,7 +189,7 @@ func (this RSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据
 func (this RSA) CreatePKCS8PublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -213,7 +213,7 @@ func (this RSA) CreatePKCS8PublicKey() RSA {
 // 生成私钥 xml 数据
 func (this RSA) CreateXMLPrivateKey() RSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/rsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -230,7 +230,7 @@ func (this RSA) CreateXMLPrivateKey() RSA {
 // 生成公钥 xml 数据
 func (this RSA) CreateXMLPublicKey() RSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/rsa: publicKey empty.")
         return this.AppendError(err)
     }
 

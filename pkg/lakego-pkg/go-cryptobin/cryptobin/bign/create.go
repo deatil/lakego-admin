@@ -46,7 +46,7 @@ func (this Bign) CreatePrivateKeyWithPassword(password string, opts ...string) B
 // 生成私钥 pem 数据
 func (this Bign) CreatePKCS1PrivateKey() Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this Bign) CreatePKCS1PrivateKey() Bign {
 // 生成私钥带密码 pem 数据
 func (this Bign) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -80,7 +80,7 @@ func (this Bign) CreatePKCS1PrivateKeyWithPassword(password string, opts ...stri
     // 加密方式
     cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("PEMCipher not exists.")
+        err := errors.New("go-cryptobin/bign: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this Bign) CreatePKCS1PrivateKeyWithPassword(password string, opts ...stri
 // 生成 PKCS8 私钥 pem 数据
 func (this Bign) CreatePKCS8PrivateKey() Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -135,7 +135,7 @@ func (this Bign) CreatePKCS8PrivateKey() Bign {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this Bign) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) Bign {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bign: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -172,7 +172,7 @@ func (this Bign) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any)
 // 生成公钥 pem 数据
 func (this Bign) CreatePublicKey() Bign {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bign: publicKey empty.")
         return this.AppendError(err)
     }
 

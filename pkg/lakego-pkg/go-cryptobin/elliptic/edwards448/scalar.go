@@ -60,6 +60,7 @@ func NewScalar() *Scalar {
     return &Scalar{}
 }
 
+// s = x * y + z
 func (s *Scalar) MulAdd(x, y, z *Scalar) *Scalar {
     scMulAdd(&s.s, &x.s, &y.s, &z.s)
     return s

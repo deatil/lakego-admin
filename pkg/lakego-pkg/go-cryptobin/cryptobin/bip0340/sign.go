@@ -37,12 +37,12 @@ func (this BIP0340) Verify(data []byte) BIP0340 {
 // 私钥签名 ASN1
 func (this BIP0340) SignASN1() BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bip0340: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -61,12 +61,12 @@ func (this BIP0340) SignASN1() BIP0340 {
 // 使用原始数据[data]对比签名后数据
 func (this BIP0340) VerifyASN1(data []byte) BIP0340 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bip0340: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bip0340: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -81,12 +81,12 @@ func (this BIP0340) VerifyASN1(data []byte) BIP0340 {
 // 私钥签名 Bytes
 func (this BIP0340) SignBytes() BIP0340 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/bip0340: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bip0340: Hash func not set.")
         return this.AppendError(err)
     }
 
@@ -104,12 +104,12 @@ func (this BIP0340) SignBytes() BIP0340 {
 // 使用原始数据[data]对比签名后数据
 func (this BIP0340) VerifyBytes(data []byte) BIP0340 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/bip0340: publicKey empty.")
         return this.AppendError(err)
     }
 
     if this.signHash == nil {
-        err := errors.New("Hash func not set.")
+        err := errors.New("go-cryptobin/bip0340: Hash func not set.")
         return this.AppendError(err)
     }
 

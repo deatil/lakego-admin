@@ -10,9 +10,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS8 key")
-    ErrNotGostPrivateKey   = errors.New("key is not a valid Gost private key")
-    ErrNotGostPublicKey    = errors.New("key is not a valid Gost public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/gost: invalid key: Key must be a PEM encoded PKCS8 key")
+    ErrNotGostPrivateKey   = errors.New("go-cryptobin/gost: key is not a valid Gost private key")
+    ErrNotGostPublicKey    = errors.New("go-cryptobin/gost: key is not a valid Gost public key")
 )
 
 // 解析私钥

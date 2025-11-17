@@ -11,8 +11,8 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotECPublicKey      = errors.New("key is not a valid Bign public key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/bign: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotECPublicKey      = errors.New("go-cryptobin/bign: key is not a valid Bign public key")
 )
 
 // 解析私钥

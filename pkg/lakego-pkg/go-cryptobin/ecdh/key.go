@@ -22,7 +22,7 @@ var (
     oidPublicKeyGmSM2 = asn1.ObjectIdentifier{1, 2, 156, 10197, 1, 301}
 )
 
-// 私钥 - 包装
+// PrivateKey info
 type pkcs8 struct {
     Version    int
     Algo       pkix.AlgorithmIdentifier
@@ -30,13 +30,13 @@ type pkcs8 struct {
     Attributes []asn1.RawValue `asn1:"optional,tag:0"`
 }
 
-// 公钥 - 包装
+// pkix PublicKey info
 type pkixPublicKey struct {
     Algo      pkix.AlgorithmIdentifier
     BitString asn1.BitString
 }
 
-// 公钥信息 - 解析
+// publicKey Info
 type publicKeyInfo struct {
     Raw       asn1.RawContent
     Algorithm pkix.AlgorithmIdentifier
@@ -50,7 +50,7 @@ type ecPrivateKey struct {
     PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
 }
 
-// 包装公钥
+// Marshal PublicKey
 func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
     switch pub.Curve() {
         case X448():
@@ -79,55 +79,53 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 
             pubkey, err := sm2.MarshalPublicKey(pubblic)
             if err != nil {
-                return nil, errors.New("ecdsa: failed to marshal algo param: " + err.Error())
+                return nil, errors.New("go-cryptobin/ecdh: failed to marshal algo param: " + err.Error())
             }
 
             return pubkey, nil
         default:
             pubkey, err := ToPublicKey(pub)
             if err != nil {
-                return nil, fmt.Errorf("ecdh: failed to marshal public key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal public key: %v", err)
             }
 
             public, err := x509.MarshalPKIXPublicKey(pubkey)
             if err != nil {
-                return nil, fmt.Errorf("ecdh: failed to marshal public key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal public key: %v", err)
             }
 
             return public, nil
     }
 }
 
-// 解析公钥
+// Parse PublicKey
 func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
     var pki publicKeyInfo
     if rest, err := asn1.Unmarshal(derBytes, &pki); err != nil {
         return nil, err
     } else if len(rest) != 0 {
-        return nil, errors.New("ecdh: trailing data after ASN.1 of public-key")
+        return nil, errors.New("go-cryptobin/ecdh: trailing data after ASN.1 of public-key")
     }
 
-    keyData := &pki
-
-    oid := keyData.Algorithm.Algorithm
-    params := keyData.Algorithm.Parameters
-    der := cryptobyte.String(keyData.PublicKey.RightAlign())
+    oid := pki.Algorithm.Algorithm
+    params := pki.Algorithm.Parameters
+    der := cryptobyte.String(pki.PublicKey.RightAlign())
 
     switch {
         case oid.Equal(oidPublicKeyX448):
             if len(params.FullBytes) != 0 {
-                return nil, errors.New("ecdh: X25519 key encoded with illegal parameters")
+                return nil, errors.New("go-cryptobin/ecdh: X25519 key encoded with illegal parameters")
             }
 
             return X448().NewPublicKey(der)
         default:
-            // 先判断 SM2 证书
+            // check SM2 cert
             if oid.Equal(oidPublicKeyECDSA) {
                 paramsDer := cryptobyte.String(params.FullBytes)
 
                 namedCurveOID := new(asn1.ObjectIdentifier)
                 if !paramsDer.ReadASN1ObjectIdentifier(namedCurveOID) {
-                    return nil, errors.New("ecdh: invalid ECDH parameters")
+                    return nil, errors.New("go-cryptobin/ecdh: invalid ECDH parameters")
                 }
 
                 if oidPublicKeyGmSM2.Equal(*namedCurveOID) {
@@ -137,7 +135,7 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
                 }
             }
 
-            // 其他 EC 曲线
+            // other EC curve
             key, err := x509.ParsePKIXPublicKey(derBytes)
             if err != nil {
                 return nil, err
@@ -158,14 +156,14 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
                     }
             }
 
-            return nil, errors.New("ecdh: unknown public key algorithm")
+            return nil, errors.New("go-cryptobin/ecdh: unknown public key algorithm")
     }
 
 }
 
 // ====================
 
-// 包装私钥
+// Marshal PrivateKey
 func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     var privKey pkcs8
 
@@ -176,7 +174,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
             }
             var err error
             if privKey.PrivateKey, err = asn1.Marshal(key.Bytes()); err != nil {
-                return nil, fmt.Errorf("ecdh: failed to marshal private key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal private key: %v", err)
             }
         case GmSM2():
             c := sm2.P256()
@@ -190,19 +188,19 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
             private, err := sm2.MarshalPrivateKey(pri)
             if err != nil {
-                return nil, errors.New("ecdsa: failed to marshal algo param: " + err.Error())
+                return nil, errors.New("go-cryptobin/ecdh: failed to marshal algo param: " + err.Error())
             }
 
             return private, nil
         default:
             prikey, err := ToPrivateKey(key)
             if err != nil {
-                return nil, fmt.Errorf("ecdh: failed to marshal private key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal private key: %v", err)
             }
 
             private, err := x509.MarshalPKCS8PrivateKey(prikey)
             if err != nil {
-                return nil, fmt.Errorf("ecdh: failed to marshal private key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal private key: %v", err)
             }
 
             return private, nil
@@ -211,7 +209,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
     return asn1.Marshal(privKey)
 }
 
-// 解析私钥
+// Parse PrivateKey
 func ParsePrivateKey(der []byte) (*PrivateKey, error) {
     var privKey pkcs8
     if _, err := asn1.Unmarshal(der, &privKey); err != nil {
@@ -221,17 +219,17 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
     switch {
         case privKey.Algo.Algorithm.Equal(oidPublicKeyX448):
             if l := len(privKey.Algo.Parameters.FullBytes); l != 0 {
-                return nil, errors.New("ecdh: invalid X448 private key parameters")
+                return nil, errors.New("go-cryptobin/ecdh: invalid X448 private key parameters")
             }
 
             var curvePrivateKey []byte
             if _, err := asn1.Unmarshal(privKey.PrivateKey, &curvePrivateKey); err != nil {
-                return nil, fmt.Errorf("ecdh: invalid X448 private key: %v", err)
+                return nil, fmt.Errorf("go-cryptobin/ecdh: invalid X448 private key: %v", err)
             }
 
             return X448().NewPrivateKey(curvePrivateKey)
         default:
-            // 先判断 SM2 证书
+            // check SM2 cert
             if privKey.Algo.Algorithm.Equal(oidPublicKeyECDSA) {
                 bytes := privKey.Algo.Parameters.FullBytes
 
@@ -247,7 +245,7 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
                 }
             }
 
-            // 其他 EC 曲线
+            // other EC curve
             key, err := x509.ParsePKCS8PrivateKey(der)
             if err != nil {
                 return nil, err
@@ -267,13 +265,12 @@ func ParsePrivateKey(der []byte) (*PrivateKey, error) {
                     }
             }
 
-            return nil, fmt.Errorf("ecdh: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
+            return nil, fmt.Errorf("go-cryptobin/ecdh: PKCS#8 wrapping contained private key with unknown algorithm: %v", privKey.Algo.Algorithm)
     }
 }
 
 // ================
 
-// 格式转换
 func FromPrivateKey(key *crypto_ecdh.PrivateKey) (*PrivateKey, error) {
     switch key.Curve() {
         case crypto_ecdh.P256():
@@ -286,7 +283,7 @@ func FromPrivateKey(key *crypto_ecdh.PrivateKey) (*PrivateKey, error) {
             return X25519().NewPrivateKey(key.Bytes())
     }
 
-    return nil, fmt.Errorf("ecdh: PrivateKey is not support")
+    return nil, fmt.Errorf("go-cryptobin/ecdh: PrivateKey is not support")
 }
 
 func ToPrivateKey(key *PrivateKey) (*crypto_ecdh.PrivateKey, error) {
@@ -302,12 +299,12 @@ func ToPrivateKey(key *PrivateKey) (*crypto_ecdh.PrivateKey, error) {
         case X25519():
             newCurve = crypto_ecdh.X25519()
         default:
-            return nil, fmt.Errorf("ecdh: unknown key type while marshaling PKCS#8: %T", key)
+            return nil, fmt.Errorf("go-cryptobin/ecdh: unknown key type while marshaling PKCS#8: %T", key)
     }
 
     prikey, err := newCurve.NewPrivateKey(key.Bytes())
     if err != nil {
-        return nil, fmt.Errorf("ecdh: failed to marshal private key: %v", err)
+        return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal private key: %v", err)
     }
 
     return prikey, nil
@@ -325,7 +322,7 @@ func FromPublicKey(pub *crypto_ecdh.PublicKey) (*PublicKey, error) {
             return X25519().NewPublicKey(pub.Bytes())
     }
 
-    return nil, fmt.Errorf("ecdh: PublicKey is not support")
+    return nil, fmt.Errorf("go-cryptobin/ecdh: PublicKey is not support")
 }
 
 func ToPublicKey(pub *PublicKey) (*crypto_ecdh.PublicKey, error) {
@@ -341,12 +338,12 @@ func ToPublicKey(pub *PublicKey) (*crypto_ecdh.PublicKey, error) {
         case X25519():
             newCurve = crypto_ecdh.X25519()
         default:
-            return nil, fmt.Errorf("ecdh: unsupported public key type: %T", pub)
+            return nil, fmt.Errorf("go-cryptobin/ecdh: unsupported public key type: %T", pub)
     }
 
     pubkey, err := newCurve.NewPublicKey(pub.Bytes())
     if err != nil {
-        return nil, fmt.Errorf("ecdh: failed to marshal public key: %v", err)
+        return nil, fmt.Errorf("go-cryptobin/ecdh: failed to marshal public key: %v", err)
     }
 
     return pubkey, nil

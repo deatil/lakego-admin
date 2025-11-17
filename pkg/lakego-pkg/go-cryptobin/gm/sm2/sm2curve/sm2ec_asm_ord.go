@@ -31,7 +31,7 @@ var RR = &p256OrdElement{0x901192af7c114f20, 0x3464504ade6fa2fa, 0x620fc84c3affe
 //
 func P256OrdInverse(k []byte) ([]byte, error) {
     if len(k) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     x := new(p256OrdElement)
     p256OrdBigToLittle(x, toElementArray(k))
@@ -104,7 +104,7 @@ func P256OrdInverse(k []byte) ([]byte, error) {
 // P256OrdMul multiplication modulo org(G).
 func P256OrdMul(in1, in2 []byte) ([]byte, error) {
     if len(in1) != 32 || len(in2) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     x1 := new(p256OrdElement)
     p256OrdBigToLittle(x1, toElementArray(in1))

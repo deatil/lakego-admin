@@ -277,7 +277,7 @@ func (this Enveloped) parseEncryptionScheme(encryptionScheme pkix.AlgorithmIdent
 // Parse decodes a DER encoded package
 func (this Enveloped) parseData(data []byte) ([]byte, asn1.ObjectIdentifier, error) {
     if len(data) == 0 {
-        return nil, asn1.ObjectIdentifier{}, errors.New("input data is empty")
+        return nil, asn1.ObjectIdentifier{}, errors.New("go-cryptobin/pkcs12: input data is empty")
     }
 
     der, err := ber.Ber2der(data)

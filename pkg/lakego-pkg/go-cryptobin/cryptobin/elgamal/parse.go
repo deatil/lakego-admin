@@ -11,9 +11,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded  = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotElGamalPrivateKey = errors.New("key is not a valid ElGamal private key")
-    ErrNotElGamalPublicKey  = errors.New("key is not a valid ElGamal public key")
+    ErrKeyMustBePEMEncoded  = errors.New("go-cryptobin/elgamal: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotElGamalPrivateKey = errors.New("go-cryptobin/elgamal: key is not a valid ElGamal private key")
+    ErrNotElGamalPublicKey  = errors.New("go-cryptobin/elgamal: key is not a valid ElGamal public key")
 )
 
 // 解析私钥

@@ -37,7 +37,7 @@ func (this SM2) Verify(data []byte) SM2 {
 // 私钥签名 ASN1
 func (this SM2) SignASN1() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -58,7 +58,7 @@ func (this SM2) SignASN1() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyASN1(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -76,7 +76,7 @@ func (this SM2) VerifyASN1(data []byte) SM2 {
 // 兼容[招行]
 func (this SM2) SignBytes() SM2 {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/sm2: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -98,12 +98,12 @@ func (this SM2) SignBytes() SM2 {
 // 使用原始数据[data]对比签名后数据
 func (this SM2) VerifyBytes(data []byte) SM2 {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/sm2: publicKey empty.")
         return this.AppendError(err)
     }
 
     if len(this.data) != 64 {
-        err := errors.New("sig data error.")
+        err := errors.New("go-cryptobin/sm2: sig data error.")
         return this.AppendError(err)
     }
 

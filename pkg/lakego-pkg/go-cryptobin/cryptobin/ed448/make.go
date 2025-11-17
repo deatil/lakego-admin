@@ -12,7 +12,7 @@ func (this ED448) MakePublicKey() ED448 {
     this.publicKey = ed448.PublicKey{}
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ed448: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -26,7 +26,7 @@ func (this ED448) MakePublicKey() ED448 {
 func (this ED448) MakeKeyDer() ED448 {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/ed448: keyData error.")
         return this.AppendError(err)
     }
 

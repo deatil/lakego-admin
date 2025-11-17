@@ -269,7 +269,7 @@ func (this ECDSA) FromPublicKeyUncompressString(key string) ECDSA {
 
     x, y := elliptic.Unmarshal(this.curve, k)
     if x == nil || y == nil {
-        err := errors.New("publicKey uncompress string error")
+        err := errors.New("go-cryptobin/ecdsa: publicKey uncompress string error")
 
         return this.AppendError(err)
     }
@@ -291,7 +291,7 @@ func (this ECDSA) FromPublicKeyCompressString(key string) ECDSA {
 
     x, y := elliptic.UnmarshalCompressed(this.curve, k)
     if x == nil || y == nil {
-        err := errors.New("publicKey compress string error")
+        err := errors.New("go-cryptobin/ecdsa: publicKey compress string error")
 
         return this.AppendError(err)
     }

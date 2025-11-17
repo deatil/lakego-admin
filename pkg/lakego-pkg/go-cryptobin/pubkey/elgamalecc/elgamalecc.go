@@ -85,7 +85,7 @@ func NewPrivateKey(curve elliptic.Curve, k []byte) (*PrivateKey, error) {
 
     n := new(big.Int).Sub(curve.Params().N, one)
     if d.Cmp(n) >= 0 {
-        return nil, errors.New("go-cryptobin/bign: privateKey's D is overflow")
+        return nil, errors.New("go-cryptobin/elgamalecc: privateKey's D is overflow")
     }
 
     priv := new(PrivateKey)
@@ -106,7 +106,7 @@ func PrivateKeyTo(key *PrivateKey) []byte {
 func NewPublicKey(curve elliptic.Curve, k []byte) (*PublicKey, error) {
     x, y := elliptic.Unmarshal(curve, k)
     if x == nil || y == nil {
-        return nil, errors.New("go-cryptobin/bign: incorrect public key")
+        return nil, errors.New("go-cryptobin/elgamalecc: incorrect public key")
     }
 
     pub := &PublicKey{
@@ -131,7 +131,7 @@ func Encrypt(random io.Reader, pub *PublicKey, data []byte) (C1x, C1y *big.Int, 
 
     r, err := randFieldElement(random, curve)
     if err != nil {
-        err = errors.New("go-cryptobin/bign: invalid rand r")
+        err = errors.New("go-cryptobin/elgamalecc: invalid rand r")
         return
     }
 

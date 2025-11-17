@@ -96,7 +96,7 @@ func EncryptPKCS8PrivateKey(
 
     b, err := asn1.Marshal(pki)
     if err != nil {
-        return nil, errors.New("error marshaling encrypted key")
+        return nil, errors.New("go-cryptobin/pkcs8: error marshaling encrypted key")
     }
 
     return &pem.Block{
@@ -109,7 +109,7 @@ func EncryptPKCS8PrivateKey(
 func DecryptPKCS8PrivateKey(data, password []byte) ([]byte, error) {
     var pki encryptedPrivateKeyInfo
     if _, err := asn1.Unmarshal(data, &pki); err != nil {
-        return nil, errors.New("failed to unmarshal private key")
+        return nil, errors.New("go-cryptobin/pkcs8: failed to unmarshal private key")
     }
 
     algo := pki.EncryptionAlgorithm
@@ -134,26 +134,26 @@ func DecryptPEMBlock(block *pem.Block, password []byte) ([]byte, error) {
         return DecryptPKCS8PrivateKey(block.Bytes, password)
     }
 
-    return nil, errors.New("unsupported encrypted PEM")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported encrypted PEM")
 }
 
 // PBES2 Encrypt data
 func PBES2Encrypt(rand io.Reader, data []byte, password []byte, opts *Opts) (encrypted []byte, algo pkix.AlgorithmIdentifier, err error) {
     cipher := opts.Cipher
     if cipher == nil {
-        err = errors.New("unknown opts cipher")
+        err = errors.New("go-cryptobin/pkcs8: unknown opts cipher")
         return
     }
 
     kdfOpts := opts.KDFOpts
     if kdfOpts == nil {
-        err = errors.New("unknown opts kdfOpts")
+        err = errors.New("go-cryptobin/pkcs8: unknown opts kdfOpts")
         return
     }
 
     salt := make([]byte, kdfOpts.GetSaltSize())
     if _, err = io.ReadFull(rand, salt); err != nil {
-        err = errors.New("failed to generate salt")
+        err = errors.New("go-cryptobin/pkcs8: failed to generate salt")
         return
     }
 
@@ -219,7 +219,7 @@ func PBES2Decrypt(data []byte, algo pkix.AlgorithmIdentifier, password []byte) (
 
     var params pbes2Params
     if _, err := asn1.Unmarshal(algo.Parameters.FullBytes, &params); err != nil {
-        return nil, errors.New("invalid PBES2 parameters")
+        return nil, errors.New("go-cryptobin/pkcs8: invalid PBES2 parameters")
     }
 
     cipher, cipherParams, err := parseEncryptionScheme(params.EncryptionScheme)
@@ -289,7 +289,7 @@ func parseKeyDerivationFunc(keyDerivationFunc pkix.AlgorithmIdentifier) (KDFPara
 
     _, err := asn1.Unmarshal(keyDerivationFunc.Parameters.FullBytes, newParams)
     if err != nil {
-        return nil, errors.New("invalid KDF parameters")
+        return nil, errors.New("go-cryptobin/pkcs8: invalid KDF parameters")
     }
 
     return newParams, nil

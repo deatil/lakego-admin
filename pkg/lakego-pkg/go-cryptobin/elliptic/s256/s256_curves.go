@@ -1,9 +1,17 @@
-package bip0340
+package s256
 
-var s256 *CurveParams
+import (
+    "math/big"
+)
 
-func init() {
-    s256 = &CurveParams{
+var s256 *S256Curve
+
+func initAll() {
+    initS256()
+}
+
+func initS256() {
+    s256 = &S256Curve{
         Name:    "secp256k1",
         BitSize: 256,
         P:       bigFromHex("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEFFFFFC2F"),
@@ -14,9 +22,9 @@ func init() {
     }
 }
 
-// The following conventions are used, with constants as defined for secp256k1.
-// We note that adapting this specification to other elliptic curves is not straightforward
-// and can result in an insecure scheme
-func S256() *CurveParams {
-    return s256
+func bigFromHex(s string) (i *big.Int) {
+    i = new(big.Int)
+    i.SetString(s, 16)
+
+    return
 }

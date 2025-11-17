@@ -56,7 +56,7 @@ func (priv *PrivateKey) PublicKey(params *Params) *PublicKey {
 // message and an updated secret key.
 func (priv *PrivateKey) Sign(params *Params, m []byte) ([]byte, error) {
     if params == nil {
-        return nil, errors.New("xmss: Params error")
+        return nil, errors.New("go-cryptobin/xmss: Params error")
     }
 
     prv := priv.D
@@ -88,11 +88,11 @@ func (priv *PrivateKey) Sign(params *Params, m []byte) ([]byte, error) {
         memsetByte(prv[:params.indexBytes], 0xFF)
         memsetByte(prv[params.indexBytes:(params.prvBytes - params.indexBytes)], 0)
         if idx > ((1 << params.fullHeight) - 1) {
-            return nil, errors.New("xmss: fullHeight is error")
+            return nil, errors.New("go-cryptobin/xmss: fullHeight is error")
         }
 
         if (params.fullHeight == 64) && (idx == ((1 << params.fullHeight) - 1)) {
-            return nil, errors.New("xmss: fullHeight is long")
+            return nil, errors.New("go-cryptobin/xmss: fullHeight is long")
         }
     }
 
@@ -144,7 +144,7 @@ func (priv *PrivateKey) Sign(params *Params, m []byte) ([]byte, error) {
 // Format public: [root || pubSeed]
 func GenerateKey(rand io.Reader, params *Params) (*PrivateKey, *PublicKey, error) {
     if params == nil {
-        return nil, nil, errors.New("xmss: Params error")
+        return nil, nil, errors.New("go-cryptobin/xmss: Params error")
     }
 
     var prv PrivateKey
@@ -165,7 +165,7 @@ func GenerateKey(rand io.Reader, params *Params) (*PrivateKey, *PublicKey, error
     // Initialize prvSeed, prfSeed and pubSeed
     seed := make([]byte, 3*n)
     if _, err := io.ReadFull(rand, seed); err != nil {
-        return nil, nil, fmt.Errorf("xmss: %w", err)
+        return nil, nil, fmt.Errorf("go-cryptobin/xmss: %w", err)
     }
 
     copy(prv.D[params.indexBytes:], seed)

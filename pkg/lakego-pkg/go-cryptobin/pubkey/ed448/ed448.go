@@ -121,7 +121,7 @@ func (priv PrivateKey) Sign(rand io.Reader, message []byte, opts crypto.SignerOp
     switch {
         case scheme == ED448 && hash == crypto.Hash(0):
             if l := len(context); l > ContextMaxSize {
-                return nil, errors.New("ed448: bad ED448 context length: " + strconv.Itoa(l))
+                return nil, errors.New("go-cryptobin/ed448: bad ED448 context length: " + strconv.Itoa(l))
             }
 
             signature := make([]byte, SignatureSize)
@@ -129,7 +129,7 @@ func (priv PrivateKey) Sign(rand io.Reader, message []byte, opts crypto.SignerOp
             return signature, nil
         case scheme == ED448Ph && hash == crypto.Hash(0):
             if l := len(context); l > ContextMaxSize {
-                return nil, errors.New("ed448: bad ED448ph context length: " + strconv.Itoa(l))
+                return nil, errors.New("go-cryptobin/ed448: bad ED448ph context length: " + strconv.Itoa(l))
             }
 
             signature := make([]byte, SignatureSize)
@@ -137,7 +137,7 @@ func (priv PrivateKey) Sign(rand io.Reader, message []byte, opts crypto.SignerOp
             return signature, nil
     }
 
-    return nil, errors.New("ed448: bad hash algorithm")
+    return nil, errors.New("go-cryptobin/ed448: bad hash algorithm")
 }
 
 // GenerateKey generates a public/private key pair using entropy from rand.
@@ -173,7 +173,7 @@ func NewKeyFromSeed(seed []byte) PrivateKey {
 
 func newKeyFromSeed(privateKey, seed []byte) {
     if l := len(seed); l != SeedSize {
-        panic("x448: bad seed length: " + strconv.Itoa(l))
+        panic("go-cryptobin/ed448: bad seed length: " + strconv.Itoa(l))
     }
 
     h := make([]byte, 114)
@@ -225,7 +225,7 @@ func sign(signature, privateKey, message []byte, domPre, context string) {
     sha3.ShakeSum256(h, seed)
     s, err := edwards448.NewScalar().SetBytesWithClamping(h[:57])
     if err != nil {
-        panic("ed448: internal error: setting scalar failed")
+        panic("go-cryptobin/ed448: internal error: setting scalar failed")
     }
     prefix := h[57:]
 
@@ -239,7 +239,7 @@ func sign(signature, privateKey, message []byte, domPre, context string) {
     mh.Read(messageDigest)
     r, err := edwards448.NewScalar().SetUniformBytes(messageDigest)
     if err != nil {
-        panic("ed448: internal error: setting scalar failed")
+        panic("go-cryptobin/ed448: internal error: setting scalar failed")
     }
 
     R := new(edwards448.Point).ScalarBaseMult(r)
@@ -255,7 +255,7 @@ func sign(signature, privateKey, message []byte, domPre, context string) {
     kh.Read(hramDigest)
     k, err := edwards448.NewScalar().SetUniformBytes(hramDigest)
     if err != nil {
-        panic("ed448: internal error: setting scalar failed")
+        panic("go-cryptobin/ed448: internal error: setting scalar failed")
     }
 
     S := edwards448.NewScalar().MulAdd(k, s, r)
@@ -287,34 +287,34 @@ func VerifyWithOptions(publicKey PublicKey, message, sig []byte, opts crypto.Sig
     switch {
         case scheme == ED448Ph && hash == crypto.Hash(0): // ED448ph
             if l := len(context); l > ContextMaxSize {
-                return errors.New("ed448: bad ED448ph context length: " + strconv.Itoa(l))
+                return errors.New("go-cryptobin/ed448: bad ED448ph context length: " + strconv.Itoa(l))
             }
 
             if !verify(publicKey, message, sig, domPrefixPh, context) {
-                return errors.New("ed448: invalid signature")
+                return errors.New("go-cryptobin/ed448: invalid signature")
             }
 
             return nil
         case scheme == ED448 && hash == crypto.Hash(0): // ED448
             if l := len(context); l > ContextMaxSize {
-                return errors.New("ed448: bad ED448 context length: " + strconv.Itoa(l))
+                return errors.New("go-cryptobin/ed448: bad ED448 context length: " + strconv.Itoa(l))
             }
 
             if !verify(publicKey, message, sig, domPrefixPure, context) {
-                return errors.New("ed448: invalid signature")
+                return errors.New("go-cryptobin/ed448: invalid signature")
             }
 
             return nil
     }
 
-    return errors.New("ed448: expected opts.Hash zero (unhashed message, for standard ED448) or SHA3-Shake256 (for ED448ph)")
+    return errors.New("go-cryptobin/ed448: expected opts.Hash zero (unhashed message, for standard ED448) or SHA3-Shake256 (for ED448ph)")
 }
 
 // Verify reports whether sig is a valid signature of message by publicKey. It
 // will panic if len(publicKey) is not PublicKeySize.
 func verify(publicKey PublicKey, message, sig []byte, domPre, context string) bool {
     if l := len(publicKey); l != PublicKeySize {
-        panic("ed448: bad public key length: " + strconv.Itoa(l))
+        panic("go-cryptobin/ed448: bad public key length: " + strconv.Itoa(l))
     }
 
     if len(sig) != SignatureSize || sig[113]&0x7F != 0 {
@@ -347,7 +347,7 @@ func verify(publicKey PublicKey, message, sig []byte, domPre, context string) bo
     kh.Read(hramDigest)
     k, err := edwards448.NewScalar().SetUniformBytes(hramDigest)
     if err != nil {
-        panic("ed448: internal error: setting scalar failed")
+        panic("go-cryptobin/ed448: internal error: setting scalar failed")
     }
 
     S, err := edwards448.NewScalar().SetCanonicalBytes(sig[57:])

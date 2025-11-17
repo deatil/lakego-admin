@@ -70,7 +70,7 @@ func MarshalPublicKey(pub *PublicKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(pub.Curve)
     if !ok {
-        return nil, errors.New("go-cryptobin/bip0340: unsupported ecgdsa curve")
+        return nil, errors.New("go-cryptobin/bip0340: unsupported bip0340 curve")
     }
 
     var paramBytes []byte
@@ -132,7 +132,7 @@ func ParsePublicKey(derBytes []byte) (pub *PublicKey, err error) {
 
     namedCurve := NamedCurveFromOid(*namedCurveOID)
     if namedCurve == nil {
-        err = errors.New("go-cryptobin/bip0340: unsupported ecgdsa curve")
+        err = errors.New("go-cryptobin/bip0340: unsupported bip0340 curve")
         return
     }
 
@@ -157,7 +157,7 @@ func MarshalPrivateKey(key *PrivateKey) ([]byte, error) {
 
     oid, ok := OidFromNamedCurve(key.Curve)
     if !ok {
-        return nil, errors.New("go-cryptobin/bip0340: unsupported ecgdsa curve")
+        return nil, errors.New("go-cryptobin/bip0340: unsupported bip0340 curve")
     }
 
     oidBytes, err := asn1.Marshal(oid)

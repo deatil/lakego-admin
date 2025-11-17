@@ -125,10 +125,10 @@ func NewKeyFromSeed(seed []byte) PrivateKey {
 // slices of 56 bytes.
 func X448(scalar, point []byte) ([]byte, error) {
     if l := len(scalar); l != 56 {
-        return nil, errors.New("x448: bad scalar length: " + strconv.Itoa(l) + ", expected 56")
+        return nil, errors.New("go-cryptobin/x448: bad scalar length: " + strconv.Itoa(l) + ", expected 56")
     }
     if l := len(point); l != 56 {
-        return nil, errors.New("x448: bad point length: " + strconv.Itoa(l) + ", expected 56")
+        return nil, errors.New("go-cryptobin/x448: bad point length: " + strconv.Itoa(l) + ", expected 56")
     }
 
     var k [56]byte
@@ -185,7 +185,7 @@ func X448(scalar, point []byte) ([]byte, error) {
     var ret field.Element
     ret.Mul(&x2, ret.Inv(&z2))
     if zero.Equal(&ret) == 1 {
-        return nil, errors.New("x448 bad input point: low order point")
+        return nil, errors.New("go-cryptobin/x448: bad input point: low order point")
     }
 
     return ret.Bytes(), nil

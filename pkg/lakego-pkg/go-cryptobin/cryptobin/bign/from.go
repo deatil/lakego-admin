@@ -269,7 +269,7 @@ func (this Bign) FromPublicKeyUncompressString(key string) Bign {
 
     x, y := elliptic.Unmarshal(this.curve, k)
     if x == nil || y == nil {
-        err := errors.New("publicKey uncompress string error")
+        err := errors.New("go-cryptobin/bign: publicKey uncompress string error")
 
         return this.AppendError(err)
     }
@@ -291,7 +291,7 @@ func (this Bign) FromPublicKeyCompressString(key string) Bign {
 
     x, y := elliptic.UnmarshalCompressed(this.curve, k)
     if x == nil || y == nil {
-        err := errors.New("publicKey compress string error")
+        err := errors.New("go-cryptobin/bign: publicKey compress string error")
 
         return this.AppendError(err)
     }

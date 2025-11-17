@@ -10,7 +10,7 @@ import (
 // 私钥签名
 func (this EdDSA) Sign() EdDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/eddsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -29,7 +29,7 @@ func (this EdDSA) Sign() EdDSA {
 // 公钥验证
 func (this EdDSA) Verify(data []byte) EdDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/eddsa: publicKey empty.")
         return this.AppendError(err)
     }
 

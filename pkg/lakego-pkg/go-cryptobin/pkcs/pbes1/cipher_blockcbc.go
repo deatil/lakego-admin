@@ -69,7 +69,7 @@ func (this CipherBlockCBC) Encrypt(rand io.Reader, password, plaintext []byte) (
 
     block, err := this.cipherFunc(key)
     if err != nil {
-        return nil, nil, errors.New("pkcs/cipher:" + err.Error() + " failed to create cipher")
+        return nil, nil, errors.New("go-cryptobin/pkcs:" + err.Error() + " failed to create cipher")
     }
 
     // 加密数据补码
@@ -97,7 +97,7 @@ func (this CipherBlockCBC) Encrypt(rand io.Reader, password, plaintext []byte) (
 func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte, error) {
     var param pbeCBCParams
     if _, err := asn1.Unmarshal(params, &param); err != nil {
-        return nil, errors.New("pkcs/cipher: invalid PBES2 parameters")
+        return nil, errors.New("go-cryptobin/pkcs: invalid PBES2 parameters")
     }
 
     key, iv := this.derivedKeyFunc(string(password), string(param.Salt), param.IterationCount, this.keySize, this.blockSize, this.hashFunc)
@@ -110,7 +110,7 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
     blockSize := block.BlockSize()
 
     if len(ciphertext)%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: encrypted PEM data is not a multiple of the block size")
+        return nil, errors.New("go-cryptobin/pkcs: encrypted PEM data is not a multiple of the block size")
     }
 
     plaintext := make([]byte, len(ciphertext))
@@ -121,7 +121,7 @@ func (this CipherBlockCBC) Decrypt(password, params, ciphertext []byte) ([]byte,
     // 判断数据是否为填充数据
     dlen := len(plaintext)
     if dlen == 0 || dlen%blockSize != 0 {
-        return nil, errors.New("pkcs/cipher: invalid padding")
+        return nil, errors.New("go-cryptobin/pkcs: invalid padding")
     }
 
     // 解析加密数据

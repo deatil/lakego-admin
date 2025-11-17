@@ -37,7 +37,7 @@ func (this ElGamal) Verify(data []byte) ElGamal {
 // 私钥签名
 func (this ElGamal) SignASN1() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -60,7 +60,7 @@ func (this ElGamal) SignASN1() ElGamal {
 // 使用原始数据[data]对比签名后数据
 func (this ElGamal) VerifyASN1(data []byte) ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -84,7 +84,7 @@ func (this ElGamal) VerifyASN1(data []byte) ElGamal {
 // 私钥签名明文
 func (this ElGamal) SignBytes() ElGamal {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -107,7 +107,7 @@ func (this ElGamal) SignBytes() ElGamal {
 // 使用原始数据[data]对比签名后数据
 func (this ElGamal) VerifyBytes(data []byte) ElGamal {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/elgamal: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -131,7 +131,7 @@ func (this ElGamal) VerifyBytes(data []byte) ElGamal {
 // 签名数据
 func (this ElGamal) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return data, errors.New("sign hash empty.")
+        return data, errors.New("go-cryptobin/elgamal: sign hash empty.")
     }
 
     h := this.signHash()

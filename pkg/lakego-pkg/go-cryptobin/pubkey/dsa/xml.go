@@ -10,11 +10,11 @@ import (
 
 var (
     errPublicKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: public key [" + name + "] value is error")
+        return errors.New("go-cryptobin/dsa: public key [" + name + "] value is error")
     }
 
     errPrivateKeyXMLValue = func(name string) error {
-        return errors.New("dsa xml: private key [" + name + "] value is error")
+        return errors.New("go-cryptobin/dsa: private key [" + name + "] value is error")
     }
 )
 
@@ -104,7 +104,7 @@ func (this XMLKey) ParsePublicKey(data []byte) (*dsa.PublicKey, error) {
     }
 
     if p.Sign() <= 0 || q.Sign() <= 0 || g.Sign() <= 0 || y.Sign() <= 0 {
-        return nil, errors.New("dsa xml: public key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/dsa: public key contains zero or negative value")
     }
 
     publicKey := &dsa.PublicKey{
@@ -177,7 +177,7 @@ func (this XMLKey) ParsePrivateKey(data []byte) (*dsa.PrivateKey, error) {
     }
 
     if p.Sign() <= 0 || q.Sign() <= 0 || g.Sign() <= 0 || y.Sign() <= 0 || x.Sign() <= 0 {
-        return nil, errors.New("dsa xml: private key contains zero or negative value")
+        return nil, errors.New("go-cryptobin/dsa: private key contains zero or negative value")
     }
 
     privateKey := &dsa.PrivateKey{

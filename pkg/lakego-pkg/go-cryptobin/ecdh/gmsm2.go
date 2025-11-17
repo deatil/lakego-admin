@@ -32,7 +32,7 @@ func (c *gmsm2Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
 
     size := (key.Curve.Params().N.BitLen() + 7) / 8
     if key.D.BitLen() > size*8 {
-        return nil, errors.New("crypto/ecdh: invalid private key")
+        return nil, errors.New("go-cryptobin/ecdh: invalid private key")
     }
 
     return c.NewPrivateKey(key.D.FillBytes(make([]byte, size)))
@@ -40,11 +40,11 @@ func (c *gmsm2Curve) GenerateKey(rand io.Reader) (*PrivateKey, error) {
 
 func (c *gmsm2Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
     if len(key) != 32 {
-        return nil, errors.New("crypto/ecdh: invalid private key size")
+        return nil, errors.New("go-cryptobin/ecdh: invalid private key size")
     }
 
     if isZero(key) {
-        return nil, errors.New("crypto/ecdh: invalid private key")
+        return nil, errors.New("go-cryptobin/ecdh: invalid private key")
     }
 
     return &PrivateKey{
@@ -55,7 +55,7 @@ func (c *gmsm2Curve) NewPrivateKey(key []byte) (*PrivateKey, error) {
 
 func (c *gmsm2Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
     if key.NamedCurve != c {
-        panic("crypto/ecdh: converting the wrong key type")
+        panic("go-cryptobin/ecdh: converting the wrong key type")
     }
 
     curve := sm2.P256()
@@ -64,7 +64,7 @@ func (c *gmsm2Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
 
     publicKey := elliptic.Marshal(curve, x, y)
     if len(publicKey) == 1 {
-        panic("crypto/ecdh: nistec ScalarBaseMult returned the identity")
+        panic("go-cryptobin/ecdh: nistec ScalarBaseMult returned the identity")
     }
 
     k := &PublicKey{
@@ -77,7 +77,7 @@ func (c *gmsm2Curve) PrivateKeyToPublicKey(key *PrivateKey) *PublicKey {
 
 func (c *gmsm2Curve) NewPublicKey(key []byte) (*PublicKey, error) {
     if len(key) == 0 || key[0] != 4 {
-        return nil, errors.New("crypto/ecdh: invalid public key")
+        return nil, errors.New("go-cryptobin/ecdh: invalid public key")
     }
 
     return &PublicKey{
@@ -92,7 +92,7 @@ func (c *gmsm2Curve) ECDH(local *PrivateKey, remote *PublicKey) ([]byte, error) 
     // 公钥
     xx, yy := elliptic.Unmarshal(curve, remote.Bytes())
     if xx == nil {
-        return nil, errors.New("crypto/ecdh: failed to unmarshal elliptic curve point")
+        return nil, errors.New("go-cryptobin/ecdh: failed to unmarshal elliptic curve point")
     }
 
     x, _ := curve.ScalarMult(xx, yy, local.Bytes())
@@ -170,7 +170,7 @@ func isZero(a []byte) bool {
 func SM2PublicKeyToECDH(pub *sm2.PublicKey) (*PublicKey, error) {
     publicKey := elliptic.Marshal(sm2.P256(), pub.X, pub.Y)
     if len(publicKey) == 1 {
-        return nil, errors.New("crypto/ecdh: sm2 PublicKey error")
+        return nil, errors.New("go-cryptobin/ecdh: sm2 PublicKey error")
     }
 
     return GmSM2().NewPublicKey(publicKey)
@@ -180,7 +180,7 @@ func SM2PublicKeyToECDH(pub *sm2.PublicKey) (*PublicKey, error) {
 func SM2PrivateKeyToECDH(pri *sm2.PrivateKey) (*PrivateKey, error) {
     size := (pri.Curve.Params().N.BitLen() + 7) / 8
     if pri.D.BitLen() > size*8 {
-        return nil, errors.New("crypto/ecdh: invalid private key")
+        return nil, errors.New("go-cryptobin/ecdh: invalid private key")
     }
 
     key := pri.D.FillBytes(make([]byte, size))

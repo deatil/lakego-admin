@@ -109,7 +109,7 @@ func GenerateKey(random io.Reader, c elliptic.Curve) (*PrivateKey, error) {
         return nil, err
     }
 
-    dInv := fermatInverse(d, c.Params().N)
+    dInv := formatInverse(d, c.Params().N)
 
     priv := new(PrivateKey)
     priv.PublicKey.Curve = c
@@ -130,7 +130,7 @@ func NewPrivateKey(curve elliptic.Curve, k []byte) (*PrivateKey, error) {
         return nil, errors.New("go-cryptobin/ecgdsa: privateKey's D is overflow")
     }
 
-    dInv := fermatInverse(d, curve.Params().N)
+    dInv := formatInverse(d, curve.Params().N)
 
     priv := new(PrivateKey)
     priv.PublicKey.Curve = curve
@@ -404,7 +404,7 @@ func VerifyWithRS(pub *PublicKey, hashFunc Hasher, data []byte, r, s *big.Int) b
 }
 
 func XY(D *big.Int, c elliptic.Curve) (X, Y *big.Int) {
-    dInv := fermatInverse(D, c.Params().N)
+    dInv := formatInverse(D, c.Params().N)
     return c.ScalarBaseMult(dInv.Bytes())
 }
 
@@ -429,7 +429,7 @@ func randFieldElement(rand io.Reader, c elliptic.Curve) (k *big.Int, err error) 
     }
 }
 
-func fermatInverse(a, N *big.Int) *big.Int {
+func formatInverse(a, N *big.Int) *big.Int {
     two := big.NewInt(2)
     nMinus2 := new(big.Int).Sub(N, two)
     return new(big.Int).Exp(a, nMinus2, N)

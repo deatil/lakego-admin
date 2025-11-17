@@ -11,9 +11,9 @@ import (
 )
 
 var (
-    ErrKeyMustBePEMEncoded = errors.New("invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
-    ErrNotECPublicKey      = errors.New("key is not a valid ECGDSA public key")
-    ErrNotECPrivateKey     = errors.New("key is not a valid ECGDSA private key")
+    ErrKeyMustBePEMEncoded = errors.New("go-cryptobin/ecgdsa: invalid key: Key must be a PEM encoded PKCS1 or PKCS8 key")
+    ErrNotECPublicKey      = errors.New("go-cryptobin/ecgdsa: key is not a valid ECGDSA public key")
+    ErrNotECPrivateKey     = errors.New("go-cryptobin/ecgdsa: key is not a valid ECGDSA private key")
 )
 
 // 解析私钥

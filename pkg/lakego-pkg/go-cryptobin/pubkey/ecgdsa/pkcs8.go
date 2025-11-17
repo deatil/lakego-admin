@@ -187,7 +187,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
     }
 
     if !privKey.Algo.Algorithm.Equal(oidPublicKeyECGDSA) {
-        err = errors.New("ecgdsa: unknown private key algorithm")
+        err = errors.New("go-cryptobin/ecgdsa: unknown private key algorithm")
         return nil, err
     }
 
@@ -200,7 +200,7 @@ func ParsePrivateKey(derBytes []byte) (*PrivateKey, error) {
 
     key, err := parseECPrivateKey(namedCurveOID, privKey.PrivateKey)
     if err != nil {
-        return nil, errors.New("ecgdsa: failed to parse EC private key embedded in PKCS#8: " + err.Error())
+        return nil, errors.New("go-cryptobin/ecgdsa: failed to parse EC private key embedded in PKCS#8: " + err.Error())
     }
 
     return key, nil

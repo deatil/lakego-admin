@@ -128,7 +128,7 @@ func (priv *LmotsPrivateKey) Sign(rng io.Reader, msg []byte, opts crypto.SignerO
 // SignToSignature calculates the LM-OTS signature of a chosen message.
 func (priv *LmotsPrivateKey) SignToSignature(rng io.Reader, msg []byte, opts crypto.SignerOpts) (*LmotsSignature, error) {
     if !priv.valid {
-        return nil, errors.New("lms: invalid private key")
+        return nil, errors.New("go-cryptobin/lms: invalid private key")
     }
 
     var err error
@@ -376,7 +376,7 @@ func (pub *LmotsPublicKey) Key() []byte {
 // This is the inverse of the ToBytes() method on the LmotsPublicKey object.
 func NewLmotsPublicKeyFromBytes(b []byte) (*LmotsPublicKey, error) {
     if len(b) < 4 {
-        return nil, errors.New("lms: OTS public key too short")
+        return nil, errors.New("go-cryptobin/lms: OTS public key too short")
     }
 
     // The typecode is bytes 0-3 (4 bytes)
@@ -391,9 +391,9 @@ func NewLmotsPublicKeyFromBytes(b []byte) (*LmotsPublicKey, error) {
 
     // ensure that the length of the slice is correct
     if uint64(len(b)) < 4+ID_LEN+4+params.N {
-        return nil, errors.New("lms: OTS public key too short")
+        return nil, errors.New("go-cryptobin/lms: OTS public key too short")
     } else if uint64(len(b)) > 4+ID_LEN+4+params.N {
-        return nil, errors.New("lms: OTS public key too long")
+        return nil, errors.New("go-cryptobin/lms: OTS public key too long")
     } else {
         // The next ID_LEN bytes are the id
         id := ID(b[4 : 4+ID_LEN])
@@ -455,7 +455,7 @@ func (sig *LmotsSignature) C() []byte {
 // NewLmotsSignatureFromBytes returns an LmotsSignature represented by b.
 func NewLmotsSignatureFromBytes(b []byte) (*LmotsSignature, error) {
     if len(b) < 4 {
-        return nil, errors.New("lms: No typecode")
+        return nil, errors.New("go-cryptobin/lms: No typecode")
     }
 
     // Typecode is the first 4 bytes
@@ -473,9 +473,9 @@ func NewLmotsSignatureFromBytes(b []byte) (*LmotsSignature, error) {
 
     // check the length of the signature
     if uint64(len(b)) < sigLen {
-        return nil, errors.New("lms: LMOTS signature too short")
+        return nil, errors.New("go-cryptobin/lms: LMOTS signature too short")
     } else if uint64(len(b)) > sigLen {
-        return nil, errors.New("lms: LMOTS signature too long")
+        return nil, errors.New("go-cryptobin/lms: LMOTS signature too long")
     } else {
         // parse the signature
         c := b[4 : 4+int(params.N)]

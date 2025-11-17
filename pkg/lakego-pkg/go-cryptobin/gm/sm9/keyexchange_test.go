@@ -130,7 +130,7 @@ func Test_KeyExchangeWithoutSignature(t *testing.T) {
 func bigFromHex(s string) (*big.Int, error) {
     b, ok := new(big.Int).SetString(s, 16)
     if !ok {
-        return nil, errors.New("de hex error")
+        return nil, errors.New("go-cryptobin/sm9: decode hex error")
     }
 
     return b, nil

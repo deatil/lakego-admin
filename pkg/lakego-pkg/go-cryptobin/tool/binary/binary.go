@@ -88,6 +88,7 @@ func BE2LE_64(inp []byte) []byte {
 
 // =============
 
+// 16 bytes LittleEndian to BigEndian
 func LE2BE_16_Bytes(in []byte) []byte {
     if len(in) % 2 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -95,7 +96,6 @@ func LE2BE_16_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 小端转大端
     for i := 0; i < len(in); i += 2 {
         tmp := LE2BE_16(in[i:])
         copy(out[i:], tmp[:])
@@ -104,6 +104,7 @@ func LE2BE_16_Bytes(in []byte) []byte {
     return out
 }
 
+// 16 bytes BigEndian to LittleEndian
 func BE2LE_16_Bytes(in []byte) []byte {
     if len(in) % 2 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -111,7 +112,6 @@ func BE2LE_16_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 大端转小端
     for i := 0; i < len(in); i += 2 {
         tmp := BE2LE_16(in[i:])
         copy(out[i:], tmp[:])
@@ -120,6 +120,7 @@ func BE2LE_16_Bytes(in []byte) []byte {
     return out
 }
 
+// 32 bytes LittleEndian to BigEndian
 func LE2BE_32_Bytes(in []byte) []byte {
     if len(in) % 4 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -127,7 +128,6 @@ func LE2BE_32_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 小端转大端
     for i := 0; i < len(in); i += 4 {
         tmp := LE2BE_32(in[i:])
         copy(out[i:], tmp[:])
@@ -136,6 +136,7 @@ func LE2BE_32_Bytes(in []byte) []byte {
     return out
 }
 
+// 32 bytes BigEndian to LittleEndian
 func BE2LE_32_Bytes(in []byte) []byte {
     if len(in) % 4 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -143,7 +144,6 @@ func BE2LE_32_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 大端转小端
     for i := 0; i < len(in); i += 4 {
         tmp := BE2LE_32(in[i:])
         copy(out[i:], tmp[:])
@@ -152,6 +152,7 @@ func BE2LE_32_Bytes(in []byte) []byte {
     return out
 }
 
+// 64 bytes LittleEndian to BigEndian
 func LE2BE_64_Bytes(in []byte) []byte {
     if len(in) % 8 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -159,7 +160,6 @@ func LE2BE_64_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 小端转大端
     for i := 0; i < len(in); i += 8 {
         tmp := LE2BE_64(in[i:])
         copy(out[i:], tmp[:])
@@ -168,6 +168,7 @@ func LE2BE_64_Bytes(in []byte) []byte {
     return out
 }
 
+// 64 bytes BigEndian to LittleEndian
 func BE2LE_64_Bytes(in []byte) []byte {
     if len(in) % 8 != 0 {
         panic(fmt.Sprintf("in data len(%d) error", len(in)))
@@ -175,7 +176,6 @@ func BE2LE_64_Bytes(in []byte) []byte {
 
     out := make([]byte, len(in))
 
-    // 大端转小端
     for i := 0; i < len(in); i += 8 {
         tmp := BE2LE_64(in[i:])
         copy(out[i:], tmp[:])

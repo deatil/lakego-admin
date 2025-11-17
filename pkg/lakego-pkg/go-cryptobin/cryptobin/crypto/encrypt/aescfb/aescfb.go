@@ -46,7 +46,7 @@ func (this EncryptAesCFB) Decrypt(encrypted []byte, opt crypto.IOption) ([]byte,
     }
 
     if len(encrypted) < aes.BlockSize {
-        err := errors.New("ciphertext too short")
+        err := errors.New("go-cryptobin/crypto: ciphertext too short")
         return nil, err
     }
 

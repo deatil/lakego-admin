@@ -10,7 +10,7 @@ func (this ElGamal) MakePublicKey() ElGamal {
     this.publicKey = nil
 
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/elgamal: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -24,7 +24,7 @@ func (this ElGamal) MakePublicKey() ElGamal {
 func (this ElGamal) MakeKeyDer() ElGamal {
     var block *pem.Block
     if block, _ = pem.Decode(this.keyData); block == nil {
-        err := errors.New("keyData error.")
+        err := errors.New("go-cryptobin/elgamal: keyData error.")
         return this.AppendError(err)
     }
 

@@ -46,7 +46,7 @@ func (this ECSDSA) CreatePrivateKeyWithPassword(password string, opts ...string)
 // 生成私钥 pem 数据
 func (this ECSDSA) CreatePKCS1PrivateKey() ECSDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecsdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -68,7 +68,7 @@ func (this ECSDSA) CreatePKCS1PrivateKey() ECSDSA {
 // 生成私钥带密码 pem 数据
 func (this ECSDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...string) ECSDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecsdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -80,7 +80,7 @@ func (this ECSDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...st
     // 加密方式
     cipher := pkcs1.GetPEMCipher(opt)
     if cipher == nil {
-        err := errors.New("PEMCipher not exists.")
+        err := errors.New("go-cryptobin/ecsdsa: PEMCipher not exists.")
         return this.AppendError(err)
     }
 
@@ -112,7 +112,7 @@ func (this ECSDSA) CreatePKCS1PrivateKeyWithPassword(password string, opts ...st
 // 生成 PKCS8 私钥 pem 数据
 func (this ECSDSA) CreatePKCS8PrivateKey() ECSDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecsdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -135,7 +135,7 @@ func (this ECSDSA) CreatePKCS8PrivateKey() ECSDSA {
 // CreatePKCS8PrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ECSDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...any) ECSDSA {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecsdsa: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -172,7 +172,7 @@ func (this ECSDSA) CreatePKCS8PrivateKeyWithPassword(password string, opts ...an
 // 生成公钥 pem 数据
 func (this ECSDSA) CreatePublicKey() ECSDSA {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecsdsa: publicKey empty.")
         return this.AppendError(err)
     }
 

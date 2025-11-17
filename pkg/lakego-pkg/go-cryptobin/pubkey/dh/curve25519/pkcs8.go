@@ -71,7 +71,7 @@ func ParsePublicKey(derBytes []byte) (*PublicKey, error) {
 
     algoEq := pki.Algorithm.Algorithm.Equal(oidPublicKeyDH)
     if !algoEq {
-        err = errors.New("curve25519: unknown public key algorithm")
+        err = errors.New("go-cryptobin/curve25519: unknown public key algorithm")
         return nil, err
     }
 

@@ -39,7 +39,7 @@ func oidSMByHash(h Hash) (asn1.ObjectIdentifier, error) {
             return oidHMACWithSM3, nil
     }
 
-    return nil, errors.New("unsupported hash function")
+    return nil, errors.New("go-cryptobin/pkcs8: unsupported hash function")
 }
 
 // smpbkdf2 params

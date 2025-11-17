@@ -40,7 +40,7 @@ func (this Gost) Verify(data []byte) Gost {
 // privateKey Sign with asn.1
 func (this Gost) SignASN1() Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -64,7 +64,7 @@ func (this Gost) SignASN1() Gost {
 // publicKey Verify with asn.1
 func (this Gost) VerifyASN1(data []byte) Gost {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -84,7 +84,7 @@ func (this Gost) VerifyASN1(data []byte) Gost {
 // privateKey Sign with bytes
 func (this Gost) SignBytes() Gost {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/gost: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -109,7 +109,7 @@ func (this Gost) SignBytes() Gost {
 // publicKey Verify with bytes
 func (this Gost) VerifyBytes(data []byte) Gost {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/gost: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -130,7 +130,7 @@ func (this Gost) VerifyBytes(data []byte) Gost {
 // sign data with hash
 func (this Gost) dataHash(data []byte) ([]byte, error) {
     if this.signHash == nil {
-        return nil, errors.New("hash func empty.")
+        return nil, errors.New("go-cryptobin/gost: hash func empty.")
     }
 
     h := this.signHash()

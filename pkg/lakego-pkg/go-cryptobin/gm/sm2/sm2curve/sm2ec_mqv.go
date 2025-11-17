@@ -13,7 +13,7 @@ var p256Order = [4]uint64{
 
 func fromBytes(bytes []byte) (*[4]uint64, error) {
     if len(bytes) != 32 {
-        return nil, errors.New("invalid scalar length")
+        return nil, errors.New("go-cryptobin/sm2: invalid scalar length")
     }
     var t [4]uint64
     t[0] = binary.BigEndian.Uint64(bytes[24:])

@@ -33,7 +33,7 @@ var (
 // priKey := obj.CreatePrivateKey().ToKeyString()
 func (this ECDH) CreatePrivateKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -56,7 +56,7 @@ func (this ECDH) CreatePrivateKey() ECDH {
 // CreatePrivateKeyWithPassword("123", "AES256CBC", "SHA256")
 func (this ECDH) CreatePrivateKeyWithPassword(password string, opts ...any) ECDH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -91,7 +91,7 @@ func (this ECDH) CreatePrivateKeyWithPassword(password string, opts ...any) ECDH
 // 生成公钥 pem 数据
 func (this ECDH) CreatePublicKey() ECDH {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecdh: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -115,7 +115,7 @@ func (this ECDH) CreatePublicKey() ECDH {
 // 生成私钥 pem 数据, 库自使用的 asn1 格式
 func (this ECDH) CreateECDHPrivateKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -142,7 +142,7 @@ func (this ECDH) CreateECDHPrivateKey() ECDH {
 // 生成 PKCS8 私钥带密码 pem 数据, 库自使用的 asn1 格式
 func (this ECDH) CreateECDHPrivateKeyWithPassword(password string, opts ...any) ECDH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdh: privateKey empty.")
         return this.AppendError(err)
     }
 
@@ -182,7 +182,7 @@ func (this ECDH) CreateECDHPrivateKeyWithPassword(password string, opts ...any) 
 // 生成公钥 pem 数据, 库自使用的 asn1 格式
 func (this ECDH) CreateECDHPublicKey() ECDH {
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecdh: publicKey empty.")
         return this.AppendError(err)
     }
 
@@ -211,12 +211,12 @@ func (this ECDH) CreateECDHPublicKey() ECDH {
 // 根据公钥和私钥生成对称密钥
 func (this ECDH) CreateSecretKey() ECDH {
     if this.privateKey == nil {
-        err := errors.New("privateKey empty.")
+        err := errors.New("go-cryptobin/ecdh: privateKey empty.")
         return this.AppendError(err)
     }
 
     if this.publicKey == nil {
-        err := errors.New("publicKey empty.")
+        err := errors.New("go-cryptobin/ecdh: publicKey empty.")
         return this.AppendError(err)
     }
 

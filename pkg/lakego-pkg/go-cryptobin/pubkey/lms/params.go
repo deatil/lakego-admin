@@ -40,7 +40,7 @@ func (this *TypeParams[N, M]) GetParam(typ N) (func() M, error) {
 
     param, ok := this.data[typ]
     if !ok {
-        err := fmt.Errorf("lms: unsupported param (ID: %d)", typ)
+        err := fmt.Errorf("go-cryptobin/lms: unsupported param (ID: %d)", typ)
         return nil, err
     }
 

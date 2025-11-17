@@ -155,7 +155,7 @@ func (ke *KeyExchange) Repond(rand io.Reader, hid byte, rA *sm9curve.G1) (*sm9cu
 
 func (ke *KeyExchange) respond(hid byte, r *big.Int, rA *sm9curve.G1) (*sm9curve.G1, []byte, error) {
     if !rA.IsOnCurve() {
-        return nil, nil, errors.New("sm9: invalid initiator's ephemeral public key")
+        return nil, nil, errors.New("go-cryptobin/sm9: invalid initiator's ephemeral public key")
     }
 
     ke.peerSecret = rA
@@ -200,7 +200,7 @@ func (ke *KeyExchange) respond(hid byte, r *big.Int, rA *sm9curve.G1) (*sm9curve
 // ConfirmResponder for initiator's step A5-A7
 func (ke *KeyExchange) ConfirmResponder(rB *sm9curve.G1, sB []byte) ([]byte, []byte, error) {
     if !rB.IsOnCurve() {
-        return nil, nil, errors.New("sm9: invalid responder's ephemeral public key")
+        return nil, nil, errors.New("go-cryptobin/sm9: invalid responder's ephemeral public key")
     }
 
     // step 5
@@ -225,7 +225,7 @@ func (ke *KeyExchange) ConfirmResponder(rB *sm9curve.G1, sB []byte) ([]byte, []b
     if len(sB) > 0 {
         signature := ke.sign(false, 0x82)
         if subtle.ConstantTimeCompare(signature, sB) != 1 {
-            return nil, nil, errors.New("sm9: invalid responder's signature")
+            return nil, nil, errors.New("go-cryptobin/sm9: invalid responder's signature")
         }
     }
 
@@ -247,7 +247,7 @@ func (ke *KeyExchange) ConfirmInitiator(s1 []byte) ([]byte, error) {
         buffer := ke.sign(true, 0x83)
 
         if subtle.ConstantTimeCompare(buffer, s1) != 1 {
-            return nil, errors.New("sm9: invalid initiator's signature")
+            return nil, errors.New("go-cryptobin/sm9: invalid initiator's signature")
         }
     }
 
